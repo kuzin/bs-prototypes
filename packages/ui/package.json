@@ -1,0 +1,13 @@
+{
+  "name": "@bs/ui",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./index.jsx",
+    "./css": "./BeanstackProfile.css"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  }
+}
