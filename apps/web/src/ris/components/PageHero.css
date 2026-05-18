@@ -1,0 +1,43 @@
+.ph-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #E5E7EB;
+  margin-bottom: 18px;
+}
+
+.ph-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: var(--ph-bg);
+  color: var(--ph-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid color-mix(in srgb, var(--ph-color) 22%, transparent);
+}
+
+.ph-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.ph-text { min-width: 0; }
+
+.ph-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1E293B;
+  letter-spacing: -0.02em;
+  margin: 0 0 2px;
+  line-height: 1.1;
+}
+
+.ph-sub {
+  font-size: 12px;
+  color: #64748B;
+  line-height: 1.4;
+}

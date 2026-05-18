@@ -1,0 +1,151 @@
+.stw-section {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 16px;
+}
+
+.stw-empty {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.stw-empty h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E293B;
+  margin: 0 0 4px;
+}
+
+.stw-empty p {
+  font-size: 12.5px;
+  color: #64748B;
+  margin: 0;
+}
+
+.stw-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.stw-header h3 {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E293B;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.stw-count {
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  background: #DC2626;
+  border-radius: 99px;
+  padding: 2px 8px;
+  min-width: 22px;
+  text-align: center;
+}
+
+.stw-sub {
+  font-size: 11px;
+  color: #94A3B8;
+  margin: 0 0 10px;
+}
+
+/* Scrollable list */
+.stw-list {
+  display: flex;
+  flex-direction: column;
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.stw-list::-webkit-scrollbar { width: 8px; }
+.stw-list::-webkit-scrollbar-thumb {
+  background: #E2E8F0;
+  border-radius: 4px;
+}
+.stw-list::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+
+.stw-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 8px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  border: none;
+  border-bottom: 1px solid #F1F5F9;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  width: 100%;
+  transition: background 0.1s;
+}
+
+.stw-row:last-child { border-bottom: none; }
+
+.stw-row:hover {
+  background: #F8FAFC;
+}
+
+.stw-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+  letter-spacing: -0.03em;
+}
+
+.stw-name {
+  flex: 1;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #1E293B;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.stw-bucket {
+  font-size: 9.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 7px;
+  border-radius: 99px;
+  color: var(--bucket-color);
+  background: var(--bucket-bg);
+  flex-shrink: 0;
+  width: 78px;
+  text-align: center;
+}
+
+.stw-chevron {
+  color: #CBD5E1;
+  font-size: 14px;
+  flex-shrink: 0;
+  transition: color 0.12s, transform 0.12s;
+}
+
+.stw-row:hover .stw-chevron {
+  color: #475569;
+  transform: translateX(2px);
+}
