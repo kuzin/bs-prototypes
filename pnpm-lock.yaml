@@ -39,11 +39,8 @@ importers:
         specifier: ^5.4.10
         version: 5.4.21
 
-  apps/student-profile:
+  apps/web:
     dependencies:
-      '@bs/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       react:
         specifier: ^18.3.1
         version: 18.3.1

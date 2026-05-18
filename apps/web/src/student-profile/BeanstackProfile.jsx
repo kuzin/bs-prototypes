@@ -271,7 +271,7 @@ function Overview({ student, onNavigate }) {
       <Card>
         <SectionHeading>Benny Says...</SectionHeading>
         <div className="bp-benny">
-          <img className="bp-benny-avatar" src="/bs-student-profile/benny.png" alt="Benny" />
+          <img className="bp-benny-avatar" src="/bs-prototypes/benny.png" alt="Benny" />
           <div className="bp-benny-body">
             <div className="bp-benny-bubble">{student.bennySummary}</div>
             <div className="bp-benny-timestamp">Analysis last run on {student.lastRun}</div>
@@ -442,7 +442,7 @@ function MotivationDetail({ sec, c }) {
     <Card>
       <SectionHeading>Benny Says...</SectionHeading>
       <div className="bp-benny">
-        <img className="bp-benny-avatar" src="/bs-student-profile/benny.png" alt="Benny" />
+        <img className="bp-benny-avatar" src="/bs-prototypes/benny.png" alt="Benny" />
         <div className="bp-benny-body">
           <div className="bp-benny-bubble">{rmi.bennySummary}</div>
         </div>
@@ -1751,7 +1751,7 @@ function AdminMockup({ onStudentClick, selectedKey }) {
     <div className="bp-adm">
       {/* Far-left icon rail */}
       <div className="bp-adm-rail">
-        <img className="bp-adm-rail-logo" src="/bs-student-profile/bs.svg" alt="Beanstack" />
+        <img className="bp-adm-rail-logo" src="/bs-prototypes/bs.svg" alt="Beanstack" />
         {[1,2,3,4,5,6,7,8].map(i => (
           <div key={i} className={`bp-adm-rail-btn${i === 2 ? " bp-adm-rail-btn--active" : ""}`}>
             <div className="bp-adm-rail-icon" />

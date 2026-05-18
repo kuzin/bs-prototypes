@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "packageManager": "pnpm@9.15.4",
   "scripts": {
-    "dev:student-profile": "pnpm --filter student-profile dev",
+    "dev": "pnpm --filter bs-web dev",
+    "build": "pnpm --filter bs-web build",
     "build:all": "pnpm -r build"
   },
   "devDependencies": {

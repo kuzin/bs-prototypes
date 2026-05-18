@@ -29,13 +29,11 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Build student-profile
-        run: pnpm --filter student-profile build
+      - name: Build
+        run: pnpm --filter bs-web build
 
       - name: Assemble pages artifact
-        run: |
-          mkdir -p pages/student-profile
-          cp -r apps/student-profile/dist/. pages/student-profile/
+        run: cp -r apps/web/dist/. pages/
 
       - uses: actions/upload-pages-artifact@v3
         with:
