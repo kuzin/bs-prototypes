@@ -1,0 +1,30 @@
+.back-bar {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 11px 24px;
+  background: #fff;
+  border-bottom: 1px solid #E5E7EB;
+  flex-shrink: 0;
+}
+
+.back-bar-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #EF4444;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  text-decoration: none;
+  transition: color 0.12s, gap 0.12s;
+}
+
+.back-bar-link:hover {
+  color: #B91C1C;
+  gap: 7px;
+}

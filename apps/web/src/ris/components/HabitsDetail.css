@@ -1,0 +1,94 @@
+.habits-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.detail-back {
+  align-self: flex-start;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.12s;
+}
+.detail-back:hover { color: #1E293B; }
+
+.detail-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E293B;
+  letter-spacing: -0.02em;
+  margin-top: -8px;
+}
+
+.hd-stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.hd-stat {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.hd-stat-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0DA7BC;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+
+.hd-stat-label {
+  font-size: 12px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.hd-stat-sub {
+  font-size: 11px;
+  color: #94A3B8;
+  margin-top: 2px;
+}
+
+.hd-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.hd-card {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.hd-card--wide {
+  grid-column: span 2;
+}
+
+.hd-card h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+
+.hd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: #64748B;
+}

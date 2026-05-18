@@ -1,0 +1,203 @@
+.dm-root {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Equity table ── */
+.dm-equity-table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.dm-equity-head,
+.dm-equity-row {
+  display: grid;
+  grid-template-columns: 140px 52px 1fr 90px 80px 60px 68px;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+}
+
+.dm-equity-head {
+  background: #F8FAFC;
+  border-bottom: 1px solid #E2E8F0;
+  font-size: 10px;
+  font-weight: 700;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.dm-equity-row {
+  font-size: 12px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.dm-equity-row:last-child {
+  border-bottom: none;
+}
+
+.dm-ec { white-space: nowrap; }
+.dm-ec--name { font-weight: 600; color: #1E293B; }
+.dm-ec--rmi  { text-align: right; }
+.dm-ec--engage { text-align: right; color: #475569; }
+.dm-ec--lexile { text-align: right; color: #475569; }
+.dm-ec--frl { text-align: center; }
+.dm-ec--titlei { text-align: center; }
+
+.dm-school-name {
+  font-size: 12px;
+  color: #334155;
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dm-rmi-val {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.dm-rmi-bar-wrap {
+  background: #F1F5F9;
+  border-radius: 3px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.dm-rmi-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.dm-frl-pill {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748B;
+  padding: 1px 6px;
+  border-radius: 99px;
+  background: #F1F5F9;
+}
+
+.dm-frl-pill--med {
+  background: #FFFBEB;
+  color: #92400E;
+}
+
+.dm-frl-pill--high {
+  background: #FEF2F2;
+  color: #991B1B;
+}
+
+.dm-titlei-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 99px;
+  padding: 2px 7px;
+}
+
+.dm-titlei-badge--yes {
+  background: #EFF6FF;
+  color: #1D4ED8;
+  border: 1px solid #BFDBFE;
+}
+
+.dm-titlei-badge--no {
+  color: #CBD5E1;
+}
+
+.dm-equity-note {
+  font-size: 11px;
+  color: #92400E;
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  border-radius: 8px;
+  padding: 8px 12px;
+  line-height: 1.5;
+  margin-top: 10px;
+}
+
+/* ── Title I comparison ── */
+.dm-compare-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.dm-compare-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dm-compare-metric {
+  font-size: 11px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.dm-compare-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.dm-compare-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #F8FAFC;
+  border-radius: 4px;
+  height: 18px;
+  overflow: hidden;
+  position: relative;
+}
+
+.dm-compare-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+  flex-shrink: 0;
+}
+
+.dm-compare-bar--t1 { background: #E8866A; }
+.dm-compare-bar--n1 { background: #0DA7BC; }
+
+.dm-compare-val {
+  font-size: 11px;
+  font-weight: 700;
+  color: #1E293B;
+  padding-left: 4px;
+  line-height: 18px;
+}
+
+.dm-compare-legend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #64748B;
+}
+
+.dm-compare-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dm-compare-dot--t1 { background: #E8866A; }
+.dm-compare-dot--n1 { background: #0DA7BC; }

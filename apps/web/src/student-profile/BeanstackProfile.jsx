@@ -4,6 +4,8 @@ import {
   C, LABEL, GENRE_COLORS,
   Ic, StatusBadge, Pill, Bar, Card, SectionHeading, GoalRing, CoverImage,
 } from "@bs/ui";
+import { MainRail } from "../MainRail";
+import { BackBar } from "../BackBar";
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
 // Monthly density modifiers per student profile (index 0 = Jan, 11 = Dec)
@@ -173,36 +175,44 @@ const NAV_ITEMS = [
 const ANALYSIS_SECTIONS = new Set(["motivation", "integrity", "habits", "skills"]);
 
 function LeftNav({ activeSection, onNavigate }) {
+  function renderItem(item, idx) {
+    if (item.divider) return <div key={`divider-${idx}`} className="bp-nav-divider" />
+    const { icon, section, label, compact } = item
+    const active = activeSection === section
+    const pal = section ? C[section] : null
+    const activeBg    = pal ? pal.bg   : "#E6F1FF"
+    const activeColor = pal ? pal.text  : "#1A6DD5"
+    return (
+      <div
+        key={label}
+        className={`bp-nav-item${active ? " bp-nav-item--active" : ""}${compact ? " bp-nav-item--compact" : ""}`}
+        style={active ? { "--nav-active-bg": activeBg, "--nav-active-color": activeColor } : {}}
+        onClick={() => onNavigate(section)}
+        onKeyDown={e => e.key === "Enter" && onNavigate(section)}
+        role="button"
+        tabIndex={0}
+        title={label}
+        aria-label={label}
+      >
+        <Ic name={icon} size={compact ? 18 : 20} style={{ opacity: active ? 1 : 0.4 }} />
+        {!compact && <span className="bp-nav-label">{label}</span>}
+      </div>
+    )
+  }
+
+  const overviewItem  = NAV_ITEMS[0]
+  const subItems      = NAV_ITEMS.slice(1, 5)   // Motivation, Integrity, Habits, Skills
+  const restItems     = NAV_ITEMS.slice(5)
+
   return (
     <nav className="bp-nav">
-      {NAV_ITEMS.map((item, idx) => {
-        if (item.divider) {
-          return <div key={`divider-${idx}`} className="bp-nav-divider" />;
-        }
-        const { icon, section, label, compact } = item;
-        const active = activeSection === section;
-        const pal = section ? C[section] : null;
-        const activeBg    = pal ? pal.bg   : "#E6F1FF";
-        const activeColor = pal ? pal.text  : "#1A6DD5";
-        return (
-          <div
-            key={label}
-            className={`bp-nav-item${active ? " bp-nav-item--active" : ""}${compact ? " bp-nav-item--compact" : ""}`}
-            style={active ? { "--nav-active-bg": activeBg, "--nav-active-color": activeColor } : {}}
-            onClick={() => onNavigate(section)}
-            onKeyDown={e => e.key === "Enter" && onNavigate(section)}
-            role="button"
-            tabIndex={0}
-            title={label}
-            aria-label={label}
-          >
-            <Ic name={icon} size={compact ? 18 : 20} style={{ opacity: active ? 1 : 0.4 }} />
-            {!compact && <span className="bp-nav-label">{label}</span>}
-          </div>
-        );
-      })}
+      {renderItem(overviewItem, 0)}
+      <div className="bp-nav-subgroup">
+        {subItems.map((item, i) => renderItem(item, i + 1))}
+      </div>
+      {restItems.map((item, i) => renderItem(item, i + 5))}
     </nav>
-  );
+  )
 }
 
 // ─── Shared page header ───────────────────────────────────────────────────────
@@ -1749,49 +1759,47 @@ function PlaceholderPage({ pageKey }) {
 function AdminMockup({ onStudentClick, selectedKey }) {
   return (
     <div className="bp-adm">
-      {/* Far-left icon rail */}
-      <div className="bp-adm-rail">
-        <img className="bp-adm-rail-logo" src="/bs-prototypes/bs.svg" alt="Beanstack" />
-        {[1,2,3,4,5,6,7,8].map(i => (
-          <div key={i} className={`bp-adm-rail-btn${i === 2 ? " bp-adm-rail-btn--active" : ""}`}>
-            <div className="bp-adm-rail-icon" />
-          </div>
-        ))}
-        <div style={{ flex: 1 }} />
-        <div className="bp-adm-rail-btn"><div className="bp-adm-rail-icon" style={{ borderRadius: "50%" }} /></div>
-        <div className="bp-adm-rail-btn"><div className="bp-adm-rail-icon" style={{ borderRadius: "50%", fontSize: 10, color: "rgba(255,255,255,0.7)", display:"flex", alignItems:"center", justifyContent:"center" }}>?</div></div>
-        <div className="bp-adm-avatar-chip">EG</div>
-      </div>
+      {/* Far-left icon rail (shared across prototypes) */}
+      <MainRail activeIndex={1} />
 
       {/* People sidebar */}
       <div className="bp-adm-people">
         <div className="bp-adm-people-top">
           <div className="bp-adm-people-title">People</div>
           <div className="bp-adm-people-sub">Find and log for my students and classes.</div>
-          <div className="bp-adm-people-collapse">‹</div>
         </div>
         <div className="bp-adm-nav">
-          <div className="bp-adm-nav-section">
-            <div className="bp-adm-nav-name">Classes</div>
-            <div className="bp-adm-nav-desc">View and log for classes.</div>
+          <div className="bp-adm-nav-item">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:0.75}}>
+              <rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/>
+              <rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/>
+            </svg>
+            <span>Classes</span>
           </div>
-          <div className="bp-adm-nav-section bp-adm-nav-section--open">
-            <div className="bp-adm-nav-row">
-              <div>
-                <div className="bp-adm-nav-name">Students</div>
-                <div className="bp-adm-nav-desc">Description here</div>
-              </div>
-              <span className="bp-adm-nav-chevron">⌄</span>
+          <div className="bp-adm-nav-item bp-adm-nav-item--open">
+            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:0.85}}>
+              <circle cx="7.5" cy="6" r="2.5"/>
+              <path d="M2 17c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/>
+              <circle cx="14.5" cy="6" r="2" opacity="0.7"/>
+              <path d="M17 17c0-2.5-1.5-4-3.5-4.5" opacity="0.7"/>
+            </svg>
+            <span>Students</span>
+          </div>
+          <div className="bp-adm-nav-subgroup">
+            <div className="bp-adm-nav-child bp-adm-nav-child--active">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:0.8}}>
+                <circle cx="10" cy="7" r="3"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+              </svg>
+              View Students
             </div>
-            <div className="bp-adm-nav-children">
-              <div className="bp-adm-nav-child bp-adm-nav-child--active">
-                <div className="bp-adm-child-name">View Students</div>
-                <div className="bp-adm-child-desc">View and log for students.</div>
-              </div>
-              <div className="bp-adm-nav-child">
-                <div className="bp-adm-child-name">Flagged Entries</div>
-                <div className="bp-adm-child-desc">View and delete all flagged entries.</div>
-              </div>
+            <div className="bp-adm-nav-child">
+              <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:0.8}}>
+                <path d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
+                <path d="M7 8h6M7 11h6M7 14h3"/>
+                <circle cx="15.5" cy="14.5" r="2.5" fill="currentColor" fillOpacity="0.2" stroke="currentColor"/>
+                <line x1="14.5" y1="14.5" x2="16.5" y2="14.5"/><line x1="15.5" y1="13.5" x2="15.5" y2="15.5"/>
+              </svg>
+              Flagged Entries
             </div>
           </div>
         </div>
@@ -1799,9 +1807,16 @@ function AdminMockup({ onStudentClick, selectedKey }) {
 
       {/* Main content area */}
       <div className="bp-adm-main">
-        <div className="bp-adm-breadcrumb">‹ Back to Classes</div>
+        <BackBar label="Back to Classes" />
+        <div className="bp-adm-main-body">
         <div className="bp-adm-class-header">
-          <div className="bp-adm-class-title">Class A</div>
+          <div className="bp-adm-class-identity">
+            <div className="bp-adm-class-avatar">CA</div>
+            <div>
+              <div className="bp-adm-class-title">Class A</div>
+              <div className="bp-adm-class-meta">24 students · 2024–25 School Year</div>
+            </div>
+          </div>
           <div className="bp-adm-class-btns">
             <button className="bp-adm-btn-ghost">Set Classroom Goal</button>
             <button className="bp-adm-btn-primary">Log for Class</button>
@@ -1856,12 +1871,20 @@ function AdminMockup({ onStudentClick, selectedKey }) {
                       <span className="bp-adm-student-name">{STUDENTS[s.key].name}</span>
                     </div>
                   </td>
-                  <td className="bp-adm-goal-cell">{s.goal} <span className="bp-adm-info-icon">ℹ</span> <span className="bp-adm-edit-icon">✎</span></td>
+                  <td className="bp-adm-goal-cell">
+                    <span className="bp-adm-goal-val">{s.goal}</span>
+                    <button className="bp-adm-goal-edit-btn" title="Edit goal" onClick={e => e.stopPropagation()}>
+                      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="11" height="11">
+                        <path d="M8.5 1.5 l2 2 L3 11 l-2.5.5.5-2.5z"/>
+                        <path d="M7 3l2 2"/>
+                      </svg>
+                    </button>
+                  </td>
                   <td><span className={`bp-adm-pct bp-adm-pct--${s.ac}`}>{s.avg}%</span></td>
                   {s.days.map((d,i)=>(
                     <td key={i} className="bp-adm-day-td">
                       {d===null ? <span className="bp-adm-dash">–</span>
-                       : d===true ? <span className="bp-adm-check">✓</span>
+                       : d===true ? <span className="bp-adm-check-circle"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="10" height="10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></span>
                        : <span className={`bp-adm-pct bp-adm-pct--${s.ac === "red" ? "red" : "orange"}`}>{d}</span>}
                     </td>
                   ))}
@@ -1881,9 +1904,35 @@ function AdminMockup({ onStudentClick, selectedKey }) {
             <span style={{color:"#10B981"}}>✓ 100%</span>
           </div>
         </div>
+        </div>{/* bp-adm-main-body */}
       </div>
     </div>
   );
+}
+
+// ─── Embeddable profile panel (used by RIS StudentPanel slide-in) ─────────────
+export function StudentProfileView({ studentKey }) {
+  const [activeSection, setActiveSection] = useState(null)
+  const student = STUDENTS[studentKey] || STUDENTS.marcus
+
+  return (
+    <div className="bp-root" style={{ width: '100%', flex: 1, minHeight: 0, boxShadow: 'none' }}>
+      <LeftNav activeSection={activeSection} onNavigate={setActiveSection} />
+      <div className="bp-panel">
+        <StudentHeader student={student} />
+        <div key={`${studentKey}-${activeSection ?? 'overview'}`} className="bp-page-fade">
+          {activeSection === null
+            ? <Overview student={student} onNavigate={setActiveSection} />
+            : ANALYSIS_SECTIONS.has(activeSection)
+              ? <SectionDetail student={student} sectionKey={activeSection} />
+              : activeSection === 'readinglog'
+                ? <ReadingLogPage />
+                : <PlaceholderPage pageKey={activeSection} />
+          }
+        </div>
+      </div>
+    </div>
+  )
 }
 
 // ─── Root ─────────────────────────────────────────────────────────────────────

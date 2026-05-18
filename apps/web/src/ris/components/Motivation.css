@@ -1,0 +1,358 @@
+.mot-root {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.mot-trend-legend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: #64748B;
+  flex-shrink: 0;
+}
+
+.mot-legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.mot-shift-note {
+  font-size: 11.5px;
+  color: #475569;
+  line-height: 1.55;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: #FFF7F5;
+  border: 1px solid #FED7C8;
+  border-radius: 8px;
+}
+
+.mot-shift-note strong { color: #E8866A; }
+
+/* ── Motivation Drivers ── */
+.mot-driver-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+}
+
+.mot-driver-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 8px 0;
+}
+
+.mot-driver-divider {
+  height: 1px;
+  background: #F1F5F9;
+}
+
+.mot-driver-group-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.mot-driver-group-label--ext { color: #D97706; }
+.mot-driver-group-label--int { color: #E8866A; }
+
+.mot-driver-row {
+  display: grid;
+  grid-template-columns: 140px 1fr 32px;
+  align-items: center;
+  gap: 10px;
+}
+
+.mot-driver-name {
+  font-size: 12px;
+  color: #475569;
+}
+
+.mot-driver-bar-wrap {
+  background: #F1F5F9;
+  border-radius: 4px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.mot-driver-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.mot-driver-pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1E293B;
+  text-align: right;
+}
+
+/* ── Intrinsic Signals ── */
+.mot-signals {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+}
+
+.mot-signal-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.mot-signal-row:last-child { border-bottom: none; }
+
+.mot-signal-pct {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  flex-shrink: 0;
+  width: 46px;
+  text-align: right;
+}
+
+.mot-signal-body { flex: 1; }
+
+.mot-signal-label {
+  font-size: 12px;
+  color: #334155;
+  font-weight: 500;
+  line-height: 1.3;
+  margin-bottom: 2px;
+}
+
+.mot-signal-delta {
+  font-size: 10px;
+  color: #16A97A;
+  font-weight: 600;
+}
+
+.mot-signal-note {
+  font-size: 10.5px;
+  color: #94A3B8;
+  line-height: 1.5;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid #F1F5F9;
+}
+
+/* ── RMI Factor Breakdown ── */
+.mot-factor-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 8px;
+}
+
+.mot-factor-groups--wide {
+  flex-direction: row;
+  gap: 24px;
+}
+
+.mot-factor-groups--wide .mot-factor-group {
+  flex: 1;
+}
+
+.mot-factor-groups--wide .mot-factor-divider {
+  width: 1px;
+  height: auto;
+  align-self: stretch;
+}
+
+.mot-factor-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0;
+}
+
+.mot-factor-group-label {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+}
+
+.mot-factor-group-label--int { color: #E8866A; }
+.mot-factor-group-label--ext { color: #7CB5F5; }
+
+.mot-factor-divider {
+  height: 1px;
+  background: #F1F5F9;
+}
+
+.mot-factor-row {
+  display: grid;
+  grid-template-columns: 110px 1fr 40px;
+  align-items: center;
+  gap: 10px;
+}
+
+.mot-factor-name-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.mot-factor-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #334155;
+}
+
+.mot-factor-desc {
+  font-size: 10px;
+  color: #94A3B8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mot-factor-bar-wrap {
+  background: #F1F5F9;
+  border-radius: 4px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.mot-factor-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.mot-factor-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+}
+
+.mot-factor-score {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1E293B;
+}
+
+.mot-factor-delta {
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mot-factor-delta--pos { color: #16A97A; }
+.mot-factor-delta--neg { color: #E8866A; }
+
+/* ── Grade Band ── */
+.mot-grade-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.mot-grade-row {
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+
+.mot-grade-band {
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+}
+
+.mot-grade-tracks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.mot-grade-track-row {
+  display: grid;
+  grid-template-columns: 58px 1fr 26px;
+  align-items: center;
+  gap: 8px;
+}
+
+.mot-grade-track-label {
+  font-size: 10px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.mot-grade-track {
+  background: #F1F5F9;
+  border-radius: 3px;
+  height: 8px;
+  overflow: hidden;
+}
+
+.mot-grade-bar {
+  height: 100%;
+  transition: width 0.4s ease;
+}
+
+.mot-grade-bar--int { background: #E8866A; }
+.mot-grade-bar--ext { background: #CBD5E1; }
+
+.mot-grade-val {
+  font-size: 11px;
+  font-weight: 700;
+  text-align: right;
+}
+
+.mot-grade-top-factor {
+  font-size: 10px;
+  font-weight: 600;
+  color: #7C3AED;
+  background: #F5F3FF;
+  border: 1px solid #DDD6FE;
+  border-radius: 99px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+.mot-grade-legend {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #64748B;
+}
+
+/* ── Signal meta ── */
+.mot-signal-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.mot-signal-factor {
+  font-size: 10px;
+  font-weight: 600;
+  color: #E8866A;
+  background: #FFF7F5;
+  border: 1px solid #FED7C8;
+  border-radius: 99px;
+  padding: 1px 7px;
+  white-space: nowrap;
+}

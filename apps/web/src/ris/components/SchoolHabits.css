@@ -1,0 +1,66 @@
+.sh-gemini-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: #7C3AED;
+  background: #F5F3FF;
+  border: 1px solid #DDD6FE;
+  border-radius: 99px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.sh-diet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 8px;
+}
+
+.sh-diet-row {
+  display: grid;
+  grid-template-columns: 160px 1fr 34px;
+  align-items: center;
+  gap: 10px;
+}
+
+.sh-diet-label {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.sh-diet-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sh-diet-genre {
+  font-size: 12px;
+  color: #475569;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sh-diet-bar-wrap {
+  background: #F1F5F9;
+  border-radius: 4px;
+  height: 10px;
+  overflow: hidden;
+}
+
+.sh-diet-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.sh-diet-pct {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1E293B;
+  text-align: right;
+}

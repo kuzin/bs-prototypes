@@ -1,0 +1,60 @@
+/* Backdrop */
+.stp-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  z-index: 200;
+  animation: stp-fade 0.15s ease-out;
+}
+
+@keyframes stp-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Panel */
+.stp-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 48px; /* leave room for proto-nav */
+  width: 640px;
+  max-width: 95vw;
+  background: #fff;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.16);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: stp-slide 0.18s ease-out;
+}
+
+@keyframes stp-slide {
+  from { transform: translateX(20px); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+/* Close button — floats over the panel header */
+.stp-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 10;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  background: rgba(248, 250, 252, 0.9);
+  backdrop-filter: blur(4px);
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+}
+
+.stp-close:hover {
+  background: #F1F5F9;
+  color: #1E293B;
+}
