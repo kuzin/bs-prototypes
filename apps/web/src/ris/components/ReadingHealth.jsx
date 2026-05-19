@@ -75,41 +75,52 @@ function Delta({ value }) {
   )
 }
 
+/**
+ * Single health-area tile (Motivation / Integrity / Habits / Skills).
+ * <HealthStat section={SECTIONS[0]} score={71} delta={7} onClick={fn} />
+ */
+export function HealthStat({ section, score, delta, onClick }) {
+  const Tag = onClick ? 'button' : 'div'
+  return (
+    <Tag
+      type={onClick ? 'button' : undefined}
+      onClick={onClick}
+      className={`rh-stat${onClick ? ' rh-stat--clickable' : ''}`}
+      style={{ '--sec-color': section.color, '--sec-bg': section.bg }}
+    >
+      <div className="rh-stat-icon" aria-hidden="true">{section.icon}</div>
+      <div className="rh-stat-score">{score}</div>
+      <div className="rh-stat-label">{section.label}</div>
+      <div className="rh-stat-meta">
+        <span className="rh-stat-desc">{section.description}</span>
+        {delta != null && <Delta value={delta} />}
+      </div>
+      {onClick && (
+        <div className="rh-stat-more">
+          View more
+          <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="5,3 8,6 5,9" />
+          </svg>
+        </div>
+      )}
+    </Tag>
+  )
+}
+
 export function ReadingHealth({ title = 'Reading Health', data, onNavigate }) {
   return (
     <div className="rh-wrap">
       {title && <h3 className="rh-title">{title}</h3>}
       <div className="rh-grid">
-        {SECTIONS.map(sec => {
-          const score = data[sec.key]
-          const delta = data[sec.deltaKey]
-          const Tag = onNavigate ? 'button' : 'div'
-          return (
-            <Tag
-              key={sec.key}
-              type={onNavigate ? 'button' : undefined}
-              onClick={onNavigate ? () => onNavigate(sec.key) : undefined}
-              className={`rh-stat${onNavigate ? ' rh-stat--clickable' : ''}`}
-              style={{ '--sec-color': sec.color, '--sec-bg': sec.bg }}
-            >
-              <div className="rh-stat-icon" aria-hidden="true">{sec.icon}</div>
-              <div className="rh-stat-score">{score}</div>
-              <div className="rh-stat-label">{sec.label}</div>
-              <div className="rh-stat-meta">
-                <span className="rh-stat-desc">{sec.description}</span>
-                <Delta value={delta} />
-              </div>
-              {onNavigate && (
-                <div className="rh-stat-more">
-                  View more
-                  <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <polyline points="5,3 8,6 5,9" />
-                  </svg>
-                </div>
-              )}
-            </Tag>
-          )
-        })}
+        {SECTIONS.map(sec => (
+          <HealthStat
+            key={sec.key}
+            section={sec}
+            score={data[sec.key]}
+            delta={data[sec.deltaKey]}
+            onClick={onNavigate ? () => onNavigate(sec.key) : undefined}
+          />
+        ))}
       </div>
     </div>
   )

@@ -3,28 +3,44 @@ import { StatCard, ChartCard, CardNote } from '../ris/components/Cards'
 import {
   ChartLegend, SliceTooltip, GradeTooltip, BarTooltip,
 } from '../ris/components/charts'
-import { SECTIONS } from '../ris/components/ReadingHealth'
+import { SECTIONS, HealthStat, ReadingHealth } from '../ris/components/ReadingHealth'
+import { AlertRow, AlertsBanner } from '../ris/components/AlertsBanner'
+import { OverviewHero } from '../ris/components/OverviewHero'
+import { BucketHero } from '../ris/components/BucketHero'
+import { MainRail } from '../MainRail'
+import { PrototypeNav } from '../PrototypeNav'
 import { RMI_ICONS } from '../ris/components/RmiIcons'
 import { RMI_FACTORS } from '../ris/data'
-import { PrototypeNav } from '../PrototypeNav'
 
 // Bring in CSS for the components so they render properly here
 import '../ris/components/Cards.css'
 import '../ris/components/SchoolDashboard.css'
+import '../ris/components/ReadingHealth.css'
+import '../ris/components/AlertsBanner.css'
+import '../ris/components/OverviewHero.css'
+import '../ris/components/BucketHero.css'
+import '../MainRail.css'
 
 import './App.css'
 
 const SECTIONS_LIST = [
-  { id: 'stat-card',   name: 'StatCard' },
-  { id: 'chart-card',  name: 'ChartCard' },
-  { id: 'card-note',   name: 'CardNote' },
-  { id: 'chart-legend', name: 'ChartLegend' },
-  { id: 'tooltips',    name: 'Tooltips' },
-  { id: 'rmi-icons',   name: 'RMI Icons' },
-  { id: 'health-icons', name: 'Reading Health Icons' },
+  { group: 'Cards',     id: 'stat-card',    name: 'StatCard' },
+  { group: 'Cards',     id: 'chart-card',   name: 'ChartCard' },
+  { group: 'Cards',     id: 'card-note',    name: 'CardNote' },
+  { group: 'Charts',    id: 'chart-legend', name: 'ChartLegend' },
+  { group: 'Charts',    id: 'tooltips',     name: 'Tooltips' },
+  { group: 'Health',    id: 'health-stat',  name: 'HealthStat' },
+  { group: 'Health',    id: 'reading-health', name: 'ReadingHealth' },
+  { group: 'Alerts',    id: 'alert-row',    name: 'AlertRow' },
+  { group: 'Alerts',    id: 'alerts-banner', name: 'AlertsBanner' },
+  { group: 'Heroes',    id: 'overview-hero', name: 'OverviewHero' },
+  { group: 'Heroes',    id: 'bucket-hero',  name: 'BucketHero' },
+  { group: 'Layout',    id: 'main-rail',    name: 'MainRail' },
+  { group: 'Layout',    id: 'prototype-nav', name: 'PrototypeNav' },
+  { group: 'Icons',     id: 'rmi-icons',    name: 'RMI Icons' },
+  { group: 'Icons',     id: 'health-icons', name: 'Reading Health Icons' },
 ]
 
-// ── Static slice fixtures so the tooltips can render outside a chart ────────
 const fakeSlicePoints = (points) => ({
   points: points.map((p, i) => ({
     id:         `${p.serieId}.${i}`,
@@ -40,6 +56,14 @@ const RMI_TREND_FIXTURE = [
   { month: 'Nov', school: 67, district: 71 },
   { month: 'Dec', school: 66, district: 70 },
   { month: 'Jan', school: 68, district: 72 },
+]
+
+const SAMPLE_HEALTH = { motivation: 71, integrity: 86, habits: 58, skills: 42, dM: 7, dI: 3, dH: 5, dS: -3 }
+
+const SAMPLE_ALERTS = [
+  { id: '1', level: 'critical', school: 'Lincoln Elementary', title: 'Stuck Lexile plateau — 6 weeks, no growth', action: 'Review', tab: 'skills' },
+  { id: '2', level: 'warning', school: 'Washington Middle',   title: 'Student engagement down 39% vs. last month', action: 'View habits', tab: 'habits' },
+  { id: '3', level: 'positive', school: 'Adams High',          title: '+65% increase in avg session length', action: 'View details', tab: 'habits' },
 ]
 
 function ChartCardKnobs() {
@@ -118,11 +142,16 @@ function Section({ id, title, desc, children }) {
   )
 }
 
-function Variant({ label, children, bare }) {
+function Variant({ label, children, bare, full }) {
+  const className = [
+    'pt-variant-frame',
+    bare && 'pt-variant-frame--bare',
+    full && 'pt-variant-frame--full',
+  ].filter(Boolean).join(' ')
   return (
     <div className="pt-variant">
       <div className="pt-variant-label">{label}</div>
-      <div className={`pt-variant-frame${bare ? ' pt-variant-frame--bare' : ''}`}>{children}</div>
+      <div className={className}>{children}</div>
     </div>
   )
 }
@@ -146,21 +175,33 @@ export function App() {
     return () => content?.removeEventListener('scroll', onScroll)
   }, [])
 
+  // Group sections for sidebar
+  const groups = SECTIONS_LIST.reduce((acc, s) => {
+    if (!acc[s.group]) acc[s.group] = []
+    acc[s.group].push(s)
+    return acc
+  }, {})
+
   return (
     <>
       <div className="pt-shell">
         <aside className="pt-sidebar">
           <div className="pt-sidebar-title">Pattern Library</div>
           <div className="pt-sidebar-sub">Shared components used across all RIS prototype pages</div>
-          {SECTIONS_LIST.map(s => (
-            <a
-              key={s.id}
-              href={`#${s.id}`}
-              className={`pt-nav-link${active === s.id ? ' pt-nav-link--active' : ''}`}
-              onClick={() => setActive(s.id)}
-            >
-              {s.name}
-            </a>
+          {Object.entries(groups).map(([group, items]) => (
+            <div key={group} className="pt-nav-group">
+              <div className="pt-nav-group-label">{group}</div>
+              {items.map(s => (
+                <a
+                  key={s.id}
+                  href={`#${s.id}`}
+                  className={`pt-nav-link${active === s.id ? ' pt-nav-link--active' : ''}`}
+                  onClick={() => setActive(s.id)}
+                >
+                  {s.name}
+                </a>
+              ))}
+            </div>
           ))}
         </aside>
 
@@ -283,6 +324,148 @@ export function App() {
                   accent="#7C3AED"
                 />
               </Variant>
+            </div>
+          </Section>
+
+          <Section
+            id="health-stat"
+            title="HealthStat"
+            desc={<>Single health-area tile (one of Motivation / Integrity / Habits / Skills). Props: <code>section</code>, <code>score</code>, <code>delta</code>, <code>onClick</code>. Renders as a button when <code>onClick</code> is provided.</>}
+          >
+            <div className="pt-variants pt-variants--4">
+              {SECTIONS.map((sec, i) => (
+                <Variant key={sec.key} label={`clickable · ${sec.label}`} bare>
+                  <HealthStat
+                    section={sec}
+                    score={SAMPLE_HEALTH[sec.key]}
+                    delta={SAMPLE_HEALTH[sec.deltaKey]}
+                    onClick={() => {}}
+                  />
+                </Variant>
+              ))}
+            </div>
+            <div className="pt-variants pt-variants--4" style={{ marginTop: 16 }}>
+              <Variant label="static (no onClick)" bare>
+                <HealthStat
+                  section={SECTIONS[0]}
+                  score={71}
+                  delta={7}
+                />
+              </Variant>
+              <Variant label="no delta" bare>
+                <HealthStat
+                  section={SECTIONS[1]}
+                  score={86}
+                />
+              </Variant>
+            </div>
+          </Section>
+
+          <Section
+            id="reading-health"
+            title="ReadingHealth"
+            desc={<>Full 4-tile grid wrapping HealthStat. Props: <code>title</code>, <code>data</code>, <code>onNavigate</code>.</>}
+          >
+            <Variant label="dashboard usage" bare>
+              <ReadingHealth title={null} data={SAMPLE_HEALTH} onNavigate={() => {}} />
+            </Variant>
+          </Section>
+
+          <Section
+            id="alert-row"
+            title="AlertRow"
+            desc={<>Single alert tile shown by AlertsBanner. Props: <code>level</code> (critical | warning | positive | info), <code>school</code>, <code>title</code>, <code>action</code>, <code>onAction</code>.</>}
+          >
+            <div className="pt-variants" style={{ gridTemplateColumns: '1fr' }}>
+              <Variant label="critical">
+                <AlertRow level="critical" school="Lincoln Elementary" title="Stuck Lexile plateau — 6 weeks, no growth" action="Review" onAction={() => {}} />
+              </Variant>
+              <Variant label="warning">
+                <AlertRow level="warning" school="Washington Middle" title="Student engagement down 39% vs. last month" action="View habits" onAction={() => {}} />
+              </Variant>
+              <Variant label="positive">
+                <AlertRow level="positive" school="Adams High" title="+65% increase in avg session length" action="View details" onAction={() => {}} />
+              </Variant>
+              <Variant label="info (no action)">
+                <AlertRow level="info" school="Kennedy K-8" title="3 new Book Talks completed this week" />
+              </Variant>
+            </div>
+          </Section>
+
+          <Section
+            id="alerts-banner"
+            title="AlertsBanner"
+            desc={<>List wrapper around AlertRow. Pass <code>alerts</code> array and optional <code>onNavigate</code>. Returns null when no alerts.</>}
+          >
+            <Variant label="multiple alerts" bare>
+              <AlertsBanner alerts={SAMPLE_ALERTS} onNavigate={() => {}} />
+            </Variant>
+          </Section>
+
+          <Section
+            id="overview-hero"
+            title="OverviewHero"
+            desc={<>Top-of-dashboard header for a school or entity. Props: <code>title</code>, <code>subtitle</code>, <code>accent</code>, <code>initials</code>.</>}
+          >
+            <div className="pt-variants" style={{ gridTemplateColumns: '1fr' }}>
+              <Variant label="elementary school">
+                <OverviewHero
+                  title="Lincoln Elementary"
+                  subtitle="K–5 · 1,650 students"
+                  accent="#E8866A"
+                  initials="LE"
+                />
+              </Variant>
+              <Variant label="high school">
+                <OverviewHero
+                  title="Adams High"
+                  subtitle="9–12 · 2,510 students"
+                  accent="#C084FC"
+                  initials="AH"
+                />
+              </Variant>
+            </div>
+          </Section>
+
+          <Section
+            id="bucket-hero"
+            title="BucketHero"
+            desc={<>Header banner used at the top of every bucket detail page. Looks up the section by <code>bucket</code> key. Props: <code>bucket</code>, <code>score</code>, <code>delta</code>.</>}
+          >
+            <div className="pt-variants pt-variants--2">
+              <Variant label="bucket='motivation'">
+                <BucketHero bucket="motivation" score={71} delta={7} />
+              </Variant>
+              <Variant label="bucket='integrity'">
+                <BucketHero bucket="integrity" score={86} delta={3} />
+              </Variant>
+              <Variant label="bucket='habits'">
+                <BucketHero bucket="habits" score={58} delta={5} />
+              </Variant>
+              <Variant label="bucket='skills' (negative)">
+                <BucketHero bucket="skills" score={42} delta={-3} />
+              </Variant>
+            </div>
+          </Section>
+
+          <Section
+            id="main-rail"
+            title="MainRail"
+            desc={<>Narrow icon strip on the far left of every Beanstack admin page. Shared chrome. Props: <code>activeIndex</code> (0–7).</>}
+          >
+            <div className="pt-rail-frame">
+              <MainRail activeIndex={4} />
+              <div className="pt-rail-note">activeIndex = 4 (RIS app)</div>
+            </div>
+          </Section>
+
+          <Section
+            id="prototype-nav"
+            title="PrototypeNav"
+            desc={<>Floating switcher at the bottom-right of every prototype. Lets people jump between prototypes without going back to the index. Props: <code>currentHref</code>.</>}
+          >
+            <div className="pt-section-desc">
+              The PrototypeNav is rendered at the bottom of this page itself — scroll to see it. It picks up the current prototype from <code>currentHref</code> and shows prev/next arrows for the other prototypes.
             </div>
           </Section>
 

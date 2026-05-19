@@ -32,9 +32,20 @@
   margin-bottom: 8px;
 }
 
+.pt-nav-group { margin-bottom: 6px; }
+
+.pt-nav-group-label {
+  padding: 12px 18px 4px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.45);
+}
+
 .pt-nav-link {
   display: block;
-  padding: 8px 18px;
+  padding: 7px 18px;
   font-size: 13px;
   color: rgba(255, 255, 255, 0.78);
   cursor: pointer;
@@ -122,6 +133,33 @@
 }
 
 .pt-variant-frame--bare { padding: 0; background: transparent; border: none; }
+.pt-variant-frame--full { padding: 0; overflow: hidden; }
+
+/* ── MainRail showcase ───────────────────────────────────────────────────── */
+.pt-rail-frame {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 16px;
+  height: 520px;
+  position: relative;
+  overflow: hidden;
+}
+
+.pt-rail-frame .main-rail {
+  position: relative;
+  height: 100%;
+}
+
+.pt-rail-note {
+  align-self: center;
+  font-size: 13px;
+  color: #94A3B8;
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+}
 
 /* ── Knobs panel ─────────────────────────────────────────────────────────── */
 .pt-knobs {
