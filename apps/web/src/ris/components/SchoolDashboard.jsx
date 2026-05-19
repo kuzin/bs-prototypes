@@ -34,7 +34,7 @@ const NIVO_THEME = {
   },
 }
 
-const LINE_MARGIN = { top: 16, right: 24, bottom: 32, left: 42 }
+const LINE_MARGIN = { top: 16, right: 28, bottom: 36, left: 52 }
 const AXIS_BOTTOM = { tickSize: 0, tickPadding: 10 }
 const AXIS_LEFT   = { tickSize: 0, tickPadding: 8 }
 
@@ -130,7 +130,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
 
       <AlertsBanner alerts={alerts} />
 
-      <ReadingHealth title="Student Reading Health" data={health} onNavigate={onNavigate} />
+      <ReadingHealth title={null} data={health} onNavigate={onNavigate} />
 
       <StudentsToWatch schoolId={schoolId} onOpenStudent={onOpenStudent} />
 
@@ -245,7 +245,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             indexBy="school"
             layout="horizontal"
             theme={NIVO_THEME}
-            margin={{ top: 8, right: 28, bottom: 32, left: 76 }}
+            margin={{ top: 8, right: 32, bottom: 36, left: 80 }}
             colors={d => d.data.isThis ? school.color : '#CBD5E1'}
             borderRadius={4}
             axisBottom={{ tickSize: 0, tickPadding: 8, format: v => `${v}L` }}

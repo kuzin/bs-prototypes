@@ -121,7 +121,6 @@ function SchoolPicker({ schoolId, onSchoolId, onPage }) {
 
   return (
     <div className="rl-picker">
-      <div className="rl-picker-label">District site switcher</div>
       <button className="rl-picker-btn" onClick={() => setOpen(o => !o)}>
         <span className="rl-picker-avatar" style={{ background: school.color }}>
           {school.name[0]}

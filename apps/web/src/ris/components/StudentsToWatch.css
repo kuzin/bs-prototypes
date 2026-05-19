@@ -2,8 +2,9 @@
   background: #fff;
   border: 1px solid #E5E7EB;
   border-radius: 14px;
-  padding: 16px 18px;
+  padding: 16px 0 0;
   margin-bottom: 16px;
+  overflow: hidden;
 }
 
 .stw-empty {
@@ -32,7 +33,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 10px;
+  padding: 0 18px 10px;
+  border-bottom: 1px solid #F1F5F9;
+  margin-bottom: 0;
 }
 
 .stw-header h3 {
@@ -79,7 +82,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 8px;
+  padding: 10px 18px;
   text-decoration: none;
   color: inherit;
   cursor: pointer;

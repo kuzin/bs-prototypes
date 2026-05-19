@@ -73,16 +73,18 @@
   opacity: 1;
 }
 
-/* ── Chart area — flush to card edges ────────────────────────────────────── */
+/* ── Chart area ───────────────────────────────────────────────────────────── */
 .sdb-card-chart {
   height: 180px;
   padding: 8px 0;
+  overflow: hidden;
 }
 
 /* ── Legend ───────────────────────────────────────────────────────────────── */
 .sdb-card-legend {
   display: flex;
-  padding: 0 16px 12px;
+  padding: 10px 16px 12px;
+  border-top: 1px solid #F1F5F9;
 }
 
 .sdb-legend {

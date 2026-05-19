@@ -10,8 +10,6 @@ export function OverviewHero({ title, subtitle, accent, initials, year = '2024â€
         <h1 className="oh-title">{title}</h1>
         <div className="oh-meta">
           <span>{subtitle}</span>
-          <span className="oh-dot" aria-hidden="true">Â·</span>
-          <span>{year}</span>
         </div>
       </div>
     </header>
