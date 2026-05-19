@@ -18,7 +18,7 @@
   border-radius: 14px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  position: relative;
 }
 
 /* ── Card header ──────────────────────────────────────────────────────────── */
@@ -77,6 +77,10 @@
 .sdb-card-chart {
   height: 180px;
   padding: 8px 0;
+  overflow: hidden;
+}
+
+.sdb-card-chart svg {
   overflow: hidden;
 }
 
