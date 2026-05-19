@@ -46,11 +46,11 @@ export function SchoolHabits({ schoolId, onBack }) {
           <ResponsiveContainer width="100%" height={210}>
             <LineChart data={sessionData} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[6, 32]} tick={{ fontSize: 11, fill: '#94A3B8' }} unit=" min" />
-              <Tooltip formatter={v => `${v} min`} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
-              <ReferenceLine y={20} stroke="#D97706" strokeDasharray="4 3" label={{ value: 'District avg (20 min)', position: 'right', fontSize: 10, fill: '#D97706' }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[6, 32]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit=" min" />
+              <Tooltip formatter={v => `${v} min`} contentStyle={{ fontSize: 13, borderRadius: 8 }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
+              <ReferenceLine y={20} stroke="#D97706" strokeDasharray="4 3" label={{ value: 'District avg (20 min)', position: 'right', fontSize: 13, fill: '#D97706' }} />
               <Line type="monotone" dataKey="school" name={school.name.split(' ')[0]} stroke={school.color} strokeWidth={2.5} dot={false} />
               <Line type="monotone" dataKey="district" name="District avg" stroke="#94A3B8" strokeWidth={1.5} dot={false} strokeDasharray="5 4" />
             </LineChart>
@@ -63,10 +63,10 @@ export function SchoolHabits({ schoolId, onBack }) {
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={streakData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="milestone" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#94A3B8' }} unit="%" />
-              <Tooltip formatter={v => `${v}%`} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="milestone" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit="%" />
+              <Tooltip formatter={v => `${v}%`} contentStyle={{ fontSize: 13, borderRadius: 8 }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Bar dataKey="value" name={school.name.split(' ')[0]} fill={school.color} radius={[3, 3, 0, 0]} />
               <Bar dataKey="district" name="District avg" fill="#CBD5E1" radius={[3, 3, 0, 0]} />
             </BarChart>
@@ -87,10 +87,10 @@ export function SchoolHabits({ schoolId, onBack }) {
                 ))}
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[1, 5]} tick={{ fontSize: 11, fill: '#94A3B8' }} unit=" bks" />
-              <Tooltip formatter={v => `${v} bks/mo`} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[1, 5]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit=" bks" />
+              <Tooltip formatter={v => `${v} bks/mo`} contentStyle={{ fontSize: 13, borderRadius: 8 }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Area type="monotone" dataKey="elementary" name="Elementary" stroke="#0DA7BC" fill="url(#vElGrad)" strokeWidth={2} dot={false} />
               <Area type="monotone" dataKey="middle" name="Middle" stroke="#16A97A" fill="url(#vMidGrad)" strokeWidth={2} dot={false} />
               <Area type="monotone" dataKey="high" name="High" stroke="#C084FC" fill="url(#vHiGrad)" strokeWidth={2} dot={false} />

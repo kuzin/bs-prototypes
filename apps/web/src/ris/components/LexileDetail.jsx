@@ -41,20 +41,20 @@ export function LexileDetail({ onBack }) {
           <ResponsiveContainer width="100%" height={260}>
             <ScatterChart margin={{ top: 16, right: 32, left: 0, bottom: 20 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="volume" name="Books/mo" type="number" domain={[15, 50]} tick={{ fontSize: 11, fill: '#94A3B8' }} label={{ value: 'Avg books/month', position: 'insideBottom', offset: -12, fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis dataKey="lexileGrowth" name="Lexile growth" type="number" domain={[0, 130]} tick={{ fontSize: 11, fill: '#94A3B8' }} label={{ value: 'Lexile growth (L)', angle: -90, position: 'insideLeft', offset: 12, fontSize: 11, fill: '#94A3B8' }} />
-              <ReferenceLine y={EXPECTED_GROWTH} stroke="#D97706" strokeDasharray="5 4" label={{ value: 'Expected (+65L)', position: 'right', fontSize: 11, fill: '#D97706' }} />
+              <XAxis dataKey="volume" name="Books/mo" type="number" domain={[15, 50]} tick={{ fontSize: 13, fill: '#94A3B8' }} label={{ value: 'Avg books/month', position: 'insideBottom', offset: -12, fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis dataKey="lexileGrowth" name="Lexile growth" type="number" domain={[0, 130]} tick={{ fontSize: 13, fill: '#94A3B8' }} label={{ value: 'Lexile growth (L)', angle: -90, position: 'insideLeft', offset: 12, fontSize: 13, fill: '#94A3B8' }} />
+              <ReferenceLine y={EXPECTED_GROWTH} stroke="#D97706" strokeDasharray="5 4" label={{ value: 'Expected (+65L)', position: 'right', fontSize: 13, fill: '#D97706' }} />
               <Tooltip
                 content={({ payload }) => {
                   if (!payload?.length) return null
                   const d = payload[0].payload
                   return (
-                    <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 12 }}>
+                    <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 13 }}>
                       <div style={{ fontWeight: 700, marginBottom: 4 }}>{d.school}</div>
                       <div>Lexile growth: <b style={{ color: d.aboveExpected ? '#16A97A' : '#DC2626' }}>+{d.lexileGrowth}L</b></div>
                       <div>Avg books/mo: <b>{d.volume}</b></div>
                       <div>Students: <b>{d.students.toLocaleString()}</b></div>
-                      <div style={{ marginTop: 4, fontSize: 11, color: d.aboveExpected ? '#16A97A' : '#DC2626', fontWeight: 600 }}>
+                      <div style={{ marginTop: 4, fontSize: 13, color: d.aboveExpected ? '#16A97A' : '#DC2626', fontWeight: 600 }}>
                         {d.aboveExpected ? '✓ Above expected' : '⚠ Below expected'}
                       </div>
                     </div>
@@ -121,10 +121,10 @@ export function LexileDetail({ onBack }) {
           <ResponsiveContainer width="100%" height={260}>
             <BarChart data={LEXILE_BY_GRADE} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="grade" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[0, 140]} tick={{ fontSize: 11, fill: '#94A3B8' }} unit="L" />
-              <Tooltip formatter={v => `+${v}L`} contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="grade" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[0, 140]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit="L" />
+              <Tooltip formatter={v => `+${v}L`} contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Bar dataKey="growth" name="Actual growth" radius={[3, 3, 0, 0]}>
                 {LEXILE_BY_GRADE.map((d, i) => (
                   <Cell key={i} fill={d.growth >= d.expected ? '#0DA7BC' : '#E8866A'} />

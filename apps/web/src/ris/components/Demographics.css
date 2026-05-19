@@ -27,7 +27,7 @@
 .dm-equity-head {
   background: #F8FAFC;
   border-bottom: 1px solid #E2E8F0;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   color: #94A3B8;
   text-transform: uppercase;
@@ -35,7 +35,7 @@
 }
 
 .dm-equity-row {
-  font-size: 12px;
+  font-size: 13px;
   border-bottom: 1px solid #F1F5F9;
 }
 
@@ -52,7 +52,7 @@
 .dm-ec--titlei { text-align: center; }
 
 .dm-school-name {
-  font-size: 12px;
+  font-size: 13px;
   color: #334155;
   font-weight: 600;
   overflow: hidden;
@@ -80,7 +80,7 @@
 
 .dm-frl-pill {
   display: inline-block;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #64748B;
   padding: 1px 6px;
@@ -100,7 +100,7 @@
 
 .dm-titlei-badge {
   display: inline-block;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   border-radius: 99px;
   padding: 2px 7px;
@@ -117,7 +117,7 @@
 }
 
 .dm-equity-note {
-  font-size: 11px;
+  font-size: 13px;
   color: #92400E;
   background: #FFFBEB;
   border: 1px solid #FDE68A;
@@ -142,7 +142,7 @@
 }
 
 .dm-compare-metric {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #475569;
 }
@@ -175,7 +175,7 @@
 .dm-compare-bar--n1 { background: #0DA7BC; }
 
 .dm-compare-val {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #1E293B;
   padding-left: 4px;
@@ -187,7 +187,7 @@
   align-items: center;
   gap: 5px;
   margin-top: 10px;
-  font-size: 11px;
+  font-size: 13px;
   color: #64748B;
 }
 
@@ -222,7 +222,7 @@
 
 
 .dm-action-priority {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   padding: 3px 7px;
   border-radius: 4px;
@@ -247,13 +247,13 @@
 }
 
 .dm-action-frl {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 500;
   color: #94A3B8;
 }
 
 .dm-action-text {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   line-height: 1.6;
 }
@@ -274,8 +274,8 @@
 }
 
 .dm-cohort-info { display: flex; flex-direction: column; gap: 1px; }
-.dm-cohort-name { font-size: 12px; font-weight: 600; color: #1E293B; }
-.dm-cohort-desc { font-size: 10px; color: #94A3B8; }
+.dm-cohort-name { font-size: 13px; font-weight: 600; color: #1E293B; }
+.dm-cohort-desc { font-size: 13px; color: #94A3B8; }
 
 .dm-cohort-track {
   background: #F1F5F9;
@@ -297,7 +297,7 @@
 }
 
 .dm-cohort-pct { font-size: 13px; font-weight: 800; color: #1E293B; letter-spacing: -0.01em; }
-.dm-cohort-count { font-size: 10px; color: #94A3B8; }
+.dm-cohort-count { font-size: 13px; color: #94A3B8; }
 
 /* School equity table uses fewer columns */
 .dm-equity-table--school .dm-equity-head,

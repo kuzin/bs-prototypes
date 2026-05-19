@@ -108,7 +108,7 @@
 }
 
 .sl-picker-name {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
@@ -118,7 +118,7 @@
 }
 
 .sl-picker-grades {
-  font-size: 10px;
+  font-size: 13px;
   color: rgba(255,255,255,0.4);
 }
 
@@ -143,7 +143,7 @@
 }
 
 .sl-picker-dropdown-label {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -161,7 +161,7 @@
   border: none;
   background: none;
   color: #334155;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   text-align: left;
   transition: background 0.1s;
@@ -185,7 +185,7 @@
 .sl-picker-opt-name { flex: 1; }
 
 .sl-picker-opt-grades {
-  font-size: 10px;
+  font-size: 13px;
   color: #94A3B8;
 }
 
@@ -245,7 +245,7 @@
 }
 
 .sl-header-meta {
-  font-size: 12px;
+  font-size: 13px;
   color: #64748B;
 }
 
@@ -255,7 +255,7 @@
   align-items: center;
   padding: 2px 8px;
   border-radius: 99px;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -301,7 +301,7 @@
 .sl-hstat-val--warn { color: #DC2626; }
 
 .sl-hstat-lbl {
-  font-size: 10px;
+  font-size: 13px;
   color: #94A3B8;
   margin-top: 3px;
   white-space: nowrap;
@@ -369,13 +369,13 @@
 }
 
 .sv-stat-lbl {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   font-weight: 500;
 }
 
 .sv-stat-sub {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   margin-top: 2px;
 }
@@ -411,13 +411,13 @@
 }
 
 .sv-note {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   margin-bottom: 8px;
 }
 
 .sv-drill {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #0DA7BC;
   background: none;
@@ -433,7 +433,7 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 13px;
   color: #64748B;
 }
 

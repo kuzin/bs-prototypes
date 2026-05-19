@@ -77,10 +77,10 @@ export function Motivation({ onBack }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[9, 16]} tickCount={5} tick={{ fontSize: 11, fill: '#94A3B8' }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[9, 16]} tickCount={5} tick={{ fontSize: 13, fill: '#94A3B8' }} />
               <Tooltip
-                contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }}
+                contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }}
                 formatter={(v, name) => [`${v.toFixed(1)} /20`, name]}
               />
               <Area type="monotone" dataKey="intrinsic" name="Intrinsic" stroke="#E8866A" fill="url(#intrinsicGrad)" strokeWidth={2.5} dot={false} />
@@ -211,7 +211,7 @@ export function Motivation({ onBack }) {
           <div className="mot-grade-legend">
             <span className="mot-legend-dot" style={{ background: '#E8866A' }} /> Intrinsic
             <span className="mot-legend-dot" style={{ background: '#CBD5E1', marginLeft: 12 }} /> Extrinsic
-            <span style={{ marginLeft: 8, color: '#94A3B8', fontSize: 10 }}>scores out of 20 · badge = top factor</span>
+            <span style={{ marginLeft: 8, color: '#94A3B8', fontSize: 13 }}>scores out of 20 · badge = top factor</span>
           </div>
         </div>
 
@@ -232,10 +232,10 @@ export function Motivation({ onBack }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[55, 90]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[55, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Area type="monotone" dataKey="district" name="District avg" stroke="#E8866A" fill="url(#motDistGrad)" strokeWidth={2.5} dot={false} />
               {SCHOOLS.map(s => (
                 <Area key={s.id} type="monotone" dataKey={s.id} name={s.name.split(' ')[0]} stroke={s.color} fill="none" strokeWidth={1.2} strokeDasharray="4 3" dot={false} opacity={0.7} />
@@ -255,9 +255,9 @@ export function Motivation({ onBack }) {
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={ranked} layout="vertical" margin={{ top: 4, right: 16, left: 4, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" horizontal={false} />
-              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#475569' }} width={90} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 13, fill: '#475569' }} width={90} />
+              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8 }} />
               <Bar dataKey="rmi" name="RMI" radius={[0, 4, 4, 0]}>
                 {ranked.map((d, i) => <Cell key={i} fill={d.color} />)}
               </Bar>

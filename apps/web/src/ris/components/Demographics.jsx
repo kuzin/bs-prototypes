@@ -151,13 +151,13 @@ export function Demographics() {
               barSize={14}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-              <XAxis dataKey="grade" tick={{ fontSize: 10, fill: '#94A3B8' }} />
-              <YAxis domain={[60, 85]} tick={{ fontSize: 10, fill: '#94A3B8' }} />
+              <XAxis dataKey="grade" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[60, 85]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
               <Tooltip
-                contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }}
+                contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }}
                 formatter={(v, name) => [v, name === 'rmi' ? 'RMI Score' : 'Engagement %']}
               />
-              <Legend wrapperStyle={{ fontSize: 11 }} formatter={k => k === 'rmi' ? 'RMI Score' : 'Engagement %'} />
+              <Legend wrapperStyle={{ fontSize: 13 }} formatter={k => k === 'rmi' ? 'RMI Score' : 'Engagement %'} />
               <Bar dataKey="rmi" fill="#0DA7BC" radius={[3, 3, 0, 0]} />
               <Bar dataKey="engagement" fill="#7CB5F5" radius={[3, 3, 0, 0]} />
             </BarChart>

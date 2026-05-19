@@ -1,0 +1,153 @@
+.sdb {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── 2×2 area card grid ───────────────────────────────────────────────────── */
+.sdb-areas {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+/* ── Individual area card ─────────────────────────────────────────────────── */
+.sdb-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ── Card header ──────────────────────────────────────────────────────────── */
+.sdb-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.sdb-card-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--ac-bg);
+  color: var(--ac);
+  border: 1px solid color-mix(in srgb, var(--ac) 20%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.sdb-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.sdb-card-title {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+}
+
+.sdb-card-drill {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ac);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0.85;
+  transition: opacity 0.12s;
+}
+
+.sdb-card-drill:hover {
+  opacity: 1;
+}
+
+/* ── Chart area — flush to card edges ────────────────────────────────────── */
+.sdb-card-chart {
+  height: 180px;
+  padding: 8px 0;
+}
+
+/* ── Legend ───────────────────────────────────────────────────────────────── */
+.sdb-card-legend {
+  display: flex;
+  padding: 0 16px 12px;
+}
+
+.sdb-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+
+.sdb-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #64748B;
+}
+
+.sdb-legend-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 2.5px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Tooltip ──────────────────────────────────────────────────────────────── */
+.sdb-tooltip {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 9px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.10);
+  padding: 8px 12px;
+  min-width: 160px;
+}
+
+.sdb-tooltip-month {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94A3B8;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.sdb-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 0;
+}
+
+.sdb-tooltip-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sdb-tooltip-label {
+  flex: 1;
+  font-size: 13px;
+  color: #475569;
+}
+
+.sdb-tooltip-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+}

@@ -197,10 +197,10 @@ export function SchoolAnalytics({ schoolId }) {
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={rmiData} margin={{ top: 8, right: 16, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[55, 90]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[55, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Line type="monotone" dataKey="school" name={school.name.split(' ')[0]} stroke={school.color} strokeWidth={2.5} dot={false} />
               <Line type="monotone" dataKey="district" name="District avg" stroke="#94A3B8" strokeWidth={1.5} dot={false} strokeDasharray="5 4" />
             </LineChart>
@@ -218,10 +218,10 @@ export function SchoolAnalytics({ schoolId }) {
           <ResponsiveContainer width="100%" height={230}>
             <BarChart data={schoolGrades} margin={{ top: 4, right: 16, left: -20, bottom: 0 }} barSize={18}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-              <XAxis dataKey="grade" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[40, 90]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="grade" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[40, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Bar dataKey="engagement" name="Active %" fill={school.color} radius={[3, 3, 0, 0]} />
               <Bar dataKey="rmi"        name="RMI" fill="#94A3B8" radius={[3, 3, 0, 0]} />
             </BarChart>
@@ -240,11 +240,11 @@ export function SchoolAnalytics({ schoolId }) {
           <ResponsiveContainer width="100%" height={210}>
             <LineChart data={ROI_TRENDS} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis yAxisId="left" domain={[60, 95]} tick={{ fontSize: 11, fill: '#94A3B8' }} unit="%" />
-              <YAxis yAxisId="right" orientation="right" domain={[20, 45]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis yAxisId="left" domain={[60, 95]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit="%" />
+              <YAxis yAxisId="right" orientation="right" domain={[20, 45]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Line yAxisId="left"  type="monotone" dataKey="engagement" name="Reading Engagement %" stroke={school.color} strokeWidth={2.5} dot={false} />
               <Line yAxisId="left"  type="monotone" dataKey="attendance" name="Attendance Rate %"    stroke="#16A97A" strokeWidth={2}   dot={false} strokeDasharray="5 4" />
               <Line yAxisId="right" type="monotone" dataKey="incidents"  name="Behavioral Incidents" stroke="#E8866A" strokeWidth={2}   dot={false} strokeDasharray="3 3" />

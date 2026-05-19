@@ -67,6 +67,16 @@ export const BOOK_TALKS_TRENDS = MONTHS.map((month, i) => ({
   flagRate:       [16, 15, 15, 16, 14, 13, 14, 12, 11][i],
 }));
 
+// Per-school BTWB month-by-month trends (completionRate rising = good, flagRate falling = good)
+export const SCHOOL_INTEGRITY_TRENDS = {
+  jefferson:  MONTHS.map((month, i) => ({ month, completionRate: [70,72,74,73,76,78,79,80,82][i], flagRate: [15,14,14,13,12,11,10, 9, 8][i] })),
+  lincoln:    MONTHS.map((month, i) => ({ month, completionRate: [76,75,73,74,73,72,72,71,71][i], flagRate: [12,13,13,14,15,16,16,17,18][i] })),
+  kennedy:    MONTHS.map((month, i) => ({ month, completionRate: [67,68,70,70,72,73,74,76,77][i], flagRate: [16,15,15,14,14,13,12,12,11][i] })),
+  roosevelt:  MONTHS.map((month, i) => ({ month, completionRate: [66,67,69,68,70,71,72,74,75][i], flagRate: [16,15,16,15,15,14,15,14,14][i] })),
+  washington: MONTHS.map((month, i) => ({ month, completionRate: [72,70,68,68,67,66,65,64,62][i], flagRate: [15,16,17,17,18,19,20,21,22][i] })),
+  adams:      MONTHS.map((month, i) => ({ month, completionRate: [75,77,79,78,81,83,84,86,88][i], flagRate: [14,13,12,11,10, 9, 8, 7, 6][i] })),
+}
+
 // Per-school Book Talks stats (May 2025)
 // trend: pp change in completionRate vs prior month (+ve = more students completing = good)
 export const BOOK_TALKS_BY_SCHOOL = [

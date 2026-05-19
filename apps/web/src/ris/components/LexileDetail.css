@@ -26,13 +26,13 @@
 }
 
 .ld-stat-label {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   font-weight: 500;
 }
 
 .ld-stat-sub {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   margin-top: 2px;
 }
@@ -61,7 +61,7 @@
 }
 
 .ld-note {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   margin-bottom: 8px;
 }
@@ -71,20 +71,20 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 13px;
   color: #64748B;
 }
 
 .ld-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: 13px;
   margin-top: 8px;
 }
 
 .ld-table th {
   text-align: left;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #94A3B8;
   text-transform: uppercase;
@@ -105,7 +105,7 @@
   align-items: center;
   padding: 2px 7px;
   border-radius: 99px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .ld-action {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #0DA7BC;
   background: none;
@@ -133,7 +133,7 @@
   background: #FEF2F2;
   border: 1px solid #FECACA;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 13px;
   color: #DC2626;
   line-height: 1.5;
 }

@@ -34,7 +34,7 @@
 }
 
 .alert-school {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--alert-color);
   white-space: nowrap;
@@ -47,12 +47,12 @@
 }
 
 .alert-detail {
-  font-size: 12px;
+  font-size: 13px;
   color: #64748B;
 }
 
 .alert-action {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--alert-color);
   background: none;
@@ -67,7 +67,7 @@
 .alert-action:hover { opacity: 1; }
 
 .alert-dismiss {
-  font-size: 12px;
+  font-size: 13px;
   color: #94A3B8;
   background: none;
   border: none;

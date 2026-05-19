@@ -30,7 +30,7 @@
 }
 
 .fs-banner-sub {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   line-height: 1.5;
 }
@@ -61,7 +61,7 @@
 
 .fs-tag {
   display: inline-block;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -82,7 +82,7 @@
 }
 
 .fs-integration {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   color: #94A3B8;
   background: #F8FAFC;
@@ -102,7 +102,7 @@
 }
 
 .fs-desc {
-  font-size: 12px;
+  font-size: 13px;
   color: #64748B;
   line-height: 1.5;
   margin: 0;
@@ -126,7 +126,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .fs-diet-dot {
@@ -148,7 +148,7 @@
 
 .fs-gemini-badge {
   align-self: flex-start;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   color: #7C3AED;
   background: #F5F3FF;
@@ -190,7 +190,7 @@
 }
 
 .fs-callout-lbl {
-  font-size: 10px;
+  font-size: 13px;
   color: #64748B;
   line-height: 1.3;
 }
@@ -213,7 +213,7 @@
   grid-template-columns: 110px 1fr 52px 70px;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 13px;
 }
 
 .fs-hm-name {
@@ -249,12 +249,12 @@
 
 .fs-hm-meta {
   color: #94A3B8;
-  font-size: 10px;
+  font-size: 13px;
   text-align: right;
 }
 
 .fs-heatmap-note {
-  font-size: 11px;
+  font-size: 13px;
   color: #92400E;
   background: #FFFBEB;
   border: 1px solid #FDE68A;

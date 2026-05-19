@@ -98,7 +98,7 @@
 }
 
 .rl-topbar-sub {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   color: rgba(255,255,255,0.7);
   margin-top: 1px;
@@ -130,7 +130,7 @@
 }
 
 .rl-sidebar-district {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: rgba(255,255,255,0.6);
   margin-top: 4px;
@@ -210,7 +210,7 @@
   margin-left: auto;
   background: #DC2626;
   color: #fff;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
   border-radius: 99px;
   padding: 1px 6px;
@@ -227,7 +227,7 @@
 }
 
 .rl-picker-label {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   color: rgba(255,255,255,0.5);
   text-transform: uppercase;
@@ -274,7 +274,7 @@
 }
 
 .rl-picker-name {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.2;
   white-space: nowrap;
@@ -284,7 +284,7 @@
 }
 
 .rl-picker-grades {
-  font-size: 10px;
+  font-size: 13px;
   color: rgba(255,255,255,0.5);
 }
 
@@ -309,7 +309,7 @@
 }
 
 .rl-picker-dropdown-label {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -327,7 +327,7 @@
   border: none;
   background: none;
   color: #334155;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   text-align: left;
   transition: background 0.1s;
@@ -351,7 +351,7 @@
 .rl-picker-opt-name { flex: 1; }
 
 .rl-picker-opt-grades {
-  font-size: 10px;
+  font-size: 13px;
   color: #94A3B8;
 }
 
@@ -420,7 +420,7 @@
 }
 
 .rl-header-meta {
-  font-size: 12px;
+  font-size: 13px;
   color: #64748B;
 }
 
@@ -430,7 +430,7 @@
   align-items: center;
   padding: 2px 8px;
   border-radius: 99px;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -476,7 +476,7 @@
 .rl-hstat-val--warn { color: #DC2626; }
 
 .rl-hstat-lbl {
-  font-size: 10px;
+  font-size: 13px;
   color: #94A3B8;
   margin-top: 3px;
   white-space: nowrap;
@@ -557,13 +557,13 @@
 }
 
 .sv-stat-lbl {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   font-weight: 500;
 }
 
 .sv-stat-sub {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   margin-top: 2px;
 }
@@ -599,13 +599,13 @@
 }
 
 .sv-note {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   margin-bottom: 8px;
 }
 
 .sv-drill {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #0DA7BC;
   background: none;
@@ -621,12 +621,12 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 13px;
   color: #64748B;
 }
 
 .sv-card-note {
-  font-size: 11px;
+  font-size: 13px;
   color: #64748B;
   margin-top: 12px;
   line-height: 1.6;
@@ -646,7 +646,7 @@
 }
 
 .rl-sites-label {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   color: rgba(255,255,255,0.4);
   text-transform: uppercase;
@@ -683,7 +683,7 @@
 
 .rl-site-name {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: rgba(255,255,255,0.85);
   white-space: nowrap;
@@ -693,7 +693,7 @@
 }
 
 .rl-site-grades {
-  font-size: 10px;
+  font-size: 13px;
   color: rgba(255,255,255,0.4);
 }
 
@@ -703,7 +703,7 @@
 }
 
 .rl-sites-hint {
-  font-size: 10px;
+  font-size: 13px;
   color: rgba(255,255,255,0.28);
   margin-top: 8px;
   line-height: 1.4;
@@ -741,7 +741,7 @@
 }
 
 .int-review-name {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #1E293B;
   margin-bottom: 4px;
@@ -755,7 +755,7 @@
 }
 
 .int-flag-chip {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   padding: 2px 6px;
   border-radius: 4px;
@@ -768,7 +768,7 @@
 }
 
 .int-trend-chip {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   padding: 2px 5px;
   border-radius: 4px;
@@ -777,12 +777,12 @@
 .int-trend-chip--down { color: #DC2626; background: #FEF2F2; }
 
 .int-talks-chip {
-  font-size: 10px;
+  font-size: 13px;
   color: #94A3B8;
 }
 
 .int-review-btn {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #1D4ED8;
   background: none;

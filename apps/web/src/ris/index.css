@@ -25,4 +25,5 @@ body {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  zoom: 1.07;
 }

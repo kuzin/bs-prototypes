@@ -26,13 +26,13 @@
 }
 
 .dash-stat-label {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   font-weight: 500;
 }
 
 .dash-stat-sub {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   margin-top: 2px;
 }
@@ -65,7 +65,7 @@
 }
 
 .dash-drill {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: #0DA7BC;
   background: none;
@@ -81,7 +81,7 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 13px;
   color: #64748B;
 }
 
@@ -112,7 +112,7 @@
 }
 
 .dash-mini-lbl {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   margin-top: 2px;
 }
@@ -138,7 +138,7 @@
 }
 
 .dash-stw-note {
-  font-size: 12px;
+  font-size: 13px;
   color: #94A3B8;
 }
 
@@ -188,12 +188,12 @@
 }
 
 .dash-stw-grades {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
 }
 
 .dash-stw-badge {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   padding: 2px 7px;
   border-radius: 4px;
@@ -205,7 +205,7 @@
 .dash-stw-badge--warning  { background: #FFFBEB; color: #D97706; }
 
 .dash-stw-concern {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   line-height: 1.5;
 }
@@ -249,7 +249,7 @@
 }
 
 .dash-stw-link-hint {
-  font-size: 10px;
+  font-size: 13px;
   color: #CBD5E1;
   font-style: italic;
 }
@@ -259,7 +259,7 @@
   border: 1px solid #E2E8F0;
   border-radius: 6px;
   padding: 4px 10px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #94A3B8;
   cursor: not-allowed;

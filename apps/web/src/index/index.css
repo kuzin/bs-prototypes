@@ -11,6 +11,7 @@ body {
   max-width: 720px;
   margin: 0 auto;
   padding: 48px 24px 80px;
+  zoom: 1.07;
 }
 
 header {

@@ -1,5 +1,5 @@
 .sh-gemini-badge {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   color: #7C3AED;
   background: #F5F3FF;
@@ -38,7 +38,7 @@
 }
 
 .sh-diet-genre {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   white-space: nowrap;
   overflow: hidden;
@@ -59,7 +59,7 @@
 }
 
 .sh-diet-pct {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #1E293B;
   text-align: right;

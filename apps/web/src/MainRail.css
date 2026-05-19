@@ -44,7 +44,7 @@
 .main-rail-icon--round { border-radius: 50%; }
 
 .main-rail-icon--help {
-  font-size: 10px;
+  font-size: 13px;
   color: rgba(255,255,255,0.7);
   display: flex;
   align-items: center;
@@ -61,7 +61,7 @@
   border-radius: 50%;
   background: #1D4ED8;
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   display: flex;
   align-items: center;

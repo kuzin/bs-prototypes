@@ -144,7 +144,7 @@ function StudentActions() {
 }
 
 // ─── Persistent student header ────────────────────────────────────────────────
-function StudentHeader({ student }) {
+function StudentHeader({ student, onClose }) {
   return (
     <div className="bp-panel-header">
       <div className="bp-panel-identity">
@@ -156,7 +156,17 @@ function StudentHeader({ student }) {
           <div className="bp-panel-meta">{student.grade}</div>
         </div>
       </div>
-      <StudentActions />
+      <div className="bp-header-right">
+        <StudentActions />
+        {onClose && (
+          <button className="bp-header-close" onClick={onClose} aria-label="Close profile">
+            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="3" y1="3" x2="13" y2="13" />
+              <line x1="13" y1="3" x2="3" y2="13" />
+            </svg>
+          </button>
+        )}
+      </div>
     </div>
   );
 }
@@ -1918,7 +1928,7 @@ function AdminMockup({ onStudentClick, selectedKey }) {
 }
 
 // ─── Embeddable profile panel (used by RIS StudentPanel slide-in) ─────────────
-export function StudentProfileView({ studentKey }) {
+export function StudentProfileView({ studentKey, onClose }) {
   const [activeSection, setActiveSection] = useState(null)
   const student = STUDENTS[studentKey] || STUDENTS.marcus
 
@@ -1926,7 +1936,7 @@ export function StudentProfileView({ studentKey }) {
     <div className="bp-root" style={{ width: '100%', flex: 1, minHeight: 0, boxShadow: 'none' }}>
       <LeftNav activeSection={activeSection} onNavigate={setActiveSection} />
       <div className="bp-panel">
-        <StudentHeader student={student} />
+        <StudentHeader student={student} onClose={onClose} />
         <div key={`${studentKey}-${activeSection ?? 'overview'}`} className="bp-page-fade">
           {activeSection === null
             ? <Overview student={student} onNavigate={setActiveSection} />

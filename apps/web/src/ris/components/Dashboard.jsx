@@ -54,9 +54,9 @@ export function Dashboard({ onNavigate, alerts = [] }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[55, 90]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[55, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
               <Area type="monotone" dataKey="district" name="District avg" stroke="#0DA7BC" strokeWidth={2.5} fill="url(#rmiGrad)" dot={false} />
               {SCHOOLS.map(s => (
                 <Line key={s.id} type="monotone" dataKey={s.id} name={s.name} stroke={s.color} strokeWidth={1} dot={false} strokeDasharray="4 3" opacity={0.6} />
@@ -94,9 +94,9 @@ export function Dashboard({ onNavigate, alerts = [] }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[8, 30]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <Tooltip formatter={v => `${v} min`} contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[8, 30]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <Tooltip formatter={v => `${v} min`} contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
               <Area type="monotone" dataKey="district" name="District avg" stroke="#16A97A" strokeWidth={2} fill="url(#sessGrad)" dot={false} />
             </AreaChart>
           </ResponsiveContainer>
@@ -107,10 +107,10 @@ export function Dashboard({ onNavigate, alerts = [] }) {
           <ResponsiveContainer width="100%" height={200}>
             <LineChart data={BOOK_TALKS_TRENDS} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#94A3B8' }} unit="%" />
-              <Tooltip formatter={v => `${v}%`} contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 12 }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit="%" />
+              <Tooltip formatter={v => `${v}%`} contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Line type="monotone" dataKey="completionRate" name="Completion Rate" stroke="#1D4ED8" strokeWidth={2.5} dot={false} />
               <Line type="monotone" dataKey="flagRate"       name="Flag Rate"       stroke="#E8866A" strokeWidth={2}   dot={false} strokeDasharray="5 4" />
             </LineChart>
@@ -122,18 +122,18 @@ export function Dashboard({ onNavigate, alerts = [] }) {
           <ResponsiveContainer width="100%" height={200}>
             <ScatterChart margin={{ top: 8, right: 16, left: -10, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="volume" name="Books read/mo" type="number" domain={[15, 50]} tick={{ fontSize: 11, fill: '#94A3B8' }} label={{ value: 'Books/mo', position: 'insideBottom', offset: -2, fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis dataKey="lexileGrowth" name="Lexile growth" type="number" domain={[0, 130]} tick={{ fontSize: 11, fill: '#94A3B8' }} label={{ value: 'Lexile +L', angle: -90, position: 'insideLeft', fontSize: 11, fill: '#94A3B8' }} />
+              <XAxis dataKey="volume" name="Books read/mo" type="number" domain={[15, 50]} tick={{ fontSize: 13, fill: '#94A3B8' }} label={{ value: 'Books/mo', position: 'insideBottom', offset: -2, fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis dataKey="lexileGrowth" name="Lexile growth" type="number" domain={[0, 130]} tick={{ fontSize: 13, fill: '#94A3B8' }} label={{ value: 'Lexile +L', angle: -90, position: 'insideLeft', fontSize: 13, fill: '#94A3B8' }} />
               <ZAxis dataKey="students" range={[60, 300]} />
               <Tooltip
                 cursor={{ strokeDasharray: '3 3' }}
-                contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }}
+                contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }}
                 formatter={(v, name) => [name === 'Books read/mo' ? `${v} bks/mo` : `+${v}L`, name]}
                 content={({ payload }) => {
                   if (!payload?.length) return null
                   const d = payload[0].payload
                   return (
-                    <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 12 }}>
+                    <div style={{ background: '#fff', border: '1px solid #E2E8F0', borderRadius: 8, padding: '8px 12px', fontSize: 13 }}>
                       <div style={{ fontWeight: 700, marginBottom: 2 }}>{d.school}</div>
                       <div>Lexile growth: <b>+{d.lexileGrowth}L</b></div>
                       <div>Avg books/mo: <b>{d.volume}</b></div>

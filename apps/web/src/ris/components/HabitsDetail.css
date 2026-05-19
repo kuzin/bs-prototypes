@@ -48,13 +48,13 @@
 }
 
 .hd-stat-label {
-  font-size: 12px;
+  font-size: 13px;
   color: #475569;
   font-weight: 500;
 }
 
 .hd-stat-sub {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   margin-top: 2px;
 }
@@ -89,6 +89,6 @@
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 8px;
-  font-size: 11px;
+  font-size: 13px;
   color: #64748B;
 }

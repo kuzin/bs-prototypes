@@ -177,7 +177,7 @@
 .bp-nav-item:hover:not(.bp-nav-item--active) { background: #F9FAFB; }
 
 .bp-nav-label {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   color: #ACACAC;
   text-align: center;
@@ -255,7 +255,7 @@
 }
 
 .bp-panel-meta {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #9CA3AF;
   margin-top: 2px;
@@ -375,12 +375,12 @@
   font-weight: 800;
   border-radius: 100px;
   display: inline-block;
-  font-size: 12px;
+  font-size: 13px;
   padding: 4px 12px;
 }
 
 .bp-pill--sm {
-  font-size: 11px;
+  font-size: 13px;
   padding: 2px 9px;
 }
 
@@ -389,7 +389,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   border-radius: 100px;
   padding: 5px 11px;
@@ -422,7 +422,7 @@
   background: var(--tag-bg);
   color: var(--tag-color);
   font-weight: 800;
-  font-size: 11px;
+  font-size: 13px;
   border-radius: 100px;
   padding: 2px 9px;
   display: inline-flex;
@@ -479,6 +479,33 @@
   flex-shrink: 0;
 }
 
+.bp-header-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.bp-header-close {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid #E5E7EB;
+  background: #F8FAFC;
+  color: #64748B;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.12s, color 0.12s;
+  flex-shrink: 0;
+}
+
+.bp-header-close:hover {
+  background: #F1F5F9;
+  color: #1E293B;
+}
+
 /* ─── Snapshot tiles ─────────────────────────────────────────────────────── */
 .bp-tiles {
   display: grid;
@@ -497,7 +524,7 @@
 .bp-tile:hover { opacity: 0.85; }
 
 .bp-tile-label {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -513,7 +540,7 @@
 }
 
 .bp-tile-sub {
-  font-size: 12px;
+  font-size: 13px;
   color: #424242;
   margin-top: 2px;
 }
@@ -579,7 +606,7 @@
   border: 1.5px solid color-mix(in srgb, var(--ht-bar) 40%, transparent);
   border-radius: 100px;
   padding: 6px 13px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -638,7 +665,7 @@
 .bp-health-row-top .bp-status {
   background: none;
   padding: 0;
-  font-size: 11px;
+  font-size: 13px;
 }
 .bp-health-row-top .bp-status img { filter: none; }
 .bp-health-row-top .bp-status--watch     { color: #E5493A; }
@@ -692,7 +719,7 @@
 }
 
 .bp-benny-timestamp {
-  font-size: 12px;
+  font-size: 13px;
   color: #707070;
   margin-top: 7px;
 }
@@ -771,7 +798,7 @@
 }
 
 .bp-section-meta {
-  font-size: 12px;
+  font-size: 13px;
   color: #707070;
   font-weight: 600;
 }
@@ -805,7 +832,7 @@
 }
 
 .bp-motivators-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #ACACAC;
   text-transform: uppercase;
@@ -858,7 +885,7 @@
 .bp-flag-breakdown { margin-bottom: 14px; }
 
 .bp-flag-breakdown-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #ACACAC;
   text-transform: uppercase;
@@ -926,14 +953,14 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 12px;
+  font-size: 13px;
   color: #9CA3AF;
   font-weight: 500;
 }
 .bp-goal-ring-num  { font-weight: 700; color: #424242; }
 .bp-goal-ring-dot  { color: #D1D5DB; }
 .bp-goal-ring-status {
-  font-size: 12px;
+  font-size: 13px;
   color: #9CA3AF;
   font-weight: 600;
   margin-top: 2px;
@@ -941,7 +968,7 @@
 .bp-goal-ring-status--met { color: #10B981; }
 
 .bp-goal-title    { font-size: 15px; font-weight: 800; color: #424242; }
-.bp-goal-subtitle { font-size: 12px; color: #707070; font-weight: 600; margin-top: 2px; }
+.bp-goal-subtitle { font-size: 13px; color: #707070; font-weight: 600; margin-top: 2px; }
 
 .bp-goal-week-nav {
   display: flex;
@@ -992,7 +1019,7 @@
 }
 
 .bp-goal-mins {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   color: #D97706;
 }
@@ -1040,7 +1067,7 @@
 .bp-goal-circle--today  { background: #DBEAFE; color: #93C5FD; border: 2px dashed #93C5FD; }
 .bp-goal-circle--future { background: #F3F4F6; color: #E0E0E0; }
 
-.bp-goal-day-label        { font-size: 11px; font-weight: 600; color: #9CA3AF; }
+.bp-goal-day-label        { font-size: 13px; font-weight: 600; color: #9CA3AF; }
 .bp-goal-day-label--today { color: #1D4ED8; font-weight: 800; }
 
 /* ─── Habits detail ──────────────────────────────────────────────────────── */
@@ -1080,7 +1107,7 @@
 }
 
 .bp-streak-hero-sublabel {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #ACACAC;
   margin-top: 3px;
@@ -1098,7 +1125,7 @@
 }
 
 .bp-streak-pb-label {
-  font-size: 12px;
+  font-size: 13px;
   color: #707070;
   font-weight: 600;
   margin-bottom: 7px;
@@ -1123,7 +1150,7 @@
 }
 
 .bp-streak-pb-sub {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #9CA3AF;
 }
@@ -1171,7 +1198,7 @@
 .bp-habit-row-value--neutral { color: #854D0E; }
 
 .bp-habit-row-note {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 600;
   color: #ACACAC;
 }
@@ -1181,7 +1208,7 @@
 /* .bp-minutes-grid removed — absorbed into bp-streak-grid (4-col) */
 
 .bp-week-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #ACACAC;
   text-transform: uppercase;
@@ -1206,7 +1233,7 @@
 .bp-week-cell--today  { background: #D0E3FF; border: 1.5px solid #8CBEFA; }
 .bp-week-cell--missed { background: #F5F5F5; border: 1.5px dashed #DEDEDE; }
 
-.bp-week-day-label { font-size: 11px; font-weight: 500; color: #ACACAC; }
+.bp-week-day-label { font-size: 13px; font-weight: 500; color: #ACACAC; }
 .bp-week-day-label--today { font-weight: 700; color: #185FA5; }
 
 .bp-minutes-grid {
@@ -1217,19 +1244,19 @@
   border-top: 1px solid #F5F5F5;
 }
 
-.bp-minutes-label { font-size: 12px; color: #707070; font-weight: 600; margin-bottom: 3px; }
+.bp-minutes-label { font-size: 13px; color: #707070; font-weight: 600; margin-bottom: 3px; }
 
 .bp-minutes-value { display: flex; align-items: baseline; gap: 7px; }
 
 .bp-minutes-num { font-size: 24px; font-weight: 900; color: #424242; }
 
-.bp-minutes-delta { font-size: 12px; font-weight: 700; }
+.bp-minutes-delta { font-size: 13px; font-weight: 700; }
 .bp-minutes-delta--up      { color: #0F6E56; }
 .bp-minutes-delta--neutral { color: #707070; font-weight: 600; }
 
 /* ─── Skills detail ──────────────────────────────────────────────────────── */
 .bp-book-current-badge {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   color: #185FA5;
   background: #D0E3FF;
@@ -1260,7 +1287,7 @@
 }
 
 .bp-titles-range-chip {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #185FA5;
   background: #D0E3FF;
@@ -1297,7 +1324,7 @@
 .bp-heatmap-nav-label {
   flex: 1;
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #111827;
 }
@@ -1408,7 +1435,7 @@
   transform: translateX(-50%);
   background: #1F2937;
   color: #F9FAFB;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 500;
   padding: 5px 8px;
   border-radius: 6px;
@@ -1450,7 +1477,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 10px;
+  font-size: 13px;
   color: #ACACAC;
   font-weight: 600;
   white-space: nowrap;
@@ -1470,7 +1497,7 @@
 .bp-genre-header .bp-section-heading { margin-bottom: 4px; }
 
 .bp-genre-subhead {
-  font-size: 12px;
+  font-size: 13px;
   color: #707070;
   font-weight: 500;
   line-height: 1.4;
@@ -1500,7 +1527,7 @@
 .bp-genre-chip:hover { filter: brightness(0.96); }
 
 .bp-genre-chip-count {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   opacity: 0.6;
   background: var(--chip-color);
@@ -1582,7 +1609,7 @@
 }
 
 .bp-title-lexile-pill {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #6B7280;
   background: #F3F4F6;
@@ -1595,7 +1622,7 @@
 }
 
 .bp-title-author {
-  font-size: 11px;
+  font-size: 13px;
   color: #9CA3AF;
   font-weight: 500;
   margin-top: 3px;
@@ -1628,7 +1655,7 @@
 }
 
 .bp-title-btwb-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #707070;
 }
@@ -1640,7 +1667,7 @@
 }
 
 .bp-title-genre-tag {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #707070;
   background: #F0F0F0;
@@ -1649,7 +1676,7 @@
 }
 
 .bp-title-date {
-  font-size: 11px;
+  font-size: 13px;
   color: #ACACAC;
   font-weight: 500;
 }
@@ -1675,7 +1702,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 12px;
+  font-size: 13px;
   color: #ACACAC;
   font-weight: 600;
 }
@@ -1692,7 +1719,7 @@
 .bp-rmi-header .bp-section-heading { margin-bottom: 0; }
 
 .bp-rmi-period-select {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: #424242;
   font-family: inherit;
@@ -1741,7 +1768,7 @@
 }
 
 .bp-rmi-delta {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   margin-left: 4px;
 }
@@ -1750,7 +1777,7 @@
 .bp-rmi-delta--down { color: #DC2626; }
 
 .bp-rmi-label {
-  font-size: 11px;
+  font-size: 13px;
   color: #707070;
   font-weight: 600;
   line-height: 1.3;
@@ -1778,7 +1805,7 @@
 }
 
 .bp-rmi-rec-goal-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #707070;
   margin-bottom: 6px;
@@ -1793,7 +1820,7 @@
 }
 
 .bp-rmi-rec-goal-unit {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #707070;
   margin-top: 4px;
@@ -1809,7 +1836,7 @@
 }
 
 .bp-rmi-rec-actions-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #707070;
   text-transform: uppercase;
@@ -1823,7 +1850,7 @@
 }
 
 .bp-rmi-rec-action-text {
-  font-size: 12px;
+  font-size: 13px;
   color: #424242;
   line-height: 1.5;
   margin: 0;
@@ -1853,7 +1880,7 @@
 .bp-motivator-row:last-child { border-bottom: none; }
 
 .bp-motivator-rank {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #ACACAC;
   width: 18px;
@@ -1884,7 +1911,7 @@
 }
 
 .bp-motivator-delta {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   width: 38px;
   text-align: right;
@@ -1906,7 +1933,7 @@
 }
 
 .bp-sessions-col {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #ACACAC;
   text-transform: uppercase;
@@ -1930,7 +1957,7 @@
 .bp-session-row:hover { background: #FAFAFA; }
 
 .bp-session-date {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: #707070;
   width: 76px;
@@ -2117,7 +2144,7 @@
   border-radius: 50%;
   background: #1D4ED8;
   color: #fff;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -2166,7 +2193,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 13px;
   cursor: pointer;
   transition: background 0.12s;
 }
@@ -2266,7 +2293,7 @@
 }
 
 .bp-adm-breadcrumb {
-  font-size: 12px;
+  font-size: 13px;
   color: #EF4444;
   font-weight: 700;
   margin-bottom: 10px;
@@ -2394,7 +2421,7 @@
 .bp-adm-filter { flex: 1; }
 
 .bp-adm-filter-lbl {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #6B7280;
   margin-bottom: 5px;
@@ -2474,7 +2501,7 @@
 .bp-adm-table th {
   padding: 8px 10px;
   text-align: center;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #6B7280;
   border-bottom: 1px solid #F0F0F0;
@@ -2501,7 +2528,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   flex-shrink: 0;
 }
@@ -2563,7 +2590,7 @@
   display: inline-block;
   padding: 3px 9px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -2605,7 +2632,7 @@
   gap: 16px;
   justify-content: flex-end;
   padding: 10px 16px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   border-top: 1px solid #F0F0F0;
 }
@@ -2650,7 +2677,7 @@
 .bp-btn-ghost--sm {
   height: 30px;
   padding: 0 12px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 /* Segmented control */
@@ -2672,7 +2699,7 @@
   border-radius: 6px;
   background: transparent;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #6B7280;
   cursor: pointer;
@@ -2728,7 +2755,7 @@
 }
 
 .bp-rl-week-label {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #ACACAC;
   text-transform: uppercase;
@@ -2768,7 +2795,7 @@
 }
 
 .bp-rl-day-name {
-  font-size: 11px;
+  font-size: 13px;
   color: #9CA3AF;
   font-weight: 600;
   margin-bottom: 4px;
@@ -2783,7 +2810,7 @@
 }
 
 .bp-rl-flame span {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
   background: #F97316;
   color: #fff;
@@ -2802,7 +2829,7 @@
 }
 
 .bp-rl-empty {
-  font-size: 12px;
+  font-size: 13px;
   color: #C4C4C4;
   font-weight: 500;
   padding: 6px 2px;
@@ -2861,7 +2888,7 @@
 }
 
 .bp-rl-entry-author {
-  font-size: 11px;
+  font-size: 13px;
   color: #6B7280;
   font-weight: 600;
   margin-bottom: 6px;
@@ -2893,7 +2920,7 @@
 
 .bp-rl-cal-dow-cell {
   text-align: center;
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 800;
   color: #ACACAC;
   text-transform: uppercase;
@@ -2969,7 +2996,7 @@
 }
 
 .bp-rl-cal-flame {
-  font-size: 11px;
+  font-size: 13px;
   margin-top: 2px;
   line-height: 1;
 }
@@ -3069,7 +3096,7 @@
 .bp-profile-topbar .bp-btn-primary {
   /* Compact mobile-sized buttons */
   padding: 6px 10px;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .bp-profile-topbar-close {
@@ -3107,7 +3134,7 @@
 }
 
 .bp-profile-topbar-grade {
-  font-size: 11px;
+  font-size: 13px;
   color: #94A3B8;
   font-weight: 600;
   margin-top: 1px;
@@ -3153,7 +3180,7 @@
   .bp-adm-class-btns .bp-adm-btn-primary {
     flex: 1;
     padding: 0 10px;
-    font-size: 12px;
+    font-size: 13px;
     white-space: nowrap;
   }
 

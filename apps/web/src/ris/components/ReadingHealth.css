@@ -83,7 +83,7 @@
 }
 
 .rh-stat-desc {
-  font-size: 10px;
+  font-size: 13px;
   color: #64748B;
   white-space: nowrap;
   overflow: hidden;
@@ -91,7 +91,7 @@
 }
 
 .rh-delta {
-  font-size: 10px;
+  font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
   flex-shrink: 0;
@@ -108,7 +108,7 @@
   margin-top: 10px;
   padding-top: 8px;
   border-top: 1px solid color-mix(in srgb, var(--sec-color) 18%, transparent);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--sec-color);
   letter-spacing: 0.01em;

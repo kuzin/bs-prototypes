@@ -67,10 +67,10 @@ export function SchoolMotivation({ schoolId, onBack }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[55, 90]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8 }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[55, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8 }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Area type="monotone" dataKey="school" name={school.name.split(' ')[0]} stroke={school.color} fill="url(#schoolMotGrad)" strokeWidth={2.5} dot={false} />
               <Area type="monotone" dataKey="district" name={`District avg (${districtNow})`} stroke="#94A3B8" fill="none" strokeWidth={1.5} dot={false} strokeDasharray="5 4" />
             </AreaChart>
@@ -92,9 +92,9 @@ export function SchoolMotivation({ schoolId, onBack }) {
           <ResponsiveContainer width="100%" height={190}>
             <ComposedChart data={INTRINSIC_EXTRINSIC_TRENDS} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
-              <YAxis domain={[9, 16]} tickCount={5} tick={{ fontSize: 11, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} formatter={(v, n) => [`${v.toFixed(1)} /20`, n]} />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
+              <YAxis domain={[9, 16]} tickCount={5} tick={{ fontSize: 13, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
+              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} formatter={(v, n) => [`${v.toFixed(1)} /20`, n]} />
               <Bar dataKey="extrinsic" name="Extrinsic" fill="#E2E8F0" radius={[3, 3, 0, 0]} barSize={18} />
               <Bar dataKey="intrinsic" name="Intrinsic" fill="#E8866A" radius={[3, 3, 0, 0]} barSize={18} />
             </ComposedChart>
@@ -196,7 +196,7 @@ export function SchoolMotivation({ schoolId, onBack }) {
           <div className="mot-grade-legend">
             <span className="mot-legend-dot" style={{ background: '#E8866A' }} /> Intrinsic
             <span className="mot-legend-dot" style={{ background: '#CBD5E1', marginLeft: 12 }} /> Extrinsic
-            <span style={{ marginLeft: 8, color: '#94A3B8', fontSize: 10 }}>scores out of 20 · badge = top factor</span>
+            <span style={{ marginLeft: 8, color: '#94A3B8', fontSize: 13 }}>scores out of 20 · badge = top factor</span>
           </div>
         </div>
 

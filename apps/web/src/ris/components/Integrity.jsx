@@ -76,7 +76,7 @@ export function Integrity({ onBack }) {
                 District-wide · Sep 2024 – May 2025 · Completion rising, flag rate declining
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 12, fontSize: 11, color: '#64748B', alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 12, fontSize: 13, color: '#64748B', alignItems: 'center' }}>
               <span><span style={{ color: '#1D4ED8', fontWeight: 700 }}>—</span> Completion rate</span>
               <span><span style={{ color: '#E8866A', fontWeight: 700 }}>- -</span> Flag rate</span>
             </div>
@@ -94,11 +94,11 @@ export function Integrity({ onBack }) {
                 </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#94A3B8' }} unit="%" />
+              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit="%" />
               <Tooltip
                 formatter={v => `${v}%`}
-                contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }}
+                contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }}
               />
               <Area
                 type="monotone" dataKey="completionRate" name="Completion Rate"
@@ -133,9 +133,9 @@ export function Integrity({ onBack }) {
               margin={{ top: 4, right: 20, left: 8, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" horizontal={false} />
-              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 11, fill: '#94A3B8' }} unit="%" />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#475569' }} width={90} />
-              <Tooltip formatter={v => `${v}%`} contentStyle={{ fontSize: 12, borderRadius: 8 }} />
+              <XAxis type="number" domain={[0, 100]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit="%" />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 13, fill: '#475569' }} width={90} />
+              <Tooltip formatter={v => `${v}%`} contentStyle={{ fontSize: 13, borderRadius: 8 }} />
               <Bar dataKey="completionRate" name="Completion Rate" radius={[0, 4, 4, 0]}>
                 {[...BOOK_TALKS_BY_SCHOOL]
                   .sort((a, b) => b.completionRate - a.completionRate)
@@ -199,11 +199,11 @@ export function Integrity({ onBack }) {
               margin={{ top: 4, right: 16, left: 4, bottom: 0 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" horizontal={false} />
-              <XAxis type="number" domain={[60, 100]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis type="category" dataKey="name" tick={{ fontSize: 11, fill: '#475569' }} width={90} />
+              <XAxis type="number" domain={[60, 100]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis type="category" dataKey="name" tick={{ fontSize: 13, fill: '#475569' }} width={90} />
               <Tooltip
                 formatter={v => `${v}/100`}
-                contentStyle={{ fontSize: 12, borderRadius: 8 }}
+                contentStyle={{ fontSize: 13, borderRadius: 8 }}
               />
               <Bar dataKey="integrityScore" name="Integrity Score" radius={[0, 4, 4, 0]}>
                 {rankedByIntegrity.map((d, i) => (

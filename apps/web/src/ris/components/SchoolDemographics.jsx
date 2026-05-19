@@ -177,10 +177,10 @@ export function SchoolDemographics({ schoolId }) {
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={gradeRows} margin={{ top: 4, right: 16, left: -20, bottom: 0 }} barSize={16}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-              <XAxis dataKey="grade" tick={{ fontSize: 10, fill: '#94A3B8' }} />
-              <YAxis domain={[40, 90]} tick={{ fontSize: 10, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <XAxis dataKey="grade" tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <YAxis domain={[40, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
+              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+              <Legend wrapperStyle={{ fontSize: 13 }} />
               <Bar dataKey="rmi" name="RMI Score" radius={[3, 3, 0, 0]}>
                 {gradeRows.map((g, i) => <Cell key={i} fill={rmiColor(g.rmi)} />)}
               </Bar>
