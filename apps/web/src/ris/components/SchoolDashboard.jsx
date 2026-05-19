@@ -1,8 +1,8 @@
 import { ResponsiveLine } from '@nivo/line'
 import { ResponsiveBar } from '@nivo/bar'
 import {
-  SCHOOLS, SCHOOL_HEALTH, RMI_TRENDS, SESSION_TRENDS, LEXILE_DATA,
-  SCHOOL_INTEGRITY_TRENDS,
+  SCHOOLS, SCHOOL_HEALTH, RMI_TRENDS, SCHOOL_INTEGRITY_TRENDS,
+  SCHOOL_LEXILE_BY_GRADE, GOALS_MET_TRENDS,
 } from '../data'
 import { StudentsToWatch } from './StudentsToWatch'
 import { OverviewHero } from './OverviewHero'
@@ -15,10 +15,10 @@ function schoolInitials(name) {
 }
 
 const AREA_CONFIG = {
-  motivation: { color: '#E8866A', bg: '#FFF8F5', title: 'Reading Motivation Index',    nav: 'motivation', navLabel: 'motivation' },
-  integrity:  { color: '#1D4ED8', bg: '#EFF6FF', title: 'BTWB completion & flag rate', nav: 'integrity',  navLabel: 'integrity'  },
-  habits:     { color: '#16A97A', bg: '#F0FDF6', title: 'Avg session length',          nav: 'habits',     navLabel: 'habits'     },
-  skills:     { color: '#7C3AED', bg: '#F5F3FF', title: 'Lexile growth vs. district',  nav: 'skills',     navLabel: 'skills'     },
+  motivation: { color: '#E8866A', bg: '#FFF8F5', title: 'Reading Motivation Index',          nav: 'motivation', navLabel: 'motivation' },
+  integrity:  { color: '#1D4ED8', bg: '#EFF6FF', title: 'Book Talk completion & flag rate',   nav: 'integrity',  navLabel: 'integrity'  },
+  habits:     { color: '#16A97A', bg: '#F0FDF6', title: 'Goal completion rate',               nav: 'habits',     navLabel: 'habits'     },
+  skills:     { color: '#7C3AED', bg: '#F5F3FF', title: 'Lexile growth by grade',             nav: 'skills',     navLabel: 'skills'     },
 }
 
 const NIVO_THEME = {
@@ -96,12 +96,10 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
   const shortName = school.name.split(' ')[0]
 
   const rmiData       = RMI_TRENDS.map(d => ({ month: d.month, school: d[schoolId], district: d.district }))
-  const sessionData   = SESSION_TRENDS.map(d => ({ month: d.month, school: d[schoolId], district: d.district }))
+  const goalsData     = GOALS_MET_TRENDS.map(d => ({ month: d.month, school: d[schoolId], district: d.district }))
   const integrityData = SCHOOL_INTEGRITY_TRENDS[schoolId]
-
-  const lexileCtx = LEXILE_DATA
-    .map(d => ({ school: d.school, growth: d.lexileGrowth, isThis: d.id === schoolId }))
-    .sort((a, b) => b.growth - a.growth)
+  const lexileByGrade = SCHOOL_LEXILE_BY_GRADE[schoolId]
+  const avgExpected   = Math.round(lexileByGrade.reduce((s, d) => s + d.expected, 0) / lexileByGrade.length)
 
   // ── Nivo data shapes ────────────────────────────────────────────────────────
   const rmiNivo = [
@@ -110,13 +108,13 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
   ]
 
   const integrityNivo = [
-    { id: 'BTWB completion', color: '#1D4ED8', data: integrityData.map(d => ({ x: d.month, y: d.completionRate })) },
-    { id: 'Flag rate',       color: '#E8866A', data: integrityData.map(d => ({ x: d.month, y: d.flagRate       })) },
+    { id: 'Book Talk completion', color: '#1D4ED8', data: integrityData.map(d => ({ x: d.month, y: d.completionRate })) },
+    { id: 'Flag rate',            color: '#E8866A', data: integrityData.map(d => ({ x: d.month, y: d.flagRate       })) },
   ]
 
-  const habitsNivo = [
-    { id: shortName,      color: '#16A97A', data: sessionData.map(d => ({ x: d.month, y: d.school   })) },
-    { id: 'District avg', color: '#CBD5E1', data: sessionData.map(d => ({ x: d.month, y: d.district })) },
+  const goalsNivo = [
+    { id: shortName,      color: '#16A97A', data: goalsData.map(d => ({ x: d.month, y: d.school   })) },
+    { id: 'District avg', color: '#CBD5E1', data: goalsData.map(d => ({ x: d.month, y: d.district })) },
   ]
 
   return (
@@ -174,7 +172,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
           area="integrity"
           onNavigate={onNavigate}
           legend={<Legend items={[
-            { color: '#1D4ED8', label: 'BTWB completion' },
+            { color: '#1D4ED8', label: 'Book Talk completion' },
             { color: '#E8866A', label: 'Flag rate', dashed: true },
           ]} />}
         >
@@ -196,7 +194,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
           />
         </AreaCard>
 
-        {/* Habits */}
+        {/* Habits — goal completion rate */}
         <AreaCard
           area="habits"
           onNavigate={onNavigate}
@@ -206,11 +204,11 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
           ]} />}
         >
           <ResponsiveLine
-            data={habitsNivo}
+            data={goalsNivo}
             theme={NIVO_THEME}
             margin={LINE_MARGIN}
             xScale={{ type: 'point' }}
-            yScale={{ type: 'linear', min: 6, max: 32 }}
+            yScale={{ type: 'linear', min: 30, max: 100 }}
             curve="monotoneX"
             colors={d => d.color}
             lineWidth={2.5}
@@ -219,50 +217,44 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             areaOpacity={0.08}
             enableGridX={false}
             axisBottom={AXIS_BOTTOM}
-            axisLeft={{ ...AXIS_LEFT, format: v => `${v}m`, tickValues: [10, 20, 30] }}
+            axisLeft={{ ...AXIS_LEFT, format: v => `${v}%`, tickValues: [40, 60, 80, 100] }}
             defs={[{
               id: 'habGrad', type: 'linearGradient',
               colors: [{ offset: 0, color: '#16A97A', opacity: 0.25 }, { offset: 100, color: '#16A97A', opacity: 0 }],
             }]}
             fill={[{ match: { id: shortName }, id: 'habGrad' }]}
             enableSlices="x"
-            sliceTooltip={({ slice }) => <SliceTooltip slice={slice} formatY={v => `${v} min`} />}
+            sliceTooltip={({ slice }) => <SliceTooltip slice={slice} formatY={v => `${v}%`} />}
           />
         </AreaCard>
 
-        {/* Skills */}
+        {/* Skills — Lexile growth by grade */}
         <AreaCard
           area="skills"
           onNavigate={onNavigate}
           legend={<Legend items={[
-            { color: school.color, label: shortName },
-            { color: '#CBD5E1',    label: 'Other schools' },
+            { color: school.color, label: 'Actual growth' },
+            { color: '#E2E8F0',    label: `Expected (~${avgExpected}L)` },
           ]} />}
         >
           <ResponsiveBar
-            data={lexileCtx}
-            keys={['growth']}
-            indexBy="school"
+            data={lexileByGrade}
+            keys={['expected', 'growth']}
+            indexBy="grade"
             layout="horizontal"
+            groupMode="grouped"
             theme={NIVO_THEME}
-            margin={{ top: 8, right: 32, bottom: 36, left: 80 }}
-            colors={d => d.data.isThis ? school.color : '#CBD5E1'}
-            borderRadius={4}
+            margin={{ top: 8, right: 32, bottom: 36, left: 44 }}
+            colors={({ id }) => id === 'growth' ? school.color : '#E2E8F0'}
+            borderRadius={3}
             axisBottom={{ tickSize: 0, tickPadding: 8, format: v => `${v}L` }}
             axisLeft={{ tickSize: 0, tickPadding: 8 }}
             enableGridY={false}
             enableLabel={false}
-            markers={[{
-              axis: 'x', value: 65,
-              lineStyle: { stroke: '#D97706', strokeDasharray: '4 3', strokeWidth: 1.5 },
-              legend: 'exp.', legendOrientation: 'vertical',
-              legendStyle: { fontSize: 9, fill: '#D97706' },
-            }]}
-            tooltip={({ indexValue, value, color }) => (
+            tooltip={({ id, indexValue, value }) => (
               <div className="sdb-tooltip">
                 <div className="sdb-tooltip-row">
-                  <span className="sdb-tooltip-dot" style={{ background: color }} />
-                  <span className="sdb-tooltip-label">{indexValue}</span>
+                  <span className="sdb-tooltip-label">{indexValue} — {id === 'growth' ? 'actual' : 'expected'}</span>
                   <span className="sdb-tooltip-val">+{value}L</span>
                 </div>
               </div>

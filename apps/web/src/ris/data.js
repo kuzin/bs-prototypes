@@ -184,6 +184,28 @@ export const ALERTS = [
   },
 ];
 
+// ── Per-school Lexile growth by grade (YTD, Lexile units) ─────────────────
+export const SCHOOL_LEXILE_BY_GRADE = {
+  jefferson:  [{ grade: '3rd', growth: 68, expected: 50 }, { grade: '4th', growth: 78, expected: 55 }, { grade: '5th', growth: 72, expected: 55 }],
+  lincoln:    [{ grade: '3rd', growth: 12, expected: 50 }, { grade: '4th', growth:  9, expected: 55 }, { grade: '5th', growth:  4, expected: 55 }],
+  kennedy:    [{ grade: '3rd', growth: 62, expected: 50 }, { grade: '4th', growth: 74, expected: 55 }, { grade: '5th', growth: 70, expected: 55 }, { grade: '6th', growth: 85, expected: 60 }, { grade: '7th', growth: 88, expected: 60 }, { grade: '8th', growth: 82, expected: 65 }],
+  roosevelt:  [{ grade: '6th', growth: 88, expected: 60 }, { grade: '7th', growth: 94, expected: 60 }, { grade: '8th', growth: 92, expected: 65 }],
+  washington: [{ grade: '6th', growth: 28, expected: 60 }, { grade: '7th', growth: 22, expected: 60 }, { grade: '8th', growth: 18, expected: 65 }],
+  adams:      [{ grade: '9th', growth: 98, expected: 65 }, { grade: '10th', growth: 115, expected: 70 }, { grade: '11th', growth: 122, expected: 70 }, { grade: '12th', growth: 108, expected: 70 }],
+}
+
+// ── Goal completion rate (% students meeting monthly reading goal) ─────────
+export const GOALS_MET_TRENDS = MONTHS.map((month, i) => ({
+  month,
+  district:   [58, 60, 62, 60, 64, 66, 65, 68, 70][i],
+  jefferson:  [64, 66, 68, 67, 70, 72, 73, 75, 76][i],
+  lincoln:    [52, 53, 55, 54, 56, 57, 56, 58, 59][i],
+  kennedy:    [60, 62, 64, 62, 65, 67, 68, 70, 71][i],
+  roosevelt:  [58, 60, 62, 61, 63, 65, 67, 69, 70][i],
+  washington: [48, 47, 48, 46, 47, 46, 44, 43, 42][i],
+  adams:      [70, 72, 74, 73, 76, 79, 81, 83, 85][i],
+}));
+
 // ── School-level metadata ─────────────────────────────────────────────────
 export const SCHOOL_DETAILS = {
   jefferson:  { titleI: false, frl: 18, principal: "Dr. Sarah Chen",     alertIds: [] },
