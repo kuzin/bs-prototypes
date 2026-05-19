@@ -337,48 +337,64 @@
   text-align: right;
 }
 
-.mot-grade-row--head {
-  padding: 0 0 8px;
-  border-bottom: 1px solid #F1F5F9;
-  margin-bottom: 4px;
+.mot-grade-row--simple {
+  grid-template-columns: 44px 1fr;
 }
 
-.mot-grade-head-label {
+/* ── Top Motivation Factor by Grade Band ── */
+.mot-top-factor-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.mot-top-factor-row {
+  display: grid;
+  grid-template-columns: 44px 36px 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+}
+
+.mot-top-factor-band {
   font-size: 13px;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #94A3B8;
+  color: #475569;
 }
 
-.mot-grade-head-label--center { text-align: center; }
-
-.mot-grade-top-factor {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  color: color-mix(in srgb, var(--tf-color, #7C3AED) 55%, #334155);
-  background: color-mix(in srgb, var(--tf-color, #7C3AED) 10%, white);
-  border: 1px solid color-mix(in srgb, var(--tf-color, #7C3AED) 25%, #E2E8F0);
-  border-radius: 99px;
-  padding: 3px 10px 3px 6px;
-  white-space: nowrap;
-}
-
-.mot-grade-top-factor-icon {
-  display: inline-flex;
+.mot-top-factor-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--tf-bg, #F8FAFC);
+  color: color-mix(in srgb, var(--tf-color, #94A3B8) 55%, #334155);
+  border: 1px solid color-mix(in srgb, var(--tf-color, #94A3B8) 25%, #E2E8F0);
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
-  color: var(--tf-color, #7C3AED);
 }
 
-.mot-grade-top-factor-icon svg {
-  width: 14px;
-  height: 14px;
+.mot-top-factor-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.mot-top-factor-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.mot-top-factor-name {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.mot-top-factor-desc {
+  font-size: 13px;
+  color: #64748B;
 }
 
 .mot-grade-legend {

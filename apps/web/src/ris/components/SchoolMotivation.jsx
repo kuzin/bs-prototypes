@@ -224,51 +224,65 @@ export function SchoolMotivation({ schoolId, onBack }) {
         </ChartCard>
 
         <ChartCard
-          span={2}
           title="Intrinsic vs. Extrinsic by Grade Band"
-          subtitle="RMI subscores out of 20 · older students show stronger intrinsic reading identity"
+          subtitle="RMI subscores out of 20"
           icon={MOT_ICON}
           accent={INTRINSIC_COLOR}
           bodyPad="padded"
-          footer={
-            <div className="mot-grade-legend">
-              <span className="mot-legend-dot" style={{ background: INTRINSIC_COLOR }} /> Intrinsic
-              <span className="mot-legend-dot" style={{ background: '#CBD5E1', marginLeft: 12 }} /> Extrinsic
-              <span style={{ marginLeft: 8, color: '#94A3B8', fontSize: 13 }}>scores out of 20 · badge = top factor</span>
-            </div>
-          }
+          footer={<ChartLegend items={[
+            { color: INTRINSIC_COLOR, label: 'Intrinsic' },
+            { color: '#CBD5E1',       label: 'Extrinsic' },
+          ]} />}
         >
           <div className="mot-grade-list">
-            <div className="mot-grade-row mot-grade-row--head">
-              <div className="mot-grade-head-label">Grade</div>
-              <div className="mot-grade-head-label mot-grade-head-label--center">Subscores out of 20</div>
-              <div className="mot-grade-head-label">Top factor</div>
-            </div>
+            {MOTIVATION_BY_GRADE.map(g => (
+              <div key={g.band} className="mot-grade-row mot-grade-row--simple">
+                <div className="mot-grade-band">{g.band}</div>
+                <div className="mot-grade-tracks">
+                  <div className="mot-grade-track-row">
+                    <span className="mot-grade-track-label" style={{ color: INTRINSIC_COLOR }}>Intrinsic</span>
+                    <div className="mot-grade-track">
+                      <div className="mot-grade-bar mot-grade-bar--int" style={{ width: `${(g.intrinsic / 20) * 100}%` }} />
+                    </div>
+                    <span className="mot-grade-val" style={{ color: INTRINSIC_COLOR }}>{g.intrinsic}</span>
+                  </div>
+                  <div className="mot-grade-track-row">
+                    <span className="mot-grade-track-label" style={{ color: '#94A3B8' }}>Extrinsic</span>
+                    <div className="mot-grade-track">
+                      <div className="mot-grade-bar mot-grade-bar--ext" style={{ width: `${(g.extrinsic / 20) * 100}%` }} />
+                    </div>
+                    <span className="mot-grade-val" style={{ color: '#94A3B8' }}>{g.extrinsic}</span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </ChartCard>
+
+        <ChartCard
+          title="Top Motivation Factor by Grade Band"
+          subtitle="What drives readers most at each level"
+          icon={MOT_ICON}
+          accent={INTRINSIC_COLOR}
+          bodyPad="padded"
+        >
+          <div className="mot-top-factor-list">
             {MOTIVATION_BY_GRADE.map(g => {
               const factor = FACTOR_BY_NAME[g.topFactor]
+              if (!factor) return null
               return (
-                <div key={g.band} className="mot-grade-row">
-                  <div className="mot-grade-band">{g.band}</div>
-                  <div className="mot-grade-tracks">
-                    <div className="mot-grade-track-row">
-                      <span className="mot-grade-track-label" style={{ color: INTRINSIC_COLOR }}>Intrinsic</span>
-                      <div className="mot-grade-track">
-                        <div className="mot-grade-bar mot-grade-bar--int" style={{ width: `${(g.intrinsic / 20) * 100}%` }} />
-                      </div>
-                      <span className="mot-grade-val" style={{ color: INTRINSIC_COLOR }}>{g.intrinsic}</span>
-                    </div>
-                    <div className="mot-grade-track-row">
-                      <span className="mot-grade-track-label" style={{ color: '#94A3B8' }}>Extrinsic</span>
-                      <div className="mot-grade-track">
-                        <div className="mot-grade-bar mot-grade-bar--ext" style={{ width: `${(g.extrinsic / 20) * 100}%` }} />
-                      </div>
-                      <span className="mot-grade-val" style={{ color: '#94A3B8' }}>{g.extrinsic}</span>
-                    </div>
+                <div key={g.band} className="mot-top-factor-row">
+                  <div className="mot-top-factor-band">{g.band}</div>
+                  <div
+                    className="mot-top-factor-icon"
+                    style={{ '--tf-color': factor.color, '--tf-bg': `color-mix(in srgb, ${factor.color} 12%, white)` }}
+                  >
+                    {RMI_ICONS[factor.iconKey]}
                   </div>
-                  <span className="mot-grade-top-factor" style={factor ? { '--tf-color': factor.color } : undefined}>
-                    {factor && <span className="mot-grade-top-factor-icon">{RMI_ICONS[factor.iconKey]}</span>}
-                    {g.topFactor}
-                  </span>
+                  <div className="mot-top-factor-body">
+                    <div className="mot-top-factor-name" style={{ color: factor.color }}>{factor.name}</div>
+                    <div className="mot-top-factor-desc">{factor.desc}</div>
+                  </div>
                 </div>
               )
             })}
