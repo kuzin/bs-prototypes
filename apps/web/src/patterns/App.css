@@ -133,17 +133,17 @@
 }
 
 .pt-section-body {
-  padding: 20px 24px 22px;
+  padding: 14px 20px 16px;
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
 }
 
 /* ── Variants — always vertical, full-width ──────────────────────────────── */
 .pt-variants {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 10px;
 }
 
 /* legacy modifier classes are no-ops now */
@@ -154,7 +154,7 @@
 .pt-variant {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
 }
 
@@ -170,8 +170,7 @@
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
   border-radius: 10px;
-  padding: 16px;
-  min-height: 60px;
+  padding: 14px;
 }
 
 /* When a frame holds discrete elements (buttons, pills) we want them in a row */
@@ -225,21 +224,40 @@
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
   border-radius: 10px;
-  padding: 14px 16px;
+  padding: 10px 14px;
   display: flex;
   flex-wrap: wrap;
-  gap: 12px 16px;
-  align-items: flex-end;
+  gap: 10px 14px;
+  align-items: flex-start;
   font-size: 13px;
 }
 
-/* Inside knobs, Field is laid out compactly */
-.pt-knobs .fld { gap: 4px; flex: 0 0 auto; }
-.pt-knobs .fld-label { font-size: 13px; color: #64748B; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
-.pt-knobs .fld-control { flex-direction: row; }
+/* Inside knobs, Field is laid out compactly with fixed-height label so
+   every control (input, select, color, toggle) lines up on the same baseline */
+.pt-knobs .fld {
+  gap: 3px;
+  flex: 0 0 auto;
+}
+
+.pt-knobs .fld-label {
+  font-size: 13px;
+  color: #64748B;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  height: 14px;
+  line-height: 14px;
+}
+
+.pt-knobs .fld-control { flex-direction: row; align-items: center; }
+
 .pt-knobs .inp,
-.pt-knobs .sel { min-width: 140px; }
-.pt-knobs .tgl { padding-top: 2px; }
+.pt-knobs .sel  { min-width: 130px; height: 30px; }
+.pt-knobs .inp--sm,
+.pt-knobs .sel-wrap--sm .sel { height: 28px; }
+.pt-knobs .pt-color { height: 30px; }
+.pt-knobs .tgl { height: 30px; }
+.pt-knobs .rdg { padding-top: 6px; }
 
 .pt-color {
   width: 36px;

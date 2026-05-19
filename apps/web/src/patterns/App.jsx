@@ -21,6 +21,10 @@ import { Toggle } from '../ris/components/Toggle'
 import {
   Field, Input, Select, Textarea, Checkbox, RadioGroup, Radio,
 } from '../ris/components/Form'
+import {
+  Divider, Spinner, IconButton, Tooltip, Banner,
+  Breadcrumb, Accordion, EmptyState, Skeleton, SectionHeading,
+} from '../ris/components/Primitives'
 import { RMI_ICONS } from '../ris/components/RmiIcons'
 import { RMI_FACTORS } from '../ris/data'
 
@@ -34,6 +38,7 @@ import '../MainRail.css'
 import '../BackBar.css'
 import '../ris/components/Toggle.css'
 import '../ris/components/Form.css'
+import '../ris/components/Primitives.css'
 
 import './App.css'
 
@@ -46,6 +51,16 @@ const SECTIONS_LIST = [
   { group: 'Primitives', id: 'avatar',     name: 'Avatar' },
   { group: 'Primitives', id: 'pill',       name: 'Pill' },
   { group: 'Primitives', id: 'progress-bar', name: 'ProgressBar' },
+  { group: 'Primitives', id: 'icon-button', name: 'IconButton' },
+  { group: 'Primitives', id: 'divider',     name: 'Divider' },
+  { group: 'Primitives', id: 'spinner',     name: 'Spinner' },
+  { group: 'Primitives', id: 'tooltip',     name: 'Tooltip (hover)' },
+  { group: 'Primitives', id: 'banner',      name: 'Banner' },
+  { group: 'Primitives', id: 'breadcrumb',  name: 'Breadcrumb' },
+  { group: 'Primitives', id: 'accordion',   name: 'Accordion' },
+  { group: 'Primitives', id: 'empty-state', name: 'EmptyState' },
+  { group: 'Primitives', id: 'skeleton',    name: 'Skeleton' },
+  { group: 'Primitives', id: 'section-heading', name: 'SectionHeading' },
   { group: 'Forms',     id: 'toggle',       name: 'Toggle' },
   { group: 'Forms',     id: 'input',        name: 'Input' },
   { group: 'Forms',     id: 'select',       name: 'Select' },
@@ -337,9 +352,9 @@ function ChartCardKnobs() {
             <option value="padded">padded</option>
           </Select>
         </Field>
-        <Toggle checked={showIcon} onChange={setShowIcon}>icon</Toggle>
-        <Toggle checked={showAction} onChange={setShowAction}>action</Toggle>
-        <Toggle checked={showFooter} onChange={setShowFooter}>footer</Toggle>
+        <Field label="icon"><Toggle checked={showIcon} onChange={setShowIcon} /></Field>
+        <Field label="action"><Toggle checked={showAction} onChange={setShowAction} /></Field>
+        <Field label="footer"><Toggle checked={showFooter} onChange={setShowFooter} /></Field>
       </Knobs>
       <div className="pt-variant-frame pt-variant-frame--bare">
         <ChartCard
@@ -393,10 +408,10 @@ function ButtonKnobs() {
             <input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} />
           </Field>
         )}
-        <Toggle checked={withIcon} onChange={setIcon}>left icon</Toggle>
-        <Toggle checked={withCaret} onChange={setCaret}>right caret</Toggle>
-        <Toggle checked={disabled} onChange={setDisabled}>disabled</Toggle>
-        <Toggle checked={loading} onChange={setLoading}>loading</Toggle>
+        <Field label="left icon"><Toggle checked={withIcon} onChange={setIcon} /></Field>
+        <Field label="right caret"><Toggle checked={withCaret} onChange={setCaret} /></Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
+        <Field label="loading"><Toggle checked={loading} onChange={setLoading} /></Field>
       </Knobs>
       <div className="pt-variant-frame">
         <Button
@@ -498,7 +513,7 @@ function ProgressBarKnobs() {
             <option>sm</option><option>md</option><option>lg</option>
           </Select>
         </Field>
-        <Toggle checked={showLabel} onChange={setShowLabel}>label / value</Toggle>
+        <Field label="label / value"><Toggle checked={showLabel} onChange={setShowLabel} /></Field>
         {showLabel && <Field label="label"><Input value={label} onChange={e => setLabel(e.target.value)} /></Field>}
         {showLabel && <Field label="subLabel"><Input value={subLabel} onChange={e => setSub(e.target.value)} placeholder="(optional)" /></Field>}
         {showLabel && <Field label="valueLabel"><Input value={valueLabel} onChange={e => setVl(e.target.value)} /></Field>}
@@ -832,6 +847,191 @@ export function App() {
             desc={<>Track + fill with optional <code>label</code>, <code>subLabel</code>, and <code>valueLabel</code>. Used for cohorts, RMI factors, grade bands, engagement tiers. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>.</>}
           >
             <ProgressBarKnobs />
+          </Section>
+
+          <Section
+            id="icon-button"
+            title="IconButton"
+            desc={<>Square button with just an icon. Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>, <code>danger</code>. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>. Always pair with an <code>aria-label</code>.</>}
+          >
+            <div className="pt-variant-frame pt-variant-frame--row">
+              <IconButton aria-label="Add"><PlusIcon /></IconButton>
+              <IconButton variant="primary" aria-label="Add"><PlusIcon /></IconButton>
+              <IconButton variant="ghost" aria-label="Add"><PlusIcon /></IconButton>
+              <IconButton variant="danger" aria-label="Delete">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="3,4 13,4" />
+                  <path d="M5 4V2.5h6V4" />
+                  <path d="M4 4l1 9h6l1-9" />
+                </svg>
+              </IconButton>
+              <IconButton size="sm" aria-label="Add"><PlusIcon /></IconButton>
+              <IconButton size="md" aria-label="Add"><PlusIcon /></IconButton>
+              <IconButton size="lg" aria-label="Add"><PlusIcon /></IconButton>
+              <IconButton disabled aria-label="Disabled"><PlusIcon /></IconButton>
+            </div>
+          </Section>
+
+          <Section
+            id="divider"
+            title="Divider"
+            desc={<>Horizontal rule. Optional <code>label</code> to render an "OR" style separator. <code>orientation="vertical"</code> for a thin column divider that stretches to its flex parent.</>}
+          >
+            <div className="pt-variant-frame">
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <span style={{ fontSize: 13, color: '#64748B' }}>Default</span>
+                <Divider />
+                <span style={{ fontSize: 13, color: '#64748B' }}>With label</span>
+                <Divider label="OR" />
+                <span style={{ fontSize: 13, color: '#64748B' }}>Vertical (in a flex row)</span>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, fontSize: 13, color: '#475569' }}>
+                  <span>Left</span>
+                  <Divider orientation="vertical" />
+                  <span>Right</span>
+                  <Divider orientation="vertical" />
+                  <span>Far right</span>
+                </div>
+              </div>
+            </div>
+          </Section>
+
+          <Section
+            id="spinner"
+            title="Spinner"
+            desc={<>Animated loading indicator. Sizes <code>xs / sm / md / lg / xl</code>. Inherits current color or set explicitly via <code>color</code>.</>}
+          >
+            <div className="pt-variant-frame pt-variant-frame--row" style={{ alignItems: 'center' }}>
+              <Spinner size="xs" />
+              <Spinner size="sm" />
+              <Spinner size="md" />
+              <Spinner size="lg" />
+              <Spinner size="xl" />
+              <Spinner size="md" color="#E8866A" />
+              <Spinner size="md" color="#16A34A" />
+              <Spinner size="md" color="#DC2626" />
+            </div>
+          </Section>
+
+          <Section
+            id="tooltip"
+            title="Tooltip (hover)"
+            desc={<>Lightweight hover tooltip. Different from the chart tooltips above — this is for explaining icon buttons / labels. <code>placement</code>: top / bottom / left / right.</>}
+          >
+            <div className="pt-variant-frame pt-variant-frame--row" style={{ minHeight: 80, alignItems: 'center', gap: 16 }}>
+              <Tooltip content="Mark as read" placement="top">
+                <IconButton aria-label="Mark as read"><PlusIcon /></IconButton>
+              </Tooltip>
+              <Tooltip content="Show below" placement="bottom">
+                <Button variant="secondary">Bottom</Button>
+              </Tooltip>
+              <Tooltip content="Left side" placement="left">
+                <Button variant="secondary">Left</Button>
+              </Tooltip>
+              <Tooltip content="Right side" placement="right">
+                <Button variant="secondary">Right</Button>
+              </Tooltip>
+            </div>
+          </Section>
+
+          <Section
+            id="banner"
+            title="Banner"
+            desc={<>Page-level alert / banner. Levels: <code>info</code>, <code>success</code>, <code>warning</code>, <code>error</code>. Optional <code>title</code>, <code>action</code>, <code>onDismiss</code>.</>}
+          >
+            <Banner level="info" title="Heads up" onDismiss={() => {}}>
+              The Reading Information System rolls out to all schools next Monday.
+            </Banner>
+            <Banner level="success" title="Saved">
+              Your changes to the goal threshold are live.
+            </Banner>
+            <Banner level="warning" title="6-week Lexile plateau" action={<Button variant="secondary" size="sm">View</Button>}>
+              Lincoln Elementary shows no measurable Lexile progression despite 94% engagement.
+            </Banner>
+            <Banner level="error" title="Connection lost" onDismiss={() => {}}>
+              Cannot reach the analytics service. Showing last cached values from 12 minutes ago.
+            </Banner>
+          </Section>
+
+          <Section
+            id="breadcrumb"
+            title="Breadcrumb"
+            desc={<>Navigation crumbs. Pass <code>items</code> as <code>{'[{ label, href? }]'}</code> — the last item is treated as the current page and rendered without a link.</>}
+          >
+            <div className="pt-variant-frame">
+              <Breadcrumb items={[
+                { label: 'Schools', href: '#' },
+                { label: 'Lincoln Elementary', href: '#' },
+                { label: 'Motivation' },
+              ]} />
+            </div>
+          </Section>
+
+          <Section
+            id="accordion"
+            title="Accordion"
+            desc={<>Expand/collapse list. Pass <code>items</code> as <code>{'[{ id, title, content }]'}</code>. <code>allowMultiple</code> lets multiple sections open at once; <code>defaultOpen</code> pre-opens by id.</>}
+          >
+            <Accordion
+              defaultOpen={['a']}
+              items={[
+                { id: 'a', title: 'What is the Reading Motivation Index?', content: <>The RMI is a composite score 0–100 derived from ten survey factors (five intrinsic, five extrinsic) collected three times a year.</> },
+                { id: 'b', title: 'How is the Lexile plateau alert triggered?', content: <>When a school's average Lexile growth is below 5% of the expected annual gain across 6 consecutive weeks despite engagement above 85%.</> },
+                { id: 'c', title: 'Can I export this dashboard?', content: <>Yes — use the kebab menu in the top-right of any chart to export a PNG or CSV.</> },
+              ]}
+            />
+          </Section>
+
+          <Section
+            id="empty-state"
+            title="EmptyState"
+            desc={<>Empty-list placeholder. Props: <code>icon</code>, <code>title</code>, <code>description</code>, <code>action</code>.</>}
+          >
+            <div className="pt-variant-frame">
+              <EmptyState
+                icon={
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                    <circle cx="11" cy="11" r="7" />
+                    <line x1="16" y1="16" x2="21" y2="21" />
+                  </svg>
+                }
+                title="No students to watch"
+                description="Students appear here when they trip a habit, integrity, or skill alert. Adjust your thresholds to see more."
+                action={<Button variant="secondary">Set thresholds</Button>}
+              />
+            </div>
+          </Section>
+
+          <Section
+            id="skeleton"
+            title="Skeleton"
+            desc={<>Animated loading placeholder. <code>width</code>, <code>height</code>, <code>shape</code> (rect/circle), or <code>lines</code> for a multi-row text placeholder.</>}
+          >
+            <div className="pt-variant-frame" style={{ background: '#fff' }}>
+              <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 16 }}>
+                <Skeleton shape="circle" width={44} height={44} />
+                <div style={{ flex: 1 }}>
+                  <Skeleton width="35%" height={14} />
+                  <div style={{ height: 6 }} />
+                  <Skeleton width="60%" height={12} />
+                </div>
+                <Skeleton width={64} height={26} />
+              </div>
+              <Skeleton lines={3} />
+            </div>
+          </Section>
+
+          <Section
+            id="section-heading"
+            title="SectionHeading"
+            desc={<>Recurring h3 + optional subtitle + optional right-side action. Used as the header inside content sections / cards.</>}
+          >
+            <div className="pt-variant-frame">
+              <SectionHeading
+                title="Students to Watch"
+                subtitle="Last 30 days · 4 students flagged"
+                action={<Button variant="ghost" size="sm">View all →</Button>}
+              />
+            </div>
           </Section>
 
           <Section
