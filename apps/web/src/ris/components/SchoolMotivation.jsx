@@ -5,16 +5,19 @@ import {
   RMI_FACTORS, INTRINSIC_EXTRINSIC_TRENDS, MOTIVATION_BY_GRADE,
 } from '../data'
 import { BucketHero } from './BucketHero'
+import { SECTIONS } from './ReadingHealth'
 import {
   NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
   SliceTooltip, ChartLegend, BarTooltip,
 } from './charts'
+import { StatCard, ChartCard, CardNote } from './Cards'
 import { RMI_ICONS } from './RmiIcons'
 import './RisLayout.css'
 import './Motivation.css'
 
 const INTRINSIC_COLOR = '#E8866A'
 const EXTRINSIC_COLOR = '#7CB5F5'
+const MOT_ICON = SECTIONS.find(s => s.key === 'motivation')?.icon
 
 function FactorRow({ f }) {
   return (
@@ -52,7 +55,6 @@ export function SchoolMotivation({ schoolId, onBack }) {
   const extrinsicFactors = RMI_FACTORS.filter(f => f.kind === 'extrinsic')
   const latestTrend      = INTRINSIC_EXTRINSIC_TRENDS[INTRINSIC_EXTRINSIC_TRENDS.length - 1]
 
-  // ── Nivo data shapes ────────────────────────────────────────────────────
   const rmiNivo = [
     { id: shortName,      color: school.color, data: trend.map(d => ({ x: d.month, y: d.school   })) },
     { id: 'District avg', color: '#CBD5E1',    data: trend.map(d => ({ x: d.month, y: d.district })) },
@@ -62,40 +64,42 @@ export function SchoolMotivation({ schoolId, onBack }) {
     <div className="mot-root">
       <BucketHero bucket="motivation" score={health.motivation} delta={health.dM} onBack={onBack} />
 
-      <div className="sv-stats-row" style={{ marginBottom: 16, gridTemplateColumns: 'repeat(3, 1fr)' }}>
-        <div className="sv-stat">
-          <div className="sv-stat-val">
-            {(latestTrend.intrinsic + latestTrend.extrinsic).toFixed(1)}<span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}> /40</span>
-          </div>
-          <div className="sv-stat-lbl">School RMI score</div>
-          <div className="sv-stat-sub">↑{health.dM} pts since Sep 2024</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: INTRINSIC_COLOR }}>
-            {latestTrend.intrinsic}<span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}> /20</span>
-          </div>
-          <div className="sv-stat-lbl">Intrinsic subscore</div>
-          <div className="sv-stat-sub">↑1.9 pts over school year</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: EXTRINSIC_COLOR }}>
-            {latestTrend.extrinsic}<span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}> /20</span>
-          </div>
-          <div className="sv-stat-lbl">Extrinsic subscore</div>
-          <div className="sv-stat-sub">↑0.4 pts over school year</div>
-        </div>
+      <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
+        <StatCard
+          value={(latestTrend.intrinsic + latestTrend.extrinsic).toFixed(1)}
+          unit="/40"
+          label="School RMI score"
+          footer={`↑${health.dM} pts since Sep 2024`}
+        />
+        <StatCard
+          value={latestTrend.intrinsic}
+          unit="/20"
+          label="Intrinsic subscore"
+          footer="↑1.9 pts over school year"
+          color={INTRINSIC_COLOR}
+        />
+        <StatCard
+          value={latestTrend.extrinsic}
+          unit="/20"
+          label="Extrinsic subscore"
+          footer="↑0.4 pts over school year"
+          color={EXTRINSIC_COLOR}
+        />
       </div>
 
       <div className="sv-grid">
 
-        {/* RMI Trend vs District */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>RMI Trend — {school.name} vs. District</h3>
-              <div className="sv-note">Sep 2024 – May 2025</div>
-            </div>
-          </div>
+        <ChartCard
+          span={2}
+          title={`RMI Trend — ${school.name} vs. District`}
+          subtitle="Sep 2024 – May 2025"
+          icon={MOT_ICON}
+          accent={INTRINSIC_COLOR}
+          footer={<ChartLegend items={[
+            { color: school.color, label: shortName },
+            { color: '#CBD5E1',    label: `District avg (${districtNow})`, dashed: true },
+          ]} />}
+        >
           <div style={{ height: 220 }}>
             <ResponsiveLine
               data={rmiNivo}
@@ -137,22 +141,19 @@ export function SchoolMotivation({ schoolId, onBack }) {
               )}
             />
           </div>
-          <div style={{ marginTop: 8 }}>
-            <ChartLegend items={[
-              { color: school.color, label: shortName },
-              { color: '#CBD5E1',    label: `District avg (${districtNow})`, dashed: true },
-            ]} />
-          </div>
-        </div>
+        </ChartCard>
 
-        {/* Intrinsic vs Extrinsic trend */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>Intrinsic vs. Extrinsic Motivation Trend</h3>
-              <div className="sv-note">RMI subscores out of 20 · Sep 2024 – May 2025</div>
-            </div>
-          </div>
+        <ChartCard
+          span={2}
+          title="Intrinsic vs. Extrinsic Motivation Trend"
+          subtitle="RMI subscores out of 20 · Sep 2024 – May 2025"
+          icon={MOT_ICON}
+          accent={INTRINSIC_COLOR}
+          footer={<ChartLegend items={[
+            { color: INTRINSIC_COLOR, label: 'Intrinsic' },
+            { color: '#CBD5E1',       label: 'Extrinsic' },
+          ]} />}
+        >
           <div style={{ height: 190 }}>
             <ResponsiveBar
               data={INTRINSIC_EXTRINSIC_TRENDS}
@@ -186,25 +187,19 @@ export function SchoolMotivation({ schoolId, onBack }) {
               )}
             />
           </div>
-          <div style={{ marginTop: 8 }}>
-            <ChartLegend items={[
-              { color: INTRINSIC_COLOR, label: 'Intrinsic' },
-              { color: '#CBD5E1',       label: 'Extrinsic' },
-            ]} />
-          </div>
-          <div className="mot-shift-note">
+          <CardNote tone="accent">
             Students' intrinsic reading subscore rose from <strong>12.1</strong> to <strong>14.2 /20</strong> over the school year — reflecting sustained growth in self-motivated, independent reading. The extrinsic score remains stable at <strong>11.8 /20</strong>, meaning intrinsic motivation is outpacing external drivers.
-          </div>
-        </div>
+          </CardNote>
+        </ChartCard>
 
-        {/* RMI Factor Breakdown */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>RMI Factor Breakdown</h3>
-              <div className="sv-note">All 10 RMI factors · scored 1–4</div>
-            </div>
-          </div>
+        <ChartCard
+          span={2}
+          title="RMI Factor Breakdown"
+          subtitle="All 10 RMI factors · scored 1–4"
+          icon={MOT_ICON}
+          accent={INTRINSIC_COLOR}
+          bodyPad="padded"
+        >
           <div className="mot-factor-groups mot-factor-groups--wide">
             <div className="mot-factor-group">
               <div className="mot-factor-group-label mot-factor-group-label--int">Intrinsic</div>
@@ -216,16 +211,23 @@ export function SchoolMotivation({ schoolId, onBack }) {
               {extrinsicFactors.map(f => <FactorRow key={f.name} f={f} />)}
             </div>
           </div>
-        </div>
+        </ChartCard>
 
-        {/* Grade band breakdown */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>Intrinsic vs. Extrinsic by Grade Band</h3>
-              <div className="sv-note">RMI subscores out of 20 · older students show stronger intrinsic reading identity</div>
+        <ChartCard
+          span={2}
+          title="Intrinsic vs. Extrinsic by Grade Band"
+          subtitle="RMI subscores out of 20 · older students show stronger intrinsic reading identity"
+          icon={MOT_ICON}
+          accent={INTRINSIC_COLOR}
+          bodyPad="padded"
+          footer={
+            <div className="mot-grade-legend">
+              <span className="mot-legend-dot" style={{ background: INTRINSIC_COLOR }} /> Intrinsic
+              <span className="mot-legend-dot" style={{ background: '#CBD5E1', marginLeft: 12 }} /> Extrinsic
+              <span style={{ marginLeft: 8, color: '#94A3B8', fontSize: 13 }}>scores out of 20 · badge = top factor</span>
             </div>
-          </div>
+          }
+        >
           <div className="mot-grade-list">
             {MOTIVATION_BY_GRADE.map(g => (
               <div key={g.band} className="mot-grade-row">
@@ -250,12 +252,7 @@ export function SchoolMotivation({ schoolId, onBack }) {
               </div>
             ))}
           </div>
-          <div className="mot-grade-legend">
-            <span className="mot-legend-dot" style={{ background: INTRINSIC_COLOR }} /> Intrinsic
-            <span className="mot-legend-dot" style={{ background: '#CBD5E1', marginLeft: 12 }} /> Extrinsic
-            <span style={{ marginLeft: 8, color: '#94A3B8', fontSize: 13 }}>scores out of 20 · badge = top factor</span>
-          </div>
-        </div>
+        </ChartCard>
 
       </div>
     </div>

@@ -1,0 +1,131 @@
+/* ── Stat tile ─────────────────────────────────────────────────────────── */
+.rc-stat {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rc-stat-val {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: #0F172A;
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.rc-stat-unit {
+  font-size: 14px;
+  font-weight: 500;
+  color: #94A3B8;
+}
+
+.rc-stat-lbl {
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+}
+
+.rc-stat-sub {
+  font-size: 13px;
+  color: #94A3B8;
+}
+
+/* ── Chart / content card ──────────────────────────────────────────────── */
+.rc-card {
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.rc-card--wide { grid-column: span 2; }
+
+.rc-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.rc-card-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--rc-accent-bg, #F8FAFC);
+  color: var(--rc-accent, #475569);
+  border: 1px solid color-mix(in srgb, var(--rc-accent, #94A3B8) 20%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rc-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rc-card-title-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.rc-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+  letter-spacing: -0.01em;
+}
+
+.rc-card-sub {
+  font-size: 13px;
+  color: #94A3B8;
+  font-weight: 500;
+}
+
+.rc-card-action {
+  flex-shrink: 0;
+}
+
+.rc-card-body--flush  { padding: 8px 0; }
+.rc-card-body--padded { padding: 14px 16px; }
+
+.rc-card-foot {
+  padding: 10px 16px 12px;
+  border-top: 1px solid #F1F5F9;
+}
+
+/* ── Inline note inside a card body ────────────────────────────────────── */
+.rc-card-note {
+  margin: 10px 16px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #475569;
+}
+
+.rc-card-note--neutral { background: #F8FAFC; border: 1px solid #E2E8F0; }
+.rc-card-note--accent  { background: var(--rc-accent-bg, #FFF7F5); border: 1px solid color-mix(in srgb, var(--rc-accent, #E8866A) 25%, white); }
+.rc-card-note--accent strong { color: var(--rc-accent, #E8866A); }
+
+/* ── Row of stat tiles ─────────────────────────────────────────────────── */
+.rc-stats-row {
+  display: grid;
+  grid-template-columns: repeat(var(--rc-stats-cols, 4), 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
