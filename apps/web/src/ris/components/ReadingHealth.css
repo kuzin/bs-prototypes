@@ -18,6 +18,7 @@
 
 .rh-stat {
   position: relative;
+  width: 100%;
   background: var(--sec-bg);
   border: 1px solid color-mix(in srgb, var(--sec-color) 22%, transparent);
   border-radius: 12px;

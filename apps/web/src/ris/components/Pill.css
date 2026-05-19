@@ -1,0 +1,46 @@
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  border-radius: 99px;
+  border: 1px solid transparent;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sizes */
+.pill--sm { font-size: 13px; padding: 2px 8px; }
+.pill--md { font-size: 13px; padding: 3px 10px; }
+
+/* ── Soft (default) — pale tint, dark text ───────────────────────────────── */
+.pill--soft {
+  color: color-mix(in srgb, var(--pill-color, #475569) 55%, #334155);
+  background: color-mix(in srgb, var(--pill-color, #475569) 12%, white);
+  border-color: color-mix(in srgb, var(--pill-color, #475569) 22%, transparent);
+}
+
+/* ── Filled — solid background, white text ───────────────────────────────── */
+.pill--filled {
+  color: #fff;
+  background: var(--pill-color, #475569);
+  border-color: var(--pill-color, #475569);
+}
+
+/* ── Outline — transparent, colored text + border ────────────────────────── */
+.pill--outline {
+  color: var(--pill-color, #475569);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--pill-color, #475569) 45%, transparent);
+}
+
+.pill-icon {
+  display: inline-flex;
+  align-items: center;
+}
+
+.pill-icon svg {
+  width: 11px;
+  height: 11px;
+}

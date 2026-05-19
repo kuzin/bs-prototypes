@@ -14,6 +14,11 @@ import { Tabs } from '../ris/components/Tabs'
 import { Flyout } from '../ris/components/Flyout'
 import { Modal } from '../ris/components/Modal'
 import { Table } from '../ris/components/Table'
+import { Avatar } from '../ris/components/Avatar'
+import { Pill } from '../ris/components/Pill'
+import { ProgressBar } from '../ris/components/ProgressBar'
+import { BackBar } from '../BackBar'
+import { PageHero } from '../ris/components/PageHero'
 import { RMI_ICONS } from '../ris/components/RmiIcons'
 import { RMI_FACTORS } from '../ris/data'
 
@@ -24,7 +29,9 @@ import '../ris/components/ReadingHealth.css'
 import '../ris/components/AlertsBanner.css'
 import '../ris/components/OverviewHero.css'
 import '../ris/components/BucketHero.css'
+import '../ris/components/PageHero.css'
 import '../MainRail.css'
+import '../BackBar.css'
 
 import './App.css'
 
@@ -34,6 +41,9 @@ const SECTIONS_LIST = [
   { group: 'Primitives', id: 'flyout',     name: 'Flyout' },
   { group: 'Primitives', id: 'modal',      name: 'Modal' },
   { group: 'Primitives', id: 'table',      name: 'Table' },
+  { group: 'Primitives', id: 'avatar',     name: 'Avatar' },
+  { group: 'Primitives', id: 'pill',       name: 'Pill' },
+  { group: 'Primitives', id: 'progress-bar', name: 'ProgressBar' },
   { group: 'Cards',     id: 'stat-card',    name: 'StatCard' },
   { group: 'Cards',     id: 'chart-card',   name: 'ChartCard' },
   { group: 'Cards',     id: 'card-note',    name: 'CardNote' },
@@ -45,6 +55,8 @@ const SECTIONS_LIST = [
   { group: 'Alerts',    id: 'alerts-banner', name: 'AlertsBanner' },
   { group: 'Heroes',    id: 'overview-hero', name: 'OverviewHero' },
   { group: 'Heroes',    id: 'bucket-hero',  name: 'BucketHero' },
+  { group: 'Heroes',    id: 'page-hero',    name: 'PageHero' },
+  { group: 'Layout',    id: 'back-bar',     name: 'BackBar' },
   { group: 'Layout',    id: 'main-rail',    name: 'MainRail' },
   { group: 'Layout',    id: 'prototype-nav', name: 'PrototypeNav' },
   { group: 'Icons',     id: 'rmi-icons',    name: 'RMI Icons' },
@@ -358,9 +370,11 @@ function ChartCardKnobs() {
 function Section({ id, title, desc, children }) {
   return (
     <section id={id} className="pt-section">
-      <h2>{title}</h2>
-      {desc && <div className="pt-section-desc">{desc}</div>}
-      {children}
+      <div className="pt-section-head">
+        <h2>{title}</h2>
+        {desc && <div className="pt-section-desc">{desc}</div>}
+      </div>
+      <div className="pt-section-body">{children}</div>
     </section>
   )
 }
@@ -472,6 +486,90 @@ export function App() {
             desc={<>Pass <code>columns</code> and <code>rows</code>. Each column can have <code>align</code>, <code>render</code>, <code>width</code>. Optional <code>onRowClick</code>, <code>zebra</code>, <code>compact</code>.</>}
           >
             <TableShowcase />
+          </Section>
+
+          <Section
+            id="avatar"
+            title="Avatar"
+            desc={<>Initials in a colored circle or square. Props: <code>initials</code>, <code>color</code>, <code>size</code> (xs/sm/md/lg/xl), <code>shape</code> (circle/square — square uses the size's border-radius).</>}
+          >
+            <div className="pt-variants pt-variants--3">
+              <Variant label="circle sizes">
+                <Avatar initials="MC" color="#E8866A" size="xs" />
+                <Avatar initials="MC" color="#E8866A" size="sm" />
+                <Avatar initials="MC" color="#E8866A" size="md" />
+                <Avatar initials="MC" color="#E8866A" size="lg" />
+                <Avatar initials="MC" color="#E8866A" size="xl" />
+              </Variant>
+              <Variant label="square sizes">
+                <Avatar initials="LE" color="#1D4ED8" size="xs" shape="square" />
+                <Avatar initials="LE" color="#1D4ED8" size="sm" shape="square" />
+                <Avatar initials="LE" color="#1D4ED8" size="md" shape="square" />
+                <Avatar initials="LE" color="#1D4ED8" size="lg" shape="square" />
+                <Avatar initials="LE" color="#1D4ED8" size="xl" shape="square" />
+              </Variant>
+              <Variant label="colors">
+                <Avatar initials="AB" color="#16A97A" />
+                <Avatar initials="JK" color="#C084FC" />
+                <Avatar initials="RM" color="#7CB5F5" />
+                <Avatar initials="SD" color="#F0C050" />
+                <Avatar initials="EG" color="#0DA7BC" />
+              </Variant>
+            </div>
+          </Section>
+
+          <Section
+            id="pill"
+            title="Pill"
+            desc={<>Colored badge / chip. Variants: <code>soft</code> (default, tinted bg + dark text), <code>filled</code> (solid + white text), <code>outline</code>. Sizes: <code>sm</code>, <code>md</code>. Optional left <code>icon</code>.</>}
+          >
+            <div className="pt-variants pt-variants--3">
+              <Variant label="variant='soft'">
+                <Pill color="#7C3AED">Skills</Pill>
+                <Pill color="#16A97A">Habits</Pill>
+                <Pill color="#E8866A">Motivation</Pill>
+                <Pill color="#1D4ED8">Integrity</Pill>
+              </Variant>
+              <Variant label="variant='filled'">
+                <Pill color="#DC2626" variant="filled">High Priority</Pill>
+                <Pill color="#D97706" variant="filled">Monitor</Pill>
+                <Pill color="#16A34A" variant="filled">Active</Pill>
+              </Variant>
+              <Variant label="variant='outline'">
+                <Pill color="#1D4ED8" variant="outline">Title I</Pill>
+                <Pill color="#475569" variant="outline">Not eligible</Pill>
+              </Variant>
+            </div>
+          </Section>
+
+          <Section
+            id="progress-bar"
+            title="ProgressBar"
+            desc={<>Track + fill with optional <code>label</code>, <code>subLabel</code>, and <code>valueLabel</code>. Used for cohorts, RMI factors, grade bands, engagement tiers. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>.</>}
+          >
+            <div className="pt-variants pt-variants--2">
+              <Variant label="bare track">
+                <ProgressBar value={62} color="#7C3AED" />
+              </Variant>
+              <Variant label="with label + value">
+                <ProgressBar value={62} color="#7C3AED" label="Free/Reduced Lunch" valueLabel="62%" />
+              </Variant>
+              <Variant label="label + sub + value">
+                <ProgressBar
+                  value={3.1}
+                  max={4}
+                  color="#E8866A"
+                  label="Enjoyment"
+                  subLabel="Reading for personal pleasure and fun"
+                  valueLabel="3.1"
+                />
+              </Variant>
+              <Variant label="sizes (sm / md / lg)">
+                <ProgressBar value={62} color="#16A97A" size="sm" />
+                <ProgressBar value={62} color="#16A97A" size="md" />
+                <ProgressBar value={62} color="#16A97A" size="lg" />
+              </Variant>
+            </div>
           </Section>
 
           <Section
@@ -709,6 +807,58 @@ export function App() {
                 <BucketHero bucket="skills" score={42} delta={-3} />
               </Variant>
             </div>
+          </Section>
+
+          <Section
+            id="page-hero"
+            title="PageHero"
+            desc={<>Top-of-page header for analytics / demographics pages with a tinted icon, title, and subtitle. Props: <code>icon</code>, <code>title</code>, <code>subtitle</code>, <code>accent</code>, <code>accentBg</code>.</>}
+          >
+            <div className="pt-variants" style={{ gridTemplateColumns: '1fr' }}>
+              <Variant label="analytics" bare>
+                <PageHero
+                  icon={
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="3" y="11" width="3" height="6" rx="1" />
+                      <rect x="8.5" y="7" width="3" height="10" rx="1" />
+                      <rect x="14" y="3" width="3" height="14" rx="1" />
+                    </svg>
+                  }
+                  title="Analytics"
+                  subtitle="Student engagement, reading behavior, and outcome correlations · Lincoln Elementary"
+                  accent="#0DA7BC"
+                  accentBg="#ECFEFF"
+                />
+              </Variant>
+              <Variant label="demographics" bare>
+                <PageHero
+                  icon={
+                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="10" cy="6" r="2.5" />
+                      <circle cx="4"  cy="9" r="2" />
+                      <circle cx="16" cy="9" r="2" />
+                      <path d="M6 17c0-2.2 1.8-4 4-4s4 1.8 4 4" />
+                      <path d="M1 17c0-1.7 1.3-3 3-3" />
+                      <path d="M19 17c0-1.7-1.3-3-3-3" />
+                    </svg>
+                  }
+                  title="Demographics"
+                  subtitle="Student cohorts, equity indicators, and grade-level performance"
+                  accent="#7C3AED"
+                  accentBg="#F5F3FF"
+                />
+              </Variant>
+            </div>
+          </Section>
+
+          <Section
+            id="back-bar"
+            title="BackBar"
+            desc={<>"‹ Back to X" link styled like a breadcrumb. Renders as a button or anchor. Props: <code>label</code>, <code>onClick</code> or <code>href</code>.</>}
+          >
+            <Variant label="default" bare>
+              <BackBar label="Back to Overview" onClick={() => {}} />
+            </Variant>
           </Section>
 
           <Section
