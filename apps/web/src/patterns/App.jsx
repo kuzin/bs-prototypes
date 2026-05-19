@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react'
+import { ResponsiveLine } from '@nivo/line'
+import { ResponsiveBar } from '@nivo/bar'
+import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 import { StatCard, ChartCard, CardNote } from '../ris/components/Cards'
 import {
   ChartLegend, SliceTooltip, GradeTooltip, BarTooltip,
+  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
 } from '../ris/components/charts'
 import { SECTIONS, HealthStat, ReadingHealth } from '../ris/components/ReadingHealth'
 import { AlertRow, AlertsBanner } from '../ris/components/AlertsBanner'
@@ -68,6 +72,10 @@ const SECTIONS_LIST = [
   { group: 'Forms',     id: 'checkbox',     name: 'Checkbox' },
   { group: 'Forms',     id: 'radio',        name: 'RadioGroup' },
   { group: 'Forms',     id: 'field-form',   name: 'Field / Form' },
+  { group: 'Charts',    id: 'chart-line',   name: 'Line chart' },
+  { group: 'Charts',    id: 'chart-bar-grouped', name: 'Grouped bar chart' },
+  { group: 'Charts',    id: 'chart-bar-h',  name: 'Horizontal bar chart' },
+  { group: 'Charts',    id: 'chart-scatter', name: 'Scatter chart' },
   { group: 'Cards',     id: 'stat-card',    name: 'StatCard' },
   { group: 'Cards',     id: 'chart-card',   name: 'ChartCard' },
   { group: 'Cards',     id: 'card-note',    name: 'CardNote' },
@@ -532,6 +540,338 @@ function ProgressBarKnobs() {
   )
 }
 
+// ── More knob panels ─────────────────────────────────────────────────────
+function TabsKnobs() {
+  const [variant, setVariant] = useState('underline')
+  const [active, setActive]   = useState('daily')
+  return (
+    <>
+      <Knobs>
+        <Field label="variant">
+          <Select value={variant} onChange={e => setVariant(e.target.value)}>
+            <option>underline</option><option>pill</option>
+          </Select>
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Tabs
+          variant={variant}
+          active={active}
+          onChange={setActive}
+          items={[
+            { id: 'daily',   label: 'Daily Reading' },
+            { id: 'roster',  label: 'Students', count: 24 },
+            { id: 'rewards', label: 'Earned Rewards' },
+          ]}
+        />
+      </div>
+    </>
+  )
+}
+
+function IconButtonKnobs() {
+  const [variant, setVariant]   = useState('secondary')
+  const [size, setSize]         = useState('md')
+  const [disabled, setDisabled] = useState(false)
+  return (
+    <>
+      <Knobs>
+        <Field label="variant">
+          <Select value={variant} onChange={e => setVariant(e.target.value)}>
+            <option>primary</option><option>secondary</option><option>ghost</option><option>danger</option>
+          </Select>
+        </Field>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <IconButton variant={variant} size={size} disabled={disabled} aria-label="Add"><PlusIcon /></IconButton>
+      </div>
+    </>
+  )
+}
+
+function SpinnerKnobs() {
+  const [size, setSize]   = useState('md')
+  const [color, setColor] = useState('#1D4ED8')
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>xs</option><option>sm</option><option>md</option><option>lg</option><option>xl</option>
+          </Select>
+        </Field>
+        <Field label="color">
+          <input className="pt-color" type="color" value={color} onChange={e => setColor(e.target.value)} />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Spinner size={size} color={color} />
+      </div>
+    </>
+  )
+}
+
+function SkeletonKnobs() {
+  const [shape, setShape] = useState('rect')
+  const [width, setWidth] = useState('200')
+  const [height, setHeight] = useState('14')
+  const [lines, setLines] = useState('1')
+  return (
+    <>
+      <Knobs>
+        <Field label="shape">
+          <RadioGroup name="skel-shape" value={shape} onChange={setShape}>
+            <Radio value="rect">rect</Radio>
+            <Radio value="circle">circle</Radio>
+          </RadioGroup>
+        </Field>
+        <Field label="width"><Input value={width} onChange={e => setWidth(e.target.value)} /></Field>
+        <Field label="height"><Input value={height} onChange={e => setHeight(e.target.value)} /></Field>
+        <Field label="lines"><Input type="number" value={lines} onChange={e => setLines(e.target.value)} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Skeleton
+          shape={shape}
+          width={Number(width) || width}
+          height={Number(height) || height}
+          lines={Number(lines) > 1 ? Number(lines) : undefined}
+        />
+      </div>
+    </>
+  )
+}
+
+function TooltipKnobs() {
+  const [placement, setPlacement] = useState('top')
+  const [content, setContent]     = useState('Mark as read')
+  return (
+    <>
+      <Knobs>
+        <Field label="placement">
+          <Select value={placement} onChange={e => setPlacement(e.target.value)}>
+            <option>top</option><option>bottom</option><option>left</option><option>right</option>
+          </Select>
+        </Field>
+        <Field label="content"><Input value={content} onChange={e => setContent(e.target.value)} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame" style={{ minHeight: 100, justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
+        <Tooltip content={content} placement={placement}>
+          <Button variant="secondary">Hover me</Button>
+        </Tooltip>
+      </div>
+    </>
+  )
+}
+
+function BannerKnobs() {
+  const [level, setLevel]       = useState('info')
+  const [title, setTitle]       = useState('Heads up')
+  const [message, setMessage]   = useState('The Reading Information System rolls out next Monday.')
+  const [hasAction, setAction]  = useState(false)
+  const [hasDismiss, setDismiss] = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="level">
+          <Select value={level} onChange={e => setLevel(e.target.value)}>
+            <option>info</option><option>success</option><option>warning</option><option>error</option>
+          </Select>
+        </Field>
+        <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="message"><Input value={message} onChange={e => setMessage(e.target.value)} /></Field>
+        <Field label="action"><Toggle checked={hasAction} onChange={setAction} /></Field>
+        <Field label="dismiss"><Toggle checked={hasDismiss} onChange={setDismiss} /></Field>
+      </Knobs>
+      <Banner
+        level={level}
+        title={title}
+        action={hasAction ? <Button variant="secondary" size="sm">View</Button> : undefined}
+        onDismiss={hasDismiss ? () => {} : undefined}
+      >
+        {message}
+      </Banner>
+    </>
+  )
+}
+
+function StatCardKnobs() {
+  const [value, setValue]   = useState('71')
+  const [unit, setUnit]     = useState('')
+  const [label, setLabel]   = useState('Reading Motivation Index')
+  const [footer, setFooter] = useState('↑ 7 pts since Sep 2024')
+  const [color, setColor]   = useState('#0F172A')
+  const [footerColor, setFc] = useState('#94A3B8')
+  return (
+    <>
+      <Knobs>
+        <Field label="value"><Input value={value} onChange={e => setValue(e.target.value)} /></Field>
+        <Field label="unit"><Input value={unit} onChange={e => setUnit(e.target.value)} placeholder="/40" /></Field>
+        <Field label="label"><Input value={label} onChange={e => setLabel(e.target.value)} /></Field>
+        <Field label="footer"><Input value={footer} onChange={e => setFooter(e.target.value)} /></Field>
+        <Field label="color"><input className="pt-color" type="color" value={color} onChange={e => setColor(e.target.value)} /></Field>
+        <Field label="footerColor"><input className="pt-color" type="color" value={footerColor} onChange={e => setFc(e.target.value)} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <StatCard value={value} unit={unit || undefined} label={label} footer={footer} color={color} footerColor={footerColor} />
+      </div>
+    </>
+  )
+}
+
+function HealthStatKnobs() {
+  const [bucket, setBucket] = useState('motivation')
+  const [score, setScore]   = useState('71')
+  const [delta, setDelta]   = useState('7')
+  const [clickable, setClickable] = useState(true)
+  const section = SECTIONS.find(s => s.key === bucket)
+  return (
+    <>
+      <Knobs>
+        <Field label="bucket">
+          <Select value={bucket} onChange={e => setBucket(e.target.value)}>
+            <option>motivation</option><option>integrity</option><option>habits</option><option>skills</option>
+          </Select>
+        </Field>
+        <Field label="score"><Input type="number" value={score} onChange={e => setScore(e.target.value)} /></Field>
+        <Field label="delta"><Input type="number" value={delta} onChange={e => setDelta(e.target.value)} /></Field>
+        <Field label="clickable"><Toggle checked={clickable} onChange={setClickable} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <HealthStat
+          section={section}
+          score={Number(score)}
+          delta={Number(delta)}
+          onClick={clickable ? () => {} : undefined}
+        />
+      </div>
+    </>
+  )
+}
+
+function AlertRowKnobs() {
+  const [level, setLevel]   = useState('critical')
+  const [school, setSchool] = useState('Lincoln Elementary')
+  const [title, setTitle]   = useState('Stuck Lexile plateau — 6 weeks, no growth')
+  const [hasAction, setAction] = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="level">
+          <Select value={level} onChange={e => setLevel(e.target.value)}>
+            <option>critical</option><option>warning</option><option>positive</option><option>info</option>
+          </Select>
+        </Field>
+        <Field label="school"><Input value={school} onChange={e => setSchool(e.target.value)} /></Field>
+        <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="action"><Toggle checked={hasAction} onChange={setAction} /></Field>
+      </Knobs>
+      <AlertRow
+        level={level}
+        school={school}
+        title={title}
+        action={hasAction ? 'Review' : undefined}
+        onAction={hasAction ? () => {} : undefined}
+      />
+    </>
+  )
+}
+
+function HeroKnobs() {
+  const [mode, setMode]       = useState('bucket')
+  const [bucket, setBucket]   = useState('motivation')
+  const [title, setTitle]     = useState('Lincoln Elementary')
+  const [subtitle, setSubtitle] = useState('K–5 · 1,650 students')
+  const [initials, setInitials] = useState('LE')
+  const [accent, setAccent]   = useState('#E8866A')
+  const [score, setScore]     = useState('71')
+  const [delta, setDelta]     = useState('7')
+
+  if (mode === 'bucket') {
+    return (
+      <>
+        <Knobs>
+          <Field label="mode">
+            <Select value={mode} onChange={e => setMode(e.target.value)}>
+              <option value="bucket">bucket (auto)</option>
+              <option value="avatar">avatar (overview)</option>
+              <option value="icon">icon (page)</option>
+            </Select>
+          </Field>
+          <Field label="bucket">
+            <Select value={bucket} onChange={e => setBucket(e.target.value)}>
+              <option>motivation</option><option>integrity</option><option>habits</option><option>skills</option>
+            </Select>
+          </Field>
+          <Field label="score"><Input type="number" value={score} onChange={e => setScore(e.target.value)} /></Field>
+          <Field label="delta"><Input type="number" value={delta} onChange={e => setDelta(e.target.value)} /></Field>
+        </Knobs>
+        <Hero bucket={bucket} score={Number(score)} delta={Number(delta)} />
+      </>
+    )
+  }
+  if (mode === 'avatar') {
+    return (
+      <>
+        <Knobs>
+          <Field label="mode">
+            <Select value={mode} onChange={e => setMode(e.target.value)}>
+              <option value="bucket">bucket (auto)</option>
+              <option value="avatar">avatar (overview)</option>
+              <option value="icon">icon (page)</option>
+            </Select>
+          </Field>
+          <Field label="initials"><Input value={initials} onChange={e => setInitials(e.target.value.slice(0, 2))} /></Field>
+          <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
+          <Field label="subtitle"><Input value={subtitle} onChange={e => setSubtitle(e.target.value)} /></Field>
+          <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+        </Knobs>
+        <Hero initials={initials} title={title} subtitle={subtitle} accent={accent} />
+      </>
+    )
+  }
+  // icon mode
+  const motIcon = SECTIONS.find(s => s.key === 'motivation')?.icon
+  return (
+    <>
+      <Knobs>
+        <Field label="mode">
+          <Select value={mode} onChange={e => setMode(e.target.value)}>
+            <option value="bucket">bucket (auto)</option>
+            <option value="avatar">avatar (overview)</option>
+            <option value="icon">icon (page)</option>
+          </Select>
+        </Field>
+        <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="subtitle"><Input value={subtitle} onChange={e => setSubtitle(e.target.value)} /></Field>
+        <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+      </Knobs>
+      <Hero icon={motIcon} title={title} subtitle={subtitle} accent={accent} />
+    </>
+  )
+}
+
+// ── Chart fixtures + chart-card showcase pieces ──────────────────────────
+const CHART_TREND = [
+  { month: 'Sep', school: 64, district: 68 },
+  { month: 'Oct', school: 65, district: 69 },
+  { month: 'Nov', school: 67, district: 71 },
+  { month: 'Dec', school: 66, district: 70 },
+  { month: 'Jan', school: 68, district: 72 },
+  { month: 'Feb', school: 69, district: 74 },
+  { month: 'Mar', school: 68, district: 73 },
+  { month: 'Apr', school: 70, district: 75 },
+  { month: 'May', school: 71, district: 76 },
+]
+
+// Imports for the chart components live at top — re-export shortcuts here
+// (declared lazily so we don't blow up the import block at the very top)
+
 // ── Form showcase pieces ─────────────────────────────────────────────────
 function ToggleShowcase() {
   const [a, setA] = useState(true)
@@ -793,7 +1133,7 @@ export function App() {
             title="Tabs"
             desc={<>Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>. Two variants: <code>underline</code> (default) and <code>pill</code>.</>}
           >
-            <TabsShowcase />
+            <TabsKnobs />
           </Section>
 
           <Section
@@ -849,22 +1189,7 @@ export function App() {
             title="IconButton"
             desc={<>Square button with just an icon. Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>, <code>danger</code>. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>. Always pair with an <code>aria-label</code>.</>}
           >
-            <div className="pt-variant-frame pt-variant-frame--row">
-              <IconButton aria-label="Add"><PlusIcon /></IconButton>
-              <IconButton variant="primary" aria-label="Add"><PlusIcon /></IconButton>
-              <IconButton variant="ghost" aria-label="Add"><PlusIcon /></IconButton>
-              <IconButton variant="danger" aria-label="Delete">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="3,4 13,4" />
-                  <path d="M5 4V2.5h6V4" />
-                  <path d="M4 4l1 9h6l1-9" />
-                </svg>
-              </IconButton>
-              <IconButton size="sm" aria-label="Add"><PlusIcon /></IconButton>
-              <IconButton size="md" aria-label="Add"><PlusIcon /></IconButton>
-              <IconButton size="lg" aria-label="Add"><PlusIcon /></IconButton>
-              <IconButton disabled aria-label="Disabled"><PlusIcon /></IconButton>
-            </div>
+            <IconButtonKnobs />
           </Section>
 
           <Section
@@ -895,16 +1220,7 @@ export function App() {
             title="Spinner"
             desc={<>Animated loading indicator. Sizes <code>xs / sm / md / lg / xl</code>. Inherits current color or set explicitly via <code>color</code>.</>}
           >
-            <div className="pt-variant-frame pt-variant-frame--row" style={{ alignItems: 'center' }}>
-              <Spinner size="xs" />
-              <Spinner size="sm" />
-              <Spinner size="md" />
-              <Spinner size="lg" />
-              <Spinner size="xl" />
-              <Spinner size="md" color="#E8866A" />
-              <Spinner size="md" color="#16A34A" />
-              <Spinner size="md" color="#DC2626" />
-            </div>
+            <SpinnerKnobs />
           </Section>
 
           <Section
@@ -912,20 +1228,7 @@ export function App() {
             title="Tooltip (hover)"
             desc={<>Lightweight hover tooltip. Different from the chart tooltips above — this is for explaining icon buttons / labels. <code>placement</code>: top / bottom / left / right.</>}
           >
-            <div className="pt-variant-frame pt-variant-frame--row" style={{ minHeight: 80, alignItems: 'center', gap: 16 }}>
-              <Tooltip content="Mark as read" placement="top">
-                <IconButton aria-label="Mark as read"><PlusIcon /></IconButton>
-              </Tooltip>
-              <Tooltip content="Show below" placement="bottom">
-                <Button variant="secondary">Bottom</Button>
-              </Tooltip>
-              <Tooltip content="Left side" placement="left">
-                <Button variant="secondary">Left</Button>
-              </Tooltip>
-              <Tooltip content="Right side" placement="right">
-                <Button variant="secondary">Right</Button>
-              </Tooltip>
-            </div>
+            <TooltipKnobs />
           </Section>
 
           <Section
@@ -933,18 +1236,7 @@ export function App() {
             title="Banner"
             desc={<>Page-level alert / banner. Levels: <code>info</code>, <code>success</code>, <code>warning</code>, <code>error</code>. Optional <code>title</code>, <code>action</code>, <code>onDismiss</code>.</>}
           >
-            <Banner level="info" title="Heads up" onDismiss={() => {}}>
-              The Reading Information System rolls out to all schools next Monday.
-            </Banner>
-            <Banner level="success" title="Saved">
-              Your changes to the goal threshold are live.
-            </Banner>
-            <Banner level="warning" title="6-week Lexile plateau" action={<Button variant="secondary" size="sm">View</Button>}>
-              Lincoln Elementary shows no measurable Lexile progression despite 94% engagement.
-            </Banner>
-            <Banner level="error" title="Connection lost" onDismiss={() => {}}>
-              Cannot reach the analytics service. Showing last cached values from 12 minutes ago.
-            </Banner>
+            <BannerKnobs />
           </Section>
 
           <Section
@@ -1001,8 +1293,9 @@ export function App() {
             title="Skeleton"
             desc={<>Animated loading placeholder. <code>width</code>, <code>height</code>, <code>shape</code> (rect/circle), or <code>lines</code> for a multi-row text placeholder.</>}
           >
-            <div className="pt-variant-frame" style={{ background: '#fff' }}>
-              <div style={{ display: 'flex', gap: 16, alignItems: 'center', marginBottom: 16 }}>
+            <SkeletonKnobs />
+            <Variant label="composed example (avatar + meta + button)">
+              <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: 14, display: 'flex', gap: 16, alignItems: 'center' }}>
                 <Skeleton shape="circle" width={44} height={44} />
                 <div style={{ flex: 1 }}>
                   <Skeleton width="35%" height={14} />
@@ -1011,8 +1304,7 @@ export function App() {
                 </div>
                 <Skeleton width={64} height={26} />
               </div>
-              <Skeleton lines={3} />
-            </div>
+            </Variant>
           </Section>
 
           <Section
@@ -1086,24 +1378,236 @@ export function App() {
           </Section>
 
           <Section
+            id="chart-line"
+            title="Line chart"
+            desc={<>Nivo <code>ResponsiveLine</code> + <code>SliceTooltip</code> wrapped in a <code>ChartCard</code>. Pattern used for trend charts across the dashboard, motivation, integrity, and habits pages.</>}
+          >
+            <ChartCard
+              title="RMI Trend — Lincoln vs. District"
+              subtitle="Sep 2024 – May 2025"
+              icon={SECTIONS.find(s => s.key === 'motivation')?.icon}
+              accent="#E8866A"
+              footer={<ChartLegend items={[
+                { color: '#E8866A', label: 'Lincoln' },
+                { color: '#CBD5E1', label: 'District avg', dashed: true },
+              ]} />}
+            >
+              <div style={{ height: 220 }}>
+                <ResponsiveLine
+                  data={[
+                    { id: 'Lincoln',      color: '#E8866A', data: CHART_TREND.map(d => ({ x: d.month, y: d.school })) },
+                    { id: 'District avg', color: '#CBD5E1', data: CHART_TREND.map(d => ({ x: d.month, y: d.district })) },
+                  ]}
+                  theme={NIVO_THEME}
+                  margin={LINE_MARGIN}
+                  xScale={{ type: 'point' }}
+                  yScale={{ type: 'linear', min: 55, max: 90 }}
+                  curve="monotoneX"
+                  colors={d => d.color}
+                  lineWidth={2.5}
+                  enablePoints={false}
+                  enableArea
+                  areaOpacity={0.08}
+                  enableGridX={false}
+                  axisBottom={AXIS_BOTTOM}
+                  axisLeft={{ ...AXIS_LEFT, tickValues: [60, 70, 80, 90] }}
+                  enableSlices="x"
+                  sliceTooltip={({ slice }) => (
+                    <SliceTooltip
+                      slice={slice}
+                      accent="#E8866A"
+                      allData={CHART_TREND}
+                      seriesMap={{ Lincoln: 'school', 'District avg': 'district' }}
+                      formatDelta={d => `${d > 0 ? '+' : ''}${d} pts`}
+                    />
+                  )}
+                />
+              </div>
+            </ChartCard>
+          </Section>
+
+          <Section
+            id="chart-bar-grouped"
+            title="Grouped bar chart"
+            desc={<>Nivo <code>ResponsiveBar</code> with <code>groupMode="grouped"</code> + <code>BarTooltip</code>. Used for "this vs district" or "actual vs expected" comparisons.</>}
+          >
+            <ChartCard
+              title="Intrinsic vs. Extrinsic Motivation"
+              subtitle="RMI subscores out of 20"
+              icon={SECTIONS.find(s => s.key === 'motivation')?.icon}
+              accent="#E8866A"
+              footer={<ChartLegend items={[
+                { color: '#E8866A', label: 'Intrinsic' },
+                { color: '#CBD5E1', label: 'Extrinsic' },
+              ]} />}
+            >
+              <div style={{ height: 190 }}>
+                <ResponsiveBar
+                  data={[
+                    { month: 'Sep', intrinsic: 12.1, extrinsic: 11.4 },
+                    { month: 'Oct', intrinsic: 12.4, extrinsic: 11.5 },
+                    { month: 'Nov', intrinsic: 12.8, extrinsic: 11.6 },
+                    { month: 'Dec', intrinsic: 12.6, extrinsic: 11.5 },
+                    { month: 'Jan', intrinsic: 13.1, extrinsic: 11.6 },
+                    { month: 'Feb', intrinsic: 13.5, extrinsic: 11.7 },
+                    { month: 'Mar', intrinsic: 13.7, extrinsic: 11.6 },
+                    { month: 'Apr', intrinsic: 14.0, extrinsic: 11.7 },
+                    { month: 'May', intrinsic: 14.2, extrinsic: 11.8 },
+                  ]}
+                  keys={['intrinsic', 'extrinsic']}
+                  indexBy="month"
+                  groupMode="grouped"
+                  theme={NIVO_THEME}
+                  margin={{ top: 8, right: 16, bottom: 36, left: 36 }}
+                  padding={0.3}
+                  innerPadding={2}
+                  colors={({ id }) => id === 'intrinsic' ? '#E8866A' : '#CBD5E1'}
+                  borderRadius={3}
+                  axisBottom={AXIS_BOTTOM}
+                  axisLeft={{ ...AXIS_LEFT, tickValues: [9, 11, 13, 15] }}
+                  enableGridY
+                  enableLabel={false}
+                  minValue={9}
+                  maxValue={16}
+                  tooltip={({ indexValue, data }) => (
+                    <BarTooltip
+                      data={data}
+                      indexValue={indexValue}
+                      accent="#E8866A"
+                      format={v => `${v.toFixed(1)} /20`}
+                      keys={['intrinsic', 'extrinsic']}
+                      labels={{
+                        intrinsic: { label: 'Intrinsic', color: '#E8866A' },
+                        extrinsic: { label: 'Extrinsic', color: '#CBD5E1' },
+                      }}
+                    />
+                  )}
+                />
+              </div>
+            </ChartCard>
+          </Section>
+
+          <Section
+            id="chart-bar-h"
+            title="Horizontal bar chart"
+            desc={<>Nivo <code>ResponsiveBar</code> with <code>layout="horizontal"</code>. Used for school rankings and per-grade growth comparisons.</>}
+          >
+            <ChartCard
+              title="District integrity ranking"
+              subtitle="Book Talk completion rate · May 2025"
+              icon={SECTIONS.find(s => s.key === 'integrity')?.icon}
+              accent="#1D4ED8"
+            >
+              <div style={{ height: 220 }}>
+                <ResponsiveBar
+                  data={[
+                    { id: 'adams',      name: 'Adams High',     completionRate: 88, isThis: false },
+                    { id: 'jefferson',  name: 'Jefferson El.',  completionRate: 82, isThis: false },
+                    { id: 'kennedy',    name: 'Kennedy K-8',    completionRate: 77, isThis: false },
+                    { id: 'roosevelt',  name: 'Roosevelt Mid.', completionRate: 75, isThis: false },
+                    { id: 'lincoln',    name: 'Lincoln El.',    completionRate: 71, isThis: true },
+                    { id: 'washington', name: 'Washington Mid.',completionRate: 62, isThis: false },
+                  ]}
+                  keys={['completionRate']}
+                  indexBy="name"
+                  layout="horizontal"
+                  theme={NIVO_THEME}
+                  margin={{ top: 8, right: 32, bottom: 36, left: 100 }}
+                  colors={({ data }) => data.isThis ? '#E8866A' : '#CBD5E1'}
+                  borderRadius={4}
+                  axisBottom={{ ...AXIS_BOTTOM, format: v => `${v}%`, tickValues: [0, 25, 50, 75, 100] }}
+                  axisLeft={{ tickSize: 0, tickPadding: 10 }}
+                  enableGridY={false}
+                  enableLabel={false}
+                  maxValue={100}
+                  tooltip={({ data }) => (
+                    <div className="sdb-tooltip" style={{ '--tip-accent': data.isThis ? '#E8866A' : '#1D4ED8' }}>
+                      <div className="sdb-tooltip-header">{data.name}</div>
+                      <div className="sdb-tooltip-series" style={{ '--series-color': data.isThis ? '#E8866A' : '#94A3B8' }}>
+                        <div className="sdb-tooltip-row">
+                          <span className="sdb-tooltip-dot" />
+                          <span className="sdb-tooltip-label">Completion rate</span>
+                          <span className="sdb-tooltip-val">{data.completionRate}%</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                />
+              </div>
+            </ChartCard>
+          </Section>
+
+          <Section
+            id="chart-scatter"
+            title="Scatter chart"
+            desc={<>Nivo <code>ResponsiveScatterPlot</code> with a highlighted "this school" series and a reference marker. Used on the Skills (Lexile) page.</>}
+          >
+            <ChartCard
+              title="Lexile Growth vs. Reading Volume"
+              subtitle="Lincoln highlighted against district peers"
+              icon={SECTIONS.find(s => s.key === 'skills')?.icon}
+              accent="#7C3AED"
+              footer={<ChartLegend items={[
+                { color: '#E8866A', label: 'Lincoln' },
+                { color: '#CBD5E1', label: 'Other schools' },
+                { color: '#D97706', label: 'Expected (+65L)', dashed: true },
+              ]} />}
+            >
+              <div style={{ height: 260 }}>
+                <ResponsiveScatterPlot
+                  data={[
+                    {
+                      id: 'This school',
+                      data: [{ x: 41, y: 8, school: 'Lincoln', students: 1650, sid: 'lincoln' }],
+                    },
+                    {
+                      id: 'Other schools',
+                      data: [
+                        { x: 38, y: 62, school: 'Jefferson', students: 1820, sid: 'jefferson' },
+                        { x: 35, y: 74, school: 'Kennedy',   students: 2340, sid: 'kennedy' },
+                        { x: 28, y: 88, school: 'Roosevelt', students: 2100, sid: 'roosevelt' },
+                        { x: 24, y: 22, school: 'Washington',students: 1980, sid: 'washington' },
+                        { x: 22, y: 112,school: 'Adams',     students: 2510, sid: 'adams' },
+                      ],
+                    },
+                  ]}
+                  theme={NIVO_THEME}
+                  margin={{ top: 16, right: 28, bottom: 50, left: 56 }}
+                  xScale={{ type: 'linear', min: 15, max: 50 }}
+                  yScale={{ type: 'linear', min: 0, max: 130 }}
+                  colors={({ serieId }) => serieId === 'This school' ? '#E8866A' : '#CBD5E1'}
+                  nodeSize={d => Math.sqrt(d.data.students / 5)}
+                  axisBottom={{ ...AXIS_BOTTOM, legend: 'Avg books/month', legendOffset: 38, legendPosition: 'middle' }}
+                  axisLeft={{ ...AXIS_LEFT, format: v => `${v}L`, legend: 'Lexile growth', legendOffset: -44, legendPosition: 'middle' }}
+                  enableGridX={false}
+                  markers={[{
+                    axis: 'y', value: 65,
+                    lineStyle: { stroke: '#D97706', strokeDasharray: '4 3', strokeWidth: 1.5 },
+                  }]}
+                  tooltip={({ node }) => (
+                    <div className="sdb-tooltip" style={{ '--tip-accent': node.data.sid === 'lincoln' ? '#E8866A' : '#475569' }}>
+                      <div className="sdb-tooltip-header">{node.data.school}</div>
+                      <div className="sdb-tooltip-series" style={{ '--series-color': node.data.sid === 'lincoln' ? '#E8866A' : '#94A3B8' }}>
+                        <div className="sdb-tooltip-row">
+                          <span className="sdb-tooltip-dot" />
+                          <span className="sdb-tooltip-label">Lexile growth</span>
+                          <span className="sdb-tooltip-val">+{node.data.y}L</span>
+                        </div>
+                      </div>
+                      <div className="sdb-tooltip-context">{node.data.students.toLocaleString()} students</div>
+                    </div>
+                  )}
+                />
+              </div>
+            </ChartCard>
+          </Section>
+
+          <Section
             id="stat-card"
             title="StatCard"
             desc={<>Small metric tile shown in a row at the top of a bucket page. Props: <code>value</code>, <code>unit</code>, <code>label</code>, <code>footer</code>, <code>color</code>, <code>footerColor</code>.</>}
           >
-            <div className="pt-variants pt-variants--4">
-              <Variant label="basic" bare>
-                <StatCard value={71} label="Reading Motivation Index" footer="↑ 7 pts since Sep 2024" />
-              </Variant>
-              <Variant label="with unit + color" bare>
-                <StatCard value={26.0} unit="/40" label="School RMI score" footer="↑ 7 pts since Sep" color="#E8866A" />
-              </Variant>
-              <Variant label="semantic footer (good)" bare>
-                <StatCard value="+18" unit="L" label="YTD Lexile growth" footer="Above expected +65L" color="#16A97A" footerColor="#16A34A" />
-              </Variant>
-              <Variant label="semantic footer (bad)" bare>
-                <StatCard value="+8" unit="L" label="YTD Lexile growth" footer="Below expected +65L" color="#DC2626" footerColor="#DC2626" />
-              </Variant>
-            </div>
+            <StatCardKnobs />
           </Section>
 
           <Section
@@ -1206,33 +1710,7 @@ export function App() {
             title="HealthStat"
             desc={<>Single health-area tile (one of Motivation / Integrity / Habits / Skills). Props: <code>section</code>, <code>score</code>, <code>delta</code>, <code>onClick</code>. Renders as a button when <code>onClick</code> is provided.</>}
           >
-            <div className="pt-variants pt-variants--4">
-              {SECTIONS.map((sec, i) => (
-                <Variant key={sec.key} label={`clickable · ${sec.label}`} bare>
-                  <HealthStat
-                    section={sec}
-                    score={SAMPLE_HEALTH[sec.key]}
-                    delta={SAMPLE_HEALTH[sec.deltaKey]}
-                    onClick={() => {}}
-                  />
-                </Variant>
-              ))}
-            </div>
-            <div className="pt-variants pt-variants--4" style={{ marginTop: 16 }}>
-              <Variant label="static (no onClick)" bare>
-                <HealthStat
-                  section={SECTIONS[0]}
-                  score={71}
-                  delta={7}
-                />
-              </Variant>
-              <Variant label="no delta" bare>
-                <HealthStat
-                  section={SECTIONS[1]}
-                  score={86}
-                />
-              </Variant>
-            </div>
+            <HealthStatKnobs />
           </Section>
 
           <Section
@@ -1250,20 +1728,7 @@ export function App() {
             title="AlertRow"
             desc={<>Single alert tile shown by AlertsBanner. Props: <code>level</code> (critical | warning | positive | info), <code>school</code>, <code>title</code>, <code>action</code>, <code>onAction</code>.</>}
           >
-            <div className="pt-variants" style={{ gridTemplateColumns: '1fr' }}>
-              <Variant label="critical">
-                <AlertRow level="critical" school="Lincoln Elementary" title="Stuck Lexile plateau — 6 weeks, no growth" action="Review" onAction={() => {}} />
-              </Variant>
-              <Variant label="warning">
-                <AlertRow level="warning" school="Washington Middle" title="Student engagement down 39% vs. last month" action="View habits" onAction={() => {}} />
-              </Variant>
-              <Variant label="positive">
-                <AlertRow level="positive" school="Adams High" title="+65% increase in avg session length" action="View details" onAction={() => {}} />
-              </Variant>
-              <Variant label="info (no action)">
-                <AlertRow level="info" school="Kennedy K-8" title="3 new Book Talks completed this week" />
-              </Variant>
-            </div>
+            <AlertRowKnobs />
           </Section>
 
           <Section
@@ -1279,47 +1744,9 @@ export function App() {
           <Section
             id="hero"
             title="Hero"
-            desc={<>One unified page header. Pass either <code>initials</code> (avatar) or <code>icon</code> (icon block); optional <code>subtitle</code> and right-side <code>score</code>+<code>delta</code>. The <code>bucket</code> prop auto-derives icon/title/accent/accentBg from SECTIONS for the four health areas.</>}
+            desc={<>One unified page header. <code>mode</code> picks between the three shapes: <code>bucket</code> (auto-derive icon/title/accent from SECTIONS + right-side score), <code>avatar</code> (overview-style), and <code>icon</code> (analytics-style with subtitle).</>}
           >
-            <div className="pt-variants" style={{ gridTemplateColumns: '1fr' }}>
-              <Variant label="avatar + title + subtitle (overview)" bare>
-                <Hero
-                  initials="LE"
-                  title="Lincoln Elementary"
-                  subtitle="K–5 · 1,650 students"
-                  accent="#E8866A"
-                />
-              </Variant>
-              <Variant label="icon + title + subtitle (page)" bare>
-                <Hero
-                  icon={
-                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="3" y="11" width="3" height="6" rx="1" />
-                      <rect x="8.5" y="7" width="3" height="10" rx="1" />
-                      <rect x="14" y="3" width="3" height="14" rx="1" />
-                    </svg>
-                  }
-                  title="Analytics"
-                  subtitle="Student engagement, reading behavior, and outcome correlations · Lincoln Elementary"
-                  accent="#0DA7BC"
-                  accentBg="#ECFEFF"
-                />
-              </Variant>
-            </div>
-            <div className="pt-variants pt-variants--2">
-              <Variant label="bucket='motivation'" bare>
-                <Hero bucket="motivation" score={71} delta={7} />
-              </Variant>
-              <Variant label="bucket='integrity'" bare>
-                <Hero bucket="integrity" score={86} delta={3} />
-              </Variant>
-              <Variant label="bucket='habits'" bare>
-                <Hero bucket="habits" score={58} delta={5} />
-              </Variant>
-              <Variant label="bucket='skills' (negative)" bare>
-                <Hero bucket="skills" score={42} delta={-3} />
-              </Variant>
-            </div>
+            <HeroKnobs />
           </Section>
 
           <Section

@@ -82,22 +82,23 @@
 }
 
 .pt-section-head {
-  padding: 18px 24px 16px;
+  padding: 12px 20px 12px;
   border-bottom: 1px solid #F1F5F9;
 }
 
 .pt-section-head h2 {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  margin-bottom: 6px;
+  margin-bottom: 2px;
   color: #0F172A;
+  line-height: 1.2;
 }
 
 .pt-section-desc {
   font-size: 13px;
   color: #64748B;
-  line-height: 1.6;
+  line-height: 1.5;
   max-width: 720px;
   margin: 0;
 }
