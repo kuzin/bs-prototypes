@@ -100,6 +100,22 @@
   flex-shrink: 0;
 }
 
+.rc-card-drill {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rc-accent, #475569);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0.85;
+  transition: opacity 0.12s;
+}
+
+.rc-card-drill:hover { opacity: 1; }
+
 .rc-card-body--flush  { padding: 8px 0; }
 .rc-card-body--padded { padding: 14px 16px; }
 

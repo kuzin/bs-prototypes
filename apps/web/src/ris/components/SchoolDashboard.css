@@ -11,85 +11,8 @@
   margin-top: 16px;
 }
 
-/* ── Individual area card ─────────────────────────────────────────────────── */
-.sdb-card {
-  background: #fff;
-  border: 1px solid #E5E7EB;
-  border-radius: 14px;
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* ── Card header ──────────────────────────────────────────────────────────── */
-.sdb-card-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px;
-  border-bottom: 1px solid #F1F5F9;
-}
-
-.sdb-card-icon {
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  background: var(--ac-bg);
-  color: var(--ac);
-  border: 1px solid color-mix(in srgb, var(--ac) 20%, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.sdb-card-icon svg {
-  width: 18px;
-  height: 18px;
-}
-
-.sdb-card-title {
-  flex: 1;
-  font-size: 13px;
-  font-weight: 600;
-  color: #1E293B;
-}
-
-.sdb-card-drill {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ac);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
-  white-space: nowrap;
-  opacity: 0.85;
-  transition: opacity 0.12s;
-}
-
-.sdb-card-drill:hover {
-  opacity: 1;
-}
-
-/* ── Chart area ───────────────────────────────────────────────────────────── */
-.sdb-card-chart {
-  height: 180px;
-  padding: 8px 0;
-  overflow: visible;
-}
-
-.sdb-card-chart svg {
-  overflow: hidden;
-}
-
-/* ── Legend ───────────────────────────────────────────────────────────────── */
-.sdb-card-legend {
-  display: flex;
-  padding: 10px 16px 12px;
-  border-top: 1px solid #F1F5F9;
-}
+/* SVGs inside chart cards must clip at their bounds (Nivo defaults to overflow: visible) */
+.rc-card svg { overflow: hidden; }
 
 .sdb-legend {
   display: flex;

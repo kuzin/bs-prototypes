@@ -90,20 +90,53 @@ export function GradeTooltip({ data, accent }) {
   )
 }
 
-// Generic bar tooltip — shows index value + each key with value + optional delta
-export function BarTooltip({ data, indexValue, accent, format = v => v, keys, labels = {} }) {
+// Rich bar tooltip — value per key, optional MoM delta vs `allData`/`indexBy`, optional context line.
+export function BarTooltip({
+  data, indexValue, accent,
+  format = v => v, formatDelta,
+  keys, labels = {},
+  allData, indexBy = 'month',
+  inverseKeys = [],
+  context,
+  deltaLabel = 'vs',
+}) {
+  const rowIdx = allData ? allData.findIndex(d => d[indexBy] === indexValue) : -1
+  const prev = rowIdx > 0 ? allData[rowIdx - 1] : null
   return (
     <div className="sdb-tooltip" style={{ '--tip-accent': accent }}>
       <div className="sdb-tooltip-header">{indexValue}</div>
-      {keys.map((key, i) => (
-        <div key={key} className="sdb-tooltip-series" style={{ '--series-color': labels[key]?.color || accent }}>
-          <div className="sdb-tooltip-row">
-            <span className="sdb-tooltip-dot" />
-            <span className="sdb-tooltip-label">{labels[key]?.label || key}</span>
-            <span className="sdb-tooltip-val">{format(data[key])}</span>
+      {keys.map(key => {
+        const val = data[key]
+        const prevVal = prev ? prev[key] : null
+        const isInverse = inverseKeys.includes(key)
+        let cls = 'neutral', arrow = null, delta = null
+        if (prevVal != null && val != null) {
+          delta = val - prevVal
+          if (delta === 0) { arrow = '→' }
+          else {
+            const good = isInverse ? delta < 0 : delta > 0
+            cls = good ? 'up' : 'down'
+            arrow = delta > 0 ? '▲' : '▼'
+          }
+        }
+        const seriesColor = labels[key]?.color || accent
+        return (
+          <div key={key} className="sdb-tooltip-series" style={{ '--series-color': seriesColor }}>
+            <div className="sdb-tooltip-row">
+              <span className="sdb-tooltip-dot" />
+              <span className="sdb-tooltip-label">{labels[key]?.label || key}</span>
+              <span className="sdb-tooltip-val">{format(val)}</span>
+            </div>
+            {delta != null && (
+              <div className={`sdb-tooltip-delta sdb-tooltip-delta--${cls}`}>
+                <span className="sdb-tooltip-arrow">{arrow}</span>
+                <span>{formatDelta ? formatDelta(delta) : (delta > 0 ? `+${delta}` : delta)} {deltaLabel} {prev[indexBy]}</span>
+              </div>
+            )}
           </div>
-        </div>
-      ))}
+        )
+      })}
+      {context && <div className="sdb-tooltip-context">{context(data)}</div>}
     </div>
   )
 }

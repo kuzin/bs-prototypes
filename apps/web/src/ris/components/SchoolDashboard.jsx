@@ -8,6 +8,11 @@ import { StudentsToWatch } from './StudentsToWatch'
 import { OverviewHero } from './OverviewHero'
 import { AlertsBanner } from './AlertsBanner'
 import { ReadingHealth, SECTIONS } from './ReadingHealth'
+import {
+  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
+  SliceTooltip, GradeTooltip, ChartLegend,
+} from './charts'
+import { ChartCard } from './Cards'
 import './SchoolDashboard.css'
 
 function schoolInitials(name) {
@@ -15,135 +20,29 @@ function schoolInitials(name) {
 }
 
 const AREA_CONFIG = {
-  motivation: { color: '#E8866A', bg: '#FFF8F5', title: 'Reading Motivation Index',          nav: 'motivation', navLabel: 'motivation' },
-  integrity:  { color: '#1D4ED8', bg: '#EFF6FF', title: 'Book Talk completion & flag rate',   nav: 'integrity',  navLabel: 'integrity'  },
-  habits:     { color: '#16A97A', bg: '#F0FDF6', title: 'Goal completion rate',               nav: 'habits',     navLabel: 'habits'     },
-  skills:     { color: '#7C3AED', bg: '#F5F3FF', title: 'Lexile growth by grade',             nav: 'skills',     navLabel: 'skills'     },
+  motivation: { color: '#E8866A', title: 'Reading Motivation Index',          nav: 'motivation', navLabel: 'motivation' },
+  integrity:  { color: '#1D4ED8', title: 'Book Talk completion & flag rate',   nav: 'integrity',  navLabel: 'integrity'  },
+  habits:     { color: '#16A97A', title: 'Goal completion rate',               nav: 'habits',     navLabel: 'habits'     },
+  skills:     { color: '#7C3AED', title: 'Lexile growth by grade',             nav: 'skills',     navLabel: 'skills'     },
 }
 
-const NIVO_THEME = {
-  axis: {
-    ticks: {
-      line: { stroke: 'transparent' },
-      text: { fontSize: 13, fill: '#94A3B8' },
-    },
-    domain: { line: { stroke: '#EDE8E3' } },
-  },
-  grid: {
-    line: { stroke: '#EDE8E3', strokeDasharray: '3 3' },
-  },
-}
-
-const LINE_MARGIN = { top: 16, right: 28, bottom: 36, left: 52 }
-const AXIS_BOTTOM = { tickSize: 0, tickPadding: 10 }
-const AXIS_LEFT   = { tickSize: 0, tickPadding: 8 }
-
-function deltaParts(curr, prev, { inverse = false } = {}) {
-  if (prev == null) return { delta: null, cls: 'neutral', arrow: null }
-  const delta = curr - prev
-  if (delta === 0) return { delta, cls: 'neutral', arrow: '→' }
-  const good = inverse ? delta < 0 : delta > 0
-  return { delta, cls: good ? 'up' : 'down', arrow: delta > 0 ? '▲' : '▼' }
-}
-
-function SliceTooltip({ slice, allData, seriesMap, accent, inverseSeries = [], formatY, formatDelta, context }) {
-  const month = slice.points[0]?.data.x
-  const monthIdx = allData ? allData.findIndex(d => d.month === month) : -1
-  const prev = monthIdx > 0 ? allData[monthIdx - 1] : null
-
-  return (
-    <div className="sdb-tooltip" style={{ '--tip-accent': accent }}>
-      <div className="sdb-tooltip-header">{month}</div>
-      {slice.points.map(pt => {
-        const field = seriesMap?.[pt.serieId]
-        const prevVal = field && prev ? prev[field] : null
-        const isInverse = inverseSeries.includes(pt.serieId)
-        const { delta, cls, arrow } = deltaParts(pt.data.y, prevVal, { inverse: isInverse })
-        return (
-          <div key={pt.id} className="sdb-tooltip-series" style={{ '--series-color': pt.serieColor }}>
-            <div className="sdb-tooltip-row">
-              <span className="sdb-tooltip-dot" />
-              <span className="sdb-tooltip-label">{pt.serieId}</span>
-              <span className="sdb-tooltip-val">{formatY ? formatY(pt.data.y) : pt.data.y}</span>
-            </div>
-            {delta != null && (
-              <div className={`sdb-tooltip-delta sdb-tooltip-delta--${cls}`}>
-                <span className="sdb-tooltip-arrow">{arrow}</span>
-                <span>{formatDelta ? formatDelta(delta) : (delta > 0 ? `+${delta}` : delta)} vs {prev.month}</span>
-              </div>
-            )}
-          </div>
-        )
-      })}
-      {context && <div className="sdb-tooltip-context">{context(slice)}</div>}
-    </div>
-  )
-}
-
-function GradeTooltip({ data, accent }) {
-  const delta = data.growth - data.expected
-  const isAbove = delta >= 0
-  const cls = delta === 0 ? 'neutral' : isAbove ? 'up' : 'down'
-  const arrow = delta === 0 ? '→' : isAbove ? '▲' : '▼'
-  return (
-    <div className="sdb-tooltip" style={{ '--tip-accent': accent }}>
-      <div className="sdb-tooltip-header">{data.grade} grade</div>
-      <div className="sdb-tooltip-series" style={{ '--series-color': accent }}>
-        <div className="sdb-tooltip-row">
-          <span className="sdb-tooltip-dot" />
-          <span className="sdb-tooltip-label">Actual growth</span>
-          <span className="sdb-tooltip-val">+{data.growth}L</span>
-        </div>
-      </div>
-      <div className="sdb-tooltip-series" style={{ '--series-color': '#CBD5E1' }}>
-        <div className="sdb-tooltip-row">
-          <span className="sdb-tooltip-dot" />
-          <span className="sdb-tooltip-label">Expected</span>
-          <span className="sdb-tooltip-val">+{data.expected}L</span>
-        </div>
-      </div>
-      <div className={`sdb-tooltip-delta sdb-tooltip-delta--${cls}`} style={{ marginLeft: 0, marginTop: 8, paddingTop: 8, borderTop: '1px solid #F1F5F9' }}>
-        <span className="sdb-tooltip-arrow">{arrow}</span>
-        <span>{isAbove ? '+' : ''}{delta}L {isAbove ? 'above' : 'below'} target</span>
-      </div>
-    </div>
-  )
-}
-
-function Legend({ items }) {
-  return (
-    <div className="sdb-legend">
-      {items.map(({ color, label, dashed }) => (
-        <span key={label} className="sdb-legend-item">
-          <span
-            className="sdb-legend-swatch"
-            style={dashed
-              ? { backgroundImage: `repeating-linear-gradient(to right, ${color} 0, ${color} 4px, transparent 4px, transparent 8px)` }
-              : { background: color }
-            }
-          />
-          {label}
-        </span>
-      ))}
-    </div>
-  )
-}
-
-function AreaCard({ area, onNavigate, legend, children }) {
+function DashCard({ area, onNavigate, footer, height = 180, children }) {
   const cfg = AREA_CONFIG[area]
   const sec = SECTIONS.find(s => s.key === area)
   return (
-    <div className="sdb-card" style={{ '--ac': cfg.color, '--ac-bg': cfg.bg }}>
-      <div className="sdb-card-head">
-        <div className="sdb-card-icon">{sec?.icon}</div>
-        <span className="sdb-card-title">{cfg.title}</span>
-        <button className="sdb-card-drill" onClick={() => onNavigate(cfg.nav)}>
+    <ChartCard
+      title={cfg.title}
+      icon={sec?.icon}
+      accent={cfg.color}
+      action={
+        <button className="rc-card-drill" onClick={() => onNavigate(cfg.nav)}>
           View {cfg.navLabel} →
         </button>
-      </div>
-      <div className="sdb-card-chart">{children}</div>
-      {legend && <div className="sdb-card-legend">{legend}</div>}
-    </div>
+      }
+      footer={footer}
+    >
+      <div style={{ height }}>{children}</div>
+    </ChartCard>
   )
 }
 
@@ -191,10 +90,10 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
 
       <div className="sdb-areas">
         {/* Motivation */}
-        <AreaCard
+        <DashCard
           area="motivation"
           onNavigate={onNavigate}
-          legend={<Legend items={[
+          footer={<ChartLegend items={[
             { color: school.color, label: shortName },
             { color: '#CBD5E1',    label: 'District avg', dashed: true },
           ]} />}
@@ -239,13 +138,13 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
               />
             )}
           />
-        </AreaCard>
+        </DashCard>
 
         {/* Integrity */}
-        <AreaCard
+        <DashCard
           area="integrity"
           onNavigate={onNavigate}
-          legend={<Legend items={[
+          footer={<ChartLegend items={[
             { color: '#1D4ED8', label: 'Book Talk completion' },
             { color: '#E8866A', label: 'Flag rate', dashed: true },
           ]} />}
@@ -276,13 +175,13 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
               />
             )}
           />
-        </AreaCard>
+        </DashCard>
 
         {/* Habits — goal completion rate */}
-        <AreaCard
+        <DashCard
           area="habits"
           onNavigate={onNavigate}
-          legend={<Legend items={[
+          footer={<ChartLegend items={[
             { color: '#16A97A', label: shortName },
             { color: '#CBD5E1', label: 'District avg', dashed: true },
           ]} />}
@@ -328,13 +227,13 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
               />
             )}
           />
-        </AreaCard>
+        </DashCard>
 
         {/* Skills — Lexile growth by grade */}
-        <AreaCard
+        <DashCard
           area="skills"
           onNavigate={onNavigate}
-          legend={<Legend items={[
+          footer={<ChartLegend items={[
             { color: school.color, label: 'Actual growth' },
             { color: '#E2E8F0',    label: `Expected (~${avgExpected}L)` },
           ]} />}
@@ -355,7 +254,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             enableLabel={false}
             tooltip={({ data }) => <GradeTooltip data={data} accent={school.color} />}
           />
-        </AreaCard>
+        </DashCard>
       </div>
     </div>
   )
