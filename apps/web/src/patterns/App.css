@@ -221,51 +221,51 @@
   background: #F8FAFC;
   border: 1px solid #E2E8F0;
   border-radius: 10px;
-  padding: 12px 16px;
+  padding: 14px 16px;
   display: flex;
   flex-wrap: wrap;
-  gap: 14px 20px;
+  gap: 12px 16px;
+  align-items: flex-end;
   font-size: 13px;
 }
 
-.pt-knob {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+/* Inside knobs, Field is laid out compactly */
+.pt-knobs .fld { gap: 4px; flex: 0 0 auto; }
+.pt-knobs .fld-label { font-size: 13px; color: #64748B; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; }
+.pt-knobs .fld-control { flex-direction: row; }
+.pt-knobs .inp,
+.pt-knobs .sel { min-width: 140px; }
+.pt-knobs .tgl { padding-top: 2px; }
 
-.pt-knob label {
-  color: #475569;
-  font-weight: 500;
-}
-
-.pt-knob input[type="text"] {
-  font: inherit;
-  padding: 4px 8px;
-  border: 1px solid #E2E8F0;
-  border-radius: 6px;
-  min-width: 160px;
-  font-size: 13px;
-  background: #fff;
-}
-
-.pt-knob input[type="color"] {
-  width: 32px;
-  height: 28px;
-  border: 1px solid #E2E8F0;
-  border-radius: 6px;
+.pt-color {
+  width: 36px;
+  height: 30px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
   cursor: pointer;
   padding: 1px;
   background: #fff;
 }
 
-.pt-knob select {
-  font: inherit;
-  padding: 4px 8px;
-  border: 1px solid #E2E8F0;
-  border-radius: 6px;
-  font-size: 13px;
-  background: #fff;
+/* ── Form layout (Field/full-form example) ───────────────────────────────── */
+.pt-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 560px;
+}
+
+.pt-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.pt-form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
 }
 
 /* ── Icons grid ──────────────────────────────────────────────────────────── */

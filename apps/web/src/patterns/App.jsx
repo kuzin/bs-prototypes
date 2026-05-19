@@ -19,6 +19,10 @@ import { Pill } from '../ris/components/Pill'
 import { ProgressBar } from '../ris/components/ProgressBar'
 import { BackBar } from '../BackBar'
 import { PageHero } from '../ris/components/PageHero'
+import { Toggle } from '../ris/components/Toggle'
+import {
+  Field, Input, Select, Textarea, Checkbox, RadioGroup, Radio,
+} from '../ris/components/Form'
 import { RMI_ICONS } from '../ris/components/RmiIcons'
 import { RMI_FACTORS } from '../ris/data'
 
@@ -32,6 +36,8 @@ import '../ris/components/BucketHero.css'
 import '../ris/components/PageHero.css'
 import '../MainRail.css'
 import '../BackBar.css'
+import '../ris/components/Toggle.css'
+import '../ris/components/Form.css'
 
 import './App.css'
 
@@ -44,6 +50,13 @@ const SECTIONS_LIST = [
   { group: 'Primitives', id: 'avatar',     name: 'Avatar' },
   { group: 'Primitives', id: 'pill',       name: 'Pill' },
   { group: 'Primitives', id: 'progress-bar', name: 'ProgressBar' },
+  { group: 'Forms',     id: 'toggle',       name: 'Toggle' },
+  { group: 'Forms',     id: 'input',        name: 'Input' },
+  { group: 'Forms',     id: 'select',       name: 'Select' },
+  { group: 'Forms',     id: 'textarea',     name: 'Textarea' },
+  { group: 'Forms',     id: 'checkbox',     name: 'Checkbox' },
+  { group: 'Forms',     id: 'radio',        name: 'RadioGroup' },
+  { group: 'Forms',     id: 'field-form',   name: 'Field / Form' },
   { group: 'Cards',     id: 'stat-card',    name: 'StatCard' },
   { group: 'Cards',     id: 'chart-card',   name: 'ChartCard' },
   { group: 'Cards',     id: 'card-note',    name: 'CardNote' },
@@ -301,6 +314,11 @@ function TableShowcase() {
   )
 }
 
+// ── Knobs panel wrapper ──────────────────────────────────────────────────
+function Knobs({ children }) {
+  return <div className="pt-knobs">{children}</div>
+}
+
 function ChartCardKnobs() {
   const [title, setTitle]       = useState('Reading Motivation Index')
   const [subtitle, setSubtitle] = useState('Sep 2024 – May 2025')
@@ -313,36 +331,22 @@ function ChartCardKnobs() {
   const icon = SECTIONS.find(s => s.key === 'motivation')?.icon
   return (
     <>
-      <div className="pt-knobs">
-        <div className="pt-knob">
-          <label htmlFor="t">title</label>
-          <input id="t" type="text" value={title} onChange={e => setTitle(e.target.value)} />
-        </div>
-        <div className="pt-knob">
-          <label htmlFor="s">subtitle</label>
-          <input id="s" type="text" value={subtitle} onChange={e => setSubtitle(e.target.value)} />
-        </div>
-        <div className="pt-knob">
-          <label htmlFor="a">accent</label>
-          <input id="a" type="color" value={accent} onChange={e => setAccent(e.target.value)} />
-        </div>
-        <div className="pt-knob">
-          <label htmlFor="b">bodyPad</label>
-          <select id="b" value={bodyPad} onChange={e => setBodyPad(e.target.value)}>
+      <Knobs>
+        <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="subtitle"><Input value={subtitle} onChange={e => setSubtitle(e.target.value)} /></Field>
+        <Field label="accent" className="pt-knob-color">
+          <input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} />
+        </Field>
+        <Field label="bodyPad">
+          <Select value={bodyPad} onChange={e => setBodyPad(e.target.value)}>
             <option value="flush">flush</option>
             <option value="padded">padded</option>
-          </select>
-        </div>
-        <div className="pt-knob">
-          <label><input type="checkbox" checked={showIcon} onChange={e => setShowIcon(e.target.checked)} /> icon</label>
-        </div>
-        <div className="pt-knob">
-          <label><input type="checkbox" checked={showAction} onChange={e => setShowAction(e.target.checked)} /> action</label>
-        </div>
-        <div className="pt-knob">
-          <label><input type="checkbox" checked={showFooter} onChange={e => setShowFooter(e.target.checked)} /> footer</label>
-        </div>
-      </div>
+          </Select>
+        </Field>
+        <Toggle checked={showIcon} onChange={setShowIcon}>icon</Toggle>
+        <Toggle checked={showAction} onChange={setShowAction}>action</Toggle>
+        <Toggle checked={showFooter} onChange={setShowFooter}>footer</Toggle>
+      </Knobs>
       <div className="pt-variant-frame pt-variant-frame--bare">
         <ChartCard
           title={title}
@@ -364,6 +368,330 @@ function ChartCardKnobs() {
         </ChartCard>
       </div>
     </>
+  )
+}
+
+function ButtonKnobs() {
+  const [label, setLabel]       = useState('Log for Class')
+  const [variant, setVariant]   = useState('primary')
+  const [size, setSize]         = useState('md')
+  const [accent, setAccent]     = useState('#7C3AED')
+  const [withIcon, setIcon]     = useState(false)
+  const [withCaret, setCaret]   = useState(false)
+  const [disabled, setDisabled] = useState(false)
+  const [loading, setLoading]   = useState(false)
+  return (
+    <>
+      <Knobs>
+        <Field label="label"><Input value={label} onChange={e => setLabel(e.target.value)} /></Field>
+        <Field label="variant">
+          <Select value={variant} onChange={e => setVariant(e.target.value)}>
+            <option>primary</option><option>secondary</option><option>ghost</option><option>danger</option><option>accent</option>
+          </Select>
+        </Field>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        {variant === 'accent' && (
+          <Field label="accent">
+            <input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} />
+          </Field>
+        )}
+        <Toggle checked={withIcon} onChange={setIcon}>left icon</Toggle>
+        <Toggle checked={withCaret} onChange={setCaret}>right caret</Toggle>
+        <Toggle checked={disabled} onChange={setDisabled}>disabled</Toggle>
+        <Toggle checked={loading} onChange={setLoading}>loading</Toggle>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Button
+          variant={variant}
+          size={size}
+          accent={accent}
+          disabled={disabled}
+          loading={loading}
+          icon={withIcon ? <PlusIcon /> : undefined}
+          iconRight={withCaret ? <CaretIcon /> : undefined}
+        >
+          {label}
+        </Button>
+      </div>
+    </>
+  )
+}
+
+function AvatarKnobs() {
+  const [initials, setInitials] = useState('MC')
+  const [color, setColor]       = useState('#E8866A')
+  const [size, setSize]         = useState('md')
+  const [shape, setShape]       = useState('circle')
+  return (
+    <>
+      <Knobs>
+        <Field label="initials"><Input value={initials} onChange={e => setInitials(e.target.value.slice(0, 2))} /></Field>
+        <Field label="color">
+          <input className="pt-color" type="color" value={color} onChange={e => setColor(e.target.value)} />
+        </Field>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>xs</option><option>sm</option><option>md</option><option>lg</option><option>xl</option>
+          </Select>
+        </Field>
+        <Field label="shape">
+          <RadioGroup name="av-shape" value={shape} onChange={setShape}>
+            <Radio value="circle">circle</Radio>
+            <Radio value="square">square</Radio>
+          </RadioGroup>
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Avatar initials={initials} color={color} size={size} shape={shape} />
+      </div>
+    </>
+  )
+}
+
+function PillKnobs() {
+  const [text, setText]       = useState('Skills')
+  const [variant, setVariant] = useState('soft')
+  const [size, setSize]       = useState('md')
+  const [color, setColor]     = useState('#7C3AED')
+  return (
+    <>
+      <Knobs>
+        <Field label="text"><Input value={text} onChange={e => setText(e.target.value)} /></Field>
+        <Field label="variant">
+          <Select value={variant} onChange={e => setVariant(e.target.value)}>
+            <option>soft</option><option>filled</option><option>outline</option>
+          </Select>
+        </Field>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option>
+          </Select>
+        </Field>
+        <Field label="color">
+          <input className="pt-color" type="color" value={color} onChange={e => setColor(e.target.value)} />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Pill color={color} variant={variant} size={size}>{text}</Pill>
+      </div>
+    </>
+  )
+}
+
+function ProgressBarKnobs() {
+  const [value, setValue]   = useState(62)
+  const [color, setColor]   = useState('#E8866A')
+  const [size, setSize]     = useState('md')
+  const [label, setLabel]   = useState('Engagement')
+  const [valueLabel, setVl] = useState('62%')
+  const [subLabel, setSub]  = useState('')
+  const [showLabel, setShowLabel] = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="value">
+          <Input type="range" min="0" max="100" value={value} onChange={e => setValue(Number(e.target.value))} />
+        </Field>
+        <Field label="color">
+          <input className="pt-color" type="color" value={color} onChange={e => setColor(e.target.value)} />
+        </Field>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Toggle checked={showLabel} onChange={setShowLabel}>label / value</Toggle>
+        {showLabel && <Field label="label"><Input value={label} onChange={e => setLabel(e.target.value)} /></Field>}
+        {showLabel && <Field label="subLabel"><Input value={subLabel} onChange={e => setSub(e.target.value)} placeholder="(optional)" /></Field>}
+        {showLabel && <Field label="valueLabel"><Input value={valueLabel} onChange={e => setVl(e.target.value)} /></Field>}
+      </Knobs>
+      <div className="pt-variant-frame">
+        <ProgressBar
+          value={value}
+          color={color}
+          size={size}
+          label={showLabel ? label : undefined}
+          subLabel={showLabel && subLabel ? subLabel : undefined}
+          valueLabel={showLabel ? valueLabel : undefined}
+        />
+      </div>
+    </>
+  )
+}
+
+// ── Form showcase pieces ─────────────────────────────────────────────────
+function ToggleShowcase() {
+  const [a, setA] = useState(true)
+  const [b, setB] = useState(false)
+  const [c, setC] = useState(true)
+  return (
+    <div className="pt-variants pt-variants--3">
+      <Variant label="default (md)">
+        <Toggle checked={a} onChange={setA}>Notifications</Toggle>
+      </Variant>
+      <Variant label="off">
+        <Toggle checked={b} onChange={setB}>Auto-publish</Toggle>
+      </Variant>
+      <Variant label="size='sm'">
+        <Toggle checked={c} onChange={setC} size="sm">Compact mode</Toggle>
+      </Variant>
+      <Variant label="disabled">
+        <Toggle checked disabled>Locked on</Toggle>
+      </Variant>
+      <Variant label="disabled off">
+        <Toggle checked={false} disabled>Locked off</Toggle>
+      </Variant>
+    </div>
+  )
+}
+
+function InputShowcase() {
+  const [value, setValue] = useState('Lincoln Elementary')
+  return (
+    <div className="pt-variants pt-variants--2">
+      <Variant label="default" bare>
+        <Field label="School name">
+          <Input value={value} onChange={e => setValue(e.target.value)} placeholder="Type here…" />
+        </Field>
+      </Variant>
+      <Variant label="with help text" bare>
+        <Field label="Email" help="We'll send weekly summaries here.">
+          <Input type="email" placeholder="you@school.org" />
+        </Field>
+      </Variant>
+      <Variant label="with error" bare>
+        <Field label="Slug" error="Slug is required.">
+          <Input placeholder="lincoln-elementary" />
+        </Field>
+      </Variant>
+      <Variant label="with left icon" bare>
+        <Field label="Search">
+          <Input
+            placeholder="Find a student…"
+            icon={<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="7.5" cy="7.5" r="4.5"/><path d="M10.8 10.8 14.5 14.5"/></svg>}
+          />
+        </Field>
+      </Variant>
+      <Variant label="disabled" bare>
+        <Field label="School ID" help="Auto-generated; cannot be edited.">
+          <Input value="sch_lincoln_2024" disabled />
+        </Field>
+      </Variant>
+      <Variant label="sizes (sm/md/lg)" bare>
+        <Field label="Small"><Input size="sm" placeholder="sm" /></Field>
+        <Field label="Medium"><Input size="md" placeholder="md" /></Field>
+        <Field label="Large"><Input size="lg" placeholder="lg" /></Field>
+      </Variant>
+    </div>
+  )
+}
+
+function SelectShowcase() {
+  const [grade, setGrade] = useState('5')
+  return (
+    <div className="pt-variants pt-variants--2">
+      <Variant label="default" bare>
+        <Field label="Grade level">
+          <Select value={grade} onChange={e => setGrade(e.target.value)}>
+            {['K', '1', '2', '3', '4', '5', '6', '7', '8'].map(g => <option key={g} value={g}>Grade {g}</option>)}
+          </Select>
+        </Field>
+      </Variant>
+      <Variant label="sizes" bare>
+        <Field label="Small"><Select size="sm"><option>sm</option></Select></Field>
+        <Field label="Medium"><Select size="md"><option>md</option></Select></Field>
+        <Field label="Large"><Select size="lg"><option>lg</option></Select></Field>
+      </Variant>
+    </div>
+  )
+}
+
+function TextareaShowcase() {
+  const [value, setValue] = useState('Lincoln Elementary saw a 6-week Lexile plateau despite strong engagement scores.')
+  return (
+    <div className="pt-variants" style={{ gridTemplateColumns: '1fr' }}>
+      <Variant label="default" bare>
+        <Field label="Notes" help="Visible to district leadership.">
+          <Textarea rows={4} value={value} onChange={e => setValue(e.target.value)} />
+        </Field>
+      </Variant>
+    </div>
+  )
+}
+
+function CheckboxShowcase() {
+  const [a, setA] = useState(false)
+  const [b, setB] = useState(true)
+  return (
+    <div className="pt-variants pt-variants--3">
+      <Variant label="unchecked"><Checkbox checked={a} onChange={setA}>Send weekly digest</Checkbox></Variant>
+      <Variant label="checked"><Checkbox checked={b} onChange={setB}>Include FRL data</Checkbox></Variant>
+      <Variant label="disabled"><Checkbox checked disabled>Locked option</Checkbox></Variant>
+    </div>
+  )
+}
+
+function RadioShowcase() {
+  const [a, setA] = useState('md')
+  return (
+    <div className="pt-variants pt-variants--2">
+      <Variant label="row">
+        <RadioGroup name="rs-row" value={a} onChange={setA}>
+          <Radio value="sm">Small</Radio>
+          <Radio value="md">Medium</Radio>
+          <Radio value="lg">Large</Radio>
+        </RadioGroup>
+      </Variant>
+      <Variant label="column">
+        <RadioGroup name="rs-col" layout="column" value={a} onChange={setA}>
+          <Radio value="sm">Small (compact density)</Radio>
+          <Radio value="md">Medium (default density)</Radio>
+          <Radio value="lg">Large (spacious density)</Radio>
+        </RadioGroup>
+      </Variant>
+    </div>
+  )
+}
+
+function FullFormShowcase() {
+  const [name, setName]   = useState('')
+  const [grade, setGrade] = useState('5')
+  const [bucket, setBucket] = useState('motivation')
+  const [notes, setNotes] = useState('')
+  const [optIn, setOptIn] = useState(true)
+  return (
+    <div className="pt-form" onSubmit={e => e.preventDefault()}>
+      <Field label="Student name" help="As it appears in your SIS.">
+        <Input value={name} onChange={e => setName(e.target.value)} placeholder="Marcus Chen" />
+      </Field>
+      <div className="pt-form-row">
+        <Field label="Grade level">
+          <Select value={grade} onChange={e => setGrade(e.target.value)}>
+            {['K','1','2','3','4','5','6','7','8','9','10','11','12'].map(g => <option key={g} value={g}>Grade {g}</option>)}
+          </Select>
+        </Field>
+        <Field label="Watch reason">
+          <RadioGroup name="watch-reason" value={bucket} onChange={setBucket}>
+            <Radio value="motivation">Motivation</Radio>
+            <Radio value="habits">Habits</Radio>
+            <Radio value="skills">Skills</Radio>
+            <Radio value="integrity">Integrity</Radio>
+          </RadioGroup>
+        </Field>
+      </div>
+      <Field label="Notes" help="Visible to district leadership.">
+        <Textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Why are we watching this student?" />
+      </Field>
+      <Toggle checked={optIn} onChange={setOptIn}>Notify teacher when this student is logged for the next reading session</Toggle>
+      <div className="pt-form-actions">
+        <Button variant="ghost">Cancel</Button>
+        <Button variant="primary">Add to watchlist</Button>
+      </div>
+    </div>
   )
 }
 
@@ -453,6 +781,7 @@ export function App() {
             title="Button"
             desc={<>Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>, <code>danger</code>, <code>accent</code>. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>. Optional <code>icon</code> / <code>iconRight</code>. Can render as a link via <code>as="a"</code>.</>}
           >
+            <ButtonKnobs />
             <ButtonShowcase />
           </Section>
 
@@ -493,6 +822,7 @@ export function App() {
             title="Avatar"
             desc={<>Initials in a colored circle or square. Props: <code>initials</code>, <code>color</code>, <code>size</code> (xs/sm/md/lg/xl), <code>shape</code> (circle/square — square uses the size's border-radius).</>}
           >
+            <AvatarKnobs />
             <div className="pt-variants pt-variants--3">
               <Variant label="circle sizes">
                 <Avatar initials="MC" color="#E8866A" size="xs" />
@@ -523,6 +853,7 @@ export function App() {
             title="Pill"
             desc={<>Colored badge / chip. Variants: <code>soft</code> (default, tinted bg + dark text), <code>filled</code> (solid + white text), <code>outline</code>. Sizes: <code>sm</code>, <code>md</code>. Optional left <code>icon</code>.</>}
           >
+            <PillKnobs />
             <div className="pt-variants pt-variants--3">
               <Variant label="variant='soft'">
                 <Pill color="#7C3AED">Skills</Pill>
@@ -547,6 +878,7 @@ export function App() {
             title="ProgressBar"
             desc={<>Track + fill with optional <code>label</code>, <code>subLabel</code>, and <code>valueLabel</code>. Used for cohorts, RMI factors, grade bands, engagement tiers. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>.</>}
           >
+            <ProgressBarKnobs />
             <div className="pt-variants pt-variants--2">
               <Variant label="bare track">
                 <ProgressBar value={62} color="#7C3AED" />
@@ -570,6 +902,62 @@ export function App() {
                 <ProgressBar value={62} color="#16A97A" size="lg" />
               </Variant>
             </div>
+          </Section>
+
+          <Section
+            id="toggle"
+            title="Toggle"
+            desc={<>iOS-style switch. Props: <code>checked</code>, <code>onChange</code>, <code>disabled</code>, <code>size</code> (sm/md), optional label as children.</>}
+          >
+            <ToggleShowcase />
+          </Section>
+
+          <Section
+            id="input"
+            title="Input"
+            desc={<>Text input. Sizes <code>sm</code> / <code>md</code> / <code>lg</code>. Optional <code>icon</code> + <code>iconRight</code>. Picks up id, error state, and ARIA from the parent <code>Field</code>.</>}
+          >
+            <InputShowcase />
+          </Section>
+
+          <Section
+            id="select"
+            title="Select"
+            desc={<>Wrapped native <code>{'<select>'}</code> with a consistent caret + focus ring. Same size scale as Input.</>}
+          >
+            <SelectShowcase />
+          </Section>
+
+          <Section
+            id="textarea"
+            title="Textarea"
+            desc={<>Multi-line text input. Resizes vertically by default.</>}
+          >
+            <TextareaShowcase />
+          </Section>
+
+          <Section
+            id="checkbox"
+            title="Checkbox"
+            desc={<>Boolean control with a colored check icon when on. Use for non-exclusive options.</>}
+          >
+            <CheckboxShowcase />
+          </Section>
+
+          <Section
+            id="radio"
+            title="RadioGroup"
+            desc={<>Mutually exclusive options. <code>RadioGroup</code> takes <code>name</code>, <code>value</code>, <code>onChange</code>, optional <code>layout</code> (row/column). Children are <code>Radio</code> with a <code>value</code>.</>}
+          >
+            <RadioShowcase />
+          </Section>
+
+          <Section
+            id="field-form"
+            title="Field / Full form example"
+            desc={<><code>Field</code> wraps any control with a label, optional <code>help</code> text, or an <code>error</code> message. Below is a real form composing every primitive together.</>}
+          >
+            <FullFormShowcase />
           </Section>
 
           <Section

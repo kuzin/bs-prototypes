@@ -1,0 +1,73 @@
+.tgl {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+  font-size: 13px;
+  color: #334155;
+}
+
+.tgl--disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.tgl-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+.tgl-track {
+  position: relative;
+  display: inline-block;
+  background: #CBD5E1;
+  border-radius: 999px;
+  transition: background 0.16s ease;
+  flex-shrink: 0;
+}
+
+.tgl-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+  transition: transform 0.16s ease;
+}
+
+/* Sizes */
+.tgl--md .tgl-track { width: 34px; height: 20px; }
+.tgl--md .tgl-thumb { width: 16px; height: 16px; }
+.tgl--md .tgl-input:checked + .tgl-track .tgl-thumb { transform: translateX(14px); }
+
+.tgl--sm .tgl-track { width: 26px; height: 16px; }
+.tgl--sm .tgl-thumb { width: 12px; height: 12px; }
+.tgl--sm .tgl-input:checked + .tgl-track .tgl-thumb { transform: translateX(10px); }
+
+/* Checked state */
+.tgl-input:checked + .tgl-track {
+  background: #1D4ED8;
+}
+
+.tgl:hover .tgl-track {
+  background: #94A3B8;
+}
+
+.tgl:hover .tgl-input:checked + .tgl-track {
+  background: #1E40AF;
+}
+
+.tgl-input:focus-visible + .tgl-track {
+  outline: 2px solid #1D4ED8;
+  outline-offset: 2px;
+}
+
+.tgl-label {
+  font-weight: 500;
+}
