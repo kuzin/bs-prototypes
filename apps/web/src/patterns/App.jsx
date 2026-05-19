@@ -761,7 +761,7 @@ export function App() {
       <div className="pt-shell">
         <aside className="pt-sidebar">
           <div className="pt-sidebar-title">Pattern Library</div>
-          <div className="pt-sidebar-sub">Shared components used across all RIS prototype pages</div>
+          <div className="pt-sidebar-sub">Shared components used across every prototype</div>
           {Object.entries(groups).map(([group, items]) => (
             <div key={group} className="pt-nav-group">
               <div className="pt-nav-group-label">{group}</div>
@@ -780,11 +780,6 @@ export function App() {
         </aside>
 
         <main className="pt-content">
-          <div className="pt-header">
-            <h1>Pattern Library</h1>
-            <p>Edit the source CSS / JSX and every prototype updates via HMR. Knobs let you preview prop combinations without touching code.</p>
-          </div>
-
           <Section
             id="button"
             title="Button"

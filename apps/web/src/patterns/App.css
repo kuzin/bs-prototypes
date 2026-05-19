@@ -68,28 +68,7 @@
 
 .pt-content {
   overflow-y: auto;
-  padding: 0 32px 64px;
-}
-
-/* ── Page header ──────────────────────────────────────────────────────────── */
-.pt-header {
-  background: #fff;
-  border-bottom: 1px solid #E5E7EB;
-  padding: 24px 40px 22px;
-  margin: 0 -32px 28px;
-}
-
-.pt-header h1 {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  margin-bottom: 6px;
-}
-
-.pt-header p {
-  font-size: 14px;
-  color: #64748B;
-  max-width: 720px;
+  padding: 24px 32px 64px;
 }
 
 /* ── Section card ─────────────────────────────────────────────────────────── */
@@ -232,10 +211,11 @@
   font-size: 13px;
 }
 
-/* Inside knobs, Field is laid out compactly with fixed-height label so
-   every control (input, select, color, toggle) lines up on the same baseline */
+/* Inside knobs, Field is laid out compactly with fixed-height label and
+   every control (input, select, color, toggle) is exactly 30px tall so
+   the bar reads as a single neat strip */
 .pt-knobs .fld {
-  gap: 3px;
+  gap: 4px;
   flex: 0 0 auto;
 }
 
@@ -249,25 +229,49 @@
   line-height: 14px;
 }
 
-.pt-knobs .fld-control { flex-direction: row; align-items: center; }
+.pt-knobs .fld-control {
+  flex-direction: row;
+  align-items: center;
+  height: 30px;
+}
 
+/* All knob controls share the same 30px height + identical border styles */
 .pt-knobs .inp,
-.pt-knobs .sel  { min-width: 130px; height: 30px; }
-.pt-knobs .inp--sm,
-.pt-knobs .sel-wrap--sm .sel { height: 28px; }
-.pt-knobs .pt-color { height: 30px; }
-.pt-knobs .tgl { height: 30px; }
-.pt-knobs .rdg { padding-top: 6px; }
+.pt-knobs .sel {
+  height: 30px;
+  padding: 0 10px;
+  min-width: 140px;
+  font-size: 13px;
+  line-height: 30px;
+}
 
+.pt-knobs .sel { padding-right: 28px; }
+
+.pt-knobs .pt-color  { height: 30px; }
+.pt-knobs .tgl       { height: 30px; display: inline-flex; align-items: center; }
+.pt-knobs .rdg       { height: 30px; align-items: center; }
+
+/* Color picker — kill native chrome, render as a flat color chip with rounded
+   inner swatch that matches the outer border-radius */
 .pt-color {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
   width: 36px;
   height: 30px;
   border: 1px solid #CBD5E1;
   border-radius: 8px;
   cursor: pointer;
-  padding: 1px;
-  background: #fff;
+  padding: 0;
+  background: transparent;
+  overflow: hidden;
 }
+
+.pt-color::-webkit-color-swatch-wrapper { padding: 0; border: none; }
+.pt-color::-webkit-color-swatch         { border: none; border-radius: 7px; }
+.pt-color::-moz-color-swatch            { border: none; border-radius: 7px; }
+
+.pt-color:hover { border-color: #94A3B8; }
 
 /* ── Form layout (Field/full-form example) ───────────────────────────────── */
 .pt-form {
