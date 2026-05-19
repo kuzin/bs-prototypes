@@ -38,17 +38,74 @@ const LINE_MARGIN = { top: 16, right: 28, bottom: 36, left: 52 }
 const AXIS_BOTTOM = { tickSize: 0, tickPadding: 10 }
 const AXIS_LEFT   = { tickSize: 0, tickPadding: 8 }
 
-function SliceTooltip({ slice, formatY }) {
+function deltaParts(curr, prev, { inverse = false } = {}) {
+  if (prev == null) return { delta: null, cls: 'neutral', arrow: null }
+  const delta = curr - prev
+  if (delta === 0) return { delta, cls: 'neutral', arrow: '→' }
+  const good = inverse ? delta < 0 : delta > 0
+  return { delta, cls: good ? 'up' : 'down', arrow: delta > 0 ? '▲' : '▼' }
+}
+
+function SliceTooltip({ slice, allData, seriesMap, accent, inverseSeries = [], formatY, formatDelta, context }) {
+  const month = slice.points[0]?.data.x
+  const monthIdx = allData ? allData.findIndex(d => d.month === month) : -1
+  const prev = monthIdx > 0 ? allData[monthIdx - 1] : null
+
   return (
-    <div className="sdb-tooltip">
-      <div className="sdb-tooltip-month">{slice.points[0]?.data.x}</div>
-      {slice.points.map(pt => (
-        <div key={pt.id} className="sdb-tooltip-row">
-          <span className="sdb-tooltip-dot" style={{ background: pt.serieColor }} />
-          <span className="sdb-tooltip-label">{pt.serieId}</span>
-          <span className="sdb-tooltip-val">{formatY ? formatY(pt.data.y) : pt.data.y}</span>
+    <div className="sdb-tooltip" style={{ '--tip-accent': accent }}>
+      <div className="sdb-tooltip-header">{month}</div>
+      {slice.points.map(pt => {
+        const field = seriesMap?.[pt.serieId]
+        const prevVal = field && prev ? prev[field] : null
+        const isInverse = inverseSeries.includes(pt.serieId)
+        const { delta, cls, arrow } = deltaParts(pt.data.y, prevVal, { inverse: isInverse })
+        return (
+          <div key={pt.id} className="sdb-tooltip-series" style={{ '--series-color': pt.serieColor }}>
+            <div className="sdb-tooltip-row">
+              <span className="sdb-tooltip-dot" />
+              <span className="sdb-tooltip-label">{pt.serieId}</span>
+              <span className="sdb-tooltip-val">{formatY ? formatY(pt.data.y) : pt.data.y}</span>
+            </div>
+            {delta != null && (
+              <div className={`sdb-tooltip-delta sdb-tooltip-delta--${cls}`}>
+                <span className="sdb-tooltip-arrow">{arrow}</span>
+                <span>{formatDelta ? formatDelta(delta) : (delta > 0 ? `+${delta}` : delta)} vs {prev.month}</span>
+              </div>
+            )}
+          </div>
+        )
+      })}
+      {context && <div className="sdb-tooltip-context">{context(slice)}</div>}
+    </div>
+  )
+}
+
+function GradeTooltip({ data, accent }) {
+  const delta = data.growth - data.expected
+  const isAbove = delta >= 0
+  const cls = delta === 0 ? 'neutral' : isAbove ? 'up' : 'down'
+  const arrow = delta === 0 ? '→' : isAbove ? '▲' : '▼'
+  return (
+    <div className="sdb-tooltip" style={{ '--tip-accent': accent }}>
+      <div className="sdb-tooltip-header">{data.grade} grade</div>
+      <div className="sdb-tooltip-series" style={{ '--series-color': accent }}>
+        <div className="sdb-tooltip-row">
+          <span className="sdb-tooltip-dot" />
+          <span className="sdb-tooltip-label">Actual growth</span>
+          <span className="sdb-tooltip-val">+{data.growth}L</span>
         </div>
-      ))}
+      </div>
+      <div className="sdb-tooltip-series" style={{ '--series-color': '#CBD5E1' }}>
+        <div className="sdb-tooltip-row">
+          <span className="sdb-tooltip-dot" />
+          <span className="sdb-tooltip-label">Expected</span>
+          <span className="sdb-tooltip-val">+{data.expected}L</span>
+        </div>
+      </div>
+      <div className={`sdb-tooltip-delta sdb-tooltip-delta--${cls}`} style={{ marginLeft: 0, marginTop: 8, paddingTop: 8, borderTop: '1px solid #F1F5F9' }}>
+        <span className="sdb-tooltip-arrow">{arrow}</span>
+        <span>{isAbove ? '+' : ''}{delta}L {isAbove ? 'above' : 'below'} target</span>
+      </div>
     </div>
   )
 }
@@ -163,7 +220,24 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             }]}
             fill={[{ match: { id: shortName }, id: 'motGrad' }]}
             enableSlices="x"
-            sliceTooltip={({ slice }) => <SliceTooltip slice={slice} />}
+            sliceTooltip={({ slice }) => (
+              <SliceTooltip
+                slice={slice}
+                accent={school.color}
+                allData={rmiData}
+                seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
+                formatDelta={d => `${d > 0 ? '+' : ''}${d} pts`}
+                context={s => {
+                  const my = s.points.find(p => p.serieId === shortName)?.data.y
+                  const dist = s.points.find(p => p.serieId === 'District avg')?.data.y
+                  if (my == null || dist == null) return null
+                  const gap = my - dist
+                  return gap === 0
+                    ? <>On pace with district</>
+                    : <><strong>{shortName}</strong> {gap > 0 ? '+' : ''}{gap} pts {gap > 0 ? 'above' : 'below'} district</>
+                }}
+              />
+            )}
           />
         </AreaCard>
 
@@ -190,7 +264,17 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             axisBottom={AXIS_BOTTOM}
             axisLeft={{ ...AXIS_LEFT, format: v => `${v}%`, tickValues: [0, 25, 50, 75, 100] }}
             enableSlices="x"
-            sliceTooltip={({ slice }) => <SliceTooltip slice={slice} formatY={v => `${v}%`} />}
+            sliceTooltip={({ slice }) => (
+              <SliceTooltip
+                slice={slice}
+                accent="#1D4ED8"
+                allData={integrityData}
+                seriesMap={{ 'Book Talk completion': 'completionRate', 'Flag rate': 'flagRate' }}
+                inverseSeries={['Flag rate']}
+                formatY={v => `${v}%`}
+                formatDelta={d => `${d > 0 ? '+' : ''}${d}pp`}
+              />
+            )}
           />
         </AreaCard>
 
@@ -224,7 +308,25 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             }]}
             fill={[{ match: { id: shortName }, id: 'habGrad' }]}
             enableSlices="x"
-            sliceTooltip={({ slice }) => <SliceTooltip slice={slice} formatY={v => `${v}%`} />}
+            sliceTooltip={({ slice }) => (
+              <SliceTooltip
+                slice={slice}
+                accent="#16A97A"
+                allData={goalsData}
+                seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
+                formatY={v => `${v}%`}
+                formatDelta={d => `${d > 0 ? '+' : ''}${d}pp`}
+                context={s => {
+                  const my = s.points.find(p => p.serieId === shortName)?.data.y
+                  const dist = s.points.find(p => p.serieId === 'District avg')?.data.y
+                  if (my == null || dist == null) return null
+                  const gap = my - dist
+                  return gap === 0
+                    ? <>On pace with district</>
+                    : <><strong>{shortName}</strong> {gap > 0 ? '+' : ''}{gap}pp {gap > 0 ? 'above' : 'below'} district</>
+                }}
+              />
+            )}
           />
         </AreaCard>
 
@@ -251,14 +353,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             axisLeft={{ tickSize: 0, tickPadding: 8 }}
             enableGridY={false}
             enableLabel={false}
-            tooltip={({ id, indexValue, value }) => (
-              <div className="sdb-tooltip">
-                <div className="sdb-tooltip-row">
-                  <span className="sdb-tooltip-label">{indexValue} — {id === 'growth' ? 'actual' : 'expected'}</span>
-                  <span className="sdb-tooltip-val">+{value}L</span>
-                </div>
-              </div>
-            )}
+            tooltip={({ data }) => <GradeTooltip data={data} accent={school.color} />}
           />
         </AreaCard>
       </div>
