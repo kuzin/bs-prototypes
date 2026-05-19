@@ -12,6 +12,7 @@ export default defineConfig({
         studentProfile: resolve(__dirname, 'student-profile/index.html'),
         ris: resolve(__dirname, 'ris/index.html'),
         risDistrict: resolve(__dirname, 'ris-district/index.html'),
+        patterns: resolve(__dirname, 'patterns/index.html'),
       },
     },
   },

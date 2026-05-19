@@ -20,4 +20,11 @@ export const PROTOTYPES = [
     accent: "#0DA7BC",
     description: "District-level analytics dashboard for curriculum directors and superintendents.",
   },
+  {
+    id: "patterns",
+    name: "Pattern Library",
+    href: "/bs-prototypes/patterns/",
+    accent: "#7C3AED",
+    description: "Shared components used across all RIS prototypes — StatCard, ChartCard, tooltips, icons.",
+  },
 ];
