@@ -1,24 +1,62 @@
-import {
-  AreaChart, Area, ComposedChart, Bar, Line,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
-} from 'recharts'
+import { ResponsiveLine } from '@nivo/line'
+import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, RMI_TRENDS, SCHOOL_HEALTH,
-  RMI_FACTORS, INTRINSIC_EXTRINSIC_TRENDS, MOTIVATION_BY_GRADE, MOTIVATION_SIGNALS,
+  RMI_FACTORS, INTRINSIC_EXTRINSIC_TRENDS, MOTIVATION_BY_GRADE,
 } from '../data'
 import { BucketHero } from './BucketHero'
+import {
+  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
+  SliceTooltip, ChartLegend, BarTooltip,
+} from './charts'
+import { RMI_ICONS } from './RmiIcons'
 import './RisLayout.css'
 import './Motivation.css'
+
+const INTRINSIC_COLOR = '#E8866A'
+const EXTRINSIC_COLOR = '#7CB5F5'
+
+function FactorRow({ f }) {
+  return (
+    <div className="mot-factor-row mot-factor-row--iconed">
+      <div className="mot-factor-icon" style={{ '--ic-color': f.color, '--ic-bg': `color-mix(in srgb, ${f.color} 10%, white)` }}>
+        {RMI_ICONS[f.iconKey]}
+      </div>
+      <div className="mot-factor-name-wrap">
+        <span className="mot-factor-name">{f.name}</span>
+        <span className="mot-factor-desc">{f.desc}</span>
+      </div>
+      <div className="mot-factor-bar-wrap">
+        <div className="mot-factor-bar" style={{ width: `${(f.score / f.max) * 100}%`, background: f.color }} />
+      </div>
+      <div className="mot-factor-right">
+        <span className="mot-factor-score">{f.score}</span>
+        {f.delta !== 0 && (
+          <span className={`mot-factor-delta${f.delta > 0 ? ' mot-factor-delta--pos' : ' mot-factor-delta--neg'}`}>
+            {f.delta > 0 ? '↑' : '↓'}{Math.abs(f.delta)}
+          </span>
+        )}
+      </div>
+    </div>
+  )
+}
 
 export function SchoolMotivation({ schoolId, onBack }) {
   const school      = SCHOOLS.find(s => s.id === schoolId)
   const health      = SCHOOL_HEALTH[schoolId]
+  const shortName   = school.name.split(' ')[0]
   const trend       = RMI_TRENDS.map(d => ({ month: d.month, school: d[schoolId], district: d.district }))
   const districtNow = RMI_TRENDS[RMI_TRENDS.length - 1].district
 
   const intrinsicFactors = RMI_FACTORS.filter(f => f.kind === 'intrinsic')
   const extrinsicFactors = RMI_FACTORS.filter(f => f.kind === 'extrinsic')
   const latestTrend      = INTRINSIC_EXTRINSIC_TRENDS[INTRINSIC_EXTRINSIC_TRENDS.length - 1]
+
+  // ── Nivo data shapes ────────────────────────────────────────────────────
+  const rmiNivo = [
+    { id: shortName,      color: school.color, data: trend.map(d => ({ x: d.month, y: d.school   })) },
+    { id: 'District avg', color: '#CBD5E1',    data: trend.map(d => ({ x: d.month, y: d.district })) },
+  ]
 
   return (
     <div className="mot-root">
@@ -33,14 +71,14 @@ export function SchoolMotivation({ schoolId, onBack }) {
           <div className="sv-stat-sub">↑{health.dM} pts since Sep 2024</div>
         </div>
         <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: '#E8866A' }}>
+          <div className="sv-stat-val" style={{ color: INTRINSIC_COLOR }}>
             {latestTrend.intrinsic}<span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}> /20</span>
           </div>
           <div className="sv-stat-lbl">Intrinsic subscore</div>
           <div className="sv-stat-sub">↑1.9 pts over school year</div>
         </div>
         <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: '#7CB5F5' }}>
+          <div className="sv-stat-val" style={{ color: EXTRINSIC_COLOR }}>
             {latestTrend.extrinsic}<span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}> /20</span>
           </div>
           <div className="sv-stat-lbl">Extrinsic subscore</div>
@@ -58,23 +96,53 @@ export function SchoolMotivation({ schoolId, onBack }) {
               <div className="sv-note">Sep 2024 – May 2025</div>
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={trend} margin={{ top: 8, right: 16, left: -20, bottom: 0 }}>
-              <defs>
-                <linearGradient id="schoolMotGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor={school.color} stopOpacity={0.22} />
-                  <stop offset="95%" stopColor={school.color} stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <YAxis domain={[55, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8 }} />
-              <Legend wrapperStyle={{ fontSize: 13 }} />
-              <Area type="monotone" dataKey="school" name={school.name.split(' ')[0]} stroke={school.color} fill="url(#schoolMotGrad)" strokeWidth={2.5} dot={false} />
-              <Area type="monotone" dataKey="district" name={`District avg (${districtNow})`} stroke="#94A3B8" fill="none" strokeWidth={1.5} dot={false} strokeDasharray="5 4" />
-            </AreaChart>
-          </ResponsiveContainer>
+          <div style={{ height: 220 }}>
+            <ResponsiveLine
+              data={rmiNivo}
+              theme={NIVO_THEME}
+              margin={LINE_MARGIN}
+              xScale={{ type: 'point' }}
+              yScale={{ type: 'linear', min: 55, max: 90 }}
+              curve="monotoneX"
+              colors={d => d.color}
+              lineWidth={2.5}
+              enablePoints={false}
+              enableArea
+              areaOpacity={0.08}
+              enableGridX={false}
+              axisBottom={AXIS_BOTTOM}
+              axisLeft={{ ...AXIS_LEFT, tickValues: [60, 70, 80, 90] }}
+              defs={[{
+                id: 'smotGrad', type: 'linearGradient',
+                colors: [{ offset: 0, color: school.color, opacity: 0.22 }, { offset: 100, color: school.color, opacity: 0 }],
+              }]}
+              fill={[{ match: { id: shortName }, id: 'smotGrad' }]}
+              enableSlices="x"
+              sliceTooltip={({ slice }) => (
+                <SliceTooltip
+                  slice={slice}
+                  accent={school.color}
+                  allData={trend}
+                  seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
+                  formatDelta={d => `${d > 0 ? '+' : ''}${d} pts`}
+                  context={s => {
+                    const my = s.points.find(p => p.serieId === shortName)?.data.y
+                    if (my == null) return null
+                    const gap = my - districtNow
+                    return gap === 0
+                      ? <>On pace with district</>
+                      : <><strong>{shortName}</strong> {gap > 0 ? '+' : ''}{gap} pts {gap > 0 ? 'above' : 'below'} district</>
+                  }}
+                />
+              )}
+            />
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <ChartLegend items={[
+              { color: school.color, label: shortName },
+              { color: '#CBD5E1',    label: `District avg (${districtNow})`, dashed: true },
+            ]} />
+          </div>
         </div>
 
         {/* Intrinsic vs Extrinsic trend */}
@@ -84,21 +152,46 @@ export function SchoolMotivation({ schoolId, onBack }) {
               <h3>Intrinsic vs. Extrinsic Motivation Trend</h3>
               <div className="sv-note">RMI subscores out of 20 · Sep 2024 – May 2025</div>
             </div>
-            <div className="mot-trend-legend">
-              <span className="mot-legend-dot" style={{ background: '#E8866A' }} /> Intrinsic
-              <span className="mot-legend-dot" style={{ background: '#CBD5E1', marginLeft: 10 }} /> Extrinsic
-            </div>
           </div>
-          <ResponsiveContainer width="100%" height={190}>
-            <ComposedChart data={INTRINSIC_EXTRINSIC_TRENDS} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
-              <YAxis domain={[9, 16]} tickCount={5} tick={{ fontSize: 13, fill: '#94A3B8' }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} formatter={(v, n) => [`${v.toFixed(1)} /20`, n]} />
-              <Bar dataKey="extrinsic" name="Extrinsic" fill="#E2E8F0" radius={[3, 3, 0, 0]} barSize={18} />
-              <Bar dataKey="intrinsic" name="Intrinsic" fill="#E8866A" radius={[3, 3, 0, 0]} barSize={18} />
-            </ComposedChart>
-          </ResponsiveContainer>
+          <div style={{ height: 190 }}>
+            <ResponsiveBar
+              data={INTRINSIC_EXTRINSIC_TRENDS}
+              keys={['intrinsic', 'extrinsic']}
+              indexBy="month"
+              groupMode="grouped"
+              theme={NIVO_THEME}
+              margin={{ top: 8, right: 16, bottom: 36, left: 36 }}
+              padding={0.3}
+              innerPadding={2}
+              colors={({ id }) => id === 'intrinsic' ? INTRINSIC_COLOR : '#CBD5E1'}
+              borderRadius={3}
+              axisBottom={AXIS_BOTTOM}
+              axisLeft={{ ...AXIS_LEFT, tickValues: [9, 11, 13, 15] }}
+              enableGridY
+              enableLabel={false}
+              minValue={9}
+              maxValue={16}
+              tooltip={({ indexValue, data }) => (
+                <BarTooltip
+                  data={data}
+                  indexValue={indexValue}
+                  accent={INTRINSIC_COLOR}
+                  format={v => `${v.toFixed(1)} /20`}
+                  keys={['intrinsic', 'extrinsic']}
+                  labels={{
+                    intrinsic: { label: 'Intrinsic', color: INTRINSIC_COLOR },
+                    extrinsic: { label: 'Extrinsic', color: '#CBD5E1' },
+                  }}
+                />
+              )}
+            />
+          </div>
+          <div style={{ marginTop: 8 }}>
+            <ChartLegend items={[
+              { color: INTRINSIC_COLOR, label: 'Intrinsic' },
+              { color: '#CBD5E1',       label: 'Extrinsic' },
+            ]} />
+          </div>
           <div className="mot-shift-note">
             Students' intrinsic reading subscore rose from <strong>12.1</strong> to <strong>14.2 /20</strong> over the school year — reflecting sustained growth in self-motivated, independent reading. The extrinsic score remains stable at <strong>11.8 /20</strong>, meaning intrinsic motivation is outpacing external drivers.
           </div>
@@ -115,48 +208,12 @@ export function SchoolMotivation({ schoolId, onBack }) {
           <div className="mot-factor-groups mot-factor-groups--wide">
             <div className="mot-factor-group">
               <div className="mot-factor-group-label mot-factor-group-label--int">Intrinsic</div>
-              {intrinsicFactors.map(f => (
-                <div key={f.name} className="mot-factor-row">
-                  <div className="mot-factor-name-wrap">
-                    <span className="mot-factor-name">{f.name}</span>
-                    <span className="mot-factor-desc">{f.desc}</span>
-                  </div>
-                  <div className="mot-factor-bar-wrap">
-                    <div className="mot-factor-bar" style={{ width: `${(f.score / f.max) * 100}%`, background: f.color }} />
-                  </div>
-                  <div className="mot-factor-right">
-                    <span className="mot-factor-score">{f.score}</span>
-                    {f.delta !== 0 && (
-                      <span className={`mot-factor-delta${f.delta > 0 ? ' mot-factor-delta--pos' : ' mot-factor-delta--neg'}`}>
-                        {f.delta > 0 ? '↑' : '↓'}{Math.abs(f.delta)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
+              {intrinsicFactors.map(f => <FactorRow key={f.name} f={f} />)}
             </div>
             <div className="mot-factor-divider" />
             <div className="mot-factor-group">
               <div className="mot-factor-group-label mot-factor-group-label--ext">Extrinsic</div>
-              {extrinsicFactors.map(f => (
-                <div key={f.name} className="mot-factor-row">
-                  <div className="mot-factor-name-wrap">
-                    <span className="mot-factor-name">{f.name}</span>
-                    <span className="mot-factor-desc">{f.desc}</span>
-                  </div>
-                  <div className="mot-factor-bar-wrap">
-                    <div className="mot-factor-bar" style={{ width: `${(f.score / f.max) * 100}%`, background: f.color }} />
-                  </div>
-                  <div className="mot-factor-right">
-                    <span className="mot-factor-score">{f.score}</span>
-                    {f.delta !== 0 && (
-                      <span className={`mot-factor-delta${f.delta > 0 ? ' mot-factor-delta--pos' : ' mot-factor-delta--neg'}`}>
-                        {f.delta > 0 ? '↑' : '↓'}{Math.abs(f.delta)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ))}
+              {extrinsicFactors.map(f => <FactorRow key={f.name} f={f} />)}
             </div>
           </div>
         </div>
@@ -175,11 +232,11 @@ export function SchoolMotivation({ schoolId, onBack }) {
                 <div className="mot-grade-band">{g.band}</div>
                 <div className="mot-grade-tracks">
                   <div className="mot-grade-track-row">
-                    <span className="mot-grade-track-label" style={{ color: '#E8866A' }}>Intrinsic</span>
+                    <span className="mot-grade-track-label" style={{ color: INTRINSIC_COLOR }}>Intrinsic</span>
                     <div className="mot-grade-track">
                       <div className="mot-grade-bar mot-grade-bar--int" style={{ width: `${(g.intrinsic / 20) * 100}%` }} />
                     </div>
-                    <span className="mot-grade-val" style={{ color: '#E8866A' }}>{g.intrinsic}</span>
+                    <span className="mot-grade-val" style={{ color: INTRINSIC_COLOR }}>{g.intrinsic}</span>
                   </div>
                   <div className="mot-grade-track-row">
                     <span className="mot-grade-track-label" style={{ color: '#94A3B8' }}>Extrinsic</span>
@@ -194,7 +251,7 @@ export function SchoolMotivation({ schoolId, onBack }) {
             ))}
           </div>
           <div className="mot-grade-legend">
-            <span className="mot-legend-dot" style={{ background: '#E8866A' }} /> Intrinsic
+            <span className="mot-legend-dot" style={{ background: INTRINSIC_COLOR }} /> Intrinsic
             <span className="mot-legend-dot" style={{ background: '#CBD5E1', marginLeft: 12 }} /> Extrinsic
             <span style={{ marginLeft: 8, color: '#94A3B8', fontSize: 13 }}>scores out of 20 · badge = top factor</span>
           </div>

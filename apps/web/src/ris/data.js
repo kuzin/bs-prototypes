@@ -334,17 +334,17 @@ export const DISTRICT_HEALTH = {
 // School-level values = avg across all students who completed the RMI this year.
 export const RMI_FACTORS = [
   // Intrinsic
-  { name: 'Enjoyment',         kind: 'intrinsic', score: 3.1, max: 4, delta:  0.2, color: '#E8866A', desc: 'Reading for personal pleasure and fun' },
-  { name: 'Curiosity',         kind: 'intrinsic', score: 2.9, max: 4, delta:  0.3, color: '#F0A060', desc: 'Reading to explore topics and answer questions' },
-  { name: 'Importance',        kind: 'intrinsic', score: 2.8, max: 4, delta:  0.2, color: '#F0C050', desc: 'Valuing reading as meaningful and worthwhile' },
-  { name: 'Confidence',        kind: 'intrinsic', score: 2.6, max: 4, delta:  0.1, color: '#16A97A', desc: 'Belief in oneself as a capable reader' },
-  { name: 'Challenge',         kind: 'intrinsic', score: 2.4, max: 4, delta:  0.1, color: '#0DA7BC', desc: 'Seeking complex or difficult texts' },
+  { name: 'Enjoyment',         iconKey: 'enjoyment',   kind: 'intrinsic', score: 3.1, max: 4, delta:  0.2, color: '#E8866A', desc: 'Reading for personal pleasure and fun' },
+  { name: 'Curiosity',         iconKey: 'curiosity',   kind: 'intrinsic', score: 2.9, max: 4, delta:  0.3, color: '#F0A060', desc: 'Reading to explore topics and answer questions' },
+  { name: 'Importance',        iconKey: 'importance',  kind: 'intrinsic', score: 2.8, max: 4, delta:  0.2, color: '#F0C050', desc: 'Valuing reading as meaningful and worthwhile' },
+  { name: 'Confidence',        iconKey: 'confidence',  kind: 'intrinsic', score: 2.6, max: 4, delta:  0.1, color: '#16A97A', desc: 'Belief in oneself as a capable reader' },
+  { name: 'Challenge',         iconKey: 'challenge',   kind: 'intrinsic', score: 2.4, max: 4, delta:  0.1, color: '#0DA7BC', desc: 'Seeking complex or difficult texts' },
   // Extrinsic
-  { name: 'Social Connection', kind: 'extrinsic', score: 2.5, max: 4, delta:  0.3, color: '#7CB5F5', desc: 'Reading to share and discuss with others' },
-  { name: 'Recognition',       kind: 'extrinsic', score: 2.3, max: 4, delta:  0.1, color: '#C084FC', desc: 'Reading to receive praise or acknowledgment' },
-  { name: 'Grades',            kind: 'extrinsic', score: 2.4, max: 4, delta:  0.0, color: '#94A3B8', desc: 'Reading for academic performance' },
-  { name: 'Competition',       kind: 'extrinsic', score: 2.0, max: 4, delta: -0.1, color: '#CBD5E1', desc: 'Reading to outperform or beat peers' },
-  { name: 'Compliance',        kind: 'extrinsic', score: 1.8, max: 4, delta: -0.2, color: '#E2E8F0', desc: 'Reading because required by teacher or parent' },
+  { name: 'Social Connection', iconKey: 'social',      kind: 'extrinsic', score: 2.5, max: 4, delta:  0.3, color: '#7CB5F5', desc: 'Reading to share and discuss with others' },
+  { name: 'Recognition',       iconKey: 'recognition', kind: 'extrinsic', score: 2.3, max: 4, delta:  0.1, color: '#C084FC', desc: 'Reading to receive praise or acknowledgment' },
+  { name: 'Grades',            iconKey: 'grades',      kind: 'extrinsic', score: 2.4, max: 4, delta:  0.0, color: '#94A3B8', desc: 'Reading for academic performance' },
+  { name: 'Competition',       iconKey: 'competition', kind: 'extrinsic', score: 2.0, max: 4, delta: -0.1, color: '#CBD5E1', desc: 'Reading to outperform or beat peers' },
+  { name: 'Compliance',        iconKey: 'compliance',  kind: 'extrinsic', score: 1.8, max: 4, delta: -0.2, color: '#E2E8F0', desc: 'Reading because required by teacher or parent' },
 ];
 
 // Intrinsic subscore = sum of 5 intrinsic factors (max 20)

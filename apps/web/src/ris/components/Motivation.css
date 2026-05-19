@@ -203,10 +203,29 @@
   gap: 10px;
 }
 
+.mot-factor-row--iconed {
+  grid-template-columns: 28px 130px 1fr 46px;
+  padding: 4px 0;
+}
+
+.mot-factor-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: color-mix(in srgb, var(--ic-color, #94A3B8) 55%, #334155);
+  background: var(--ic-bg, #F8FAFC);
+  border: 1px solid color-mix(in srgb, var(--ic-color, #94A3B8) 25%, #E2E8F0);
+  flex-shrink: 0;
+}
+
 .mot-factor-name-wrap {
   display: flex;
   flex-direction: column;
   gap: 1px;
+  min-width: 0;
 }
 
 .mot-factor-name {
