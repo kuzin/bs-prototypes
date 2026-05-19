@@ -36,7 +36,7 @@
 
 .bh-score-row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 10px;
 }
 
