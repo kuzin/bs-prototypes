@@ -3,6 +3,7 @@
   display: flex;
   height: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 /* ── Sidebar (matches student profile mock) ── */
@@ -16,9 +17,102 @@
   overflow: hidden;
 }
 
+/* Close button inside sidebar (hidden by default — only shown when sidebar is an overlay) */
+.rl-sidebar-close {
+  display: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.8);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.rl-sidebar-close:hover {
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+}
+
+/* Backdrop behind overlay sidebar (mobile drawer mode only) */
+.rl-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.4);
+  z-index: 19;
+  animation: rl-backdrop-in 0.18s ease;
+}
+
+@keyframes rl-backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Mobile top bar — hidden by default, shown only at narrow widths ── */
+.rl-topbar {
+  display: none;
+  height: 56px;
+  background: linear-gradient(160deg, #1E40AF 0%, #1D4ED8 60%, #2563EB 100%);
+  align-items: center;
+  gap: 12px;
+  padding: 0 14px;
+  flex-shrink: 0;
+}
+
+.rl-topbar-toggle {
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.16);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rl-topbar-toggle:hover { background: rgba(255,255,255,0.2); }
+
+.rl-topbar-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.rl-topbar-product {
+  font-size: 14px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rl-topbar-sub {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  margin-top: 1px;
+}
+
+/* Responsive tier rules are at the bottom of this file so they win
+   over the base sidebar/nav/picker rules defined further down. */
+
 .rl-sidebar-top {
   padding: 20px 20px 18px;
   border-bottom: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
 }
 
 .rl-sidebar-title {
@@ -529,4 +623,269 @@
   margin-top: 8px;
   font-size: 11px;
   color: #64748B;
+}
+
+.sv-card-note {
+  font-size: 11px;
+  color: #64748B;
+  margin-top: 12px;
+  line-height: 1.6;
+  padding: 10px 12px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
+/* ── District site links (sidebar) ── */
+.rl-sites {
+  padding: 12px 16px 16px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rl-sites-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 6px;
+}
+
+.rl-site-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px;
+  border-radius: 7px;
+  cursor: default;
+  opacity: 0.75;
+  transition: opacity 0.12s, background 0.12s;
+}
+.rl-site-item:hover {
+  background: rgba(255,255,255,0.08);
+  opacity: 1;
+}
+
+.rl-site-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rl-site-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.rl-site-name {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.rl-site-grades {
+  font-size: 10px;
+  color: rgba(255,255,255,0.4);
+}
+
+.rl-site-arrow {
+  color: rgba(255,255,255,0.3);
+  flex-shrink: 0;
+}
+
+.rl-sites-hint {
+  font-size: 10px;
+  color: rgba(255,255,255,0.28);
+  margin-top: 8px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+/* ── Integrity page — review list ── */
+.int-review-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.int-review-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  border: 1px solid #E2E8F0;
+}
+
+.int-review-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.int-review-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.int-review-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 4px;
+}
+
+.int-review-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.int-flag-chip {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #F1F5F9;
+  color: #64748B;
+}
+.int-flag-chip--high {
+  background: #FEF2F2;
+  color: #DC2626;
+}
+
+.int-trend-chip {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.int-trend-chip--up   { color: #16A97A; background: #F0FDF4; }
+.int-trend-chip--down { color: #DC2626; background: #FEF2F2; }
+
+.int-talks-chip {
+  font-size: 10px;
+  color: #94A3B8;
+}
+
+.int-review-btn {
+  font-size: 11px;
+  font-weight: 600;
+  color: #1D4ED8;
+  background: none;
+  border: 1px solid #BFDBFE;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+.int-review-btn:hover { background: #EFF6FF; }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Responsive tiers
+   • ≥ 1100px           full sidebar with labels
+   • 700px – 1099px     icons-only sidebar (in-flow, narrow column)
+   • < 700px            mobile: top bar + sidebar slides in as overlay
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Icons-only collapsed sidebar (medium widths) ── */
+@media (max-width: 1099px) and (min-width: 700px) {
+  .rl-sidebar {
+    width: 64px;
+    /* Allow the picker dropdown to escape to the right */
+    overflow: visible;
+  }
+
+  .rl-sidebar-top {
+    padding: 16px 0;
+    justify-content: center;
+  }
+  .rl-sidebar-title { display: none; }
+
+  .rl-nav { padding: 8px 6px; }
+  .rl-nav-item {
+    justify-content: center;
+    padding: 10px 6px;
+    gap: 0;
+    position: relative;
+  }
+  .rl-nav-label { display: none; }
+
+  /* Convert numeric badge into a small dot */
+  .rl-nav-badge {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    min-width: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    font-size: 0;
+    top: 4px;
+    right: 4px;
+    line-height: 0;
+  }
+
+  /* Subgroup connector removed in icon mode */
+  .rl-nav-subgroup {
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .rl-nav-subgroup::before { display: none; }
+
+  /* Picker collapses to avatar only */
+  .rl-picker { padding: 10px 0; }
+  .rl-picker-label { display: none; }
+  .rl-picker-btn {
+    justify-content: center;
+    padding: 6px;
+    background: transparent;
+  }
+  .rl-picker-btn:hover { background: rgba(0, 0, 0, 0.18); }
+  .rl-picker-info { display: none; }
+  .rl-picker-btn > svg { display: none; }
+
+  /* Dropdown anchors to the right of the collapsed avatar */
+  .rl-picker-dropdown {
+    left: calc(100% + 8px);
+    right: auto;
+    bottom: 8px;
+    min-width: 220px;
+  }
+}
+
+/* ── Mobile: top bar + drawer overlay ── */
+@media (max-width: 699px) {
+  .rl-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 48px; /* leave room for the prototype nav bar */
+    z-index: 20;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+    box-shadow: 4px 0 18px rgba(15, 23, 42, 0.25);
+  }
+
+  .rl-sidebar--open { transform: translateX(0); }
+
+  .rl-sidebar-backdrop { bottom: 48px; }
+  .ris-layout--nav-open .rl-sidebar-backdrop { display: block; }
+
+  .rl-sidebar-close { display: flex; }
+  .rl-topbar { display: flex; }
 }

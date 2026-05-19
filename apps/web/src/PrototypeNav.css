@@ -195,3 +195,35 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ── Responsive: shrink to fit on mobile ── */
+@media (max-width: 600px) {
+  .proto-nav {
+    padding: 0 10px;
+    gap: 8px;
+  }
+
+  /* Hide the "Prototypes" word — keep only the logo */
+  .proto-nav-back span { display: none; }
+
+  .proto-nav-switcher {
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-end;
+  }
+
+  /* Let the pill shrink to fit; ellipsis handles overflow */
+  .proto-nav-select {
+    min-width: 0;
+    flex: 1;
+    max-width: 100%;
+    padding: 0 8px 0 10px;
+    font-size: 12px;
+  }
+
+  /* Shrink arrow buttons slightly */
+  .proto-nav-arrow {
+    width: 24px;
+    height: 24px;
+  }
+}

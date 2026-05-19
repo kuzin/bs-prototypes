@@ -4,7 +4,10 @@ import {
   CartesianGrid, Tooltip, ResponsiveContainer, Legend, ZAxis,
 } from 'recharts'
 import './Dashboard.css'
-import { RMI_TRENDS, SESSION_TRENDS, BTWB_TRENDS, LEXILE_DATA, SCHOOLS, DISTRICT, DISTRICT_HEALTH } from '../data'
+import {
+  RMI_TRENDS, SESSION_TRENDS, BOOK_TALKS_TRENDS, LEXILE_DATA,
+  SCHOOLS, DISTRICT, DISTRICT_HEALTH, SCHOOLS_TO_WATCH,
+} from '../data'
 import { ReadingHealth } from './ReadingHealth'
 import { OverviewHero } from './OverviewHero'
 import { AlertsBanner } from './AlertsBanner'
@@ -21,7 +24,7 @@ function SectionCard({ title, children, onDrill }) {
   )
 }
 
-export function Dashboard({ onNavigate, onOpenStudent, alerts = [] }) {
+export function Dashboard({ onNavigate, alerts = [] }) {
   return (
     <div className="dashboard">
       <OverviewHero
@@ -99,17 +102,17 @@ export function Dashboard({ onNavigate, onOpenStudent, alerts = [] }) {
           </ResponsiveContainer>
         </SectionCard>
 
-        {/* BTWB Engagement */}
-        <SectionCard title="BTWB Engagement &amp; Integrity" onDrill={() => onNavigate('integrity')}>
+        {/* Book Talks */}
+        <SectionCard title="Book Talks Engagement" onDrill={() => onNavigate('integrity')}>
           <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={BTWB_TRENDS} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+            <LineChart data={BOOK_TALKS_TRENDS} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
               <XAxis dataKey="month" tick={{ fontSize: 11, fill: '#94A3B8' }} />
-              <YAxis domain={[60, 100]} tick={{ fontSize: 11, fill: '#94A3B8' }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 11, fill: '#94A3B8' }} unit="%" />
               <Tooltip formatter={v => `${v}%`} contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid #E2E8F0' }} />
               <Legend wrapperStyle={{ fontSize: 12 }} />
-              <Line type="monotone" dataKey="engagement" name="Engagement Rate" stroke="#E8866A" strokeWidth={2.5} dot={false} />
-              <Line type="monotone" dataKey="integrity" name="Integrity Score" stroke="#7CB5F5" strokeWidth={2.5} dot={false} strokeDasharray="5 4" />
+              <Line type="monotone" dataKey="completionRate" name="Completion Rate" stroke="#1D4ED8" strokeWidth={2.5} dot={false} />
+              <Line type="monotone" dataKey="flagRate"       name="Flag Rate"       stroke="#E8866A" strokeWidth={2}   dot={false} strokeDasharray="5 4" />
             </LineChart>
           </ResponsiveContainer>
         </SectionCard>
@@ -152,6 +155,54 @@ export function Dashboard({ onNavigate, onOpenStudent, alerts = [] }) {
             <span style={{ color: '#E8866A' }}>● Below expected growth</span>
           </div>
         </SectionCard>
+      </div>
+
+      {/* Schools to Watch */}
+      <div className="dash-stw">
+        <div className="dash-stw-header">
+          <h3 className="dash-stw-title">Schools to Watch</h3>
+          <span className="dash-stw-note">Sites with signals requiring attention this month</span>
+        </div>
+        <div className="dash-stw-cards">
+          {SCHOOLS_TO_WATCH.map(s => {
+            const school = SCHOOLS.find(sc => sc.id === s.id)
+            const bucketColors = { motivation: '#E8866A', integrity: '#1D4ED8', habits: '#16A97A', skills: '#7C3AED' }
+            return (
+              <div key={s.id} className={`dash-stw-card dash-stw-card--${s.concernType}`}>
+                <div className="dash-stw-head">
+                  <span className="dash-stw-dot" style={{ background: school?.color }} />
+                  <div className="dash-stw-ident">
+                    <span className="dash-stw-name">{s.name}</span>
+                    <span className="dash-stw-grades">{s.grades}</span>
+                  </div>
+                  <span className={`dash-stw-badge dash-stw-badge--${s.concernType}`}>
+                    {s.concernType === 'critical' ? 'Action needed' : 'Watch'}
+                  </span>
+                </div>
+                <div className="dash-stw-concern">{s.concern}</div>
+                <div className="dash-stw-metrics">
+                  {Object.entries(s.health).map(([k, v]) => (
+                    <div key={k} className="dash-stw-metric">
+                      <span className="dash-stw-metric-lbl" style={{ color: bucketColors[k] }}>
+                        {k[0].toUpperCase() + k.slice(1)}
+                      </span>
+                      <span
+                        className="dash-stw-metric-val"
+                        style={{ color: v < 65 ? '#E8866A' : v < 78 ? '#D97706' : '#16A97A' }}
+                      >
+                        {v}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+                <div className="dash-stw-footer">
+                  <span className="dash-stw-link-hint">Opens in Beanstack school dashboard</span>
+                  <button className="dash-stw-action" disabled>View school →</button>
+                </div>
+              </div>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

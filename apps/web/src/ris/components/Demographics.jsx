@@ -195,6 +195,45 @@ export function Demographics() {
           </div>
         </div>
 
+        {/* Recommended district actions — full width */}
+        <div className="sv-card sv-card--wide">
+          <div className="sv-card-header">
+            <div>
+              <h3>Recommended District Actions</h3>
+              <div className="sv-note">Data-driven priorities based on equity gaps and engagement signals</div>
+            </div>
+          </div>
+          <div className="dm-actions">
+            {[
+              {
+                school: 'Washington Middle', frl: 68, priority: 'critical',
+                action: "Engagement recovery plan — 39% decline in grades 7–8. Consider a targeted re-engagement challenge or a coach-led check-in with the site reading coordinator.",
+              },
+              {
+                school: 'Lincoln Elementary', frl: 61, priority: 'critical',
+                action: 'Curriculum review for 3rd–5th grade text complexity. Students show high engagement (94%) but zero Lexile growth — likely a material complexity mismatch, not a motivation issue.',
+              },
+              {
+                school: 'Roosevelt Middle', frl: 52, priority: 'warning',
+                action: 'Monitor Book Talks flag rate, which has risen 4pp this month. Educator review of flagged conversations recommended to determine if intervention is needed.',
+              },
+            ].map(item => (
+              <div key={item.school} className={`dm-action-row dm-action-row--${item.priority}`}>
+                <span className={`dm-action-priority dm-action-priority--${item.priority}`}>
+                  {item.priority === 'critical' ? 'High Priority' : 'Monitor'}
+                </span>
+                <div className="dm-action-body">
+                  <div className="dm-action-school">
+                    {item.school}
+                    <span className="dm-action-frl"> · {item.frl}% FRL</span>
+                  </div>
+                  <div className="dm-action-text">{item.action}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </div>
   )

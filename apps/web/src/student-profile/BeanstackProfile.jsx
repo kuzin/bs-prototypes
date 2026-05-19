@@ -97,8 +97,8 @@ function DropdownMenu({ items, onClose }) {
   );
 }
 
-// ─── Persistent student header ────────────────────────────────────────────────
-function StudentHeader({ student }) {
+// ─── Reusable student action buttons (3-dots + Log) ───────────────────────────
+function StudentActions() {
   const [dotsOpen, setDotsOpen] = useState(false);
   const [logOpen,  setLogOpen]  = useState(false);
 
@@ -115,6 +115,37 @@ function StudentHeader({ student }) {
   ];
 
   return (
+    <div className="bp-student-actions">
+      <div className="bp-dropdown-anchor">
+        <button
+          className="bp-btn-ghost"
+          aria-label="More options"
+          onClick={() => { setDotsOpen(o => !o); setLogOpen(false); }}
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="8" cy="3.5" r="1.5" fill="currentColor"/>
+            <circle cx="8" cy="8"   r="1.5" fill="currentColor"/>
+            <circle cx="8" cy="12.5" r="1.5" fill="currentColor"/>
+          </svg>
+        </button>
+        {dotsOpen && <DropdownMenu items={dotsItems} onClose={() => setDotsOpen(false)} />}
+      </div>
+      <div className="bp-dropdown-anchor">
+        <button
+          className="bp-btn-primary"
+          onClick={() => { setLogOpen(o => !o); setDotsOpen(false); }}
+        >
+          Log <Ic name="ti-chevron-down" size={13} />
+        </button>
+        {logOpen && <DropdownMenu items={logItems} onClose={() => setLogOpen(false)} />}
+      </div>
+    </div>
+  );
+}
+
+// ─── Persistent student header ────────────────────────────────────────────────
+function StudentHeader({ student }) {
+  return (
     <div className="bp-panel-header">
       <div className="bp-panel-identity">
         <div className="bp-panel-avatar">
@@ -125,31 +156,7 @@ function StudentHeader({ student }) {
           <div className="bp-panel-meta">{student.grade}</div>
         </div>
       </div>
-      <div className="bp-student-actions">
-        <div className="bp-dropdown-anchor">
-          <button
-            className="bp-btn-ghost"
-            aria-label="More options"
-            onClick={() => { setDotsOpen(o => !o); setLogOpen(false); }}
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-              <circle cx="8" cy="3.5" r="1.5" fill="currentColor"/>
-              <circle cx="8" cy="8"   r="1.5" fill="currentColor"/>
-              <circle cx="8" cy="12.5" r="1.5" fill="currentColor"/>
-            </svg>
-          </button>
-          {dotsOpen && <DropdownMenu items={dotsItems} onClose={() => setDotsOpen(false)} />}
-        </div>
-        <div className="bp-dropdown-anchor">
-          <button
-            className="bp-btn-primary"
-            onClick={() => { setLogOpen(o => !o); setDotsOpen(false); }}
-          >
-            Log <Ic name="ti-chevron-down" size={13} />
-          </button>
-          {logOpen && <DropdownMenu items={logItems} onClose={() => setLogOpen(false)} />}
-        </div>
-      </div>
+      <StudentActions />
     </div>
   );
 }
@@ -1973,6 +1980,20 @@ export default function BeanstackProfile() {
                 <line x1="10" y1="1" x2="1"  y2="10" stroke="#555" strokeWidth="1.8" strokeLinecap="round"/>
               </svg>
             </button>
+          </div>
+
+          {/* Mobile-only top bar — hidden on desktop via CSS */}
+          <div className="bp-profile-topbar">
+            <button className="bp-profile-topbar-close" onClick={closeProfile} aria-label="Close profile">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M4 4l8 8M12 4l-8 8"/>
+              </svg>
+            </button>
+            <div className="bp-profile-topbar-title">
+              <span className="bp-profile-topbar-name">{student.name}</span>
+              <span className="bp-profile-topbar-grade">{student.grade}</span>
+            </div>
+            <StudentActions />
           </div>
 
           <div className="bp-root">

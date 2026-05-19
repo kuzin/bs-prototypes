@@ -201,3 +201,106 @@
 
 .dm-compare-dot--t1 { background: #E8866A; }
 .dm-compare-dot--n1 { background: #0DA7BC; }
+
+/* ── Recommended actions ── */
+.dm-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.dm-action-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px solid #E2E8F0;
+  background: #FAFAFA;
+}
+
+
+.dm-action-priority {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.dm-action-priority--critical { background: #FEF2F2; color: #DC2626; }
+.dm-action-priority--warning  { background: #FFFBEB; color: #D97706; }
+
+.dm-action-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.dm-action-school {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+  margin-bottom: 3px;
+}
+
+.dm-action-frl {
+  font-size: 12px;
+  font-weight: 500;
+  color: #94A3B8;
+}
+
+.dm-action-text {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.6;
+}
+
+/* ── Student cohort breakdown (school view) ── */
+.dm-cohort-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.dm-cohort-row {
+  display: grid;
+  grid-template-columns: 200px 1fr 120px;
+  align-items: center;
+  gap: 12px;
+}
+
+.dm-cohort-info { display: flex; flex-direction: column; gap: 1px; }
+.dm-cohort-name { font-size: 12px; font-weight: 600; color: #1E293B; }
+.dm-cohort-desc { font-size: 10px; color: #94A3B8; }
+
+.dm-cohort-track {
+  background: #F1F5F9;
+  border-radius: 4px;
+  height: 14px;
+  overflow: hidden;
+}
+
+.dm-cohort-bar {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+.dm-cohort-vals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.dm-cohort-pct { font-size: 13px; font-weight: 800; color: #1E293B; letter-spacing: -0.01em; }
+.dm-cohort-count { font-size: 10px; color: #94A3B8; }
+
+/* School equity table uses fewer columns */
+.dm-equity-table--school .dm-equity-head,
+.dm-equity-table--school .dm-equity-row {
+  grid-template-columns: 90px 52px 1fr 100px 80px 64px;
+}

@@ -5,15 +5,17 @@ import {
 import { Dashboard } from './Dashboard'
 import { HabitsDetail } from './HabitsDetail'
 import { LexileDetail } from './LexileDetail'
-import { Analytics } from './Analytics'
 import { Demographics } from './Demographics'
 import { Motivation } from './Motivation'
 import { Integrity } from './Integrity'
+import { DistrictAnalytics } from './DistrictAnalytics'
 import { SchoolDashboard } from './SchoolDashboard'
 import { SchoolHabits } from './SchoolHabits'
 import { SchoolLexile } from './SchoolLexile'
 import { SchoolMotivation } from './SchoolMotivation'
 import { SchoolIntegrity } from './SchoolIntegrity'
+import { SchoolAnalytics } from './SchoolAnalytics'
+import { SchoolDemographics } from './SchoolDemographics'
 import { StudentPanel } from './StudentPanel'
 import { MainRail } from '../../MainRail'
 import { BackBar } from '../../BackBar'
@@ -90,6 +92,27 @@ function NavIcon({ name }) {
     )
     default: return null
   }
+}
+
+function DistrictSiteLinks() {
+  return (
+    <div className="rl-sites">
+      <div className="rl-sites-label">Schools in district</div>
+      {SCHOOLS.map(s => (
+        <div key={s.id} className="rl-site-item" title={`Would open ${s.name}'s dashboard in Beanstack`}>
+          <span className="rl-site-dot" style={{ background: s.color }} />
+          <div className="rl-site-info">
+            <span className="rl-site-name">{s.name}</span>
+            <span className="rl-site-grades">{s.grades}</span>
+          </div>
+          <svg viewBox="0 0 16 16" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" className="rl-site-arrow">
+            <path d="M3 8h10M9 4l4 4-4 4"/>
+          </svg>
+        </div>
+      ))}
+      <div className="rl-sites-hint">Opens each school's Beanstack dashboard</div>
+    </div>
+  )
 }
 
 function SchoolPicker({ schoolId, onSchoolId, onPage }) {
@@ -178,6 +201,7 @@ function SchoolHeader({ schoolId }) {
 export function RisLayout({ scope, schoolId, onSchoolId, page, onPage }) {
   const isSchool = scope === 'school'
   const [openStudent, setOpenStudent] = useState(null)
+  const [navOpen, setNavOpen] = useState(false)
 
   const districtAlerts = ALERTS
   const schoolDetails  = isSchool ? SCHOOL_DETAILS[schoolId] : null
@@ -190,8 +214,8 @@ export function RisLayout({ scope, schoolId, onSchoolId, page, onPage }) {
         case 'integrity':  return <SchoolIntegrity  schoolId={schoolId} />
         case 'habits':     return <SchoolHabits     schoolId={schoolId} />
         case 'skills':     return <SchoolLexile    schoolId={schoolId} />
-        case 'analytics':    return <Analytics />
-        case 'demographics': return <Demographics />
+        case 'analytics':    return <SchoolAnalytics schoolId={schoolId} />
+        case 'demographics': return <SchoolDemographics schoolId={schoolId} />
         default:           return <SchoolDashboard schoolId={schoolId} onNavigate={onPage} onOpenStudent={setOpenStudent} alerts={schoolAlerts} />
       }
     } else {
@@ -200,24 +224,36 @@ export function RisLayout({ scope, schoolId, onSchoolId, page, onPage }) {
         case 'integrity':  return <Integrity />
         case 'habits':     return <HabitsDetail />
         case 'skills':     return <LexileDetail />
-        case 'analytics':    return <Analytics />
+        case 'analytics':    return <DistrictAnalytics />
         case 'demographics': return <Demographics />
-        default:           return <Dashboard onNavigate={onPage} onOpenStudent={setOpenStudent} alerts={districtAlerts} />
+        default:           return <Dashboard onNavigate={onPage} alerts={districtAlerts} />
       }
     }
   }
 
   return (
-    <div className="ris-layout">
+    <div className={`ris-layout${navOpen ? ' ris-layout--nav-open' : ''}`}>
       <MainRail />
 
+      {navOpen && <div className="rl-sidebar-backdrop" onClick={() => setNavOpen(false)} />}
+
       {/* ── Sidebar ── */}
-      <aside className="rl-sidebar">
+      <aside className={`rl-sidebar${navOpen ? ' rl-sidebar--open' : ''}`}>
         <div className="rl-sidebar-top">
           <div className="rl-sidebar-title">
             <div className="rl-sidebar-product">Reading Information System</div>
             <div className="rl-sidebar-district">{isSchool ? 'School View' : 'District View'}</div>
           </div>
+          <button
+            type="button"
+            className="rl-sidebar-close"
+            onClick={() => setNavOpen(false)}
+            aria-label="Close navigation"
+          >
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M5 5l10 10M15 5L5 15"/>
+            </svg>
+          </button>
         </div>
 
         <nav className="rl-nav">
@@ -230,6 +266,7 @@ export function RisLayout({ scope, schoolId, onSchoolId, page, onPage }) {
                 key={item.id}
                 className={`rl-nav-item${page === item.id ? ' rl-nav-item--active' : ''}`}
                 onClick={() => onPage(item.id)}
+                title={item.label}
               >
                 <span className="rl-nav-icon"><NavIcon name={item.icon} /></span>
                 <span className="rl-nav-label">{item.label}</span>
@@ -242,6 +279,7 @@ export function RisLayout({ scope, schoolId, onSchoolId, page, onPage }) {
                 key={sub.id}
                 className={`rl-nav-item${page === sub.id ? ' rl-nav-item--active' : ''}`}
                 onClick={() => onPage(sub.id)}
+                title={sub.label}
               >
                 <span className="rl-nav-icon"><NavIcon name={sub.icon} /></span>
                 <span className="rl-nav-label">{sub.label}</span>
@@ -259,6 +297,24 @@ export function RisLayout({ scope, schoolId, onSchoolId, page, onPage }) {
 
       {/* ── Content ── */}
       <div className="rl-content">
+        {/* Mobile top bar — visible only at small screen widths */}
+        <div className="rl-topbar">
+          <button
+            type="button"
+            className="rl-topbar-toggle"
+            onClick={() => setNavOpen(true)}
+            aria-label="Open navigation"
+          >
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+              <path d="M3 6h14M3 10h14M3 14h14"/>
+            </svg>
+          </button>
+          <div className="rl-topbar-title">
+            <span className="rl-topbar-product">Reading Information System</span>
+            <span className="rl-topbar-sub">{isSchool ? 'School View' : 'District View'}</span>
+          </div>
+        </div>
+
         {page !== 'dashboard' && page !== 'analytics' && page !== 'demographics' && (
           <BackBar label="Back to Overview" onClick={() => onPage('dashboard')} />
         )}
@@ -267,7 +323,7 @@ export function RisLayout({ scope, schoolId, onSchoolId, page, onPage }) {
         </div>
       </div>
 
-      <StudentPanel studentId={openStudent} onClose={() => setOpenStudent(null)} />
+      {isSchool && <StudentPanel studentId={openStudent} onClose={() => setOpenStudent(null)} />}
     </div>
   )
 }

@@ -2995,3 +2995,195 @@
   font-weight: 800;
   color: #1A1A1A;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Responsive tiers — matches RIS layout pattern
+   • ≥ 1100px           full sidebar with labels
+   • 700px – 1099px     icons-only People sidebar (narrow column)
+   • < 700px            mobile: hide People sidebar; profile panel = full width
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* ── Icons-only collapsed People sidebar (medium widths) ── */
+@media (max-width: 1099px) and (min-width: 700px) {
+  .bp-adm-people { width: 64px; }
+
+  .bp-adm-people-top {
+    padding: 16px 0;
+    text-align: center;
+  }
+  .bp-adm-people-title,
+  .bp-adm-people-sub,
+  .bp-adm-people-collapse { display: none; }
+
+  .bp-adm-nav { padding: 8px 6px; }
+
+  .bp-adm-nav-item {
+    justify-content: center;
+    padding: 10px 6px;
+    gap: 0;
+  }
+  .bp-adm-nav-item > span { display: none; }
+
+  .bp-adm-nav-subgroup {
+    margin-left: 0;
+    padding-left: 0;
+  }
+  .bp-adm-nav-subgroup::before { display: none; }
+
+  .bp-adm-nav-child {
+    justify-content: center;
+    padding: 8px 6px;
+    gap: 0;
+    font-size: 0;
+  }
+  .bp-adm-nav-child > svg { font-size: 15px; }
+
+  /* Side-panel student profile becomes narrower so it doesn't overflow */
+  .bp-root { width: min(640px, calc(100vw - 116px)); }
+}
+
+/* Mobile top bar for the profile panel (hidden on desktop) */
+.bp-profile-topbar {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  height: 56px;
+  padding: 0 12px;
+  background: #fff;
+  border-bottom: 1px solid #E5E7EB;
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bp-profile-topbar-title {
+  flex: 1;
+}
+
+.bp-profile-topbar .bp-student-actions {
+  flex-shrink: 0;
+  gap: 6px;
+}
+
+.bp-profile-topbar .bp-btn-ghost,
+.bp-profile-topbar .bp-btn-primary {
+  /* Compact mobile-sized buttons */
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.bp-profile-topbar-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #F1F5F9;
+  border: 1px solid #E2E8F0;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.bp-profile-topbar-close:hover {
+  background: #E2E8F0;
+  color: #1E293B;
+}
+
+.bp-profile-topbar-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+
+.bp-profile-topbar-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1E293B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bp-profile-topbar-grade {
+  font-size: 11px;
+  color: #94A3B8;
+  font-weight: 600;
+  margin-top: 1px;
+}
+
+/* ── Mobile: hide People sidebar; profile becomes full-width overlay ── */
+@media (max-width: 699px) {
+  .bp-adm-people { display: none; }
+
+  .bp-adm-main-body { padding: 14px 14px; }
+
+  /* Slide-in profile occupies the full screen on mobile, stacked column */
+  .bp-profile-wrap {
+    left: 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .bp-root { width: 100%; box-shadow: none; flex: 1; min-height: 0; }
+
+  /* Hide the left-side floating close column */
+  .bp-profile-ctrls { display: none; }
+
+  /* Hide the redundant in-panel header (topbar replaces it on mobile) */
+  .bp-panel-header { display: none; }
+
+  /* Show the in-flow top bar with close + student name + actions */
+  .bp-profile-topbar { display: flex; }
+
+  /* ── Admin mockup page: tighten layout for narrow widths ── */
+
+  /* Class header: stack identity + buttons vertically */
+  .bp-adm-class-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .bp-adm-class-identity { gap: 10px; }
+  .bp-adm-class-avatar { width: 40px; height: 40px; font-size: 13px; }
+  .bp-adm-class-title { font-size: 18px; }
+  .bp-adm-class-meta { font-size: 11.5px; }
+  .bp-adm-class-btns { width: 100%; }
+  .bp-adm-class-btns .bp-adm-btn-ghost,
+  .bp-adm-class-btns .bp-adm-btn-primary {
+    flex: 1;
+    padding: 0 10px;
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  /* Tabs: scrollable row if they overflow */
+  .bp-adm-tabs {
+    gap: 16px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .bp-adm-tabs::-webkit-scrollbar { display: none; }
+  .bp-adm-tab {
+    font-size: 13px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Filters: stack into a 2-column grid with the save button full-width */
+  .bp-adm-filters {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    padding: 12px;
+  }
+  .bp-adm-save-btn { grid-column: 1 / -1; width: 100%; }
+
+  /* Card / table: allow horizontal scroll so the daily columns aren't squished */
+  .bp-adm-card { overflow-x: auto; }
+  .bp-adm-table { min-width: 640px; }
+
+  /* Week navigation: keep label on one line, tighten padding */
+  .bp-adm-week-nav { padding: 10px 12px; gap: 8px; }
+  .bp-adm-week-label { font-size: 13px; white-space: nowrap; }
+}

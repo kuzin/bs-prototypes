@@ -116,3 +116,152 @@
   color: #94A3B8;
   margin-top: 2px;
 }
+
+/* ── Schools to Watch ── */
+.dash-stw {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dash-stw-header {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.dash-stw-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1E293B;
+  letter-spacing: -0.02em;
+}
+
+.dash-stw-note {
+  font-size: 12px;
+  color: #94A3B8;
+}
+
+.dash-stw-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.dash-stw-card {
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dash-stw-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dash-stw-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.dash-stw-ident {
+  flex: 1;
+  min-width: 0;
+}
+
+.dash-stw-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dash-stw-grades {
+  font-size: 11px;
+  color: #94A3B8;
+}
+
+.dash-stw-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.dash-stw-badge--critical { background: #FEF2F2; color: #DC2626; }
+.dash-stw-badge--warning  { background: #FFFBEB; color: #D97706; }
+
+.dash-stw-concern {
+  font-size: 12px;
+  color: #475569;
+  line-height: 1.5;
+}
+
+.dash-stw-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  background: #F8FAFC;
+  border-radius: 8px;
+  padding: 10px 8px;
+}
+
+.dash-stw-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.dash-stw-metric-lbl {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.dash-stw-metric-val {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.dash-stw-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 6px;
+  border-top: 1px solid #F1F5F9;
+}
+
+.dash-stw-link-hint {
+  font-size: 10px;
+  color: #CBD5E1;
+  font-style: italic;
+}
+
+.dash-stw-action {
+  background: none;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #94A3B8;
+  cursor: not-allowed;
+  opacity: 0.65;
+}

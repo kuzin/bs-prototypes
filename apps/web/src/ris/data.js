@@ -58,12 +58,56 @@ export const VELOCITY_TRENDS = MONTHS.map((month, i) => ({
   high:       [1.8, 1.9, 2.1, 1.8, 2.2, 2.4, 2.5, 2.6, 2.7][i],
 }));
 
-// ── BTWB Engagement & Integrity ───────────────────────────────────────────
-export const BTWB_TRENDS = MONTHS.map((month, i) => ({
+// ── Book Talks with Benny — engagement & integrity ────────────────────────
+// completionRate: % of triggered Book Talks students complete
+// flagRate: % of completed talks flagged for concerning patterns (declining = good)
+export const BOOK_TALKS_TRENDS = MONTHS.map((month, i) => ({
   month,
-  engagement: [71, 72, 74, 73, 75, 77, 76, 78, 79][i],
-  integrity:  [84, 85, 85, 84, 86, 87, 86, 88, 89][i],
+  completionRate: [71, 72, 74, 73, 75, 77, 76, 78, 79][i],
+  flagRate:       [16, 15, 15, 16, 14, 13, 14, 12, 11][i],
 }));
+
+// Per-school Book Talks stats (May 2025)
+// trend: pp change in completionRate vs prior month (+ve = more students completing = good)
+export const BOOK_TALKS_BY_SCHOOL = [
+  { id: 'jefferson',  name: 'Jefferson El.',   completionRate: 82, flagRate:  8, totalTalks: 148, trend: +4 },
+  { id: 'lincoln',    name: 'Lincoln El.',     completionRate: 71, flagRate: 18, totalTalks: 117, trend: -3 },
+  { id: 'kennedy',    name: 'Kennedy K-8',     completionRate: 77, flagRate: 11, totalTalks: 180, trend: +2 },
+  { id: 'roosevelt',  name: 'Roosevelt Mid.',  completionRate: 75, flagRate: 14, totalTalks: 157, trend: +1 },
+  { id: 'washington', name: 'Washington Mid.', completionRate: 62, flagRate: 22, totalTalks: 123, trend: -6 },
+  { id: 'adams',      name: 'Adams High',      completionRate: 88, flagRate:  6, totalTalks: 221, trend: +5 },
+];
+
+// District-level "schools to watch" for the district dashboard
+export const SCHOOLS_TO_WATCH = [
+  {
+    id: 'washington', name: 'Washington Middle', grades: '6–8',
+    concern: 'Engagement down 39% vs. last month — grades 7–8 flagged',
+    concernType: 'critical', bucket: 'habits',
+    health: { motivation: 62, integrity: 78, habits: 48, skills: 50 },
+  },
+  {
+    id: 'lincoln', name: 'Lincoln Elementary', grades: 'K–5',
+    concern: '6-week Lexile plateau despite 94% engagement rate',
+    concernType: 'critical', bucket: 'skills',
+    health: { motivation: 71, integrity: 86, habits: 58, skills: 42 },
+  },
+  {
+    id: 'roosevelt', name: 'Roosevelt Middle', grades: '6–8',
+    concern: 'Book Talks flag rate rising — up 4pp this month',
+    concernType: 'warning', bucket: 'integrity',
+    health: { motivation: 74, integrity: 84, habits: 72, skills: 82 },
+  },
+];
+
+// District-wide engagement funnel (all 12,400 enrolled students)
+export const DISTRICT_FUNNEL = [
+  { stage: 'Enrolled Students', count: 12400, pct: 100, delta: null, note: 'Active roster in Beanstack' },
+  { stage: 'Logged This Month', count:  9672, pct:  78, delta:   +4, note: 'At least 1 log in May 2025' },
+  { stage: 'Weekly Habit',      count:  6820, pct:  55, delta:   +6, note: '1+ log every week for 4+ weeks' },
+  { stage: 'Daily Habit',       count:  3100, pct:  25, delta:   +3, note: '5+ days logged per week' },
+  { stage: '30-Day Streak',     count:  1860, pct:  15, delta:   +2, note: 'Unbroken streak ≥ 30 days' },
+];
 
 // ── Lexile growth per school ───────────────────────────────────────────────
 export const LEXILE_DATA = [
