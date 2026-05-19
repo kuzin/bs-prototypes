@@ -9,6 +9,11 @@ import { OverviewHero } from '../ris/components/OverviewHero'
 import { BucketHero } from '../ris/components/BucketHero'
 import { MainRail } from '../MainRail'
 import { PrototypeNav } from '../PrototypeNav'
+import { Button } from '../ris/components/Button'
+import { Tabs } from '../ris/components/Tabs'
+import { Flyout } from '../ris/components/Flyout'
+import { Modal } from '../ris/components/Modal'
+import { Table } from '../ris/components/Table'
 import { RMI_ICONS } from '../ris/components/RmiIcons'
 import { RMI_FACTORS } from '../ris/data'
 
@@ -24,6 +29,11 @@ import '../MainRail.css'
 import './App.css'
 
 const SECTIONS_LIST = [
+  { group: 'Primitives', id: 'button',     name: 'Button' },
+  { group: 'Primitives', id: 'tabs',       name: 'Tabs' },
+  { group: 'Primitives', id: 'flyout',     name: 'Flyout' },
+  { group: 'Primitives', id: 'modal',      name: 'Modal' },
+  { group: 'Primitives', id: 'table',      name: 'Table' },
   { group: 'Cards',     id: 'stat-card',    name: 'StatCard' },
   { group: 'Cards',     id: 'chart-card',   name: 'ChartCard' },
   { group: 'Cards',     id: 'card-note',    name: 'CardNote' },
@@ -65,6 +75,219 @@ const SAMPLE_ALERTS = [
   { id: '2', level: 'warning', school: 'Washington Middle',   title: 'Student engagement down 39% vs. last month', action: 'View habits', tab: 'habits' },
   { id: '3', level: 'positive', school: 'Adams High',          title: '+65% increase in avg session length', action: 'View details', tab: 'habits' },
 ]
+
+// Sample icons for Button + Tabs showcases
+const PlusIcon = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <line x1="8" y1="3" x2="8" y2="13" /><line x1="3" y1="8" x2="13" y2="8" />
+  </svg>
+)
+const CaretIcon = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="4,6 8,10 12,6" />
+  </svg>
+)
+
+function ButtonShowcase() {
+  return (
+    <>
+      <div className="pt-variants pt-variants--4">
+        <Variant label="primary" bare><Button variant="primary">Log for Class</Button></Variant>
+        <Variant label="secondary" bare><Button variant="secondary">Set Classroom Goal</Button></Variant>
+        <Variant label="ghost" bare><Button variant="ghost">Cancel</Button></Variant>
+        <Variant label="danger" bare><Button variant="danger">Delete</Button></Variant>
+      </div>
+      <div className="pt-variants pt-variants--4" style={{ marginTop: 16 }}>
+        <Variant label="accent (custom color)" bare>
+          <Button variant="accent" accent="#7C3AED">Open Skills</Button>
+        </Variant>
+        <Variant label="with icon" bare>
+          <Button variant="primary" icon={<PlusIcon />}>Add Student</Button>
+        </Variant>
+        <Variant label="with right caret" bare>
+          <Button variant="secondary" iconRight={<CaretIcon />}>Filter</Button>
+        </Variant>
+        <Variant label="as link (a)" bare>
+          <Button as="a" href="#" variant="ghost">Link button</Button>
+        </Variant>
+      </div>
+      <div className="pt-variants pt-variants--4" style={{ marginTop: 16 }}>
+        <Variant label="size='sm'" bare><Button variant="primary" size="sm">Small</Button></Variant>
+        <Variant label="size='md'" bare><Button variant="primary" size="md">Medium</Button></Variant>
+        <Variant label="size='lg'" bare><Button variant="primary" size="lg">Large</Button></Variant>
+        <Variant label="disabled / loading" bare>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <Button disabled>Disabled</Button>
+            <Button loading>Loading</Button>
+          </div>
+        </Variant>
+      </div>
+    </>
+  )
+}
+
+function TabsShowcase() {
+  const [a, setA] = useState('daily')
+  const [b, setB] = useState('overview')
+  return (
+    <>
+      <Variant label="underline (default)">
+        <Tabs
+          active={a}
+          onChange={setA}
+          items={[
+            { id: 'daily',   label: 'Daily Reading' },
+            { id: 'roster',  label: 'Students', count: 24 },
+            { id: 'rewards', label: 'Earned Rewards' },
+          ]}
+        />
+      </Variant>
+      <Variant label="pill variant">
+        <Tabs
+          variant="pill"
+          active={b}
+          onChange={setB}
+          items={[
+            { id: 'overview', label: 'Overview' },
+            { id: 'detail',   label: 'Detail' },
+            { id: 'history',  label: 'History' },
+          ]}
+        />
+      </Variant>
+    </>
+  )
+}
+
+function FlyoutShowcase() {
+  return (
+    <div className="pt-variants pt-variants--2">
+      <Variant label="simple menu">
+        <Flyout
+          trigger={({ open, toggle }) => (
+            <Button variant="secondary" iconRight={<CaretIcon />} onClick={toggle} aria-expanded={open}>
+              Actions
+            </Button>
+          )}
+        >
+          {({ close }) => (
+            <div className="flyout-menu">
+              <button className="flyout-menu-item" onClick={close}>Edit</button>
+              <button className="flyout-menu-item" onClick={close}>Duplicate</button>
+              <button className="flyout-menu-item" onClick={close}>Archive</button>
+            </div>
+          )}
+        </Flyout>
+      </Variant>
+      <Variant label="school picker">
+        <Flyout
+          placement="bottom-start"
+          trigger={({ open, toggle }) => (
+            <Button variant="secondary" iconRight={<CaretIcon />} onClick={toggle} aria-expanded={open}>
+              Lincoln Elementary
+            </Button>
+          )}
+        >
+          {({ close }) => (
+            <div className="flyout-menu" style={{ minWidth: 200 }}>
+              {['Jefferson', 'Lincoln', 'Kennedy', 'Roosevelt', 'Washington', 'Adams'].map(s => (
+                <button
+                  key={s}
+                  className={`flyout-menu-item${s === 'Lincoln' ? ' flyout-menu-item--active' : ''}`}
+                  onClick={close}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          )}
+        </Flyout>
+      </Variant>
+    </div>
+  )
+}
+
+function ModalShowcase() {
+  const [sideOpen, setSideOpen] = useState(false)
+  const [centerOpen, setCenterOpen] = useState(false)
+  return (
+    <div className="pt-variants pt-variants--2">
+      <Variant label="variant='side' (slide-in)">
+        <Button onClick={() => setSideOpen(true)}>Open side panel</Button>
+        <Modal open={sideOpen} onClose={() => setSideOpen(false)} variant="side" ariaLabel="Sample side panel">
+          {({ close }) => (
+            <div style={{ padding: 24 }}>
+              <h3 style={{ marginBottom: 8 }}>Side Panel</h3>
+              <p style={{ color: '#64748B', marginBottom: 16 }}>
+                Slides in from the right with backdrop. Press Escape or click the backdrop to close.
+              </p>
+              <Button variant="primary" onClick={close}>Close</Button>
+            </div>
+          )}
+        </Modal>
+      </Variant>
+      <Variant label="variant='center' (overlay)">
+        <Button onClick={() => setCenterOpen(true)}>Open centered modal</Button>
+        <Modal open={centerOpen} onClose={() => setCenterOpen(false)} variant="center" ariaLabel="Sample modal">
+          {({ close }) => (
+            <div style={{ padding: 24 }}>
+              <h3 style={{ marginBottom: 8 }}>Confirm</h3>
+              <p style={{ color: '#64748B', marginBottom: 16 }}>
+                Delete this challenge? This action can't be undone.
+              </p>
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                <Button variant="ghost" onClick={close}>Cancel</Button>
+                <Button variant="danger" onClick={close}>Delete</Button>
+              </div>
+            </div>
+          )}
+        </Modal>
+      </Variant>
+    </div>
+  )
+}
+
+function TableShowcase() {
+  const rows = [
+    { id: 'jefferson',  name: 'Jefferson',  rmi: 80, delta:  8, students: 1820 },
+    { id: 'lincoln',    name: 'Lincoln',    rmi: 71, delta:  7, students: 1650 },
+    { id: 'kennedy',    name: 'Kennedy',    rmi: 77, delta:  7, students: 2340 },
+    { id: 'washington', name: 'Washington', rmi: 62, delta:  1, students: 1980 },
+    { id: 'adams',      name: 'Adams',      rmi: 83, delta:  9, students: 2510 },
+  ]
+  const renderDelta = (v) => (
+    <span style={{ color: v >= 0 ? '#16A34A' : '#DC2626', fontWeight: 700 }}>
+      {v >= 0 ? '↑' : '↓'} {Math.abs(v)} pts
+    </span>
+  )
+  return (
+    <>
+      <Variant label="basic + clickable rows">
+        <Table
+          columns={[
+            { key: 'name',     label: 'School' },
+            { key: 'students', label: 'Students', align: 'right', render: v => v.toLocaleString() },
+            { key: 'rmi',      label: 'RMI',      align: 'right' },
+            { key: 'delta',    label: 'YoY',      align: 'right', render: renderDelta },
+          ]}
+          rows={rows}
+          onRowClick={() => {}}
+        />
+      </Variant>
+      <Variant label="zebra + compact">
+        <Table
+          columns={[
+            { key: 'name',     label: 'School' },
+            { key: 'rmi',      label: 'RMI',  align: 'right' },
+            { key: 'students', label: 'Students', align: 'right', render: v => v.toLocaleString() },
+          ]}
+          rows={rows}
+          zebra
+          compact
+        />
+      </Variant>
+    </>
+  )
+}
 
 function ChartCardKnobs() {
   const [title, setTitle]       = useState('Reading Motivation Index')
@@ -210,6 +433,46 @@ export function App() {
             <h1>Pattern Library</h1>
             <p>Edit the source CSS / JSX and every prototype updates via HMR. Knobs let you preview prop combinations without touching code.</p>
           </div>
+
+          <Section
+            id="button"
+            title="Button"
+            desc={<>Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>, <code>danger</code>, <code>accent</code>. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>. Optional <code>icon</code> / <code>iconRight</code>. Can render as a link via <code>as="a"</code>.</>}
+          >
+            <ButtonShowcase />
+          </Section>
+
+          <Section
+            id="tabs"
+            title="Tabs"
+            desc={<>Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>. Two variants: <code>underline</code> (default) and <code>pill</code>.</>}
+          >
+            <TabsShowcase />
+          </Section>
+
+          <Section
+            id="flyout"
+            title="Flyout"
+            desc={<>Anchored popover triggered by a button. Closes on outside click + Escape. Children can be JSX or a render function that receives <code>{'{ close }'}</code>.</>}
+          >
+            <FlyoutShowcase />
+          </Section>
+
+          <Section
+            id="modal"
+            title="Modal"
+            desc={<>Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both close on backdrop click + Escape and animate in/out.</>}
+          >
+            <ModalShowcase />
+          </Section>
+
+          <Section
+            id="table"
+            title="Table"
+            desc={<>Pass <code>columns</code> and <code>rows</code>. Each column can have <code>align</code>, <code>render</code>, <code>width</code>. Optional <code>onRowClick</code>, <code>zebra</code>, <code>compact</code>.</>}
+          >
+            <TableShowcase />
+          </Section>
 
           <Section
             id="stat-card"

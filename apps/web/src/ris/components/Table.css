@@ -1,0 +1,48 @@
+.tbl {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13px;
+  color: #1E293B;
+}
+
+.tbl-th {
+  text-align: left;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94A3B8;
+  font-size: 13px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #E5E7EB;
+  background: #F8FAFC;
+}
+
+.tbl-th:first-child { border-top-left-radius: 8px; }
+.tbl-th:last-child  { border-top-right-radius: 8px; }
+
+.tbl-td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #F1F5F9;
+  vertical-align: middle;
+}
+
+.tbl-row:last-child .tbl-td { border-bottom: none; }
+
+.tbl-row--clickable {
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.tbl-row--clickable:hover .tbl-td { background: #F8FAFC; }
+
+.tbl-cell--right  { text-align: right; }
+.tbl-cell--center { text-align: center; }
+
+/* ── Variants ────────────────────────────────────────────────────────────── */
+.tbl--zebra tbody tr:nth-child(2n) .tbl-td { background: #F8FAFC; }
+
+.tbl--compact .tbl-th,
+.tbl--compact .tbl-td {
+  padding: 7px 10px;
+}
