@@ -776,7 +776,6 @@ export function App() {
             desc={<>Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>, <code>danger</code>, <code>accent</code>. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>. Optional <code>icon</code> / <code>iconRight</code>. Can render as a link via <code>as="a"</code>.</>}
           >
             <ButtonKnobs />
-            <ButtonShowcase />
           </Section>
 
           <Section
@@ -817,29 +816,6 @@ export function App() {
             desc={<>Initials in a colored circle or square. Props: <code>initials</code>, <code>color</code>, <code>size</code> (xs/sm/md/lg/xl), <code>shape</code> (circle/square — square uses the size's border-radius).</>}
           >
             <AvatarKnobs />
-            <div className="pt-variants pt-variants--3">
-              <Variant label="circle sizes">
-                <Avatar initials="MC" color="#E8866A" size="xs" />
-                <Avatar initials="MC" color="#E8866A" size="sm" />
-                <Avatar initials="MC" color="#E8866A" size="md" />
-                <Avatar initials="MC" color="#E8866A" size="lg" />
-                <Avatar initials="MC" color="#E8866A" size="xl" />
-              </Variant>
-              <Variant label="square sizes">
-                <Avatar initials="LE" color="#1D4ED8" size="xs" shape="square" />
-                <Avatar initials="LE" color="#1D4ED8" size="sm" shape="square" />
-                <Avatar initials="LE" color="#1D4ED8" size="md" shape="square" />
-                <Avatar initials="LE" color="#1D4ED8" size="lg" shape="square" />
-                <Avatar initials="LE" color="#1D4ED8" size="xl" shape="square" />
-              </Variant>
-              <Variant label="colors">
-                <Avatar initials="AB" color="#16A97A" />
-                <Avatar initials="JK" color="#C084FC" />
-                <Avatar initials="RM" color="#7CB5F5" />
-                <Avatar initials="SD" color="#F0C050" />
-                <Avatar initials="EG" color="#0DA7BC" />
-              </Variant>
-            </div>
           </Section>
 
           <Section
@@ -848,23 +824,6 @@ export function App() {
             desc={<>Colored badge / chip. Variants: <code>soft</code> (default, tinted bg + dark text), <code>filled</code> (solid + white text), <code>outline</code>. Sizes: <code>sm</code>, <code>md</code>. Optional left <code>icon</code>.</>}
           >
             <PillKnobs />
-            <div className="pt-variants pt-variants--3">
-              <Variant label="variant='soft'">
-                <Pill color="#7C3AED">Skills</Pill>
-                <Pill color="#16A97A">Habits</Pill>
-                <Pill color="#E8866A">Motivation</Pill>
-                <Pill color="#1D4ED8">Integrity</Pill>
-              </Variant>
-              <Variant label="variant='filled'">
-                <Pill color="#DC2626" variant="filled">High Priority</Pill>
-                <Pill color="#D97706" variant="filled">Monitor</Pill>
-                <Pill color="#16A34A" variant="filled">Active</Pill>
-              </Variant>
-              <Variant label="variant='outline'">
-                <Pill color="#1D4ED8" variant="outline">Title I</Pill>
-                <Pill color="#475569" variant="outline">Not eligible</Pill>
-              </Variant>
-            </div>
           </Section>
 
           <Section
@@ -873,29 +832,6 @@ export function App() {
             desc={<>Track + fill with optional <code>label</code>, <code>subLabel</code>, and <code>valueLabel</code>. Used for cohorts, RMI factors, grade bands, engagement tiers. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>.</>}
           >
             <ProgressBarKnobs />
-            <div className="pt-variants pt-variants--2">
-              <Variant label="bare track">
-                <ProgressBar value={62} color="#7C3AED" />
-              </Variant>
-              <Variant label="with label + value">
-                <ProgressBar value={62} color="#7C3AED" label="Free/Reduced Lunch" valueLabel="62%" />
-              </Variant>
-              <Variant label="label + sub + value">
-                <ProgressBar
-                  value={3.1}
-                  max={4}
-                  color="#E8866A"
-                  label="Enjoyment"
-                  subLabel="Reading for personal pleasure and fun"
-                  valueLabel="3.1"
-                />
-              </Variant>
-              <Variant label="sizes (sm / md / lg)">
-                <ProgressBar value={62} color="#16A97A" size="sm" />
-                <ProgressBar value={62} color="#16A97A" size="md" />
-                <ProgressBar value={62} color="#16A97A" size="lg" />
-              </Variant>
-            </div>
           </Section>
 
           <Section

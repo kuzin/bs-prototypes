@@ -139,15 +139,17 @@
   gap: 18px;
 }
 
-/* ── Variant grid ────────────────────────────────────────────────────────── */
+/* ── Variants — always vertical, full-width ──────────────────────────────── */
 .pt-variants {
-  display: grid;
-  gap: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
 }
 
-.pt-variants--2 { grid-template-columns: repeat(2, 1fr); }
-.pt-variants--3 { grid-template-columns: repeat(3, 1fr); }
-.pt-variants--4 { grid-template-columns: repeat(4, 1fr); }
+/* legacy modifier classes are no-ops now */
+.pt-variants--2,
+.pt-variants--3,
+.pt-variants--4 { grid-template-columns: none; }
 
 .pt-variant {
   display: flex;
@@ -170,6 +172,10 @@
   border-radius: 10px;
   padding: 16px;
   min-height: 60px;
+}
+
+/* When a frame holds discrete elements (buttons, pills) we want them in a row */
+.pt-variant-frame--row {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -181,13 +187,11 @@
   background: transparent;
   border: none;
   min-height: 0;
-  display: block;
 }
 
 .pt-variant-frame--full {
   padding: 0;
   overflow: hidden;
-  display: block;
 }
 
 /* ── MainRail showcase ───────────────────────────────────────────────────── */
