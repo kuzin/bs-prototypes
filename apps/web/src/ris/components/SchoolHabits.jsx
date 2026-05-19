@@ -1,111 +1,232 @@
+import { ResponsiveLine } from '@nivo/line'
+import { ResponsiveBar } from '@nivo/bar'
 import {
-  LineChart, Line, BarChart, Bar, AreaChart, Area,
-  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine,
-} from 'recharts'
-import { SCHOOLS, SCHOOL_STATS, SCHOOL_HEALTH, SESSION_TRENDS, STREAK_DATA, VELOCITY_TRENDS, READING_DIET } from '../data'
+  SCHOOLS, SCHOOL_STATS, SCHOOL_HEALTH, SESSION_TRENDS,
+  STREAK_DATA, VELOCITY_TRENDS, READING_DIET,
+} from '../data'
 import { BucketHero } from './BucketHero'
+import { SECTIONS } from './ReadingHealth'
+import {
+  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
+  SliceTooltip, ChartLegend, BarTooltip,
+} from './charts'
+import { StatCard, ChartCard } from './Cards'
 import './RisLayout.css'
 import './SchoolHabits.css'
 
+const HABITS_COLOR = '#16A97A'
+const HABITS_ICON  = SECTIONS.find(s => s.key === 'habits')?.icon
+
 export function SchoolHabits({ schoolId, onBack }) {
-  const school  = SCHOOLS.find(s => s.id === schoolId)
-  const stats   = SCHOOL_STATS.find(s => s.id === schoolId)
-  const health  = SCHOOL_HEALTH[schoolId]
+  const school   = SCHOOLS.find(s => s.id === schoolId)
+  const stats    = SCHOOL_STATS.find(s => s.id === schoolId)
+  const health   = SCHOOL_HEALTH[schoolId]
+  const shortName = school.name.split(' ')[0]
 
   const sessionData = SESSION_TRENDS.map(d => ({ month: d.month, school: d[schoolId], district: d.district }))
 
   const streakData = STREAK_DATA.map(d => ({
     milestone: d.milestone,
-    value:     d[schoolId],
+    school:    d[schoolId],
     district:  Math.round(Object.entries(d).filter(([k]) => k !== 'milestone').reduce((a, [,v]) => a + v, 0) / 6),
   }))
 
+  const sessionNivo = [
+    { id: shortName,      color: school.color, data: sessionData.map(d => ({ x: d.month, y: d.school   })) },
+    { id: 'District avg', color: '#CBD5E1',    data: sessionData.map(d => ({ x: d.month, y: d.district })) },
+  ]
+
+  const velocityNivo = [
+    { id: 'Elementary', color: '#0DA7BC', data: VELOCITY_TRENDS.map(d => ({ x: d.month, y: d.elementary })) },
+    { id: 'Middle',     color: '#16A97A', data: VELOCITY_TRENDS.map(d => ({ x: d.month, y: d.middle     })) },
+    { id: 'High',       color: '#C084FC', data: VELOCITY_TRENDS.map(d => ({ x: d.month, y: d.high       })) },
+  ]
+
   return (
-    <div>
+    <div className="mot-root">
       <BucketHero bucket="habits" score={health.habits} delta={health.dH} onBack={onBack} />
 
-      <div className="sv-stats-row">
-        {[
-          { label: 'Avg Session Length',   value: `${stats.avgSession} min`, sub: stats.avgSession >= 20 ? '↑ Above district avg' : '↓ Below district avg (20 min)' },
-          { label: 'Active Streaks',        value: `${stats.streakPct}%`,    sub: 'of enrolled students' },
-          { label: 'Avg Reading Days/Week', value: '3.1 days',               sub: 'school average' },
-          { label: 'Avg Books/Month',       value: '2.6 books',              sub: 'all grade levels' },
-        ].map(s => (
-          <div key={s.label} className="sv-stat">
-            <div className="sv-stat-val" style={{ color: '#0DA7BC' }}>{s.value}</div>
-            <div className="sv-stat-lbl">{s.label}</div>
-            <div className="sv-stat-sub">{s.sub}</div>
-          </div>
-        ))}
+      <div className="rc-stats-row">
+        <StatCard
+          value={stats.avgSession}
+          unit="min"
+          label="Avg session length"
+          footer={stats.avgSession >= 20 ? '↑ Above district avg' : '↓ Below district avg (20 min)'}
+          color={HABITS_COLOR}
+          footerColor={stats.avgSession >= 20 ? '#16A34A' : '#DC2626'}
+        />
+        <StatCard
+          value={stats.streakPct}
+          unit="%"
+          label="Active streaks"
+          footer="of enrolled students"
+        />
+        <StatCard
+          value="3.1"
+          unit="days"
+          label="Avg reading days / week"
+          footer="School average"
+        />
+        <StatCard
+          value="2.6"
+          unit="books"
+          label="Avg books / month"
+          footer="All grade levels"
+        />
       </div>
 
       <div className="sv-grid">
-        {/* Session trend — wide */}
-        <div className="sv-card sv-card--wide">
-          <h3>Session Length Trend — {school.name} vs. District</h3>
-          <ResponsiveContainer width="100%" height={210}>
-            <LineChart data={sessionData} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <YAxis domain={[6, 32]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit=" min" />
-              <Tooltip formatter={v => `${v} min`} contentStyle={{ fontSize: 13, borderRadius: 8 }} />
-              <Legend wrapperStyle={{ fontSize: 13 }} />
-              <ReferenceLine y={20} stroke="#D97706" strokeDasharray="4 3" label={{ value: 'District avg (20 min)', position: 'right', fontSize: 13, fill: '#D97706' }} />
-              <Line type="monotone" dataKey="school" name={school.name.split(' ')[0]} stroke={school.color} strokeWidth={2.5} dot={false} />
-              <Line type="monotone" dataKey="district" name="District avg" stroke="#94A3B8" strokeWidth={1.5} dot={false} strokeDasharray="5 4" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
 
-        {/* Streak milestones */}
-        <div className="sv-card">
-          <h3>Streak Milestones</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={streakData} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="milestone" tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit="%" />
-              <Tooltip formatter={v => `${v}%`} contentStyle={{ fontSize: 13, borderRadius: 8 }} />
-              <Legend wrapperStyle={{ fontSize: 13 }} />
-              <Bar dataKey="value" name={school.name.split(' ')[0]} fill={school.color} radius={[3, 3, 0, 0]} />
-              <Bar dataKey="district" name="District avg" fill="#CBD5E1" radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Reading velocity */}
-        <div className="sv-card">
-          <h3>Reading Velocity by Level</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <AreaChart data={VELOCITY_TRENDS} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-              <defs>
-                {[['vElGrad','#0DA7BC'],['vMidGrad','#16A97A'],['vHiGrad','#C084FC']].map(([id, c]) => (
-                  <linearGradient key={id} id={id} x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor={c} stopOpacity={0.18} />
-                    <stop offset="95%" stopColor={c} stopOpacity={0} />
-                  </linearGradient>
-                ))}
-              </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <YAxis domain={[1, 5]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit=" bks" />
-              <Tooltip formatter={v => `${v} bks/mo`} contentStyle={{ fontSize: 13, borderRadius: 8 }} />
-              <Legend wrapperStyle={{ fontSize: 13 }} />
-              <Area type="monotone" dataKey="elementary" name="Elementary" stroke="#0DA7BC" fill="url(#vElGrad)" strokeWidth={2} dot={false} />
-              <Area type="monotone" dataKey="middle" name="Middle" stroke="#16A97A" fill="url(#vMidGrad)" strokeWidth={2} dot={false} />
-              <Area type="monotone" dataKey="high" name="High" stroke="#C084FC" fill="url(#vHiGrad)" strokeWidth={2} dot={false} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-        {/* Reading Diet */}
-        <div className="sv-card">
-          <div className="sv-card-header">
-            <div>
-              <h3>"Reading Diet" Breakdown</h3>
-              <div className="sv-note">AI genre analysis · district-wide 2024–25</div>
-            </div>
-            <span className="sh-gemini-badge">✦ Gemini</span>
+        <ChartCard
+          span={2}
+          title={`Session Length Trend — ${school.name} vs. District`}
+          subtitle="Sep 2024 – May 2025"
+          icon={HABITS_ICON}
+          accent={HABITS_COLOR}
+          footer={<ChartLegend items={[
+            { color: school.color, label: shortName },
+            { color: '#CBD5E1',    label: 'District avg', dashed: true },
+          ]} />}
+        >
+          <div style={{ height: 210 }}>
+            <ResponsiveLine
+              data={sessionNivo}
+              theme={NIVO_THEME}
+              margin={LINE_MARGIN}
+              xScale={{ type: 'point' }}
+              yScale={{ type: 'linear', min: 6, max: 32 }}
+              curve="monotoneX"
+              colors={d => d.color}
+              lineWidth={2.5}
+              enablePoints={false}
+              enableArea
+              areaOpacity={0.08}
+              enableGridX={false}
+              axisBottom={AXIS_BOTTOM}
+              axisLeft={{ ...AXIS_LEFT, format: v => `${v}m`, tickValues: [10, 20, 30] }}
+              defs={[{
+                id: 'sessGrad', type: 'linearGradient',
+                colors: [{ offset: 0, color: school.color, opacity: 0.22 }, { offset: 100, color: school.color, opacity: 0 }],
+              }]}
+              fill={[{ match: { id: shortName }, id: 'sessGrad' }]}
+              enableSlices="x"
+              sliceTooltip={({ slice }) => (
+                <SliceTooltip
+                  slice={slice}
+                  accent={HABITS_COLOR}
+                  allData={sessionData}
+                  seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
+                  formatY={v => `${v} min`}
+                  formatDelta={d => `${d > 0 ? '+' : ''}${d} min`}
+                  context={s => {
+                    const my = s.points.find(p => p.serieId === shortName)?.data.y
+                    const dist = s.points.find(p => p.serieId === 'District avg')?.data.y
+                    if (my == null || dist == null) return null
+                    const gap = my - dist
+                    return gap === 0
+                      ? <>On pace with district</>
+                      : <><strong>{shortName}</strong> {gap > 0 ? '+' : ''}{gap} min {gap > 0 ? 'above' : 'below'} district</>
+                  }}
+                />
+              )}
+            />
           </div>
+        </ChartCard>
+
+        <ChartCard
+          title="Streak Milestones"
+          subtitle="% of students reaching each streak length"
+          icon={HABITS_ICON}
+          accent={HABITS_COLOR}
+          footer={<ChartLegend items={[
+            { color: school.color, label: shortName },
+            { color: '#CBD5E1',    label: 'District avg' },
+          ]} />}
+        >
+          <div style={{ height: 200 }}>
+            <ResponsiveBar
+              data={streakData}
+              keys={['school', 'district']}
+              indexBy="milestone"
+              groupMode="grouped"
+              theme={NIVO_THEME}
+              margin={{ top: 8, right: 16, bottom: 36, left: 38 }}
+              padding={0.3}
+              innerPadding={2}
+              colors={({ id }) => id === 'school' ? school.color : '#CBD5E1'}
+              borderRadius={3}
+              axisBottom={AXIS_BOTTOM}
+              axisLeft={{ ...AXIS_LEFT, format: v => `${v}%`, tickValues: [0, 25, 50, 75, 100] }}
+              enableGridY
+              enableLabel={false}
+              maxValue={100}
+              tooltip={({ indexValue, data }) => (
+                <BarTooltip
+                  data={data}
+                  indexValue={indexValue}
+                  accent={HABITS_COLOR}
+                  format={v => `${v}%`}
+                  keys={['school', 'district']}
+                  labels={{
+                    school:   { label: shortName,      color: school.color },
+                    district: { label: 'District avg', color: '#CBD5E1' },
+                  }}
+                />
+              )}
+            />
+          </div>
+        </ChartCard>
+
+        <ChartCard
+          title="Reading Velocity by Level"
+          subtitle="Books/month per grade band"
+          icon={HABITS_ICON}
+          accent={HABITS_COLOR}
+          footer={<ChartLegend items={[
+            { color: '#0DA7BC', label: 'Elementary' },
+            { color: '#16A97A', label: 'Middle' },
+            { color: '#C084FC', label: 'High' },
+          ]} />}
+        >
+          <div style={{ height: 200 }}>
+            <ResponsiveLine
+              data={velocityNivo}
+              theme={NIVO_THEME}
+              margin={LINE_MARGIN}
+              xScale={{ type: 'point' }}
+              yScale={{ type: 'linear', min: 1, max: 5 }}
+              curve="monotoneX"
+              colors={d => d.color}
+              lineWidth={2}
+              enablePoints={false}
+              enableArea
+              areaOpacity={0.12}
+              enableGridX={false}
+              axisBottom={AXIS_BOTTOM}
+              axisLeft={{ ...AXIS_LEFT, format: v => `${v} bks`, tickValues: [1, 2, 3, 4, 5] }}
+              enableSlices="x"
+              sliceTooltip={({ slice }) => (
+                <SliceTooltip
+                  slice={slice}
+                  accent={HABITS_COLOR}
+                  allData={VELOCITY_TRENDS}
+                  seriesMap={{ Elementary: 'elementary', Middle: 'middle', High: 'high' }}
+                  formatY={v => `${v.toFixed(1)} bks/mo`}
+                  formatDelta={d => `${d > 0 ? '+' : ''}${d.toFixed(1)}`}
+                />
+              )}
+            />
+          </div>
+        </ChartCard>
+
+        <ChartCard
+          title="Reading Diet Breakdown"
+          subtitle="AI genre analysis · district-wide 2024–25"
+          icon={HABITS_ICON}
+          accent={HABITS_COLOR}
+          bodyPad="padded"
+          action={<span className="sh-gemini-badge">✦ Gemini</span>}
+        >
           <div className="sh-diet-list">
             {READING_DIET.map(d => (
               <div key={d.genre} className="sh-diet-row">
@@ -123,7 +244,7 @@ export function SchoolHabits({ schoolId, onBack }) {
               </div>
             ))}
           </div>
-        </div>
+        </ChartCard>
 
       </div>
     </div>

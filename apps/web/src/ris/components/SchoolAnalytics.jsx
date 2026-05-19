@@ -1,14 +1,19 @@
-import {
-  LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend, Cell, ReferenceLine,
-} from 'recharts'
+import { ResponsiveLine } from '@nivo/line'
+import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, SCHOOL_STATS, SCHOOL_DETAILS, SCHOOL_HEALTH,
-  RMI_TRENDS, SESSION_TRENDS, ROI_TRENDS,
+  RMI_TRENDS, ROI_TRENDS,
   GRADE_PERFORMANCE, SCHOOL_GRADE_LEVELS, LEXILE_BY_GRADE,
 } from '../data'
 import { PageHero } from './PageHero'
+import {
+  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
+  SliceTooltip, ChartLegend, BarTooltip,
+} from './charts'
+import { StatCard, ChartCard } from './Cards'
 import './Analytics.css'
+
+const ANALYTICS_COLOR = '#0DA7BC'
 
 const AnalyticsIcon = () => (
   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -23,7 +28,6 @@ const AnalyticsIcon = () => (
 function buildSchoolFunnel(school, stats) {
   const enrolled = school.students
   const engagement = stats.engagement / 100
-  // depth multiplier: schools with low engagement have proportionally fewer deep-habit kids
   const depth = 0.6 + engagement * 0.5
   const pcts = [100, Math.round(engagement * 100), Math.round(engagement * 70 * depth), Math.round(engagement * 32 * depth), Math.round(engagement * 18 * depth)]
   const stages = [
@@ -42,7 +46,6 @@ function buildSchoolFunnel(school, stats) {
   }))
 }
 
-// Student-level engagement distribution within this school
 function buildEngagementDistribution(school, stats) {
   const total = school.students
   const engagedPct = stats.engagement
@@ -58,21 +61,30 @@ function buildEngagementDistribution(school, stats) {
 }
 
 export function SchoolAnalytics({ schoolId }) {
-  const school   = SCHOOLS.find(s => s.id === schoolId)
-  const stats    = SCHOOL_STATS.find(s => s.id === schoolId)
-  const details  = SCHOOL_DETAILS[schoolId]
-  const health   = SCHOOL_HEALTH[schoolId]
+  const school    = SCHOOLS.find(s => s.id === schoolId)
+  const stats     = SCHOOL_STATS.find(s => s.id === schoolId)
+  const health    = SCHOOL_HEALTH[schoolId]
+  const shortName = school.name.split(' ')[0]
 
   const funnel       = buildSchoolFunnel(school, stats)
   const distribution = buildEngagementDistribution(school, stats)
 
   const rmiData = RMI_TRENDS.map(d => ({ month: d.month, school: d[schoolId], district: d.district }))
-  const sessionData = SESSION_TRENDS.map(d => ({ month: d.month, school: d[schoolId], district: d.district }))
 
-  // Grade-level engagement within this school (filter district grade performance to this school's grades)
-  const gradeIdxs = SCHOOL_GRADE_LEVELS[schoolId]
-  const gradeNames = gradeIdxs.map(i => LEXILE_BY_GRADE[i].grade.replace(/(st|nd|rd|th)/, ''))
+  const gradeIdxs    = SCHOOL_GRADE_LEVELS[schoolId]
+  const gradeNames   = gradeIdxs.map(i => LEXILE_BY_GRADE[i].grade.replace(/(st|nd|rd|th)/, ''))
   const schoolGrades = GRADE_PERFORMANCE.filter(g => gradeNames.includes(g.grade))
+
+  const rmiNivo = [
+    { id: shortName,      color: school.color, data: rmiData.map(d => ({ x: d.month, y: d.school   })) },
+    { id: 'District avg', color: '#CBD5E1',    data: rmiData.map(d => ({ x: d.month, y: d.district })) },
+  ]
+
+  const roiNivo = [
+    { id: 'Engagement %', color: school.color, data: ROI_TRENDS.map(d => ({ x: d.month, y: d.engagement })) },
+    { id: 'Attendance %', color: '#16A97A',    data: ROI_TRENDS.map(d => ({ x: d.month, y: d.attendance })) },
+    { id: 'Incidents',    color: '#E8866A',    data: ROI_TRENDS.map(d => ({ x: d.month, y: d.incidents  })) },
+  ]
 
   return (
     <div className="an-root">
@@ -85,39 +97,44 @@ export function SchoolAnalytics({ schoolId }) {
         accentBg="#ECFEFF"
       />
 
-      <div className="sv-stats-row">
-        <div className="sv-stat">
-          <div className="sv-stat-val">{stats.engagement}%</div>
-          <div className="sv-stat-lbl">Active Students</div>
-          <div className="sv-stat-sub">{Math.round(school.students * stats.engagement / 100).toLocaleString()} of {school.students.toLocaleString()}</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val">{stats.avgSession} min</div>
-          <div className="sv-stat-lbl">Avg Session Length</div>
-          <div className="sv-stat-sub">Per active student</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val">{stats.streakPct}%</div>
-          <div className="sv-stat-lbl">Weekly Habit Rate</div>
-          <div className="sv-stat-sub">Logged 4+ weeks running</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: '#16A97A' }}>{health.motivation}</div>
-          <div className="sv-stat-lbl">RMI Score</div>
-          <div className="sv-stat-sub">+{health.dM} pts vs. Sep</div>
-        </div>
+      <div className="rc-stats-row">
+        <StatCard
+          value={stats.engagement}
+          unit="%"
+          label="Active students"
+          footer={`${Math.round(school.students * stats.engagement / 100).toLocaleString()} of ${school.students.toLocaleString()}`}
+        />
+        <StatCard
+          value={stats.avgSession}
+          unit="min"
+          label="Avg session length"
+          footer="Per active student"
+        />
+        <StatCard
+          value={stats.streakPct}
+          unit="%"
+          label="Weekly habit rate"
+          footer="Logged 4+ weeks running"
+        />
+        <StatCard
+          value={health.motivation}
+          label="RMI score"
+          footer={`+${health.dM} pts vs. Sep`}
+          color="#16A97A"
+          footerColor="#16A34A"
+        />
       </div>
 
       <div className="sv-grid">
 
-        {/* Engagement funnel — school-scoped */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>Student Engagement Funnel</h3>
-              <div className="sv-note">Habit depth across all {school.students.toLocaleString()} students · {school.name} · May 2025</div>
-            </div>
-          </div>
+        <ChartCard
+          span={2}
+          title="Student Engagement Funnel"
+          subtitle={`Habit depth across all ${school.students.toLocaleString()} students · May 2025`}
+          icon={<AnalyticsIcon />}
+          accent={ANALYTICS_COLOR}
+          bodyPad="padded"
+        >
           <div className="an-funnel">
             {funnel.map((step, i) => {
               const next = funnel[i + 1]
@@ -130,18 +147,13 @@ export function SchoolAnalytics({ schoolId }) {
                       <span className="an-funnel-note">{step.note}</span>
                     </div>
                     <div className="an-funnel-track">
-                      <div
-                        className="an-funnel-bar"
-                        style={{ width: `${step.pct}%`, opacity: 1 - i * 0.12, background: school.color }}
-                      />
+                      <div className="an-funnel-bar" style={{ width: `${step.pct}%`, opacity: 1 - i * 0.12, background: school.color }} />
                     </div>
                     <div className="an-funnel-right">
                       <span className="an-funnel-count">{step.count.toLocaleString()}</span>
                       <div className="an-funnel-meta">
                         <span className="an-funnel-pct">{step.pct}%</span>
-                        {step.delta != null && (
-                          <span className="an-funnel-delta">↑{step.delta}pp</span>
-                        )}
+                        {step.delta != null && <span className="an-funnel-delta">↑{step.delta}pp</span>}
                       </div>
                     </div>
                   </div>
@@ -157,16 +169,15 @@ export function SchoolAnalytics({ schoolId }) {
               )
             })}
           </div>
-        </div>
+        </ChartCard>
 
-        {/* Student engagement distribution */}
-        <div className="sv-card">
-          <div className="sv-card-header">
-            <div>
-              <h3>Student Engagement Tiers</h3>
-              <div className="sv-note">Where {school.students.toLocaleString()} students fall on the activity spectrum</div>
-            </div>
-          </div>
+        <ChartCard
+          title="Student Engagement Tiers"
+          subtitle={`Where ${school.students.toLocaleString()} students fall on the activity spectrum`}
+          icon={<AnalyticsIcon />}
+          accent={ANALYTICS_COLOR}
+          bodyPad="padded"
+        >
           <div className="an-tiers">
             {distribution.map(t => (
               <div key={t.tier} className="an-tier-row">
@@ -184,72 +195,131 @@ export function SchoolAnalytics({ schoolId }) {
               </div>
             ))}
           </div>
-        </div>
+        </ChartCard>
 
-        {/* RMI vs. district */}
-        <div className="sv-card">
-          <div className="sv-card-header">
-            <div>
-              <h3>RMI Trend vs. District</h3>
-              <div className="sv-note">Reading Motivation Index, Sep – May</div>
-            </div>
+        <ChartCard
+          title="RMI Trend vs. District"
+          subtitle="Reading Motivation Index, Sep – May"
+          icon={<AnalyticsIcon />}
+          accent={ANALYTICS_COLOR}
+          footer={<ChartLegend items={[
+            { color: school.color, label: shortName },
+            { color: '#CBD5E1',    label: 'District avg', dashed: true },
+          ]} />}
+        >
+          <div style={{ height: 200 }}>
+            <ResponsiveLine
+              data={rmiNivo}
+              theme={NIVO_THEME}
+              margin={LINE_MARGIN}
+              xScale={{ type: 'point' }}
+              yScale={{ type: 'linear', min: 55, max: 90 }}
+              curve="monotoneX"
+              colors={d => d.color}
+              lineWidth={2.5}
+              enablePoints={false}
+              enableGridX={false}
+              axisBottom={AXIS_BOTTOM}
+              axisLeft={{ ...AXIS_LEFT, tickValues: [60, 70, 80, 90] }}
+              enableSlices="x"
+              sliceTooltip={({ slice }) => (
+                <SliceTooltip
+                  slice={slice}
+                  accent={ANALYTICS_COLOR}
+                  allData={rmiData}
+                  seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
+                  formatDelta={d => `${d > 0 ? '+' : ''}${d} pts`}
+                />
+              )}
+            />
           </div>
-          <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={rmiData} margin={{ top: 8, right: 16, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#EDE8E3" />
-              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <YAxis domain={[55, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 13 }} />
-              <Line type="monotone" dataKey="school" name={school.name.split(' ')[0]} stroke={school.color} strokeWidth={2.5} dot={false} />
-              <Line type="monotone" dataKey="district" name="District avg" stroke="#94A3B8" strokeWidth={1.5} dot={false} strokeDasharray="5 4" />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        {/* Engagement by grade */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>Engagement by Grade Level</h3>
-              <div className="sv-note">Active student % &amp; RMI score across grades served by {school.name}</div>
-            </div>
+        <ChartCard
+          span={2}
+          title="Engagement by Grade Level"
+          subtitle={`Active student % & RMI score across grades served by ${school.name}`}
+          icon={<AnalyticsIcon />}
+          accent={ANALYTICS_COLOR}
+          footer={<ChartLegend items={[
+            { color: school.color, label: 'Active %' },
+            { color: '#94A3B8',    label: 'RMI' },
+          ]} />}
+        >
+          <div style={{ height: 230 }}>
+            <ResponsiveBar
+              data={schoolGrades}
+              keys={['engagement', 'rmi']}
+              indexBy="grade"
+              groupMode="grouped"
+              theme={NIVO_THEME}
+              margin={{ top: 8, right: 16, bottom: 36, left: 38 }}
+              padding={0.3}
+              innerPadding={2}
+              colors={({ id }) => id === 'engagement' ? school.color : '#94A3B8'}
+              borderRadius={3}
+              axisBottom={AXIS_BOTTOM}
+              axisLeft={{ ...AXIS_LEFT, tickValues: [40, 60, 80, 100] }}
+              enableGridY
+              enableLabel={false}
+              minValue={40}
+              maxValue={90}
+              tooltip={({ indexValue, data }) => (
+                <BarTooltip
+                  data={data}
+                  indexValue={`Grade ${indexValue}`}
+                  accent={ANALYTICS_COLOR}
+                  keys={['engagement', 'rmi']}
+                  labels={{
+                    engagement: { label: 'Active %', color: school.color },
+                    rmi:        { label: 'RMI score', color: '#94A3B8' },
+                  }}
+                  context={d => <>{d.count.toLocaleString()} students</>}
+                />
+              )}
+            />
           </div>
-          <ResponsiveContainer width="100%" height={230}>
-            <BarChart data={schoolGrades} margin={{ top: 4, right: 16, left: -20, bottom: 0 }} barSize={18}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-              <XAxis dataKey="grade" tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <YAxis domain={[40, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 13 }} />
-              <Bar dataKey="engagement" name="Active %" fill={school.color} radius={[3, 3, 0, 0]} />
-              <Bar dataKey="rmi"        name="RMI" fill="#94A3B8" radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        {/* Outcome correlations */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>Engagement → Outcome Correlations</h3>
-              <div className="sv-note">Reading engagement vs. attendance &amp; behavioral incidents · Sep 2024 – May 2025</div>
-            </div>
-            <span className="an-sis-badge">Requires SIS data</span>
+        <ChartCard
+          span={2}
+          title="Engagement → Outcome Correlations"
+          subtitle="Reading engagement vs. attendance & behavioral incidents · Sep 2024 – May 2025"
+          icon={<AnalyticsIcon />}
+          accent={ANALYTICS_COLOR}
+          action={<span className="an-sis-badge">Requires SIS data</span>}
+          footer={<ChartLegend items={[
+            { color: school.color, label: 'Engagement %' },
+            { color: '#16A97A',    label: 'Attendance %', dashed: true },
+            { color: '#E8866A',    label: 'Incidents',    dashed: true },
+          ]} />}
+        >
+          <div style={{ height: 210 }}>
+            <ResponsiveLine
+              data={roiNivo}
+              theme={NIVO_THEME}
+              margin={LINE_MARGIN}
+              xScale={{ type: 'point' }}
+              yScale={{ type: 'linear', min: 20, max: 100 }}
+              curve="monotoneX"
+              colors={d => d.color}
+              lineWidth={2.2}
+              enablePoints={false}
+              enableGridX={false}
+              axisBottom={AXIS_BOTTOM}
+              axisLeft={AXIS_LEFT}
+              enableSlices="x"
+              sliceTooltip={({ slice }) => (
+                <SliceTooltip
+                  slice={slice}
+                  accent={ANALYTICS_COLOR}
+                  allData={ROI_TRENDS}
+                  seriesMap={{ 'Engagement %': 'engagement', 'Attendance %': 'attendance', Incidents: 'incidents' }}
+                  inverseSeries={['Incidents']}
+                />
+              )}
+            />
           </div>
-          <ResponsiveContainer width="100%" height={210}>
-            <LineChart data={ROI_TRENDS} margin={{ top: 4, right: 16, left: -20, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" />
-              <XAxis dataKey="month" tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <YAxis yAxisId="left" domain={[60, 95]} tick={{ fontSize: 13, fill: '#94A3B8' }} unit="%" />
-              <YAxis yAxisId="right" orientation="right" domain={[20, 45]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 13 }} />
-              <Line yAxisId="left"  type="monotone" dataKey="engagement" name="Reading Engagement %" stroke={school.color} strokeWidth={2.5} dot={false} />
-              <Line yAxisId="left"  type="monotone" dataKey="attendance" name="Attendance Rate %"    stroke="#16A97A" strokeWidth={2}   dot={false} strokeDasharray="5 4" />
-              <Line yAxisId="right" type="monotone" dataKey="incidents"  name="Behavioral Incidents" stroke="#E8866A" strokeWidth={2}   dot={false} strokeDasharray="3 3" />
-            </LineChart>
-          </ResponsiveContainer>
           <div className="an-roi-callouts">
             <div className="an-callout an-callout--pos">
               <span className="an-callout-val">r = 0.82</span>
@@ -260,7 +330,7 @@ export function SchoolAnalytics({ schoolId }) {
               <span className="an-callout-lbl">Engagement ↔ Incidents</span>
             </div>
           </div>
-        </div>
+        </ChartCard>
 
       </div>
     </div>

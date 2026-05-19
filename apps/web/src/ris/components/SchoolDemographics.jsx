@@ -1,13 +1,17 @@
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, Legend, Cell,
-} from 'recharts'
+import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, SCHOOL_DETAILS, SCHOOL_STATS,
   GRADE_PERFORMANCE, SCHOOL_GRADE_LEVELS, LEXILE_BY_GRADE,
 } from '../data'
 import { PageHero } from './PageHero'
+import {
+  NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT,
+  ChartLegend, BarTooltip,
+} from './charts'
+import { StatCard, ChartCard } from './Cards'
 import './Demographics.css'
+
+const DEMO_COLOR = '#7C3AED'
 
 const DemographicsIcon = () => (
   <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -20,7 +24,6 @@ const DemographicsIcon = () => (
   </svg>
 )
 
-// Per-school synthetic student cohort breakdowns (FRL, ELL, IEP, etc.)
 function buildCohorts(details) {
   const frl = details.frl
   return [
@@ -43,12 +46,10 @@ export function SchoolDemographics({ schoolId }) {
   const stats   = SCHOOL_STATS.find(s => s.id === schoolId)
   const cohorts = buildCohorts(details)
 
-  // Grade-level performance for grades this school serves
-  const gradeIdxs  = SCHOOL_GRADE_LEVELS[schoolId]
-  const gradeNames = gradeIdxs.map(i => LEXILE_BY_GRADE[i].grade.replace(/(st|nd|rd|th)/, ''))
+  const gradeIdxs    = SCHOOL_GRADE_LEVELS[schoolId]
+  const gradeNames   = gradeIdxs.map(i => LEXILE_BY_GRADE[i].grade.replace(/(st|nd|rd|th)/, ''))
   const schoolGrades = GRADE_PERFORMANCE.filter(g => gradeNames.includes(g.grade))
 
-  // Synthesize an FRL gap across grade bands — higher grades typically dip a bit
   const gradeRows = schoolGrades.map((g, i) => {
     const frlShift = i - Math.floor(schoolGrades.length / 2)
     const groupFrl = Math.max(8, Math.min(85, details.frl + frlShift * 3))
@@ -72,41 +73,42 @@ export function SchoolDemographics({ schoolId }) {
         accentBg="#F5F3FF"
       />
 
-      <div className="sv-stats-row">
-        <div className="sv-stat">
-          <div className="sv-stat-val">{school.students.toLocaleString()}</div>
-          <div className="sv-stat-lbl">Total Students</div>
-          <div className="sv-stat-sub">Grades {school.grades}</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val">{details.frl}%</div>
-          <div className="sv-stat-lbl">FRL Rate</div>
-          <div className="sv-stat-sub">{details.frl >= 50 ? 'High-need school' : details.frl >= 30 ? 'Mixed-income' : 'Low FRL'}</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: details.titleI ? '#1D4ED8' : '#94A3B8' }}>
-            {details.titleI ? 'Yes' : 'No'}
-          </div>
-          <div className="sv-stat-lbl">Title I Eligible</div>
-          <div className="sv-stat-sub">{details.titleI ? 'Federal funding active' : 'Not Title I'}</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val">{stats.rmi}</div>
-          <div className="sv-stat-lbl">RMI Score</div>
-          <div className="sv-stat-sub">{stats.rmi >= 78 ? 'Above district avg' : stats.rmi >= 70 ? 'Near district avg' : 'Below district avg'}</div>
-        </div>
+      <div className="rc-stats-row">
+        <StatCard
+          value={school.students.toLocaleString()}
+          label="Total students"
+          footer={`Grades ${school.grades}`}
+        />
+        <StatCard
+          value={details.frl}
+          unit="%"
+          label="FRL rate"
+          footer={details.frl >= 50 ? 'High-need school' : details.frl >= 30 ? 'Mixed-income' : 'Low FRL'}
+          color={DEMO_COLOR}
+        />
+        <StatCard
+          value={details.titleI ? 'Yes' : 'No'}
+          label="Title I eligible"
+          footer={details.titleI ? 'Federal funding active' : 'Not Title I'}
+          color={details.titleI ? '#1D4ED8' : '#94A3B8'}
+        />
+        <StatCard
+          value={stats.rmi}
+          label="RMI score"
+          footer={stats.rmi >= 78 ? 'Above district avg' : stats.rmi >= 70 ? 'Near district avg' : 'Below district avg'}
+        />
       </div>
 
       <div className="sv-grid">
 
-        {/* Student cohort breakdown — full width */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>Student Cohorts</h3>
-              <div className="sv-note">Demographic indicators for {school.students.toLocaleString()} enrolled students</div>
-            </div>
-          </div>
+        <ChartCard
+          span={2}
+          title="Student Cohorts"
+          subtitle={`Demographic indicators for ${school.students.toLocaleString()} enrolled students`}
+          icon={<DemographicsIcon />}
+          accent={DEMO_COLOR}
+          bodyPad="padded"
+        >
           <div className="dm-cohort-list">
             {cohorts.map(c => (
               <div key={c.label} className="dm-cohort-row">
@@ -124,16 +126,16 @@ export function SchoolDemographics({ schoolId }) {
               </div>
             ))}
           </div>
-        </div>
+        </ChartCard>
 
-        {/* Grade-level equity table — full width */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>Grade-Level Performance</h3>
-              <div className="sv-note">RMI, engagement, and FRL distribution across grades served</div>
-            </div>
-          </div>
+        <ChartCard
+          span={2}
+          title="Grade-Level Performance"
+          subtitle="RMI, engagement, and FRL distribution across grades served"
+          icon={<DemographicsIcon />}
+          accent={DEMO_COLOR}
+          bodyPad="padded"
+        >
           <div className="dm-equity-table dm-equity-table--school">
             <div className="dm-equity-head">
               <div className="dm-ec dm-ec--name">Grade</div>
@@ -164,39 +166,62 @@ export function SchoolDemographics({ schoolId }) {
               </div>
             ))}
           </div>
-        </div>
+        </ChartCard>
 
-        {/* RMI vs Engagement bar (per grade in this school) */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>RMI &amp; Engagement by Grade</h3>
-              <div className="sv-note">Side-by-side comparison across grades at {school.name}</div>
-            </div>
+        <ChartCard
+          span={2}
+          title="RMI & Engagement by Grade"
+          subtitle={`Side-by-side comparison across grades at ${school.name}`}
+          icon={<DemographicsIcon />}
+          accent={DEMO_COLOR}
+          footer={<ChartLegend items={[
+            { color: DEMO_COLOR, label: 'RMI score' },
+            { color: '#7CB5F5',  label: 'Engagement %' },
+          ]} />}
+        >
+          <div style={{ height: 240 }}>
+            <ResponsiveBar
+              data={gradeRows}
+              keys={['rmi', 'engagement']}
+              indexBy="grade"
+              groupMode="grouped"
+              theme={NIVO_THEME}
+              margin={{ top: 8, right: 16, bottom: 36, left: 38 }}
+              padding={0.3}
+              innerPadding={2}
+              colors={({ id, data }) => id === 'rmi' ? rmiColor(data.rmi) : '#7CB5F5'}
+              borderRadius={3}
+              axisBottom={AXIS_BOTTOM}
+              axisLeft={{ ...AXIS_LEFT, tickValues: [40, 60, 80, 100] }}
+              enableGridY
+              enableLabel={false}
+              minValue={40}
+              maxValue={90}
+              tooltip={({ indexValue, data }) => (
+                <BarTooltip
+                  data={data}
+                  indexValue={`Grade ${indexValue}`}
+                  accent={DEMO_COLOR}
+                  keys={['rmi', 'engagement']}
+                  labels={{
+                    rmi:        { label: 'RMI score',  color: rmiColor(data.rmi) },
+                    engagement: { label: 'Engagement', color: '#7CB5F5' },
+                  }}
+                  context={d => <>{d.count.toLocaleString()} students · {d.frl}% FRL</>}
+                />
+              )}
+            />
           </div>
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={gradeRows} margin={{ top: 4, right: 16, left: -20, bottom: 0 }} barSize={16}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#F1F5F9" vertical={false} />
-              <XAxis dataKey="grade" tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <YAxis domain={[40, 90]} tick={{ fontSize: 13, fill: '#94A3B8' }} />
-              <Tooltip contentStyle={{ fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }} />
-              <Legend wrapperStyle={{ fontSize: 13 }} />
-              <Bar dataKey="rmi" name="RMI Score" radius={[3, 3, 0, 0]}>
-                {gradeRows.map((g, i) => <Cell key={i} fill={rmiColor(g.rmi)} />)}
-              </Bar>
-              <Bar dataKey="engagement" name="Engagement %" fill="#7CB5F5" radius={[3, 3, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        {/* Recommendations — school-specific */}
-        <div className="sv-card sv-card--wide">
-          <div className="sv-card-header">
-            <div>
-              <h3>Recommended Actions for {school.name}</h3>
-              <div className="sv-note">Equity-driven priorities for school leadership</div>
-            </div>
-          </div>
+        <ChartCard
+          span={2}
+          title={`Recommended Actions for ${school.name}`}
+          subtitle="Equity-driven priorities for school leadership"
+          icon={<DemographicsIcon />}
+          accent={DEMO_COLOR}
+          bodyPad="padded"
+        >
           <div className="dm-actions">
             {details.frl >= 50 && (
               <div className="dm-action-row dm-action-row--critical">
@@ -233,7 +258,7 @@ export function SchoolDemographics({ schoolId }) {
               </div>
             </div>
           </div>
-        </div>
+        </ChartCard>
 
       </div>
     </div>
