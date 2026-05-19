@@ -5,7 +5,7 @@ import {
   SCHOOL_LEXILE_BY_GRADE, GOALS_MET_TRENDS,
 } from '../data'
 import { StudentsToWatch } from './StudentsToWatch'
-import { OverviewHero } from './OverviewHero'
+import { Hero } from './Hero'
 import { AlertsBanner } from './AlertsBanner'
 import { ReadingHealth, SECTIONS } from './ReadingHealth'
 import {
@@ -75,7 +75,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
 
   return (
     <div className="sdb">
-      <OverviewHero
+      <Hero
         title={school.name}
         subtitle={`${school.grades} · ${school.students.toLocaleString()} students`}
         accent={school.color}

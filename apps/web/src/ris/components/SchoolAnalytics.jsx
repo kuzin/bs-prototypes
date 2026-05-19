@@ -5,7 +5,7 @@ import {
   RMI_TRENDS, ROI_TRENDS,
   GRADE_PERFORMANCE, SCHOOL_GRADE_LEVELS, LEXILE_BY_GRADE,
 } from '../data'
-import { PageHero } from './PageHero'
+import { Hero } from './Hero'
 import {
   NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
   SliceTooltip, ChartLegend, BarTooltip,
@@ -89,7 +89,7 @@ export function SchoolAnalytics({ schoolId }) {
   return (
     <div className="an-root">
 
-      <PageHero
+      <Hero
         icon={<AnalyticsIcon />}
         title="Analytics"
         subtitle={`Student engagement, reading behavior, and outcome correlations · ${school.name}`}

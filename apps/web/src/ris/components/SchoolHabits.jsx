@@ -4,7 +4,7 @@ import {
   SCHOOLS, SCHOOL_STATS, SCHOOL_HEALTH, SESSION_TRENDS,
   STREAK_DATA, VELOCITY_TRENDS, READING_DIET,
 } from '../data'
-import { BucketHero } from './BucketHero'
+import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
   NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
@@ -44,7 +44,7 @@ export function SchoolHabits({ schoolId, onBack }) {
 
   return (
     <div className="mot-root">
-      <BucketHero bucket="habits" score={health.habits} delta={health.dH} onBack={onBack} />
+      <Hero bucket="habits" score={health.habits} delta={health.dH} />
 
       <div className="rc-stats-row">
         <StatCard

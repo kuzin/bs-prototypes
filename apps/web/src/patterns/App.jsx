@@ -5,8 +5,7 @@ import {
 } from '../ris/components/charts'
 import { SECTIONS, HealthStat, ReadingHealth } from '../ris/components/ReadingHealth'
 import { AlertRow, AlertsBanner } from '../ris/components/AlertsBanner'
-import { OverviewHero } from '../ris/components/OverviewHero'
-import { BucketHero } from '../ris/components/BucketHero'
+import { Hero } from '../ris/components/Hero'
 import { MainRail } from '../MainRail'
 import { PrototypeNav } from '../PrototypeNav'
 import { Button } from '../ris/components/Button'
@@ -18,7 +17,6 @@ import { Avatar } from '../ris/components/Avatar'
 import { Pill } from '../ris/components/Pill'
 import { ProgressBar } from '../ris/components/ProgressBar'
 import { BackBar } from '../BackBar'
-import { PageHero } from '../ris/components/PageHero'
 import { Toggle } from '../ris/components/Toggle'
 import {
   Field, Input, Select, Textarea, Checkbox, RadioGroup, Radio,
@@ -31,9 +29,7 @@ import '../ris/components/Cards.css'
 import '../ris/components/SchoolDashboard.css'
 import '../ris/components/ReadingHealth.css'
 import '../ris/components/AlertsBanner.css'
-import '../ris/components/OverviewHero.css'
-import '../ris/components/BucketHero.css'
-import '../ris/components/PageHero.css'
+import '../ris/components/Hero.css'
 import '../MainRail.css'
 import '../BackBar.css'
 import '../ris/components/Toggle.css'
@@ -66,9 +62,7 @@ const SECTIONS_LIST = [
   { group: 'Health',    id: 'reading-health', name: 'ReadingHealth' },
   { group: 'Alerts',    id: 'alert-row',    name: 'AlertRow' },
   { group: 'Alerts',    id: 'alerts-banner', name: 'AlertsBanner' },
-  { group: 'Heroes',    id: 'overview-hero', name: 'OverviewHero' },
-  { group: 'Heroes',    id: 'bucket-hero',  name: 'BucketHero' },
-  { group: 'Heroes',    id: 'page-hero',    name: 'PageHero' },
+  { group: 'Heroes',    id: 'hero',         name: 'Hero' },
   { group: 'Layout',    id: 'back-bar',     name: 'BackBar' },
   { group: 'Layout',    id: 'main-rail',    name: 'MainRail' },
   { group: 'Layout',    id: 'prototype-nav', name: 'PrototypeNav' },
@@ -1152,59 +1146,21 @@ export function App() {
           </Section>
 
           <Section
-            id="overview-hero"
-            title="OverviewHero"
-            desc={<>Top-of-dashboard header for a school or entity. Props: <code>title</code>, <code>subtitle</code>, <code>accent</code>, <code>initials</code>.</>}
+            id="hero"
+            title="Hero"
+            desc={<>One unified page header. Pass either <code>initials</code> (avatar) or <code>icon</code> (icon block); optional <code>subtitle</code> and right-side <code>score</code>+<code>delta</code>. The <code>bucket</code> prop auto-derives icon/title/accent/accentBg from SECTIONS for the four health areas.</>}
           >
             <div className="pt-variants" style={{ gridTemplateColumns: '1fr' }}>
-              <Variant label="elementary school">
-                <OverviewHero
+              <Variant label="avatar + title + subtitle (overview)" bare>
+                <Hero
+                  initials="LE"
                   title="Lincoln Elementary"
                   subtitle="K–5 · 1,650 students"
                   accent="#E8866A"
-                  initials="LE"
                 />
               </Variant>
-              <Variant label="high school">
-                <OverviewHero
-                  title="Adams High"
-                  subtitle="9–12 · 2,510 students"
-                  accent="#C084FC"
-                  initials="AH"
-                />
-              </Variant>
-            </div>
-          </Section>
-
-          <Section
-            id="bucket-hero"
-            title="BucketHero"
-            desc={<>Header banner used at the top of every bucket detail page. Looks up the section by <code>bucket</code> key. Props: <code>bucket</code>, <code>score</code>, <code>delta</code>.</>}
-          >
-            <div className="pt-variants pt-variants--2">
-              <Variant label="bucket='motivation'">
-                <BucketHero bucket="motivation" score={71} delta={7} />
-              </Variant>
-              <Variant label="bucket='integrity'">
-                <BucketHero bucket="integrity" score={86} delta={3} />
-              </Variant>
-              <Variant label="bucket='habits'">
-                <BucketHero bucket="habits" score={58} delta={5} />
-              </Variant>
-              <Variant label="bucket='skills' (negative)">
-                <BucketHero bucket="skills" score={42} delta={-3} />
-              </Variant>
-            </div>
-          </Section>
-
-          <Section
-            id="page-hero"
-            title="PageHero"
-            desc={<>Top-of-page header for analytics / demographics pages with a tinted icon, title, and subtitle. Props: <code>icon</code>, <code>title</code>, <code>subtitle</code>, <code>accent</code>, <code>accentBg</code>.</>}
-          >
-            <div className="pt-variants" style={{ gridTemplateColumns: '1fr' }}>
-              <Variant label="analytics" bare>
-                <PageHero
+              <Variant label="icon + title + subtitle (page)" bare>
+                <Hero
                   icon={
                     <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                       <rect x="3" y="11" width="3" height="6" rx="1" />
@@ -1218,23 +1174,19 @@ export function App() {
                   accentBg="#ECFEFF"
                 />
               </Variant>
-              <Variant label="demographics" bare>
-                <PageHero
-                  icon={
-                    <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="10" cy="6" r="2.5" />
-                      <circle cx="4"  cy="9" r="2" />
-                      <circle cx="16" cy="9" r="2" />
-                      <path d="M6 17c0-2.2 1.8-4 4-4s4 1.8 4 4" />
-                      <path d="M1 17c0-1.7 1.3-3 3-3" />
-                      <path d="M19 17c0-1.7-1.3-3-3-3" />
-                    </svg>
-                  }
-                  title="Demographics"
-                  subtitle="Student cohorts, equity indicators, and grade-level performance"
-                  accent="#7C3AED"
-                  accentBg="#F5F3FF"
-                />
+            </div>
+            <div className="pt-variants pt-variants--2">
+              <Variant label="bucket='motivation'" bare>
+                <Hero bucket="motivation" score={71} delta={7} />
+              </Variant>
+              <Variant label="bucket='integrity'" bare>
+                <Hero bucket="integrity" score={86} delta={3} />
+              </Variant>
+              <Variant label="bucket='habits'" bare>
+                <Hero bucket="habits" score={58} delta={5} />
+              </Variant>
+              <Variant label="bucket='skills' (negative)" bare>
+                <Hero bucket="skills" score={42} delta={-3} />
               </Variant>
             </div>
           </Section>

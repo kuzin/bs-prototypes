@@ -3,7 +3,7 @@ import {
   SCHOOLS, SCHOOL_DETAILS, SCHOOL_STATS,
   GRADE_PERFORMANCE, SCHOOL_GRADE_LEVELS, LEXILE_BY_GRADE,
 } from '../data'
-import { PageHero } from './PageHero'
+import { Hero } from './Hero'
 import {
   NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT,
   ChartLegend, BarTooltip,
@@ -65,7 +65,7 @@ export function SchoolDemographics({ schoolId }) {
   return (
     <div className="dm-root">
 
-      <PageHero
+      <Hero
         icon={<DemographicsIcon />}
         title="Demographics"
         subtitle={`Student cohorts, equity indicators, and grade-level performance · ${school.name}`}

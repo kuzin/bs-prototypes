@@ -3,7 +3,7 @@ import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 import {
   SCHOOLS, SCHOOL_HEALTH, LEXILE_DATA, SCHOOL_LEXILE_BY_GRADE,
 } from '../data'
-import { BucketHero } from './BucketHero'
+import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
   NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT,
@@ -41,7 +41,7 @@ export function SchoolLexile({ schoolId, onBack }) {
 
   return (
     <div className="mot-root">
-      <BucketHero bucket="skills" score={health.skills} delta={health.dS} onBack={onBack} />
+      <Hero bucket="skills" score={health.skills} delta={health.dS} />
 
       <div className="rc-stats-row">
         <StatCard

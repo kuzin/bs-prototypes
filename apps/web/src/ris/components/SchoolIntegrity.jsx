@@ -3,7 +3,7 @@ import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, SCHOOL_HEALTH, SCHOOL_INTEGRITY_TRENDS, BOOK_TALKS_BY_SCHOOL,
 } from '../data'
-import { BucketHero } from './BucketHero'
+import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
   NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
@@ -35,7 +35,7 @@ export function SchoolIntegrity({ schoolId, onBack }) {
 
   return (
     <div className="mot-root">
-      <BucketHero bucket="integrity" score={health.integrity} delta={health.dI} onBack={onBack} />
+      <Hero bucket="integrity" score={health.integrity} delta={health.dI} />
 
       <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
         <StatCard

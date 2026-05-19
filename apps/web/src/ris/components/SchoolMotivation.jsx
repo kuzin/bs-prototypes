@@ -4,7 +4,7 @@ import {
   SCHOOLS, RMI_TRENDS, SCHOOL_HEALTH,
   RMI_FACTORS, INTRINSIC_EXTRINSIC_TRENDS, MOTIVATION_BY_GRADE,
 } from '../data'
-import { BucketHero } from './BucketHero'
+import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
   NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
@@ -63,7 +63,7 @@ export function SchoolMotivation({ schoolId, onBack }) {
 
   return (
     <div className="mot-root">
-      <BucketHero bucket="motivation" score={health.motivation} delta={health.dM} onBack={onBack} />
+      <Hero bucket="motivation" score={health.motivation} delta={health.dM} />
 
       <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
         <StatCard
