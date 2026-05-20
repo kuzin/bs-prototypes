@@ -12,6 +12,7 @@ import {
 } from './charts'
 import { StatCard, ChartCard, CardNote } from './Cards'
 import { ProgressBar } from './ProgressBar'
+import { BarList } from './BarList'
 import { RMI_ICONS } from './RmiIcons'
 import './RisLayout.css'
 import './Motivation.css'
@@ -21,28 +22,6 @@ const EXTRINSIC_COLOR = '#7CB5F5'
 const MOT_ICON = SECTIONS.find(s => s.key === 'motivation')?.icon
 const FACTOR_BY_NAME = Object.fromEntries(RMI_FACTORS.map(f => [f.name, f]))
 
-function FactorRow({ f }) {
-  return (
-    <div className="mot-factor-row mot-factor-row--iconed">
-      <div className="mot-factor-icon" style={{ '--ic-color': f.color, '--ic-bg': `color-mix(in srgb, ${f.color} 10%, white)` }}>
-        {RMI_ICONS[f.iconKey]}
-      </div>
-      <div className="mot-factor-name-wrap">
-        <span className="mot-factor-name">{f.name}</span>
-        <span className="mot-factor-desc">{f.desc}</span>
-      </div>
-      <ProgressBar value={f.score} max={f.max} color={f.color} size="md" />
-      <div className="mot-factor-right">
-        <span className="mot-factor-score">{f.score}</span>
-        {f.delta !== 0 && (
-          <span className={`mot-factor-delta${f.delta > 0 ? ' mot-factor-delta--pos' : ' mot-factor-delta--neg'}`}>
-            {f.delta > 0 ? '↑' : '↓'}{Math.abs(f.delta)}
-          </span>
-        )}
-      </div>
-    </div>
-  )
-}
 
 export function SchoolMotivation({ schoolId, onBack }) {
   const school      = SCHOOLS.find(s => s.id === schoolId)
@@ -209,17 +188,41 @@ export function SchoolMotivation({ schoolId, onBack }) {
           accent={INTRINSIC_COLOR}
           bodyPad="padded"
         >
-          <div className="mot-factor-groups mot-factor-groups--wide">
-            <div className="mot-factor-group">
-              <div className="mot-factor-group-label mot-factor-group-label--int">Intrinsic</div>
-              {intrinsicFactors.map(f => <FactorRow key={f.name} f={f} />)}
-            </div>
-            <div className="mot-factor-divider" />
-            <div className="mot-factor-group">
-              <div className="mot-factor-group-label mot-factor-group-label--ext">Extrinsic</div>
-              {extrinsicFactors.map(f => <FactorRow key={f.name} f={f} />)}
-            </div>
-          </div>
+          <BarList
+            layout="columns"
+            groups={[
+              {
+                label: 'Intrinsic',
+                labelColor: '#E8866A',
+                items: intrinsicFactors.map(f => ({
+                  icon: RMI_ICONS[f.iconKey],
+                  iconColor: f.color,
+                  label: f.name,
+                  sublabel: f.desc,
+                  value: f.score,
+                  max: f.max,
+                  color: f.color,
+                  valueLabel: String(f.score),
+                  delta: f.delta,
+                })),
+              },
+              {
+                label: 'Extrinsic',
+                labelColor: '#7CB5F5',
+                items: extrinsicFactors.map(f => ({
+                  icon: RMI_ICONS[f.iconKey],
+                  iconColor: f.color,
+                  label: f.name,
+                  sublabel: f.desc,
+                  value: f.score,
+                  max: f.max,
+                  color: f.color,
+                  valueLabel: String(f.score),
+                  delta: f.delta,
+                })),
+              },
+            ]}
+          />
         </ChartCard>
 
         <ChartCard
@@ -261,27 +264,21 @@ export function SchoolMotivation({ schoolId, onBack }) {
           accent={INTRINSIC_COLOR}
           bodyPad="padded"
         >
-          <div className="mot-top-factor-list">
-            {MOTIVATION_BY_GRADE.map(g => {
+          <BarList
+            showBar={false}
+            items={MOTIVATION_BY_GRADE.map(g => {
               const factor = FACTOR_BY_NAME[g.topFactor]
               if (!factor) return null
-              return (
-                <div key={g.band} className="mot-top-factor-row">
-                  <div className="mot-top-factor-band">{g.band}</div>
-                  <div
-                    className="mot-top-factor-icon"
-                    style={{ '--tf-color': factor.color, '--tf-bg': `color-mix(in srgb, ${factor.color} 12%, white)` }}
-                  >
-                    {RMI_ICONS[factor.iconKey]}
-                  </div>
-                  <div className="mot-top-factor-body">
-                    <div className="mot-top-factor-name" style={{ color: factor.color }}>{factor.name}</div>
-                    <div className="mot-top-factor-desc">{factor.desc}</div>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
+              return {
+                prefix: g.band,
+                icon: RMI_ICONS[factor.iconKey],
+                iconColor: factor.color,
+                label: factor.name,
+                labelColor: factor.color,
+                sublabel: factor.desc,
+              }
+            }).filter(Boolean)}
+          />
         </ChartCard>
 
       </div>

@@ -54,6 +54,12 @@
 
 .rc-card--wide { grid-column: span 2; }
 
+/* Mobile: don't span 2 columns when the grid has already collapsed to 1 col.
+   span 2 forces an implicit 2nd column and widens the grid past its container. */
+@media (max-width: 699px) {
+  .rc-card--wide { grid-column: auto; }
+}
+
 .rc-card-head {
   display: flex;
   align-items: center;
@@ -159,4 +165,11 @@
   grid-template-columns: repeat(var(--rc-stats-cols, 4), 1fr);
   gap: 10px;
   margin-bottom: 16px;
+}
+
+/* Mobile: full-width stat cards (single column) regardless of --rc-stats-cols.
+   At 2 cols the labels wrap awkwardly inside narrow cards and odd counts
+   leave an orphan card on the last row. */
+@media (max-width: 699px) {
+  .rc-stats-row { grid-template-columns: 1fr; }
 }

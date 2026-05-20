@@ -11,7 +11,7 @@ import {
   SliceTooltip, ChartLegend, BarTooltip,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
-import { ProgressBar } from './ProgressBar'
+import { BarList } from './BarList'
 import './RisLayout.css'
 import './SchoolHabits.css'
 
@@ -193,7 +193,7 @@ export function SchoolHabits({ schoolId, onBack }) {
             <ResponsiveLine
               data={velocityNivo}
               theme={NIVO_THEME}
-              margin={LINE_MARGIN}
+              margin={{ ...LINE_MARGIN, left: 52 }}
               xScale={{ type: 'point' }}
               yScale={{ type: 'linear', min: 1, max: 5 }}
               curve="monotoneX"
@@ -201,6 +201,7 @@ export function SchoolHabits({ schoolId, onBack }) {
               lineWidth={2}
               enablePoints={false}
               enableArea
+              areaBaselineValue={1}
               areaOpacity={0.12}
               enableGridX={false}
               axisBottom={AXIS_BOTTOM}
@@ -226,21 +227,18 @@ export function SchoolHabits({ schoolId, onBack }) {
           icon={HABITS_ICON}
           accent={HABITS_COLOR}
           bodyPad="padded"
+          span={2}
           action={<span className="sh-gemini-badge">✦ Gemini</span>}
         >
-          <div className="sh-diet-list">
-            {READING_DIET.map(d => (
-              <ProgressBar
-                key={d.genre}
-                label={d.genre}
-                value={d.pct}
-                max={Math.max(...READING_DIET.map(x => x.pct))}
-                color={d.color}
-                valueLabel={`${d.pct}%`}
-                size="sm"
-              />
-            ))}
-          </div>
+          <BarList
+            items={READING_DIET.map(d => ({
+              label: d.genre,
+              value: d.pct,
+              max: Math.max(...READING_DIET.map(x => x.pct)),
+              color: d.color,
+              valueLabel: `${d.pct}%`,
+            }))}
+          />
         </ChartCard>
 
       </div>

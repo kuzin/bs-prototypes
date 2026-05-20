@@ -24,7 +24,17 @@
   flex-shrink: 0;
 }
 
-.sb-shell--mobile { flex-direction: column; }
+/* On mobile, .sb-shell collapses to just its topbar (56px). Drop position:
+   relative so the drawer overlays (backdrop / overlay-rail / overlay sidebar)
+   attach to the outer shell (.ris-layout or the showcase frame) and can
+   cover the full height instead of being clipped to the topbar. Also drop
+   the default height:100% so the shell doesn't consume the column flex
+   space that .rl-content needs to fill. */
+.sb-shell--mobile {
+  flex-direction: column;
+  position: static;
+  height: auto;
+}
 
 /* ── Mobile topbar ───────────────────────────────────────────────────── */
 .sb-topbar {

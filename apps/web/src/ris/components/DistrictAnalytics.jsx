@@ -6,6 +6,7 @@ import {
   ROI_TRENDS, SCHOOL_HEALTH, SCHOOLS, DISTRICT_FUNNEL, BOOK_TALKS_BY_SCHOOL, SCHOOL_STATS,
 } from '../data'
 import { Hero } from './Hero'
+import { Funnel } from './Funnel'
 import './Analytics.css'
 import './DistrictAnalytics.css'
 
@@ -151,40 +152,11 @@ export function DistrictAnalytics() {
               </div>
             </div>
           </div>
-          <div className="an-funnel">
-            {DISTRICT_FUNNEL.map((step, i) => {
-              const next    = DISTRICT_FUNNEL[i + 1]
-              const dropOff = next ? step.count - next.count : null
-              return (
-                <div key={step.stage} className="an-funnel-block">
-                  <div className="an-funnel-row">
-                    <div className="an-funnel-label-group">
-                      <span className="an-funnel-stage">{step.stage}</span>
-                      <span className="an-funnel-note">{step.note}</span>
-                    </div>
-                    <div className="an-funnel-track">
-                      <div className="an-funnel-bar" style={{ width: `${step.pct}%`, opacity: 1 - i * 0.12 }} />
-                    </div>
-                    <div className="an-funnel-right">
-                      <span className="an-funnel-count">{step.count.toLocaleString()}</span>
-                      <div className="an-funnel-meta">
-                        <span className="an-funnel-pct">{step.pct}%</span>
-                        {step.delta != null && <span className="an-funnel-delta">↑{step.delta}pp</span>}
-                      </div>
-                    </div>
-                  </div>
-                  {dropOff && (
-                    <div className="an-funnel-dropoff">
-                      <span className="an-funnel-dropoff-line" />
-                      <span className="an-funnel-dropoff-text">
-                        {dropOff.toLocaleString()} students not yet forming next habit
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+          <Funnel
+            accent="#0DA7BC"
+            dropoffLabel="students not yet forming next habit"
+            items={DISTRICT_FUNNEL}
+          />
         </div>
 
         {/* Outcome correlations */}

@@ -12,6 +12,8 @@ import {
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
 import { ProgressBar } from './ProgressBar'
+import { BarList } from './BarList'
+import { Funnel } from './Funnel'
 import './Analytics.css'
 
 const ANALYTICS_COLOR = '#0DA7BC'
@@ -136,38 +138,11 @@ export function SchoolAnalytics({ schoolId }) {
           accent={ANALYTICS_COLOR}
           bodyPad="padded"
         >
-          <div className="an-funnel">
-            {funnel.map((step, i) => {
-              const next = funnel[i + 1]
-              const dropOff = next ? step.count - next.count : null
-              return (
-                <div key={step.stage} className="an-funnel-block">
-                  <div className="an-funnel-row">
-                    <div className="an-funnel-label-group">
-                      <span className="an-funnel-stage">{step.stage}</span>
-                      <span className="an-funnel-note">{step.note}</span>
-                    </div>
-                    <ProgressBar value={step.pct} color={school.color} size="md" className="an-funnel-track" />
-                    <div className="an-funnel-right">
-                      <span className="an-funnel-count">{step.count.toLocaleString()}</span>
-                      <div className="an-funnel-meta">
-                        <span className="an-funnel-pct">{step.pct}%</span>
-                        {step.delta != null && <span className="an-funnel-delta">↑{step.delta}pp</span>}
-                      </div>
-                    </div>
-                  </div>
-                  {dropOff > 0 && (
-                    <div className="an-funnel-dropoff">
-                      <span className="an-funnel-dropoff-line" />
-                      <span className="an-funnel-dropoff-text">
-                        {dropOff.toLocaleString()} students not yet forming next habit
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+          <Funnel
+            accent={school.color}
+            dropoffLabel="students not yet forming next habit"
+            items={funnel}
+          />
         </ChartCard>
 
         <ChartCard
@@ -177,21 +152,17 @@ export function SchoolAnalytics({ schoolId }) {
           accent={ANALYTICS_COLOR}
           bodyPad="padded"
         >
-          <div className="an-tiers">
-            {distribution.map(t => (
-              <div key={t.tier} className="an-tier-row">
-                <div className="an-tier-info">
-                  <div className="an-tier-name">{t.tier}</div>
-                  <div className="an-tier-desc">{t.desc}</div>
-                </div>
-                <ProgressBar value={t.pct} color={t.color} size="md" className="an-tier-track" />
-                <div className="an-tier-vals">
-                  <span className="an-tier-pct">{t.pct}%</span>
-                  <span className="an-tier-count">{t.count.toLocaleString()}</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <BarList
+            items={distribution.map(t => ({
+              label:      t.tier,
+              sublabel:   t.desc,
+              value:      t.pct,
+              color:      t.color,
+              valueLabel: `${t.pct}%`,
+              subValue:   t.count.toLocaleString(),
+            }))}
+            labelWidth={130}
+          />
         </ChartCard>
 
         <ChartCard

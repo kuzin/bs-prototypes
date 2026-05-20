@@ -20,6 +20,8 @@ import { Table } from '../ris/components/Table'
 import { Avatar } from '../ris/components/Avatar'
 import { Pill } from '../ris/components/Pill'
 import { ProgressBar } from '../ris/components/ProgressBar'
+import { BarList } from '../ris/components/BarList'
+import { Funnel } from '../ris/components/Funnel'
 import { BackBar } from '../BackBar'
 import { Toggle } from '../ris/components/Toggle'
 import {
@@ -54,6 +56,8 @@ import '../ris/components/Toggle.css'
 import '../ris/components/Form.css'
 import '../ris/components/FilterBar.css'
 import '../ris/components/Primitives.css'
+import '../ris/components/BarList.css'
+import '../ris/components/Funnel.css'
 
 import './App.css'
 
@@ -101,6 +105,8 @@ const SECTIONS_LIST = [
   { group: 'Charts',    id: 'chart-bar-h',  name: 'Horizontal bar' },
   { group: 'Charts',    id: 'chart-scatter', name: 'Scatter' },
   { group: 'Charts',    id: 'chart-legend', name: 'ChartLegend' },
+  { group: 'Charts',    id: 'bar-list',     name: 'BarList' },
+  { group: 'Charts',    id: 'funnel',       name: 'Funnel' },
   { group: 'Charts',    id: 'tooltips',     name: 'Tooltips' },
   { group: 'Domain',    id: 'health-stat',  name: 'HealthStat' },
   { group: 'Domain',    id: 'reading-health', name: 'ReadingHealth' },
@@ -828,6 +834,141 @@ function PillKnobs() {
       </Knobs>
       <div className="pt-variant-frame pt-variant-frame--row">
         <Pill color={color} variant={variant} size={size} icon={ICONS[iconKey]}>{text}</Pill>
+      </div>
+    </>
+  )
+}
+
+const BL_DIET_DATA = [
+  { label: 'Sci-Fi & Fantasy',   value: 28, color: '#7C3AED' },
+  { label: 'Sports & Adventure', value: 19, color: '#0DA7BC' },
+  { label: 'Realistic Fiction',  value: 17, color: '#16A97A' },
+  { label: 'Graphic & Manga',    value: 14, color: '#E8866A' },
+  { label: 'Mystery & Thriller', value: 11, color: '#F0C050' },
+  { label: 'Other',              value: 11, color: '#CBD5E1' },
+]
+const BL_GRADE_BANDS = ['K–2', '3–5', '6–8', '9–12']
+
+function BarListKnobs() {
+  const [variant, setVariant]               = useState('grouped')
+  const [showBar, setShowBar]               = useState(true)
+  const [layout, setLayout]                 = useState('columns')
+  const [showIcon, setShowIcon]             = useState(true)
+  const [showSublabel, setShowSublabel]     = useState(true)
+  const [showDelta, setShowDelta]           = useState(true)
+  const [showValueLabel, setShowValueLabel] = useState(true)
+  const [showPrefix, setShowPrefix]         = useState(true)
+  const [labelWidth, setLabelWidth]         = useState(0)
+  const [barAlign, setBarAlign]             = useState('start')
+  const [barHeight, setBarHeight]           = useState(0)
+
+  const intrinsic = RMI_FACTORS.filter(f => f.kind === 'intrinsic')
+  const extrinsic = RMI_FACTORS.filter(f => f.kind === 'extrinsic')
+  const dietMax   = Math.max(...BL_DIET_DATA.map(d => d.value))
+
+  const factorItem = f => ({
+    icon:       showIcon       ? RMI_ICONS[f.iconKey]   : undefined,
+    iconColor:  f.color,
+    label:      f.name,
+    sublabel:   showSublabel   ? f.desc                 : undefined,
+    value:      f.score,
+    max:        f.max,
+    color:      f.color,
+    valueLabel: showValueLabel ? String(f.score)        : undefined,
+    delta:      showDelta      ? f.delta                : undefined,
+  })
+
+  const sharedBarProps = {
+    showBar,
+    labelWidth: labelWidth || undefined,
+    barAlign:   barAlign  === 'center' ? 'center' : undefined,
+    barHeight:  barHeight || undefined,
+  }
+
+  let body
+  if (variant === 'simple') {
+    body = (
+      <BarList
+        {...sharedBarProps}
+        items={BL_DIET_DATA.map(d => ({
+          label: d.label,
+          value: d.value,
+          max:   dietMax,
+          color: d.color,
+          valueLabel: showValueLabel ? `${d.value}%` : undefined,
+        }))}
+      />
+    )
+  } else if (variant === 'grouped') {
+    body = (
+      <BarList
+        {...sharedBarProps}
+        layout={layout}
+        groups={[
+          { label: 'Intrinsic', labelColor: '#E8866A', items: intrinsic.map(factorItem) },
+          { label: 'Extrinsic', labelColor: '#7CB5F5', items: extrinsic.map(factorItem) },
+        ]}
+      />
+    )
+  } else {
+    body = (
+      <BarList
+        {...sharedBarProps}
+        items={intrinsic.slice(0, 4).map((f, i) => ({
+          prefix: showPrefix ? BL_GRADE_BANDS[i] : undefined,
+          ...factorItem(f),
+        }))}
+      />
+    )
+  }
+
+  return (
+    <>
+      <Knobs>
+        <Field label="variant">
+          <Select value={variant} onChange={e => setVariant(e.target.value)}>
+            <option value="simple">simple</option>
+            <option value="grouped">grouped</option>
+            <option value="iconList">iconList</option>
+          </Select>
+        </Field>
+        <Field label="showBar"><Toggle checked={showBar} onChange={setShowBar} /></Field>
+        {variant === 'grouped' && (
+          <Field label="layout">
+            <Select value={layout} onChange={e => setLayout(e.target.value)}>
+              <option value="stack">stack</option>
+              <option value="columns">columns</option>
+            </Select>
+          </Field>
+        )}
+        {variant !== 'simple' && <Field label="showIcon"><Toggle checked={showIcon} onChange={setShowIcon} /></Field>}
+        {variant !== 'simple' && <Field label="showSublabel"><Toggle checked={showSublabel} onChange={setShowSublabel} /></Field>}
+        {variant !== 'simple' && <Field label="showDelta"><Toggle checked={showDelta} onChange={setShowDelta} /></Field>}
+        {variant === 'iconList' && <Field label="showPrefix"><Toggle checked={showPrefix} onChange={setShowPrefix} /></Field>}
+        <Field label="showValueLabel"><Toggle checked={showValueLabel} onChange={setShowValueLabel} /></Field>
+        <Field label="labelWidth (0 = auto)">
+          <Input type="number" min="0" max="240" value={labelWidth} onChange={e => setLabelWidth(Number(e.target.value))} />
+        </Field>
+        <Field label="barAlign">
+          <Select value={barAlign} onChange={e => setBarAlign(e.target.value)}>
+            <option value="start">start</option>
+            <option value="center">center (funnel)</option>
+          </Select>
+        </Field>
+        <Field label="barHeight (0 = default 6px)">
+          <Input type="number" min="0" max="48" value={barHeight} onChange={e => setBarHeight(Number(e.target.value))} />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <ChartCard
+          title={variant === 'simple' ? 'Reading Diet Breakdown' : variant === 'grouped' ? 'RMI Factor Breakdown' : 'Top Factor by Grade Band'}
+          subtitle={variant === 'simple' ? 'Genre distribution' : variant === 'grouped' ? 'All 10 factors · scored 1–4' : 'What drives readers most'}
+          accent={variant === 'simple' ? '#7C3AED' : '#E8866A'}
+          bodyPad="padded"
+          span={variant === 'iconList' ? 1 : 2}
+        >
+          {body}
+        </ChartCard>
       </div>
     </>
   )
@@ -3281,6 +3422,36 @@ export function App() {
             desc={<>Footer legend rendered below the chart body. <code>items</code> is an array of <code>{'{ color, label, dashed? }'}</code>.</>}
           >
             <ChartLegendKnobs />
+          </Section>
+
+          <Section
+            id="bar-list"
+            title="BarList"
+            desc={<>Horizontal bar-list for ranked breakdowns, factor scores, and icon lists. Three variants: <code>simple</code> (label + bar + value), <code>grouped</code> (icon + sublabel + bar + score/delta, optionally side-by-side via <code>layout="columns"</code>), and <code>iconList</code> (prefix + icon + label, no bar). Set <code>labelWidth</code> to pin the meta column width and align bars across rows.</>}
+          >
+            <BarListKnobs />
+          </Section>
+
+          <Section
+            id="funnel"
+            title="Funnel"
+            desc={<>Stage-card funnel for conversion / habit-depth flows. Each step is a card with the count, % of total, optional <code>↑Δpp</code>, stage label, and note. A drop-off annotation is computed and rendered between consecutive cards. Stacks vertically — mobile-friendly by default.</>}
+          >
+            <Variant label="Student Engagement Funnel" bare>
+              <ChartCard title="Student Engagement Funnel" subtitle="Habit depth across 1,650 students" accent="#0DA7BC" bodyPad="padded" span={2}>
+                <Funnel
+                  accent="#0DA7BC"
+                  dropoffLabel="students not yet forming next habit"
+                  items={[
+                    { stage: 'Enrolled Students',  note: 'Active roster in Beanstack',   count: 1650, pct: 100 },
+                    { stage: 'Logged This Month',  note: 'At least 1 log in May 2025',   count: 1040, pct: 63, delta: 4 },
+                    { stage: 'Weekly Habit',       note: '1+ log every week for 4+ weeks', count: 660,  pct: 40, delta: 6 },
+                    { stage: 'Daily Habit',        note: '5+ days logged per week',      count: 297,  pct: 18, delta: 3 },
+                    { stage: '30-Day Streak',      note: 'Unbroken streak ≥ 30 days',    count: 165,  pct: 10, delta: 2 },
+                  ]}
+                />
+              </ChartCard>
+            </Variant>
           </Section>
 
           <Section
