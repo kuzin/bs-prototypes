@@ -12,8 +12,11 @@ import { Avatar } from '../ris/components/Avatar'
 import { IconButton, EmptyState, Divider } from '../ris/components/Primitives'
 import { Pill } from '../ris/components/Pill'
 import { ProgressBar } from '../ris/components/ProgressBar'
-import { MainRail } from "../MainRail";
+import { BarList } from '../ris/components/BarList'
+import { StatCard, CardNote } from '../ris/components/Cards'
+import '../ris/components/Table.css'
 import { BackBar } from "../BackBar";
+import { Sidebar } from '../ris/components/Sidebar';
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
 // Monthly density modifiers per student profile (index 0 = Jan, 11 = Dec)
@@ -125,8 +128,9 @@ function StudentActions() {
   return (
     <div className="bp-student-actions">
       <div className="bp-dropdown-anchor">
-        <Button
+        <IconButton
           variant="ghost"
+          size="md"
           aria-label="More options"
           onClick={() => { setDotsOpen(o => !o); setLogOpen(false); }}
         >
@@ -135,15 +139,16 @@ function StudentActions() {
             <circle cx="8" cy="8"   r="1.5" fill="currentColor"/>
             <circle cx="8" cy="12.5" r="1.5" fill="currentColor"/>
           </svg>
-        </Button>
+        </IconButton>
         {dotsOpen && <DropdownMenu items={dotsItems} onClose={() => setDotsOpen(false)} />}
       </div>
       <div className="bp-dropdown-anchor">
         <Button
           variant="primary"
+          iconRight={<svg viewBox="0 0 12 12" style={{width:11,height:11,flexShrink:0}} fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="2,4 6,8 10,4"/></svg>}
           onClick={() => { setLogOpen(o => !o); setDotsOpen(false); }}
         >
-          Log <Ic name="ti-chevron-down" size={13} />
+          Log
         </Button>
         {logOpen && <DropdownMenu items={logItems} onClose={() => setLogOpen(false)} />}
       </div>
@@ -244,13 +249,11 @@ function LeftNav({ activeSection, onNavigate }) {
 }
 
 // ─── Shared page header ───────────────────────────────────────────────────────
-function PageHeader({ icon, iconBg = "#F0F0F0", title, right }) {
+function PageHeader({ icon, title, right }) {
   return (
     <div className="bp-section-header">
       <div className="bp-section-header-left">
-        <div className="bp-section-icon" style={{ "--section-bg": iconBg }}>
-          <Ic name={icon} size={22} />
-        </div>
+        <Ic name={icon} size={20} style={{ opacity: 0.5 }} />
         <div className="bp-section-title">{title}</div>
       </div>
       {right && <div>{right}</div>}
@@ -275,7 +278,7 @@ function Overview({ student, onNavigate }) {
         icon="ti-user"
         iconBg="#E6F1FF"
         title="Overview"
-        right={<Button variant="ghost">Regenerate Overview</Button>}
+        right={null}
       />
 
       {/* Snapshot tiles */}
@@ -284,6 +287,10 @@ function Overview({ student, onNavigate }) {
           const c = C[key];
           const score = sectionScore(key, sec);
           const stat = key === "motivation" ? String(score) : sec.tileStat;
+          const unit = key === "motivation" ? "Score"
+                     : key === "integrity"  ? (parseInt(stat) === 1 ? "Flag" : "Flags")
+                     : key === "habits"     ? "Day Streak"
+                     : "Lexile";
           return (
             <div
               key={key}
@@ -295,8 +302,9 @@ function Overview({ student, onNavigate }) {
               tabIndex={0}
             >
               <div className="bp-tile-label">{LABEL[key]}</div>
-              <div className="bp-tile-stat">{stat}</div>
-              <div className="bp-tile-sub">{sec.tileSub}</div>
+              <div className="bp-tile-stat">
+                {stat}<span className="bp-tile-unit"> {unit}</span>
+              </div>
               <div className="bp-tile-status">
                 <StatusBadge label={sec.status} />
               </div>
@@ -437,42 +445,29 @@ function MotivationDetail({ sec, c }) {
         </select>
       </div>
 
-      <div className="bp-rmi-metrics">
+      <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
         {[
           { label: "Avg Intrinsic Score",  val: rmi.intrinsicAvg,  max: rmi.intrinsicMax,  delta: rmi.intrinsicDelta },
           { label: "Avg Motivation Score", val: rmi.motivationAvg, max: rmi.motivationMax, delta: rmi.motivationDelta },
           { label: "Avg Extrinsic Score",  val: rmi.extrinsicAvg,  max: rmi.extrinsicMax,  delta: rmi.extrinsicDelta },
         ].map(({ label, val, max, delta }) => (
-          <div key={label} className="bp-rmi-metric">
-            <div className="bp-rmi-score-row">
-              <span className="bp-rmi-score">{val}</span>
-              <span className="bp-rmi-max">/{max}</span>
-              <span className={`bp-rmi-delta ${delta > 0 ? "bp-rmi-delta--up" : "bp-rmi-delta--down"}`}>
-                {delta > 0 ? "▲" : "▼"}{Math.abs(delta)}%
-              </span>
-            </div>
-            <div className="bp-rmi-label">{label}</div>
-          </div>
+          <StatCard
+            key={label}
+            value={val}
+            unit={`/${max}`}
+            label={label}
+            footer={`${delta > 0 ? '▲' : '▼'}${Math.abs(delta)}%`}
+            footerColor={delta > 0 ? '#16A97A' : '#DC2626'}
+          />
         ))}
       </div>
 
-      <div className="bp-rmi-bars">
-        {[
-          { label: "Intrinsic", score: sec.intrinsic, delta: sec.intrinsicDelta },
-          { label: "Extrinsic", score: sec.extrinsic, delta: sec.extrinsicDelta },
-        ].map(({ label, score, delta }) => (
-          <div key={label} className="bp-score-row">
-            <div className="bp-score-row-header">
-              <span className="bp-score-label">{label}</span>
-              <div className="bp-score-value">
-                <span className="bp-score-num">{score}</span>
-                <Pill variant={delta > 0 ? "success" : "error"} size="sm">{delta > 0 ? "+" : ""}{delta}</Pill>
-              </div>
-            </div>
-            <ProgressBar value={score} color={c.bar} />
-          </div>
-        ))}
-      </div>
+      <BarList
+        items={[
+          { label: "Intrinsic", value: sec.intrinsic, color: c.bar, valueLabel: String(sec.intrinsic), delta: sec.intrinsicDelta },
+          { label: "Extrinsic", value: sec.extrinsic, color: c.bar, valueLabel: String(sec.extrinsic), delta: sec.extrinsicDelta },
+        ]}
+      />
     </Card>
 
     <Card>
@@ -488,11 +483,12 @@ function MotivationDetail({ sec, c }) {
     <Card>
       <SectionHeading>Recommendations</SectionHeading>
       <div className="bp-rmi-recs">
-        <div className="bp-rmi-rec-goal">
-          <div className="bp-rmi-rec-goal-label">Recommended Reading Goal</div>
-          <div className="bp-rmi-rec-goal-value">{rmi.readingGoalMinutes}</div>
-          <div className="bp-rmi-rec-goal-unit">Minutes Daily</div>
-        </div>
+        <StatCard
+          value={rmi.readingGoalMinutes}
+          unit=" min"
+          label="Recommended Reading Goal"
+          footer="daily"
+        />
         <div className="bp-rmi-rec-actions">
           <div className="bp-rmi-rec-actions-label">Recommended Actions</div>
           {rmi.recommendedActions.map((a, i) => (
@@ -509,21 +505,16 @@ function MotivationDetail({ sec, c }) {
 
     <Card>
       <SectionHeading>Motivator Rankings</SectionHeading>
-      <div className="bp-motivator-rankings">
-        {rmi.rankings.map((m, i) => (
-          <div key={m.name} className="bp-motivator-row">
-            <span className="bp-motivator-rank">{i + 1}</span>
-            <span className="bp-motivator-name">{m.name}</span>
-            <div className="bp-motivator-bar-wrap">
-              <ProgressBar value={(m.score / m.max) * 100} color={c.bar} size="sm" />
-            </div>
-            <span className="bp-motivator-score">{m.score}</span>
-            <span className={`bp-motivator-delta ${m.delta >= 0 ? "bp-motivator-delta--up" : "bp-motivator-delta--down"}`}>
-              {m.delta >= 0 ? "▲" : "▼"}{Math.abs(m.delta)}%
-            </span>
-          </div>
-        ))}
-      </div>
+      <BarList
+        items={rmi.rankings.map((m, i) => ({
+          prefix: i + 1,
+          label: m.name,
+          value: (m.score / m.max) * 100,
+          color: c.bar,
+          valueLabel: String(m.score),
+          delta: m.delta,
+        }))}
+      />
     </Card>
   </>);
 }
@@ -560,20 +551,18 @@ function IntegrityDetail({ sec }) {
       </div>
       <div className="bp-flag-breakdown">
         <div className="bp-flag-breakdown-label">Top flags this period</div>
-        <div className="bp-flag-list">
-          {sec.flagBreakdown.map(f => (
-            <div key={f.type} className="bp-flag-item">
-              <span className="bp-flag-type">{f.type}</span>
-              <Pill variant="warning" size="sm">{f.count}</Pill>
-            </div>
-          ))}
-        </div>
+        <BarList
+          showBar={false}
+          items={sec.flagBreakdown.map(f => ({
+            label: f.type,
+            valueLabel: String(f.count),
+          }))}
+        />
       </div>
       {sec.unfinishedConversations > 0 && (
-        <div className="bp-unfinished-banner">
-          <Ic name="ti-message-x" size={16} />
-          {sec.unfinishedConversations} unfinished BTWB conversations
-        </div>
+        <CardNote tone="accent">
+          <Ic name="ti-message-x" size={14} /> {sec.unfinishedConversations} unfinished BTWB conversations
+        </CardNote>
       )}
     </Card>
 
@@ -841,28 +830,15 @@ function HabitsDetail({ sec, c }) {
     {/* Habit patterns */}
     <Card>
       <SectionHeading>Reading patterns</SectionHeading>
-      <div className="bp-habit-patterns">
-        {[
-          { label: "Avg session length",    value: `${sec.avgSessionMins} min`,
-            note: "per sitting" },
-          { label: "Days read this month",  value: `${sec.daysReadThisMonth} of ${sec.daysInMonth}`,
-            note: `${Math.round(sec.daysReadThisMonth / sec.daysInMonth * 100)}% consistency`,
-            tone: sec.daysReadThisMonth / sec.daysInMonth >= 0.7 ? "good" : sec.daysReadThisMonth / sec.daysInMonth >= 0.4 ? "neutral" : "bad" },
-          { label: "Longest gap",           value: `${sec.longestGap} ${sec.longestGap === 1 ? "day" : "days"}`,
-            note: "without reading",
-            tone: sec.longestGap <= 2 ? "good" : sec.longestGap <= 5 ? "neutral" : "bad" },
-          { label: "Best reading day",      value: sec.topReadingDay,
-            note: "most consistent" },
-        ].map(({ label, value, note, tone }) => (
-          <div key={label} className="bp-habit-row">
-            <div className="bp-habit-row-label">{label}</div>
-            <div className="bp-habit-row-right">
-              <span className={`bp-habit-row-value${tone ? ` bp-habit-row-value--${tone}` : ""}`}>{value}</span>
-              <span className="bp-habit-row-note">{note}</span>
-            </div>
-          </div>
-        ))}
-      </div>
+      <BarList
+        showBar={false}
+        items={[
+          { label: "Avg session length",   valueLabel: `${sec.avgSessionMins} min`,  subValue: "per sitting" },
+          { label: "Days read this month",  valueLabel: `${sec.daysReadThisMonth} of ${sec.daysInMonth}`, subValue: `${Math.round(sec.daysReadThisMonth / sec.daysInMonth * 100)}% consistency` },
+          { label: "Longest gap",           valueLabel: `${sec.longestGap} ${sec.longestGap === 1 ? "day" : "days"}`, subValue: "without reading" },
+          { label: "Best reading day",      valueLabel: sec.topReadingDay,            subValue: "most consistent" },
+        ]}
+      />
     </Card>
 
     {/* Heatmap */}
@@ -1778,51 +1754,18 @@ function PlaceholderPage({ pageKey }) {
 function AdminMockup({ onStudentClick, selectedKey }) {
   return (
     <div className="bp-adm">
-      {/* Far-left icon rail (shared across prototypes) */}
-      <MainRail activeIndex={1} />
-
-      {/* People sidebar */}
-      <div className="bp-adm-people">
-        <div className="bp-adm-people-top">
-          <div className="bp-adm-people-title">People</div>
-          <div className="bp-adm-people-sub">Find and log for my students and classes.</div>
-        </div>
-        <div className="bp-adm-nav">
-          <div className="bp-adm-nav-item">
-            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:0.75}}>
-              <rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/>
-              <rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/>
-            </svg>
-            <span>Classes</span>
-          </div>
-          <div className="bp-adm-nav-item bp-adm-nav-item--open">
-            <svg width="17" height="17" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:0.85}}>
-              <circle cx="7.5" cy="6" r="2.5"/>
-              <path d="M2 17c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/>
-              <circle cx="14.5" cy="6" r="2" opacity="0.7"/>
-              <path d="M17 17c0-2.5-1.5-4-3.5-4.5" opacity="0.7"/>
-            </svg>
-            <span>Students</span>
-          </div>
-          <div className="bp-adm-nav-subgroup">
-            <div className="bp-adm-nav-child bp-adm-nav-child--active">
-              <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:0.8}}>
-                <circle cx="10" cy="7" r="3"/><path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
-              </svg>
-              View Students
-            </div>
-            <div className="bp-adm-nav-child">
-              <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" style={{flexShrink:0,opacity:0.8}}>
-                <path d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/>
-                <path d="M7 8h6M7 11h6M7 14h3"/>
-                <circle cx="15.5" cy="14.5" r="2.5" fill="currentColor" fillOpacity="0.2" stroke="currentColor"/>
-                <line x1="14.5" y1="14.5" x2="16.5" y2="14.5"/><line x1="15.5" y1="13.5" x2="15.5" y2="15.5"/>
-              </svg>
-              Flagged Entries
-            </div>
-          </div>
-        </div>
-      </div>
+      <Sidebar
+        title="People"
+        subtitle="Find and log for my students and classes."
+        mainRailIndex={1}
+        nav={[
+          { id: 'classes',      label: 'Classes',        icon: 'overview'     },
+          { id: 'students',     label: 'Students',       icon: 'demographics' },
+          { id: 'view-students', label: 'View Students', icon: 'person',      subgroup: true },
+          { id: 'flagged',      label: 'Flagged Entries', icon: 'flag',       subgroup: true },
+        ]}
+        active="view-students"
+      />
 
       {/* Main content area */}
       <div className="bp-adm-main">
@@ -1848,7 +1791,7 @@ function AdminMockup({ onStudentClick, selectedKey }) {
           ))}
         </div>
 
-        <FilterBar action={<Button variant="secondary" disabled>Save &amp; Update</Button>}>
+        <FilterBar>
           <FilterItem label="View as …">
             <Select defaultValue="goal" size="sm">
               <option value="goal">Reading Goal</option>
@@ -1873,48 +1816,53 @@ function AdminMockup({ onStudentClick, selectedKey }) {
 
         <div className="bp-adm-card">
           <div className="bp-adm-week-nav">
-            <IconButton variant="ghost" size="sm">‹</IconButton>
+            <IconButton variant="ghost" size="md" aria-label="Previous week">
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="13,5 7,10 13,15"/></svg>
+            </IconButton>
             <span className="bp-adm-week-label">5/11 – 5/17 (This Week)</span>
-            <IconButton variant="ghost" size="sm" style={{opacity:0.3}}>›</IconButton>
+            <IconButton variant="ghost" size="md" aria-label="Next week" style={{opacity:0.3}}>
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="7,5 13,10 7,15"/></svg>
+            </IconButton>
           </div>
-          <table className="bp-adm-table">
+          <table className="tbl tbl--compact tbl--flush">
             <thead>
               <tr>
-                <th style={{width:160}}></th>
-                <th>Goal</th>
-                <th>Average</th>
-                {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=><th key={d}>{d}</th>)}
+                <th className="tbl-th" style={{width:160,textAlign:'left'}}>Student</th>
+                <th className="tbl-th bp-adm-th--goal">Goal</th>
+                <th className="tbl-th tbl-cell--center">Average</th>
+                {["Sun","Mon","Tue","Wed","Thu","Fri","Sat"].map(d=><th key={d} className="tbl-th tbl-cell--center">{d}</th>)}
               </tr>
             </thead>
             <tbody>
               {CLASS_TABLE.map(s => (
                 <tr
                   key={s.key}
-                  className={`bp-adm-row${selectedKey === s.key ? " bp-adm-row--selected" : ""}`}
+                  className={`tbl-row tbl-row--clickable${selectedKey === s.key ? " bp-adm-row--selected" : ""}`}
                   onClick={() => onStudentClick?.(s.key)}
                   onKeyDown={e => e.key === "Enter" && onStudentClick?.(s.key)}
                   role="button"
                   tabIndex={0}
-                  style={{ cursor: "pointer" }}
                 >
-                  <td>
+                  <td className="tbl-td">
                     <div className="bp-adm-student-cell">
                       <span className={`bp-adm-rank bp-adm-rank--${s.rank===1?"gold":s.rank===2?"silver":"bronze"}`}>{s.rank}</span>
                       <span className="bp-adm-student-name">{STUDENTS[s.key].name}</span>
                     </div>
                   </td>
-                  <td className="bp-adm-goal-cell">
-                    <span className="bp-adm-goal-val">{s.goal}</span>
-                    <IconButton variant="ghost" size="sm" title="Edit goal" onClick={e => e.stopPropagation()}>
-                      <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="11" height="11">
-                        <path d="M8.5 1.5 l2 2 L3 11 l-2.5.5.5-2.5z"/>
-                        <path d="M7 3l2 2"/>
-                      </svg>
-                    </IconButton>
+                  <td className="tbl-td bp-adm-td--goal">
+                    <div className="bp-adm-goal-cell">
+                      <span className="bp-adm-goal-val">{s.goal}</span>
+                      <IconButton variant="ghost" size="sm" title="Edit goal" onClick={e => e.stopPropagation()}>
+                        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="11" height="11">
+                          <path d="M8.5 1.5 l2 2 L3 11 l-2.5.5.5-2.5z"/>
+                          <path d="M7 3l2 2"/>
+                        </svg>
+                      </IconButton>
+                    </div>
                   </td>
-                  <td><span className={`bp-adm-pct bp-adm-pct--${s.ac}`}>{s.avg}%</span></td>
+                  <td className="tbl-td tbl-cell--center"><span className={`bp-adm-pct bp-adm-pct--${s.ac}`}>{s.avg}%</span></td>
                   {s.days.map((d,i)=>(
-                    <td key={i} className="bp-adm-day-td">
+                    <td key={i} className="tbl-td tbl-cell--center">
                       {d===null ? <span className="bp-adm-dash">–</span>
                        : d===true ? <span className="bp-adm-check-circle"><svg viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="10" height="10"><polyline points="1.5,5 4,7.5 8.5,2.5"/></svg></span>
                        : <span className={`bp-adm-pct bp-adm-pct--${s.ac === "red" ? "red" : "orange"}`}>{d}</span>}
@@ -1923,9 +1871,10 @@ function AdminMockup({ onStudentClick, selectedKey }) {
                 </tr>
               ))}
               <tr className="bp-adm-avg-row">
-                <td colSpan={2}>Class Average</td>
-                <td>67%</td>
-                {["–","58%","50%","33%","67%","24%","–"].map((v,i)=><td key={i}>{v}</td>)}
+                <td className="tbl-td">Class Average</td>
+                <td className="tbl-td bp-adm-td--goal" />
+                <td className="tbl-td tbl-cell--center">67%</td>
+                {["–","58%","50%","33%","67%","24%","–"].map((v,i)=><td key={i} className="tbl-td tbl-cell--center">{v}</td>)}
               </tr>
             </tbody>
           </table>
@@ -2009,16 +1958,16 @@ export default function BeanstackProfile() {
 
           {/* Mobile-only top bar — hidden on desktop via CSS */}
           <div className="bp-profile-topbar">
-            <button className="bp-profile-topbar-close" onClick={closeProfile} aria-label="Close profile">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M4 4l8 8M12 4l-8 8"/>
-              </svg>
-            </button>
             <div className="bp-profile-topbar-title">
               <span className="bp-profile-topbar-name">{student.name}</span>
               <span className="bp-profile-topbar-grade">{student.grade}</span>
             </div>
             <StudentActions />
+            <button className="bp-profile-topbar-close" onClick={closeProfile} aria-label="Close profile">
+              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M4 4l8 8M12 4l-8 8"/>
+              </svg>
+            </button>
           </div>
 
           <div className="bp-root">

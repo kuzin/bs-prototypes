@@ -3591,6 +3591,18 @@ export function App() {
           </Section>
 
           <Section
+            id="tabs"
+            title="Tabs"
+            desc={<>Underline-style tab bar. Apply <code>bp-adm-tab--active</code> to the selected tab.</>}
+          >
+            <div className="bp-adm-tabs" style={{ maxWidth: 400 }}>
+              {["Daily Reading", "Students", "Earned Rewards"].map((t, i) => (
+                <div key={t} className={`bp-adm-tab${i === 0 ? " bp-adm-tab--active" : ""}`}>{t}</div>
+              ))}
+            </div>
+          </Section>
+
+          <Section
             id="health-icons"
             title="Reading Health Icons"
             desc={<>The four health-area icons from <code>SECTIONS</code> (Motivation, Integrity, Habits, Skills). Used in dashboard cards and bucket page heroes.</>}

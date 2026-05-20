@@ -90,6 +90,18 @@ function NavIcon({ name }) {
         <path d="M2 10C4 6 7 4 10 4s6 2 8 6c-2 4-5 6-8 6s-6-2-8-6z"/>
       </svg>
     )
+    case 'person': return (
+      <svg {...props}>
+        <circle cx="10" cy="7" r="3"/>
+        <path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6"/>
+      </svg>
+    )
+    case 'flag': return (
+      <svg {...props}>
+        <path d="M5 3v14"/>
+        <path d="M5 3h10l-2.5 4.5L15 12H5"/>
+      </svg>
+    )
     default: return null
   }
 }

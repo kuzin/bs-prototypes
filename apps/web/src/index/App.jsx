@@ -1,5 +1,7 @@
 import { PROTOTYPES } from '../prototypes'
 
+const CARDS = PROTOTYPES.filter((p) => p.id !== 'patterns');
+
 function ProtoCard({ name, description, href, accent }) {
   return (
     <a href={href} className="card" style={{ "--accent": accent }}>
@@ -24,7 +26,7 @@ export default function App() {
 
       <main>
         <div className="list">
-          {PROTOTYPES.map((p) => (
+          {CARDS.map((p) => (
             <ProtoCard key={p.href} {...p} />
           ))}
         </div>
