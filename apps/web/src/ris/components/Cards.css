@@ -116,11 +116,11 @@
 
 .rc-card-drill:hover { opacity: 1; }
 
-.rc-card-body--flush { padding: 0; }
+/* Chart cards get side breathing room; .tbl cards override back to 0 so
+   table rows sit flush with the card border. */
+.rc-card-body--flush { padding: 0 12px; }
 
-/* Clip table rows to card corners — only when the flush body contains a table.
-   Charts use flush too but need overflow: visible for Nivo tooltip portals. */
-.rc-card-body--flush:has(.tbl) { overflow: hidden; }
+.rc-card-body--flush:has(.tbl) { padding: 0; overflow: hidden; }
 .rc-card-body--flush:has(.tbl):first-child { border-radius: 13px 13px 0 0; }
 .rc-card-body--flush:has(.tbl):last-child  { border-radius: 0 0 13px 13px; }
 .rc-card-body--flush:has(.tbl):only-child  { border-radius: 13px; }
