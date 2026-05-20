@@ -1,4 +1,4 @@
-import { useState, useEffect, useSyncExternalStore, Fragment } from 'react'
+import { useState, useEffect, useRef, useSyncExternalStore, Fragment } from 'react'
 import { ResponsiveLine } from '@nivo/line'
 import { ResponsiveBar } from '@nivo/bar'
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
@@ -2688,6 +2688,10 @@ export function App() {
     return new Set([initial])
   })
 
+  // Suppress scroll-based updates while anchor navigation is animating
+  const suppressScroll  = useRef(false)
+  const suppressTimer   = useRef(null)
+
   const toggleGroup = group =>
     setOpenGroups(prev => {
       const next = new Set(prev)
@@ -2695,8 +2699,20 @@ export function App() {
       return next
     })
 
+  // Called when a sidebar link is clicked — snap state immediately and
+  // freeze the scroll handler until smooth-scroll finishes (~600 ms).
+  const handleNavClick = (s) => {
+    setActive(s.id)
+    setOpenGroups(new Set([SECTION_GROUP[s.id]]))
+    setNavOpen(false)
+    suppressScroll.current = true
+    clearTimeout(suppressTimer.current)
+    suppressTimer.current = setTimeout(() => { suppressScroll.current = false }, 600)
+  }
+
   useEffect(() => {
     function onScroll() {
+      if (suppressScroll.current) return   // nav click in progress — skip
       const sections = SECTIONS_LIST.map(s => document.getElementById(s.id))
       const top = document.querySelector('.pt-content').scrollTop + 60
       for (let i = sections.length - 1; i >= 0; i--) {
@@ -2783,7 +2799,7 @@ export function App() {
                     key={s.id}
                     href={`#${s.id}`}
                     className={`pt-nav-link${active === s.id ? ' pt-nav-link--active' : ''}`}
-                    onClick={() => { setActive(s.id); setNavOpen(false) }}
+                    onClick={() => handleNavClick(s)}
                   >
                     {s.name}
                   </a>
