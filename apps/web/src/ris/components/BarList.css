@@ -1,0 +1,191 @@
+/* ── BarList ─────────────────────────────────────────────────────────────── */
+.bl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bl--grouped { gap: 0; }
+
+.bl--columns {
+  flex-direction: row;
+  gap: 24px;
+}
+
+.bl--columns > .bl-group { flex: 1; }
+
+/* Container-query wrapper around grouped BarLists — lets the layout
+   respond to its own card width, not the viewport. Below ~600px the two
+   columns get squeezed and bars vanish, so collapse to a single stack. */
+.bl-cq { container-type: inline-size; }
+
+@container (max-width: 600px) {
+  .bl--columns {
+    flex-direction: column;
+    gap: 0;
+  }
+  .bl--columns > .bl-divider {
+    width: auto;
+    height: 1px;
+    align-self: stretch;
+  }
+}
+
+.bl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 0;
+}
+
+.bl-group-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.bl-divider { background: #F1F5F9; }
+.bl--stack   > .bl-divider { height: 1px; }
+.bl--columns > .bl-divider { width: 1px; height: auto; align-self: stretch; }
+
+/* ── Row ─────────────────────────────────────────────────────────────────── */
+.bl-row {
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  grid-template-columns: var(--bl-meta-w, 1fr) 2fr auto;
+}
+
+/* icon | meta | bar | value */
+.bl-row--icon {
+  grid-template-columns: 28px var(--bl-meta-w, 120px) 1fr auto;
+  padding: 3px 0;
+}
+
+/* No bar: meta | value */
+.bl-row--no-bar {
+  grid-template-columns: var(--bl-meta-w, 1fr) auto;
+}
+
+/* icon + no bar: icon | meta | value */
+.bl-row--icon.bl-row--no-bar {
+  grid-template-columns: 28px var(--bl-meta-w, 1fr) auto;
+}
+
+/* prefix + bar (no icon): prefix | meta | bar | value */
+.bl-row--prefix {
+  grid-template-columns: 44px var(--bl-meta-w, 1fr) 2fr auto;
+}
+
+/* prefix + icon + bar: prefix | icon | meta | bar | value */
+.bl-row--prefix.bl-row--icon {
+  grid-template-columns: 44px 28px var(--bl-meta-w, 120px) 1fr auto;
+}
+
+/* prefix + no bar (no icon): prefix | meta | value */
+.bl-row--prefix.bl-row--no-bar {
+  grid-template-columns: 44px var(--bl-meta-w, 1fr) auto;
+}
+
+/* prefix + icon + no bar: prefix | icon | meta | value */
+.bl-row--prefix.bl-row--icon.bl-row--no-bar {
+  grid-template-columns: 44px 28px 1fr auto;
+  padding: 4px 0;
+}
+
+/* ── Prefix ─────────────────────────────────────────────────────────────── */
+.bl-prefix {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+}
+
+/* ── Icon ───────────────────────────────────────────────────────────────── */
+.bl-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: color-mix(in srgb, var(--bl-ic, #94A3B8) 55%, #334155);
+  background: var(--bl-ic-bg, #F8FAFC);
+  border: 1px solid color-mix(in srgb, var(--bl-ic, #94A3B8) 25%, #E2E8F0);
+}
+
+.bl-icon svg { width: 16px; height: 16px; }
+
+/* ── Meta ───────────────────────────────────────────────────────────────── */
+.bl-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.bl-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bl-sublabel {
+  font-size: 13px;
+  color: #94A3B8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Bar track ──────────────────────────────────────────────────────────── */
+.bl-track {
+  display: flex;
+  justify-content: var(--bl-bar-justify, flex-start);
+  height: var(--bl-bar-h, 6px);
+  background: var(--bl-bar-bg, #F1F5F9);
+  border-radius: var(--bl-bar-radius, 99px);
+  overflow: hidden;
+}
+
+.bl-fill {
+  height: 100%;
+  border-radius: var(--bl-bar-radius, 99px);
+  transition: width 0.4s ease;
+}
+
+/* ── Value + delta ──────────────────────────────────────────────────────── */
+.bl-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 36px;
+}
+
+.bl-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1E293B;
+  font-variant-numeric: tabular-nums;
+}
+
+.bl-subvalue {
+  font-size: 13px;
+  color: #94A3B8;
+  font-variant-numeric: tabular-nums;
+}
+
+.bl-delta {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.bl-delta--pos { color: #16A97A; }
+.bl-delta--neg { color: #E8866A; }

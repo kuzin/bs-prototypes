@@ -10,6 +10,8 @@ import {
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
 import { ProgressBar } from './ProgressBar'
+import { BarList } from './BarList'
+import { Table } from './Table'
 import { Pill } from './Pill'
 import './Demographics.css'
 
@@ -111,21 +113,17 @@ export function SchoolDemographics({ schoolId }) {
           accent={DEMO_COLOR}
           bodyPad="padded"
         >
-          <div className="dm-cohort-list">
-            {cohorts.map(c => (
-              <div key={c.label} className="dm-cohort-row">
-                <div className="dm-cohort-info">
-                  <div className="dm-cohort-name">{c.label}</div>
-                  <div className="dm-cohort-desc">{c.desc}</div>
-                </div>
-                <ProgressBar value={c.pct} color={c.color} size="md" className="dm-cohort-track" />
-                <div className="dm-cohort-vals">
-                  <span className="dm-cohort-pct">{c.pct}%</span>
-                  <span className="dm-cohort-count">{Math.round(school.students * c.pct / 100).toLocaleString()} students</span>
-                </div>
-              </div>
-            ))}
-          </div>
+          <BarList
+            labelWidth={140}
+            items={cohorts.map(c => ({
+              label:      c.label,
+              sublabel:   c.desc,
+              value:      c.pct,
+              color:      c.color,
+              valueLabel: `${c.pct}%`,
+              subValue:   `${Math.round(school.students * c.pct / 100).toLocaleString()} students`,
+            }))}
+          />
         </ChartCard>
 
         <ChartCard
@@ -134,38 +132,30 @@ export function SchoolDemographics({ schoolId }) {
           subtitle="RMI, engagement, and FRL distribution across grades served"
           icon={<DemographicsIcon />}
           accent={DEMO_COLOR}
-          bodyPad="padded"
+          bodyPad="flush"
         >
-          <div className="dm-equity-table dm-equity-table--school">
-            <div className="dm-equity-head">
-              <div className="dm-ec dm-ec--name">Grade</div>
-              <div className="dm-ec dm-ec--rmi">RMI</div>
-              <div className="dm-ec dm-ec--bar">Reading Motivation Index</div>
-              <div className="dm-ec dm-ec--engage">Engagement</div>
-              <div className="dm-ec dm-ec--lexile">Students</div>
-              <div className="dm-ec dm-ec--frl">FRL %</div>
-            </div>
-            {gradeRows.map(g => (
-              <div key={g.grade} className="dm-equity-row">
-                <div className="dm-ec dm-ec--name dm-school-name">Grade {g.grade}</div>
-                <div className="dm-ec dm-ec--rmi">
-                  <span className="dm-rmi-val" style={{ color: rmiColor(g.rmi) }}>{g.rmi}</span>
-                </div>
-                <div className="dm-ec dm-ec--bar">
-                  <ProgressBar value={g.rmi} max={100} color={rmiColor(g.rmi)} size="sm" />
-                </div>
-                <div className="dm-ec dm-ec--engage">{g.engagement}%</div>
-                <div className="dm-ec dm-ec--lexile">{g.count.toLocaleString()}</div>
-                <div className="dm-ec dm-ec--frl">
+          <Table
+            flush
+            getRowKey={r => r.grade}
+            columns={[
+              { key: 'grade',      label: 'Grade', render: v => `Grade ${v}` },
+              { key: 'rmi',        label: 'RMI', align: 'right',
+                render: v => <span style={{ color: rmiColor(v), fontWeight: 700 }}>{v}</span> },
+              { key: 'rmiBar',     label: 'Reading Motivation Index',
+                render: (_, r) => <ProgressBar value={r.rmi} max={100} color={rmiColor(r.rmi)} size="sm" /> },
+              { key: 'engagement', label: 'Engagement', align: 'right', render: v => `${v}%` },
+              { key: 'count',      label: 'Students',   align: 'right', render: v => v.toLocaleString() },
+              { key: 'frl',        label: 'FRL %',      align: 'center',
+                render: v => (
                   <Pill
-                    color={g.frl >= 50 ? '#DC2626' : g.frl >= 30 ? '#D97706' : '#16A97A'}
+                    color={v >= 50 ? '#DC2626' : v >= 30 ? '#D97706' : '#16A97A'}
                     variant="soft"
                     size="sm"
-                  >{g.frl}%</Pill>
-                </div>
-              </div>
-            ))}
-          </div>
+                  >{v}%</Pill>
+                ) },
+            ]}
+            rows={gradeRows}
+          />
         </ChartCard>
 
         <ChartCard
@@ -225,36 +215,36 @@ export function SchoolDemographics({ schoolId }) {
           <div className="dm-actions">
             {details.frl >= 50 && (
               <div className="dm-action-row dm-action-row--critical">
-                <Pill color="#DC2626" variant="soft" size="sm">High Priority</Pill>
-                <div className="dm-action-body">
+                <div className="dm-action-head">
                   <div className="dm-action-school">
                     High-FRL cohort support
                     <span className="dm-action-frl"> · {details.frl}% FRL</span>
                   </div>
-                  <div className="dm-action-text">
-                    With {Math.round(school.students * details.frl / 100).toLocaleString()} students on free/reduced lunch, monitor engagement gaps in lower-grade cohorts and consider expanded book access programs.
-                  </div>
+                  <Pill color="#DC2626" variant="soft" size="sm">High Priority</Pill>
+                </div>
+                <div className="dm-action-text">
+                  With {Math.round(school.students * details.frl / 100).toLocaleString()} students on free/reduced lunch, monitor engagement gaps in lower-grade cohorts and consider expanded book access programs.
                 </div>
               </div>
             )}
             {stats.rmi < 75 && (
               <div className="dm-action-row dm-action-row--warning">
-                <Pill color="#D97706" variant="soft" size="sm">Monitor</Pill>
-                <div className="dm-action-body">
+                <div className="dm-action-head">
                   <div className="dm-action-school">RMI below district average</div>
-                  <div className="dm-action-text">
-                    School-level RMI sits at {stats.rmi}. Look at the lowest-performing grade in the chart above and target a re-engagement challenge or teacher-led check-in.
-                  </div>
+                  <Pill color="#D97706" variant="soft" size="sm">Monitor</Pill>
+                </div>
+                <div className="dm-action-text">
+                  School-level RMI sits at {stats.rmi}. Look at the lowest-performing grade in the chart above and target a re-engagement challenge or teacher-led check-in.
                 </div>
               </div>
             )}
             <div className="dm-action-row">
-              <Pill color="#D97706" variant="soft" size="sm">Monitor</Pill>
-              <div className="dm-action-body">
+              <div className="dm-action-head">
                 <div className="dm-action-school">Cross-cohort equity review</div>
-                <div className="dm-action-text">
-                  Compare engagement rates between FRL-eligible students and the overall student body. If the gap exceeds 10pp, consider a targeted reading challenge or book-access intervention.
-                </div>
+                <Pill color="#D97706" variant="soft" size="sm">Monitor</Pill>
+              </div>
+              <div className="dm-action-text">
+                Compare engagement rates between FRL-eligible students and the overall student body. If the gap exceeds 10pp, consider a targeted reading challenge or book-access intervention.
               </div>
             </div>
           </div>

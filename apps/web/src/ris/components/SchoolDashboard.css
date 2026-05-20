@@ -10,6 +10,10 @@
   gap: 16px;
 }
 
+@media (max-width: 699px) {
+  .sdb-areas { grid-template-columns: 1fr; }
+}
+
 
 .sdb-legend {
   display: flex;
@@ -46,6 +50,11 @@
   position: relative;
   overflow: hidden;
   animation: sdb-tip-in 0.14s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Mobile: chart tooltips have nowhere to go without overflowing — hide them. */
+@media (max-width: 699px) {
+  .sdb-tooltip { display: none; }
 }
 
 .sdb-tooltip::before {

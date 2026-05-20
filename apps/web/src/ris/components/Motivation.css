@@ -150,120 +150,6 @@
   border-top: 1px solid #F1F5F9;
 }
 
-/* ── RMI Factor Breakdown ── */
-.mot-factor-groups {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  margin-top: 8px;
-}
-
-.mot-factor-groups--wide {
-  flex-direction: row;
-  gap: 24px;
-}
-
-.mot-factor-groups--wide .mot-factor-group {
-  flex: 1;
-}
-
-.mot-factor-groups--wide .mot-factor-divider {
-  width: 1px;
-  height: auto;
-  align-self: stretch;
-}
-
-.mot-factor-group {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 8px 0;
-}
-
-.mot-factor-group-label {
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 2px;
-}
-
-.mot-factor-group-label--int { color: #E8866A; }
-.mot-factor-group-label--ext { color: #7CB5F5; }
-
-.mot-factor-divider {
-  height: 1px;
-  background: #F1F5F9;
-}
-
-.mot-factor-row {
-  display: grid;
-  grid-template-columns: 110px 1fr 40px;
-  align-items: center;
-  gap: 10px;
-}
-
-.mot-factor-row--iconed {
-  grid-template-columns: 28px 130px 1fr 46px;
-  padding: 4px 0;
-}
-
-.mot-factor-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: color-mix(in srgb, var(--ic-color, #94A3B8) 55%, #334155);
-  background: var(--ic-bg, #F8FAFC);
-  border: 1px solid color-mix(in srgb, var(--ic-color, #94A3B8) 25%, #E2E8F0);
-  flex-shrink: 0;
-}
-
-.mot-factor-name-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.mot-factor-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: #334155;
-}
-
-.mot-factor-desc {
-  font-size: 13px;
-  color: #94A3B8;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* bar track replaced by ProgressBar component */
-
-.mot-factor-right {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 1px;
-}
-
-.mot-factor-score {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1E293B;
-}
-
-.mot-factor-delta {
-  font-size: 13px;
-  font-weight: 700;
-}
-
-.mot-factor-delta--pos { color: #16A97A; }
-.mot-factor-delta--neg { color: #E8866A; }
 
 /* ── Grade Band ── */
 .mot-grade-list {
@@ -317,61 +203,6 @@
   grid-template-columns: 44px 1fr;
 }
 
-/* ── Top Motivation Factor by Grade Band ── */
-.mot-top-factor-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.mot-top-factor-row {
-  display: grid;
-  grid-template-columns: 44px 36px 1fr;
-  align-items: center;
-  gap: 12px;
-  padding: 4px 0;
-}
-
-.mot-top-factor-band {
-  font-size: 13px;
-  font-weight: 700;
-  color: #475569;
-}
-
-.mot-top-factor-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: var(--tf-bg, #F8FAFC);
-  color: color-mix(in srgb, var(--tf-color, #94A3B8) 55%, #334155);
-  border: 1px solid color-mix(in srgb, var(--tf-color, #94A3B8) 25%, #E2E8F0);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.mot-top-factor-icon svg {
-  width: 20px;
-  height: 20px;
-}
-
-.mot-top-factor-body {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-
-.mot-top-factor-name {
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
-
-.mot-top-factor-desc {
-  font-size: 13px;
-  color: #64748B;
-}
 
 .mot-grade-legend {
   display: flex;
@@ -399,4 +230,10 @@
   border-radius: 99px;
   padding: 1px 7px;
   white-space: nowrap;
+}
+
+/* Mobile: tighten fixed-width left columns so rows don't compress the bar. */
+@media (max-width: 699px) {
+  .mot-driver-row      { grid-template-columns: 100px 1fr 32px; }
+  .mot-grade-track-row { grid-template-columns: 44px 1fr 26px; }
 }

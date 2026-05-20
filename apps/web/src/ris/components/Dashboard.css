@@ -43,6 +43,10 @@
   gap: 16px;
 }
 
+@media (max-width: 699px) {
+  .dash-grid { grid-template-columns: 1fr; }
+}
+
 .dash-card {
   background: #fff;
   border: 1px solid #E2E8F0;

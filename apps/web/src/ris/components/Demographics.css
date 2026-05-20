@@ -1,7 +1,6 @@
 .dm-root {
   display: flex;
   flex-direction: column;
-  gap: 16px;
 }
 
 /* ── Equity table ── */
@@ -181,27 +180,26 @@
 
 .dm-action-row {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
+  flex-direction: column;
+  gap: 6px;
   padding: 12px 14px;
   border-radius: 10px;
   border: 1px solid #E2E8F0;
   background: #FAFAFA;
 }
 
-
-/* dm-action-priority replaced by Pill component */
-
-.dm-action-body {
-  flex: 1;
-  min-width: 0;
+.dm-action-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
 .dm-action-school {
   font-size: 13px;
   font-weight: 700;
   color: #1E293B;
-  margin-bottom: 3px;
+  min-width: 0;
 }
 
 .dm-action-frl {
@@ -217,37 +215,10 @@
 }
 
 /* ── Student cohort breakdown (school view) ── */
-.dm-cohort-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-top: 8px;
-}
-
-.dm-cohort-row {
-  display: grid;
-  grid-template-columns: 200px 1fr 120px;
-  align-items: center;
-  gap: 12px;
-}
-
-.dm-cohort-info { display: flex; flex-direction: column; gap: 1px; }
-.dm-cohort-name { font-size: 13px; font-weight: 600; color: #1E293B; }
-.dm-cohort-desc { font-size: 13px; color: #94A3B8; }
-
-.dm-cohort-track { flex: 1; }
-
-.dm-cohort-vals {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-}
-
-.dm-cohort-pct { font-size: 13px; font-weight: 800; color: #1E293B; letter-spacing: -0.01em; }
-.dm-cohort-count { font-size: 13px; color: #94A3B8; }
-
-/* School equity table uses fewer columns */
-.dm-equity-table--school .dm-equity-head,
-.dm-equity-table--school .dm-equity-row {
-  grid-template-columns: 90px 52px 1fr 100px 80px 64px;
+/* Mobile: let the (district) equity table scroll horizontally instead of
+   overflowing the card. The grid rows keep their natural width inside. */
+@media (max-width: 699px) {
+  .dm-equity-table { overflow-x: auto; }
+  .dm-equity-head,
+  .dm-equity-row { min-width: max-content; }
 }

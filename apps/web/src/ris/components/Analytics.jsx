@@ -4,6 +4,7 @@ import {
 } from 'recharts'
 import { ROI_TRENDS, SCHOOL_STATS, ENGAGEMENT_FUNNEL } from '../data'
 import { PageHero } from './PageHero'
+import { Funnel } from './Funnel'
 import './Analytics.css'
 
 const AnalyticsIcon = () => (
@@ -62,45 +63,11 @@ export function Analytics() {
               <div className="sv-note">Habit depth across all 12,400 enrolled students · Riverside USD · May 2025</div>
             </div>
           </div>
-          <div className="an-funnel">
-            {ENGAGEMENT_FUNNEL.map((step, i) => {
-              const next = ENGAGEMENT_FUNNEL[i + 1]
-              const dropOff = next ? step.count - next.count : null
-              return (
-                <div key={step.stage} className="an-funnel-block">
-                  <div className="an-funnel-row">
-                    <div className="an-funnel-label-group">
-                      <span className="an-funnel-stage">{step.stage}</span>
-                      <span className="an-funnel-note">{step.note}</span>
-                    </div>
-                    <div className="an-funnel-track">
-                      <div
-                        className="an-funnel-bar"
-                        style={{ width: `${step.pct}%`, opacity: 1 - i * 0.12 }}
-                      />
-                    </div>
-                    <div className="an-funnel-right">
-                      <span className="an-funnel-count">{step.count.toLocaleString()}</span>
-                      <div className="an-funnel-meta">
-                        <span className="an-funnel-pct">{step.pct}%</span>
-                        {step.delta != null && (
-                          <span className="an-funnel-delta">↑{step.delta}pp</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  {dropOff && (
-                    <div className="an-funnel-dropoff">
-                      <span className="an-funnel-dropoff-line" />
-                      <span className="an-funnel-dropoff-text">
-                        {dropOff.toLocaleString()} students not yet forming next habit
-                      </span>
-                    </div>
-                  )}
-                </div>
-              )
-            })}
-          </div>
+          <Funnel
+            accent="#0DA7BC"
+            dropoffLabel="students not yet forming next habit"
+            items={ENGAGEMENT_FUNNEL}
+          />
         </div>
 
         {/* ROI Correlations — full width */}

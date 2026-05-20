@@ -1,5 +1,6 @@
 // Shared Nivo chart helpers used by SchoolDashboard, Motivation, and other pages.
 // Pairs with .sdb-tooltip / .sdb-legend styles in SchoolDashboard.css.
+// Tooltips are hidden on mobile via CSS — too cramped to be useful.
 
 export const NIVO_THEME = {
   axis: {

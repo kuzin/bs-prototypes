@@ -291,6 +291,10 @@
   gap: 14px;
 }
 
+@media (max-width: 699px) {
+  .sv-grid { grid-template-columns: 1fr; }
+}
+
 .sv-card {
   background: #fff;
   border: 1px solid #E5E7EB;
@@ -514,6 +518,10 @@
 
 /* ── Mobile: backdrop + top bar (sidebar handles its own drawer behavior) ── */
 @media (max-width: 699px) {
+  /* Stack the sidebar (just its topbar on mobile) above content instead of
+     beside it. Without this, .ris-layout's row flex squeezes .sb-shell to
+     its content width and the topbar ends up as a narrow left column. */
+  .ris-layout { flex-direction: column; }
   .rl-sidebar-backdrop { bottom: 48px; }
   .ris-layout--nav-open .rl-sidebar-backdrop { display: block; }
   .rl-topbar { display: flex; }
