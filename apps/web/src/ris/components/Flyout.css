@@ -58,3 +58,27 @@
   color: #1D4ED8;
   font-weight: 600;
 }
+
+.flyout-menu-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: #64748B;
+  flex-shrink: 0;
+}
+
+.flyout-menu-icon svg { width: 14px; height: 14px; }
+
+.flyout-menu-item--active .flyout-menu-icon { color: #1D4ED8; }
+
+.flyout-menu-item--danger        { color: #DC2626; }
+.flyout-menu-item--danger:hover  { background: #FEF2F2; }
+.flyout-menu-item--danger .flyout-menu-icon { color: #DC2626; }
+
+.flyout-menu-sep {
+  height: 1px;
+  margin: 4px 4px;
+  background: #E5E7EB;
+}

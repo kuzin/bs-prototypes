@@ -6,7 +6,7 @@ import './Toggle.css'
  * <Toggle checked={value} onChange={setValue}>Show icon</Toggle>
  * <Toggle checked={value} onChange={setValue} size="sm" />
  *
- * sizes: sm | md
+ * sizes: sm | md | lg
  */
 export function Toggle({ checked, onChange, disabled, size = 'md', children, name, className = '' }) {
   return (

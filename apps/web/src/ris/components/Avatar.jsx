@@ -14,7 +14,7 @@ export function Avatar({ initials, color = '#94A3B8', size = 'md', shape = 'circ
       style={{ background: color }}
       aria-hidden="true"
     >
-      {initials}
+      <span className="avatar-text">{initials}</span>
     </span>
   )
 }

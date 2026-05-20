@@ -3,7 +3,7 @@ import {
   Tooltip, ResponsiveContainer, Legend,
 } from 'recharts'
 import { SCHOOL_STATS, SCHOOL_DETAILS, GRADE_PERFORMANCE } from '../data'
-import { PageHero } from './PageHero'
+import { Hero } from './Hero'
 import './Demographics.css'
 
 const DemographicsIcon = () => (
@@ -53,7 +53,7 @@ export function Demographics() {
   return (
     <div className="dm-root">
 
-      <PageHero
+      <Hero
         icon={<DemographicsIcon />}
         title="Demographics"
         subtitle="Equity mapping, grade-level performance, and resource allocation indicators"

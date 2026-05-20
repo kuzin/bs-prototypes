@@ -9,15 +9,17 @@ import {
   SCHOOLS, DISTRICT, DISTRICT_HEALTH, SCHOOLS_TO_WATCH,
 } from '../data'
 import { ReadingHealth } from './ReadingHealth'
-import { OverviewHero } from './OverviewHero'
+import { Hero } from './Hero'
 import { AlertsBanner } from './AlertsBanner'
+import { Button } from './Button'
+import { Pill } from './Pill'
 
 function SectionCard({ title, children, onDrill }) {
   return (
     <div className="dash-card">
       <div className="dash-card-header">
         <h3>{title}</h3>
-        {onDrill && <button className="dash-drill" onClick={onDrill}>View details →</button>}
+        {onDrill && <Button variant="ghost" size="sm" onClick={onDrill}>View details →</Button>}
       </div>
       {children}
     </div>
@@ -27,10 +29,10 @@ function SectionCard({ title, children, onDrill }) {
 export function Dashboard({ onNavigate, alerts = [] }) {
   return (
     <div className="dashboard">
-      <OverviewHero
+      <Hero
+        initials="RUSD"
         title={DISTRICT.name}
         subtitle={`${DISTRICT.schools} schools · ${DISTRICT.students.toLocaleString()} students`}
-        initials="RUSD"
       />
 
       <AlertsBanner alerts={alerts} onNavigate={onNavigate} />
@@ -175,9 +177,9 @@ export function Dashboard({ onNavigate, alerts = [] }) {
                     <span className="dash-stw-name">{s.name}</span>
                     <span className="dash-stw-grades">{s.grades}</span>
                   </div>
-                  <span className={`dash-stw-badge dash-stw-badge--${s.concernType}`}>
+                  <Pill variant={s.concernType === 'critical' ? 'error' : 'warning'} size="sm">
                     {s.concernType === 'critical' ? 'Action needed' : 'Watch'}
-                  </span>
+                  </Pill>
                 </div>
                 <div className="dash-stw-concern">{s.concern}</div>
                 <div className="dash-stw-metrics">
@@ -197,7 +199,7 @@ export function Dashboard({ onNavigate, alerts = [] }) {
                 </div>
                 <div className="dash-stw-footer">
                   <span className="dash-stw-link-hint">Opens in Beanstack school dashboard</span>
-                  <button className="dash-stw-action" disabled>View school →</button>
+                  <Button variant="ghost" size="sm" disabled>View school →</Button>
                 </div>
               </div>
             )

@@ -16,11 +16,32 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: #94A3B8;
-  font-size: 13px;
+  font-size: 12px;
   padding: 10px 12px;
   border-bottom: 1px solid #E5E7EB;
   background: #F8FAFC;
+  white-space: nowrap;
 }
+
+.tbl-th--sortable {
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.1s;
+}
+.tbl-th--sortable:hover { color: #475569; }
+.tbl-th--sorted { color: #1E293B; }
+
+.tbl-sort-icon {
+  display: inline-block;
+  margin-left: 5px;
+  font-size: 10px;
+  font-style: normal;
+  vertical-align: middle;
+  line-height: 1;
+  transition: opacity 0.1s;
+}
+.tbl-sort-icon--idle   { opacity: 0.3; }
+.tbl-sort-icon--active { opacity: 1; color: #1D4ED8; }
 
 .tbl-td {
   padding: 10px 12px;
@@ -47,4 +68,83 @@
 .tbl--compact .tbl-th,
 .tbl--compact .tbl-td {
   padding: 7px 10px;
+}
+
+.tbl--bordered .tbl-td,
+.tbl--bordered .tbl-th {
+  border-right: 1px solid #F1F5F9;
+}
+.tbl--bordered .tbl-td:last-child,
+.tbl--bordered .tbl-th:last-child {
+  border-right: none;
+}
+
+.tbl--sticky .tbl-th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.tbl-state {
+  padding: 22px 12px;
+  text-align: center;
+  color: #94A3B8;
+  font-size: 13px;
+  font-style: italic;
+  background: #fff;
+}
+
+/* ── Pagination ──────────────────────────────────────────────────────────── */
+.tbl-pagination {
+  padding: 8px 12px;
+  border-top: 1px solid #E5E7EB;
+  background: #F8FAFC;
+  text-align: right;
+}
+
+.tbl-pg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  color: #475569;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+.tbl-pg-btn:hover:not(:disabled) { background: #F1F5F9; border-color: #CBD5E1; }
+.tbl-pg-btn:disabled { opacity: 0.35; cursor: default; }
+
+.tbl-pg-info {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 600;
+  color: #475569;
+  margin: 0 8px;
+  min-width: 48px;
+  text-align: center;
+}
+.tbl-pg-sep { color: #CBD5E1; }
+
+/* ── Flush variant — edge-to-edge inside ChartCard bodyPad="flush" ────────── */
+.tbl--flush {
+  border: none;
+  border-radius: 0;
+}
+.tbl--flush .tbl-th:first-child,
+.tbl--flush .tbl-td:first-child { padding-left: 16px; }
+.tbl--flush .tbl-th:last-child,
+.tbl--flush .tbl-td:last-child  { padding-right: 16px; }
+
+.tbl-row--highlight .tbl-td {
+  background: #FFF7ED;
+  font-weight: 600;
+}
+.tbl--zebra tbody tr.tbl-row--highlight:nth-child(2n) .tbl-td {
+  background: #FEF3E2;
 }

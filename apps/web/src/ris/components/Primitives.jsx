@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import './Primitives.css'
 
 /**
@@ -84,12 +84,30 @@ export function IconButton({
  *   <IconButton><MailIcon /></IconButton>
  * </Tooltip>
  *
- * placement: top (default) | bottom | left | right
+ * placement: top (default) | bottom | left | right | auto
+ *   'auto' detects the nearest viewport edge and flips accordingly.
  */
 export function Tooltip({ content, placement = 'top', delay = 0, children }) {
+  const wrapRef = useRef(null)
+  const [resolved, setResolved] = useState('top')
+
+  function onEnter() {
+    if (placement !== 'auto' || !wrapRef.current) return
+    const r  = wrapRef.current.getBoundingClientRect()
+    const vh = window.innerHeight
+    // Prefer top; fall back to bottom if too close to viewport top.
+    setResolved(r.top < 60 ? 'bottom' : 'top')
+  }
+
   if (!content) return children
+  const pos = placement === 'auto' ? resolved : placement
   return (
-    <span className={`ttp ttp--${placement}`} style={{ '--ttp-delay': `${delay}ms` }}>
+    <span
+      className={`ttp ttp--${pos}`}
+      style={{ '--ttp-delay': `${delay}ms` }}
+      ref={wrapRef}
+      onMouseEnter={onEnter}
+    >
       {children}
       <span className="ttp-bubble" role="tooltip">{content}</span>
     </span>
@@ -123,12 +141,12 @@ export function Banner({ level = 'info', title, icon, onDismiss, action, childre
       </div>
       {action && <div className="bnr-action">{action}</div>}
       {onDismiss && (
-        <button className="bnr-close" onClick={onDismiss} aria-label="Dismiss">
-          <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <IconButton variant="ghost" size="sm" onClick={onDismiss} aria-label="Dismiss" className="bnr-close">
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <line x1="3" y1="3" x2="11" y2="11" />
             <line x1="11" y1="3" x2="3" y2="11" />
           </svg>
-        </button>
+        </IconButton>
       )}
     </div>
   )
@@ -178,7 +196,7 @@ export function Breadcrumb({ items = [], className = '' }) {
  *
  * allowMultiple: true → multiple sections can be open at once.
  */
-export function Accordion({ items = [], defaultOpen = [], allowMultiple = false, className = '' }) {
+export function Accordion({ items = [], defaultOpen = [], allowMultiple = false, accent, className = '' }) {
   const [open, setOpen] = useState(new Set(defaultOpen))
 
   const toggle = (id) => {
@@ -190,8 +208,10 @@ export function Accordion({ items = [], defaultOpen = [], allowMultiple = false,
     })
   }
 
+  const style = accent ? { '--acd-accent': accent } : undefined
+
   return (
-    <div className={`acd ${className}`.trim()}>
+    <div className={`acd ${className}`.trim()} style={style}>
       {items.map(item => {
         const isOpen = open.has(item.id)
         return (
@@ -243,18 +263,15 @@ export function EmptyState({ icon, title, description, action, className = '' })
  * <Skeleton shape="circle" width={36} height={36} />
  * <Skeleton lines={3} />          // multi-line text skeleton
  */
-export function Skeleton({ width, height = 14, shape = 'rect', lines, className = '' }) {
+export function Skeleton({ width, height = 14, shape = 'rect', lines, className = '', style }) {
   if (lines && lines > 1) {
     return (
-      <div className={`skl-lines ${className}`.trim()}>
+      <div className={`skl-lines ${className}`.trim()} style={style}>
         {Array.from({ length: lines }).map((_, i) => (
           <span
             key={i}
             className="skl skl--rect"
-            style={{
-              width: i === lines - 1 ? '70%' : '100%',
-              height,
-            }}
+            style={{ width: i === lines - 1 ? '70%' : '100%', height }}
           />
         ))}
       </div>
@@ -263,7 +280,7 @@ export function Skeleton({ width, height = 14, shape = 'rect', lines, className 
   return (
     <span
       className={`skl skl--${shape} ${className}`.trim()}
-      style={{ width, height }}
+      style={{ width, height, ...style }}
     />
   )
 }

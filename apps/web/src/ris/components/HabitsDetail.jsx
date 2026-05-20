@@ -4,30 +4,21 @@ import {
 } from 'recharts'
 import './HabitsDetail.css'
 import { SESSION_TRENDS, STREAK_DATA, VELOCITY_TRENDS, SCHOOL_STATS, SCHOOLS, DISTRICT_HEALTH } from '../data'
-import { BucketHero } from './BucketHero'
+import { Hero } from './Hero'
+import { StatCard } from './Cards'
 
 const DISTRICT_AVG_SESSION = 20
-
-function StatCard({ label, value, sub }) {
-  return (
-    <div className="hd-stat">
-      <div className="hd-stat-value">{value}</div>
-      <div className="hd-stat-label">{label}</div>
-      {sub && <div className="hd-stat-sub">{sub}</div>}
-    </div>
-  )
-}
 
 export function HabitsDetail({ onBack }) {
   return (
     <div className="habits-detail">
-      <BucketHero bucket="habits" score={DISTRICT_HEALTH.habits} delta={DISTRICT_HEALTH.dH} onBack={onBack} />
+      <Hero bucket="habits" />
 
       <div className="hd-stats-row">
-        <StatCard label="District avg session" value="20 min" sub="↑6 min since Sep" />
-        <StatCard label="Active reading streaks" value="41%" sub="of all students" />
-        <StatCard label="Avg reading days/week" value="3.2 days" sub="district-wide" />
-        <StatCard label="Avg books/month" value="2.8 books" sub="all grade levels" />
+        <StatCard label="District avg session" value="20 min" footer="↑6 min since Sep" />
+        <StatCard label="Active reading streaks" value="41%" footer="of all students" />
+        <StatCard label="Avg reading days/week" value="3.2 days" footer="district-wide" />
+        <StatCard label="Avg books/month" value="2.8 books" footer="all grade levels" />
       </div>
 
       <div className="hd-grid">

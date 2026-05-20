@@ -50,6 +50,11 @@
 .tgl--sm .tgl-thumb { width: 12px; height: 12px; }
 .tgl--sm .tgl-input:checked + .tgl-track .tgl-thumb { transform: translateX(10px); }
 
+.tgl--lg .tgl-track { width: 44px; height: 26px; }
+.tgl--lg .tgl-thumb { width: 22px; height: 22px; }
+.tgl--lg .tgl-input:checked + .tgl-track .tgl-thumb { transform: translateX(18px); }
+.tgl--lg .tgl-label { font-size: 14px; }
+
 /* Checked state */
 .tgl-input:checked + .tgl-track {
   background: #1D4ED8;

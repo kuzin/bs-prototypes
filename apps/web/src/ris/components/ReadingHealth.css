@@ -10,10 +10,20 @@
   margin: 0 0 10px;
 }
 
+/* Health tiles only ever lay out as 4/0 (wide), 2/2 (medium), or 1/1/1/1
+   (narrow) — never 3/1, never 1/3. Viewport-keyed media queries enforce it. */
 .rh-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
+}
+
+@media (max-width: 900px) {
+  .rh-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 480px) {
+  .rh-grid { grid-template-columns: 1fr; }
 }
 
 .rh-stat {

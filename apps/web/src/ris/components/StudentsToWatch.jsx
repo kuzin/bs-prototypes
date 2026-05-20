@@ -1,6 +1,8 @@
 import { SCHOOLS, STUDENTS_TO_WATCH } from '../data'
 import { SECTIONS } from './ReadingHealth'
 import './StudentsToWatch.css'
+import { Avatar } from './Avatar'
+import { EmptyState } from './Primitives'
 
 const BUCKETS = Object.fromEntries(SECTIONS.map(s => [s.key, s]))
 
@@ -19,9 +21,7 @@ function StudentRow({ student, onOpen }) {
       onClick={() => onOpen?.(student.id)}
       title={`Open ${student.name}'s details`}
     >
-      <div className="stw-avatar" style={{ background: school?.color || '#94A3B8' }}>
-        {initials(student.name)}
-      </div>
+      <Avatar initials={initials(student.name)} color={school?.color || '#94A3B8'} shape="rounded" />
       <span className="stw-name">{student.name}</span>
       {bucket && (
         <span className="stw-bucket" style={{ '--bucket-color': bucket.color, '--bucket-bg': bucket.bg }}>
@@ -39,11 +39,7 @@ export function StudentsToWatch({ schoolId, onOpenStudent }) {
     : STUDENTS_TO_WATCH
 
   if (students.length === 0) {
-    return (
-      <div className="stw-empty">
-        <h3>Students to Watch</h3>
-      </div>
-    )
+    return <EmptyState title="No students to watch" description="All schools are on track." />
   }
 
   return (

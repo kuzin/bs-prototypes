@@ -20,3 +20,11 @@
 /* Shape override */
 .avatar--circle { border-radius: 50%; }
 .avatar--square { /* uses size's border-radius */ }
+
+/* Optical vertical centering: capital glyphs sit above the mathematical midline
+   of the em square. translateY nudges them down ~6% of font-size. */
+.avatar-text {
+  display: block;
+  transform: translateY(0.06em);
+  line-height: 1;
+}

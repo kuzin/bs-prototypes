@@ -6,9 +6,9 @@ import './MainRail.css'
  *
  * @param {number} activeIndex  Index (0–7) of the active app button.
  */
-export function MainRail({ activeIndex = 4 }) {
+export function MainRail({ activeIndex = 4, className = '' }) {
   return (
-    <div className="main-rail">
+    <div className={`main-rail ${className}`.trim()}>
       <a href="/bs-prototypes/" className="main-rail-logo-link" aria-label="Prototypes">
         <img src="/bs-prototypes/bs.svg" className="main-rail-logo" alt="" />
       </a>

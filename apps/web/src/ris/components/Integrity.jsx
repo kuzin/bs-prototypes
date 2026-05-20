@@ -3,7 +3,10 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell,
 } from 'recharts'
 import { BOOK_TALKS_TRENDS, BOOK_TALKS_BY_SCHOOL, SCHOOLS, DISTRICT_HEALTH, SCHOOL_HEALTH } from '../data'
-import { BucketHero } from './BucketHero'
+import { Hero } from './Hero'
+import { StatCard } from './Cards'
+import { Button } from './Button'
+import { Pill } from './Pill'
 import './RisLayout.css'
 
 export function Integrity({ onBack }) {
@@ -24,45 +27,36 @@ export function Integrity({ onBack }) {
 
   return (
     <div>
-      <BucketHero bucket="integrity" score={DISTRICT_HEALTH.integrity} delta={DISTRICT_HEALTH.dI} onBack={onBack} />
+      <Hero bucket="integrity" />
 
       <div className="sv-stats-row" style={{ marginBottom: 16 }}>
-        <div className="sv-stat">
-          <div className="sv-stat-val">{avgCompletion}%</div>
-          <div className="sv-stat-lbl">Avg Book Talk completion</div>
-          <div className="sv-stat-sub">Students who finish the AI chat</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: avgFlagRate > 15 ? '#DC2626' : '#D97706' }}>
-            {avgFlagRate}%
-          </div>
-          <div className="sv-stat-lbl">Avg conversation flag rate</div>
-          <div className="sv-stat-sub">↓2pp improvement YTD</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: highFlagSchools.length > 0 ? '#E8866A' : '#16A97A' }}>
-            {highFlagSchools.length}{' '}
-            <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}>of 6</span>
-          </div>
-          <div className="sv-stat-lbl">Schools flagged &gt;15%</div>
-          <div className="sv-stat-sub">
-            {highFlagSchools.length > 0
-              ? highFlagSchools.map(s => s.name.split(' ')[0]).join(', ')
-              : 'All within range'}
-          </div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: decliningSchools.length > 1 ? '#E8866A' : '#D97706' }}>
-            {decliningSchools.length}{' '}
-            <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}>of 6</span>
-          </div>
-          <div className="sv-stat-lbl">Schools declining this month</div>
-          <div className="sv-stat-sub">
-            {decliningSchools.length > 0
-              ? decliningSchools.map(s => s.name.split(' ')[0]).join(', ')
-              : 'None this month'}
-          </div>
-        </div>
+        <StatCard
+          value={`${avgCompletion}%`}
+          label="Avg Book Talk completion"
+          footer="Students who finish the AI chat"
+        />
+        <StatCard
+          value={`${avgFlagRate}%`}
+          label="Avg conversation flag rate"
+          footer="↓2pp improvement YTD"
+          color={avgFlagRate > 15 ? '#DC2626' : '#D97706'}
+        />
+        <StatCard
+          value={<>{highFlagSchools.length} <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}>of 6</span></>}
+          label="Schools flagged >15%"
+          footer={highFlagSchools.length > 0
+            ? highFlagSchools.map(s => s.name.split(' ')[0]).join(', ')
+            : 'All within range'}
+          color={highFlagSchools.length > 0 ? '#E8866A' : '#16A97A'}
+        />
+        <StatCard
+          value={<>{decliningSchools.length} <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}>of 6</span></>}
+          label="Schools declining this month"
+          footer={decliningSchools.length > 0
+            ? decliningSchools.map(s => s.name.split(' ')[0]).join(', ')
+            : 'None this month'}
+          color={decliningSchools.length > 1 ? '#E8866A' : '#D97706'}
+        />
       </div>
 
       <div className="sv-grid">
@@ -166,16 +160,16 @@ export function Integrity({ onBack }) {
                   <div className="int-review-body">
                     <div className="int-review-name">{s.name}</div>
                     <div className="int-review-meta">
-                      <span className={`int-flag-chip${isHighFlag ? ' int-flag-chip--high' : ''}`}>
+                      <Pill variant={isHighFlag ? 'error' : 'default'} size="sm">
                         {s.flagRate}% flagged
-                      </span>
-                      <span className={`int-trend-chip${isDeclining ? ' int-trend-chip--down' : ' int-trend-chip--up'}`}>
+                      </Pill>
+                      <Pill variant={isDeclining ? 'error' : 'success'} size="sm">
                         {isDeclining ? `↓${Math.abs(s.trend)}pp` : `↑${s.trend}pp`}
-                      </span>
-                      <span className="int-talks-chip">{s.totalTalks} talks</span>
+                      </Pill>
+                      <Pill variant="default" size="sm">{s.totalTalks} talks</Pill>
                     </div>
                   </div>
-                  <button className="int-review-btn">Review →</button>
+                  <Button variant="ghost" size="sm">Review →</Button>
                 </div>
               )
             })}

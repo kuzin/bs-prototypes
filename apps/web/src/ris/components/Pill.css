@@ -1,18 +1,21 @@
 .pill {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 5px;
   font-weight: 600;
-  line-height: 1;
+  line-height: 1.15;
   white-space: nowrap;
   border-radius: 99px;
   border: 1px solid transparent;
   font-variant-numeric: tabular-nums;
+  vertical-align: middle;
 }
 
-/* Sizes */
-.pill--sm { font-size: 13px; padding: 2px 8px; }
-.pill--md { font-size: 13px; padding: 3px 10px; }
+/* Sizes — visible scale step + balanced vertical padding */
+.pill--sm { font-size: 11px; padding: 3px 8px;  gap: 4px; }
+.pill--md { font-size: 13px; padding: 4px 10px; gap: 5px; }
+.pill--lg { font-size: 14px; padding: 5px 14px; gap: 6px; }
 
 /* ── Soft (default) — pale tint, dark text ───────────────────────────────── */
 .pill--soft {
@@ -35,6 +38,13 @@
   border-color: color-mix(in srgb, var(--pill-color, #475569) 45%, transparent);
 }
 
+/* Optical centering: nudge label text down slightly so cap-height aligns
+   with the visual midpoint of the pill rather than sitting above it. */
+.pill-label {
+  display: block;
+  transform: translateY(0.05em);
+}
+
 .pill-icon {
   display: inline-flex;
   align-items: center;
@@ -44,3 +54,6 @@
   width: 11px;
   height: 11px;
 }
+
+.pill--sm .pill-icon svg { width: 10px; height: 10px; }
+.pill--lg .pill-icon svg { width: 13px; height: 13px; }

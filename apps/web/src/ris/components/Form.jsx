@@ -1,4 +1,5 @@
-import { createContext, useContext, useId } from 'react'
+import { createContext, useContext, useId, useState, useEffect, useRef } from 'react'
+import { FieldContext, useFieldProps } from './FormContext'
 import './Form.css'
 
 /**
@@ -24,8 +25,6 @@ import './Form.css'
  */
 
 // ── Field wrapper ────────────────────────────────────────────────────────
-const FieldContext = createContext(null)
-
 export function Field({ label, help, error, hint, htmlFor, children, layout = 'column', className = '' }) {
   const id = useId()
   const controlId = htmlFor || id
@@ -48,45 +47,44 @@ export function Field({ label, help, error, hint, htmlFor, children, layout = 'c
   )
 }
 
-function useFieldProps() {
-  return useContext(FieldContext) || { id: undefined, hasError: false }
-}
-
 // ── Input ────────────────────────────────────────────────────────────────
-export function Input({ size = 'md', icon, iconRight, className = '', ...rest }) {
-  const { id, hasError } = useFieldProps()
-  if (!icon && !iconRight) {
-    return (
-      <input
-        id={rest.id || id}
-        className={`inp inp--${size}${hasError ? ' inp--error' : ''} ${className}`.trim()}
-        {...rest}
-      />
-    )
-  }
-  return (
-    <div className={`inp-wrap inp-wrap--${size}${hasError ? ' inp-wrap--error' : ''} ${className}`.trim()}>
+export function Input({ size = 'md', icon, iconRight, label, className = '', ...rest }) {
+  const { id: fieldId, hasError } = useFieldProps()
+  const selfId = useId()
+  const inputId = rest.id || fieldId || selfId
+
+  const inputEl = !icon && !iconRight ? (
+    <input
+      id={inputId}
+      className={`inp inp--${size}${hasError ? ' inp--error' : ''}${!label && className ? ` ${className}` : ''}`}
+      {...rest}
+    />
+  ) : (
+    <div className={`inp-wrap inp-wrap--${size}${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}>
       {icon && <span className="inp-icon inp-icon--left">{icon}</span>}
-      <input
-        id={rest.id || id}
-        className="inp inp--bare"
-        {...rest}
-      />
+      <input id={inputId} className="inp inp--bare" {...rest} />
       {iconRight && <span className="inp-icon inp-icon--right">{iconRight}</span>}
+    </div>
+  )
+
+  if (!label) return inputEl
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <label className="frm-self-label" htmlFor={inputId}>{label}</label>
+      {inputEl}
     </div>
   )
 }
 
 // ── Select ───────────────────────────────────────────────────────────────
-export function Select({ size = 'md', children, className = '', ...rest }) {
-  const { id, hasError } = useFieldProps()
-  return (
-    <div className={`sel-wrap sel-wrap--${size}${hasError ? ' sel-wrap--error' : ''} ${className}`.trim()}>
-      <select
-        id={rest.id || id}
-        className="sel"
-        {...rest}
-      >
+export function Select({ size = 'md', label, children, className = '', ...rest }) {
+  const { id: fieldId, hasError } = useFieldProps()
+  const selfId = useId()
+  const selectId = rest.id || fieldId || selfId
+
+  const selectEl = (
+    <div className={`sel-wrap sel-wrap--${size}${hasError ? ' sel-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}>
+      <select id={selectId} className="sel" {...rest}>
         {children}
       </select>
       <svg className="sel-caret" viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -94,17 +92,36 @@ export function Select({ size = 'md', children, className = '', ...rest }) {
       </svg>
     </div>
   )
+
+  if (!label) return selectEl
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <label className="frm-self-label" htmlFor={selectId}>{label}</label>
+      {selectEl}
+    </div>
+  )
 }
 
 // ── Textarea ─────────────────────────────────────────────────────────────
-export function Textarea({ size = 'md', className = '', ...rest }) {
-  const { id, hasError } = useFieldProps()
-  return (
+export function Textarea({ size = 'md', label, className = '', ...rest }) {
+  const { id: fieldId, hasError } = useFieldProps()
+  const selfId = useId()
+  const textareaId = rest.id || fieldId || selfId
+
+  const textareaEl = (
     <textarea
-      id={rest.id || id}
-      className={`txt txt--${size}${hasError ? ' txt--error' : ''} ${className}`.trim()}
+      id={textareaId}
+      className={`txt txt--${size}${hasError ? ' txt--error' : ''}${!label && className ? ` ${className}` : ''}`}
       {...rest}
     />
+  )
+
+  if (!label) return textareaEl
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <label className="frm-self-label" htmlFor={textareaId}>{label}</label>
+      {textareaEl}
+    </div>
   )
 }
 
@@ -157,5 +174,358 @@ export function Radio({ value, disabled, children, className = '' }) {
       <span className="rdo-box" aria-hidden="true" />
       {children && <span className="rdo-label">{children}</span>}
     </label>
+  )
+}
+
+// ── DateInput ────────────────────────────────────────────────────────────
+export function DateInput({ size = 'md', type = 'date', label, className = '', ...rest }) {
+  const { id: fieldId, hasError } = useFieldProps()
+  const selfId = useId()
+  const inputId = rest.id || fieldId || selfId
+
+  const el = (
+    <div className={`inp-wrap inp-wrap--${size}${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}>
+      <span className="inp-icon inp-icon--left">
+        <svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <rect x="1" y="2.5" width="12" height="11" rx="2" />
+          <line x1="1" y1="6" x2="13" y2="6" />
+          <line x1="4.5" y1="1" x2="4.5" y2="4" />
+          <line x1="9.5" y1="1" x2="9.5" y2="4" />
+        </svg>
+      </span>
+      <input id={inputId} type={type} className="inp inp--bare inp--date" {...rest} />
+    </div>
+  )
+
+  if (!label) return el
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <label className="frm-self-label" htmlFor={inputId}>{label}</label>
+      {el}
+    </div>
+  )
+}
+
+// ── TimeInput ────────────────────────────────────────────────────────────
+export function TimeInput({ size = 'md', label, className = '', ...rest }) {
+  const { id: fieldId, hasError } = useFieldProps()
+  const selfId = useId()
+  const inputId = rest.id || fieldId || selfId
+
+  const el = (
+    <div className={`inp-wrap inp-wrap--${size}${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}>
+      <span className="inp-icon inp-icon--left">
+        <svg viewBox="0 0 14 14" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <circle cx="7" cy="7" r="6" />
+          <polyline points="7,3.5 7,7 9.5,9" />
+        </svg>
+      </span>
+      <input id={inputId} type="time" className="inp inp--bare inp--time" {...rest} />
+    </div>
+  )
+
+  if (!label) return el
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <label className="frm-self-label" htmlFor={inputId}>{label}</label>
+      {el}
+    </div>
+  )
+}
+
+// ── ColorInput ───────────────────────────────────────────────────────────
+export function ColorInput({ size = 'md', value = '#1D4ED8', onChange, label, className = '', ...rest }) {
+  const { id: fieldId } = useFieldProps()
+  const selfId = useId()
+  const inputId = rest.id || fieldId || selfId
+
+  const el = (
+    <div className={`cinp cinp--${size}${!label && className ? ` ${className}` : ''}`}>
+      <input
+        id={inputId}
+        type="color"
+        className="cinp-swatch"
+        value={value}
+        onChange={e => onChange?.(e.target.value)}
+        {...rest}
+      />
+      <span className="cinp-hex">{value}</span>
+    </div>
+  )
+
+  if (!label) return el
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <label className="frm-self-label" htmlFor={inputId}>{label}</label>
+      {el}
+    </div>
+  )
+}
+
+// ── FileInput ────────────────────────────────────────────────────────────
+export function FileInput({ size = 'md', label, accept, multiple, placeholder = 'No file chosen', onChange, className = '', disabled = false }) {
+  const inputRef = useRef(null)
+  const [fileName, setFileName] = useState('')
+  const { id: fieldId } = useFieldProps()
+  const selfId = useId()
+  const inputId = fieldId || selfId
+
+  function handleChange(e) {
+    const files = e.target.files
+    if (files?.length) {
+      setFileName(files.length === 1 ? files[0].name : `${files.length} files selected`)
+    } else {
+      setFileName('')
+    }
+    onChange?.(e)
+  }
+
+  const el = (
+    <div className={`finp finp--${size}${disabled ? ' finp--disabled' : ''}${!label && className ? ` ${className}` : ''}`}>
+      <input
+        ref={inputRef}
+        id={inputId}
+        type="file"
+        className="finp-native"
+        accept={accept}
+        multiple={multiple}
+        disabled={disabled}
+        onChange={handleChange}
+      />
+      <button
+        type="button"
+        className="finp-btn"
+        onClick={() => inputRef.current?.click()}
+        disabled={disabled}
+      >
+        <svg viewBox="0 0 14 14" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <path d="M7 1v8M4 4l3-3 3 3" />
+          <path d="M1 10v1.5A1.5 1.5 0 0 0 2.5 13h9a1.5 1.5 0 0 0 1.5-1.5V10" />
+        </svg>
+        Choose file
+      </button>
+      <span className={`finp-name${!fileName ? ' finp-name--placeholder' : ''}`}>
+        {fileName || placeholder}
+      </span>
+    </div>
+  )
+
+  if (!label) return el
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <label className="frm-self-label" htmlFor={inputId}>{label}</label>
+      {el}
+    </div>
+  )
+}
+
+// ── CheckboxGroup ────────────────────────────────────────────────────────
+const CheckboxGroupContext = createContext({ value: [], onChange: () => {} })
+
+export function CheckboxGroup({ value = [], onChange, layout = 'column', children, className = '' }) {
+  return (
+    <CheckboxGroupContext.Provider value={{ value, onChange }}>
+      <div className={`chkg chkg--${layout} ${className}`.trim()}>
+        {children}
+      </div>
+    </CheckboxGroupContext.Provider>
+  )
+}
+
+export function CheckboxGroupItem({ value, disabled, children, className = '' }) {
+  const ctx = useContext(CheckboxGroupContext)
+  const checked = Array.isArray(ctx.value) && ctx.value.includes(value)
+  function handleChange(on) {
+    if (on) ctx.onChange?.([...ctx.value, value])
+    else ctx.onChange?.(ctx.value.filter(v => v !== value))
+  }
+  return (
+    <Checkbox checked={checked} onChange={handleChange} disabled={disabled} className={className}>
+      {children}
+    </Checkbox>
+  )
+}
+
+// ── MultiSelect ──────────────────────────────────────────────────────────
+export function MultiSelect({
+  options = [], value = [], onChange,
+  placeholder = 'Select…',
+  size = 'md', label, className = '', disabled = false,
+}) {
+  const [open, setOpen] = useState(false)
+  const wrapRef = useRef(null)
+  const { id: fieldId, hasError } = useFieldProps()
+  const selfId = useId()
+  const triggerId = fieldId || selfId
+
+  useEffect(() => {
+    if (!open) return
+    function onDown(e) { if (!wrapRef.current?.contains(e.target)) setOpen(false) }
+    function onKey(e) { if (e.key === 'Escape') setOpen(false) }
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey) }
+  }, [open])
+
+  const displayText = value.length === 0
+    ? placeholder
+    : value.length === 1
+      ? (options.find(o => o.value === value[0])?.label ?? value[0])
+      : `${value.length} selected`
+
+  function toggle(v) {
+    if (value.includes(v)) onChange?.(value.filter(x => x !== v))
+    else onChange?.([...value, v])
+  }
+
+  const el = (
+    <div
+      ref={wrapRef}
+      className={`msel msel--${size}${hasError ? ' msel--error' : ''}${!label && className ? ` ${className}` : ''}`}
+    >
+      <button
+        id={triggerId}
+        type="button"
+        className={`msel-trigger${open ? ' msel-trigger--open' : ''}`}
+        onClick={() => !disabled && setOpen(v => !v)}
+        disabled={disabled}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+      >
+        <span className={`msel-display${value.length === 0 ? ' msel-display--placeholder' : ''}`}>{displayText}</span>
+        <svg className="msel-caret" viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <polyline points="4,6 8,10 12,6" />
+        </svg>
+      </button>
+      {open && (
+        <div className="msel-pop" role="listbox" aria-multiselectable="true">
+          {options.length === 0
+            ? <div className="msel-empty">No options</div>
+            : options.map(opt => (
+              <label key={opt.value} className={`msel-opt${opt.disabled ? ' msel-opt--disabled' : ''}`}>
+                <input
+                  type="checkbox"
+                  className="chk-input"
+                  checked={value.includes(opt.value)}
+                  disabled={opt.disabled}
+                  onChange={() => toggle(opt.value)}
+                />
+                <span className="chk-box" aria-hidden="true">
+                  <svg viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="2,6 5,9 10,3" />
+                  </svg>
+                </span>
+                <span className="msel-opt-label">{opt.label}</span>
+              </label>
+            ))
+          }
+        </div>
+      )}
+    </div>
+  )
+
+  if (!label) return el
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <label className="frm-self-label" htmlFor={triggerId}>{label}</label>
+      {el}
+    </div>
+  )
+}
+
+// ── NumberInput ──────────────────────────────────────────────────────────
+export function NumberInput({ size = 'md', min, max, step = 1, value = 0, onChange, label, className = '', ...rest }) {
+  const { id: fieldId, hasError } = useFieldProps()
+  const selfId = useId()
+  const inputId = rest.id || fieldId || selfId
+
+  function adjust(delta) {
+    const next = Number(value) + delta
+    if (min !== undefined && next < min) return
+    if (max !== undefined && next > max) return
+    onChange?.(next)
+  }
+
+  const el = (
+    <div className={`ninp ninp--${size}${hasError ? ' ninp--error' : ''}${!label && className ? ` ${className}` : ''}`}>
+      <button
+        type="button"
+        className="ninp-btn"
+        onClick={() => adjust(-step)}
+        disabled={rest.disabled || (min !== undefined && Number(value) <= min)}
+        aria-label="Decrease"
+        tabIndex={-1}
+      >
+        <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="2" y1="6" x2="10" y2="6" />
+        </svg>
+      </button>
+      <input
+        id={inputId}
+        type="number"
+        className="ninp-inp"
+        value={value}
+        min={min}
+        max={max}
+        step={step}
+        onChange={e => onChange?.(Number(e.target.value))}
+        {...rest}
+      />
+      <button
+        type="button"
+        className="ninp-btn"
+        onClick={() => adjust(step)}
+        disabled={rest.disabled || (max !== undefined && Number(value) >= max)}
+        aria-label="Increase"
+        tabIndex={-1}
+      >
+        <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+          <line x1="2" y1="6" x2="10" y2="6" />
+          <line x1="6" y1="2" x2="6" y2="10" />
+        </svg>
+      </button>
+    </div>
+  )
+
+  if (!label) return el
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <label className="frm-self-label" htmlFor={inputId}>{label}</label>
+      {el}
+    </div>
+  )
+}
+
+// ── RangeSlider ──────────────────────────────────────────────────────────
+export function RangeSlider({ min = 0, max = 100, step = 1, value = 50, onChange, showValue = true, label, className = '' }) {
+  const pct = max > min ? ((Number(value) - min) / (max - min)) * 100 : 0
+
+  const rangeEl = (
+    <input
+      type="range"
+      className="rng-input"
+      min={min} max={max} step={step}
+      value={value}
+      style={{ '--rng-pct': `${pct}%` }}
+      onChange={e => onChange?.(Number(e.target.value))}
+    />
+  )
+
+  if (!label) {
+    return (
+      <div className={`rng${className ? ` ${className}` : ''}`}>
+        {rangeEl}
+        {showValue && <span className="rng-value">{value}</span>}
+      </div>
+    )
+  }
+  return (
+    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+      <div className="rng-header">
+        <label className="frm-self-label">{label}</label>
+        {showValue && <span className="rng-value">{value}</span>}
+      </div>
+      {rangeEl}
+    </div>
   )
 }

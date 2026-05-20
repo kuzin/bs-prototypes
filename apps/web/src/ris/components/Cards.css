@@ -116,7 +116,15 @@
 
 .rc-card-drill:hover { opacity: 1; }
 
-.rc-card-body--flush  { padding: 8px 0; }
+.rc-card-body--flush { padding: 0; }
+
+/* Clip table rows to card corners — only when the flush body contains a table.
+   Charts use flush too but need overflow: visible for Nivo tooltip portals. */
+.rc-card-body--flush:has(.tbl) { overflow: hidden; }
+.rc-card-body--flush:has(.tbl):first-child { border-radius: 13px 13px 0 0; }
+.rc-card-body--flush:has(.tbl):last-child  { border-radius: 0 0 13px 13px; }
+.rc-card-body--flush:has(.tbl):only-child  { border-radius: 13px; }
+
 .rc-card-body--padded { padding: 14px 16px; }
 
 .rc-card-foot {
@@ -126,13 +134,15 @@
 
 /* ── Inline note inside a card body ────────────────────────────────────── */
 .rc-card-note {
-  margin: 10px 16px;
-  padding: 8px 12px;
-  border-radius: 8px;
+  margin: 8px 0 0;
+  padding: 6px 10px;
+  border-radius: 6px;
   font-size: 13px;
-  line-height: 1.55;
+  line-height: 1.5;
   color: #475569;
 }
+
+.rc-card-body--flush > .rc-card-note { margin: 8px 16px 12px; }
 
 .rc-card-note--neutral { background: #F8FAFC; border: 1px solid #E2E8F0; }
 .rc-card-note--accent  { background: var(--rc-accent-bg, #FFF7F5); border: 1px solid color-mix(in srgb, var(--rc-accent, #E8866A) 25%, white); }

@@ -27,13 +27,38 @@ import './Hero.css'
  *   accentBg  — background tint for the icon block (defaults to a soft mix of accent)
  */
 
+function DeltaArrow({ positive, flat }) {
+  if (flat) {
+    return (
+      <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="3" y1="7" x2="11" y2="7" />
+      </svg>
+    )
+  }
+  return (
+    <svg viewBox="0 0 14 14" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"
+      style={{ transform: positive ? 'none' : 'rotate(180deg)' }}>
+      <polyline points="3,8 7,4 11,8" />
+      <line x1="7" y1="4" x2="7" y2="12" />
+    </svg>
+  )
+}
+
 function Delta({ value }) {
   if (value == null) return null
-  if (value === 0) return <span className="hero-delta hero-delta--flat">±0 pts</span>
+  if (value === 0) {
+    return (
+      <span className="hero-delta hero-delta--flat">
+        <DeltaArrow flat />
+        ±0 pts
+      </span>
+    )
+  }
   const positive = value > 0
   return (
     <span className={`hero-delta hero-delta--${positive ? 'up' : 'down'}`}>
-      {positive ? '↑' : '↓'} {Math.abs(value)} pts
+      <DeltaArrow positive={positive} />
+      {Math.abs(value)} pts
     </span>
   )
 }
@@ -48,6 +73,7 @@ export function Hero({
   delta,
   accent,
   accentBg,
+  action,
 }) {
   // Auto-derive from a section bucket key
   let resolvedTitle = title
@@ -86,11 +112,16 @@ export function Hero({
       </div>
 
       {score != null && (
-        <div className="hero-score-row">
-          <span className="hero-score">{score}</span>
+        <div className="hero-score-card">
+          <div className="hero-score-row">
+            <span className="hero-score">{score}</span>
+            <span className="hero-score-suffix">/100</span>
+          </div>
           <Delta value={delta} />
         </div>
       )}
+
+      {action && <div className="hero-action">{action}</div>}
     </header>
   )
 }

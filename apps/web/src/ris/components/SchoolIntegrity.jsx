@@ -35,7 +35,7 @@ export function SchoolIntegrity({ schoolId, onBack }) {
 
   return (
     <div className="mot-root">
-      <Hero bucket="integrity" score={health.integrity} delta={health.dI} />
+      <Hero bucket="integrity" />
 
       <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
         <StatCard

@@ -25,7 +25,7 @@ export function Pill({
       style={{ '--pill-color': color }}
     >
       {icon && <span className="pill-icon">{icon}</span>}
-      <span>{children}</span>
+      <span className="pill-label">{children}</span>
     </span>
   )
 }

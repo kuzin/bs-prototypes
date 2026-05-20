@@ -63,7 +63,7 @@ export function SchoolMotivation({ schoolId, onBack }) {
 
   return (
     <div className="mot-root">
-      <Hero bucket="motivation" score={health.motivation} delta={health.dM} />
+      <Hero bucket="motivation" />
 
       <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
         <StatCard

@@ -44,7 +44,7 @@ export function SchoolHabits({ schoolId, onBack }) {
 
   return (
     <div className="mot-root">
-      <Hero bucket="habits" score={health.habits} delta={health.dH} />
+      <Hero bucket="habits" />
 
       <div className="rc-stats-row">
         <StatCard

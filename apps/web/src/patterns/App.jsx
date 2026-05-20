@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useSyncExternalStore, Fragment } from 'react'
 import { ResponsiveLine } from '@nivo/line'
 import { ResponsiveBar } from '@nivo/bar'
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
@@ -10,8 +10,8 @@ import {
 import { SECTIONS, HealthStat, ReadingHealth } from '../ris/components/ReadingHealth'
 import { AlertRow, AlertsBanner } from '../ris/components/AlertsBanner'
 import { Hero } from '../ris/components/Hero'
-import { MainRail } from '../MainRail'
 import { PrototypeNav } from '../PrototypeNav'
+import { Sidebar, SchoolPicker } from '../ris/components/Sidebar'
 import { Button } from '../ris/components/Button'
 import { Tabs } from '../ris/components/Tabs'
 import { Flyout } from '../ris/components/Flyout'
@@ -24,7 +24,14 @@ import { BackBar } from '../BackBar'
 import { Toggle } from '../ris/components/Toggle'
 import {
   Field, Input, Select, Textarea, Checkbox, RadioGroup, Radio,
+  CheckboxGroup, CheckboxGroupItem,
+  MultiSelect, NumberInput, RangeSlider,
+  DateInput, TimeInput, ColorInput, FileInput,
 } from '../ris/components/Form'
+import { CustomSelect } from '../ris/components/CustomSelect'
+import { FilterBar, FilterItem } from '../ris/components/FilterBar'
+import { DatePicker } from '../ris/components/DatePicker'
+import { TimePicker } from '../ris/components/TimePicker'
 import {
   Divider, Spinner, IconButton, Tooltip, Banner,
   Breadcrumb, Accordion, EmptyState, Skeleton, SectionHeading,
@@ -32,16 +39,20 @@ import {
 import { RMI_ICONS } from '../ris/components/RmiIcons'
 import { RMI_FACTORS } from '../ris/data'
 
+// Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
+import '../ris/index.css'
+
 // Bring in CSS for the components so they render properly here
 import '../ris/components/Cards.css'
 import '../ris/components/SchoolDashboard.css'
 import '../ris/components/ReadingHealth.css'
 import '../ris/components/AlertsBanner.css'
 import '../ris/components/Hero.css'
-import '../MainRail.css'
 import '../BackBar.css'
+import '../ris/components/Sidebar.css'
 import '../ris/components/Toggle.css'
 import '../ris/components/Form.css'
+import '../ris/components/FilterBar.css'
 import '../ris/components/Primitives.css'
 
 import './App.css'
@@ -70,27 +81,37 @@ const SECTIONS_LIST = [
   { group: 'Forms',     id: 'select',       name: 'Select' },
   { group: 'Forms',     id: 'textarea',     name: 'Textarea' },
   { group: 'Forms',     id: 'checkbox',     name: 'Checkbox' },
-  { group: 'Forms',     id: 'radio',        name: 'RadioGroup' },
-  { group: 'Forms',     id: 'field-form',   name: 'Field / Form' },
+  { group: 'Forms',     id: 'radio',          name: 'RadioGroup' },
+  { group: 'Forms',     id: 'checkbox-group', name: 'CheckboxGroup' },
+  { group: 'Forms',     id: 'multi-select',   name: 'MultiSelect' },
+  { group: 'Forms',     id: 'number-input',   name: 'NumberInput' },
+  { group: 'Forms',     id: 'range-slider',   name: 'RangeSlider' },
+  { group: 'Forms',     id: 'date-input',     name: 'Date' },
+  { group: 'Forms',     id: 'time-input',     name: 'Time' },
+  { group: 'Forms',     id: 'color-input',    name: 'ColorInput' },
+  { group: 'Forms',     id: 'file-input',     name: 'FileInput' },
+  { group: 'Forms',     id: 'custom-select',  name: 'CustomSelect' },
+  { group: 'Forms',     id: 'filter-bar',     name: 'FilterBar' },
+  { group: 'Forms',     id: 'field-form',     name: 'Field / Form' },
+  { group: 'Charts',    id: 'stat-card',    name: 'StatCard' },
+  { group: 'Charts',    id: 'chart-card',   name: 'ChartCard' },
+  { group: 'Charts',    id: 'card-note',    name: 'CardNote' },
   { group: 'Charts',    id: 'chart-line',   name: 'Line chart' },
-  { group: 'Charts',    id: 'chart-bar-grouped', name: 'Grouped bar chart' },
-  { group: 'Charts',    id: 'chart-bar-h',  name: 'Horizontal bar chart' },
-  { group: 'Charts',    id: 'chart-scatter', name: 'Scatter chart' },
-  { group: 'Cards',     id: 'stat-card',    name: 'StatCard' },
-  { group: 'Cards',     id: 'chart-card',   name: 'ChartCard' },
-  { group: 'Cards',     id: 'card-note',    name: 'CardNote' },
+  { group: 'Charts',    id: 'chart-bar-grouped', name: 'Grouped bar' },
+  { group: 'Charts',    id: 'chart-bar-h',  name: 'Horizontal bar' },
+  { group: 'Charts',    id: 'chart-scatter', name: 'Scatter' },
   { group: 'Charts',    id: 'chart-legend', name: 'ChartLegend' },
   { group: 'Charts',    id: 'tooltips',     name: 'Tooltips' },
-  { group: 'Health',    id: 'health-stat',  name: 'HealthStat' },
-  { group: 'Health',    id: 'reading-health', name: 'ReadingHealth' },
-  { group: 'Alerts',    id: 'alert-row',    name: 'AlertRow' },
-  { group: 'Alerts',    id: 'alerts-banner', name: 'AlertsBanner' },
-  { group: 'Heroes',    id: 'hero',         name: 'Hero' },
+  { group: 'Domain',    id: 'health-stat',  name: 'HealthStat' },
+  { group: 'Domain',    id: 'reading-health', name: 'ReadingHealth' },
+  { group: 'Domain',    id: 'alert-row',    name: 'AlertRow' },
+  { group: 'Domain',    id: 'alerts-banner', name: 'AlertsBanner' },
+  { group: 'Layout',    id: 'hero',         name: 'Hero' },
   { group: 'Layout',    id: 'back-bar',     name: 'BackBar' },
-  { group: 'Layout',    id: 'main-rail',    name: 'MainRail' },
+  { group: 'Layout',    id: 'sidebar',      name: 'Sidebar' },
   { group: 'Layout',    id: 'prototype-nav', name: 'PrototypeNav' },
-  { group: 'Icons',     id: 'rmi-icons',    name: 'RMI Icons' },
-  { group: 'Icons',     id: 'health-icons', name: 'Reading Health Icons' },
+  { group: 'Layout',    id: 'rmi-icons',    name: 'RMI Icons' },
+  { group: 'Layout',    id: 'health-icons', name: 'Health Icons' },
 ]
 
 const fakeSlicePoints = (points) => ({
@@ -113,9 +134,9 @@ const RMI_TREND_FIXTURE = [
 const SAMPLE_HEALTH = { motivation: 71, integrity: 86, habits: 58, skills: 42, dM: 7, dI: 3, dH: 5, dS: -3 }
 
 const SAMPLE_ALERTS = [
-  { id: '1', level: 'critical', school: 'Lincoln Elementary', title: 'Stuck Lexile plateau — 6 weeks, no growth', action: 'Review', tab: 'skills' },
-  { id: '2', level: 'warning', school: 'Washington Middle',   title: 'Student engagement down 39% vs. last month', action: 'View habits', tab: 'habits' },
-  { id: '3', level: 'positive', school: 'Adams High',          title: '+65% increase in avg session length', action: 'View details', tab: 'habits' },
+  { id: '1', level: 'critical', title: 'Lincoln Elementary', description: 'Stuck Lexile plateau — 6 weeks, no growth', action: 'Review', tab: 'skills' },
+  { id: '2', level: 'warning',  title: 'Washington Middle',  description: 'Student engagement down 39% vs. last month', action: 'View habits', tab: 'habits' },
+  { id: '3', level: 'positive', title: 'Adams High',         description: '+65% increase in avg session length',        action: 'View details', tab: 'habits' },
 ]
 
 // Sample icons for Button + Tabs showcases
@@ -200,26 +221,99 @@ function TabsShowcase() {
   )
 }
 
-function FlyoutShowcase() {
+// Tiny icons for menu items
+const EditIcon = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M11.5 2.5l2 2L6 12l-3 1 1-3 7.5-7.5z" />
+  </svg>
+)
+const DuplicateIcon = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="4" y="4" width="9" height="9" rx="1.5" />
+    <path d="M3 11V4a1 1 0 0 1 1-1h7" />
+  </svg>
+)
+const ArchiveIcon = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="2" y="3" width="12" height="3" rx="0.5" />
+    <path d="M3 6v7a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6" />
+    <line x1="6.5" y1="9" x2="9.5" y2="9" />
+  </svg>
+)
+const TrashIcon = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 4h10" />
+    <path d="M5.5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1" />
+    <path d="M4.5 4l.6 9a1 1 0 0 0 1 1h3.8a1 1 0 0 0 1-1l.6-9" />
+  </svg>
+)
+const MoreIcon = () => (
+  <svg viewBox="0 0 16 16" fill="currentColor">
+    <circle cx="3.5" cy="8" r="1.4" />
+    <circle cx="8" cy="8" r="1.4" />
+    <circle cx="12.5" cy="8" r="1.4" />
+  </svg>
+)
+
+function FlyoutKnobs() {
+  const [size, setSize]   = useState('md')
+  const [withIcons, setIcons] = useState(true)
+  const [placement, setPlacement] = useState('bottom-start')
   return (
-    <div className="pt-variants pt-variants--2">
-      <Variant label="simple menu">
+    <>
+      <Knobs>
+        <Field label="button size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="placement">
+          <Select value={placement} onChange={e => setPlacement(e.target.value)}>
+            <option>auto</option><option>bottom-start</option><option>bottom-end</option><option>top-start</option><option>top-end</option>
+          </Select>
+        </Field>
+        <Field label="icons in menu"><Toggle checked={withIcons} onChange={setIcons} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
         <Flyout
+          placement={placement}
           trigger={({ open, toggle }) => (
-            <Button variant="secondary" iconRight={<CaretIcon />} onClick={toggle} aria-expanded={open}>
+            <Button variant="secondary" size={size} iconRight={<CaretIcon />} onClick={toggle} aria-expanded={open}>
               Actions
             </Button>
           )}
         >
           {({ close }) => (
-            <div className="flyout-menu">
-              <button className="flyout-menu-item" onClick={close}>Edit</button>
-              <button className="flyout-menu-item" onClick={close}>Duplicate</button>
-              <button className="flyout-menu-item" onClick={close}>Archive</button>
+            <div className="flyout-menu" style={{ minWidth: 180 }}>
+              <button className="flyout-menu-item" onClick={close}>
+                {withIcons && <span className="flyout-menu-icon"><EditIcon /></span>}
+                Edit
+              </button>
+              <button className="flyout-menu-item" onClick={close}>
+                {withIcons && <span className="flyout-menu-icon"><DuplicateIcon /></span>}
+                Duplicate
+              </button>
+              <button className="flyout-menu-item" onClick={close}>
+                {withIcons && <span className="flyout-menu-icon"><ArchiveIcon /></span>}
+                Archive
+              </button>
+              <div className="flyout-menu-sep" />
+              <button className="flyout-menu-item flyout-menu-item--danger" onClick={close}>
+                {withIcons && <span className="flyout-menu-icon"><TrashIcon /></span>}
+                Delete
+              </button>
             </div>
           )}
         </Flyout>
-      </Variant>
+      </div>
+    </>
+  )
+}
+
+function FlyoutShowcase() {
+  return (
+    <div className="pt-variants pt-variants--2">
+
       <Variant label="school picker">
         <Flyout
           placement="bottom-start"
@@ -244,89 +338,308 @@ function FlyoutShowcase() {
           )}
         </Flyout>
       </Variant>
+
+      <Variant label="overflow menu (3+ actions collapse into More)">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <Button variant="primary" size="sm">Review</Button>
+          <Button variant="secondary" size="sm">Snooze</Button>
+          <Flyout
+            placement="bottom-end"
+            trigger={({ open, toggle }) => (
+              <IconButton
+                variant="secondary"
+                size="sm"
+                aria-label="More actions"
+                aria-expanded={open}
+                onClick={toggle}
+              >
+                <MoreIcon />
+              </IconButton>
+            )}
+          >
+            {({ close }) => (
+              <div className="flyout-menu" style={{ minWidth: 180 }}>
+                <button className="flyout-menu-item" onClick={close}>
+                  <span className="flyout-menu-icon"><EditIcon /></span>
+                  Edit
+                </button>
+                <button className="flyout-menu-item" onClick={close}>
+                  <span className="flyout-menu-icon"><DuplicateIcon /></span>
+                  Duplicate
+                </button>
+                <button className="flyout-menu-item" onClick={close}>
+                  <span className="flyout-menu-icon"><ArchiveIcon /></span>
+                  Archive
+                </button>
+                <div className="flyout-menu-sep" />
+                <button className="flyout-menu-item flyout-menu-item--danger" onClick={close}>
+                  <span className="flyout-menu-icon"><TrashIcon /></span>
+                  Delete
+                </button>
+              </div>
+            )}
+          </Flyout>
+        </div>
+      </Variant>
     </div>
   )
 }
 
-function ModalShowcase() {
-  const [sideOpen, setSideOpen] = useState(false)
-  const [centerOpen, setCenterOpen] = useState(false)
+const DEFAULT_MODAL_BODY = `Once deleted, this challenge and its logged minutes won't appear in any reports or student dashboards. You can still see it in the audit log for 30 days.
+
+If you only want to pause logging without losing data, archive the challenge instead.`
+
+function CloseIcon() {
   return (
-    <div className="pt-variants pt-variants--2">
-      <Variant label="variant='side' (slide-in)">
-        <Button onClick={() => setSideOpen(true)}>Open side panel</Button>
-        <Modal open={sideOpen} onClose={() => setSideOpen(false)} variant="side" ariaLabel="Sample side panel">
-          {({ close }) => (
-            <div style={{ padding: 24 }}>
-              <h3 style={{ marginBottom: 8 }}>Side Panel</h3>
-              <p style={{ color: '#64748B', marginBottom: 16 }}>
-                Slides in from the right with backdrop. Press Escape or click the backdrop to close.
-              </p>
-              <Button variant="primary" onClick={close}>Close</Button>
+    <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="3" y1="3" x2="11" y2="11" />
+      <line x1="11" y1="3" x2="3" y2="11" />
+    </svg>
+  )
+}
+
+function CenteredModalKnobs() {
+  const [open, setOpen]         = useState(false)
+  const [withClose, setClose]   = useState(true)
+  const [withImage, setImage]   = useState(false)
+  const [withFooter, setFooter] = useState(true)
+  const [destructive, setDest]  = useState(false)
+  const [title, setTitle]       = useState('Delete this challenge?')
+  const [body, setBody]         = useState(DEFAULT_MODAL_BODY)
+
+  return (
+    <>
+      <Knobs>
+        <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="close btn"><Toggle checked={withClose} onChange={setClose} /></Field>
+        <Field label="banner image"><Toggle checked={withImage} onChange={setImage} /></Field>
+        <Field label="footer"><Toggle checked={withFooter} onChange={setFooter} /></Field>
+        <Field label="destructive"><Toggle checked={destructive} onChange={setDest} /></Field>
+        <Field label="body" className="pt-knob-full">
+          <Textarea rows={3} value={body} onChange={e => setBody(e.target.value)} />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Button onClick={() => setOpen(true)}>Open centered modal</Button>
+      </div>
+      <Modal open={open} onClose={() => setOpen(false)} variant="center" ariaLabel={title}>
+        {({ close }) => (
+          <>
+            {withImage && (
+              <img
+                className="modal-image"
+                alt=""
+                src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1040&q=70"
+              />
+            )}
+            {withImage && withClose && (
+              <IconButton
+                variant="secondary"
+                size="sm"
+                onClick={close}
+                aria-label="Close"
+                className="modal-close modal-close--floating"
+              >
+                <CloseIcon />
+              </IconButton>
+            )}
+            <div className={`modal-header${withImage ? ' modal-header--flush' : ''}`}>
+              <div className="modal-header-text">
+                <h3 className="modal-title">{title}</h3>
+              </div>
+              {!withImage && withClose && (
+                <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close" className="modal-close">
+                  <CloseIcon />
+                </IconButton>
+              )}
             </div>
-          )}
-        </Modal>
-      </Variant>
-      <Variant label="variant='center' (overlay)">
-        <Button onClick={() => setCenterOpen(true)}>Open centered modal</Button>
-        <Modal open={centerOpen} onClose={() => setCenterOpen(false)} variant="center" ariaLabel="Sample modal">
-          {({ close }) => (
-            <div style={{ padding: 24 }}>
-              <h3 style={{ marginBottom: 8 }}>Confirm</h3>
-              <p style={{ color: '#64748B', marginBottom: 16 }}>
-                Delete this challenge? This action can't be undone.
-              </p>
-              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+            <div className="modal-body">
+              {body.split(/\n{2,}/).map((para, i) => <p key={i}>{para}</p>)}
+            </div>
+            {withFooter && (
+              <div className="modal-footer">
                 <Button variant="ghost" onClick={close}>Cancel</Button>
-                <Button variant="danger" onClick={close}>Delete</Button>
+                <Button variant={destructive ? 'danger' : 'primary'} onClick={close}>
+                  {destructive ? 'Delete challenge' : 'Confirm'}
+                </Button>
+              </div>
+            )}
+          </>
+        )}
+      </Modal>
+    </>
+  )
+}
+
+const SP_SECTIONS = [
+  { id: 'overview',   label: 'Overview',   icon: 'overview',     color: '#475569' },
+  { id: 'motivation', label: 'Motivation', icon: 'flame',        color: '#E8866A' },
+  { id: 'integrity',  label: 'Integrity',  icon: 'shield',       color: '#1D4ED8' },
+  { id: 'habits',     label: 'Habits',     icon: 'habits',       color: '#16A97A' },
+  { id: 'skills',     label: 'Skills',     icon: 'book',         color: '#7C3AED' },
+]
+
+const SP_EMPTY = {
+  overview:   { title: 'No data yet',           description: 'Once this student logs reading sessions, their overview will appear here.' },
+  motivation: { title: 'No motivation data',    description: 'Complete the RMI survey to see this student\'s intrinsic and extrinsic scores.' },
+  integrity:  { title: 'No Book Talks logged',  description: 'Verification activity for this student will show up after their first Book Talk.' },
+  habits:     { title: 'No reading sessions',   description: 'Session length, streaks, and frequency populate after this student starts logging.' },
+  skills:     { title: 'No Lexile scores yet',  description: 'Lexile growth requires at least two assessment data points.' },
+}
+
+function EmptyIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="7" />
+      <line x1="16" y1="16" x2="21" y2="21" />
+    </svg>
+  )
+}
+
+function SpNavIcon({ name }) {
+  const props = { viewBox: '0 0 20 20', fill: 'none', stroke: 'currentColor', strokeWidth: '1.6', strokeLinecap: 'round', strokeLinejoin: 'round', width: 20, height: 20 }
+  switch (name) {
+    case 'overview': return (<svg {...props}><circle cx="10" cy="7" r="3"/><path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6"/></svg>)
+    case 'flame':    return (<svg {...props}><path d="M10 2c.2 2.2-1.1 3.2-2.3 4.4C6.5 7.6 5 9.1 5 11.5 5 14.5 7.2 17 10 17s5-2.5 5-5.5c0-1.7-.6-2.7-1.4-3.4"/></svg>)
+    case 'shield':   return (<svg {...props}><path d="M10 2.5 16 4.5v5.7c0 3.7-2.7 6.7-6 7.6-3.3-.9-6-3.9-6-7.6V4.5z"/><polyline points="7,10 9.2,12.2 13.2,8"/></svg>)
+    case 'habits':   return (<svg {...props}><rect x="3" y="4.5" width="14" height="13" rx="1.6"/><line x1="3" y1="8.5" x2="17" y2="8.5"/><line x1="7" y1="2.5" x2="7" y2="5.5"/><line x1="13" y1="2.5" x2="13" y2="5.5"/></svg>)
+    case 'book':     return (<svg {...props}><path d="M3 4c0-.6.4-1 1-1h5.5v14H4c-.6 0-1-.4-1-1V4z"/><path d="M17 4c0-.6-.4-1-1-1h-5.5v14H16c.6 0 1-.4 1-1V4z"/><line x1="9.5" y1="3" x2="9.5" y2="17"/></svg>)
+    default: return null
+  }
+}
+
+function SideModalShowcase() {
+  const [open, setOpen]   = useState(false)
+  const [section, setSection] = useState('overview')
+  const empty = SP_EMPTY[section]
+  return (
+    <div className="pt-variant-frame">
+      <Button onClick={() => setOpen(true)}>Open student panel</Button>
+      <Modal open={open} onClose={() => setOpen(false)} variant="side" ariaLabel="Marcus Chen — student profile">
+        {({ close }) => (
+          <div className="sp-shell">
+            {/* Left vertical nav (BeanstackProfile-style) */}
+            <nav className="sp-nav">
+              {SP_SECTIONS.map((s, i) => {
+                const active = section === s.id
+                return (
+                  <Fragment key={s.id}>
+                    <button
+                      type="button"
+                      className={`sp-nav-item${active ? ' sp-nav-item--active' : ''}`}
+                      style={active ? { '--nav-active-color': s.color, '--nav-active-bg': `color-mix(in srgb, ${s.color} 12%, white)` } : undefined}
+                      onClick={() => setSection(s.id)}
+                      title={s.label}
+                    >
+                      <span className="sp-nav-icon"><SpNavIcon name={s.icon} /></span>
+                      <span className="sp-nav-label">{s.label}</span>
+                    </button>
+                    {i === 0 && <div className="sp-nav-divider" />}
+                  </Fragment>
+                )
+              })}
+            </nav>
+
+            {/* Main pane */}
+            <div className="sp-pane">
+              <div className="sp-pane-header">
+                <div className="sp-pane-identity">
+                  <Avatar initials="MC" color="#7C3AED" size="md" />
+                  <div className="sp-pane-identity-text">
+                    <div className="sp-pane-name">Marcus Chen</div>
+                    <div className="sp-pane-meta">Grade 5 · Lincoln Elementary</div>
+                  </div>
+                </div>
+                <div className="sp-pane-actions">
+                  <Button variant="secondary" size="sm">Log reading</Button>
+                  <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close">
+                    <CloseIcon />
+                  </IconButton>
+                </div>
+              </div>
+
+              <div className="sp-pane-body">
+                <EmptyState
+                  icon={<EmptyIcon />}
+                  title={empty.title}
+                  description={empty.description}
+                  action={<Button variant="secondary" size="sm">Get started</Button>}
+                />
               </div>
             </div>
-          )}
-        </Modal>
-      </Variant>
+          </div>
+        )}
+      </Modal>
     </div>
   )
 }
 
-function TableShowcase() {
-  const rows = [
-    { id: 'jefferson',  name: 'Jefferson',  rmi: 80, delta:  8, students: 1820 },
-    { id: 'lincoln',    name: 'Lincoln',    rmi: 71, delta:  7, students: 1650 },
-    { id: 'kennedy',    name: 'Kennedy',    rmi: 77, delta:  7, students: 2340 },
-    { id: 'washington', name: 'Washington', rmi: 62, delta:  1, students: 1980 },
-    { id: 'adams',      name: 'Adams',      rmi: 83, delta:  9, students: 2510 },
-  ]
-  const renderDelta = (v) => (
+const TABLE_ROWS = [
+  { id: 'jefferson',  name: 'Jefferson',  rmi: 80, delta:  8, students: 1820 },
+  { id: 'lincoln',    name: 'Lincoln',    rmi: 71, delta:  7, students: 1650 },
+  { id: 'kennedy',    name: 'Kennedy',    rmi: 77, delta:  7, students: 2340 },
+  { id: 'washington', name: 'Washington', rmi: 62, delta:  1, students: 1980 },
+  { id: 'adams',      name: 'Adams',      rmi: 83, delta:  9, students: 2510 },
+]
+
+function TableKnobs() {
+  const [zebra, setZebra]       = useState(false)
+  const [compact, setCompact]   = useState(false)
+  const [bordered, setBordered] = useState(false)
+  const [flush, setFlush]       = useState(false)
+  const [sortable, setSortable] = useState(false)
+  const [paginate, setPaginate] = useState(false)
+  const [clickable, setClick]   = useState(true)
+  const [highlight, setHL]      = useState(false)
+  const [state, setState]       = useState('data') // data | empty | loading
+
+  const renderDelta = v => (
     <span style={{ color: v >= 0 ? '#16A34A' : '#DC2626', fontWeight: 700 }}>
       {v >= 0 ? '↑' : '↓'} {Math.abs(v)} pts
     </span>
   )
+
+  const columns = [
+    { key: 'name',     label: 'School',   sortable },
+    { key: 'students', label: 'Students', align: 'right', sortable, render: v => v.toLocaleString() },
+    { key: 'rmi',      label: 'RMI',      align: 'right', sortable },
+    { key: 'delta',    label: 'YoY',      align: 'right', render: renderDelta },
+  ]
+
   return (
     <>
-      <Variant label="basic + clickable rows">
+      <Knobs>
+        <Field label="state">
+          <Select value={state} onChange={e => setState(e.target.value)}>
+            <option value="data">with data</option>
+            <option value="empty">empty</option>
+            <option value="loading">loading</option>
+          </Select>
+        </Field>
+        <Field label="zebra"><Toggle checked={zebra} onChange={setZebra} /></Field>
+        <Field label="compact"><Toggle checked={compact} onChange={setCompact} /></Field>
+        <Field label="bordered"><Toggle checked={bordered} onChange={setBordered} /></Field>
+        <Field label="flush"><Toggle checked={flush} onChange={setFlush} /></Field>
+        <Field label="sortable cols"><Toggle checked={sortable} onChange={setSortable} /></Field>
+        <Field label="pagination"><Toggle checked={paginate} onChange={setPaginate} /></Field>
+        <Field label="clickable"><Toggle checked={clickable} onChange={setClick} /></Field>
+        <Field label="highlight Lincoln"><Toggle checked={highlight} onChange={setHL} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
         <Table
-          columns={[
-            { key: 'name',     label: 'School' },
-            { key: 'students', label: 'Students', align: 'right', render: v => v.toLocaleString() },
-            { key: 'rmi',      label: 'RMI',      align: 'right' },
-            { key: 'delta',    label: 'YoY',      align: 'right', render: renderDelta },
-          ]}
-          rows={rows}
-          onRowClick={() => {}}
+          columns={columns}
+          rows={state === 'empty' ? [] : TABLE_ROWS}
+          zebra={zebra}
+          compact={compact}
+          bordered={bordered}
+          flush={flush}
+          loading={state === 'loading'}
+          empty="No schools match the current filter."
+          onRowClick={clickable ? () => {} : undefined}
+          highlightRow={highlight ? r => r.id === 'lincoln' : undefined}
+          pageSize={paginate ? 3 : undefined}
         />
-      </Variant>
-      <Variant label="zebra + compact">
-        <Table
-          columns={[
-            { key: 'name',     label: 'School' },
-            { key: 'rmi',      label: 'RMI',  align: 'right' },
-            { key: 'students', label: 'Students', align: 'right', render: v => v.toLocaleString() },
-          ]}
-          rows={rows}
-          zebra
-          compact
-        />
-      </Variant>
+      </div>
     </>
   )
 }
@@ -469,11 +782,24 @@ function AvatarKnobs() {
   )
 }
 
+const CheckIcon = () => (
+  <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="3,8 7,12 13,4" />
+  </svg>
+)
+const StarIcon = () => (
+  <svg viewBox="0 0 16 16" fill="currentColor">
+    <path d="M8 1.5l1.9 4 4.4.6-3.2 3.1.8 4.3L8 11.4l-4 2.1.8-4.3L1.7 6.1 6.1 5.5z" />
+  </svg>
+)
+
 function PillKnobs() {
   const [text, setText]       = useState('Skills')
   const [variant, setVariant] = useState('soft')
   const [size, setSize]       = useState('md')
   const [color, setColor]     = useState('#7C3AED')
+  const [iconKey, setIconKey] = useState('none')
+  const ICONS = { none: null, plus: <PlusIcon />, check: <CheckIcon />, star: <StarIcon /> }
   return (
     <>
       <Knobs>
@@ -485,15 +811,23 @@ function PillKnobs() {
         </Field>
         <Field label="size">
           <Select value={size} onChange={e => setSize(e.target.value)}>
-            <option>sm</option><option>md</option>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="icon">
+          <Select value={iconKey} onChange={e => setIconKey(e.target.value)}>
+            <option value="none">none</option>
+            <option value="plus">plus</option>
+            <option value="check">check</option>
+            <option value="star">star</option>
           </Select>
         </Field>
         <Field label="color">
           <input className="pt-color" type="color" value={color} onChange={e => setColor(e.target.value)} />
         </Field>
       </Knobs>
-      <div className="pt-variant-frame">
-        <Pill color={color} variant={variant} size={size}>{text}</Pill>
+      <div className="pt-variant-frame pt-variant-frame--row">
+        <Pill color={color} variant={variant} size={size} icon={ICONS[iconKey]}>{text}</Pill>
       </div>
     </>
   )
@@ -543,7 +877,18 @@ function ProgressBarKnobs() {
 // ── More knob panels ─────────────────────────────────────────────────────
 function TabsKnobs() {
   const [variant, setVariant] = useState('underline')
+  const [size, setSize]       = useState('md')
   const [active, setActive]   = useState('daily')
+  const [accent, setAccent]   = useState('#1D4ED8')
+  const [showCount, setCount] = useState(true)
+  const [showIcon,  setIcon]  = useState(false)
+  const [withDisabled, setDis] = useState(false)
+  const items = [
+    { id: 'daily',   label: 'Daily Reading',  icon: showIcon ? <PlusIcon /> : undefined },
+    { id: 'roster',  label: 'Students', count: showCount ? 24 : undefined },
+    { id: 'rewards', label: 'Earned Rewards' },
+    ...(withDisabled ? [{ id: 'locked', label: 'Locked tab', disabled: true }] : []),
+  ]
   return (
     <>
       <Knobs>
@@ -552,17 +897,29 @@ function TabsKnobs() {
             <option>underline</option><option>pill</option>
           </Select>
         </Field>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+        <Field label="active">
+          <Select value={active} onChange={e => setActive(e.target.value)}>
+            {items.filter(i => !i.disabled).map(i => <option key={i.id} value={i.id}>{i.label}</option>)}
+          </Select>
+        </Field>
+        <Field label="count"><Toggle checked={showCount} onChange={setCount} /></Field>
+        <Field label="icon"><Toggle checked={showIcon} onChange={setIcon} /></Field>
+        <Field label="disabled"><Toggle checked={withDisabled} onChange={setDis} /></Field>
       </Knobs>
       <div className="pt-variant-frame">
         <Tabs
           variant={variant}
+          size={size}
+          accent={accent}
           active={active}
           onChange={setActive}
-          items={[
-            { id: 'daily',   label: 'Daily Reading' },
-            { id: 'roster',  label: 'Students', count: 24 },
-            { id: 'rewards', label: 'Earned Rewards' },
-          ]}
+          items={items}
         />
       </div>
     </>
@@ -572,7 +929,18 @@ function TabsKnobs() {
 function IconButtonKnobs() {
   const [variant, setVariant]   = useState('secondary')
   const [size, setSize]         = useState('md')
+  const [iconKey, setIconKey]   = useState('plus')
   const [disabled, setDisabled] = useState(false)
+  const ICONS = {
+    plus:      { node: <PlusIcon />,      label: 'Add' },
+    caret:     { node: <CaretIcon />,     label: 'Open menu' },
+    edit:      { node: <EditIcon />,      label: 'Edit' },
+    trash:     { node: <TrashIcon />,     label: 'Delete' },
+    archive:   { node: <ArchiveIcon />,   label: 'Archive' },
+    duplicate: { node: <DuplicateIcon />, label: 'Duplicate' },
+    more:      { node: <MoreIcon />,      label: 'More actions' },
+    check:     { node: <CheckIcon />,     label: 'Confirm' },
+  }
   return (
     <>
       <Knobs>
@@ -586,10 +954,17 @@ function IconButtonKnobs() {
             <option>sm</option><option>md</option><option>lg</option>
           </Select>
         </Field>
+        <Field label="icon">
+          <Select value={iconKey} onChange={e => setIconKey(e.target.value)}>
+            {Object.keys(ICONS).map(k => <option key={k} value={k}>{k}</option>)}
+          </Select>
+        </Field>
         <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
       </Knobs>
-      <div className="pt-variant-frame">
-        <IconButton variant={variant} size={size} disabled={disabled} aria-label="Add"><PlusIcon /></IconButton>
+      <div className="pt-variant-frame pt-variant-frame--row">
+        <IconButton variant={variant} size={size} disabled={disabled} aria-label={ICONS[iconKey].label}>
+          {ICONS[iconKey].node}
+        </IconButton>
       </div>
     </>
   )
@@ -622,25 +997,28 @@ function SkeletonKnobs() {
   const [width, setWidth] = useState('200')
   const [height, setHeight] = useState('14')
   const [lines, setLines] = useState('1')
+  const isCircle = shape === 'circle'
   return (
     <>
       <Knobs>
         <Field label="shape">
-          <RadioGroup name="skel-shape" value={shape} onChange={setShape}>
+          <RadioGroup name="skel-shape" value={shape} onChange={v => { setShape(v); if (v === 'circle') { setWidth('44'); setHeight('44') } }}>
             <Radio value="rect">rect</Radio>
             <Radio value="circle">circle</Radio>
           </RadioGroup>
         </Field>
         <Field label="width"><Input value={width} onChange={e => setWidth(e.target.value)} /></Field>
         <Field label="height"><Input value={height} onChange={e => setHeight(e.target.value)} /></Field>
-        <Field label="lines"><Input type="number" value={lines} onChange={e => setLines(e.target.value)} /></Field>
+        {!isCircle && (
+          <Field label="lines"><Input type="number" value={lines} onChange={e => setLines(e.target.value)} /></Field>
+        )}
       </Knobs>
       <div className="pt-variant-frame">
         <Skeleton
           shape={shape}
           width={Number(width) || width}
           height={Number(height) || height}
-          lines={Number(lines) > 1 ? Number(lines) : undefined}
+          lines={!isCircle && Number(lines) > 1 ? Number(lines) : undefined}
         />
       </div>
     </>
@@ -655,7 +1033,7 @@ function TooltipKnobs() {
       <Knobs>
         <Field label="placement">
           <Select value={placement} onChange={e => setPlacement(e.target.value)}>
-            <option>top</option><option>bottom</option><option>left</option><option>right</option>
+            <option>auto</option><option>top</option><option>bottom</option><option>left</option><option>right</option>
           </Select>
         </Field>
         <Field label="content"><Input value={content} onChange={e => setContent(e.target.value)} /></Field>
@@ -696,6 +1074,78 @@ function BannerKnobs() {
       >
         {message}
       </Banner>
+    </>
+  )
+}
+
+function EmptyStateKnobs() {
+  const [title, setTitle]   = useState('No students to watch')
+  const [desc, setDesc]     = useState('Students appear here when they trip a habit, integrity, or skill alert. Adjust your thresholds to see more.')
+  const [iconKey, setIcon]  = useState('search')
+  const [actionText, setActionText] = useState('Set thresholds')
+  const [hasAction, setHas] = useState(true)
+  const ICONS = {
+    search: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16" y1="16" x2="21" y2="21"/></svg>,
+    inbox:  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 13l3-9h12l3 9"/><path d="M3 13v6a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-6"/><path d="M3 13h6l1 2h4l1-2h6"/></svg>,
+    book:   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v15a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2z"/><path d="M4 18a2 2 0 0 1 2-2h13"/></svg>,
+    chart:  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 21h18"/><rect x="6" y="13" width="3" height="6"/><rect x="11" y="9" width="3" height="10"/><rect x="16" y="5" width="3" height="14"/></svg>,
+  }
+  return (
+    <>
+      <Knobs>
+        <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="icon">
+          <Select value={iconKey} onChange={e => setIcon(e.target.value)}>
+            <option value="search">search</option>
+            <option value="inbox">inbox</option>
+            <option value="book">book</option>
+            <option value="chart">chart</option>
+          </Select>
+        </Field>
+        <Field label="action"><Toggle checked={hasAction} onChange={setHas} /></Field>
+        {hasAction && <Field label="action text"><Input value={actionText} onChange={e => setActionText(e.target.value)} /></Field>}
+        <Field label="description" className="pt-knob-full">
+          <Textarea rows={2} value={desc} onChange={e => setDesc(e.target.value)} />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <EmptyState
+          icon={ICONS[iconKey]}
+          title={title}
+          description={desc}
+          action={hasAction ? <Button variant="secondary">{actionText}</Button> : undefined}
+        />
+      </div>
+    </>
+  )
+}
+
+function AccordionKnobs() {
+  const [accent, setAccent]   = useState('#1D4ED8')
+  const [multi, setMulti]     = useState(false)
+  const [count, setCount]     = useState('3')
+  const ITEMS = [
+    { id: 'a', title: 'What is the Reading Motivation Index?', content: 'The RMI is a composite score 0–100 derived from ten survey factors (five intrinsic, five extrinsic) collected three times a year.' },
+    { id: 'b', title: 'How is the Lexile plateau alert triggered?', content: 'When a school\'s average Lexile growth is below 5% of the expected annual gain across 6 consecutive weeks despite engagement above 85%.' },
+    { id: 'c', title: 'Can I export this dashboard?', content: 'Yes — use the kebab menu in the top-right of any chart to export a PNG or CSV.' },
+    { id: 'd', title: 'How often is data refreshed?', content: 'Reading logs sync every 15 minutes. Lexile assessments sync nightly. RMI surveys update on the next page load after submission.' },
+    { id: 'e', title: 'Who can see flagged students?', content: 'Only users with the District Admin or School Lead role. Teachers see only the students in their own roster.' },
+  ]
+  const items = ITEMS.slice(0, Number(count) || 3)
+  return (
+    <>
+      <Knobs>
+        <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+        <Field label="allow multiple"><Toggle checked={multi} onChange={setMulti} /></Field>
+        <Field label="items">
+          <Select value={count} onChange={e => setCount(e.target.value)}>
+            <option>2</option><option>3</option><option>4</option><option>5</option>
+          </Select>
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Accordion accent={accent} allowMultiple={multi} defaultOpen={['a']} items={items} />
+      </div>
     </>
   )
 }
@@ -755,10 +1205,11 @@ function HealthStatKnobs() {
 }
 
 function AlertRowKnobs() {
-  const [level, setLevel]   = useState('critical')
-  const [school, setSchool] = useState('Lincoln Elementary')
-  const [title, setTitle]   = useState('Stuck Lexile plateau — 6 weeks, no growth')
-  const [hasAction, setAction] = useState(true)
+  const [level, setLevel]       = useState('critical')
+  const [title, setTitle]       = useState('Lincoln Elementary')
+  const [description, setDesc]  = useState('Stuck Lexile plateau — 6 weeks, no growth')
+  const [action, setActionText] = useState('Review')
+  const [hasAction, setHasAction] = useState(true)
   return (
     <>
       <Knobs>
@@ -767,51 +1218,142 @@ function AlertRowKnobs() {
             <option>critical</option><option>warning</option><option>positive</option><option>info</option>
           </Select>
         </Field>
-        <Field label="school"><Input value={school} onChange={e => setSchool(e.target.value)} /></Field>
         <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
-        <Field label="action"><Toggle checked={hasAction} onChange={setAction} /></Field>
+        <Field label="description"><Input value={description} onChange={e => setDesc(e.target.value)} /></Field>
+        <Field label="action"><Toggle checked={hasAction} onChange={setHasAction} /></Field>
+        {hasAction && <Field label="action text"><Input value={action} onChange={e => setActionText(e.target.value)} /></Field>}
       </Knobs>
       <AlertRow
         level={level}
-        school={school}
         title={title}
-        action={hasAction ? 'Review' : undefined}
+        description={description}
+        action={hasAction ? action : undefined}
         onAction={hasAction ? () => {} : undefined}
       />
     </>
   )
 }
 
+const SIDEBAR_NAV_SETS = {
+  ris: {
+    label: 'RIS district (7 items + subgroup)',
+    subtitle: 'District View',
+    items: [
+      { id: 'dashboard',    label: 'Overview',     icon: 'overview' },
+      { id: 'motivation',   label: 'Motivation',   icon: 'flame',        subgroup: true, section: 'Reading Health' },
+      { id: 'integrity',    label: 'Integrity',    icon: 'shield',       subgroup: true, section: 'Reading Health' },
+      { id: 'habits',       label: 'Habits',       icon: 'habits',       subgroup: true, section: 'Reading Health' },
+      { id: 'skills',       label: 'Skills',       icon: 'book',         subgroup: true, section: 'Reading Health' },
+      { id: 'analytics',    label: 'Analytics',    icon: 'analytics',    section: 'Data' },
+      { id: 'demographics', label: 'Demographics', icon: 'demographics', section: 'Data' },
+    ],
+  },
+  school: {
+    label: 'School view (4 items)',
+    subtitle: 'School View',
+    items: [
+      { id: 'dashboard', label: 'Overview',       icon: 'overview' },
+      { id: 'habits',    label: 'Reading Habits', icon: 'habits',   section: 'Reports' },
+      { id: 'lexile',    label: 'Lexile Growth',  icon: 'lexile',   section: 'Reports' },
+      { id: 'future',    label: 'Future State',   icon: 'future',   section: 'Reports' },
+    ],
+  },
+  minimal: {
+    label: 'Minimal (3 items, no subgroup)',
+    subtitle: undefined,
+    items: [
+      { id: 'dashboard', label: 'Dashboard', icon: 'overview' },
+      { id: 'habits',    label: 'Habits',    icon: 'habits',   section: 'Main' },
+      { id: 'skills',    label: 'Skills',    icon: 'book',     section: 'Main' },
+    ],
+  },
+}
+
+function SidebarKnobs() {
+  const [navSet, setNavSet]     = useState('ris')
+  const [active, setActive]     = useState('dashboard')
+  const [withPicker, setPicker] = useState(true)
+  const [withBadge, setBadge]   = useState(true)
+  const [title, setTitle]       = useState('Reading Information System')
+  const [subtitle, setSubtitle] = useState('District View')
+  const [schoolId, setSchoolId] = useState('lincoln')
+
+  const set = SIDEBAR_NAV_SETS[navSet]
+  return (
+    <>
+      <Knobs>
+        <Field label="nav set">
+          <Select value={navSet} onChange={e => {
+            const next = e.target.value
+            setNavSet(next)
+            setActive(SIDEBAR_NAV_SETS[next].items[0].id)
+            setSubtitle(SIDEBAR_NAV_SETS[next].subtitle || '')
+          }}>
+            {Object.entries(SIDEBAR_NAV_SETS).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
+          </Select>
+        </Field>
+        <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="subtitle"><Input value={subtitle} onChange={e => setSubtitle(e.target.value)} placeholder="(none)" /></Field>
+        <Field label="alert badge"><Toggle checked={withBadge} onChange={setBadge} /></Field>
+        <Field label="picker"><Toggle checked={withPicker} onChange={setPicker} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--full pt-sidebar-demo">
+        <Sidebar
+          nav={set.items}
+          active={active}
+          onNavigate={setActive}
+          title={title || undefined}
+          subtitle={subtitle || undefined}
+          badges={withBadge && set.items.some(i => i.id === 'dashboard') ? { dashboard: 3 } : {}}
+          picker={withPicker && <SchoolPicker schoolId={schoolId} onSchoolId={setSchoolId} />}
+        />
+        <div className="pt-sidebar-demo-content">
+          <span>active = "{active}"</span>
+        </div>
+      </div>
+    </>
+  )
+}
+
 function HeroKnobs() {
-  const [mode, setMode]       = useState('bucket')
-  const [bucket, setBucket]   = useState('motivation')
-  const [title, setTitle]     = useState('Lincoln Elementary')
+  const [mode, setMode]         = useState('bucket')
+  const [bucket, setBucket]     = useState('motivation')
+  const [title, setTitle]       = useState('Lincoln Elementary')
   const [subtitle, setSubtitle] = useState('K–5 · 1,650 students')
   const [initials, setInitials] = useState('LE')
-  const [accent, setAccent]   = useState('#E8866A')
-  const [score, setScore]     = useState('71')
-  const [delta, setDelta]     = useState('7')
+  const [accent, setAccent]     = useState('#E8866A')
+  const [withAction, setAction] = useState(true)
+
+  const modeSelect = (
+    <Field label="mode">
+      <Select value={mode} onChange={e => setMode(e.target.value)}>
+        <option value="bucket">bucket (auto)</option>
+        <option value="avatar">avatar (overview)</option>
+        <option value="icon">icon (page)</option>
+      </Select>
+    </Field>
+  )
+  const actionToggle = <Field label="action"><Toggle checked={withAction} onChange={setAction} /></Field>
+  const actionNode = withAction ? (
+    <>
+      <Button variant="ghost" size="lg">Export</Button>
+      <Button variant="primary" size="lg">Log reading</Button>
+    </>
+  ) : undefined
 
   if (mode === 'bucket') {
     return (
       <>
         <Knobs>
-          <Field label="mode">
-            <Select value={mode} onChange={e => setMode(e.target.value)}>
-              <option value="bucket">bucket (auto)</option>
-              <option value="avatar">avatar (overview)</option>
-              <option value="icon">icon (page)</option>
-            </Select>
-          </Field>
+          {modeSelect}
           <Field label="bucket">
             <Select value={bucket} onChange={e => setBucket(e.target.value)}>
               <option>motivation</option><option>integrity</option><option>habits</option><option>skills</option>
             </Select>
           </Field>
-          <Field label="score"><Input type="number" value={score} onChange={e => setScore(e.target.value)} /></Field>
-          <Field label="delta"><Input type="number" value={delta} onChange={e => setDelta(e.target.value)} /></Field>
+          {actionToggle}
         </Knobs>
-        <Hero bucket={bucket} score={Number(score)} delta={Number(delta)} />
+        <Hero bucket={bucket} action={actionNode} />
       </>
     )
   }
@@ -819,19 +1361,14 @@ function HeroKnobs() {
     return (
       <>
         <Knobs>
-          <Field label="mode">
-            <Select value={mode} onChange={e => setMode(e.target.value)}>
-              <option value="bucket">bucket (auto)</option>
-              <option value="avatar">avatar (overview)</option>
-              <option value="icon">icon (page)</option>
-            </Select>
-          </Field>
+          {modeSelect}
           <Field label="initials"><Input value={initials} onChange={e => setInitials(e.target.value.slice(0, 2))} /></Field>
           <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
           <Field label="subtitle"><Input value={subtitle} onChange={e => setSubtitle(e.target.value)} /></Field>
           <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+          {actionToggle}
         </Knobs>
-        <Hero initials={initials} title={title} subtitle={subtitle} accent={accent} />
+        <Hero initials={initials} title={title} subtitle={subtitle} accent={accent} action={actionNode} />
       </>
     )
   }
@@ -840,18 +1377,13 @@ function HeroKnobs() {
   return (
     <>
       <Knobs>
-        <Field label="mode">
-          <Select value={mode} onChange={e => setMode(e.target.value)}>
-            <option value="bucket">bucket (auto)</option>
-            <option value="avatar">avatar (overview)</option>
-            <option value="icon">icon (page)</option>
-          </Select>
-        </Field>
+        {modeSelect}
         <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
         <Field label="subtitle"><Input value={subtitle} onChange={e => setSubtitle(e.target.value)} /></Field>
         <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+        {actionToggle}
       </Knobs>
-      <Hero icon={motIcon} title={title} subtitle={subtitle} accent={accent} />
+      <Hero icon={motIcon} title={title} subtitle={subtitle} accent={accent} action={actionNode} />
     </>
   )
 }
@@ -873,165 +1405,725 @@ const CHART_TREND = [
 // (declared lazily so we don't blow up the import block at the very top)
 
 // ── Form showcase pieces ─────────────────────────────────────────────────
-function ToggleShowcase() {
-  const [a, setA] = useState(true)
-  const [b, setB] = useState(false)
-  const [c, setC] = useState(true)
+function SectionHeadingKnobs() {
+  const [title, setTitle]       = useState('Students to Watch')
+  const [subtitle, setSubtitle] = useState('Last 30 days · 4 students flagged')
+  const [level, setLevel]       = useState('h3')
+  const [withAction, setAction] = useState(true)
+  const [withSub, setSub]       = useState(true)
   return (
-    <div className="pt-variants pt-variants--3">
-      <Variant label="default (md)">
-        <Toggle checked={a} onChange={setA}>Notifications</Toggle>
-      </Variant>
-      <Variant label="off">
-        <Toggle checked={b} onChange={setB}>Auto-publish</Toggle>
-      </Variant>
-      <Variant label="size='sm'">
-        <Toggle checked={c} onChange={setC} size="sm">Compact mode</Toggle>
-      </Variant>
-      <Variant label="disabled">
-        <Toggle checked disabled>Locked on</Toggle>
-      </Variant>
-      <Variant label="disabled off">
-        <Toggle checked={false} disabled>Locked off</Toggle>
-      </Variant>
-    </div>
-  )
-}
-
-function InputShowcase() {
-  const [value, setValue] = useState('Lincoln Elementary')
-  return (
-    <div className="pt-variants pt-variants--2">
-      <Variant label="default" bare>
-        <Field label="School name">
-          <Input value={value} onChange={e => setValue(e.target.value)} placeholder="Type here…" />
-        </Field>
-      </Variant>
-      <Variant label="with help text" bare>
-        <Field label="Email" help="We'll send weekly summaries here.">
-          <Input type="email" placeholder="you@school.org" />
-        </Field>
-      </Variant>
-      <Variant label="with error" bare>
-        <Field label="Slug" error="Slug is required.">
-          <Input placeholder="lincoln-elementary" />
-        </Field>
-      </Variant>
-      <Variant label="with left icon" bare>
-        <Field label="Search">
-          <Input
-            placeholder="Find a student…"
-            icon={<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="7.5" cy="7.5" r="4.5"/><path d="M10.8 10.8 14.5 14.5"/></svg>}
-          />
-        </Field>
-      </Variant>
-      <Variant label="disabled" bare>
-        <Field label="School ID" help="Auto-generated; cannot be edited.">
-          <Input value="sch_lincoln_2024" disabled />
-        </Field>
-      </Variant>
-      <Variant label="sizes (sm/md/lg)" bare>
-        <Field label="Small"><Input size="sm" placeholder="sm" /></Field>
-        <Field label="Medium"><Input size="md" placeholder="md" /></Field>
-        <Field label="Large"><Input size="lg" placeholder="lg" /></Field>
-      </Variant>
-    </div>
-  )
-}
-
-function SelectShowcase() {
-  const [grade, setGrade] = useState('5')
-  return (
-    <div className="pt-variants pt-variants--2">
-      <Variant label="default" bare>
-        <Field label="Grade level">
-          <Select value={grade} onChange={e => setGrade(e.target.value)}>
-            {['K', '1', '2', '3', '4', '5', '6', '7', '8'].map(g => <option key={g} value={g}>Grade {g}</option>)}
+    <>
+      <Knobs>
+        <Field label="title"><Input value={title} onChange={e => setTitle(e.target.value)} /></Field>
+        <Field label="subtitle"><Input value={subtitle} onChange={e => setSubtitle(e.target.value)} /></Field>
+        <Field label="level">
+          <Select value={level} onChange={e => setLevel(e.target.value)}>
+            <option>h2</option><option>h3</option><option>h4</option>
           </Select>
         </Field>
-      </Variant>
-      <Variant label="sizes" bare>
-        <Field label="Small"><Select size="sm"><option>sm</option></Select></Field>
-        <Field label="Medium"><Select size="md"><option>md</option></Select></Field>
-        <Field label="Large"><Select size="lg"><option>lg</option></Select></Field>
-      </Variant>
-    </div>
+        <Field label="show subtitle"><Toggle checked={withSub} onChange={setSub} /></Field>
+        <Field label="show action"><Toggle checked={withAction} onChange={setAction} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <SectionHeading
+          title={title}
+          subtitle={withSub ? subtitle : undefined}
+          level={level}
+          action={withAction ? <Button variant="ghost" size="sm">View all →</Button> : undefined}
+        />
+      </div>
+    </>
   )
 }
 
-function TextareaShowcase() {
-  const [value, setValue] = useState('Lincoln Elementary saw a 6-week Lexile plateau despite strong engagement scores.')
+function ToggleKnobs() {
+  const [checked, setChecked] = useState(true)
+  const [size, setSize]       = useState('md')
+  const [disabled, setDisabled] = useState(false)
+  const [label, setLabel]     = useState('Notifications')
   return (
-    <div className="pt-variants" style={{ gridTemplateColumns: '1fr' }}>
-      <Variant label="default" bare>
-        <Field label="Notes" help="Visible to district leadership.">
-          <Textarea rows={4} value={value} onChange={e => setValue(e.target.value)} />
+    <>
+      <Knobs>
+        <Field label="checked"><Toggle checked={checked} onChange={setChecked} /></Field>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
         </Field>
-      </Variant>
-    </div>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
+        <Field label="label"><Input value={label} onChange={e => setLabel(e.target.value)} placeholder="(no label)" /></Field>
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--row">
+        <Toggle checked={checked} onChange={setChecked} size={size} disabled={disabled}>
+          {label || undefined}
+        </Toggle>
+      </div>
+    </>
   )
 }
 
-function CheckboxShowcase() {
-  const [a, setA] = useState(false)
-  const [b, setB] = useState(true)
+function InputKnobs() {
+  const [value, setValue]       = useState('Lincoln Elementary')
+  const [placeholder, setPh]    = useState('Type here…')
+  const [size, setSize]         = useState('md')
+  const [disabled, setDisabled] = useState(false)
+  const [withIcon, setIcon]     = useState(false)
+  const [withLabel, setLabel]   = useState(true)
+  const [error, setError]       = useState('')
+  const [help, setHelp]         = useState('')
+  const searchIcon = <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="7.5" cy="7.5" r="4.5"/><path d="M10.8 10.8 14.5 14.5"/></svg>
   return (
-    <div className="pt-variants pt-variants--3">
-      <Variant label="unchecked"><Checkbox checked={a} onChange={setA}>Send weekly digest</Checkbox></Variant>
-      <Variant label="checked"><Checkbox checked={b} onChange={setB}>Include FRL data</Checkbox></Variant>
-      <Variant label="disabled"><Checkbox checked disabled>Locked option</Checkbox></Variant>
-    </div>
+    <>
+      <Knobs>
+        <Field label="value"><Input value={value} onChange={e => setValue(e.target.value)} /></Field>
+        <Field label="placeholder"><Input value={placeholder} onChange={e => setPh(e.target.value)} /></Field>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="show label"><Toggle checked={withLabel} onChange={setLabel} /></Field>
+        <Field label="left icon"><Toggle checked={withIcon} onChange={setIcon} /></Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
+        <Field label="help"><Input value={help} onChange={e => setHelp(e.target.value)} placeholder="(none)" /></Field>
+        <Field label="error"><Input value={error} onChange={e => setError(e.target.value)} placeholder="(none)" /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        {error || help ? (
+          <Field
+            label={withLabel ? 'School name' : undefined}
+            help={help || undefined}
+            error={error || undefined}
+          >
+            <Input
+              value={value}
+              onChange={e => setValue(e.target.value)}
+              placeholder={placeholder}
+              size={size}
+              disabled={disabled}
+              icon={withIcon ? searchIcon : undefined}
+            />
+          </Field>
+        ) : (
+          <Input
+            label={withLabel ? 'School name' : undefined}
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            placeholder={placeholder}
+            size={size}
+            disabled={disabled}
+            icon={withIcon ? searchIcon : undefined}
+          />
+        )}
+      </div>
+    </>
   )
 }
 
-function RadioShowcase() {
-  const [a, setA] = useState('md')
+function SelectKnobs() {
+  const [value, setValue]       = useState('5')
+  const [size, setSize]         = useState('md')
+  const [disabled, setDisabled] = useState(false)
+  const [labelText, setLabel]   = useState('Grade level')
+  const [withLabel, setWith]    = useState(true)
   return (
-    <div className="pt-variants pt-variants--2">
-      <Variant label="row">
-        <RadioGroup name="rs-row" value={a} onChange={setA}>
+    <>
+      <Knobs>
+        <Field label="value">
+          <Select value={value} onChange={e => setValue(e.target.value)}>
+            {['K','1','2','3','4','5','6','7','8'].map(g => <option key={g} value={g}>{g}</option>)}
+          </Select>
+        </Field>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="show label"><Toggle checked={withLabel} onChange={setWith} /></Field>
+        <Field label="label text"><Input value={labelText} onChange={e => setLabel(e.target.value)} /></Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Select
+          label={withLabel ? labelText : undefined}
+          value={value}
+          onChange={e => setValue(e.target.value)}
+          size={size}
+          disabled={disabled}
+        >
+          {['K','1','2','3','4','5','6','7','8'].map(g => <option key={g} value={g}>Grade {g}</option>)}
+        </Select>
+      </div>
+    </>
+  )
+}
+
+function TextareaKnobs() {
+  const [value, setValue] = useState('Lincoln Elementary saw a 6-week Lexile plateau despite strong engagement scores.')
+  const [rows, setRows]   = useState('4')
+  const [disabled, setDisabled] = useState(false)
+  const [help, setHelp]   = useState('Visible to district leadership.')
+  return (
+    <>
+      <Knobs>
+        <Field label="rows"><Input type="number" value={rows} onChange={e => setRows(e.target.value)} /></Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
+        <Field label="help"><Input value={help} onChange={e => setHelp(e.target.value)} placeholder="(none)" /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Field label="Notes" help={help || undefined}>
+          <Textarea
+            rows={Number(rows) || 3}
+            value={value}
+            onChange={e => setValue(e.target.value)}
+            disabled={disabled}
+          />
+        </Field>
+      </div>
+    </>
+  )
+}
+
+function CheckboxKnobs() {
+  const [checked, setChecked]   = useState(true)
+  const [disabled, setDisabled] = useState(false)
+  const [label, setLabel]       = useState('Include FRL data')
+  return (
+    <>
+      <Knobs>
+        <Field label="checked"><Toggle checked={checked} onChange={setChecked} /></Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
+        <Field label="label"><Input value={label} onChange={e => setLabel(e.target.value)} placeholder="(none)" /></Field>
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--row">
+        <Checkbox checked={checked} onChange={setChecked} disabled={disabled}>
+          {label || undefined}
+        </Checkbox>
+      </div>
+    </>
+  )
+}
+
+function RadioKnobs() {
+  const [value, setValue]   = useState('md')
+  const [layout, setLayout] = useState('row')
+  return (
+    <>
+      <Knobs>
+        <Field label="layout">
+          <Select value={layout} onChange={e => setLayout(e.target.value)}>
+            <option>row</option><option>column</option>
+          </Select>
+        </Field>
+        <Field label="value"><Input value={value} onChange={e => setValue(e.target.value)} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <RadioGroup name="rs-knob" layout={layout} value={value} onChange={setValue}>
           <Radio value="sm">Small</Radio>
           <Radio value="md">Medium</Radio>
           <Radio value="lg">Large</Radio>
         </RadioGroup>
-      </Variant>
-      <Variant label="column">
-        <RadioGroup name="rs-col" layout="column" value={a} onChange={setA}>
-          <Radio value="sm">Small (compact density)</Radio>
-          <Radio value="md">Medium (default density)</Radio>
-          <Radio value="lg">Large (spacious density)</Radio>
-        </RadioGroup>
-      </Variant>
-    </div>
+      </div>
+    </>
   )
 }
 
-function FullFormShowcase() {
-  const [name, setName]   = useState('')
-  const [grade, setGrade] = useState('5')
-  const [bucket, setBucket] = useState('motivation')
-  const [notes, setNotes] = useState('')
-  const [optIn, setOptIn] = useState(true)
+function CheckboxGroupKnobs() {
+  const [value, setValue]   = useState(['motivation', 'habits'])
+  const [layout, setLayout] = useState('column')
   return (
-    <div className="pt-form" onSubmit={e => e.preventDefault()}>
+    <>
+      <Knobs>
+        <Field label="layout">
+          <Select value={layout} onChange={e => setLayout(e.target.value)}>
+            <option>column</option><option>row</option>
+          </Select>
+        </Field>
+        <Field label="selection"><Input value={value.join(', ')} readOnly /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <CheckboxGroup value={value} onChange={setValue} layout={layout}>
+          <CheckboxGroupItem value="motivation">Motivation</CheckboxGroupItem>
+          <CheckboxGroupItem value="habits">Habits</CheckboxGroupItem>
+          <CheckboxGroupItem value="skills">Skills</CheckboxGroupItem>
+          <CheckboxGroupItem value="integrity">Integrity</CheckboxGroupItem>
+        </CheckboxGroup>
+      </div>
+    </>
+  )
+}
+
+const GRADE_OPTIONS = [
+  { value: 'k',  label: 'Kindergarten' },
+  { value: '1',  label: 'Grade 1' },
+  { value: '2',  label: 'Grade 2' },
+  { value: '3',  label: 'Grade 3' },
+  { value: '4',  label: 'Grade 4' },
+  { value: '5',  label: 'Grade 5' },
+  { value: '6',  label: 'Grade 6' },
+  { value: '7',  label: 'Grade 7' },
+  { value: '8',  label: 'Grade 8' },
+]
+
+function MultiSelectKnobs() {
+  const [value, setValue]     = useState(['4', '5'])
+  const [size, setSize]       = useState('md')
+  const [disabled, setDisabled] = useState(false)
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <MultiSelect
+          options={GRADE_OPTIONS}
+          value={value}
+          onChange={setValue}
+          size={size}
+          disabled={disabled}
+          placeholder="Select grades…"
+        />
+      </div>
+    </>
+  )
+}
+
+function NumberInputKnobs() {
+  const [value, setValue] = useState(5)
+  const [min, setMin]     = useState(1)
+  const [max, setMax]     = useState(10)
+  const [size, setSize]   = useState('md')
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="min"><Input type="number" value={min} onChange={e => setMin(Number(e.target.value))} /></Field>
+        <Field label="max"><Input type="number" value={max} onChange={e => setMax(Number(e.target.value))} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <NumberInput value={value} onChange={setValue} min={min} max={max} size={size} />
+      </div>
+    </>
+  )
+}
+
+function RangeSliderKnobs() {
+  const [value, setValue]       = useState(45)
+  const [min, setMin]           = useState(0)
+  const [max, setMax]           = useState(100)
+  const [showValue, setShow]    = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="show value"><Toggle checked={showValue} onChange={setShow} /></Field>
+        <Field label="min"><Input type="number" value={min} onChange={e => setMin(Number(e.target.value))} /></Field>
+        <Field label="max"><Input type="number" value={max} onChange={e => setMax(Number(e.target.value))} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <RangeSlider value={value} onChange={setValue} min={min} max={max} showValue={showValue} />
+      </div>
+    </>
+  )
+}
+
+function DateInputKnobs() {
+  const [value, setValue] = useState(null)
+  const [size, setSize]   = useState('md')
+  const [showLabel, setShowLabel] = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="label"><Toggle checked={showLabel} onChange={setShowLabel} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <DatePicker
+          value={value}
+          onChange={setValue}
+          size={size}
+          label={showLabel ? 'Deadline' : undefined}
+          placeholder="Pick a date"
+        />
+      </div>
+    </>
+  )
+}
+
+function TimeInputKnobs() {
+  const [value, setValue] = useState(null)
+  const [size, setSize]   = useState('md')
+  const [step, setStep]   = useState(30)
+  const [showLabel, setShowLabel] = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="step">
+          <Select value={step} onChange={e => setStep(Number(e.target.value))}>
+            <option value={15}>15 min</option>
+            <option value={30}>30 min</option>
+            <option value={60}>60 min</option>
+          </Select>
+        </Field>
+        <Field label="label"><Toggle checked={showLabel} onChange={setShowLabel} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <TimePicker
+          value={value}
+          onChange={setValue}
+          size={size}
+          step={step}
+          label={showLabel ? 'Start time' : undefined}
+          placeholder="Pick a time"
+        />
+      </div>
+    </>
+  )
+}
+
+function ColorInputKnobs() {
+  const [value, setValue] = useState('#1D4ED8')
+  const [size, setSize]   = useState('md')
+  const [label, setLabel] = useState('Accent color')
+  const [showLabel, setShowLabel] = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="show label"><Toggle checked={showLabel} onChange={setShowLabel} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <ColorInput value={value} onChange={setValue} size={size} label={showLabel ? label : undefined} />
+      </div>
+    </>
+  )
+}
+
+function FileInputKnobs() {
+  const [size, setSize]         = useState('md')
+  const [multiple, setMultiple] = useState(false)
+  const [disabled, setDisabled] = useState(false)
+  const [showLabel, setShowLabel] = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="multiple"><Toggle checked={multiple} onChange={setMultiple} /></Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDisabled} /></Field>
+        <Field label="show label"><Toggle checked={showLabel} onChange={setShowLabel} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <FileInput
+          size={size}
+          multiple={multiple}
+          disabled={disabled}
+          label={showLabel ? 'Upload CSV' : undefined}
+          accept=".csv,.xlsx,.pdf"
+        />
+      </div>
+    </>
+  )
+}
+
+const CSEL_OPTS_SIMPLE = [
+  { value: 'k',   label: 'Kindergarten' },
+  { value: '1',   label: 'Grade 1' },
+  { value: '2',   label: 'Grade 2' },
+  { value: '3',   label: 'Grade 3' },
+  { value: '4',   label: 'Grade 4' },
+  { value: '5',   label: 'Grade 5' },
+]
+
+const CSEL_OPTS_GROUPED = [
+  { value: 'motivation', label: 'Motivation' },
+  { value: 'habits',     label: 'Habits' },
+  { value: 'skills',     label: 'Skills' },
+  {
+    group: 'Integrity',
+    options: [
+      { value: 'btwb',  label: 'BTWB flag' },
+      { value: 'rapid', label: 'Rapid entry' },
+      { value: 'dupe',  label: 'Duplicate session' },
+    ],
+  },
+]
+
+const CSEL_OPTS_LONG = [
+  { value: 'al', label: 'Alabama' },
+  { value: 'ak', label: 'Alaska' },
+  { value: 'az', label: 'Arizona' },
+  { value: 'ar', label: 'Arkansas' },
+  { value: 'ca', label: 'California' },
+  { value: 'co', label: 'Colorado' },
+  { value: 'ct', label: 'Connecticut' },
+  { value: 'de', label: 'Delaware' },
+  { value: 'fl', label: 'Florida' },
+  { value: 'ga', label: 'Georgia' },
+  { value: 'hi', label: 'Hawaii' },
+  { value: 'id', label: 'Idaho' },
+  { value: 'il', label: 'Illinois' },
+  { value: 'in', label: 'Indiana' },
+  { value: 'ia', label: 'Iowa' },
+]
+
+const CSEL_OPTS_WITH_DISABLED = [
+  { value: 'active',   label: 'Active' },
+  { value: 'inactive', label: 'Inactive', disabled: true },
+  { value: 'pending',  label: 'Pending' },
+  { value: 'archived', label: 'Archived', disabled: true },
+  { value: 'draft',    label: 'Draft' },
+]
+
+const CSEL_OPTS_MAP = {
+  simple:        CSEL_OPTS_SIMPLE,
+  grouped:       CSEL_OPTS_GROUPED,
+  long:          CSEL_OPTS_LONG,
+  'w/ disabled': CSEL_OPTS_WITH_DISABLED,
+}
+
+function CustomSelectKnobs() {
+  const [value, setValue]     = useState('motivation')
+  const [size, setSize]       = useState('md')
+  const [disabled, setDis]    = useState(false)
+  const [showLabel, setLbl]   = useState(true)
+  const [hasError, setErr]    = useState(false)
+  const [optSet, setOptSet]   = useState('grouped')
+
+  const opts = CSEL_OPTS_MAP[optSet]
+  const handleOptSet = v => { setOptSet(v); setValue('') }
+
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="options">
+          <Select value={optSet} onChange={e => handleOptSet(e.target.value)}>
+            {Object.keys(CSEL_OPTS_MAP).map(k => <option key={k}>{k}</option>)}
+          </Select>
+        </Field>
+        <Field label="label"><Toggle checked={showLabel} onChange={setLbl} /></Field>
+        <Field label="error"><Toggle checked={hasError} onChange={setErr} /></Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDis} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <Field error={hasError ? 'This field is required' : undefined}>
+          <CustomSelect
+            options={opts}
+            value={value}
+            onChange={setValue}
+            size={size}
+            disabled={disabled}
+            label={showLabel ? 'Category' : undefined}
+            placeholder="Select an option…"
+          />
+        </Field>
+      </div>
+    </>
+  )
+}
+
+function DatePickerKnobs() {
+  const [date, setDate]       = useState(null)
+  const [size, setSize]       = useState('md')
+  const [disabled, setDis]    = useState(false)
+  const [showLabel, setLbl]   = useState(true)
+  const [hasError, setErr]    = useState(false)
+  const [clearable, setClear] = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="clearable"><Toggle checked={clearable} onChange={setClear} /></Field>
+        <Field label="error"><Toggle checked={hasError} onChange={setErr} /></Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDis} /></Field>
+        <Field label="label"><Toggle checked={showLabel} onChange={setLbl} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div>
+          <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Default</span>
+          <div style={{ marginTop: 8 }}>
+            <Field error={hasError ? 'Please select a date' : undefined}>
+              <DatePicker value={date} onChange={setDate} size={size} disabled={disabled} clearable={clearable} />
+            </Field>
+          </div>
+        </div>
+        <div>
+          <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>With label</span>
+          <div style={{ marginTop: 8 }}>
+            <DatePicker value={date} onChange={setDate} size={size} disabled={disabled} clearable={clearable}
+              label={showLabel ? 'Due date' : undefined} />
+          </div>
+        </div>
+        <div>
+          <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>In a field row</span>
+          <div className="pt-form-row" style={{ marginTop: 8 }}>
+            <Field label="Start date" error={hasError ? 'Required' : undefined}>
+              <DatePicker value={date} onChange={setDate} size={size} disabled={disabled} clearable={clearable} />
+            </Field>
+            <Field label="End date">
+              <DatePicker value={null} onChange={() => {}} size={size} disabled={disabled} clearable={clearable} placeholder="Pick an end date" />
+            </Field>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function TimePickerKnobs() {
+  const [time, setTime]       = useState(null)
+  const [size, setSize]       = useState('md')
+  const [step, setStep]       = useState(30)
+  const [disabled, setDis]    = useState(false)
+  const [showLabel, setLbl]   = useState(true)
+  const [hasError, setErr]    = useState(false)
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={e => setSize(e.target.value)}>
+            <option>sm</option><option>md</option><option>lg</option>
+          </Select>
+        </Field>
+        <Field label="step (min)">
+          <Select value={step} onChange={e => setStep(Number(e.target.value))}>
+            <option value={15}>15</option>
+            <option value={30}>30</option>
+            <option value={60}>60</option>
+          </Select>
+        </Field>
+        <Field label="error"><Toggle checked={hasError} onChange={setErr} /></Field>
+        <Field label="disabled"><Toggle checked={disabled} onChange={setDis} /></Field>
+        <Field label="label"><Toggle checked={showLabel} onChange={setLbl} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame" style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div>
+          <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Default</span>
+          <div style={{ marginTop: 8 }}>
+            <Field error={hasError ? 'Please select a time' : undefined}>
+              <TimePicker value={time} onChange={setTime} size={size} step={step} disabled={disabled} />
+            </Field>
+          </div>
+        </div>
+        <div>
+          <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>With label</span>
+          <div style={{ marginTop: 8 }}>
+            <TimePicker value={time} onChange={setTime} size={size} step={step} disabled={disabled}
+              label={showLabel ? 'Start time' : undefined} />
+          </div>
+        </div>
+        <div>
+          <span style={{ fontSize: 12, color: '#94A3B8', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em' }}>Date + time together</span>
+          <div className="pt-form-row" style={{ marginTop: 8 }}>
+            <Field label="Date">
+              <DatePicker value={null} onChange={() => {}} size={size} disabled={disabled} placeholder="Pick a date" />
+            </Field>
+            <Field label="Time" error={hasError ? 'Required' : undefined}>
+              <TimePicker value={time} onChange={setTime} size={size} step={step} disabled={disabled} />
+            </Field>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+function FilterBarKnobs() {
+  const [showAction, setShowAction] = useState(true)
+  const [view,    setView]    = useState('goal')
+  const [logType, setLogType] = useState('minutes')
+  const [showAs,  setShowAs]  = useState('pct')
+
+  return (
+    <>
+      <Knobs>
+        <Field label="action button"><Toggle checked={showAction} onChange={setShowAction} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <FilterBar action={showAction ? <Button variant="primary" size="sm">Save &amp; Update</Button> : undefined}>
+          <FilterItem label="View as">
+            <Select value={view} onChange={e => setView(e.target.value)} size="sm">
+              <option value="goal">Goal %</option>
+              <option value="actual">Actual mins</option>
+              <option value="rank">Rank</option>
+            </Select>
+          </FilterItem>
+          <FilterItem label="Log type">
+            <Select value={logType} onChange={e => setLogType(e.target.value)} size="sm">
+              <option value="minutes">Minutes</option>
+              <option value="books">Books</option>
+              <option value="pages">Pages</option>
+            </Select>
+          </FilterItem>
+          <FilterItem label="Show as">
+            <Select value={showAs} onChange={e => setShowAs(e.target.value)} size="sm">
+              <option value="pct">Percentage</option>
+              <option value="abs">Absolute</option>
+            </Select>
+          </FilterItem>
+        </FilterBar>
+      </div>
+    </>
+  )
+}
+
+function FullFormExample() {
+  const [name, setName]     = useState('')
+  const [grade, setGrade]   = useState('5')
+  const [bucket, setBucket] = useState('motivation')
+  const [notes, setNotes]   = useState('')
+  const [optIn, setOptIn]   = useState(true)
+  return (
+    <form className="pt-form" onSubmit={e => e.preventDefault()}>
       <Field label="Student name" help="As it appears in your SIS.">
         <Input value={name} onChange={e => setName(e.target.value)} placeholder="Marcus Chen" />
       </Field>
-      <div className="pt-form-row">
-        <Field label="Grade level">
-          <Select value={grade} onChange={e => setGrade(e.target.value)}>
-            {['K','1','2','3','4','5','6','7','8','9','10','11','12'].map(g => <option key={g} value={g}>Grade {g}</option>)}
-          </Select>
-        </Field>
-        <Field label="Watch reason">
-          <RadioGroup name="watch-reason" value={bucket} onChange={setBucket}>
-            <Radio value="motivation">Motivation</Radio>
-            <Radio value="habits">Habits</Radio>
-            <Radio value="skills">Skills</Radio>
-            <Radio value="integrity">Integrity</Radio>
-          </RadioGroup>
-        </Field>
-      </div>
+      <Field label="Grade level">
+        <Select value={grade} onChange={e => setGrade(e.target.value)}>
+          {['K','1','2','3','4','5','6','7','8','9','10','11','12'].map(g => <option key={g} value={g}>Grade {g}</option>)}
+        </Select>
+      </Field>
+      <Field label="Watch reason">
+        <RadioGroup name="watch-reason" value={bucket} onChange={setBucket}>
+          <Radio value="motivation">Motivation</Radio>
+          <Radio value="habits">Habits</Radio>
+          <Radio value="skills">Skills</Radio>
+          <Radio value="integrity">Integrity</Radio>
+        </RadioGroup>
+      </Field>
       <Field label="Notes" help="Visible to district leadership.">
         <Textarea rows={3} value={notes} onChange={e => setNotes(e.target.value)} placeholder="Why are we watching this student?" />
       </Field>
@@ -1040,6 +2132,519 @@ function FullFormShowcase() {
         <Button variant="ghost">Cancel</Button>
         <Button variant="primary">Add to watchlist</Button>
       </div>
+    </form>
+  )
+}
+
+function CompactFormExample() {
+  const [email, setEmail] = useState('')
+  const [touched, setTouched] = useState(false)
+  const error = touched && !email.includes('@') ? 'Please enter a valid email.' : ''
+  return (
+    <form className="pt-form" onSubmit={e => { e.preventDefault(); setTouched(true) }}>
+      <Field label="Email" help="We'll send weekly summaries here." error={error || undefined}>
+        <Input
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          onBlur={() => setTouched(true)}
+          placeholder="you@school.org"
+        />
+      </Field>
+      <div className="pt-form-actions">
+        <Button variant="primary">Subscribe</Button>
+      </div>
+    </form>
+  )
+}
+
+function FilterFormExample() {
+  const [grades, setGrades]     = useState(['4', '5'])
+  const [bucket, setBucket]     = useState('all')
+  const [minScore, setMinScore] = useState(40)
+  const [flagged, setFlagged]   = useState(false)
+  return (
+    <form className="pt-form" onSubmit={e => e.preventDefault()}>
+      <Field label="Grade levels">
+        <CheckboxGroup value={grades} onChange={setGrades} layout="row">
+          {['3','4','5','6','7','8'].map(g => (
+            <CheckboxGroupItem key={g} value={g}>Grade {g}</CheckboxGroupItem>
+          ))}
+        </CheckboxGroup>
+      </Field>
+      <Field label="Reading health area">
+        <RadioGroup name="filter-bucket" value={bucket} onChange={setBucket} layout="column">
+          <Radio value="all">All areas</Radio>
+          <Radio value="motivation">Motivation</Radio>
+          <Radio value="habits">Habits</Radio>
+          <Radio value="skills">Skills</Radio>
+          <Radio value="integrity">Integrity</Radio>
+        </RadioGroup>
+      </Field>
+      <RangeSlider label="Minimum RMI score" min={0} max={100} value={minScore} onChange={setMinScore} />
+      <Checkbox checked={flagged} onChange={setFlagged}>Flagged students only</Checkbox>
+      <div className="pt-form-actions">
+        <Button variant="ghost">Reset</Button>
+        <Button variant="primary">Apply filters</Button>
+      </div>
+    </form>
+  )
+}
+
+function SettingsFormExample() {
+  const [orgName, setOrgName]   = useState('Lincoln Elementary')
+  const [tz, setTz]             = useState('America/Chicago')
+  const [sessGoal, setSessGoal] = useState(3)
+  const [dataTypes, setTypes]   = useState(['logins', 'sessions'])
+  const [exportFmt, setExport]  = useState('csv')
+  return (
+    <form className="pt-form" onSubmit={e => e.preventDefault()}>
+      <Input label="Organization name" value={orgName} onChange={e => setOrgName(e.target.value)} />
+      <Select label="Timezone" value={tz} onChange={e => setTz(e.target.value)}>
+        <option value="America/New_York">Eastern (ET)</option>
+        <option value="America/Chicago">Central (CT)</option>
+        <option value="America/Denver">Mountain (MT)</option>
+        <option value="America/Los_Angeles">Pacific (PT)</option>
+      </Select>
+      <NumberInput label="Sessions per week goal" min={1} max={7} value={sessGoal} onChange={setSessGoal} />
+      <Field label="Include in reports">
+        <CheckboxGroup value={dataTypes} onChange={setTypes} layout="column">
+          <CheckboxGroupItem value="logins">Login activity</CheckboxGroupItem>
+          <CheckboxGroupItem value="sessions">Reading sessions</CheckboxGroupItem>
+          <CheckboxGroupItem value="lexile">Lexile changes</CheckboxGroupItem>
+          <CheckboxGroupItem value="flags">Flagged events</CheckboxGroupItem>
+        </CheckboxGroup>
+      </Field>
+      <Field label="Default export format">
+        <RadioGroup name="export-format" value={exportFmt} onChange={setExport} layout="row">
+          <Radio value="csv">CSV</Radio>
+          <Radio value="xlsx">Excel</Radio>
+          <Radio value="pdf">PDF</Radio>
+        </RadioGroup>
+      </Field>
+      <div className="pt-form-actions">
+        <Button variant="ghost">Discard</Button>
+        <Button variant="primary">Save settings</Button>
+      </div>
+    </form>
+  )
+}
+
+function FieldFormKnobs() {
+  const [example, setExample] = useState('full')
+  return (
+    <>
+      <Knobs>
+        <Field label="example">
+          <Select value={example} onChange={e => setExample(e.target.value)}>
+            <option value="full">full (add to watchlist)</option>
+            <option value="compact">compact (email subscribe)</option>
+            <option value="filter">filter panel</option>
+            <option value="settings">settings form</option>
+          </Select>
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        {example === 'full'     && <FullFormExample />}
+        {example === 'compact'  && <CompactFormExample />}
+        {example === 'filter'   && <FilterFormExample />}
+        {example === 'settings' && <SettingsFormExample />}
+      </div>
+    </>
+  )
+}
+
+// ── Chart knobs ──────────────────────────────────────────────────────────
+function LineChartKnobs() {
+  const [curve, setCurve]       = useState('monotoneX')
+  const [showArea, setArea]     = useState(false)
+  const [showPoints, setPoints] = useState(false)
+  const [showLegend, setLegend] = useState(true)
+  const [showAxes, setAxes]     = useState(false)
+  const [accent, setAccent]     = useState('#E8866A')
+
+  const xLegend = showAxes ? 'Month' : undefined
+  const yLegend = showAxes ? 'RMI score' : undefined
+  return (
+    <>
+      <Knobs>
+        <Field label="curve">
+          <Select value={curve} onChange={e => setCurve(e.target.value)}>
+            <option>monotoneX</option><option>linear</option><option>step</option><option>natural</option>
+          </Select>
+        </Field>
+        <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+        <Field label="area fill"><Toggle checked={showArea} onChange={setArea} /></Field>
+        <Field label="points"><Toggle checked={showPoints} onChange={setPoints} /></Field>
+        <Field label="axis legends"><Toggle checked={showAxes} onChange={setAxes} /></Field>
+        <Field label="legend"><Toggle checked={showLegend} onChange={setLegend} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--bare">
+        <ChartCard
+          title="RMI Trend — Lincoln vs. District"
+          subtitle="Sep 2024 – May 2025"
+          icon={SECTIONS.find(s => s.key === 'motivation')?.icon}
+          accent={accent}
+          footer={showLegend ? <ChartLegend items={[
+            { color: accent,    label: 'Lincoln' },
+            { color: '#CBD5E1', label: 'District avg', dashed: true },
+          ]} /> : undefined}
+        >
+          <div style={{ height: 220 }}>
+            <ResponsiveLine
+              data={[
+                { id: 'Lincoln',      color: accent,    data: CHART_TREND.map(d => ({ x: d.month, y: d.school })) },
+                { id: 'District avg', color: '#CBD5E1', data: CHART_TREND.map(d => ({ x: d.month, y: d.district })) },
+              ]}
+              theme={NIVO_THEME}
+              margin={{ top: 12, right: 24, bottom: showAxes ? 48 : 32, left: showAxes ? 64 : 36 }}
+              xScale={{ type: 'point' }}
+              yScale={{ type: 'linear', min: 55, max: 90 }}
+              curve={curve}
+              colors={d => d.color}
+              lineWidth={2.5}
+              enablePoints={showPoints}
+              pointSize={6}
+              enableArea={showArea}
+              areaBaselineValue={55}
+              areaOpacity={0.08}
+              enableGridX={false}
+              axisBottom={{ ...AXIS_BOTTOM, legend: xLegend, legendOffset: 36, legendPosition: 'middle' }}
+              axisLeft={{ ...AXIS_LEFT, tickValues: [60, 70, 80, 90], legend: yLegend, legendOffset: -48, legendPosition: 'middle' }}
+              enableSlices="x"
+              sliceTooltip={({ slice }) => (
+                <SliceTooltip
+                  slice={slice}
+                  accent={accent}
+                  allData={CHART_TREND}
+                  seriesMap={{ Lincoln: 'school', 'District avg': 'district' }}
+                  formatDelta={d => `${d > 0 ? '+' : ''}${d} pts`}
+                />
+              )}
+            />
+          </div>
+        </ChartCard>
+      </div>
+    </>
+  )
+}
+
+const GROUPED_BAR_DATA = [
+  { month: 'Sep', intrinsic: 12.1, extrinsic: 11.4 },
+  { month: 'Oct', intrinsic: 12.4, extrinsic: 11.5 },
+  { month: 'Nov', intrinsic: 12.8, extrinsic: 11.6 },
+  { month: 'Dec', intrinsic: 12.6, extrinsic: 11.5 },
+  { month: 'Jan', intrinsic: 13.1, extrinsic: 11.6 },
+  { month: 'Feb', intrinsic: 13.5, extrinsic: 11.7 },
+  { month: 'Mar', intrinsic: 13.7, extrinsic: 11.6 },
+  { month: 'Apr', intrinsic: 14.0, extrinsic: 11.7 },
+  { month: 'May', intrinsic: 14.2, extrinsic: 11.8 },
+]
+
+function GroupedBarKnobs() {
+  const [mode, setMode]         = useState('grouped')
+  const [showLegend, setLegend] = useState(true)
+  const [decimals, setDecimals] = useState('1')
+  const [showAxes, setAxes]     = useState(false)
+  const [accent, setAccent]     = useState('#E8866A')
+
+  const dec = Number(decimals) || 0
+  const formatVal = v => v.toFixed(dec)
+  // Widest possible y-tick label width: "##." + dec digits @ ~7px char width
+  const sampleTick = formatVal(mode === 'stacked' ? 30 : 16)
+  const tickPx = sampleTick.length * 8 + 14
+  const leftMargin = (showAxes ? 32 : 0) + tickPx
+
+  const xLegend = showAxes ? 'Month' : undefined
+  const yLegend = showAxes ? 'Score / 20' : undefined
+  return (
+    <>
+      <Knobs>
+        <Field label="groupMode">
+          <Select value={mode} onChange={e => setMode(e.target.value)}>
+            <option>grouped</option><option>stacked</option>
+          </Select>
+        </Field>
+        <Field label="decimals">
+          <Select value={decimals} onChange={e => setDecimals(e.target.value)}>
+            <option>0</option><option>1</option><option>2</option>
+          </Select>
+        </Field>
+        <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+        <Field label="axis legends"><Toggle checked={showAxes} onChange={setAxes} /></Field>
+        <Field label="legend"><Toggle checked={showLegend} onChange={setLegend} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--bare">
+        <ChartCard
+          title="Intrinsic vs. Extrinsic Motivation"
+          subtitle="RMI subscores out of 20"
+          icon={SECTIONS.find(s => s.key === 'motivation')?.icon}
+          accent={accent}
+          footer={showLegend ? <ChartLegend items={[
+            { color: accent,    label: 'Intrinsic' },
+            { color: '#CBD5E1', label: 'Extrinsic' },
+          ]} /> : undefined}
+        >
+          <div style={{ height: 200 }}>
+            <ResponsiveBar
+              data={GROUPED_BAR_DATA}
+              keys={['intrinsic', 'extrinsic']}
+              indexBy="month"
+              groupMode={mode}
+              theme={NIVO_THEME}
+              margin={{ top: 12, right: 20, bottom: showAxes ? 48 : 32, left: leftMargin }}
+              padding={0.3}
+              innerPadding={2}
+              colors={({ id }) => id === 'intrinsic' ? accent : '#CBD5E1'}
+              borderRadius={3}
+              axisBottom={{ ...AXIS_BOTTOM, legend: xLegend, legendOffset: 36, legendPosition: 'middle' }}
+              axisLeft={{ ...AXIS_LEFT, format: formatVal, tickValues: 5, legend: yLegend, legendOffset: -(leftMargin - 16), legendPosition: 'middle' }}
+              enableGridY
+              enableLabel={false}
+              minValue={mode === 'stacked' ? 0 : 9}
+              maxValue={mode === 'stacked' ? 30 : 16}
+              tooltip={({ indexValue, data }) => (
+                <BarTooltip
+                  data={data}
+                  indexValue={indexValue}
+                  accent={accent}
+                  format={v => `${formatVal(v)} /20`}
+                  keys={['intrinsic', 'extrinsic']}
+                  labels={{
+                    intrinsic: { label: 'Intrinsic', color: accent },
+                    extrinsic: { label: 'Extrinsic', color: '#CBD5E1' },
+                  }}
+                />
+              )}
+            />
+          </div>
+        </ChartCard>
+      </div>
+    </>
+  )
+}
+
+const H_BAR_DATA = [
+  { id: 'adams',      name: 'Adams High',      completionRate: 96, isThis: false },
+  { id: 'jefferson',  name: 'Jefferson El.',   completionRate: 88, isThis: false },
+  { id: 'kennedy',    name: 'Kennedy K-8',     completionRate: 80, isThis: false },
+  { id: 'roosevelt',  name: 'Roosevelt Mid.',  completionRate: 73, isThis: false },
+  { id: 'lincoln',    name: 'Lincoln El.',     completionRate: 64, isThis: true },
+  { id: 'washington', name: 'Washington Mid.', completionRate: 51, isThis: false },
+]
+
+function HorizontalBarKnobs() {
+  const [showValueLabel, setVL] = useState(false)
+  const [showAxes, setAxes]     = useState(false)
+  const [showLegend, setLegend] = useState(true)
+  const [accent, setAccent]     = useState('#E8866A')
+
+  // Derive left margin from the widest y-axis label (school name)
+  const widestLabel = H_BAR_DATA.reduce((m, d) => Math.max(m, d.name.length), 0)
+  const leftMargin = widestLabel * 7 + 24 + (showAxes ? 32 : 0)
+  // Right margin: room for the last x-axis tick "100%" (centered on its position,
+  // so half spills past the chart area) plus optional inline value labels on the bars.
+  const rightMargin = (showValueLabel ? 72 : 56)
+
+  const xLegend = showAxes ? 'Completion rate' : undefined
+  const yLegend = showAxes ? 'School' : undefined
+
+  return (
+    <>
+      <Knobs>
+        <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+        <Field label="value labels"><Toggle checked={showValueLabel} onChange={setVL} /></Field>
+        <Field label="axis legends"><Toggle checked={showAxes} onChange={setAxes} /></Field>
+        <Field label="legend"><Toggle checked={showLegend} onChange={setLegend} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--bare">
+        <ChartCard
+          title="District integrity ranking"
+          subtitle="Book Talk completion rate · May 2025"
+          icon={SECTIONS.find(s => s.key === 'integrity')?.icon}
+          accent="#1D4ED8"
+          footer={showLegend ? <ChartLegend items={[
+            { color: accent,    label: 'This school' },
+            { color: '#CBD5E1', label: 'Other schools' },
+          ]} /> : undefined}
+        >
+          <div style={{ height: 240 }}>
+            <ResponsiveBar
+              data={H_BAR_DATA}
+              keys={['completionRate']}
+              indexBy="name"
+              layout="horizontal"
+              theme={NIVO_THEME}
+              margin={{ top: 12, right: rightMargin, bottom: showAxes ? 48 : 32, left: leftMargin }}
+              colors={({ data }) => data.isThis ? accent : '#CBD5E1'}
+              borderRadius={4}
+              axisBottom={{ ...AXIS_BOTTOM, format: v => `${v}%`, tickValues: [0, 25, 50, 75, 100], legend: xLegend, legendOffset: 36, legendPosition: 'middle' }}
+              axisLeft={{ tickSize: 0, tickPadding: 10, legend: yLegend, legendOffset: -(leftMargin - 16), legendPosition: 'middle' }}
+              enableGridY={false}
+              enableLabel={showValueLabel}
+              label={d => `${d.value}%`}
+              labelTextColor="#1E293B"
+              maxValue={100}
+              tooltip={({ data }) => (
+                <div className="sdb-tooltip" style={{ '--tip-accent': data.isThis ? accent : '#1D4ED8' }}>
+                  <div className="sdb-tooltip-header">{data.name}</div>
+                  <div className="sdb-tooltip-series" style={{ '--series-color': data.isThis ? accent : '#94A3B8' }}>
+                    <div className="sdb-tooltip-row">
+                      <span className="sdb-tooltip-dot" />
+                      <span className="sdb-tooltip-label">Completion rate</span>
+                      <span className="sdb-tooltip-val">{data.completionRate}%</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+            />
+          </div>
+        </ChartCard>
+      </div>
+    </>
+  )
+}
+
+function ScatterKnobs() {
+  const [accent, setAccent] = useState('#E8866A')
+  const [yTicks, setYTicks] = useState('5')
+  const [showRef, setRef]   = useState(true)
+  const [showAxes, setAxes] = useState(true)
+  const [showLegend, setLegend] = useState(true)
+
+  const xLabel = showAxes ? 'Avg books / month' : undefined
+  const yLabel = showAxes ? 'Lexile growth' : undefined
+  return (
+    <>
+      <Knobs>
+        <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+        <Field label="y ticks">
+          <Select value={yTicks} onChange={e => setYTicks(e.target.value)}>
+            <option>3</option><option>4</option><option>5</option><option>6</option>
+          </Select>
+        </Field>
+        <Field label="ref line"><Toggle checked={showRef} onChange={setRef} /></Field>
+        <Field label="axis legends"><Toggle checked={showAxes} onChange={setAxes} /></Field>
+        <Field label="legend"><Toggle checked={showLegend} onChange={setLegend} /></Field>
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--bare">
+        <ChartCard
+          title="Lexile Growth vs. Reading Volume"
+          subtitle="Lincoln highlighted against district peers"
+          icon={SECTIONS.find(s => s.key === 'skills')?.icon}
+          accent="#7C3AED"
+          footer={showLegend ? <ChartLegend items={[
+            { color: accent,    label: 'This school' },
+            { color: '#CBD5E1', label: 'Other schools' },
+            ...(showRef ? [{ color: '#D97706', label: 'Expected (+65L)', dashed: true }] : []),
+          ]} /> : undefined}
+        >
+          <div style={{ height: 260 }}>
+            <ResponsiveScatterPlot
+              data={[
+                {
+                  id: 'This school',
+                  data: [{ x: 41, y: 8, school: 'Lincoln', students: 1650, sid: 'lincoln' }],
+                },
+                {
+                  id: 'Other schools',
+                  data: [
+                    { x: 38, y: 62, school: 'Jefferson', students: 1820, sid: 'jefferson' },
+                    { x: 35, y: 74, school: 'Kennedy',   students: 2340, sid: 'kennedy' },
+                    { x: 28, y: 88, school: 'Roosevelt', students: 2100, sid: 'roosevelt' },
+                    { x: 24, y: 22, school: 'Washington',students: 1980, sid: 'washington' },
+                    { x: 22, y: 112,school: 'Adams',     students: 2510, sid: 'adams' },
+                  ],
+                },
+              ]}
+              theme={NIVO_THEME}
+              margin={{ top: 16, right: 28, bottom: showAxes ? 52 : 32, left: showAxes ? 76 : 44 }}
+              xScale={{ type: 'linear', min: 15, max: 50 }}
+              yScale={{ type: 'linear', min: 0, max: 130 }}
+              colors={({ serieId }) => serieId === 'This school' ? accent : '#CBD5E1'}
+              nodeSize={d => Math.sqrt(d.data.students / 5)}
+              axisBottom={{ ...AXIS_BOTTOM, legend: xLabel, legendOffset: 40, legendPosition: 'middle', tickValues: 5 }}
+              axisLeft={{ ...AXIS_LEFT, format: v => `${v}L`, legend: yLabel, legendOffset: -60, legendPosition: 'middle', tickValues: Number(yTicks) || 5 }}
+              enableGridX={false}
+              markers={showRef ? [{
+                axis: 'y', value: 65,
+                lineStyle: { stroke: '#D97706', strokeDasharray: '4 3', strokeWidth: 1.5 },
+              }] : []}
+              tooltip={({ node }) => (
+                <div className="sdb-tooltip" style={{ '--tip-accent': node.data.sid === 'lincoln' ? accent : '#475569' }}>
+                  <div className="sdb-tooltip-header">{node.data.school}</div>
+                  <div className="sdb-tooltip-series" style={{ '--series-color': node.data.sid === 'lincoln' ? accent : '#94A3B8' }}>
+                    <div className="sdb-tooltip-row">
+                      <span className="sdb-tooltip-dot" />
+                      <span className="sdb-tooltip-label">Lexile growth</span>
+                      <span className="sdb-tooltip-val">+{node.data.y}L</span>
+                    </div>
+                  </div>
+                  <div className="sdb-tooltip-context">{node.data.students.toLocaleString()} students</div>
+                </div>
+              )}
+            />
+          </div>
+        </ChartCard>
+      </div>
+    </>
+  )
+}
+
+function ChartLegendKnobs() {
+  const [layout, setLayout] = useState('row')
+  const [items, setItems]   = useState('3')
+  const palette = [
+    { color: '#E8866A', label: 'Lincoln' },
+    { color: '#CBD5E1', label: 'District avg', dashed: true },
+    { color: '#16A97A', label: 'Target' },
+    { color: '#7C3AED', label: 'Top quartile' },
+    { color: '#0DA7BC', label: 'Elementary' },
+  ]
+  const visible = palette.slice(0, Number(items) || 2)
+  return (
+    <>
+      <Knobs>
+        <Field label="orientation">
+          <Select value={layout} onChange={e => setLayout(e.target.value)}>
+            <option>row</option><option>column</option>
+          </Select>
+        </Field>
+        <Field label="items">
+          <Select value={items} onChange={e => setItems(e.target.value)}>
+            <option>2</option><option>3</option><option>4</option><option>5</option>
+          </Select>
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame" style={layout === 'column' ? { } : undefined}>
+        <div style={{ display: 'flex', flexDirection: layout === 'column' ? 'column' : 'row', gap: layout === 'column' ? 6 : 16, flexWrap: 'wrap' }}>
+          <ChartLegend items={visible} />
+        </div>
+      </div>
+    </>
+  )
+}
+
+// ── Breakpoint indicator (fixed corner pill) ─────────────────────────────
+function subscribeViewport(cb) {
+  window.addEventListener('resize', cb)
+  return () => window.removeEventListener('resize', cb)
+}
+function BreakpointIndicator() {
+  const width = useSyncExternalStore(
+    subscribeViewport,
+    () => window.innerWidth,
+    () => 1280,
+  )
+  const tier =
+    width <= 699  ? { label: 'mobile',  color: '#DC2626' } :
+    width <= 1099 ? { label: 'tablet',  color: '#D97706' } :
+                    { label: 'desktop', color: '#16A34A' }
+  return (
+    <div className="pt-breakpoint" style={{ '--bp-color': tier.color }}>
+      <span className="pt-breakpoint-dot" />
+      <span className="pt-breakpoint-tier">{tier.label}</span>
+      <span className="pt-breakpoint-px">{width}px</span>
     </div>
   )
 }
@@ -1070,8 +2675,25 @@ function Variant({ label, children, bare, full }) {
   )
 }
 
+// Derive which group a section ID belongs to
+const SECTION_GROUP = Object.fromEntries(SECTIONS_LIST.map(s => [s.id, s.group]))
+
 export function App() {
-  const [active, setActive] = useState('stat-card')
+  const [active, setActive]   = useState('stat-card')
+  const [navOpen, setNavOpen] = useState(false)
+
+  // Start with the active section's group open
+  const [openGroups, setOpenGroups] = useState(() => {
+    const initial = SECTION_GROUP['stat-card']
+    return new Set([initial])
+  })
+
+  const toggleGroup = group =>
+    setOpenGroups(prev => {
+      const next = new Set(prev)
+      next.has(group) ? next.delete(group) : next.add(group)
+      return next
+    })
 
   useEffect(() => {
     function onScroll() {
@@ -1079,7 +2701,14 @@ export function App() {
       const top = document.querySelector('.pt-content').scrollTop + 60
       for (let i = sections.length - 1; i >= 0; i--) {
         if (sections[i] && sections[i].offsetTop <= top) {
-          setActive(SECTIONS_LIST[i].id)
+          const id = SECTIONS_LIST[i].id
+          setActive(id)
+          // Accordion: only the active group stays open while scrolling
+          setOpenGroups(prev => {
+            const g = SECTION_GROUP[id]
+            if (prev.size === 1 && prev.has(g)) return prev
+            return new Set([g])
+          })
           return
         }
       }
@@ -1098,25 +2727,70 @@ export function App() {
 
   return (
     <>
-      <div className="pt-shell">
-        <aside className="pt-sidebar">
-          <div className="pt-sidebar-title">Pattern Library</div>
-          <div className="pt-sidebar-sub">Shared components used across every prototype</div>
-          {Object.entries(groups).map(([group, items]) => (
-            <div key={group} className="pt-nav-group">
-              <div className="pt-nav-group-label">{group}</div>
-              {items.map(s => (
-                <a
-                  key={s.id}
-                  href={`#${s.id}`}
-                  className={`pt-nav-link${active === s.id ? ' pt-nav-link--active' : ''}`}
-                  onClick={() => setActive(s.id)}
-                >
-                  {s.name}
-                </a>
-              ))}
+      <div className={`pt-shell${navOpen ? ' pt-shell--nav-open' : ''}`}>
+        {/* Mobile topbar — opens the sidebar as a drawer */}
+        <div className="pt-topbar">
+          <button
+            type="button"
+            className="pt-topbar-toggle"
+            onClick={() => setNavOpen(true)}
+            aria-label="Open pattern library navigation"
+          >
+            <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="4" y1="6" x2="16" y2="6" /><line x1="4" y1="10" x2="16" y2="10" /><line x1="4" y1="14" x2="16" y2="14" />
+            </svg>
+          </button>
+          <div className="pt-topbar-title">Pattern Library</div>
+        </div>
+
+        {navOpen && <div className="pt-sidebar-backdrop" onClick={() => setNavOpen(false)} />}
+
+        <aside className={`pt-sidebar${navOpen ? ' pt-sidebar--open' : ''}`}>
+          <div className="pt-sidebar-head">
+            <div>
+              <div className="pt-sidebar-title">Pattern Library</div>
+              <div className="pt-sidebar-sub">Shared components used across every prototype</div>
             </div>
-          ))}
+            <button
+              type="button"
+              className="pt-sidebar-close"
+              onClick={() => setNavOpen(false)}
+              aria-label="Close navigation"
+            >
+              <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                <path d="M5 5l10 10M15 5L5 15"/>
+              </svg>
+            </button>
+          </div>
+          {Object.entries(groups).map(([group, items]) => {
+            const isOpen = openGroups.has(group)
+            const hasActive = items.some(s => s.id === active)
+            return (
+              <div key={group} className={`pt-nav-group${isOpen ? ' pt-nav-group--open' : ''}`}>
+                <button
+                  type="button"
+                  className={`pt-nav-group-label${hasActive ? ' pt-nav-group-label--active' : ''}`}
+                  onClick={() => toggleGroup(group)}
+                >
+                  {group}
+                  <svg className="pt-nav-group-caret" viewBox="0 0 12 12" width="10" height="10"
+                    fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="2,4 6,8 10,4" />
+                  </svg>
+                </button>
+                {isOpen && items.map(s => (
+                  <a
+                    key={s.id}
+                    href={`#${s.id}`}
+                    className={`pt-nav-link${active === s.id ? ' pt-nav-link--active' : ''}`}
+                    onClick={() => { setActive(s.id); setNavOpen(false) }}
+                  >
+                    {s.name}
+                  </a>
+                ))}
+              </div>
+            )
+          })}
         </aside>
 
         <main className="pt-content">
@@ -1139,25 +2813,33 @@ export function App() {
           <Section
             id="flyout"
             title="Flyout"
-            desc={<>Anchored popover triggered by a button. Closes on outside click + Escape. Children can be JSX or a render function that receives <code>{'{ close }'}</code>.</>}
+            desc={<>Anchored popover triggered by a button. Closes on outside click + Escape. Children can be JSX or a render function that receives <code>{'{ close }'}</code>. <strong>Overflow rule:</strong> when a button row has 3+ actions, collapse the secondary ones into a <code>More</code> (kebab) flyout.</>}
           >
+            <FlyoutKnobs />
             <FlyoutShowcase />
           </Section>
 
           <Section
             id="modal"
             title="Modal"
-            desc={<>Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both close on backdrop click + Escape and animate in/out.</>}
+            desc={<>Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both close on backdrop click + Escape and animate in/out. The centered modal composes from <code>.modal-image</code>, <code>.modal-header</code>, <code>.modal-body</code>, <code>.modal-footer</code> — toggle each below.</>}
           >
-            <ModalShowcase />
+            <div className="pt-variant">
+              <div className="pt-variant-label">variant='center' (overlay)</div>
+              <CenteredModalKnobs />
+            </div>
+            <div className="pt-variant">
+              <div className="pt-variant-label">variant='side' (slide-in)</div>
+              <SideModalShowcase />
+            </div>
           </Section>
 
           <Section
             id="table"
             title="Table"
-            desc={<>Pass <code>columns</code> and <code>rows</code>. Each column can have <code>align</code>, <code>render</code>, <code>width</code>. Optional <code>onRowClick</code>, <code>zebra</code>, <code>compact</code>.</>}
+            desc={<>Pass <code>columns</code> and <code>rows</code>. Each column can have <code>align</code>, <code>render</code>, <code>width</code>, <code>sortable</code>. Props: <code>zebra</code>, <code>compact</code>, <code>flush</code>, <code>pageSize</code> (enables pagination), <code>defaultSortKey</code>.</>}
           >
-            <TableShowcase />
+            <TableKnobs />
           </Section>
 
           <Section
@@ -1256,16 +2938,9 @@ export function App() {
           <Section
             id="accordion"
             title="Accordion"
-            desc={<>Expand/collapse list. Pass <code>items</code> as <code>{'[{ id, title, content }]'}</code>. <code>allowMultiple</code> lets multiple sections open at once; <code>defaultOpen</code> pre-opens by id.</>}
+            desc={<>Expand/collapse list. Pass <code>items</code> as <code>{'[{ id, title, content }]'}</code>. Optional <code>accent</code> color, <code>allowMultiple</code>, <code>defaultOpen</code>.</>}
           >
-            <Accordion
-              defaultOpen={['a']}
-              items={[
-                { id: 'a', title: 'What is the Reading Motivation Index?', content: <>The RMI is a composite score 0–100 derived from ten survey factors (five intrinsic, five extrinsic) collected three times a year.</> },
-                { id: 'b', title: 'How is the Lexile plateau alert triggered?', content: <>When a school's average Lexile growth is below 5% of the expected annual gain across 6 consecutive weeks despite engagement above 85%.</> },
-                { id: 'c', title: 'Can I export this dashboard?', content: <>Yes — use the kebab menu in the top-right of any chart to export a PNG or CSV.</> },
-              ]}
-            />
+            <AccordionKnobs />
           </Section>
 
           <Section
@@ -1273,19 +2948,7 @@ export function App() {
             title="EmptyState"
             desc={<>Empty-list placeholder. Props: <code>icon</code>, <code>title</code>, <code>description</code>, <code>action</code>.</>}
           >
-            <div className="pt-variant-frame">
-              <EmptyState
-                icon={
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                    <circle cx="11" cy="11" r="7" />
-                    <line x1="16" y1="16" x2="21" y2="21" />
-                  </svg>
-                }
-                title="No students to watch"
-                description="Students appear here when they trip a habit, integrity, or skill alert. Adjust your thresholds to see more."
-                action={<Button variant="secondary">Set thresholds</Button>}
-              />
-            </div>
+            <EmptyStateKnobs />
           </Section>
 
           <Section
@@ -1294,31 +2957,70 @@ export function App() {
             desc={<>Animated loading placeholder. <code>width</code>, <code>height</code>, <code>shape</code> (rect/circle), or <code>lines</code> for a multi-row text placeholder.</>}
           >
             <SkeletonKnobs />
-            <Variant label="composed example (avatar + meta + button)">
-              <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: 14, display: 'flex', gap: 16, alignItems: 'center' }}>
-                <Skeleton shape="circle" width={44} height={44} />
-                <div style={{ flex: 1 }}>
-                  <Skeleton width="35%" height={14} />
-                  <div style={{ height: 6 }} />
-                  <Skeleton width="60%" height={12} />
+            <div className="pt-variants pt-variants--3">
+              <Variant label="avatar row">
+                <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: 14, display: 'flex', gap: 16, alignItems: 'center' }}>
+                  <Skeleton shape="circle" width={44} height={44} />
+                  <div style={{ flex: 1 }}>
+                    <Skeleton width="35%" height={14} />
+                    <div style={{ height: 6 }} />
+                    <Skeleton width="60%" height={12} />
+                  </div>
+                  <Skeleton width={64} height={26} />
                 </div>
-                <Skeleton width={64} height={26} />
-              </div>
-            </Variant>
+              </Variant>
+              <Variant label="stat card">
+                <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: '14px 16px', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <Skeleton width="45%" height={12} />
+                  <Skeleton width="30%" height={28} />
+                  <Skeleton width="55%" height={11} />
+                </div>
+              </Variant>
+              <Variant label="article / card">
+                <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
+                  <Skeleton width="100%" height={120} />
+                  <Skeleton width="70%" height={15} />
+                  <Skeleton width="90%" height={12} lines={3} />
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
+                    <Skeleton shape="circle" width={24} height={24} />
+                    <Skeleton width="30%" height={11} />
+                  </div>
+                </div>
+              </Variant>
+              <Variant label="table rows">
+                <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, overflow: 'hidden' }}>
+                  {[100, 80, 70, 60].map((w, i) => (
+                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 14px', borderBottom: i < 3 ? '1px solid #F1F5F9' : 'none' }}>
+                      <Skeleton shape="circle" width={28} height={28} />
+                      <Skeleton width={`${w}%`} height={13} style={{ flex: 1 }} />
+                      <Skeleton width={40} height={13} />
+                    </div>
+                  ))}
+                </div>
+              </Variant>
+              <Variant label="form">
+                <div style={{ background: '#fff', border: '1px solid #E5E7EB', borderRadius: 10, padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  {[['40%', 32], ['60%', 32], ['100%', 72]].map(([w, h], i) => (
+                    <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                      <Skeleton width="28%" height={11} />
+                      <Skeleton width={w} height={h} />
+                    </div>
+                  ))}
+                  <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                    <Skeleton width={72} height={32} />
+                    <Skeleton width={88} height={32} />
+                  </div>
+                </div>
+              </Variant>
+            </div>
           </Section>
 
           <Section
             id="section-heading"
             title="SectionHeading"
-            desc={<>Recurring h3 + optional subtitle + optional right-side action. Used as the header inside content sections / cards.</>}
+            desc={<>Recurring h2/h3 + optional subtitle + optional right-side action. Used as the header inside content sections / cards.</>}
           >
-            <div className="pt-variant-frame">
-              <SectionHeading
-                title="Students to Watch"
-                subtitle="Last 30 days · 4 students flagged"
-                action={<Button variant="ghost" size="sm">View all →</Button>}
-              />
-            </div>
+            <SectionHeadingKnobs />
           </Section>
 
           <Section
@@ -1326,7 +3028,7 @@ export function App() {
             title="Toggle"
             desc={<>iOS-style switch. Props: <code>checked</code>, <code>onChange</code>, <code>disabled</code>, <code>size</code> (sm/md), optional label as children.</>}
           >
-            <ToggleShowcase />
+            <ToggleKnobs />
           </Section>
 
           <Section
@@ -1334,7 +3036,7 @@ export function App() {
             title="Input"
             desc={<>Text input. Sizes <code>sm</code> / <code>md</code> / <code>lg</code>. Optional <code>icon</code> + <code>iconRight</code>. Picks up id, error state, and ARIA from the parent <code>Field</code>.</>}
           >
-            <InputShowcase />
+            <InputKnobs />
           </Section>
 
           <Section
@@ -1342,7 +3044,7 @@ export function App() {
             title="Select"
             desc={<>Wrapped native <code>{'<select>'}</code> with a consistent caret + focus ring. Same size scale as Input.</>}
           >
-            <SelectShowcase />
+            <SelectKnobs />
           </Section>
 
           <Section
@@ -1350,7 +3052,7 @@ export function App() {
             title="Textarea"
             desc={<>Multi-line text input. Resizes vertically by default.</>}
           >
-            <TextareaShowcase />
+            <TextareaKnobs />
           </Section>
 
           <Section
@@ -1358,7 +3060,7 @@ export function App() {
             title="Checkbox"
             desc={<>Boolean control with a colored check icon when on. Use for non-exclusive options.</>}
           >
-            <CheckboxShowcase />
+            <CheckboxKnobs />
           </Section>
 
           <Section
@@ -1366,15 +3068,95 @@ export function App() {
             title="RadioGroup"
             desc={<>Mutually exclusive options. <code>RadioGroup</code> takes <code>name</code>, <code>value</code>, <code>onChange</code>, optional <code>layout</code> (row/column). Children are <code>Radio</code> with a <code>value</code>.</>}
           >
-            <RadioShowcase />
+            <RadioKnobs />
+          </Section>
+
+          <Section
+            id="checkbox-group"
+            title="CheckboxGroup"
+            desc={<>Multi-select group of checkboxes. <code>CheckboxGroup</code> holds <code>value</code> (string[]) + <code>onChange</code>. Children are <code>CheckboxGroupItem</code> with a <code>value</code> key. Supports row/column layout.</>}
+          >
+            <CheckboxGroupKnobs />
+          </Section>
+
+          <Section
+            id="multi-select"
+            title="MultiSelect"
+            desc={<>Dropdown that lets users pick multiple items from an <code>options</code> array. Displays a summary of the selection. Click outside or press Esc to close.</>}
+          >
+            <MultiSelectKnobs />
+          </Section>
+
+          <Section
+            id="number-input"
+            title="NumberInput"
+            desc={<>A number field with decrement/increment buttons. Respects <code>min</code>, <code>max</code>, and <code>step</code>. Buttons disable at the bounds. Spinner arrows are hidden via CSS.</>}
+          >
+            <NumberInputKnobs />
+          </Section>
+
+          <Section
+            id="range-slider"
+            title="RangeSlider"
+            desc={<>Styled <code>{'<input type="range">'}</code> with a filled track that updates via a CSS variable and a value readout. Pass <code>showValue={'{false}'}</code> to hide the label.</>}
+          >
+            <RangeSliderKnobs />
+          </Section>
+
+          <Section
+            id="date-input"
+            title="Date"
+            desc={<><code>DatePicker</code> — calendar popup via Radix Popover with month navigation, today indicator, and clear. <code>DateInput</code> — lightweight wrapper around the native <code>{'<input type="date">'}</code> family for simpler contexts.</>}
+          >
+            <DateInputKnobs />
+          </Section>
+
+          <Section
+            id="time-input"
+            title="Time"
+            desc={<><code>TimePicker</code> — scrollable time-slot list (configurable step) in a Radix Popover. <code>TimeInput</code> — native <code>{'<input type="time">'}</code> wrapper for simpler contexts.</>}
+          >
+            <TimeInputKnobs />
+          </Section>
+
+          <Section
+            id="color-input"
+            title="ColorInput"
+            desc={<>A styled color swatch + hex readout. Clicking anywhere opens the native color picker. The swatch uses <code>{'<input type="color">'}</code> with vendor-prefixed chrome removed.</>}
+          >
+            <ColorInputKnobs />
+          </Section>
+
+          <Section
+            id="file-input"
+            title="FileInput"
+            desc={<>Custom file upload control. A styled button triggers the hidden native input; selected filename is shown alongside. Supports <code>multiple</code>, <code>accept</code>, and <code>disabled</code>.</>}
+          >
+            <FileInputKnobs />
+          </Section>
+
+          <Section
+            id="custom-select"
+            title="CustomSelect"
+            desc={<>Radix UI–powered select with consistent cross-browser styling, keyboard navigation, animated dropdown, and grouped options. Replaces the native <code>{'<select>'}</code> chrome entirely.</>}
+          >
+            <CustomSelectKnobs />
+          </Section>
+
+          <Section
+            id="filter-bar"
+            title="FilterBar"
+            desc={<><code>FilterBar</code> is a horizontal row of labeled controls (<code>FilterItem</code> children) with an optional action button. Collapses to a 2-column grid on mobile. Used in the student profile admin panel.</>}
+          >
+            <FilterBarKnobs />
           </Section>
 
           <Section
             id="field-form"
-            title="Field / Full form example"
-            desc={<><code>Field</code> wraps any control with a label, optional <code>help</code> text, or an <code>error</code> message. Below is a real form composing every primitive together.</>}
+            title="Field / Form example"
+            desc={<><code>Field</code> wraps any control with a label, optional <code>help</code> text, or an <code>error</code> message. Four complete examples — switch with the knob.</>}
           >
-            <FullFormShowcase />
+            <FieldFormKnobs />
           </Section>
 
           <Section
@@ -1382,48 +3164,7 @@ export function App() {
             title="Line chart"
             desc={<>Nivo <code>ResponsiveLine</code> + <code>SliceTooltip</code> wrapped in a <code>ChartCard</code>. Pattern used for trend charts across the dashboard, motivation, integrity, and habits pages.</>}
           >
-            <ChartCard
-              title="RMI Trend — Lincoln vs. District"
-              subtitle="Sep 2024 – May 2025"
-              icon={SECTIONS.find(s => s.key === 'motivation')?.icon}
-              accent="#E8866A"
-              footer={<ChartLegend items={[
-                { color: '#E8866A', label: 'Lincoln' },
-                { color: '#CBD5E1', label: 'District avg', dashed: true },
-              ]} />}
-            >
-              <div style={{ height: 220 }}>
-                <ResponsiveLine
-                  data={[
-                    { id: 'Lincoln',      color: '#E8866A', data: CHART_TREND.map(d => ({ x: d.month, y: d.school })) },
-                    { id: 'District avg', color: '#CBD5E1', data: CHART_TREND.map(d => ({ x: d.month, y: d.district })) },
-                  ]}
-                  theme={NIVO_THEME}
-                  margin={LINE_MARGIN}
-                  xScale={{ type: 'point' }}
-                  yScale={{ type: 'linear', min: 55, max: 90 }}
-                  curve="monotoneX"
-                  colors={d => d.color}
-                  lineWidth={2.5}
-                  enablePoints={false}
-                  enableArea
-                  areaOpacity={0.08}
-                  enableGridX={false}
-                  axisBottom={AXIS_BOTTOM}
-                  axisLeft={{ ...AXIS_LEFT, tickValues: [60, 70, 80, 90] }}
-                  enableSlices="x"
-                  sliceTooltip={({ slice }) => (
-                    <SliceTooltip
-                      slice={slice}
-                      accent="#E8866A"
-                      allData={CHART_TREND}
-                      seriesMap={{ Lincoln: 'school', 'District avg': 'district' }}
-                      formatDelta={d => `${d > 0 ? '+' : ''}${d} pts`}
-                    />
-                  )}
-                />
-              </div>
-            </ChartCard>
+            <LineChartKnobs />
           </Section>
 
           <Section
@@ -1431,60 +3172,7 @@ export function App() {
             title="Grouped bar chart"
             desc={<>Nivo <code>ResponsiveBar</code> with <code>groupMode="grouped"</code> + <code>BarTooltip</code>. Used for "this vs district" or "actual vs expected" comparisons.</>}
           >
-            <ChartCard
-              title="Intrinsic vs. Extrinsic Motivation"
-              subtitle="RMI subscores out of 20"
-              icon={SECTIONS.find(s => s.key === 'motivation')?.icon}
-              accent="#E8866A"
-              footer={<ChartLegend items={[
-                { color: '#E8866A', label: 'Intrinsic' },
-                { color: '#CBD5E1', label: 'Extrinsic' },
-              ]} />}
-            >
-              <div style={{ height: 190 }}>
-                <ResponsiveBar
-                  data={[
-                    { month: 'Sep', intrinsic: 12.1, extrinsic: 11.4 },
-                    { month: 'Oct', intrinsic: 12.4, extrinsic: 11.5 },
-                    { month: 'Nov', intrinsic: 12.8, extrinsic: 11.6 },
-                    { month: 'Dec', intrinsic: 12.6, extrinsic: 11.5 },
-                    { month: 'Jan', intrinsic: 13.1, extrinsic: 11.6 },
-                    { month: 'Feb', intrinsic: 13.5, extrinsic: 11.7 },
-                    { month: 'Mar', intrinsic: 13.7, extrinsic: 11.6 },
-                    { month: 'Apr', intrinsic: 14.0, extrinsic: 11.7 },
-                    { month: 'May', intrinsic: 14.2, extrinsic: 11.8 },
-                  ]}
-                  keys={['intrinsic', 'extrinsic']}
-                  indexBy="month"
-                  groupMode="grouped"
-                  theme={NIVO_THEME}
-                  margin={{ top: 8, right: 16, bottom: 36, left: 36 }}
-                  padding={0.3}
-                  innerPadding={2}
-                  colors={({ id }) => id === 'intrinsic' ? '#E8866A' : '#CBD5E1'}
-                  borderRadius={3}
-                  axisBottom={AXIS_BOTTOM}
-                  axisLeft={{ ...AXIS_LEFT, tickValues: [9, 11, 13, 15] }}
-                  enableGridY
-                  enableLabel={false}
-                  minValue={9}
-                  maxValue={16}
-                  tooltip={({ indexValue, data }) => (
-                    <BarTooltip
-                      data={data}
-                      indexValue={indexValue}
-                      accent="#E8866A"
-                      format={v => `${v.toFixed(1)} /20`}
-                      keys={['intrinsic', 'extrinsic']}
-                      labels={{
-                        intrinsic: { label: 'Intrinsic', color: '#E8866A' },
-                        extrinsic: { label: 'Extrinsic', color: '#CBD5E1' },
-                      }}
-                    />
-                  )}
-                />
-              </div>
-            </ChartCard>
+            <GroupedBarKnobs />
           </Section>
 
           <Section
@@ -1492,49 +3180,7 @@ export function App() {
             title="Horizontal bar chart"
             desc={<>Nivo <code>ResponsiveBar</code> with <code>layout="horizontal"</code>. Used for school rankings and per-grade growth comparisons.</>}
           >
-            <ChartCard
-              title="District integrity ranking"
-              subtitle="Book Talk completion rate · May 2025"
-              icon={SECTIONS.find(s => s.key === 'integrity')?.icon}
-              accent="#1D4ED8"
-            >
-              <div style={{ height: 220 }}>
-                <ResponsiveBar
-                  data={[
-                    { id: 'adams',      name: 'Adams High',     completionRate: 88, isThis: false },
-                    { id: 'jefferson',  name: 'Jefferson El.',  completionRate: 82, isThis: false },
-                    { id: 'kennedy',    name: 'Kennedy K-8',    completionRate: 77, isThis: false },
-                    { id: 'roosevelt',  name: 'Roosevelt Mid.', completionRate: 75, isThis: false },
-                    { id: 'lincoln',    name: 'Lincoln El.',    completionRate: 71, isThis: true },
-                    { id: 'washington', name: 'Washington Mid.',completionRate: 62, isThis: false },
-                  ]}
-                  keys={['completionRate']}
-                  indexBy="name"
-                  layout="horizontal"
-                  theme={NIVO_THEME}
-                  margin={{ top: 8, right: 32, bottom: 36, left: 100 }}
-                  colors={({ data }) => data.isThis ? '#E8866A' : '#CBD5E1'}
-                  borderRadius={4}
-                  axisBottom={{ ...AXIS_BOTTOM, format: v => `${v}%`, tickValues: [0, 25, 50, 75, 100] }}
-                  axisLeft={{ tickSize: 0, tickPadding: 10 }}
-                  enableGridY={false}
-                  enableLabel={false}
-                  maxValue={100}
-                  tooltip={({ data }) => (
-                    <div className="sdb-tooltip" style={{ '--tip-accent': data.isThis ? '#E8866A' : '#1D4ED8' }}>
-                      <div className="sdb-tooltip-header">{data.name}</div>
-                      <div className="sdb-tooltip-series" style={{ '--series-color': data.isThis ? '#E8866A' : '#94A3B8' }}>
-                        <div className="sdb-tooltip-row">
-                          <span className="sdb-tooltip-dot" />
-                          <span className="sdb-tooltip-label">Completion rate</span>
-                          <span className="sdb-tooltip-val">{data.completionRate}%</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                />
-              </div>
-            </ChartCard>
+            <HorizontalBarKnobs />
           </Section>
 
           <Section
@@ -1542,64 +3188,7 @@ export function App() {
             title="Scatter chart"
             desc={<>Nivo <code>ResponsiveScatterPlot</code> with a highlighted "this school" series and a reference marker. Used on the Skills (Lexile) page.</>}
           >
-            <ChartCard
-              title="Lexile Growth vs. Reading Volume"
-              subtitle="Lincoln highlighted against district peers"
-              icon={SECTIONS.find(s => s.key === 'skills')?.icon}
-              accent="#7C3AED"
-              footer={<ChartLegend items={[
-                { color: '#E8866A', label: 'Lincoln' },
-                { color: '#CBD5E1', label: 'Other schools' },
-                { color: '#D97706', label: 'Expected (+65L)', dashed: true },
-              ]} />}
-            >
-              <div style={{ height: 260 }}>
-                <ResponsiveScatterPlot
-                  data={[
-                    {
-                      id: 'This school',
-                      data: [{ x: 41, y: 8, school: 'Lincoln', students: 1650, sid: 'lincoln' }],
-                    },
-                    {
-                      id: 'Other schools',
-                      data: [
-                        { x: 38, y: 62, school: 'Jefferson', students: 1820, sid: 'jefferson' },
-                        { x: 35, y: 74, school: 'Kennedy',   students: 2340, sid: 'kennedy' },
-                        { x: 28, y: 88, school: 'Roosevelt', students: 2100, sid: 'roosevelt' },
-                        { x: 24, y: 22, school: 'Washington',students: 1980, sid: 'washington' },
-                        { x: 22, y: 112,school: 'Adams',     students: 2510, sid: 'adams' },
-                      ],
-                    },
-                  ]}
-                  theme={NIVO_THEME}
-                  margin={{ top: 16, right: 28, bottom: 50, left: 56 }}
-                  xScale={{ type: 'linear', min: 15, max: 50 }}
-                  yScale={{ type: 'linear', min: 0, max: 130 }}
-                  colors={({ serieId }) => serieId === 'This school' ? '#E8866A' : '#CBD5E1'}
-                  nodeSize={d => Math.sqrt(d.data.students / 5)}
-                  axisBottom={{ ...AXIS_BOTTOM, legend: 'Avg books/month', legendOffset: 38, legendPosition: 'middle' }}
-                  axisLeft={{ ...AXIS_LEFT, format: v => `${v}L`, legend: 'Lexile growth', legendOffset: -44, legendPosition: 'middle' }}
-                  enableGridX={false}
-                  markers={[{
-                    axis: 'y', value: 65,
-                    lineStyle: { stroke: '#D97706', strokeDasharray: '4 3', strokeWidth: 1.5 },
-                  }]}
-                  tooltip={({ node }) => (
-                    <div className="sdb-tooltip" style={{ '--tip-accent': node.data.sid === 'lincoln' ? '#E8866A' : '#475569' }}>
-                      <div className="sdb-tooltip-header">{node.data.school}</div>
-                      <div className="sdb-tooltip-series" style={{ '--series-color': node.data.sid === 'lincoln' ? '#E8866A' : '#94A3B8' }}>
-                        <div className="sdb-tooltip-row">
-                          <span className="sdb-tooltip-dot" />
-                          <span className="sdb-tooltip-label">Lexile growth</span>
-                          <span className="sdb-tooltip-val">+{node.data.y}L</span>
-                        </div>
-                      </div>
-                      <div className="sdb-tooltip-context">{node.data.students.toLocaleString()} students</div>
-                    </div>
-                  )}
-                />
-              </div>
-            </ChartCard>
+            <ScatterKnobs />
           </Section>
 
           <Section
@@ -1616,6 +3205,31 @@ export function App() {
             desc={<>Wide rectangle with a consistent header / body / footer used for every chart and panel. Props: <code>title</code>, <code>subtitle</code>, <code>icon</code>, <code>accent</code>, <code>action</code>, <code>footer</code>, <code>bodyPad</code>. Knobs below to preview combinations.</>}
           >
             <ChartCardKnobs />
+            <div style={{ marginTop: 20 }}>
+              <div className="pt-variant-label">Table inside ChartCard — <code>bodyPad="flush"</code> + <code>flush</code> on Table</div>
+              <ChartCard
+                title="Schools by RMI"
+                subtitle="Current year average"
+                accent="#E8866A"
+                bodyPad="flush"
+              >
+                <Table
+                  flush
+                  columns={[
+                    { key: 'name',     label: 'School' },
+                    { key: 'students', label: 'Students', align: 'right', render: v => v.toLocaleString() },
+                    { key: 'rmi',      label: 'RMI',      align: 'right' },
+                    { key: 'delta',    label: 'YoY',      align: 'right', render: v => (
+                      <span style={{ color: v >= 0 ? '#16A34A' : '#DC2626', fontWeight: 700 }}>
+                        {v >= 0 ? '↑' : '↓'}{Math.abs(v)} pts
+                      </span>
+                    )},
+                  ]}
+                  rows={TABLE_ROWS}
+                  zebra
+                />
+              </ChartCard>
+            </div>
           </Section>
 
           <Section
@@ -1646,21 +3260,7 @@ export function App() {
             title="ChartLegend"
             desc={<>Footer legend rendered below the chart body. <code>items</code> is an array of <code>{'{ color, label, dashed? }'}</code>.</>}
           >
-            <div className="pt-variants pt-variants--2">
-              <Variant label="solid + dashed">
-                <ChartLegend items={[
-                  { color: '#E8866A', label: 'Lincoln' },
-                  { color: '#CBD5E1', label: 'District avg', dashed: true },
-                ]} />
-              </Variant>
-              <Variant label="three series">
-                <ChartLegend items={[
-                  { color: '#0DA7BC', label: 'Elementary' },
-                  { color: '#16A97A', label: 'Middle' },
-                  { color: '#C084FC', label: 'High' },
-                ]} />
-              </Variant>
-            </div>
+            <ChartLegendKnobs />
           </Section>
 
           <Section
@@ -1726,7 +3326,7 @@ export function App() {
           <Section
             id="alert-row"
             title="AlertRow"
-            desc={<>Single alert tile shown by AlertsBanner. Props: <code>level</code> (critical | warning | positive | info), <code>school</code>, <code>title</code>, <code>action</code>, <code>onAction</code>.</>}
+            desc={<>Single alert tile. Props: <code>level</code> (critical | warning | positive | info), <code>title</code> (bold prefix), <code>description</code> (longer text), <code>action</code>, <code>onAction</code>. Collapses to stacked layout on narrow viewports.</>}
           >
             <AlertRowKnobs />
           </Section>
@@ -1752,22 +3352,20 @@ export function App() {
           <Section
             id="back-bar"
             title="BackBar"
-            desc={<>"‹ Back to X" link styled like a breadcrumb. Renders as a button or anchor. Props: <code>label</code>, <code>onClick</code> or <code>href</code>.</>}
+            desc={<>"‹ Back to X" link styled like a breadcrumb. Renders as a button or anchor. Props: <code>label</code>, <code>onClick</code> or <code>href</code>. Lives at the top of a content area against the page background; the preview wraps it in a grey frame so it's visible.</>}
           >
-            <Variant label="default" bare>
+            <div className="pt-variant-frame pt-variant-frame--full">
               <BackBar label="Back to Overview" onClick={() => {}} />
-            </Variant>
+            </div>
           </Section>
 
+
           <Section
-            id="main-rail"
-            title="MainRail"
-            desc={<>Narrow icon strip on the far left of every Beanstack admin page. Shared chrome. Props: <code>activeIndex</code> (0–7).</>}
+            id="sidebar"
+            title="Sidebar"
+            desc={<>The full navigation chrome used by every admin prototype — narrow Beanstack rail (MainRail) + the blue gradient sidebar. Props: <code>nav</code>, <code>active</code>, <code>onNavigate</code>, <code>title</code>, <code>subtitle</code>, <code>badges</code>, <code>picker</code> slot (typically <code>SchoolPicker</code>), <code>mainRailIndex</code>.</>}
           >
-            <div className="pt-rail-frame">
-              <MainRail activeIndex={4} />
-              <div className="pt-rail-note">activeIndex = 4 (RIS app)</div>
-            </div>
+            <SidebarKnobs />
           </Section>
 
           <Section
@@ -1824,6 +3422,7 @@ export function App() {
         </main>
       </div>
       <PrototypeNav currentHref="/bs-prototypes/patterns/" />
+      <BreakpointIndicator />
     </>
   )
 }

@@ -1,16 +1,18 @@
+import { useState, useMemo, useEffect } from 'react'
 import './Table.css'
 
 /**
  * <Table
  *   columns={[
- *     { key: 'name',  label: 'School' },
- *     { key: 'score', label: 'RMI', align: 'right' },
+ *     { key: 'name',  label: 'School', sortable: true },
+ *     { key: 'score', label: 'RMI', align: 'right', sortable: true },
  *     { key: 'delta', label: 'Δ',   align: 'right', render: v => <DeltaPill v={v} /> },
  *   ]}
  *   rows={[{ name: 'Lincoln', score: 71, delta: 7 }, …]}
  *   getRowKey={r => r.id}
  *   onRowClick={r => openSchool(r.id)}
  *   zebra
+ *   pageSize={5}
  * />
  */
 export function Table({
@@ -20,38 +22,143 @@ export function Table({
   onRowClick,
   zebra = false,
   compact = false,
+  bordered = false,
+  flush = false,         // remove outer border + radius — use inside ChartCard bodyPad="flush"
+  stickyHeader = false,
+  loading = false,
+  empty,                 // string | node — shown when rows is empty
+  highlightRow,          // (row) => bool — gives a row the highlight style
+  pageSize,              // number — enables pagination; omit to show all rows
+  defaultSortKey,        // initial sort column key
+  defaultSortDir = 'asc',
   className = '',
 }) {
+  const [sortKey, setSortKey] = useState(defaultSortKey ?? null)
+  const [sortDir, setSortDir] = useState(defaultSortDir)
+  const [page, setPage]       = useState(0)
+
+  // Reset to page 0 when the rows data changes externally
+  useEffect(() => { setPage(0) }, [rows])
+
+  function handleSort(key) {
+    if (sortKey === key) {
+      setSortDir(d => d === 'asc' ? 'desc' : 'asc')
+    } else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
+    setPage(0)
+  }
+
+  const sortedRows = useMemo(() => {
+    if (!sortKey) return rows
+    return [...rows].sort((a, b) => {
+      const va = a[sortKey]
+      const vb = b[sortKey]
+      const cmp = (typeof va === 'number' && typeof vb === 'number')
+        ? va - vb
+        : String(va ?? '').localeCompare(String(vb ?? ''))
+      return sortDir === 'asc' ? cmp : -cmp
+    })
+  }, [rows, sortKey, sortDir])
+
+  const totalPages  = pageSize ? Math.ceil(sortedRows.length / pageSize) : 1
+  const visibleRows = pageSize
+    ? sortedRows.slice(page * pageSize, (page + 1) * pageSize)
+    : sortedRows
+
+  const cls = [
+    'tbl',
+    zebra && 'tbl--zebra',
+    compact && 'tbl--compact',
+    bordered && 'tbl--bordered',
+    flush && 'tbl--flush',
+    stickyHeader && 'tbl--sticky',
+    className,
+  ].filter(Boolean).join(' ')
+
+  function SortIcon({ colKey }) {
+    if (sortKey !== colKey) return <span className="tbl-sort-icon tbl-sort-icon--idle">⇅</span>
+    return <span className="tbl-sort-icon tbl-sort-icon--active">{sortDir === 'asc' ? '↑' : '↓'}</span>
+  }
+
   return (
-    <table className={`tbl${zebra ? ' tbl--zebra' : ''}${compact ? ' tbl--compact' : ''} ${className}`}>
+    <table className={cls}>
       <thead>
         <tr>
           {columns.map(c => (
-            <th key={c.key} className={`tbl-th${c.align ? ` tbl-cell--${c.align}` : ''}`} style={c.width ? { width: c.width } : undefined}>
+            <th
+              key={c.key}
+              className={[
+                'tbl-th',
+                c.sortable && 'tbl-th--sortable',
+                c.sortable && sortKey === c.key && 'tbl-th--sorted',
+                c.align && `tbl-cell--${c.align}`,
+              ].filter(Boolean).join(' ')}
+              style={c.width ? { width: c.width } : undefined}
+              onClick={c.sortable ? () => handleSort(c.key) : undefined}
+            >
               {c.label}
+              {c.sortable && <SortIcon colKey={c.key} />}
             </th>
           ))}
         </tr>
       </thead>
       <tbody>
-        {rows.map((row, i) => (
-          <tr
-            key={getRowKey(row, i)}
-            className={onRowClick ? 'tbl-row tbl-row--clickable' : 'tbl-row'}
-            onClick={onRowClick ? () => onRowClick(row) : undefined}
-          >
-            {columns.map(c => {
-              const value = row[c.key]
-              const content = c.render ? c.render(value, row) : value
-              return (
-                <td key={c.key} className={`tbl-td${c.align ? ` tbl-cell--${c.align}` : ''}`}>
-                  {content}
-                </td>
-              )
-            })}
-          </tr>
-        ))}
+        {loading && (
+          <tr><td className="tbl-state" colSpan={columns.length}>Loading…</td></tr>
+        )}
+        {!loading && sortedRows.length === 0 && (
+          <tr><td className="tbl-state" colSpan={columns.length}>{empty ?? 'No rows'}</td></tr>
+        )}
+        {!loading && visibleRows.map((row, i) => {
+          const isHighlight = highlightRow?.(row)
+          return (
+            <tr
+              key={getRowKey(row, i)}
+              className={[
+                'tbl-row',
+                onRowClick && 'tbl-row--clickable',
+                isHighlight && 'tbl-row--highlight',
+              ].filter(Boolean).join(' ')}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+            >
+              {columns.map(c => {
+                const value = row[c.key]
+                const content = c.render ? c.render(value, row) : value
+                return (
+                  <td key={c.key} className={`tbl-td${c.align ? ` tbl-cell--${c.align}` : ''}`}>
+                    {content}
+                  </td>
+                )
+              })}
+            </tr>
+          )
+        })}
       </tbody>
+      {pageSize && totalPages > 1 && (
+        <tfoot>
+          <tr>
+            <td colSpan={columns.length} className="tbl-pagination">
+              <button
+                className="tbl-pg-btn"
+                onClick={() => setPage(p => p - 1)}
+                disabled={page === 0}
+                aria-label="Previous page"
+              >‹</button>
+              <span className="tbl-pg-info">
+                {page + 1} <span className="tbl-pg-sep">/</span> {totalPages}
+              </span>
+              <button
+                className="tbl-pg-btn"
+                onClick={() => setPage(p => p + 1)}
+                disabled={page >= totalPages - 1}
+                aria-label="Next page"
+              >›</button>
+            </td>
+          </tr>
+        </tfoot>
+      )}
     </table>
   )
 }

@@ -4,19 +4,10 @@ import {
 } from 'recharts'
 import './LexileDetail.css'
 import { LEXILE_DATA, LEXILE_BY_GRADE, SCHOOLS, DISTRICT_HEALTH } from '../data'
-import { BucketHero } from './BucketHero'
+import { Hero } from './Hero'
+import { StatCard } from './Cards'
 
 const EXPECTED_GROWTH = 65
-
-function StatCard({ label, value, sub, accent = '#0DA7BC' }) {
-  return (
-    <div className="ld-stat">
-      <div className="ld-stat-value" style={{ color: accent }}>{value}</div>
-      <div className="ld-stat-label">{label}</div>
-      {sub && <div className="ld-stat-sub">{sub}</div>}
-    </div>
-  )
-}
 
 const SCHOOL_COLORS = Object.fromEntries(SCHOOLS.map(s => [s.id, s.color]))
 
@@ -25,13 +16,13 @@ export function LexileDetail({ onBack }) {
 
   return (
     <div className="lexile-detail">
-      <BucketHero bucket="skills" score={DISTRICT_HEALTH.skills} delta={DISTRICT_HEALTH.dS} onBack={onBack} />
+      <Hero bucket="skills" />
 
       <div className="ld-stats-row">
-        <StatCard label="District avg Lexile growth" value="+82L" sub="YTD vs. expected +65L" />
-        <StatCard label="Schools below expected" value={`${stuckSchools.length} of 6`} sub="stuck or declining" accent="#DC2626" />
-        <StatCard label="Top-growth school" value="Adams High" sub="+112L YTD" accent="#16A97A" />
-        <StatCard label="Students flagged (stuck)" value="~1,490" sub="12% of total enrollment" accent="#D97706" />
+        <StatCard label="District avg Lexile growth" value="+82L" footer="YTD vs. expected +65L" />
+        <StatCard label="Schools below expected" value={`${stuckSchools.length} of 6`} footer="stuck or declining" color="#DC2626" />
+        <StatCard label="Top-growth school" value="Adams High" footer="+112L YTD" color="#16A97A" />
+        <StatCard label="Students flagged (stuck)" value="~1,490" footer="12% of total enrollment" color="#D97706" />
       </div>
 
       <div className="ld-grid">

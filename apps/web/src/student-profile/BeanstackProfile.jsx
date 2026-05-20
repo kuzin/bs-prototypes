@@ -2,8 +2,16 @@ import { useState } from "react";
 import "@bs/ui/css";
 import {
   C, LABEL, GENRE_COLORS,
-  Ic, StatusBadge, Pill, Bar, Card, SectionHeading, GoalRing, CoverImage,
+  Ic, StatusBadge, Card, SectionHeading, GoalRing, CoverImage,
 } from "@bs/ui";
+import { Button } from '../ris/components/Button'
+import { Select } from '../ris/components/Form'
+import { FilterBar, FilterItem } from '../ris/components/FilterBar'
+import '../ris/components/Form.css'
+import { Avatar } from '../ris/components/Avatar'
+import { IconButton, EmptyState, Divider } from '../ris/components/Primitives'
+import { Pill } from '../ris/components/Pill'
+import { ProgressBar } from '../ris/components/ProgressBar'
 import { MainRail } from "../MainRail";
 import { BackBar } from "../BackBar";
 
@@ -117,8 +125,8 @@ function StudentActions() {
   return (
     <div className="bp-student-actions">
       <div className="bp-dropdown-anchor">
-        <button
-          className="bp-btn-ghost"
+        <Button
+          variant="ghost"
           aria-label="More options"
           onClick={() => { setDotsOpen(o => !o); setLogOpen(false); }}
         >
@@ -127,16 +135,16 @@ function StudentActions() {
             <circle cx="8" cy="8"   r="1.5" fill="currentColor"/>
             <circle cx="8" cy="12.5" r="1.5" fill="currentColor"/>
           </svg>
-        </button>
+        </Button>
         {dotsOpen && <DropdownMenu items={dotsItems} onClose={() => setDotsOpen(false)} />}
       </div>
       <div className="bp-dropdown-anchor">
-        <button
-          className="bp-btn-primary"
+        <Button
+          variant="primary"
           onClick={() => { setLogOpen(o => !o); setDotsOpen(false); }}
         >
           Log <Ic name="ti-chevron-down" size={13} />
-        </button>
+        </Button>
         {logOpen && <DropdownMenu items={logItems} onClose={() => setLogOpen(false)} />}
       </div>
     </div>
@@ -148,9 +156,12 @@ function StudentHeader({ student, onClose }) {
   return (
     <div className="bp-panel-header">
       <div className="bp-panel-identity">
-        <div className="bp-panel-avatar">
-          {student.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
-        </div>
+        <Avatar
+          initials={student.name.split(" ").map(w => w[0]).join("").slice(0, 2)}
+          color="#1D4ED8"
+          size="lg"
+          shape="rounded"
+        />
         <div>
           <div className="bp-panel-name">{student.name}</div>
           <div className="bp-panel-meta">{student.grade}</div>
@@ -159,12 +170,12 @@ function StudentHeader({ student, onClose }) {
       <div className="bp-header-right">
         <StudentActions />
         {onClose && (
-          <button className="bp-header-close" onClick={onClose} aria-label="Close profile">
+          <IconButton variant="ghost" size="sm" onClick={onClose} aria-label="Close profile">
             <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <line x1="3" y1="3" x2="13" y2="13" />
               <line x1="13" y1="3" x2="3" y2="13" />
             </svg>
-          </button>
+          </IconButton>
         )}
       </div>
     </div>
@@ -193,7 +204,7 @@ const ANALYSIS_SECTIONS = new Set(["motivation", "integrity", "habits", "skills"
 
 function LeftNav({ activeSection, onNavigate }) {
   function renderItem(item, idx) {
-    if (item.divider) return <div key={`divider-${idx}`} className="bp-nav-divider" />
+    if (item.divider) return <Divider key={`divider-${idx}`} />
     const { icon, section, label, compact } = item
     const active = activeSection === section
     const pal = section ? C[section] : null
@@ -264,7 +275,7 @@ function Overview({ student, onNavigate }) {
         icon="ti-user"
         iconBg="#E6F1FF"
         title="Overview"
-        right={<button className="bp-btn-ghost">Regenerate Overview</button>}
+        right={<Button variant="ghost">Regenerate Overview</Button>}
       />
 
       {/* Snapshot tiles */}
@@ -328,7 +339,7 @@ function Overview({ student, onNavigate }) {
                 </span>
               </div>
               <div className="bp-health-verdict-track">
-                <Bar value={composite} color={ht.bar} height={10} />
+                <ProgressBar value={composite} color={ht.bar} size="lg" />
               </div>
             </div>
           );
@@ -354,7 +365,7 @@ function Overview({ student, onNavigate }) {
                     <span className="bp-health-row-name">{LABEL[key]}</span>
                     <StatusBadge label={sec.status} />
                   </div>
-                  <Bar value={sectionScore(key, sec)} color={c.bar} />
+                  <ProgressBar value={sectionScore(key, sec)} color={c.bar} />
                 </div>
                 <span className="bp-health-row-link">
                   <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
@@ -455,12 +466,10 @@ function MotivationDetail({ sec, c }) {
               <span className="bp-score-label">{label}</span>
               <div className="bp-score-value">
                 <span className="bp-score-num">{score}</span>
-                <Pill label={`${delta > 0 ? "+" : ""}${delta}`}
-                  bg={delta > 0 ? "#CBFDE5" : "#FEDDD1"}
-                  color={delta > 0 ? "#0F6E56" : "#993C1D"} small />
+                <Pill variant={delta > 0 ? "success" : "error"} size="sm">{delta > 0 ? "+" : ""}{delta}</Pill>
               </div>
             </div>
-            <Bar value={score} color={c.bar} height={7} />
+            <ProgressBar value={score} color={c.bar} />
           </div>
         ))}
       </div>
@@ -506,7 +515,7 @@ function MotivationDetail({ sec, c }) {
             <span className="bp-motivator-rank">{i + 1}</span>
             <span className="bp-motivator-name">{m.name}</span>
             <div className="bp-motivator-bar-wrap">
-              <Bar value={(m.score / m.max) * 100} color={c.bar} height={6} />
+              <ProgressBar value={(m.score / m.max) * 100} color={c.bar} size="sm" />
             </div>
             <span className="bp-motivator-score">{m.score}</span>
             <span className={`bp-motivator-delta ${m.delta >= 0 ? "bp-motivator-delta--up" : "bp-motivator-delta--down"}`}>
@@ -546,10 +555,7 @@ function IntegrityDetail({ sec }) {
         <span className="bp-flagged-label">Flagged sessions</span>
         <div className="bp-flagged-count-group">
           <span className="bp-flagged-count">{sec.flaggedSessions}</span>
-          {sec.flagDelta < 0
-            ? <Pill label={`↓${Math.abs(sec.flagDelta)} vs last period`} bg="#CBFDE5" color="#0F6E56" small />
-            : <Pill label={`↑${Math.abs(sec.flagDelta)} vs last period`} bg="#FEDDD1" color="#993C1D" small />
-          }
+          <Pill variant={sec.flagDelta < 0 ? "success" : "error"} size="sm">{sec.flagDelta < 0 ? `↓${Math.abs(sec.flagDelta)} vs last period` : `↑${Math.abs(sec.flagDelta)} vs last period`}</Pill>
         </div>
       </div>
       <div className="bp-flag-breakdown">
@@ -558,7 +564,7 @@ function IntegrityDetail({ sec }) {
           {sec.flagBreakdown.map(f => (
             <div key={f.type} className="bp-flag-item">
               <span className="bp-flag-type">{f.type}</span>
-              <Pill label={f.count} bg="#FFF3DC" color="#854F0B" small />
+              <Pill variant="warning" size="sm">{f.count}</Pill>
             </div>
           ))}
         </div>
@@ -654,19 +660,21 @@ function ReadingHeatmap({ goalMinutes, color, data }) {
   return (
     <div className="bp-heatmap">
       <div className="bp-heatmap-nav">
-        <button
-          className="bp-heatmap-nav-btn"
+        <IconButton
+          variant="ghost"
+          size="sm"
           onClick={() => setMonthOffset(o => Math.min(o + 1, MAX_OFFSET))}
           disabled={monthOffset >= MAX_OFFSET}
           aria-label="Previous 6 months"
-        >‹</button>
+        >‹</IconButton>
         <span className="bp-heatmap-nav-label">{navLabel}</span>
-        <button
-          className="bp-heatmap-nav-btn"
+        <IconButton
+          variant="ghost"
+          size="sm"
           onClick={() => setMonthOffset(o => Math.max(o - 1, 0))}
           disabled={monthOffset === 0}
           aria-label="Next 6 months"
-        >›</button>
+        >›</IconButton>
       </div>
       <div className="bp-heatmap-body">
         <div className="bp-heatmap-day-labels">
@@ -775,22 +783,24 @@ function HabitsDetail({ sec, c }) {
             <span>Today</span>
           </div>
         </div>
-        <button className="bp-btn-ghost">Edit Goal</button>
+        <Button variant="ghost">Edit Goal</Button>
       </div>
       <div className="bp-goal-week-nav">
-        <button
-          className="bp-goal-nav-btn"
+        <IconButton
+          variant="ghost"
+          size="sm"
           onClick={() => setWeekIdx(i => Math.min(i + 1, sec.weeks.length - 1))}
           disabled={weekIdx === sec.weeks.length - 1}
-        >‹</button>
+        >‹</IconButton>
         <span className="bp-goal-week-label">
           {week.label}{week.current ? " (This Week)" : ""}
         </span>
-        <button
-          className="bp-goal-nav-btn"
+        <IconButton
+          variant="ghost"
+          size="sm"
           onClick={() => setWeekIdx(i => Math.max(i - 1, 0))}
           disabled={weekIdx === 0}
-        >›</button>
+        >›</IconButton>
       </div>
       <GoalTracker week={week} goalMinutes={sec.dailyGoalMinutes} />
     </Card>
@@ -942,12 +952,7 @@ function SkillsDetail({ sec, c, firstName }) {
         <span className="bp-lexile-summary-label">Monthly Lexile average</span>
         <div className="bp-lexile-summary-right">
           <span className="bp-lexile-avg">{sec.monthlyAvg}L</span>
-          <Pill
-            label={`${deltaUp ? "↑" : "↓"}${Math.abs(sec.monthlyDelta)}L vs Apr`}
-            bg={deltaUp ? "#CBFDE5" : "#FEDDD1"}
-            color={deltaUp ? "#0F6E56" : "#993C1D"}
-            small
-          />
+          <Pill variant={deltaUp ? "success" : "error"} size="sm">{deltaUp ? "↑" : "↓"}{Math.abs(sec.monthlyDelta)}L vs Apr</Pill>
         </div>
       </div>
     </Card>
@@ -1719,13 +1724,13 @@ function ReadingLogPage() {
         icon="ti-reading-log"
         iconBg="#E0F2FE"
         title="Reading Log"
-        right={<button className="bp-btn-ghost bp-btn-ghost--sm">Print log</button>}
+        right={<Button variant="ghost" size="sm">Print log</Button>}
       />
       <div className="bp-rl-month-nav">
         <div className="bp-rl-month-label">{month}</div>
         <div className="bp-rl-month-arrows">
-          <button className="bp-rl-arrow">‹</button>
-          <button className="bp-rl-arrow">›</button>
+          <IconButton variant="ghost" size="sm">‹</IconButton>
+          <IconButton variant="ghost" size="sm">›</IconButton>
         </div>
       </div>
       {RL_DATA.map((week, wi) => (
@@ -1743,7 +1748,7 @@ function ReadingLogPage() {
               <div className="bp-rl-entries">
                 {day.entries.length > 0
                   ? day.entries.map((e, ei) => <RLEntryCard key={ei} entry={e} />)
-                  : !day.faded && <div className="bp-rl-empty">No reading logged</div>
+                  : !day.faded && <EmptyState title="No reading logged" />
                 }
               </div>
             </div>
@@ -1764,10 +1769,7 @@ function PlaceholderPage({ pageKey }) {
         iconBg="#F0F0F0"
         title={item?.label || pageKey}
       />
-      <div className="bp-placeholder-empty">
-        <Ic name={item?.icon || "ti-user"} size={36} style={{ opacity: 0.18 }} />
-        <div className="bp-placeholder-text">This section is coming soon.</div>
-      </div>
+      <EmptyState title="Coming soon" description="This section is coming soon." />
     </div>
   );
 }
@@ -1835,8 +1837,8 @@ function AdminMockup({ onStudentClick, selectedKey }) {
             </div>
           </div>
           <div className="bp-adm-class-btns">
-            <button className="bp-adm-btn-ghost">Set Classroom Goal</button>
-            <button className="bp-adm-btn-primary">Log for Class</button>
+            <Button variant="ghost">Set Classroom Goal</Button>
+            <Button variant="primary">Log for Class</Button>
           </div>
         </div>
 
@@ -1846,21 +1848,34 @@ function AdminMockup({ onStudentClick, selectedKey }) {
           ))}
         </div>
 
-        <div className="bp-adm-filters">
-          {[["View as …","Reading Goal"],["Log Type","Minutes"],["Show as …","Percentages"]].map(([lbl,val]) => (
-            <div key={lbl} className="bp-adm-filter">
-              <div className="bp-adm-filter-lbl">{lbl}</div>
-              <div className="bp-adm-filter-sel">{val} <span style={{opacity:0.5}}>∨</span></div>
-            </div>
-          ))}
-          <button className="bp-adm-save-btn" disabled>Save &amp; Update</button>
-        </div>
+        <FilterBar action={<Button variant="secondary" disabled>Save &amp; Update</Button>}>
+          <FilterItem label="View as …">
+            <Select defaultValue="goal" size="sm">
+              <option value="goal">Reading Goal</option>
+              <option value="pages">Pages</option>
+              <option value="minutes">Minutes</option>
+            </Select>
+          </FilterItem>
+          <FilterItem label="Log Type">
+            <Select defaultValue="minutes" size="sm">
+              <option value="minutes">Minutes</option>
+              <option value="pages">Pages</option>
+              <option value="sessions">Sessions</option>
+            </Select>
+          </FilterItem>
+          <FilterItem label="Show as …">
+            <Select defaultValue="pct" size="sm">
+              <option value="pct">Percentages</option>
+              <option value="raw">Raw values</option>
+            </Select>
+          </FilterItem>
+        </FilterBar>
 
         <div className="bp-adm-card">
           <div className="bp-adm-week-nav">
-            <button className="bp-adm-week-btn">‹</button>
+            <IconButton variant="ghost" size="sm">‹</IconButton>
             <span className="bp-adm-week-label">5/11 – 5/17 (This Week)</span>
-            <button className="bp-adm-week-btn" style={{opacity:0.3}}>›</button>
+            <IconButton variant="ghost" size="sm" style={{opacity:0.3}}>›</IconButton>
           </div>
           <table className="bp-adm-table">
             <thead>
@@ -1890,12 +1905,12 @@ function AdminMockup({ onStudentClick, selectedKey }) {
                   </td>
                   <td className="bp-adm-goal-cell">
                     <span className="bp-adm-goal-val">{s.goal}</span>
-                    <button className="bp-adm-goal-edit-btn" title="Edit goal" onClick={e => e.stopPropagation()}>
+                    <IconButton variant="ghost" size="sm" title="Edit goal" onClick={e => e.stopPropagation()}>
                       <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" width="11" height="11">
                         <path d="M8.5 1.5 l2 2 L3 11 l-2.5.5.5-2.5z"/>
                         <path d="M7 3l2 2"/>
                       </svg>
-                    </button>
+                    </IconButton>
                   </td>
                   <td><span className={`bp-adm-pct bp-adm-pct--${s.ac}`}>{s.avg}%</span></td>
                   {s.days.map((d,i)=>(

@@ -153,7 +153,7 @@
 /* ── Banner ─────────────────────────────────────────────────────────────── */
 .bnr {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 12px;
   padding: 12px 14px;
   border-radius: 10px;
@@ -166,7 +166,6 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  margin-top: 1px;
 }
 
 .bnr-icon svg { width: 18px; height: 18px; }
@@ -186,23 +185,7 @@
 }
 
 .bnr-action { flex-shrink: 0; }
-
-.bnr-close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #94A3B8;
-  padding: 4px;
-  margin: -4px -4px -4px 0;
-  border-radius: 6px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.1s, color 0.1s;
-  flex-shrink: 0;
-}
-
-.bnr-close:hover { background: rgba(15, 23, 42, 0.06); color: #475569; }
+.bnr-close  { flex-shrink: 0; }
 
 /* Levels */
 .bnr--info    { background: #EFF6FF; border-color: #BFDBFE; }
@@ -216,6 +199,34 @@
 
 .bnr--error   { background: #FEF2F2; border-color: #FECACA; }
 .bnr--error   .bnr-icon { color: #DC2626; }
+
+/* ── Mobile: stack body/action vertically, full-width action ──────────── */
+@media (max-width: 560px) {
+  .bnr {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    position: relative; /* anchors the absolute close btn */
+  }
+
+  .bnr-body {
+    /* Reserve room for the icon (18+12px) on the left; pad right so text
+       doesn't run under the absolute-positioned dismiss button */
+    flex-basis: calc(100% - 30px);
+    padding-right: 28px;
+  }
+
+  .bnr-action {
+    flex-basis: 100%;
+    margin-top: 6px;
+  }
+
+  /* Pin dismiss to top-right corner, independent of flex flow */
+  .bnr-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+}
 
 /* ── Breadcrumb ─────────────────────────────────────────────────────────── */
 .bcb-list {
@@ -282,20 +293,26 @@
   color: #0F172A;
   cursor: pointer;
   text-align: left;
-  transition: background 0.1s;
+  transition: color 0.12s;
 }
 
-.acd-trigger:hover { background: #F8FAFC; }
+.acd-trigger:hover { color: var(--acd-accent, #1D4ED8); }
+.acd-trigger:hover .acd-caret { color: var(--acd-accent, #1D4ED8); }
+
+.acd-item--open .acd-trigger { color: var(--acd-accent, #1D4ED8); }
 
 .acd-title { flex: 1; }
 
 .acd-caret {
   color: #94A3B8;
-  transition: transform 0.18s;
+  transition: transform 0.18s, color 0.12s;
   flex-shrink: 0;
 }
 
-.acd-item--open .acd-caret { transform: rotate(180deg); }
+.acd-item--open .acd-caret {
+  transform: rotate(180deg);
+  color: var(--acd-accent, #1D4ED8);
+}
 
 .acd-content {
   padding: 0 16px 14px;
@@ -390,6 +407,11 @@
   margin: 0;
   line-height: 1.25;
 }
+
+/* Semantic level scaling */
+h2.sct-title { font-size: 20px; letter-spacing: -0.02em; }
+h3.sct-title { font-size: 14px; }
+h4.sct-title { font-size: 13px; font-weight: 700; color: #334155; }
 
 .sct-sub {
   font-size: 13px;

@@ -41,7 +41,7 @@ export function SchoolLexile({ schoolId, onBack }) {
 
   return (
     <div className="mot-root">
-      <Hero bucket="skills" score={health.skills} delta={health.dS} />
+      <Hero bucket="skills" />
 
       <div className="rc-stats-row">
         <StatCard

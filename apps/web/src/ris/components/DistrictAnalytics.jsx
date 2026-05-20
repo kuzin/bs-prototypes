@@ -5,7 +5,7 @@ import {
 import {
   ROI_TRENDS, SCHOOL_HEALTH, SCHOOLS, DISTRICT_FUNNEL, BOOK_TALKS_BY_SCHOOL, SCHOOL_STATS,
 } from '../data'
-import { PageHero } from './PageHero'
+import { Hero } from './Hero'
 import './Analytics.css'
 import './DistrictAnalytics.css'
 
@@ -33,7 +33,7 @@ export function DistrictAnalytics() {
 
   return (
     <div className="da-root">
-      <PageHero
+      <Hero
         icon={<AnalyticsIcon />}
         title="Analytics"
         subtitle="School performance scorecard, engagement trends, and outcome data across the district"

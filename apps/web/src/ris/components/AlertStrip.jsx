@@ -21,8 +21,8 @@ export function AlertStrip({ onNavigate }) {
           <div key={alert.id} className="alert-item" style={{ '--alert-color': m.color, '--alert-bg': m.bg, '--alert-border': m.border }}>
             <span className="alert-icon">{m.icon}</span>
             <div className="alert-body">
-              <span className="alert-school">{alert.school}</span>
-              <span className="alert-title">{alert.title}</span>
+              <span className="alert-school">{alert.title}</span>
+              <span className="alert-title">{alert.description}</span>
               <span className="alert-detail">{alert.detail}</span>
             </div>
             <button className="alert-action" onClick={() => onNavigate(alert.tab)}>

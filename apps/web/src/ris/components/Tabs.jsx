@@ -11,17 +11,19 @@ import './Tabs.css'
  *   ]}
  * />
  */
-export function Tabs({ active, onChange, items, variant = 'underline' }) {
+export function Tabs({ active, onChange, items, variant = 'underline', size = 'md', accent }) {
+  const style = accent ? { '--tab-accent': accent } : undefined
   return (
-    <div className={`tabs tabs--${variant}`} role="tablist">
+    <div className={`tabs tabs--${variant} tabs--${size}`} role="tablist" style={style}>
       {items.map(item => (
         <button
           key={item.id}
           role="tab"
           type="button"
           aria-selected={active === item.id}
-          className={`tab${active === item.id ? ' tab--active' : ''}`}
-          onClick={() => onChange?.(item.id)}
+          disabled={item.disabled}
+          className={`tab${active === item.id ? ' tab--active' : ''}${item.disabled ? ' tab--disabled' : ''}`}
+          onClick={() => !item.disabled && onChange?.(item.id)}
         >
           {item.icon && <span className="tab-icon">{item.icon}</span>}
           <span>{item.label}</span>

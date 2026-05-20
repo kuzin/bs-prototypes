@@ -6,7 +6,8 @@ import {
   RMI_TRENDS, SCHOOLS, DISTRICT_HEALTH, SCHOOL_HEALTH,
   RMI_FACTORS, INTRINSIC_EXTRINSIC_TRENDS, MOTIVATION_BY_GRADE, MOTIVATION_SIGNALS,
 } from '../data'
-import { BucketHero } from './BucketHero'
+import { Hero } from './Hero'
+import { StatCard } from './Cards'
 import './RisLayout.css'
 import './Motivation.css'
 
@@ -24,30 +25,33 @@ export function Motivation({ onBack }) {
 
   return (
     <div className="mot-root">
-      <BucketHero bucket="motivation" score={DISTRICT_HEALTH.motivation} delta={DISTRICT_HEALTH.dM} onBack={onBack} />
+      <Hero bucket="motivation" />
 
       {/* Stats row */}
       <div className="sv-stats-row" style={{ marginBottom: 16 }}>
-        <div className="sv-stat">
-          <div className="sv-stat-val">{DISTRICT_HEALTH.motivation}</div>
-          <div className="sv-stat-lbl">District avg RMI</div>
-          <div className="sv-stat-sub">↑{DISTRICT_HEALTH.dM} pts since Sep 2024</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: '#16A97A' }}>{improvingCount} <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}>of 6</span></div>
-          <div className="sv-stat-lbl">Schools improving RMI</div>
-          <div className="sv-stat-sub">vs. Sep 2024 baseline</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: topSchool.color }}>{topSchool.rmi}</div>
-          <div className="sv-stat-lbl">Highest school — {topSchool.name}</div>
-          <div className="sv-stat-sub">Top-performing site</div>
-        </div>
-        <div className="sv-stat">
-          <div className="sv-stat-val" style={{ color: '#E8866A' }}>{bottomSchool.rmi}</div>
-          <div className="sv-stat-lbl">Lowest school — {bottomSchool.name}</div>
-          <div className="sv-stat-sub">↑ priority for intervention</div>
-        </div>
+        <StatCard
+          value={DISTRICT_HEALTH.motivation}
+          label="District avg RMI"
+          footer={`↑${DISTRICT_HEALTH.dM} pts since Sep 2024`}
+        />
+        <StatCard
+          value={<>{improvingCount} <span style={{ fontSize: 14, fontWeight: 500, color: '#94A3B8' }}>of 6</span></>}
+          label="Schools improving RMI"
+          footer="vs. Sep 2024 baseline"
+          color="#16A97A"
+        />
+        <StatCard
+          value={topSchool.rmi}
+          label={`Highest school — ${topSchool.name}`}
+          footer="Top-performing site"
+          color={topSchool.color}
+        />
+        <StatCard
+          value={bottomSchool.rmi}
+          label={`Lowest school — ${bottomSchool.name}`}
+          footer="↑ priority for intervention"
+          color="#E8866A"
+        />
       </div>
 
       <div className="sv-grid">

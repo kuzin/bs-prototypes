@@ -5,7 +5,17 @@ export const NIVO_THEME = {
   axis: {
     ticks: {
       line: { stroke: 'transparent' },
-      text: { fontSize: 13, fill: '#94A3B8' },
+      text: { fontSize: 13, fill: '#94A3B8', fontFamily: 'inherit' },
+    },
+    legend: {
+      text: {
+        fontSize: 11,
+        fontWeight: 700,
+        fill: '#64748B',
+        fontFamily: 'inherit',
+        letterSpacing: '0.06em',
+        textTransform: 'uppercase',
+      },
     },
     domain: { line: { stroke: '#EDE8E3' } },
   },

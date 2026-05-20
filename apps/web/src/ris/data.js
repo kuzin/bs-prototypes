@@ -158,8 +158,8 @@ export const ALERTS = [
   {
     id: "lincoln-lexile",
     level: "critical",
-    school: "Lincoln Elementary",
-    title: "Stuck Lexile plateau — 6 weeks, no growth",
+    title: "Lincoln Elementary",
+    description: "Stuck Lexile plateau — 6 weeks, no growth",
     detail: "94% engagement rate despite zero measurable Lexile progression. Likely text complexity mismatch.",
     action: "Review curriculum materials",
     tab: "skills",
@@ -167,8 +167,8 @@ export const ALERTS = [
   {
     id: "washington-engagement",
     level: "warning",
-    school: "Washington Middle",
-    title: "Student engagement down 39% vs. last month",
+    title: "Washington Middle",
+    description: "Student engagement down 39% vs. last month",
     detail: "Drop concentrated in grades 7–8. Session lengths also declining. Early intervention recommended.",
     action: "View reading habits",
     tab: "habits",
@@ -176,8 +176,8 @@ export const ALERTS = [
   {
     id: "adams-sessions",
     level: "positive",
-    school: "Adams High",
-    title: "+65% increase in avg session length over 30 days",
+    title: "Adams High",
+    description: "+65% increase in avg session length over 30 days",
     detail: "Students averaging 26 min/session, up from 16 min. Strongest growth in 11th grade cohort.",
     action: "View details",
     tab: "habits",
