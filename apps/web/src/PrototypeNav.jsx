@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import './PrototypeNav.css'
 import { PROTOTYPES } from './prototypes'
 
+const NAV_PROTOTYPES = PROTOTYPES.filter(p => p.id !== 'patterns')
+
 export function PrototypeNav({ currentHref }) {
   const [open, setOpen] = useState(false)
-  const currentIdx = PROTOTYPES.findIndex(p => p.href === currentHref)
-  const current = currentIdx >= 0 ? PROTOTYPES[currentIdx] : null
-  const prev = currentIdx > 0 ? PROTOTYPES[currentIdx - 1] : null
-  const next = currentIdx >= 0 && currentIdx < PROTOTYPES.length - 1 ? PROTOTYPES[currentIdx + 1] : null
+  const currentIdx = NAV_PROTOTYPES.findIndex(p => p.href === currentHref)
+  const current = currentIdx >= 0 ? NAV_PROTOTYPES[currentIdx] : null
+  const prev = currentIdx > 0 ? NAV_PROTOTYPES[currentIdx - 1] : null
+  const next = currentIdx >= 0 && currentIdx < NAV_PROTOTYPES.length - 1 ? NAV_PROTOTYPES[currentIdx + 1] : null
 
   useEffect(() => {
     if (!open) return
@@ -41,7 +43,7 @@ export function PrototypeNav({ currentHref }) {
         <div className="proto-nav-select-wrap">
           <button
             type="button"
-            className="proto-nav-select"
+            className={`proto-nav-select${!current ? ' proto-nav-select--empty' : ''}`}
             style={current ? { '--accent': current.accent } : undefined}
             onClick={() => setOpen(o => !o)}
             aria-haspopup="listbox"
@@ -58,7 +60,7 @@ export function PrototypeNav({ currentHref }) {
             <>
               <div className="proto-nav-backdrop" onClick={() => setOpen(false)} />
               <div className="proto-nav-dropdown" role="listbox">
-                {PROTOTYPES.map(p => {
+                {NAV_PROTOTYPES.map(p => {
                   const isCurrent = p.href === currentHref
                   return (
                     <a

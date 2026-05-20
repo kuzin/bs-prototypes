@@ -1,5 +1,6 @@
 import { PROTOTYPES } from '../prototypes'
 
+const PATTERNS = PROTOTYPES.find((p) => p.id === 'patterns');
 const CARDS = PROTOTYPES.filter((p) => p.id !== 'patterns');
 
 function ProtoCard({ name, description, href, accent }) {
@@ -22,6 +23,11 @@ export default function App() {
           <img src="bs.svg" alt="Beanstack" className="logo-mark" />
           Prototypes
         </h1>
+        {PATTERNS && (
+          <a href={PATTERNS.href} className="patterns-btn">
+            Pattern Library →
+          </a>
+        )}
       </header>
 
       <main>

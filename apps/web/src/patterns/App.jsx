@@ -61,49 +61,65 @@ import '../ris/components/Funnel.css'
 
 import './App.css'
 
+function GroupHeader({ icon, title, desc, color }) {
+  return (
+    <div className="pt-group-header">
+      <div className="pt-group-header-icon" style={color ? {
+        background: `color-mix(in srgb, ${color} 12%, #fff)`,
+        borderColor: `color-mix(in srgb, ${color} 22%, transparent)`,
+        color,
+      } : undefined}>{icon}</div>
+      <div>
+        <div className="pt-group-header-title">{title}</div>
+        <div className="pt-group-header-desc">{desc}</div>
+      </div>
+    </div>
+  )
+}
+
 const SECTIONS_LIST = [
-  { group: 'Primitives', id: 'button',     name: 'Button' },
-  { group: 'Primitives', id: 'tabs',       name: 'Tabs' },
-  { group: 'Primitives', id: 'flyout',     name: 'Flyout' },
-  { group: 'Primitives', id: 'modal',      name: 'Modal' },
-  { group: 'Primitives', id: 'table',      name: 'Table' },
-  { group: 'Primitives', id: 'avatar',     name: 'Avatar' },
-  { group: 'Primitives', id: 'pill',       name: 'Pill' },
-  { group: 'Primitives', id: 'progress-bar', name: 'ProgressBar' },
-  { group: 'Primitives', id: 'icon-button', name: 'IconButton' },
-  { group: 'Primitives', id: 'divider',     name: 'Divider' },
-  { group: 'Primitives', id: 'spinner',     name: 'Spinner' },
-  { group: 'Primitives', id: 'tooltip',     name: 'Tooltip (hover)' },
-  { group: 'Primitives', id: 'banner',      name: 'Banner' },
-  { group: 'Primitives', id: 'breadcrumb',  name: 'Breadcrumb' },
-  { group: 'Primitives', id: 'accordion',   name: 'Accordion' },
-  { group: 'Primitives', id: 'empty-state', name: 'EmptyState' },
-  { group: 'Primitives', id: 'skeleton',    name: 'Skeleton' },
-  { group: 'Primitives', id: 'section-heading', name: 'SectionHeading' },
-  { group: 'Forms',     id: 'toggle',       name: 'Toggle' },
-  { group: 'Forms',     id: 'input',        name: 'Input' },
-  { group: 'Forms',     id: 'select',       name: 'Select' },
-  { group: 'Forms',     id: 'textarea',     name: 'Textarea' },
-  { group: 'Forms',     id: 'checkbox',     name: 'Checkbox' },
-  { group: 'Forms',     id: 'radio',          name: 'RadioGroup' },
-  { group: 'Forms',     id: 'checkbox-group', name: 'CheckboxGroup' },
-  { group: 'Forms',     id: 'multi-select',   name: 'MultiSelect' },
-  { group: 'Forms',     id: 'number-input',   name: 'NumberInput' },
-  { group: 'Forms',     id: 'range-slider',   name: 'RangeSlider' },
-  { group: 'Forms',     id: 'date-input',     name: 'Date' },
-  { group: 'Forms',     id: 'time-input',     name: 'Time' },
-  { group: 'Forms',     id: 'color-input',    name: 'ColorInput' },
-  { group: 'Forms',     id: 'file-input',     name: 'FileInput' },
-  { group: 'Forms',     id: 'custom-select',  name: 'CustomSelect' },
-  { group: 'Forms',     id: 'filter-bar',     name: 'FilterBar' },
-  { group: 'Forms',     id: 'field-form',     name: 'Field / Form' },
+  { group: 'Atoms',         id: 'button',        name: 'Button' },
+  { group: 'Atoms',         id: 'icon-button',   name: 'IconButton' },
+  { group: 'Atoms',         id: 'pill',          name: 'Pill' },
+  { group: 'Atoms',         id: 'avatar',        name: 'Avatar' },
+  { group: 'Atoms',         id: 'divider',       name: 'Divider' },
+  { group: 'Atoms',         id: 'spinner',       name: 'Spinner' },
+  { group: 'Atoms',         id: 'skeleton',      name: 'Skeleton' },
+  { group: 'Atoms',         id: 'progress-bar',  name: 'ProgressBar' },
+  { group: 'Atoms',         id: 'tooltip',       name: 'Tooltip' },
+  { group: 'Molecules',     id: 'tabs',          name: 'Tabs' },
+  { group: 'Molecules',     id: 'flyout',        name: 'Flyout' },
+  { group: 'Molecules',     id: 'modal',         name: 'Modal' },
+  { group: 'Molecules',     id: 'banner',        name: 'Banner' },
+  { group: 'Molecules',     id: 'accordion',     name: 'Accordion' },
+  { group: 'Molecules',     id: 'breadcrumb',    name: 'Breadcrumb' },
+  { group: 'Molecules',     id: 'empty-state',   name: 'EmptyState' },
+  { group: 'Molecules',     id: 'section-heading', name: 'SectionHeading' },
+  { group: 'Molecules',     id: 'table',         name: 'Table' },
+  { group: 'Form Fields',   id: 'toggle',        name: 'Toggle' },
+  { group: 'Form Fields',   id: 'input',         name: 'Input' },
+  { group: 'Form Fields',   id: 'select',        name: 'Select' },
+  { group: 'Form Fields',   id: 'textarea',      name: 'Textarea' },
+  { group: 'Form Fields',   id: 'checkbox',      name: 'Checkbox' },
+  { group: 'Form Fields',   id: 'radio',         name: 'RadioGroup' },
+  { group: 'Form Fields',   id: 'number-input',  name: 'NumberInput' },
+  { group: 'Form Fields',   id: 'range-slider',  name: 'RangeSlider' },
+  { group: 'Form Patterns', id: 'color-input',   name: 'ColorInput' },
+  { group: 'Form Patterns', id: 'file-input',    name: 'FileInput' },
+  { group: 'Form Patterns', id: 'date-input',    name: 'DatePicker' },
+  { group: 'Form Patterns', id: 'time-input',    name: 'TimePicker' },
+  { group: 'Form Patterns', id: 'checkbox-group', name: 'CheckboxGroup' },
+  { group: 'Form Patterns', id: 'multi-select',  name: 'MultiSelect' },
+  { group: 'Form Patterns', id: 'custom-select', name: 'CustomSelect' },
+  { group: 'Form Patterns', id: 'filter-bar',    name: 'FilterBar' },
+  { group: 'Form Patterns', id: 'field-form',    name: 'Field / Form' },
+  { group: 'Charts',    id: 'chart-line',   name: 'Line Chart' },
+  { group: 'Charts',    id: 'chart-bar-grouped', name: 'Grouped Bar' },
+  { group: 'Charts',    id: 'chart-bar-h',  name: 'Horizontal Bar' },
+  { group: 'Charts',    id: 'chart-scatter', name: 'Scatter Chart' },
   { group: 'Charts',    id: 'stat-card',    name: 'StatCard' },
   { group: 'Charts',    id: 'chart-card',   name: 'ChartCard' },
   { group: 'Charts',    id: 'card-note',    name: 'CardNote' },
-  { group: 'Charts',    id: 'chart-line',   name: 'Line chart' },
-  { group: 'Charts',    id: 'chart-bar-grouped', name: 'Grouped bar' },
-  { group: 'Charts',    id: 'chart-bar-h',  name: 'Horizontal bar' },
-  { group: 'Charts',    id: 'chart-scatter', name: 'Scatter' },
   { group: 'Charts',    id: 'chart-legend', name: 'ChartLegend' },
   { group: 'Charts',    id: 'bar-list',     name: 'BarList' },
   { group: 'Charts',    id: 'funnel',       name: 'Funnel' },
@@ -117,7 +133,7 @@ const SECTIONS_LIST = [
   { group: 'Layout',    id: 'sidebar',      name: 'Sidebar' },
   { group: 'Layout',    id: 'prototype-nav', name: 'PrototypeNav' },
   { group: 'Layout',    id: 'rmi-icons',    name: 'RMI Icons' },
-  { group: 'Layout',    id: 'health-icons', name: 'Health Icons' },
+  { group: 'Layout',    id: 'health-icons', name: 'Reading Health Icons' },
 ]
 
 const fakeSlicePoints = (points) => ({
@@ -2820,12 +2836,13 @@ function Variant({ label, children, bare, full }) {
 const SECTION_GROUP = Object.fromEntries(SECTIONS_LIST.map(s => [s.id, s.group]))
 
 export function App() {
-  const [active, setActive]   = useState('stat-card')
+  const [active, setActive]   = useState('button')
   const [navOpen, setNavOpen] = useState(false)
+  const [showTop, setShowTop] = useState(false)
 
   // Start with the active section's group open
   const [openGroups, setOpenGroups] = useState(() => {
-    const initial = SECTION_GROUP['stat-card']
+    const initial = SECTION_GROUP['button']
     return new Set([initial])
   })
 
@@ -2852,31 +2869,76 @@ export function App() {
   }
 
   useEffect(() => {
-    function onScroll() {
-      if (suppressScroll.current) return   // nav click in progress — skip
-      const content = document.querySelector('.pt-content')
-      const contentTop = content.getBoundingClientRect().top
-      const sections = SECTIONS_LIST.map(s => document.getElementById(s.id))
-      for (let i = sections.length - 1; i >= 0; i--) {
-        if (sections[i]) {
-          const sectionTop = sections[i].getBoundingClientRect().top - contentTop
-          if (sectionTop <= 1) {
-            const id = SECTIONS_LIST[i].id
-            setActive(id)
-            // Accordion: only the active group stays open while scrolling
-            setOpenGroups(prev => {
-              const g = SECTION_GROUP[id]
-              if (prev.size === 1 && prev.has(g)) return prev
-              return new Set([g])
-            })
-            return
-          }
-        }
-      }
-    }
     const content = document.querySelector('.pt-content')
-    content?.addEventListener('scroll', onScroll, { passive: true })
-    return () => content?.removeEventListener('scroll', onScroll)
+    if (!content) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (suppressScroll.current) return
+        const entering = entries.filter(e => e.isIntersecting)
+        if (!entering.length) return
+        // Pick whichever intersecting section is closest to the top
+        const top = entering.reduce((a, b) =>
+          a.boundingClientRect.top < b.boundingClientRect.top ? a : b
+        )
+        const id = top.target.id
+        if (!SECTION_GROUP[id]) return
+        setActive(id)
+        setOpenGroups(prev => {
+          const g = SECTION_GROUP[id]
+          if (prev.size === 1 && prev.has(g)) return prev
+          return new Set([g])
+        })
+      },
+      {
+        root: content,
+        // Active zone: a band just below the sticky group-header bar (~104px tall)
+        rootMargin: '-120px 0px -70% 0px',
+        threshold: 0,
+      }
+    )
+
+    SECTIONS_LIST.forEach(s => {
+      const el = document.getElementById(s.id)
+      if (el) observer.observe(el)
+    })
+
+    // Detect when each group header bar is approaching the previous stuck bar
+    // and toggle .is-stuck so the next bar removes its top margin (touching the
+    // previous bar) while keeping a visible padding above it when in natural flow.
+    // The trigger fires when the sentinel crosses the previous bar's bottom edge.
+    const headers = Array.from(content.querySelectorAll('.pt-group-header'))
+    const sentinels = []
+    const barHeight = headers[0]?.offsetHeight || 104
+    headers.forEach(header => {
+      const sentinel = document.createElement('div')
+      sentinel.className = 'pt-group-stuck-sentinel'
+      header.parentElement.insertBefore(sentinel, header)
+      sentinels.push(sentinel)
+    })
+    const updateStuckStates = () => {
+      const contentTop = content.getBoundingClientRect().top
+      headers.forEach((h, i) => {
+        const sTop = sentinels[i].getBoundingClientRect().top - contentTop
+        h.classList.toggle('is-stuck', sTop < barHeight)
+      })
+    }
+    updateStuckStates()
+    content.addEventListener('scroll', updateStuckStates, { passive: true })
+
+    return () => {
+      observer.disconnect()
+      content.removeEventListener('scroll', updateStuckStates)
+      sentinels.forEach(s => s.remove())
+    }
+  }, [])
+
+  useEffect(() => {
+    const content = document.querySelector('.pt-content')
+    if (!content) return
+    const onScroll = () => setShowTop(content.scrollTop > 400)
+    content.addEventListener('scroll', onScroll, { passive: true })
+    return () => content.removeEventListener('scroll', onScroll)
   }, [])
 
   // Group sections for sidebar
@@ -2955,6 +3017,13 @@ export function App() {
         </aside>
 
         <main className="pt-content">
+          <div className="pt-group">
+          <GroupHeader
+            icon={<svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="6" height="6" rx="1.5"/><rect x="11" y="3" width="6" height="6" rx="1.5"/><rect x="3" y="11" width="6" height="6" rx="1.5"/><rect x="11" y="11" width="6" height="6" rx="1.5"/></svg>}
+            title="Atoms"
+            desc="The smallest, indivisible UI building blocks — single-purpose and stateless."
+            color="#2563EB"
+          />
           <Section
             id="button"
             title="Button"
@@ -2964,51 +3033,11 @@ export function App() {
           </Section>
 
           <Section
-            id="tabs"
-            title="Tabs"
-            desc={<>Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>. Two variants: <code>underline</code> (default) and <code>pill</code>.</>}
+            id="icon-button"
+            title="IconButton"
+            desc={<>Square button with just an icon. Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>, <code>danger</code>. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>. Always pair with an <code>aria-label</code>.</>}
           >
-            <TabsKnobs />
-          </Section>
-
-          <Section
-            id="flyout"
-            title="Flyout"
-            desc={<>Anchored popover triggered by a button. Closes on outside click + Escape. Children can be JSX or a render function that receives <code>{'{ close }'}</code>. <strong>Overflow rule:</strong> when a button row has 3+ actions, collapse the secondary ones into a <code>More</code> (kebab) flyout.</>}
-          >
-            <FlyoutKnobs />
-            <FlyoutShowcase />
-          </Section>
-
-          <Section
-            id="modal"
-            title="Modal"
-            desc={<>Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both close on backdrop click + Escape and animate in/out. The centered modal composes from <code>.modal-image</code>, <code>.modal-header</code>, <code>.modal-body</code>, <code>.modal-footer</code> — toggle each below.</>}
-          >
-            <div className="pt-variant">
-              <div className="pt-variant-label">variant='center' (overlay)</div>
-              <CenteredModalKnobs />
-            </div>
-            <div className="pt-variant">
-              <div className="pt-variant-label">variant='side' (slide-in)</div>
-              <SideModalShowcase />
-            </div>
-          </Section>
-
-          <Section
-            id="table"
-            title="Table"
-            desc={<>Pass <code>columns</code> and <code>rows</code>. Each column can have <code>align</code>, <code>render</code>, <code>width</code>, <code>sortable</code>. Props: <code>zebra</code>, <code>compact</code>, <code>flush</code>, <code>pageSize</code> (enables pagination), <code>defaultSortKey</code>.</>}
-          >
-            <TableKnobs />
-          </Section>
-
-          <Section
-            id="avatar"
-            title="Avatar"
-            desc={<>Initials in a colored circle or square. Props: <code>initials</code>, <code>color</code>, <code>size</code> (xs/sm/md/lg/xl), <code>shape</code> (circle/square — square uses the size's border-radius).</>}
-          >
-            <AvatarKnobs />
+            <IconButtonKnobs />
           </Section>
 
           <Section
@@ -3020,19 +3049,11 @@ export function App() {
           </Section>
 
           <Section
-            id="progress-bar"
-            title="ProgressBar"
-            desc={<>Track + fill with optional <code>label</code>, <code>subLabel</code>, and <code>valueLabel</code>. Used for cohorts, RMI factors, grade bands, engagement tiers. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>.</>}
+            id="avatar"
+            title="Avatar"
+            desc={<>Initials in a colored shape. Props: <code>initials</code>, <code>color</code>, <code>size</code> (xs / sm / md / lg / xl), <code>shape</code> (<code>circle</code> / <code>square</code> / <code>rounded</code>).</>}
           >
-            <ProgressBarKnobs />
-          </Section>
-
-          <Section
-            id="icon-button"
-            title="IconButton"
-            desc={<>Square button with just an icon. Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>, <code>danger</code>. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>. Always pair with an <code>aria-label</code>.</>}
-          >
-            <IconButtonKnobs />
+            <AvatarKnobs />
           </Section>
 
           <Section
@@ -3064,52 +3085,6 @@ export function App() {
             desc={<>Animated loading indicator. Sizes <code>xs / sm / md / lg / xl</code>. Inherits current color or set explicitly via <code>color</code>.</>}
           >
             <SpinnerKnobs />
-          </Section>
-
-          <Section
-            id="tooltip"
-            title="Tooltip (hover)"
-            desc={<>Lightweight hover tooltip. Different from the chart tooltips above — this is for explaining icon buttons / labels. <code>placement</code>: top / bottom / left / right.</>}
-          >
-            <TooltipKnobs />
-          </Section>
-
-          <Section
-            id="banner"
-            title="Banner"
-            desc={<>Page-level alert / banner. Levels: <code>info</code>, <code>success</code>, <code>warning</code>, <code>error</code>. Optional <code>title</code>, <code>action</code>, <code>onDismiss</code>.</>}
-          >
-            <BannerKnobs />
-          </Section>
-
-          <Section
-            id="breadcrumb"
-            title="Breadcrumb"
-            desc={<>Navigation crumbs. Pass <code>items</code> as <code>{'[{ label, href? }]'}</code> — the last item is treated as the current page and rendered without a link.</>}
-          >
-            <div className="pt-variant-frame">
-              <Breadcrumb items={[
-                { label: 'Schools', href: '#' },
-                { label: 'Lincoln Elementary', href: '#' },
-                { label: 'Motivation' },
-              ]} />
-            </div>
-          </Section>
-
-          <Section
-            id="accordion"
-            title="Accordion"
-            desc={<>Expand/collapse list. Pass <code>items</code> as <code>{'[{ id, title, content }]'}</code>. Optional <code>accent</code> color, <code>allowMultiple</code>, <code>defaultOpen</code>.</>}
-          >
-            <AccordionKnobs />
-          </Section>
-
-          <Section
-            id="empty-state"
-            title="EmptyState"
-            desc={<>Empty-list placeholder. Props: <code>icon</code>, <code>title</code>, <code>description</code>, <code>action</code>.</>}
-          >
-            <EmptyStateKnobs />
           </Section>
 
           <Section
@@ -3177,6 +3152,100 @@ export function App() {
           </Section>
 
           <Section
+            id="progress-bar"
+            title="ProgressBar"
+            desc={<>Track + fill with optional <code>label</code>, <code>subLabel</code>, and <code>valueLabel</code>. Used for cohorts, RMI factors, grade bands, engagement tiers. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>.</>}
+          >
+            <ProgressBarKnobs />
+          </Section>
+
+          <Section
+            id="tooltip"
+            title="Tooltip"
+            desc={<>Lightweight hover tooltip for explaining icon buttons and labels — not for chart data. <code>placement</code>: <code>top</code> / <code>bottom</code> / <code>left</code> / <code>right</code>.</>}
+          >
+            <TooltipKnobs />
+          </Section>
+
+          </div>
+          <div className="pt-group">
+          <GroupHeader
+            icon={<svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="10" cy="10" r="3"/><circle cx="3.5" cy="5" r="2"/><circle cx="16.5" cy="5" r="2"/><circle cx="3.5" cy="15" r="2"/><circle cx="16.5" cy="15" r="2"/><line x1="5.5" y1="6" x2="8" y2="8.5"/><line x1="14.5" y1="6" x2="12" y2="8.5"/><line x1="5.5" y1="14" x2="8" y2="11.5"/><line x1="14.5" y1="14" x2="12" y2="11.5"/></svg>}
+            title="Molecules"
+            desc="Atoms combined into simple, behavior-driven components."
+            color="#7C3AED"
+          />
+          <Section
+            id="tabs"
+            title="Tabs"
+            desc={<>Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>. Two variants: <code>underline</code> (default) and <code>pill</code>.</>}
+          >
+            <TabsKnobs />
+          </Section>
+
+          <Section
+            id="flyout"
+            title="Flyout"
+            desc={<>Anchored popover triggered by a button. Closes on outside click + Escape. Children can be JSX or a render function that receives <code>{'{ close }'}</code>. <strong>Overflow rule:</strong> when a button row has 3+ actions, collapse the secondary ones into a <code>More</code> (kebab) flyout.</>}
+          >
+            <FlyoutKnobs />
+            <FlyoutShowcase />
+          </Section>
+
+          <Section
+            id="modal"
+            title="Modal"
+            desc={<>Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both close on backdrop click + Escape and animate in/out. The centered modal composes from <code>.modal-image</code>, <code>.modal-header</code>, <code>.modal-body</code>, <code>.modal-footer</code> — toggle each below.</>}
+          >
+            <div className="pt-variant">
+              <div className="pt-variant-label">variant='center' (overlay)</div>
+              <CenteredModalKnobs />
+            </div>
+            <div className="pt-variant">
+              <div className="pt-variant-label">variant='side' (slide-in)</div>
+              <SideModalShowcase />
+            </div>
+          </Section>
+
+          <Section
+            id="banner"
+            title="Banner"
+            desc={<>Page-level alert / banner. Levels: <code>info</code>, <code>success</code>, <code>warning</code>, <code>error</code>. Optional <code>title</code>, <code>action</code>, <code>onDismiss</code>.</>}
+          >
+            <BannerKnobs />
+          </Section>
+
+          <Section
+            id="accordion"
+            title="Accordion"
+            desc={<>Expand/collapse list. Pass <code>items</code> as <code>{'[{ id, title, content }]'}</code>. Optional <code>accent</code> color, <code>allowMultiple</code>, <code>defaultOpen</code>.</>}
+          >
+            <AccordionKnobs />
+          </Section>
+
+          <Section
+            id="breadcrumb"
+            title="Breadcrumb"
+            desc={<>Navigation crumbs. Pass <code>items</code> as <code>{'[{ label, href? }]'}</code> — the last item is treated as the current page and rendered without a link.</>}
+          >
+            <div className="pt-variant-frame">
+              <Breadcrumb items={[
+                { label: 'Schools', href: '#' },
+                { label: 'Lincoln Elementary', href: '#' },
+                { label: 'Motivation' },
+              ]} />
+            </div>
+          </Section>
+
+          <Section
+            id="empty-state"
+            title="EmptyState"
+            desc={<>Empty-list placeholder. Props: <code>icon</code>, <code>title</code>, <code>description</code>, <code>action</code>.</>}
+          >
+            <EmptyStateKnobs />
+          </Section>
+
+          <Section
             id="section-heading"
             title="SectionHeading"
             desc={<>Recurring h2/h3 + optional subtitle + optional right-side action. Used as the header inside content sections / cards.</>}
@@ -3184,6 +3253,22 @@ export function App() {
             <SectionHeadingKnobs />
           </Section>
 
+          <Section
+            id="table"
+            title="Table"
+            desc={<>Pass <code>columns</code> and <code>rows</code>. Each column can have <code>align</code>, <code>render</code>, <code>width</code>, <code>sortable</code>. Props: <code>zebra</code>, <code>compact</code>, <code>flush</code>, <code>pageSize</code> (enables pagination), <code>defaultSortKey</code>.</>}
+          >
+            <TableKnobs />
+          </Section>
+
+          </div>
+          <div className="pt-group">
+          <GroupHeader
+            icon={<svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="14" height="3" rx="1"/><rect x="3" y="8.5" width="14" height="3" rx="1"/><rect x="3" y="14" width="8" height="3" rx="1"/></svg>}
+            title="Form Fields"
+            desc="Single-purpose input controls — the atoms of data entry."
+            color="#0891B2"
+          />
           <Section
             id="toggle"
             title="Toggle"
@@ -3233,22 +3318,6 @@ export function App() {
           </Section>
 
           <Section
-            id="checkbox-group"
-            title="CheckboxGroup"
-            desc={<>Multi-select group of checkboxes. <code>CheckboxGroup</code> holds <code>value</code> (string[]) + <code>onChange</code>. Children are <code>CheckboxGroupItem</code> with a <code>value</code> key. Supports row/column layout.</>}
-          >
-            <CheckboxGroupKnobs />
-          </Section>
-
-          <Section
-            id="multi-select"
-            title="MultiSelect"
-            desc={<>Dropdown that lets users pick multiple items from an <code>options</code> array. Displays a summary of the selection. Click outside or press Esc to close.</>}
-          >
-            <MultiSelectKnobs />
-          </Section>
-
-          <Section
             id="number-input"
             title="NumberInput"
             desc={<>A number field with decrement/increment buttons. Respects <code>min</code>, <code>max</code>, and <code>step</code>. Buttons disable at the bounds. Spinner arrows are hidden via CSS.</>}
@@ -3264,22 +3333,14 @@ export function App() {
             <RangeSliderKnobs />
           </Section>
 
-          <Section
-            id="date-input"
-            title="Date"
-            desc={<><code>DatePicker</code> — calendar popup via Radix Popover with month navigation, today indicator, and clear. <code>DateInput</code> — lightweight wrapper around the native <code>{'<input type="date">'}</code> family for simpler contexts.</>}
-          >
-            <DateInputKnobs />
-          </Section>
-
-          <Section
-            id="time-input"
-            title="Time"
-            desc={<><code>TimePicker</code> — scrollable time-slot list (configurable step) in a Radix Popover. <code>TimeInput</code> — native <code>{'<input type="time">'}</code> wrapper for simpler contexts.</>}
-          >
-            <TimeInputKnobs />
-          </Section>
-
+          </div>
+          <div className="pt-group">
+          <GroupHeader
+            icon={<svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="14" height="3.5" rx="1"/><rect x="3" y="8.5" width="9" height="3.5" rx="1"/><rect x="3" y="14" width="11" height="3.5" rx="1"/><circle cx="15.5" cy="15.75" r="2.5"/><line x1="14.5" y1="15.75" x2="16.5" y2="15.75"/><line x1="15.5" y1="14.75" x2="15.5" y2="16.75"/></svg>}
+            title="Form Patterns"
+            desc="Composed inputs and layout patterns for building complete forms."
+            color="#059669"
+          />
           <Section
             id="color-input"
             title="ColorInput"
@@ -3297,6 +3358,38 @@ export function App() {
           </Section>
 
           <Section
+            id="date-input"
+            title="DatePicker / DateInput"
+            desc={<><code>DatePicker</code> — calendar popup via Radix Popover with month navigation, today indicator, and clear. <code>DateInput</code> — lightweight native <code>{'<input type="date">'}</code> wrapper for simpler contexts.</>}
+          >
+            <DateInputKnobs />
+          </Section>
+
+          <Section
+            id="time-input"
+            title="TimePicker / TimeInput"
+            desc={<><code>TimePicker</code> — scrollable time-slot list (configurable step) in a Radix Popover. <code>TimeInput</code> — lightweight native <code>{'<input type="time">'}</code> wrapper for simpler contexts.</>}
+          >
+            <TimeInputKnobs />
+          </Section>
+
+          <Section
+            id="checkbox-group"
+            title="CheckboxGroup"
+            desc={<>Multi-select group of checkboxes. <code>CheckboxGroup</code> holds <code>value</code> (string[]) + <code>onChange</code>. Children are <code>CheckboxGroupItem</code> with a <code>value</code> key. Supports row/column layout.</>}
+          >
+            <CheckboxGroupKnobs />
+          </Section>
+
+          <Section
+            id="multi-select"
+            title="MultiSelect"
+            desc={<>Dropdown that lets users pick multiple items from an <code>options</code> array. Displays a summary of the selection. Click outside or press Esc to close.</>}
+          >
+            <MultiSelectKnobs />
+          </Section>
+
+          <Section
             id="custom-select"
             title="CustomSelect"
             desc={<>Radix UI–powered select with consistent cross-browser styling, keyboard navigation, animated dropdown, and grouped options. Replaces the native <code>{'<select>'}</code> chrome entirely.</>}
@@ -3307,47 +3400,55 @@ export function App() {
           <Section
             id="filter-bar"
             title="FilterBar"
-            desc={<><code>FilterBar</code> is a horizontal row of labeled controls (<code>FilterItem</code> children) with an optional action button. Collapses to a 2-column grid on mobile. Used in the student profile admin panel.</>}
+            desc={<><code>FilterBar</code> is a horizontal row of labeled controls (<code>FilterItem</code> children) with an optional trailing action. Collapses to a 2-column grid on mobile.</>}
           >
             <FilterBarKnobs />
           </Section>
 
           <Section
             id="field-form"
-            title="Field / Form example"
-            desc={<><code>Field</code> wraps any control with a label, optional <code>help</code> text, or an <code>error</code> message. Four complete examples — switch with the knob.</>}
+            title="Field / Form"
+            desc={<><code>Field</code> wraps any input with a label, optional <code>help</code> text, and an <code>error</code> state. Switch the knob to preview four common form layouts.</>}
           >
             <FieldFormKnobs />
           </Section>
 
+          </div>
+          <div className="pt-group">
+          <GroupHeader
+            icon={<svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="10" width="3" height="7" rx="1"/><rect x="8.5" y="6" width="3" height="11" rx="1"/><rect x="14" y="2" width="3" height="15" rx="1"/></svg>}
+            title="Charts"
+            desc="Data visualization — stat cards, line, bar, scatter, funnels, and tooltips."
+            color="#D97706"
+          />
           <Section
             id="chart-line"
-            title="Line chart"
-            desc={<>Nivo <code>ResponsiveLine</code> + <code>SliceTooltip</code> wrapped in a <code>ChartCard</code>. Pattern used for trend charts across the dashboard, motivation, integrity, and habits pages.</>}
+            title="Line Chart"
+            desc={<>Nivo <code>ResponsiveLine</code> + <code>SliceTooltip</code> wrapped in a <code>ChartCard</code>. The standard pattern for trend lines — used on dashboard, motivation, integrity, and habits pages.</>}
           >
             <LineChartKnobs />
           </Section>
 
           <Section
             id="chart-bar-grouped"
-            title="Grouped bar chart"
-            desc={<>Nivo <code>ResponsiveBar</code> with <code>groupMode="grouped"</code> + <code>BarTooltip</code>. Used for "this vs district" or "actual vs expected" comparisons.</>}
+            title="Grouped Bar Chart"
+            desc={<>Nivo <code>ResponsiveBar</code> with <code>groupMode="grouped"</code> + <code>BarTooltip</code>. Use for side-by-side comparisons — "this school vs district" or "actual vs expected".</>}
           >
             <GroupedBarKnobs />
           </Section>
 
           <Section
             id="chart-bar-h"
-            title="Horizontal bar chart"
-            desc={<>Nivo <code>ResponsiveBar</code> with <code>layout="horizontal"</code>. Used for school rankings and per-grade growth comparisons.</>}
+            title="Horizontal Bar Chart"
+            desc={<>Nivo <code>ResponsiveBar</code> with <code>layout="horizontal"</code>. Use for ranked lists — school rankings and per-grade growth comparisons.</>}
           >
             <HorizontalBarKnobs />
           </Section>
 
           <Section
             id="chart-scatter"
-            title="Scatter chart"
-            desc={<>Nivo <code>ResponsiveScatterPlot</code> with a highlighted "this school" series and a reference marker. Used on the Skills (Lexile) page.</>}
+            title="Scatter Chart"
+            desc={<>Nivo <code>ResponsiveScatterPlot</code> with a highlighted primary series and a reference marker. Used on the Skills (Lexile) page to show individual school positioning.</>}
           >
             <ScatterKnobs />
           </Section>
@@ -3496,6 +3597,14 @@ export function App() {
             </div>
           </Section>
 
+          </div>
+          <div className="pt-group">
+          <GroupHeader
+            icon={<svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M10 2.5 16 4.5v5.7c0 3.7-2.7 6.7-6 7.6-3.3-.9-6-3.9-6-7.6V4.5z"/><polyline points="7,10 9,12 13,8"/></svg>}
+            title="Domain"
+            desc="Beanstack-specific components — reading health, alerts, and RMI."
+            color="#E8866A"
+          />
           <Section
             id="health-stat"
             title="HealthStat"
@@ -3532,6 +3641,14 @@ export function App() {
             </Variant>
           </Section>
 
+          </div>
+          <div className="pt-group">
+          <GroupHeader
+            icon={<svg viewBox="0 0 20 20" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="16" height="16" rx="2"/><line x1="2" y1="7" x2="18" y2="7"/><line x1="7" y1="7" x2="7" y2="18"/></svg>}
+            title="Layout"
+            desc="Page structure, navigation shells, sidebars, and chrome."
+            color="#475569"
+          />
           <Section
             id="hero"
             title="Hero"
@@ -3562,7 +3679,7 @@ export function App() {
           <Section
             id="prototype-nav"
             title="PrototypeNav"
-            desc={<>Floating switcher at the bottom-right of every prototype. Lets people jump between prototypes without going back to the index. Props: <code>currentHref</code>.</>}
+            desc={<>Fixed bar at the bottom of every prototype page. Shows the current prototype name with prev/next arrows and a dropdown to jump directly to any other prototype. Props: <code>currentHref</code>.</>}
           >
             <div className="pt-section-desc">
               The PrototypeNav is rendered at the bottom of this page itself — scroll to see it. It picks up the current prototype from <code>currentHref</code> and shows prev/next arrows for the other prototypes.
@@ -3591,18 +3708,6 @@ export function App() {
           </Section>
 
           <Section
-            id="tabs"
-            title="Tabs"
-            desc={<>Underline-style tab bar. Apply <code>bp-adm-tab--active</code> to the selected tab.</>}
-          >
-            <div className="bp-adm-tabs" style={{ maxWidth: 400 }}>
-              {["Daily Reading", "Students", "Earned Rewards"].map((t, i) => (
-                <div key={t} className={`bp-adm-tab${i === 0 ? " bp-adm-tab--active" : ""}`}>{t}</div>
-              ))}
-            </div>
-          </Section>
-
-          <Section
             id="health-icons"
             title="Reading Health Icons"
             desc={<>The four health-area icons from <code>SECTIONS</code> (Motivation, Integrity, Habits, Skills). Used in dashboard cards and bucket page heroes.</>}
@@ -3622,8 +3727,21 @@ export function App() {
               ))}
             </div>
           </Section>
+          </div>
         </main>
       </div>
+      {showTop && (
+        <button
+          className="pt-back-to-top"
+          onClick={() => document.querySelector('.pt-content')?.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Back to top"
+        >
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3,10 8,5 13,10"/>
+          </svg>
+          Top
+        </button>
+      )}
       <PrototypeNav currentHref="/bs-prototypes/patterns/" />
       <BreakpointIndicator />
     </>
