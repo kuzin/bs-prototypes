@@ -2713,19 +2713,23 @@ export function App() {
   useEffect(() => {
     function onScroll() {
       if (suppressScroll.current) return   // nav click in progress — skip
+      const content = document.querySelector('.pt-content')
+      const contentTop = content.getBoundingClientRect().top
       const sections = SECTIONS_LIST.map(s => document.getElementById(s.id))
-      const top = document.querySelector('.pt-content').scrollTop + 60
       for (let i = sections.length - 1; i >= 0; i--) {
-        if (sections[i] && sections[i].offsetTop <= top) {
-          const id = SECTIONS_LIST[i].id
-          setActive(id)
-          // Accordion: only the active group stays open while scrolling
-          setOpenGroups(prev => {
-            const g = SECTION_GROUP[id]
-            if (prev.size === 1 && prev.has(g)) return prev
-            return new Set([g])
-          })
-          return
+        if (sections[i]) {
+          const sectionTop = sections[i].getBoundingClientRect().top - contentTop
+          if (sectionTop <= 1) {
+            const id = SECTIONS_LIST[i].id
+            setActive(id)
+            // Accordion: only the active group stays open while scrolling
+            setOpenGroups(prev => {
+              const g = SECTION_GROUP[id]
+              if (prev.size === 1 && prev.has(g)) return prev
+              return new Set([g])
+            })
+            return
+          }
         }
       }
     }
