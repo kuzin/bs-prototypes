@@ -47,6 +47,11 @@
   position: relative;
 }
 
+/* Nivo defaults SVGs to overflow: visible (needed for tooltip portals outside the
+   SVG bounds). Clip the SVG itself so area fills / bars don't bleed outside the
+   chart frame. Tooltips are rendered in a separate DOM layer and are unaffected. */
+.rc-card svg { overflow: hidden; }
+
 .rc-card--wide { grid-column: span 2; }
 
 .rc-card-head {
