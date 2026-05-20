@@ -24,7 +24,8 @@ export const NIVO_THEME = {
   },
 }
 
-export const LINE_MARGIN = { top: 16, right: 28, bottom: 36, left: 52 }
+export const LINE_MARGIN = { top: 12, right: 24, bottom: 32, left: 36 }
+export const BAR_MARGIN  = { top: 12, right: 20, bottom: 32, left: 40 }
 export const AXIS_BOTTOM = { tickSize: 0, tickPadding: 10 }
 export const AXIS_LEFT   = { tickSize: 0, tickPadding: 8 }
 

@@ -6,7 +6,7 @@ import {
 import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
-  NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT,
+  NIVO_THEME, BAR_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
   ChartLegend, GradeTooltip,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
@@ -150,7 +150,7 @@ export function SchoolLexile({ schoolId, onBack }) {
               indexBy="grade"
               groupMode="grouped"
               theme={NIVO_THEME}
-              margin={{ top: 8, right: 16, bottom: 36, left: 40 }}
+              margin={BAR_MARGIN}
               padding={0.3}
               innerPadding={2}
               colors={({ id }) => id === 'growth' ? school.color : '#E2E8F0'}

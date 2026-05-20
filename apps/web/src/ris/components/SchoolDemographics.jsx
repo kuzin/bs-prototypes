@@ -5,7 +5,7 @@ import {
 } from '../data'
 import { Hero } from './Hero'
 import {
-  NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT,
+  NIVO_THEME, BAR_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
   ChartLegend, BarTooltip,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
@@ -186,7 +186,7 @@ export function SchoolDemographics({ schoolId }) {
               indexBy="grade"
               groupMode="grouped"
               theme={NIVO_THEME}
-              margin={{ top: 8, right: 16, bottom: 36, left: 38 }}
+              margin={BAR_MARGIN}
               padding={0.3}
               innerPadding={2}
               colors={({ id, data }) => id === 'rmi' ? rmiColor(data.rmi) : '#7CB5F5'}

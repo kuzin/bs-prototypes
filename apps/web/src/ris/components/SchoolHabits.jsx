@@ -7,7 +7,7 @@ import {
 import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
-  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
+  NIVO_THEME, LINE_MARGIN, BAR_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
   SliceTooltip, ChartLegend, BarTooltip,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
@@ -151,7 +151,7 @@ export function SchoolHabits({ schoolId, onBack }) {
               indexBy="milestone"
               groupMode="grouped"
               theme={NIVO_THEME}
-              margin={{ top: 8, right: 16, bottom: 36, left: 38 }}
+              margin={BAR_MARGIN}
               padding={0.3}
               innerPadding={2}
               colors={({ id }) => id === 'school' ? school.color : '#CBD5E1'}

@@ -7,7 +7,7 @@ import {
 import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
-  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
+  NIVO_THEME, LINE_MARGIN, BAR_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
   SliceTooltip, ChartLegend, BarTooltip,
 } from './charts'
 import { StatCard, ChartCard, CardNote } from './Cards'
@@ -162,7 +162,7 @@ export function SchoolMotivation({ schoolId, onBack }) {
               indexBy="month"
               groupMode="grouped"
               theme={NIVO_THEME}
-              margin={{ top: 8, right: 16, bottom: 36, left: 36 }}
+              margin={BAR_MARGIN}
               padding={0.3}
               innerPadding={2}
               colors={({ id }) => id === 'intrinsic' ? INTRINSIC_COLOR : '#CBD5E1'}
