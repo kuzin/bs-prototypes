@@ -105,6 +105,17 @@
   border-color: color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
+.proto-nav-select--empty {
+  color: #64748B;
+  background: rgba(0, 0, 0, 0.04);
+  border-color: rgba(0, 0, 0, 0.08);
+}
+
+.proto-nav-select--empty:hover {
+  background: rgba(0, 0, 0, 0.07);
+  border-color: rgba(0, 0, 0, 0.14);
+}
+
 .proto-nav-select-dot {
   width: 8px;
   height: 8px;
