@@ -70,20 +70,7 @@
   line-height: 1.3;
 }
 
-.an-funnel-track {
-  flex: 1;
-  background: #F1F5F9;
-  border-radius: 4px;
-  height: 14px;
-  overflow: hidden;
-}
-
-.an-funnel-bar {
-  height: 100%;
-  background: #0DA7BC;
-  border-radius: 4px;
-  transition: width 0.4s ease;
-}
+.an-funnel-track { flex: 1; }
 
 .an-funnel-right {
   display: flex;
@@ -277,18 +264,7 @@
 .an-tier-name { font-size: 13px; font-weight: 600; color: #1E293B; }
 .an-tier-desc { font-size: 13px; color: #94A3B8; }
 
-.an-tier-track {
-  background: #F1F5F9;
-  border-radius: 4px;
-  height: 12px;
-  overflow: hidden;
-}
-
-.an-tier-bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.4s ease;
-}
+.an-tier-track { flex: 1; }
 
 .an-tier-vals {
   display: flex;

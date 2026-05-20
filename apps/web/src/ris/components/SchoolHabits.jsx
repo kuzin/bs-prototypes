@@ -11,6 +11,7 @@ import {
   SliceTooltip, ChartLegend, BarTooltip,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
+import { ProgressBar } from './ProgressBar'
 import './RisLayout.css'
 import './SchoolHabits.css'
 
@@ -229,19 +230,15 @@ export function SchoolHabits({ schoolId, onBack }) {
         >
           <div className="sh-diet-list">
             {READING_DIET.map(d => (
-              <div key={d.genre} className="sh-diet-row">
-                <div className="sh-diet-label">
-                  <span className="sh-diet-dot" style={{ background: d.color }} />
-                  <span className="sh-diet-genre">{d.genre}</span>
-                </div>
-                <div className="sh-diet-bar-wrap">
-                  <div className="sh-diet-bar" style={{
-                    width: `${(d.pct / Math.max(...READING_DIET.map(x => x.pct))) * 100}%`,
-                    background: d.color,
-                  }} />
-                </div>
-                <span className="sh-diet-pct">{d.pct}%</span>
-              </div>
+              <ProgressBar
+                key={d.genre}
+                label={d.genre}
+                value={d.pct}
+                max={Math.max(...READING_DIET.map(x => x.pct))}
+                color={d.color}
+                valueLabel={`${d.pct}%`}
+                size="sm"
+              />
             ))}
           </div>
         </ChartCard>

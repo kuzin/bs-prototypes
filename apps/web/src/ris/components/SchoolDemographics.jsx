@@ -9,6 +9,8 @@ import {
   ChartLegend, BarTooltip,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
+import { ProgressBar } from './ProgressBar'
+import { Pill } from './Pill'
 import './Demographics.css'
 
 const DEMO_COLOR = '#7C3AED'
@@ -116,9 +118,7 @@ export function SchoolDemographics({ schoolId }) {
                   <div className="dm-cohort-name">{c.label}</div>
                   <div className="dm-cohort-desc">{c.desc}</div>
                 </div>
-                <div className="dm-cohort-track">
-                  <div className="dm-cohort-bar" style={{ width: `${c.pct}%`, background: c.color }} />
-                </div>
+                <ProgressBar value={c.pct} color={c.color} size="md" className="dm-cohort-track" />
                 <div className="dm-cohort-vals">
                   <span className="dm-cohort-pct">{c.pct}%</span>
                   <span className="dm-cohort-count">{Math.round(school.students * c.pct / 100).toLocaleString()} students</span>
@@ -152,16 +152,16 @@ export function SchoolDemographics({ schoolId }) {
                   <span className="dm-rmi-val" style={{ color: rmiColor(g.rmi) }}>{g.rmi}</span>
                 </div>
                 <div className="dm-ec dm-ec--bar">
-                  <div className="dm-rmi-bar-wrap">
-                    <div className="dm-rmi-bar" style={{ width: `${g.rmi}%`, background: rmiColor(g.rmi) }} />
-                  </div>
+                  <ProgressBar value={g.rmi} max={100} color={rmiColor(g.rmi)} size="sm" />
                 </div>
                 <div className="dm-ec dm-ec--engage">{g.engagement}%</div>
                 <div className="dm-ec dm-ec--lexile">{g.count.toLocaleString()}</div>
                 <div className="dm-ec dm-ec--frl">
-                  <span className={`dm-frl-pill${g.frl >= 50 ? ' dm-frl-pill--high' : g.frl >= 30 ? ' dm-frl-pill--med' : ''}`}>
-                    {g.frl}%
-                  </span>
+                  <Pill
+                    color={g.frl >= 50 ? '#DC2626' : g.frl >= 30 ? '#D97706' : '#16A97A'}
+                    variant="soft"
+                    size="sm"
+                  >{g.frl}%</Pill>
                 </div>
               </div>
             ))}
@@ -225,7 +225,7 @@ export function SchoolDemographics({ schoolId }) {
           <div className="dm-actions">
             {details.frl >= 50 && (
               <div className="dm-action-row dm-action-row--critical">
-                <span className="dm-action-priority dm-action-priority--critical">High Priority</span>
+                <Pill color="#DC2626" variant="soft" size="sm">High Priority</Pill>
                 <div className="dm-action-body">
                   <div className="dm-action-school">
                     High-FRL cohort support
@@ -239,7 +239,7 @@ export function SchoolDemographics({ schoolId }) {
             )}
             {stats.rmi < 75 && (
               <div className="dm-action-row dm-action-row--warning">
-                <span className="dm-action-priority dm-action-priority--warning">Monitor</span>
+                <Pill color="#D97706" variant="soft" size="sm">Monitor</Pill>
                 <div className="dm-action-body">
                   <div className="dm-action-school">RMI below district average</div>
                   <div className="dm-action-text">
@@ -249,7 +249,7 @@ export function SchoolDemographics({ schoolId }) {
               </div>
             )}
             <div className="dm-action-row">
-              <span className="dm-action-priority dm-action-priority--warning">Monitor</span>
+              <Pill color="#D97706" variant="soft" size="sm">Monitor</Pill>
               <div className="dm-action-body">
                 <div className="dm-action-school">Cross-cohort equity review</div>
                 <div className="dm-action-text">

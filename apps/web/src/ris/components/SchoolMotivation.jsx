@@ -11,6 +11,7 @@ import {
   SliceTooltip, ChartLegend, BarTooltip,
 } from './charts'
 import { StatCard, ChartCard, CardNote } from './Cards'
+import { ProgressBar } from './ProgressBar'
 import { RMI_ICONS } from './RmiIcons'
 import './RisLayout.css'
 import './Motivation.css'
@@ -30,9 +31,7 @@ function FactorRow({ f }) {
         <span className="mot-factor-name">{f.name}</span>
         <span className="mot-factor-desc">{f.desc}</span>
       </div>
-      <div className="mot-factor-bar-wrap">
-        <div className="mot-factor-bar" style={{ width: `${(f.score / f.max) * 100}%`, background: f.color }} />
-      </div>
+      <ProgressBar value={f.score} max={f.max} color={f.color} size="md" />
       <div className="mot-factor-right">
         <span className="mot-factor-score">{f.score}</span>
         {f.delta !== 0 && (
@@ -241,16 +240,12 @@ export function SchoolMotivation({ schoolId, onBack }) {
                 <div className="mot-grade-tracks">
                   <div className="mot-grade-track-row">
                     <span className="mot-grade-track-label" style={{ color: INTRINSIC_COLOR }}>Intrinsic</span>
-                    <div className="mot-grade-track">
-                      <div className="mot-grade-bar mot-grade-bar--int" style={{ width: `${(g.intrinsic / 20) * 100}%` }} />
-                    </div>
+                    <ProgressBar value={g.intrinsic} max={20} color={INTRINSIC_COLOR} size="sm" />
                     <span className="mot-grade-val" style={{ color: INTRINSIC_COLOR }}>{g.intrinsic}</span>
                   </div>
                   <div className="mot-grade-track-row">
                     <span className="mot-grade-track-label" style={{ color: '#94A3B8' }}>Extrinsic</span>
-                    <div className="mot-grade-track">
-                      <div className="mot-grade-bar mot-grade-bar--ext" style={{ width: `${(g.extrinsic / 20) * 100}%` }} />
-                    </div>
+                    <ProgressBar value={g.extrinsic} max={20} color="#CBD5E1" size="sm" />
                     <span className="mot-grade-val" style={{ color: '#94A3B8' }}>{g.extrinsic}</span>
                   </div>
                 </div>

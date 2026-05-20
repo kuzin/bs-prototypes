@@ -65,38 +65,7 @@
   letter-spacing: -0.02em;
 }
 
-.dm-rmi-bar-wrap {
-  background: #F1F5F9;
-  border-radius: 3px;
-  height: 8px;
-  overflow: hidden;
-}
-
-.dm-rmi-bar {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-.dm-frl-pill {
-  display: inline-block;
-  font-size: 13px;
-  font-weight: 600;
-  color: #64748B;
-  padding: 1px 6px;
-  border-radius: 99px;
-  background: #F1F5F9;
-}
-
-.dm-frl-pill--med {
-  background: #FFFBEB;
-  color: #92400E;
-}
-
-.dm-frl-pill--high {
-  background: #FEF2F2;
-  color: #991B1B;
-}
+/* rmi bar + frl pill replaced by ProgressBar / Pill components */
 
 .dm-titlei-badge {
   display: inline-block;
@@ -221,18 +190,7 @@
 }
 
 
-.dm-action-priority {
-  font-size: 13px;
-  font-weight: 700;
-  padding: 3px 7px;
-  border-radius: 4px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-.dm-action-priority--critical { background: #FEF2F2; color: #DC2626; }
-.dm-action-priority--warning  { background: #FFFBEB; color: #D97706; }
+/* dm-action-priority replaced by Pill component */
 
 .dm-action-body {
   flex: 1;
@@ -277,18 +235,7 @@
 .dm-cohort-name { font-size: 13px; font-weight: 600; color: #1E293B; }
 .dm-cohort-desc { font-size: 13px; color: #94A3B8; }
 
-.dm-cohort-track {
-  background: #F1F5F9;
-  border-radius: 4px;
-  height: 14px;
-  overflow: hidden;
-}
-
-.dm-cohort-bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.4s ease;
-}
+.dm-cohort-track { flex: 1; }
 
 .dm-cohort-vals {
   display: flex;

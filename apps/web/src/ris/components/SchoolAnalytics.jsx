@@ -11,6 +11,7 @@ import {
   SliceTooltip, ChartLegend, BarTooltip,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
+import { ProgressBar } from './ProgressBar'
 import './Analytics.css'
 
 const ANALYTICS_COLOR = '#0DA7BC'
@@ -146,9 +147,7 @@ export function SchoolAnalytics({ schoolId }) {
                       <span className="an-funnel-stage">{step.stage}</span>
                       <span className="an-funnel-note">{step.note}</span>
                     </div>
-                    <div className="an-funnel-track">
-                      <div className="an-funnel-bar" style={{ width: `${step.pct}%`, opacity: 1 - i * 0.12, background: school.color }} />
-                    </div>
+                    <ProgressBar value={step.pct} color={school.color} size="md" className="an-funnel-track" />
                     <div className="an-funnel-right">
                       <span className="an-funnel-count">{step.count.toLocaleString()}</span>
                       <div className="an-funnel-meta">
@@ -185,9 +184,7 @@ export function SchoolAnalytics({ schoolId }) {
                   <div className="an-tier-name">{t.tier}</div>
                   <div className="an-tier-desc">{t.desc}</div>
                 </div>
-                <div className="an-tier-track">
-                  <div className="an-tier-bar" style={{ width: `${t.pct}%`, background: t.color }} />
-                </div>
+                <ProgressBar value={t.pct} color={t.color} size="md" className="an-tier-track" />
                 <div className="an-tier-vals">
                   <span className="an-tier-pct">{t.pct}%</span>
                   <span className="an-tier-count">{t.count.toLocaleString()}</span>

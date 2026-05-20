@@ -242,18 +242,7 @@
   text-overflow: ellipsis;
 }
 
-.mot-factor-bar-wrap {
-  background: #F1F5F9;
-  border-radius: 4px;
-  height: 10px;
-  overflow: hidden;
-}
-
-.mot-factor-bar {
-  height: 100%;
-  border-radius: 4px;
-  transition: width 0.4s ease;
-}
+/* bar track replaced by ProgressBar component */
 
 .mot-factor-right {
   display: flex;
@@ -316,20 +305,7 @@
   white-space: nowrap;
 }
 
-.mot-grade-track {
-  background: #F1F5F9;
-  border-radius: 3px;
-  height: 8px;
-  overflow: hidden;
-}
-
-.mot-grade-bar {
-  height: 100%;
-  transition: width 0.4s ease;
-}
-
-.mot-grade-bar--int { background: #E8866A; }
-.mot-grade-bar--ext { background: #CBD5E1; }
+/* grade bars replaced by ProgressBar component */
 
 .mot-grade-val {
   font-size: 13px;
