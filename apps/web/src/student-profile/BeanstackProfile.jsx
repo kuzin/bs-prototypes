@@ -444,12 +444,12 @@ function SplitDonutChart({ intrinsicVal, extrinsicVal, max, label, intrinsicColo
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
           <circle cx={mid} cy={mid} r={r} fill="none" stroke="#E5E7EB" strokeWidth={sw} />
           <circle cx={mid} cy={mid} r={r} fill="none" stroke={intrinsicColor} strokeWidth={sw}
-            strokeLinecap="butt"
+            strokeLinecap="round"
             strokeDasharray={`${dash1} ${circ - dash1}`}
             transform={`rotate(-90 ${mid} ${mid})`}
           />
           <circle cx={mid} cy={mid} r={r} fill="none" stroke={EXTRINSIC_COLOR} strokeWidth={sw}
-            strokeLinecap="butt"
+            strokeLinecap="round"
             strokeDasharray={`${dash2} ${circ - dash2}`}
             transform={`rotate(${-90 + angle1} ${mid} ${mid})`}
           />
@@ -495,8 +495,8 @@ function MotivationDetail({ sec, c }) {
 
       <BarList
         items={[
-          { label: "Intrinsic", value: sec.intrinsic, color: c.bar, valueLabel: String(sec.intrinsic) },
-          { label: "Extrinsic", value: sec.extrinsic, color: c.bar, valueLabel: String(sec.extrinsic) },
+          { label: "Intrinsic", value: sec.intrinsic, color: c.bar,         valueLabel: String(sec.intrinsic) },
+          { label: "Extrinsic", value: sec.extrinsic, color: EXTRINSIC_COLOR, valueLabel: String(sec.extrinsic) },
         ]}
       />
     </Card>
@@ -530,12 +530,14 @@ function MotivationDetail({ sec, c }) {
       <BarList
         items={rmi.rankings.map((m) => {
           const iconKey = m.name === "Social Connection" ? "social" : m.name.toLowerCase();
+          const EXTRINSIC_NAMES = new Set(["Social Connection", "Recognition", "Grades", "Competition", "Compliance"]);
+          const mColor = EXTRINSIC_NAMES.has(m.name) ? EXTRINSIC_COLOR : c.bar;
           return {
             icon: cloneElement(RMI_ICONS[iconKey], { width: 15, height: 15 }),
-            iconColor: c.bar,
+            iconColor: mColor,
             label: m.name,
             value: (m.score / m.max) * 100,
-            color: c.bar,
+            color: mColor,
             valueLabel: String(m.score),
           };
         })}
