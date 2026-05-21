@@ -527,6 +527,8 @@
   padding: 14px 16px;
   cursor: pointer;
   transition: opacity 0.12s;
+  display: flex;
+  flex-direction: column;
 }
 
 .bp-tile:hover { opacity: 0.85; }

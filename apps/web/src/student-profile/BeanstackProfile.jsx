@@ -346,7 +346,9 @@ function Overview({ student, onNavigate }) {
                 <div className="bp-tile-label">{LABEL[key]}</div>
                 {indicator.render(indicator.color)}
               </div>
-              {insightNode}
+              <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+                {insightNode}
+              </div>
             </div>
           );
         })}
