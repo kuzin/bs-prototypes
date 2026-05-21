@@ -84,12 +84,6 @@ function NavIcon({ name }) {
         <path d="M19 17c0-1.7-1.3-3-3-3"/>
       </svg>
     )
-    case 'future': return (
-      <svg {...props}>
-        <circle cx="10" cy="10" r="3"/>
-        <path d="M2 10C4 6 7 4 10 4s6 2 8 6c-2 4-5 6-8 6s-6-2-8-6z"/>
-      </svg>
-    )
     case 'person': return (
       <svg {...props}>
         <circle cx="10" cy="7" r="3"/>

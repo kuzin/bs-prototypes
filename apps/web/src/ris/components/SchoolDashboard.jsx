@@ -1,5 +1,4 @@
 import { ResponsiveLine } from '@nivo/line'
-import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, SCHOOL_HEALTH, RMI_TRENDS, SCHOOL_INTEGRITY_TRENDS,
   SCHOOL_LEXILE_BY_GRADE, GOALS_MET_TRENDS,
@@ -10,9 +9,10 @@ import { AlertsBanner } from './AlertsBanner'
 import { ReadingHealth, SECTIONS } from './ReadingHealth'
 import {
   NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
-  SliceTooltip, GradeTooltip, ChartLegend,
+  SliceTooltip, ChartLegend,
 } from './charts'
 import { ChartCard } from './Cards'
+import { TrendChart } from './TrendChart'
 import './SchoolDashboard.css'
 
 function schoolInitials(name) {
@@ -41,7 +41,9 @@ function DashCard({ area, onNavigate, footer, height = 180, children }) {
       }
       footer={footer}
     >
-      <div style={{ height }}>{children}</div>
+      <div style={{ flex: 1, minHeight: height, display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </div>
     </ChartCard>
   )
 }
@@ -238,21 +240,19 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             { color: '#E2E8F0',    label: `Expected (~${avgExpected}L)` },
           ]} />}
         >
-          <ResponsiveBar
-            data={lexileByGrade}
-            keys={['expected', 'growth']}
-            indexBy="grade"
+          <TrendChart
+            type="bar"
             layout="horizontal"
-            groupMode="grouped"
-            theme={NIVO_THEME}
-            margin={{ top: 8, right: 32, bottom: 36, left: 44 }}
-            colors={({ id }) => id === 'growth' ? school.color : '#E2E8F0'}
-            borderRadius={3}
-            axisBottom={{ tickSize: 0, tickPadding: 8, format: v => `${v}L` }}
-            axisLeft={{ tickSize: 0, tickPadding: 8 }}
-            enableGridY={false}
-            enableLabel={false}
-            tooltip={({ data }) => <GradeTooltip data={data} accent={school.color} />}
+            data={lexileByGrade}
+            xKey="grade"
+            yUnit="L"
+            height="sm"
+            leftMargin={36}
+            tooltipFormatter={v => `+${v}L`}
+            series={[
+              { key: 'expected', name: 'Expected', color: '#E2E8F0' },
+              { key: 'growth',   name: 'Actual',   color: school.color },
+            ]}
           />
         </DashCard>
       </div>

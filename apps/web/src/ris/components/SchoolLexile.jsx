@@ -1,4 +1,3 @@
-import { ResponsiveBar } from '@nivo/bar'
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 import {
   SCHOOLS, SCHOOL_HEALTH, LEXILE_DATA, SCHOOL_LEXILE_BY_GRADE,
@@ -6,10 +5,11 @@ import {
 import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
-  NIVO_THEME, BAR_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
-  ChartLegend, GradeTooltip,
+  NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT,
+  ChartLegend,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
+import { TrendChart } from './TrendChart'
 import './RisLayout.css'
 
 const SKILLS_COLOR = '#7C3AED'
@@ -66,7 +66,7 @@ export function SchoolLexile({ schoolId, onBack }) {
         />
         <StatCard
           value={lexile.students.toLocaleString()}
-          label="Enrolled students"
+          label="Active students"
           footer="Contributing to avg"
         />
       </div>
@@ -85,18 +85,19 @@ export function SchoolLexile({ schoolId, onBack }) {
             { color: '#D97706',    label: 'Expected (+65L)', dashed: true },
           ]} />}
         >
-          <div style={{ height: 260 }}>
+          <div style={{ flex: 1, minHeight: 380 }}>
             <ResponsiveScatterPlot
               data={scatterNivo}
               theme={NIVO_THEME}
-              margin={{ top: 16, right: 28, bottom: 50, left: 56 }}
+              margin={{ top: 16, right: 28, bottom: 50, left: 64 }}
               xScale={{ type: 'linear', min: 15, max: 50 }}
               yScale={{ type: 'linear', min: 0, max: 130 }}
               colors={({ serieId }) => serieId === 'This school' ? school.color : '#CBD5E1'}
               nodeSize={d => Math.sqrt(d.data.students / 5)}
-              axisBottom={{ ...AXIS_BOTTOM, legend: 'Avg books/month', legendOffset: 38, legendPosition: 'middle' }}
-              axisLeft={{ ...AXIS_LEFT, format: v => `${v}L`, legend: 'Lexile growth', legendOffset: -44, legendPosition: 'middle' }}
+              axisBottom={{ ...AXIS_BOTTOM, legend: 'Avg books/month', legendOffset: 38, legendPosition: 'middle', tickValues: 6 }}
+              axisLeft={{ ...AXIS_LEFT, format: v => `${v}L`, legend: 'Lexile growth', legendOffset: -50, legendPosition: 'middle', tickValues: 5 }}
               enableGridX={false}
+              gridYValues={5}
               markers={[{
                 axis: 'y', value: EXPECTED_GROWTH,
                 lineStyle: { stroke: '#D97706', strokeDasharray: '4 3', strokeWidth: 1.5 },
@@ -143,25 +144,19 @@ export function SchoolLexile({ schoolId, onBack }) {
             { color: '#E2E8F0',    label: 'Expected growth' },
           ]} />}
         >
-          <div style={{ height: 220 }}>
-            <ResponsiveBar
-              data={grades}
-              keys={['expected', 'growth']}
-              indexBy="grade"
-              groupMode="grouped"
-              theme={NIVO_THEME}
-              margin={BAR_MARGIN}
-              padding={0.3}
-              innerPadding={2}
-              colors={({ id }) => id === 'growth' ? school.color : '#E2E8F0'}
-              borderRadius={3}
-              axisBottom={AXIS_BOTTOM}
-              axisLeft={{ ...AXIS_LEFT, format: v => `${v}L` }}
-              enableGridY
-              enableLabel={false}
-              tooltip={({ data }) => <GradeTooltip data={data} accent={school.color} />}
-            />
-          </div>
+          <TrendChart
+            type="bar"
+            data={grades}
+            xKey="grade"
+            yUnit="L"
+            height="md"
+            tooltipFormatter={v => `+${v}L`}
+            xPadding={{ left: 12, right: 12 }}
+            series={[
+              { key: 'expected', name: 'Expected', color: '#E2E8F0' },
+              { key: 'growth',   name: 'Actual',   color: school.color },
+            ]}
+          />
         </ChartCard>
 
       </div>

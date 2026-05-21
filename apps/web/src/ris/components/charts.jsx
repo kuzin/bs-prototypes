@@ -25,10 +25,34 @@ export const NIVO_THEME = {
   },
 }
 
-export const LINE_MARGIN = { top: 12, right: 24, bottom: 32, left: 36 }
-export const BAR_MARGIN  = { top: 12, right: 20, bottom: 32, left: 40 }
+// Nivo margins — tuned to match the effective plot width of Recharts
+// charts (which use { left: -32, right: 8 } against a 60px-wide default
+// Y axis = 28px effective left margin). Keep the bottom big enough for
+// X axis labels. Top matches RCHART_MARGIN.top so Nivo line charts have
+// the same breathing room as Recharts TrendCharts.
+export const LINE_MARGIN = { top: 16, right: 16, bottom: 32, left: 44 }
+export const BAR_MARGIN  = { top: 16, right: 16, bottom: 32, left: 44 }
 export const AXIS_BOTTOM = { tickSize: 0, tickPadding: 10 }
 export const AXIS_LEFT   = { tickSize: 0, tickPadding: 8 }
+
+// ── Shared Recharts presets ──────────────────────────────────────────────
+// Use these in every Recharts <AreaChart|LineChart|BarChart> so margins,
+// tick fonts, and tooltips look identical across the app.
+
+export const RCHART_MARGIN  = { top: 16, right: 8, left: -20, bottom: 0 }
+export const RCHART_TICK    = { fontSize: 13, fill: '#94A3B8' }
+export const RCHART_GRID    = { strokeDasharray: '3 3', stroke: '#F1F5F9' }
+export const RCHART_TOOLTIP = { fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }
+export const RCHART_X_PADDING = { left: 0, right: 0 }
+
+// Standard chart heights. Use these instead of one-off numbers so cards
+// in the same grid row line up.
+export const CHART_H = {
+  sm: 180,   // inside a card that also has mini-stats above
+  md: 240,   // single-column trend chart
+  lg: 320,   // span=2 trend chart
+  xl: 380,   // scatter / span=2 chart with axis legends
+}
 
 function deltaParts(curr, prev, { inverse = false } = {}) {
   if (prev == null) return { delta: null, cls: 'neutral', arrow: null }

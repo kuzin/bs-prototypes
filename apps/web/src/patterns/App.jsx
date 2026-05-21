@@ -22,6 +22,7 @@ import { Pill } from '../ris/components/Pill'
 import { ProgressBar } from '../ris/components/ProgressBar'
 import { BarList } from '../ris/components/BarList'
 import { Funnel } from '../ris/components/Funnel'
+import { TrendChart } from '../ris/components/TrendChart'
 import { BackBar } from '../BackBar'
 import { Toggle } from '../ris/components/Toggle'
 import {
@@ -113,10 +114,11 @@ const SECTIONS_LIST = [
   { group: 'Form Patterns', id: 'custom-select', name: 'CustomSelect' },
   { group: 'Form Patterns', id: 'filter-bar',    name: 'FilterBar' },
   { group: 'Form Patterns', id: 'field-form',    name: 'Field / Form' },
-  { group: 'Charts',    id: 'chart-line',   name: 'Line Chart' },
-  { group: 'Charts',    id: 'chart-bar-grouped', name: 'Grouped Bar' },
-  { group: 'Charts',    id: 'chart-bar-h',  name: 'Horizontal Bar' },
-  { group: 'Charts',    id: 'chart-scatter', name: 'Scatter Chart' },
+  { group: 'Charts',    id: 'trend-chart',  name: 'TrendChart' },
+  { group: 'Charts',    id: 'chart-line',   name: 'Line Chart (Nivo)' },
+  { group: 'Charts',    id: 'chart-bar-grouped', name: 'Grouped Bar (Nivo)' },
+  { group: 'Charts',    id: 'chart-bar-h',  name: 'Horizontal Bar (Nivo)' },
+  { group: 'Charts',    id: 'chart-scatter', name: 'Scatter Chart (Nivo)' },
   { group: 'Charts',    id: 'stat-card',    name: 'StatCard' },
   { group: 'Charts',    id: 'chart-card',   name: 'ChartCard' },
   { group: 'Charts',    id: 'card-note',    name: 'CardNote' },
@@ -877,6 +879,8 @@ function BarListKnobs() {
   const [labelWidth, setLabelWidth]         = useState(0)
   const [barAlign, setBarAlign]             = useState('start')
   const [barHeight, setBarHeight]           = useState(0)
+  const [divided, setDivided]               = useState(true)
+  const [showHeader, setShowHeader]         = useState(false)
 
   const intrinsic = RMI_FACTORS.filter(f => f.kind === 'intrinsic')
   const extrinsic = RMI_FACTORS.filter(f => f.kind === 'extrinsic')
@@ -899,6 +903,7 @@ function BarListKnobs() {
     labelWidth: labelWidth || undefined,
     barAlign:   barAlign  === 'center' ? 'center' : undefined,
     barHeight:  barHeight || undefined,
+    divided:    divided,
   }
 
   let body
@@ -906,6 +911,7 @@ function BarListKnobs() {
     body = (
       <BarList
         {...sharedBarProps}
+        header={showHeader ? { label: 'Genre', valueLabel: '% of logs' } : undefined}
         items={BL_DIET_DATA.map(d => ({
           label: d.label,
           value: d.value,
@@ -974,6 +980,8 @@ function BarListKnobs() {
         <Field label="barHeight (0 = default 6px)">
           <Input type="number" min="0" max="48" value={barHeight} onChange={e => setBarHeight(Number(e.target.value))} />
         </Field>
+        {variant === 'simple' && <Field label="divided"><Toggle checked={divided} onChange={setDivided} /></Field>}
+        {variant === 'simple' && <Field label="header row"><Toggle checked={showHeader} onChange={setShowHeader} /></Field>}
       </Knobs>
       <div className="pt-variant-frame">
         <ChartCard
@@ -1412,7 +1420,6 @@ const SIDEBAR_NAV_SETS = {
       { id: 'dashboard', label: 'Overview',       icon: 'overview' },
       { id: 'habits',    label: 'Reading Habits', icon: 'habits',   section: 'Reports' },
       { id: 'lexile',    label: 'Lexile Growth',  icon: 'lexile',   section: 'Reports' },
-      { id: 'future',    label: 'Future State',   icon: 'future',   section: 'Reports' },
     ],
   },
   minimal: {
@@ -2412,6 +2419,105 @@ function FieldFormKnobs() {
 }
 
 // ── Chart knobs ──────────────────────────────────────────────────────────
+
+const TC_DATA = [
+  { month: 'Sep', district: 68, school: 64, secondary: 22 },
+  { month: 'Oct', district: 70, school: 67, secondary: 25 },
+  { month: 'Nov', district: 71, school: 70, secondary: 24 },
+  { month: 'Dec', district: 69, school: 72, secondary: 26 },
+  { month: 'Jan', district: 73, school: 75, secondary: 30 },
+  { month: 'Feb', district: 75, school: 76, secondary: 32 },
+  { month: 'Mar', district: 76, school: 78, secondary: 33 },
+  { month: 'Apr', district: 77, school: 79, secondary: 35 },
+  { month: 'May', district: 78, school: 81, secondary: 38 },
+]
+
+const TC_HBAR_DATA = [
+  { name: 'Adams High',     completionRate: 88, isThis: false },
+  { name: 'Jefferson El.',  completionRate: 82, isThis: false },
+  { name: 'Kennedy K-8',    completionRate: 77, isThis: false },
+  { name: 'Roosevelt Mid.', completionRate: 75, isThis: false },
+  { name: 'Lincoln El.',    completionRate: 71, isThis: true  },
+  { name: 'Washington Mid.',completionRate: 62, isThis: false },
+]
+
+function TrendChartKnobs() {
+  const [type, setType]         = useState('area')
+  const [layout, setLayout]     = useState('vertical')
+  const [height, setHeight]     = useState('md')
+  const [dualAxis, setDualAxis] = useState(false)
+  const [accent, setAccent]     = useState('#0DA7BC')
+
+  const isHorizontal = type === 'bar' && layout === 'horizontal'
+
+  return (
+    <>
+      <Knobs>
+        <Field label="type">
+          <Select value={type} onChange={e => setType(e.target.value)}>
+            <option value="area">area</option>
+            <option value="line">line</option>
+            <option value="bar">bar</option>
+          </Select>
+        </Field>
+        {type === 'bar' && (
+          <Field label="layout">
+            <Select value={layout} onChange={e => setLayout(e.target.value)}>
+              <option value="vertical">vertical</option>
+              <option value="horizontal">horizontal</option>
+            </Select>
+          </Field>
+        )}
+        <Field label="height">
+          <Select value={height} onChange={e => setHeight(e.target.value)}>
+            <option value="sm">sm (180)</option>
+            <option value="md">md (240)</option>
+            <option value="lg">lg (320)</option>
+            <option value="xl">xl (380)</option>
+          </Select>
+        </Field>
+        <Field label="accent"><input className="pt-color" type="color" value={accent} onChange={e => setAccent(e.target.value)} /></Field>
+        {!isHorizontal && <Field label="dual Y axis"><Toggle checked={dualAxis} onChange={setDualAxis} /></Field>}
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--bare">
+        <ChartCard title="RMI Trend" subtitle="District vs. school · Sep 2024 – May 2025" accent={accent} bodyPad="padded" span={2}>
+          {isHorizontal ? (
+            <TrendChart
+              type="bar"
+              layout="horizontal"
+              data={TC_HBAR_DATA}
+              xKey="name"
+              yDomain={[0, 100]}
+              yUnit="%"
+              yTicks={[0, 25, 50, 75, 100]}
+              height={height}
+              leftMargin={128}
+              tooltipFormatter={v => `${v}%`}
+              series={[
+                { key: 'completionRate', name: 'Completion', color: '#CBD5E1', colorFn: d => d.isThis ? accent : '#CBD5E1' },
+              ]}
+            />
+          ) : (
+            <TrendChart
+              type={type}
+              data={TC_DATA}
+              yDomain={[60, 90]}
+              height={height}
+              yRight={dualAxis ? { domain: [20, 45] } : undefined}
+              xPadding={type === 'bar' ? { left: 12, right: 12 } : undefined}
+              series={[
+                { key: 'district', name: 'District avg', color: accent },
+                { key: 'school',   name: 'School',       color: '#1D4ED8', dashed: true },
+                ...(dualAxis ? [{ key: 'secondary', name: 'Incidents', color: '#E8866A', yAxisId: 'right', dashed: true, strokeWidth: 2 }] : []),
+              ]}
+            />
+          )}
+        </ChartCard>
+      </div>
+    </>
+  )
+}
+
 function LineChartKnobs() {
   const [curve, setCurve]       = useState('monotoneX')
   const [showArea, setArea]     = useState(false)
@@ -3422,9 +3528,17 @@ export function App() {
             color="#D97706"
           />
           <Section
+            id="trend-chart"
+            title="TrendChart"
+            desc={<>The default reusable chart for area / line / bar visualizations. Wraps Recharts and locks in the project's standard margins, tick font, tooltip styling, axis padding, and height. Pass <code>type</code> (<code>'area' | 'line' | 'bar'</code>), <code>data</code>, <code>xKey</code>, <code>yDomain</code>, <code>height</code> (<code>'sm' | 'md' | 'lg' | 'xl'</code>), and a <code>series</code> array of <code>{'{ key, name, color, dashed?, fillOpacity?, strokeWidth?, yAxisId?, colorFn? }'}</code>. Pass <code>yRight</code> for dual-axis trends; pass <code>layout="horizontal"</code> + <code>leftMargin</code> for horizontal-bar rankings. Always use this for new charts — only drop down to Recharts directly for one-off shapes like scatter or reference lines.</>}
+          >
+            <TrendChartKnobs />
+          </Section>
+
+          <Section
             id="chart-line"
-            title="Line Chart"
-            desc={<>Nivo <code>ResponsiveLine</code> + <code>SliceTooltip</code> wrapped in a <code>ChartCard</code>. The standard pattern for trend lines — used on dashboard, motivation, integrity, and habits pages.</>}
+            title="Line Chart (Nivo)"
+            desc={<>Nivo <code>ResponsiveLine</code> + <code>SliceTooltip</code> wrapped in a <code>ChartCard</code>. Used in school-detail pages where the rich Nivo SliceTooltip is needed. For new district-level trend lines, prefer <code>TrendChart</code> above.</>}
           >
             <LineChartKnobs />
           </Section>
@@ -3464,7 +3578,7 @@ export function App() {
           <Section
             id="chart-card"
             title="ChartCard"
-            desc={<>Wide rectangle with a consistent header / body / footer used for every chart and panel. Props: <code>title</code>, <code>subtitle</code>, <code>icon</code>, <code>accent</code>, <code>action</code>, <code>footer</code>, <code>bodyPad</code>. Knobs below to preview combinations.</>}
+            desc={<>Wide rectangle with a consistent header / body / footer used for every chart and panel. Props: <code>title</code>, <code>subtitle</code>, <code>icon</code>, <code>accent</code>, <code>action</code>, <code>footer</code>, <code>bodyPad</code>, <code>bodyMaxHeight</code> (px — caps body height and scrolls vertically while keeping sticky table / bar-list headers visible). Knobs below to preview combinations.</>}
           >
             <ChartCardKnobs />
             <div style={{ marginTop: 20 }}>
@@ -3528,7 +3642,7 @@ export function App() {
           <Section
             id="bar-list"
             title="BarList"
-            desc={<>Horizontal bar-list for ranked breakdowns, factor scores, and icon lists. Three variants: <code>simple</code> (label + bar + value), <code>grouped</code> (icon + sublabel + bar + score/delta, optionally side-by-side via <code>layout="columns"</code>), and <code>iconList</code> (prefix + icon + label, no bar). Set <code>labelWidth</code> to pin the meta column width and align bars across rows.</>}
+            desc={<>Horizontal bar-list for ranked breakdowns, factor scores, and icon lists. Three variants: <code>simple</code> (label + bar + value), <code>grouped</code> (icon + sublabel + bar + score/delta, optionally side-by-side via <code>layout="columns"</code>), and <code>iconList</code> (prefix + icon + label, no bar). Set <code>labelWidth</code> to pin the meta column width and align bars across rows. Simple-mode rows are separated by hairline rules by default; pass <code>divided={'{false}'}</code> to opt out. Pass <code>header={'{ label, valueLabel }'}</code> to add a table-style header row above the bars.</>}
           >
             <BarListKnobs />
           </Section>

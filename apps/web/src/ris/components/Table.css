@@ -17,7 +17,8 @@
   letter-spacing: 0.05em;
   color: #94A3B8;
   font-size: 12px;
-  padding: 10px 12px;
+  padding: 14px 12px;
+  border-top: 1px solid #E5E7EB;
   border-bottom: 1px solid #E5E7EB;
   background: #F8FAFC;
   white-space: nowrap;
@@ -140,6 +141,66 @@
 .tbl--flush .tbl-td:first-child { padding-left: 16px; }
 .tbl--flush .tbl-th:last-child,
 .tbl--flush .tbl-td:last-child  { padding-right: 16px; }
+
+/* ── Mobile — tighter padding and font so wide tables fit. Anything that
+   still doesn't fit will scroll horizontally inside the card body (set
+   by .rc-card-body--flush:has(.tbl)). ───────────────────────────────── */
+@media (max-width: 600px) {
+  .tbl {
+    font-size: 12px;
+  }
+  .tbl-th {
+    padding: 7px 6px;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+  }
+  .tbl-td {
+    padding: 7px 6px;
+  }
+  .tbl--flush .tbl-th:first-child,
+  .tbl--flush .tbl-td:first-child { padding-left: 10px; }
+  .tbl--flush .tbl-th:last-child,
+  .tbl--flush .tbl-td:last-child  { padding-right: 10px; }
+
+  /* Collapse variant — on mobile, each row becomes a stack of label-value
+     pairs, so wide multi-column tables (Recommended Actions, etc.) read
+     vertically without horizontal scroll. Opt-in via the `collapse` prop. */
+  .tbl--collapse,
+  .tbl--collapse thead,
+  .tbl--collapse tbody,
+  .tbl--collapse tr,
+  .tbl--collapse td {
+    display: block;
+    width: 100%;
+  }
+  .tbl--collapse thead { display: none; }
+  .tbl--collapse .tbl-row {
+    border-bottom: 1px solid #E2E8F0;
+    padding: 10px 12px;
+  }
+  .tbl--collapse .tbl-row:last-child { border-bottom: none; }
+  .tbl--collapse .tbl-td,
+  .tbl--collapse .tbl-td.tbl-cell--right,
+  .tbl--collapse .tbl-td.tbl-cell--center {
+    border-bottom: none;
+    padding: 4px 0;
+    text-align: left;
+  }
+  /* Tiny inline label rendered from the column's data-label attribute. */
+  .tbl--collapse .tbl-td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94A3B8;
+    margin-bottom: 2px;
+  }
+  /* When there's no label (e.g. the action column), drop the placeholder
+     line so the row doesn't get an extra blank top. */
+  .tbl--collapse .tbl-td:not([data-label]) { padding-top: 0; }
+}
 
 .tbl-row--highlight .tbl-td {
   background: #FFF7ED;

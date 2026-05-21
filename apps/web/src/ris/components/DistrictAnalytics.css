@@ -1,202 +1,36 @@
-.da-root {
+/* ── Outcome-correlation callouts ─────────────────────────────────────────── */
+.da-callouts {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.da-callout {
+  flex: 1;
+  border-radius: 8px;
+  padding: 8px 12px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 2px;
 }
 
-/* ── Scorecard table ── */
-.da-scorecard {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #E2E8F0;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-top: 4px;
-}
+.da-callout--pos { background: #F0FDF4; border: 1px solid #BBF7D0; }
+.da-callout--neg { background: #FEF2F2; border: 1px solid #FECACA; }
 
-.da-sc-head,
-.da-sc-row {
-  display: grid;
-  grid-template-columns: 1fr 86px 86px 86px 86px 72px 76px;
-  border-bottom: 1px solid #F1F5F9;
-}
-
-.da-sc-row:last-child { border-bottom: none; }
-.da-sc-row:hover { background: #FAFAFA; }
-
-.da-sc-head {
-  background: #F8FAFC;
-  border-bottom: 1px solid #E2E8F0;
-}
-
-.da-sc-head .da-sc-cell {
-  font-size: 13px;
-  font-weight: 700;
-  color: #64748B;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  padding: 9px 12px;
-}
-
-.da-sc-cell {
-  padding: 11px 12px;
-  display: flex;
-  align-items: center;
-  font-size: 13px;
-}
-
-.da-sc-cell--name    { gap: 10px; }
-.da-sc-cell--bucket  { justify-content: center; }
-.da-sc-cell--overall { justify-content: center; }
-.da-sc-cell--action  { justify-content: flex-end; }
-
-.da-sc-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.da-sc-school-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1E293B;
-  line-height: 1.2;
-}
-
-.da-sc-grades {
-  font-size: 13px;
-  color: #94A3B8;
-  margin-top: 1px;
-}
-
-.da-score-chip {
-  display: inline-block;
-  padding: 4px 9px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  min-width: 40px;
-  text-align: center;
-}
-
-.da-overall-chip {
-  display: inline-block;
-  padding: 4px 11px;
-  border-radius: 20px;
-  font-size: 13px;
+.da-callout-val {
+  font-size: 16px;
   font-weight: 800;
-  color: #fff;
   letter-spacing: -0.02em;
-}
-
-.da-school-link {
-  background: none;
-  border: 1px solid #E2E8F0;
-  border-radius: 6px;
-  padding: 4px 9px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #94A3B8;
-  cursor: not-allowed;
-  opacity: 0.6;
-  white-space: nowrap;
-}
-
-/* Legend */
-.da-legend {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: #64748B;
-}
-
-.da-legend-dot {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-.da-legend-dot--green { background: #16A97A; }
-.da-legend-dot--amber { background: #D97706; }
-.da-legend-dot--red   { background: #E8866A; }
-
-/* ── Book Talks adoption list ── */
-.da-bt-list {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  margin-top: 4px;
-}
-
-.da-bt-row {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.da-bt-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-top: 3px;
-  flex-shrink: 0;
-}
-
-.da-bt-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.da-bt-name {
-  display: block;
-  font-size: 13px;
-  font-weight: 700;
   color: #1E293B;
-  margin-bottom: 5px;
 }
 
-.da-bt-bars {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.da-bt-bar-group {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.da-bt-bar-lbl {
+.da-callout-lbl {
   font-size: 13px;
-  color: #94A3B8;
-  width: 58px;
-  flex-shrink: 0;
-}
-
-.da-bt-track {
-  flex: 1;
-  height: 6px;
-  background: #F1F5F9;
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.da-bt-fill {
-  height: 100%;
-  border-radius: 3px;
-  transition: width 0.3s;
-}
-
-.da-bt-val {
-  font-size: 13px;
-  font-weight: 700;
   color: #64748B;
-  width: 32px;
-  text-align: right;
-  flex-shrink: 0;
+  line-height: 1.3;
+}
+
+/* Mobile — stack the two correlation callouts vertically. */
+@media (max-width: 600px) {
+  .da-callouts { flex-direction: column; }
 }

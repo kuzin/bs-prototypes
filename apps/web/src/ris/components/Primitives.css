@@ -150,6 +150,10 @@
 .ttp--right:hover .ttp-bubble,
 .ttp--right:focus-within .ttp-bubble { transform: translateY(-50%) translateX(0); }
 
+/* Cursor-following variant — position is set via inline style on each
+   mousemove. No placement transforms; just fade in. */
+.ttp--cursor .ttp-bubble { transform: none; }
+
 /* ── Banner ─────────────────────────────────────────────────────────────── */
 .bnr {
   display: flex;

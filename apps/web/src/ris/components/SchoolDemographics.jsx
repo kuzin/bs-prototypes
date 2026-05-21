@@ -1,19 +1,16 @@
-import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, SCHOOL_DETAILS, SCHOOL_STATS,
   GRADE_PERFORMANCE, SCHOOL_GRADE_LEVELS, LEXILE_BY_GRADE,
 } from '../data'
 import { Hero } from './Hero'
-import {
-  NIVO_THEME, BAR_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
-  ChartLegend, BarTooltip,
-} from './charts'
+import { ChartLegend } from './charts'
 import { StatCard, ChartCard } from './Cards'
 import { ProgressBar } from './ProgressBar'
 import { BarList } from './BarList'
 import { Table } from './Table'
 import { Pill } from './Pill'
-import './Demographics.css'
+import { TrendChart } from './TrendChart'
+import './SchoolDemographics.css'
 
 const DEMO_COLOR = '#7C3AED'
 
@@ -169,39 +166,19 @@ export function SchoolDemographics({ schoolId }) {
             { color: '#7CB5F5',  label: 'Engagement %' },
           ]} />}
         >
-          <div style={{ height: 240 }}>
-            <ResponsiveBar
-              data={gradeRows}
-              keys={['rmi', 'engagement']}
-              indexBy="grade"
-              groupMode="grouped"
-              theme={NIVO_THEME}
-              margin={BAR_MARGIN}
-              padding={0.3}
-              innerPadding={2}
-              colors={({ id, data }) => id === 'rmi' ? rmiColor(data.rmi) : '#7CB5F5'}
-              borderRadius={3}
-              axisBottom={AXIS_BOTTOM}
-              axisLeft={{ ...AXIS_LEFT, tickValues: [40, 60, 80, 100] }}
-              enableGridY
-              enableLabel={false}
-              minValue={40}
-              maxValue={90}
-              tooltip={({ indexValue, data }) => (
-                <BarTooltip
-                  data={data}
-                  indexValue={`Grade ${indexValue}`}
-                  accent={DEMO_COLOR}
-                  keys={['rmi', 'engagement']}
-                  labels={{
-                    rmi:        { label: 'RMI score',  color: rmiColor(data.rmi) },
-                    engagement: { label: 'Engagement', color: '#7CB5F5' },
-                  }}
-                  context={d => <>{d.count.toLocaleString()} students · {d.frl}% FRL</>}
-                />
-              )}
-            />
-          </div>
+          <TrendChart
+            type="bar"
+            data={gradeRows}
+            xKey="grade"
+            yDomain={[40, 90]}
+            yTicks={[40, 60, 80, 100]}
+            height="md"
+            xPadding={{ left: 12, right: 12 }}
+            series={[
+              { key: 'rmi',        name: 'RMI score',  color: DEMO_COLOR, colorFn: d => rmiColor(d.rmi) },
+              { key: 'engagement', name: 'Engagement', color: '#7CB5F5' },
+            ]}
+          />
         </ChartCard>
 
         <ChartCard

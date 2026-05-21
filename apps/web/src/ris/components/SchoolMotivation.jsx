@@ -1,5 +1,4 @@
 import { ResponsiveLine } from '@nivo/line'
-import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, RMI_TRENDS, SCHOOL_HEALTH,
   RMI_FACTORS, INTRINSIC_EXTRINSIC_TRENDS, MOTIVATION_BY_GRADE,
@@ -7,15 +6,14 @@ import {
 import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
-  NIVO_THEME, LINE_MARGIN, BAR_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
-  SliceTooltip, ChartLegend, BarTooltip,
+  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
+  SliceTooltip, ChartLegend,
 } from './charts'
 import { StatCard, ChartCard, CardNote } from './Cards'
 import { ProgressBar } from './ProgressBar'
 import { BarList } from './BarList'
 import { RMI_ICONS } from './RmiIcons'
-import './RisLayout.css'
-import './Motivation.css'
+import { TrendChart } from './TrendChart'
 
 const INTRINSIC_COLOR = '#E8866A'
 const EXTRINSIC_COLOR = '#7CB5F5'
@@ -47,7 +45,7 @@ export function SchoolMotivation({ schoolId, onBack }) {
         <StatCard
           value={(latestTrend.intrinsic + latestTrend.extrinsic).toFixed(1)}
           unit="/40"
-          label="School RMI score"
+          label="Combined RMI Score"
           footer={`↑${health.dM} pts since Sep 2024`}
         />
         <StatCard
@@ -79,7 +77,7 @@ export function SchoolMotivation({ schoolId, onBack }) {
             { color: '#CBD5E1',    label: `District avg (${districtNow})`, dashed: true },
           ]} />}
         >
-          <div style={{ height: 220 }}>
+          <div style={{ flex: 1, minHeight: 240 }}>
             <ResponsiveLine
               data={rmiNivo}
               theme={NIVO_THEME}
@@ -134,47 +132,19 @@ export function SchoolMotivation({ schoolId, onBack }) {
             { color: '#CBD5E1',       label: 'Extrinsic' },
           ]} />}
         >
-          <div style={{ height: 190 }}>
-            <ResponsiveBar
-              data={INTRINSIC_EXTRINSIC_TRENDS}
-              keys={['intrinsic', 'extrinsic']}
-              indexBy="month"
-              groupMode="grouped"
-              theme={NIVO_THEME}
-              margin={BAR_MARGIN}
-              padding={0.3}
-              innerPadding={2}
-              colors={({ id }) => id === 'intrinsic' ? INTRINSIC_COLOR : '#CBD5E1'}
-              borderRadius={3}
-              axisBottom={AXIS_BOTTOM}
-              axisLeft={{ ...AXIS_LEFT, tickValues: [9, 11, 13, 15] }}
-              enableGridY
-              enableLabel={false}
-              minValue={9}
-              maxValue={16}
-              tooltip={({ indexValue, data }) => (
-                <BarTooltip
-                  data={data}
-                  indexValue={indexValue}
-                  accent={INTRINSIC_COLOR}
-                  format={v => `${v.toFixed(1)} /20`}
-                  formatDelta={d => `${d > 0 ? '+' : ''}${d.toFixed(1)} pts`}
-                  keys={['intrinsic', 'extrinsic']}
-                  labels={{
-                    intrinsic: { label: 'Intrinsic', color: INTRINSIC_COLOR },
-                    extrinsic: { label: 'Extrinsic', color: '#CBD5E1' },
-                  }}
-                  allData={INTRINSIC_EXTRINSIC_TRENDS}
-                  indexBy="month"
-                  context={d => {
-                    const gap = d.intrinsic - d.extrinsic
-                    if (gap === 0) return <>On par with extrinsic</>
-                    return <><strong>Intrinsic</strong> {gap > 0 ? '+' : ''}{gap.toFixed(1)} pts {gap > 0 ? 'above' : 'below'} extrinsic</>
-                  }}
-                />
-              )}
-            />
-          </div>
+          <TrendChart
+            type="bar"
+            data={INTRINSIC_EXTRINSIC_TRENDS}
+            yDomain={[9, 16]}
+            yTicks={[9, 11, 13, 15]}
+            height="md"
+            tooltipFormatter={(v, name) => [`${v.toFixed(1)} /20`, name]}
+            xPadding={{ left: 12, right: 12 }}
+            series={[
+              { key: 'intrinsic', name: 'Intrinsic', color: INTRINSIC_COLOR },
+              { key: 'extrinsic', name: 'Extrinsic', color: '#CBD5E1' },
+            ]}
+          />
           <CardNote tone="accent">
             Students' intrinsic reading subscore rose from <strong>12.1</strong> to <strong>14.2 /20</strong> over the school year — reflecting sustained growth in self-motivated, independent reading. The extrinsic score remains stable at <strong>11.8 /20</strong>, meaning intrinsic motivation is outpacing external drivers.
           </CardNote>
@@ -233,28 +203,20 @@ export function SchoolMotivation({ schoolId, onBack }) {
           bodyPad="padded"
           footer={<ChartLegend items={[
             { color: INTRINSIC_COLOR, label: 'Intrinsic' },
-            { color: '#CBD5E1',       label: 'Extrinsic' },
+            { color: EXTRINSIC_COLOR, label: 'Extrinsic' },
           ]} />}
         >
-          <div className="mot-grade-list">
-            {MOTIVATION_BY_GRADE.map(g => (
-              <div key={g.band} className="mot-grade-row mot-grade-row--simple">
-                <div className="mot-grade-band">{g.band}</div>
-                <div className="mot-grade-tracks">
-                  <div className="mot-grade-track-row">
-                    <span className="mot-grade-track-label" style={{ color: INTRINSIC_COLOR }}>Intrinsic</span>
-                    <ProgressBar value={g.intrinsic} max={20} color={INTRINSIC_COLOR} size="sm" />
-                    <span className="mot-grade-val" style={{ color: INTRINSIC_COLOR }}>{g.intrinsic}</span>
-                  </div>
-                  <div className="mot-grade-track-row">
-                    <span className="mot-grade-track-label" style={{ color: '#94A3B8' }}>Extrinsic</span>
-                    <ProgressBar value={g.extrinsic} max={20} color="#CBD5E1" size="sm" />
-                    <span className="mot-grade-val" style={{ color: '#94A3B8' }}>{g.extrinsic}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <BarList
+            layout="columns"
+            groups={MOTIVATION_BY_GRADE.map(g => ({
+              label: `Grade ${g.band}`,
+              labelColor: '#475569',
+              items: [
+                { label: 'Intrinsic', labelColor: INTRINSIC_COLOR, value: g.intrinsic, max: 20, color: INTRINSIC_COLOR, valueLabel: g.intrinsic.toFixed(1) },
+                { label: 'Extrinsic', labelColor: EXTRINSIC_COLOR, value: g.extrinsic, max: 20, color: EXTRINSIC_COLOR, valueLabel: g.extrinsic.toFixed(1) },
+              ],
+            }))}
+          />
         </ChartCard>
 
         <ChartCard

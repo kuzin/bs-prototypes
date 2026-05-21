@@ -35,8 +35,13 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 6px 0;
+  padding: 14px 0;
 }
+
+/* In a stacked grouped list, the first group sits flush against the
+   body's top padding (no need for the group's own 14px on top). */
+.bl--stack > .bl-group:first-child { padding-top: 0; }
+.bl--stack > .bl-group:last-child  { padding-bottom: 0; }
 
 .bl-group-label {
   font-size: 11px;
@@ -49,6 +54,60 @@
 .bl-divider { background: #F1F5F9; }
 .bl--stack   > .bl-divider { height: 1px; }
 .bl--columns > .bl-divider { width: 1px; height: auto; align-self: stretch; }
+
+/* `divided` prop on the simple-items mode — hairline between consecutive
+   rows so dense lists read clearly. Replaces the flex gap with padded
+   rows so the rule sits flush between them. */
+.bl--divided { gap: 0; }
+.bl--divided > .bl-row { padding: 14px 0; }
+.bl--divided > .bl-row + .bl-row { border-top: 1px solid #F1F5F9; }
+/* Tighten the first/last data row's outer padding — but leave the
+   header strip alone so it keeps its symmetric 14px top/bottom. */
+.bl--divided > .bl-row:first-child:not(.bl-header) { padding-top: 6px; }
+.bl--divided > .bl-row:last-child:not(.bl-header)  { padding-bottom: 6px; }
+
+/* `header` prop — table-style label row above the bars. Mirrors the row
+   grid so the column labels sit directly over the meta/value columns,
+   and matches the look of `.tbl-th` exactly: slate strip, 1px bottom
+   rule, uppercase tracked-out caps. The negative side-margins push the
+   slate strip out to the card edges so it reads like a table header
+   when the BarList sits inside a `bodyPad="padded"` body. */
+/* When the body wraps a BarList with a header strip, drop the body's
+   top padding so the slate strip extends all the way up to the
+   card-head divider (matching the look of `.tbl-th` in a flush table). */
+.rc-card-body--padded:has(> .bl.bl--has-header) {
+  padding-top: 0;
+}
+
+/* Compound class to beat `.bl--divided > .bl-row { padding: 10px 0 }`.
+   Mirrors `.tbl-th` styling but with a touch more vertical room so the
+   header strip aligns visually with the card-head spacing (12px top,
+   10px bottom, 16px horizontal). 1px bottom border, no bottom margin —
+   the first row sits flush against the border-bottom like a `<tbody>`
+   does after a `<thead>`. */
+.bl-row.bl-header {
+  background: #F8FAFC;
+  border-top: 1px solid #E5E7EB;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 14px 16px;
+  margin: 0 -16px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.bl-th {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94A3B8;
+  white-space: nowrap;
+}
+
+.bl--divided.bl--has-header > .bl-header + .bl-row { padding-top: 6px; }
+
+.bl-header-spacer { background: transparent !important; }
 
 /* ── Row ─────────────────────────────────────────────────────────────────── */
 .bl-row {
@@ -133,6 +192,14 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Icon rows with no sublabel (label-only) — bump the label slightly so
+   it carries the row visually (matches mood of a list of headings). */
+.bl-row--icon .bl-meta:not(:has(.bl-sublabel)) .bl-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0F172A;
 }
 
 .bl-sublabel {

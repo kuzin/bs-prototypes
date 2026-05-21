@@ -1,5 +1,4 @@
 import { ResponsiveLine } from '@nivo/line'
-import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, SCHOOL_STATS, SCHOOL_HEALTH, SESSION_TRENDS,
   STREAK_DATA, VELOCITY_TRENDS, READING_DIET,
@@ -7,11 +6,12 @@ import {
 import { Hero } from './Hero'
 import { SECTIONS } from './ReadingHealth'
 import {
-  NIVO_THEME, LINE_MARGIN, BAR_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
-  SliceTooltip, ChartLegend, BarTooltip,
+  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
+  SliceTooltip, ChartLegend,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
 import { BarList } from './BarList'
+import { TrendChart } from './TrendChart'
 import './RisLayout.css'
 import './SchoolHabits.css'
 
@@ -58,20 +58,17 @@ export function SchoolHabits({ schoolId, onBack }) {
         />
         <StatCard
           value={stats.streakPct}
-          unit="%"
           label="Active streaks"
           footer="of enrolled students"
         />
         <StatCard
           value="3.1"
-          unit="days"
           label="Avg reading days / week"
           footer="School average"
         />
         <StatCard
           value="2.6"
-          unit="books"
-          label="Avg books / month"
+          label="Avg Sessions"
           footer="All grade levels"
         />
       </div>
@@ -89,7 +86,7 @@ export function SchoolHabits({ schoolId, onBack }) {
             { color: '#CBD5E1',    label: 'District avg', dashed: true },
           ]} />}
         >
-          <div style={{ height: 210 }}>
+          <div style={{ flex: 1, minHeight: 240 }}>
             <ResponsiveLine
               data={sessionNivo}
               theme={NIVO_THEME}
@@ -144,38 +141,21 @@ export function SchoolHabits({ schoolId, onBack }) {
             { color: '#CBD5E1',    label: 'District avg' },
           ]} />}
         >
-          <div style={{ height: 200 }}>
-            <ResponsiveBar
-              data={streakData}
-              keys={['school', 'district']}
-              indexBy="milestone"
-              groupMode="grouped"
-              theme={NIVO_THEME}
-              margin={BAR_MARGIN}
-              padding={0.3}
-              innerPadding={2}
-              colors={({ id }) => id === 'school' ? school.color : '#CBD5E1'}
-              borderRadius={3}
-              axisBottom={AXIS_BOTTOM}
-              axisLeft={{ ...AXIS_LEFT, format: v => `${v}%`, tickValues: [0, 25, 50, 75, 100] }}
-              enableGridY
-              enableLabel={false}
-              maxValue={100}
-              tooltip={({ indexValue, data }) => (
-                <BarTooltip
-                  data={data}
-                  indexValue={indexValue}
-                  accent={HABITS_COLOR}
-                  format={v => `${v}%`}
-                  keys={['school', 'district']}
-                  labels={{
-                    school:   { label: shortName,      color: school.color },
-                    district: { label: 'District avg', color: '#CBD5E1' },
-                  }}
-                />
-              )}
-            />
-          </div>
+          <TrendChart
+            type="bar"
+            data={streakData}
+            xKey="milestone"
+            yDomain={[0, 100]}
+            yUnit="%"
+            yTicks={[0, 25, 50, 75, 100]}
+            height="md"
+            tooltipFormatter={v => `${v}%`}
+            xPadding={{ left: 12, right: 12 }}
+            series={[
+              { key: 'school',   name: shortName,      color: school.color },
+              { key: 'district', name: 'District avg', color: '#CBD5E1' },
+            ]}
+          />
         </ChartCard>
 
         <ChartCard
@@ -189,7 +169,7 @@ export function SchoolHabits({ schoolId, onBack }) {
             { color: '#C084FC', label: 'High' },
           ]} />}
         >
-          <div style={{ height: 200 }}>
+          <div style={{ flex: 1, minHeight: 240 }}>
             <ResponsiveLine
               data={velocityNivo}
               theme={NIVO_THEME}
@@ -231,6 +211,7 @@ export function SchoolHabits({ schoolId, onBack }) {
           action={<span className="sh-gemini-badge">✦ Gemini</span>}
         >
           <BarList
+            header={{ label: 'Genre', valueLabel: '% of logs' }}
             items={READING_DIET.map(d => ({
               label: d.genre,
               value: d.pct,

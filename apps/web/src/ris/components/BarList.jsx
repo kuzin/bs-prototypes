@@ -7,6 +7,7 @@ function BarListRow({
   label,
   labelColor,
   sublabel,
+  tooltip,        // string — rendered as a native `title` tooltip on the label
   value,
   max = 100,
   color = '#94A3B8',
@@ -40,7 +41,7 @@ function BarListRow({
           {icon}
         </span>
       )}
-      <div className="bl-meta">
+      <div className="bl-meta" title={tooltip || undefined}>
         {label != null && (
           <span className="bl-label" style={labelColor ? { color: labelColor } : undefined}>
             {label}
@@ -90,6 +91,8 @@ export function BarList({
   labelWidth,
   barAlign,      // 'start' (default) | 'center' — center the fill + drop track bg for a funnel taper
   barHeight,     // px override for bar thickness
+  divided = true, // default: draw hairline dividers between rows (simple-items mode only). Pass `divided={false}` to opt out.
+  header,        // optional { label, valueLabel } — renders a table-style header row above the bars
 }) {
   const style = {}
   if (labelWidth) style['--bl-meta-w'] = `${labelWidth}px`
@@ -127,7 +130,14 @@ export function BarList({
   }
 
   return (
-    <div className="bl" style={style}>
+    <div className={`bl${divided ? ' bl--divided' : ''}${header ? ' bl--has-header' : ''}`} style={style}>
+      {header && (
+        <div className="bl-row bl-header" aria-hidden="true">
+          <div className="bl-meta"><span className="bl-th">{header.label}</span></div>
+          {showBar && <div className="bl-track bl-header-spacer" />}
+          <div className="bl-right"><span className="bl-th">{header.valueLabel}</span></div>
+        </div>
+      )}
       {(items || []).map((item, i) => (
         <BarListRow key={i} {...item} showBar={showBar} />
       ))}

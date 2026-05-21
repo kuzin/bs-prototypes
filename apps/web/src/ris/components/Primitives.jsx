@@ -86,30 +86,45 @@ export function IconButton({
  *
  * placement: top (default) | bottom | left | right | auto
  *   'auto' detects the nearest viewport edge and flips accordingly.
+ *
+ * Pass `followCursor` to position the bubble at the pointer and have it
+ * track the cursor as it moves — best for chart-like surfaces where the
+ * tooltip explains the value under the cursor.
  */
-export function Tooltip({ content, placement = 'top', delay = 0, children }) {
+export function Tooltip({ content, placement = 'top', delay = 0, followCursor = false, children }) {
   const wrapRef = useRef(null)
   const [resolved, setResolved] = useState('top')
+  const [cursor, setCursor] = useState({ x: 0, y: 0 })
 
   function onEnter() {
     if (placement !== 'auto' || !wrapRef.current) return
     const r  = wrapRef.current.getBoundingClientRect()
-    const vh = window.innerHeight
     // Prefer top; fall back to bottom if too close to viewport top.
     setResolved(r.top < 60 ? 'bottom' : 'top')
   }
 
+  function onMove(e) {
+    if (!followCursor) return
+    setCursor({ x: e.clientX, y: e.clientY })
+  }
+
   if (!content) return children
   const pos = placement === 'auto' ? resolved : placement
+  // When following the cursor we use fixed positioning and skip the
+  // placement-specific CSS classes — JS sets x/y per mousemove.
+  const bubbleStyle = followCursor
+    ? { position: 'fixed', left: cursor.x + 12, top: cursor.y - 32 }
+    : undefined
   return (
     <span
-      className={`ttp ttp--${pos}`}
+      className={`ttp${followCursor ? ' ttp--cursor' : ` ttp--${pos}`}`}
       style={{ '--ttp-delay': `${delay}ms` }}
       ref={wrapRef}
       onMouseEnter={onEnter}
+      onMouseMove={onMove}
     >
       {children}
-      <span className="ttp-bubble" role="tooltip">{content}</span>
+      <span className="ttp-bubble" role="tooltip" style={bubbleStyle}>{content}</span>
     </span>
   )
 }
