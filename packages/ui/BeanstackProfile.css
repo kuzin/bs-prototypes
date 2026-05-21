@@ -477,6 +477,14 @@
   display: flex;
   gap: 8px;
   flex-shrink: 0;
+  align-items: center;
+}
+
+.bp-student-actions .btn,
+.bp-student-actions .icnb,
+.bp-student-actions .bp-header-close {
+  height: 36px;
+  box-sizing: border-box;
 }
 
 .bp-header-right {
@@ -487,8 +495,8 @@
 }
 
 .bp-header-close {
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 8px;
   border: 1px solid #E5E7EB;
   background: #F8FAFC;
