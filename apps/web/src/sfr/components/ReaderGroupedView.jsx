@@ -85,7 +85,7 @@ function TypePill({ session, type }) {
   return null
 }
 
-export function ReaderGroupedView({ sessions, onSelectSession, onApproveRequest, showTypeColumn = true, showFlagIcons = false, showPosFlags = true, showEngagementColumn = true, onClearFilters }) {
+export function ReaderGroupedView({ sessions, onSelectSession, onApproveRequest, onViewProfile, showTypeColumn = true, showFlagIcons = false, showPosFlags = true, showEngagementColumn = true, onClearFilters }) {
   const groups = []
   const seen = {}
   for (const s of sessions) {
@@ -139,7 +139,9 @@ export function ReaderGroupedView({ sessions, onSelectSession, onApproveRequest,
                 <tr className="rgv-group-row">
                   <td colSpan={colCount} className="rgv-group-cell">
                     <div className="rgv-header">
-                      <span className="rgv-name">{student.name}</span>
+                      {onViewProfile
+                        ? <button className="rgv-name rgv-name--link" onClick={() => onViewProfile(student)}>{student.name}</button>
+                        : <span className="rgv-name">{student.name}</span>}
                     </div>
                   </td>
                 </tr>
@@ -155,7 +157,7 @@ export function ReaderGroupedView({ sessions, onSelectSession, onApproveRequest,
                       {showPosFlags && <td className="tbl-td"><PosFlagCount flags={s.positiveFlags} /></td>}
                       <td className="tbl-td">{showFlagIcons ? <FlagTypeIcons flags={s.flags} /> : <FlagCount flags={s.flags} />}</td>
                       <td className="tbl-td tbl-td--action" onClick={e => e.stopPropagation()}>
-                        <DotsButton session={s} onSelectSession={onSelectSession} onApproveRequest={onApproveRequest} />
+                        <DotsButton session={s} onSelectSession={onSelectSession} onApproveRequest={onApproveRequest} onViewProfile={onViewProfile} />
                       </td>
                     </tr>
                   )

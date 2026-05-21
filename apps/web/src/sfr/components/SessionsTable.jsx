@@ -156,7 +156,7 @@ export function StatusBadge({ status }) {
   return null
 }
 
-export function RowFlyout({ session, anchor, onClose, onSelectSession, onApproveRequest }) {
+export function RowFlyout({ session, anchor, onClose, onSelectSession, onApproveRequest, onViewProfile }) {
   const flyoutRef = useRef(null)
   const [pos, setPos] = useState({ top: 0, left: 0 })
 
@@ -196,6 +196,14 @@ export function RowFlyout({ session, anchor, onClose, onSelectSession, onApprove
         </svg>
         View details
       </button>
+      {onViewProfile && (
+        <button className="sess-flyout-item" onClick={e => { e.stopPropagation(); onViewProfile(session.student); onClose() }}>
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="8" cy="6" r="3"/><path d="M2.5 14a5.5 5.5 0 0 1 11 0"/>
+          </svg>
+          View profile
+        </button>
+      )}
       <button className="sess-flyout-item" onClick={e => e.stopPropagation()}>
         <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
           <path d="M11 2l3 3-8 8H3v-3L11 2z"/>
@@ -222,7 +230,7 @@ export function RowFlyout({ session, anchor, onClose, onSelectSession, onApprove
   )
 }
 
-export function DotsButton({ session, onSelectSession, onApproveRequest }) {
+export function DotsButton({ session, onSelectSession, onApproveRequest, onViewProfile }) {
   const [open, setOpen] = useState(false)
   const btnRef = useRef(null)
 
@@ -243,13 +251,14 @@ export function DotsButton({ session, onSelectSession, onApproveRequest }) {
           onClose={() => setOpen(false)}
           onSelectSession={onSelectSession}
           onApproveRequest={onApproveRequest}
+          onViewProfile={onViewProfile}
         />
       )}
     </>
   )
 }
 
-export function SessionsTable({ sessions, onSelectSession, onApproveRequest, showTypeColumn = true, showFlagIcons = false, showPosFlags = true, showEngagementColumn = true, hideStudentColumns = false, onClearFilters }) {
+export function SessionsTable({ sessions, onSelectSession, onApproveRequest, onViewProfile, showTypeColumn = true, showFlagIcons = false, showPosFlags = true, showEngagementColumn = true, hideStudentColumns = false, onClearFilters }) {
   const columns = [
     {
       key: 'date',
@@ -264,7 +273,14 @@ export function SessionsTable({ sessions, onSelectSession, onApproveRequest, sho
       {
         key: 'student',
         label: 'Student',
-        render: (_, row) => <span className="sess-student-name">{row.student.name}</span>,
+        render: (_, row) => onViewProfile
+          ? (
+            <button
+              className="sess-student-name sess-student-name--link"
+              onClick={e => { e.stopPropagation(); onViewProfile(row.student) }}
+            >{row.student.name}</button>
+          )
+          : <span className="sess-student-name">{row.student.name}</span>,
       },
       {
         key: 'grade',
@@ -317,7 +333,7 @@ export function SessionsTable({ sessions, onSelectSession, onApproveRequest, sho
     {
       key: 'action',
       label: '',
-      render: (_, row) => <DotsButton session={row} onSelectSession={onSelectSession} onApproveRequest={onApproveRequest} />,
+      render: (_, row) => <DotsButton session={row} onSelectSession={onSelectSession} onApproveRequest={onApproveRequest} onViewProfile={onViewProfile} />,
     },
   ]
 

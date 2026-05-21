@@ -8,7 +8,7 @@ import '../../ris/components/FilterBar.css'
 import '../../ris/components/Form.css'
 import './ListView.css'
 
-export function AllBTWBView({ sessions, onSelectSession, onApproveRequest, groupBy, defaultFilters = {} }) {
+export function AllBTWBView({ sessions, onSelectSession, onApproveRequest, onViewProfile, groupBy, defaultFilters = {} }) {
   const [search,   setSearch]   = useState('')
   const [type,     setType]     = useState(defaultFilters.type     ?? 'all')
   const [rating,   setRating]   = useState(defaultFilters.rating   ?? 'all')
@@ -110,8 +110,8 @@ export function AllBTWBView({ sessions, onSelectSession, onApproveRequest, group
         />
       </div>
       {groupBy === 'reader'
-        ? <ReaderGroupedView sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} showTypeColumn showFlagIcons onClearFilters={() => { setSearch(''); setType('all'); setRating('all'); setStatus('all'); setPosFlags('all') }} />
-        : <SessionsTable sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} showTypeColumn showFlagIcons onClearFilters={() => { setSearch(''); setType('all'); setRating('all'); setStatus('all'); setPosFlags('all') }} />
+        ? <ReaderGroupedView sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} onViewProfile={onViewProfile} showTypeColumn showFlagIcons onClearFilters={() => { setSearch(''); setType('all'); setRating('all'); setStatus('all'); setPosFlags('all') }} />
+        : <SessionsTable sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} onViewProfile={onViewProfile} showTypeColumn showFlagIcons onClearFilters={() => { setSearch(''); setType('all'); setRating('all'); setStatus('all'); setPosFlags('all') }} />
       }
     </div>
   )

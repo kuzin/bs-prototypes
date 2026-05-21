@@ -7,6 +7,8 @@ import { FlaggedView } from './FlaggedView'
 import { EngagementView } from './EngagementView'
 import { AllBTWBView } from './AllBTWBView'
 import { SessionModal, ApproveConfirmModal } from './SessionModal'
+import { StudentPanel } from '../../ris/components/StudentPanel'
+import '../../ris/components/StudentPanel.css'
 import '../../ris/components/RisLayout.css'
 import '../../ris/components/Sidebar.css'
 import '../../ris/components/Tabs.css'
@@ -59,6 +61,7 @@ export function SfrPage({
   const [tabFilters, setTabFilters] = useState({})
   const [sessionList, setSessionList] = useState([])
   const [approveTarget, setApproveTarget] = useState(null)
+  const [profileStudent, setProfileStudent] = useState(null)
 
   function confirmApprove() {
     if (!approveTarget) return
@@ -172,9 +175,9 @@ export function SfrPage({
 
         <div className="rl-page">
           {activeTab === 'overview'   && <Overview   sessions={sessions} onGoToTab={goToTabWithFilters} onSelectSession={handleSelectSession} />}
-          {activeTab === 'flagged'    && <FlaggedView    sessions={sessions} onSelectSession={handleSelectSession} onApproveRequest={setApproveTarget} groupBy={groupBy} defaultFilters={tabFilters} />}
-          {activeTab === 'engagement' && <EngagementView sessions={sessions} onSelectSession={handleSelectSession} onApproveRequest={setApproveTarget} groupBy={groupBy} defaultFilters={tabFilters} />}
-          {activeTab === 'all'        && <AllBTWBView    sessions={sessions} onSelectSession={handleSelectSession} onApproveRequest={setApproveTarget} groupBy={groupBy} defaultFilters={tabFilters} />}
+          {activeTab === 'flagged'    && <FlaggedView    sessions={sessions} onSelectSession={handleSelectSession} onApproveRequest={setApproveTarget} onViewProfile={setProfileStudent} groupBy={groupBy} defaultFilters={tabFilters} />}
+          {activeTab === 'engagement' && <EngagementView sessions={sessions} onSelectSession={handleSelectSession} onApproveRequest={setApproveTarget} onViewProfile={setProfileStudent} groupBy={groupBy} defaultFilters={tabFilters} />}
+          {activeTab === 'all'        && <AllBTWBView    sessions={sessions} onSelectSession={handleSelectSession} onApproveRequest={setApproveTarget} onViewProfile={setProfileStudent} groupBy={groupBy} defaultFilters={tabFilters} />}
           {activeTab === 'logs'       && (
             <div className="sfr-stub">
               <div className="sfr-stub-icon">📖</div>
@@ -193,11 +196,14 @@ export function SfrPage({
         onUpdateSession={onUpdateSession}
         onSelectSession={onSelectSession}
         onApproveRequest={setApproveTarget}
+        onViewProfile={setProfileStudent}
         onPrev={hasPrev ? handlePrev : null}
         onNext={hasNext ? handleNext : null}
         sessionIdx={sessionIdx}
         sessionCount={sessionList.length}
       />
+
+      <StudentPanel student={profileStudent} onClose={() => setProfileStudent(null)} />
 
       <ApproveConfirmModal
         open={!!approveTarget}

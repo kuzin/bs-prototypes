@@ -135,7 +135,7 @@ function newLogEntry(extra) {
   }
 }
 
-export function SessionModal({ session, allSessions = [], onClose, onUpdateSession, onSelectSession, onApproveRequest, onPrev, onNext, sessionIdx, sessionCount }) {
+export function SessionModal({ session, allSessions = [], onClose, onUpdateSession, onSelectSession, onApproveRequest, onViewProfile, onPrev, onNext, sessionIdx, sessionCount }) {
   const [local, setLocal] = useState(null)
   const [sidebarTab, setSidebarTab] = useState('details')
   const [confirmingRating, setConfirmingRating] = useState(null)
@@ -232,7 +232,17 @@ export function SessionModal({ session, allSessions = [], onClose, onUpdateSessi
       <div className="sm2-shell">
         {/* Top bar */}
         <div className="sm2-topbar">
-          <span className="sm2-student-name">{d.student.name}</span>
+          <div className="sm2-topbar-left">
+            <span className="sm2-student-name">{d.student.name}</span>
+            {onViewProfile && (
+              <button className="sm2-view-profile" onClick={() => onViewProfile(d.student)}>
+                <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="8" cy="6" r="3"/><path d="M2.5 14a5.5 5.5 0 0 1 11 0"/>
+                </svg>
+                View profile
+              </button>
+            )}
+          </div>
           <div className="sm2-topbar-right">
             {sessionCount > 0 && (
               <div className="sm2-nav">

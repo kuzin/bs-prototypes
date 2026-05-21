@@ -8,7 +8,7 @@ import '../../ris/components/FilterBar.css'
 import '../../ris/components/Form.css'
 import './ListView.css'
 
-export function EngagementView({ sessions, onSelectSession, onApproveRequest, groupBy, defaultFilters = {} }) {
+export function EngagementView({ sessions, onSelectSession, onApproveRequest, onViewProfile, groupBy, defaultFilters = {} }) {
   const [search,      setSearch]      = useState('')
   const [rating,      setRating]      = useState(defaultFilters.rating      ?? 'all')
   const [posFlags,    setPosFlags]    = useState(defaultFilters.posFlags    ?? 'all')
@@ -135,8 +135,8 @@ export function EngagementView({ sessions, onSelectSession, onApproveRequest, gr
         <ActiveFilters filters={activeFilters} onClearAll={() => { setSearch(''); setRating('all'); setPosFlags('all'); setClassFilter('all'); setGrade('all'); setChallenge('all'); setStatus('all'); setHasFlags('all') }} />
       </div>
       {groupBy === 'reader'
-        ? <ReaderGroupedView sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} showTypeColumn={false} showFlagIcons onClearFilters={() => { setSearch(''); setRating('all'); setPosFlags('all'); setClassFilter('all'); setGrade('all'); setChallenge('all'); setStatus('all'); setHasFlags('all') }} />
-        : <SessionsTable sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} showTypeColumn={false} showFlagIcons onClearFilters={() => { setSearch(''); setRating('all'); setPosFlags('all'); setClassFilter('all'); setGrade('all'); setChallenge('all'); setStatus('all'); setHasFlags('all') }} />
+        ? <ReaderGroupedView sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} onViewProfile={onViewProfile} showTypeColumn={false} showFlagIcons onClearFilters={() => { setSearch(''); setRating('all'); setPosFlags('all'); setClassFilter('all'); setGrade('all'); setChallenge('all'); setStatus('all'); setHasFlags('all') }} />
+        : <SessionsTable sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} onViewProfile={onViewProfile} showTypeColumn={false} showFlagIcons onClearFilters={() => { setSearch(''); setRating('all'); setPosFlags('all'); setClassFilter('all'); setGrade('all'); setChallenge('all'); setStatus('all'); setHasFlags('all') }} />
       }
     </div>
   )

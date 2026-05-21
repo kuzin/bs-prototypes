@@ -15,10 +15,38 @@
   flex-shrink: 0;
 }
 
+.sm2-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
 .sm2-student-name {
   font-size: 15px;
   font-weight: 700;
   color: #0F172A;
+}
+
+.sm2-view-profile {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1D4ED8;
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+.sm2-view-profile:hover {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  color: #1E40AF;
 }
 
 .sm2-topbar-right {

@@ -8,7 +8,7 @@ import '../../ris/components/FilterBar.css'
 import '../../ris/components/Form.css'
 import './ListView.css'
 
-export function FlaggedView({ sessions, onSelectSession, onApproveRequest, groupBy, defaultFilters = {} }) {
+export function FlaggedView({ sessions, onSelectSession, onApproveRequest, onViewProfile, groupBy, defaultFilters = {} }) {
   const [search,      setSearch]      = useState('')
   const [grade,       setGrade]       = useState(defaultFilters.grade       ?? 'all')
   const [classFilter, setClassFilter] = useState(defaultFilters.classFilter ?? 'all')
@@ -126,8 +126,8 @@ export function FlaggedView({ sessions, onSelectSession, onApproveRequest, group
         />
       </div>
       {groupBy === 'reader'
-        ? <ReaderGroupedView sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} showTypeColumn={false} showFlagIcons showPosFlags={false} showEngagementColumn={false} onClearFilters={() => { setSearch(''); setGrade('all'); setClassFilter('all'); setFlagType('all'); setStatus('all'); setChallenge('all') }} />
-        : <SessionsTable sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} showTypeColumn={false} showFlagIcons showPosFlags={false} showEngagementColumn={false} onClearFilters={() => { setSearch(''); setGrade('all'); setClassFilter('all'); setFlagType('all'); setStatus('all'); setChallenge('all') }} />
+        ? <ReaderGroupedView sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} onViewProfile={onViewProfile} showTypeColumn={false} showFlagIcons showPosFlags={false} showEngagementColumn={false} onClearFilters={() => { setSearch(''); setGrade('all'); setClassFilter('all'); setFlagType('all'); setStatus('all'); setChallenge('all') }} />
+        : <SessionsTable sessions={filtered} onSelectSession={s => onSelectSession(s, filtered)} onApproveRequest={onApproveRequest} onViewProfile={onViewProfile} showTypeColumn={false} showFlagIcons showPosFlags={false} showEngagementColumn={false} onClearFilters={() => { setSearch(''); setGrade('all'); setClassFilter('all'); setFlagType('all'); setStatus('all'); setChallenge('all') }} />
       }
     </div>
   )
