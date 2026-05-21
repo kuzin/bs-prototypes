@@ -399,7 +399,9 @@ function SectionDetail({ student, sectionKey }) {
   );
 }
 
-// ─── Donut chart ─────────────────────────────────────────────────────────────
+// ─── Donut charts ────────────────────────────────────────────────────────────
+const EXTRINSIC_COLOR = "#94A3B8";
+
 function DonutChart({ value, max, label, color, size = 84 }) {
   const sw = 9;
   const r = (size - sw) / 2;
@@ -419,6 +421,41 @@ function DonutChart({ value, max, label, color, size = 84 }) {
         </svg>
         <div className="bp-donut-center">
           <span className="bp-donut-val">{value}</span>
+          <span className="bp-donut-max">/{max}</span>
+        </div>
+      </div>
+      <div className="bp-donut-label">{label}</div>
+    </div>
+  );
+}
+
+function SplitDonutChart({ intrinsicVal, extrinsicVal, max, label, intrinsicColor, size = 84 }) {
+  const sw = 9;
+  const r = (size - sw) / 2;
+  const circ = 2 * Math.PI * r;
+  const mid = size / 2;
+  const dash1 = circ * Math.max(0, Math.min(1, intrinsicVal / max));
+  const dash2 = circ * Math.max(0, Math.min(1, extrinsicVal / max));
+  const angle1 = (intrinsicVal / max) * 360;
+  const total = Math.round((intrinsicVal + extrinsicVal) * 10) / 10;
+  return (
+    <div className="bp-donut-wrap">
+      <div className="bp-donut-chart" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke="#E5E7EB" strokeWidth={sw} />
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke={intrinsicColor} strokeWidth={sw}
+            strokeLinecap="butt"
+            strokeDasharray={`${dash1} ${circ - dash1}`}
+            transform={`rotate(-90 ${mid} ${mid})`}
+          />
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke={EXTRINSIC_COLOR} strokeWidth={sw}
+            strokeLinecap="butt"
+            strokeDasharray={`${dash2} ${circ - dash2}`}
+            transform={`rotate(${-90 + angle1} ${mid} ${mid})`}
+          />
+        </svg>
+        <div className="bp-donut-center">
+          <span className="bp-donut-val">{total}</span>
           <span className="bp-donut-max">/{max}</span>
         </div>
       </div>
@@ -448,9 +485,12 @@ function MotivationDetail({ sec, c }) {
       </div>
 
       <div className="bp-rmi-donuts">
-        <DonutChart value={rmi.intrinsicAvg}  max={rmi.intrinsicMax}  label="Intrinsic" color={c.bar} />
-        <DonutChart value={rmi.motivationAvg} max={rmi.motivationMax} label="Overall"   color={c.bar} />
-        <DonutChart value={rmi.extrinsicAvg}  max={rmi.extrinsicMax}  label="Extrinsic" color={c.bar} />
+        <DonutChart value={rmi.intrinsicAvg} max={rmi.intrinsicMax} label="Intrinsic" color={c.bar} />
+        <SplitDonutChart
+          intrinsicVal={rmi.intrinsicAvg} extrinsicVal={rmi.extrinsicAvg}
+          max={rmi.motivationMax} label="Overall" intrinsicColor={c.bar}
+        />
+        <DonutChart value={rmi.extrinsicAvg} max={rmi.extrinsicMax} label="Extrinsic" color={EXTRINSIC_COLOR} />
       </div>
 
       <BarList
