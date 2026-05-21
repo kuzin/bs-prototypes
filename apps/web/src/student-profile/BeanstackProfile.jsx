@@ -399,6 +399,34 @@ function SectionDetail({ student, sectionKey }) {
   );
 }
 
+// ─── Donut chart ─────────────────────────────────────────────────────────────
+function DonutChart({ value, max, label, color, size = 84 }) {
+  const sw = 9;
+  const r = (size - sw) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = circ * Math.max(0, Math.min(1, value / max));
+  const mid = size / 2;
+  return (
+    <div className="bp-donut-wrap">
+      <div className="bp-donut-chart" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke="#E5E7EB" strokeWidth={sw} />
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke={color} strokeWidth={sw}
+            strokeLinecap="round"
+            strokeDasharray={`${dash} ${circ - dash}`}
+            transform={`rotate(-90 ${mid} ${mid})`}
+          />
+        </svg>
+        <div className="bp-donut-center">
+          <span className="bp-donut-val">{value}</span>
+          <span className="bp-donut-max">/{max}</span>
+        </div>
+      </div>
+      <div className="bp-donut-label">{label}</div>
+    </div>
+  );
+}
+
 // ─── Motivation detail ────────────────────────────────────────────────────────
 function MotivationDetail({ sec, c }) {
   const [periodIdx, setPeriodIdx] = useState(0);
@@ -419,27 +447,16 @@ function MotivationDetail({ sec, c }) {
         </select>
       </div>
 
-      <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
-        {[
-          { label: "Avg Intrinsic Score",  val: rmi.intrinsicAvg,  max: rmi.intrinsicMax,  delta: rmi.intrinsicDelta },
-          { label: "Avg Motivation Score", val: rmi.motivationAvg, max: rmi.motivationMax, delta: rmi.motivationDelta },
-          { label: "Avg Extrinsic Score",  val: rmi.extrinsicAvg,  max: rmi.extrinsicMax,  delta: rmi.extrinsicDelta },
-        ].map(({ label, val, max, delta }) => (
-          <StatCard
-            key={label}
-            value={val}
-            unit={`/${max}`}
-            label={label}
-            footer={`${delta > 0 ? '▲' : '▼'}${Math.abs(delta)}%`}
-            footerColor={delta > 0 ? '#16A97A' : '#DC2626'}
-          />
-        ))}
+      <div className="bp-rmi-donuts">
+        <DonutChart value={rmi.intrinsicAvg}  max={rmi.intrinsicMax}  label="Intrinsic" color={c.bar} />
+        <DonutChart value={rmi.motivationAvg} max={rmi.motivationMax} label="Overall"   color={c.bar} />
+        <DonutChart value={rmi.extrinsicAvg}  max={rmi.extrinsicMax}  label="Extrinsic" color={c.bar} />
       </div>
 
       <BarList
         items={[
-          { label: "Intrinsic", value: sec.intrinsic, color: c.bar, valueLabel: String(sec.intrinsic), delta: sec.intrinsicDelta },
-          { label: "Extrinsic", value: sec.extrinsic, color: c.bar, valueLabel: String(sec.extrinsic), delta: sec.extrinsicDelta },
+          { label: "Intrinsic", value: sec.intrinsic, color: c.bar, valueLabel: String(sec.intrinsic) },
+          { label: "Extrinsic", value: sec.extrinsic, color: c.bar, valueLabel: String(sec.extrinsic) },
         ]}
       />
     </Card>
@@ -451,38 +468,37 @@ function MotivationDetail({ sec, c }) {
 
     <Card>
       <SectionHeading>Recommendations</SectionHeading>
-      <div className="bp-rmi-recs">
-        <StatCard
-          value={rmi.readingGoalMinutes}
-          unit=" min"
-          label="Recommended Reading Goal"
-          footer="daily"
-        />
-        <div className="bp-rmi-rec-actions">
-          <div className="bp-rmi-rec-actions-label">Recommended Actions</div>
-          {rmi.recommendedActions.map((a, i) => (
-            <div key={i} className="bp-rmi-rec-action">
-              <Ic name="ti-circle-check" size={16} style={{ flexShrink: 0, marginTop: 1 }} />
-              <p className="bp-rmi-rec-action-text">
-                <strong>{a.label}:</strong> {a.text}
-              </p>
-            </div>
-          ))}
-        </div>
+      <div className="bp-rmi-goal-row">
+        <span className="bp-rmi-goal-num">{rmi.readingGoalMinutes}</span>
+        <span className="bp-rmi-goal-unit"> min/day</span>
+        <span className="bp-rmi-goal-desc">recommended reading goal</span>
       </div>
+      <BarList
+        showBar={false}
+        divided={false}
+        items={rmi.recommendedActions.map((a) => ({
+          icon: <svg viewBox="0 0 16 16" width="14" height="14" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="8" fill="currentColor"/><path d="M5 8.2 7 10.2 11 6" stroke="#fff" strokeWidth="1.6"/></svg>,
+          iconColor: c.bar,
+          label: a.label,
+          sublabel: a.text,
+        }))}
+      />
     </Card>
 
     <Card>
       <SectionHeading>Motivator Rankings</SectionHeading>
       <BarList
-        items={rmi.rankings.map((m, i) => ({
-          prefix: i + 1,
-          label: m.name,
-          value: (m.score / m.max) * 100,
-          color: c.bar,
-          valueLabel: String(m.score),
-          delta: m.delta,
-        }))}
+        items={rmi.rankings.map((m) => {
+          const iconKey = m.name === "Social Connection" ? "social" : m.name.toLowerCase();
+          return {
+            icon: cloneElement(RMI_ICONS[iconKey], { width: 15, height: 15 }),
+            iconColor: c.bar,
+            label: m.name,
+            value: (m.score / m.max) * 100,
+            color: c.bar,
+            valueLabel: String(m.score),
+          };
+        })}
       />
     </Card>
   </>);

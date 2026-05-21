@@ -1741,6 +1741,87 @@
 }
 
 /* ─── RMI summary (Motivation detail) ───────────────────────────────────────── */
+/* ─── RMI Donut charts ───────────────────────────────────────────────────── */
+.bp-rmi-donuts {
+  display: flex;
+  justify-content: space-around;
+  padding: 4px 0 16px;
+  gap: 8px;
+}
+
+.bp-donut-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+}
+
+.bp-donut-chart {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.bp-donut-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+}
+
+.bp-donut-val {
+  font-size: 18px;
+  font-weight: 900;
+  color: #1E293B;
+  line-height: 1;
+}
+
+.bp-donut-max {
+  font-size: 10px;
+  font-weight: 700;
+  color: #94A3B8;
+  align-self: flex-end;
+  margin-bottom: 2px;
+}
+
+.bp-donut-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748B;
+  text-align: center;
+}
+
+/* ─── RMI Goal row ───────────────────────────────────────────────────────── */
+.bp-rmi-goal-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #F0F0F0;
+}
+
+.bp-rmi-goal-num {
+  font-size: 26px;
+  font-weight: 900;
+  color: #1E293B;
+  line-height: 1;
+}
+
+.bp-rmi-goal-unit {
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748B;
+}
+
+.bp-rmi-goal-desc {
+  font-size: 13px;
+  font-weight: 500;
+  color: #94A3B8;
+  margin-left: 4px;
+}
+
 .bp-rmi-header {
   display: flex;
   align-items: center;
