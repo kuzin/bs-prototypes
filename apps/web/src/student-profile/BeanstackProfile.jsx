@@ -58,9 +58,9 @@ function sectionScore(key, sec) {
   return key === "motivation" ? motivationScore(sec) : sec.score;
 }
 const STATUS_ICONS = {
-  ok:   (c) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 8.2 7.2 10 10.5 6.5"/></svg>,
-  warn: (c) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2.5 1.5 13.5h13z"/><path d="M8 6.5v3M8 11.5v.5"/></svg>,
-  bad:  (c) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 5.5 10.5 10.5M10.5 5.5 5.5 10.5"/></svg>,
+  ok:   (c) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="8" fill={c}/><path d="M5 8.2 7 10.2 11 6" stroke="#fff" strokeWidth="1.6"/></svg>,
+  warn: (c) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="8" fill={c}/><path d="M8 5.5v3.5" stroke="#fff" strokeWidth="1.7"/><circle cx="8" cy="11.5" r="0.9" fill="#fff"/></svg>,
+  bad:  (c) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="8" fill={c}/><path d="M5.5 5.5 10.5 10.5M10.5 5.5 5.5 10.5" stroke="#fff" strokeWidth="1.6"/></svg>,
 };
 function statusIndicator(score) {
   if (score >= 75) return { render: STATUS_ICONS.ok,   color: "#16A97A" };
