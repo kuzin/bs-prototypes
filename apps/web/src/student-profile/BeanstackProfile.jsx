@@ -17,6 +17,7 @@ import { StatCard, CardNote } from '../ris/components/Cards'
 import '../ris/components/Table.css'
 import { BackBar } from "../BackBar";
 import { Sidebar } from '../ris/components/Sidebar';
+import { BennyBubble } from '../ris/components/BennyBubble';
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
 // Monthly density modifiers per student profile (index 0 = Jan, 11 = Dec)
@@ -344,13 +345,7 @@ function Overview({ student, onNavigate }) {
       {/* Benny Says */}
       <Card>
         <SectionHeading>Benny Says...</SectionHeading>
-        <div className="bp-benny">
-          <img className="bp-benny-avatar" src="/bs-prototypes/benny.png" alt="Benny" />
-          <div className="bp-benny-body">
-            <div className="bp-benny-bubble">{student.bennySummary}</div>
-            <div className="bp-benny-timestamp">Analysis last run on {student.lastRun}</div>
-          </div>
-        </div>
+        <BennyBubble timestamp={student.lastRun}>{student.bennySummary}</BennyBubble>
       </Card>
 
       {/* Recommended Actions */}
@@ -439,12 +434,7 @@ function MotivationDetail({ sec, c }) {
 
     <Card>
       <SectionHeading>Benny Says...</SectionHeading>
-      <div className="bp-benny">
-        <img className="bp-benny-avatar" src="/bs-prototypes/benny.png" alt="Benny" />
-        <div className="bp-benny-body">
-          <div className="bp-benny-bubble">{rmi.bennySummary}</div>
-        </div>
-      </div>
+      <BennyBubble>{rmi.bennySummary}</BennyBubble>
     </Card>
 
     <Card>
@@ -952,7 +942,7 @@ const STUDENTS = {
     grade: "7th Grade",
     lastRun: "May 15 at 9:55am",
     bennySummary:
-      "Marcus is an outstanding reader. He's maintained an 18-day reading streak — the longest in the class — and is reading well above grade level at 870L. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with only 1 flagged session all year. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
+      "Marcus is an outstanding reader. He's logged reading on 21 of the last 30 days — the highest consistency in the class — and is reading well above grade level at 870L. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with only 1 flagged session all year. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
     sections: {
       motivation: {
         status: "Strong",
@@ -1013,7 +1003,7 @@ const STUDENTS = {
           },
         ],
         actions: [
-          { title: "Nominate Marcus for a reading recognition award", body: "His 18-day streak and near-perfect motivation scores make him an ideal candidate. Public recognition could also strengthen classmates' motivation." },
+          { title: "Nominate Marcus for a reading recognition award", body: "His consistent reading record and near-perfect motivation scores make him an ideal candidate. Public recognition could also strengthen classmates' motivation." },
           { title: "Give Marcus a voice — try a student book recommendation", body: "High-curiosity, high-enjoyment readers like Marcus do well as peer recommenders. A short class book talk would channel his engagement productively." },
         ],
       },
@@ -1082,7 +1072,7 @@ const STUDENTS = {
           },
         ],
         actions: [
-          { title: "Keep streak accountability low-touch", body: "Marcus is highly self-directed. A weekly leaderboard or quiet streak counter is all he needs — daily nudges would feel patronizing." },
+          { title: "Keep habits accountability light-touch", body: "Marcus is highly self-directed. A weekly leaderboard or simple goal counter is all he needs — daily nudges would feel patronizing." },
           { title: "Consider raising Marcus's daily goal to 40 minutes", body: "He's consistently hitting 30+ minutes and his engagement shows no signs of burnout. A modest goal increase could deepen his growth." },
         ],
       },
@@ -1124,9 +1114,9 @@ const STUDENTS = {
       },
     },
     recommendedActions: [
-      { title: "Nominate Marcus for a reading recognition award", body: "His 18-day streak and near-perfect motivation scores make him an ideal candidate.", section: "motivation" },
+      { title: "Nominate Marcus for a reading recognition award", body: "His consistent reading record and near-perfect motivation scores make him an ideal candidate.", section: "motivation" },
       { title: "Celebrate his near-perfect integrity record", body: "Only 1 flagged session all year — a brief shoutout reinforces the behavior for the class.", section: "integrity" },
-      { title: "Keep streak accountability low-touch", body: "Marcus is self-directed. A weekly leaderboard is enough — he doesn't need daily nudges.", section: "habits" },
+      { title: "Keep habits accountability light-touch", body: "Marcus is self-directed. A weekly leaderboard or simple goal counter is enough — he doesn't need daily nudges.", section: "habits" },
       { title: "Recommend titles in the 900–950L range", body: "He's at 870L and climbing. He's significantly above grade level and ready for a real challenge.", section: "skills" },
     ],
   },
@@ -1137,7 +1127,7 @@ const STUDENTS = {
     grade: "6th Grade",
     lastRun: "May 15 at 9:55am",
     bennySummary:
-      "Anne is making real progress this month! Her reading habits are strong — she's on a 4-day streak and has already logged 85 minutes this week. Her Lexile average has climbed 50 points since April, and she's consistently choosing harder books. Integrity is improving, with flags down from 7 to 4. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and 2 unfinished BTWB conversations that are worth following up on.",
+      "Anne is making real progress this month! Her reading habits are building — she's logged reading on 10 of the last 30 days and has already logged 85 minutes this week. Her Lexile average has climbed 50 points since April, and she's consistently choosing harder books. Integrity is improving, with flags down from 7 to 4. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and 2 unfinished BTWB conversations that are worth following up on.",
     sections: {
       motivation: {
         status: "Watch",
@@ -1155,7 +1145,7 @@ const STUDENTS = {
             readingGoalMinutes: 15,
             bennySummary: "Anne's motivation is mixed this period. Recognition and Social Connection are her clearest levers — she responds well to public acknowledgment and peer interaction. Her Enjoyment score has slipped, which is worth watching. A shoutout or leaderboard mention could give her a quick boost while you work on rebuilding deeper engagement.",
             recommendedActions: [
-              { label: "Recognition",       text: "Recognize Anne for reading accomplishments (like meeting their goal, or a reading streak) with a high five or a shoutout." },
+              { label: "Recognition",       text: "Recognize Anne for reading accomplishments (like meeting her goal or logging consistently) with a high five or a shoutout." },
               { label: "Social Connection", text: "Encourage Anne to use Beanstack's friends and leaderboards functionality." },
             ],
             rankings: [
@@ -1300,7 +1290,7 @@ const STUDENTS = {
           },
         ],
         actions: [
-          { title: "Celebrate the streak — encourage logging today", body: "Anne's personal best is 6 days. Logging today would tie it. A quick nudge could be all she needs." },
+          { title: "Encourage Anne to keep logging consistently", body: "She's been steadily building logging days this month. A quick nudge today can help reinforce the habit." },
           { title: "Help Anne hit her daily goal more consistently", body: "She's meeting her 20-minute goal on reading days but skipping Wed and Sun regularly. A quick habit check-in could smooth that out." },
         ],
       },
@@ -1344,7 +1334,7 @@ const STUDENTS = {
     recommendedActions: [
       { title: "Connect Anne's reading to a self-chosen goal", body: "Extrinsic motivation is down 4 pts. Her top motivators are Recognition and Social Connection.", section: "motivation" },
       { title: "Follow up on Anne's 2 unfinished BTWB conversations", body: "She hasn't completed 2 open reflections. A quick prompt before her next log could help.", section: "integrity" },
-      { title: "Encourage logging today to tie her personal best streak", body: "Anne's on a 4-day streak — her best is 6. A quick nudge today could lock in the habit.", section: "habits" },
+      { title: "Encourage Anne to keep up her logging momentum", body: "She's been logging steadily this week. A quick nudge today can reinforce the habit while motivation is up.", section: "habits" },
       { title: "Suggest titles in the 760–800L range", body: "Anne's Lexile avg is 730L and rising. She's ready for a meaningful step up.", section: "skills" },
     ],
   },
@@ -1355,7 +1345,7 @@ const STUDENTS = {
     grade: "6th Grade",
     lastRun: "May 15 at 9:55am",
     bennySummary:
-      "Tyler needs immediate attention. He's logged only 1 day this week and his reading streak has reset multiple times. His Lexile average has declined 15 points since March — the only student in the class trending downward. He has 13 flagged sessions including 6 suspected over-logs, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.",
+      "Tyler needs immediate attention. He has no logged reading days in the past 30 days — the only student in the class with zero recent activity. His Lexile average has declined 15 points since March, and he has 13 flagged sessions including 6 suspected over-logs, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.",
     sections: {
       motivation: {
         status: "Watch",

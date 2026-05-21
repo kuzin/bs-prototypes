@@ -3937,13 +3937,18 @@ export function App() {
           <Section
             id="sfr-benny-bubble"
             title="BennyBubble"
-            desc={<>Benny's avatar + speech bubble with a left-pointing chat arrow. Pass text or JSX as <code>children</code>. Use <code>{'<strong>'}</code> for bold emphasis.</>}
+            desc={<>Benny's avatar + speech bubble with a left-pointing chat arrow. Pass text or JSX as <code>children</code>. Use <code>{'<strong>'}</code> for bold emphasis. Pass <code>timestamp</code> to show an "Analysis last run on …" line below the bubble.</>}
           >
             <Variant label="default">
               <BennyBubble>
                 Students started <strong>16</strong> Book Talks with Benny and completed <strong>14</strong> so far this week.
                 Most students are positively engaged in the books they finished, while Beanstack detected <strong>11</strong> logs
                 over your site's 50-minute warning.
+              </BennyBubble>
+            </Variant>
+            <Variant label="with timestamp">
+              <BennyBubble timestamp="May 15 at 9:55am">
+                Marcus is an outstanding reader. He's logged reading on <strong>21 of the last 30 days</strong> — the highest consistency in the class — and is reading well above grade level at 870L.
               </BennyBubble>
             </Variant>
           </Section>
