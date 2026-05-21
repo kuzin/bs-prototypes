@@ -7,6 +7,10 @@ import './ProgressBar.css'
  * <ProgressBar value={62} max={100} color="#E8866A" label="Engagement" valueLabel="62%" />
  * <ProgressBar value={3.1} max={4} color="#E8866A" label="Enjoyment" valueLabel="3.1" subLabel="Reading for fun" />
  *
+ * Pass `inline` to render the value beside the bar on a single line — best
+ * inside narrow table cells where the default stacked layout wraps:
+ *   <ProgressBar inline value={62} valueLabel="62%" />
+ *
  * sizes: sm | md | lg (changes bar thickness)
  */
 export function ProgressBar({
@@ -17,9 +21,25 @@ export function ProgressBar({
   valueLabel,
   subLabel,
   size = 'md',
+  inline = false,
   className = '',
 }) {
   const pct = Math.max(0, Math.min(100, (value / max) * 100))
+  const bar = (
+    <div className="pgb-track">
+      <div className="pgb-fill" style={{ width: `${pct}%`, background: color }} />
+    </div>
+  )
+
+  // Inline layout: bar + value side-by-side, no header row.
+  if (inline) {
+    return (
+      <div className={`pgb pgb--inline pgb--${size} ${className}`.trim()}>
+        {bar}
+        {valueLabel != null && <span className="pgb-value">{valueLabel}</span>}
+      </div>
+    )
+  }
 
   const hasHeader = label || valueLabel || subLabel
   return (
@@ -33,9 +53,7 @@ export function ProgressBar({
           {valueLabel != null && <span className="pgb-value">{valueLabel}</span>}
         </div>
       )}
-      <div className="pgb-track">
-        <div className="pgb-fill" style={{ width: `${pct}%`, background: color }} />
-      </div>
+      {bar}
     </div>
   )
 }

@@ -114,9 +114,9 @@ export const SCHOOLS_TO_WATCH = [
 export const DISTRICT_FUNNEL = [
   { stage: 'Enrolled Students', count: 12400, pct: 100, delta: null, note: 'Active roster in Beanstack' },
   { stage: 'Logged This Month', count:  9672, pct:  78, delta:   +4, note: 'At least 1 log in May 2025' },
-  { stage: 'Weekly Habit',      count:  6820, pct:  55, delta:   +6, note: '1+ log every week for 4+ weeks' },
-  { stage: 'Daily Habit',       count:  3100, pct:  25, delta:   +3, note: '5+ days logged per week' },
-  { stage: '30-Day Streak',     count:  1860, pct:  15, delta:   +2, note: 'Unbroken streak ≥ 30 days' },
+  { stage: 'Logged This Week',  count:  6820, pct:  55, delta:   +6, note: '1+ log every week for 4+ weeks' },
+  { stage: 'Logged Yesterday',  count:  3100, pct:  25, delta:   +3, note: '5+ days logged per week' },
+  { stage: 'Has A Current Streak', count: 1860, pct: 15, delta:  +2, note: 'Unbroken streak ≥ 30 days' },
 ];
 
 // ── Lexile growth per school ───────────────────────────────────────────────
@@ -367,19 +367,25 @@ export const MOTIVATION_BY_GRADE = [
 
 // Behavioral signals from reading logs that proxy specific RMI intrinsic factors
 export const MOTIVATION_SIGNALS = [
-  { signal: 'Logged when no challenge active', factor: 'Enjoyment',  pct: 31, delta: 4 },
-  { signal: 'Self-selected book',              factor: 'Curiosity',  pct: 44, delta: 7 },
-  { signal: 'Exceeded minimum log time',       factor: 'Challenge',  pct: 58, delta: 5 },
-  { signal: 'New book started within 48h',     factor: 'Curiosity',  pct: 22, delta: 3 },
+  { signal: 'Logged when no challenge active',  factor: 'Enjoyment',  pct: 31, delta:  4 },
+  { signal: 'Self-selected book',               factor: 'Curiosity',  pct: 44, delta:  7 },
+  { signal: 'Exceeded minimum log time',        factor: 'Challenge',  pct: 58, delta:  5 },
+  { signal: 'New book started within 48h',      factor: 'Curiosity',  pct: 22, delta:  3 },
+  { signal: 'Re-read a previously logged book', factor: 'Enjoyment',  pct: 18, delta:  2 },
+  { signal: 'Logged on a weekend or holiday',   factor: 'Enjoyment',  pct: 41, delta:  6 },
+  { signal: 'Finished a book above grade band', factor: 'Challenge',  pct: 27, delta:  4 },
+  { signal: 'Tried a new genre this month',     factor: 'Curiosity',  pct: 35, delta:  5 },
+  { signal: 'Logged 3+ sessions in one day',    factor: 'Enjoyment',  pct: 14, delta: -1 },
+  { signal: 'Maintained streak ≥ 14 days',      factor: 'Challenge',  pct: 24, delta:  3 },
 ];
 
 // ── Engagement funnel ─────────────────────────────────────────────────────
 export const ENGAGEMENT_FUNNEL = [
   { stage: 'Enrolled Students',          count: 2510, pct: 100, delta: null,  note: 'Active roster in Beanstack' },
   { stage: 'Logged This Month',           count: 1958, pct: 78,  delta: +4,   note: 'At least 1 log in May 2025' },
-  { stage: 'Weekly Habit',               count: 1382, pct: 55,  delta: +6,   note: '1+ log every week for 4+ weeks' },
-  { stage: 'Daily Habit',                count: 628,  pct: 25,  delta: +3,   note: '5+ days logged per week' },
-  { stage: '30-Day Streak',              count: 377,  pct: 15,  delta: +2,   note: 'Unbroken streak ≥ 30 days' },
+  { stage: 'Logged This Week',           count: 1382, pct: 55,  delta: +6,   note: '1+ log every week for 4+ weeks' },
+  { stage: 'Logged Yesterday',           count: 628,  pct: 25,  delta: +3,   note: '5+ days logged per week' },
+  { stage: 'Has A Current Streak',       count: 377,  pct: 15,  delta: +2,   note: 'Unbroken streak ≥ 30 days' },
 ];
 
 // ── Grade-level performance ───────────────────────────────────────────────

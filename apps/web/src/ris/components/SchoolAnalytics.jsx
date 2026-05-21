@@ -1,5 +1,4 @@
 import { ResponsiveLine } from '@nivo/line'
-import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, SCHOOL_STATS, SCHOOL_DETAILS, SCHOOL_HEALTH,
   RMI_TRENDS, ROI_TRENDS,
@@ -7,14 +6,15 @@ import {
 } from '../data'
 import { Hero } from './Hero'
 import {
-  NIVO_THEME, LINE_MARGIN, BAR_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
-  SliceTooltip, ChartLegend, BarTooltip,
+  NIVO_THEME, LINE_MARGIN, AXIS_BOTTOM, AXIS_LEFT,
+  SliceTooltip, ChartLegend,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
 import { ProgressBar } from './ProgressBar'
 import { BarList } from './BarList'
 import { Funnel } from './Funnel'
-import './Analytics.css'
+import { TrendChart } from './TrendChart'
+import './SchoolAnalytics.css'
 
 const ANALYTICS_COLOR = '#0DA7BC'
 
@@ -36,9 +36,9 @@ function buildSchoolFunnel(school, stats) {
   const stages = [
     { stage: 'Enrolled Students', note: 'Active roster in Beanstack' },
     { stage: 'Logged This Month', note: 'At least 1 log in May 2025' },
-    { stage: 'Weekly Habit',      note: '1+ log every week for 4+ weeks' },
-    { stage: 'Daily Habit',       note: '5+ days logged per week' },
-    { stage: '30-Day Streak',     note: 'Unbroken streak ≥ 30 days' },
+    { stage: 'Logged This Week',  note: '1+ log every week for 4+ weeks' },
+    { stage: 'Logged Yesterday',  note: '5+ days logged per week' },
+    { stage: 'Has A Current Streak', note: 'Unbroken streak ≥ 30 days' },
   ]
   const deltas = [null, +4, +6, +3, +2]
   return stages.map((s, i) => ({
@@ -175,7 +175,7 @@ export function SchoolAnalytics({ schoolId }) {
             { color: '#CBD5E1',    label: 'District avg', dashed: true },
           ]} />}
         >
-          <div style={{ height: 200 }}>
+          <div style={{ flex: 1, minHeight: 240 }}>
             <ResponsiveLine
               data={rmiNivo}
               theme={NIVO_THEME}
@@ -214,39 +214,19 @@ export function SchoolAnalytics({ schoolId }) {
             { color: '#94A3B8',    label: 'RMI' },
           ]} />}
         >
-          <div style={{ height: 230 }}>
-            <ResponsiveBar
-              data={schoolGrades}
-              keys={['engagement', 'rmi']}
-              indexBy="grade"
-              groupMode="grouped"
-              theme={NIVO_THEME}
-              margin={BAR_MARGIN}
-              padding={0.3}
-              innerPadding={2}
-              colors={({ id }) => id === 'engagement' ? school.color : '#94A3B8'}
-              borderRadius={3}
-              axisBottom={AXIS_BOTTOM}
-              axisLeft={{ ...AXIS_LEFT, tickValues: [40, 60, 80, 100] }}
-              enableGridY
-              enableLabel={false}
-              minValue={40}
-              maxValue={90}
-              tooltip={({ indexValue, data }) => (
-                <BarTooltip
-                  data={data}
-                  indexValue={`Grade ${indexValue}`}
-                  accent={ANALYTICS_COLOR}
-                  keys={['engagement', 'rmi']}
-                  labels={{
-                    engagement: { label: 'Active %', color: school.color },
-                    rmi:        { label: 'RMI score', color: '#94A3B8' },
-                  }}
-                  context={d => <>{d.count.toLocaleString()} students</>}
-                />
-              )}
-            />
-          </div>
+          <TrendChart
+            type="bar"
+            data={schoolGrades}
+            xKey="grade"
+            yDomain={[40, 90]}
+            yTicks={[40, 60, 80, 100]}
+            height="md"
+            xPadding={{ left: 12, right: 12 }}
+            series={[
+              { key: 'engagement', name: 'Active %',  color: school.color },
+              { key: 'rmi',        name: 'RMI score', color: '#94A3B8' },
+            ]}
+          />
         </ChartCard>
 
         <ChartCard
@@ -262,7 +242,7 @@ export function SchoolAnalytics({ schoolId }) {
             { color: '#E8866A',    label: 'Incidents',    dashed: true },
           ]} />}
         >
-          <div style={{ height: 210 }}>
+          <div style={{ flex: 1, minHeight: 240 }}>
             <ResponsiveLine
               data={roiNivo}
               theme={NIVO_THEME}
@@ -287,16 +267,6 @@ export function SchoolAnalytics({ schoolId }) {
                 />
               )}
             />
-          </div>
-          <div className="an-roi-callouts">
-            <div className="an-callout an-callout--pos">
-              <span className="an-callout-val">r = 0.82</span>
-              <span className="an-callout-lbl">Engagement ↔ Attendance</span>
-            </div>
-            <div className="an-callout an-callout--neg">
-              <span className="an-callout-val">r = −0.76</span>
-              <span className="an-callout-lbl">Engagement ↔ Incidents</span>
-            </div>
           </div>
         </ChartCard>
 

@@ -11,19 +11,18 @@ import './Cards.css'
  *   color="#E8866A"
  * />
  */
-export function StatCard({ value, unit, label, footer, color, footerColor }) {
+export function StatCard({ value, unit, label, color }) {
+  // Explicit `color` wins by setting --rc-stat-color inline. Otherwise the
+  // card inherits --rc-accent from the page / enclosing ChartCard via the
+  // CSS variable cascade — see .rc-stat in Cards.css.
+  const style = color ? { '--rc-stat-color': color } : undefined
   return (
-    <div className="rc-stat">
-      <div className="rc-stat-val" style={color ? { color } : undefined}>
+    <div className="rc-stat" style={style}>
+      <div className="rc-stat-val">
         {value}
         {unit && <span className="rc-stat-unit">{unit}</span>}
       </div>
       <div className="rc-stat-lbl">{label}</div>
-      {footer && (
-        <div className="rc-stat-sub" style={footerColor ? { color: footerColor } : undefined}>
-          {footer}
-        </div>
-      )}
     </div>
   )
 }
@@ -53,14 +52,16 @@ export function ChartCard({
   footer,
   children,
   bodyPad = 'flush',  // 'flush' | 'padded'
+  bodyMaxHeight,      // px — when set, caps body height and scrolls vertically (sticky header inside table/bar-list stays visible)
   className = '',
   span = 1,           // 1 = normal, 2 = wide (spans the sv-grid)
 }) {
-  const style = accent
+  const cardStyle = accent
     ? { '--rc-accent': accent, '--rc-accent-bg': `color-mix(in srgb, ${accent} 12%, white)` }
     : undefined
+  const bodyStyle = bodyMaxHeight ? { maxHeight: bodyMaxHeight, overflowY: 'auto' } : undefined
   return (
-    <div className={`rc-card${span === 2 ? ' rc-card--wide' : ''} ${className}`} style={style}>
+    <div className={`rc-card${span === 2 ? ' rc-card--wide' : ''} ${className}`} style={cardStyle}>
       <div className="rc-card-head">
         {icon && <div className="rc-card-icon">{icon}</div>}
         <div className="rc-card-title-wrap">
@@ -69,7 +70,7 @@ export function ChartCard({
         </div>
         {action && <div className="rc-card-action">{action}</div>}
       </div>
-      <div className={`rc-card-body rc-card-body--${bodyPad}`}>{children}</div>
+      <div className={`rc-card-body rc-card-body--${bodyPad}`} style={bodyStyle}>{children}</div>
       {footer && <div className="rc-card-foot">{footer}</div>}
     </div>
   )

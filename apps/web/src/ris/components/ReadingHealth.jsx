@@ -92,7 +92,6 @@ export function HealthStat({ section, score, delta, onClick }) {
       <div className="rh-stat-score">{score}</div>
       <div className="rh-stat-label">{section.label}</div>
       <div className="rh-stat-meta">
-        <span className="rh-stat-desc">{section.description}</span>
         {delta != null && <Delta value={delta} />}
       </div>
       {onClick && (

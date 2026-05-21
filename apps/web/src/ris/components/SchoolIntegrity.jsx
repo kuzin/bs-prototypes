@@ -1,5 +1,4 @@
 import { ResponsiveLine } from '@nivo/line'
-import { ResponsiveBar } from '@nivo/bar'
 import {
   SCHOOLS, SCHOOL_HEALTH, SCHOOL_INTEGRITY_TRENDS, BOOK_TALKS_BY_SCHOOL,
 } from '../data'
@@ -10,6 +9,7 @@ import {
   SliceTooltip, ChartLegend,
 } from './charts'
 import { StatCard, ChartCard } from './Cards'
+import { TrendChart } from './TrendChart'
 import './RisLayout.css'
 
 const COMPLETION_COLOR = '#1D4ED8'
@@ -25,7 +25,7 @@ export function SchoolIntegrity({ schoolId, onBack }) {
   const shortName = school.name.split(' ')[0]
 
   const ranked = [...BOOK_TALKS_BY_SCHOOL]
-    .map(b => ({ ...b, isThis: b.id === schoolId }))
+    .map(b => ({ ...b, name: b.name.split(' ')[0], isThis: b.id === schoolId }))
     .sort((a, b) => b.completionRate - a.completionRate)
 
   const trendNivo = [
@@ -74,7 +74,7 @@ export function SchoolIntegrity({ schoolId, onBack }) {
             { color: FLAG_COLOR,       label: 'Flag rate', dashed: true },
           ]} />}
         >
-          <div style={{ height: 220 }}>
+          <div style={{ flex: 1, minHeight: 240 }}>
             <ResponsiveLine
               data={trendNivo}
               theme={NIVO_THEME}
@@ -118,43 +118,21 @@ export function SchoolIntegrity({ schoolId, onBack }) {
           icon={INT_ICON}
           accent={COMPLETION_COLOR}
         >
-          <div style={{ height: 220 }}>
-            <ResponsiveBar
-              data={ranked}
-              keys={['completionRate']}
-              indexBy="name"
-              layout="horizontal"
-              theme={NIVO_THEME}
-              margin={{ top: 8, right: 32, bottom: 36, left: 96 }}
-              colors={({ data }) => data.isThis ? school.color : '#CBD5E1'}
-              borderRadius={4}
-              axisBottom={{ ...AXIS_BOTTOM, format: v => `${v}%`, tickValues: [0, 25, 50, 75, 100] }}
-              axisLeft={{ tickSize: 0, tickPadding: 10 }}
-              enableGridY={false}
-              enableLabel={false}
-              maxValue={100}
-              tooltip={({ data }) => (
-                <div className="sdb-tooltip" style={{ '--tip-accent': data.isThis ? school.color : COMPLETION_COLOR }}>
-                  <div className="sdb-tooltip-header">{data.name}</div>
-                  <div className="sdb-tooltip-series" style={{ '--series-color': data.isThis ? school.color : '#94A3B8' }}>
-                    <div className="sdb-tooltip-row">
-                      <span className="sdb-tooltip-dot" />
-                      <span className="sdb-tooltip-label">Completion rate</span>
-                      <span className="sdb-tooltip-val">{data.completionRate}%</span>
-                    </div>
-                  </div>
-                  <div className="sdb-tooltip-series" style={{ '--series-color': FLAG_COLOR }}>
-                    <div className="sdb-tooltip-row">
-                      <span className="sdb-tooltip-dot" />
-                      <span className="sdb-tooltip-label">Flag rate</span>
-                      <span className="sdb-tooltip-val">{data.flagRate}%</span>
-                    </div>
-                  </div>
-                  <div className="sdb-tooltip-context">{data.totalTalks} Book Talks this year</div>
-                </div>
-              )}
-            />
-          </div>
+          <TrendChart
+            type="bar"
+            layout="horizontal"
+            data={ranked}
+            xKey="name"
+            yDomain={[0, 100]}
+            yUnit="%"
+            yTicks={[0, 25, 50, 75, 100]}
+            height="md"
+            leftMargin={84}
+            tooltipFormatter={v => `${v}%`}
+            series={[
+              { key: 'completionRate', name: 'Completion rate', color: '#CBD5E1', colorFn: d => d.isThis ? school.color : '#CBD5E1' },
+            ]}
+          />
         </ChartCard>
 
       </div>

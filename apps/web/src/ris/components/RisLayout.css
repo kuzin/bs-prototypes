@@ -250,111 +250,20 @@
   padding: 20px 24px;
 }
 
-/* Shared school view card styles (carried over from old SchoolLayout.css) */
-.sv-stats-row {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin-bottom: 16px;
-}
-
-.sv-stat {
-  background: #fff;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  padding: 14px 16px;
-}
-
-.sv-stat-val {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  margin-bottom: 4px;
-}
-
-.sv-stat-lbl {
-  font-size: 13px;
-  color: #475569;
-  font-weight: 500;
-}
-
-.sv-stat-sub {
-  font-size: 13px;
-  color: #94A3B8;
-  margin-top: 2px;
-}
-
 .sv-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  gap: 16px;
 }
+
+/* Grid items default to min-width: auto (size-to-content), which lets a
+   wide child — e.g. a table with many columns — push its card past the
+   column boundary. Forcing min-width: 0 makes the card respect the grid
+   column width and any overflow happens inside the card. */
+.sv-grid > * { min-width: 0; }
 
 @media (max-width: 699px) {
   .sv-grid { grid-template-columns: 1fr; }
-}
-
-.sv-card {
-  background: #fff;
-  border: 1px solid #E5E7EB;
-  border-radius: 14px;
-  padding: 16px;
-}
-
-.sv-card--wide { grid-column: span 2; }
-
-.sv-card h3 {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1E293B;
-  letter-spacing: -0.01em;
-  margin-bottom: 4px;
-}
-
-.sv-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 4px;
-}
-
-.sv-note {
-  font-size: 13px;
-  color: #94A3B8;
-  margin-bottom: 8px;
-}
-
-.sv-drill {
-  font-size: 13px;
-  font-weight: 600;
-  color: #0DA7BC;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: opacity 0.12s;
-}
-.sv-drill:hover { opacity: 0.7; }
-
-.sv-legend {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 8px;
-  font-size: 13px;
-  color: #64748B;
-}
-
-.sv-card-note {
-  font-size: 13px;
-  color: #64748B;
-  margin-top: 12px;
-  line-height: 1.6;
-  padding: 10px 12px;
-  background: #F8FAFC;
-  border-radius: 8px;
-  border: 1px solid #E2E8F0;
 }
 
 /* ── District site links (sidebar) ── */
@@ -430,91 +339,6 @@
   line-height: 1.4;
   font-style: italic;
 }
-
-/* ── Integrity page — review list ── */
-.int-review-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.int-review-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  background: #F8FAFC;
-  border-radius: 8px;
-  border: 1px solid #E2E8F0;
-}
-
-.int-review-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.int-review-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.int-review-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: #1E293B;
-  margin-bottom: 4px;
-}
-
-.int-review-meta {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.int-flag-chip {
-  font-size: 13px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: #F1F5F9;
-  color: #64748B;
-}
-.int-flag-chip--high {
-  background: #FEF2F2;
-  color: #DC2626;
-}
-
-.int-trend-chip {
-  font-size: 13px;
-  font-weight: 600;
-  padding: 2px 5px;
-  border-radius: 4px;
-}
-.int-trend-chip--up   { color: #16A97A; background: #F0FDF4; }
-.int-trend-chip--down { color: #DC2626; background: #FEF2F2; }
-
-.int-talks-chip {
-  font-size: 13px;
-  color: #94A3B8;
-}
-
-.int-review-btn {
-  font-size: 13px;
-  font-weight: 600;
-  color: #1D4ED8;
-  background: none;
-  border: 1px solid #BFDBFE;
-  border-radius: 6px;
-  padding: 4px 10px;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.12s;
-}
-.int-review-btn:hover { background: #EFF6FF; }
 
 /* ── Mobile: backdrop + top bar (sidebar handles its own drawer behavior) ── */
 @media (max-width: 699px) {

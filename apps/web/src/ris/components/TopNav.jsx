@@ -4,7 +4,6 @@ const TABS = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'habits',    label: 'Reading Habits' },
   { id: 'lexile',    label: 'Lexile Growth' },
-  { id: 'future',    label: 'Future State' },
 ]
 
 export function TopNav({ page, onPage, scope, onScope }) {

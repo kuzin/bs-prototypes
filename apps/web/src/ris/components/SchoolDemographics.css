@@ -1,0 +1,40 @@
+/* Recommended Actions list — stacked rows with a head (label + pill) and
+   a description. Hairline dividers between rows; left bar tints the row
+   when severity is critical/warning. */
+.dm-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.dm-action-row {
+  padding: 12px 0;
+  border-top: 1px solid #F1F5F9;
+}
+.dm-action-row:first-child { border-top: none; padding-top: 4px; }
+.dm-action-row:last-child  { padding-bottom: 4px; }
+
+.dm-action-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 6px;
+}
+
+.dm-action-school {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0F172A;
+  line-height: 1.3;
+}
+
+.dm-action-frl {
+  font-weight: 500;
+  color: #64748B;
+}
+
+.dm-action-text {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.5;
+}

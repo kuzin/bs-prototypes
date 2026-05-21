@@ -56,3 +56,20 @@
   border-radius: 4px;
   transition: width 0.4s ease;
 }
+
+/* ── Inline variant — bar + value on a single row, no stacked header.
+   Used in narrow table cells. ─────────────────────────────────────────── */
+.pgb--inline {
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+
+.pgb--inline .pgb-track {
+  flex: 1;
+  min-width: 40px;
+}
+
+.pgb--inline .pgb-value {
+  flex-shrink: 0;
+}

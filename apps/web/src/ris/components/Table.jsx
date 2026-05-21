@@ -24,6 +24,7 @@ export function Table({
   compact = false,
   bordered = false,
   flush = false,         // remove outer border + radius — use inside ChartCard bodyPad="flush"
+  collapse = false,      // on narrow viewports, collapse each row to a stacked card (label : value)
   stickyHeader = false,
   loading = false,
   empty,                 // string | node — shown when rows is empty
@@ -73,6 +74,7 @@ export function Table({
     compact && 'tbl--compact',
     bordered && 'tbl--bordered',
     flush && 'tbl--flush',
+    collapse && 'tbl--collapse',
     stickyHeader && 'tbl--sticky',
     className,
   ].filter(Boolean).join(' ')
@@ -127,7 +129,11 @@ export function Table({
                 const value = row[c.key]
                 const content = c.render ? c.render(value, row) : value
                 return (
-                  <td key={c.key} className={`tbl-td${c.align ? ` tbl-cell--${c.align}` : ''}`}>
+                  <td
+                    key={c.key}
+                    className={`tbl-td${c.align ? ` tbl-cell--${c.align}` : ''}`}
+                    data-label={typeof c.label === 'string' ? c.label : undefined}
+                  >
                     {content}
                   </td>
                 )
