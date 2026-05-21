@@ -26,10 +26,11 @@ const STATUS_CONFIG = {
   "Trending up": { icon: "ti-trending-up",    cls: "bp-status--trending" },
 };
 
-export function StatusBadge({ label, size = 11 }) {
+export function StatusBadge({ label, size = 11, accent }) {
   const cfg = STATUS_CONFIG[label] ?? { icon: "ti-circle-check", cls: "bp-status--strong" };
+  const style = accent ? { background: accent } : undefined;
   return (
-    <span className={`bp-status ${cfg.cls}`}>
+    <span className={`bp-status ${cfg.cls}`} style={style}>
       <Ic name={cfg.icon} size={size} />
       {label}
     </span>

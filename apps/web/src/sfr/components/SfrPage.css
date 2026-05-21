@@ -78,13 +78,6 @@
   margin-bottom: 8px;
 }
 
-/* Widen + shift the centered modal to clear the 48px PrototypeNav */
-.modal--center:has(.sm2-shell) {
-  width: min(860px, calc(100vw - 32px));
-  max-height: calc(100vh - 116px); /* 48px nav + 34px top + 34px bottom */
-  top: calc(50% - 24px); /* shift center up by half the nav height */
-}
-
 .sfr-stub-sub {
   font-size: 13px;
   font-weight: 400;

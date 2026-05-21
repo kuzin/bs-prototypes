@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, cloneElement } from "react";
 import "@bs/ui/css";
 import {
   C, LABEL, GENRE_COLORS,
@@ -13,10 +13,14 @@ import { IconButton, EmptyState, Divider } from '../ris/components/Primitives'
 import { Pill } from '../ris/components/Pill'
 import { ProgressBar } from '../ris/components/ProgressBar'
 import { BarList } from '../ris/components/BarList'
-import { StatCard, CardNote } from '../ris/components/Cards'
+import { StatCard, CardNote, ChartCard } from '../ris/components/Cards'
 import '../ris/components/Table.css'
 import { BackBar } from "../BackBar";
 import { Sidebar } from '../ris/components/Sidebar';
+import { BennyBubble } from '../ris/components/BennyBubble';
+import { RMI_ICONS } from '../ris/components/RmiIcons';
+import { SessionModal } from '../sfr/components/SessionModal';
+import { SESSIONS as SFR_SESSIONS } from '../sfr/data';
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
 // Monthly density modifiers per student profile (index 0 = Jan, 11 = Dec)
@@ -55,9 +59,15 @@ function motivationScore(sec) {
 function sectionScore(key, sec) {
   return key === "motivation" ? motivationScore(sec) : sec.score;
 }
-function compositeScore(sections) {
-  const vals = Object.entries(sections).map(([k, s]) => sectionScore(k, s));
-  return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+const STATUS_ICONS = {
+  ok:   (c) => <svg width="20" height="20" viewBox="0 0 16 16" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="8" fill={c}/><path d="M5 8.2 7 10.2 11 6" stroke="#fff" strokeWidth="1.6"/></svg>,
+  warn: (c) => <svg width="20" height="20" viewBox="0 0 16 16" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="8" fill={c}/><path d="M8 5.5v3.5" stroke="#fff" strokeWidth="1.7"/><circle cx="8" cy="11.5" r="0.9" fill="#fff"/></svg>,
+  bad:  (c) => <svg width="20" height="20" viewBox="0 0 16 16" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="8" fill={c}/><path d="M5.5 5.5 10.5 10.5M10.5 5.5 5.5 10.5" stroke="#fff" strokeWidth="1.6"/></svg>,
+};
+function statusIndicator(score) {
+  if (score >= 75) return { render: STATUS_ICONS.ok,   color: "#16A97A" };
+  if (score >= 50) return { render: STATUS_ICONS.warn, color: "#D97706" };
+  return             { render: STATUS_ICONS.bad,  color: "#DC2626" };
 }
 
 // ─── Section tag chip ─────────────────────────────────────────────────────────
@@ -108,8 +118,8 @@ function DropdownMenu({ items, onClose }) {
   );
 }
 
-// ─── Reusable student action buttons (3-dots + Log) ───────────────────────────
-function StudentActions() {
+// ─── Reusable student action buttons (3-dots + Log + Close) ──────────────────
+function StudentActions({ onClose }) {
   const [dotsOpen, setDotsOpen] = useState(false);
   const [logOpen,  setLogOpen]  = useState(false);
 
@@ -152,6 +162,14 @@ function StudentActions() {
         </Button>
         {logOpen && <DropdownMenu items={logItems} onClose={() => setLogOpen(false)} />}
       </div>
+      {onClose && (
+        <button className="bp-header-close" onClick={onClose} aria-label="Close profile">
+          <svg viewBox="0 0 14 14" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="2" y1="2" x2="12" y2="12" />
+            <line x1="12" y1="2" x2="2" y2="12" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
@@ -173,15 +191,7 @@ function StudentHeader({ student, onClose }) {
         </div>
       </div>
       <div className="bp-header-right">
-        <StudentActions />
-        {onClose && (
-          <IconButton variant="ghost" size="sm" onClick={onClose} aria-label="Close profile">
-            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="3" x2="13" y2="13" />
-              <line x1="13" y1="3" x2="3" y2="13" />
-            </svg>
-          </IconButton>
-        )}
+        <StudentActions onClose={onClose} />
       </div>
     </div>
   );
@@ -261,17 +271,8 @@ function PageHeader({ icon, title, right }) {
   );
 }
 
-// ─── Reading health color theme ───────────────────────────────────────────────
-function healthTheme(score) {
-  if (score >= 85) return { bar: "#16A97A", areaBg: "#E8FBF2", areaText: "#0A5E42", pillBg: "#0A5E42", icon: "ti-circle-check" };
-  if (score >= 70) return { bar: "#1A6DD5", areaBg: "#E6F1FF", areaText: "#1A4AB0", pillBg: "#1A4AB0", icon: "ti-circle-check" };
-  if (score >= 50) return { bar: "#D97706", areaBg: "#FEF3C7", areaText: "#854D0E", pillBg: "#854D0E", icon: "ti-alert-triangle" };
-  return                  { bar: "#DC2626", areaBg: "#FEE2E2", areaText: "#991B1B", pillBg: "#991B1B", icon: "ti-alert-triangle" };
-}
-
 // ─── Overview ─────────────────────────────────────────────────────────────────
 function Overview({ student, onNavigate }) {
-  const composite = compositeScore(student.sections);
   return (
     <div className="bp-content">
       <PageHeader
@@ -286,11 +287,53 @@ function Overview({ student, onNavigate }) {
         {Object.entries(student.sections).map(([key, sec]) => {
           const c = C[key];
           const score = sectionScore(key, sec);
-          const stat = key === "motivation" ? String(score) : sec.tileStat;
-          const unit = key === "motivation" ? "Score"
-                     : key === "integrity"  ? (parseInt(stat) === 1 ? "Flag" : "Flags")
-                     : key === "habits"     ? "Day Streak"
-                     : "Lexile";
+          const indicator = statusIndicator(score);
+
+          let insightNode;
+          if (key === "motivation") {
+            if (sec.motivatorInsight.type === "clear") {
+              insightNode = (
+                <div className="bp-tile-motivators">
+                  {sec.motivatorInsight.top.map(name => {
+                    const iconKey = name === "Social Connection" ? "social" : name.toLowerCase();
+                    return (
+                      <div key={name} className="bp-tile-motivator-row">
+                        <span className="bp-tile-motivator-icon">
+                          {cloneElement(RMI_ICONS[iconKey], { width: 14, height: 14 })}
+                        </span>
+                        {name}
+                      </div>
+                    );
+                  })}
+                </div>
+              );
+            } else {
+              insightNode = (
+                <div className="bp-tile-stat" style={{ fontSize: 13, opacity: 0.75, fontWeight: 500 }}>
+                  ⚠ No clear motivator found
+                </div>
+              );
+            }
+          } else if (key === "habits") {
+            insightNode = sec.daysRead30 > 0 ? (
+              <div className="bp-tile-stat">
+                {sec.daysRead30}<span className="bp-tile-unit"> of last 30 days</span>
+              </div>
+            ) : (
+              <div className="bp-tile-stat" style={{ fontSize: 13, opacity: 0.75, fontWeight: 500 }}>
+                No logging in past 30 days
+              </div>
+            );
+          } else {
+            const stat = sec.tileStat;
+            const unit = key === "integrity" ? (parseInt(stat) === 1 ? "Flag" : "Flags") : "Lexile";
+            insightNode = (
+              <div className="bp-tile-stat">
+                {stat}<span className="bp-tile-unit"> {unit}</span>
+              </div>
+            );
+          }
+
           return (
             <div
               key={key}
@@ -301,12 +344,12 @@ function Overview({ student, onNavigate }) {
               role="button"
               tabIndex={0}
             >
-              <div className="bp-tile-label">{LABEL[key]}</div>
-              <div className="bp-tile-stat">
-                {stat}<span className="bp-tile-unit"> {unit}</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+                <div className="bp-tile-label">{LABEL[key]}</div>
+                {indicator.render(indicator.color)}
               </div>
-              <div className="bp-tile-status">
-                <StatusBadge label={sec.status} />
+              <div style={{ flex: 1, display: "flex", alignItems: "center" }}>
+                {insightNode}
               </div>
             </div>
           );
@@ -316,74 +359,7 @@ function Overview({ student, onNavigate }) {
       {/* Benny Says */}
       <Card>
         <SectionHeading>Benny Says...</SectionHeading>
-        <div className="bp-benny">
-          <img className="bp-benny-avatar" src="/bs-prototypes/benny.png" alt="Benny" />
-          <div className="bp-benny-body">
-            <div className="bp-benny-bubble">{student.bennySummary}</div>
-            <div className="bp-benny-timestamp">Analysis last run on {student.lastRun}</div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Reading Health rollup */}
-      <Card>
-        <div className="bp-health-header">
-          <div className="bp-health-title">Reading Health</div>
-        </div>
-
-        {/* Colored score verdict */}
-        {(() => {
-          const ht = healthTheme(composite);
-          return (
-            <div className="bp-health-verdict" style={{ "--ht-bar": ht.bar, "--ht-text": ht.areaText, "--ht-light": ht.areaBg }}>
-              <div className="bp-health-verdict-row">
-                <div className="bp-health-verdict-score">
-                  <span className="bp-health-verdict-num">{composite}</span>
-                  <span className="bp-health-verdict-outof">/100</span>
-                </div>
-                <span className="bp-health-verdict-pill">
-                  <Ic name={ht.icon} size={12} />
-                  {student.healthStatus}
-                </span>
-              </div>
-              <div className="bp-health-verdict-track">
-                <ProgressBar value={composite} color={ht.bar} size="lg" />
-              </div>
-            </div>
-          );
-        })()}
-
-        <div className="bp-health-list">
-          {Object.entries(student.sections).map(([key, sec]) => {
-            const c = C[key];
-            return (
-              <div
-                key={key}
-                className="bp-health-row"
-                onClick={() => onNavigate(key)}
-                onKeyDown={e => e.key === "Enter" && onNavigate(key)}
-                role="button"
-                tabIndex={0}
-              >
-                <div className="bp-health-icon" style={{ "--section-bg": c.bg }}>
-                  <Ic name={c.icon} size={18} />
-                </div>
-                <div className="bp-health-row-body">
-                  <div className="bp-health-row-top">
-                    <span className="bp-health-row-name">{LABEL[key]}</span>
-                    <StatusBadge label={sec.status} />
-                  </div>
-                  <ProgressBar value={sectionScore(key, sec)} color={c.bar} />
-                </div>
-                <span className="bp-health-row-link">
-                  <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
-                    <polyline points="1,1 6,6 1,11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
-              </div>
-            );
-          })}
-        </div>
+        <BennyBubble timestamp={student.lastRun}>{student.bennySummary}</BennyBubble>
       </Card>
 
       {/* Recommended Actions */}
@@ -414,13 +390,78 @@ function SectionDetail({ student, sectionKey }) {
         icon={c.icon}
         iconBg={c.bg}
         title={`Reading ${LABEL[sectionKey]}`}
-        right={<StatusBadge label={sec.status} size={13} />}
+        right={<StatusBadge label={sec.status} size={13} accent={c.bar} />}
       />
       {sectionKey === "motivation" && <MotivationDetail sec={sec} c={c} />}
       {sectionKey === "integrity"  && <IntegrityDetail  sec={sec} c={c} />}
       {sectionKey === "habits"     && <HabitsDetail     sec={sec} c={c} />}
       {sectionKey === "skills"     && <SkillsDetail     sec={sec} c={c} firstName={firstName} />}
       <Card><ActionFooter actions={sec.actions} /></Card>
+    </div>
+  );
+}
+
+// ─── Donut charts ────────────────────────────────────────────────────────────
+const EXTRINSIC_COLOR = "#94A3B8";
+
+function DonutChart({ value, max, label, color, size = 84 }) {
+  const sw = 9;
+  const r = (size - sw) / 2;
+  const circ = 2 * Math.PI * r;
+  const dash = circ * Math.max(0, Math.min(1, value / max));
+  const mid = size / 2;
+  return (
+    <div className="bp-donut-wrap">
+      <div className="bp-donut-chart" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke="#E5E7EB" strokeWidth={sw} />
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke={color} strokeWidth={sw}
+            strokeLinecap="round"
+            strokeDasharray={`${dash} ${circ - dash}`}
+            transform={`rotate(-90 ${mid} ${mid})`}
+          />
+        </svg>
+        <div className="bp-donut-center">
+          <span className="bp-donut-val">{value}</span>
+          <span className="bp-donut-max">/{max}</span>
+        </div>
+      </div>
+      <div className="bp-donut-label">{label}</div>
+    </div>
+  );
+}
+
+function SplitDonutChart({ intrinsicVal, extrinsicVal, max, label, intrinsicColor, size = 84 }) {
+  const sw = 9;
+  const r = (size - sw) / 2;
+  const circ = 2 * Math.PI * r;
+  const mid = size / 2;
+  const dash1 = circ * Math.max(0, Math.min(1, intrinsicVal / max));
+  const dash2 = circ * Math.max(0, Math.min(1, extrinsicVal / max));
+  const angle1 = (intrinsicVal / max) * 360;
+  const total = Math.round((intrinsicVal + extrinsicVal) * 10) / 10;
+  return (
+    <div className="bp-donut-wrap">
+      <div className="bp-donut-chart" style={{ width: size, height: size }}>
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke="#E5E7EB" strokeWidth={sw} />
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke={intrinsicColor} strokeWidth={sw}
+            strokeLinecap="round"
+            strokeDasharray={`${dash1} ${circ - dash1}`}
+            transform={`rotate(-90 ${mid} ${mid})`}
+          />
+          <circle cx={mid} cy={mid} r={r} fill="none" stroke={EXTRINSIC_COLOR} strokeWidth={sw}
+            strokeLinecap="round"
+            strokeDasharray={`${dash2} ${circ - dash2}`}
+            transform={`rotate(${-90 + angle1} ${mid} ${mid})`}
+          />
+        </svg>
+        <div className="bp-donut-center">
+          <span className="bp-donut-val">{total}</span>
+          <span className="bp-donut-max">/{max}</span>
+        </div>
+      </div>
+      <div className="bp-donut-label">{label}</div>
     </div>
   );
 }
@@ -432,88 +473,55 @@ function MotivationDetail({ sec, c }) {
 
   return (<>
     <Card>
-      <div className="bp-rmi-header">
-        <SectionHeading>Reading Motivation Index</SectionHeading>
-        <select
-          className="bp-rmi-period-select"
-          value={periodIdx}
-          onChange={e => setPeriodIdx(Number(e.target.value))}
-        >
-          {sec.rmiHistory.map((r, i) => (
-            <option key={i} value={i}>{r.period} ({r.range})</option>
-          ))}
-        </select>
-      </div>
-
-      <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
-        {[
-          { label: "Avg Intrinsic Score",  val: rmi.intrinsicAvg,  max: rmi.intrinsicMax,  delta: rmi.intrinsicDelta },
-          { label: "Avg Motivation Score", val: rmi.motivationAvg, max: rmi.motivationMax, delta: rmi.motivationDelta },
-          { label: "Avg Extrinsic Score",  val: rmi.extrinsicAvg,  max: rmi.extrinsicMax,  delta: rmi.extrinsicDelta },
-        ].map(({ label, val, max, delta }) => (
-          <StatCard
-            key={label}
-            value={val}
-            unit={`/${max}`}
-            label={label}
-            footer={`${delta > 0 ? '▲' : '▼'}${Math.abs(delta)}%`}
-            footerColor={delta > 0 ? '#16A97A' : '#DC2626'}
-          />
+      <Select
+        value={periodIdx}
+        onChange={e => setPeriodIdx(Number(e.target.value))}
+        style={{ width: "100%" }}
+      >
+        {sec.rmiHistory.map((r, i) => (
+          <option key={i} value={i}>{r.period} ({r.range})</option>
         ))}
-      </div>
+      </Select>
 
-      <BarList
-        items={[
-          { label: "Intrinsic", value: sec.intrinsic, color: c.bar, valueLabel: String(sec.intrinsic), delta: sec.intrinsicDelta },
-          { label: "Extrinsic", value: sec.extrinsic, color: c.bar, valueLabel: String(sec.extrinsic), delta: sec.extrinsicDelta },
-        ]}
-      />
+      <div className="bp-rmi-donuts">
+        <DonutChart value={rmi.intrinsicAvg} max={rmi.intrinsicMax} label="Intrinsic" color={c.bar} />
+        <SplitDonutChart
+          intrinsicVal={rmi.intrinsicAvg} extrinsicVal={rmi.extrinsicAvg}
+          max={rmi.motivationMax} label="Overall" intrinsicColor={c.bar}
+        />
+        <DonutChart value={rmi.extrinsicAvg} max={rmi.extrinsicMax} label="Extrinsic" color={EXTRINSIC_COLOR} />
+      </div>
     </Card>
 
     <Card>
       <SectionHeading>Benny Says...</SectionHeading>
-      <div className="bp-benny">
-        <img className="bp-benny-avatar" src="/bs-prototypes/benny.png" alt="Benny" />
-        <div className="bp-benny-body">
-          <div className="bp-benny-bubble">{rmi.bennySummary}</div>
-        </div>
-      </div>
+      <BennyBubble>{rmi.bennySummary}</BennyBubble>
     </Card>
 
     <Card>
-      <SectionHeading>Recommendations</SectionHeading>
-      <div className="bp-rmi-recs">
-        <StatCard
-          value={rmi.readingGoalMinutes}
-          unit=" min"
-          label="Recommended Reading Goal"
-          footer="daily"
-        />
-        <div className="bp-rmi-rec-actions">
-          <div className="bp-rmi-rec-actions-label">Recommended Actions</div>
-          {rmi.recommendedActions.map((a, i) => (
-            <div key={i} className="bp-rmi-rec-action">
-              <Ic name="ti-circle-check" size={16} style={{ flexShrink: 0, marginTop: 1 }} />
-              <p className="bp-rmi-rec-action-text">
-                <strong>{a.label}:</strong> {a.text}
-              </p>
-            </div>
-          ))}
-        </div>
+      <SectionHeading>Recommended Reading Goal</SectionHeading>
+      <div className="bp-rmi-goal-row">
+        <span className="bp-rmi-goal-num">{rmi.readingGoalMinutes}</span>
+        <span className="bp-rmi-goal-unit"> min/day</span>
       </div>
     </Card>
 
     <Card>
       <SectionHeading>Motivator Rankings</SectionHeading>
       <BarList
-        items={rmi.rankings.map((m, i) => ({
-          prefix: i + 1,
-          label: m.name,
-          value: (m.score / m.max) * 100,
-          color: c.bar,
-          valueLabel: String(m.score),
-          delta: m.delta,
-        }))}
+        items={rmi.rankings.map((m) => {
+          const iconKey = m.name === "Social Connection" ? "social" : m.name.toLowerCase();
+          const EXTRINSIC_NAMES = new Set(["Social Connection", "Recognition", "Grades", "Competition", "Compliance"]);
+          const mColor = EXTRINSIC_NAMES.has(m.name) ? EXTRINSIC_COLOR : c.bar;
+          return {
+            icon: cloneElement(RMI_ICONS[iconKey], { width: 15, height: 15 }),
+            iconColor: mColor,
+            label: m.name,
+            value: (m.score / m.max) * 100,
+            color: mColor,
+            valueLabel: String(m.score),
+          };
+        })}
       />
     </Card>
   </>);
@@ -539,6 +547,18 @@ function SessionFlag({ type }) {
 }
 
 function IntegrityDetail({ sec }) {
+  const [openSession, setOpenSession] = useState(null);
+  const [sessions, setSessions] = useState(SFR_SESSIONS);
+
+  function openRow(rowIdx) {
+    setOpenSession(sessions[rowIdx % sessions.length]);
+  }
+
+  function handleUpdateSession(updated) {
+    setSessions(sessions.map(s => s.id === updated.id ? updated : s));
+    setOpenSession(updated);
+  }
+
   return (<>
     <Card>
       <SectionHeading>Session integrity</SectionHeading>
@@ -546,34 +566,33 @@ function IntegrityDetail({ sec }) {
         <span className="bp-flagged-label">Flagged sessions</span>
         <div className="bp-flagged-count-group">
           <span className="bp-flagged-count">{sec.flaggedSessions}</span>
-          <Pill variant={sec.flagDelta < 0 ? "success" : "error"} size="sm">{sec.flagDelta < 0 ? `↓${Math.abs(sec.flagDelta)} vs last period` : `↑${Math.abs(sec.flagDelta)} vs last period`}</Pill>
         </div>
       </div>
-      <div className="bp-flag-breakdown">
-        <div className="bp-flag-breakdown-label">Top flags this period</div>
-        <BarList
-          showBar={false}
-          items={sec.flagBreakdown.map(f => ({
-            label: f.type,
-            valueLabel: String(f.count),
-          }))}
-        />
-      </div>
       {sec.unfinishedConversations > 0 && (
-        <CardNote tone="accent">
-          <Ic name="ti-message-x" size={14} /> {sec.unfinishedConversations} unfinished BTWB conversations
-        </CardNote>
+        <div className="bp-flagged-summary">
+          <span className="bp-flagged-label">Unfinished book talks</span>
+          <div className="bp-flagged-count-group">
+            <span className="bp-flagged-count">{sec.unfinishedConversations}</span>
+          </div>
+        </div>
       )}
     </Card>
 
     <Card flush>
       <div className="bp-sessions-header">
-        <span className="bp-sessions-col bp-sessions-col--date">Flagged on</span>
+        <span className="bp-sessions-col bp-sessions-col--date">Date</span>
         <span className="bp-sessions-col bp-sessions-col--title">Title</span>
         <span className="bp-sessions-col bp-sessions-col--flags">Flags</span>
       </div>
       {sec.sessions.map((s, i) => (
-        <div key={i} className="bp-session-row">
+        <div
+          key={i}
+          className="bp-session-row bp-session-row--clickable"
+          onClick={() => openRow(i)}
+          onKeyDown={e => (e.key === "Enter" || e.key === " ") && openRow(i)}
+          role="button"
+          tabIndex={0}
+        >
           <span className="bp-session-date">{s.date}</span>
           <span className="bp-session-title">{s.title}</span>
           <span className="bp-session-flags">
@@ -582,12 +601,20 @@ function IntegrityDetail({ sec }) {
         </div>
       ))}
     </Card>
+
+    <SessionModal
+      session={openSession}
+      allSessions={sessions}
+      onClose={() => setOpenSession(null)}
+      onUpdateSession={handleUpdateSession}
+      onSelectSession={setOpenSession}
+    />
   </>);
 }
 
 // ─── Reading heatmap ──────────────────────────────────────────────────────────
 function ReadingHeatmap({ goalMinutes, color, data }) {
-  const [monthOffset, setMonthOffset] = useState(0); // 0 = most recent 6-month window
+  const [monthOffset, setMonthOffset] = useState(0); // 0 = most recent 3-month window
   const MAX_OFFSET = 19; // go back to Sep 2023
 
   const today = new Date("2025-05-15");
@@ -596,14 +623,14 @@ function ReadingHeatmap({ goalMinutes, color, data }) {
   const windowEndMonth = new Date(today.getFullYear(), today.getMonth() - monthOffset + 1, 0);
   const windowEnd = monthOffset === 0 ? today : windowEndMonth;
 
-  // Start of window: first day of the month 5 months before windowEnd's month
-  const windowStart = new Date(windowEndMonth.getFullYear(), windowEndMonth.getMonth() - 5, 1);
+  // Start of window: first day of the month 3 months before windowEnd's month
+  const windowStart = new Date(windowEndMonth.getFullYear(), windowEndMonth.getMonth() - 3, 1);
 
   // Grid starts on the Sunday on or before windowStart
   const gridStart = new Date(windowStart);
   gridStart.setDate(gridStart.getDate() - gridStart.getDay());
 
-  const FIXED_WEEKS = 27; // always render exactly 27 columns so grid height never jumps
+  const FIXED_WEEKS = 18; // always render exactly 18 columns so grid height never jumps
   const weeks = [];
   const cur = new Date(gridStart);
   while (weeks.length < FIXED_WEEKS) {
@@ -649,21 +676,27 @@ function ReadingHeatmap({ goalMinutes, color, data }) {
   return (
     <div className="bp-heatmap">
       <div className="bp-heatmap-nav">
-        <IconButton
-          variant="ghost"
-          size="sm"
+        <button
+          className="bp-heatmap-nav-btn"
           onClick={() => setMonthOffset(o => Math.min(o + 1, MAX_OFFSET))}
           disabled={monthOffset >= MAX_OFFSET}
-          aria-label="Previous 6 months"
-        >‹</IconButton>
+          aria-label="Previous 4 months"
+        >
+          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+            <polyline points="5,1 1,5.5 5,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
         <span className="bp-heatmap-nav-label">{navLabel}</span>
-        <IconButton
-          variant="ghost"
-          size="sm"
+        <button
+          className="bp-heatmap-nav-btn"
           onClick={() => setMonthOffset(o => Math.max(o - 1, 0))}
           disabled={monthOffset === 0}
-          aria-label="Next 6 months"
-        >›</IconButton>
+          aria-label="Next 4 months"
+        >
+          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+            <polyline points="1,1 5,5.5 1,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
       <div className="bp-heatmap-body">
         <div className="bp-heatmap-day-labels">
@@ -749,9 +782,6 @@ function GoalTracker({ week, goalMinutes }) {
 function HabitsDetail({ sec, c }) {
   const [weekIdx, setWeekIdx] = useState(0);
   const week    = sec.weeks[weekIdx];
-  const atBest  = sec.currentStreak >= sec.personalBest;
-  const pct     = Math.min(sec.currentStreak / sec.personalBest, 1);
-  const toGo    = sec.personalBest - sec.currentStreak;
 
   // Derive today's minutes from the current week (last non-null day)
   const currentWeek = sec.weeks.find(w => w.current);
@@ -775,55 +805,74 @@ function HabitsDetail({ sec, c }) {
         <Button variant="ghost">Edit Goal</Button>
       </div>
       <div className="bp-goal-week-nav">
-        <IconButton
-          variant="ghost"
-          size="sm"
+        <button
+          className="bp-heatmap-nav-btn"
           onClick={() => setWeekIdx(i => Math.min(i + 1, sec.weeks.length - 1))}
           disabled={weekIdx === sec.weeks.length - 1}
-        >‹</IconButton>
+          aria-label="Previous week"
+        >
+          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+            <polyline points="5,1 1,5.5 5,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
         <span className="bp-goal-week-label">
           {week.label}{week.current ? " (This Week)" : ""}
         </span>
-        <IconButton
-          variant="ghost"
-          size="sm"
+        <button
+          className="bp-heatmap-nav-btn"
           onClick={() => setWeekIdx(i => Math.max(i - 1, 0))}
           disabled={weekIdx === 0}
-        >›</IconButton>
+          aria-label="Next week"
+        >
+          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+            <polyline points="1,1 5,5.5 1,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
       <GoalTracker week={week} goalMinutes={sec.dailyGoalMinutes} />
     </Card>
 
-    {/* Streak hero */}
+    {/* Recent activity */}
     <Card>
-      <SectionHeading>Reading streak</SectionHeading>
+      <SectionHeading>Recent activity</SectionHeading>
       <div className="bp-streak-hero">
         <div className="bp-streak-hero-left">
-          <span className="bp-streak-hero-flame">🔥</span>
           <div>
             <div className="bp-streak-hero-num">
-              {sec.currentStreak}<span className="bp-streak-hero-unit">days</span>
+              {sec.daysRead30}<span className="bp-streak-hero-unit"> of last 30 days</span>
             </div>
-            <div className="bp-streak-hero-sublabel">current streak</div>
+            <div className="bp-streak-hero-sublabel">
+              {sec.daysRead30 === 0
+                ? "No reading logged"
+                : `Logged on ${Math.round((sec.daysRead30 / 30) * 100)}% of days`}
+            </div>
           </div>
         </div>
         <div className="bp-streak-hero-right">
-          {atBest ? (
-            <div className="bp-streak-pb-badge">🏆 Personal best!</div>
+          {sec.daysRead30 === 0 ? (
+            <CardNote tone="accent">
+              <Ic name="ti-alert-triangle" size={14} /> Worth checking in
+            </CardNote>
           ) : (
             <>
-              <div className="bp-streak-pb-label">
-                Personal best: <strong>{sec.personalBest} days</strong>
-              </div>
               <div className="bp-streak-pb-track">
-                <div className="bp-streak-pb-fill" style={{ width: `${pct * 100}%`, background: c.bar }} />
+                <div className="bp-streak-pb-fill" style={{ width: `${(sec.daysRead30 / 30) * 100}%`, background: c.bar }} />
               </div>
               <div className="bp-streak-pb-sub">
-                {toGo === 1 ? "1 more day to tie the record!" : `${toGo} days to tie the record`}
+                Personal best: <strong>{sec.personalBest} days</strong> in a row
               </div>
             </>
           )}
         </div>
+      </div>
+    </Card>
+
+    {/* Streaks */}
+    <Card>
+      <SectionHeading>Streaks</SectionHeading>
+      <div className="bp-streaks-row">
+        <StatCard value={sec.currentStreak} unit={sec.currentStreak === 1 ? "day" : "days"} label="Current streak" color={c.bar} />
+        <StatCard value={sec.personalBest}  unit={sec.personalBest === 1 ? "day" : "days"}  label="Longest streak" color={c.bar} />
       </div>
     </Card>
 
@@ -842,9 +891,10 @@ function HabitsDetail({ sec, c }) {
     </Card>
 
     {/* Heatmap */}
-    <Card>
-      <div className="bp-heatmap-heading-row">
-        <SectionHeading>Reading activity</SectionHeading>
+    <ChartCard
+      title="Reading activity"
+      bodyPad="padded"
+      footer={
         <div className="bp-heatmap-legend">
           {[
             { bg: "#EAECF0", label: "No reading" },
@@ -861,9 +911,10 @@ function HabitsDetail({ sec, c }) {
             </div>
           ))}
         </div>
-      </div>
+      }
+    >
       <ReadingHeatmap goalMinutes={sec.dailyGoalMinutes} color="#60A5FA" data={sec.heatmapData} />
-    </Card>
+    </ChartCard>
   </>);
 }
 
@@ -957,62 +1008,6 @@ function SkillsDetail({ sec, c, firstName }) {
       ))}
     </div>
 
-    <Card>
-      <div className="bp-genre-header">
-        <SectionHeading>Genre trends</SectionHeading>
-        <span className="bp-genre-subhead">{firstName} gravitates toward these genres — good signals for recommendations</span>
-      </div>
-      <div className="bp-genre-cloud">
-        {(() => {
-          const maxCount = Math.max(...sec.genreCloud.map(g => g.count));
-          return sec.genreCloud.map((g, i) => {
-            const pal = GENRE_COLORS[g.genre] ?? { bg: "#F3F4F6", color: "#374151", border: "#D1D5DB" };
-            const weight = g.count / maxCount; // 0–1 relative size
-            return (
-              <span
-                key={i}
-                className="bp-genre-chip"
-                style={{
-                  "--chip-bg":     pal.bg,
-                  "--chip-color":  pal.color,
-                  "--chip-border": pal.border,
-                  fontSize: `${11 + Math.round(weight * 5)}px`,
-                  opacity: 0.55 + weight * 0.45,
-                }}
-              >
-                {g.genre}
-                <span className="bp-genre-chip-count">{g.count}</span>
-              </span>
-            );
-          });
-        })()}
-      </div>
-    </Card>
-
-    <Card flush>
-      <div className="bp-titles-header">
-        <span className="bp-titles-header-label">Suggested next reads</span>
-        <span className="bp-titles-range-chip">{sec.recommendedRange}</span>
-      </div>
-      {sec.recommendedTitles.map((t, i) => (
-        <div key={i} className="bp-title-row">
-          <a href={`https://openlibrary.org/isbn/${t.isbn}`} target="_blank" rel="noreferrer" className="bp-title-cover-link">
-            <CoverImage isbn={t.isbn} title={t.title} />
-          </a>
-          <div className="bp-title-row-main">
-            <div className="bp-title-row-top">
-              <div>
-                <a href={`https://openlibrary.org/isbn/${t.isbn}`} target="_blank" rel="noreferrer" className="bp-title-name-link">
-                  {t.title}
-                </a>
-                <div className="bp-title-author">{t.author}</div>
-              </div>
-              <span className="bp-title-lexile-pill">{t.lexile}L</span>
-            </div>
-          </div>
-        </div>
-      ))}
-    </Card>
   </>);
 }
 
@@ -1027,16 +1022,15 @@ const STUDENTS = {
     name: "Marcus Chen",
     grade: "7th Grade",
     lastRun: "May 15 at 9:55am",
-    healthStatus: "Excellent",
-    healthIcon: "ti-circle-check",
     bennySummary:
-      "Marcus is an outstanding reader. He's maintained an 18-day reading streak — the longest in the class — and is reading well above grade level at 870L. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with only 1 flagged session all year. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
+      "Marcus is an outstanding reader. He's logged reading on 21 of the last 30 days — the highest consistency in the class — and is reading well above grade level at 870L. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with only 1 flagged session all year. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
     sections: {
       motivation: {
         status: "Strong",
         intrinsic: 88, intrinsicDelta: 12,
         extrinsic: 82, extrinsicDelta: 6,
         tileSub: "/ 100 score",
+        motivatorInsight: { type: "clear", top: ["Enjoyment", "Curiosity"] },
         rmiHistory: [
           {
             period: "Apr 25 Index",
@@ -1090,7 +1084,7 @@ const STUDENTS = {
           },
         ],
         actions: [
-          { title: "Nominate Marcus for a reading recognition award", body: "His 18-day streak and near-perfect motivation scores make him an ideal candidate. Public recognition could also strengthen classmates' motivation." },
+          { title: "Nominate Marcus for a reading recognition award", body: "His consistent reading record and near-perfect motivation scores make him an ideal candidate. Public recognition could also strengthen classmates' motivation." },
           { title: "Give Marcus a voice — try a student book recommendation", body: "High-curiosity, high-enjoyment readers like Marcus do well as peer recommenders. A short class book talk would channel his engagement productively." },
         ],
       },
@@ -1116,6 +1110,7 @@ const STUDENTS = {
         minutesThisWeek: 185, minutesDelta: 25,
         booksLogged: 4, goalHitRate: 94,
         avgSessionMins: 37, daysReadThisMonth: 14, daysInMonth: 15, longestGap: 1, topReadingDay: "Thursdays",
+        daysRead30: 21,
         tileStat: "18", tileSub: "day streak",
         dailyGoalMinutes: 30,
         heatmapData: makeHeatmapData(0.85, "consistent"),
@@ -1158,7 +1153,7 @@ const STUDENTS = {
           },
         ],
         actions: [
-          { title: "Keep streak accountability low-touch", body: "Marcus is highly self-directed. A weekly leaderboard or quiet streak counter is all he needs — daily nudges would feel patronizing." },
+          { title: "Keep habits accountability light-touch", body: "Marcus is highly self-directed. A weekly leaderboard or simple goal counter is all he needs — daily nudges would feel patronizing." },
           { title: "Consider raising Marcus's daily goal to 40 minutes", body: "He's consistently hitting 30+ minutes and his engagement shows no signs of burnout. A modest goal increase could deepen his growth." },
         ],
       },
@@ -1200,9 +1195,9 @@ const STUDENTS = {
       },
     },
     recommendedActions: [
-      { title: "Nominate Marcus for a reading recognition award", body: "His 18-day streak and near-perfect motivation scores make him an ideal candidate.", section: "motivation" },
+      { title: "Nominate Marcus for a reading recognition award", body: "His consistent reading record and near-perfect motivation scores make him an ideal candidate.", section: "motivation" },
       { title: "Celebrate his near-perfect integrity record", body: "Only 1 flagged session all year — a brief shoutout reinforces the behavior for the class.", section: "integrity" },
-      { title: "Keep streak accountability low-touch", body: "Marcus is self-directed. A weekly leaderboard is enough — he doesn't need daily nudges.", section: "habits" },
+      { title: "Keep habits accountability light-touch", body: "Marcus is self-directed. A weekly leaderboard or simple goal counter is enough — he doesn't need daily nudges.", section: "habits" },
       { title: "Recommend titles in the 900–950L range", body: "He's at 870L and climbing. He's significantly above grade level and ready for a real challenge.", section: "skills" },
     ],
   },
@@ -1212,16 +1207,15 @@ const STUDENTS = {
     name: "Anne Boonchuy",
     grade: "6th Grade",
     lastRun: "May 15 at 9:55am",
-    healthStatus: "On Track",
-    healthIcon: "ti-circle-check",
     bennySummary:
-      "Anne is making real progress this month! Her reading habits are strong — she's on a 4-day streak and has already logged 85 minutes this week. Her Lexile average has climbed 50 points since April, and she's consistently choosing harder books. Integrity is improving, with flags down from 7 to 4. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and 2 unfinished BTWB conversations that are worth following up on.",
+      "Anne is making real progress this month! Her reading habits are building — she's logged reading on 10 of the last 30 days and has already logged 85 minutes this week. Her Lexile average has climbed 50 points since April, and she's consistently choosing harder books. Integrity is improving, with flags down from 7 to 4. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and 2 unfinished BTWB conversations that are worth following up on.",
     sections: {
       motivation: {
         status: "Watch",
         intrinsic: 72, intrinsicDelta: 7,
         extrinsic: 48, extrinsicDelta: -4,
         tileSub: "/ 100 score",
+        motivatorInsight: { type: "clear", top: ["Recognition", "Social Connection"] },
         rmiHistory: [
           {
             period: "Apr 25 Index",
@@ -1232,7 +1226,7 @@ const STUDENTS = {
             readingGoalMinutes: 15,
             bennySummary: "Anne's motivation is mixed this period. Recognition and Social Connection are her clearest levers — she responds well to public acknowledgment and peer interaction. Her Enjoyment score has slipped, which is worth watching. A shoutout or leaderboard mention could give her a quick boost while you work on rebuilding deeper engagement.",
             recommendedActions: [
-              { label: "Recognition",       text: "Recognize Anne for reading accomplishments (like meeting their goal, or a reading streak) with a high five or a shoutout." },
+              { label: "Recognition",       text: "Recognize Anne for reading accomplishments (like meeting her goal or logging consistently) with a high five or a shoutout." },
               { label: "Social Connection", text: "Encourage Anne to use Beanstack's friends and leaderboards functionality." },
             ],
             rankings: [
@@ -1334,6 +1328,7 @@ const STUDENTS = {
         minutesThisWeek: 85, minutesDelta: 12,
         booksLogged: 2, goalHitRate: 68,
         avgSessionMins: 24, daysReadThisMonth: 9, daysInMonth: 15, longestGap: 3, topReadingDay: "Mondays",
+        daysRead30: 10,
         tileStat: "4", tileSub: "day streak",
         dailyGoalMinutes: 20,
         heatmapData: makeHeatmapData(0.63, "peaky"),
@@ -1376,7 +1371,7 @@ const STUDENTS = {
           },
         ],
         actions: [
-          { title: "Celebrate the streak — encourage logging today", body: "Anne's personal best is 6 days. Logging today would tie it. A quick nudge could be all she needs." },
+          { title: "Encourage Anne to keep logging consistently", body: "She's been steadily building logging days this month. A quick nudge today can help reinforce the habit." },
           { title: "Help Anne hit her daily goal more consistently", body: "She's meeting her 20-minute goal on reading days but skipping Wed and Sun regularly. A quick habit check-in could smooth that out." },
         ],
       },
@@ -1420,7 +1415,7 @@ const STUDENTS = {
     recommendedActions: [
       { title: "Connect Anne's reading to a self-chosen goal", body: "Extrinsic motivation is down 4 pts. Her top motivators are Recognition and Social Connection.", section: "motivation" },
       { title: "Follow up on Anne's 2 unfinished BTWB conversations", body: "She hasn't completed 2 open reflections. A quick prompt before her next log could help.", section: "integrity" },
-      { title: "Encourage logging today to tie her personal best streak", body: "Anne's on a 4-day streak — her best is 6. A quick nudge today could lock in the habit.", section: "habits" },
+      { title: "Encourage Anne to keep up her logging momentum", body: "She's been logging steadily this week. A quick nudge today can reinforce the habit while motivation is up.", section: "habits" },
       { title: "Suggest titles in the 760–800L range", body: "Anne's Lexile avg is 730L and rising. She's ready for a meaningful step up.", section: "skills" },
     ],
   },
@@ -1430,16 +1425,15 @@ const STUDENTS = {
     name: "Tyler Voss",
     grade: "6th Grade",
     lastRun: "May 15 at 9:55am",
-    healthStatus: "Needs Attention",
-    healthIcon: "ti-alert-triangle",
     bennySummary:
-      "Tyler needs immediate attention. He's logged only 1 day this week and his reading streak has reset multiple times. His Lexile average has declined 15 points since March — the only student in the class trending downward. He has 13 flagged sessions including 6 suspected over-logs, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.",
+      "Tyler needs immediate attention. He has no logged reading days in the past 30 days — the only student in the class with zero recent activity. His Lexile average has declined 15 points since March, and he has 13 flagged sessions including 6 suspected over-logs, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.",
     sections: {
       motivation: {
         status: "Watch",
         intrinsic: 32, intrinsicDelta: -8,
         extrinsic: 44, extrinsicDelta: -5,
         tileSub: "/ 100 score",
+        motivatorInsight: { type: "mystery" },
         rmiHistory: [
           {
             period: "Apr 25 Index",
@@ -1524,10 +1518,11 @@ const STUDENTS = {
       },
       habits: {
         score: 30, status: "Watch",
-        currentStreak: 1, avgStreak: 2, personalBest: 3,
-        minutesThisWeek: 18, minutesDelta: -12,
-        booksLogged: 1, goalHitRate: 22,
-        avgSessionMins: 18, daysReadThisMonth: 3, daysInMonth: 15, longestGap: 7, topReadingDay: "Thursdays",
+        currentStreak: 0, avgStreak: 2, personalBest: 3,
+        minutesThisWeek: 0, minutesDelta: -30,
+        booksLogged: 0, goalHitRate: 0,
+        avgSessionMins: 18, daysReadThisMonth: 0, daysInMonth: 15, longestGap: 30, topReadingDay: "Thursdays",
+        daysRead30: 0,
         tileStat: "1", tileSub: "day streak",
         dailyGoalMinutes: 15,
         heatmapData: makeHeatmapData(0.18, "sporadic"),
@@ -1705,8 +1700,16 @@ function ReadingLogPage() {
       <div className="bp-rl-month-nav">
         <div className="bp-rl-month-label">{month}</div>
         <div className="bp-rl-month-arrows">
-          <IconButton variant="ghost" size="sm">‹</IconButton>
-          <IconButton variant="ghost" size="sm">›</IconButton>
+          <button className="bp-heatmap-nav-btn" aria-label="Previous month">
+            <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+              <polyline points="5,1 1,5.5 5,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <button className="bp-heatmap-nav-btn" aria-label="Next month">
+            <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+              <polyline points="1,1 5,5.5 1,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
       </div>
       {RL_DATA.map((week, wi) => (
@@ -1949,14 +1952,6 @@ export default function BeanstackProfile() {
       {/* Profile panel */}
       {profileMode !== "closed" && student && (
         <div className={`bp-profile-wrap${profileMode === "full" ? " bp-profile-wrap--full" : ""}`}>
-          <div className="bp-profile-ctrls">
-            <button className="bp-ctrl-btn" onClick={closeProfile} title="Close profile">
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-                <line x1="1" y1="1" x2="10" y2="10" stroke="#555" strokeWidth="1.8" strokeLinecap="round"/>
-                <line x1="10" y1="1" x2="1"  y2="10" stroke="#555" strokeWidth="1.8" strokeLinecap="round"/>
-              </svg>
-            </button>
-          </div>
 
           {/* Mobile-only top bar — hidden on desktop via CSS */}
           <div className="bp-profile-topbar">
@@ -1964,18 +1959,13 @@ export default function BeanstackProfile() {
               <span className="bp-profile-topbar-name">{student.name}</span>
               <span className="bp-profile-topbar-grade">{student.grade}</span>
             </div>
-            <StudentActions />
-            <button className="bp-profile-topbar-close" onClick={closeProfile} aria-label="Close profile">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M4 4l8 8M12 4l-8 8"/>
-              </svg>
-            </button>
+            <StudentActions onClose={closeProfile} />
           </div>
 
           <div className="bp-root">
             <LeftNav activeSection={activeSection} onNavigate={setActiveSection} />
             <div className="bp-panel">
-              <StudentHeader student={student} />
+              <StudentHeader student={student} onClose={closeProfile} />
               <div key={`${selectedStudentKey}-${activeSection ?? "overview"}`} className="bp-page-fade">
                 {activeSection === null
                   ? <Overview student={student} onNavigate={setActiveSection} />
