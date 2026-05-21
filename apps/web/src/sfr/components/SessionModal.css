@@ -1,8 +1,15 @@
 .sm2-shell {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 116px);
+  height: calc(100vh - 180px);
   overflow: hidden;
+}
+
+/* Widen + shift the centered modal to clear the 48px PrototypeNav */
+.modal--center:has(.sm2-shell) {
+  width: min(860px, calc(100vw - 96px));
+  max-height: calc(100vh - 180px);
+  top: calc(50% - 24px);
 }
 
 /* ── Top bar ── */

@@ -13,12 +13,14 @@ import { IconButton, EmptyState, Divider } from '../ris/components/Primitives'
 import { Pill } from '../ris/components/Pill'
 import { ProgressBar } from '../ris/components/ProgressBar'
 import { BarList } from '../ris/components/BarList'
-import { StatCard, CardNote } from '../ris/components/Cards'
+import { StatCard, CardNote, ChartCard } from '../ris/components/Cards'
 import '../ris/components/Table.css'
 import { BackBar } from "../BackBar";
 import { Sidebar } from '../ris/components/Sidebar';
 import { BennyBubble } from '../ris/components/BennyBubble';
 import { RMI_ICONS } from '../ris/components/RmiIcons';
+import { SessionModal } from '../sfr/components/SessionModal';
+import { SESSIONS as SFR_SESSIONS } from '../sfr/data';
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
 // Monthly density modifiers per student profile (index 0 = Jan, 11 = Dec)
@@ -388,7 +390,7 @@ function SectionDetail({ student, sectionKey }) {
         icon={c.icon}
         iconBg={c.bg}
         title={`Reading ${LABEL[sectionKey]}`}
-        right={<StatusBadge label={sec.status} size={13} />}
+        right={<StatusBadge label={sec.status} size={13} accent={c.bar} />}
       />
       {sectionKey === "motivation" && <MotivationDetail sec={sec} c={c} />}
       {sectionKey === "integrity"  && <IntegrityDetail  sec={sec} c={c} />}
@@ -471,18 +473,15 @@ function MotivationDetail({ sec, c }) {
 
   return (<>
     <Card>
-      <div className="bp-rmi-header">
-        <SectionHeading>Reading Motivation Index</SectionHeading>
-        <select
-          className="bp-rmi-period-select"
-          value={periodIdx}
-          onChange={e => setPeriodIdx(Number(e.target.value))}
-        >
-          {sec.rmiHistory.map((r, i) => (
-            <option key={i} value={i}>{r.period} ({r.range})</option>
-          ))}
-        </select>
-      </div>
+      <Select
+        value={periodIdx}
+        onChange={e => setPeriodIdx(Number(e.target.value))}
+        style={{ width: "100%" }}
+      >
+        {sec.rmiHistory.map((r, i) => (
+          <option key={i} value={i}>{r.period} ({r.range})</option>
+        ))}
+      </Select>
 
       <div className="bp-rmi-donuts">
         <DonutChart value={rmi.intrinsicAvg} max={rmi.intrinsicMax} label="Intrinsic" color={c.bar} />
@@ -492,13 +491,6 @@ function MotivationDetail({ sec, c }) {
         />
         <DonutChart value={rmi.extrinsicAvg} max={rmi.extrinsicMax} label="Extrinsic" color={EXTRINSIC_COLOR} />
       </div>
-
-      <BarList
-        items={[
-          { label: "Intrinsic", value: sec.intrinsic, color: c.bar,         valueLabel: String(sec.intrinsic) },
-          { label: "Extrinsic", value: sec.extrinsic, color: EXTRINSIC_COLOR, valueLabel: String(sec.extrinsic) },
-        ]}
-      />
     </Card>
 
     <Card>
@@ -507,22 +499,11 @@ function MotivationDetail({ sec, c }) {
     </Card>
 
     <Card>
-      <SectionHeading>Recommendations</SectionHeading>
+      <SectionHeading>Recommended Reading Goal</SectionHeading>
       <div className="bp-rmi-goal-row">
         <span className="bp-rmi-goal-num">{rmi.readingGoalMinutes}</span>
         <span className="bp-rmi-goal-unit"> min/day</span>
-        <span className="bp-rmi-goal-desc">recommended reading goal</span>
       </div>
-      <BarList
-        showBar={false}
-        divided={false}
-        items={rmi.recommendedActions.map((a) => ({
-          icon: <svg viewBox="0 0 16 16" width="14" height="14" fill="none" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="8" fill="currentColor"/><path d="M5 8.2 7 10.2 11 6" stroke="#fff" strokeWidth="1.6"/></svg>,
-          iconColor: c.bar,
-          label: a.label,
-          sublabel: a.text,
-        }))}
-      />
     </Card>
 
     <Card>
@@ -566,6 +547,18 @@ function SessionFlag({ type }) {
 }
 
 function IntegrityDetail({ sec }) {
+  const [openSession, setOpenSession] = useState(null);
+  const [sessions, setSessions] = useState(SFR_SESSIONS);
+
+  function openRow(rowIdx) {
+    setOpenSession(sessions[rowIdx % sessions.length]);
+  }
+
+  function handleUpdateSession(updated) {
+    setSessions(sessions.map(s => s.id === updated.id ? updated : s));
+    setOpenSession(updated);
+  }
+
   return (<>
     <Card>
       <SectionHeading>Session integrity</SectionHeading>
@@ -573,34 +566,33 @@ function IntegrityDetail({ sec }) {
         <span className="bp-flagged-label">Flagged sessions</span>
         <div className="bp-flagged-count-group">
           <span className="bp-flagged-count">{sec.flaggedSessions}</span>
-          <Pill variant={sec.flagDelta < 0 ? "success" : "error"} size="sm">{sec.flagDelta < 0 ? `↓${Math.abs(sec.flagDelta)} vs last period` : `↑${Math.abs(sec.flagDelta)} vs last period`}</Pill>
         </div>
       </div>
-      <div className="bp-flag-breakdown">
-        <div className="bp-flag-breakdown-label">Top flags this period</div>
-        <BarList
-          showBar={false}
-          items={sec.flagBreakdown.map(f => ({
-            label: f.type,
-            valueLabel: String(f.count),
-          }))}
-        />
-      </div>
       {sec.unfinishedConversations > 0 && (
-        <CardNote tone="accent">
-          <Ic name="ti-message-x" size={14} /> {sec.unfinishedConversations} unfinished BTWB conversations
-        </CardNote>
+        <div className="bp-flagged-summary">
+          <span className="bp-flagged-label">Unfinished book talks</span>
+          <div className="bp-flagged-count-group">
+            <span className="bp-flagged-count">{sec.unfinishedConversations}</span>
+          </div>
+        </div>
       )}
     </Card>
 
     <Card flush>
       <div className="bp-sessions-header">
-        <span className="bp-sessions-col bp-sessions-col--date">Flagged on</span>
+        <span className="bp-sessions-col bp-sessions-col--date">Date</span>
         <span className="bp-sessions-col bp-sessions-col--title">Title</span>
         <span className="bp-sessions-col bp-sessions-col--flags">Flags</span>
       </div>
       {sec.sessions.map((s, i) => (
-        <div key={i} className="bp-session-row">
+        <div
+          key={i}
+          className="bp-session-row bp-session-row--clickable"
+          onClick={() => openRow(i)}
+          onKeyDown={e => (e.key === "Enter" || e.key === " ") && openRow(i)}
+          role="button"
+          tabIndex={0}
+        >
           <span className="bp-session-date">{s.date}</span>
           <span className="bp-session-title">{s.title}</span>
           <span className="bp-session-flags">
@@ -609,12 +601,20 @@ function IntegrityDetail({ sec }) {
         </div>
       ))}
     </Card>
+
+    <SessionModal
+      session={openSession}
+      allSessions={sessions}
+      onClose={() => setOpenSession(null)}
+      onUpdateSession={handleUpdateSession}
+      onSelectSession={setOpenSession}
+    />
   </>);
 }
 
 // ─── Reading heatmap ──────────────────────────────────────────────────────────
 function ReadingHeatmap({ goalMinutes, color, data }) {
-  const [monthOffset, setMonthOffset] = useState(0); // 0 = most recent 6-month window
+  const [monthOffset, setMonthOffset] = useState(0); // 0 = most recent 3-month window
   const MAX_OFFSET = 19; // go back to Sep 2023
 
   const today = new Date("2025-05-15");
@@ -623,14 +623,14 @@ function ReadingHeatmap({ goalMinutes, color, data }) {
   const windowEndMonth = new Date(today.getFullYear(), today.getMonth() - monthOffset + 1, 0);
   const windowEnd = monthOffset === 0 ? today : windowEndMonth;
 
-  // Start of window: first day of the month 5 months before windowEnd's month
-  const windowStart = new Date(windowEndMonth.getFullYear(), windowEndMonth.getMonth() - 5, 1);
+  // Start of window: first day of the month 3 months before windowEnd's month
+  const windowStart = new Date(windowEndMonth.getFullYear(), windowEndMonth.getMonth() - 3, 1);
 
   // Grid starts on the Sunday on or before windowStart
   const gridStart = new Date(windowStart);
   gridStart.setDate(gridStart.getDate() - gridStart.getDay());
 
-  const FIXED_WEEKS = 27; // always render exactly 27 columns so grid height never jumps
+  const FIXED_WEEKS = 18; // always render exactly 18 columns so grid height never jumps
   const weeks = [];
   const cur = new Date(gridStart);
   while (weeks.length < FIXED_WEEKS) {
@@ -680,7 +680,7 @@ function ReadingHeatmap({ goalMinutes, color, data }) {
           className="bp-heatmap-nav-btn"
           onClick={() => setMonthOffset(o => Math.min(o + 1, MAX_OFFSET))}
           disabled={monthOffset >= MAX_OFFSET}
-          aria-label="Previous 6 months"
+          aria-label="Previous 4 months"
         >
           <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
             <polyline points="5,1 1,5.5 5,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -691,7 +691,7 @@ function ReadingHeatmap({ goalMinutes, color, data }) {
           className="bp-heatmap-nav-btn"
           onClick={() => setMonthOffset(o => Math.max(o - 1, 0))}
           disabled={monthOffset === 0}
-          aria-label="Next 6 months"
+          aria-label="Next 4 months"
         >
           <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
             <polyline points="1,1 5,5.5 1,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
@@ -867,6 +867,15 @@ function HabitsDetail({ sec, c }) {
       </div>
     </Card>
 
+    {/* Streaks */}
+    <Card>
+      <SectionHeading>Streaks</SectionHeading>
+      <div className="bp-streaks-row">
+        <StatCard value={sec.currentStreak} unit={sec.currentStreak === 1 ? "day" : "days"} label="Current streak" color={c.bar} />
+        <StatCard value={sec.personalBest}  unit={sec.personalBest === 1 ? "day" : "days"}  label="Longest streak" color={c.bar} />
+      </div>
+    </Card>
+
     {/* Habit patterns */}
     <Card>
       <SectionHeading>Reading patterns</SectionHeading>
@@ -882,9 +891,10 @@ function HabitsDetail({ sec, c }) {
     </Card>
 
     {/* Heatmap */}
-    <Card>
-      <div className="bp-heatmap-heading-row">
-        <SectionHeading>Reading activity</SectionHeading>
+    <ChartCard
+      title="Reading activity"
+      bodyPad="padded"
+      footer={
         <div className="bp-heatmap-legend">
           {[
             { bg: "#EAECF0", label: "No reading" },
@@ -901,9 +911,10 @@ function HabitsDetail({ sec, c }) {
             </div>
           ))}
         </div>
-      </div>
+      }
+    >
       <ReadingHeatmap goalMinutes={sec.dailyGoalMinutes} color="#60A5FA" data={sec.heatmapData} />
-    </Card>
+    </ChartCard>
   </>);
 }
 

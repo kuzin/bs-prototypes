@@ -1103,6 +1103,13 @@
 .bp-goal-day-label--today { color: #1D4ED8; font-weight: 800; }
 
 /* ─── Habits detail ──────────────────────────────────────────────────────── */
+/* ── Streaks panel (two StatCards side-by-side) ── */
+.bp-streaks-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
 /* ── Streak hero ── */
 .bp-streak-hero {
   display: flex;
@@ -1387,16 +1394,16 @@
 }
 
 .bp-heatmap-months {
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
-  color: #ACACAC;
+  color: #94A3B8;
   display: flex;
   white-space: nowrap;
   gap: 0;
 }
 
 .bp-heatmap-month-spacer {
-  width: 28px; /* day-labels col (22px) + body gap (6px) */
+  width: 32px; /* day-labels col (26px) + body gap (6px) */
   flex-shrink: 0;
 }
 
@@ -1421,10 +1428,10 @@
 
 .bp-heatmap-day-label {
   flex: 1;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 600;
-  color: #ACACAC;
-  width: 22px;
+  color: #94A3B8;
+  width: 26px;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -1745,7 +1752,7 @@
 .bp-rmi-donuts {
   display: flex;
   justify-content: space-around;
-  padding: 4px 0 16px;
+  padding: 28px 0 16px;
   gap: 8px;
 }
 
@@ -1765,6 +1772,7 @@
   position: absolute;
   inset: 0;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 1px;
@@ -1778,11 +1786,10 @@
 }
 
 .bp-donut-max {
-  font-size: 10px;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 600;
   color: #94A3B8;
-  align-self: flex-end;
-  margin-bottom: 2px;
+  line-height: 1;
 }
 
 .bp-donut-label {
@@ -1797,9 +1804,6 @@
   display: flex;
   align-items: baseline;
   gap: 4px;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #F0F0F0;
 }
 
 .bp-rmi-goal-num {
@@ -2069,6 +2073,9 @@
 
 .bp-session-row:last-child { border-bottom: none; border-radius: 0 0 12px 12px; }
 .bp-session-row:hover { background: #FAFAFA; }
+.bp-session-row--clickable { cursor: pointer; }
+.bp-session-row--clickable:focus-visible { outline: 2px solid #1A6DD5; outline-offset: -2px; }
+.bp-session-row--clickable .bp-session-title { color: #1A6DD5; }
 
 .bp-session-date {
   font-size: 13px;
@@ -2525,13 +2532,9 @@
   border-radius: 2px;
 }
 
-.bp-adm-filter-wrap .fltr {
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-  padding-top: 0 !important;
+.bp-adm-filter-wrap {
+  align-self: stretch;
+  margin-bottom: 12px;
 }
 
 .bp-adm-filters {
