@@ -1,0 +1,146 @@
+.ov-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Benny summary ── */
+.ov-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #E5E7EB;
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+
+/* ── Highlights grid ── */
+.ov-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+@media (max-width: 1100px) {
+  .ov-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 699px) {
+  .ov-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Highlight card ── */
+.ov-card {
+  border: 1.5px solid;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ov-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ov-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ov-card-titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.ov-card-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1E293B;
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
+}
+
+.ov-card-desc {
+  font-size: 12px;
+  color: #64748B;
+  line-height: 1.35;
+}
+
+.ov-card-count {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Student list within card ── */
+.ov-student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ov-student-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  background: rgba(255,255,255,0.7);
+  border-radius: 8px;
+}
+
+.ov-student-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.ov-student-name {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1E293B;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ov-student-count {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ov-view-all {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1D4ED8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: inherit;
+  text-align: left;
+  transition: opacity 0.12s;
+}
+.ov-view-all:hover { opacity: 0.7; }

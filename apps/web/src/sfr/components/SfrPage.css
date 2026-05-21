@@ -1,0 +1,94 @@
+.sfr-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* By Session / By Reader toggle */
+.sfr-view-toggle {
+  display: flex;
+  background: #F1F5F9;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.sfr-view-btn {
+  padding: 5px 13px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748B;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+.sfr-view-btn:hover { color: #1E293B; }
+.sfr-view-btn--active {
+  background: #fff;
+  color: #1E293B;
+  box-shadow: 0 1px 3px rgba(15,23,42,0.1);
+}
+
+/* Settings button */
+.sfr-settings-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 13px;
+  border-radius: 8px;
+  border: 1.5px solid #E2E8F0;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+.sfr-settings-btn:hover { background: #F8FAFC; border-color: #CBD5E1; color: #1E293B; }
+
+.sfr-tabs-bar {
+  background: #fff;
+  border-bottom: 1px solid #E5E7EB;
+  padding: 0 24px;
+  flex-shrink: 0;
+}
+
+.sfr-stub {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 80px 40px;
+  text-align: center;
+  color: #64748B;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.sfr-stub-icon {
+  font-size: 40px;
+  margin-bottom: 8px;
+}
+
+/* Widen + shift the centered modal to clear the 48px PrototypeNav */
+.modal--center:has(.sm2-shell) {
+  width: min(860px, calc(100vw - 32px));
+  max-height: calc(100vh - 116px); /* 48px nav + 34px top + 34px bottom */
+  top: calc(50% - 24px); /* shift center up by half the nav height */
+}
+
+.sfr-stub-sub {
+  font-size: 13px;
+  font-weight: 400;
+  color: #94A3B8;
+  max-width: 360px;
+  line-height: 1.5;
+}

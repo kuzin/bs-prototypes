@@ -21,6 +21,13 @@ export const PROTOTYPES = [
     description: "District-level analytics dashboard for curriculum directors and superintendents.",
   },
   {
+    id: "sfr",
+    name: "Sessions for Review",
+    href: "/bs-prototypes/sfr/",
+    accent: "#16A97A",
+    description: "Redesigned Sessions for Review with AI summary, engagement highlights, and combined Book Talk list.",
+  },
+  {
     id: "patterns",
     name: "Pattern Library",
     href: "/bs-prototypes/patterns/",
