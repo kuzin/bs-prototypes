@@ -109,8 +109,8 @@ function DropdownMenu({ items, onClose }) {
   );
 }
 
-// ─── Reusable student action buttons (3-dots + Log) ───────────────────────────
-function StudentActions() {
+// ─── Reusable student action buttons (3-dots + Log + Close) ──────────────────
+function StudentActions({ onClose }) {
   const [dotsOpen, setDotsOpen] = useState(false);
   const [logOpen,  setLogOpen]  = useState(false);
 
@@ -153,6 +153,14 @@ function StudentActions() {
         </Button>
         {logOpen && <DropdownMenu items={logItems} onClose={() => setLogOpen(false)} />}
       </div>
+      {onClose && (
+        <button className="bp-header-close" onClick={onClose} aria-label="Close profile">
+          <svg viewBox="0 0 14 14" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+            <line x1="2" y1="2" x2="12" y2="12" />
+            <line x1="12" y1="2" x2="2" y2="12" />
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
@@ -174,15 +182,7 @@ function StudentHeader({ student, onClose }) {
         </div>
       </div>
       <div className="bp-header-right">
-        <StudentActions />
-        {onClose && (
-          <IconButton variant="ghost" size="sm" onClick={onClose} aria-label="Close profile">
-            <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="3" y1="3" x2="13" y2="13" />
-              <line x1="13" y1="3" x2="3" y2="13" />
-            </svg>
-          </IconButton>
-        )}
+        <StudentActions onClose={onClose} />
       </div>
     </div>
   );
@@ -1866,14 +1866,6 @@ export default function BeanstackProfile() {
       {/* Profile panel */}
       {profileMode !== "closed" && student && (
         <div className={`bp-profile-wrap${profileMode === "full" ? " bp-profile-wrap--full" : ""}`}>
-          <div className="bp-profile-ctrls">
-            <button className="bp-ctrl-btn" onClick={closeProfile} title="Close profile">
-              <svg width="11" height="11" viewBox="0 0 11 11" fill="none">
-                <line x1="1" y1="1" x2="10" y2="10" stroke="#555" strokeWidth="1.8" strokeLinecap="round"/>
-                <line x1="10" y1="1" x2="1"  y2="10" stroke="#555" strokeWidth="1.8" strokeLinecap="round"/>
-              </svg>
-            </button>
-          </div>
 
           {/* Mobile-only top bar — hidden on desktop via CSS */}
           <div className="bp-profile-topbar">
@@ -1881,18 +1873,13 @@ export default function BeanstackProfile() {
               <span className="bp-profile-topbar-name">{student.name}</span>
               <span className="bp-profile-topbar-grade">{student.grade}</span>
             </div>
-            <StudentActions />
-            <button className="bp-profile-topbar-close" onClick={closeProfile} aria-label="Close profile">
-              <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M4 4l8 8M12 4l-8 8"/>
-              </svg>
-            </button>
+            <StudentActions onClose={closeProfile} />
           </div>
 
           <div className="bp-root">
             <LeftNav activeSection={activeSection} onNavigate={setActiveSection} />
             <div className="bp-panel">
-              <StudentHeader student={student} />
+              <StudentHeader student={student} onClose={closeProfile} />
               <div key={`${selectedStudentKey}-${activeSection ?? "overview"}`} className="bp-page-fade">
                 {activeSection === null
                   ? <Overview student={student} onNavigate={setActiveSection} />
