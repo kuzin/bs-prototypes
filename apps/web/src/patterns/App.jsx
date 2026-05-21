@@ -44,6 +44,7 @@ import { BennyBubble } from '../ris/components/BennyBubble'
 import { HighlightCard } from '../sfr/components/Overview'
 import { SessionsTable } from '../sfr/components/SessionsTable'
 import { SessionModal } from '../sfr/components/SessionModal'
+import { ActiveFilters } from '../sfr/components/ActiveFilters'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -67,6 +68,7 @@ import '../sfr/components/Overview.css'
 import '../sfr/components/SessionsTable.css'
 import '../sfr/components/SessionModal.css'
 import '../sfr/components/SfrPage.css'
+import '../sfr/components/ActiveFilters.css'
 
 import './App.css'
 
@@ -143,10 +145,11 @@ const SECTIONS_LIST = [
   { group: 'Layout',    id: 'prototype-nav', name: 'PrototypeNav' },
   { group: 'Layout',    id: 'rmi-icons',    name: 'RMI Icons' },
   { group: 'Layout',    id: 'health-icons', name: 'Reading Health Icons' },
-  { group: 'Sessions for Review', id: 'sfr-benny-bubble',   name: 'BennyBubble' },
-  { group: 'Sessions for Review', id: 'sfr-highlight-card', name: 'HighlightCard' },
-  { group: 'Sessions for Review', id: 'sfr-sessions-table', name: 'SessionsTable' },
-  { group: 'Sessions for Review', id: 'sfr-session-modal',  name: 'SessionModal' },
+  { group: 'Sessions for Review', id: 'sfr-benny-bubble',    name: 'BennyBubble' },
+  { group: 'Sessions for Review', id: 'sfr-highlight-card',  name: 'HighlightCard' },
+  { group: 'Sessions for Review', id: 'sfr-active-filters',  name: 'ActiveFilters' },
+  { group: 'Sessions for Review', id: 'sfr-sessions-table',  name: 'SessionsTable' },
+  { group: 'Sessions for Review', id: 'sfr-session-modal',   name: 'SessionModal' },
 ]
 
 const fakeSlicePoints = (points) => ({
@@ -3894,6 +3897,29 @@ export function App() {
                 totalCount={2}
                 totalLabel="students"
                 onViewAll={() => {}}
+              />
+            </Variant>
+          </Section>
+
+          <Section
+            id="sfr-active-filters"
+            title="ActiveFilters"
+            desc={<>Active filter chips rendered below the filter bar. Each chip shows the filter label and a × to clear it. Props: <code>filters</code> array of <code>{'{ key, label, onClear }'}</code>, <code>onClearAll</code> callback. Renders nothing when <code>filters</code> is empty.</>}
+          >
+            <Variant label="one filter">
+              <ActiveFilters
+                filters={[{ key: 'rating', label: 'Engagement: Positive', onClear: () => {} }]}
+                onClearAll={() => {}}
+              />
+            </Variant>
+            <Variant label="multiple filters">
+              <ActiveFilters
+                filters={[
+                  { key: 'type',   label: 'Type: Flagged',      onClear: () => {} },
+                  { key: 'rating', label: 'Engagement: Mixed',  onClear: () => {} },
+                  { key: 'status', label: 'Status: Unfinished', onClear: () => {} },
+                ]}
+                onClearAll={() => {}}
               />
             </Variant>
           </Section>

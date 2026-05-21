@@ -6,7 +6,7 @@ import { Overview } from './Overview'
 import { FlaggedView } from './FlaggedView'
 import { EngagementView } from './EngagementView'
 import { AllBTWBView } from './AllBTWBView'
-import { SessionModal } from './SessionModal'
+import { SessionModal, ApproveConfirmModal } from './SessionModal'
 import '../../ris/components/RisLayout.css'
 import '../../ris/components/Sidebar.css'
 import '../../ris/components/Tabs.css'
@@ -15,20 +15,24 @@ import '../../MainRail.css'
 import './SfrPage.css'
 
 function buildNav(sessions) {
-  const flaggedCount    = sessions.filter(s => s.type === 'flagged' || s.type === 'both').length
-  const engageCount     = sessions.filter(s => s.type === 'engagement' || s.type === 'both').length
   return [
-    { id: 'overview',    label: 'Overview',            icon: 'overview' },
-    { id: 'flagged',     label: 'Flagged Entries',     icon: 'flag',      section: 'Book Talks', subgroup: true },
-    { id: 'engagement',  label: 'Engagement Sessions', icon: 'flame',     subgroup: true },
-    { id: 'all',         label: 'All Book Talks',      icon: 'book',      subgroup: true },
-    { id: 'logs',        label: 'Reading Logs',        icon: 'habits' },
+    { id: 'classes',         label: 'Classes',    icon: 'demographics' },
+    { id: 'students',        label: 'Students',        icon: 'person' },
+    { id: 'view-students',   label: 'View Students',   icon: 'person',   subgroup: true },
+    { id: 'earned-rewards',  label: 'Earned Rewards',  icon: 'habits',   subgroup: true },
+    { id: 'book-talks',      label: 'Book Talks', icon: 'book' },
+    { id: 'overview',        label: 'Overview',            icon: 'overview', subgroup: true },
+    { id: 'flagged',         label: 'Flagged Sessions',    icon: 'flag',     subgroup: true },
+    { id: 'engagement',      label: 'Engagement Sessions', icon: 'flame',    subgroup: true },
+    { id: 'all',             label: 'All Book Talks',      icon: 'book',     subgroup: true },
+    { id: 'staff',           label: 'Staff',    icon: 'person' },
+    { id: 'groups',          label: 'Groups',   icon: 'overview' },
   ]
 }
 
 function buildBadges(sessions) {
   return {
-    flagged:    sessions.filter(s => s.type === 'flagged' || s.type === 'both').length,
+    flagged:    sessions.filter(s => (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0).length,
     engagement: sessions.filter(s => s.type === 'engagement' || s.type === 'both').length,
     all:        sessions.length,
   }
@@ -36,7 +40,7 @@ function buildBadges(sessions) {
 
 const TAB_ITEMS = [
   { id: 'overview',   label: 'Overview' },
-  { id: 'flagged',    label: 'Flagged Entries' },
+  { id: 'flagged',    label: 'Flagged Sessions' },
   { id: 'engagement', label: 'Engagement Sessions' },
   { id: 'all',        label: 'All Book Talks' },
 ]
@@ -52,16 +56,66 @@ export function SfrPage({
   onBack,
 }) {
   const [groupBy, setGroupBy] = useState('session') // 'session' | 'reader'
+  const [tabFilters, setTabFilters] = useState({})
+  const [sessionList, setSessionList] = useState([])
+  const [approveTarget, setApproveTarget] = useState(null)
+
+  function confirmApprove() {
+    if (!approveTarget) return
+    const clearedFlags = [...(approveTarget.flags || [])]
+    const previousType = approveTarget.type
+    // If the session also had an engagement aspect, demote 'both' to 'engagement';
+    // otherwise drop the type entirely so it only appears in All Book Talks.
+    const nextType = previousType === 'both' ? 'engagement' : null
+    const entry = {
+      id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      by: 'Mr. Garcia',
+      at: new Date().toISOString(),
+      kind: 'approved',
+      removedCount: clearedFlags.length,
+      clearedFlags,
+      previousType,
+    }
+    onUpdateSession({
+      ...approveTarget,
+      flags: [],
+      type: nextType,
+      changeLog: [...(approveTarget.changeLog || []), entry],
+    })
+    setApproveTarget(null)
+    onSelectSession(null)
+  }
+
+  function goToTabWithFilters(tabId, filters = {}) {
+    onActiveTab(tabId)
+    setTabFilters(filters)
+  }
+
+  function handleSelectSession(session, list) {
+    onSelectSession(session)
+    if (list) setSessionList(list)
+  }
+
+  const sessionIdx = selectedSession ? sessionList.findIndex(s => s.id === selectedSession.id) : -1
+  const hasPrev = sessionIdx > 0
+  const hasNext = sessionIdx >= 0 && sessionIdx < sessionList.length - 1
+
+  function handlePrev() { if (hasPrev) onSelectSession(sessionList[sessionIdx - 1]) }
+  function handleNext() { if (hasNext) onSelectSession(sessionList[sessionIdx + 1]) }
 
   return (
     <div className="ris-layout">
       <Sidebar
-        title="Sessions for Review"
-        subtitle="Classic and Readers"
+        title="Classes and Readers"
+        subtitle="Find and log for students and classes."
         nav={buildNav(sessions)}
         active={activeTab}
         badges={buildBadges(sessions)}
-        onNavigate={id => id !== 'logs' && onActiveTab(id)}
+        onNavigate={id => {
+          if (id === 'classes') return
+          if (id === 'book-talks') { onActiveTab('overview'); setTabFilters({}); return }
+          if (id !== 'logs') { onActiveTab(id); setTabFilters({}) }
+        }}
         mainRailIndex={3}
       />
 
@@ -105,7 +159,7 @@ export function SfrPage({
           <Tabs
             items={TAB_ITEMS.map(t => ({
               ...t,
-              count: t.id === 'flagged'    ? sessions.filter(s => s.type === 'flagged' || s.type === 'both').length
+              count: t.id === 'flagged'    ? sessions.filter(s => (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0).length
                    : t.id === 'engagement' ? sessions.filter(s => s.type === 'engagement' || s.type === 'both').length
                    : t.id === 'all'        ? sessions.length
                    : undefined,
@@ -117,10 +171,10 @@ export function SfrPage({
         </div>
 
         <div className="rl-page">
-          {activeTab === 'overview'   && <Overview   sessions={sessions} onGoToTab={onActiveTab} />}
-          {activeTab === 'flagged'    && <FlaggedView    sessions={sessions} onSelectSession={onSelectSession} groupBy={groupBy} />}
-          {activeTab === 'engagement' && <EngagementView sessions={sessions} onSelectSession={onSelectSession} groupBy={groupBy} />}
-          {activeTab === 'all'        && <AllBTWBView    sessions={sessions} onSelectSession={onSelectSession} groupBy={groupBy} />}
+          {activeTab === 'overview'   && <Overview   sessions={sessions} onGoToTab={goToTabWithFilters} onSelectSession={handleSelectSession} />}
+          {activeTab === 'flagged'    && <FlaggedView    sessions={sessions} onSelectSession={handleSelectSession} onApproveRequest={setApproveTarget} groupBy={groupBy} defaultFilters={tabFilters} />}
+          {activeTab === 'engagement' && <EngagementView sessions={sessions} onSelectSession={handleSelectSession} onApproveRequest={setApproveTarget} groupBy={groupBy} defaultFilters={tabFilters} />}
+          {activeTab === 'all'        && <AllBTWBView    sessions={sessions} onSelectSession={handleSelectSession} onApproveRequest={setApproveTarget} groupBy={groupBy} defaultFilters={tabFilters} />}
           {activeTab === 'logs'       && (
             <div className="sfr-stub">
               <div className="sfr-stub-icon">📖</div>
@@ -134,7 +188,23 @@ export function SfrPage({
       {/* Session detail modal */}
       <SessionModal
         session={selectedSession}
+        allSessions={sessions}
         onClose={() => onSelectSession(null)}
+        onUpdateSession={onUpdateSession}
+        onSelectSession={onSelectSession}
+        onApproveRequest={setApproveTarget}
+        onPrev={hasPrev ? handlePrev : null}
+        onNext={hasNext ? handleNext : null}
+        sessionIdx={sessionIdx}
+        sessionCount={sessionList.length}
+      />
+
+      <ApproveConfirmModal
+        open={!!approveTarget}
+        flagCount={(approveTarget?.flags || []).length}
+        studentName={approveTarget?.student.name ?? ''}
+        onCancel={() => setApproveTarget(null)}
+        onConfirm={confirmApprove}
       />
     </div>
   )

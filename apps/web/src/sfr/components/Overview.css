@@ -19,16 +19,18 @@
 /* ── Highlights grid ── */
 .ov-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 12px;
 }
 
-@media (max-width: 1100px) {
-  .ov-grid { grid-template-columns: repeat(2, 1fr); }
+/* 5th card (or any last card that starts a new row alone) spans full width */
+.ov-grid > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
 }
 
 @media (max-width: 699px) {
   .ov-grid { grid-template-columns: 1fr; }
+  .ov-grid > :last-child:nth-child(odd) { grid-column: auto; }
 }
 
 /* ── Highlight card ── */
@@ -101,34 +103,65 @@
   border-radius: 8px;
 }
 
-.ov-student-avatar {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+.ov-student-row--clickable {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s, box-shadow 0.12s, transform 0.1s;
+}
+
+.ov-student-row--clickable:hover {
+  background: rgba(255,255,255,0.98);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+  transform: translateY(-1px);
+}
+
+.ov-student-row--clickable:hover .ov-row-chevron {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.ov-student-info {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  font-weight: 800;
-  color: #fff;
-  flex-shrink: 0;
+  flex-direction: column;
+  gap: 1px;
 }
 
 .ov-student-name {
-  flex: 1;
   font-size: 13px;
   font-weight: 600;
   color: #1E293B;
-  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.ov-student-count {
-  font-size: 12px;
-  font-weight: 700;
+.ov-student-book {
+  font-size: 11px;
+  font-weight: 400;
+  color: #64748B;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ov-student-flags {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.ov-row-chevron {
+  flex-shrink: 0;
+  color: #94A3B8;
+  opacity: 0.45;
+  transition: opacity 0.12s, transform 0.12s;
+  margin-left: 2px;
 }
 
 .ov-view-all {
@@ -144,3 +177,9 @@
   transition: opacity 0.12s;
 }
 .ov-view-all:hover { opacity: 0.7; }
+
+.ov-view-all--danger    { color: #B91C1C; }
+.ov-view-all--success   { color: #14803F; }
+.ov-view-all--warning   { color: #B45309; }
+.ov-view-all--intercede { color: #BE123C; }
+.ov-view-all--neutral   { color: #0369A1; }

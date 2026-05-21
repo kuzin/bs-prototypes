@@ -1,8 +1,9 @@
+import { FlagIconBadge, FLAG_TYPE_CONFIG, POS_FLAG_CONFIG } from './SessionsTable'
 import { BennyBubble } from '../../ris/components/BennyBubble'
 import '../../ris/components/BennyBubble.css'
 import './Overview.css'
 
-export function HighlightCard({ variant, icon, title, description, students, totalCount, totalLabel, onViewAll }) {
+export function HighlightCard({ variant, icon, title, description, sessions = [], totalCount, viewAllLabel, onViewAll, onSelectSession }) {
   const VARIANTS = {
     danger:   { bg: '#FEF2F2', border: '#FECACA', iconBg: '#FEE2E2', iconColor: '#DC2626', tagBg: '#FEE2E2', tagColor: '#991B1B' },
     success:  { bg: '#F0FDF4', border: '#BBF7D0', iconBg: '#DCFCE7', iconColor: '#16A97A', tagBg: '#DCFCE7', tagColor: '#14532D' },
@@ -24,47 +25,42 @@ export function HighlightCard({ variant, icon, title, description, students, tot
         </div>
       </div>
       <div className="ov-student-list">
-        {students.slice(0, 3).map((s, i) => (
-          <div key={i} className="ov-student-row">
-            <div className="ov-student-avatar" style={{ background: s.color }}>{s.initials}</div>
-            <span className="ov-student-name">{s.name}</span>
-            <span className="ov-student-count" style={{ color: v.iconColor }}>
-              {s.count} {s.countLabel}
-            </span>
-          </div>
+        {sessions.slice(0, 3).map((s, i) => (
+          <button key={i} className="ov-student-row ov-student-row--clickable" onClick={() => onSelectSession?.(s, sessions)}>
+            <div className="ov-student-info">
+              <span className="ov-student-name">{s.student.name}</span>
+              <span className="ov-student-book">{s.book.title}</span>
+            </div>
+            <div className="ov-student-flags">
+              {s.flags?.map(f => {
+                const cfg = FLAG_TYPE_CONFIG[f.type]
+                return cfg ? <FlagIconBadge key={f.id} type={f.type} cfg={cfg} /> : null
+              })}
+              {s.positiveFlags?.map(pf => {
+                const cfg = POS_FLAG_CONFIG[pf.type]
+                return cfg ? <FlagIconBadge key={pf.id} type={pf.type} cfg={cfg} /> : null
+              })}
+            </div>
+            <svg className="ov-row-chevron" viewBox="0 0 12 12" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="4,2 8,6 4,10"/>
+            </svg>
+          </button>
         ))}
       </div>
-      <button className="ov-view-all" onClick={onViewAll}>
-        View all {totalCount} →
+      <button className={`ov-view-all ov-view-all--${variant}`} onClick={onViewAll}>
+        {viewAllLabel} →
       </button>
     </div>
   )
 }
 
-export function Overview({ sessions, onGoToTab }) {
+export function Overview({ sessions, onGoToTab, onSelectSession }) {
 
-  // Derive highlight data from sessions
-  const flaggedSessions = sessions.filter(s => s.type === 'flagged' || s.type === 'both')
+  const flaggedSessions = sessions.filter(s => (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0)
   const greenSessions   = sessions.filter(s => s.engagementRating === 'green')
   const yellowSessions  = sessions.filter(s => s.engagementRating === 'yellow')
   const redSessions     = sessions.filter(s => s.engagementRating === 'red')
   const unfinished      = sessions.filter(s => s.status === 'unfinished')
-
-  function groupByStudent(list, countLabel) {
-    const map = {}
-    list.forEach(s => {
-      const id = s.student.id
-      if (!map[id]) map[id] = { ...s.student, count: 0, countLabel }
-      map[id].count++
-    })
-    return Object.values(map).sort((a, b) => b.count - a.count)
-  }
-
-  const flaggedStudents   = groupByStudent(flaggedSessions, 'flags')
-  const greenStudents     = groupByStudent(greenSessions,   'green talks')
-  const yellowStudents    = groupByStudent(yellowSessions,  'yellow talks')
-  const redStudents       = groupByStudent(redSessions,     'red talks')
-  const unfinishedStudents = groupByStudent(unfinished,     'unfinished')
 
   const totalBTWB = sessions.length
   const completedBTWB = sessions.filter(s => s.status === 'completed').length
@@ -92,10 +88,11 @@ export function Overview({ sessions, onGoToTab }) {
           }
           title="Validate / Intercede"
           description="Students with multiple flagged integrity sessions"
-          students={flaggedStudents}
-          totalCount={flaggedStudents.length}
-          totalLabel="students"
-          onViewAll={() => onGoToTab('flagged')}
+          sessions={flaggedSessions}
+          totalCount={flaggedSessions.length}
+          viewAllLabel="View all flagged sessions"
+          onViewAll={() => onGoToTab('flagged', {})}
+          onSelectSession={onSelectSession}
         />
         <HighlightCard
           variant="success"
@@ -106,10 +103,11 @@ export function Overview({ sessions, onGoToTab }) {
           }
           title="Celebrate"
           description="Students with positive engagement Book Talks"
-          students={greenStudents}
-          totalCount={greenStudents.length}
-          totalLabel="students"
-          onViewAll={() => onGoToTab('engagement')}
+          sessions={greenSessions}
+          totalCount={greenSessions.length}
+          viewAllLabel="View all engagement sessions"
+          onViewAll={() => onGoToTab('engagement', { rating: 'green' })}
+          onSelectSession={onSelectSession}
         />
         <HighlightCard
           variant="warning"
@@ -120,10 +118,27 @@ export function Overview({ sessions, onGoToTab }) {
           }
           title="Review / Assess"
           description="Students with mixed engagement Book Talks"
-          students={yellowStudents}
-          totalCount={yellowStudents.length}
-          totalLabel="students"
-          onViewAll={() => onGoToTab('engagement')}
+          sessions={yellowSessions}
+          totalCount={yellowSessions.length}
+          viewAllLabel="View all mixed sessions"
+          onViewAll={() => onGoToTab('engagement', { rating: 'yellow' })}
+          onSelectSession={onSelectSession}
+        />
+        <HighlightCard
+          variant="intercede"
+          icon={
+            <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M8 2c.2 1.8-.9 2.6-1.9 3.6C5.2 6.5 4 7.7 4 9.5 4 11.9 5.8 14 8 14s4-2 4-4.5c0-1.4-.5-2.2-1.1-2.8"/>
+              <line x1="8" y1="11" x2="8" y2="11.5"/>
+            </svg>
+          }
+          title="Intercede"
+          description="Students showing disengagement in their Book Talks"
+          sessions={redSessions}
+          totalCount={redSessions.length}
+          viewAllLabel="View all disengaged sessions"
+          onViewAll={() => onGoToTab('engagement', { rating: 'red' })}
+          onSelectSession={onSelectSession}
         />
         <HighlightCard
           variant="neutral"
@@ -135,10 +150,11 @@ export function Overview({ sessions, onGoToTab }) {
           }
           title="Give Students Time"
           description="Students with unfinished Benny conversations"
-          students={unfinishedStudents}
-          totalCount={unfinishedStudents.length}
-          totalLabel="students"
-          onViewAll={() => onGoToTab('all')}
+          sessions={unfinished}
+          totalCount={unfinished.length}
+          viewAllLabel="View all unfinished conversations"
+          onViewAll={() => onGoToTab('all', { status: 'unfinished' })}
+          onSelectSession={onSelectSession}
         />
       </div>
     </div>

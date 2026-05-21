@@ -1,23 +1,23 @@
-.rgv-shell {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.rgv-table {
+  width: 100%;
 }
 
-.rgv-group {
-  background: #fff;
-  border: 1px solid #E5E7EB;
-  border-radius: 12px;
-  overflow: hidden;
+.rgv-group-cell {
+  padding: 0 !important;
+  background: #F8FAFC;
+  border-top: 1px solid #E5E7EB !important;
+}
+
+/* First group header gets no top border */
+.rgv-table tbody tr.rgv-group-row:first-child .rgv-group-cell {
+  border-top: none !important;
 }
 
 .rgv-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
-  background: #F8FAFC;
-  border-bottom: 1px solid #E5E7EB;
+  padding: 6px 10px;
 }
 
 .rgv-avatar {
@@ -54,13 +54,21 @@
   border-radius: 99px;
 }
 
-.rgv-table {
-  overflow-x: auto;
+.rgv-empty-wrap {
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
 }
 
 .rgv-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
   font-size: 13px;
+  font-style: italic;
   color: #94A3B8;
-  padding: 40px;
+  padding: 32px;
   text-align: center;
 }

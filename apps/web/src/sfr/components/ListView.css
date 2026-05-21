@@ -1,8 +1,14 @@
 .lv-shell {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   min-width: 0;
+}
+
+.lv-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .lv-toolbar {
@@ -13,9 +19,9 @@
 }
 
 .lv-count {
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 700;
-  color: #475569;
+  color: #1E293B;
   white-space: nowrap;
 }
 
@@ -47,3 +53,4 @@
 }
 .lv-search:focus { border-color: #1D4ED8; }
 .lv-search::placeholder { color: #CBD5E1; }
+

@@ -342,6 +342,15 @@
   text-overflow: ellipsis;
 }
 
+.sb-nav-section {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+  padding: 14px 12px 3px;
+}
+
 .sb-nav-subgroup {
   display: flex;
   flex-direction: column;

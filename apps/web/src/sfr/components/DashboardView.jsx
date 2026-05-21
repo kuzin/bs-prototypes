@@ -8,21 +8,8 @@ import '../../MainRail.css'
 import './DashboardView.css'
 
 const NAV = [
-  { id: 'dashboard',       label: 'Dashboard',            icon: 'overview' },
-  { id: 'sessions-review', label: 'Sessions for Review',  icon: 'flag' },
-  { id: 'students',        label: 'Students',             icon: 'person' },
-  { id: 'reports',         label: 'Reports',              icon: 'analytics' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'overview' },
 ]
-
-function StatWidget() {
-  return (
-    <div className="dash-widget">
-      <Skeleton width={64} height={28} style={{ marginBottom: 10 }} />
-      <Skeleton width={140} height={13} style={{ marginBottom: 6 }} />
-      <Skeleton width={110} height={12} />
-    </div>
-  )
-}
 
 export function DashboardView({ sessions, onGoToSfr }) {
   const flaggedCount = sessions.filter(s => s.type === 'flagged' || s.type === 'both').length
@@ -30,8 +17,8 @@ export function DashboardView({ sessions, onGoToSfr }) {
   return (
     <div className="ris-layout">
       <Sidebar
-        title="Classic and Readers"
-        subtitle="Admin Dashboard"
+        title="Admin Dashboard"
+        subtitle="As a Media Specialist"
         nav={NAV}
         active="dashboard"
         badges={{ 'sessions-review': flaggedCount }}
@@ -56,12 +43,6 @@ export function DashboardView({ sessions, onGoToSfr }) {
         <div className="rl-page">
           {/* SfR CTA — prominent widget */}
           <div className="dash-sfr-cta" onClick={onGoToSfr}>
-            <div className="dash-sfr-cta-icon">
-              <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                <polyline points="22,6 12,13 2,6"/>
-              </svg>
-            </div>
             <div className="dash-sfr-cta-body">
               <div className="dash-sfr-cta-title">Reading Sessions Need Review</div>
               <div className="dash-sfr-cta-desc">
@@ -76,14 +57,6 @@ export function DashboardView({ sessions, onGoToSfr }) {
             <Button variant="primary" accent="#DC2626" className="dash-sfr-cta-btn" onClick={e => { e.stopPropagation(); onGoToSfr() }}>
               Review Sessions →
             </Button>
-          </div>
-
-          {/* Secondary widgets */}
-          <div className="dash-widgets-grid">
-            <StatWidget />
-            <StatWidget />
-            <StatWidget />
-            <StatWidget />
           </div>
 
           {/* Recent activity — skeleton placeholder */}
