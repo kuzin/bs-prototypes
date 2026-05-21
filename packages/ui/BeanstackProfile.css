@@ -537,7 +537,6 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--tile-text);
-  margin-bottom: 6px;
 }
 
 .bp-tile-stat {
@@ -555,6 +554,29 @@
 
 .bp-tile-status {
   margin-top: 9px;
+}
+
+.bp-tile-motivators {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 2px;
+}
+
+.bp-tile-motivator-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #424242;
+}
+
+.bp-tile-motivator-icon {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--tile-text);
 }
 
 /* ─── Reading Health card ────────────────────────────────────────────────── */

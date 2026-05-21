@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, cloneElement } from "react";
 import "@bs/ui/css";
 import {
   C, LABEL, GENRE_COLORS,
@@ -18,6 +18,7 @@ import '../ris/components/Table.css'
 import { BackBar } from "../BackBar";
 import { Sidebar } from '../ris/components/Sidebar';
 import { BennyBubble } from '../ris/components/BennyBubble';
+import { RMI_ICONS } from '../ris/components/RmiIcons';
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
 // Monthly density modifiers per student profile (index 0 = Jan, 11 = Dec)
@@ -285,11 +286,18 @@ function Overview({ student, onNavigate }) {
           if (key === "motivation") {
             if (sec.motivatorInsight.type === "clear") {
               insightNode = (
-                <div className="bp-tile-stat" style={{ lineHeight: 1.3 }}>
-                  <div style={{ fontSize: 11, fontWeight: 400, opacity: 0.65, marginBottom: 3 }}>
-                    Top motivator{sec.motivatorInsight.top.length > 1 ? "s" : ""}:
-                  </div>
-                  {sec.motivatorInsight.top.join(", ")}
+                <div className="bp-tile-motivators">
+                  {sec.motivatorInsight.top.map(name => {
+                    const iconKey = name === "Social Connection" ? "social" : name.toLowerCase();
+                    return (
+                      <div key={name} className="bp-tile-motivator-row">
+                        <span className="bp-tile-motivator-icon">
+                          {cloneElement(RMI_ICONS[iconKey], { width: 14, height: 14 })}
+                        </span>
+                        {name}
+                      </div>
+                    );
+                  })}
                 </div>
               );
             } else {
