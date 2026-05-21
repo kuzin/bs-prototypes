@@ -334,7 +334,22 @@
 
 .sb-nav-item--active .sb-nav-icon { opacity: 1; }
 
-.sb-nav-label { white-space: nowrap; }
+.sb-nav-label {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sb-nav-section {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+  padding: 14px 12px 3px;
+}
 
 .sb-nav-subgroup {
   display: flex;
@@ -360,13 +375,14 @@
   margin-left: auto;
   background: #DC2626;
   color: #fff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   border-radius: 99px;
-  padding: 1px 6px;
-  min-width: 18px;
+  padding: 2px 7px;
+  min-width: 22px;
   text-align: center;
   line-height: 1.4;
+  flex-shrink: 0;
 }
 
 /* ── School picker ─────────────────────────────────────────────────────── */

@@ -5,9 +5,10 @@ import './StudentPanel.css'
 
 const ANIM_DURATION = 220
 
-export function StudentPanel({ studentId, onClose }) {
+export function StudentPanel({ studentId, student: studentProp, onClose }) {
   const [closing, setClosing] = useState(false)
-  const student = studentId ? STUDENTS_TO_WATCH.find(s => s.id === studentId) : null
+  const student = studentProp
+    || (studentId ? STUDENTS_TO_WATCH.find(s => s.id === studentId) : null)
 
   const handleClose = useCallback(() => {
     setClosing(true)
@@ -26,8 +27,13 @@ export function StudentPanel({ studentId, onClose }) {
 
   if (!student) return null
 
-  // Map 'marcus-chen' → 'marcus', 'anne-boonchuy' → 'anne', etc.
-  const profileKey = student.id.split('-')[0]
+  // Resolve profile key:
+  //   – explicit override on the student object
+  //   – existing 'marcus-chen' → 'marcus' id convention
+  //   – fall back to first name lowercased (Tyler Williams → tyler)
+  const profileKey = student.profileKey
+    || (student.id?.includes('-') ? student.id.split('-')[0] : null)
+    || student.name.toLowerCase().split(' ')[0]
 
   return (
     <>

@@ -2411,6 +2411,15 @@
   border-radius: 2px;
 }
 
+.bp-adm-filter-wrap .fltr {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 0 !important;
+}
+
 .bp-adm-filters {
   display: flex;
   gap: 12px;

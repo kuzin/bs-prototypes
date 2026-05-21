@@ -1,0 +1,46 @@
+.benny-bubble-wrap {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.benny-bubble-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+
+.benny-bubble-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.benny-bubble {
+  position: relative;
+  background: #F2F2F2;
+  border-radius: 12px;
+  padding: 13px 15px;
+  font-size: 14px;
+  color: #424242;
+  line-height: 1.65;
+  font-weight: 500;
+}
+
+/* Left-pointing chat arrow toward avatar */
+.benny-bubble::before {
+  content: '';
+  position: absolute;
+  left: -8px;
+  top: 16px;
+  border: 8px solid transparent;
+  border-right: 8px solid #F2F2F2;
+  border-left: 0;
+}
+
+.benny-bubble strong {
+  font-weight: 800;
+  color: #1E293B;
+}

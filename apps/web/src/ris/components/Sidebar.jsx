@@ -149,7 +149,9 @@ export function Sidebar({
   const groups = []
   for (const item of nav) {
     const last = groups[groups.length - 1]
-    if (item.subgroup) {
+    if (item.type === 'section') {
+      groups.push({ kind: 'section', label: item.label })
+    } else if (item.subgroup) {
       if (last?.kind === 'subgroup') last.items.push(item)
       else groups.push({ kind: 'subgroup', items: [item] })
     } else {
@@ -201,6 +203,9 @@ export function Sidebar({
 
         <nav className="sb-nav">
           {groups.map((g, idx) => {
+            if (g.kind === 'section') {
+              return <div key={`sec-${idx}`} className="sb-nav-section">{g.label}</div>
+            }
             if (g.kind === 'item') {
               return (
                 <NavItem

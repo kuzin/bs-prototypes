@@ -1791,28 +1791,30 @@ function AdminMockup({ onStudentClick, selectedKey }) {
           ))}
         </div>
 
-        <FilterBar>
-          <FilterItem label="View as …">
-            <Select defaultValue="goal" size="sm">
-              <option value="goal">Reading Goal</option>
-              <option value="pages">Pages</option>
-              <option value="minutes">Minutes</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Log Type">
-            <Select defaultValue="minutes" size="sm">
-              <option value="minutes">Minutes</option>
-              <option value="pages">Pages</option>
-              <option value="sessions">Sessions</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Show as …">
-            <Select defaultValue="pct" size="sm">
-              <option value="pct">Percentages</option>
-              <option value="raw">Raw values</option>
-            </Select>
-          </FilterItem>
-        </FilterBar>
+        <div className="bp-adm-filter-wrap">
+          <FilterBar>
+            <FilterItem label="View as …">
+              <Select defaultValue="goal" size="sm">
+                <option value="goal">Reading Goal</option>
+                <option value="pages">Pages</option>
+                <option value="minutes">Minutes</option>
+              </Select>
+            </FilterItem>
+            <FilterItem label="Log Type">
+              <Select defaultValue="minutes" size="sm">
+                <option value="minutes">Minutes</option>
+                <option value="pages">Pages</option>
+                <option value="sessions">Sessions</option>
+              </Select>
+            </FilterItem>
+            <FilterItem label="Show as …">
+              <Select defaultValue="pct" size="sm">
+                <option value="pct">Percentages</option>
+                <option value="raw">Raw values</option>
+              </Select>
+            </FilterItem>
+          </FilterBar>
+        </div>
 
         <div className="bp-adm-card">
           <div className="bp-adm-week-nav">

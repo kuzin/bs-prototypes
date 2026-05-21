@@ -13,6 +13,7 @@ export default defineConfig({
         ris: resolve(__dirname, 'ris/index.html'),
         risDistrict: resolve(__dirname, 'ris-district/index.html'),
         patterns: resolve(__dirname, 'patterns/index.html'),
+        sfr: resolve(__dirname, 'sfr/index.html'),
       },
     },
   },
