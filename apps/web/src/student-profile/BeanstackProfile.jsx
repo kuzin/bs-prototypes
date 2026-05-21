@@ -57,10 +57,15 @@ function motivationScore(sec) {
 function sectionScore(key, sec) {
   return key === "motivation" ? motivationScore(sec) : sec.score;
 }
-function statusDot(score) {
-  if (score >= 75) return "#16A97A";
-  if (score >= 50) return "#D97706";
-  return "#DC2626";
+const STATUS_ICONS = {
+  ok:   (c) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 8.2 7.2 10 10.5 6.5"/></svg>,
+  warn: (c) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 2.5 1.5 13.5h13z"/><path d="M8 6.5v3M8 11.5v.5"/></svg>,
+  bad:  (c) => <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke={c} strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5.5 5.5 10.5 10.5M10.5 5.5 5.5 10.5"/></svg>,
+};
+function statusIndicator(score) {
+  if (score >= 75) return { render: STATUS_ICONS.ok,   color: "#16A97A" };
+  if (score >= 50) return { render: STATUS_ICONS.warn, color: "#D97706" };
+  return             { render: STATUS_ICONS.bad,  color: "#DC2626" };
 }
 
 // ─── Section tag chip ─────────────────────────────────────────────────────────
@@ -280,7 +285,7 @@ function Overview({ student, onNavigate }) {
         {Object.entries(student.sections).map(([key, sec]) => {
           const c = C[key];
           const score = sectionScore(key, sec);
-          const dot = statusDot(score);
+          const indicator = statusIndicator(score);
 
           let insightNode;
           if (key === "motivation") {
@@ -337,14 +342,11 @@ function Overview({ student, onNavigate }) {
               role="button"
               tabIndex={0}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
                 <div className="bp-tile-label">{LABEL[key]}</div>
-                <span style={{ width: 10, height: 10, borderRadius: "50%", background: dot, flexShrink: 0, display: "inline-block" }} />
+                {indicator.render(indicator.color)}
               </div>
               {insightNode}
-              <div className="bp-tile-status">
-                <StatusBadge label={sec.status} />
-              </div>
             </div>
           );
         })}
