@@ -880,7 +880,7 @@
 
 .bp-flagged-count-group { display: flex; align-items: center; gap: 10px; }
 
-.bp-flagged-count { font-size: 30px; font-weight: 900; color: #424242; }
+.bp-flagged-count { font-size: 22px; font-weight: 800; color: #424242; }
 
 .bp-flag-breakdown { margin-bottom: 14px; }
 
@@ -1092,11 +1092,11 @@
 }
 
 .bp-streak-hero-num {
-  font-size: 38px;
-  font-weight: 900;
+  font-size: 22px;
+  font-weight: 800;
   color: #1A1A1A;
-  line-height: 1;
-  letter-spacing: -1px;
+  line-height: 1.1;
+  letter-spacing: -0.3px;
 }
 
 .bp-streak-hero-unit {

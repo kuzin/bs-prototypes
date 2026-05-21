@@ -722,9 +722,6 @@ function GoalTracker({ week, goalMinutes }) {
 function HabitsDetail({ sec, c }) {
   const [weekIdx, setWeekIdx] = useState(0);
   const week    = sec.weeks[weekIdx];
-  const atBest  = sec.currentStreak >= sec.personalBest;
-  const pct     = Math.min(sec.currentStreak / sec.personalBest, 1);
-  const toGo    = sec.personalBest - sec.currentStreak;
 
   // Derive today's minutes from the current week (last non-null day)
   const currentWeek = sec.weeks.find(w => w.current);
@@ -748,51 +745,61 @@ function HabitsDetail({ sec, c }) {
         <Button variant="ghost">Edit Goal</Button>
       </div>
       <div className="bp-goal-week-nav">
-        <IconButton
-          variant="ghost"
-          size="sm"
+        <button
+          className="bp-heatmap-nav-btn"
           onClick={() => setWeekIdx(i => Math.min(i + 1, sec.weeks.length - 1))}
           disabled={weekIdx === sec.weeks.length - 1}
-        >‹</IconButton>
+          aria-label="Previous week"
+        >
+          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+            <polyline points="5,1 1,5.5 5,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
         <span className="bp-goal-week-label">
           {week.label}{week.current ? " (This Week)" : ""}
         </span>
-        <IconButton
-          variant="ghost"
-          size="sm"
+        <button
+          className="bp-heatmap-nav-btn"
           onClick={() => setWeekIdx(i => Math.max(i - 1, 0))}
           disabled={weekIdx === 0}
-        >›</IconButton>
+          aria-label="Next week"
+        >
+          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+            <polyline points="1,1 5,5.5 1,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
       <GoalTracker week={week} goalMinutes={sec.dailyGoalMinutes} />
     </Card>
 
-    {/* Streak hero */}
+    {/* Recent activity */}
     <Card>
-      <SectionHeading>Reading streak</SectionHeading>
+      <SectionHeading>Recent activity</SectionHeading>
       <div className="bp-streak-hero">
         <div className="bp-streak-hero-left">
-          <span className="bp-streak-hero-flame">🔥</span>
           <div>
             <div className="bp-streak-hero-num">
-              {sec.currentStreak}<span className="bp-streak-hero-unit">days</span>
+              {sec.daysRead30}<span className="bp-streak-hero-unit"> of last 30 days</span>
             </div>
-            <div className="bp-streak-hero-sublabel">current streak</div>
+            <div className="bp-streak-hero-sublabel">
+              {sec.daysRead30 === 0
+                ? "No reading logged"
+                : `Logged on ${Math.round((sec.daysRead30 / 30) * 100)}% of days`}
+            </div>
           </div>
         </div>
         <div className="bp-streak-hero-right">
-          {atBest ? (
-            <div className="bp-streak-pb-badge">🏆 Personal best!</div>
+          {sec.daysRead30 === 0 ? (
+            <CardNote tone="accent">
+              <Ic name="ti-alert-triangle" size={14} /> Worth checking in
+            </CardNote>
           ) : (
             <>
-              <div className="bp-streak-pb-label">
-                Personal best: <strong>{sec.personalBest} days</strong>
-              </div>
               <div className="bp-streak-pb-track">
-                <div className="bp-streak-pb-fill" style={{ width: `${pct * 100}%`, background: c.bar }} />
+                <div className="bp-streak-pb-fill" style={{ width: `${(sec.daysRead30 / 30) * 100}%`, background: c.bar }} />
               </div>
               <div className="bp-streak-pb-sub">
-                {toGo === 1 ? "1 more day to tie the record!" : `${toGo} days to tie the record`}
+                Personal best: <strong>{sec.personalBest} days</strong> in a row
               </div>
             </>
           )}
@@ -1440,10 +1447,10 @@ const STUDENTS = {
       },
       habits: {
         score: 30, status: "Watch",
-        currentStreak: 1, avgStreak: 2, personalBest: 3,
-        minutesThisWeek: 18, minutesDelta: -12,
-        booksLogged: 1, goalHitRate: 22,
-        avgSessionMins: 18, daysReadThisMonth: 3, daysInMonth: 15, longestGap: 7, topReadingDay: "Thursdays",
+        currentStreak: 0, avgStreak: 2, personalBest: 3,
+        minutesThisWeek: 0, minutesDelta: -30,
+        booksLogged: 0, goalHitRate: 0,
+        avgSessionMins: 18, daysReadThisMonth: 0, daysInMonth: 15, longestGap: 30, topReadingDay: "Thursdays",
         daysRead30: 0,
         tileStat: "1", tileSub: "day streak",
         dailyGoalMinutes: 15,
@@ -1622,8 +1629,16 @@ function ReadingLogPage() {
       <div className="bp-rl-month-nav">
         <div className="bp-rl-month-label">{month}</div>
         <div className="bp-rl-month-arrows">
-          <IconButton variant="ghost" size="sm">‹</IconButton>
-          <IconButton variant="ghost" size="sm">›</IconButton>
+          <button className="bp-heatmap-nav-btn" aria-label="Previous month">
+            <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+              <polyline points="5,1 1,5.5 5,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
+          <button className="bp-heatmap-nav-btn" aria-label="Next month">
+            <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+              <polyline points="1,1 5,5.5 1,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
       </div>
       {RL_DATA.map((week, wi) => (
