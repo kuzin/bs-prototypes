@@ -616,21 +616,27 @@ function ReadingHeatmap({ goalMinutes, color, data }) {
   return (
     <div className="bp-heatmap">
       <div className="bp-heatmap-nav">
-        <IconButton
-          variant="ghost"
-          size="sm"
+        <button
+          className="bp-heatmap-nav-btn"
           onClick={() => setMonthOffset(o => Math.min(o + 1, MAX_OFFSET))}
           disabled={monthOffset >= MAX_OFFSET}
           aria-label="Previous 6 months"
-        >‹</IconButton>
+        >
+          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+            <polyline points="5,1 1,5.5 5,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
         <span className="bp-heatmap-nav-label">{navLabel}</span>
-        <IconButton
-          variant="ghost"
-          size="sm"
+        <button
+          className="bp-heatmap-nav-btn"
           onClick={() => setMonthOffset(o => Math.max(o - 1, 0))}
           disabled={monthOffset === 0}
           aria-label="Next 6 months"
-        >›</IconButton>
+        >
+          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
+            <polyline points="1,1 5,5.5 1,10" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </button>
       </div>
       <div className="bp-heatmap-body">
         <div className="bp-heatmap-day-labels">

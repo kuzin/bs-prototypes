@@ -1447,7 +1447,7 @@
 }
 
 /* Goal met — small white dot centered on cell */
-.bp-heatmap-cell--goal::after {
+.bp-heatmap-cell--goal::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -1457,6 +1457,7 @@
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.75);
   pointer-events: none;
+  z-index: 1;
 }
 
 /* Streak — amber outer outline */
