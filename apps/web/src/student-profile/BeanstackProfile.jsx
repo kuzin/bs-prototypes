@@ -55,9 +55,10 @@ function motivationScore(sec) {
 function sectionScore(key, sec) {
   return key === "motivation" ? motivationScore(sec) : sec.score;
 }
-function compositeScore(sections) {
-  const vals = Object.entries(sections).map(([k, s]) => sectionScore(k, s));
-  return Math.round(vals.reduce((a, b) => a + b, 0) / vals.length);
+function statusDot(score) {
+  if (score >= 75) return "#16A97A";
+  if (score >= 50) return "#D97706";
+  return "#DC2626";
 }
 
 // ─── Section tag chip ─────────────────────────────────────────────────────────
@@ -261,17 +262,8 @@ function PageHeader({ icon, title, right }) {
   );
 }
 
-// ─── Reading health color theme ───────────────────────────────────────────────
-function healthTheme(score) {
-  if (score >= 85) return { bar: "#16A97A", areaBg: "#E8FBF2", areaText: "#0A5E42", pillBg: "#0A5E42", icon: "ti-circle-check" };
-  if (score >= 70) return { bar: "#1A6DD5", areaBg: "#E6F1FF", areaText: "#1A4AB0", pillBg: "#1A4AB0", icon: "ti-circle-check" };
-  if (score >= 50) return { bar: "#D97706", areaBg: "#FEF3C7", areaText: "#854D0E", pillBg: "#854D0E", icon: "ti-alert-triangle" };
-  return                  { bar: "#DC2626", areaBg: "#FEE2E2", areaText: "#991B1B", pillBg: "#991B1B", icon: "ti-alert-triangle" };
-}
-
 // ─── Overview ─────────────────────────────────────────────────────────────────
 function Overview({ student, onNavigate }) {
-  const composite = compositeScore(student.sections);
   return (
     <div className="bp-content">
       <PageHeader
@@ -286,11 +278,46 @@ function Overview({ student, onNavigate }) {
         {Object.entries(student.sections).map(([key, sec]) => {
           const c = C[key];
           const score = sectionScore(key, sec);
-          const stat = key === "motivation" ? String(score) : sec.tileStat;
-          const unit = key === "motivation" ? "Score"
-                     : key === "integrity"  ? (parseInt(stat) === 1 ? "Flag" : "Flags")
-                     : key === "habits"     ? "Day Streak"
-                     : "Lexile";
+          const dot = statusDot(score);
+
+          let insightNode;
+          if (key === "motivation") {
+            if (sec.motivatorInsight.type === "clear") {
+              insightNode = (
+                <div className="bp-tile-stat" style={{ lineHeight: 1.3 }}>
+                  <div style={{ fontSize: 11, fontWeight: 400, opacity: 0.65, marginBottom: 3 }}>
+                    Top motivator{sec.motivatorInsight.top.length > 1 ? "s" : ""}:
+                  </div>
+                  {sec.motivatorInsight.top.join(", ")}
+                </div>
+              );
+            } else {
+              insightNode = (
+                <div className="bp-tile-stat" style={{ fontSize: 13, opacity: 0.75, fontWeight: 500 }}>
+                  ⚠ No clear motivator found
+                </div>
+              );
+            }
+          } else if (key === "habits") {
+            insightNode = sec.daysRead30 > 0 ? (
+              <div className="bp-tile-stat">
+                {sec.daysRead30}<span className="bp-tile-unit"> of last 30 days</span>
+              </div>
+            ) : (
+              <div className="bp-tile-stat" style={{ fontSize: 13, opacity: 0.75, fontWeight: 500 }}>
+                No logging in past 30 days
+              </div>
+            );
+          } else {
+            const stat = sec.tileStat;
+            const unit = key === "integrity" ? (parseInt(stat) === 1 ? "Flag" : "Flags") : "Lexile";
+            insightNode = (
+              <div className="bp-tile-stat">
+                {stat}<span className="bp-tile-unit"> {unit}</span>
+              </div>
+            );
+          }
+
           return (
             <div
               key={key}
@@ -301,10 +328,11 @@ function Overview({ student, onNavigate }) {
               role="button"
               tabIndex={0}
             >
-              <div className="bp-tile-label">{LABEL[key]}</div>
-              <div className="bp-tile-stat">
-                {stat}<span className="bp-tile-unit"> {unit}</span>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 4 }}>
+                <div className="bp-tile-label">{LABEL[key]}</div>
+                <span style={{ width: 10, height: 10, borderRadius: "50%", background: dot, flexShrink: 0, display: "inline-block" }} />
               </div>
+              {insightNode}
               <div className="bp-tile-status">
                 <StatusBadge label={sec.status} />
               </div>
@@ -322,67 +350,6 @@ function Overview({ student, onNavigate }) {
             <div className="bp-benny-bubble">{student.bennySummary}</div>
             <div className="bp-benny-timestamp">Analysis last run on {student.lastRun}</div>
           </div>
-        </div>
-      </Card>
-
-      {/* Reading Health rollup */}
-      <Card>
-        <div className="bp-health-header">
-          <div className="bp-health-title">Reading Health</div>
-        </div>
-
-        {/* Colored score verdict */}
-        {(() => {
-          const ht = healthTheme(composite);
-          return (
-            <div className="bp-health-verdict" style={{ "--ht-bar": ht.bar, "--ht-text": ht.areaText, "--ht-light": ht.areaBg }}>
-              <div className="bp-health-verdict-row">
-                <div className="bp-health-verdict-score">
-                  <span className="bp-health-verdict-num">{composite}</span>
-                  <span className="bp-health-verdict-outof">/100</span>
-                </div>
-                <span className="bp-health-verdict-pill">
-                  <Ic name={ht.icon} size={12} />
-                  {student.healthStatus}
-                </span>
-              </div>
-              <div className="bp-health-verdict-track">
-                <ProgressBar value={composite} color={ht.bar} size="lg" />
-              </div>
-            </div>
-          );
-        })()}
-
-        <div className="bp-health-list">
-          {Object.entries(student.sections).map(([key, sec]) => {
-            const c = C[key];
-            return (
-              <div
-                key={key}
-                className="bp-health-row"
-                onClick={() => onNavigate(key)}
-                onKeyDown={e => e.key === "Enter" && onNavigate(key)}
-                role="button"
-                tabIndex={0}
-              >
-                <div className="bp-health-icon" style={{ "--section-bg": c.bg }}>
-                  <Ic name={c.icon} size={18} />
-                </div>
-                <div className="bp-health-row-body">
-                  <div className="bp-health-row-top">
-                    <span className="bp-health-row-name">{LABEL[key]}</span>
-                    <StatusBadge label={sec.status} />
-                  </div>
-                  <ProgressBar value={sectionScore(key, sec)} color={c.bar} />
-                </div>
-                <span className="bp-health-row-link">
-                  <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
-                    <polyline points="1,1 6,6 1,11" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-                  </svg>
-                </span>
-              </div>
-            );
-          })}
         </div>
       </Card>
 
@@ -957,62 +924,6 @@ function SkillsDetail({ sec, c, firstName }) {
       ))}
     </div>
 
-    <Card>
-      <div className="bp-genre-header">
-        <SectionHeading>Genre trends</SectionHeading>
-        <span className="bp-genre-subhead">{firstName} gravitates toward these genres — good signals for recommendations</span>
-      </div>
-      <div className="bp-genre-cloud">
-        {(() => {
-          const maxCount = Math.max(...sec.genreCloud.map(g => g.count));
-          return sec.genreCloud.map((g, i) => {
-            const pal = GENRE_COLORS[g.genre] ?? { bg: "#F3F4F6", color: "#374151", border: "#D1D5DB" };
-            const weight = g.count / maxCount; // 0–1 relative size
-            return (
-              <span
-                key={i}
-                className="bp-genre-chip"
-                style={{
-                  "--chip-bg":     pal.bg,
-                  "--chip-color":  pal.color,
-                  "--chip-border": pal.border,
-                  fontSize: `${11 + Math.round(weight * 5)}px`,
-                  opacity: 0.55 + weight * 0.45,
-                }}
-              >
-                {g.genre}
-                <span className="bp-genre-chip-count">{g.count}</span>
-              </span>
-            );
-          });
-        })()}
-      </div>
-    </Card>
-
-    <Card flush>
-      <div className="bp-titles-header">
-        <span className="bp-titles-header-label">Suggested next reads</span>
-        <span className="bp-titles-range-chip">{sec.recommendedRange}</span>
-      </div>
-      {sec.recommendedTitles.map((t, i) => (
-        <div key={i} className="bp-title-row">
-          <a href={`https://openlibrary.org/isbn/${t.isbn}`} target="_blank" rel="noreferrer" className="bp-title-cover-link">
-            <CoverImage isbn={t.isbn} title={t.title} />
-          </a>
-          <div className="bp-title-row-main">
-            <div className="bp-title-row-top">
-              <div>
-                <a href={`https://openlibrary.org/isbn/${t.isbn}`} target="_blank" rel="noreferrer" className="bp-title-name-link">
-                  {t.title}
-                </a>
-                <div className="bp-title-author">{t.author}</div>
-              </div>
-              <span className="bp-title-lexile-pill">{t.lexile}L</span>
-            </div>
-          </div>
-        </div>
-      ))}
-    </Card>
   </>);
 }
 
@@ -1027,8 +938,6 @@ const STUDENTS = {
     name: "Marcus Chen",
     grade: "7th Grade",
     lastRun: "May 15 at 9:55am",
-    healthStatus: "Excellent",
-    healthIcon: "ti-circle-check",
     bennySummary:
       "Marcus is an outstanding reader. He's maintained an 18-day reading streak — the longest in the class — and is reading well above grade level at 870L. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with only 1 flagged session all year. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
     sections: {
@@ -1037,6 +946,7 @@ const STUDENTS = {
         intrinsic: 88, intrinsicDelta: 12,
         extrinsic: 82, extrinsicDelta: 6,
         tileSub: "/ 100 score",
+        motivatorInsight: { type: "clear", top: ["Enjoyment", "Curiosity"] },
         rmiHistory: [
           {
             period: "Apr 25 Index",
@@ -1116,6 +1026,7 @@ const STUDENTS = {
         minutesThisWeek: 185, minutesDelta: 25,
         booksLogged: 4, goalHitRate: 94,
         avgSessionMins: 37, daysReadThisMonth: 14, daysInMonth: 15, longestGap: 1, topReadingDay: "Thursdays",
+        daysRead30: 21,
         tileStat: "18", tileSub: "day streak",
         dailyGoalMinutes: 30,
         heatmapData: makeHeatmapData(0.85, "consistent"),
@@ -1212,8 +1123,6 @@ const STUDENTS = {
     name: "Anne Boonchuy",
     grade: "6th Grade",
     lastRun: "May 15 at 9:55am",
-    healthStatus: "On Track",
-    healthIcon: "ti-circle-check",
     bennySummary:
       "Anne is making real progress this month! Her reading habits are strong — she's on a 4-day streak and has already logged 85 minutes this week. Her Lexile average has climbed 50 points since April, and she's consistently choosing harder books. Integrity is improving, with flags down from 7 to 4. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and 2 unfinished BTWB conversations that are worth following up on.",
     sections: {
@@ -1222,6 +1131,7 @@ const STUDENTS = {
         intrinsic: 72, intrinsicDelta: 7,
         extrinsic: 48, extrinsicDelta: -4,
         tileSub: "/ 100 score",
+        motivatorInsight: { type: "clear", top: ["Recognition", "Social Connection"] },
         rmiHistory: [
           {
             period: "Apr 25 Index",
@@ -1334,6 +1244,7 @@ const STUDENTS = {
         minutesThisWeek: 85, minutesDelta: 12,
         booksLogged: 2, goalHitRate: 68,
         avgSessionMins: 24, daysReadThisMonth: 9, daysInMonth: 15, longestGap: 3, topReadingDay: "Mondays",
+        daysRead30: 10,
         tileStat: "4", tileSub: "day streak",
         dailyGoalMinutes: 20,
         heatmapData: makeHeatmapData(0.63, "peaky"),
@@ -1430,8 +1341,6 @@ const STUDENTS = {
     name: "Tyler Voss",
     grade: "6th Grade",
     lastRun: "May 15 at 9:55am",
-    healthStatus: "Needs Attention",
-    healthIcon: "ti-alert-triangle",
     bennySummary:
       "Tyler needs immediate attention. He's logged only 1 day this week and his reading streak has reset multiple times. His Lexile average has declined 15 points since March — the only student in the class trending downward. He has 13 flagged sessions including 6 suspected over-logs, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.",
     sections: {
@@ -1440,6 +1349,7 @@ const STUDENTS = {
         intrinsic: 32, intrinsicDelta: -8,
         extrinsic: 44, extrinsicDelta: -5,
         tileSub: "/ 100 score",
+        motivatorInsight: { type: "mystery" },
         rmiHistory: [
           {
             period: "Apr 25 Index",
@@ -1528,6 +1438,7 @@ const STUDENTS = {
         minutesThisWeek: 18, minutesDelta: -12,
         booksLogged: 1, goalHitRate: 22,
         avgSessionMins: 18, daysReadThisMonth: 3, daysInMonth: 15, longestGap: 7, topReadingDay: "Thursdays",
+        daysRead30: 0,
         tileStat: "1", tileSub: "day streak",
         dailyGoalMinutes: 15,
         heatmapData: makeHeatmapData(0.18, "sporadic"),
