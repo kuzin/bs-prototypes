@@ -47,36 +47,19 @@ export const FEATURE_BAR = {
   href: "#",
 };
 
-// ─── Engagement tracker (variants per role) ───────────────────────────────────
+// ─── Engagement (RCA levels) ─────────────────────────────────────────────────
+// Reading Culture Awards has 4 named levels; current school engagement places
+// the school in one of them. Widget shows current %, current level, next-level
+// threshold, and a 4-segment progress bar with a caret over the active segment.
 export const ENGAGEMENT = {
-  teacher: {
-    title: "Teacher Engagement",
-    label: "Active Students",
-    active: 12,
-    threshold: 10,
-    segments: [
-      { until: 3,  color: "red"    },
-      { until: 9,  color: "yellow" },
-      { until: 99, color: "green"  },
-    ],
-    message:
-      "Congratulations! 10 of your students have logged. Get your 3 free Benny plushies!",
-    cta: "Redeem",
-  },
-  media: {
-    title: "Media Specialist Engagement",
-    label: "Active Classes",
-    active: 7,
-    threshold: 10,
-    segments: [
-      { until: 3,  color: "red"    },
-      { until: 9,  color: "yellow" },
-      { until: 99, color: "green"  },
-    ],
-    message:
-      "Encourage 3 more classes to log to earn a Beanstack swag bundle for your library!",
-    cta: "Learn more",
-  },
+  current: 45, // % engagement
+  label: "Engagement",
+  levels: [
+    { id: "spark",       name: "Spark",       color: "orange", min: 0  },
+    { id: "igniter",     name: "Igniter",     color: "green",  min: 25 },
+    { id: "pathfinder",  name: "Pathfinder",  color: "blue",   min: 50 },
+    { id: "trailblazer", name: "Trailblazer", color: "purple", min: 75 },
+  ],
 };
 
 // ─── Fixed right rail — What's New cards ──────────────────────────────────────
@@ -198,16 +181,41 @@ export const LEADERBOARDS = {
 };
 
 // ─── Dashboard quick links ────────────────────────────────────────────────────
-// `icon` is one of the keys in LINK_ICONS (rendered as a stroked SVG in
-// widgets.jsx). `color` keys into .adm-link--<color> pill backgrounds.
+// Labels are verbs ("Recognize…", "Review…") so each link reads as something
+// the user can do, not a place to browse. `icon` is one of the keys in
+// LINK_ICONS in widgets.jsx; `color` keys into .adm-link--<color>.
 export const LINKS = [
-  { id: "l1", label: "View Classes",        color: "red",    icon: "classes" },
-  { id: "l2", label: "View Leaderboards",   color: "yellow", icon: "trophy" },
-  { id: "l3", label: "View Flagged Entries",color: "blue",   icon: "flag" },
-  { id: "l4", label: "Manage Goals",        color: "green",  icon: "target" },
-  { id: "l5", label: "Reading Reports",     color: "purple", icon: "chart" },
-  { id: "l6", label: "Roster Students",     color: "pink",   icon: "clipboard" },
+  { id: "l1", label: "Recognize top readers",   color: "yellow", icon: "trophy" },
+  { id: "l2", label: "Review flagged sessions", color: "blue",   icon: "flag" },
+  { id: "l3", label: "See Lexile Insights",     color: "purple", icon: "lexile" },
+  { id: "l4", label: "Distribute rewards",      color: "pink",   icon: "reward" },
+  { id: "l5", label: "Update reading goal",     color: "green",  icon: "target" },
+  { id: "l6", label: "Find a class or reader",  color: "red",    icon: "classes" },
 ];
+
+// ─── Action row (admin-controlled, sits above the editable grid) ──────────────
+// Each entry is a key action from the brief. `roles` filters which roles see
+// it. `attention` is an optional badge count (rendered as a small chip).
+export const ACTIONS = [
+  { id: "a-flags",     title: "Review flagged sessions", subtitle: "3 sessions need a teacher's eyes", icon: "flag",      attention: 3,  cta: "Review",   roles: ["teacher", "media"] },
+  { id: "a-rewards",   title: "Distribute rewards",      subtitle: "12 students newly earned a reward", icon: "reward",   attention: 12, cta: "Distribute", roles: ["media"] },
+  { id: "a-challenge", title: "Create a challenge",      subtitle: "Pick a template or build your own",  icon: "trophy",  cta: "Start",    roles: ["teacher", "media"] },
+  { id: "a-bnc",       title: "Run BNC",                 subtitle: "Weekly nudge to capture rewards data", icon: "chart",   cta: "Open BNC", roles: ["media"] },
+  { id: "a-lexile",    title: "Explore Lexile Insights", subtitle: "See where readers are growing",      icon: "lexile",  cta: "Open",     roles: ["teacher", "media"] },
+];
+
+// ─── Admin condition flags — drive contextual CTAs in the action row ──────────
+// These would come from the backend in prod. The action row reads them and
+// surfaces a CTA tile when a condition is unmet (no live goal, no challenges).
+export const ADMIN_STATE = {
+  goalUpdatedMonthsAgo: 14, // > 12 → show "Set a goal" CTA
+  liveChallengeCount: 0,    // 0    → show "Turn on auto-publish" CTA
+};
+
+// Max tiles shown in the action row (combined: conditional + role), per role.
+// Media specialists already have a denser dashboard, so we keep their row
+// tighter than the teacher view.
+export const ACTION_ROW_CAP = { teacher: 4, media: 3 };
 
 // ─── Quick-question library ──────────────────────────────────────────────────
 // All available; widget settings choose which subset to display.
@@ -234,9 +242,8 @@ export const REQUIRED_WIDGETS = {};
 export const DEFAULT_LAYOUT = [];
 
 // ─── Layout presets ───────────────────────────────────────────────────────────
-// Each preset defines a starting layout + optional per-widget settings.
-// Five templates: Blank · School Overview · Reports & Analytics · Demographics
-// · Rostering Data. Picking one replaces the current layout.
+// Templates are organized by INTENT (what I'm trying to do) rather than by
+// data shape. Picking one replaces the editable grid's layout + settings.
 export const LAYOUT_PRESETS = [
   {
     id: "blank",
@@ -248,67 +255,60 @@ export const LAYOUT_PRESETS = [
     settings: {},
   },
   {
-    id: "school-overview",
-    name: "School Overview",
-    description: "High-level engagement for the whole school — top metrics, daily reading, and class standings.",
-    widgetNames: ["What's Happened", "Daily Reading Tracker", "Classes"],
+    id: "run-classroom",
+    name: "Run my classroom",
+    description: "Daily Reading Tracker up top, with shortcuts and a student roster for quick lookups.",
+    widgetNames: ["Daily Reading Tracker", "Quick Links", "Students"],
     roles: ["teacher", "media"],
     layout: [
-      { i: "stat-tiles",          x: 0, y: 0,  w: 12, h: 8,  minW: 6, minH: 4 },
-      { i: "daily-tracker",       x: 0, y: 8,  w: 12, h: 20, minW: 5, minH: 6 },
-      { i: "leaderboard-classes", x: 0, y: 28, w: 12, h: 34, minW: 3, minH: 10 },
+      { i: "daily-tracker",        x: 0, y: 0,   w: 12, h: 20, minW: 5, minH: 6 },
+      { i: "quick-links",          x: 0, y: 20,  w: 12, h: 14, minW: 3, minH: 14 },
+      { i: "leaderboard-students", x: 0, y: 28,  w: 12, h: 34, minW: 3, minH: 10 },
+    ],
+    settings: {},
+  },
+  {
+    id: "manage-rewards",
+    name: "Manage rewards & recognition",
+    description: "Surface who's earning, who's ready for a reward, and shortcuts to distribute.",
+    widgetNames: ["Students", "Classes", "Quick Links"],
+    roles: ["teacher", "media"],
+    layout: [
+      { i: "leaderboard-students", x: 0, y: 0,   w: 6,  h: 34, minW: 3, minH: 10 },
+      { i: "leaderboard-classes",  x: 6, y: 0,   w: 6,  h: 34, minW: 3, minH: 10 },
+      { i: "quick-links",          x: 0, y: 34,  w: 12, h: 14, minW: 3, minH: 14 },
     ],
     settings: {
-      "leaderboard-classes": { sort: "active-desc", range: "week", limit: "15" },
+      "leaderboard-students": { sort: "active-desc", range: "week", limit: "15" },
+      "leaderboard-classes":  { sort: "active-desc", range: "week", limit: "15" },
     },
   },
   {
-    id: "reports",
-    name: "Reports & Analytics",
-    description: "Data-heavy view with stat tiles, suggested questions, and weekly reading patterns.",
-    widgetNames: ["What's Happened", "Number Cruncher", "Daily Reading Tracker"],
+    id: "engagement-health",
+    name: "Engagement health",
+    description: "Spot quiet readers and stalled classes — engagement, stat tiles, and weekly tracking.",
+    widgetNames: ["Engagement", "What's Happened", "Daily Reading Tracker"],
     roles: ["teacher", "media"],
     layout: [
-      { i: "stat-tiles",    x: 0, y: 0,  w: 12, h: 8,  minW: 6, minH: 4 },
-      { i: "questions",     x: 0, y: 8,  w: 12, h: 8,  minW: 6, minH: 4 },
-      { i: "daily-tracker", x: 0, y: 16, w: 12, h: 20, minW: 5, minH: 6 },
+      { i: "engagement",    x: 0, y: 0,  w: 6,  h: 10, minW: 3, minH: 6 },
+      { i: "stat-tiles",    x: 6, y: 0,  w: 6,  h: 10, minW: 4, minH: 4 },
+      { i: "daily-tracker", x: 0, y: 10, w: 12, h: 20, minW: 5, minH: 6 },
     ],
-    settings: {
-      "questions": { selected: ["q1","q2","q3","q4","q5","q6"] },
-    },
+    settings: {},
   },
   {
-    id: "demographics",
-    name: "Demographics",
-    description: "Snapshot of who's reading — average title level, active readers, and how students compare.",
-    widgetNames: ["What's Happened", "Number Cruncher", "Students"],
+    id: "explore-data",
+    name: "Explore the data",
+    description: "Number Cruncher, stat tiles, and rosters for ad-hoc questions and digging in.",
+    widgetNames: ["Number Cruncher", "What's Happened", "Students"],
     roles: ["teacher", "media"],
     layout: [
-      { i: "stat-tiles",           x: 0, y: 0,  w: 12, h: 8, minW: 6, minH: 4 },
-      { i: "questions",            x: 0, y: 8,  w: 12, h: 8, minW: 6, minH: 4 },
+      { i: "questions",            x: 0, y: 0,  w: 12, h: 14, minW: 6, minH: 14 },
+      { i: "stat-tiles",           x: 0, y: 8,  w: 12, h: 8,  minW: 6, minH: 4 },
       { i: "leaderboard-students", x: 0, y: 16, w: 12, h: 34, minW: 3, minH: 10 },
     ],
     settings: {
-      "stat-tiles":                { selected: ["active", "avgLevel"] },
-      "questions":                 { selected: ["q5", "q7", "q1", "q3"] },
-      "leaderboard-students":      { sort: "alpha", range: "year", limit: "15" },
-    },
-  },
-  {
-    id: "rostering",
-    name: "Rostering Data",
-    description: "Side-by-side rosters for quick reference — students, classes, and (for media specialists) staff.",
-    widgetNames: ["Students", "Classes", "Staff"],
-    roles: ["teacher", "media"],
-    layout: [
-      { i: "leaderboard-students", x: 0, y: 0,  w: 6, h: 34, minW: 3, minH: 10 },
-      { i: "leaderboard-classes",  x: 6, y: 0,  w: 6, h: 34, minW: 3, minH: 10 },
-      { i: "leaderboard-staff",    x: 0, y: 34, w: 12, h: 34, minW: 3, minH: 10 },
-    ],
-    settings: {
-      "leaderboard-students": { sort: "alpha", range: "week", limit: "15" },
-      "leaderboard-classes":  { sort: "alpha", range: "week", limit: "15" },
-      "leaderboard-staff":    { sort: "alpha", range: "week", limit: "15" },
+      "questions": { selected: ["q1","q2","q3","q4","q5","q6"] },
     },
   },
 ];

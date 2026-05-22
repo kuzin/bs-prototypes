@@ -1,6 +1,6 @@
 import {
   NOTIFICATIONS, STAT_TILES, DAILY_TRACKER, LEADERBOARDS,
-  LINKS, QUESTIONS,
+  LINKS, QUESTIONS, ENGAGEMENT,
 } from "../data";
 import { useState } from "react";
 
@@ -377,6 +377,20 @@ const LINK_ICONS = {
       <line x1="8" y1="13" x2="12" y2="13" />
     </svg>
   ),
+  lexile: (
+    <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 4h7a3 3 0 0 1 3 3v10a2 2 0 0 0-2-2H3z" />
+      <path d="M17 4h-4a3 3 0 0 0-3 3v10a2 2 0 0 1 2-2h5z" />
+      <path d="M5 8h4M5 11h4" />
+    </svg>
+  ),
+  reward: (
+    <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="10" cy="8" r="4.5" />
+      <path d="M7 12l-1.5 5L10 15l4.5 2L13 12" />
+      <path d="M10 6v2l1.5 1" />
+    </svg>
+  ),
 };
 export function AdmQuickLinks({ settings = {} }) {
   const selectedIds = settings.selected && settings.selected.length
@@ -501,6 +515,57 @@ const QUESTIONS_FIELDS = [
     options: QUESTIONS.map((q) => ({ value: q.id, label: q.text })) },
 ];
 
+// ─── Engagement (RCA-level format) ───────────────────────────────────────
+// Shows the school's current Reading Culture Awards level alongside a 4-stop
+// progress bar; a small caret marks the active segment, and the next level's
+// threshold is shown below the active level's "Engagement N%" pill.
+export function AdmEngagement() {
+  const { current, label, levels } = ENGAGEMENT;
+  // Active level = highest `min` ≤ current. Next level (if any) drives the
+  // "Next Level" row at the bottom.
+  let activeIdx = 0;
+  for (let i = 0; i < levels.length; i++) {
+    if (current >= levels[i].min) activeIdx = i;
+  }
+  const active = levels[activeIdx];
+  const next = levels[activeIdx + 1];
+  const article = /^[aeiou]/i.test(active.name) ? "an" : "a";
+  return (
+    <div className="adm-w">
+      <div className="adm-w-body adm-rca">
+        <div className="adm-rca-head">
+          <div>
+            <div className="adm-rca-eyebrow">Your school is currently {article}</div>
+            <div className={`adm-rca-level adm-rca-level--${active.color}`}>{active.name}</div>
+          </div>
+          <div className={`adm-rca-badge adm-rca-badge--${active.color}`} aria-hidden="true">
+            <span className="adm-rca-diamond" />
+          </div>
+        </div>
+
+        <div className="adm-rca-bar" style={{ "--active": activeIdx }}>
+          {levels.map((lv, i) => (
+            <span key={lv.id} className={`adm-rca-seg adm-rca-seg--${lv.color} ${i === activeIdx ? "is-active" : ""}`} />
+          ))}
+          <span className="adm-rca-caret" aria-hidden="true" />
+        </div>
+
+        <div className={`adm-rca-pill adm-rca-pill--${active.color}`}>
+          <span>{label}</span>
+          <span>{current}%</span>
+        </div>
+
+        {next && (
+          <div className="adm-rca-next">
+            <span>Next Level: {next.name}</span>
+            <span>{next.min}%</span>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Catalog ──────────────────────────────────────────────────────────
 // `scrollable: true` means the widget has a fixed height (set in layout) and
 // its body scrolls internally — good for long lists. Otherwise the dashboard
@@ -511,6 +576,7 @@ export const WIDGET_CATALOG = {
   "leaderboard-students":   { name: "Students", desc: "Roster of students with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardStudents, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true },
   "leaderboard-classes":    { name: "Classes",  desc: "Roster of classes with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardClasses,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true },
   "leaderboard-staff":      { name: "Staff",    desc: "Roster of staff with configurable sort",    min: { w: 1, h: 6 }, component: AdmLeaderboardStaff,    defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["media"] },
-  "quick-links":            { name: "Quick Links",          desc: "Pick which shortcut tiles to show",    min: { w: 2, h: 6 }, component: AdmQuickLinks, defaults: QUICK_LINKS_DEFAULTS, settingsFields: QUICK_LINKS_FIELDS, scrollable: true },
-  "questions":              { name: "Number Cruncher",      desc: "Pick which questions to show",        min: { w: 2, h: 4 }, component: AdmQuestions, defaults: QUESTIONS_DEFAULTS, settingsFields: QUESTIONS_FIELDS },
+  "quick-links":            { name: "Quick Links",          desc: "Pick which shortcut tiles to show",    min: { w: 2, h: 14 }, component: AdmQuickLinks, defaults: QUICK_LINKS_DEFAULTS, settingsFields: QUICK_LINKS_FIELDS, scrollable: true },
+  "questions":              { name: "Number Cruncher",      desc: "Pick which questions to show",        min: { w: 2, h: 14 }, component: AdmQuestions, defaults: QUESTIONS_DEFAULTS, settingsFields: QUESTIONS_FIELDS, scrollable: true },
+  "engagement":             { name: "Engagement",            desc: "Are enough readers (or classes) actively logging?", min: { w: 2, h: 6 }, component: AdmEngagement },
 };

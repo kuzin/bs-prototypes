@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { NOTIFICATIONS, GOAL_OPTIONS, WHATS_NEW, FEATURE_BAR, ENGAGEMENT } from "../data";
+import { NOTIFICATIONS, GOAL_OPTIONS, WHATS_NEW, FEATURE_BAR, ACTIONS, ADMIN_STATE, ACTION_ROW_CAP } from "../data";
 import { SettingsPopover } from "./SettingsPopover";
 
 const fmt = (n) => n.toLocaleString();
@@ -197,45 +197,93 @@ export function FeatureBar({ onClose }) {
   );
 }
 
-// ─── Engagement tracker (variants per role) ─────────────────────────────
-function EngagementCard({ role = "teacher" }) {
-  const e = ENGAGEMENT[role] || ENGAGEMENT.teacher;
-  // Build the 3 segmented progress bar — pill above the active segment
-  const segments = [
-    { color: "red",    label: "0–3" },
-    { color: "yellow", label: "4–9" },
-    { color: "green",  label: "10+" },
-  ];
-  const activeIdx = e.active <= 3 ? 0 : e.active <= 9 ? 1 : 2;
-  const tone = segments[activeIdx].color;
+// ─── Action row (admin-controlled, sits above the editable grid) ─────────
+// Renders ACTIONS filtered by role, plus conditional CTAs derived from
+// ADMIN_STATE (no goal in 12+ months, no live challenges). Not editable —
+// the brief asks us to drive users toward action ASAP, so these stay pinned.
+const ACTION_ICONS = {
+  flag: (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 2v16" /><path d="M4 3h11l-2 3 2 3H4" />
+    </svg>
+  ),
+  reward: (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="10" cy="8" r="4.5" /><path d="M7 12l-1.5 5L10 15l4.5 2L13 12" />
+    </svg>
+  ),
+  trophy: (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M5 3h10v4a5 5 0 0 1-10 0z" /><path d="M5 5H3v1a3 3 0 0 0 2 2.8" /><path d="M15 5h2v1a3 3 0 0 1-2 2.8" /><path d="M10 12v3" /><path d="M6.5 17h7" />
+    </svg>
+  ),
+  chart: (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 17h14" /><rect x="5" y="9" width="2.5" height="6" rx="0.5" /><rect x="9" y="5" width="2.5" height="10" rx="0.5" /><rect x="13" y="11" width="2.5" height="4" rx="0.5" />
+    </svg>
+  ),
+  lexile: (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 4h7a3 3 0 0 1 3 3v10a2 2 0 0 0-2-2H3z" /><path d="M17 4h-4a3 3 0 0 0-3 3v10a2 2 0 0 1 2-2h5z" />
+    </svg>
+  ),
+  target: (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="10" cy="10" r="7.5" /><circle cx="10" cy="10" r="4" /><circle cx="10" cy="10" r="1" fill="currentColor" />
+    </svg>
+  ),
+};
+export function ActionRow({ role = "teacher" }) {
+  const items = ACTIONS.filter((a) => !a.roles || a.roles.includes(role));
+  // Conditional admin CTAs — inserted at the front so they're hard to miss.
+  const conditional = [];
+  if (ADMIN_STATE.goalUpdatedMonthsAgo > 12) {
+    conditional.push({
+      id: "cta-goal", title: "Set this year's goal", subtitle: `Last updated ${ADMIN_STATE.goalUpdatedMonthsAgo} months ago`,
+      icon: "target", cta: "Set goal", tone: "warn",
+    });
+  }
+  if (ADMIN_STATE.liveChallengeCount === 0) {
+    conditional.push({
+      id: "cta-challenges", title: "Turn on a challenge", subtitle: "No live challenges right now",
+      icon: "trophy", cta: "Auto-publish", tone: "warn",
+    });
+  }
+  // Conditional CTAs always show; remaining slots are filled with role
+  // actions in their declared (priority) order. Total is capped so the row
+  // doesn't sprawl past the most important 3–4 things.
+  const cap = (typeof ACTION_ROW_CAP === "object" ? ACTION_ROW_CAP[role] : ACTION_ROW_CAP) ?? 4;
+  const slotsForRole = Math.max(0, cap - conditional.length);
+  const tiles = [...conditional, ...items.slice(0, slotsForRole)];
+  if (!tiles.length) return null;
   return (
-    <div className="adm-rail-card adm-engage">
-      <div className="adm-rail-head">
-        <h3 className="adm-rail-title">{e.title}</h3>
-      </div>
-      <div className={`adm-engage-bar adm-engage-bar--${tone}`}>
-        {segments.map((s, i) => (
-          <span key={i} className={`adm-engage-seg adm-engage-seg--${s.color} ${i === activeIdx ? "is-active" : ""}`} />
-        ))}
-      </div>
-      <div className={`adm-engage-pill adm-engage-pill--${tone}`}>
-        {e.active} {e.label}
-      </div>
-      <p className="adm-engage-msg">{e.message}</p>
-      {e.cta && tone === "green" && (
-        <button className="adm-btn adm-btn--primary" style={{ alignSelf: "flex-start" }}>{e.cta}</button>
-      )}
-    </div>
+    <section className="adm-action-row" aria-label="Quick actions">
+      {tiles.map((t) => (
+        <div
+          key={t.id}
+          className={`adm-action ${t.tone ? `adm-action--${t.tone}` : ""}`}
+        >
+          <span className="adm-action-ico">{ACTION_ICONS[t.icon] || ACTION_ICONS.target}</span>
+          <span className="adm-action-text">
+            <span className="adm-action-title">{t.title}</span>
+            <span className="adm-action-sub">{t.subtitle}</span>
+          </span>
+          <button type="button" className={`adm-action-btn ${t.tone ? `adm-action-btn--${t.tone}` : ""}`}>
+            {t.cta || "Open"}
+          </button>
+        </div>
+      ))}
+    </section>
   );
 }
 
 // ─── Right rail combo ──────────────────────────────────────────────────────
+// Engagement moved out of the rail into the editable grid (see widgets.jsx).
 export function FixedRail({ editing = false, role = "teacher" }) {
   return (
     <aside className="adm-rail">
       <AlertsCard />
       <CommunityGoalCard editing={editing} />
-      <EngagementCard role={role} />
       <WhatsNewSection />
     </aside>
   );

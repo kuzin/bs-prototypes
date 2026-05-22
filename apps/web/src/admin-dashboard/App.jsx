@@ -7,7 +7,7 @@ import { DEFAULT_LAYOUT, REQUIRED_WIDGETS } from "./data";
 import { WIDGET_CATALOG, WIDTH_TO_COLS, COLS_TO_WIDTH, WIDTH_FIELD } from "./components/widgets";
 import { SettingsPopover } from "./components/SettingsPopover";
 import { TemplatesPanel } from "./components/TemplatesPanel";
-import { FixedRail, AlertsCard, FeatureBar } from "./components/FixedRegions";
+import { FixedRail, AlertsCard, FeatureBar, ActionRow } from "./components/FixedRegions";
 import { MainRail } from "../MainRail";
 import { PrototypeNav } from "../PrototypeNav";
 import { Button } from "../ris/components/Button";
@@ -268,7 +268,13 @@ export function App() {
           const cs = window.getComputedStyle(body);
           const pad = parseFloat(cs.paddingTop || 0) + parseFloat(cs.paddingBottom || 0);
           const innerH = [...body.children].reduce((s, c) => s + c.offsetHeight, 0);
-          bodyH = innerH + pad;
+          // Flex/grid row-gap between children doesn't count in offsetHeight
+          // but does take real vertical space. Add it back so widgets with
+          // gap-spaced rows (e.g. engagement) measure their true height.
+          const rg = parseFloat(cs.rowGap);
+          const gap = Number.isNaN(rg) ? 0 : rg;
+          const gapsH = Math.max(0, body.children.length - 1) * gap;
+          bodyH = innerH + pad + gapsH;
         }
         const h = headH + bodyH + footerH;
         if (!h) return;
@@ -567,6 +573,10 @@ export function App() {
 
       {/* Feature announcement bar — admin-controlled, not in editable area */}
       {featureOn && <FeatureBar onClose={toggleFeature} />}
+
+      {/* Action row — admin-controlled key actions + conditional CTAs. Not
+          part of the editable grid; sits between the topbar and the grid. */}
+      <ActionRow role={role} />
 
       {/* Main: editable grid (left, fluid) + fixed right rail.
           On mobile (.adm-main becomes flex-column), the .adm-mobile-alerts
