@@ -88,11 +88,11 @@ export const WHATS_NEW = [
 // `roles` are shown to everyone. Staff-related tiles only appear for
 // the Media Specialist role.
 export const STAT_TILES = [
-  { id: "minutes",      label: "Minutes",            value: "3,252",   color: "red",    icon: "ti-clock" },
-  { id: "active",       label: "Active Readers",     value: "1",       color: "yellow", icon: "ti-user" },
-  { id: "avgLevel",     label: "Average Title Level",value: "665L",    color: "green",  icon: "ti-user" },
-  { id: "staffMinutes", label: "Staff Minutes",      value: "1,348",   color: "red",    icon: "ti-clock", roles: ["media"] },
-  { id: "activeStaff",  label: "Active Staff",       value: "142",     color: "yellow", icon: "ti-user",  roles: ["media"] },
+  { id: "minutes",      label: "Minutes",            value: "3,252",   color: "red",    icon: "clock"  },
+  { id: "active",       label: "Active Readers",     value: "1",       color: "yellow", icon: "user"   },
+  { id: "avgLevel",     label: "Average Title Level",value: "665L",    color: "green",  icon: "book"   },
+  { id: "staffMinutes", label: "Staff Minutes",      value: "1,348",   color: "red",    icon: "timer",  roles: ["media"] },
+  { id: "activeStaff",  label: "Active Staff",       value: "142",     color: "yellow", icon: "people", roles: ["media"] },
 ];
 
 // ─── Goal tracker (kept for the Community Goal in the sidebar) ────────────────
@@ -261,9 +261,9 @@ export const LAYOUT_PRESETS = [
     widgetNames: ["Daily Reading Tracker", "Quick Links", "Students"],
     roles: ["teacher", "media"],
     layout: [
-      { i: "daily-tracker",        x: 0, y: 0,   w: 12, h: 20, minW: 5, minH: 6 },
-      { i: "quick-links",          x: 0, y: 20,  w: 12, h: 14, minW: 3, minH: 14 },
-      { i: "leaderboard-students", x: 0, y: 28,  w: 12, h: 34, minW: 3, minH: 10 },
+      { i: "daily-tracker",        x: 0, y: 0,   w: 12, h: 20, minW: 4, minH: 6 },
+      { i: "quick-links",          x: 0, y: 20,  w: 12, h: 14, minW: 4, minH: 14 },
+      { i: "leaderboard-students", x: 0, y: 28,  w: 12, h: 34, minW: 4, minH: 10 },
     ],
     settings: {},
   },
@@ -274,9 +274,9 @@ export const LAYOUT_PRESETS = [
     widgetNames: ["Students", "Classes", "Quick Links"],
     roles: ["teacher", "media"],
     layout: [
-      { i: "leaderboard-students", x: 0, y: 0,   w: 6,  h: 34, minW: 3, minH: 10 },
-      { i: "leaderboard-classes",  x: 6, y: 0,   w: 6,  h: 34, minW: 3, minH: 10 },
-      { i: "quick-links",          x: 0, y: 34,  w: 12, h: 14, minW: 3, minH: 14 },
+      { i: "leaderboard-students", x: 0, y: 0,   w: 4,  h: 34, minW: 4, minH: 10 },
+      { i: "leaderboard-classes",  x: 4, y: 0,   w: 8,  h: 34, minW: 4, minH: 10 },
+      { i: "quick-links",          x: 0, y: 34,  w: 12, h: 14, minW: 4, minH: 14 },
     ],
     settings: {
       "leaderboard-students": { sort: "active-desc", range: "week", limit: "15" },
@@ -286,13 +286,14 @@ export const LAYOUT_PRESETS = [
   {
     id: "engagement-health",
     name: "Engagement health",
-    description: "Spot quiet readers and stalled classes — engagement, stat tiles, and weekly tracking.",
-    widgetNames: ["Engagement", "What's Happened", "Daily Reading Tracker"],
+    description: "Spot quiet readers and stalled classes — engagement, the community goal, and weekly tracking.",
+    widgetNames: ["Engagement", "Community Goal", "What's Happened", "Daily Reading Tracker"],
     roles: ["teacher", "media"],
     layout: [
-      { i: "engagement",    x: 0, y: 0,  w: 6,  h: 10, minW: 3, minH: 6 },
-      { i: "stat-tiles",    x: 6, y: 0,  w: 6,  h: 10, minW: 4, minH: 4 },
-      { i: "daily-tracker", x: 0, y: 10, w: 12, h: 20, minW: 5, minH: 6 },
+      { i: "engagement",     x: 0, y: 0,  w: 4,  h: 10, minW: 4, minH: 6 },
+      { i: "community-goal", x: 4, y: 0,  w: 4,  h: 10, minW: 4, minH: 4 },
+      { i: "stat-tiles",     x: 0, y: 10, w: 12, h: 8,  minW: 4, minH: 4 },
+      { i: "daily-tracker",  x: 0, y: 18, w: 12, h: 20, minW: 4, minH: 6 },
     ],
     settings: {},
   },
@@ -303,9 +304,9 @@ export const LAYOUT_PRESETS = [
     widgetNames: ["Number Cruncher", "What's Happened", "Students"],
     roles: ["teacher", "media"],
     layout: [
-      { i: "questions",            x: 0, y: 0,  w: 12, h: 14, minW: 6, minH: 14 },
-      { i: "stat-tiles",           x: 0, y: 8,  w: 12, h: 8,  minW: 6, minH: 4 },
-      { i: "leaderboard-students", x: 0, y: 16, w: 12, h: 34, minW: 3, minH: 10 },
+      { i: "questions",            x: 0, y: 0,  w: 12, h: 14, minW: 4, minH: 14 },
+      { i: "stat-tiles",           x: 0, y: 8,  w: 12, h: 8,  minW: 4, minH: 4 },
+      { i: "leaderboard-students", x: 0, y: 16, w: 12, h: 34, minW: 4, minH: 10 },
     ],
     settings: {
       "questions": { selected: ["q1","q2","q3","q4","q5","q6"] },

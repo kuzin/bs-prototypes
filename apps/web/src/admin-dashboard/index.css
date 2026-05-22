@@ -213,97 +213,55 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ─── Engagement / RCA-level widget ─────────────────────────────────── */
 .adm-rca {
-  display: flex; flex-direction: column; gap: 14px;
-  padding: 16px;
+  display: flex; flex-direction: column; gap: 10px;
+  justify-content: center;
 }
 /* Prevent flex-item shrinking inside .adm-w-body (which constrains height
    via flex:1 + min-height:0). Without this, the bar collapses to 0 and the
    widget's auto-fit measurement reads the wrong content height. */
 .adm-rca > * { flex-shrink: 0; }
-.adm-rca-head {
-  display: flex; align-items: flex-start; justify-content: space-between;
-  gap: 12px;
-}
-.adm-rca-eyebrow {
-  font-size: 14px; color: #475569;
-  line-height: 1.3;
-}
-.adm-rca-level {
-  font-size: 24px; font-weight: 800;
-  line-height: 1.1;
-  margin-top: 2px;
-}
+/* Inline level pip in the widget header meta — colored by RCA tier */
+.adm-rca-level-inline { font-weight: 800; }
 .adm-rca-level--orange { color: #D97706; }
 .adm-rca-level--green  { color: #059669; }
 .adm-rca-level--blue   { color: #2563EB; }
 .adm-rca-level--purple { color: #7C3AED; }
 
-.adm-rca-badge {
-  flex: 0 0 44px; width: 44px; height: 44px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-}
-.adm-rca-badge--orange { background: #FEF3C7; }
-.adm-rca-badge--green  { background: #D1FAE5; }
-.adm-rca-badge--blue   { background: #DBEAFE; }
-.adm-rca-badge--purple { background: #EDE9FE; }
-.adm-rca-diamond {
-  width: 18px; height: 18px;
-  transform: rotate(45deg);
-  border-radius: 3px;
-}
-.adm-rca-badge--orange .adm-rca-diamond { background: #F59E0B; }
-.adm-rca-badge--green  .adm-rca-diamond { background: #10B981; }
-.adm-rca-badge--blue   .adm-rca-diamond { background: #3B82F6; }
-.adm-rca-badge--purple .adm-rca-diamond { background: #8B5CF6; }
-
+/* Same height as .adm-goal-bar so Engagement + Community Goal align visually
+   (both widgets follow the same value-row / bar / footer pattern). */
 .adm-rca-bar {
   position: relative;
   display: grid; grid-template-columns: repeat(4, 1fr);
   gap: 6px;
-  height: 12px;
-  margin-top: 4px;
+  height: 10px;
 }
-.adm-rca-seg { border-radius: 6px; opacity: 0.55; }
+.adm-rca-seg { border-radius: 999px; opacity: 0.55; }
 .adm-rca-seg.is-active { opacity: 1; }
 .adm-rca-seg--orange { background: #F59E0B; }
 .adm-rca-seg--green  { background: #10B981; }
 .adm-rca-seg--blue   { background: #3B82F6; }
 .adm-rca-seg--purple { background: #8B5CF6; }
-/* Caret sits centered above the active segment. Each segment is 25% wide,
-   minus a tiny offset for the inter-segment gap. */
-.adm-rca-caret {
-  position: absolute;
-  bottom: -2px;
-  left: calc((var(--active, 0) + 0.5) * 25%);
-  transform: translateX(-50%);
-  width: 0; height: 0;
-  border-left: 7px solid transparent;
-  border-right: 7px solid transparent;
-  border-bottom: 7px solid #fff;
-  filter: drop-shadow(0 -1px 0 rgba(15,23,42,0.06));
-}
+/* (Old caret indicator replaced by .adm-bar-thumb circle.) */
 
-.adm-rca-pill {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px;
-  border-radius: 10px;
-  color: #fff;
-  font-weight: 800; font-size: 16px;
+/* Big level + meta row, parallel to .adm-goal-row in Community Goal */
+.adm-rca-row {
+  display: flex; align-items: baseline; gap: 8px;
 }
-.adm-rca-pill--orange { background: #F59E0B; }
-.adm-rca-pill--green  { background: #10B981; }
-.adm-rca-pill--blue   { background: #3B82F6; }
-.adm-rca-pill--purple { background: #8B5CF6; }
-
-.adm-rca-next {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 16px;
-  border-radius: 10px;
-  background: #F1F5F9;
-  color: #334155;
-  font-size: 14px;
+.adm-rca-val {
+  font-size: 22px; font-weight: 800;
+  line-height: 1.1;
 }
+.adm-rca-val--orange { color: #D97706; }
+.adm-rca-val--green  { color: #059669; }
+.adm-rca-val--blue   { color: #2563EB; }
+.adm-rca-val--purple { color: #7C3AED; }
+.adm-rca-meta {
+  color: #64748B; font-size: 13px; font-weight: 600;
+}
+.adm-rca-foot {
+  font-size: 12px; font-weight: 600; color: #475569;
+}
+.adm-rca-foot strong { font-weight: 800; color: #0F172A; }
 
 /* ─── Main row: editable grid + right rail ────────────────────────────── */
 .adm-main {
@@ -313,10 +271,13 @@ button { font-family: inherit; cursor: pointer; }
 }
 .adm-main > .adm-grid-wrap { flex: 1; min-width: 0; }
 .adm-rail {
-  width: 340px;
+  width: 420px;
   flex-shrink: 0;
   display: flex; flex-direction: column; gap: 16px;
   align-self: flex-start;
+}
+@media (max-width: 1400px) {
+  .adm-rail { width: 380px; }
 }
 /* By default (desktop), the mobile-only alerts wrapper is hidden — alerts
    live inside the right rail. */
@@ -839,7 +800,10 @@ button { font-family: inherit; cursor: pointer; }
   background: #F8FAFC;
   border-bottom: 1px solid #E5E7EB;
   flex-shrink: 0;
-  min-height: 44px;
+  /* Match the height of a head WITH an action button so head-less widgets
+     line up across the row. The button is ~29px tall (6px top/bottom padding
+     + 17px line-height), so 11px head padding × 2 + 29px = 51px. */
+  min-height: 52px;
 }
 .adm-w-title {
   font-size: 14px; font-weight: 800; color: #111827;
@@ -994,18 +958,55 @@ button { font-family: inherit; cursor: pointer; }
   border: var(--border); border-radius: 12px;
   padding: 14px 16px;
 }
-.adm-goal-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
-.adm-goal-val { font-size: 22px; font-weight: 800; color: #047857; }
-.adm-goal-val--blue { color: #1A6DD5; }
-.adm-goal-meta { color: #64748B; font-size: 13px; font-weight: 600; }
+/* These styles serve the legacy .adm-goal card (no longer rendered) — scope
+   them so they don't collide with the new Community Goal widget below. */
+.adm-goal .adm-goal-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.adm-goal .adm-goal-val { font-size: 22px; font-weight: 800; color: #047857; }
+.adm-goal .adm-goal-val--blue { color: #1A6DD5; }
+.adm-goal .adm-goal-meta { color: #64748B; font-size: 13px; font-weight: 600; }
 .adm-goal-bar {
-  height: 10px; background: #E5E7EB; border-radius: 999px; overflow: hidden;
+  height: 10px; background: #E5E7EB; border-radius: 999px;
   position: relative;
 }
 .adm-goal-fill {
   height: 100%; background: #10B981; border-radius: 999px;
 }
 .adm-goal-fill--blue { background: #1A6DD5; }
+
+/* Shared circle-dot indicator that sits on top of a progress bar at the
+   widget's current position (community goal: % filled; engagement: center
+   of the active level segment). Color comes from a modifier. */
+.adm-bar-thumb {
+  position: absolute;
+  top: 50%;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 3px solid #1A6DD5;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
+  pointer-events: none;
+}
+.adm-bar-thumb::after {
+  content: "";
+  display: block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #1A6DD5;
+  margin: 3px auto 0;
+}
+.adm-bar-thumb--orange { border-color: #D97706; }
+.adm-bar-thumb--orange::after { background: #D97706; }
+.adm-bar-thumb--green  { border-color: #059669; }
+.adm-bar-thumb--green::after  { background: #059669; }
+.adm-bar-thumb--blue   { border-color: #2563EB; }
+.adm-bar-thumb--blue::after   { background: #2563EB; }
+.adm-bar-thumb--purple { border-color: #7C3AED; }
+.adm-bar-thumb--purple::after { background: #7C3AED; }
+/* Engagement bar: thumb centered over the active 4-segment slot. */
+.adm-rca-bar .adm-bar-thumb {
+  left: calc((var(--active, 0) + 0.5) * 25%);
+}
 
 .adm-goal-empty {
   border: var(--border); border-radius: 12px;
@@ -1572,4 +1573,60 @@ button { font-family: inherit; cursor: pointer; }
 .adm-engage-body {
   display: flex; flex-direction: column; gap: 10px;
   padding: 6px 4px 10px;
+}
+
+/* ─── Sidebar action list ─────────────────────────────────────────────── */
+.adm-rail-card--actions { padding-bottom: 8px; }
+.adm-rail-actions {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column;
+}
+.adm-rail-action-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid #F1F5F9;
+}
+.adm-rail-action-row:first-child { border-top: 0; padding-top: 4px; }
+.adm-rail-action-ico {
+  flex: 0 0 32px; width: 32px; height: 32px;
+  border-radius: 8px;
+  background: #EEF2FF; color: #4F46E5;
+  display: flex; align-items: center; justify-content: center;
+}
+.adm-rail-action-row--warn .adm-rail-action-ico {
+  background: #FEF3C7; color: #B45309;
+}
+.adm-rail-action-text { flex: 1; min-width: 0; }
+.adm-rail-action-title {
+  font-weight: 700; font-size: 13px; color: #0F172A;
+  line-height: 1.25;
+}
+.adm-rail-action-sub {
+  font-size: 12px; color: #64748B;
+  margin-top: 1px; line-height: 1.35;
+}
+.adm-rail-actions .adm-action-btn {
+  padding: 6px 10px; font-size: 12px;
+}
+
+/* ─── Community Goal widget ───────────────────────────────────────────── */
+.adm-goal-widget {
+  display: flex; flex-direction: column; gap: 10px;
+  justify-content: center;
+}
+/* Same fix as .adm-rca: prevent the fixed-height bar from collapsing when
+   the body is shorter than content (which also breaks the auto-fit
+   measurement that decides the cell height). */
+.adm-goal-widget > * { flex-shrink: 0; }
+.adm-goal-row {
+  display: flex; align-items: baseline; gap: 6px;
+}
+.adm-goal-val {
+  font-size: 22px; font-weight: 800; color: #1A6DD5;
+}
+.adm-goal-widget .adm-goal-meta {
+  color: #64748B; font-size: 13px; font-weight: 600;
+}
+.adm-goal-pct {
+  font-size: 12px; font-weight: 700; color: #475569;
 }
