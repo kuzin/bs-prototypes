@@ -46,6 +46,15 @@ const ICONS = {
       <rect x="13" y="13" width="8" height="8" rx="1.5" />
     </svg>
   ),
+  // Admin Dashboard — a 2x2 layout grid with a wide top-left tile
+  'admin-dashboard': (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3"  y="3"  width="12" height="8" rx="1.5" />
+      <rect x="17" y="3"  width="4"  height="8" rx="1.5" />
+      <rect x="3"  y="13" width="6"  height="8" rx="1.5" />
+      <rect x="11" y="13" width="10" height="8" rx="1.5" />
+    </svg>
+  ),
 };
 
 function ProtoCard({ id, name, description, href, accent }) {
