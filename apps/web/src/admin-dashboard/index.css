@@ -429,16 +429,15 @@ button { font-family: inherit; cursor: pointer; }
 .adm-rgl { position: relative; }
 
 /* react-grid-layout's own placeholder + dragging effects */
-/* Snappier transitions — RGL defaults to 200ms which feels laggy on touch. */
+/* Instant moves — no animated transition between layout states. */
 .adm-rgl .react-grid-item {
-  transition-duration: 50ms !important;
-  transition-timing-function: ease-out !important;
+  transition: none !important;
 }
 .react-grid-item.react-grid-placeholder {
   background: #1A6DD5 !important;
   opacity: 0.12 !important;
   border-radius: var(--radius);
-  transition-duration: 50ms !important;
+  transition: none !important;
 }
 .react-grid-item.react-draggable-dragging {
   z-index: 6;
