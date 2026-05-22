@@ -1,26 +1,25 @@
 import {
   NOTIFICATIONS, STAT_TILES, DAILY_TRACKER, LEADERBOARDS,
-  LINKS, QUESTIONS,
+  LINKS, QUESTIONS, ENGAGEMENT, GOAL_OPTIONS,
 } from "../data";
 import { useState } from "react";
 
 const fmt = (n) => n.toLocaleString();
 
 // ─── Width system ────────────────────────────────────────────────────────────
-// Every widget has a universal "Width" setting (S/M/L/Full). The selected
-// width maps to grid columns; settings.width drives layouts.lg[i].w.
-export const WIDTH_TO_COLS = { sm: 4, md: 6, lg: 8, full: 12 };
+// Simplified 3-step width: 1/3, 2/3, or full. Internally we still use a
+// 12-column RGL grid (4/8/12) so the underlying math is unchanged, but the
+// width selector only ever offers these three options.
+export const WIDTH_TO_COLS = { sm: 4, lg: 8, full: 12 };
 export const COLS_TO_WIDTH = (w) =>
-  w <= 4  ? "sm"
-  : w <= 6  ? "md"
-  : w <= 8  ? "lg"
-  :           "full";
+  w <= 4 ? "sm"
+  : w <= 8 ? "lg"
+  :          "full";
 export const WIDTH_FIELD = {
   key: "width", label: "Width", type: "select",
   options: [
-    { value: "sm",   label: "Small (1/3)" },
-    { value: "md",   label: "Medium (1/2)" },
-    { value: "lg",   label: "Large (2/3)" },
+    { value: "sm",   label: "1/3" },
+    { value: "lg",   label: "2/3" },
     { value: "full", label: "Full width" },
   ],
 };
@@ -48,6 +47,41 @@ export function AdmNotifications() {
 }
 
 // ─── Stat tiles ──────────────────────────────────────────────────────────
+const STAT_ICONS = {
+  clock: (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="9" />
+      <polyline points="12,7 12,12 15.5,14" />
+    </svg>
+  ),
+  user: (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 20c0-3.866 3.582-7 8-7s8 3.134 8 7" />
+    </svg>
+  ),
+  book: (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M4 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H4z" />
+      <path d="M20 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z" />
+    </svg>
+  ),
+  people: (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="9" cy="8" r="3.5" />
+      <circle cx="17" cy="9" r="2.8" />
+      <path d="M2 20c0-3.314 3.134-6 7-6s7 2.686 7 6" />
+      <path d="M15 14c2.761 0 7 1.5 7 6" />
+    </svg>
+  ),
+  timer: (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="13" r="8" />
+      <line x1="9" y1="2" x2="15" y2="2" />
+      <line x1="12" y1="13" x2="15.5" y2="9.5" />
+    </svg>
+  ),
+};
 const STAT_RANGE_LABEL = {
   week:  "This Week",
   month: "This Month",
@@ -75,7 +109,7 @@ export function AdmStatTiles({ settings = {}, role = "teacher" }) {
         <div className="adm-stats">
           {tiles.map((s) => (
             <div key={s.id} className={`adm-stat adm-stat--${s.color}`}>
-              <div className="adm-stat-ico">{s.icon === "ti-user" ? "👤" : "⏱"}</div>
+              <div className="adm-stat-ico">{STAT_ICONS[s.icon] || STAT_ICONS.user}</div>
               <div>
                 <div className="adm-stat-val">{s.value}</div>
                 <div className="adm-stat-lbl">{s.label}</div>
@@ -140,7 +174,7 @@ export function AdmDailyTracker({ settings = {} }) {
           Daily Reading Tracker
           <span className="adm-w-meta">{GROUP_LABEL[group] || "Class A · Grade 3"}</span>
         </div>
-        <button className="adm-w-action">View class</button>
+        <button className="adm-w-action">View all classes</button>
       </div>
       <div className="adm-w-body adm-drt">
         <div className="adm-drt-week-nav">
@@ -377,6 +411,20 @@ const LINK_ICONS = {
       <line x1="8" y1="13" x2="12" y2="13" />
     </svg>
   ),
+  lexile: (
+    <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 4h7a3 3 0 0 1 3 3v10a2 2 0 0 0-2-2H3z" />
+      <path d="M17 4h-4a3 3 0 0 0-3 3v10a2 2 0 0 1 2-2h5z" />
+      <path d="M5 8h4M5 11h4" />
+    </svg>
+  ),
+  reward: (
+    <svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="10" cy="8" r="4.5" />
+      <path d="M7 12l-1.5 5L10 15l4.5 2L13 12" />
+      <path d="M10 6v2l1.5 1" />
+    </svg>
+  ),
 };
 export function AdmQuickLinks({ settings = {} }) {
   const selectedIds = settings.selected && settings.selected.length
@@ -501,16 +549,102 @@ const QUESTIONS_FIELDS = [
     options: QUESTIONS.map((q) => ({ value: q.id, label: q.text })) },
 ];
 
+// ─── Engagement (RCA-level format) ───────────────────────────────────────
+// Shows the school's current Reading Culture Awards level alongside a 4-stop
+// progress bar; a small caret marks the active segment, and the next level's
+// threshold is shown below the active level's "Engagement N%" pill.
+export function AdmEngagement() {
+  const { current, label, levels } = ENGAGEMENT;
+  // Active level = highest `min` ≤ current. Next level (if any) drives the
+  // "Next Level" row at the bottom.
+  let activeIdx = 0;
+  for (let i = 0; i < levels.length; i++) {
+    if (current >= levels[i].min) activeIdx = i;
+  }
+  const active = levels[activeIdx];
+  const next = levels[activeIdx + 1];
+  return (
+    <div className="adm-w">
+      <div className="adm-w-head">
+        <div className="adm-w-title">Engagement</div>
+      </div>
+      <div className="adm-w-body adm-rca">
+        <div className="adm-rca-row">
+          <span className={`adm-rca-val adm-rca-val--${active.color}`}>{active.name}</span>
+          <span className="adm-rca-meta">{current}% engaged</span>
+        </div>
+        <div className="adm-rca-bar" style={{ "--active": activeIdx }}>
+          {levels.map((lv, i) => (
+            <span key={lv.id} className={`adm-rca-seg adm-rca-seg--${lv.color} ${i === activeIdx ? "is-active" : ""}`} />
+          ))}
+          <span className={`adm-bar-thumb adm-bar-thumb--${active.color}`} aria-hidden="true" />
+        </div>
+        {next && (
+          <div className="adm-rca-foot">
+            Next level: <strong>{next.name}</strong> at {next.min}%
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Community / District Goal (now an editable widget) ─────────────────
+const fmtN = (n) => n.toLocaleString();
+function shortGoal(n) {
+  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(0)}B`;
+  if (n >= 1_000_000)     return `${(n / 1_000_000).toFixed(0)}M`;
+  if (n >= 1_000)         return `${(n / 1_000).toFixed(0)}K`;
+  return String(n);
+}
+export function AdmCommunityGoal({ settings = {} }) {
+  const scope = settings.scope || "community";
+  const g = GOAL_OPTIONS[scope] || GOAL_OPTIONS.community;
+  const pct = Math.min(100, Math.round((g.value / g.goal) * 100));
+  // District goals are set centrally — only the community goal is user-managed.
+  const canEdit = scope === "community";
+  return (
+    <div className="adm-w">
+      <div className="adm-w-head">
+        <div className="adm-w-title">{g.name}</div>
+        {canEdit && <button className="adm-w-action">Update Goal</button>}
+      </div>
+      <div className="adm-w-body adm-goal-widget">
+        <div className="adm-goal-row">
+          <span className="adm-goal-val">{fmtN(g.value)}</span>
+          <span className="adm-goal-meta">/ {shortGoal(g.goal)} {g.unit}</span>
+        </div>
+        <div className="adm-goal-bar">
+          <div className="adm-goal-fill adm-goal-fill--blue" style={{ width: `${pct}%` }} />
+          <span className="adm-bar-thumb adm-bar-thumb--blue" style={{ left: `${pct}%` }} aria-hidden="true" />
+        </div>
+        <div className="adm-goal-pct">{pct}% of goal</div>
+      </div>
+    </div>
+  );
+}
+const GOAL_DEFAULTS = { scope: "community" };
+const GOAL_FIELDS = [
+  { key: "scope", label: "Show", type: "select",
+    help: "Pick which goal to display.",
+    options: [
+      { value: "community", label: "Community Goal" },
+      { value: "district",  label: "District Goal" },
+    ]},
+];
+
 // ─── Catalog ──────────────────────────────────────────────────────────
 // `scrollable: true` means the widget has a fixed height (set in layout) and
 // its body scrolls internally — good for long lists. Otherwise the dashboard
 // auto-sizes the cell to fit content.
 export const WIDGET_CATALOG = {
-  "stat-tiles":             { name: "What's Happened",      desc: "At-a-glance metric tiles — pick which ones", min: { w: 2, h: 4 }, component: AdmStatTiles, defaults: STAT_DEFAULTS, settingsFields: STAT_FIELDS },
+  "stat-tiles":             { name: "What's Happened",      desc: "At-a-glance metric tiles — pick which ones", min: { w: 2, h: 4 }, component: AdmStatTiles, defaults: STAT_DEFAULTS, settingsFields: STAT_FIELDS, fixedWidth: "full" },
   "daily-tracker":          { name: "Daily Reading Tracker",desc: "Daily goal ring + 7-day star strip (full width)", min: { w: 2, h: 6 }, component: AdmDailyTracker, defaults: TRACKER_DEFAULTS, settingsFields: TRACKER_FIELDS, fixedWidth: "full" },
   "leaderboard-students":   { name: "Students", desc: "Roster of students with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardStudents, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true },
   "leaderboard-classes":    { name: "Classes",  desc: "Roster of classes with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardClasses,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true },
   "leaderboard-staff":      { name: "Staff",    desc: "Roster of staff with configurable sort",    min: { w: 1, h: 6 }, component: AdmLeaderboardStaff,    defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["media"] },
-  "quick-links":            { name: "Quick Links",          desc: "Pick which shortcut tiles to show",    min: { w: 2, h: 6 }, component: AdmQuickLinks, defaults: QUICK_LINKS_DEFAULTS, settingsFields: QUICK_LINKS_FIELDS, scrollable: true },
-  "questions":              { name: "Number Cruncher",      desc: "Pick which questions to show",        min: { w: 2, h: 4 }, component: AdmQuestions, defaults: QUESTIONS_DEFAULTS, settingsFields: QUESTIONS_FIELDS },
+  "quick-links":            { name: "Quick Links",          desc: "Pick which shortcut tiles to show",    min: { w: 2, h: 14 }, component: AdmQuickLinks, defaults: QUICK_LINKS_DEFAULTS, settingsFields: QUICK_LINKS_FIELDS, scrollable: true },
+  "questions":              { name: "Number Cruncher",      desc: "Pick which questions to show",        min: { w: 2, h: 14 }, component: AdmQuestions, defaults: QUESTIONS_DEFAULTS, settingsFields: QUESTIONS_FIELDS, scrollable: true },
+  "engagement":             { name: "Engagement",            desc: "Are enough readers (or classes) actively logging?", min: { w: 2, h: 6 }, component: AdmEngagement },
+  "community-goal":         { name: "Community Goal",        desc: "Progress toward the community or district reading goal", min: { w: 2, h: 4 }, component: AdmCommunityGoal, defaults: GOAL_DEFAULTS, settingsFields: GOAL_FIELDS, titleFn: (s) => (s?.scope === "district" ? "District Goal" : "Community Goal") },
 };

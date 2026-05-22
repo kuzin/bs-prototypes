@@ -224,6 +224,10 @@ export function App() {
   });
   const updateRole = (next) => {
     setRole(next);
+    // Drop measured heights so the next render starts from a clean slate —
+    // otherwise role-dependent widgets keep their pre-switch h until a
+    // ResizeObserver mutation re-fires.
+    setContentHeights({});
     try { localStorage.setItem(ROLE_KEY, next); } catch {}
   };
   const [featureOn, setFeatureOn] = useState(() => {
@@ -268,7 +272,13 @@ export function App() {
           const cs = window.getComputedStyle(body);
           const pad = parseFloat(cs.paddingTop || 0) + parseFloat(cs.paddingBottom || 0);
           const innerH = [...body.children].reduce((s, c) => s + c.offsetHeight, 0);
-          bodyH = innerH + pad;
+          // Flex/grid row-gap between children doesn't count in offsetHeight
+          // but does take real vertical space. Add it back so widgets with
+          // gap-spaced rows (e.g. engagement) measure their true height.
+          const rg = parseFloat(cs.rowGap);
+          const gap = Number.isNaN(rg) ? 0 : rg;
+          const gapsH = Math.max(0, body.children.length - 1) * gap;
+          bodyH = innerH + pad + gapsH;
         }
         const h = headH + bodyH + footerH;
         if (!h) return;
@@ -282,7 +292,9 @@ export function App() {
       observers.push(ro);
     }
     return () => { for (const ro of observers) ro.disconnect(); };
-  }, [layouts, settings]);  // re-run when widgets are added/removed/configured
+  }, [layouts, settings, role]);  // also re-run on role change so widgets that
+  // re-render with different content (e.g. role-aware stat tiles, engagement)
+  // get re-measured and the grid h's are recalculated.
 
   const setState = (next) => {
     _setState(next);
@@ -362,7 +374,9 @@ export function App() {
     const cat = WIDGET_CATALOG[id];
     if (!cat) return;
     const maxY = baseLayout.reduce((m, l) => Math.max(m, l.y + l.h), 0);
-    const startW = Math.max(cat.min.w * 3, 6);
+    // Default new widgets to full-width so they snap into the 3-column system
+    // cleanly; user can drop them to 1/3 or 2/3 from the inline width picker.
+    const startW = 12;
     // Scrollable widgets get a starter h sized for ~15 rows of list content
     // (~34 rows × 17px = ~562px cell, which fits 15 rows + header). Non-
     // scrollable widgets get min.h since they auto-grow via measurement.
@@ -514,13 +528,13 @@ export function App() {
       for (const group of Object.values(rowGroups)) {
         if (group.length < 2) continue;
         const maxH = Math.max(...group.map((i) => i.h));
+        // Stretch every widget in the row to the tallest member so neighbors
+        // line up. For scrollable widgets the extra space shows more rows; for
+        // auto-h widgets it becomes flex-grown padding inside .adm-w-body
+        // (which is fine — the inner content already has flex-shrink:0 so it
+        // keeps its natural size).
         for (const item of group) {
-          const cat = WIDGET_CATALOG[item.i];
-          // Only inflate scrollable widgets to match — auto-h widgets stay
-          // at their natural content size.
-          if (cat?.scrollable && item.h < maxH) {
-            item.h = maxH;
-          }
+          if (item.h < maxH) item.h = maxH;
         }
       }
       out[bp] = items;
@@ -655,7 +669,7 @@ export function App() {
                       <span className="adm-cell-grip">
                         {isRequired ? <Pin /> : <Grip />}
                       </span>
-                      <span>{cat.name}</span>
+                      <span>{cat.titleFn ? cat.titleFn(widgetSettings) : cat.name}</span>
                       {isRequired && <span className="adm-cell-tag">Required</span>}
                     </span>
                     <div className="adm-cell-actions">
@@ -721,9 +735,8 @@ export function App() {
                   >
                     <div className="adm-cell-width">
                       {[
-                        { v: "sm",   label: "S" },
-                        { v: "md",   label: "M" },
-                        { v: "lg",   label: "L" },
+                        { v: "sm",   label: "1/3" },
+                        { v: "lg",   label: "2/3" },
                         { v: "full", label: "Full" },
                       ].map((opt) => (
                         <button
