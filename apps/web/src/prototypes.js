@@ -28,6 +28,13 @@ export const PROTOTYPES = [
     description: "Redesigned Sessions for Review with AI summary, engagement highlights, and combined Book Talk list.",
   },
   {
+    id: "admin-dashboard",
+    name: "Admin Dashboard v2",
+    href: "/bs-prototypes/admin-dashboard/",
+    accent: "#1A6DD5",
+    description: "Editable admin dashboard with drag-and-drop, resizable, lockable widgets.",
+  },
+  {
     id: "patterns",
     name: "Pattern Library",
     href: "/bs-prototypes/patterns/",

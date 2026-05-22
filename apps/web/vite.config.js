@@ -14,6 +14,7 @@ export default defineConfig({
         risDistrict: resolve(__dirname, 'ris-district/index.html'),
         patterns: resolve(__dirname, 'patterns/index.html'),
         sfr: resolve(__dirname, 'sfr/index.html'),
+        adminDashboard: resolve(__dirname, 'admin-dashboard/index.html'),
       },
     },
   },

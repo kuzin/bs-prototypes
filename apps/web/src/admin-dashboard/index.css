@@ -1,0 +1,1445 @@
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Nunito", "Trebuchet MS", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: #F3F4F6;
+  color: #1E293B;
+  -webkit-font-smoothing: antialiased;
+}
+h1,h2,h3,h4 { margin: 0; }
+p { margin: 0; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ─── Tokens ───────────────────────────────────────────────────────────── */
+.adm {
+  --col-gap: 16px;
+  --row-h: 130px;
+  --radius: 14px;
+  --border: 1px solid #E5E7EB;
+  --shadow-sm: 0 1px 2px rgba(15,23,42,0.04);
+  --shadow-md: 0 8px 24px rgba(15,23,42,0.08);
+
+  /* tones */
+  --red-bg: #FEE2E2;     --red-bd: #FCA5A5;     --red-fg: #B91C1C;
+  --orange-bg: #FFE4D3;  --orange-bd: #FBA181;  --orange-fg: #9A3412;
+  --yellow-bg: #FEF3C7;  --yellow-bd: #FCD34D;  --yellow-fg: #92400E;
+  --green-bg: #D1FAE5;   --green-bd: #6EE7B7;   --green-fg: #047857;
+  --teal-bg: #CCFBF1;    --teal-bd: #5EEAD4;    --teal-fg: #0F766E;
+  --blue-bg: #DBEAFE;    --blue-bd: #93C5FD;    --blue-fg: #1D4ED8;
+  --purple-bg: #EDE9FE;  --purple-bd: #C4B5FD;  --purple-fg: #6D28D9;
+  --pink-bg: #FCE7F3;    --pink-bd: #F9A8D4;    --pink-fg: #9D174D;
+}
+
+/* ─── App shell (Sidebar + scrollable content) ────────────────────────── */
+.adm-shell {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 48px;     /* leave room for PrototypeNav at bottom */
+  display: flex;
+  overflow: hidden;
+}
+.adm {
+  flex: 1; min-width: 0;
+  overflow-y: auto;
+  padding: 0 24px 32px;
+}
+.adm-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 0 24px;
+  margin-bottom: 8px;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.adm-h1 {
+  font-size: 26px; font-weight: 800; color: #111827; flex: 1; min-width: 0;
+}
+
+/* Icon-only Edit dashboard button — hide the empty label span but keep
+   the height matching the other md buttons (Log Reading next to it). */
+.adm-edit-btn .btn-label:empty { display: none; }
+.adm-edit-btn .btn-icon { margin: 0; }
+.adm-edit-btn {
+  /* match .btn--md vertical padding + line-height so the square button
+     visually matches the height of the text buttons next to it */
+  min-height: 36px;
+  min-width: 36px;
+  padding-left: 10px;
+  padding-right: 10px;
+  aspect-ratio: 1 / 1;
+}
+.adm-topbar-r { display: flex; align-items: center; gap: 8px; }
+
+/* ─── Buttons ──────────────────────────────────────────────────────────── */
+.adm-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 10px;
+  border: var(--border); background: #fff; color: #1E293B;
+  font-weight: 700; font-size: 14px;
+  transition: background .15s;
+}
+.adm-btn:hover { background: #F9FAFB; }
+.adm-btn--primary { background: #1A6DD5; color: #fff; border-color: transparent; }
+.adm-btn--primary:hover { background: #1559B7; }
+.adm-btn--ghost { background: transparent; border-color: transparent; color: #475569; }
+.adm-btn--ghost:hover { background: #F1F5F9; }
+.adm-btn--danger { background: #FEE2E2; color: #B91C1C; border-color: #FCA5A5; }
+.adm-btn--xs { padding: 4px 8px; font-size: 12px; gap: 4px; border-radius: 7px; }
+.adm-btn--icon { padding: 6px; }
+
+/* ─── Edit mode toggle ──────────────────────────────────────────────────── */
+.adm-edit-pill {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 14px; border-radius: 999px; font-weight: 700; font-size: 13px;
+  border: 1px solid #CBD5E1; background: #fff; color: #334155;
+}
+.adm-edit-pill.is-on { background: #1A6DD5; color: #fff; border-color: transparent; }
+
+/* ─── Alerts (no card chrome — flush against rail / mobile top) ────────── */
+.adm-rail-card--alerts {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.adm-rail-card--alerts .adm-rail-head {
+  padding: 0 4px;
+  margin-bottom: 10px;
+}
+.adm-rail-count {
+  font-size: 11px; font-weight: 800;
+  background: #1A6DD5; color: #fff;
+  padding: 1px 8px; border-radius: 999px;
+}
+.adm-rail-alerts { display: flex; flex-direction: column; gap: 8px; }
+.adm-alert {
+  border: 1px solid;
+  border-radius: 12px;
+  padding: 14px;
+}
+.adm-alert-row { display: flex; gap: 12px; align-items: flex-start; }
+.adm-alert-text { display: flex; flex-direction: column; gap: 4px; }
+.adm-alert-ico {
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  font-size: 20px; flex-shrink: 0;
+  background: rgba(255,255,255,0.85);
+  border: 1px solid currentColor;
+}
+.adm-alert-text { flex: 1; min-width: 0; }
+.adm-alert-title { font-weight: 800; font-size: 14px; line-height: 1.3; }
+.adm-alert-body { font-size: 12.5px; line-height: 1.45; opacity: 0.85; margin-top: 3px; }
+/* Primary-style CTA filled with the alert's tone, inline with the text */
+.adm-alert-cta {
+  align-self: flex-start;
+  margin-top: 8px;
+  font-weight: 800; font-size: 12.5px;
+  padding: 7px 14px; border-radius: 8px;
+  background: var(--alert-tone);
+  color: #fff;
+  border: 1px solid var(--alert-tone);
+  cursor: pointer;
+  transition: filter .15s;
+}
+.adm-alert-cta:hover { filter: brightness(0.92); }
+.adm-alert--info   { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; --alert-tone: #1D4ED8; }
+.adm-alert--good   { background: #ECFDF5; border-color: #A7F3D0; color: #047857; --alert-tone: #047857; }
+.adm-alert--warn   { background: #FFFBEB; border-color: #FDE68A; color: #B45309; --alert-tone: #B45309; }
+.adm-alert--danger { background: #FEF2F2; border-color: #FECACA; color: #B91C1C; --alert-tone: #B91C1C; }
+
+/* ─── Feature announcement bar (above main row) ─────────────────────── */
+.adm-feature-bar {
+  display: flex; align-items: center; gap: 14px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, #EEF2FF 0%, #DBEAFE 60%, #BAE6FD 100%);
+  border: 1px solid #C7D2FE;
+  border-radius: 14px;
+}
+.adm-feature-badge {
+  flex-shrink: 0;
+  background: #1A6DD5; color: #fff;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.adm-feature-text { flex: 1; min-width: 0; }
+.adm-feature-title {
+  font-weight: 800; color: #0F172A; font-size: 14px;
+  line-height: 1.3;
+}
+.adm-feature-body {
+  font-size: 13px; color: #334155;
+  margin-top: 2px; line-height: 1.4;
+}
+.adm-feature-cta {
+  flex-shrink: 0;
+  background: #1A6DD5; color: #fff; border: 0;
+  padding: 8px 14px; border-radius: 10px;
+  font-weight: 800; font-size: 13px;
+  text-decoration: none; cursor: pointer;
+  transition: filter .15s;
+}
+.adm-feature-cta:hover { filter: brightness(0.92); }
+.adm-feature-close {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  background: transparent; border: 0; border-radius: 7px;
+  color: #475569; font-size: 13px;
+  cursor: pointer;
+}
+.adm-feature-close:hover { background: rgba(15,23,42,0.06); color: #0F172A; }
+
+/* ─── Engagement tracker (right rail) ───────────────────────────────── */
+.adm-engage { display: flex; flex-direction: column; gap: 10px; }
+.adm-engage-bar {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 4px;
+  height: 8px;
+}
+.adm-engage-seg { background: #E5E7EB; border-radius: 3px; }
+.adm-engage-seg.is-active { /* color via parent --color */ }
+.adm-engage-bar--red    .adm-engage-seg.is-active { background: #EF4444; }
+.adm-engage-bar--yellow .adm-engage-seg.is-active { background: #F59E0B; }
+.adm-engage-bar--green  .adm-engage-seg.is-active { background: #10B981; }
+.adm-engage-pill {
+  align-self: stretch;
+  padding: 8px 14px;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 800; font-size: 14px;
+  text-align: center;
+}
+.adm-engage-pill--red    { background: #EF4444; }
+.adm-engage-pill--yellow { background: #F59E0B; }
+.adm-engage-pill--green  { background: #10B981; }
+.adm-engage-msg {
+  font-size: 12.5px; line-height: 1.45; color: #334155;
+}
+
+/* ─── Main row: editable grid + right rail ────────────────────────────── */
+.adm-main {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+.adm-main > .adm-grid-wrap { flex: 1; min-width: 0; }
+.adm-rail {
+  width: 340px;
+  flex-shrink: 0;
+  display: flex; flex-direction: column; gap: 16px;
+  align-self: flex-start;
+}
+/* By default (desktop), the mobile-only alerts wrapper is hidden — alerts
+   live inside the right rail. */
+.adm-mobile-alerts { display: none; }
+
+@media (max-width: 1100px) {
+  .adm-main { flex-direction: column; }
+  .adm-main > .adm-grid-wrap { width: 100%; }
+  .adm-rail { width: 100%; }
+  /* On mobile, surface alerts above the editable grid */
+  .adm-mobile-alerts { display: block; width: 100%; order: -1; }
+  /* Hide the in-rail alerts copy on mobile so there's only one. */
+  .adm-rail .adm-rail-card--alerts { display: none; }
+}
+
+/* ─── Right rail cards ────────────────────────────────────────────────── */
+.adm-rail-card {
+  background: #fff;
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  padding: 16px 18px;
+}
+.adm-rail-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 12px;
+}
+.adm-rail-title { font-size: 15px; font-weight: 800; color: #111827; }
+.adm-rail-action {
+  font-size: 13px; font-weight: 700; color: #1A6DD5;
+  background: transparent; border: 0; padding: 0;
+  text-decoration: none;
+  cursor: pointer;
+}
+.adm-rail-head-actions {
+  display: flex; align-items: center; gap: 10px;
+}
+.adm-rail-cog {
+  width: 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #fff; border: 1px solid #E2E8F0; border-radius: 7px;
+  color: #475569;
+  padding: 0; line-height: 0; cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.adm-rail-cog:hover { background: #F1F5F9; color: #0F172A; border-color: #CBD5E1; }
+.adm-rail-cog svg { display: block; }
+.adm-rail-goal-row {
+  display: flex; align-items: baseline; gap: 8px;
+  border: var(--border); border-radius: 10px;
+  padding: 12px 14px;
+  margin-bottom: 0;
+}
+.adm-rail-goal { display: flex; flex-direction: column; gap: 8px; }
+.adm-rail-goal-val { font-size: 22px; font-weight: 800; color: #1A6DD5; }
+.adm-rail-goal-meta { color: #64748B; font-size: 13px; font-weight: 600; }
+.adm-rail-goal .adm-goal-bar { margin-top: 0; }
+
+/* ─── What's New cards ────────────────────────────────────────────────── */
+.adm-rail-news { display: flex; flex-direction: column; gap: 16px; }
+.adm-news {
+  border: var(--border); border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+}
+.adm-news-img {
+  height: 150px;
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.adm-news-img--badges {
+  background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 60%, #93C5FD 100%);
+}
+.adm-news-img--case-study {
+  background: #B5DEB6;
+}
+.adm-news-img--event {
+  background: #FFF7DC;
+  position: relative;
+}
+.adm-news-event {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: flex-start;
+  justify-content: center;
+  padding: 16px 18px;
+  gap: 4px;
+}
+.adm-news-event-logo {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 18px; font-weight: 900;
+  color: #1F2937;
+  letter-spacing: -0.02em;
+}
+.adm-news-event-heart { font-size: 20px; }
+.adm-news-event-edu { color: #D97706; }
+.adm-news-event-sub {
+  font-weight: 800; font-size: 11px;
+  color: #92400E; letter-spacing: 0.02em;
+}
+.adm-news-event-date {
+  position: absolute; right: 14px; bottom: -12px; width: 44px;
+  background: #fff; border-radius: 7px;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.18);
+  overflow: hidden; text-align: center;
+  z-index: 1;
+}
+.adm-news-event-date .m {
+  display: block; background: #EF4444; color: #fff;
+  font-size: 10px; font-weight: 800; padding: 2px 0;
+  letter-spacing: 0.04em;
+}
+.adm-news-event-date .d {
+  display: block; color: #111827;
+  font-size: 18px; font-weight: 800; padding: 4px 0;
+}
+.adm-news-badges {
+  display: grid; grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  padding: 8px;
+}
+.adm-news-badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 6px 8px;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 9px; font-weight: 800; letter-spacing: 0.04em;
+  text-align: center;
+  text-transform: uppercase;
+  line-height: 1.1;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+.adm-news-badge--gold   { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.adm-news-badge--green  { background: linear-gradient(135deg, #10B981, #047857); }
+.adm-news-badge--pink   { background: linear-gradient(135deg, #EC4899, #BE185D); }
+.adm-news-badge--purple { background: linear-gradient(135deg, #8B5CF6, #6D28D9); }
+.adm-news-illust {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px;
+}
+.adm-news-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px;
+}
+.adm-news-cell {
+  width: 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #FEF3C7;
+  border-radius: 6px;
+  font-size: 14px;
+}
+.adm-news-cell.is-check {
+  background: #10B981; color: #fff;
+}
+.adm-news-figure { font-size: 36px; }
+.adm-news-body { padding: 14px 16px; }
+.adm-news-cat {
+  font-size: 11px; color: #64748B; font-weight: 700;
+  text-transform: capitalize; letter-spacing: 0.02em;
+}
+.adm-news-title {
+  font-size: 15px; font-weight: 800; color: #111827;
+  margin: 4px 0 10px; line-height: 1.3;
+}
+.adm-news-link { font-size: 13px; color: #1A6DD5; font-weight: 700; text-decoration: none; }
+
+/* ─── Editable empty state ─────────────────────────────────────────── */
+.adm-empty {
+  border: 2px dashed #CBD5E1;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.4);
+  padding: 60px 24px;
+  text-align: center;
+  color: #64748B;
+}
+/* When already inside the editing wrapper (which has its own dashed border),
+   drop the empty state's outline so we don't double up. */
+.adm-grid-wrap.is-editing .adm-empty { border: 0; padding: 32px 24px; }
+.adm-empty h3 { font-size: 16px; font-weight: 800; color: #334155; margin-bottom: 6px; }
+.adm-empty p { font-size: 13px; margin-bottom: 16px; }
+.adm-empty-actions {
+  display: flex; gap: 8px; justify-content: center;
+}
+
+/* ─── Grid wrapper ──────────────────────────────────────────────────────── */
+.adm-grid-wrap { position: relative; }
+.adm-grid-wrap.is-editing {
+  /* Dashed outline communicates "this is your editable area". */
+  border: 2px dashed #CBD5E1;
+  border-radius: 14px;
+  padding: 14px;
+  background: rgba(255,255,255,0.45);
+}
+.adm-rgl { position: relative; }
+
+/* react-grid-layout's own placeholder + dragging effects */
+/* Snappier transitions — RGL defaults to 200ms which feels laggy on touch. */
+.adm-rgl .react-grid-item {
+  transition-duration: 50ms !important;
+  transition-timing-function: ease-out !important;
+}
+.react-grid-item.react-grid-placeholder {
+  background: #1A6DD5 !important;
+  opacity: 0.12 !important;
+  border-radius: var(--radius);
+  transition-duration: 50ms !important;
+}
+.react-grid-item.react-draggable-dragging {
+  z-index: 6;
+  box-shadow: 0 18px 48px rgba(15,23,42,0.18) !important;
+  cursor: grabbing;
+  transition: none !important; /* no lag while finger is down */
+}
+.react-grid-item.resizing {
+  z-index: 5;
+  transition: none !important;
+}
+/* South-only resize handle (height resize for scrollable widgets only).
+   Default RGL/react-resizable styling gives a tiny corner triangle — we
+   override to a wide pill at the bottom of the cell. */
+.react-grid-item > .react-resizable-handle.react-resizable-handle-s {
+  /* sits inside the cell (not clipped by overflow:hidden) just above the
+     cell footer (S/M/L/Full width controls) so it doesn't fight for the
+     same vertical space */
+  bottom: 50px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 8px;
+  background-image: none;
+  background-color: #1A6DD5;
+  border-radius: 4px;
+  opacity: 0;
+  transition: opacity .15s;
+  cursor: ns-resize;
+  z-index: 4;
+}
+.react-grid-item > .react-resizable-handle.react-resizable-handle-s::after {
+  display: none;
+}
+.adm-grid-wrap.is-editing .react-grid-item:hover > .react-resizable-handle-s,
+.adm-grid-wrap.is-editing .react-grid-item.resizing > .react-resizable-handle-s {
+  opacity: 0.9;
+}
+.adm-grid-wrap:not(.is-editing) .react-grid-item > .react-resizable-handle { display: none; }
+
+/* ─── Cell ──────────────────────────────────────────────────────────────── */
+.adm-cell {
+  position: relative;
+  height: 100%;
+  background: #fff;
+  border: var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  /* Flex column so chrome + body + footer stack reliably even when the body
+     uses height: 100% (scrollable widgets). */
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow .15s, transform .15s;
+}
+/* Scrollable widget body (.adm-w as direct child) fills the remaining space. */
+.adm-cell > .adm-w {
+  flex: 1;
+  min-height: 0;
+}
+/* Non-scrollable widgets use a .adm-measure wrapper. It grows to fill any
+   slack space in the cell (from ceil-rounded auto-height) so the footer
+   always pins to the bottom of the cell, not the bottom of the content. */
+.adm-cell > .adm-measure {
+  flex: 1;
+  min-height: 0;
+}
+.adm-cell-chrome,
+.adm-cell-footer { flex-shrink: 0; }
+/* Unified cell strokes — drop the inset box-shadow trick and just bump the
+   border color in edit/required states. Same 1px width in every state so
+   the cells read consistently. */
+.adm-cell--editing { border-color: #CBD5E1; }
+.adm-cell--editing:hover { border-color: #94A3B8; box-shadow: var(--shadow-md); }
+/* In edit mode, the chrome row replaces the widget's own header. */
+.adm-cell--editing .adm-w > .adm-w-head { display: none; }
+.adm-cell--editing .adm-banners { padding-top: 28px; }
+.adm-cell--required { border-color: #93C5FD; }
+.adm-cell--required.adm-cell--editing { border-color: #1A6DD5; }
+.adm-cell--required .adm-cell-handle {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+  color: #1D4ED8;
+  cursor: default;
+}
+
+/* ─── Settings popover (portaled to body, anchored to gear button) ─── */
+.adm-set {
+  position: fixed;
+  z-index: 60;
+  width: 280px;
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 18px 48px rgba(15,23,42,0.18);
+  font-size: 13px;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+.adm-set-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid #F1F5F9;
+}
+.adm-set-title { font-weight: 800; font-size: 13px; color: #0F172A; }
+.adm-set-close {
+  width: 22px; height: 22px;
+  border: 0; background: transparent;
+  border-radius: 6px;
+  color: #64748B; font-size: 12px;
+}
+.adm-set-close:hover { background: #F1F5F9; color: #0F172A; }
+.adm-set-body {
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 14px;
+  max-height: 320px; overflow-y: auto;
+}
+.adm-set-field { display: flex; flex-direction: column; gap: 6px; }
+.adm-set-label {
+  font-size: 11px; font-weight: 800; color: #475569;
+  letter-spacing: 0.04em; text-transform: uppercase;
+}
+.adm-set-input {
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid #CBD5E1;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 13px; font-weight: 600; color: #0F172A;
+  font-family: inherit;
+}
+.adm-set-input:focus { outline: 2px solid #BFDBFE; outline-offset: 0; border-color: #93C5FD; }
+
+.adm-set-toggle {
+  display: inline-flex; align-items: center; gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.adm-set-toggle input { display: none; }
+.adm-set-toggle-track {
+  width: 32px; height: 18px;
+  background: #CBD5E1; border-radius: 999px;
+  position: relative; transition: background .15s;
+}
+.adm-set-toggle-thumb {
+  position: absolute; top: 2px; left: 2px;
+  width: 14px; height: 14px;
+  background: #fff; border-radius: 50%;
+  transition: transform .15s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.adm-set-toggle input:checked + .adm-set-toggle-track { background: #1A6DD5; }
+.adm-set-toggle input:checked + .adm-set-toggle-track .adm-set-toggle-thumb {
+  transform: translateX(14px);
+}
+.adm-set-toggle-text { font-weight: 600; color: #334155; font-size: 12px; }
+
+.adm-set-multi {
+  display: flex; flex-direction: column; gap: 6px;
+  max-height: 180px; overflow-y: auto;
+  padding: 6px 8px;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  background: #F8FAFC;
+}
+.adm-set-multi-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: #334155; font-weight: 600;
+  cursor: pointer; padding: 3px 0;
+}
+.adm-set-multi-row input { accent-color: #1A6DD5; }
+
+.adm-set-help { font-size: 11px; color: #94A3B8; }
+
+.adm-set-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 12px;
+  border-top: 1px solid #F1F5F9;
+  background: #F8FAFC;
+}
+
+/* ─── Edit-mode hint banner ───────────────────────────────────────────── */
+.adm-edit-hint {
+  background: #EFF6FF; border: 1px solid #BFDBFE; color: #1D4ED8;
+  padding: 10px 14px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  margin-bottom: 16px;
+  display: flex; justify-content: space-between; align-items: center; gap: 12px;
+}
+.adm-edit-hint strong { font-weight: 800; }
+
+/* ─── Widget chrome (replaces widget header in edit mode) ────────────── */
+.adm-cell-chrome {
+  /* In-flow toolbar, mirrors .adm-w-head styling. Centered vertically so
+     buttons + segmented control don't stretch to the chrome height. */
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E5E7EB;
+  min-height: 56px;
+  flex-shrink: 0;
+}
+.adm-cell-handle {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: 10px;
+  color: #1E293B;
+  font-size: 15px; font-weight: 800;
+  user-select: none;
+  cursor: grab;
+  align-self: stretch;
+}
+.adm-cell-handle:active { cursor: grabbing; }
+/* Title text truncates with ellipsis when the toolbar runs out of room */
+.adm-cell-handle > span:not(.adm-cell-grip):not(.adm-cell-tag) {
+  min-width: 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.adm-cell-grip {
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #94A3B8;
+  width: 20px;
+  flex-shrink: 0;
+}
+.adm-cell-tag {
+  font-size: 9.5px; font-weight: 800; letter-spacing: 0.04em;
+  text-transform: uppercase;
+  background: #1A6DD5; color: #fff;
+  padding: 1px 6px; border-radius: 999px;
+  margin-left: 2px;
+}
+.adm-cell-actions {
+  display: flex; gap: 6px; align-items: center;
+  flex-shrink: 0;
+  cursor: default;
+}
+.adm-cell-action {
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #fff; border: 1px solid #E2E8F0; border-radius: 9px;
+  color: #475569;
+  cursor: pointer;
+  padding: 0;
+  line-height: 0;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.adm-cell-action svg { display: block; }
+.adm-cell-action:hover { background: #F1F5F9; color: #0F172A; border-color: #CBD5E1; }
+.adm-cell-action.is-on { background: #1A6DD5; color: #fff; border-color: transparent; }
+
+/* ─── Footer (width controls in edit mode) ──────────────────────────── */
+.adm-cell-footer {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px;
+  padding: 8px 12px;
+  background: #F8FAFC;
+  border-top: 1px solid #E5E7EB;
+  min-height: 48px;
+  flex-shrink: 0;
+}
+.adm-cell-footer-label {
+  font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.04em;
+  color: #94A3B8;
+}
+
+/* ─── Segmented width control ───────────────────────────────────────── */
+.adm-cell-width {
+  display: inline-flex; align-self: center;
+  background: #fff; border: 1px solid #E2E8F0;
+  border-radius: 9px; overflow: hidden;
+  flex-shrink: 0;
+  cursor: default;
+}
+.adm-cell-width button {
+  padding: 7px 14px;
+  border: 0; background: transparent;
+  font-weight: 800; font-size: 12px; color: #475569;
+  cursor: pointer;
+  border-right: 1px solid #E2E8F0;
+  min-width: 38px;
+  transition: background .15s, color .15s;
+}
+.adm-cell-width button:last-child { border-right: 0; }
+.adm-cell-width button:hover { background: #F1F5F9; color: #0F172A; }
+.adm-cell-width button.is-active {
+  background: #1A6DD5; color: #fff;
+}
+.adm-cell-action:hover { background: #F1F5F9; color: #0F172A; }
+.adm-cell-action.is-on { background: #1A6DD5; color: #fff; border-color: transparent; }
+
+/* Measuring wrapper for non-scrollable widgets. .adm-w stretches to fill so
+   the internal .adm-w-footer pins to the cell bottom. Natural content height
+   is measured by summing the children of .adm-w directly in JS instead of
+   reading .adm-w's offsetHeight. */
+.adm-measure {
+  display: block;
+}
+.adm-measure > .adm-w {
+  height: 100%;
+}
+
+/* ─── Widget interior padding ─────────────────────────────────────────── */
+.adm-w {
+  height: 100%;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.adm-w-head {
+  /* Visual top bar inside each widget — anchored to the top, edge-to-edge */
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+  padding: 11px 16px;
+  background: #F8FAFC;
+  border-bottom: 1px solid #E5E7EB;
+  flex-shrink: 0;
+  min-height: 44px;
+}
+.adm-w-title {
+  font-size: 14px; font-weight: 800; color: #111827;
+  display: flex; flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  line-height: 1.25;
+}
+.adm-w-action {
+  font-size: 12.5px; font-weight: 700; color: #1A6DD5;
+  background: #fff; border: 1px solid #DBEAFE;
+  padding: 6px 10px 6px 12px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  display: inline-flex; align-items: center; gap: 6px;
+  cursor: pointer;
+  transition: background .15s, border-color .15s, color .15s;
+}
+.adm-w-action:hover {
+  background: #EFF6FF;
+  border-color: #93C5FD;
+  color: #1559B7;
+}
+.adm-w-action::after {
+  content: "›";
+  font-size: 18px;
+  line-height: 1;
+  font-weight: 700;
+  display: inline-block;
+  margin-top: -2px;
+}
+/* Subtitle / meta sits below the title text — stays in title case */
+.adm-w-meta {
+  font-size: 12px; font-weight: 600; color: #64748B;
+}
+.adm-w-body {
+  flex: 1; min-height: 0;
+  /* default clipped — the cell auto-sizes to fit content + edit chrome.
+     Body fills cell-head-footer; with overflow:hidden any ceil-rounding
+     slack lives invisibly below the bottom padding, so the visible gap
+     between content and the cell footer stays a consistent 16px. */
+  overflow: hidden;
+  padding: 16px;
+}
+/* Scrollable widget bodies scroll internally */
+.adm-w-body.adm-lb { overflow: auto; }
+/* Quick Links is scrollable too — but its body is edge-to-edge (no padding)
+   because the rows render their own borders. */
+.adm-w-body:has(> .adm-links) { overflow: auto; }
+/* Optional widget-level footer (legend / key / status row). Mirrors the
+   widget header styling but at the bottom. */
+.adm-w-footer {
+  flex-shrink: 0;
+  padding: 10px 16px;
+  background: #F8FAFC;
+  border-top: 1px solid #E5E7EB;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 600;
+}
+
+/* ─── Banners ─────────────────────────────────────────────────────────── */
+.adm-banners { display: flex; flex-direction: column; gap: 10px; padding: 4px; }
+.adm-banner {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px; border-radius: 10px;
+  border: 1px solid;
+}
+.adm-banner-ico {
+  width: 32px; height: 32px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 8px; flex-shrink: 0;
+  font-size: 16px;
+}
+.adm-banner-text { flex: 1; min-width: 0; }
+.adm-banner-title { font-weight: 800; font-size: 14px; }
+.adm-banner-body { font-size: 13px; line-height: 1.45; opacity: 0.85; margin-top: 2px; }
+.adm-banner-cta {
+  flex-shrink: 0; font-weight: 700; font-size: 13px;
+  padding: 7px 14px; border-radius: 8px;
+  background: #fff; border: 1px solid currentColor;
+}
+.adm-banner--info  { background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8; }
+.adm-banner--info .adm-banner-ico { background: #DBEAFE; }
+.adm-banner--good  { background: #ECFDF5; border-color: #A7F3D0; color: #047857; }
+.adm-banner--good .adm-banner-ico { background: #D1FAE5; }
+.adm-banner--warn  { background: #FFFBEB; border-color: #FDE68A; color: #B45309; }
+.adm-banner--warn .adm-banner-ico { background: #FEF3C7; }
+.adm-banner--danger{ background: #FEF2F2; border-color: #FECACA; color: #B91C1C; }
+.adm-banner--danger .adm-banner-ico { background: #FEE2E2; }
+
+/* ─── Stat tiles ──────────────────────────────────────────────────────── */
+.adm-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  /* Stretch rows to fill the body so cards grow vertically when the cell
+     gets matched to a taller neighbor. Within each row, items stretch to
+     match the tallest card (default flex behavior). */
+  align-content: stretch;
+}
+.adm-stat {
+  /* fill the row evenly; min 140px keeps content readable, max none so they
+     stretch when fewer are visible */
+  flex: 1 1 140px;
+  min-width: 140px;
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  border: 1px solid;
+}
+.adm-stats-empty {
+  flex: 1;
+  padding: 24px;
+  text-align: center;
+  font-size: 13px; color: #94A3B8;
+}
+.adm-stat-ico {
+  width: 36px; height: 36px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.7);
+  font-size: 18px;
+}
+.adm-stat-val { font-size: 22px; font-weight: 800; line-height: 1; }
+.adm-stat-lbl { font-size: 12px; font-weight: 700; margin-top: 4px; }
+.adm-stat--red    { background: #FEE2E2; border-color: #FCA5A5; color: #B91C1C; }
+.adm-stat--yellow { background: #FEF3C7; border-color: #FDE68A; color: #92400E; }
+.adm-stat--green  { background: #D1FAE5; border-color: #6EE7B7; color: #047857; }
+.adm-stat--teal   { background: #CCFBF1; border-color: #5EEAD4; color: #0F766E; }
+.adm-stat--blue   { background: #DBEAFE; border-color: #93C5FD; color: #1D4ED8; }
+.adm-stat--purple { background: #EDE9FE; border-color: #C4B5FD; color: #6D28D9; }
+.adm-stat--pink   { background: #FCE7F3; border-color: #F9A8D4; color: #9D174D; }
+.adm-stat--orange { background: #FFE4D3; border-color: #FBA181; color: #9A3412; }
+
+/* ─── Streak chips ────────────────────────────────────────────────────── */
+.adm-streaks {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+.adm-streak {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; border-radius: 12px; border: 1px solid;
+}
+.adm-streak-ico { font-size: 22px; }
+.adm-streak-num { font-size: 18px; font-weight: 800; }
+.adm-streak-lbl { font-size: 12px; font-weight: 700; }
+
+/* ─── Goal tracker ────────────────────────────────────────────────────── */
+.adm-goals { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+.adm-goal {
+  border: var(--border); border-radius: 12px;
+  padding: 14px 16px;
+}
+.adm-goal-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 8px; }
+.adm-goal-val { font-size: 22px; font-weight: 800; color: #047857; }
+.adm-goal-val--blue { color: #1A6DD5; }
+.adm-goal-meta { color: #64748B; font-size: 13px; font-weight: 600; }
+.adm-goal-bar {
+  height: 10px; background: #E5E7EB; border-radius: 999px; overflow: hidden;
+  position: relative;
+}
+.adm-goal-fill {
+  height: 100%; background: #10B981; border-radius: 999px;
+}
+.adm-goal-fill--blue { background: #1A6DD5; }
+
+.adm-goal-empty {
+  border: var(--border); border-radius: 12px;
+  padding: 20px; text-align: center;
+  background: #F8FAFC;
+}
+.adm-goal-empty h4 { font-weight: 800; margin-bottom: 4px; }
+.adm-goal-empty p { font-size: 13px; color: #64748B; margin-bottom: 12px; }
+
+/* ─── Daily reading tracker (per-student table) ──────────────────────────
+   Mirrors the Student Profile AdminMockup class view. Edge-to-edge table
+   inside the widget body with a week navigator on top + legend in footer. */
+.adm-w-body.adm-drt { padding: 0; }
+.adm-drt {
+  display: flex; flex-direction: column;
+}
+.adm-drt-week-nav {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #F0F0F0;
+}
+.adm-drt-week-label {
+  flex: 1; text-align: center;
+  font-size: 14px; font-weight: 800; color: #111827;
+}
+.adm-drt-nav-btn {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: #F3F4F6; border: none;
+  color: #374151; font-size: 16px; font-weight: 700; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer; padding: 0;
+  transition: background .12s;
+}
+.adm-drt-nav-btn:hover:not(:disabled) { background: #E5E7EB; }
+.adm-drt-nav-btn:disabled { opacity: 0.3; cursor: default; }
+.adm-drt-table {
+  width: 100%; border-collapse: separate; border-spacing: 0;
+  font-size: 13px;
+}
+.adm-drt-th, .adm-drt-td {
+  padding: 10px 8px;
+  border-bottom: 1px solid #F1F5F9;
+  text-align: left;
+}
+.adm-drt-th {
+  font-size: 11px; font-weight: 800;
+  color: #64748B; text-transform: uppercase; letter-spacing: 0.3px;
+  background: #F8FAFC;
+}
+.adm-drt-th--student { padding-left: 16px; width: 160px; }
+.adm-drt-th--center, .adm-drt-td--center { text-align: center; }
+.adm-drt-th--goal { background: #EFF6FF; text-align: center; }
+.adm-drt-td--goal { background: #F5F9FF; text-align: center; }
+.adm-drt-row .adm-drt-td { font-weight: 600; color: #1E293B; }
+.adm-drt-student { display: flex; align-items: center; gap: 8px; padding-left: 8px; }
+.adm-drt-rank {
+  width: 22px; height: 22px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; flex-shrink: 0;
+}
+.adm-drt-rank--gold   { background: #FCD34D; color: #92400E; }
+.adm-drt-rank--silver { background: #E5E7EB; color: #374151; }
+.adm-drt-rank--bronze { background: #D97706; color: #fff; }
+/* "Class Average" row: a smaller hollow grey circle that lines up with
+   the rank chips above. No content inside — visual alignment marker. */
+.adm-drt-rank--avg {
+  background: transparent;
+  border: 1.5px dashed #CBD5E1;
+  width: 16px; height: 16px;
+  /* nudge to keep the smaller circle centered in the 22px rank slot */
+  margin: 3px;
+}
+.adm-drt-student-name {
+  font-weight: 700; color: #1A6DD5; cursor: pointer;
+}
+.adm-drt-student-name:hover { color: #1559B7; text-decoration: underline; }
+.adm-drt-goal-cell {
+  display: inline-flex; align-items: center; gap: 6px; font-weight: 700;
+}
+.adm-drt-goal-val { font-size: 13px; color: #1E293B; }
+.adm-drt-edit-btn {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 6px;
+  border: 1px solid #E2E8F0; background: #F8FAFC; color: #64748B;
+  cursor: pointer; padding: 0; flex-shrink: 0;
+  transition: background .12s, border-color .12s, color .12s;
+}
+.adm-drt-edit-btn:hover {
+  background: #EFF6FF; border-color: #BFDBFE; color: #1D4ED8;
+}
+.adm-drt-pct {
+  display: inline-block; padding: 3px 9px; border-radius: 6px;
+  font-size: 12px; font-weight: 800;
+}
+.adm-drt-pct--blue   { background: #DBEAFE; color: #1D4ED8; }
+.adm-drt-pct--orange { background: #FEF3C7; color: #D97706; }
+.adm-drt-pct--red    { background: #FEE2E2; color: #DC2626; }
+.adm-drt-check {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: #10B981; color: #fff; flex-shrink: 0;
+}
+.adm-drt-dash { color: #CBD5E1; font-size: 15px; }
+.adm-drt-avg-row .adm-drt-td {
+  font-size: 13px; font-weight: 700; color: #374151;
+  background: #F9FAFB; border-bottom: none;
+}
+/* Snap the body to fit the table exactly so the legend footer sits right
+   below the Class Average row instead of leaving body flex-slack between. */
+.adm-w-body.adm-drt { flex: 0 0 auto; }
+.adm-drt-legend {
+  display: flex; gap: 16px; justify-content: flex-end;
+  font-size: 13px;
+}
+.adm-drt-legend .lg-red    { color: #DC2626; }
+.adm-drt-legend .lg-yellow { color: #D97706; }
+.adm-drt-legend .lg-blue   { color: #1D4ED8; }
+.adm-drt-legend .lg-green  { color: #10B981; }
+
+/* ─── Leaderboards ────────────────────────────────────────────────────── */
+/* The body has no padding so the scrollbar sits flush to the cell's right
+   edge AND the scroll area extends to the full body height. Rows handle their
+   own padding. */
+.adm-w-body.adm-lb { padding: 0; }
+.adm-lb { display: flex; flex-direction: column; height: 100%; }
+.adm-lb-list { flex: 1; min-height: 0; overflow-y: auto; }
+.adm-lb-row {
+  display: flex; justify-content: space-between; padding: 8px 16px;
+  border-bottom: 1px dashed #E5E7EB;
+  font-size: 13px;
+}
+.adm-lb-row:last-child { border-bottom: 0; }
+.adm-lb-name { color: #1A6DD5; font-weight: 700; }
+.adm-lb-val  { color: #475569; font-weight: 600; }
+.adm-lb-empty {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; gap: 8px; padding: 20px;
+}
+.adm-lb-empty h4 { font-size: 14px; font-weight: 800; }
+.adm-lb-empty p  { font-size: 12px; color: #64748B; }
+
+/* ─── Checklist ──────────────────────────────────────────────────────── */
+.adm-check { display: flex; flex-direction: column; height: 100%; }
+.adm-check-prog {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 12px; color: #475569; font-weight: 700;
+}
+.adm-check-prog-bar {
+  flex: 1; height: 6px; background: #E5E7EB; border-radius: 999px; overflow: hidden;
+}
+.adm-check-prog-fill {
+  height: 100%; background: #1A6DD5; border-radius: 999px;
+}
+.adm-check-list { flex: 1; min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 6px; margin-top: 12px; }
+.adm-check-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; background: #F8FAFC; border-radius: 10px;
+  border: 1px solid transparent;
+}
+.adm-check-row.is-done { background: #ECFDF5; }
+.adm-check-box {
+  width: 18px; height: 18px; border-radius: 5px; border: 2px solid #CBD5E1;
+  background: #fff; display: inline-flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 12px; font-weight: 800;
+  flex-shrink: 0;
+}
+.adm-check-row.is-done .adm-check-box { background: #1A6DD5; border-color: #1A6DD5; }
+.adm-check-main { flex: 1; min-width: 0; }
+.adm-check-label { font-weight: 700; font-size: 13px; color: #1E293B; }
+.adm-check-action {
+  font-size: 12px; color: #1A6DD5; font-weight: 700; background: transparent; border: 0; padding: 0; margin-top: 2px;
+}
+.adm-check-status {
+  font-size: 11px; font-weight: 800; padding: 3px 8px; border-radius: 999px;
+}
+.adm-check-status--done { background: #D1FAE5; color: #047857; }
+.adm-check-status--todo { background: #FEE2E2; color: #B91C1C; }
+
+/* ─── RCA ─────────────────────────────────────────────────────────────── */
+.adm-rca { display: flex; flex-direction: column; gap: 12px; height: 100%; }
+.adm-rca-head { display: flex; align-items: center; justify-content: space-between; }
+.adm-rca-prefix { font-size: 12px; color: #64748B; }
+.adm-rca-level { font-size: 22px; font-weight: 800; color: #0F766E; }
+.adm-rca-badge {
+  width: 36px; height: 36px; border-radius: 50%; background: #10B981;
+  border: 3px solid #fff; box-shadow: 0 0 0 1px #10B981;
+}
+.adm-rca-rainbow {
+  display: flex; height: 10px; border-radius: 999px; overflow: hidden;
+  background: #E5E7EB;
+}
+.adm-rca-rainbow span { flex: 1; }
+.adm-rca-rainbow .s1 { background: #EF4444; }
+.adm-rca-rainbow .s2 { background: #F59E0B; }
+.adm-rca-rainbow .s3 { background: #1A6DD5; }
+.adm-rca-rainbow .s4 { background: #6D28D9; }
+.adm-rca-rainbow .s5 { background: #10B981; }
+.adm-rca-bar {
+  height: 22px; border-radius: 8px; background: #10B981; color: #fff;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 10px; font-weight: 800; font-size: 12px;
+}
+.adm-rca-next {
+  display: flex; justify-content: space-between; font-size: 12px;
+  color: #475569; padding: 2px 0; font-weight: 600;
+}
+.adm-rca-reward {
+  padding: 12px; background: #ECFDF5; border-radius: 10px;
+  font-size: 12px; color: #047857; font-weight: 600; line-height: 1.45;
+  display: flex; gap: 8px; align-items: flex-start;
+}
+
+/* ─── Teacher engagement ──────────────────────────────────────────────── */
+.adm-teach { display: flex; flex-direction: column; gap: 10px; height: 100%; }
+.adm-teach-pill {
+  background: #10B981; color: #fff; text-align: center;
+  padding: 6px 12px; border-radius: 8px; font-weight: 800; font-size: 14px;
+}
+.adm-teach-msg { font-size: 12px; color: #047857; font-weight: 600; line-height: 1.45; }
+
+/* ─── Community card ──────────────────────────────────────────────────── */
+.adm-com { display: flex; flex-direction: column; height: 100%; }
+.adm-com-img {
+  height: 130px; border-radius: 10px;
+  background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 60%, #93C5FD 100%);
+  position: relative; overflow: hidden; flex-shrink: 0;
+}
+.adm-com-img::after {
+  content: "🏆";
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  font-size: 48px; opacity: 0.6;
+}
+.adm-com-date {
+  position: absolute; right: 12px; bottom: -10px; width: 44px;
+  background: #fff; border-radius: 6px; box-shadow: var(--shadow-md);
+  overflow: hidden; text-align: center;
+}
+.adm-com-date span { display: block; }
+.adm-com-date .m { background: #EF4444; color: #fff; font-size: 10px; font-weight: 800; padding: 2px 0; }
+.adm-com-date .d { color: #111827; font-size: 16px; font-weight: 800; padding: 2px 0; }
+.adm-com-body { padding-top: 16px; flex: 1; }
+.adm-com-cat { font-size: 11px; color: #64748B; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.adm-com-title { font-size: 16px; font-weight: 800; color: #111827; margin: 4px 0 10px; line-height: 1.3; }
+.adm-com-link { font-size: 13px; color: #1A6DD5; font-weight: 700; }
+
+/* ─── Quick links (vertical row list) ────────────────────────────────── */
+/* No body padding so links can go edge-to-edge inside the cell. */
+.adm-w-body:has(> .adm-links) { padding: 0; }
+.adm-links {
+  display: flex;
+  flex-direction: column;
+}
+.adm-link {
+  display: flex; align-items: center; gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #F1F5F9;
+  background: #fff; text-decoration: none; color: #1E293B;
+  font-weight: 600; font-size: 14px;
+  transition: background .12s;
+}
+.adm-link:last-child { border-bottom: 0; }
+.adm-link:hover { background: #F8FAFC; }
+.adm-link-ico {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  font-size: 15px;
+}
+.adm-link-arrow {
+  margin-left: auto;
+  color: #94A3B8;
+  font-size: 18px;
+  line-height: 1;
+}
+.adm-link--red    .adm-link-ico { background: #FEE2E2; color: #B91C1C; }
+.adm-link--yellow .adm-link-ico { background: #FEF3C7; color: #92400E; }
+.adm-link--blue   .adm-link-ico { background: #DBEAFE; color: #1D4ED8; }
+.adm-link--green  .adm-link-ico { background: #D1FAE5; color: #047857; }
+.adm-link--purple .adm-link-ico { background: #EDE9FE; color: #6D28D9; }
+.adm-link--pink   .adm-link-ico { background: #FCE7F3; color: #9D174D; }
+
+/* ─── Questions ───────────────────────────────────────────────────────── */
+.adm-questions {
+  display: flex; flex-wrap: wrap;
+  gap: 16px;
+  align-content: flex-start;
+}
+.adm-question {
+  /* fill the row evenly; flex-basis 220 keeps content readable, shrink lets
+     them squeeze down when more fit per row, grow lets the last row stretch */
+  flex: 1 1 220px;
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; background: #fff; border: var(--border); border-radius: 10px;
+  font-size: 13px; font-weight: 600; color: #1E293B; line-height: 1.35;
+  text-align: left;
+  cursor: pointer;
+  transition: background .15s, border-color .15s;
+}
+.adm-question:hover { background: #F8FAFC; border-color: #CBD5E1; }
+.adm-question-ico {
+  width: 30px; height: 30px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #EFF6FF; color: #1D4ED8;
+  border-radius: 8px; flex-shrink: 0;
+}
+.adm-question-text { flex: 1; min-width: 0; }
+.adm-question-arrow {
+  color: #475569; font-size: 22px; line-height: 1; font-weight: 700;
+  flex-shrink: 0; margin-left: auto;
+}
+
+/* ─── Ads ────────────────────────────────────────────────────────────── */
+.adm-ads { display: flex; flex-direction: column; gap: 10px; height: 100%; overflow: auto; }
+.adm-ad {
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid;
+  display: flex; flex-direction: column;
+}
+.adm-ad-top { flex: 1; min-height: 60px; }
+.adm-ad-body {
+  padding: 10px 14px; display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+}
+.adm-ad-title { font-weight: 800; font-size: 14px; }
+.adm-ad-cta {
+  padding: 6px 12px; border-radius: 8px; background: transparent;
+  border: 1px solid currentColor; font-weight: 700; font-size: 12px;
+}
+.adm-ad--purple { background: #F5E6FF; border-color: #C4B5FD; color: #6D28D9; }
+.adm-ad--purple .adm-ad-top { background: #FAF0FF; }
+.adm-ad--teal   { background: #CCFBF1; border-color: #5EEAD4; color: #0F766E; }
+.adm-ad--teal .adm-ad-top { background: #E6FFF9; }
+.adm-ad--blue   { background: #DBEAFE; border-color: #93C5FD; color: #1D4ED8; }
+.adm-ad--blue .adm-ad-top { background: #EFF6FF; }
+
+/* ─── Add widget panel ──────────────────────────────────────────────── */
+.adm-fab {
+  /* sit above the 48px PrototypeNav at the bottom */
+  position: fixed; right: 24px; bottom: 72px; z-index: 30;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 14px 18px; border-radius: 999px;
+  background: #1A6DD5; color: #fff; border: 0;
+  font-weight: 800; font-size: 14px;
+  box-shadow: 0 10px 28px rgba(26,109,213,0.35);
+}
+.adm-fab:hover { background: #1559B7; }
+.adm-panel-empty {
+  padding: 24px 12px;
+  text-align: center;
+  font-size: 13px;
+  color: #64748B;
+}
+
+.adm-panel {
+  /* Sit above the 48px PrototypeNav at the bottom so the panel footer is reachable */
+  position: fixed; top: 0; right: 0; bottom: 48px; width: 420px;
+  background: #fff; box-shadow: -16px 0 32px rgba(15,23,42,0.12);
+  z-index: 40; padding: 20px;
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform .22s ease;
+}
+.adm-panel.is-open { transform: translateX(0); }
+.adm-panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.adm-panel-title { font-size: 16px; font-weight: 800; }
+.adm-panel-sub { font-size: 12px; color: #64748B; margin-bottom: 14px; }
+.adm-panel-list {
+  flex: 1; min-height: 0; overflow: auto;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+}
+.adm-panel-item {
+  border: var(--border); border-radius: 10px; padding: 12px;
+  display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
+  background: #F8FAFC;
+  text-align: left;
+  cursor: pointer;
+}
+.adm-panel-item:hover { background: #EFF6FF; border-color: #93C5FD; }
+.adm-panel-item:disabled { opacity: 0.4; cursor: not-allowed; }
+.adm-panel-item h5 { font-size: 13px; font-weight: 800; }
+.adm-panel-item p { font-size: 11px; color: #64748B; line-height: 1.4; }
+
+/* ─── Shared list-card style (Add Widget + Templates panels) ──────────── */
+/* Both panels render the same shape: a thumbnail / preview on the left, a
+   title + description in the middle, and an action affordance on the right.
+   `.adm-card` is the base; `.adm-card--tpl` adds the layout-preview slot. */
+.adm-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding-right: 4px;
+}
+.adm-card {
+  display: flex; gap: 14px; align-items: center;
+  padding: 12px 14px;
+  background: #fff;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color .15s, box-shadow .15s, transform .15s;
+}
+.adm-card:hover {
+  border-color: #93C5FD;
+  box-shadow: 0 4px 12px rgba(15,23,42,0.06);
+  transform: translateY(-1px);
+}
+.adm-card.is-current {
+  border-color: #1A6DD5;
+  box-shadow: 0 0 0 1px #1A6DD5;
+}
+.adm-card-thumb {
+  flex-shrink: 0;
+  width: 64px; height: 56px;
+  background: #F8FAFC;
+  border: 1px solid #E5E7EB;
+  border-radius: 8px;
+  padding: 7px;
+  display: flex; align-items: stretch; justify-content: center;
+}
+.adm-card.is-current .adm-card-thumb {
+  background: #EFF6FF;
+  border-color: #BFDBFE;
+}
+.adm-card-body {
+  flex: 1; min-width: 0;
+  display: flex; flex-direction: column;
+  gap: 3px;
+}
+.adm-card-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; font-weight: 700; color: #0F172A;
+  line-height: 1.25;
+  letter-spacing: -0.005em;
+}
+.adm-card-current {
+  font-size: 10px; font-weight: 700;
+  color: #1A6DD5; background: #DBEAFE;
+  padding: 2px 7px; border-radius: 999px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.adm-card-desc {
+  font-size: 12.5px; color: #64748B;
+  line-height: 1.45;
+  margin: 0;
+}
+.adm-card-meta {
+  font-size: 11.5px; color: #94A3B8;
+  font-weight: 600;
+  margin-top: 2px;
+}
+.adm-card-add {
+  flex-shrink: 0;
+  width: 28px; height: 28px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #EFF6FF; color: #1A6DD5;
+  border: 1px solid #BFDBFE; border-radius: 8px;
+  font-size: 16px; font-weight: 700; line-height: 1;
+}
+
+/* Thumbnail variants — schematic shapes that hint at the widget */
+.thumb-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 3px; width: 100%; }
+.thumb-stats > span { background: #DBEAFE; border-radius: 3px; }
+.thumb-rows { display: flex; flex-direction: column; gap: 4px; width: 100%; justify-content: center; }
+.thumb-rows > span { display: block; height: 5px; background: #DBEAFE; border-radius: 2px; }
+.thumb-rows > span:nth-child(1) { width: 90%; }
+.thumb-rows > span:nth-child(2) { width: 70%; }
+.thumb-rows > span:nth-child(3) { width: 80%; }
+.thumb-rows > span:nth-child(4) { width: 55%; }
+.thumb-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 3px; width: 100%; }
+.thumb-grid > span { background: #DBEAFE; border-radius: 2px; height: 10px; }
+.thumb-lines { display: flex; flex-direction: column; gap: 4px; width: 100%; justify-content: center; }
+.thumb-lines > span {
+  display: flex; align-items: center; background: #DBEAFE;
+  height: 8px; border-radius: 3px; padding-left: 3px; position: relative;
+}
+.thumb-lines > span::before {
+  content: ""; width: 3px; height: 3px; border-radius: 50%; background: #1A6DD5;
+}
+.thumb-table { display: flex; flex-direction: column; gap: 3px; width: 100%; }
+.thumb-table-row { height: 6px; background: linear-gradient(90deg, #DBEAFE 30%, #BBF7D0 30%, #BBF7D0 60%, #FEF3C7 60%); border-radius: 2px; }
+/* Layout-preview used inside the template card thumb. Children are
+   absolutely positioned with % offsets/sizes so the tiny preview renders
+   crisply without sub-pixel grid track rounding artifacts. The 2px outer
+   padding gives the bars a little breathing room. */
+.thumb-layout {
+  position: relative;
+  width: 100%; height: 100%;
+}
+.thumb-layout > span {
+  position: absolute;
+  background: #C7D2FE;
+  border-radius: 1.5px;
+  /* shrink slightly so neighboring bars have a visible gap */
+  padding: 0;
+  box-shadow: inset 0 0 0 0.5px #F8FAFC;
+}
+.adm-card.is-current .thumb-layout > span { background: #1A6DD5; }
+.thumb-empty {
+  color: #94A3B8;
+  font-size: 9px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  display: flex; align-items: center; justify-content: center;
+  width: 100%;
+}
+.adm-panel-foot { padding-top: 12px; border-top: var(--border); margin-top: 12px; display: flex; gap: 8px; }
+
+.adm-overlay {
+  position: fixed; inset: 0; background: rgba(15,23,42,0.3);
+  z-index: 35;
+}
+
+/* ─── Templates panel ─────────────────────────────────────────────────── */
+.adm-panel--templates { width: 420px; }
