@@ -237,9 +237,20 @@ export const QUESTIONS = [
 export const REQUIRED_WIDGETS = {};
 
 // ─── Default layout (react-grid-layout format) ────────────────────────────────
-// Editable area starts empty — user adds from the Add Widget panel or picks a
-// preset from the Templates panel.
-export const DEFAULT_LAYOUT = [];
+// New users land on the "Engagement health" template instead of an empty
+// canvas, so they see a representative arrangement of widgets immediately.
+// Community Goal starts in district scope (set centrally — read-only for the
+// user). See DEFAULT_PRESET_ID + DEFAULT_SETTINGS below.
+export const DEFAULT_PRESET_ID = "engagement-health";
+export const DEFAULT_LAYOUT = [
+  { i: "engagement",     x: 0, y: 0,  w: 4,  h: 10, minW: 4, minH: 6  },
+  { i: "community-goal", x: 4, y: 0,  w: 4,  h: 10, minW: 4, minH: 4  },
+  { i: "stat-tiles",     x: 0, y: 10, w: 12, h: 8,  minW: 4, minH: 4  },
+  { i: "daily-tracker",  x: 0, y: 18, w: 12, h: 20, minW: 4, minH: 6  },
+];
+export const DEFAULT_SETTINGS = {
+  "community-goal": { scope: "district" },
+};
 
 // ─── Layout presets ───────────────────────────────────────────────────────────
 // Templates are organized by INTENT (what I'm trying to do) rather than by

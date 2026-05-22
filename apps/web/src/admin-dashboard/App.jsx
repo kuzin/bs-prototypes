@@ -3,7 +3,7 @@ import { Responsive, WidthProvider } from "react-grid-layout/legacy";
 import "react-grid-layout/css/styles.css";
 import "react-resizable/css/styles.css";
 
-import { DEFAULT_LAYOUT, REQUIRED_WIDGETS } from "./data";
+import { DEFAULT_LAYOUT, DEFAULT_PRESET_ID, DEFAULT_SETTINGS, REQUIRED_WIDGETS } from "./data";
 import { WIDGET_CATALOG, WIDTH_TO_COLS, COLS_TO_WIDTH, WIDTH_FIELD } from "./components/widgets";
 import { SettingsPopover } from "./components/SettingsPopover";
 import { TemplatesPanel } from "./components/TemplatesPanel";
@@ -136,7 +136,9 @@ const ResponsiveGrid = WidthProvider(Responsive);
 // ~720px container. These breakpoints are tuned to that container width.
 const BREAKPOINTS = { lg: 640, md: 480, sm: 320, xs: 0 };
 const COLS        = { lg: 12,  md: 8,   sm: 4,   xs: 2 };
-const STORAGE_KEY = "adm-dashboard-rgl-v17";
+// Bumped from v17 → v18: the default state changed from an empty canvas to
+// the Engagement Health template. Existing users get the new default once.
+const STORAGE_KEY = "adm-dashboard-rgl-v18";
 
 /**
  * Stretch each row's items so they fill the available column width.
@@ -201,14 +203,14 @@ function loadState() {
       return {
         layouts: ensureRequired(parsed.layouts || { lg: [] }),
         settings: parsed.settings || {},
-        presetId: parsed.presetId || "blank",
+        presetId: parsed.presetId || DEFAULT_PRESET_ID,
       };
     }
   } catch {}
   return {
-    layouts: ensureRequired({ lg: DEFAULT_LAYOUT }),
-    settings: {},
-    presetId: "blank",
+    layouts: ensureRequired({ lg: DEFAULT_LAYOUT.map((l) => ({ ...l })) }),
+    settings: { ...DEFAULT_SETTINGS },
+    presetId: DEFAULT_PRESET_ID,
   };
 }
 function saveState(state) {
@@ -425,8 +427,8 @@ export function App() {
   const resetLayout = () => {
     setState({
       layouts: ensureRequired({ lg: DEFAULT_LAYOUT.map((l) => ({ ...l })) }),
-      settings: {},
-      presetId: "blank",
+      settings: { ...DEFAULT_SETTINGS },
+      presetId: DEFAULT_PRESET_ID,
     });
   };
 
