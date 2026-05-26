@@ -83,6 +83,15 @@ const ICONS = {
       <line x1="7" y1="16" x2="11" y2="16" />
     </svg>
   ),
+  // Footers — content block with a darker footer strip below
+  'footers': (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="11" rx="1.5" opacity="0.4" />
+      <rect x="3" y="16" width="18" height="5" rx="1.5" />
+      <line x1="6" y1="18.5" x2="11" y2="18.5" />
+      <line x1="14" y1="18.5" x2="18" y2="18.5" />
+    </svg>
+  ),
 };
 
 function ProtoCard({ id, name, description, href, accent }) {

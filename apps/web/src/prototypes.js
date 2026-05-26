@@ -48,6 +48,14 @@ export const PROTOTYPES = [
     description: "Beanstack consumer web app — student-facing dashboard, challenges, reading log.",
   },
   {
+    id: "footers",
+    name: "Unified Joyful Footer",
+    section: "Experiments",
+    href: "/bs-prototypes/footers/",
+    accent: "#7C5CFA",
+    description: "A consistent Joyful-brand footer applied to Comics Plus, MyDot, Beanstack, and RMI Classroom — with dark/light mode.",
+  },
+  {
     id: "patterns",
     name: "Pattern Library",
     section: "Prototypes",
