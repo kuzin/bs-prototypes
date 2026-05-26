@@ -1373,4 +1373,14 @@ button.ins-metric { cursor: pointer; }
   .ins-filters { grid-template-columns: 1fr; }
   .ins-meter-inner { grid-template-columns: 1fr; }
   .ins-qmeter { min-width: 0; }
+
+  /* Stack banner contents so short headlines don't get squeezed into a narrow
+     column next to the long descriptive text. Applies to direct strong+span
+     variants (AI snapshot) and to the text+actions variant (Pinned, etc.). */
+  .ins-cache-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .ins-cache-banner-actions { justify-content: flex-end; }
 }
