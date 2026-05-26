@@ -33,8 +33,10 @@ html, body, #root { height: 100%; }
   margin-bottom: 48px;
 }
 
-/* Make the content column scrollable as a whole (instead of just .rl-page) */
-.ins-content {
+/* Make the content column scrollable as a whole (instead of just .rl-page).
+   Selector is qualified so it wins against .rl-content { overflow: hidden }
+   regardless of CSS-bundle source order. */
+.ins-shell .ins-content {
   overflow-y: auto;
 }
 
@@ -273,9 +275,19 @@ html, body, #root { height: 100%; }
   font-weight: 600;
   color: #1E293B;
   border: 1px solid transparent;
+  min-width: 0;
+}
+.ins-filter > svg { flex-shrink: 0; }
+.ins-filter > span:not(.ins-filter-dot) {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .ins-filter--muted { color: #94A3B8; }
 .ins-filter-dot {
+  flex-shrink: 0;
   width: 8px; height: 8px;
   border-radius: 999px;
   background: var(--accent);
@@ -1361,4 +1373,14 @@ button.ins-metric { cursor: pointer; }
   .ins-filters { grid-template-columns: 1fr; }
   .ins-meter-inner { grid-template-columns: 1fr; }
   .ins-qmeter { min-width: 0; }
+
+  /* Stack banner contents so short headlines don't get squeezed into a narrow
+     column next to the long descriptive text. Applies to direct strong+span
+     variants (AI snapshot) and to the text+actions variant (Pinned, etc.). */
+  .ins-cache-banner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  .ins-cache-banner-actions { justify-content: flex-end; }
 }

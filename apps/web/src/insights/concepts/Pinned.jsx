@@ -8,10 +8,15 @@ const DEFAULT_PINNED = new Set([
 ])
 
 function PinIcon({ filled }) {
+  // Push-pin drawn upright, head at top, stem pointing down.
+  // Outline + crossbar always render; fill toggles for pinned state.
   return (
-    <svg viewBox="0 0 16 16" width="13" height="13" fill={filled ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M10.5 1.5l4 4-3 1-3.5 3.5L8 13l-1 1-3-3 1-1 3-2 3.5-3.5z" />
-      <line x1="3" y1="13" x2="6" y2="10" />
+    <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path
+        d="M6 2 L10 2 L10 6 L12 9 L4 9 L6 6 Z"
+        fill={filled ? 'currentColor' : 'none'}
+      />
+      <line x1="8" y1="9" x2="8" y2="14" />
     </svg>
   )
 }
