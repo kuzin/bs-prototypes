@@ -17,6 +17,7 @@ export default defineConfig({
         adminDashboard: resolve(__dirname, 'admin-dashboard/index.html'),
         webApp: resolve(__dirname, 'web-app/index.html'),
         footers: resolve(__dirname, 'footers/index.html'),
+        rostering: resolve(__dirname, 'rostering/index.html'),
         insights: resolve(__dirname, 'insights/index.html'),
       },
     },

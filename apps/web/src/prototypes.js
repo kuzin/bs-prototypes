@@ -40,6 +40,14 @@ export const PROTOTYPES = [
     description: "Editable admin dashboard with drag-and-drop, resizable, lockable widgets.",
   },
   {
+    id: "rostering",
+    name: "Rostering",
+    section: "Prototypes",
+    href: "/bs-prototypes/rostering/",
+    accent: "#7C5CFA",
+    description: "Preview what's coming in from Clever, filter classroom subjects, and manage roster syncs from one place.",
+  },
+  {
     id: "insights",
     name: "Insights · Load Concepts",
     section: "Prototypes",
