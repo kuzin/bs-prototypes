@@ -1,0 +1,557 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: #F5F4F0;
+  color: #1A1A1A;
+  min-height: 100dvh;
+}
+
+body[data-theme="dark"] {
+  background: #0B0D10;
+  color: #E7E7E2;
+}
+
+/* ── Shell ─────────────────────────────────────────────────────────────── */
+
+.ft-shell {
+  --page-bg: #F5F4F0;
+  --page-ink: #1A1A1A;
+  --page-ink-2: #6B6864;
+  --panel-bg: #FFFFFF;
+  --panel-rule: rgba(0, 0, 0, 0.08);
+  --panel-shadow: 0 4px 24px rgba(15, 23, 42, 0.06);
+
+  /* Joyful footer tokens (light mode) */
+  --jf-bg: #FAFAF7;
+  --jf-ink: #1A1A1A;
+  --jf-ink-2: #5F5E59;
+  --jf-rule: rgba(0, 0, 0, 0.08);
+  --jf-control-bg: rgba(0, 0, 0, 0.04);
+  --jf-control-bg-hover: rgba(0, 0, 0, 0.07);
+
+  min-height: 100dvh;
+  padding-bottom: 48px;
+}
+
+.ft-shell[data-theme="dark"] {
+  --page-bg: #0B0D10;
+  --page-ink: #E7E7E2;
+  --page-ink-2: #9A988F;
+  --panel-bg: #16181C;
+  --panel-rule: rgba(255, 255, 255, 0.08);
+  --panel-shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+
+  --jf-bg: #14161A;
+  --jf-ink: #ECEBE5;
+  --jf-ink-2: #908E86;
+  --jf-rule: rgba(255, 255, 255, 0.08);
+  --jf-control-bg: rgba(255, 255, 255, 0.05);
+  --jf-control-bg-hover: rgba(255, 255, 255, 0.09);
+
+  background: var(--page-bg);
+  color: var(--page-ink);
+}
+
+.ft-shell:not([data-theme="dark"]) {
+  background: var(--page-bg);
+  color: var(--page-ink);
+}
+
+/* ── Header ────────────────────────────────────────────────────────────── */
+
+.ft-header {
+  border-bottom: 1px solid var(--panel-rule);
+}
+
+.ft-header-inner {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 32px 28px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.ft-title {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--page-ink);
+}
+
+.ft-subtitle {
+  margin-top: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--page-ink-2);
+  max-width: 560px;
+}
+
+.ft-subtitle strong {
+  color: var(--page-ink);
+  font-weight: 700;
+}
+
+/* ── Theme toggle ──────────────────────────────────────────────────────── */
+
+.ft-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 99px;
+  background: var(--jf-control-bg);
+  border: 1px solid var(--panel-rule);
+  flex-shrink: 0;
+}
+
+.ft-toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 99px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--page-ink-2);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+
+.ft-toggle-btn:hover {
+  color: var(--page-ink);
+}
+
+.ft-toggle-btn.is-active {
+  background: var(--panel-bg);
+  color: var(--page-ink);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Main grid ─────────────────────────────────────────────────────────── */
+
+.ft-main {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px;
+}
+
+.ft-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* ── App panel ─────────────────────────────────────────────────────────── */
+
+.ft-app {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ft-app-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--page-ink-2);
+}
+
+.ft-app-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ft-window {
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-rule);
+  box-shadow: var(--panel-shadow);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── App-content placeholder (fades into the footer) ───────────────────── */
+
+.ft-window-fade {
+  position: relative;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--panel-bg);
+}
+
+.ft-window-fade::before {
+  content: '';
+  position: absolute;
+  inset: 16px 24px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--page-ink) 6%, transparent);
+}
+
+.ft-window-fade span {
+  position: relative;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--page-ink-2);
+  opacity: 0.55;
+}
+
+/* ── Browser chrome (minimal — just traffic-light dots) ────────────────── */
+
+.ft-chrome {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 14px;
+  background: color-mix(in srgb, var(--accent) 5%, var(--panel-bg));
+  border-bottom: 1px solid var(--panel-rule);
+}
+
+.ft-chrome-traffic {
+  display: flex;
+  gap: 6px;
+}
+
+.ft-chrome-traffic span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--page-ink) 16%, transparent);
+}
+
+/* ── Joyful footer (the actual unified design) ─────────────────────────── */
+
+.jf-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--jf-bg);
+  color: var(--jf-ink);
+  padding: 14px 24px 12px;
+  border-top: 1px solid var(--jf-rule);
+  font-family: 'Nunito', sans-serif;
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.jf-footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.jf-footer-identity {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.jf-footer-logo {
+  display: inline-flex;
+}
+
+.jf-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.jf-footer-links {
+  list-style: none;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.jf-footer-links a {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--jf-ink);
+  text-decoration: none;
+  transition: color 0.12s;
+}
+
+.jf-footer-links a:hover {
+  color: var(--accent);
+}
+
+.jf-more {
+  position: relative;
+  display: inline-flex;
+}
+
+.jf-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--jf-ink);
+  cursor: pointer;
+  transition: color 0.12s;
+}
+
+.jf-more-btn:hover { color: var(--accent); }
+
+.jf-more-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+}
+
+.jf-more-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  min-width: 180px;
+  padding: 6px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-rule);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.jf-more-menu a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--jf-ink);
+  text-decoration: none;
+  transition: background 0.12s, color 0.12s;
+}
+
+.jf-more-menu a:hover {
+  background: var(--jf-control-bg-hover);
+  color: var(--accent);
+}
+
+.jf-footer-stores {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jf-footer-store-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--jf-control-bg);
+  border: 1px solid var(--jf-rule);
+  color: var(--jf-ink);
+  text-decoration: none;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.jf-footer-store-btn:hover {
+  background: var(--jf-control-bg-hover);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--jf-rule));
+  color: var(--accent);
+}
+
+.jf-footer-divider {
+  height: 1px;
+  background: var(--jf-rule);
+  margin: 0;
+}
+
+.jf-footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.jf-footer-attribution {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--jf-ink);
+  text-decoration: none;
+  font-size: 12px;
+  transition: color 0.12s;
+}
+
+.jf-footer-attribution:hover { color: var(--accent); }
+
+.jf-footer-attribution-made {
+  color: var(--jf-ink-2);
+}
+
+.jf-footer-attribution strong {
+  font-weight: 800;
+}
+
+.jf-footer-attribution-year {
+  color: var(--jf-ink-2);
+  font-weight: 500;
+}
+
+.jf-mark {
+  display: inline-flex;
+  color: #0DA7BC;
+}
+
+.jf-footer-bottom-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--jf-ink-2);
+}
+
+.jf-footer-bottom-right a {
+  color: var(--jf-ink-2);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.12s;
+}
+
+.jf-footer-bottom-right a:hover { color: var(--accent); }
+
+.jf-footer-bottom-sep {
+  opacity: 0.5;
+}
+
+.jf-footer-copy { white-space: nowrap; }
+
+.jf-footer-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 99px;
+  background: var(--jf-control-bg);
+  color: var(--jf-ink);
+  border: 1px solid var(--jf-rule);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.jf-footer-lang:hover { background: var(--jf-control-bg-hover); }
+
+/* ── Logos ─────────────────────────────────────────────────────────────── */
+
+.cp-logo, .bs-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--jf-ink, var(--page-ink));
+}
+
+.cp-logo-mark,
+.cp-logo-wordmark {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.cp-logo-wordmark svg {
+  height: 12px;
+  width: auto;
+  display: block;
+}
+
+.ft-chrome .cp-logo-wordmark svg { height: 11px; }
+
+.bs-logo-mark {
+  display: inline-flex;
+  color: var(--accent);
+}
+
+.bs-logo-text {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -0.015em;
+  color: var(--jf-ink, var(--page-ink));
+}
+
+.ft-chrome .bs-logo-text {
+  color: inherit;
+}
+
+/* ── Mobile ────────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .ft-header-inner {
+    padding: 24px 20px;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+
+  .ft-toggle { align-self: flex-start; }
+
+  .ft-main { padding: 20px; }
+
+  .ft-grid { gap: 20px; }
+
+  .jf-footer {
+    padding: 14px 18px 12px;
+    gap: 12px;
+  }
+
+  .jf-footer-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .jf-footer-links {
+    gap: 8px 14px;
+    row-gap: 6px;
+  }
+
+  .jf-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .jf-footer-bottom-right {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* On phones, drop the dot separators since items already wrap to their own line */
+  .jf-footer-bottom-right .jf-footer-bottom-sep { display: none; }
+}

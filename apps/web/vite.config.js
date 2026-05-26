@@ -16,6 +16,7 @@ export default defineConfig({
         sfr: resolve(__dirname, 'sfr/index.html'),
         adminDashboard: resolve(__dirname, 'admin-dashboard/index.html'),
         webApp: resolve(__dirname, 'web-app/index.html'),
+        footers: resolve(__dirname, 'footers/index.html'),
       },
     },
   },
