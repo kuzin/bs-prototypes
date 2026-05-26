@@ -40,6 +40,14 @@ export const PROTOTYPES = [
     description: "Editable admin dashboard with drag-and-drop, resizable, lockable widgets.",
   },
   {
+    id: "insights",
+    name: "Insights · Load Concepts",
+    section: "Prototypes",
+    href: "/bs-prototypes/insights/",
+    accent: "#6366F1",
+    description: "UX concepts for a less resource-intensive Insights page load — cached snapshot, drill-down, progressive, and pinned widgets.",
+  },
+  {
     id: "web-app",
     name: "Web App",
     section: "Experiments",
