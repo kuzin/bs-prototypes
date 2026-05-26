@@ -92,6 +92,17 @@ const ICONS = {
       <line x1="14" y1="18.5" x2="18" y2="18.5" />
     </svg>
   ),
+  // Rostering — two arrows curving between people (sync between systems)
+  'rostering': (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="6" cy="7" r="2.5" />
+      <circle cx="18" cy="17" r="2.5" />
+      <path d="M8.5 8.5 a6 6 0 0 1 7 7" />
+      <polyline points="13.5,15 15.5,15.5 15,13.5" />
+      <path d="M15.5 15.5 a6 6 0 0 1 -7 -7" />
+      <polyline points="10.5,9 8.5,8.5 9,10.5" />
+    </svg>
+  ),
 };
 
 function ProtoCard({ id, name, description, href, accent }) {
