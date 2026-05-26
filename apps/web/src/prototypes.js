@@ -2,6 +2,7 @@ export const PROTOTYPES = [
   {
     id: "student-profile",
     name: "Student Profile",
+    section: "Prototypes",
     href: "/bs-prototypes/student-profile/",
     accent: "#E8866A",
     description: "Reading habits, skills, motivation & integrity dashboard for a single student.",
@@ -9,6 +10,7 @@ export const PROTOTYPES = [
   {
     id: "ris-school",
     name: "Reading Information System: School",
+    section: "Prototypes",
     href: "/bs-prototypes/ris/",
     accent: "#1D4ED8",
     description: "School-level analytics dashboard for principals and instructional coaches.",
@@ -16,6 +18,7 @@ export const PROTOTYPES = [
   {
     id: "ris-district",
     name: "Reading Information System: District",
+    section: "Prototypes",
     href: "/bs-prototypes/ris-district/",
     accent: "#0DA7BC",
     description: "District-level analytics dashboard for curriculum directors and superintendents.",
@@ -23,6 +26,7 @@ export const PROTOTYPES = [
   {
     id: "sfr",
     name: "Sessions for Review",
+    section: "Prototypes",
     href: "/bs-prototypes/sfr/",
     accent: "#16A97A",
     description: "Redesigned Sessions for Review with AI summary, engagement highlights, and combined Book Talk list.",
@@ -30,13 +34,23 @@ export const PROTOTYPES = [
   {
     id: "admin-dashboard",
     name: "Admin Dashboard v2",
+    section: "Prototypes",
     href: "/bs-prototypes/admin-dashboard/",
     accent: "#1A6DD5",
     description: "Editable admin dashboard with drag-and-drop, resizable, lockable widgets.",
   },
   {
+    id: "web-app",
+    name: "Web App",
+    section: "Experiments",
+    href: "/bs-prototypes/web-app/",
+    accent: "#0DA7BC",
+    description: "Beanstack consumer web app — student-facing dashboard, challenges, reading log.",
+  },
+  {
     id: "patterns",
     name: "Pattern Library",
+    section: "Prototypes",
     href: "/bs-prototypes/patterns/",
     accent: "#7C3AED",
     description: "Shared components used across all RIS prototypes — StatCard, ChartCard, tooltips, icons.",
