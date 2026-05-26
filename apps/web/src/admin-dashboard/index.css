@@ -44,7 +44,7 @@ button { font-family: inherit; cursor: pointer; }
 .adm {
   flex: 1; min-width: 0;
   overflow-y: auto;
-  padding: 0 24px 32px;
+  padding: 0 max(24px, calc((100% - 1280px) / 2)) 32px;
 }
 .adm-topbar {
   display: flex;
