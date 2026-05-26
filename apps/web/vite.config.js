@@ -15,6 +15,7 @@ export default defineConfig({
         patterns: resolve(__dirname, 'patterns/index.html'),
         sfr: resolve(__dirname, 'sfr/index.html'),
         adminDashboard: resolve(__dirname, 'admin-dashboard/index.html'),
+        webApp: resolve(__dirname, 'web-app/index.html'),
       },
     },
   },

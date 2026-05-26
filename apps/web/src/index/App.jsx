@@ -3,6 +3,23 @@ import { PROTOTYPES } from '../prototypes'
 const PATTERNS = PROTOTYPES.find((p) => p.id === 'patterns');
 const CARDS = PROTOTYPES.filter((p) => p.id !== 'patterns');
 
+// Group cards by their `section` (default "Prototypes"). Preserve first-seen order.
+const SECTION_ORDER = ['Prototypes', 'Experiments'];
+const SECTIONS = (() => {
+  const groups = new Map();
+  for (const p of CARDS) {
+    const key = p.section || 'Prototypes';
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(p);
+  }
+  const sorted = [...groups.entries()].sort(([a], [b]) => {
+    const ai = SECTION_ORDER.indexOf(a);
+    const bi = SECTION_ORDER.indexOf(b);
+    return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+  });
+  return sorted.map(([title, items]) => ({ title, items }));
+})();
+
 const ICONS = {
   // Student Profile — a person bust
   'student-profile': (
@@ -55,6 +72,17 @@ const ICONS = {
       <rect x="11" y="13" width="10" height="8" rx="1.5" />
     </svg>
   ),
+  // Web App — a browser window with a content line
+  'web-app': (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="4" width="18" height="16" rx="2" />
+      <line x1="3" y1="9" x2="21" y2="9" />
+      <circle cx="6" cy="6.5" r="0.6" fill="currentColor" />
+      <circle cx="8.4" cy="6.5" r="0.6" fill="currentColor" />
+      <line x1="7" y1="13" x2="14" y2="13" />
+      <line x1="7" y1="16" x2="11" y2="16" />
+    </svg>
+  ),
 };
 
 function ProtoCard({ id, name, description, href, accent }) {
@@ -86,11 +114,16 @@ export default function App() {
       </header>
 
       <main>
-        <div className="list">
-          {CARDS.map((p) => (
-            <ProtoCard key={p.href} {...p} />
-          ))}
-        </div>
+        {SECTIONS.map((section) => (
+          <section className="section" key={section.title}>
+            <h2 className="section-title">{section.title}</h2>
+            <div className="list">
+              {section.items.map((p) => (
+                <ProtoCard key={p.href} {...p} />
+              ))}
+            </div>
+          </section>
+        ))}
       </main>
     </div>
   );
