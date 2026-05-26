@@ -103,6 +103,16 @@ const ICONS = {
       <polyline points="10.5,9 8.5,8.5 9,10.5" />
     </svg>
   ),
+  // Insights — bar chart columns with a trend line above
+  'insights': (
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="3" y1="20" x2="21" y2="20" />
+      <rect x="5"  y="12" width="3" height="8" rx="0.5" />
+      <rect x="10" y="8"  width="3" height="12" rx="0.5" />
+      <rect x="15" y="14" width="3" height="6" rx="0.5" />
+      <polyline points="5,6 10,4 15,7 20,3" opacity="0.5" />
+    </svg>
+  ),
 };
 
 function ProtoCard({ id, name, description, href, accent }) {
