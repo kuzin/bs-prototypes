@@ -1,33 +1,24 @@
 import { useState, useMemo } from 'react'
 import { ChartCard } from '../../ris/components/Cards'
-import { Toggle } from '../../ris/components/Toggle'
-import '../../ris/components/Toggle.css'
-import { SOURCE, SYNC_LOG, DIFF, SUBJECT_COUNTS, TOTALS, NEW_SUBJECTS, STAFF } from '../data'
+import { Table } from '../../ris/components/Table'
+import { Modal } from '../../ris/components/Modal'
+import {
+  SOURCE, INCOMING_CLASSES, MODE_OPTIONS,
+  classImportSource, LAST_SYNC,
+} from '../data'
 
 /**
- * The single Roster Sync Settings page. Everything Janie needs lives here:
+ * The single Roster Sync Settings page:
  *
  *   1. Connection — passive "you're connected to Clever" strip
- *   2. Tonight's incoming sync — data-oriented stat row + Preview CTA
- *   3. Subject Rules — single list with segmented control
- *   4. Summer sync pause — pause/restart dates
- *   5. Recent syncs — paginated log
- *
- * All sections use the shared ChartCard wrapper from ris/components for
- * consistent visual chrome.
+ *   2. Subject Rules — import filter (mode + custom keywords) with live preview
+ *   3. Summer sync pause — pause/restart dates
+ *   4. Last sync — school-tool-style totals; deactivations open in a modal
  */
 
 const ACCENT = '#7C5CFA'
 
 // ─── Icons (Feather-style, 24x24 viewBox, 1.8 stroke) ─────────────────────
-const IcSync = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
-    <path d="M3 12a9 9 0 0 1 15-6.7L21 8"/>
-    <polyline points="21 3 21 8 16 8"/>
-    <polyline points="3 21 3 16 8 16"/>
-  </svg>
-)
 const IcRules = (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
     <polyline points="9 11 12 14 22 4"/>
@@ -48,9 +39,6 @@ const IcHistory = (
     <polyline points="12 7 12 12 15 14"/>
   </svg>
 )
-const ArrowRight = (
-  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="8" x2="13" y2="8"/><polyline points="9,4 13,8 9,12"/></svg>
-)
 function ChevronDown() {
   return (
     <svg className="rost-select-chevron" viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -62,11 +50,6 @@ function ChevronDown() {
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function fmtSyncTime(iso) {
   return new Date(iso).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
-}
-function ResultBadge({ result }) {
-  if (result === 'success') return <span className="rost-status rost-status--sync"><span className="rost-status-dot"/>Success</span>
-  if (result === 'warning') return <span className="rost-status rost-status--unsorted"><span className="rost-status-dot"/>Warning</span>
-  return <span className="rost-status rost-status--removed"><span className="rost-status-dot"/>Failed</span>
 }
 
 // ─── Connection (small passive strip) ─────────────────────────────────────
@@ -95,173 +78,182 @@ function ConnectionSection() {
   )
 }
 
-// ─── Tonight's incoming sync — GitHub-style diff stats ───────────────────
-// Symbols double as a non-color signal for ADA (info isn't conveyed by hue alone).
-const PlusGlyph  = () => <svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="6" y1="2.5" x2="6" y2="9.5"/><line x1="2.5" y1="6" x2="9.5" y2="6"/></svg>
-const MinusGlyph = () => <svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><line x1="2.5" y1="6" x2="9.5" y2="6"/></svg>
-const TildeGlyph = () => <svg viewBox="0 0 12 12" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M2 7c1-1.6 2.2-1.6 3.2 0s2.2 1.6 3.2 0"/><path d="M9 7c.4-.6.8-.8 1-.8"/></svg>
-const WarnGlyph  = () => <svg viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M8 1.5l6.5 11H1.5z"/><line x1="8" y1="6" x2="8" y2="9"/><circle cx="8" cy="10.8" r="0.5" fill="currentColor"/></svg>
-
-function DiffRow({ label, total, added, removed, changed, warning, onClick }) {
-  const noChanges = !added && !removed && !changed
+// ─── Subject Rules — import filter + live preview ─────────────────────────
+function ModeCard({ option, active, onSelect }) {
   return (
-    <button type="button" className={`rost-diff-row${warning ? ' rost-diff-row--warn' : ''}`} onClick={onClick}>
-      <div className="rost-diff-row-main">
-        <span className="rost-diff-row-label">{label}</span>
-        <div className="rost-diff-row-chips">
-          {added > 0   && <span className="rost-delta-pill rost-delta-pill--add" aria-label={`${added} added`}><PlusGlyph /><b>{added}</b> added</span>}
-          {removed > 0 && <span className="rost-delta-pill rost-delta-pill--del" aria-label={`${removed} removed`}><MinusGlyph /><b>{removed}</b> removed</span>}
-          {changed > 0 && <span className="rost-delta-pill rost-delta-pill--mod" aria-label={`${changed} changed`}><TildeGlyph /><b>{changed}</b> changed</span>}
-          {noChanges && <span className="rost-delta-pill rost-delta-pill--zero">No changes</span>}
-          {warning && (
-            <span className="rost-delta-pill rost-delta-pill--warn" aria-label={`${warning.count} ${warning.text}`}>
-              <WarnGlyph /><b>{warning.count}</b> {warning.text}
-            </span>
-          )}
-        </div>
-      </div>
-
-      <span className="rost-diff-row-total">{total}</span>
-
-      <span className="rost-diff-row-chevron" aria-hidden="true">
-        <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="6,4 10,8 6,12"/>
-        </svg>
+    <button
+      type="button"
+      className={`rost-mode-card${active ? ' rost-mode-card--active' : ''}`}
+      onClick={() => onSelect(option.id)}
+      aria-pressed={active}
+    >
+      <span className={`rost-mode-radio${active ? ' rost-mode-radio--on' : ''}`} aria-hidden="true" />
+      <span className="rost-mode-card-body">
+        <span className="rost-mode-card-title">{option.label}</span>
+        <span className="rost-mode-card-desc">{option.desc}</span>
       </span>
     </button>
   )
 }
 
-function DiffBanner({ onOpenPreview }) {
-  const staffMissing = STAFF.filter(s => s.syncStatus === 'not-synced').length
-  const previewAction = (
-    <button className="rost-btn rost-btn--primary" onClick={() => onOpenPreview('classes')}>
-      <span>Preview tonight's sync</span>
-      {ArrowRight}
-    </button>
-  )
+function CustomSubjects({ words, onAdd, onRemove }) {
+  const [draft, setDraft] = useState('')
+
+  function commit() {
+    const t = draft.trim()
+    if (t && !words.some(w => w.toLowerCase() === t.toLowerCase())) onAdd(t)
+    setDraft('')
+  }
+
   return (
-    <ChartCard
-      title="Tonight's incoming sync"
-      subtitle={`Tomorrow at 2:00 AM · from ${SOURCE.name}`}
-      icon={IcSync}
-      accent={ACCENT}
-      action={previewAction}
-      bodyPad="flush"
-    >
-      <div className="rost-diff-rows">
-        <DiffRow
-          label="Classes"
-          total={TOTALS.classesIncoming.toLocaleString()}
-          added={DIFF.classes.new}
-          removed={DIFF.classes.removed}
-          changed={DIFF.classes.changed}
-          onClick={() => onOpenPreview('classes')}
-        />
-        <DiffRow
-          label="Students"
-          total={TOTALS.students.toLocaleString()}
-          added={DIFF.students.new}
-          removed={DIFF.students.removed}
-          changed={DIFF.students.changed}
-          onClick={() => onOpenPreview('students')}
-        />
-        <DiffRow
-          label="Staff"
-          total={TOTALS.staff.toLocaleString()}
-          added={DIFF.staff.new}
-          removed={DIFF.staff.removed}
-          changed={DIFF.staff.changed}
-          warning={staffMissing > 0 ? { count: staffMissing, text: 'not in sync' } : null}
-          onClick={() => onOpenPreview('staff')}
-        />
-      </div>
-    </ChartCard>
+    <div className="rost-custom-field" onClick={e => e.currentTarget.querySelector('input')?.focus()}>
+      {words.map(w => (
+        <span key={w} className="rost-custom-chip">
+          {w}
+          <button type="button" className="rost-custom-chip-x" onClick={() => onRemove(w)} aria-label={`Remove ${w}`}>
+            <svg viewBox="0 0 12 12" width="10" height="10" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"><line x1="3" y1="3" x2="9" y2="9"/><line x1="9" y1="3" x2="3" y2="9"/></svg>
+          </button>
+        </span>
+      ))}
+      <input
+        className="rost-custom-input"
+        value={draft}
+        onChange={e => setDraft(e.target.value)}
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); commit() }
+          if (e.key === 'Backspace' && !draft && words.length) onRemove(words[words.length - 1])
+        }}
+        onBlur={commit}
+        placeholder={words.length ? 'Add another…' : 'e.g. Book Club, Guided Reading'}
+      />
+    </div>
   )
 }
 
-// ─── Subject Rules ────────────────────────────────────────────────────────
-function SubjectRulesSection({ rules, rulesDirty, onSetSubjectAllowed, onSaveRules, onCancelRules }) {
-  const [editing, setEditing] = useState(false)
+function ViaPill({ via }) {
+  if (via === 'filter') return <span className="rost-status rost-status--sync"><span className="rost-status-dot" />Filter</span>
+  if (via === 'custom') return <span className="rost-status rost-status--via"><span className="rost-status-dot" />Custom word</span>
+  return <span className="rost-status rost-status--filter"><span className="rost-status-dot" />Not synced</span>
+}
 
-  // View mode: just the allowed subjects, sorted by class count
-  const allowedList = useMemo(() =>
-    [...rules.allowed].sort((a, b) => (SUBJECT_COUNTS[b] || 0) - (SUBJECT_COUNTS[a] || 0)),
-    [rules.allowed]
+function FilterImpact({ filter }) {
+  const [open, setOpen] = useState(false)
+  const [view, setView] = useState('imported')   // imported | excluded | all
+
+  const classified = useMemo(
+    () => INCOMING_CLASSES.map(c => ({ ...c, via: classImportSource(c, filter) })),
+    [filter]
   )
+  const total       = classified.length
+  const filterCount = classified.filter(c => c.via === 'filter').length
+  const customCount = classified.filter(c => c.via === 'custom').length
+  const imported    = filterCount + customCount
 
-  // Edit mode: every known subject, sorted by class count
-  const fullList = useMemo(() =>
-    Object.keys(SUBJECT_COUNTS)
-      .map(s => ({ subject: s, count: SUBJECT_COUNTS[s] || 0, allowed: rules.allowed.includes(s), isNew: NEW_SUBJECTS.includes(s) }))
-      .sort((a, b) => b.count - a.count),
-    [rules]
-  )
+  const rows = useMemo(() => classified.filter(c => {
+    if (view === 'imported' && !c.via) return false
+    if (view === 'excluded' && c.via) return false
+    return true
+  }), [classified, view])
 
-  function handleSave()   { onSaveRules(); setEditing(false) }
-  function handleCancel() { onCancelRules(); setEditing(false) }
+  const columns = [
+    {
+      key: 'name', label: 'Class',
+      render: (_, row) => (
+        <div className="rost-class-cell-row">
+          <span className="rost-class-cell-name">{row.name.split(' - ')[0]}</span>
+          <span className="rost-class-cell-code">{row.period}</span>
+        </div>
+      ),
+    },
+    { key: 'subject', label: 'Subject', render: v => <span style={{ fontWeight: 600, fontSize: 13 }}>{v}</span> },
+    { key: 'teachers', label: 'Teacher(s)', render: v => v.join(', ') },
+    { key: 'students', label: '# Students', align: 'right', sortable: true },
+    { key: 'avgLexile', label: 'Avg Lexile', align: 'right', render: v => v ? `${v}L` : <span style={{ color: '#9CA3AF' }}>N/A</span> },
+    { key: 'via', label: 'Synced via', align: 'right', render: v => <ViaPill via={v} /> },
+  ]
 
-  // Header action: in view mode show "Edit subjects"; in edit mode show nothing
-  // (Save/Cancel live in the footer).
-  const headerAction = !editing ? (
-    <button className="rost-btn rost-btn--ghost" onClick={() => setEditing(true)}>
-      <svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: 5 }}><path d="M11.5 2.5l2 2L6 12l-2.5.5L4 10z"/></svg>
-      Edit subjects
-    </button>
-  ) : null
-
-  const footer = editing ? (
-    <div className="rost-card-footer-bar">
-      <span className="rost-card-footer-note">{rulesDirty ? 'You have unsaved changes' : 'No changes yet'}</span>
-      <div className="rost-card-footer-actions">
-        <button className="rost-btn rost-btn--ghost" onClick={handleCancel}>Cancel</button>
-        <button className="rost-btn rost-btn--primary" onClick={handleSave} disabled={!rulesDirty}>Save rules</button>
+  return (
+    <div className="rost-fi">
+      <div className="rost-rules-label">Filter preview</div>
+      <div className="rost-fi-bar">
+        <span className="rost-fi-text">
+          Syncing <b>{imported}</b> of {total} classes
+          <span className="rost-fi-breakdown">
+            {filterCount} from filter
+            {customCount > 0 && <> · <span className="rost-fi-custom">+{customCount} from custom filter</span></>}
+          </span>
+        </span>
+        <button type="button" className="rost-btn rost-btn--ghost rost-fi-btn" onClick={() => setOpen(o => !o)} aria-expanded={open}>
+          {open ? 'Hide classes' : 'See which classes'}
+          <svg className={`rost-fi-chevron${open ? ' rost-fi-chevron--open' : ''}`} viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="4,6 8,10 12,6"/></svg>
+        </button>
       </div>
+
+      {open && (
+        <div className="rost-fi-panel">
+          <div className="rost-filters">
+            <div className="rost-seg">
+              {[
+                { id: 'imported', label: `Synced (${imported})` },
+                { id: 'excluded', label: `Not synced (${total - imported})` },
+                { id: 'all',      label: `All (${total})` },
+              ].map(o => (
+                <button key={o.id} type="button" className={`rost-seg-btn${view === o.id ? ' rost-seg-btn--active' : ''}`} onClick={() => setView(o.id)}>{o.label}</button>
+              ))}
+            </div>
+            <span className="rost-filters-count">{rows.length} shown</span>
+          </div>
+
+          <div className="rost-card rost-classes-table" style={{ padding: 0 }}>
+            <Table
+              columns={columns}
+              rows={rows}
+              getRowKey={r => r.id}
+              zebra
+              stickyHeader
+              scrollX
+              pageSize={12}
+              flush
+              empty="No classes match these filters."
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function SubjectRulesSection({ filter, filterDirty, onSetMode, onAddCustom, onRemoveCustom, onSave, onCancel }) {
+  const footer = filterDirty ? (
+    <div className="rost-card-footer-bar">
+      <button className="rost-btn rost-btn--ghost" onClick={onCancel}>Cancel</button>
+      <button className="rost-btn rost-btn--primary" onClick={onSave}>Save rules</button>
     </div>
   ) : null
 
   return (
     <ChartCard
       title="Subject Rules"
-      subtitle="Which classroom subjects flow into your reports and leaderboards."
+      subtitle="Pick which classes sync into Beanstack."
       icon={IcRules}
       accent={ACCENT}
-      action={headerAction}
       footer={footer}
-      bodyPad={editing ? 'flush' : 'padded'}
+      bodyPad="padded"
     >
-      {!editing ? (
-        // ── View mode — only what's syncing ──────────────────────────────
-        <div className="rost-rules-view">
-          <div className="rost-tag-row">
-            {allowedList.map(s => (
-              <span key={s} className="rost-subject-tag">
-                {s}
-                <span className="rost-subject-tag-count">{SUBJECT_COUNTS[s]}</span>
-              </span>
-            ))}
-          </div>
-        </div>
-      ) : (
-        // ── Edit mode — full list as plain rows, toggle on the far right ──
-        <div className="rost-rules-list">
-          {fullList.map(({ subject, count, allowed, isNew }) => (
-            <div key={subject} className="rost-rule-row">
-              <div className="rost-rule-row-label">
-                <span className="rost-rule-row-name">
-                  {subject}
-                  {isNew && <span className="rost-new-badge">New</span>}
-                </span>
-                <span className="rost-rule-row-count">{count} {count === 1 ? 'class' : 'classes'}</span>
-              </div>
-              <label className="rost-rule-row-control">
-                <span className={`rost-rule-status${allowed ? ' rost-rule-status--on' : ''}`}>{allowed ? 'Syncing' : 'Not syncing'}</span>
-                <Toggle checked={allowed} onChange={v => onSetSubjectAllowed(subject, v)} />
-              </label>
-            </div>
-          ))}
-        </div>
-      )}
+      <div className="rost-rules-label">Import filter</div>
+      <div className="rost-mode-options">
+        {MODE_OPTIONS.map(opt => (
+          <ModeCard key={opt.id} option={opt} active={filter.mode === opt.id} onSelect={onSetMode} />
+        ))}
+      </div>
+
+      <div className="rost-rules-label rost-rules-label--spaced">
+        Custom subjects <span className="rost-rules-label-opt">optional</span>
+      </div>
+      <div className="rost-rules-help">Also sync classes whose name matches these words.</div>
+      <CustomSubjects words={filter.customSubjects} onAdd={onAddCustom} onRemove={onRemoveCustom} />
+
+      <FilterImpact filter={filter} />
     </ChartCard>
   )
 }
@@ -279,20 +271,17 @@ function ScheduleSection() {
 
   const set = (k) => (v) => setDates(d => ({ ...d, [k]: v }))
 
-  const footer = (
+  const footer = dirty ? (
     <div className="rost-card-footer-bar">
-      <span className="rost-card-footer-note">{dirty ? 'You have unsaved changes' : 'No changes yet'}</span>
-      <div className="rost-card-footer-actions">
-        <button className="rost-btn rost-btn--ghost" onClick={() => setDates(saved)} disabled={!dirty}>Cancel</button>
-        <button className="rost-btn rost-btn--primary" onClick={() => setSaved(dates)} disabled={!dirty}>Save</button>
-      </div>
+      <button className="rost-btn rost-btn--ghost" onClick={() => setDates(saved)}>Cancel</button>
+      <button className="rost-btn rost-btn--primary" onClick={() => setSaved(dates)}>Save</button>
     </div>
-  )
+  ) : null
 
   return (
     <ChartCard
       title="Summer rostering sync pause"
-      subtitle="Freeze your roster over the summer so end-of-year data is preserved."
+      subtitle="Pause syncing over the summer to keep end-of-year data."
       icon={IcCalendar}
       accent={ACCENT}
       footer={footer}
@@ -305,13 +294,13 @@ function ScheduleSection() {
           </svg>
         </div>
         <div>
-          Make sure rostering data is shared right up until the pause date and again on the restart date — that way no logs get lost.
+          Share rostering data up to the pause date and again on the restart date, so no logs are lost.
         </div>
       </div>
 
       <div className="rost-field">
         <label className="rost-field-label">Pause date</label>
-        <div className="rost-field-help">Typically your last day of school for students.</div>
+        <div className="rost-field-help">Usually your last day of school.</div>
         <div className="rost-field-row">
           <div className="rost-select-wrap rost-select-wrap--grow">
             <select value={dates.pauseMonth} onChange={e => set('pauseMonth')(e.target.value)} className="rost-select">
@@ -330,7 +319,7 @@ function ScheduleSection() {
 
       <div className="rost-field" style={{ marginTop: 16 }}>
         <label className="rost-field-label">Restart date</label>
-        <div className="rost-field-help">Typically 3–5 days before students return, <strong>after</strong> your summer reading challenge ends.</div>
+        <div className="rost-field-help">A few days before students return, <strong>after</strong> your summer challenge ends.</div>
         <div className="rost-field-row">
           <div className="rost-select-wrap rost-select-wrap--grow">
             <select value={dates.restartMonth} onChange={e => set('restartMonth')(e.target.value)} className="rost-select">
@@ -354,96 +343,126 @@ function ScheduleSection() {
           </svg>
         </div>
         <div>
-          Sync will be paused and no sync jobs will run from <strong>{dates.pauseMonth} {dates.pauseDay + 1}</strong> through <strong>{dates.restartMonth} {dates.restartDay - 1 || 31}</strong>.
+          No syncs will run from <strong>{dates.pauseMonth} {dates.pauseDay + 1}</strong> through <strong>{dates.restartMonth} {dates.restartDay - 1 || 31}</strong>.
         </div>
       </div>
     </ChartCard>
   )
 }
 
-// ─── Recent syncs (activity timeline) ─────────────────────────────────────
-function relDate(iso) {
+// ─── Last sync (school-tool-style totals; deactivations open a modal) ─────
+function fmtDeactivatedAt(iso) {
   const d = new Date(iso)
-  const now = new Date('2026-05-26T10:00:00-04:00')
-  const days = Math.round((now.setHours(0,0,0,0) - new Date(iso).setHours(0,0,0,0)) / 86400000)
-  if (days === 0) return 'Today'
-  if (days === 1) return 'Yesterday'
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const pad = n => String(n).padStart(2, '0')
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`
 }
-function relTime(iso) {
-  return new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+function fmtScheduledDeletion(date) {
+  return new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
 }
 
-// One inline "+N −M entity" summary segment
-function ChangeSummary({ label, change }) {
-  const n = change?.new || 0, r = change?.removed || 0
-  if (n === 0 && r === 0) return null
+function DeactCell({ count, active, onClick }) {
+  if (!count) return <span className="rost-ls-deact rost-ls-deact--zero">0</span>
   return (
-    <span className="rost-tl-change">
-      {n > 0 && <span className="rost-gh-add">+{n}</span>}
-      {r > 0 && <span className="rost-gh-del">−{r}</span>}
-      {' '}{label}
-    </span>
+    <button type="button" className={`rost-ls-deact${active ? ' rost-ls-deact--active' : ''}`} onClick={onClick} aria-haspopup="dialog">
+      {count}
+    </button>
   )
 }
 
-function SyncLogSection() {
+function LastSyncSection() {
+  const [drill, setDrill] = useState(null)   // 'teachers' | 'students' | null
+  const ls = LAST_SYNC
+  const tD = ls.teachersDeactivated
+  const sD = ls.studentsDeactivated
+  const drillRows = drill === 'teachers' ? tD : drill === 'students' ? sD : []
+
   return (
     <ChartCard
-      title="Recent syncs"
-      subtitle={`Activity from each sync run from ${SOURCE.name}`}
+      title="Last sync"
+      subtitle={`Your most recent sync · ${fmtSyncTime(ls.at)}`}
       icon={IcHistory}
       accent={ACCENT}
-      bodyPad="padded"
+      bodyPad="flush"
     >
-      <ol className="rost-timeline">
-        {SYNC_LOG.map((entry, i) => {
-          const c = entry.changes
-          const hasChanges = c.classes.new || c.classes.removed || c.students.new || c.students.removed || c.staff.new || c.staff.removed
-          return (
-            <li key={i} className={`rost-tl-item rost-tl-item--${entry.result}`}>
-              <span className="rost-tl-dot" />
-              <div className="rost-tl-body">
-                <div className="rost-tl-head">
-                  <span className="rost-tl-date">{relDate(entry.at)}</span>
-                  <span className="rost-tl-time">{relTime(entry.at)}</span>
-                  <ResultBadge result={entry.result} />
-                </div>
-                <div className="rost-tl-changes">
-                  {hasChanges ? (
-                    <>
-                      <ChangeSummary label="classes" change={c.classes} />
-                      <ChangeSummary label="students" change={c.students} />
-                      <ChangeSummary label="staff" change={c.staff} />
-                    </>
-                  ) : (
-                    <span className="rost-tl-nochange">No changes</span>
-                  )}
-                </div>
+      <div className="rost-ls">
+        <table className="rost-ls-table">
+          <thead>
+            <tr>
+              <th className="rost-ls-num">Teachers</th>
+              <th className="rost-ls-num">Deactivated</th>
+              <th className="rost-ls-num">Students</th>
+              <th className="rost-ls-num">Deactivated</th>
+              <th className="rost-ls-num">Sections</th>
+              <th className="rost-ls-num">Enrollments</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr className="rost-ls-row">
+              <td className="rost-ls-num">{ls.teachers}</td>
+              <td className="rost-ls-num"><DeactCell count={tD.length} active={drill === 'teachers'} onClick={() => setDrill('teachers')} /></td>
+              <td className="rost-ls-num">{ls.students.toLocaleString()}</td>
+              <td className="rost-ls-num"><DeactCell count={sD.length} active={drill === 'students'} onClick={() => setDrill('students')} /></td>
+              <td className="rost-ls-num">{ls.sections}</td>
+              <td className="rost-ls-num">{ls.enrollments.toLocaleString()}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <Modal open={!!drill} onClose={() => setDrill(null)} variant="center" ariaLabel="Deactivated users">
+        {({ close }) => (
+          <div className="rost-deact-modal">
+            <div className="modal-header">
+              <div className="modal-header-text">
+                <h3 className="modal-title">Deactivated {drill === 'teachers' ? 'teachers' : 'students'}</h3>
+                <div className="rost-deact-sub">Removed on the deletion date unless they return in a later sync.</div>
               </div>
-            </li>
-          )
-        })}
-      </ol>
+              <button className="rost-modal-close" onClick={close} aria-label="Close">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="4" x2="12" y2="12"/><line x1="12" y1="4" x2="4" y2="12"/>
+                </svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              <table className="rost-ls-drill-table">
+                <thead>
+                  <tr><th>#</th><th>User Name</th><th>Deactivation Date</th><th>Scheduled Deletion</th></tr>
+                </thead>
+                <tbody>
+                  {drillRows.map((r, i) => (
+                    <tr key={r.name}>
+                      <td>{i + 1}</td>
+                      <td className="rost-ls-drill-name">{r.name}</td>
+                      <td>{fmtDeactivatedAt(r.deactivatedAt)}</td>
+                      <td>{fmtScheduledDeletion(r.scheduledDeletion)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </Modal>
     </ChartCard>
   )
 }
 
 // ─── Page composition ─────────────────────────────────────────────────────
-export function SyncSettingsPage({ rules, rulesDirty, onSetSubjectAllowed, onSaveRules, onCancelRules, onOpenPreview }) {
+export function SyncSettingsPage({ filter, filterDirty, onSetMode, onAddCustom, onRemoveCustom, onSaveFilter, onCancelFilter }) {
   return (
     <>
       <ConnectionSection />
-      <DiffBanner onOpenPreview={onOpenPreview} />
       <SubjectRulesSection
-        rules={rules}
-        rulesDirty={rulesDirty}
-        onSetSubjectAllowed={onSetSubjectAllowed}
-        onSaveRules={onSaveRules}
-        onCancelRules={onCancelRules}
+        filter={filter}
+        filterDirty={filterDirty}
+        onSetMode={onSetMode}
+        onAddCustom={onAddCustom}
+        onRemoveCustom={onRemoveCustom}
+        onSave={onSaveFilter}
+        onCancel={onCancelFilter}
       />
       <ScheduleSection />
-      <SyncLogSection />
+      <LastSyncSection />
     </>
   )
 }

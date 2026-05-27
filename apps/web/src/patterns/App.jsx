@@ -629,6 +629,7 @@ function TableKnobs() {
   const [flush, setFlush]       = useState(false)
   const [sortable, setSortable] = useState(false)
   const [paginate, setPaginate] = useState(false)
+  const [scrollX, setScrollX]   = useState(false)
   const [clickable, setClick]   = useState(true)
   const [highlight, setHL]      = useState(false)
   const [state, setState]       = useState('data') // data | empty | loading
@@ -662,6 +663,7 @@ function TableKnobs() {
         <Field label="flush"><Toggle checked={flush} onChange={setFlush} /></Field>
         <Field label="sortable cols"><Toggle checked={sortable} onChange={setSortable} /></Field>
         <Field label="pagination"><Toggle checked={paginate} onChange={setPaginate} /></Field>
+        <Field label="scrollX"><Toggle checked={scrollX} onChange={setScrollX} /></Field>
         <Field label="clickable"><Toggle checked={clickable} onChange={setClick} /></Field>
         <Field label="highlight Lincoln"><Toggle checked={highlight} onChange={setHL} /></Field>
       </Knobs>
@@ -673,6 +675,8 @@ function TableKnobs() {
           compact={compact}
           bordered={bordered}
           flush={flush}
+          scrollX={scrollX}
+          className={scrollX ? 'pt-tbl-wide' : ''}
           loading={state === 'loading'}
           empty="No schools match the current filter."
           onRowClick={clickable ? () => {} : undefined}
