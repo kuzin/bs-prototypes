@@ -406,6 +406,10 @@
   padding: 14px;
 }
 
+/* Forces the Table demo wide enough to overflow so the scrollX knob actually
+   scrolls (and the pagination bar stays pinned below the scroll). */
+.pt-tbl-wide { min-width: 900px; }
+
 /* When a frame holds discrete elements (buttons, pills) we want them in a row */
 .pt-variant-frame--row {
   display: flex;

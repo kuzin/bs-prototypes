@@ -25,6 +25,7 @@ export function Table({
   bordered = false,
   flush = false,         // remove outer border + radius — use inside ChartCard bodyPad="flush"
   collapse = false,      // on narrow viewports, collapse each row to a stacked card (label : value)
+  scrollX = false,       // wrap the table in a horizontal scroller; pagination stays pinned outside it
   stickyHeader = false,
   loading = false,
   empty,                 // string | node — shown when rows is empty
@@ -84,7 +85,28 @@ export function Table({
     return <span className="tbl-sort-icon tbl-sort-icon--active">{sortDir === 'asc' ? '↑' : '↓'}</span>
   }
 
-  return (
+  const hasPagination = pageSize && totalPages > 1
+  const paginationControls = hasPagination ? (
+    <>
+      <button
+        className="tbl-pg-btn"
+        onClick={() => setPage(p => p - 1)}
+        disabled={page === 0}
+        aria-label="Previous page"
+      >‹</button>
+      <span className="tbl-pg-info">
+        {page + 1} <span className="tbl-pg-sep">/</span> {totalPages}
+      </span>
+      <button
+        className="tbl-pg-btn"
+        onClick={() => setPage(p => p + 1)}
+        disabled={page >= totalPages - 1}
+        aria-label="Next page"
+      >›</button>
+    </>
+  ) : null
+
+  const tableEl = (
     <table className={cls}>
       <thead>
         <tr>
@@ -142,29 +164,26 @@ export function Table({
           )
         })}
       </tbody>
-      {pageSize && totalPages > 1 && (
+      {/* Default: pagination rides in the table footer. In scrollX mode it's
+          lifted out (below) so it never moves with the horizontal scroll. */}
+      {!scrollX && hasPagination && (
         <tfoot>
           <tr>
             <td colSpan={columns.length} className="tbl-pagination">
-              <button
-                className="tbl-pg-btn"
-                onClick={() => setPage(p => p - 1)}
-                disabled={page === 0}
-                aria-label="Previous page"
-              >‹</button>
-              <span className="tbl-pg-info">
-                {page + 1} <span className="tbl-pg-sep">/</span> {totalPages}
-              </span>
-              <button
-                className="tbl-pg-btn"
-                onClick={() => setPage(p => p + 1)}
-                disabled={page >= totalPages - 1}
-                aria-label="Next page"
-              >›</button>
+              {paginationControls}
             </td>
           </tr>
         </tfoot>
       )}
     </table>
+  )
+
+  if (!scrollX) return tableEl
+
+  return (
+    <div className="tbl-scroll-wrap">
+      <div className="tbl-scroll">{tableEl}</div>
+      {hasPagination && <div className="tbl-pagination">{paginationControls}</div>}
+    </div>
   )
 }

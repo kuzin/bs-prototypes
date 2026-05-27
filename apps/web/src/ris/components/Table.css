@@ -95,6 +95,11 @@
   background: #fff;
 }
 
+/* ── Horizontal scroll (scrollX) ─────────────────────────────────────────────
+   The table scrolls inside .tbl-scroll while the pagination bar stays pinned
+   below it, so the footer never rides along with the horizontal scroll. */
+.tbl-scroll { overflow-x: auto; }
+
 /* ── Pagination ──────────────────────────────────────────────────────────── */
 .tbl-pagination {
   padding: 8px 12px;
