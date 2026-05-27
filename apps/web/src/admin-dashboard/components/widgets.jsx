@@ -1,8 +1,11 @@
 import {
   NOTIFICATIONS, STAT_TILES, DAILY_TRACKER, LEADERBOARDS,
-  LINKS, QUESTIONS, ENGAGEMENT, GOAL_OPTIONS,
+  LINKS, QUESTIONS, ENGAGEMENT, GOAL_OPTIONS, FLAGGED_SESSIONS,
+  TOP_BOOKS, TOP_BADGES, coverUrl,
 } from "../data";
 import { useState } from "react";
+import Tippy from "@tippyjs/react";
+import "tippy.js/dist/tippy.css";
 
 const fmt = (n) => n.toLocaleString();
 
@@ -10,15 +13,17 @@ const fmt = (n) => n.toLocaleString();
 // Simplified 3-step width: 1/3, 2/3, or full. Internally we still use a
 // 12-column RGL grid (4/8/12) so the underlying math is unchanged, but the
 // width selector only ever offers these three options.
-export const WIDTH_TO_COLS = { sm: 4, lg: 8, full: 12 };
+export const WIDTH_TO_COLS = { sm: 4, half: 6, lg: 8, full: 12 };
 export const COLS_TO_WIDTH = (w) =>
   w <= 4 ? "sm"
+  : w <= 6 ? "half"
   : w <= 8 ? "lg"
   :          "full";
 export const WIDTH_FIELD = {
   key: "width", label: "Width", type: "select",
   options: [
     { value: "sm",   label: "1/3" },
+    { value: "half", label: "1/2" },
     { value: "lg",   label: "2/3" },
     { value: "full", label: "Full width" },
   ],
@@ -81,6 +86,15 @@ const STAT_ICONS = {
       <line x1="12" y1="13" x2="15.5" y2="9.5" />
     </svg>
   ),
+  calendar: (
+    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="5" width="18" height="16" rx="2" />
+      <line x1="3" y1="10" x2="21" y2="10" />
+      <line x1="8" y1="3" x2="8" y2="7" />
+      <line x1="16" y1="3" x2="16" y2="7" />
+      <polyline points="8,15 11,17 15,13" />
+    </svg>
+  ),
 };
 const STAT_RANGE_LABEL = {
   week:  "This Week",
@@ -107,15 +121,29 @@ export function AdmStatTiles({ settings = {}, role = "teacher" }) {
       </div>
       <div className="adm-w-body">
         <div className="adm-stats">
-          {tiles.map((s) => (
-            <div key={s.id} className={`adm-stat adm-stat--${s.color}`}>
-              <div className="adm-stat-ico">{STAT_ICONS[s.icon] || STAT_ICONS.user}</div>
-              <div>
-                <div className="adm-stat-val">{s.value}</div>
-                <div className="adm-stat-lbl">{s.label}</div>
-              </div>
-            </div>
-          ))}
+          {tiles.map((s) => {
+            // Tiles with a destination hint are clickable links for every role.
+            const linkable = !!s.hint;
+            const Tag = linkable ? "a" : "div";
+            const linkProps = linkable ? { href: "#", onClick: (e) => e.preventDefault() } : {};
+            return (
+              <Tag
+                key={s.id}
+                className={`adm-stat adm-stat--${s.color}${linkable ? " adm-stat--link" : ""}`}
+                {...linkProps}
+              >
+                <div className="adm-stat-main">
+                  <div className="adm-stat-val">{s.value}</div>
+                  <div className="adm-stat-lbl">{s.label}</div>
+                  {linkable && (
+                    <span className="adm-stat-hint">
+                      {s.hint}<span className="adm-stat-hint-arrow" aria-hidden="true">›</span>
+                    </span>
+                  )}
+                </div>
+              </Tag>
+            );
+          })}
           {tiles.length === 0 && (
             <div className="adm-stats-empty">
               Pick at least one metric in widget settings.
@@ -338,6 +366,9 @@ function makeLeaderboard(kind, list) {
 export const AdmLeaderboardStudents = makeLeaderboard("Students", LEADERBOARDS.students);
 export const AdmLeaderboardClasses  = makeLeaderboard("Classes",  LEADERBOARDS.classes);
 export const AdmLeaderboardStaff    = makeLeaderboard("Staff",    LEADERBOARDS.staff);
+// Public-library rosters (patrons + branches reuse the reader/branch data).
+export const AdmLeaderboardPatrons  = makeLeaderboard("Patrons",  LEADERBOARDS.students);
+export const AdmLeaderboardBranches = makeLeaderboard("Branches", LEADERBOARDS.branches);
 
 // Shared leaderboard settings schema + defaults
 const LEADERBOARD_DEFAULTS = { sort: "active-desc", range: "week", limit: "15" };
@@ -361,6 +392,202 @@ const LEADERBOARD_FIELDS = [
     { value: "25", label: "25 rows" },
   ]},
 ];
+
+// ─── Combined leaderboard (Classes / Students toggle, top 3) ──────────────
+// One block with an in-widget toggle, showing only the top 3 and linking out
+// to the full Insights leaderboard. The toggle seeds from settings.entity
+// (defaults to Top Classes). Used as the Media Specialist default.
+// Entities are role-aware: schools rank Classes/Students, public libraries
+// rank Readers/Branches.
+function lbEntities(role) {
+  if (role === "library") {
+    return [
+      { value: "readers",  label: "Top Readers", list: LEADERBOARDS.students },
+      { value: "branches", label: "Branches",    list: LEADERBOARDS.branches },
+    ];
+  }
+  return [
+    { value: "classes",  label: "Top Classes", list: LEADERBOARDS.classes },
+    { value: "students", label: "Students",    list: LEADERBOARDS.students },
+  ];
+}
+export function AdmLeaderboardCombo({ settings = {}, role = "teacher" }) {
+  const entities = lbEntities(role);
+  const [picked, setPicked] = useState(settings.entity);
+  // Fall back to the role's first entity if the picked value isn't valid for
+  // this role (e.g. after switching roles without remounting).
+  const activeValue = entities.some((e) => e.value === picked) ? picked : entities[0].value;
+  const cfg = entities.find((e) => e.value === activeValue);
+  const top = [...cfg.list].sort(SORT_FNS["active-desc"]).slice(0, 5);
+  const rankName = (i) => (i === 0 ? "gold" : i === 1 ? "silver" : i === 2 ? "bronze" : "plain");
+  return (
+    <div className="adm-w">
+      <div className="adm-w-head">
+        <div className="adm-w-title">
+          Leaderboard
+          <span className="adm-w-meta">Top 5 · This Week</span>
+        </div>
+        <button className="adm-w-action">View in Insights</button>
+      </div>
+      <div className="adm-w-body adm-lbc">
+        <div className="adm-lbc-toggle" role="tablist" aria-label="Leaderboard view">
+          {entities.map((e) => (
+            <button
+              key={e.value}
+              type="button"
+              role="tab"
+              aria-selected={activeValue === e.value}
+              className={activeValue === e.value ? "is-active" : ""}
+              onClick={() => setPicked(e.value)}
+            >
+              {e.label}
+            </button>
+          ))}
+        </div>
+        <ol className="adm-lbc-list">
+          {top.map((r, i) => (
+            <li key={r.id} className="adm-lbc-row">
+              <span className={`adm-lbc-rank adm-lbc-rank--${rankName(i)}`}>{i + 1}</span>
+              <span className="adm-lbc-name">{r.name}</span>
+              <span className="adm-lbc-val">{r.value}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </div>
+  );
+}
+const LB_COMBO_DEFAULTS = { entity: "classes" };
+
+// ─── Flagged sessions (Reading Integrity Suite priority card) ─────────────
+const FlagIcon = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M5 3v18" />
+    <path d="M5 4h13l-2.5 4 2.5 4H5" />
+  </svg>
+);
+export function AdmFlaggedSessions() {
+  const f = FLAGGED_SESSIONS;
+  const sessions = f.sessions || [];
+  return (
+    <div className="adm-w">
+      <div className="adm-w-head">
+        <div className="adm-w-title">
+          Flagged Sessions
+          <span className="adm-w-meta">{sessions.length} to review · {f.range}</span>
+        </div>
+        <button className="adm-w-action">Review all</button>
+      </div>
+      <div className="adm-w-body adm-flagged">
+        <ul className="adm-flagged-list">
+          {sessions.map((s) => (
+            <li key={s.id} className="adm-flagged-row">
+              <div className="adm-flagged-info">
+                <div className="adm-flagged-reader">{s.reader}</div>
+                <div className="adm-flagged-book">{s.title}</div>
+              </div>
+              <span className="adm-flagged-flags">
+                {s.flags.map((fl, i) => (
+                  <Tippy key={i} content={fl.label}>
+                    <span className={`adm-flag adm-flag--${fl.tone}`}>
+                      <FlagIcon />
+                    </span>
+                  </Tippy>
+                ))}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+}
+
+// ─── Top Books + Most Earned Badges (visual, Insights-style) ──────────────
+const TB_RANGE_META = { week: "This Week", month: "This Month", year: "This Year" };
+const TB_RANGE_MULT = { week: 1, month: 4, year: 48 };
+const TB_DEFAULTS = { range: "week" };
+const TB_FIELDS = [
+  { key: "range", label: "Time range", type: "select", options: [
+    { value: "week",  label: "Weekly"  },
+    { value: "month", label: "Monthly" },
+    { value: "year",  label: "Yearly"  },
+  ]},
+];
+const BadgeStar = () => (
+  <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
+    <path d="M12 2l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.8l1.1-6.5L2.6 8.8l6.5-.9z" />
+  </svg>
+);
+
+// Real Open Library cover by ISBN; on load failure (offline, missing edition)
+// fall back to a colored block with the title overlaid.
+function BookCover({ book, rank }) {
+  const [failed, setFailed] = useState(false);
+  const showFallback = failed || !book.isbn;
+  return (
+    <div className="adm-book-cover" style={showFallback ? { background: book.color } : undefined}>
+      <span className="adm-book-rank">{rank}</span>
+      {showFallback ? (
+        <span className="adm-book-fallback">{book.name}</span>
+      ) : (
+        <img src={coverUrl(book.isbn, "M")} alt="" loading="lazy" onError={() => setFailed(true)} />
+      )}
+    </div>
+  );
+}
+
+export function AdmTopBooks({ settings = {} }) {
+  const range = settings.range || "week";
+  const mult = TB_RANGE_MULT[range] || 1;
+  return (
+    <div className="adm-w">
+      <div className="adm-w-head">
+        <div className="adm-w-title">
+          Top Books
+          <span className="adm-w-meta">{TB_RANGE_META[range]}</span>
+        </div>
+        <button className="adm-w-action">View report</button>
+      </div>
+      <div className="adm-w-body adm-shelf">
+        {TOP_BOOKS.map((b, i) => (
+          <Tippy key={b.id} content={b.name}>
+            <div className="adm-shelf-item">
+              <BookCover book={b} rank={i + 1} />
+              <div className="adm-shelf-meta">{Math.round(b.count * mult).toLocaleString()} reads</div>
+            </div>
+          </Tippy>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export function AdmTopBadges({ settings = {} }) {
+  const range = settings.range || "week";
+  const mult = TB_RANGE_MULT[range] || 1;
+  return (
+    <div className="adm-w">
+      <div className="adm-w-head">
+        <div className="adm-w-title">
+          Most Earned Badges
+          <span className="adm-w-meta">{TB_RANGE_META[range]}</span>
+        </div>
+        <button className="adm-w-action">View report</button>
+      </div>
+      <div className="adm-w-body adm-badges">
+        {TOP_BADGES.map((b) => (
+          <Tippy key={b.id} content={b.name}>
+            <div className="adm-badge-item">
+              <span className={`adm-badge-medal adm-badge-medal--${b.color}`}><BadgeStar /></span>
+              <div className="adm-shelf-meta">{Math.round(b.count * mult).toLocaleString()} earned</div>
+            </div>
+          </Tippy>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // ─── Quick links ──────────────────────────────────────────────────────
 // Per-link semantic icons. Keys match the `icon` field on each LINKS entry.
@@ -637,14 +864,22 @@ const GOAL_FIELDS = [
 // `scrollable: true` means the widget has a fixed height (set in layout) and
 // its body scrolls internally — good for long lists. Otherwise the dashboard
 // auto-sizes the cell to fit content.
+// `roles` controls which views can add a widget from the palette. Omit it for
+// widgets available to everyone (What's Happened, Number Cruncher, Top Books,
+// Most Earned Badges, Community Goal).
 export const WIDGET_CATALOG = {
   "stat-tiles":             { name: "What's Happened",      desc: "At-a-glance metric tiles — pick which ones", min: { w: 2, h: 4 }, component: AdmStatTiles, defaults: STAT_DEFAULTS, settingsFields: STAT_FIELDS, fixedWidth: "full" },
-  "daily-tracker":          { name: "Daily Reading Tracker",desc: "Daily goal ring + 7-day star strip (full width)", min: { w: 2, h: 6 }, component: AdmDailyTracker, defaults: TRACKER_DEFAULTS, settingsFields: TRACKER_FIELDS, fixedWidth: "full" },
-  "leaderboard-students":   { name: "Students", desc: "Roster of students with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardStudents, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true },
-  "leaderboard-classes":    { name: "Classes",  desc: "Roster of classes with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardClasses,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true },
-  "leaderboard-staff":      { name: "Staff",    desc: "Roster of staff with configurable sort",    min: { w: 1, h: 6 }, component: AdmLeaderboardStaff,    defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["media"] },
-  "quick-links":            { name: "Quick Links",          desc: "Pick which shortcut tiles to show",    min: { w: 2, h: 14 }, component: AdmQuickLinks, defaults: QUICK_LINKS_DEFAULTS, settingsFields: QUICK_LINKS_FIELDS, scrollable: true },
+  "flagged-sessions":       { name: "Flagged Sessions",     desc: "Reading sessions auto-flagged for review this week", min: { w: 1, h: 4 }, component: AdmFlaggedSessions, scrollable: true, roles: ["teacher", "media"] },
+  "leaderboard-combo":      { name: "Leaderboard",          desc: "Top 5 with an in-widget toggle", min: { w: 2, h: 6 }, component: AdmLeaderboardCombo, defaults: LB_COMBO_DEFAULTS, scrollable: true, roles: ["media", "library"] },
+  "daily-tracker":          { name: "Daily Reading Tracker",desc: "Daily goal ring + 7-day star strip (full width)", min: { w: 2, h: 6 }, component: AdmDailyTracker, defaults: TRACKER_DEFAULTS, settingsFields: TRACKER_FIELDS, fixedWidth: "full", roles: ["teacher"] },
+  "leaderboard-students":   { name: "Students", desc: "Roster of students with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardStudents, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["teacher", "media"] },
+  "leaderboard-classes":    { name: "Classes",  desc: "Roster of classes with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardClasses,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["teacher", "media"] },
+  "leaderboard-staff":      { name: "Staff",    desc: "Roster of staff with configurable sort",    min: { w: 1, h: 6 }, component: AdmLeaderboardStaff,    defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["media", "library"] },
+  "leaderboard-patrons":    { name: "Patrons",  desc: "Roster of patrons with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardPatrons,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["library"] },
+  "leaderboard-branches":   { name: "Branches", desc: "Roster of branches with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardBranches, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["library"] },
   "questions":              { name: "Number Cruncher",      desc: "Pick which questions to show",        min: { w: 2, h: 14 }, component: AdmQuestions, defaults: QUESTIONS_DEFAULTS, settingsFields: QUESTIONS_FIELDS, scrollable: true },
-  "engagement":             { name: "Engagement",            desc: "Are enough readers (or classes) actively logging?", min: { w: 2, h: 6 }, component: AdmEngagement },
-  "community-goal":         { name: "Community Goal",        desc: "Progress toward the community or district reading goal", min: { w: 2, h: 4 }, component: AdmCommunityGoal, defaults: GOAL_DEFAULTS, settingsFields: GOAL_FIELDS, titleFn: (s) => (s?.scope === "district" ? "District Goal" : "Community Goal") },
+  "top-books":              { name: "Top Books",            desc: "Most-read titles this week", min: { w: 1, h: 6 }, component: AdmTopBooks, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS, fixedWidth: "full" },
+  "top-badges":             { name: "Most Earned Badges",   desc: "Badges earned most this week", min: { w: 1, h: 6 }, component: AdmTopBadges, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS, fixedWidth: "full" },
+  "engagement":             { name: "Engagement",            desc: "Are enough readers (or classes) actively logging?", min: { w: 2, h: 6 }, component: AdmEngagement, size: "small", roles: ["teacher", "media"] },
+  "community-goal":         { name: "Community Goal",        desc: "Progress toward the community or district reading goal", min: { w: 2, h: 4 }, component: AdmCommunityGoal, defaults: GOAL_DEFAULTS, settingsFields: GOAL_FIELDS, titleFn: (s) => (s?.scope === "district" ? "District Goal" : "Community Goal"), size: "small" },
 };

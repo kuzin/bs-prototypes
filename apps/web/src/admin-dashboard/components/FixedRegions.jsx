@@ -1,29 +1,4 @@
-import { NOTIFICATIONS, FEATURE_BAR, ACTIONS, ADMIN_STATE, ACTION_ROW_CAP } from "../data";
-
-// ─── Alerts card (lives in the right rail on desktop, moves to top on mobile) ─
-export function AlertsCard() {
-  if (!NOTIFICATIONS.length) return null;
-  return (
-    <div className="adm-rail-card adm-rail-card--alerts">
-      <div className="adm-rail-alerts">
-        {NOTIFICATIONS.map((n) => (
-          <div key={n.id} className={`adm-alert adm-alert--${n.tone}`}>
-            <div className="adm-alert-row">
-              <span className="adm-alert-ico">
-                {n.tone === "warn" ? "⚠" : n.tone === "danger" ? "✕" : n.tone === "good" ? "✓" : "🔥"}
-              </span>
-              <div className="adm-alert-text">
-                <div className="adm-alert-title">{n.title}</div>
-                {n.body && <div className="adm-alert-body">{n.body}</div>}
-                {n.action && <button className="adm-alert-cta">{n.action}</button>}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+import { FEATURE_BAR, QUICK_ACTIONS, ACTIONS, ADMIN_STATE, ACTION_ROW_CAP } from "../data";
 
 // ─── Feature announcement bar (admin-controlled, not editable) ───────────
 export function FeatureBar({ onClose }) {
@@ -48,10 +23,7 @@ export function FeatureBar({ onClose }) {
   );
 }
 
-// ─── Action row (admin-controlled, sits above the editable grid) ─────────
-// Renders ACTIONS filtered by role, plus conditional CTAs derived from
-// ADMIN_STATE (no goal in 12+ months, no live challenges). Not editable —
-// the brief asks us to drive users toward action ASAP, so these stay pinned.
+// ─── Rail icons (shared by Flagged Sessions + Quick Actions) ─────────────
 const ACTION_ICONS = {
   flag: (
     <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -83,11 +55,26 @@ const ACTION_ICONS = {
       <circle cx="10" cy="10" r="7.5" /><circle cx="10" cy="10" r="4" /><circle cx="10" cy="10" r="1" fill="currentColor" />
     </svg>
   ),
+  user: (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="10" cy="7" r="3.2" /><path d="M3.5 17c0-3.2 2.9-5.5 6.5-5.5s6.5 2.3 6.5 5.5" />
+    </svg>
+  ),
+  classes: (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="7" cy="7" r="2.5" /><circle cx="14" cy="8" r="2" /><path d="M2 16c0-2.5 2-4 5-4s5 1.5 5 4" /><path d="M12 16c0-1.8 1.5-3 3-3s3 1.2 3 3" />
+    </svg>
+  ),
+  book: (
+    <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M3 4h6a2.5 2.5 0 0 1 2.5 2.5V17a2 2 0 0 0-2-2H3z" /><path d="M17 4h-6A2.5 2.5 0 0 0 8.5 6.5V17a2 2 0 0 1 2-2H17z" />
+    </svg>
+  ),
 };
-// ─── Sidebar action list ──────────────────────────────────────────────
-// Vertical, compact version of ActionRow for the right rail. Each item is
-// a single line (icon + title + CTA button); subtitle is shown beneath in
-// a smaller tone. Conditional CTAs surface first.
+// ─── "This week" attention list (what to pay attention to) ───────────────
+// Vertical, compact list of the things needing attention this week: contextual
+// CTAs derived from ADMIN_STATE (no goal in 12+ months, no live challenges)
+// surface first, then role-relevant actions.
 function ActionList({ role = "teacher" }) {
   const items = ACTIONS.filter((a) => !a.roles || a.roles.includes(role));
   const conditional = [];
@@ -130,14 +117,41 @@ function ActionList({ role = "teacher" }) {
   );
 }
 
-// ─── Right rail combo ──────────────────────────────────────────────────────
-// Community Goal + What's New moved out of the rail (the goal became an
-// editable widget; What's New was removed). The rail is now: company
-// alerts + a stacked list of key actions.
+// ─── Quick Actions card ──────────────────────────────────────────────────
+// A compact launcher of the most common jumps, keyed by role. Sits under the
+// Flagged Sessions block. The first three land above the fold.
+function QuickActionsCard({ role = "teacher" }) {
+  const actions = QUICK_ACTIONS[role] || QUICK_ACTIONS.teacher;
+  return (
+    <div className="adm-rail-card adm-rail-card--quick">
+      <div className="adm-rail-head">
+        <h3 className="adm-rail-title">Quick Actions</h3>
+      </div>
+      <div className="adm-quick-actions">
+        {actions.map((a) => (
+          <a
+            key={a.id}
+            href="#"
+            className="adm-quick-action"
+            onClick={(e) => e.preventDefault()}
+          >
+            <span className="adm-quick-action-ico">{ACTION_ICONS[a.icon] || ACTION_ICONS.target}</span>
+            <span className="adm-quick-action-label">{a.label}</span>
+            <span className="adm-quick-action-chev" aria-hidden="true">›</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Right rail ──────────────────────────────────────────────────────────
+// Role-aware Quick Actions launcher + a "This week" attention list. (Flagged
+// Sessions now lives in the editable grid as a widget.)
 export function FixedRail({ editing = false, role = "teacher" }) {
   return (
     <aside className="adm-rail">
-      <AlertsCard />
+      <QuickActionsCard role={role} />
       <ActionList role={role} />
     </aside>
   );
