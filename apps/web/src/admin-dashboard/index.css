@@ -474,7 +474,18 @@ button { font-family: inherit; cursor: pointer; }
   gap: 16px;
   align-items: flex-start;   /* natural heights — no stretching / empty space */
 }
-.adm-grid-card { display: flex; position: relative; }
+/* ─── Mobile (≤720px) ──────────────────────────────────────────────────────
+   Paired cards stack to full width, the topbar greeting/controls wrap onto
+   separate lines, and the rail goes single-column. */
+@media (max-width: 720px) {
+  .adm-row { flex-direction: column; align-items: stretch; }
+  .adm-row > .adm-grid-card { flex: none; }
+
+  .adm-h1 { font-size: 22px; flex-basis: 100%; }
+  .adm-topbar { padding-top: 20px; gap: 14px; }
+  .adm-topbar-r { width: 100%; flex-wrap: wrap; }
+}
+.adm-grid-card { display: flex; position: relative; flex: 1 1 0; min-width: 0; }
 .adm-grid-card > .adm-cell {
   width: 100%;
   height: auto;              /* content height (overrides the legacy 100%) */
@@ -1964,3 +1975,14 @@ button { font-family: inherit; cursor: pointer; }
   line-height: 1; flex-shrink: 0; margin-top: -2px;
 }
 .adm-quick-action:hover .adm-quick-action-chev { color: #1A6DD5; }
+
+/* Mobile rail overrides — declared after the base rules above so they win the
+   cascade at ≤720px (the rail goes full-width but is still narrow). */
+@media (max-width: 720px) {
+  /* One Quick Action per row so labels don't ellipsis to "F…". */
+  .adm-quick-actions { grid-template-columns: 1fr; }
+  /* "This week": CTA drops to its own full-width line, aligned under the text
+     (past the 32px icon + 10px gap), so the title isn't squeezed per-word. */
+  .adm-rail-action-row { flex-wrap: wrap; }
+  .adm-rail-action-row .adm-action-btn { flex: 1 1 100%; margin-left: 42px; }
+}

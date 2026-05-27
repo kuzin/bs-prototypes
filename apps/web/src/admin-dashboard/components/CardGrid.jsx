@@ -54,9 +54,9 @@ function GridCard({ id, editing, dropModeFor, children }) {
   const { setNodeRef, attributes, listeners, transform, transition, isDragging, isOver } =
     useSortable({ id, disabled: !editing });
   const mode = isOver && !isDragging ? dropModeFor(id) : null;
+  // Only the dynamic dnd-kit transform/transition stay inline; flex sizing lives
+  // in CSS (.adm-grid-card) so the mobile breakpoint can override it.
   const style = {
-    flex: "1 1 0",
-    minWidth: 0,
     transform: CSS.Translate.toString(transform),
     transition,
   };
