@@ -86,13 +86,17 @@ export const WHATS_NEW = [
 // ─── Big number stat tiles ────────────────────────────────────────────────────
 // `roles` (optional) limits which roles see a given tile. Tiles without
 // `roles` are shown to everyone. Staff-related tiles only appear for
-// the Media Specialist role.
+// the Media Specialist role. `hint` (optional) labels where the tile links —
+// shown as a small "→ destination" caption and makes the tile clickable.
 export const STAT_TILES = [
-  { id: "minutes",      label: "Minutes",            value: "3,252",   color: "red",    icon: "clock"  },
-  { id: "active",       label: "Active Readers",     value: "1",       color: "yellow", icon: "user"   },
-  { id: "avgLevel",     label: "Average Title Level",value: "665L",    color: "green",  icon: "book"   },
-  { id: "staffMinutes", label: "Staff Minutes",      value: "1,348",   color: "red",    icon: "timer",  roles: ["media"] },
-  { id: "activeStaff",  label: "Active Staff",       value: "142",     color: "yellow", icon: "people", roles: ["media"] },
+  { id: "minutes",        label: "Minutes",             value: "3,252", color: "red",    icon: "clock",    hint: "Insights" },
+  { id: "active",         label: "Active Readers",      value: "1,204", color: "yellow", icon: "user",     hint: "Insights" },
+  { id: "lexileAvg",      label: "Lexile Average",      value: "740L",  color: "purple", icon: "book",     hint: "Lexile Insights" },
+  { id: "loggedEveryDay", label: "Logged Every Day",    value: "38",    color: "green",  icon: "calendar", hint: "BNC" },
+  { id: "avgLevel",       label: "Average Title Level", value: "665L",  color: "green",  icon: "book"   },
+  { id: "staffMinutes",   label: "Staff Minutes",       value: "1,348", color: "red",    icon: "timer",  roles: ["media"] },
+  { id: "activeStaff",    label: "Active Staff",        value: "142",   color: "yellow", icon: "people", roles: ["media"] },
+  { id: "newReaders",     label: "New Readers",         value: "264",   color: "blue",   icon: "user",   hint: "Insights", roles: ["library"] },
 ];
 
 // ─── Goal tracker (kept for the Community Goal in the sidebar) ────────────────
@@ -160,6 +164,16 @@ export const LEADERBOARDS = {
     { id: 15, name: "Class O · Grade 2", value: "771 Minutes" },
     { id: 16, name: "Class P · Grade 1", value: "702 Minutes" },
   ],
+  branches: [
+    { id: 1,  name: "Main Library",        value: "18,420 Minutes" },
+    { id: 2,  name: "Eastside Branch",     value: "12,910 Minutes" },
+    { id: 3,  name: "Riverside Branch",    value: "9,755 Minutes" },
+    { id: 4,  name: "Oak Park Branch",     value: "8,140 Minutes" },
+    { id: 5,  name: "Lakeview Branch",     value: "6,302 Minutes" },
+    { id: 6,  name: "Northgate Branch",    value: "5,488 Minutes" },
+    { id: 7,  name: "Westend Branch",      value: "4,011 Minutes" },
+    { id: 8,  name: "Harborview Branch",   value: "3,260 Minutes" },
+  ],
   staff: [
     { id: 1,  name: "Luz Noceda",        value: "127 Minutes" },
     { id: 2,  name: "Amity Blight",      value: "114 Minutes" },
@@ -179,6 +193,51 @@ export const LEADERBOARDS = {
     { id: 16, name: "Yusuf Mahmoud",     value: "33 Minutes" },
   ],
 };
+
+// ─── Flagged sessions (Reading Integrity Suite) ───────────────────────────────
+// Reading sessions auto-flagged for review this week. Each session carries one
+// or more `flags` from the "Take a Closer Look" categories; `tone` drives the
+// flag-icon color (red = exceeded / inappropriate, orange = title/content,
+// yellow = approaching a limit). `label` is the icon's hover tooltip.
+export const FLAGGED_SESSIONS = {
+  range: "This Week",
+  sessions: [
+    { id: 1, reader: "Tyler Voss",      title: "The Hobbit",                           flags: [{ label: "Exceeds warning threshold", tone: "red" }] },
+    { id: 2, reader: "Mei Lin",         title: "Diary of a Wimpy Kid",                 flags: [{ label: "Approaching warning threshold", tone: "yellow" }] },
+    { id: 3, reader: "Diego Hernandez", title: "Percy Jackson & the Lightning Thief",  flags: [{ label: "Exceeds warning threshold", tone: "red" }, { label: "Inappropriate language", tone: "red" }] },
+    { id: 4, reader: "Layla Mansour",   title: "Wonder",                               flags: [{ label: "Approaching logging limit", tone: "yellow" }] },
+    { id: 5, reader: "Kofi Adjei",      title: "Dog Man: Mothering Heights",           flags: [{ label: "Approaching warning threshold", tone: "yellow" }] },
+    { id: 6, reader: "Aria Patel",      title: "Wings of Fire: The Dragonet Prophecy", flags: [{ label: "Unusually long title", tone: "orange" }, { label: "Exceeds warning threshold", tone: "red" }] },
+    { id: 7, reader: "Zoë Becker",      title: "Front Desk",                           flags: [{ label: "Exceeds warning threshold", tone: "red" }, { label: "Approaching logging limit", tone: "yellow" }] },
+  ],
+};
+
+// ─── Top books + most-earned badges (optional widgets) ────────────────────────
+// `count` is the weekly figure; the widget's range setting scales it (×~4 month,
+// ×~48 year). Covers come from Open Library by ISBN; `color` is the fallback
+// block shown when a cover image fails to load.
+export const TOP_BOOKS = [
+  { id: 1, name: "Dog Man: Mothering Heights",          count: 142, isbn: "1338680455", color: "#1D4ED8" },
+  { id: 2, name: "The Hobbit",                          count: 98,  isbn: "0345339681", color: "#6D28D9" },
+  { id: 3, name: "Percy Jackson & the Lightning Thief", count: 87,  isbn: "0786838655", color: "#047857" },
+  { id: 4, name: "Wonder",                              count: 76,  isbn: "0375869026", color: "#C2410C" },
+  { id: 5, name: "Wings of Fire: The Dragonet Prophecy",count: 64,  isbn: "0545349184", color: "#B91C1C" },
+  { id: 6, name: "Front Desk",                          count: 58,  isbn: "1338157795", color: "#0F766E" },
+  { id: 7, name: "New Kid",                             count: 49,  isbn: "0062691198", color: "#BE185D" },
+];
+// Open Library cover by ISBN. `default=false` makes a missing cover 404 (rather
+// than returning a 1×1 placeholder) so the widget's onError fallback fires.
+export function coverUrl(isbn, size = "M") {
+  return `https://covers.openlibrary.org/b/isbn/${isbn}-${size}.jpg?default=false`;
+}
+export const TOP_BADGES = [
+  { id: 1, name: "Bookworm",         count: 210, color: "green"  },
+  { id: 2, name: "Streak Star",      count: 156, color: "yellow" },
+  { id: 3, name: "Genre Explorer",   count: 98,  color: "blue"   },
+  { id: 4, name: "Night Owl Reader", count: 64,  color: "purple" },
+  { id: 5, name: "Marathon Reader",  count: 41,  color: "orange" },
+  { id: 6, name: "Series Finisher",  count: 33,  color: "teal"   },
+];
 
 // ─── Dashboard quick links ────────────────────────────────────────────────────
 // Labels are verbs ("Recognize…", "Review…") so each link reads as something
@@ -217,6 +276,36 @@ export const ADMIN_STATE = {
 // tighter than the teacher view.
 export const ACTION_ROW_CAP = { teacher: 4, media: 3 };
 
+// ─── Quick Actions (right rail) ───────────────────────────────────────────────
+// A compact launcher of the most common jumps, keyed by role. Sits under the
+// Flagged Sessions block in the rail. `icon` keys into ACTION_ICONS in
+// FixedRegions.jsx. The first three are the same for both roles so they land
+// above the fold.
+export const QUICK_ACTIONS = {
+  teacher: [
+    { id: "qa-reader",    label: "Find a reader",      icon: "user"    },
+    { id: "qa-class",     label: "Find a class",       icon: "classes" },
+    { id: "qa-challenge", label: "Create a challenge", icon: "trophy"  },
+    { id: "qa-reports",   label: "View Reports",       icon: "chart"   },
+    { id: "qa-library",   label: "Classroom Library",  icon: "book"    },
+  ],
+  media: [
+    { id: "qa-reader",    label: "Find a reader",      icon: "user"    },
+    { id: "qa-class",     label: "Find a class",       icon: "classes" },
+    { id: "qa-challenge", label: "Create a challenge", icon: "trophy"  },
+    { id: "qa-rewards",   label: "Manage Rewards",     icon: "reward"  },
+    { id: "qa-reports",   label: "Reports",            icon: "chart"   },
+    { id: "qa-library",   label: "Classroom Library",  icon: "book"    },
+  ],
+  library: [
+    { id: "qa-reader",    label: "Find a reader",      icon: "user"    },
+    { id: "qa-challenge", label: "Create a challenge", icon: "trophy"  },
+    { id: "qa-rewards",   label: "Manage Rewards",     icon: "reward"  },
+    { id: "qa-reports",   label: "View Reports",       icon: "chart"   },
+    { id: "qa-branches",  label: "Branches",           icon: "classes" },
+  ],
+};
+
 // ─── Quick-question library ──────────────────────────────────────────────────
 // All available; widget settings choose which subset to display.
 export const QUESTIONS = [
@@ -236,20 +325,102 @@ export const QUESTIONS = [
 // grid entirely.
 export const REQUIRED_WIDGETS = {};
 
-// ─── Default layout (react-grid-layout format) ────────────────────────────────
-// New users land on the "Engagement health" template instead of an empty
-// canvas, so they see a representative arrangement of widgets immediately.
-// Community Goal starts in district scope (set centrally — read-only for the
-// user). See DEFAULT_PRESET_ID + DEFAULT_SETTINGS below.
-export const DEFAULT_PRESET_ID = "engagement-health";
+// ─── Teacher default layout (react-grid-layout format) ────────────────────────
+// Teachers land on a "run my room" arrangement: the Daily Reading Tracker up
+// top, a compact row of linked metric tiles below it, and the Engagement (RCA)
+// + Community Goal blocks moved to the bottom (1/2 each).
+export const DEFAULT_PRESET_ID = "run-my-room";
 export const DEFAULT_LAYOUT = [
-  { i: "engagement",     x: 0, y: 0,  w: 4,  h: 10, minW: 4, minH: 6  },
-  { i: "community-goal", x: 4, y: 0,  w: 4,  h: 10, minW: 4, minH: 4  },
-  { i: "stat-tiles",     x: 0, y: 10, w: 12, h: 8,  minW: 4, minH: 4  },
-  { i: "daily-tracker",  x: 0, y: 18, w: 12, h: 20, minW: 4, minH: 6  },
+  { i: "daily-tracker",  x: 0, y: 0,  w: 12, h: 20, minW: 4, minH: 6  },
+  { i: "stat-tiles",     x: 0, y: 20, w: 12, h: 8,  minW: 4, minH: 4  },
+  { i: "engagement",     x: 0, y: 28, w: 6,  h: 10, minW: 4, minH: 6  },
+  { i: "community-goal", x: 6, y: 28, w: 6,  h: 10, minW: 4, minH: 4  },
 ];
 export const DEFAULT_SETTINGS = {
   "community-goal": { scope: "district" },
+  "stat-tiles": { selected: ["minutes", "active", "lexileAvg", "loggedEveryDay"], range: "week" },
+};
+
+// ─── Media Specialist default ─────────────────────────────────────────────────
+// Media specialists land on a review-and-act layout: a top-3 leaderboard
+// (defaults to Top Classes, switchable to Students) beside a Flagged Sessions
+// widget, with a compact metric row below — all above the fold. No Daily Reading
+// Tracker or Quick Links (those are teacher-only widgets now).
+export const MEDIA_DEFAULT_PRESET_ID = "media-overview";
+export const MEDIA_DEFAULT_LAYOUT = [
+  { i: "leaderboard-combo", x: 0, y: 0,  w: 8,  h: 12, minW: 4, minH: 6 },
+  { i: "flagged-sessions",  x: 8, y: 0,  w: 4,  h: 8,  minW: 4, minH: 4 },
+  { i: "stat-tiles",        x: 0, y: 12, w: 12, h: 8,  minW: 4, minH: 4 },
+];
+export const MEDIA_DEFAULT_SETTINGS = {
+  "leaderboard-combo": { entity: "classes" },
+  "stat-tiles": { selected: ["minutes", "active", "lexileAvg", "loggedEveryDay"], range: "week" },
+};
+
+// ─── Public Library default ───────────────────────────────────────────────────
+// Public libraries run community reading programs (e.g. summer reading) for
+// patrons across branches — no classes/students. Lands on a Top Readers
+// leaderboard (switchable to Branches) beside the community reading goal, with
+// patron metrics below.
+export const LIBRARY_DEFAULT_PRESET_ID = "library-overview";
+export const LIBRARY_DEFAULT_LAYOUT = [
+  { i: "leaderboard-combo", x: 0, y: 0,  w: 8,  h: 12, minW: 4, minH: 6 },
+  { i: "community-goal",    x: 8, y: 0,  w: 4,  h: 12, minW: 4, minH: 4 },
+  { i: "stat-tiles",        x: 0, y: 12, w: 12, h: 8,  minW: 4, minH: 4 },
+];
+export const LIBRARY_DEFAULT_SETTINGS = {
+  "community-goal": { scope: "community" },
+  "leaderboard-combo": { entity: "readers" },
+  "stat-tiles": { selected: ["minutes", "active", "loggedEveryDay", "newReaders"], range: "week" },
+};
+
+// Kitchen Sink demo view settings (every widget rendered at once).
+export const KITCHEN_DEFAULT_SETTINGS = {
+  "community-goal": { scope: "district" },
+  "stat-tiles": { selected: ["minutes", "active", "lexileAvg", "loggedEveryDay"], range: "week" },
+  "leaderboard-combo": { entity: "classes" },
+};
+
+// Per-role defaults — picked up by loadState(role) when a role has no saved
+// layout yet.
+export const DEFAULT_LAYOUT_BY_ROLE   = { teacher: DEFAULT_LAYOUT,     media: MEDIA_DEFAULT_LAYOUT,     library: LIBRARY_DEFAULT_LAYOUT };
+export const DEFAULT_SETTINGS_BY_ROLE = { teacher: DEFAULT_SETTINGS,   media: MEDIA_DEFAULT_SETTINGS,   library: LIBRARY_DEFAULT_SETTINGS, kitchen: KITCHEN_DEFAULT_SETTINGS };
+export const DEFAULT_PRESET_BY_ROLE   = { teacher: DEFAULT_PRESET_ID,  media: MEDIA_DEFAULT_PRESET_ID,  library: LIBRARY_DEFAULT_PRESET_ID };
+
+// ─── Row-based defaults (flexbox layout — rows of widget ids) ─────────────────
+// The dashboard is a stack of rows; each row holds 1–3 cards that split the
+// width equally (flex). Full-bleed widgets (fixedWidth) sit alone in their row.
+export const DEFAULT_ROWS = [
+  ["daily-tracker"],
+  ["stat-tiles"],
+  ["engagement", "community-goal"],
+];
+export const MEDIA_DEFAULT_ROWS = [
+  ["leaderboard-combo", "flagged-sessions"],
+  ["stat-tiles"],
+];
+export const LIBRARY_DEFAULT_ROWS = [
+  ["leaderboard-combo", "community-goal"],
+  ["stat-tiles"],
+];
+// Kitchen Sink: a demo view that places every widget at once (role gating is
+// bypassed for this view), so the whole catalog can be eyeballed on one page.
+export const KITCHEN_DEFAULT_ROWS = [
+  ["daily-tracker"],
+  ["stat-tiles"],
+  ["flagged-sessions", "leaderboard-combo"],
+  ["leaderboard-students", "leaderboard-classes"],
+  ["leaderboard-staff", "leaderboard-patrons"],
+  ["leaderboard-branches", "questions"],
+  ["top-books"],
+  ["top-badges"],
+  ["engagement", "community-goal"],
+];
+export const DEFAULT_ROWS_BY_ROLE = {
+  teacher: DEFAULT_ROWS,
+  media:   MEDIA_DEFAULT_ROWS,
+  library: LIBRARY_DEFAULT_ROWS,
+  kitchen: KITCHEN_DEFAULT_ROWS,
 };
 
 // ─── Layout presets ───────────────────────────────────────────────────────────
@@ -264,6 +435,15 @@ export const LAYOUT_PRESETS = [
     roles: ["teacher", "media"],
     layout: [],
     settings: {},
+  },
+  {
+    id: "run-my-room",
+    name: "Run my room",
+    description: "Daily Reading Tracker up top, linked metric tiles below, and Engagement + Community Goal at the bottom.",
+    widgetNames: ["Daily Reading Tracker", "What's Happened", "Engagement", "Community Goal"],
+    roles: ["teacher"],
+    layout: DEFAULT_LAYOUT,
+    settings: DEFAULT_SETTINGS,
   },
   {
     id: "run-classroom",
@@ -307,6 +487,15 @@ export const LAYOUT_PRESETS = [
       { i: "daily-tracker",  x: 0, y: 18, w: 12, h: 20, minW: 4, minH: 6 },
     ],
     settings: {},
+  },
+  {
+    id: "media-overview",
+    name: "Media specialist overview",
+    description: "A top-3 leaderboard and key metrics — the at-a-glance view for media specialists. Flagged sessions live in the rail.",
+    widgetNames: ["Leaderboard", "What's Happened"],
+    roles: ["media"],
+    layout: MEDIA_DEFAULT_LAYOUT,
+    settings: MEDIA_DEFAULT_SETTINGS,
   },
   {
     id: "explore-data",

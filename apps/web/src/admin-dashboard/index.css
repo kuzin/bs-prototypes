@@ -461,6 +461,98 @@ button { font-family: inherit; cursor: pointer; }
   display: flex; gap: 8px; justify-content: center;
 }
 
+/* ─── Flexbox rows layout (dnd-kit) ───────────────────────────────────────
+   The dashboard is a column of rows; each row is a flex container whose cards
+   split the width equally (flex: 1). Width is pure CSS — no JS derivation. */
+.adm-rows { display: flex; flex-direction: column; gap: 16px; }
+/* During a drag the insert zones (16px) become the row gap, so the flex gap is
+   dropped — between-row spacing stays a steady 16px with no jump, and at rest
+   the zones don't exist so they reserve no space. */
+.adm-rows.is-dragging { gap: 0; }
+.adm-row {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;   /* natural heights — no stretching / empty space */
+}
+.adm-grid-card { display: flex; position: relative; }
+.adm-grid-card > .adm-cell {
+  width: 100%;
+  height: auto;              /* content height (overrides the legacy 100%) */
+}
+.adm-grid-card.is-draggable { cursor: grab; }
+.adm-grid-card.is-draggable:active { cursor: grabbing; }
+/* Scrollable list widgets (Flagged Sessions, Students, Classes, Quick Links,
+   Number Cruncher, Leaderboard…) share one fixed body height so they line up,
+   and scroll internally past it. */
+.adm-cell--scroll .adm-w-body { flex: none; height: 320px; overflow-y: auto; }
+/* Small non-scrollable widgets (Community Goal, Engagement) share one compact
+   body height so they line up too. */
+.adm-cell--small .adm-w-body { flex: none; height: 132px; }
+
+/* ─── Drag ghost states ───────────────────────────────────────────────── */
+/* Source slot left behind while dragging — a dashed placeholder. */
+.adm-grid-card.is-dragging-source { position: relative; }
+.adm-grid-card.is-dragging-source > .adm-cell { opacity: 0; }
+.adm-grid-card.is-dragging-source::after {
+  content: "";
+  position: absolute; inset: 0;
+  border: 2px dashed #BFDBFE;
+  border-radius: var(--radius);
+  background: rgba(26, 109, 213, 0.05);
+}
+/* Card the cursor is hovering over (will pair into its row). */
+.adm-grid-card.is-drop-target > .adm-cell {
+  box-shadow: 0 0 0 2px #1A6DD5, var(--shadow-md);
+}
+/* Locked target — can't pair (full-bleed card or row already full), so the
+   dragged card will land on its own row. Amber ring distinguishes it from the
+   blue "will split" ring. */
+.adm-grid-card.is-drop-locked > .adm-cell {
+  box-shadow: 0 0 0 2px #D97706, var(--shadow-md);
+}
+/* Hover hint badge centered on the target card during a drag. */
+.adm-drop-badge {
+  position: absolute; top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 6; pointer-events: none;
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 12px; border-radius: 999px;
+  font-size: 12px; font-weight: 800; color: #fff;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.28);
+}
+.adm-drop-badge--split  { background: #1A6DD5; }
+.adm-drop-badge--locked { background: #B45309; }
+/* The floating card under the cursor — lifted look. */
+.adm-grid-card--overlay {
+  width: 380px; max-width: 90vw;
+  cursor: grabbing;
+  transform: scale(1.02) rotate(1.2deg);
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.30);
+  border-radius: var(--radius);
+}
+.adm-grid-card--overlay > .adm-cell { height: auto; }
+
+/* Insert zone between rows — an invisible 20px spacer at rest (so it IS the row
+   gap). While dragging it shows a dashed drop line, inset so there's clearance
+   between the cards and the indicator; solid blue when targeted. */
+.adm-insert-zone {
+  height: 28px;
+  position: relative;
+}
+.adm-rows.is-dragging .adm-insert-zone::after {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 8px; bottom: 8px;
+  border: 2px dashed #CBD5E1;
+  border-radius: 7px;
+  transition: background .12s, border-color .12s;
+}
+.adm-insert-zone.is-over::after {
+  border-color: #1A6DD5;
+  border-style: solid;
+  background: rgba(26, 109, 213, 0.12);
+}
+
 /* ─── Grid wrapper ──────────────────────────────────────────────────────── */
 .adm-grid-wrap { position: relative; }
 .adm-grid-wrap.is-editing {
@@ -488,7 +580,21 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: 0 18px 48px rgba(15,23,42,0.18) !important;
   cursor: grabbing;
   transition: none !important; /* no lag while finger is down */
+  /* Let elementFromPoint see the card beneath the cursor (drop-on-edge). */
+  pointer-events: none;
 }
+.react-grid-item.react-grid-placeholder { pointer-events: none; }
+
+/* Drop-on-edge pairing indicator — a blue bar on the edge being targeted. */
+.adm-cell--pair-left::after,
+.adm-cell--pair-right::after {
+  content: "";
+  position: absolute; top: 6px; bottom: 6px; width: 4px;
+  background: #1A6DD5; border-radius: 4px;
+  z-index: 7;
+}
+.adm-cell--pair-left::after  { left: -3px; }
+.adm-cell--pair-right::after { right: -3px; }
 .react-grid-item.resizing {
   z-index: 5;
   transition: none !important;
@@ -759,12 +865,12 @@ button { font-family: inherit; cursor: pointer; }
   cursor: default;
 }
 .adm-cell-width button {
-  padding: 7px 14px;
+  padding: 7px 11px;
   border: 0; background: transparent;
   font-weight: 800; font-size: 12px; color: #475569;
   cursor: pointer;
   border-right: 1px solid #E2E8F0;
-  min-width: 38px;
+  min-width: 32px;
   transition: background .15s, color .15s;
 }
 .adm-cell-width button:last-child { border-right: 0; }
@@ -900,10 +1006,10 @@ button { font-family: inherit; cursor: pointer; }
   display: flex;
   flex-wrap: wrap;
   gap: 16px;
-  /* Stretch rows to fill the body so cards grow vertically when the cell
-     gets matched to a taller neighbor. Within each row, items stretch to
-     match the tallest card (default flex behavior). */
-  align-content: stretch;
+  /* Pack wrapped rows at the top at their natural height — the card auto-fits
+     to the tiles (incl. the row gap) instead of stretching them, so there's no
+     extra space at the bottom. */
+  align-content: flex-start;
 }
 .adm-stat {
   /* fill the row evenly; min 140px keeps content readable, max none so they
@@ -1630,3 +1736,231 @@ button { font-family: inherit; cursor: pointer; }
 .adm-goal-pct {
   font-size: 12px; font-weight: 700; color: #475569;
 }
+
+/* ─── Clickable stat tiles (destination hint) ─────────────────────────── */
+.adm-stat-main { display: flex; flex-direction: column; min-width: 0; }
+.adm-stat--link {
+  text-decoration: none; color: inherit; cursor: pointer;
+  transition: transform .12s, box-shadow .12s, filter .12s;
+}
+.adm-stat--link:hover {
+  filter: brightness(0.98);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+.adm-stat-hint {
+  margin-top: 10px;
+  display: inline-flex; align-items: center; gap: 2px;
+  width: fit-content;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.7);
+  font-size: 11px; font-weight: 800;
+  color: inherit;            /* picks up the stat tile's tone */
+  letter-spacing: 0.01em;
+  transition: background .12s;
+}
+.adm-stat--link:hover .adm-stat-hint { background: rgba(255, 255, 255, 0.95); }
+.adm-stat-hint-arrow { font-size: 13px; line-height: 1; }
+
+/* ─── Flagged sessions list (RIS — sessions to review) ────────────────── */
+.adm-w-body.adm-flagged { padding: 0; }
+.adm-flagged-list { list-style: none; margin: 0; padding: 0; }
+.adm-flagged-row {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid #F1F5F9;
+}
+.adm-flagged-row:last-child { border-bottom: 0; }
+.adm-flagged-info { flex: 1; min-width: 0; }
+.adm-flagged-reader { font-size: 13px; font-weight: 700; color: #1A6DD5; line-height: 1.2; }
+.adm-flagged-book {
+  font-size: 12px; color: #64748B; margin-top: 1px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+/* One flag icon per integrity flag (a session may have several); the icon's
+   title attribute names the category on hover. */
+.adm-flagged-flags { flex-shrink: 0; display: inline-flex; gap: 5px; }
+.adm-flag {
+  width: 26px; height: 26px;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 7px; cursor: default;
+}
+.adm-flag svg { width: 14px; height: 14px; }
+.adm-flag--red    { background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; }
+.adm-flag--orange { background: #FFE4D3; color: #9A3412; border: 1px solid #FED7AA; }
+.adm-flag--yellow { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
+
+/* ─── Combined leaderboard (Classes / Students toggle, top 3) ─────────── */
+.adm-w-body.adm-lbc {
+  display: flex; flex-direction: column; gap: 12px;
+}
+.adm-lbc > * { flex-shrink: 0; }
+/* Scrollable combo: fixed body height (matches Flagged), toggle stays put, the
+   list scrolls inside. */
+.adm-cell--scroll .adm-w-body.adm-lbc { overflow: hidden; }
+.adm-lbc-toggle {
+  display: flex; width: 100%;
+  background: #F1F5F9; border: 1px solid #E2E8F0;
+  border-radius: 9px; padding: 3px; gap: 2px;
+}
+.adm-lbc-toggle button {
+  flex: 1;
+  border: 0; background: transparent;
+  padding: 6px 14px; border-radius: 7px;
+  font-weight: 800; font-size: 12.5px; color: #475569;
+  cursor: pointer; transition: background .12s, color .12s;
+}
+.adm-lbc-toggle button:hover { color: #0F172A; }
+.adm-lbc-toggle button.is-active {
+  background: #fff; color: #1A6DD5; box-shadow: var(--shadow-sm);
+}
+.adm-lbc-list {
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-direction: column;
+  flex: 1 1 0; min-height: 0; overflow-y: auto;   /* scroll within the fixed body */
+}
+.adm-lbc-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 4px;
+  border-bottom: 1px dashed #E5E7EB;
+}
+.adm-lbc-row:last-child { border-bottom: 0; }
+.adm-lbc-rank {
+  width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 800;
+}
+.adm-lbc-rank--gold   { background: #FCD34D; color: #92400E; }
+.adm-lbc-rank--silver { background: #E5E7EB; color: #374151; }
+.adm-lbc-rank--bronze { background: #D97706; color: #fff; }
+.adm-lbc-rank--plain  { background: #F1F5F9; color: #64748B; }
+.adm-lbc-name {
+  flex: 1; min-width: 0;
+  font-size: 14px; font-weight: 700; color: #1A6DD5;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.adm-lbc-val { font-weight: 700; color: #475569; font-size: 13px; flex-shrink: 0; }
+
+/* ─── Top Books shelf + Most Earned Badges (visual) ───────────────────── */
+/* Items flex to fill the full-width block evenly (no empty gap on the right). */
+.adm-w-body.adm-shelf,
+.adm-w-body.adm-badges {
+  display: flex; gap: 16px;
+  align-items: flex-start;
+}
+.adm-shelf-item { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.adm-book-cover {
+  position: relative;
+  height: 150px; border-radius: 8px;
+  color: #fff;
+  background: #E2E8F0;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.16);
+  overflow: hidden;
+}
+.adm-book-cover img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* Shown only when the cover image is missing / fails to load. */
+.adm-book-fallback {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  padding: 10px; text-align: center;
+  font-size: 12px; font-weight: 700; line-height: 1.25; color: #fff;
+}
+.adm-book-rank {
+  position: absolute; top: 8px; left: 8px; z-index: 1;
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(255, 255, 255, 0.92); color: #0F172A;
+  font-size: 12px; font-weight: 800;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.adm-shelf-meta { font-size: 12px; font-weight: 700; color: #64748B; }
+
+.adm-badge-item {
+  flex: 1 1 0; min-width: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  text-align: center;
+}
+.adm-badge-medal {
+  width: 64px; height: 64px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.18);
+}
+.adm-badge-medal--green  { background: linear-gradient(135deg, #34D399, #047857); }
+.adm-badge-medal--yellow { background: linear-gradient(135deg, #FCD34D, #D97706); }
+.adm-badge-medal--blue   { background: linear-gradient(135deg, #60A5FA, #1D4ED8); }
+.adm-badge-medal--purple { background: linear-gradient(135deg, #A78BFA, #6D28D9); }
+.adm-badge-medal--orange { background: linear-gradient(135deg, #FBA181, #C2410C); }
+.adm-badge-medal--teal   { background: linear-gradient(135deg, #5EEAD4, #0F766E); }
+
+/* ─── Flagged Sessions rail card (top of the rail, both roles) ────────── */
+.adm-rail-flagged {
+  border-color: #FDE68A;
+  background: linear-gradient(180deg, #FFFBEB 0%, #fff 65%);
+}
+.adm-rail-flagged-head {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.adm-rail-flagged-ico {
+  width: 36px; height: 36px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 10px; background: #FEF3C7; color: #B45309;
+  border: 1px solid #FDE68A;
+}
+.adm-rail-flagged-title {
+  font-size: 15px; font-weight: 800; color: #111827; line-height: 1.2;
+}
+.adm-rail-flagged-meta {
+  font-size: 12px; font-weight: 600; color: #92400E; margin-top: 1px;
+}
+.adm-rail-flagged-body {
+  display: flex; align-items: baseline; gap: 8px; margin-bottom: 14px;
+}
+.adm-rail-flagged-count {
+  font-size: 32px; font-weight: 800; line-height: 1; color: #B45309;
+}
+.adm-rail-flagged-sub { font-size: 13px; font-weight: 700; color: #92400E; }
+.adm-rail-flagged-cta {
+  width: 100%;
+  padding: 9px 14px; border-radius: 9px;
+  background: #B45309; color: #fff; border: 1px solid #B45309;
+  font-weight: 800; font-size: 13px; cursor: pointer;
+  transition: filter .15s;
+}
+.adm-rail-flagged-cta:hover { filter: brightness(0.94); }
+
+/* ─── Quick Actions rail card ─────────────────────────────────────────── */
+.adm-quick-actions {
+  /* minmax(0, 1fr) lets columns shrink below content width so long labels
+     ellipsis instead of pushing the card wider. */
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+}
+.adm-quick-action {
+  display: flex; align-items: center; gap: 8px;
+  min-width: 0;
+  padding: 9px 10px; border-radius: 10px;
+  border: 1px solid #E5E7EB; background: #F8FAFC;
+  text-decoration: none; color: #1E293B;
+  font-weight: 700; font-size: 12.5px;
+  transition: background .12s, border-color .12s;
+}
+.adm-quick-action:hover { background: #EFF6FF; border-color: #BFDBFE; }
+.adm-quick-action:active {
+  background: #DBEAFE; border-color: #93C5FD;
+  transform: scale(0.98);
+}
+.adm-quick-action-ico {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #DBEAFE; color: #1D4ED8; flex-shrink: 0;
+}
+.adm-quick-action-ico svg { width: 15px; height: 15px; }
+.adm-quick-action-label {
+  flex: 1; min-width: 0; line-height: 1.2;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.adm-quick-action-chev {
+  color: #94A3B8; font-size: 22px; font-weight: 700;
+  line-height: 1; flex-shrink: 0; margin-top: -2px;
+}
+.adm-quick-action:hover .adm-quick-action-chev { color: #1A6DD5; }

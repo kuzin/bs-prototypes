@@ -1,13 +1,10 @@
-import { useState, useMemo, useEffect, useRef, useCallback } from "react";
-import { Responsive, WidthProvider } from "react-grid-layout/legacy";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
+import { useState } from "react";
 
-import { DEFAULT_LAYOUT, DEFAULT_PRESET_ID, DEFAULT_SETTINGS, REQUIRED_WIDGETS } from "./data";
-import { WIDGET_CATALOG, WIDTH_TO_COLS, COLS_TO_WIDTH, WIDTH_FIELD } from "./components/widgets";
+import { DEFAULT_ROWS_BY_ROLE, DEFAULT_SETTINGS_BY_ROLE } from "./data";
+import { WIDGET_CATALOG } from "./components/widgets";
 import { SettingsPopover } from "./components/SettingsPopover";
-import { TemplatesPanel } from "./components/TemplatesPanel";
-import { FixedRail, AlertsCard, FeatureBar } from "./components/FixedRegions";
+import { FixedRail, FeatureBar } from "./components/FixedRegions";
+import { CardGrid } from "./components/CardGrid";
 import { MainRail } from "../MainRail";
 import { PrototypeNav } from "../PrototypeNav";
 import { Button } from "../ris/components/Button";
@@ -17,16 +14,15 @@ import "../ris/components/CustomSelect.css";
 import "../MainRail.css";
 import "./index.css";
 
-const DISTRICTS = [
-  { value: "main",   label: "Main District" },
-  { value: "north",  label: "Northside Schools" },
-  { value: "south",  label: "Southside Schools" },
-];
-
 const ROLES = [
   { value: "teacher", label: "Teacher view" },
   { value: "media",   label: "Media Specialist view" },
+  { value: "library", label: "Public Library view" },
+  { value: "kitchen", label: "Kitchen Sink view" },
 ];
+// The Kitchen Sink view is a catalog demo — it shows every widget regardless of
+// the per-widget `roles` gate.
+const widgetAllowed = (cat, role) => !!cat && (role === "kitchen" || !cat.roles || cat.roles.includes(role));
 const ROLE_KEY = "adm-user-role";
 
 function greeting() {
@@ -50,8 +46,6 @@ const Check = () => (
     <polyline points="3,8 7,12 13,4" />
   </svg>
 );
-
-// Chrome action icons — clean SVGs in place of emojis
 const Cog = () => (
   <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <circle cx="12" cy="12" r="3" />
@@ -80,31 +74,17 @@ const Megaphone = () => (
     <path d="M18 8a4 4 0 0 1 0 8" />
   </svg>
 );
-// Tiny visual previews for the Add Widget panel — schematic rectangles that
-// hint at each widget's shape.
+
+// Tiny visual previews for the Add Widget panel.
 function WidgetThumb({ id }) {
-  const stats = (
-    <div className="thumb-stats">
-      <span /><span /><span /><span />
-    </div>
-  );
-  const rows = (
-    <div className="thumb-rows">
-      <span /><span /><span /><span />
-    </div>
-  );
-  const grid = (
-    <div className="thumb-grid">
-      {Array.from({ length: 6 }).map((_, i) => <span key={i} />)}
-    </div>
-  );
-  const lines = (
-    <div className="thumb-lines">
-      <span /><span /><span />
-    </div>
-  );
+  const stats = <div className="thumb-stats"><span /><span /><span /><span /></div>;
+  const rows = <div className="thumb-rows"><span /><span /><span /><span /></div>;
+  const grid = <div className="thumb-grid">{Array.from({ length: 6 }).map((_, i) => <span key={i} />)}</div>;
+  const lines = <div className="thumb-lines"><span /><span /><span /></div>;
   const map = {
     "stat-tiles": stats,
+    "flagged-sessions": stats,
+    "leaderboard-combo": rows,
     "daily-tracker": (
       <div className="thumb-table">
         <div className="thumb-table-row" />
@@ -115,108 +95,42 @@ function WidgetThumb({ id }) {
     "leaderboard-students": rows,
     "leaderboard-classes": rows,
     "leaderboard-staff": rows,
-    "leaderboard-schools": rows,
+    "leaderboard-patrons": rows,
+    "leaderboard-branches": rows,
+    "top-books": rows,
+    "top-badges": rows,
     "quick-links": grid,
     "questions": lines,
   };
   return map[id] || stats;
 }
 
-const Pin = () => (
-  <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <line x1="12" y1="17" x2="12" y2="22" />
-    <path d="M5 17h14l-3-4V6a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v7z" />
-  </svg>
-);
+// ─── Per-role row layout persistence ──────────────────────────────────────────
+const STORAGE_KEY_BASE = "adm-dashboard-rows-v1";
+const storageKey = (role) => `${STORAGE_KEY_BASE}-${role}`;
+const isFullBleed = (id) => !!WIDGET_CATALOG[id]?.fixedWidth;
 
-const ResponsiveGrid = WidthProvider(Responsive);
-// NOTE: react-grid-layout's Responsive uses the *container* width (not the
-// window width) for breakpoint detection. Our grid wrap is roughly
-// (viewport - sidebar - rail - padding) wide, so a 1280px viewport yields a
-// ~720px container. These breakpoints are tuned to that container width.
-const BREAKPOINTS = { lg: 640, md: 480, sm: 320, xs: 0 };
-const COLS        = { lg: 12,  md: 8,   sm: 4,   xs: 2 };
-// Bumped from v17 → v18: the default state changed from an empty canvas to
-// the Engagement Health template. Existing users get the new default once.
-const STORAGE_KEY = "adm-dashboard-rgl-v18";
-
-/**
- * Stretch each row's items so they fill the available column width.
- * Items are grouped by their `y` start; if a row's total `w` is less than the
- * column count, the remaining columns are distributed proportionally among the
- * items in that row (with min-width clamping). Items that already fill the row
- * (or overflow) are left alone.
- */
-function stretchRowsToFill(layout, cols) {
-  if (!layout || !layout.length) return layout;
-  const byY = new Map();
-  for (const item of layout) {
-    const row = byY.get(item.y) || [];
-    row.push(item);
-    byY.set(item.y, row);
-  }
-  const result = [];
-  for (const [, row] of byY) {
-    const sorted = [...row].sort((a, b) => a.x - b.x);
-    const totalW = sorted.reduce((s, i) => s + i.w, 0);
-    if (totalW >= cols) {
-      result.push(...sorted);
-      continue;
-    }
-    // Distribute extra columns proportionally based on current widths
-    const free = cols - totalW;
-    let runningX = 0;
-    sorted.forEach((item, idx) => {
-      const share = idx === sorted.length - 1
-        ? cols - runningX
-        : Math.max(item.minW || 1, Math.round(item.w + (item.w / totalW) * free));
-      result.push({ ...item, x: runningX, w: share });
-      runningX += share;
-    });
-  }
-  return result;
-}
-
-function ensureRequired(layouts) {
-  // For every breakpoint, make sure every required widget is present
-  // at its pinned position. Missing required widgets get inserted.
-  const out = {};
-  for (const bp of Object.keys(layouts)) {
-    const items = [...(layouts[bp] || [])];
-    for (const [id, pos] of Object.entries(REQUIRED_WIDGETS)) {
-      const idx = items.findIndex((l) => l.i === id);
-      const pinned = { i: id, ...pos };
-      if (idx === -1) items.unshift(pinned);
-      else items[idx] = { ...items[idx], ...pinned };
-    }
-    out[bp] = items;
-  }
-  if (!out.lg) out.lg = DEFAULT_LAYOUT.map((l) => ({ ...l }));
-  return out;
-}
-
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      return {
-        layouts: ensureRequired(parsed.layouts || { lg: [] }),
-        settings: parsed.settings || {},
-        presetId: parsed.presetId || DEFAULT_PRESET_ID,
-      };
-    }
-  } catch {}
+function defaultsFor(role) {
+  const rows = DEFAULT_ROWS_BY_ROLE[role] || DEFAULT_ROWS_BY_ROLE.teacher;
   return {
-    layouts: ensureRequired({ lg: DEFAULT_LAYOUT.map((l) => ({ ...l })) }),
-    settings: { ...DEFAULT_SETTINGS },
-    presetId: DEFAULT_PRESET_ID,
+    rows: rows.map((r) => [...r]),
+    settings: { ...(DEFAULT_SETTINGS_BY_ROLE[role] || {}) },
   };
 }
-function saveState(state) {
+function loadState(role) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    const raw = localStorage.getItem(storageKey(role));
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed.rows)) {
+        return { rows: parsed.rows, settings: parsed.settings || {} };
+      }
+    }
   } catch {}
+  return defaultsFor(role);
+}
+function saveState(role, state) {
+  try { localStorage.setItem(storageKey(role), JSON.stringify(state)); } catch {}
 }
 
 export function App() {
@@ -224,325 +138,129 @@ export function App() {
   const [role, setRole] = useState(() => {
     try { return localStorage.getItem(ROLE_KEY) || "teacher"; } catch { return "teacher"; }
   });
-  const updateRole = (next) => {
-    setRole(next);
-    // Drop measured heights so the next render starts from a clean slate —
-    // otherwise role-dependent widgets keep their pre-switch h until a
-    // ResizeObserver mutation re-fires.
-    setContentHeights({});
-    try { localStorage.setItem(ROLE_KEY, next); } catch {}
-  };
   const [featureOn, setFeatureOn] = useState(() => {
     try { return localStorage.getItem("adm-feature-on") !== "0"; } catch { return true; }
   });
+  const [{ rows, settings }, _setState] = useState(() => loadState(role));
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const [openSettings, setOpenSettings] = useState(null); // { id, anchorRect } | null
+
+  const setState = (next) => { _setState(next); saveState(role, next); };
+
+  const updateRole = (next) => {
+    setRole(next);
+    _setState(loadState(next));
+    setOpenSettings(null);
+    try { localStorage.setItem(ROLE_KEY, next); } catch {}
+  };
   const toggleFeature = () => {
     const next = !featureOn;
     setFeatureOn(next);
     try { localStorage.setItem("adm-feature-on", next ? "1" : "0"); } catch {}
   };
-  const [{ layouts, settings, presetId }, _setState] = useState(loadState);
-  const [paletteOpen, setPaletteOpen] = useState(false);
-  const [templatesOpen, setTemplatesOpen] = useState(false);
-  const [openSettings, setOpenSettings] = useState(null); // { id, anchorRect } | null
-  const [contentHeights, setContentHeights] = useState({}); // px per widget id
-  const measureRefs = useRef({});
+  const toggleEditing = () => { setOpenSettings(null); setEditing((e) => !e); };
 
-  // ResizeObserver wiring: for each non-scrollable widget, watch the measure
-  // wrapper's scrollHeight so we can auto-fit its RGL row count to content.
-  const setMeasureRef = useCallback((id, el) => {
-    if (el) measureRefs.current[id] = el;
-    else delete measureRefs.current[id];
-  }, []);
-
-  useEffect(() => {
-    const observers = [];
-    for (const [id, wrapper] of Object.entries(measureRefs.current)) {
-      const w = wrapper.firstElementChild; // .adm-w
-      if (!w) continue;
-      // Natural height = head + body's true content (children + padding) + footer.
-      // We sum children instead of reading .adm-w.offsetHeight because .adm-w
-      // is stretched (height: 100%) so its offsetHeight = cell height, not
-      // natural content size.
-      const update = () => {
-        const head = w.querySelector('.adm-w-head');
-        const body = w.querySelector('.adm-w-body');
-        const footer = w.querySelector('.adm-w-footer');
-        const headH = head ? head.offsetHeight : 0;
-        const footerH = footer ? footer.offsetHeight : 0;
-        let bodyH = 0;
-        if (body) {
-          const cs = window.getComputedStyle(body);
-          const pad = parseFloat(cs.paddingTop || 0) + parseFloat(cs.paddingBottom || 0);
-          const innerH = [...body.children].reduce((s, c) => s + c.offsetHeight, 0);
-          // Flex/grid row-gap between children doesn't count in offsetHeight
-          // but does take real vertical space. Add it back so widgets with
-          // gap-spaced rows (e.g. engagement) measure their true height.
-          const rg = parseFloat(cs.rowGap);
-          const gap = Number.isNaN(rg) ? 0 : rg;
-          const gapsH = Math.max(0, body.children.length - 1) * gap;
-          bodyH = innerH + pad + gapsH;
-        }
-        const h = headH + bodyH + footerH;
-        if (!h) return;
-        setContentHeights((prev) => (prev[id] === h ? prev : { ...prev, [id]: h }));
-      };
-      // Observe every child so any inner change re-fires
-      const ro = new ResizeObserver(update);
-      ro.observe(w);
-      for (const c of w.children) ro.observe(c);
-      update();
-      observers.push(ro);
-    }
-    return () => { for (const ro of observers) ro.disconnect(); };
-  }, [layouts, settings, role]);  // also re-run on role change so widgets that
-  // re-render with different content (e.g. role-aware stat tiles, engagement)
-  // get re-measured and the grid h's are recalculated.
-
-  const setState = (next) => {
-    _setState(next);
-    saveState(next);
-  };
-
-  // The lg layout is the source of truth for which widgets are placed.
-  // Filter out any items whose widget id is no longer in WIDGET_CATALOG
-  // (avoids a blank-looking grid when stale localStorage references
-  // deprecated widgets). Also filter widgets disallowed for the current
-  // role (e.g. teachers don't see staff widgets).
-  const baseLayout = useMemo(
-    () => (layouts.lg || DEFAULT_LAYOUT).filter((l) => {
-      const cat = WIDGET_CATALOG[l.i];
-      if (!cat) return false;
-      if (cat.roles && !cat.roles.includes(role)) return false;
-      return true;
-    }),
-    [layouts, role]
-  );
-  const placedIds = useMemo(() => new Set(baseLayout.map((l) => l.i)), [baseLayout]);
+  // Rows visible for this role (filter ids by catalog + role; drop empty rows).
+  const visibleRows = rows
+    .map((row) => row.filter((id) => widgetAllowed(WIDGET_CATALOG[id], role)))
+    .filter((row) => row.length > 0);
+  const placedIds = new Set(visibleRows.flat());
 
   // ─── Mutators ────────────────────────────────────────────────────────
-  const onLayoutChange = (current, allLayouts) => {
-    const merged = {};
-    for (const bp of Object.keys(allLayouts)) {
-      merged[bp] = allLayouts[bp].map((n) => {
-        const prev = (layouts[bp] || []).find((l) => l.i === n.i) || {};
-        return { ...prev, ...n };
-      });
-    }
-    setState({ layouts: merged, settings, presetId: "custom" });
-  };
-
-  // Edit-mode toggle. Scrollable widgets get a few extra rows added to their
-  // cell so the visible widget body stays the same size as view mode (edit
-  // mode adds 56px chrome + 48px footer that view mode doesn't have). We
-  // pad on enter / strip on exit instead of doing it in computedLayouts so
-  // RGL doesn't race with our state updates during user drags.
-  //
-  // We need body_edit ≈ body_view. cell_edit - body padding (56+48) should
-  // equal cell_view - widget head (~57px). So cell_edit - cell_view ≈ 47px.
-  // 3 rows × 17px = 51px → body_edit ends up 4px larger than body_view, just
-  // enough headroom to keep dragged content visible after exiting edit.
-  const EDIT_EXTRA_ROWS = 3;
-  const toggleEditing = () => {
-    const next = !editing;
-    const delta = next ? EDIT_EXTRA_ROWS : -EDIT_EXTRA_ROWS;
-    const merged = {};
-    for (const bp of Object.keys(layouts)) {
-      merged[bp] = (layouts[bp] || []).map((l) => {
-        const cat = WIDGET_CATALOG[l.i];
-        if (!cat?.scrollable) return l;
-        return { ...l, h: Math.max(cat.min?.h || 1, (l.h || 0) + delta) };
-      });
-    }
-    setEditing(next);
-    setState({ layouts: merged, settings, presetId });
-  };
-
-  const removeWidget = (id) => {
-    if (REQUIRED_WIDGETS[id]) return;
-    const next = {};
-    for (const bp of Object.keys(layouts)) {
-      next[bp] = (layouts[bp] || []).filter((l) => l.i !== id);
-    }
-    const nextSettings = { ...settings };
-    delete nextSettings[id];
-    setState({
-      layouts: next,
-      settings: nextSettings,
-      presetId: "custom",
-    });
-  };
+  const onRowsChange = (nextRows) => setState({ rows: nextRows, settings });
 
   const addWidget = (id) => {
-    const cat = WIDGET_CATALOG[id];
-    if (!cat) return;
-    const maxY = baseLayout.reduce((m, l) => Math.max(m, l.y + l.h), 0);
-    // Default new widgets to full-width so they snap into the 3-column system
-    // cleanly; user can drop them to 1/3 or 2/3 from the inline width picker.
-    const startW = 12;
-    // Scrollable widgets get a starter h sized for ~15 rows of list content
-    // (~34 rows × 17px = ~562px cell, which fits 15 rows + header). Non-
-    // scrollable widgets get min.h since they auto-grow via measurement.
-    const startH = cat.scrollable ? 34 : (cat.min.h || 4);
-    const item = {
-      i: id,
-      x: 0,
-      y: maxY,
-      w: startW,
-      h: startH,
-      minW: cat.min.w * 3,
-      minH: cat.min.h || 4,
-    };
-    const next = {};
-    for (const bp of Object.keys(layouts)) {
-      next[bp] = [...(layouts[bp] || []), item];
-    }
-    if (!next.lg) next.lg = [...baseLayout, item];
-    setState({
-      layouts: next,
-      settings: { ...settings, [id]: { ...(settings[id] || {}), width: COLS_TO_WIDTH(startW) } },
-      presetId: "custom",
-    });
+    if (!WIDGET_CATALOG[id] || placedIds.has(id)) return;
+    setState({ rows: [...rows, [id]], settings });
   };
-
-  const setWidgetWidth = (id, width) => {
-    setState({
-      layouts, presetId: "custom",
-      settings: { ...settings, [id]: { ...(settings[id] || {}), width } },
-    });
+  const removeWidget = (id) => {
+    const nextRows = rows.map((r) => r.filter((x) => x !== id)).filter((r) => r.length > 0);
+    const nextSettings = { ...settings };
+    delete nextSettings[id];
+    setState({ rows: nextRows, settings: nextSettings });
   };
-
-  const updateSettings = (id, patch) => {
-    setState({
-      layouts, presetId,
-      settings: { ...settings, [id]: { ...(settings[id] || {}), ...patch } },
-    });
-  };
-
+  const updateSettings = (id, patch) =>
+    setState({ rows, settings: { ...settings, [id]: { ...(settings[id] || {}), ...patch } } });
   const resetSettings = (id) => {
     const nextSettings = { ...settings };
     delete nextSettings[id];
-    setState({ layouts, settings: nextSettings, presetId });
+    setState({ rows, settings: nextSettings });
   };
 
-  const resetLayout = () => {
-    setState({
-      layouts: ensureRequired({ lg: DEFAULT_LAYOUT.map((l) => ({ ...l })) }),
-      settings: { ...DEFAULT_SETTINGS },
-      presetId: DEFAULT_PRESET_ID,
-    });
+  // Render a single widget card (chrome in edit mode + widget body).
+  const renderCard = (id) => {
+    const cat = WIDGET_CATALOG[id];
+    if (!cat) return null;
+    const Comp = cat.component;
+    const widgetSettings = settings[id] || {};
+    const widgetFields = cat.settingsFields || [];
+    const hasSettings = widgetFields.length > 0;
+    const isSettingsOpen = openSettings?.id === id;
+    return (
+      <div
+        data-widget-id={id}
+        className={[
+          "adm-cell",
+          editing && "adm-cell--editing",
+          cat.scrollable && "adm-cell--scroll",
+          cat.size === "small" && "adm-cell--small",
+        ].filter(Boolean).join(" ")}
+      >
+        {editing && (
+          <div className="adm-cell-chrome">
+            <span className="adm-cell-handle">
+              <span className="adm-cell-grip"><Grip /></span>
+              <span>{cat.titleFn ? cat.titleFn(widgetSettings) : cat.name}</span>
+            </span>
+            <div className="adm-cell-actions">
+              {hasSettings && (
+                <button
+                  type="button"
+                  className={`adm-cell-action ${isSettingsOpen ? "is-on" : ""}`}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onClick={(e) =>
+                    setOpenSettings(
+                      isSettingsOpen
+                        ? null
+                        : { id, anchorRect: e.currentTarget.getBoundingClientRect() }
+                    )
+                  }
+                  title="Widget settings"
+                >
+                  <Cog />
+                </button>
+              )}
+              <button
+                type="button"
+                className="adm-cell-action"
+                onPointerDown={(e) => e.stopPropagation()}
+                onClick={() => removeWidget(id)}
+                title="Remove widget"
+              >
+                <XIcon />
+              </button>
+            </div>
+          </div>
+        )}
+        {isSettingsOpen && (
+          <SettingsPopover
+            anchorRect={openSettings.anchorRect}
+            fields={widgetFields}
+            value={widgetSettings}
+            defaults={cat.defaults || {}}
+            onChange={(patch) => updateSettings(id, patch)}
+            onReset={() => resetSettings(id)}
+            onClose={() => setOpenSettings(null)}
+          />
+        )}
+        <Comp settings={{ ...(cat.defaults || {}), ...widgetSettings }} role={role} />
+      </div>
+    );
   };
 
-  const applyPreset = (preset) => {
-    // Drop widgets disallowed for the current role before applying.
-    const layout = preset.layout.filter((l) => {
-      const c = WIDGET_CATALOG[l.i];
-      return !!c && (!c.roles || c.roles.includes(role));
-    });
-    const seededSettings = { ...preset.settings };
-    for (const item of layout) {
-      seededSettings[item.i] = {
-        ...seededSettings[item.i],
-        width: COLS_TO_WIDTH(item.w),
-      };
-    }
-    setState({
-      layouts: ensureRequired({ lg: layout.map((l) => ({ ...l })) }),
-      settings: seededSettings,
-      presetId: preset.id,
-    });
-    setTemplatesOpen(false);
-  };
-
-  // Apply lock state + force required widgets to static + their pinned pos,
-  // auto-fit row count for non-scrollable widgets to their content height,
-  // then stretch each row to fill the available column width for that breakpoint.
-  // RGL row math: each row is rowHeight (56) + marginY (14), with the first
-  // row's margin absorbed → h_px = rows * 56 + (rows-1) * 14.
-  // Inverse: rows = ceil((h_px + 14) / 70).
-  const computedLayouts = useMemo(() => {
-    const out = {};
-    for (const bp of Object.keys(layouts)) {
-      let items = (layouts[bp] || [])
-        .filter((l) => {
-          const c = WIDGET_CATALOG[l.i];
-          return !!c && (!c.roles || c.roles.includes(role));
-        })
-        .map((l) => {
-          const req = REQUIRED_WIDGETS[l.i];
-          if (req) return { ...l, ...req, static: true };
-          return l;
-        });
-      const cols = COLS[bp] ?? 12;
-      // Width from settings.width — overrides layout w if explicitly set.
-      // At narrow breakpoints (anything below lg), force full width so widgets
-      // stretch instead of leaving empty space when they wrap.
-      // Widgets with catalog.fixedWidth are also locked to that width
-      // (e.g. daily-tracker is always "full").
-      items = items.map((l) => {
-        const cat = WIDGET_CATALOG[l.i];
-        if (cat?.fixedWidth) return { ...l, w: WIDTH_TO_COLS[cat.fixedWidth] };
-        if (bp !== "lg") return { ...l, w: cols };
-        const s = settings[l.i] || {};
-        if (s.width && WIDTH_TO_COLS[s.width]) {
-          return { ...l, w: WIDTH_TO_COLS[s.width] };
-        }
-        return l;
-      });
-      // Auto-height: non-scrollable widgets get their h derived from measured
-      // content height + their resize handle disabled. In edit mode .adm-w-head
-      // is hidden but the cell gains a 56px chrome and a 48px footer (width
-      // controls) — both sit OUTSIDE the measured .adm-w. Reserve that space
-      // so the body content isn't clipped.
-      // Grid math: rowHeight = 1, marginY = 16 → per row unit = 17px.
-      // Cell px for h rows = h*1 + (h-1)*16 = 17h - 16.
-      // marginY = 16 = the visual gap between adjacent cells.
-      //
-      // Edit mode adds 56px of cell chrome on top, plus a 48px cell footer
-      // (S/M/L/Full width controls) — except for fixedWidth and required
-      // widgets, which skip the cell footer entirely.
-      items = items.map((l) => {
-        const cat = WIDGET_CATALOG[l.i];
-        if (!cat) return l;
-        if (cat.scrollable) return l;
-        const cellFooterH = editing && !cat.fixedWidth && !REQUIRED_WIDGETS[l.i] ? 48 : 0;
-        const chromeBuffer = editing ? 56 + cellFooterH : 0;
-        // Non-scrollable: always recompute h from measured (or min.h fallback).
-        // These widgets are 100% auto-height — adjacent scrollable widgets
-        // get a matching height adjustment in toggleEditing so the dashboard
-        // doesn't visibly resize when toggling edit mode.
-        const measured = contentHeights[l.i] || 0;
-        const rows = Math.max(
-          cat.min.h || 1,
-          Math.ceil((measured + chromeBuffer + 16) / 17)
-        );
-        return { ...l, h: rows, isResizable: false };
-      });
-      // Row equalization: widgets sharing the same y coordinate live in the
-      // same visual row. Stretch each scrollable widget in a row up to the
-      // tallest non-scrollable neighbor so cells stay aligned — the
-      // scrollable list just shows more rows. Non-scrollable widgets keep
-      // their auto-fit h (they shouldn't grow taller than content).
-      const rowGroups = {};
-      for (const item of items) {
-        if (rowGroups[item.y]) rowGroups[item.y].push(item);
-        else rowGroups[item.y] = [item];
-      }
-      for (const group of Object.values(rowGroups)) {
-        if (group.length < 2) continue;
-        const maxH = Math.max(...group.map((i) => i.h));
-        // Stretch every widget in the row to the tallest member so neighbors
-        // line up. For scrollable widgets the extra space shows more rows; for
-        // auto-h widgets it becomes flex-grown padding inside .adm-w-body
-        // (which is fine — the inner content already has flex-shrink:0 so it
-        // keeps its natural size).
-        for (const item of group) {
-          if (item.h < maxH) item.h = maxH;
-        }
-      }
-      out[bp] = items;
-    }
-    return out;
-  }, [layouts, settings, contentHeights, editing, role]);
+  const availableWidgets = Object.entries(WIDGET_CATALOG).filter(
+    ([id, c]) => !placedIds.has(id) && widgetAllowed(c, role)
+  );
 
   return (
     <>
@@ -550,17 +268,10 @@ export function App() {
       <MainRail activeIndex={4} />
       <div className="adm">
 
-      {/* Topbar — uses shared Hero + Button + CustomSelect components */}
       <header className="adm-topbar">
         <h1 className="adm-h1">{greeting()}</h1>
         <div className="adm-topbar-r">
-          <CustomSelect
-            options={ROLES}
-            value={role}
-            onChange={updateRole}
-            placeholder="Role"
-            size="md"
-          />
+          <CustomSelect options={ROLES} value={role} onChange={updateRole} placeholder="Role" size="md" />
           <Button variant="primary" iconRight={<Caret />}>Log Reading</Button>
           <Button
             variant={featureOn ? "primary" : "secondary"}
@@ -581,188 +292,44 @@ export function App() {
         </div>
       </header>
 
-      {/* Feature announcement bar — admin-controlled, not in editable area */}
       {featureOn && <FeatureBar onClose={toggleFeature} />}
 
-      {/* Main: editable grid (left, fluid) + fixed right rail.
-          On mobile (.adm-main becomes flex-column), the .adm-mobile-alerts
-          wrapper jumps to the top via flex order so alerts stay visible. */}
       <div className="adm-main">
-      <div className="adm-mobile-alerts"><AlertsCard /></div>
-      <div className={`adm-grid-wrap ${editing ? "is-editing" : ""}`}>
-      {/* Edit hint — inside the grid wrap so it doesn't span across the rail */}
-      {editing && (
-        <div className="adm-edit-hint">
-          <span>Drag tiles to rearrange, then choose a size.</span>
-          <div style={{ display: "flex", gap: 6 }}>
-            <Button size="sm" variant="secondary" onClick={() => setTemplatesOpen(true)}>
-              View Templates
-            </Button>
-            <Button size="sm" variant="primary" onClick={() => setPaletteOpen(true)}>
-              ＋ Add widget
-            </Button>
-          </div>
-        </div>
-      )}
-        {baseLayout.length === 0 && (
-          <div className="adm-empty">
-            <h3>Your dashboard is empty</h3>
-            <p>Start with a pre-built template, or build your own from scratch.</p>
-            <div className="adm-empty-actions">
-              <button className="adm-btn adm-btn--primary" onClick={() => setTemplatesOpen(true)}>
-                Browse templates
-              </button>
-              {!editing && (
-                <button className="adm-btn" onClick={toggleEditing}>
-                  Edit dashboard
-                </button>
-              )}
-              {editing && (
-                <button className="adm-btn" onClick={() => setPaletteOpen(true)}>
-                  ＋ Add widget
-                </button>
-              )}
+        <div className={`adm-grid-wrap ${editing ? "is-editing" : ""}`}>
+          {editing && (
+            <div className="adm-edit-hint">
+              <span>Drag a card onto another to place them side by side, or into a gap for a new row.</span>
+              <Button size="sm" variant="primary" onClick={() => setPaletteOpen(true)}>
+                ＋ Add widget
+              </Button>
             </div>
-          </div>
-        )}
-        <ResponsiveGrid
-          className="adm-rgl"
-          layouts={computedLayouts}
-          breakpoints={BREAKPOINTS}
-          cols={COLS}
-          rowHeight={1}
-          margin={[16, 16]}
-          containerPadding={[0, 0]}
-          isDraggable={editing}
-          isResizable={editing}
-          resizeHandles={["s"]}
-          draggableHandle=".adm-cell-handle"
-          onLayoutChange={onLayoutChange}
-          compactType="vertical"
-        >
-          {baseLayout.map((item) => {
-            const cat = WIDGET_CATALOG[item.i];
-            if (!cat) return null;
-            const Comp = cat.component;
-            const isRequired = !!REQUIRED_WIDGETS[item.i];
-            const widgetSettings = settings[item.i] || {};
-            // Settings popover only shows widget-specific fields now (width is
-            // exposed inline as a segmented control in the chrome).
-            const widgetFields = cat.settingsFields || [];
-            const widgetDefaults = cat.defaults || {};
-            const hasSettings = widgetFields.length > 0;
-            const isSettingsOpen = openSettings?.id === item.i;
-            const currentWidth = widgetSettings.width || COLS_TO_WIDTH(item.w);
-            return (
-              <div
-                key={item.i}
-                className={[
-                  "adm-cell",
-                  editing && "adm-cell--editing",
-                  isRequired && "adm-cell--required",
-                ].filter(Boolean).join(" ")}
-              >
+          )}
+          {visibleRows.length === 0 ? (
+            <div className="adm-empty">
+              <h3>Your dashboard is empty</h3>
+              <p>Add widgets to build your dashboard.</p>
+              <div className="adm-empty-actions">
+                {!editing && (
+                  <button className="adm-btn adm-btn--primary" onClick={toggleEditing}>Edit dashboard</button>
+                )}
                 {editing && (
-                  <div className="adm-cell-chrome">
-                    <span
-                      className="adm-cell-handle"
-                      title={isRequired ? "Required — pinned" : "Drag to reorder"}
-                    >
-                      <span className="adm-cell-grip">
-                        {isRequired ? <Pin /> : <Grip />}
-                      </span>
-                      <span>{cat.titleFn ? cat.titleFn(widgetSettings) : cat.name}</span>
-                      {isRequired && <span className="adm-cell-tag">Required</span>}
-                    </span>
-                    <div className="adm-cell-actions">
-                      {hasSettings && (
-                        <button
-                          type="button"
-                          className={`adm-cell-action ${isSettingsOpen ? "is-on" : ""}`}
-                          onClick={(e) => {
-                            if (isSettingsOpen) {
-                              setOpenSettings(null);
-                            } else {
-                              setOpenSettings({
-                                id: item.i,
-                                anchorRect: e.currentTarget.getBoundingClientRect(),
-                              });
-                            }
-                          }}
-                          title="Widget settings"
-                          onMouseDown={(e) => e.stopPropagation()}
-                        >
-                          <Cog />
-                        </button>
-                      )}
-                      {!isRequired && (
-                        <button
-                          type="button"
-                          className="adm-cell-action"
-                          onClick={() => removeWidget(item.i)}
-                          title="Remove widget"
-                          onMouseDown={(e) => e.stopPropagation()}
-                        >
-                          <XIcon />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                )}
-                {isSettingsOpen && (
-                  <SettingsPopover
-                    anchorRect={openSettings.anchorRect}
-                    fields={widgetFields}
-                    value={widgetSettings}
-                    defaults={widgetDefaults}
-                    onChange={(patch) => updateSettings(item.i, patch)}
-                    onReset={() => resetSettings(item.i)}
-                    onClose={() => setOpenSettings(null)}
-                  />
-                )}
-                {cat.scrollable ? (
-                  <Comp settings={{ ...(cat.defaults || {}), ...widgetSettings }} />
-                ) : (
-                  <div
-                    className="adm-measure"
-                    ref={(el) => setMeasureRef(item.i, el)}
-                  >
-                    <Comp settings={{ ...(cat.defaults || {}), ...widgetSettings }} role={role} />
-                  </div>
-                )}
-                {editing && !isRequired && !cat.fixedWidth && (
-                  <div
-                    className="adm-cell-footer"
-                    onMouseDown={(e) => e.stopPropagation()}
-                  >
-                    <div className="adm-cell-width">
-                      {[
-                        { v: "sm",   label: "1/3" },
-                        { v: "lg",   label: "2/3" },
-                        { v: "full", label: "Full" },
-                      ].map((opt) => (
-                        <button
-                          key={opt.v}
-                          type="button"
-                          className={currentWidth === opt.v ? "is-active" : ""}
-                          onClick={() => setWidgetWidth(item.i, opt.v)}
-                          title={`Width: ${opt.label}`}
-                        >
-                          {opt.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                  <button className="adm-btn adm-btn--primary" onClick={() => setPaletteOpen(true)}>＋ Add widget</button>
                 )}
               </div>
-            );
-          })}
-        </ResponsiveGrid>
-      </div>
+            </div>
+          ) : (
+            <CardGrid
+              rows={visibleRows}
+              editing={editing}
+              renderCard={renderCard}
+              onRowsChange={onRowsChange}
+              isFullBleed={isFullBleed}
+            />
+          )}
+        </div>
 
-      <FixedRail editing={editing} role={role} />
+        <FixedRail editing={editing} role={role} />
       </div>
-
 
       {/* Palette panel — only widgets allowed for this role */}
       {paletteOpen && <div className="adm-overlay" onClick={() => setPaletteOpen(false)} />}
@@ -770,36 +337,27 @@ export function App() {
         <div className="adm-panel-head">
           <div>
             <div className="adm-panel-title">Add widget</div>
-            <div className="adm-panel-sub">
-              {Object.entries(WIDGET_CATALOG).filter(([id, c]) => !REQUIRED_WIDGETS[id] && !placedIds.has(id) && (!c.roles || c.roles.includes(role))).length} available
-            </div>
+            <div className="adm-panel-sub">{availableWidgets.length} available</div>
           </div>
           <button className="adm-btn adm-btn--ghost adm-btn--icon" onClick={() => setPaletteOpen(false)}>✕</button>
         </div>
         <div className="adm-card-list">
-          {Object.entries(WIDGET_CATALOG)
-            .filter(([id, c]) => !REQUIRED_WIDGETS[id] && !placedIds.has(id) && (!c.roles || c.roles.includes(role)))
-            .map(([id, c]) => (
-              <button
-                key={id}
-                type="button"
-                className="adm-card"
-                onClick={() => {
-                  addWidget(id);
-                  setPaletteOpen(false);
-                }}
-              >
-                <div className="adm-card-thumb">
-                  <WidgetThumb id={id} />
-                </div>
-                <div className="adm-card-body">
-                  <div className="adm-card-title">{c.name}</div>
-                  <p className="adm-card-desc">{c.desc}</p>
-                </div>
-                <span className="adm-card-add">＋</span>
-              </button>
-            ))}
-          {Object.entries(WIDGET_CATALOG).filter(([id, c]) => !REQUIRED_WIDGETS[id] && !placedIds.has(id) && (!c.roles || c.roles.includes(role))).length === 0 && (
+          {availableWidgets.map(([id, c]) => (
+            <button
+              key={id}
+              type="button"
+              className="adm-card"
+              onClick={() => { addWidget(id); setPaletteOpen(false); }}
+            >
+              <div className="adm-card-thumb"><WidgetThumb id={id} /></div>
+              <div className="adm-card-body">
+                <div className="adm-card-title">{c.name}</div>
+                <p className="adm-card-desc">{c.desc}</p>
+              </div>
+              <span className="adm-card-add">＋</span>
+            </button>
+          ))}
+          {availableWidgets.length === 0 && (
             <div className="adm-panel-empty">All widgets are already on your dashboard.</div>
           )}
         </div>
@@ -807,15 +365,6 @@ export function App() {
           <button className="adm-btn" onClick={() => setPaletteOpen(false)}>Close</button>
         </div>
       </aside>
-
-      {/* Templates panel */}
-      <TemplatesPanel
-        open={templatesOpen}
-        currentId={presetId}
-        role={role}
-        onApply={applyPreset}
-        onClose={() => setTemplatesOpen(false)}
-      />
       </div>
     </div>
     <PrototypeNav currentHref="/bs-prototypes/admin-dashboard/" />
