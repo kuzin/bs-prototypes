@@ -178,10 +178,6 @@ function FilterImpact({ filter }) {
       <div className="rost-fi-bar">
         <span className="rost-fi-text">
           Syncing <b>{imported}</b> of {total} classes
-          <span className="rost-fi-breakdown">
-            {filterCount} from filter
-            {customCount > 0 && <> · <span className="rost-fi-custom">+{customCount} from custom filter</span></>}
-          </span>
         </span>
         <button type="button" className="rost-btn rost-btn--ghost rost-fi-btn" onClick={() => setOpen(o => !o)} aria-expanded={open}>
           {open ? 'Hide classes' : 'See which classes'}
@@ -201,7 +197,6 @@ function FilterImpact({ filter }) {
                 <button key={o.id} type="button" className={`rost-seg-btn${view === o.id ? ' rost-seg-btn--active' : ''}`} onClick={() => setView(o.id)}>{o.label}</button>
               ))}
             </div>
-            <span className="rost-filters-count">{rows.length} shown</span>
           </div>
 
           <div className="rost-card rost-classes-table" style={{ padding: 0 }}>
@@ -302,15 +297,16 @@ function ScheduleSection() {
         <label className="rost-field-label">Pause date</label>
         <div className="rost-field-help">Usually your last day of school.</div>
         <div className="rost-field-row">
-          <div className="rost-select-wrap rost-select-wrap--grow">
-            <select value={dates.pauseMonth} onChange={e => set('pauseMonth')(e.target.value)} className="rost-select">
-              {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
-            </select>
-            <ChevronDown />
-          </div>
           <div className="rost-select-wrap rost-select-wrap--day">
             <select value={dates.pauseDay} onChange={e => set('pauseDay')(+e.target.value)} className="rost-select">
               {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <ChevronDown />
+          </div>
+          <span className="rost-field-of">of</span>
+          <div className="rost-select-wrap rost-select-wrap--grow">
+            <select value={dates.pauseMonth} onChange={e => set('pauseMonth')(e.target.value)} className="rost-select">
+              {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
             </select>
             <ChevronDown />
           </div>
@@ -321,15 +317,16 @@ function ScheduleSection() {
         <label className="rost-field-label">Restart date</label>
         <div className="rost-field-help">A few days before students return, <strong>after</strong> your summer challenge ends.</div>
         <div className="rost-field-row">
-          <div className="rost-select-wrap rost-select-wrap--grow">
-            <select value={dates.restartMonth} onChange={e => set('restartMonth')(e.target.value)} className="rost-select">
-              {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
-            </select>
-            <ChevronDown />
-          </div>
           <div className="rost-select-wrap rost-select-wrap--day">
             <select value={dates.restartDay} onChange={e => set('restartDay')(+e.target.value)} className="rost-select">
               {DAYS.map(d => <option key={d} value={d}>{d}</option>)}
+            </select>
+            <ChevronDown />
+          </div>
+          <span className="rost-field-of">of</span>
+          <div className="rost-select-wrap rost-select-wrap--grow">
+            <select value={dates.restartMonth} onChange={e => set('restartMonth')(e.target.value)} className="rost-select">
+              {MONTHS.map(m => <option key={m} value={m}>{m}</option>)}
             </select>
             <ChevronDown />
           </div>
@@ -343,7 +340,7 @@ function ScheduleSection() {
           </svg>
         </div>
         <div>
-          No syncs will run from <strong>{dates.pauseMonth} {dates.pauseDay + 1}</strong> through <strong>{dates.restartMonth} {dates.restartDay - 1 || 31}</strong>.
+          No syncs will run from <strong>{dates.pauseDay + 1} of {dates.pauseMonth}</strong> through <strong>{(dates.restartDay - 1) || 31} of {dates.restartMonth}</strong>.
         </div>
       </div>
     </ChartCard>
@@ -360,21 +357,19 @@ function fmtScheduledDeletion(date) {
   return new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
 }
 
-function DeactCell({ count, active, onClick }) {
-  if (!count) return <span className="rost-ls-deact rost-ls-deact--zero">0</span>
-  return (
-    <button type="button" className={`rost-ls-deact${active ? ' rost-ls-deact--active' : ''}`} onClick={onClick} aria-haspopup="dialog">
-      {count}
-    </button>
-  )
-}
-
 function LastSyncSection() {
   const [drill, setDrill] = useState(null)   // 'teachers' | 'students' | null
   const ls = LAST_SYNC
   const tD = ls.teachersDeactivated
   const sD = ls.studentsDeactivated
   const drillRows = drill === 'teachers' ? tD : drill === 'students' ? sD : []
+
+  const items = [
+    { key: 'teachers',    label: 'Teachers',    value: ls.teachers,    deact: tD.length },
+    { key: 'students',    label: 'Students',    value: ls.students,    deact: sD.length },
+    { key: 'sections',    label: 'Sections',    value: ls.sections },
+    { key: 'enrollments', label: 'Enrollments', value: ls.enrollments },
+  ]
 
   return (
     <ChartCard
@@ -384,30 +379,22 @@ function LastSyncSection() {
       accent={ACCENT}
       bodyPad="flush"
     >
-      <div className="rost-ls">
-        <table className="rost-ls-table">
-          <thead>
-            <tr>
-              <th className="rost-ls-num">Teachers</th>
-              <th className="rost-ls-num">Deactivated</th>
-              <th className="rost-ls-num">Students</th>
-              <th className="rost-ls-num">Deactivated</th>
-              <th className="rost-ls-num">Sections</th>
-              <th className="rost-ls-num">Enrollments</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr className="rost-ls-row">
-              <td className="rost-ls-num">{ls.teachers}</td>
-              <td className="rost-ls-num"><DeactCell count={tD.length} active={drill === 'teachers'} onClick={() => setDrill('teachers')} /></td>
-              <td className="rost-ls-num">{ls.students.toLocaleString()}</td>
-              <td className="rost-ls-num"><DeactCell count={sD.length} active={drill === 'students'} onClick={() => setDrill('students')} /></td>
-              <td className="rost-ls-num">{ls.sections}</td>
-              <td className="rost-ls-num">{ls.enrollments.toLocaleString()}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <ul className="rost-ls-list">
+        {items.map(it => (
+          <li key={it.key} className="rost-ls-li">
+            <span className="rost-ls-li-label">{it.label}</span>
+            <span className="rost-ls-li-right">
+              {it.deact > 0 && (
+                <button type="button" className="rost-ls-li-deact" onClick={() => setDrill(it.key)} aria-haspopup="dialog">
+                  {it.deact} deactivated
+                  <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="8" x2="12" y2="8"/><polyline points="8,4 12,8 8,12"/></svg>
+                </button>
+              )}
+              <span className="rost-ls-li-value">{it.value.toLocaleString()}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
 
       <Modal open={!!drill} onClose={() => setDrill(null)} variant="center" ariaLabel="Deactivated users">
         {({ close }) => (

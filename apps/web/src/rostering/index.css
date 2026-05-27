@@ -406,6 +406,10 @@
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
 }
 
+/* Full-width segmented control inside the filter preview */
+.rost-filters .rost-seg { display: flex; width: 100%; }
+.rost-filters .rost-seg-btn { flex: 1; }
+
 /* ─── Classes table (filter impact) ───────────────────────────────────────── */
 .rost-card {
   background: #fff;
@@ -507,7 +511,13 @@
 }
 .rost-field-row {
   display: flex;
+  align-items: center;
   gap: 8px;
+}
+.rost-field-of {
+  flex-shrink: 0;
+  font-size: 13.5px;
+  color: #6B7280;
 }
 .rost-select-wrap {
   position: relative;
@@ -545,60 +555,57 @@
   pointer-events: none;
 }
 
-/* ─── Last sync — school-tool-style totals (full-bleed table) ─────────────── */
-.rc-card-body--flush:has(.rost-ls) { padding: 0; overflow: hidden; }
-.rost-ls { overflow-x: auto; }
-.rost-ls-table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 540px;
+/* ─── Last sync — totals as a two-line list ───────────────────────────────── */
+.rc-card-body--flush:has(.rost-ls-list) { padding: 0; }
+.rost-ls-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
-.rost-ls-table th {
-  text-align: left;
-  font-size: 12px;
-  font-weight: 800;
-  color: #374151;
-  padding: 12px 18px;
-  background: #F3F4F6;
-  border-bottom: 1px solid #E5E7EB;
-  white-space: nowrap;
-}
-.rost-ls-table td {
-  padding: 16px 18px;
+.rost-ls-li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 20px;
   border-bottom: 1px solid #F1F5F9;
-  font-size: 15px;
+}
+.rost-ls-li:last-child { border-bottom: none; }
+.rost-ls-li-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+.rost-ls-li-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rost-ls-li-value {
+  font-size: 19px;
+  font-weight: 800;
   color: #111827;
   font-variant-numeric: tabular-nums;
-  white-space: nowrap;
 }
-.rost-ls-table th.rost-ls-num,
-.rost-ls-table td.rost-ls-num { text-align: left; }
-.rost-ls-row:hover { background: #FCFCFE; }
-
-.rost-ls-deact {
+.rost-ls-li-deact {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font: inherit;
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--rost-blue);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 2px 8px;
-  border-radius: 6px;
-  font-variant-numeric: tabular-nums;
-  transition: background 0.12s, box-shadow 0.12s;
-}
-.rost-ls-deact:hover { background: var(--rost-blue-soft); }
-.rost-ls-deact--active {
   background: var(--rost-blue-soft);
-  box-shadow: inset 0 0 0 1px #93B4FB;
+  border: none;
+  border-radius: 999px;
+  padding: 3px 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
 }
-.rost-ls-deact--zero {
-  font-size: 15px;
-  font-weight: 600;
-  color: #9CA3AF;
-  font-variant-numeric: tabular-nums;
-}
+.rost-ls-li-deact:hover { background: #C9DBFB; }
+.rost-ls-li-deact svg { transition: transform 0.12s; }
+.rost-ls-li-deact:hover svg { transform: translateX(2px); }
 
 .rost-ls-drill-table {
   width: 100%;
