@@ -405,7 +405,14 @@ export const EMPTY_DEFAULT_SETTINGS = { ...KITCHEN_DEFAULT_SETTINGS };
 // Per-role defaults — picked up by loadState(role) when a role has no saved
 // layout yet.
 export const DEFAULT_LAYOUT_BY_ROLE   = { teacher: DEFAULT_LAYOUT,     media: MEDIA_DEFAULT_LAYOUT,     library: LIBRARY_DEFAULT_LAYOUT };
-export const DEFAULT_SETTINGS_BY_ROLE = { teacher: DEFAULT_SETTINGS,   media: MEDIA_DEFAULT_SETTINGS,   library: LIBRARY_DEFAULT_SETTINGS, kitchen: KITCHEN_DEFAULT_SETTINGS, empty: EMPTY_DEFAULT_SETTINGS };
+export const DEFAULT_SETTINGS_BY_ROLE = {
+  teacher:        DEFAULT_SETTINGS,
+  media:          MEDIA_DEFAULT_SETTINGS,
+  library:        LIBRARY_DEFAULT_SETTINGS,
+  kitchen:        KITCHEN_DEFAULT_SETTINGS,
+  "kitchen-full": KITCHEN_DEFAULT_SETTINGS,
+  empty:          EMPTY_DEFAULT_SETTINGS,
+};
 export const DEFAULT_PRESET_BY_ROLE   = { teacher: DEFAULT_PRESET_ID,  media: MEDIA_DEFAULT_PRESET_ID,  library: LIBRARY_DEFAULT_PRESET_ID };
 
 // ─── Row-based defaults (flexbox layout — rows of widget ids) ─────────────────
@@ -435,15 +442,33 @@ export const KITCHEN_DEFAULT_ROWS = [
   ["leaderboard-branches", "questions"],
   ["top-badges", "top-books"],
 ];
+// Kitchen Sink (full width): same catalog, but every widget occupies its
+// own row at 100% width — useful for reviewing the spacious rendering of
+// each widget in one pass.
+export const KITCHEN_FULL_DEFAULT_ROWS = [
+  ["daily-tracker"],
+  ["stat-tiles"],
+  ["flagged-sessions"],
+  ["leaderboard-combo"],
+  ["leaderboard-students"],
+  ["leaderboard-classes"],
+  ["leaderboard-staff"],
+  ["leaderboard-patrons"],
+  ["leaderboard-branches"],
+  ["questions"],
+  ["top-badges"],
+  ["top-books"],
+];
 // Empty Sink uses the same row layout as Kitchen so the empty states sit
 // in the same positions as the populated demo.
 export const EMPTY_DEFAULT_ROWS = KITCHEN_DEFAULT_ROWS;
 export const DEFAULT_ROWS_BY_ROLE = {
-  teacher: DEFAULT_ROWS,
-  media:   MEDIA_DEFAULT_ROWS,
-  library: LIBRARY_DEFAULT_ROWS,
-  kitchen: KITCHEN_DEFAULT_ROWS,
-  empty:   EMPTY_DEFAULT_ROWS,
+  teacher:        DEFAULT_ROWS,
+  media:          MEDIA_DEFAULT_ROWS,
+  library:        LIBRARY_DEFAULT_ROWS,
+  kitchen:        KITCHEN_DEFAULT_ROWS,
+  "kitchen-full": KITCHEN_FULL_DEFAULT_ROWS,
+  empty:          EMPTY_DEFAULT_ROWS,
 };
 
 // ─── Layout presets ───────────────────────────────────────────────────────────

@@ -243,7 +243,7 @@ export function FixedRail({
   openSettings,
   setOpenSettings,
 }) {
-  const showEngagement = role === "teacher" || role === "media" || role === "kitchen" || role === "empty";
+  const showEngagement = role === "teacher" || role === "media" || role === "kitchen" || role === "kitchen-full" || role === "empty";
   const goalSettings = { ...GOAL_DEFAULTS, ...(settings["community-goal"] || {}) };
   return (
     <aside className="adm-rail">

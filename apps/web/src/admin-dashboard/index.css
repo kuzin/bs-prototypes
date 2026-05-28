@@ -1989,14 +1989,15 @@ button { font-family: inherit; cursor: pointer; }
 }
 /* Compact-mode (half-width pair): cap the body height to match the
    shared scrollable height so books/badges line up with their partner
-   widget instead of dragging the row taller. Pack content from the top
-   (not centered) so scrolling can always reach the first item. */
+   widget instead of dragging the row taller. `safe center` centers the
+   content when it fits AND falls back to flex-start when it overflows,
+   so the scroll can still reach the first item. */
 @container (max-width: 620px) {
   .adm-w-body.adm-shelf,
   .adm-w-body.adm-badges {
     max-height: 272px;
     overflow-y: auto;
-    align-content: flex-start;
+    align-content: safe center;
     padding-top: 16px;
   }
 }

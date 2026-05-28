@@ -18,17 +18,21 @@ import "../MainRail.css";
 import "./index.css";
 
 const ROLES = [
-  { value: "teacher", label: "Teacher view" },
-  { value: "media",   label: "Media Specialist view" },
-  { value: "library", label: "Public Library view" },
-  { value: "kitchen", label: "Kitchen Sink view" },
-  { value: "empty",   label: "Empty Sink view" },
+  { value: "teacher",      label: "Teacher view" },
+  { value: "media",        label: "Media Specialist view" },
+  { value: "library",      label: "Public Library view" },
+  { value: "kitchen",      label: "Kitchen Sink view" },
+  { value: "kitchen-full", label: "Kitchen Sink (full width)" },
+  { value: "empty",        label: "Empty Sink view" },
 ];
-// Kitchen Sink + Empty Sink are catalog demos — they show every widget
-// regardless of per-widget role gates. Empty Sink additionally tells each
-// widget to render its no-data state.
+// Kitchen Sink, Kitchen Sink (full width), and Empty Sink are catalog demos —
+// they show every widget regardless of per-widget role gates. Empty Sink
+// additionally tells each widget to render its no-data state.
 const widgetAllowed = (cat, role) =>
-  !!cat && (role === "kitchen" || role === "empty" || !cat.roles || cat.roles.includes(role));
+  !!cat && (
+    role === "kitchen" || role === "kitchen-full" || role === "empty" ||
+    !cat.roles || cat.roles.includes(role)
+  );
 const ROLE_KEY = "adm-user-role";
 
 function greeting() {
