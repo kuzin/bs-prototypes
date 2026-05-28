@@ -1,0 +1,200 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.42);
+  z-index: 199;
+  animation: modal-fade-in 0.22s ease-out;
+}
+
+.modal-backdrop--closing {
+  animation: modal-fade-out 0.22s ease-in forwards;
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes modal-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.modal {
+  position: fixed;
+  background: #fff;
+  z-index: 200;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, 0.22);
+  overflow: hidden;
+}
+
+/* ── Side panel (right-slide) ────────────────────────────────────────────── */
+.modal--side {
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: min(560px, 100vw);
+  border-left: 1px solid #e5e7eb;
+  animation: modal-side-in 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.modal--side.modal--closing {
+  animation: modal-side-out 0.22s cubic-bezier(0.55, 0, 0.1, 1) forwards;
+}
+
+@keyframes modal-side-in {
+  from {
+    transform: translateX(48px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes modal-side-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(48px);
+    opacity: 0;
+  }
+}
+
+/* ── Centered overlay ────────────────────────────────────────────────────── */
+.modal--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(520px, calc(100vw - 32px));
+  max-height: calc(100vh - 32px);
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  animation: modal-center-in 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal--center.modal--closing {
+  animation: modal-center-out 0.18s ease-in forwards;
+}
+
+@keyframes modal-center-in {
+  from {
+    transform: translate(-50%, calc(-50% + 8px)) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes modal-center-out {
+  from {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, calc(-50% + 8px)) scale(0.98);
+    opacity: 0;
+  }
+}
+
+/* ── Reusable centered-modal slots ───────────────────────────────────────── */
+.modal-image {
+  display: block;
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  background: #f1f5f9;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 22px 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.modal-header--flush {
+  border-bottom: none;
+  padding-bottom: 4px;
+}
+
+.modal-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.modal-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  margin: 0;
+}
+
+.modal-close {
+  flex-shrink: 0;
+  margin: -4px -6px 0 0;
+}
+
+/* Floating close — used when there's a banner image so the button sits on top
+   of the image at the top-right corner of the modal */
+.modal-close--floating {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  margin: 0;
+  z-index: 1;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+}
+.modal-close--floating:hover {
+  background: #fff;
+}
+
+.modal-body {
+  padding: 14px 22px 18px;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.55;
+  overflow-y: auto;
+  max-height: calc(100vh - 240px);
+}
+
+.modal-body p {
+  margin: 0 0 10px;
+}
+.modal-body p:last-child {
+  margin-bottom: 0;
+}
+
+.modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 22px 16px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.modal-footer--start {
+  justify-content: flex-start;
+}
+.modal-footer--between {
+  justify-content: space-between;
+}

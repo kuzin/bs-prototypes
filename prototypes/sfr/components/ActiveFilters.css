@@ -1,0 +1,56 @@
+.af-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.af-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-right: 2px;
+  white-space: nowrap;
+}
+
+.af-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px 4px 11px;
+  background: #eff6ff;
+  border: 1.5px solid #bfdbfe;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1d4ed8;
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    background 0.1s,
+    border-color 0.1s;
+  white-space: nowrap;
+}
+.af-chip:hover {
+  background: #dbeafe;
+  border-color: #93c5fd;
+}
+
+.af-clear-all {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  font-family: inherit;
+  border-radius: 6px;
+  transition:
+    color 0.1s,
+    background 0.1s;
+}
+.af-clear-all:hover {
+  color: #475569;
+  background: #f1f5f9;
+}

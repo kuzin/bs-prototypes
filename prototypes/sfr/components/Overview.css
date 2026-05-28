@@ -1,0 +1,205 @@
+.ov-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Benny summary ── */
+.ov-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px 18px;
+}
+
+/* ── Highlights grid ── */
+.ov-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+/* 5th card (or any last card that starts a new row alone) spans full width */
+.ov-grid > :last-child:nth-child(odd) {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 699px) {
+  .ov-grid {
+    grid-template-columns: 1fr;
+  }
+  .ov-grid > :last-child:nth-child(odd) {
+    grid-column: auto;
+  }
+}
+
+/* ── Highlight card ── */
+.ov-card {
+  border: 1.5px solid;
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ov-card-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.ov-card-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ov-card-titles {
+  flex: 1;
+  min-width: 0;
+}
+
+.ov-card-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1e293b;
+  margin-bottom: 2px;
+  letter-spacing: -0.01em;
+}
+
+.ov-card-desc {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.ov-card-count {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 3px 8px;
+  border-radius: 99px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Student list within card ── */
+.ov-student-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ov-student-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+
+.ov-student-row--clickable {
+  width: 100%;
+  border: none;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    box-shadow 0.12s,
+    transform 0.1s;
+}
+
+.ov-student-row--clickable:hover {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transform: translateY(-1px);
+}
+
+.ov-student-row--clickable:hover .ov-row-chevron {
+  opacity: 1;
+  transform: translateX(2px);
+}
+
+.ov-student-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ov-student-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ov-student-book {
+  font-size: 11px;
+  font-weight: 400;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ov-student-flags {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+.ov-row-chevron {
+  flex-shrink: 0;
+  color: #94a3b8;
+  opacity: 0.45;
+  transition:
+    opacity 0.12s,
+    transform 0.12s;
+  margin-left: 2px;
+}
+
+.ov-view-all {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #1d4ed8;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 0;
+  font-family: inherit;
+  text-align: left;
+  transition: opacity 0.12s;
+}
+.ov-view-all:hover {
+  opacity: 0.7;
+}
+
+.ov-view-all--danger {
+  color: #b91c1c;
+}
+.ov-view-all--success {
+  color: #14803f;
+}
+.ov-view-all--warning {
+  color: #b45309;
+}
+.ov-view-all--intercede {
+  color: #be123c;
+}
+.ov-view-all--neutral {
+  color: #0369a1;
+}

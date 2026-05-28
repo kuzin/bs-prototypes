@@ -1,0 +1,11 @@
+.sh-gemini-badge {
+  font-size: 13px;
+  font-weight: 700;
+  color: #7c3aed;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  border-radius: 99px;
+  padding: 3px 10px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}

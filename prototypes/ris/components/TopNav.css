@@ -1,0 +1,149 @@
+.ris-nav {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  height: 56px;
+  background: #fff;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.ris-nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.ris-nav-logo {
+  width: 26px;
+  height: 26px;
+}
+
+.ris-nav-title {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.ris-nav-district {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.ris-nav-product {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+}
+
+.ris-nav-tabs {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: 1;
+  justify-content: center;
+}
+
+.ris-nav-tab {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+  white-space: nowrap;
+}
+
+.ris-nav-tab:hover {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+.ris-nav-tab--active {
+  background: #eff9fb;
+  color: #0da7bc;
+  font-weight: 600;
+}
+
+.ris-nav-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.ris-nav-chip {
+  font-size: 13px;
+  color: #64748b;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 99px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+
+.ris-nav-export {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0da7bc;
+  background: none;
+  border: 1.5px solid #0da7bc;
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.ris-nav-export:hover {
+  background: #eff9fb;
+}
+
+/* Scope toggle */
+.ris-scope-toggle {
+  display: flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 2px;
+  gap: 1px;
+}
+
+.ris-scope-btn {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  background: none;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+  white-space: nowrap;
+}
+
+.ris-scope-btn:hover {
+  color: #1e293b;
+}
+
+.ris-scope-btn--active {
+  background: #fff;
+  color: #0da7bc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}

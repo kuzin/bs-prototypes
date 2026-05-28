@@ -1,0 +1,46 @@
+/* Inline mini-stats inside the Reading Habits card. Three big numbers with
+   small labels, separated by hair-thin dividers — no card chrome (that
+   would be "cards inside a card", which reads as visual noise). */
+.dash-inline-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 22px;
+}
+
+.dash-inline-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-left: 1px solid #f1f5f9;
+}
+
+.dash-inline-stat:first-child {
+  border-left: none;
+}
+
+.dash-inline-val {
+  font-size: 28px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--rc-accent, #0f172a);
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.dash-inline-unit {
+  font-size: 13px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.dash-inline-lbl {
+  font-size: 13px;
+  color: #64748b;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}

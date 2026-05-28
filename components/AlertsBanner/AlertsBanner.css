@@ -1,0 +1,118 @@
+.ab-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.ab-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.ab-row--critical {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #7f1d1d;
+}
+.ab-row--warning {
+  background: #fffbeb;
+  border-color: #fde68a;
+  color: #78350f;
+}
+.ab-row--positive {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #065f46;
+}
+.ab-row--info {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1e3a8a;
+}
+
+.ab-icon {
+  font-size: 14px;
+  flex-shrink: 0;
+  font-weight: 700;
+  line-height: 1;
+  width: 20px;
+  text-align: center;
+}
+
+.ab-body {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-width: 0;
+}
+
+.ab-title {
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.ab-desc {
+  font-weight: 500;
+  min-width: 0;
+}
+
+.ab-action {
+  font-size: 13px;
+  font-weight: 700;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 0, 0, 0.18);
+  flex-shrink: 0;
+  transition: text-decoration-color 0.12s;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.ab-action:hover {
+  text-decoration-color: currentColor;
+}
+
+/* ── Mobile: stack body vertically, drop the action below ─────────────── */
+@media (max-width: 560px) {
+  .ab-row {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    /* Keep the column gap (icon ↔ body) but zero the row gap so
+       we can pull the action button tight against the text manually */
+    gap: 0 10px;
+  }
+
+  .ab-icon {
+    /* Nudge icon down so it sits flush with the text cap-height rather
+       than the top of the line-height box */
+    margin-top: 2px;
+  }
+
+  .ab-body {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+    width: calc(100% - 30px); /* 20px icon + 10px gap */
+  }
+
+  .ab-action {
+    width: 100%;
+    text-align: left;
+    margin-top: 4px; /* tight — feels attached to the message above */
+    padding-left: 30px; /* 20px icon + 10px gap — aligns with body text */
+  }
+}

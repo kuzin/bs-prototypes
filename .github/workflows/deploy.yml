@@ -24,16 +24,22 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version-file: '.nvmrc'
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Lint
+        run: pnpm lint
+
+      - name: Format check
+        run: pnpm format:check
+
       - name: Build
-        run: pnpm --filter bs-web build
+        run: pnpm build
 
       - name: Assemble pages artifact
-        run: cp -r apps/web/dist/. pages/
+        run: cp -r dist/. pages/
 
       - uses: actions/upload-pages-artifact@v3
         with:
