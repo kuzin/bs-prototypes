@@ -474,7 +474,10 @@ button { font-family: inherit; cursor: pointer; }
 .adm-row {
   display: flex;
   gap: 16px;
-  align-items: flex-start;   /* natural heights — no stretching / empty space */
+  /* Paired cards share a row height so the cell strokes line up. The
+     shorter widget gets a bit of empty space at the bottom — acceptable
+     trade for visual consistency. */
+  align-items: stretch;
 }
 /* ─── Mobile (≤720px) ──────────────────────────────────────────────────────
    Paired cards stack to full width, the topbar greeting/controls wrap onto

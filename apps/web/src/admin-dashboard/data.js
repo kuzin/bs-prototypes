@@ -343,13 +343,15 @@ export const QUESTIONS = [
 export const REQUIRED_WIDGETS = {};
 
 // ─── Teacher default layout (react-grid-layout format) ────────────────────────
-// Teachers land on a "run my room" arrangement: the Daily Reading Tracker up
-// top, followed by a compact row of linked metric tiles. Engagement and the
-// Community Goal sit in the right rail (fixed, not widgets).
+// Teachers land on a "run my room" arrangement: the Daily Reading Tracker
+// paired with Flagged Sessions up top, followed by a compact row of linked
+// metric tiles. Engagement and the Community Goal sit in the right rail
+// (fixed, not widgets).
 export const DEFAULT_PRESET_ID = "run-my-room";
 export const DEFAULT_LAYOUT = [
-  { i: "daily-tracker",  x: 0, y: 0,  w: 12, h: 20, minW: 4, minH: 6  },
-  { i: "stat-tiles",     x: 0, y: 20, w: 12, h: 8,  minW: 4, minH: 4  },
+  { i: "daily-tracker",    x: 0, y: 0,  w: 8,  h: 20, minW: 4, minH: 6 },
+  { i: "flagged-sessions", x: 8, y: 0,  w: 4,  h: 20, minW: 4, minH: 4 },
+  { i: "stat-tiles",       x: 0, y: 20, w: 12, h: 8,  minW: 4, minH: 4 },
 ];
 export const DEFAULT_SETTINGS = {
   "community-goal": { scope: "district" },
@@ -405,7 +407,7 @@ export const DEFAULT_PRESET_BY_ROLE   = { teacher: DEFAULT_PRESET_ID,  media: ME
 // The dashboard is a stack of rows; each row holds 1–3 cards that split the
 // width equally (flex). Full-bleed widgets (fixedWidth) sit alone in their row.
 export const DEFAULT_ROWS = [
-  ["daily-tracker"],
+  ["daily-tracker", "flagged-sessions"],
   ["stat-tiles"],
 ];
 export const MEDIA_DEFAULT_ROWS = [
@@ -451,8 +453,8 @@ export const LAYOUT_PRESETS = [
   {
     id: "run-my-room",
     name: "Run my room",
-    description: "Daily Reading Tracker up top and linked metric tiles below.",
-    widgetNames: ["Daily Reading Tracker", "What's Happened"],
+    description: "Daily Reading Tracker beside Flagged Sessions up top, with linked metric tiles below.",
+    widgetNames: ["Daily Reading Tracker", "Flagged Sessions", "What's Happened"],
     roles: ["teacher"],
     layout: DEFAULT_LAYOUT,
     settings: DEFAULT_SETTINGS,
