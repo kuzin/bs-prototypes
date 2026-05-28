@@ -1,0 +1,148 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-family: inherit;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s,
+    transform 0.06s;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0.5px);
+}
+
+.btn:disabled,
+.btn[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+/* ── Sizes ───────────────────────────────────────────────────────────────── */
+.btn--sm {
+  font-size: 13px;
+  padding: 5px 10px;
+  border-radius: 7px;
+}
+
+.btn--md {
+  font-size: 13px;
+  padding: 8px 14px;
+}
+
+.btn--lg {
+  font-size: 14px;
+  padding: 10px 18px;
+  border-radius: 10px;
+}
+
+/* ── Variants ────────────────────────────────────────────────────────────── */
+/* Primary — solid brand blue */
+.btn--primary {
+  background: #1d4ed8;
+  color: #fff;
+  border-color: #1d4ed8;
+}
+.btn--primary:hover:not(:disabled) {
+  background: #1e40af;
+  border-color: #1e40af;
+}
+
+/* Secondary — white with border */
+.btn--secondary {
+  background: #fff;
+  color: #1e293b;
+  border-color: #cbd5e1;
+}
+.btn--secondary:hover:not(:disabled) {
+  background: #f8fafc;
+  border-color: #94a3b8;
+}
+
+/* Ghost — transparent */
+.btn--ghost {
+  background: transparent;
+  color: #475569;
+  border-color: transparent;
+}
+.btn--ghost:hover:not(:disabled) {
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+/* Danger — red */
+.btn--danger {
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+}
+.btn--danger:hover:not(:disabled) {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
+
+/* Accent — uses --btn-accent (defaults to slate) */
+.btn--accent {
+  background: var(--btn-accent, #475569);
+  color: #fff;
+  border-color: var(--btn-accent, #475569);
+}
+.btn--accent:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--btn-accent, #475569) 88%, black);
+  border-color: color-mix(in srgb, var(--btn-accent, #475569) 88%, black);
+}
+
+/* ── Icon slot ───────────────────────────────────────────────────────────── */
+.btn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.btn--lg .btn-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Loading state ───────────────────────────────────────────────────────── */
+.btn--loading .btn-label {
+  visibility: hidden;
+}
+
+.btn--loading::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: btn-spin 0.6s linear infinite;
+}
+
+.btn--loading {
+  position: relative;
+}
+
+@keyframes btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

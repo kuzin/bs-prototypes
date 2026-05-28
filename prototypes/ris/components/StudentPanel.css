@@ -1,0 +1,73 @@
+/* Backdrop */
+.stp-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.35);
+  z-index: 200;
+  animation: stp-fade 0.15s ease-out;
+}
+
+@keyframes stp-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Panel */
+.stp-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 48px; /* leave room for proto-nav */
+  width: 640px;
+  max-width: 95vw;
+  background: #fff;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.16);
+  z-index: 201;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: stp-slide 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+@keyframes stp-slide {
+  from {
+    transform: translateX(48px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.stp-panel--closing {
+  animation: stp-slide-out 0.22s cubic-bezier(0.55, 0, 0.1, 1) forwards;
+}
+
+@keyframes stp-slide-out {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(48px);
+    opacity: 0;
+  }
+}
+
+.stp-backdrop--closing {
+  animation: stp-fade-out 0.22s ease-in forwards;
+}
+
+@keyframes stp-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

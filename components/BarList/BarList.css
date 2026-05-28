@@ -1,0 +1,297 @@
+/* ── BarList ─────────────────────────────────────────────────────────────── */
+.bl {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.bl--grouped {
+  gap: 0;
+}
+
+.bl--columns {
+  flex-direction: row;
+  gap: 24px;
+}
+
+.bl--columns > .bl-group {
+  flex: 1;
+}
+
+/* Container-query wrapper around grouped BarLists — lets the layout
+   respond to its own card width, not the viewport. Below ~600px the two
+   columns get squeezed and bars vanish, so collapse to a single stack. */
+.bl-cq {
+  container-type: inline-size;
+}
+
+@container (max-width: 600px) {
+  .bl--columns {
+    flex-direction: column;
+    gap: 0;
+  }
+  .bl--columns > .bl-divider {
+    width: auto;
+    height: 1px;
+    align-self: stretch;
+  }
+}
+
+.bl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 0;
+}
+
+/* In a stacked grouped list, the first group sits flush against the
+   body's top padding (no need for the group's own 14px on top). */
+.bl--stack > .bl-group:first-child {
+  padding-top: 0;
+}
+.bl--stack > .bl-group:last-child {
+  padding-bottom: 0;
+}
+
+.bl-group-label {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.bl-divider {
+  background: #f1f5f9;
+}
+.bl--stack > .bl-divider {
+  height: 1px;
+}
+.bl--columns > .bl-divider {
+  width: 1px;
+  height: auto;
+  align-self: stretch;
+}
+
+/* `divided` prop on the simple-items mode — hairline between consecutive
+   rows so dense lists read clearly. Replaces the flex gap with padded
+   rows so the rule sits flush between them. */
+.bl--divided {
+  gap: 0;
+}
+.bl--divided > .bl-row {
+  padding: 14px 0;
+}
+.bl--divided > .bl-row + .bl-row {
+  border-top: 1px solid #f1f5f9;
+}
+/* Tighten the first/last data row's outer padding — but leave the
+   header strip alone so it keeps its symmetric 14px top/bottom. */
+.bl--divided > .bl-row:first-child:not(.bl-header) {
+  padding-top: 6px;
+}
+.bl--divided > .bl-row:last-child:not(.bl-header) {
+  padding-bottom: 6px;
+}
+
+/* `header` prop — table-style label row above the bars. Mirrors the row
+   grid so the column labels sit directly over the meta/value columns,
+   and matches the look of `.tbl-th` exactly: slate strip, 1px bottom
+   rule, uppercase tracked-out caps. The negative side-margins push the
+   slate strip out to the card edges so it reads like a table header
+   when the BarList sits inside a `bodyPad="padded"` body. */
+/* When the body wraps a BarList with a header strip, drop the body's
+   top padding so the slate strip extends all the way up to the
+   card-head divider (matching the look of `.tbl-th` in a flush table). */
+.rc-card-body--padded:has(> .bl.bl--has-header) {
+  padding-top: 0;
+}
+
+/* Compound class to beat `.bl--divided > .bl-row { padding: 10px 0 }`.
+   Mirrors `.tbl-th` styling but with a touch more vertical room so the
+   header strip aligns visually with the card-head spacing (12px top,
+   10px bottom, 16px horizontal). 1px bottom border, no bottom margin —
+   the first row sits flush against the border-bottom like a `<tbody>`
+   does after a `<thead>`. */
+.bl-row.bl-header {
+  background: #f8fafc;
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 14px 16px;
+  margin: 0 -16px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.bl-th {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+
+.bl--divided.bl--has-header > .bl-header + .bl-row {
+  padding-top: 6px;
+}
+
+.bl-header-spacer {
+  background: transparent !important;
+}
+
+/* ── Row ─────────────────────────────────────────────────────────────────── */
+.bl-row {
+  display: grid;
+  align-items: center;
+  gap: 10px;
+  grid-template-columns: var(--bl-meta-w, 1fr) 2fr auto;
+}
+
+/* icon | meta | bar | value */
+.bl-row--icon {
+  grid-template-columns: 28px var(--bl-meta-w, 120px) 1fr auto;
+  padding: 3px 0;
+}
+
+/* No bar: meta | value */
+.bl-row--no-bar {
+  grid-template-columns: var(--bl-meta-w, 1fr) auto;
+}
+
+/* icon + no bar: icon | meta | value */
+.bl-row--icon.bl-row--no-bar {
+  grid-template-columns: 28px var(--bl-meta-w, 1fr) auto;
+}
+
+/* prefix + bar (no icon): prefix | meta | bar | value */
+.bl-row--prefix {
+  grid-template-columns: 44px var(--bl-meta-w, 1fr) 2fr auto;
+}
+
+/* prefix + icon + bar: prefix | icon | meta | bar | value */
+.bl-row--prefix.bl-row--icon {
+  grid-template-columns: 44px 28px var(--bl-meta-w, 120px) 1fr auto;
+}
+
+/* prefix + no bar (no icon): prefix | meta | value */
+.bl-row--prefix.bl-row--no-bar {
+  grid-template-columns: 44px var(--bl-meta-w, 1fr) auto;
+}
+
+/* prefix + icon + no bar: prefix | icon | meta | value */
+.bl-row--prefix.bl-row--icon.bl-row--no-bar {
+  grid-template-columns: 44px 28px 1fr auto;
+  padding: 4px 0;
+}
+
+/* ── Prefix ─────────────────────────────────────────────────────────────── */
+.bl-prefix {
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+}
+
+/* ── Icon ───────────────────────────────────────────────────────────────── */
+.bl-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: color-mix(in srgb, var(--bl-ic, #94a3b8) 55%, #334155);
+  background: var(--bl-ic-bg, #f8fafc);
+  border: 1px solid color-mix(in srgb, var(--bl-ic, #94a3b8) 25%, #e2e8f0);
+}
+
+.bl-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ── Meta ───────────────────────────────────────────────────────────────── */
+.bl-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.bl-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #334155;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Icon rows with no sublabel (label-only) — bump the label slightly so
+   it carries the row visually (matches mood of a list of headings). */
+.bl-row--icon .bl-meta:not(:has(.bl-sublabel)) .bl-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.bl-sublabel {
+  font-size: 13px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Bar track ──────────────────────────────────────────────────────────── */
+.bl-track {
+  display: flex;
+  justify-content: var(--bl-bar-justify, flex-start);
+  height: var(--bl-bar-h, 6px);
+  background: var(--bl-bar-bg, #f1f5f9);
+  border-radius: var(--bl-bar-radius, 99px);
+  overflow: hidden;
+}
+
+.bl-fill {
+  height: 100%;
+  border-radius: var(--bl-bar-radius, 99px);
+  transition: width 0.4s ease;
+}
+
+/* ── Value + delta ──────────────────────────────────────────────────────── */
+.bl-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 36px;
+}
+
+.bl-value {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  font-variant-numeric: tabular-nums;
+}
+
+.bl-subvalue {
+  font-size: 13px;
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+}
+
+.bl-delta {
+  font-size: 13px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.bl-delta--pos {
+  color: #16a97a;
+}
+.bl-delta--neg {
+  color: #e8866a;
+}

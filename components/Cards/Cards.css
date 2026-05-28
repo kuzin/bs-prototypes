@@ -1,0 +1,271 @@
+/* ── Stat tile ─────────────────────────────────────────────────────────── */
+/* Color resolution: explicit `color` prop sets --rc-stat-color inline (wins).
+   Otherwise the card inherits the cascading --rc-accent set by the page (or
+   by an enclosing ChartCard), and finally falls back to a neutral default if
+   nothing is set. Only the value text uses the resolved color. */
+.rc-stat {
+  --rc-stat-color: var(--rc-accent, #0f172a);
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 18px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 4px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.rc-stat-val {
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  color: var(--rc-stat-color);
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.rc-stat-unit {
+  font-size: 14px;
+  font-weight: 600;
+  color: #94a3b8;
+}
+
+.rc-stat-lbl {
+  font-size: 15px;
+  color: #1e293b;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  margin-top: 4px;
+}
+
+/* ── Chart / content card ──────────────────────────────────────────────── */
+.rc-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Nivo defaults SVGs to overflow: visible (needed for tooltip portals outside the
+   SVG bounds). Clip the SVG itself so area fills / bars don't bleed outside the
+   chart frame. Tooltips are rendered in a separate DOM layer and are unaffected. */
+.rc-card svg {
+  overflow: hidden;
+}
+
+.rc-card--wide {
+  grid-column: span 2;
+}
+
+/* Mobile: don't span 2 columns when the grid has already collapsed to 1 col.
+   span 2 forces an implicit 2nd column and widens the grid past its container. */
+@media (max-width: 699px) {
+  .rc-card--wide {
+    grid-column: auto;
+  }
+}
+
+.rc-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.rc-card-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: var(--rc-accent-bg, #f8fafc);
+  color: var(--rc-accent, #475569);
+  border: 1px solid color-mix(in srgb, var(--rc-accent, #94a3b8) 20%, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rc-card-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.rc-card-title-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.rc-card-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+  letter-spacing: -0.01em;
+}
+
+.rc-card-sub {
+  font-size: 13px;
+  color: #94a3b8;
+  font-weight: 500;
+}
+
+.rc-card-action {
+  flex-shrink: 0;
+}
+
+.rc-card-drill {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--rc-accent, #475569);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0.85;
+  transition: opacity 0.12s;
+}
+
+.rc-card-drill:hover {
+  opacity: 1;
+}
+
+/* Chart cards get side breathing room; .tbl cards override back to 0 so
+   table rows sit flush with the card border. */
+.rc-card-body--flush {
+  padding: 0 12px;
+}
+
+/* Flush-mode body wrapping a table — drop the side padding so the table
+   sits edge-to-edge with the card border. Tables that don't fit on
+   mobile use the `collapse` prop on <Table> instead of scrolling
+   horizontally, so we don't need overflow-x: auto here (it would show a
+   phantom scrollbar even when content fits). `overflow: hidden` clips
+   the table's rectangular cells against the rounded card corners. */
+.rc-card-body--flush:has(.tbl) {
+  padding: 0;
+  overflow: hidden;
+}
+.rc-card-body--flush:has(.tbl):first-child {
+  border-radius: 13px 13px 0 0;
+}
+.rc-card-body--flush:has(.tbl):last-child {
+  border-radius: 0 0 13px 13px;
+}
+.rc-card-body--flush:has(.tbl):only-child {
+  border-radius: 13px;
+}
+
+.rc-card-body--padded {
+  padding: 14px 16px;
+}
+
+/* Let the body absorb leftover vertical space so footers (legends, notes)
+   pin to the bottom of the card when grid alignment stretches it taller
+   than its content. Body is a flex column so the chart inside can grow
+   to fill remaining height. */
+.rc-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Recharts' <ResponsiveContainer> pins a max-width on the wrapper from
+   its initial measurement, which prevents the SVG from re-rendering at
+   the full body width once flex layout settles. Clear the cap and
+   force the container to take the full body width. `min-width: 0`
+   stops the body's flex-item default (`min-width: auto = content`)
+   from refusing to shrink past the SVG's intrinsic size.
+
+   `flex: 1 1 auto` + `height: auto !important` lets the container grow
+   vertically to fill the body's remaining space when the card row is
+   stretched taller than the chart's prop height. The container's
+   inline `height: Npx` becomes a soft minimum instead of a hard cap. */
+.rc-card-body .recharts-responsive-container {
+  flex: 1 1 auto;
+  width: 100% !important;
+  min-width: 0;
+  height: auto !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+.rc-card-body .recharts-responsive-container > .recharts-wrapper {
+  max-width: none !important;
+  max-height: none !important;
+}
+
+.rc-card-foot {
+  padding: 10px 16px 12px;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* ── Inline note inside a card body ────────────────────────────────────── */
+.rc-card-note {
+  margin: 8px 0 0;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #475569;
+}
+
+.rc-card-body--flush > .rc-card-note {
+  margin: 8px 16px 12px;
+}
+
+.rc-card-note--neutral {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+}
+.rc-card-note--accent {
+  background: var(--rc-accent-bg, #fff7f5);
+  border: 1px solid color-mix(in srgb, var(--rc-accent, #e8866a) 25%, white);
+}
+.rc-card-note--accent strong {
+  color: var(--rc-accent, #e8866a);
+}
+
+/* ── Page root — flex column with 16px gap. Used by every district view
+   page to space the Hero / stats row / chart grid uniformly. ────────────── */
+.rc-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Row of stat tiles ─────────────────────────────────────────────────── */
+.rc-stats-row {
+  display: grid;
+  grid-template-columns: repeat(var(--rc-stats-cols, 4), 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+/* Mobile: full-width stat cards (single column) regardless of --rc-stats-cols.
+   At 2 cols the labels wrap awkwardly inside narrow cards and odd counts
+   leave an orphan card on the last row. */
+@media (max-width: 699px) {
+  .rc-stats-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Legacy section classes (.hero, .rh-wrap, .rc-stats-row…) carry their own
+   margin-bottom for non-flex parents. Inside .rc-page that compounds with the
+   gap and doubles the spacing — zero margins out so the page gap is the
+   single source of truth. Placed at the end so source order beats per-class
+   margin-bottom rules at equal specificity. */
+.rc-page > * {
+  margin-bottom: 0;
+}

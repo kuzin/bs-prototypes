@@ -1,0 +1,44 @@
+/* ── Outcome-correlation callouts ─────────────────────────────────────────── */
+.da-callouts {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.da-callout {
+  flex: 1;
+  border-radius: 8px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.da-callout--pos {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+}
+.da-callout--neg {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+}
+
+.da-callout-val {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #1e293b;
+}
+
+.da-callout-lbl {
+  font-size: 13px;
+  color: #64748b;
+  line-height: 1.3;
+}
+
+/* Mobile — stack the two correlation callouts vertically. */
+@media (max-width: 600px) {
+  .da-callouts {
+    flex-direction: column;
+  }
+}
