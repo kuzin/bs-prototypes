@@ -505,7 +505,7 @@ button { font-family: inherit; cursor: pointer; }
 /* Scrollable list widgets (Flagged Sessions, Students, Classes, Quick Links,
    Number Cruncher, Leaderboard…) share one fixed body height so they line up,
    and scroll internally past it. */
-.adm-cell--scroll .adm-w-body { flex: none; height: 320px; overflow-y: auto; }
+.adm-cell--scroll .adm-w-body { flex: none; height: 272px; overflow-y: auto; }
 /* Small non-scrollable widgets (Community Goal, Engagement) share one compact
    body height so they line up too. */
 .adm-cell--small .adm-w-body { flex: none; height: 132px; }
