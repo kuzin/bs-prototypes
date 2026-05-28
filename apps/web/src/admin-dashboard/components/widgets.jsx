@@ -506,12 +506,17 @@ export function AdmFlaggedSessions() {
 // ─── Top Books + Most Earned Badges (visual, Insights-style) ──────────────
 const TB_RANGE_META = { week: "This Week", month: "This Month", year: "This Year" };
 const TB_RANGE_MULT = { week: 1, month: 4, year: 48 };
-const TB_DEFAULTS = { range: "week" };
+const TB_DEFAULTS = { range: "week", limit: "5" };
 const TB_FIELDS = [
   { key: "range", label: "Time range", type: "select", options: [
     { value: "week",  label: "Weekly"  },
     { value: "month", label: "Monthly" },
     { value: "year",  label: "Yearly"  },
+  ]},
+  { key: "limit", label: "Show top", type: "select", options: [
+    { value: "5",  label: "5"  },
+    { value: "10", label: "10" },
+    { value: "15", label: "15" },
   ]},
 ];
 const BadgeStar = () => (
@@ -540,6 +545,7 @@ function BookCover({ book, rank }) {
 export function AdmTopBooks({ settings = {} }) {
   const range = settings.range || "week";
   const mult = TB_RANGE_MULT[range] || 1;
+  const limit = Number(settings.limit) || 5;
   return (
     <div className="adm-w">
       <div className="adm-w-head">
@@ -550,7 +556,7 @@ export function AdmTopBooks({ settings = {} }) {
         <button className="adm-w-action">View report</button>
       </div>
       <div className="adm-w-body adm-shelf">
-        {TOP_BOOKS.map((b, i) => (
+        {TOP_BOOKS.slice(0, limit).map((b, i) => (
           <Tippy key={b.id} content={b.name}>
             <div className="adm-shelf-item">
               <BookCover book={b} rank={i + 1} />
@@ -566,6 +572,7 @@ export function AdmTopBooks({ settings = {} }) {
 export function AdmTopBadges({ settings = {} }) {
   const range = settings.range || "week";
   const mult = TB_RANGE_MULT[range] || 1;
+  const limit = Number(settings.limit) || 5;
   return (
     <div className="adm-w">
       <div className="adm-w-head">
@@ -576,7 +583,7 @@ export function AdmTopBadges({ settings = {} }) {
         <button className="adm-w-action">View report</button>
       </div>
       <div className="adm-w-body adm-badges">
-        {TOP_BADGES.map((b) => (
+        {TOP_BADGES.slice(0, limit).map((b) => (
           <Tippy key={b.id} content={b.name}>
             <div className="adm-badge-item">
               <span className={`adm-badge-medal adm-badge-medal--${b.color}`}><BadgeStar /></span>

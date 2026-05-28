@@ -217,13 +217,21 @@ export const FLAGGED_SESSIONS = {
 // ×~48 year). Covers come from Open Library by ISBN; `color` is the fallback
 // block shown when a cover image fails to load.
 export const TOP_BOOKS = [
-  { id: 1, name: "Dog Man: Mothering Heights",          count: 142, isbn: "1338680455", color: "#1D4ED8" },
-  { id: 2, name: "The Hobbit",                          count: 98,  isbn: "0345339681", color: "#6D28D9" },
-  { id: 3, name: "Percy Jackson & the Lightning Thief", count: 87,  isbn: "0786838655", color: "#047857" },
-  { id: 4, name: "Wonder",                              count: 76,  isbn: "0375869026", color: "#C2410C" },
-  { id: 5, name: "Wings of Fire: The Dragonet Prophecy",count: 64,  isbn: "0545349184", color: "#B91C1C" },
-  { id: 6, name: "Front Desk",                          count: 58,  isbn: "1338157795", color: "#0F766E" },
-  { id: 7, name: "New Kid",                             count: 49,  isbn: "0062691198", color: "#BE185D" },
+  { id: 1,  name: "Dog Man: Mothering Heights",          count: 142, isbn: "1338680455", color: "#1D4ED8" },
+  { id: 2,  name: "The Hobbit",                          count: 98,  isbn: "0345339681", color: "#6D28D9" },
+  { id: 3,  name: "Percy Jackson & the Lightning Thief", count: 87,  isbn: "0786838655", color: "#047857" },
+  { id: 4,  name: "Wonder",                              count: 76,  isbn: "0375869026", color: "#C2410C" },
+  { id: 5,  name: "Wings of Fire: The Dragonet Prophecy",count: 64,  isbn: "0545349184", color: "#B91C1C" },
+  { id: 6,  name: "Front Desk",                          count: 58,  isbn: "1338157795", color: "#0F766E" },
+  { id: 7,  name: "New Kid",                             count: 49,  isbn: "0062691198", color: "#BE185D" },
+  { id: 8,  name: "Diary of a Wimpy Kid",                count: 44,  isbn: "0810993139", color: "#CA8A04" },
+  { id: 9,  name: "Harry Potter and the Sorcerer's Stone", count: 41, isbn: "0590353403", color: "#7C3AED" },
+  { id: 10, name: "Holes",                               count: 36,  isbn: "0440414806", color: "#B45309" },
+  { id: 11, name: "Charlotte's Web",                     count: 32,  isbn: "0064400557", color: "#15803D" },
+  { id: 12, name: "Matilda",                             count: 28,  isbn: "014241038X", color: "#0E7490" },
+  { id: 13, name: "The Giver",                           count: 25,  isbn: "0440237688", color: "#374151" },
+  { id: 14, name: "A Wrinkle in Time",                   count: 22,  isbn: "0312367546", color: "#1E40AF" },
+  { id: 15, name: "Hatchet",                             count: 19,  isbn: "1416936475", color: "#92400E" },
 ];
 // Open Library cover by ISBN. `default=false` makes a missing cover 404 (rather
 // than returning a 1×1 placeholder) so the widget's onError fallback fires.
@@ -231,12 +239,21 @@ export function coverUrl(isbn, size = "M") {
   return `https://covers.openlibrary.org/b/isbn/${isbn}-${size}.jpg?default=false`;
 }
 export const TOP_BADGES = [
-  { id: 1, name: "Bookworm",         count: 210, color: "green"  },
-  { id: 2, name: "Streak Star",      count: 156, color: "yellow" },
-  { id: 3, name: "Genre Explorer",   count: 98,  color: "blue"   },
-  { id: 4, name: "Night Owl Reader", count: 64,  color: "purple" },
-  { id: 5, name: "Marathon Reader",  count: 41,  color: "orange" },
-  { id: 6, name: "Series Finisher",  count: 33,  color: "teal"   },
+  { id: 1,  name: "Bookworm",         count: 210, color: "green"  },
+  { id: 2,  name: "Streak Star",      count: 156, color: "yellow" },
+  { id: 3,  name: "Genre Explorer",   count: 98,  color: "blue"   },
+  { id: 4,  name: "Night Owl Reader", count: 64,  color: "purple" },
+  { id: 5,  name: "Marathon Reader",  count: 41,  color: "orange" },
+  { id: 6,  name: "Series Finisher",  count: 33,  color: "teal"   },
+  { id: 7,  name: "Word Wizard",      count: 28,  color: "green"  },
+  { id: 8,  name: "Plot Detective",   count: 25,  color: "yellow" },
+  { id: 9,  name: "Speed Reader",     count: 22,  color: "blue"   },
+  { id: 10, name: "Adventure Seeker", count: 19,  color: "purple" },
+  { id: 11, name: "Library Lion",     count: 17,  color: "orange" },
+  { id: 12, name: "Page Turner",      count: 15,  color: "teal"   },
+  { id: 13, name: "Comic Book Pro",   count: 12,  color: "blue"   },
+  { id: 14, name: "Magic Bookmark",   count:  9,  color: "purple" },
+  { id: 15, name: "Storyteller",      count:  7,  color: "green"  },
 ];
 
 // ─── Dashboard quick links ────────────────────────────────────────────────────
