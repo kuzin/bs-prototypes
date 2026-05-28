@@ -9,8 +9,11 @@ import { MainRail } from "../MainRail";
 import { PrototypeNav } from "../PrototypeNav";
 import { Button } from "../ris/components/Button";
 import { CustomSelect } from "../ris/components/CustomSelect";
+import { Modal } from "../ris/components/Modal";
+import { IconButton, EmptyState } from "../ris/components/Primitives";
 import "../ris/components/Button.css";
 import "../ris/components/CustomSelect.css";
+import "../ris/components/Primitives.css";
 import "../MainRail.css";
 import "./index.css";
 
@@ -72,6 +75,17 @@ const Megaphone = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <path d="M3 11v2a3 3 0 0 0 3 3h2l8 4V4l-8 4H6a3 3 0 0 0-3 3z" />
     <path d="M18 8a4 4 0 0 1 0 8" />
+  </svg>
+);
+// Empty-state icon for "every widget is already placed" — a 2x2 grid with
+// a checkmark over the top-right cell.
+const DashboardFullSvg = () => (
+  <svg viewBox="0 0 32 32" width="40" height="40" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <rect x="4"  y="4"  width="10" height="10" rx="2" />
+    <rect x="4"  y="18" width="10" height="10" rx="2" />
+    <rect x="18" y="18" width="10" height="10" rx="2" />
+    <rect x="18" y="4"  width="10" height="10" rx="2" fill="currentColor" fillOpacity="0.1" />
+    <polyline points="20.5,9 22.5,11 25.5,7.5" stroke="currentColor" strokeWidth="1.8" />
   </svg>
 );
 
@@ -340,39 +354,55 @@ export function App() {
       </div>
 
       {/* Palette panel — only widgets allowed for this role */}
-      {paletteOpen && <div className="adm-overlay" onClick={() => setPaletteOpen(false)} />}
-      <aside className={`adm-panel ${paletteOpen ? "is-open" : ""}`}>
-        <div className="adm-panel-head">
-          <div>
-            <div className="adm-panel-title">Add widget</div>
-            <div className="adm-panel-sub">{availableWidgets.length} available</div>
-          </div>
-          <button className="adm-btn adm-btn--ghost adm-btn--icon" onClick={() => setPaletteOpen(false)}>✕</button>
-        </div>
-        <div className="adm-card-list">
-          {availableWidgets.map(([id, c]) => (
-            <button
-              key={id}
-              type="button"
-              className="adm-card"
-              onClick={() => { addWidget(id); setPaletteOpen(false); }}
-            >
-              <div className="adm-card-thumb"><WidgetThumb id={id} /></div>
-              <div className="adm-card-body">
-                <div className="adm-card-title">{c.name}</div>
-                <p className="adm-card-desc">{c.desc}</p>
+      <Modal
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        variant="side"
+        ariaLabel="Add widget"
+      >
+        {({ close }) => (
+          <div className="adm-side-pane">
+            <header className="adm-side-head">
+              <div className="adm-side-head-text">
+                <h2 className="adm-side-title">Add widget</h2>
+                {availableWidgets.length > 0 && (
+                  <div className="adm-side-sub">{availableWidgets.length} available</div>
+                )}
               </div>
-              <span className="adm-card-add">＋</span>
-            </button>
-          ))}
-          {availableWidgets.length === 0 && (
-            <div className="adm-panel-empty">All widgets are already on your dashboard.</div>
-          )}
-        </div>
-        <div className="adm-panel-foot">
-          <button className="adm-btn" onClick={() => setPaletteOpen(false)}>Close</button>
-        </div>
-      </aside>
+              <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close">
+                <XIcon />
+              </IconButton>
+            </header>
+            <div className={`adm-side-body ${availableWidgets.length === 0 ? "adm-side-body--empty" : ""}`}>
+              {availableWidgets.length === 0 ? (
+                <EmptyState
+                  icon={<DashboardFullSvg />}
+                  title="Your dashboard is fully loaded"
+                  description="Every widget for this role is already on the dashboard. Remove a card to free up space for something new."
+                />
+              ) : (
+                <div className="adm-card-list">
+                  {availableWidgets.map(([id, c]) => (
+                    <button
+                      key={id}
+                      type="button"
+                      className="adm-card"
+                      onClick={() => { addWidget(id); close(); }}
+                    >
+                      <div className="adm-card-thumb"><WidgetThumb id={id} /></div>
+                      <div className="adm-card-body">
+                        <div className="adm-card-title">{c.name}</div>
+                        <p className="adm-card-desc">{c.desc}</p>
+                      </div>
+                      <span className="adm-card-add">＋</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </Modal>
       </div>
     </div>
     <PrototypeNav currentHref="/bs-prototypes/admin-dashboard/" />
