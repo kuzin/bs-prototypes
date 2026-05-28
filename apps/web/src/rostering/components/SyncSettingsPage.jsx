@@ -4,7 +4,7 @@ import { Table } from '../../ris/components/Table'
 import { Modal } from '../../ris/components/Modal'
 import {
   SOURCE, INCOMING_CLASSES, MODE_OPTIONS,
-  classImportSource, LAST_SYNC,
+  classImportSource, LAST_SYNC, DISTRICT, SCHOOLS,
 } from '../data'
 
 /**
@@ -53,7 +53,8 @@ function fmtSyncTime(iso) {
 }
 
 // ─── Connection (small passive strip) ─────────────────────────────────────
-function ConnectionSection() {
+function ConnectionSection({ scope }) {
+  const isDistrict = scope === 'district'
   return (
     <section className="rost-conn-strip">
       <div className="rost-conn-strip-logo">C</div>
@@ -61,7 +62,7 @@ function ConnectionSection() {
         <div className="rost-conn-strip-name">{SOURCE.name}</div>
         <span className="rost-conn-live">
           <span className="rost-conn-live-dot" />
-          Connected · syncing daily
+          {isDistrict ? `Connected · syncing ${DISTRICT.schoolCount} schools daily` : 'Connected · syncing daily'}
         </span>
       </div>
       <dl className="rost-conn-meta">
@@ -132,28 +133,28 @@ function CustomSubjects({ words, onAdd, onRemove }) {
 
 function ViaPill({ via }) {
   if (via === 'filter') return <span className="rost-status rost-status--sync"><span className="rost-status-dot" />Filter</span>
-  if (via === 'custom') return <span className="rost-status rost-status--via"><span className="rost-status-dot" />Custom word</span>
+  if (via === 'custom') return <span className="rost-status rost-status--via"><span className="rost-status-dot" />Custom Subject</span>
   return <span className="rost-status rost-status--filter"><span className="rost-status-dot" />Not synced</span>
 }
 
-function FilterImpact({ filter }) {
+function FilterImpact({ filter, scope, schools = [], schoolId, onSchoolId }) {
   const [open, setOpen] = useState(false)
-  const [view, setView] = useState('imported')   // imported | excluded | all
+
+  const isDistrict = scope === 'district'
+  // District: preview the filter against the chosen school's roster. School: the
+  // single roster. (The filter itself is district-wide policy either way.)
+  const classes = isDistrict
+    ? (schools.find(s => s.id === schoolId)?.classes ?? INCOMING_CLASSES)
+    : INCOMING_CLASSES
 
   const classified = useMemo(
-    () => INCOMING_CLASSES.map(c => ({ ...c, via: classImportSource(c, filter) })),
-    [filter]
+    () => classes.map(c => ({ ...c, via: classImportSource(c, filter) })),
+    [classes, filter]
   )
   const total       = classified.length
   const filterCount = classified.filter(c => c.via === 'filter').length
   const customCount = classified.filter(c => c.via === 'custom').length
   const imported    = filterCount + customCount
-
-  const rows = useMemo(() => classified.filter(c => {
-    if (view === 'imported' && !c.via) return false
-    if (view === 'excluded' && c.via) return false
-    return true
-  }), [classified, view])
 
   const columns = [
     {
@@ -168,16 +169,29 @@ function FilterImpact({ filter }) {
     { key: 'subject', label: 'Subject', render: v => <span style={{ fontWeight: 600, fontSize: 13 }}>{v}</span> },
     { key: 'teachers', label: 'Teacher(s)', render: v => v.join(', ') },
     { key: 'students', label: '# Students', align: 'right', sortable: true },
-    { key: 'avgLexile', label: 'Avg Lexile', align: 'right', render: v => v ? `${v}L` : <span style={{ color: '#9CA3AF' }}>N/A</span> },
     { key: 'via', label: 'Synced via', align: 'right', render: v => <ViaPill via={v} /> },
   ]
 
   return (
     <div className="rost-fi">
       <div className="rost-rules-label">Filter preview</div>
+
       <div className="rost-fi-bar">
         <span className="rost-fi-text">
           Syncing <b>{imported}</b> of {total} classes
+          {isDistrict && (
+            <>
+              {' '}for{' '}
+              <select
+                className="rost-fi-school-select"
+                value={schoolId}
+                onChange={e => onSchoolId(e.target.value)}
+                aria-label="Choose a school to preview the filter against"
+              >
+                {schools.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
+              </select>
+            </>
+          )}
         </span>
         <button type="button" className="rost-btn rost-btn--ghost rost-fi-btn" onClick={() => setOpen(o => !o)} aria-expanded={open}>
           {open ? 'Hide classes' : 'See which classes'}
@@ -187,29 +201,17 @@ function FilterImpact({ filter }) {
 
       {open && (
         <div className="rost-fi-panel">
-          <div className="rost-filters">
-            <div className="rost-seg">
-              {[
-                { id: 'imported', label: `Synced (${imported})` },
-                { id: 'excluded', label: `Not synced (${total - imported})` },
-                { id: 'all',      label: `All (${total})` },
-              ].map(o => (
-                <button key={o.id} type="button" className={`rost-seg-btn${view === o.id ? ' rost-seg-btn--active' : ''}`} onClick={() => setView(o.id)}>{o.label}</button>
-              ))}
-            </div>
-          </div>
-
           <div className="rost-card rost-classes-table" style={{ padding: 0 }}>
             <Table
               columns={columns}
-              rows={rows}
+              rows={classified}
               getRowKey={r => r.id}
               zebra
               stickyHeader
               scrollX
               pageSize={12}
               flush
-              empty="No classes match these filters."
+              empty="No classes."
             />
           </div>
         </div>
@@ -218,7 +220,8 @@ function FilterImpact({ filter }) {
   )
 }
 
-function SubjectRulesSection({ filter, filterDirty, onSetMode, onAddCustom, onRemoveCustom, onSave, onCancel }) {
+function SubjectRulesSection({ filter, filterDirty, onSetMode, onAddCustom, onRemoveCustom, onSave, onCancel, scope, schools, schoolId, onSchoolId }) {
+  const isDistrict = scope === 'district'
   const footer = filterDirty ? (
     <div className="rost-card-footer-bar">
       <button className="rost-btn rost-btn--ghost" onClick={onCancel}>Cancel</button>
@@ -229,7 +232,7 @@ function SubjectRulesSection({ filter, filterDirty, onSetMode, onAddCustom, onRe
   return (
     <ChartCard
       title="Subject Rules"
-      subtitle="Pick which classes sync into Beanstack."
+      subtitle={isDistrict ? 'Pick which classes sync into Beanstack across your district.' : 'Pick which classes sync into Beanstack.'}
       icon={IcRules}
       accent={ACCENT}
       footer={footer}
@@ -245,10 +248,10 @@ function SubjectRulesSection({ filter, filterDirty, onSetMode, onAddCustom, onRe
       <div className="rost-rules-label rost-rules-label--spaced">
         Custom subjects <span className="rost-rules-label-opt">optional</span>
       </div>
-      <div className="rost-rules-help">Also sync classes whose name matches these words.</div>
+      <div className="rost-rules-help">Also sync any class whose name contains one of these keywords.</div>
       <CustomSubjects words={filter.customSubjects} onAdd={onAddCustom} onRemove={onRemoveCustom} />
 
-      <FilterImpact filter={filter} />
+      <FilterImpact filter={filter} scope={scope} schools={schools} schoolId={schoolId} onSchoolId={onSchoolId} />
     </ChartCard>
   )
 }
@@ -357,7 +360,12 @@ function fmtScheduledDeletion(date) {
   return new Date(`${date}T00:00:00`).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' })
 }
 
-function LastSyncSection() {
+function LastSyncSection({ scope }) {
+  return scope === 'district' ? <DistrictLastSync /> : <SchoolLastSync />
+}
+
+// School: one school's most recent sync; deactivations open a drill-down modal.
+function SchoolLastSync() {
   const [drill, setDrill] = useState(null)   // 'teachers' | 'students' | null
   const ls = LAST_SYNC
   const tD = ls.teachersDeactivated
@@ -434,11 +442,84 @@ function LastSyncSection() {
   )
 }
 
+// District: per-school last-sync totals in a borderless table. Clicking a
+// school's deactivated count opens that school's deactivation drill-down.
+function DistrictLastSync() {
+  const [drillSchool, setDrillSchool] = useState(null)
+
+  const columns = [
+    { key: 'name',        label: 'School',      render: v => <span style={{ fontWeight: 600 }}>{v}</span> },
+    { key: 'teachers',    label: 'Teachers',    align: 'right', render: v => v.toLocaleString() },
+    { key: 'students',    label: 'Students',    align: 'right', render: v => v.toLocaleString() },
+    { key: 'sections',    label: 'Sections',    align: 'right', render: v => v.toLocaleString() },
+    { key: 'enrollments', label: 'Enrollments', align: 'right', render: v => v.toLocaleString() },
+    {
+      key: 'deactivatedUsers', label: 'Deactivated', align: 'right',
+      render: (users, row) => users.length === 0
+        ? <span style={{ color: '#9CA3AF' }}>0</span>
+        : (
+          <button type="button" className="rost-ls-li-deact" onClick={() => setDrillSchool(row)} aria-haspopup="dialog">
+            {users.length} deactivated
+            <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="8" x2="12" y2="8"/><polyline points="8,4 12,8 8,12"/></svg>
+          </button>
+        ),
+    },
+  ]
+
+  return (
+    <ChartCard
+      title="Last sync"
+      subtitle={`Across all ${DISTRICT.schoolCount} schools · ${fmtSyncTime(DISTRICT.lastSyncAt)}`}
+      icon={IcHistory}
+      accent={ACCENT}
+      bodyPad="flush"
+    >
+      <Table columns={columns} rows={SCHOOLS} getRowKey={r => r.id} zebra stickyHeader scrollX flush className="rost-ls-tbl" empty="No schools." />
+
+      <Modal open={!!drillSchool} onClose={() => setDrillSchool(null)} variant="center" ariaLabel="Deactivated users">
+        {({ close }) => (
+          <div className="rost-deact-modal">
+            <div className="modal-header">
+              <div className="modal-header-text">
+                <h3 className="modal-title">Deactivated users — {drillSchool?.name}</h3>
+                <div className="rost-deact-sub">Removed on the deletion date unless they return in a later sync.</div>
+              </div>
+              <button className="rost-modal-close" onClick={close} aria-label="Close">
+                <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="4" y1="4" x2="12" y2="12"/><line x1="12" y1="4" x2="4" y2="12"/>
+                </svg>
+              </button>
+            </div>
+            <div className="modal-body">
+              <table className="rost-ls-drill-table">
+                <thead>
+                  <tr><th>#</th><th>User Name</th><th>Type</th><th>Deactivation Date</th><th>Scheduled Deletion</th></tr>
+                </thead>
+                <tbody>
+                  {(drillSchool?.deactivatedUsers ?? []).map((r, i) => (
+                    <tr key={r.name}>
+                      <td>{i + 1}</td>
+                      <td className="rost-ls-drill-name">{r.name}</td>
+                      <td>{r.role}</td>
+                      <td>{fmtDeactivatedAt(r.deactivatedAt)}</td>
+                      <td>{fmtScheduledDeletion(r.scheduledDeletion)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </Modal>
+    </ChartCard>
+  )
+}
+
 // ─── Page composition ─────────────────────────────────────────────────────
-export function SyncSettingsPage({ filter, filterDirty, onSetMode, onAddCustom, onRemoveCustom, onSaveFilter, onCancelFilter }) {
+export function SyncSettingsPage({ filter, filterDirty, onSetMode, onAddCustom, onRemoveCustom, onSaveFilter, onCancelFilter, scope, schools, schoolId, onSchoolId }) {
   return (
     <>
-      <ConnectionSection />
+      <ConnectionSection scope={scope} />
       <SubjectRulesSection
         filter={filter}
         filterDirty={filterDirty}
@@ -447,9 +528,13 @@ export function SyncSettingsPage({ filter, filterDirty, onSetMode, onAddCustom, 
         onRemoveCustom={onRemoveCustom}
         onSave={onSaveFilter}
         onCancel={onCancelFilter}
+        scope={scope}
+        schools={schools}
+        schoolId={schoolId}
+        onSchoolId={onSchoolId}
       />
       <ScheduleSection />
-      <LastSyncSection />
+      <LastSyncSection scope={scope} />
     </>
   )
 }

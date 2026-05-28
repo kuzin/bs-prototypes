@@ -315,6 +315,37 @@
 
 /* ─── Subject Rules — live filter preview ─────────────────────────────────── */
 .rost-fi { margin-top: 22px; }
+/* District version: inline school picker that sits inside the count line.
+   appearance:none hides the native arrow; we draw our own chevron via a
+   background SVG so it sits cleanly inside the inline pill. */
+.rost-fi-school-select {
+  appearance: none;
+  -webkit-appearance: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--rost-accent-deep, #5B3FC8);
+  background-color: #fff;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235B3FC8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><polyline points='4,6 8,10 12,6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 7px center;
+  background-size: 12px 12px;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  padding: 2px 24px 2px 8px;
+  cursor: pointer;
+  margin-left: 2px;
+  vertical-align: baseline;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.rost-fi-school-select:hover { border-color: var(--rost-accent, #7C5CFA); }
+.rost-fi-school-select:focus-visible {
+  outline: none;
+  border-color: var(--rost-accent, #7C5CFA);
+  box-shadow: 0 0 0 3px var(--rost-accent-soft, #EEEAFE);
+}
+/* District Last Sync table: borders off — rows read via zebra striping only */
+.rost-ls-tbl .tbl-th { border-top: none; border-bottom: none; }
+.rost-ls-tbl .tbl-td { border-bottom: none; }
 .rost-fi-bar {
   display: flex;
   align-items: center;
