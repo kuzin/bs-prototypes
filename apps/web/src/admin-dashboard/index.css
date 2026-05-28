@@ -1223,22 +1223,10 @@ button { font-family: inherit; cursor: pointer; }
 .adm-drt-td--goal { background: #F5F9FF; text-align: center; }
 .adm-drt-row .adm-drt-td { font-weight: 600; color: #1E293B; }
 .adm-drt-student { display: flex; align-items: center; gap: 8px; padding-left: 8px; }
-.adm-drt-rank {
-  width: 22px; height: 22px; border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 800; flex-shrink: 0;
-}
-.adm-drt-rank--gold   { background: #FCD34D; color: #92400E; }
-.adm-drt-rank--silver { background: #E5E7EB; color: #374151; }
-.adm-drt-rank--bronze { background: #D97706; color: #fff; }
-/* "Class Average" row: a smaller hollow grey circle that lines up with
-   the rank chips above. No content inside — visual alignment marker. */
-.adm-drt-rank--avg {
-  background: transparent;
-  border: 1.5px dashed #CBD5E1;
-  width: 16px; height: 16px;
-  /* nudge to keep the smaller circle centered in the 22px rank slot */
-  margin: 3px;
+.adm-drt-rank-num {
+  font-size: 13px; font-weight: 700; color: #64748B;
+  flex-shrink: 0; min-width: 18px;
+  font-variant-numeric: tabular-nums;
 }
 .adm-drt-student-name {
   font-weight: 700; color: #1A6DD5; cursor: pointer;
@@ -1308,8 +1296,8 @@ button { font-family: inherit; cursor: pointer; }
   .adm-drt-th, .adm-drt-td { padding: 10px 4px; vertical-align: middle; }
   .adm-drt-th--student     { padding-left: 12px; width: 104px; }
 
-  /* Smaller rank circle gives the student name a bit more room. */
-  .adm-drt-rank { width: 18px; height: 18px; font-size: 11px; }
+  /* Smaller rank text gives the student name a bit more room. */
+  .adm-drt-rank-num { font-size: 11.5px; min-width: 14px; }
   .adm-drt-student {
     padding-left: 0;
     gap: 8px;

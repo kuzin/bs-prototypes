@@ -234,7 +234,7 @@ export function AdmDailyTracker({ settings = {} }) {
               <tr key={s.id} className="adm-drt-row">
                 <td className="adm-drt-td">
                   <div className="adm-drt-student">
-                    <span className={`adm-drt-rank adm-drt-rank--${s.rank===1?"gold":s.rank===2?"silver":"bronze"}`}>{s.rank}</span>
+                    <span className="adm-drt-rank-num">{s.rank}.</span>
                     <span className="adm-drt-student-name">{s.name}</span>
                   </div>
                 </td>
@@ -263,8 +263,7 @@ export function AdmDailyTracker({ settings = {} }) {
             <tr className="adm-drt-avg-row">
               <td className="adm-drt-td">
                 <div className="adm-drt-student">
-                  <span className="adm-drt-rank adm-drt-rank--avg" aria-hidden="true" />
-                  <span>Class Average</span>
+                  <span>Average</span>
                 </div>
               </td>
               <td className="adm-drt-td adm-drt-td--goal" />
