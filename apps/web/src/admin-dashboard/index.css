@@ -1055,11 +1055,14 @@ button { font-family: inherit; cursor: pointer; }
 }
 /* Half-width widget (~480-620px): cap each tile at 50% so 4 tiles fit a
    2x2 grid and any leftover odd tile centers (justify-content above)
-   instead of stretching the full width of the cell. */
+   instead of stretching the full width of the cell. Drop the base
+   min-width: 140 so the cap actually wins at narrow body sizes — without
+   this, tiles fall back to 140 and overflow into a 1-column stack. */
 @container (max-width: 620px) {
   .adm-stat {
     flex-basis: calc(50% - 8px);
     max-width: calc(50% - 8px);
+    min-width: 0;
   }
 }
 /* Mobile viewport: 1-column full-width tiles. Use a viewport media query
