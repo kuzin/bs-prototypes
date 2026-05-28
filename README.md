@@ -19,7 +19,19 @@ This repo is a sandbox for trying out new Beanstack UI ideas — analytics dashb
 | **RIS: District** | District-level analytics dashboard for curriculum directors and superintendents | [/ris-district/](https://kuzin.github.io/bs-prototypes/ris-district/) |
 | **Sessions for Review** | Redesigned SFR with AI summary, engagement highlights, and combined Book Talk list | [/sfr/](https://kuzin.github.io/bs-prototypes/sfr/) |
 | **Admin Dashboard v2** | Editable admin home with drag-and-drop, resizable, lockable widgets | [/admin-dashboard/](https://kuzin.github.io/bs-prototypes/admin-dashboard/) |
+| **Rostering: School** | Preview Clever syncs, filter classroom subjects, and manage rostering from one place | [/rostering/](https://kuzin.github.io/bs-prototypes/rostering/) |
+| **Rostering: District** | District-wide roster sync settings — import filters and summer pause across schools | [/rostering-district/](https://kuzin.github.io/bs-prototypes/rostering-district/) |
+| **Insights · Load Concepts** | UX concepts for a lighter Insights page load — snapshot, drill-down, progressive, pinned widgets | [/insights/](https://kuzin.github.io/bs-prototypes/insights/) |
 | **Pattern Library** | Shared components used across prototypes — StatCard, ChartCard, tooltips, icons | [/patterns/](https://kuzin.github.io/bs-prototypes/patterns/) |
+
+### 🧪 Experiments
+
+Less-finished explorations that live alongside the main prototypes.
+
+| Experiment | What it is | Path |
+|---|---|---|
+| **Web App** | Beanstack consumer web app — student-facing dashboard, challenges, reading log | [/web-app/](https://kuzin.github.io/bs-prototypes/web-app/) |
+| **Unified Joyful Footer** | A consistent Joyful-brand footer applied to Comics Plus, MyDot, Beanstack, RMI Classroom — with dark/light mode | [/footers/](https://kuzin.github.io/bs-prototypes/footers/) |
 
 RIS = Reading Information System. SFR = Sessions for Review.
 
@@ -31,12 +43,17 @@ RIS = Reading Information System. SFR = Sessions for Review.
 bs-prototypes/
 ├── apps/
 │   └── web/                       # The Vite app (package name: bs-web)
-│       ├── index.html             # Landing page — grid of prototype cards
+│       ├── index.html             # Landing page — list of prototype cards
 │       ├── student-profile/       # One HTML entry per prototype
 │       ├── ris/
 │       ├── ris-district/
 │       ├── sfr/
 │       ├── admin-dashboard/
+│       ├── rostering/
+│       ├── rostering-district/
+│       ├── insights/
+│       ├── web-app/               # Experiments
+│       ├── footers/
 │       ├── patterns/
 │       ├── src/
 │       │   ├── index/             # Landing page React app
@@ -45,6 +62,11 @@ bs-prototypes/
 │       │   ├── ris-district/
 │       │   ├── sfr/
 │       │   ├── admin-dashboard/
+│       │   ├── rostering/
+│       │   ├── rostering-district/
+│       │   ├── insights/
+│       │   ├── web-app/
+│       │   ├── footers/
 │       │   ├── patterns/
 │       │   ├── prototypes.js      # Source of truth for the prototype list
 │       │   ├── PrototypeNav.jsx   # Cross-prototype switcher (top bar)
@@ -145,6 +167,7 @@ myProto: resolve(__dirname, 'my-proto/index.html'),
 {
   id: "my-proto",
   name: "My Proto",
+  section: "Prototypes",            // or "Experiments" for less-finished work
   href: "/bs-prototypes/my-proto/",
   accent: "#7C3AED",
   description: "What this prototype is for.",
