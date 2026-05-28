@@ -795,6 +795,7 @@ button { font-family: inherit; cursor: pointer; }
   display: flex; justify-content: space-between; align-items: center; gap: 12px;
 }
 .adm-edit-hint strong { font-weight: 800; }
+.adm-edit-hint-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
 
 /* ─── Widget chrome (replaces widget header in edit mode) ────────────── */
 .adm-cell-chrome {
