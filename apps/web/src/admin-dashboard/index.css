@@ -1148,15 +1148,15 @@ button { font-family: inherit; cursor: pointer; }
    Mirrors the Student Profile AdminMockup class view. Edge-to-edge table
    inside the widget body with a week navigator on top + legend in footer. */
 .adm-w-body.adm-drt {
-  /* Allow the table to scroll horizontally inside the cell when the widget
-     is placed at half-width — keeps all 7 day columns reachable. */
-  padding: 0; overflow-x: auto;
+  padding: 0;
+  /* Used by the compact-mode container query below so the tracker reshapes
+     itself when the cell is narrower than ~620px. */
+  container-type: inline-size;
+  /* Safety net for sub-compact viewports. */
+  overflow-x: auto;
 }
 .adm-drt {
   display: flex; flex-direction: column;
-  /* Reserve enough width for the 10 columns (Student 160 + Goal/Avg + 7 day
-     cells) so each stays legible. The body horizontally scrolls below this. */
-  min-width: 660px;
 }
 .adm-drt-week-nav {
   display: flex; align-items: center; gap: 12px;
@@ -1260,6 +1260,44 @@ button { font-family: inherit; cursor: pointer; }
 .adm-drt-legend .lg-yellow { color: #D97706; }
 .adm-drt-legend .lg-blue   { color: #1D4ED8; }
 .adm-drt-legend .lg-green  { color: #10B981; }
+
+/* ─── Compact tracker (narrow widget — e.g. half-width) ───────────────── */
+/* When the cell is narrower than ~620px the table drops the Goal and Average
+   columns and renders the partial-day percentages as colored dots instead of
+   numeric pills. Everything else (check / dash, day labels, class avg row)
+   stays. The Goal/Average info is still available at full width. */
+@container (max-width: 620px) {
+  /* Hide Goal (col 2) + Average (col 3) for every row in the table. */
+  .adm-drt-table tr > :nth-child(2),
+  .adm-drt-table tr > :nth-child(3) { display: none; }
+  /* Compress horizontal padding so day cells fit. */
+  .adm-drt-table          { table-layout: fixed; width: 100%; }
+  .adm-drt-th, .adm-drt-td { padding: 9px 2px; }
+  .adm-drt-th--student     { padding-left: 10px; width: 110px; }
+  .adm-drt-student         { padding-left: 2px; gap: 6px; }
+  .adm-drt-student-name {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  /* Turn the percentage badge into a saturated dot — number drops out. */
+  .adm-drt-pct {
+    width: 14px; height: 14px;
+    padding: 0; border-radius: 50%;
+    font-size: 0;
+  }
+  .adm-drt-pct--blue   { background: #2563EB; }
+  .adm-drt-pct--orange { background: #F59E0B; }
+  .adm-drt-pct--red    { background: #EF4444; }
+  /* Shrink the check circle to match the new dot rhythm. */
+  .adm-drt-check { width: 18px; height: 18px; }
+  .adm-drt-check svg { width: 9px; height: 9px; }
+  /* The Class Average row's percentages are plain text — hide them; the
+     visible row pattern still conveys the trend. */
+  .adm-drt-avg-row .adm-drt-td--center:not(:nth-child(2)):not(:nth-child(3)) {
+    color: #94A3B8; font-size: 12px;
+  }
+  /* Tighter week-nav label so it doesn't crowd the arrows. */
+  .adm-drt-week-label { font-size: 12.5px; }
+}
 
 /* ─── Leaderboards ────────────────────────────────────────────────────── */
 /* The body has no padding so the scrollbar sits flush to the cell's right
