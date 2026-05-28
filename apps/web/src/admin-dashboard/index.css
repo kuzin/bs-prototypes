@@ -1057,19 +1057,21 @@ button { font-family: inherit; cursor: pointer; }
 .adm-cell { container-type: inline-size; }
 
 /* ─── Stat tiles ──────────────────────────────────────────────────────── */
+/* Layout in three steps:
+   1. Base: 2-col cap so 4 tiles form a 2x2 at any cell width. A lone odd
+      tile (e.g. 5th in a 2x2 + 1 layout) stretches to full width.
+   2. @container ≤620px (side-by-side desktop): cap body height to match
+      the scrollable widget body (272px) and center the grid vertically
+      so paired cells line up.
+   3. @media ≤720px (true mobile viewport): stack tiles into one full-
+      width column and uncap the body. */
 .adm-stats {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   gap: 16px;
-  /* Pack wrapped rows at the top at their natural height — the card auto-fits
-     to the tiles (incl. the row gap) instead of stretching them, so there's no
-     extra space at the bottom. */
-  align-content: flex-start;
 }
 .adm-stat {
-  /* Always cap at 2 columns (50% minus gap share) so 4 tiles form a 2x2
-     grid at any cell width instead of a 3+1 layout. */
   flex: 1 1 calc(50% - 8px);
   max-width: calc(50% - 8px);
   min-width: 0;
@@ -1078,32 +1080,12 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 12px;
   border: 1px solid;
 }
-/* When the last tile is alone on its row (odd total count), stretch it to
-   the full body width so the row doesn't look half-empty. */
 .adm-stat:last-child:nth-child(odd) {
   flex-basis: 100%;
   max-width: 100%;
 }
-/* Half-width widget (~480-620px): cap each tile at 50% so 4 tiles fit a
-   2x2 grid and any leftover odd tile centers (justify-content above)
-   instead of stretching the full width of the cell. Drop the base
-   min-width: 140 so the cap actually wins at narrow body sizes — without
-   this, tiles fall back to 140 and overflow into a 1-column stack. */
+
 @container (max-width: 620px) {
-  /* Center the wrapped rows so any extra body height splits evenly above
-     and below the grid. Stretching the rows ballooned the last tile
-     when there was an odd count; centering keeps tiles at natural size. */
-  .adm-stats { align-content: center; }
-  .adm-stat {
-    flex-basis: calc(50% - 8px);
-    max-width: calc(50% - 8px);
-    min-width: 0;
-  }
-  /* Cap the body so 5+ tiles don't blow up the cell beside a scrollable
-     widget (Flagged Sessions, Leaderboard, …). 272px matches the
-     scrollable body height; overflow scrolls past it. Body becomes a
-     flex column so its child (.adm-stats) can vertically center when
-     the row stretches the cell taller than the natural tile height. */
   .adm-w-body:has(> .adm-stats) {
     max-height: 272px;
     overflow-y: auto;
@@ -1112,12 +1094,7 @@ button { font-family: inherit; cursor: pointer; }
     justify-content: center;
   }
 }
-/* Mobile viewport: 1-column full-width tiles. Use a viewport media query
-   (not a container query) so side-by-side at narrow desktop widths still
-   gets the 2-col treatment from above — the 1-col stretch is only what
-   we want when the user is actually on a phone-shaped screen. Mobile
-   also unsets the compact-mode max-height cap so the widget renders at
-   its natural content height. */
+
 @media (max-width: 720px) {
   .adm-stat {
     flex-basis: 100%;
