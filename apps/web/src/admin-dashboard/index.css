@@ -1101,10 +1101,15 @@ button { font-family: inherit; cursor: pointer; }
   }
   /* Cap the body so 5+ tiles don't blow up the cell beside a scrollable
      widget (Flagged Sessions, Leaderboard, …). 272px matches the
-     scrollable body height; overflow scrolls past it. */
+     scrollable body height; overflow scrolls past it. Body becomes a
+     flex column so its child (.adm-stats) can vertically center when
+     the row stretches the cell taller than the natural tile height. */
   .adm-w-body:has(> .adm-stats) {
     max-height: 272px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
   }
 }
 /* Mobile viewport: 1-column full-width tiles. Use a viewport media query
