@@ -1319,7 +1319,7 @@ button { font-family: inherit; cursor: pointer; }
    below the Class Average row instead of leaving body flex-slack between. */
 .adm-w-body.adm-drt { flex: 0 0 auto; }
 .adm-drt-legend {
-  display: flex; gap: 16px; justify-content: flex-end;
+  display: flex; gap: 16px; justify-content: center;
   font-size: 13px;
 }
 .adm-drt-legend .lg-red    { color: #DC2626; }
