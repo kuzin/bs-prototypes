@@ -173,6 +173,12 @@ export function App() {
     try { localStorage.setItem("adm-feature-on", next ? "1" : "0"); } catch {}
   };
   const toggleEditing = () => { setOpenSettings(null); setEditing((e) => !e); };
+  const resetDashboard = () => {
+    try { localStorage.removeItem(storageKey(role)); } catch {}
+    _setState(defaultsFor(role));
+    setOpenSettings(null);
+    setPaletteOpen(false);
+  };
 
   // Rows visible for this role (filter ids by catalog + role; drop empty rows).
   const visibleRows = rows
@@ -313,9 +319,14 @@ export function App() {
           {editing && (
             <div className="adm-edit-hint">
               <span>Drag a card onto another to place them side by side, or into a gap for a new row.</span>
-              <Button size="sm" variant="primary" onClick={() => setPaletteOpen(true)}>
-                ＋ Add widget
-              </Button>
+              <div className="adm-edit-hint-actions">
+                <Button size="sm" variant="secondary" onClick={resetDashboard}>
+                  Reset to default
+                </Button>
+                <Button size="sm" variant="primary" onClick={() => setPaletteOpen(true)}>
+                  ＋ Add widget
+                </Button>
+              </div>
             </div>
           )}
           {visibleRows.length === 0 ? (
