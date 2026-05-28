@@ -174,7 +174,6 @@ export function App() {
   };
   const toggleEditing = () => { setOpenSettings(null); setEditing((e) => !e); };
   const resetDashboard = () => {
-    if (!confirm("Reset this role's dashboard to the default layout? Your customizations will be lost.")) return;
     try { localStorage.removeItem(storageKey(role)); } catch {}
     _setState(defaultsFor(role));
     setOpenSettings(null);
