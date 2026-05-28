@@ -486,6 +486,11 @@ button { font-family: inherit; cursor: pointer; }
   .adm-h1 { font-size: 22px; flex-basis: 100%; }
   .adm-topbar { padding-top: 20px; gap: 14px; }
   .adm-topbar-r { width: 100%; flex-wrap: wrap; }
+  /* CustomSelect defaults to width:100% — fine on desktop where the topbar
+     has no fixed width, but on mobile it stretches the role picker across
+     the row. Size it to its content instead so it sits inline with the
+     action buttons. */
+  .adm-topbar-r > .csel-trigger { width: auto; }
 }
 .adm-grid-card { display: flex; position: relative; flex: 1 1 0; min-width: 0; }
 .adm-grid-card > .adm-cell {
