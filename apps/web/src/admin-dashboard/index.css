@@ -1298,7 +1298,9 @@ button { font-family: inherit; cursor: pointer; }
   /* Tight cell padding so the date table compresses more. */
   .adm-drt-table          { table-layout: fixed; width: 100%; }
   .adm-drt-th, .adm-drt-td { padding: 6px 3px; vertical-align: middle; }
-  .adm-drt-th--student     { padding-left: 10px; width: 96px; }
+  .adm-drt-th--student     { padding-left: 16px; width: 104px; }
+  .adm-drt-row .adm-drt-td:first-child,
+  .adm-drt-avg-row .adm-drt-td:first-child { padding-left: 16px; }
 
   /* Smaller rank text gives the student name a bit more room. */
   .adm-drt-rank-num { font-size: 11px; min-width: 12px; }
