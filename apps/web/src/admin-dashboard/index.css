@@ -1059,6 +1059,9 @@ button { font-family: inherit; cursor: pointer; }
    min-width: 140 so the cap actually wins at narrow body sizes — without
    this, tiles fall back to 140 and overflow into a 1-column stack. */
 @container (max-width: 620px) {
+  /* Stretch the wrapped rows so the tiles fill the body's full height
+     instead of leaving empty padding below the last row. */
+  .adm-stats { align-content: stretch; }
   .adm-stat {
     flex-basis: calc(50% - 8px);
     max-width: calc(50% - 8px);
