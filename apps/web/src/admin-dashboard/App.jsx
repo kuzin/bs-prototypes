@@ -18,12 +18,12 @@ import "../MainRail.css";
 import "./index.css";
 
 const ROLES = [
-  { value: "teacher",      label: "Teacher view" },
-  { value: "media",        label: "Media Specialist view" },
-  { value: "library",      label: "Public Library view" },
-  { value: "kitchen",      label: "Kitchen Sink view" },
+  { value: "teacher",      label: "Teacher" },
+  { value: "media",        label: "Media Specialist" },
+  { value: "library",      label: "Public Library" },
+  { value: "kitchen",      label: "Kitchen Sink" },
   { value: "kitchen-full", label: "Kitchen Sink (full width)" },
-  { value: "empty",        label: "Empty Sink view" },
+  { value: "empty",        label: "Empty Sink" },
 ];
 // Kitchen Sink, Kitchen Sink (full width), and Empty Sink are catalog demos —
 // they show every widget regardless of per-widget role gates. Empty Sink

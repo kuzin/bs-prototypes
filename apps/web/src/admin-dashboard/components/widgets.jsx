@@ -15,13 +15,7 @@ const fmt = (n) => n.toLocaleString();
 // preview the no-data UX without hand-toggling each widget. Each widget that
 // can be meaningfully empty checks `role === "empty"` and returns a shared
 // shell wrapping <EmptyState>.
-const EmptyBookIcon = () => (
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M4 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4z" />
-    <path d="M20 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z" />
-  </svg>
-);
-function WidgetEmpty({ title, action, body, icon = <EmptyBookIcon />, empty }) {
+function WidgetEmpty({ title, action, empty }) {
   return (
     <div className="adm-w">
       <div className="adm-w-head">
@@ -29,11 +23,7 @@ function WidgetEmpty({ title, action, body, icon = <EmptyBookIcon />, empty }) {
         {action && <button className="adm-w-action">{action}</button>}
       </div>
       <div className="adm-w-body adm-w-body--empty">
-        <EmptyState
-          icon={icon}
-          title={empty.title}
-          description={empty.description}
-        />
+        <EmptyState title={empty.title} description={empty.description} />
       </div>
     </div>
   );
