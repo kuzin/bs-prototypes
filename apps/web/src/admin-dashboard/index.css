@@ -506,6 +506,25 @@ button { font-family: inherit; cursor: pointer; }
    Number Cruncher, Leaderboard…) share one fixed body height so they line up,
    and scroll internally past it. */
 .adm-cell--scroll .adm-w-body { flex: none; height: 272px; overflow-y: auto; }
+/* Full-width override for the Leaderboard combo + Number Cruncher: at >=621px
+   cell width they render at their natural content height instead of the
+   fixed scroll body, so there's no awkward in-card scroll when there's
+   plenty of vertical room. Compact mode keeps the 272 cap for pair matching. */
+@container (min-width: 621px) {
+  .adm-cell--scroll .adm-w-body.adm-lbc,
+  .adm-cell--scroll .adm-w-body:has(> .adm-questions) {
+    flex: 0 0 auto;
+    height: auto;
+    overflow-y: visible;
+  }
+  /* The inner list normally has flex: 1 0 0 to fill a fixed-height body —
+     when the body is content-height, collapse-to-zero kicks in. Size the
+     list to its content here too. */
+  .adm-cell--scroll .adm-w-body.adm-lbc .adm-lbc-list {
+    flex: 0 0 auto;
+    overflow-y: visible;
+  }
+}
 /* Small non-scrollable widgets (Community Goal, Engagement) share one compact
    body height so they line up too. */
 .adm-cell--small .adm-w-body { flex: none; height: 132px; }

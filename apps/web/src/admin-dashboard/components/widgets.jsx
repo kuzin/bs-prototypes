@@ -137,13 +137,19 @@ const LOG_TYPE_TILES = {
     staffMinutes: { value: "126", label: "Staff Books", hint: undefined },
   },
 };
+// Catalog-demo roles (Kitchen Sink + variants) bypass per-tile role gates so
+// every metric in the catalog is visible.
+const IS_CATALOG_ROLE = (role) => role === "kitchen" || role === "kitchen-full";
+
 export function AdmStatTiles({ settings = {}, role = "teacher" }) {
   if (role === "empty") return (
     <WidgetEmpty title="What's Happened" action="View Report"
       empty={{ title: "No reading logged yet", description: "Once students start logging, you'll see weekly minutes, active readers, and Lexile averages here." }} />
   );
   // Tiles available to this role (staff-related ones are media-only)
-  const available = STAT_TILES.filter((s) => !s.roles || s.roles.includes(role));
+  const available = STAT_TILES.filter(
+    (s) => IS_CATALOG_ROLE(role) || !s.roles || s.roles.includes(role)
+  );
   const selectedIds = settings.selected && settings.selected.length
     ? settings.selected
     : available.map((s) => s.id);
@@ -208,7 +214,7 @@ const STAT_DEFAULTS = {
 // Kitchen Sink is the catalog demo and gets the full list.
 const STAT_FIELDS = (role) => {
   const visible = STAT_TILES.filter(
-    (s) => role === "kitchen" || !s.roles || s.roles.includes(role)
+    (s) => IS_CATALOG_ROLE(role) || !s.roles || s.roles.includes(role)
   );
   return [
     { key: "logType", label: "Log type", type: "select",
