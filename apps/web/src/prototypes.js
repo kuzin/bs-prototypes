@@ -5,7 +5,7 @@ export const PROTOTYPES = [
     section: "Prototypes",
     href: "/bs-prototypes/student-profile/",
     accent: "#E8866A",
-    description: "Reading habits, skills, motivation & integrity dashboard for a single student.",
+    description: "Single-student habits, skills, motivation & integrity.",
   },
   {
     id: "ris-school",
@@ -13,7 +13,7 @@ export const PROTOTYPES = [
     section: "Prototypes",
     href: "/bs-prototypes/ris/",
     accent: "#1D4ED8",
-    description: "School-level analytics dashboard for principals and instructional coaches.",
+    description: "School analytics for principals & coaches.",
   },
   {
     id: "ris-district",
@@ -21,7 +21,7 @@ export const PROTOTYPES = [
     section: "Prototypes",
     href: "/bs-prototypes/ris-district/",
     accent: "#0DA7BC",
-    description: "District-level analytics dashboard for curriculum directors and superintendents.",
+    description: "District analytics for curriculum & superintendents.",
   },
   {
     id: "sfr",
@@ -29,7 +29,7 @@ export const PROTOTYPES = [
     section: "Prototypes",
     href: "/bs-prototypes/sfr/",
     accent: "#16A97A",
-    description: "Redesigned Sessions for Review with AI summary, engagement highlights, and combined Book Talk list.",
+    description: "Redesigned Sessions for Review with AI summary.",
   },
   {
     id: "admin-dashboard",
@@ -37,7 +37,7 @@ export const PROTOTYPES = [
     section: "Prototypes",
     href: "/bs-prototypes/admin-dashboard/",
     accent: "#1A6DD5",
-    description: "Editable admin dashboard with drag-and-drop, resizable, lockable widgets.",
+    description: "Editable dashboard with drag-and-drop widgets.",
   },
   {
     id: "rostering",
@@ -45,7 +45,7 @@ export const PROTOTYPES = [
     section: "Prototypes",
     href: "/bs-prototypes/rostering/",
     accent: "#7C5CFA",
-    description: "Preview what's coming in from Clever, filter classroom subjects, and manage roster syncs from one place.",
+    description: "Clever roster sync — preview, filter, manage.",
   },
   {
     id: "rostering-district",
@@ -53,7 +53,7 @@ export const PROTOTYPES = [
     section: "Prototypes",
     href: "/bs-prototypes/rostering-district/",
     accent: "#5B3FC8",
-    description: "District-level roster sync settings — set the import filter and summer pause for every school, and preview the filter against any school.",
+    description: "District-wide roster sync filters & previews.",
   },
   {
     id: "insights",
@@ -61,7 +61,7 @@ export const PROTOTYPES = [
     section: "Prototypes",
     href: "/bs-prototypes/insights/",
     accent: "#6366F1",
-    description: "UX concepts for a less resource-intensive Insights page load — cached snapshot, drill-down, progressive, and pinned widgets.",
+    description: "Lighter Insights load — snapshot, drill-down, progressive.",
   },
   {
     id: "web-app",
@@ -69,7 +69,7 @@ export const PROTOTYPES = [
     section: "Experiments",
     href: "/bs-prototypes/web-app/",
     accent: "#0DA7BC",
-    description: "Beanstack consumer web app — student-facing dashboard, challenges, reading log.",
+    description: "Student-facing dashboard, challenges, reading log.",
   },
   {
     id: "footers",
@@ -77,7 +77,7 @@ export const PROTOTYPES = [
     section: "Experiments",
     href: "/bs-prototypes/footers/",
     accent: "#7C5CFA",
-    description: "A consistent Joyful-brand footer applied to Comics Plus, MyDot, Beanstack, and RMI Classroom — with dark/light mode.",
+    description: "Joyful footer across Comics Plus, MyDot, Beanstack, RMI.",
   },
   {
     id: "patterns",
@@ -85,6 +85,6 @@ export const PROTOTYPES = [
     section: "Prototypes",
     href: "/bs-prototypes/patterns/",
     accent: "#7C3AED",
-    description: "Shared components used across all RIS prototypes — StatCard, ChartCard, tooltips, icons.",
+    description: "Shared RIS components — cards, charts, tooltips, icons.",
   },
 ];
