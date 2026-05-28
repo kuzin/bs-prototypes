@@ -486,6 +486,11 @@ button { font-family: inherit; cursor: pointer; }
   .adm-h1 { font-size: 22px; flex-basis: 100%; }
   .adm-topbar { padding-top: 20px; gap: 14px; }
   .adm-topbar-r { width: 100%; flex-wrap: wrap; }
+  /* CustomSelect defaults to width:100% — fine on desktop where the topbar
+     has no fixed width, but on mobile it stretches the role picker across
+     the row. Size it to its content instead so it sits inline with the
+     action buttons. */
+  .adm-topbar-r > .csel-trigger { width: auto; }
 }
 .adm-grid-card { display: flex; position: relative; flex: 1 1 0; min-width: 0; }
 .adm-grid-card > .adm-cell {
@@ -1444,11 +1449,41 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: 0 10px 28px rgba(26,109,213,0.35);
 }
 .adm-fab:hover { background: #1559B7; }
-.adm-panel-empty {
-  padding: 24px 12px;
-  text-align: center;
-  font-size: 13px;
-  color: #64748B;
+/* ─── Side-modal pane (Add Widget) ──────────────────────────────────────
+   Inner shell for <Modal variant="side">. Follows the same pane pattern
+   as the .sp-pane in patterns/App.jsx so headers + bodies feel consistent
+   across panels. */
+.adm-side-pane {
+  display: flex; flex-direction: column;
+  height: 100%;
+  background: #fff;
+}
+.adm-side-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  background: #fff;
+  border-bottom: 1px solid #EAEAEA;
+  flex-shrink: 0;
+}
+.adm-side-head-text {
+  min-width: 0;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.adm-side-title {
+  font-size: 16px; font-weight: 800; color: #0F172A;
+  letter-spacing: -0.01em; line-height: 1.2;
+  margin: 0;
+}
+.adm-side-sub { font-size: 13px; color: #64748B; }
+.adm-side-body {
+  flex: 1; min-height: 0; overflow-y: auto;
+  background: #F8FAFC;
+  padding: 16px;
+}
+.adm-side-body--empty {
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px 16px;
 }
 
 .adm-panel {
@@ -1467,21 +1502,6 @@ button { font-family: inherit; cursor: pointer; }
 }
 .adm-panel-title { font-size: 16px; font-weight: 800; }
 .adm-panel-sub { font-size: 12px; color: #64748B; margin-bottom: 14px; }
-.adm-panel-list {
-  flex: 1; min-height: 0; overflow: auto;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
-}
-.adm-panel-item {
-  border: var(--border); border-radius: 10px; padding: 12px;
-  display: flex; flex-direction: column; gap: 6px; align-items: flex-start;
-  background: #F8FAFC;
-  text-align: left;
-  cursor: pointer;
-}
-.adm-panel-item:hover { background: #EFF6FF; border-color: #93C5FD; }
-.adm-panel-item:disabled { opacity: 0.4; cursor: not-allowed; }
-.adm-panel-item h5 { font-size: 13px; font-weight: 800; }
-.adm-panel-item p { font-size: 11px; color: #64748B; line-height: 1.4; }
 
 /* ─── Shared list-card style (Add Widget + Templates panels) ──────────── */
 /* Both panels render the same shape: a thumbnail / preview on the left, a
@@ -1816,16 +1836,24 @@ button { font-family: inherit; cursor: pointer; }
 .adm-lbc-val { font-weight: 700; color: #475569; font-size: 13px; flex-shrink: 0; }
 
 /* ─── Top Books shelf + Most Earned Badges (visual) ───────────────────── */
-/* Items flex to fill the full-width block evenly (no empty gap on the right). */
+/* Items wrap and center so partial rows sit balanced under the title. Item
+   widths are fixed so the covers/medals don't squeeze when the container
+   is narrower than (count × item + gaps). */
 .adm-w-body.adm-shelf,
 .adm-w-body.adm-badges {
-  display: flex; gap: 16px;
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 16px;
   align-items: flex-start;
 }
-.adm-shelf-item { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.adm-shelf-item {
+  flex: 0 0 96px;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  text-align: center;
+}
 .adm-book-cover {
   position: relative;
-  height: 150px; border-radius: 8px;
+  width: 100%; aspect-ratio: 2 / 3;
+  border-radius: 8px;
   color: #fff;
   background: #E2E8F0;
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.16);
@@ -1849,7 +1877,7 @@ button { font-family: inherit; cursor: pointer; }
 .adm-shelf-meta { font-size: 12px; font-weight: 700; color: #64748B; }
 
 .adm-badge-item {
-  flex: 1 1 0; min-width: 0;
+  flex: 0 0 80px;
   display: flex; flex-direction: column; align-items: center; gap: 8px;
   text-align: center;
 }
