@@ -1030,9 +1030,9 @@ button { font-family: inherit; cursor: pointer; }
 .adm-banner--danger .adm-banner-ico { background: #FEE2E2; }
 
 /* ─── Stat tiles ──────────────────────────────────────────────────────── */
-/* Body opts into container queries so the tiles can reshape themselves when
-   the widget is dragged to half width. */
-.adm-w-body:has(> .adm-stats) { container-type: inline-size; }
+/* Container-type goes on the cell (not the body) so compact-mode rules can
+   restyle the body itself — a container can't reliably restyle itself. */
+.adm-cell:has(> .adm-w > .adm-w-body > .adm-stats) { container-type: inline-size; }
 .adm-stats {
   display: flex;
   flex-wrap: wrap;
@@ -1067,6 +1067,13 @@ button { font-family: inherit; cursor: pointer; }
     flex-basis: calc(50% - 8px);
     max-width: calc(50% - 8px);
     min-width: 0;
+  }
+  /* Cap the body so 5+ tiles don't blow up the cell beside a scrollable
+     widget (Flagged Sessions, Leaderboard, …). 272px matches the
+     scrollable body height; overflow scrolls past it. */
+  .adm-w-body:has(> .adm-stats) {
+    max-height: 272px;
+    overflow-y: auto;
   }
 }
 /* Mobile viewport: 1-column full-width tiles. Use a viewport media query
