@@ -1035,10 +1035,14 @@ button { font-family: inherit; cursor: pointer; }
 .adm-banner--danger{ background: #FEF2F2; border-color: #FECACA; color: #B91C1C; }
 .adm-banner--danger .adm-banner-ico { background: #FEE2E2; }
 
+/* Every cell opts into inline-size container queries so the compact-mode
+   rules below (stat tiles 2x2, tracker compact, books/badges height cap)
+   can target any widget's descendants. Container-type lives on the cell
+   so the body — the actual target of most overrides — isn't its own
+   container (a container can't reliably restyle itself). */
+.adm-cell { container-type: inline-size; }
+
 /* ─── Stat tiles ──────────────────────────────────────────────────────── */
-/* Container-type goes on the cell (not the body) so compact-mode rules can
-   restyle the body itself — a container can't reliably restyle itself. */
-.adm-cell:has(> .adm-w > .adm-w-body > .adm-stats) { container-type: inline-size; }
 .adm-stats {
   display: flex;
   flex-wrap: wrap;
@@ -1050,10 +1054,11 @@ button { font-family: inherit; cursor: pointer; }
   align-content: flex-start;
 }
 .adm-stat {
-  /* fill the row evenly; min 140px keeps content readable, max none so they
-     stretch when fewer are visible */
-  flex: 1 1 140px;
-  min-width: 140px;
+  /* Always cap at 2 columns (50% minus gap share) so 4 tiles form a 2x2
+     grid at any cell width instead of a 3+1 layout. */
+  flex: 1 1 calc(50% - 8px);
+  max-width: calc(50% - 8px);
+  min-width: 0;
   display: flex; align-items: center; gap: 12px;
   padding: 14px 16px;
   border-radius: 12px;
@@ -1196,9 +1201,8 @@ button { font-family: inherit; cursor: pointer; }
 /* ─── Daily reading tracker (per-student table) ──────────────────────────
    Mirrors the Student Profile AdminMockup class view. Edge-to-edge table
    inside the widget body with a week navigator on top + legend in footer. */
-/* Put the container-type on the cell so the compact rules below can also
-   restyle the body itself (a container can't easily restyle itself). */
-.adm-cell:has(.adm-w-body.adm-drt) { container-type: inline-size; }
+/* container-type lives on .adm-cell universally — see the rule near the
+   top of the stat-tiles section. */
 .adm-w-body.adm-drt {
   padding: 0;
   /* Safety net for sub-compact viewports. */
@@ -1869,20 +1873,23 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
+/* Hint reads as a text link in the tile's tone — no pill background, with
+   a → arrow that nudges right on hover. */
 .adm-stat-hint {
   margin-top: 10px;
-  display: inline-flex; align-items: center; gap: 2px;
-  width: fit-content;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
-  font-size: 11px; font-weight: 800;
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11.5px; font-weight: 700;
   color: inherit;            /* picks up the stat tile's tone */
   letter-spacing: 0.01em;
-  transition: background .12s;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
 }
-.adm-stat--link:hover .adm-stat-hint { background: rgba(255, 255, 255, 0.95); }
-.adm-stat-hint-arrow { font-size: 13px; line-height: 1; }
+.adm-stat-hint-arrow {
+  font-size: 12px; font-weight: 800; line-height: 1;
+  transition: transform .15s;
+}
+.adm-stat--link:hover .adm-stat-hint-arrow { transform: translateX(2px); }
 
 /* ─── Flagged sessions list (RIS — sessions to review) ────────────────── */
 .adm-w-body.adm-flagged { padding: 0; }
@@ -1913,15 +1920,19 @@ button { font-family: inherit; cursor: pointer; }
 .adm-flag--yellow { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
 
 /* ─── Combined leaderboard (Classes / Students toggle, top 3) ─────────── */
+/* Body has zero padding so the internal list scrollbar sits flush with the
+   cell's right edge. Toggle + rows carry their own gutters. */
 .adm-w-body.adm-lbc {
-  display: flex; flex-direction: column; gap: 12px;
+  display: flex; flex-direction: column; gap: 0;
+  padding: 0;
 }
 .adm-lbc > * { flex-shrink: 0; }
 /* Scrollable combo: fixed body height (matches Flagged), toggle stays put, the
    list scrolls inside. */
 .adm-cell--scroll .adm-w-body.adm-lbc { overflow: hidden; }
 .adm-lbc-toggle {
-  display: flex; width: 100%;
+  display: flex; flex: 0 0 auto;
+  margin: 14px 16px 12px;
   background: #F1F5F9; border: 1px solid #E2E8F0;
   border-radius: 9px; padding: 3px; gap: 2px;
 }
@@ -1939,11 +1950,11 @@ button { font-family: inherit; cursor: pointer; }
 .adm-lbc-list {
   list-style: none; margin: 0; padding: 0;
   display: flex; flex-direction: column;
-  flex: 1 1 0; min-height: 0; overflow-y: auto;   /* scroll within the fixed body */
+  flex: 1 1 0; min-height: 0; overflow-y: auto;   /* scrollbar flush w/ cell edge */
 }
 .adm-lbc-row {
   display: flex; align-items: center; gap: 12px;
-  padding: 10px 4px;
+  padding: 10px 16px;
   border-bottom: 1px dashed #E5E7EB;
 }
 .adm-lbc-row:last-child { border-bottom: 0; }
@@ -1972,6 +1983,17 @@ button { font-family: inherit; cursor: pointer; }
   display: flex; flex-wrap: wrap; justify-content: center;
   gap: 16px;
   align-items: flex-start;
+}
+/* Compact-mode (half-width pair): cap the body height to match the
+   shared scrollable height so books/badges line up with their partner
+   widget instead of dragging the row taller. */
+@container (max-width: 620px) {
+  .adm-w-body.adm-shelf,
+  .adm-w-body.adm-badges {
+    max-height: 272px;
+    overflow-y: auto;
+    align-content: center;
+  }
 }
 .adm-shelf-item {
   flex: 0 0 96px;

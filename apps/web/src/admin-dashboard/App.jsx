@@ -326,10 +326,10 @@ export function App() {
               <span>Drag a card onto another to place them side by side, or into a gap for a new row.</span>
               <div className="adm-edit-hint-actions">
                 <Button size="sm" variant="secondary" onClick={resetDashboard}>
-                  Reset to default
+                  Reset to Default
                 </Button>
                 <Button size="sm" variant="primary" onClick={() => setPaletteOpen(true)}>
-                  ＋ Add widget
+                  ＋ Add Widget
                 </Button>
               </div>
             </div>
@@ -340,10 +340,10 @@ export function App() {
               <p>Add widgets to build your dashboard.</p>
               <div className="adm-empty-actions">
                 {!editing && (
-                  <button className="adm-btn adm-btn--primary" onClick={toggleEditing}>Edit dashboard</button>
+                  <button className="adm-btn adm-btn--primary" onClick={toggleEditing}>Edit Dashboard</button>
                 )}
                 {editing && (
-                  <button className="adm-btn adm-btn--primary" onClick={() => setPaletteOpen(true)}>＋ Add widget</button>
+                  <button className="adm-btn adm-btn--primary" onClick={() => setPaletteOpen(true)}>＋ Add Widget</button>
                 )}
               </div>
             </div>

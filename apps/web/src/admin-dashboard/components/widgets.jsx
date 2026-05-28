@@ -149,7 +149,7 @@ const LOG_TYPE_TILES = {
 };
 export function AdmStatTiles({ settings = {}, role = "teacher" }) {
   if (role === "empty") return (
-    <WidgetEmpty title="What's Happened" action="View report"
+    <WidgetEmpty title="What's Happened" action="View Report"
       empty={{ title: "No reading logged yet", description: "Once students start logging, you'll see weekly minutes, active readers, and Lexile averages here." }} />
   );
   // Tiles available to this role (staff-related ones are media-only)
@@ -169,7 +169,7 @@ export function AdmStatTiles({ settings = {}, role = "teacher" }) {
           What's Happened
           <span className="adm-w-meta">{STAT_RANGE_LABEL[range]}</span>
         </div>
-        <button className="adm-w-action">View report</button>
+        <button className="adm-w-action">View Report</button>
       </div>
       <div className="adm-w-body">
         <div className="adm-stats">
@@ -191,7 +191,7 @@ export function AdmStatTiles({ settings = {}, role = "teacher" }) {
                   <div className="adm-stat-lbl">{tile.label}</div>
                   {linkable && (
                     <span className="adm-stat-hint">
-                      {tile.hint}<span className="adm-stat-hint-arrow" aria-hidden="true">›</span>
+                      {tile.hint}<span className="adm-stat-hint-arrow" aria-hidden="true">→</span>
                     </span>
                   )}
                 </div>
@@ -264,7 +264,7 @@ const CheckIcon = () => (
 );
 export function AdmDailyTracker({ settings = {}, role = "teacher" }) {
   if (role === "empty") return (
-    <WidgetEmpty title="Daily Reading Tracker" action="View all classes"
+    <WidgetEmpty title="Daily Reading Tracker" action="View All Classes"
       empty={{ title: "No daily logs this week", description: "Set a per-student goal and ask students to log each day. Their daily progress will appear here." }} />
   );
   const group = settings.group || "class-a";
@@ -276,7 +276,7 @@ export function AdmDailyTracker({ settings = {}, role = "teacher" }) {
           Daily Reading Tracker
           <span className="adm-w-meta">{GROUP_LABEL[group] || "Class A · Grade 3"}</span>
         </div>
-        <button className="adm-w-action">View all classes</button>
+        <button className="adm-w-action">View All Classes</button>
       </div>
       <div className="adm-w-body adm-drt">
         <div className="adm-drt-week-nav">
@@ -545,7 +545,7 @@ const FlagIcon = () => (
 );
 export function AdmFlaggedSessions({ role = "teacher" } = {}) {
   if (role === "empty") return (
-    <WidgetEmpty title="Flagged Sessions" action="Review all"
+    <WidgetEmpty title="Flagged Sessions" action="Review All"
       empty={{ title: "Nothing to review", description: "Reading Integrity hasn't flagged any sessions this week — your students are reading clean." }} />
   );
   const f = FLAGGED_SESSIONS;
@@ -557,7 +557,7 @@ export function AdmFlaggedSessions({ role = "teacher" } = {}) {
           Flagged Sessions
           <span className="adm-w-meta">{sessions.length} to review · {f.range}</span>
         </div>
-        <button className="adm-w-action">Review all</button>
+        <button className="adm-w-action">Review All</button>
       </div>
       <div className="adm-w-body adm-flagged">
         <ul className="adm-flagged-list">
@@ -625,7 +625,7 @@ function BookCover({ book, rank }) {
 
 export function AdmTopBooks({ settings = {}, role = "teacher" }) {
   if (role === "empty") return (
-    <WidgetEmpty title="Top Books" action="View report"
+    <WidgetEmpty title="Top Books" action="View Report"
       empty={{ title: "No books logged yet", description: "As your readers log titles, the most-read books will rank here." }} />
   );
   const range = settings.range || "week";
@@ -638,7 +638,7 @@ export function AdmTopBooks({ settings = {}, role = "teacher" }) {
           Top Books
           <span className="adm-w-meta">{TB_RANGE_META[range]}</span>
         </div>
-        <button className="adm-w-action">View report</button>
+        <button className="adm-w-action">View Report</button>
       </div>
       <div className="adm-w-body adm-shelf">
         {TOP_BOOKS.slice(0, limit).map((b, i) => (
@@ -656,7 +656,7 @@ export function AdmTopBooks({ settings = {}, role = "teacher" }) {
 
 export function AdmTopBadges({ settings = {}, role = "teacher" }) {
   if (role === "empty") return (
-    <WidgetEmpty title="Most Earned Badges" action="View report"
+    <WidgetEmpty title="Most Earned Badges" action="View Report"
       empty={{ title: "No badges earned yet", description: "Once students hit reading milestones, the badges they earn most will land here." }} />
   );
   const range = settings.range || "week";
@@ -669,7 +669,7 @@ export function AdmTopBadges({ settings = {}, role = "teacher" }) {
           Most Earned Badges
           <span className="adm-w-meta">{TB_RANGE_META[range]}</span>
         </div>
-        <button className="adm-w-action">View report</button>
+        <button className="adm-w-action">View Report</button>
       </div>
       <div className="adm-w-body adm-badges">
         {TOP_BADGES.slice(0, limit).map((b) => (
@@ -834,7 +834,7 @@ const Q_ICONS = {
 
 export function AdmQuestions({ settings = {}, role = "teacher" }) {
   if (role === "empty") return (
-    <WidgetEmpty title="Number Cruncher" action="More questions"
+    <WidgetEmpty title="Number Cruncher" action="More Questions"
       empty={{ title: "No questions selected", description: "Open the cog to pick the questions you want quick answers to — they'll appear here ready to click." }} />
   );
   const selectedIds = settings.selected && settings.selected.length
@@ -848,7 +848,7 @@ export function AdmQuestions({ settings = {}, role = "teacher" }) {
           Number Cruncher
           <span className="adm-w-meta">{list.length} question{list.length === 1 ? "" : "s"}</span>
         </div>
-        <button className="adm-w-action">More questions</button>
+        <button className="adm-w-action">More Questions</button>
       </div>
       <div className="adm-w-body">
         <div className="adm-questions">

@@ -13,7 +13,7 @@ export const NOTIFICATIONS = [
     title: "[Webinar] What's New for Back to School",
     body:
       "Discover the latest Beanstack features—Book Talks with Benny, daily reading tracking, rewards, editable badges & more! Join us Aug 12 at 2 PM ET and get ready to supercharge student engagement this year!",
-    action: "Register here",
+    action: "Register Here",
   },
 ];
 
@@ -43,7 +43,7 @@ export const FEATURE_BAR = {
   badge: "New",
   title: "Daily Reading Tracker is now available",
   body: "See per-student weekly progress at a glance and spot gaps before they grow.",
-  cta: "Take a tour",
+  cta: "Take a Tour",
   href: "#",
 };
 
@@ -275,7 +275,7 @@ export const LINKS = [
 export const ACTIONS = [
   { id: "a-flags",     title: "Review flagged sessions", subtitle: "3 sessions need a teacher's eyes", icon: "flag",      attention: 3,  cta: "Review",   roles: ["teacher", "media"] },
   { id: "a-rewards",   title: "Distribute rewards",      subtitle: "12 students newly earned a reward", icon: "reward",   attention: 12, cta: "Distribute", roles: ["media"] },
-  { id: "a-challenge", title: "Create a challenge",      subtitle: "Pick a template or build your own",  icon: "trophy",  cta: "Start",    roles: ["teacher", "media"] },
+  { id: "a-challenge", title: "Create a Challenge",      subtitle: "Pick a template or build your own",  icon: "trophy",  cta: "Start",    roles: ["teacher", "media"] },
   { id: "a-bnc",       title: "Run BNC",                 subtitle: "Weekly nudge to capture rewards data", icon: "chart",   cta: "Open BNC", roles: ["media"] },
   { id: "a-lexile",    title: "Explore Lexile Insights", subtitle: "See where readers are growing",      icon: "lexile",  cta: "Open",     roles: ["teacher", "media"] },
 ];
@@ -300,23 +300,23 @@ export const ACTION_ROW_CAP = { teacher: 4, media: 3 };
 // above the fold.
 export const QUICK_ACTIONS = {
   teacher: [
-    { id: "qa-reader",    label: "Find a reader",      icon: "user"    },
-    { id: "qa-class",     label: "Find a class",       icon: "classes" },
-    { id: "qa-challenge", label: "Create a challenge", icon: "trophy"  },
+    { id: "qa-reader",    label: "Find a Reader",      icon: "user"    },
+    { id: "qa-class",     label: "Find a Class",       icon: "classes" },
+    { id: "qa-challenge", label: "Create a Challenge", icon: "trophy"  },
     { id: "qa-reports",   label: "View Reports",       icon: "chart"   },
     { id: "qa-library",   label: "Classroom Library",  icon: "book"    },
   ],
   media: [
-    { id: "qa-reader",    label: "Find a reader",      icon: "user"    },
-    { id: "qa-class",     label: "Find a class",       icon: "classes" },
-    { id: "qa-challenge", label: "Create a challenge", icon: "trophy"  },
+    { id: "qa-reader",    label: "Find a Reader",      icon: "user"    },
+    { id: "qa-class",     label: "Find a Class",       icon: "classes" },
+    { id: "qa-challenge", label: "Create a Challenge", icon: "trophy"  },
     { id: "qa-rewards",   label: "Manage Rewards",     icon: "reward"  },
     { id: "qa-reports",   label: "Reports",            icon: "chart"   },
     { id: "qa-library",   label: "Classroom Library",  icon: "book"    },
   ],
   library: [
-    { id: "qa-reader",    label: "Find a reader",      icon: "user"    },
-    { id: "qa-challenge", label: "Create a challenge", icon: "trophy"  },
+    { id: "qa-reader",    label: "Find a Reader",      icon: "user"    },
+    { id: "qa-challenge", label: "Create a Challenge", icon: "trophy"  },
     { id: "qa-rewards",   label: "Manage Rewards",     icon: "reward"  },
     { id: "qa-reports",   label: "View Reports",       icon: "chart"   },
     { id: "qa-branches",  label: "Branches",           icon: "classes" },
