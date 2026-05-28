@@ -572,18 +572,14 @@ export function AdmFlaggedSessions({ role = "teacher" } = {}) {
 // ─── Top Books + Top Badges (visual, Insights-style) ──────────────
 const TB_RANGE_META = { week: "This Week", month: "This Month", year: "This Year" };
 const TB_RANGE_MULT = { week: 1, month: 4, year: 48 };
-const TB_DEFAULTS = { range: "week", limit: "5" };
+const TB_DEFAULTS = { range: "week", limit: 5 };
 const TB_FIELDS = [
   { key: "range", label: "Time range", type: "select", options: [
     { value: "week",  label: "Weekly"  },
     { value: "month", label: "Monthly" },
     { value: "year",  label: "Yearly"  },
   ]},
-  { key: "limit", label: "Show top", type: "select", options: [
-    { value: "5",  label: "5"  },
-    { value: "10", label: "10" },
-    { value: "15", label: "15" },
-  ]},
+  { key: "limit", label: "Show top", type: "range", min: 5, max: 15, step: 1 },
 ];
 const BadgeStar = () => (
   <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
