@@ -13,7 +13,7 @@ export const NOTIFICATIONS = [
     title: "[Webinar] What's New for Back to School",
     body:
       "Discover the latest Beanstack features—Book Talks with Benny, daily reading tracking, rewards, editable badges & more! Join us Aug 12 at 2 PM ET and get ready to supercharge student engagement this year!",
-    action: "Register here",
+    action: "Register Here",
   },
 ];
 
@@ -43,7 +43,7 @@ export const FEATURE_BAR = {
   badge: "New",
   title: "Daily Reading Tracker is now available",
   body: "See per-student weekly progress at a glance and spot gaps before they grow.",
-  cta: "Take a tour",
+  cta: "Take a Tour",
   href: "#",
 };
 
@@ -91,9 +91,9 @@ export const WHATS_NEW = [
 export const STAT_TILES = [
   { id: "minutes",        label: "Minutes",             value: "3,252", color: "red",    icon: "clock",    hint: "Insights" },
   { id: "active",         label: "Active Readers",      value: "1,204", color: "yellow", icon: "user",     hint: "Insights" },
-  { id: "lexileAvg",      label: "Lexile Average",      value: "740L",  color: "purple", icon: "book",     hint: "Lexile Insights" },
+  { id: "lexileAvg",      label: "Lexile Average",      value: "740L",  color: "purple", icon: "book",     hint: "Lexile Insights", roles: ["teacher", "media"] },
   { id: "loggedEveryDay", label: "Logged Every Day",    value: "38",    color: "green",  icon: "calendar", hint: "BNC" },
-  { id: "avgLevel",       label: "Average Title Level", value: "665L",  color: "green",  icon: "book"   },
+  { id: "avgLevel",       label: "Average Title Level", value: "665L",  color: "green",  icon: "book",     hint: "Lexile Insights", roles: ["teacher", "media"] },
   { id: "staffMinutes",   label: "Staff Minutes",       value: "1,348", color: "red",    icon: "timer",  roles: ["media"] },
   { id: "activeStaff",    label: "Active Staff",        value: "142",   color: "yellow", icon: "people", roles: ["media"] },
   { id: "newReaders",     label: "New Readers",         value: "264",   color: "blue",   icon: "user",   hint: "Insights", roles: ["library"] },
@@ -275,7 +275,7 @@ export const LINKS = [
 export const ACTIONS = [
   { id: "a-flags",     title: "Review flagged sessions", subtitle: "3 sessions need a teacher's eyes", icon: "flag",      attention: 3,  cta: "Review",   roles: ["teacher", "media"] },
   { id: "a-rewards",   title: "Distribute rewards",      subtitle: "12 students newly earned a reward", icon: "reward",   attention: 12, cta: "Distribute", roles: ["media"] },
-  { id: "a-challenge", title: "Create a challenge",      subtitle: "Pick a template or build your own",  icon: "trophy",  cta: "Start",    roles: ["teacher", "media"] },
+  { id: "a-challenge", title: "Create a Challenge",      subtitle: "Pick a template or build your own",  icon: "trophy",  cta: "Start",    roles: ["teacher", "media"] },
   { id: "a-bnc",       title: "Run BNC",                 subtitle: "Weekly nudge to capture rewards data", icon: "chart",   cta: "Open BNC", roles: ["media"] },
   { id: "a-lexile",    title: "Explore Lexile Insights", subtitle: "See where readers are growing",      icon: "lexile",  cta: "Open",     roles: ["teacher", "media"] },
 ];
@@ -300,23 +300,23 @@ export const ACTION_ROW_CAP = { teacher: 4, media: 3 };
 // above the fold.
 export const QUICK_ACTIONS = {
   teacher: [
-    { id: "qa-reader",    label: "Find a reader",      icon: "user"    },
-    { id: "qa-class",     label: "Find a class",       icon: "classes" },
-    { id: "qa-challenge", label: "Create a challenge", icon: "trophy"  },
+    { id: "qa-reader",    label: "Find a Reader",      icon: "user"    },
+    { id: "qa-class",     label: "Find a Class",       icon: "classes" },
+    { id: "qa-challenge", label: "Create a Challenge", icon: "trophy"  },
     { id: "qa-reports",   label: "View Reports",       icon: "chart"   },
     { id: "qa-library",   label: "Classroom Library",  icon: "book"    },
   ],
   media: [
-    { id: "qa-reader",    label: "Find a reader",      icon: "user"    },
-    { id: "qa-class",     label: "Find a class",       icon: "classes" },
-    { id: "qa-challenge", label: "Create a challenge", icon: "trophy"  },
+    { id: "qa-reader",    label: "Find a Reader",      icon: "user"    },
+    { id: "qa-class",     label: "Find a Class",       icon: "classes" },
+    { id: "qa-challenge", label: "Create a Challenge", icon: "trophy"  },
     { id: "qa-rewards",   label: "Manage Rewards",     icon: "reward"  },
     { id: "qa-reports",   label: "Reports",            icon: "chart"   },
     { id: "qa-library",   label: "Classroom Library",  icon: "book"    },
   ],
   library: [
-    { id: "qa-reader",    label: "Find a reader",      icon: "user"    },
-    { id: "qa-challenge", label: "Create a challenge", icon: "trophy"  },
+    { id: "qa-reader",    label: "Find a Reader",      icon: "user"    },
+    { id: "qa-challenge", label: "Create a Challenge", icon: "trophy"  },
     { id: "qa-rewards",   label: "Manage Rewards",     icon: "reward"  },
     { id: "qa-reports",   label: "View Reports",       icon: "chart"   },
     { id: "qa-branches",  label: "Branches",           icon: "classes" },
@@ -343,13 +343,15 @@ export const QUESTIONS = [
 export const REQUIRED_WIDGETS = {};
 
 // ─── Teacher default layout (react-grid-layout format) ────────────────────────
-// Teachers land on a "run my room" arrangement: the Daily Reading Tracker up
-// top, followed by a compact row of linked metric tiles. Engagement and the
-// Community Goal sit in the right rail (fixed, not widgets).
+// Teachers land on a "run my room" arrangement: What's Happened metric tiles
+// paired with Flagged Sessions up top, with the Daily Reading Tracker
+// underneath. Engagement and the Community Goal sit in the right rail
+// (fixed, not widgets).
 export const DEFAULT_PRESET_ID = "run-my-room";
 export const DEFAULT_LAYOUT = [
-  { i: "daily-tracker",  x: 0, y: 0,  w: 12, h: 20, minW: 4, minH: 6  },
-  { i: "stat-tiles",     x: 0, y: 20, w: 12, h: 8,  minW: 4, minH: 4  },
+  { i: "stat-tiles",       x: 0, y: 0,  w: 8,  h: 8,  minW: 4, minH: 4 },
+  { i: "flagged-sessions", x: 8, y: 0,  w: 4,  h: 8,  minW: 4, minH: 4 },
+  { i: "daily-tracker",    x: 0, y: 8,  w: 12, h: 20, minW: 4, minH: 6 },
 ];
 export const DEFAULT_SETTINGS = {
   "community-goal": { scope: "district" },
@@ -395,18 +397,30 @@ export const KITCHEN_DEFAULT_SETTINGS = {
   "leaderboard-combo": { entity: "classes" },
 };
 
+// Empty Sink demo view — same shape as Kitchen, but each widget renders its
+// no-data empty state instead of populated content. Useful for reviewing the
+// empty UX across the catalog in one pass.
+export const EMPTY_DEFAULT_SETTINGS = { ...KITCHEN_DEFAULT_SETTINGS };
+
 // Per-role defaults — picked up by loadState(role) when a role has no saved
 // layout yet.
 export const DEFAULT_LAYOUT_BY_ROLE   = { teacher: DEFAULT_LAYOUT,     media: MEDIA_DEFAULT_LAYOUT,     library: LIBRARY_DEFAULT_LAYOUT };
-export const DEFAULT_SETTINGS_BY_ROLE = { teacher: DEFAULT_SETTINGS,   media: MEDIA_DEFAULT_SETTINGS,   library: LIBRARY_DEFAULT_SETTINGS, kitchen: KITCHEN_DEFAULT_SETTINGS };
+export const DEFAULT_SETTINGS_BY_ROLE = {
+  teacher:        DEFAULT_SETTINGS,
+  media:          MEDIA_DEFAULT_SETTINGS,
+  library:        LIBRARY_DEFAULT_SETTINGS,
+  kitchen:        KITCHEN_DEFAULT_SETTINGS,
+  "kitchen-full": KITCHEN_DEFAULT_SETTINGS,
+  empty:          EMPTY_DEFAULT_SETTINGS,
+};
 export const DEFAULT_PRESET_BY_ROLE   = { teacher: DEFAULT_PRESET_ID,  media: MEDIA_DEFAULT_PRESET_ID,  library: LIBRARY_DEFAULT_PRESET_ID };
 
 // ─── Row-based defaults (flexbox layout — rows of widget ids) ─────────────────
 // The dashboard is a stack of rows; each row holds 1–3 cards that split the
 // width equally (flex). Full-bleed widgets (fixedWidth) sit alone in their row.
 export const DEFAULT_ROWS = [
+  ["stat-tiles", "flagged-sessions"],
   ["daily-tracker"],
-  ["stat-tiles"],
 ];
 export const MEDIA_DEFAULT_ROWS = [
   ["stat-tiles"],
@@ -418,21 +432,43 @@ export const LIBRARY_DEFAULT_ROWS = [
 ];
 // Kitchen Sink: a demo view that places every widget at once (role gating is
 // bypassed for this view), so the whole catalog can be eyeballed on one page.
+// Every row is a paired half-width slot so the compact behaviors are easy to
+// review across the entire catalog.
 export const KITCHEN_DEFAULT_ROWS = [
-  ["daily-tracker"],
-  ["stat-tiles"],
+  ["daily-tracker", "stat-tiles"],
   ["flagged-sessions", "leaderboard-combo"],
   ["leaderboard-students", "leaderboard-classes"],
   ["leaderboard-staff", "leaderboard-patrons"],
   ["leaderboard-branches", "questions"],
+  ["top-badges", "top-books"],
+];
+// Kitchen Sink (full width): same catalog, but every widget occupies its
+// own row at 100% width — useful for reviewing the spacious rendering of
+// each widget in one pass.
+export const KITCHEN_FULL_DEFAULT_ROWS = [
+  ["daily-tracker"],
+  ["stat-tiles"],
+  ["flagged-sessions"],
+  ["leaderboard-combo"],
+  ["leaderboard-students"],
+  ["leaderboard-classes"],
+  ["leaderboard-staff"],
+  ["leaderboard-patrons"],
+  ["leaderboard-branches"],
+  ["questions"],
   ["top-badges"],
   ["top-books"],
 ];
+// Empty Sink uses the same row layout as Kitchen so the empty states sit
+// in the same positions as the populated demo.
+export const EMPTY_DEFAULT_ROWS = KITCHEN_DEFAULT_ROWS;
 export const DEFAULT_ROWS_BY_ROLE = {
-  teacher: DEFAULT_ROWS,
-  media:   MEDIA_DEFAULT_ROWS,
-  library: LIBRARY_DEFAULT_ROWS,
-  kitchen: KITCHEN_DEFAULT_ROWS,
+  teacher:        DEFAULT_ROWS,
+  media:          MEDIA_DEFAULT_ROWS,
+  library:        LIBRARY_DEFAULT_ROWS,
+  kitchen:        KITCHEN_DEFAULT_ROWS,
+  "kitchen-full": KITCHEN_FULL_DEFAULT_ROWS,
+  empty:          EMPTY_DEFAULT_ROWS,
 };
 
 // ─── Layout presets ───────────────────────────────────────────────────────────
@@ -451,8 +487,8 @@ export const LAYOUT_PRESETS = [
   {
     id: "run-my-room",
     name: "Run my room",
-    description: "Daily Reading Tracker up top and linked metric tiles below.",
-    widgetNames: ["Daily Reading Tracker", "What's Happened"],
+    description: "What's Happened metric tiles beside Flagged Sessions up top, with the Daily Reading Tracker underneath.",
+    widgetNames: ["What's Happened", "Flagged Sessions", "Daily Reading Tracker"],
     roles: ["teacher"],
     layout: DEFAULT_LAYOUT,
     settings: DEFAULT_SETTINGS,

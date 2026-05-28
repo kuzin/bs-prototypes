@@ -18,14 +18,21 @@ import "../MainRail.css";
 import "./index.css";
 
 const ROLES = [
-  { value: "teacher", label: "Teacher view" },
-  { value: "media",   label: "Media Specialist view" },
-  { value: "library", label: "Public Library view" },
-  { value: "kitchen", label: "Kitchen Sink view" },
+  { value: "teacher",      label: "Teacher" },
+  { value: "media",        label: "Media Specialist" },
+  { value: "library",      label: "Public Library" },
+  { value: "kitchen",      label: "Kitchen Sink" },
+  { value: "kitchen-full", label: "Kitchen Sink (full width)" },
+  { value: "empty",        label: "Empty Sink" },
 ];
-// The Kitchen Sink view is a catalog demo — it shows every widget regardless of
-// the per-widget `roles` gate.
-const widgetAllowed = (cat, role) => !!cat && (role === "kitchen" || !cat.roles || cat.roles.includes(role));
+// Kitchen Sink, Kitchen Sink (full width), and Empty Sink are catalog demos —
+// they show every widget regardless of per-widget role gates. Empty Sink
+// additionally tells each widget to render its no-data state.
+const widgetAllowed = (cat, role) =>
+  !!cat && (
+    role === "kitchen" || role === "kitchen-full" || role === "empty" ||
+    !cat.roles || cat.roles.includes(role)
+  );
 const ROLE_KEY = "adm-user-role";
 
 function greeting() {
@@ -213,7 +220,9 @@ export function App() {
     if (!cat) return null;
     const Comp = cat.component;
     const widgetSettings = settings[id] || {};
-    const widgetFields = cat.settingsFields || [];
+    const widgetFields = typeof cat.settingsFields === "function"
+      ? cat.settingsFields(role)
+      : (cat.settingsFields || []);
     const hasSettings = widgetFields.length > 0;
     const isSettingsOpen = openSettings?.id === id;
     return (
@@ -321,10 +330,10 @@ export function App() {
               <span>Drag a card onto another to place them side by side, or into a gap for a new row.</span>
               <div className="adm-edit-hint-actions">
                 <Button size="sm" variant="secondary" onClick={resetDashboard}>
-                  Reset to default
+                  Reset to Default
                 </Button>
                 <Button size="sm" variant="primary" onClick={() => setPaletteOpen(true)}>
-                  ＋ Add widget
+                  ＋ Add Widget
                 </Button>
               </div>
             </div>
@@ -335,10 +344,10 @@ export function App() {
               <p>Add widgets to build your dashboard.</p>
               <div className="adm-empty-actions">
                 {!editing && (
-                  <button className="adm-btn adm-btn--primary" onClick={toggleEditing}>Edit dashboard</button>
+                  <button className="adm-btn adm-btn--primary" onClick={toggleEditing}>Edit Dashboard</button>
                 )}
                 {editing && (
-                  <button className="adm-btn adm-btn--primary" onClick={() => setPaletteOpen(true)}>＋ Add widget</button>
+                  <button className="adm-btn adm-btn--primary" onClick={() => setPaletteOpen(true)}>＋ Add Widget</button>
                 )}
               </div>
             </div>

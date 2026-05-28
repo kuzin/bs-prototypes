@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { RangeSlider } from "../../ris/components/Form";
+import "../../ris/components/Form.css";
 
 /**
  * Anchored popover that renders a widget's settings form from a schema.
@@ -8,7 +10,8 @@ import { createPortal } from "react-dom";
  * passed in (typically the gear button's getBoundingClientRect()).
  *
  * Field schema:
- *   { key, label, type: 'select' | 'toggle' | 'multi', options?: [{value,label}], help?: string }
+ *   { key, label, type, options?: [{value,label}], help?: string, min?, max?, step? }
+ *   types: 'select' | 'toggle' | 'multi' | 'range'
  */
 export function SettingsPopover({ anchorRect, fields, value, defaults, onChange, onReset, onClose }) {
   const ref = useRef(null);
@@ -65,7 +68,13 @@ export function SettingsPopover({ anchorRect, fields, value, defaults, onChange,
       className="adm-set"
       ref={ref}
       style={{ top, left, right: "auto" }}
+      /* Popover is portaled to <body>, but events still bubble through
+         the React tree to the parent card. Stop them here so the dnd-kit
+         drag sensor on the card doesn't activate when the user drags the
+         slider thumb / clicks inside the popover. */
       onMouseDown={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     >
       <div className="adm-set-head">
         <div className="adm-set-title">Widget settings</div>
@@ -104,6 +113,15 @@ export function SettingsPopover({ anchorRect, fields, value, defaults, onChange,
                 </span>
                 <span className="adm-set-toggle-text">{v[f.key] ? "On" : "Off"}</span>
               </label>
+            )}
+            {f.type === "range" && (
+              <RangeSlider
+                min={f.min ?? 0}
+                max={f.max ?? 100}
+                step={f.step ?? 1}
+                value={Number(v[f.key] ?? f.min ?? 0)}
+                onChange={(n) => onChange({ [f.key]: n })}
+              />
             )}
             {f.type === "multi" && (
               <div className="adm-set-multi">

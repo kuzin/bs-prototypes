@@ -44,7 +44,7 @@ button { font-family: inherit; cursor: pointer; }
 .adm {
   flex: 1; min-width: 0;
   overflow-y: auto;
-  padding: 0 max(24px, calc((100% - 1280px) / 2)) 32px;
+  padding: 0 max(24px, calc((100% - 1440px) / 2)) 32px;
 }
 .adm-topbar {
   display: flex;
@@ -474,7 +474,10 @@ button { font-family: inherit; cursor: pointer; }
 .adm-row {
   display: flex;
   gap: 16px;
-  align-items: flex-start;   /* natural heights — no stretching / empty space */
+  /* Paired cards share a row height so the cell strokes line up. The
+     shorter widget gets a bit of empty space at the bottom — acceptable
+     trade for visual consistency. */
+  align-items: stretch;
 }
 /* ─── Mobile (≤720px) ──────────────────────────────────────────────────────
    Paired cards stack to full width, the topbar greeting/controls wrap onto
@@ -502,7 +505,21 @@ button { font-family: inherit; cursor: pointer; }
 /* Scrollable list widgets (Flagged Sessions, Students, Classes, Quick Links,
    Number Cruncher, Leaderboard…) share one fixed body height so they line up,
    and scroll internally past it. */
-.adm-cell--scroll .adm-w-body { flex: none; height: 320px; overflow-y: auto; }
+.adm-cell--scroll .adm-w-body { flex: none; height: 272px; overflow-y: auto; }
+/* Leaderboard combo + Number Cruncher always render at their natural content
+   height — they hold only a handful of items, so the fixed scroll body
+   leaves awkward in-card scroll. The inner list also needs flex: 0 0 auto
+   so it doesn't collapse when the parent is no longer a fixed height. */
+.adm-cell--scroll .adm-w-body.adm-lbc,
+.adm-cell--scroll .adm-w-body:has(> .adm-questions) {
+  flex: 0 0 auto;
+  height: auto;
+  overflow-y: visible;
+}
+.adm-cell--scroll .adm-w-body.adm-lbc .adm-lbc-list {
+  flex: 0 0 auto;
+  overflow-y: visible;
+}
 /* Small non-scrollable widgets (Community Goal, Engagement) share one compact
    body height so they line up too. */
 .adm-cell--small .adm-w-body { flex: none; height: 132px; }
@@ -796,6 +813,12 @@ button { font-family: inherit; cursor: pointer; }
 }
 .adm-edit-hint strong { font-weight: 800; }
 .adm-edit-hint-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+/* Mobile: stack the hint text above the buttons so the text doesn't get
+   squeezed into 1-word-per-line. */
+@media (max-width: 720px) {
+  .adm-edit-hint { flex-direction: column; align-items: stretch; }
+  .adm-edit-hint-actions { justify-content: flex-end; }
+}
 
 /* ─── Widget chrome (replaces widget header in edit mode) ────────────── */
 .adm-cell-chrome {
@@ -973,6 +996,12 @@ button { font-family: inherit; cursor: pointer; }
   overflow: hidden;
   padding: 16px;
 }
+/* Center the EmptyState in widgets that opt into the no-data treatment. */
+.adm-w-body--empty {
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px 16px;
+  min-height: 200px;
+}
 /* Scrollable widget bodies scroll internally */
 .adm-w-body.adm-lb { overflow: auto; }
 /* Quick Links is scrollable too — but its body is edge-to-edge (no padding)
@@ -1020,25 +1049,61 @@ button { font-family: inherit; cursor: pointer; }
 .adm-banner--danger{ background: #FEF2F2; border-color: #FECACA; color: #B91C1C; }
 .adm-banner--danger .adm-banner-ico { background: #FEE2E2; }
 
+/* Every cell opts into inline-size container queries so the compact-mode
+   rules below (stat tiles 2x2, tracker compact, books/badges height cap)
+   can target any widget's descendants. Container-type lives on the cell
+   so the body — the actual target of most overrides — isn't its own
+   container (a container can't reliably restyle itself). */
+.adm-cell { container-type: inline-size; }
+
 /* ─── Stat tiles ──────────────────────────────────────────────────────── */
+/* Layout in three steps:
+   1. Base: 2-col cap so 4 tiles form a 2x2 at any cell width. A lone odd
+      tile (e.g. 5th in a 2x2 + 1 layout) stretches to full width.
+   2. @container ≤620px (side-by-side desktop): cap body height to match
+      the scrollable widget body (272px) and center the grid vertically
+      so paired cells line up.
+   3. @media ≤720px (true mobile viewport): stack tiles into one full-
+      width column and uncap the body. */
 .adm-stats {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 16px;
-  /* Pack wrapped rows at the top at their natural height — the card auto-fits
-     to the tiles (incl. the row gap) instead of stretching them, so there's no
-     extra space at the bottom. */
-  align-content: flex-start;
 }
 .adm-stat {
-  /* fill the row evenly; min 140px keeps content readable, max none so they
-     stretch when fewer are visible */
-  flex: 1 1 140px;
-  min-width: 140px;
+  flex: 1 1 calc(50% - 8px);
+  max-width: calc(50% - 8px);
+  min-width: 0;
   display: flex; align-items: center; gap: 12px;
   padding: 14px 16px;
   border-radius: 12px;
   border: 1px solid;
+}
+.adm-stat:last-child:nth-child(odd) {
+  flex-basis: 100%;
+  max-width: 100%;
+}
+
+@container (max-width: 620px) {
+  .adm-w-body:has(> .adm-stats) {
+    max-height: 272px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 720px) {
+  .adm-stat {
+    flex-basis: 100%;
+    max-width: 100%;
+  }
+  .adm-w-body:has(> .adm-stats) {
+    max-height: none;
+    overflow-y: visible;
+  }
 }
 .adm-stats-empty {
   flex: 1;
@@ -1144,7 +1209,13 @@ button { font-family: inherit; cursor: pointer; }
 /* ─── Daily reading tracker (per-student table) ──────────────────────────
    Mirrors the Student Profile AdminMockup class view. Edge-to-edge table
    inside the widget body with a week navigator on top + legend in footer. */
-.adm-w-body.adm-drt { padding: 0; }
+/* container-type lives on .adm-cell universally — see the rule near the
+   top of the stat-tiles section. */
+.adm-w-body.adm-drt {
+  padding: 0;
+  /* Safety net for sub-compact viewports. */
+  overflow-x: auto;
+}
 .adm-drt {
   display: flex; flex-direction: column;
 }
@@ -1187,22 +1258,10 @@ button { font-family: inherit; cursor: pointer; }
 .adm-drt-td--goal { background: #F5F9FF; text-align: center; }
 .adm-drt-row .adm-drt-td { font-weight: 600; color: #1E293B; }
 .adm-drt-student { display: flex; align-items: center; gap: 8px; padding-left: 8px; }
-.adm-drt-rank {
-  width: 22px; height: 22px; border-radius: 50%;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-size: 12px; font-weight: 800; flex-shrink: 0;
-}
-.adm-drt-rank--gold   { background: #FCD34D; color: #92400E; }
-.adm-drt-rank--silver { background: #E5E7EB; color: #374151; }
-.adm-drt-rank--bronze { background: #D97706; color: #fff; }
-/* "Class Average" row: a smaller hollow grey circle that lines up with
-   the rank chips above. No content inside — visual alignment marker. */
-.adm-drt-rank--avg {
-  background: transparent;
-  border: 1.5px dashed #CBD5E1;
-  width: 16px; height: 16px;
-  /* nudge to keep the smaller circle centered in the 22px rank slot */
-  margin: 3px;
+.adm-drt-rank-num {
+  font-size: 13px; font-weight: 700; color: #64748B;
+  flex-shrink: 0; min-width: 18px;
+  font-variant-numeric: tabular-nums;
 }
 .adm-drt-student-name {
   font-weight: 700; color: #1A6DD5; cursor: pointer;
@@ -1243,13 +1302,93 @@ button { font-family: inherit; cursor: pointer; }
    below the Class Average row instead of leaving body flex-slack between. */
 .adm-w-body.adm-drt { flex: 0 0 auto; }
 .adm-drt-legend {
-  display: flex; gap: 16px; justify-content: flex-end;
+  display: flex; gap: 16px; justify-content: center;
   font-size: 13px;
 }
 .adm-drt-legend .lg-red    { color: #DC2626; }
 .adm-drt-legend .lg-yellow { color: #D97706; }
 .adm-drt-legend .lg-blue   { color: #1D4ED8; }
 .adm-drt-legend .lg-green  { color: #10B981; }
+
+/* ─── Compact tracker (narrow widget — e.g. half-width) ───────────────── */
+/* When the cell is narrower than ~620px the table drops the Goal and Average
+   columns and renders the partial-day percentages as colored dots instead of
+   numeric pills. Everything else (check / dash, day labels, class avg row)
+   stays. The Goal/Average info is still available at full width. */
+@container (max-width: 620px) {
+  /* Fill the cell vertically (e.g. when paired with a taller widget like
+     Flagged Sessions) — the body grows AND the inner content distributes
+     itself so the legend pins to the cell bottom and the table fills the
+     remaining space evenly. */
+  .adm-w-body.adm-drt {
+    flex: 1 1 auto;
+    display: flex; flex-direction: column;
+  }
+  .adm-w-body.adm-drt > .adm-drt-table { flex: 1; }
+
+  /* Hide Goal (col 2) + Average (col 3) for every row in the table. */
+  .adm-drt-table tr > :nth-child(2),
+  .adm-drt-table tr > :nth-child(3) { display: none; }
+
+  /* Tight cell padding so the date table compresses more. */
+  .adm-drt-table          { table-layout: fixed; width: 100%; }
+  .adm-drt-th, .adm-drt-td { padding: 6px 3px; vertical-align: middle; }
+  .adm-drt-th--student     { padding-left: 16px; width: 104px; }
+  .adm-drt-row .adm-drt-td:first-child,
+  .adm-drt-avg-row .adm-drt-td:first-child { padding-left: 16px; }
+
+  /* Smaller rank text gives the student name a bit more room. */
+  .adm-drt-rank-num { font-size: 11px; min-width: 12px; }
+  .adm-drt-student {
+    padding-left: 0;
+    gap: 6px;
+    align-items: center;
+  }
+  .adm-drt-student-name {
+    min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    line-height: 1.1; font-size: 12.5px;
+  }
+
+  /* Day-cell content (dash / dot / check) — matched sizes and a shared
+     vertical baseline so they line up cleanly across all rows. */
+  .adm-drt-pct {
+    display: inline-flex;
+    width: 14px; height: 14px;
+    padding: 0; border-radius: 50%;
+    font-size: 0;
+    vertical-align: middle;
+  }
+  .adm-drt-pct--blue   { background: #2563EB; }
+  .adm-drt-pct--orange { background: #F59E0B; }
+  .adm-drt-pct--red    { background: #EF4444; }
+  .adm-drt-check {
+    width: 16px; height: 16px;
+    vertical-align: middle;
+  }
+  .adm-drt-check svg { width: 8px; height: 8px; }
+  .adm-drt-dash { vertical-align: middle; font-size: 13px; line-height: 16px; color: #CBD5E1; }
+
+  /* Class Average row percentages: tone down to muted small text. */
+  .adm-drt-avg-row .adm-drt-td--center:not(:nth-child(2)):not(:nth-child(3)) {
+    color: #94A3B8; font-size: 11px;
+  }
+  .adm-drt-avg-row .adm-drt-td { font-size: 12px; padding-top: 8px; padding-bottom: 8px; }
+
+  /* Compact week-nav: smaller arrows, smaller label, less padding. */
+  .adm-drt-week-nav   { padding: 6px 8px; gap: 6px; }
+  .adm-drt-week-label { font-size: 11px; font-weight: 700; }
+  .adm-drt-nav-btn    { width: 20px; height: 20px; font-size: 12px; }
+
+  /* Smaller day-column headers. */
+  .adm-drt-th--center { font-size: 9px; letter-spacing: 0.2px; }
+  .adm-drt-th         { padding-top: 6px; padding-bottom: 6px; }
+
+  /* Shrink the percent-bucket legend so it stays a single row instead of
+     wrapping into 2-line entries. */
+  .adm-drt-legend { font-size: 10.5px; gap: 8px; flex-wrap: nowrap; }
+  .adm-drt-legend > span { white-space: nowrap; }
+  .adm-w-footer.adm-drt-legend { padding: 6px 10px; }
+}
 
 /* ─── Leaderboards ────────────────────────────────────────────────────── */
 /* The body has no padding so the scrollbar sits flush to the cell's right
@@ -1386,7 +1525,6 @@ button { font-family: inherit; cursor: pointer; }
 .adm-w-body:has(> .adm-questions) { padding: 0; overflow: auto; }
 .adm-questions {
   display: flex; flex-direction: column;
-  min-height: 220px;
 }
 .adm-question {
   display: flex; align-items: center; gap: 12px;
@@ -1742,20 +1880,20 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
+/* Hint reads as a text link in the tile's tone — no pill background, no
+   underline, with a → arrow that nudges right on hover. */
 .adm-stat-hint {
   margin-top: 10px;
-  display: inline-flex; align-items: center; gap: 2px;
-  width: fit-content;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.7);
-  font-size: 11px; font-weight: 800;
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11.5px; font-weight: 700;
   color: inherit;            /* picks up the stat tile's tone */
   letter-spacing: 0.01em;
-  transition: background .12s;
 }
-.adm-stat--link:hover .adm-stat-hint { background: rgba(255, 255, 255, 0.95); }
-.adm-stat-hint-arrow { font-size: 13px; line-height: 1; }
+.adm-stat-hint-arrow {
+  font-size: 12px; font-weight: 800; line-height: 1;
+  transition: transform .15s;
+}
+.adm-stat--link:hover .adm-stat-hint-arrow { transform: translateX(2px); }
 
 /* ─── Flagged sessions list (RIS — sessions to review) ────────────────── */
 .adm-w-body.adm-flagged { padding: 0; }
@@ -1786,15 +1924,19 @@ button { font-family: inherit; cursor: pointer; }
 .adm-flag--yellow { background: #FEF3C7; color: #92400E; border: 1px solid #FDE68A; }
 
 /* ─── Combined leaderboard (Classes / Students toggle, top 3) ─────────── */
+/* Body has zero padding so the internal list scrollbar sits flush with the
+   cell's right edge. Toggle + rows carry their own gutters. */
 .adm-w-body.adm-lbc {
-  display: flex; flex-direction: column; gap: 12px;
+  display: flex; flex-direction: column; gap: 0;
+  padding: 0;
 }
 .adm-lbc > * { flex-shrink: 0; }
 /* Scrollable combo: fixed body height (matches Flagged), toggle stays put, the
    list scrolls inside. */
 .adm-cell--scroll .adm-w-body.adm-lbc { overflow: hidden; }
 .adm-lbc-toggle {
-  display: flex; width: 100%;
+  display: flex; flex: 0 0 auto;
+  margin: 14px 16px 12px;
   background: #F1F5F9; border: 1px solid #E2E8F0;
   border-radius: 9px; padding: 3px; gap: 2px;
 }
@@ -1812,11 +1954,11 @@ button { font-family: inherit; cursor: pointer; }
 .adm-lbc-list {
   list-style: none; margin: 0; padding: 0;
   display: flex; flex-direction: column;
-  flex: 1 1 0; min-height: 0; overflow-y: auto;   /* scroll within the fixed body */
+  flex: 1 1 0; min-height: 0; overflow-y: auto;   /* scrollbar flush w/ cell edge */
 }
 .adm-lbc-row {
   display: flex; align-items: center; gap: 12px;
-  padding: 10px 4px;
+  padding: 10px 16px;
   border-bottom: 1px dashed #E5E7EB;
 }
 .adm-lbc-row:last-child { border-bottom: 0; }
@@ -1836,7 +1978,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .adm-lbc-val { font-weight: 700; color: #475569; font-size: 13px; flex-shrink: 0; }
 
-/* ─── Top Books shelf + Most Earned Badges (visual) ───────────────────── */
+/* ─── Top Books shelf + Top Badges (visual) ───────────────────────────── */
 /* Items wrap and center so partial rows sit balanced under the title. Item
    widths are fixed so the covers/medals don't squeeze when the container
    is narrower than (count × item + gaps). */
@@ -1845,6 +1987,29 @@ button { font-family: inherit; cursor: pointer; }
   display: flex; flex-wrap: wrap; justify-content: center;
   gap: 16px;
   align-items: flex-start;
+}
+/* Compact-mode (half-width pair): cap the body height to match the
+   shared scrollable height so books/badges line up with their partner
+   widget instead of dragging the row taller. `safe center` centers the
+   content when it fits AND falls back to flex-start when it overflows,
+   so the scroll can still reach the first item. */
+@container (max-width: 620px) {
+  .adm-w-body.adm-shelf,
+  .adm-w-body.adm-badges {
+    max-height: 272px;
+    overflow-y: auto;
+    align-content: safe center;
+    padding-top: 16px;
+  }
+}
+/* Mobile: drop the books/badges max-height so the widget renders at its
+   natural content height (no in-card scroll on a phone). */
+@media (max-width: 720px) {
+  .adm-w-body.adm-shelf,
+  .adm-w-body.adm-badges {
+    max-height: none;
+    overflow-y: visible;
+  }
 }
 .adm-shelf-item {
   flex: 0 0 96px;
@@ -1894,6 +2059,16 @@ button { font-family: inherit; cursor: pointer; }
 .adm-badge-medal--purple { background: linear-gradient(135deg, #A78BFA, #6D28D9); }
 .adm-badge-medal--orange { background: linear-gradient(135deg, #FBA181, #C2410C); }
 .adm-badge-medal--teal   { background: linear-gradient(135deg, #5EEAD4, #0F766E); }
+/* Half-width pair: shrink the books + medals so a row caps at ~3 items
+   even on the widest 50% slot. Sits after the base sizing so the override
+   wins despite same-specificity selectors. */
+@container (max-width: 620px) {
+  .adm-shelf-item       { flex: 0 0 80px; }
+  .adm-book-rank        { width: 18px; height: 18px; font-size: 11px; }
+  .adm-badge-item       { flex: 0 0 72px; }
+  .adm-badge-medal      { width: 56px; height: 56px; }
+  .adm-badge-medal svg  { width: 22px; height: 22px; }
+}
 
 /* ─── Flagged Sessions rail card (top of the rail, both roles) ────────── */
 .adm-rail-flagged {

@@ -6,8 +6,28 @@ import {
 import { useState } from "react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+import { EmptyState } from "../../ris/components/Primitives";
 
 const fmt = (n) => n.toLocaleString();
+
+// ─── Empty-state plumbing ────────────────────────────────────────────────
+// The Empty Sink role view renders every widget in its empty state so we can
+// preview the no-data UX without hand-toggling each widget. Each widget that
+// can be meaningfully empty checks `role === "empty"` and returns a shared
+// shell wrapping <EmptyState>.
+function WidgetEmpty({ title, action, empty }) {
+  return (
+    <div className="adm-w">
+      <div className="adm-w-head">
+        <div className="adm-w-title">{title}</div>
+        {action && <button className="adm-w-action">{action}</button>}
+      </div>
+      <div className="adm-w-body adm-w-body--empty">
+        <EmptyState title={empty.title} description={empty.description} />
+      </div>
+    </div>
+  );
+}
 
 // ─── Width system ────────────────────────────────────────────────────────────
 // Simplified 3-step width: 1/3, 2/3, or full. Internally we still use a
@@ -101,13 +121,41 @@ const STAT_RANGE_LABEL = {
   month: "This Month",
   year:  "This Year",
 };
+// Per-log-type overrides for the count metrics (Minutes / Staff Minutes).
+// Other tiles (Active Readers, Lexile Avg, etc.) are independent of log type.
+const LOG_TYPE_TILES = {
+  minutes: {
+    minutes:      { value: "3,252", label: "Minutes",      hint: "Insights" },
+    staffMinutes: { value: "1,348", label: "Staff Minutes", hint: undefined },
+  },
+  pages: {
+    minutes:      { value: "12,840", label: "Pages",       hint: "Insights" },
+    staffMinutes: { value: "5,210",  label: "Staff Pages", hint: undefined },
+  },
+  books: {
+    minutes:      { value: "287", label: "Books",       hint: "Insights" },
+    staffMinutes: { value: "126", label: "Staff Books", hint: undefined },
+  },
+};
+// Catalog-demo roles (Kitchen Sink + variants) bypass per-tile role gates so
+// every metric in the catalog is visible.
+const IS_CATALOG_ROLE = (role) => role === "kitchen" || role === "kitchen-full";
+
 export function AdmStatTiles({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="What's Happened" action="View Report"
+      empty={{ title: "No reading logged yet", description: "Once students start logging, you'll see weekly minutes, active readers, and Lexile averages here." }} />
+  );
   // Tiles available to this role (staff-related ones are media-only)
-  const available = STAT_TILES.filter((s) => !s.roles || s.roles.includes(role));
+  const available = STAT_TILES.filter(
+    (s) => IS_CATALOG_ROLE(role) || !s.roles || s.roles.includes(role)
+  );
   const selectedIds = settings.selected && settings.selected.length
     ? settings.selected
     : available.map((s) => s.id);
   const range = settings.range || "week";
+  const logType = settings.logType || "minutes";
+  const logOverrides = LOG_TYPE_TILES[logType] || LOG_TYPE_TILES.minutes;
   // Preserve catalog order, drop any selected ids the role can't see.
   const tiles = available.filter((s) => selectedIds.includes(s.id));
   return (
@@ -117,27 +165,29 @@ export function AdmStatTiles({ settings = {}, role = "teacher" }) {
           What's Happened
           <span className="adm-w-meta">{STAT_RANGE_LABEL[range]}</span>
         </div>
-        <button className="adm-w-action">View report</button>
+        <button className="adm-w-action">View Report</button>
       </div>
       <div className="adm-w-body">
         <div className="adm-stats">
           {tiles.map((s) => {
-            // Tiles with a destination hint are clickable links for every role.
-            const linkable = !!s.hint;
+            // Count metrics swap their value + label based on the selected
+            // log type (Minutes / Pages / Books).
+            const tile = { ...s, ...(logOverrides[s.id] || {}) };
+            const linkable = !!tile.hint;
             const Tag = linkable ? "a" : "div";
             const linkProps = linkable ? { href: "#", onClick: (e) => e.preventDefault() } : {};
             return (
               <Tag
-                key={s.id}
-                className={`adm-stat adm-stat--${s.color}${linkable ? " adm-stat--link" : ""}`}
+                key={tile.id}
+                className={`adm-stat adm-stat--${tile.color}${linkable ? " adm-stat--link" : ""}`}
                 {...linkProps}
               >
                 <div className="adm-stat-main">
-                  <div className="adm-stat-val">{s.value}</div>
-                  <div className="adm-stat-lbl">{s.label}</div>
+                  <div className="adm-stat-val">{tile.value}</div>
+                  <div className="adm-stat-lbl">{tile.label}</div>
                   {linkable && (
                     <span className="adm-stat-hint">
-                      {s.hint}<span className="adm-stat-hint-arrow" aria-hidden="true">›</span>
+                      {tile.hint}<span className="adm-stat-hint-arrow" aria-hidden="true">→</span>
                     </span>
                   )}
                 </div>
@@ -157,17 +207,33 @@ export function AdmStatTiles({ settings = {}, role = "teacher" }) {
 const STAT_DEFAULTS = {
   selected: STAT_TILES.map((s) => s.id),
   range: "week",
+  logType: "minutes",
 };
-const STAT_FIELDS = [
-  { key: "selected", label: "Show metrics", type: "multi",
-    help: "Pick which stat tiles appear in this widget.",
-    options: STAT_TILES.map((s) => ({ value: s.id, label: s.label })) },
-  { key: "range", label: "Time range", type: "select", options: [
-    { value: "week",  label: "This week" },
-    { value: "month", label: "This month" },
-    { value: "year",  label: "This year" },
-  ]},
-];
+// Role-aware: the multi-select only lists tiles the current role can see, so
+// a teacher doesn't see media-only metrics like "Staff Minutes" in the cog.
+// Kitchen Sink is the catalog demo and gets the full list.
+const STAT_FIELDS = (role) => {
+  const visible = STAT_TILES.filter(
+    (s) => IS_CATALOG_ROLE(role) || !s.roles || s.roles.includes(role)
+  );
+  return [
+    { key: "logType", label: "Log type", type: "select",
+      help: "Switches the primary count tile between minutes, pages, and books.",
+      options: [
+        { value: "minutes", label: "Minutes" },
+        { value: "pages",   label: "Pages" },
+        { value: "books",   label: "Books" },
+      ]},
+    { key: "selected", label: "Show metrics", type: "multi",
+      help: "Pick which stat tiles appear in this widget.",
+      options: visible.map((s) => ({ value: s.id, label: s.label })) },
+    { key: "range", label: "Time range", type: "select", options: [
+      { value: "week",  label: "This week" },
+      { value: "month", label: "This month" },
+      { value: "year",  label: "This year" },
+    ]},
+  ];
+};
 
 // ─── Daily reading tracker ───────────────────────────────────────────────
 // Per-student table modeled on the Student Profile AdminMockup class view:
@@ -192,7 +258,11 @@ const CheckIcon = () => (
     <polyline points="1.5,5 4,7.5 8.5,2.5"/>
   </svg>
 );
-export function AdmDailyTracker({ settings = {} }) {
+export function AdmDailyTracker({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Daily Reading Tracker" action="View All Classes"
+      empty={{ title: "No daily logs this week", description: "Set a per-student goal and ask students to log each day. Their daily progress will appear here." }} />
+  );
   const group = settings.group || "class-a";
   const t = DAILY_TRACKER;
   return (
@@ -202,7 +272,7 @@ export function AdmDailyTracker({ settings = {} }) {
           Daily Reading Tracker
           <span className="adm-w-meta">{GROUP_LABEL[group] || "Class A · Grade 3"}</span>
         </div>
-        <button className="adm-w-action">View all classes</button>
+        <button className="adm-w-action">View All Classes</button>
       </div>
       <div className="adm-w-body adm-drt">
         <div className="adm-drt-week-nav">
@@ -226,7 +296,7 @@ export function AdmDailyTracker({ settings = {} }) {
               <tr key={s.id} className="adm-drt-row">
                 <td className="adm-drt-td">
                   <div className="adm-drt-student">
-                    <span className={`adm-drt-rank adm-drt-rank--${s.rank===1?"gold":s.rank===2?"silver":"bronze"}`}>{s.rank}</span>
+                    <span className="adm-drt-rank-num">{s.rank}.</span>
                     <span className="adm-drt-student-name">{s.name}</span>
                   </div>
                 </td>
@@ -255,8 +325,7 @@ export function AdmDailyTracker({ settings = {} }) {
             <tr className="adm-drt-avg-row">
               <td className="adm-drt-td">
                 <div className="adm-drt-student">
-                  <span className="adm-drt-rank adm-drt-rank--avg" aria-hidden="true" />
-                  <span>Class Average</span>
+                  <span>Average</span>
                 </div>
               </td>
               <td className="adm-drt-td adm-drt-td--goal" />
@@ -316,24 +385,19 @@ const RANGE_LABEL = {
 };
 
 function makeLeaderboard(kind, list) {
-  return function ({ settings = {} }) {
+  return function ({ settings = {}, role = "teacher" }) {
     const sort  = settings.sort  || "active-desc";
     const range = settings.range || "week";
     const limit = parseInt(settings.limit || 5, 10);
 
-    if (!list || list.length === 0) {
+    if (role === "empty" || !list || list.length === 0) {
       return (
-        <div className="adm-w">
-          <div className="adm-w-head">
-            <div className="adm-w-title">{kind}</div>
-            <button className="adm-w-action">View Report</button>
-          </div>
-          <div className="adm-lb-empty">
-            <h4>No Active {kind}</h4>
-            <p>Get your {kind.toLowerCase()} logging to see activity.</p>
-            <button className="adm-btn adm-btn--primary">Log for {kind}</button>
-          </div>
-        </div>
+        <WidgetEmpty title={kind} action="View Report"
+          empty={{
+            title: `No active ${kind.toLowerCase()}`,
+            description: `Once reading activity rolls in, the most active ${kind.toLowerCase()} will rank here.`,
+          }}
+        />
       );
     }
 
@@ -412,6 +476,10 @@ function lbEntities(role) {
   ];
 }
 export function AdmLeaderboardCombo({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Leaderboard" action="View in Insights"
+      empty={{ title: "No activity to rank yet", description: "Students and classes will appear here as soon as someone starts logging reading minutes." }} />
+  );
   const entities = lbEntities(role);
   const [picked, setPicked] = useState(settings.entity);
   // Fall back to the role's first entity if the picked value isn't valid for
@@ -466,7 +534,11 @@ const FlagIcon = () => (
     <path d="M5 4h13l-2.5 4 2.5 4H5" />
   </svg>
 );
-export function AdmFlaggedSessions() {
+export function AdmFlaggedSessions({ role = "teacher" } = {}) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Flagged Sessions" action="Review All"
+      empty={{ title: "Nothing to review", description: "Reading Integrity hasn't flagged any sessions this week — your students are reading clean." }} />
+  );
   const f = FLAGGED_SESSIONS;
   const sessions = f.sessions || [];
   return (
@@ -476,7 +548,7 @@ export function AdmFlaggedSessions() {
           Flagged Sessions
           <span className="adm-w-meta">{sessions.length} to review · {f.range}</span>
         </div>
-        <button className="adm-w-action">Review all</button>
+        <button className="adm-w-action">Review All</button>
       </div>
       <div className="adm-w-body adm-flagged">
         <ul className="adm-flagged-list">
@@ -503,21 +575,17 @@ export function AdmFlaggedSessions() {
   );
 }
 
-// ─── Top Books + Most Earned Badges (visual, Insights-style) ──────────────
+// ─── Top Books + Top Badges (visual, Insights-style) ──────────────
 const TB_RANGE_META = { week: "This Week", month: "This Month", year: "This Year" };
 const TB_RANGE_MULT = { week: 1, month: 4, year: 48 };
-const TB_DEFAULTS = { range: "week", limit: "5" };
+const TB_DEFAULTS = { range: "week", limit: 5 };
 const TB_FIELDS = [
   { key: "range", label: "Time range", type: "select", options: [
     { value: "week",  label: "Weekly"  },
     { value: "month", label: "Monthly" },
     { value: "year",  label: "Yearly"  },
   ]},
-  { key: "limit", label: "Show top", type: "select", options: [
-    { value: "5",  label: "5"  },
-    { value: "10", label: "10" },
-    { value: "15", label: "15" },
-  ]},
+  { key: "limit", label: "Show top", type: "range", min: 5, max: 15, step: 1 },
 ];
 const BadgeStar = () => (
   <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
@@ -542,7 +610,11 @@ function BookCover({ book, rank }) {
   );
 }
 
-export function AdmTopBooks({ settings = {} }) {
+export function AdmTopBooks({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Top Books" action="View Report"
+      empty={{ title: "No books logged yet", description: "As your readers log titles, the most-read books will rank here." }} />
+  );
   const range = settings.range || "week";
   const mult = TB_RANGE_MULT[range] || 1;
   const limit = Number(settings.limit) || 5;
@@ -553,7 +625,7 @@ export function AdmTopBooks({ settings = {} }) {
           Top Books
           <span className="adm-w-meta">{TB_RANGE_META[range]}</span>
         </div>
-        <button className="adm-w-action">View report</button>
+        <button className="adm-w-action">View Report</button>
       </div>
       <div className="adm-w-body adm-shelf">
         {TOP_BOOKS.slice(0, limit).map((b, i) => (
@@ -569,7 +641,11 @@ export function AdmTopBooks({ settings = {} }) {
   );
 }
 
-export function AdmTopBadges({ settings = {} }) {
+export function AdmTopBadges({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Top Badges" action="View Report"
+      empty={{ title: "No badges earned yet", description: "Once students hit reading milestones, the badges they earn most will land here." }} />
+  );
   const range = settings.range || "week";
   const mult = TB_RANGE_MULT[range] || 1;
   const limit = Number(settings.limit) || 5;
@@ -577,10 +653,10 @@ export function AdmTopBadges({ settings = {} }) {
     <div className="adm-w">
       <div className="adm-w-head">
         <div className="adm-w-title">
-          Most Earned Badges
+          Top Badges
           <span className="adm-w-meta">{TB_RANGE_META[range]}</span>
         </div>
-        <button className="adm-w-action">View report</button>
+        <button className="adm-w-action">View Report</button>
       </div>
       <div className="adm-w-body adm-badges">
         {TOP_BADGES.slice(0, limit).map((b) => (
@@ -743,7 +819,11 @@ const Q_ICONS = {
   ),
 };
 
-export function AdmQuestions({ settings = {} }) {
+export function AdmQuestions({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Number Cruncher" action="More Questions"
+      empty={{ title: "No questions selected", description: "Open the cog to pick the questions you want quick answers to — they'll appear here ready to click." }} />
+  );
   const selectedIds = settings.selected && settings.selected.length
     ? settings.selected
     : QUESTIONS.slice(0, 3).map((q) => q.id);
@@ -755,7 +835,7 @@ export function AdmQuestions({ settings = {} }) {
           Number Cruncher
           <span className="adm-w-meta">{list.length} question{list.length === 1 ? "" : "s"}</span>
         </div>
-        <button className="adm-w-action">More questions</button>
+        <button className="adm-w-action">More Questions</button>
       </div>
       <div className="adm-w-body">
         <div className="adm-questions">
@@ -789,18 +869,18 @@ const QUESTIONS_FIELDS = [
 // auto-sizes the cell to fit content.
 // `roles` controls which views can add a widget from the palette. Omit it for
 // widgets available to everyone (What's Happened, Number Cruncher, Top Books,
-// Most Earned Badges).
+// Top Badges).
 export const WIDGET_CATALOG = {
-  "stat-tiles":             { name: "What's Happened",      desc: "At-a-glance metric tiles — pick which ones", min: { w: 2, h: 4 }, component: AdmStatTiles, defaults: STAT_DEFAULTS, settingsFields: STAT_FIELDS, fixedWidth: "full" },
+  "stat-tiles":             { name: "What's Happened",      desc: "At-a-glance metric tiles — pick which ones", min: { w: 2, h: 4 }, component: AdmStatTiles, defaults: STAT_DEFAULTS, settingsFields: STAT_FIELDS },
   "flagged-sessions":       { name: "Flagged Sessions",     desc: "Reading sessions auto-flagged for review this week", min: { w: 1, h: 4 }, component: AdmFlaggedSessions, scrollable: true, roles: ["teacher", "media"] },
   "leaderboard-combo":      { name: "Leaderboard",          desc: "Top 5 with an in-widget toggle", min: { w: 2, h: 6 }, component: AdmLeaderboardCombo, defaults: LB_COMBO_DEFAULTS, scrollable: true, roles: ["media", "library"] },
-  "daily-tracker":          { name: "Daily Reading Tracker",desc: "Daily goal ring + 7-day star strip (full width)", min: { w: 2, h: 6 }, component: AdmDailyTracker, defaults: TRACKER_DEFAULTS, settingsFields: TRACKER_FIELDS, fixedWidth: "full", roles: ["teacher"] },
+  "daily-tracker":          { name: "Daily Reading Tracker",desc: "Per-student weekly progress with daily check-ins", min: { w: 2, h: 6 }, component: AdmDailyTracker, defaults: TRACKER_DEFAULTS, settingsFields: TRACKER_FIELDS, roles: ["teacher"] },
   "leaderboard-students":   { name: "Students", desc: "Roster of students with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardStudents, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["teacher", "media"] },
   "leaderboard-classes":    { name: "Classes",  desc: "Roster of classes with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardClasses,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["teacher", "media"] },
   "leaderboard-staff":      { name: "Staff",    desc: "Roster of staff with configurable sort",    min: { w: 1, h: 6 }, component: AdmLeaderboardStaff,    defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["media", "library"] },
   "leaderboard-patrons":    { name: "Patrons",  desc: "Roster of patrons with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardPatrons,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["library"] },
   "leaderboard-branches":   { name: "Branches", desc: "Roster of branches with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardBranches, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["library"] },
   "questions":              { name: "Number Cruncher",      desc: "Pick which questions to show",        min: { w: 2, h: 14 }, component: AdmQuestions, defaults: QUESTIONS_DEFAULTS, settingsFields: QUESTIONS_FIELDS, scrollable: true },
-  "top-badges":             { name: "Most Earned Badges",   desc: "Badges earned most this week", min: { w: 1, h: 6 }, component: AdmTopBadges, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS, fixedWidth: "full" },
-  "top-books":              { name: "Top Books",            desc: "Most-read titles this week", min: { w: 1, h: 6 }, component: AdmTopBooks, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS, fixedWidth: "full" },
+  "top-badges":             { name: "Top Badges",   desc: "Badges earned most this week", min: { w: 1, h: 6 }, component: AdmTopBadges, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS },
+  "top-books":              { name: "Top Books",            desc: "Most-read titles this week", min: { w: 1, h: 6 }, component: AdmTopBooks, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS },
 };

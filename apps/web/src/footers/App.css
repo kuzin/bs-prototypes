@@ -67,7 +67,7 @@ body[data-theme="dark"] {
 }
 
 .ft-header-inner {
-  max-width: 1240px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 32px 28px;
   display: flex;
@@ -137,7 +137,7 @@ body[data-theme="dark"] {
 /* ── Main grid ─────────────────────────────────────────────────────────── */
 
 .ft-main {
-  max-width: 1240px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 28px;
 }

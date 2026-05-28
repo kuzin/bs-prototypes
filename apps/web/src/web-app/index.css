@@ -20,7 +20,7 @@
 }
 
 .wa-topbar-inner {
-  max-width: 1240px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 12px 24px;
   display: flex;
@@ -100,7 +100,7 @@
   border-top: 1px solid #F1F5F9;
 }
 .wa-tabsbar .tabs {
-  max-width: 1240px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 24px;
   justify-content: center;
@@ -118,7 +118,7 @@
   padding: 24px 0 48px;
 }
 .wa-main-inner {
-  max-width: 1240px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -459,7 +459,7 @@
   background: #FFFFFF;
 }
 .wa-footer-thin-inner {
-  max-width: 1240px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 12px 24px;
   display: flex;
@@ -506,7 +506,7 @@
   background: #FFFFFF;
 }
 .wa-footer-inner {
-  max-width: 1240px;
+  max-width: 1440px;
   margin: 0 auto;
   padding: 18px 24px 24px;
   display: flex;
