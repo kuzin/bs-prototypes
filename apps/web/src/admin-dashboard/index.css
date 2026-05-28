@@ -1173,11 +1173,11 @@ button { font-family: inherit; cursor: pointer; }
 /* ─── Daily reading tracker (per-student table) ──────────────────────────
    Mirrors the Student Profile AdminMockup class view. Edge-to-edge table
    inside the widget body with a week navigator on top + legend in footer. */
+/* Put the container-type on the cell so the compact rules below can also
+   restyle the body itself (a container can't easily restyle itself). */
+.adm-cell:has(.adm-w-body.adm-drt) { container-type: inline-size; }
 .adm-w-body.adm-drt {
   padding: 0;
-  /* Used by the compact-mode container query below so the tracker reshapes
-     itself when the cell is narrower than ~620px. */
-  container-type: inline-size;
   /* Safety net for sub-compact viewports. */
   overflow-x: auto;
 }
@@ -1282,37 +1282,41 @@ button { font-family: inherit; cursor: pointer; }
    stays. The Goal/Average info is still available at full width. */
 @container (max-width: 620px) {
   /* Fill the cell vertically (e.g. when paired with a taller widget like
-     Flagged Sessions) — the body grows so the legend snaps to the cell
-     bottom and the table doesn't sit in a short capsule. */
-  .adm-w-body.adm-drt { flex: 1 1 auto; }
+     Flagged Sessions) — the body grows AND the inner content distributes
+     itself so the legend pins to the cell bottom and the table fills the
+     remaining space evenly. */
+  .adm-w-body.adm-drt {
+    flex: 1 1 auto;
+    display: flex; flex-direction: column;
+  }
+  .adm-w-body.adm-drt > .adm-drt-table { flex: 1; }
 
   /* Hide Goal (col 2) + Average (col 3) for every row in the table. */
   .adm-drt-table tr > :nth-child(2),
   .adm-drt-table tr > :nth-child(3) { display: none; }
 
-  /* Uniform cell padding: identical horizontal padding on every column,
-     centered content, vertically middle-aligned content. */
+  /* Tight cell padding so the date table compresses more. */
   .adm-drt-table          { table-layout: fixed; width: 100%; }
-  .adm-drt-th, .adm-drt-td { padding: 10px 4px; vertical-align: middle; }
-  .adm-drt-th--student     { padding-left: 12px; width: 104px; }
+  .adm-drt-th, .adm-drt-td { padding: 6px 3px; vertical-align: middle; }
+  .adm-drt-th--student     { padding-left: 10px; width: 96px; }
 
   /* Smaller rank text gives the student name a bit more room. */
-  .adm-drt-rank-num { font-size: 11.5px; min-width: 14px; }
+  .adm-drt-rank-num { font-size: 11px; min-width: 12px; }
   .adm-drt-student {
     padding-left: 0;
-    gap: 8px;
+    gap: 6px;
     align-items: center;
   }
   .adm-drt-student-name {
     min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    line-height: 1.1;
+    line-height: 1.1; font-size: 12.5px;
   }
 
   /* Day-cell content (dash / dot / check) — matched sizes and a shared
      vertical baseline so they line up cleanly across all rows. */
   .adm-drt-pct {
     display: inline-flex;
-    width: 16px; height: 16px;
+    width: 14px; height: 14px;
     padding: 0; border-radius: 50%;
     font-size: 0;
     vertical-align: middle;
@@ -1321,24 +1325,26 @@ button { font-family: inherit; cursor: pointer; }
   .adm-drt-pct--orange { background: #F59E0B; }
   .adm-drt-pct--red    { background: #EF4444; }
   .adm-drt-check {
-    width: 18px; height: 18px;
+    width: 16px; height: 16px;
     vertical-align: middle;
   }
-  .adm-drt-check svg { width: 9px; height: 9px; }
-  .adm-drt-dash { vertical-align: middle; font-size: 14px; line-height: 18px; }
+  .adm-drt-check svg { width: 8px; height: 8px; }
+  .adm-drt-dash { vertical-align: middle; font-size: 13px; line-height: 16px; color: #CBD5E1; }
 
   /* Class Average row percentages: tone down to muted small text. */
   .adm-drt-avg-row .adm-drt-td--center:not(:nth-child(2)):not(:nth-child(3)) {
-    color: #94A3B8; font-size: 11.5px;
+    color: #94A3B8; font-size: 11px;
   }
+  .adm-drt-avg-row .adm-drt-td { font-size: 12px; padding-top: 8px; padding-bottom: 8px; }
 
-  /* Tighter week-nav so it doesn't dominate the narrow card. */
-  .adm-drt-week-nav   { padding: 8px 10px; gap: 8px; }
-  .adm-drt-week-label { font-size: 11.5px; font-weight: 700; }
-  .adm-drt-nav-btn    { width: 22px; height: 22px; font-size: 13px; }
+  /* Compact week-nav: smaller arrows, smaller label, less padding. */
+  .adm-drt-week-nav   { padding: 6px 8px; gap: 6px; }
+  .adm-drt-week-label { font-size: 11px; font-weight: 700; }
+  .adm-drt-nav-btn    { width: 20px; height: 20px; font-size: 12px; }
 
-  /* Shrink day-column headers so all 7 fit. */
-  .adm-drt-th--center { font-size: 9.5px; letter-spacing: 0.2px; }
+  /* Smaller day-column headers. */
+  .adm-drt-th--center { font-size: 9px; letter-spacing: 0.2px; }
+  .adm-drt-th         { padding-top: 6px; padding-bottom: 6px; }
 }
 
 /* ─── Leaderboards ────────────────────────────────────────────────────── */
