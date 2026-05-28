@@ -213,7 +213,9 @@ export function App() {
     if (!cat) return null;
     const Comp = cat.component;
     const widgetSettings = settings[id] || {};
-    const widgetFields = cat.settingsFields || [];
+    const widgetFields = typeof cat.settingsFields === "function"
+      ? cat.settingsFields(role)
+      : (cat.settingsFields || []);
     const hasSettings = widgetFields.length > 0;
     const isSettingsOpen = openSettings?.id === id;
     return (

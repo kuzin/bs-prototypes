@@ -93,7 +93,7 @@ export const STAT_TILES = [
   { id: "active",         label: "Active Readers",      value: "1,204", color: "yellow", icon: "user",     hint: "Insights" },
   { id: "lexileAvg",      label: "Lexile Average",      value: "740L",  color: "purple", icon: "book",     hint: "Lexile Insights" },
   { id: "loggedEveryDay", label: "Logged Every Day",    value: "38",    color: "green",  icon: "calendar", hint: "BNC" },
-  { id: "avgLevel",       label: "Average Title Level", value: "665L",  color: "green",  icon: "book"   },
+  { id: "avgLevel",       label: "Average Title Level", value: "665L",  color: "green",  icon: "book",     hint: "Lexile Insights" },
   { id: "staffMinutes",   label: "Staff Minutes",       value: "1,348", color: "red",    icon: "timer",  roles: ["media"] },
   { id: "activeStaff",    label: "Active Staff",        value: "142",   color: "yellow", icon: "people", roles: ["media"] },
   { id: "newReaders",     label: "New Readers",         value: "264",   color: "blue",   icon: "user",   hint: "Insights", roles: ["library"] },

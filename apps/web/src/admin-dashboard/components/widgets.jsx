@@ -158,16 +158,24 @@ const STAT_DEFAULTS = {
   selected: STAT_TILES.map((s) => s.id),
   range: "week",
 };
-const STAT_FIELDS = [
-  { key: "selected", label: "Show metrics", type: "multi",
-    help: "Pick which stat tiles appear in this widget.",
-    options: STAT_TILES.map((s) => ({ value: s.id, label: s.label })) },
-  { key: "range", label: "Time range", type: "select", options: [
-    { value: "week",  label: "This week" },
-    { value: "month", label: "This month" },
-    { value: "year",  label: "This year" },
-  ]},
-];
+// Role-aware: the multi-select only lists tiles the current role can see, so
+// a teacher doesn't see media-only metrics like "Staff Minutes" in the cog.
+// Kitchen Sink is the catalog demo and gets the full list.
+const STAT_FIELDS = (role) => {
+  const visible = STAT_TILES.filter(
+    (s) => role === "kitchen" || !s.roles || s.roles.includes(role)
+  );
+  return [
+    { key: "selected", label: "Show metrics", type: "multi",
+      help: "Pick which stat tiles appear in this widget.",
+      options: visible.map((s) => ({ value: s.id, label: s.label })) },
+    { key: "range", label: "Time range", type: "select", options: [
+      { value: "week",  label: "This week" },
+      { value: "month", label: "This month" },
+      { value: "year",  label: "This year" },
+    ]},
+  ];
+};
 
 // ─── Daily reading tracker ───────────────────────────────────────────────
 // Per-student table modeled on the Student Profile AdminMockup class view:
