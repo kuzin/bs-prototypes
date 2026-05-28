@@ -799,6 +799,12 @@ button { font-family: inherit; cursor: pointer; }
 }
 .adm-edit-hint strong { font-weight: 800; }
 .adm-edit-hint-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+/* Mobile: stack the hint text above the buttons so the text doesn't get
+   squeezed into 1-word-per-line. */
+@media (max-width: 720px) {
+  .adm-edit-hint { flex-direction: column; align-items: stretch; }
+  .adm-edit-hint-actions { justify-content: flex-end; }
+}
 
 /* ─── Widget chrome (replaces widget header in edit mode) ────────────── */
 .adm-cell-chrome {
@@ -1047,13 +1053,20 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 12px;
   border: 1px solid;
 }
-/* Compact mode: 2 columns max so the tiles stay a sensible size, and any
-   leftover odd tile centers (justify-content above) instead of stretching
-   the full width of the cell. */
+/* Half-width widget (~480-620px): cap each tile at 50% so 4 tiles fit a
+   2x2 grid and any leftover odd tile centers (justify-content above)
+   instead of stretching the full width of the cell. */
 @container (max-width: 620px) {
   .adm-stat {
     flex-basis: calc(50% - 8px);
     max-width: calc(50% - 8px);
+  }
+}
+/* Mobile / very narrow widget: drop back to a single full-width column. */
+@container (max-width: 480px) {
+  .adm-stat {
+    flex-basis: 100%;
+    max-width: 100%;
   }
 }
 .adm-stats-empty {
