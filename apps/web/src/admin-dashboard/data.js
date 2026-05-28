@@ -327,14 +327,12 @@ export const REQUIRED_WIDGETS = {};
 
 // ─── Teacher default layout (react-grid-layout format) ────────────────────────
 // Teachers land on a "run my room" arrangement: the Daily Reading Tracker up
-// top, a compact row of linked metric tiles below it, and the Engagement (RCA)
-// + Community Goal blocks moved to the bottom (1/2 each).
+// top, followed by a compact row of linked metric tiles. Engagement and the
+// Community Goal sit in the right rail (fixed, not widgets).
 export const DEFAULT_PRESET_ID = "run-my-room";
 export const DEFAULT_LAYOUT = [
   { i: "daily-tracker",  x: 0, y: 0,  w: 12, h: 20, minW: 4, minH: 6  },
   { i: "stat-tiles",     x: 0, y: 20, w: 12, h: 8,  minW: 4, minH: 4  },
-  { i: "engagement",     x: 0, y: 28, w: 6,  h: 10, minW: 4, minH: 6  },
-  { i: "community-goal", x: 6, y: 28, w: 6,  h: 10, minW: 4, minH: 4  },
 ];
 export const DEFAULT_SETTINGS = {
   "community-goal": { scope: "district" },
@@ -342,15 +340,15 @@ export const DEFAULT_SETTINGS = {
 };
 
 // ─── Media Specialist default ─────────────────────────────────────────────────
-// Media specialists land on a review-and-act layout: a top-3 leaderboard
-// (defaults to Top Classes, switchable to Students) beside a Flagged Sessions
-// widget, with a compact metric row below — all above the fold. No Daily Reading
-// Tracker or Quick Links (those are teacher-only widgets now).
+// Media specialists land on a review-and-act layout: the metric row up top, then
+// a top-3 leaderboard (defaults to Top Classes, switchable to Students) beside
+// a Flagged Sessions widget. No Daily Reading Tracker or Quick Links (those are
+// teacher-only widgets now).
 export const MEDIA_DEFAULT_PRESET_ID = "media-overview";
 export const MEDIA_DEFAULT_LAYOUT = [
-  { i: "leaderboard-combo", x: 0, y: 0,  w: 8,  h: 12, minW: 4, minH: 6 },
-  { i: "flagged-sessions",  x: 8, y: 0,  w: 4,  h: 8,  minW: 4, minH: 4 },
-  { i: "stat-tiles",        x: 0, y: 12, w: 12, h: 8,  minW: 4, minH: 4 },
+  { i: "stat-tiles",        x: 0, y: 0,  w: 12, h: 8,  minW: 4, minH: 4 },
+  { i: "leaderboard-combo", x: 0, y: 8,  w: 8,  h: 12, minW: 4, minH: 6 },
+  { i: "flagged-sessions",  x: 8, y: 8,  w: 4,  h: 8,  minW: 4, minH: 4 },
 ];
 export const MEDIA_DEFAULT_SETTINGS = {
   "leaderboard-combo": { entity: "classes" },
@@ -360,12 +358,11 @@ export const MEDIA_DEFAULT_SETTINGS = {
 // ─── Public Library default ───────────────────────────────────────────────────
 // Public libraries run community reading programs (e.g. summer reading) for
 // patrons across branches — no classes/students. Lands on a Top Readers
-// leaderboard (switchable to Branches) beside the community reading goal, with
-// patron metrics below.
+// leaderboard (switchable to Branches) with patron metrics below. The
+// community reading goal sits in the right rail.
 export const LIBRARY_DEFAULT_PRESET_ID = "library-overview";
 export const LIBRARY_DEFAULT_LAYOUT = [
-  { i: "leaderboard-combo", x: 0, y: 0,  w: 8,  h: 12, minW: 4, minH: 6 },
-  { i: "community-goal",    x: 8, y: 0,  w: 4,  h: 12, minW: 4, minH: 4 },
+  { i: "leaderboard-combo", x: 0, y: 0,  w: 12, h: 12, minW: 4, minH: 6 },
   { i: "stat-tiles",        x: 0, y: 12, w: 12, h: 8,  minW: 4, minH: 4 },
 ];
 export const LIBRARY_DEFAULT_SETTINGS = {
@@ -393,14 +390,13 @@ export const DEFAULT_PRESET_BY_ROLE   = { teacher: DEFAULT_PRESET_ID,  media: ME
 export const DEFAULT_ROWS = [
   ["daily-tracker"],
   ["stat-tiles"],
-  ["engagement", "community-goal"],
 ];
 export const MEDIA_DEFAULT_ROWS = [
-  ["leaderboard-combo", "flagged-sessions"],
   ["stat-tiles"],
+  ["leaderboard-combo", "flagged-sessions"],
 ];
 export const LIBRARY_DEFAULT_ROWS = [
-  ["leaderboard-combo", "community-goal"],
+  ["leaderboard-combo"],
   ["stat-tiles"],
 ];
 // Kitchen Sink: a demo view that places every widget at once (role gating is
@@ -414,7 +410,6 @@ export const KITCHEN_DEFAULT_ROWS = [
   ["leaderboard-branches", "questions"],
   ["top-books"],
   ["top-badges"],
-  ["engagement", "community-goal"],
 ];
 export const DEFAULT_ROWS_BY_ROLE = {
   teacher: DEFAULT_ROWS,
@@ -439,8 +434,8 @@ export const LAYOUT_PRESETS = [
   {
     id: "run-my-room",
     name: "Run my room",
-    description: "Daily Reading Tracker up top, linked metric tiles below, and Engagement + Community Goal at the bottom.",
-    widgetNames: ["Daily Reading Tracker", "What's Happened", "Engagement", "Community Goal"],
+    description: "Daily Reading Tracker up top and linked metric tiles below.",
+    widgetNames: ["Daily Reading Tracker", "What's Happened"],
     roles: ["teacher"],
     layout: DEFAULT_LAYOUT,
     settings: DEFAULT_SETTINGS,
@@ -477,14 +472,12 @@ export const LAYOUT_PRESETS = [
   {
     id: "engagement-health",
     name: "Engagement health",
-    description: "Spot quiet readers and stalled classes — engagement, the community goal, and weekly tracking.",
-    widgetNames: ["Engagement", "Community Goal", "What's Happened", "Daily Reading Tracker"],
+    description: "Spot quiet readers and stalled classes with weekly tracking and at-a-glance metrics.",
+    widgetNames: ["What's Happened", "Daily Reading Tracker"],
     roles: ["teacher", "media"],
     layout: [
-      { i: "engagement",     x: 0, y: 0,  w: 4,  h: 10, minW: 4, minH: 6 },
-      { i: "community-goal", x: 4, y: 0,  w: 4,  h: 10, minW: 4, minH: 4 },
-      { i: "stat-tiles",     x: 0, y: 10, w: 12, h: 8,  minW: 4, minH: 4 },
-      { i: "daily-tracker",  x: 0, y: 18, w: 12, h: 20, minW: 4, minH: 6 },
+      { i: "stat-tiles",    x: 0, y: 0,  w: 12, h: 8,  minW: 4, minH: 4 },
+      { i: "daily-tracker", x: 0, y: 8,  w: 12, h: 20, minW: 4, minH: 6 },
     ],
     settings: {},
   },
