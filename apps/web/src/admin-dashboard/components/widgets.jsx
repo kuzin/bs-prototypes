@@ -396,17 +396,12 @@ function makeLeaderboard(kind, list) {
 
     if (role === "empty" || !list || list.length === 0) {
       return (
-        <div className="adm-w">
-          <div className="adm-w-head">
-            <div className="adm-w-title">{kind}</div>
-            <button className="adm-w-action">View Report</button>
-          </div>
-          <div className="adm-lb-empty">
-            <h4>No Active {kind}</h4>
-            <p>Get your {kind.toLowerCase()} logging to see activity.</p>
-            <button className="adm-btn adm-btn--primary">Log for {kind}</button>
-          </div>
-        </div>
+        <WidgetEmpty title={kind} action="View Report"
+          empty={{
+            title: `No active ${kind.toLowerCase()}`,
+            description: `Once reading activity rolls in, the most active ${kind.toLowerCase()} will rank here.`,
+          }}
+        />
       );
     }
 
@@ -584,7 +579,7 @@ export function AdmFlaggedSessions({ role = "teacher" } = {}) {
   );
 }
 
-// ─── Top Books + Most Earned Badges (visual, Insights-style) ──────────────
+// ─── Top Books + Top Badges (visual, Insights-style) ──────────────
 const TB_RANGE_META = { week: "This Week", month: "This Month", year: "This Year" };
 const TB_RANGE_MULT = { week: 1, month: 4, year: 48 };
 const TB_DEFAULTS = { range: "week", limit: "5" };
@@ -656,7 +651,7 @@ export function AdmTopBooks({ settings = {}, role = "teacher" }) {
 
 export function AdmTopBadges({ settings = {}, role = "teacher" }) {
   if (role === "empty") return (
-    <WidgetEmpty title="Most Earned Badges" action="View Report"
+    <WidgetEmpty title="Top Badges" action="View Report"
       empty={{ title: "No badges earned yet", description: "Once students hit reading milestones, the badges they earn most will land here." }} />
   );
   const range = settings.range || "week";
@@ -666,7 +661,7 @@ export function AdmTopBadges({ settings = {}, role = "teacher" }) {
     <div className="adm-w">
       <div className="adm-w-head">
         <div className="adm-w-title">
-          Most Earned Badges
+          Top Badges
           <span className="adm-w-meta">{TB_RANGE_META[range]}</span>
         </div>
         <button className="adm-w-action">View Report</button>
@@ -882,7 +877,7 @@ const QUESTIONS_FIELDS = [
 // auto-sizes the cell to fit content.
 // `roles` controls which views can add a widget from the palette. Omit it for
 // widgets available to everyone (What's Happened, Number Cruncher, Top Books,
-// Most Earned Badges).
+// Top Badges).
 export const WIDGET_CATALOG = {
   "stat-tiles":             { name: "What's Happened",      desc: "At-a-glance metric tiles — pick which ones", min: { w: 2, h: 4 }, component: AdmStatTiles, defaults: STAT_DEFAULTS, settingsFields: STAT_FIELDS },
   "flagged-sessions":       { name: "Flagged Sessions",     desc: "Reading sessions auto-flagged for review this week", min: { w: 1, h: 4 }, component: AdmFlaggedSessions, scrollable: true, roles: ["teacher", "media"] },
@@ -894,6 +889,6 @@ export const WIDGET_CATALOG = {
   "leaderboard-patrons":    { name: "Patrons",  desc: "Roster of patrons with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardPatrons,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["library"] },
   "leaderboard-branches":   { name: "Branches", desc: "Roster of branches with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardBranches, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["library"] },
   "questions":              { name: "Number Cruncher",      desc: "Pick which questions to show",        min: { w: 2, h: 14 }, component: AdmQuestions, defaults: QUESTIONS_DEFAULTS, settingsFields: QUESTIONS_FIELDS, scrollable: true },
-  "top-badges":             { name: "Most Earned Badges",   desc: "Badges earned most this week", min: { w: 1, h: 6 }, component: AdmTopBadges, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS },
+  "top-badges":             { name: "Top Badges",   desc: "Badges earned most this week", min: { w: 1, h: 6 }, component: AdmTopBadges, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS },
   "top-books":              { name: "Top Books",            desc: "Most-read titles this week", min: { w: 1, h: 6 }, component: AdmTopBooks, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS },
 };

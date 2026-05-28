@@ -425,15 +425,15 @@ export const LIBRARY_DEFAULT_ROWS = [
 ];
 // Kitchen Sink: a demo view that places every widget at once (role gating is
 // bypassed for this view), so the whole catalog can be eyeballed on one page.
+// Every row is a paired half-width slot so the compact behaviors are easy to
+// review across the entire catalog.
 export const KITCHEN_DEFAULT_ROWS = [
-  ["daily-tracker"],
-  ["stat-tiles"],
+  ["daily-tracker", "stat-tiles"],
   ["flagged-sessions", "leaderboard-combo"],
   ["leaderboard-students", "leaderboard-classes"],
   ["leaderboard-staff", "leaderboard-patrons"],
   ["leaderboard-branches", "questions"],
-  ["top-badges"],
-  ["top-books"],
+  ["top-badges", "top-books"],
 ];
 // Empty Sink uses the same row layout as Kitchen so the empty states sit
 // in the same positions as the populated demo.

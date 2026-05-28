@@ -1064,6 +1064,12 @@ button { font-family: inherit; cursor: pointer; }
   border-radius: 12px;
   border: 1px solid;
 }
+/* When the last tile is alone on its row (odd total count), stretch it to
+   the full body width so the row doesn't look half-empty. */
+.adm-stat:last-child:nth-child(odd) {
+  flex-basis: 100%;
+  max-width: 100%;
+}
 /* Half-width widget (~480-620px): cap each tile at 50% so 4 tiles fit a
    2x2 grid and any leftover odd tile centers (justify-content above)
    instead of stretching the full width of the cell. Drop the base
@@ -1873,17 +1879,14 @@ button { font-family: inherit; cursor: pointer; }
   box-shadow: var(--shadow-md);
   transform: translateY(-1px);
 }
-/* Hint reads as a text link in the tile's tone — no pill background, with
-   a → arrow that nudges right on hover. */
+/* Hint reads as a text link in the tile's tone — no pill background, no
+   underline, with a → arrow that nudges right on hover. */
 .adm-stat-hint {
   margin-top: 10px;
   display: inline-flex; align-items: center; gap: 4px;
   font-size: 11.5px; font-weight: 700;
   color: inherit;            /* picks up the stat tile's tone */
   letter-spacing: 0.01em;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-thickness: 1.5px;
 }
 .adm-stat-hint-arrow {
   font-size: 12px; font-weight: 800; line-height: 1;
@@ -1974,7 +1977,7 @@ button { font-family: inherit; cursor: pointer; }
 }
 .adm-lbc-val { font-weight: 700; color: #475569; font-size: 13px; flex-shrink: 0; }
 
-/* ─── Top Books shelf + Most Earned Badges (visual) ───────────────────── */
+/* ─── Top Books shelf + Top Badges (visual) ───────────────────────────── */
 /* Items wrap and center so partial rows sit balanced under the title. Item
    widths are fixed so the covers/medals don't squeeze when the container
    is narrower than (count × item + gaps). */
@@ -1986,13 +1989,15 @@ button { font-family: inherit; cursor: pointer; }
 }
 /* Compact-mode (half-width pair): cap the body height to match the
    shared scrollable height so books/badges line up with their partner
-   widget instead of dragging the row taller. */
+   widget instead of dragging the row taller. Pack content from the top
+   (not centered) so scrolling can always reach the first item. */
 @container (max-width: 620px) {
   .adm-w-body.adm-shelf,
   .adm-w-body.adm-badges {
     max-height: 272px;
     overflow-y: auto;
-    align-content: center;
+    align-content: flex-start;
+    padding-top: 16px;
   }
 }
 .adm-shelf-item {
