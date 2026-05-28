@@ -2049,6 +2049,16 @@ button { font-family: inherit; cursor: pointer; }
 .adm-badge-medal--purple { background: linear-gradient(135deg, #A78BFA, #6D28D9); }
 .adm-badge-medal--orange { background: linear-gradient(135deg, #FBA181, #C2410C); }
 .adm-badge-medal--teal   { background: linear-gradient(135deg, #5EEAD4, #0F766E); }
+/* Half-width pair: shrink the books + medals so a row caps at ~3 items
+   even on the widest 50% slot. Sits after the base sizing so the override
+   wins despite same-specificity selectors. */
+@container (max-width: 620px) {
+  .adm-shelf-item       { flex: 0 0 80px; }
+  .adm-book-rank        { width: 18px; height: 18px; font-size: 11px; }
+  .adm-badge-item       { flex: 0 0 72px; }
+  .adm-badge-medal      { width: 56px; height: 56px; }
+  .adm-badge-medal svg  { width: 22px; height: 22px; }
+}
 
 /* ─── Flagged Sessions rail card (top of the rail, both roles) ────────── */
 .adm-rail-flagged {

@@ -68,7 +68,13 @@ export function SettingsPopover({ anchorRect, fields, value, defaults, onChange,
       className="adm-set"
       ref={ref}
       style={{ top, left, right: "auto" }}
+      /* Popover is portaled to <body>, but events still bubble through
+         the React tree to the parent card. Stop them here so the dnd-kit
+         drag sensor on the card doesn't activate when the user drags the
+         slider thumb / clicks inside the popover. */
       onMouseDown={(e) => e.stopPropagation()}
+      onPointerDown={(e) => e.stopPropagation()}
+      onClick={(e) => e.stopPropagation()}
     >
       <div className="adm-set-head">
         <div className="adm-set-title">Widget settings</div>
