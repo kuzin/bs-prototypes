@@ -1836,16 +1836,24 @@ button { font-family: inherit; cursor: pointer; }
 .adm-lbc-val { font-weight: 700; color: #475569; font-size: 13px; flex-shrink: 0; }
 
 /* ─── Top Books shelf + Most Earned Badges (visual) ───────────────────── */
-/* Items flex to fill the full-width block evenly (no empty gap on the right). */
+/* Items wrap and center so partial rows sit balanced under the title. Item
+   widths are fixed so the covers/medals don't squeeze when the container
+   is narrower than (count × item + gaps). */
 .adm-w-body.adm-shelf,
 .adm-w-body.adm-badges {
-  display: flex; gap: 16px;
+  display: flex; flex-wrap: wrap; justify-content: center;
+  gap: 16px;
   align-items: flex-start;
 }
-.adm-shelf-item { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 7px; }
+.adm-shelf-item {
+  flex: 0 0 96px;
+  display: flex; flex-direction: column; align-items: center; gap: 7px;
+  text-align: center;
+}
 .adm-book-cover {
   position: relative;
-  height: 150px; border-radius: 8px;
+  width: 100%; aspect-ratio: 2 / 3;
+  border-radius: 8px;
   color: #fff;
   background: #E2E8F0;
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.16);
@@ -1869,7 +1877,7 @@ button { font-family: inherit; cursor: pointer; }
 .adm-shelf-meta { font-size: 12px; font-weight: 700; color: #64748B; }
 
 .adm-badge-item {
-  flex: 1 1 0; min-width: 0;
+  flex: 0 0 80px;
   display: flex; flex-direction: column; align-items: center; gap: 8px;
   text-align: center;
 }
