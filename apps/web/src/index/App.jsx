@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { PROTOTYPES } from '../prototypes'
 
 const PATTERNS = PROTOTYPES.find((p) => p.id === 'patterns');
@@ -140,6 +141,8 @@ function ProtoCard({ id, name, description, href, accent }) {
 }
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState(SECTIONS[0]?.title || 'Prototypes');
+  const active = SECTIONS.find((s) => s.title === activeTab) || SECTIONS[0];
   return (
     <div className="page">
       <header>
@@ -154,17 +157,28 @@ export default function App() {
         )}
       </header>
 
-      <main>
-        {SECTIONS.map((section) => (
-          <section className="section" key={section.title}>
-            <h2 className="section-title">{section.title}</h2>
-            <div className="list">
-              {section.items.map((p) => (
-                <ProtoCard key={p.href} {...p} />
-              ))}
-            </div>
-          </section>
+      <nav className="tabs" role="tablist" aria-label="Prototype sections">
+        {SECTIONS.map((s) => (
+          <button
+            key={s.title}
+            type="button"
+            role="tab"
+            aria-selected={s.title === active.title}
+            className={`tab ${s.title === active.title ? 'is-active' : ''}`}
+            onClick={() => setActiveTab(s.title)}
+          >
+            {s.title}
+            <span className="tab-count">{s.items.length}</span>
+          </button>
         ))}
+      </nav>
+
+      <main>
+        <div className="list">
+          {active.items.map((p) => (
+            <ProtoCard key={p.href} {...p} />
+          ))}
+        </div>
       </main>
     </div>
   );
