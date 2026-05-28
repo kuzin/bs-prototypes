@@ -1144,9 +1144,16 @@ button { font-family: inherit; cursor: pointer; }
 /* ─── Daily reading tracker (per-student table) ──────────────────────────
    Mirrors the Student Profile AdminMockup class view. Edge-to-edge table
    inside the widget body with a week navigator on top + legend in footer. */
-.adm-w-body.adm-drt { padding: 0; }
+.adm-w-body.adm-drt {
+  /* Allow the table to scroll horizontally inside the cell when the widget
+     is placed at half-width — keeps all 7 day columns reachable. */
+  padding: 0; overflow-x: auto;
+}
 .adm-drt {
   display: flex; flex-direction: column;
+  /* Reserve enough width for the 10 columns (Student 160 + Goal/Avg + 7 day
+     cells) so each stays legible. The body horizontally scrolls below this. */
+  min-width: 660px;
 }
 .adm-drt-week-nav {
   display: flex; align-items: center; gap: 12px;

@@ -791,10 +791,10 @@ const QUESTIONS_FIELDS = [
 // widgets available to everyone (What's Happened, Number Cruncher, Top Books,
 // Most Earned Badges).
 export const WIDGET_CATALOG = {
-  "stat-tiles":             { name: "What's Happened",      desc: "At-a-glance metric tiles — pick which ones", min: { w: 2, h: 4 }, component: AdmStatTiles, defaults: STAT_DEFAULTS, settingsFields: STAT_FIELDS, fixedWidth: "full" },
+  "stat-tiles":             { name: "What's Happened",      desc: "At-a-glance metric tiles — pick which ones", min: { w: 2, h: 4 }, component: AdmStatTiles, defaults: STAT_DEFAULTS, settingsFields: STAT_FIELDS },
   "flagged-sessions":       { name: "Flagged Sessions",     desc: "Reading sessions auto-flagged for review this week", min: { w: 1, h: 4 }, component: AdmFlaggedSessions, scrollable: true, roles: ["teacher", "media"] },
   "leaderboard-combo":      { name: "Leaderboard",          desc: "Top 5 with an in-widget toggle", min: { w: 2, h: 6 }, component: AdmLeaderboardCombo, defaults: LB_COMBO_DEFAULTS, scrollable: true, roles: ["media", "library"] },
-  "daily-tracker":          { name: "Daily Reading Tracker",desc: "Daily goal ring + 7-day star strip (full width)", min: { w: 2, h: 6 }, component: AdmDailyTracker, defaults: TRACKER_DEFAULTS, settingsFields: TRACKER_FIELDS, fixedWidth: "full", roles: ["teacher"] },
+  "daily-tracker":          { name: "Daily Reading Tracker",desc: "Per-student weekly progress with daily check-ins", min: { w: 2, h: 6 }, component: AdmDailyTracker, defaults: TRACKER_DEFAULTS, settingsFields: TRACKER_FIELDS, roles: ["teacher"] },
   "leaderboard-students":   { name: "Students", desc: "Roster of students with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardStudents, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["teacher", "media"] },
   "leaderboard-classes":    { name: "Classes",  desc: "Roster of classes with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardClasses,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["teacher", "media"] },
   "leaderboard-staff":      { name: "Staff",    desc: "Roster of staff with configurable sort",    min: { w: 1, h: 6 }, component: AdmLeaderboardStaff,    defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["media", "library"] },
