@@ -794,6 +794,6 @@ export const WIDGET_CATALOG = {
   "leaderboard-patrons":    { name: "Patrons",  desc: "Roster of patrons with configurable sort",  min: { w: 1, h: 6 }, component: AdmLeaderboardPatrons,  defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["library"] },
   "leaderboard-branches":   { name: "Branches", desc: "Roster of branches with configurable sort", min: { w: 1, h: 6 }, component: AdmLeaderboardBranches, defaults: LEADERBOARD_DEFAULTS, settingsFields: LEADERBOARD_FIELDS, scrollable: true, roles: ["library"] },
   "questions":              { name: "Number Cruncher",      desc: "Pick which questions to show",        min: { w: 2, h: 14 }, component: AdmQuestions, defaults: QUESTIONS_DEFAULTS, settingsFields: QUESTIONS_FIELDS, scrollable: true },
-  "top-books":              { name: "Top Books",            desc: "Most-read titles this week", min: { w: 1, h: 6 }, component: AdmTopBooks, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS, fixedWidth: "full" },
   "top-badges":             { name: "Most Earned Badges",   desc: "Badges earned most this week", min: { w: 1, h: 6 }, component: AdmTopBadges, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS, fixedWidth: "full" },
+  "top-books":              { name: "Top Books",            desc: "Most-read titles this week", min: { w: 1, h: 6 }, component: AdmTopBooks, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS, fixedWidth: "full" },
 };

@@ -408,8 +408,8 @@ export const KITCHEN_DEFAULT_ROWS = [
   ["leaderboard-students", "leaderboard-classes"],
   ["leaderboard-staff", "leaderboard-patrons"],
   ["leaderboard-branches", "questions"],
-  ["top-books"],
   ["top-badges"],
+  ["top-books"],
 ];
 export const DEFAULT_ROWS_BY_ROLE = {
   teacher: DEFAULT_ROWS,
