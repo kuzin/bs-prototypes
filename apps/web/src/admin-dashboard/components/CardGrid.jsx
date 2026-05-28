@@ -32,20 +32,24 @@ const SplitIcon = () => (
     <rect x="14" y="5" width="7" height="14" rx="1.5" />
   </svg>
 );
-const LockIcon = () => (
+// Two stacked rows with a downward arrow — signals that dropping here will
+// push the dragged card onto a new row underneath, instead of pairing.
+const NewRowIcon = () => (
   <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <rect x="5" y="11" width="14" height="9" rx="2" />
-    <path d="M8 11V8a4 4 0 0 1 8 0v3" />
+    <rect x="4" y="4" width="16" height="6" rx="1.5" />
+    <path d="M12 13v6" />
+    <polyline points="9,16 12,19 15,16" />
   </svg>
 );
 // Hover hint shown on the card under the cursor: whether dropping will pair the
-// two side by side (split) or bump the dragged card to its own row (locked).
+// two side-by-side (split) or push the dragged card to a new row below
+// (locked — happens when the target's row is full or contains a full-bleed widget).
 function DropBadge({ mode }) {
   if (mode !== "split" && mode !== "locked") return null;
   return (
     <div className={`adm-drop-badge adm-drop-badge--${mode}`}>
-      {mode === "split" ? <SplitIcon /> : <LockIcon />}
-      <span>{mode === "split" ? "Side by side" : "Own row"}</span>
+      {mode === "split" ? <SplitIcon /> : <NewRowIcon />}
+      <span>{mode === "split" ? "Drop beside this" : "Drop onto a new row below"}</span>
     </div>
   );
 }
