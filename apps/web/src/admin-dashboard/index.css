@@ -1062,8 +1062,11 @@ button { font-family: inherit; cursor: pointer; }
     max-width: calc(50% - 8px);
   }
 }
-/* Mobile / very narrow widget: drop back to a single full-width column. */
-@container (max-width: 480px) {
+/* Mobile viewport: 1-column full-width tiles. Use a viewport media query
+   (not a container query) so side-by-side at narrow desktop widths still
+   gets the 2-col treatment from above — the 1-col stretch is only what
+   we want when the user is actually on a phone-shaped screen. */
+@media (max-width: 720px) {
   .adm-stat {
     flex-basis: 100%;
     max-width: 100%;
