@@ -41,11 +41,19 @@ export const PROTOTYPES = [
   },
   {
     id: "rostering",
-    name: "Rostering",
+    name: "Rostering: School",
     section: "Prototypes",
     href: "/bs-prototypes/rostering/",
     accent: "#7C5CFA",
     description: "Preview what's coming in from Clever, filter classroom subjects, and manage roster syncs from one place.",
+  },
+  {
+    id: "rostering-district",
+    name: "Rostering: District",
+    section: "Prototypes",
+    href: "/bs-prototypes/rostering-district/",
+    accent: "#5B3FC8",
+    description: "District-level roster sync settings — set the import filter and summer pause for every school, and preview the filter against any school.",
   },
   {
     id: "insights",

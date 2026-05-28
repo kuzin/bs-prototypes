@@ -160,10 +160,10 @@ function pickTeachers(subject, idx) {
 
 // Generate ALL incoming classes deterministically. Each entry carries its
 // Clever subject category so the import filter can classify it.
-function buildClasses() {
+function buildClasses(counts = SUBJECT_COUNTS, idPrefix = 'c') {
   const out = []
   let nextId = 1
-  for (const [subject, count] of Object.entries(SUBJECT_COUNTS)) {
+  for (const [subject, count] of Object.entries(counts)) {
     const prefix = SUBJECT_PREFIX[subject]
     for (let i = 0; i < count; i++) {
       const grade  = GRADES[i % GRADES.length]
@@ -172,7 +172,7 @@ function buildClasses() {
       const teacherLast = teachers[0].split(' ').pop()
       const code = classCode(prefix, grade, period, (i % 12) + 1)
       out.push({
-        id: `c-${nextId++}`,
+        id: `${idPrefix}-${nextId++}`,
         name: `${prefix} ${grade} - ${code} - ${teacherLast}`,
         period: code,
         students: 14 + ((i * 3) % 12),
@@ -222,4 +222,64 @@ export const LAST_SYNC = {
     { name: 'Ayden Carter',        deactivatedAt: '2026-05-20T02:41:00', scheduledDeletion: '2026-05-31' },
     { name: 'Jacqueline McDaniel', deactivatedAt: '2026-05-20T02:41:00', scheduledDeletion: '2026-05-31' },
   ],
+}
+
+// ─── District context (powers the district version of this prototype) ─────────
+// The district version reuses every component via a `scope="district"` prop and
+// adds a school picker that scopes the live filter preview. The import filter and
+// summer pause read as district-wide policy; only the preview is per-school.
+// Each school carries its own deterministically-built roster so the preview
+// changes per school. Stiles Point reuses the school version's roster so the
+// default selection lines up with the single-school prototype.
+function scaleCounts(counts, factor) {
+  const out = {}
+  for (const [k, v] of Object.entries(counts)) out[k] = Math.max(1, Math.round(v * factor))
+  return out
+}
+
+// Per-school deactivated-user pool for the Last Sync drill-down modals.
+const DEACT_POOL = [
+  { name: 'Marcus Greene',       role: 'Teacher' },
+  { name: 'Harper Gantt',        role: 'Student' },
+  { name: 'Tasha Williams',      role: 'Teacher' },
+  { name: 'Janesha Salters',     role: 'Student' },
+  { name: 'Ayden Carter',        role: 'Student' },
+  { name: 'Jacqueline McDaniel', role: 'Teacher' },
+  { name: 'Devon Boyd',          role: 'Student' },
+  { name: 'Mia Nunez',           role: 'Student' },
+  { name: 'Caleb Frye',          role: 'Student' },
+  { name: 'Nadia Rahman',        role: 'Teacher' },
+  { name: 'Owen Vance',          role: 'Student' },
+  { name: 'Priya Desai',         role: 'Teacher' },
+]
+
+function buildDeactivated(n, offset = 0) {
+  return Array.from({ length: n }, (_, i) => {
+    const u = DEACT_POOL[(offset + i) % DEACT_POOL.length]
+    const early = i % 2 === 0
+    return {
+      ...u,
+      deactivatedAt: early ? '2026-05-16T04:48:00' : '2026-05-20T02:41:00',
+      scheduledDeletion: early ? '2026-05-24' : '2026-05-31',
+    }
+  })
+}
+
+// Each school carries its own roster (for the filter preview), last-sync totals,
+// and deactivated-user list (for the Last Sync table + drill-down modal). Stiles
+// Point's numbers match the school version's LAST_SYNC.
+export const SCHOOLS = [
+  { id: 'stiles-point',   name: 'Stiles Point Elementary School', grades: 'PK–5', teachers: 47, students: 1204, sections: 72,  enrollments: 5412, deactivatedUsers: buildDeactivated(6, 0), classes: INCOMING_CLASSES },
+  { id: 'james-island',   name: 'James Island Elementary',        grades: 'PK–5', teachers: 44, students: 1098, sections: 66,  enrollments: 4940, deactivatedUsers: buildDeactivated(3, 2), classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 0.88), 'ji') },
+  { id: 'harbor-view',    name: 'Harbor View Elementary',         grades: 'PK–5', teachers: 41, students: 1012, sections: 60,  enrollments: 4550, deactivatedUsers: buildDeactivated(2, 5), classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 0.74), 'hv') },
+  { id: 'murray-lasaine', name: 'Murray-LaSaine Montessori',      grades: 'PK–8', teachers: 52, students: 1340, sections: 80,  enrollments: 6030, deactivatedUsers: buildDeactivated(5, 7), classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 1.18), 'ml') },
+  { id: 'camp-road',      name: 'Camp Road Middle School',        grades: '6–8',  teachers: 58, students: 1486, sections: 88,  enrollments: 6680, deactivatedUsers: buildDeactivated(4, 1), classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 1.32), 'cr') },
+  { id: 'fort-johnson',   name: 'Fort Johnson Middle School',     grades: '6–8',  teachers: 70, students: 1720, sections: 102, enrollments: 7740, deactivatedUsers: buildDeactivated(6, 4), classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 1.5),  'fj') },
+]
+
+export const DISTRICT = {
+  name: 'Charleston County School District',
+  shortCode: 'CCSD',
+  schoolCount: SCHOOLS.length,
+  lastSyncAt: LAST_SYNC.at,
 }

@@ -4,7 +4,7 @@ import { PrototypeNav } from '../PrototypeNav'
 import { Hero } from '../ris/components/Hero'
 import '../ris/components/Hero.css'
 import { SyncSettingsPage } from './components/SyncSettingsPage'
-import { DEFAULT_FILTER } from './data'
+import { DEFAULT_FILTER, SCHOOLS } from './data'
 
 import '../ris/index.css'
 import '../ris/components/RisLayout.css'
@@ -36,9 +36,12 @@ const SETUP_NAV = [
 
 const filterKey = (f) => JSON.stringify({ mode: f.mode, custom: [...f.customSubjects].map(w => w.toLowerCase()).sort() })
 
-export function App() {
+export function App({ scope = 'school' }) {
+  const isDistrict = scope === 'district'
   const [filter, setFilter] = useState(DEFAULT_FILTER)
   const [savedFilter, setSavedFilter] = useState(DEFAULT_FILTER)
+  // District version: which school's roster the filter preview is shown against.
+  const [schoolId, setSchoolId] = useState(SCHOOLS[0].id)
 
   const filterDirty = filterKey(filter) !== filterKey(savedFilter)
 
@@ -50,7 +53,7 @@ export function App() {
 
   return (
     <>
-      <div className="ris-layout rostering">
+      <div className={`ris-layout rostering${isDistrict ? ' rostering-district' : ''}`}>
         <Sidebar
           title="Setup"
           subtitle="Configure and set up your Beanstack site."
@@ -64,7 +67,9 @@ export function App() {
           <div className="rost-page">
             <Hero
               title="Roster Sync Settings"
-              subtitle="Decide which classes flow into your reports, and confirm what your last sync brought in."
+              subtitle={isDistrict
+                ? "Decide which classes flow into your district's reports, and confirm what your last sync brought in."
+                : 'Decide which classes flow into your reports, and confirm what your last sync brought in.'}
               accent="#7C5CFA"
             />
             <SyncSettingsPage
@@ -75,12 +80,16 @@ export function App() {
               onRemoveCustom={removeCustom}
               onSaveFilter={saveFilter}
               onCancelFilter={cancelFilter}
+              scope={scope}
+              schools={SCHOOLS}
+              schoolId={schoolId}
+              onSchoolId={setSchoolId}
             />
           </div>
         </div>
       </div>
 
-      <PrototypeNav currentHref="/bs-prototypes/rostering/" />
+      <PrototypeNav currentHref={isDistrict ? '/bs-prototypes/rostering-district/' : '/bs-prototypes/rostering/'} />
     </>
   )
 }
