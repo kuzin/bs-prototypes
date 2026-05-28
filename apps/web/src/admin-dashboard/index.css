@@ -1543,7 +1543,6 @@ button { font-family: inherit; cursor: pointer; }
 .adm-w-body:has(> .adm-questions) { padding: 0; overflow: auto; }
 .adm-questions {
   display: flex; flex-direction: column;
-  min-height: 220px;
 }
 .adm-question {
   display: flex; align-items: center; gap: 12px;
