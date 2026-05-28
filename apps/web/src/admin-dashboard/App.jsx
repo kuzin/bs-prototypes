@@ -328,7 +328,15 @@ export function App() {
           )}
         </div>
 
-        <FixedRail editing={editing} role={role} />
+        <FixedRail
+          editing={editing}
+          role={role}
+          settings={settings}
+          updateSettings={updateSettings}
+          resetSettings={resetSettings}
+          openSettings={openSettings}
+          setOpenSettings={setOpenSettings}
+        />
       </div>
 
       {/* Palette panel — only widgets allowed for this role */}

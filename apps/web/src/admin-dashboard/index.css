@@ -284,7 +284,9 @@ button { font-family: inherit; cursor: pointer; }
 .adm-mobile-alerts { display: none; }
 
 @media (max-width: 1100px) {
-  .adm-main { flex-direction: column; }
+  /* When the rail stacks below the grid, match the 16px gap used between
+     rows in the grid and between cards in the rail. */
+  .adm-main { flex-direction: column; gap: 16px; }
   .adm-main > .adm-grid-wrap { width: 100%; }
   .adm-rail { width: 100%; }
   /* On mobile, surface alerts above the editable grid */
@@ -1686,47 +1688,7 @@ button { font-family: inherit; cursor: pointer; }
   .adm-action-btn { padding: 6px 12px; font-size: 12px; }
 }
 
-/* Engagement when rendered as a grid widget (body padding compatibility) */
-.adm-engage-body {
-  display: flex; flex-direction: column; gap: 10px;
-  padding: 6px 4px 10px;
-}
-
-/* ─── Sidebar action list ─────────────────────────────────────────────── */
-.adm-rail-card--actions { padding-bottom: 8px; }
-.adm-rail-actions {
-  list-style: none; margin: 0; padding: 0;
-  display: flex; flex-direction: column;
-}
-.adm-rail-action-row {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 0;
-  border-top: 1px solid #F1F5F9;
-}
-.adm-rail-action-row:first-child { border-top: 0; padding-top: 4px; }
-.adm-rail-action-ico {
-  flex: 0 0 32px; width: 32px; height: 32px;
-  border-radius: 8px;
-  background: #EEF2FF; color: #4F46E5;
-  display: flex; align-items: center; justify-content: center;
-}
-.adm-rail-action-row--warn .adm-rail-action-ico {
-  background: #FEF3C7; color: #B45309;
-}
-.adm-rail-action-text { flex: 1; min-width: 0; }
-.adm-rail-action-title {
-  font-weight: 700; font-size: 13px; color: #0F172A;
-  line-height: 1.25;
-}
-.adm-rail-action-sub {
-  font-size: 12px; color: #64748B;
-  margin-top: 1px; line-height: 1.35;
-}
-.adm-rail-actions .adm-action-btn {
-  padding: 6px 10px; font-size: 12px;
-}
-
-/* ─── Community Goal widget ───────────────────────────────────────────── */
+/* ─── Community / District Goal card ──────────────────────────────────── */
 .adm-goal-widget {
   display: flex; flex-direction: column; gap: 10px;
   justify-content: center;
@@ -1942,9 +1904,7 @@ button { font-family: inherit; cursor: pointer; }
 
 /* ─── Quick Actions rail card ─────────────────────────────────────────── */
 .adm-quick-actions {
-  /* minmax(0, 1fr) lets columns shrink below content width so long labels
-     ellipsis instead of pushing the card wider. */
-  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;
+  display: flex; flex-direction: column; gap: 8px;
 }
 .adm-quick-action {
   display: flex; align-items: center; gap: 8px;
@@ -1975,14 +1935,3 @@ button { font-family: inherit; cursor: pointer; }
   line-height: 1; flex-shrink: 0; margin-top: -2px;
 }
 .adm-quick-action:hover .adm-quick-action-chev { color: #1A6DD5; }
-
-/* Mobile rail overrides — declared after the base rules above so they win the
-   cascade at ≤720px (the rail goes full-width but is still narrow). */
-@media (max-width: 720px) {
-  /* One Quick Action per row so labels don't ellipsis to "F…". */
-  .adm-quick-actions { grid-template-columns: 1fr; }
-  /* "This week": CTA drops to its own full-width line, aligned under the text
-     (past the 32px icon + 10px gap), so the title isn't squeezed per-word. */
-  .adm-rail-action-row { flex-wrap: wrap; }
-  .adm-rail-action-row .adm-action-btn { flex: 1 1 100%; margin-left: 42px; }
-}

@@ -1,6 +1,6 @@
 import {
   NOTIFICATIONS, STAT_TILES, DAILY_TRACKER, LEADERBOARDS,
-  LINKS, QUESTIONS, ENGAGEMENT, GOAL_OPTIONS, FLAGGED_SESSIONS,
+  LINKS, QUESTIONS, FLAGGED_SESSIONS,
   TOP_BOOKS, TOP_BADGES, coverUrl,
 } from "../data";
 import { useState } from "react";
@@ -776,97 +776,13 @@ const QUESTIONS_FIELDS = [
     options: QUESTIONS.map((q) => ({ value: q.id, label: q.text })) },
 ];
 
-// ─── Engagement (RCA-level format) ───────────────────────────────────────
-// Shows the school's current Reading Culture Awards level alongside a 4-stop
-// progress bar; a small caret marks the active segment, and the next level's
-// threshold is shown below the active level's "Engagement N%" pill.
-export function AdmEngagement() {
-  const { current, label, levels } = ENGAGEMENT;
-  // Active level = highest `min` ≤ current. Next level (if any) drives the
-  // "Next Level" row at the bottom.
-  let activeIdx = 0;
-  for (let i = 0; i < levels.length; i++) {
-    if (current >= levels[i].min) activeIdx = i;
-  }
-  const active = levels[activeIdx];
-  const next = levels[activeIdx + 1];
-  return (
-    <div className="adm-w">
-      <div className="adm-w-head">
-        <div className="adm-w-title">Engagement</div>
-      </div>
-      <div className="adm-w-body adm-rca">
-        <div className="adm-rca-row">
-          <span className={`adm-rca-val adm-rca-val--${active.color}`}>{active.name}</span>
-          <span className="adm-rca-meta">{current}% engaged</span>
-        </div>
-        <div className="adm-rca-bar" style={{ "--active": activeIdx }}>
-          {levels.map((lv, i) => (
-            <span key={lv.id} className={`adm-rca-seg adm-rca-seg--${lv.color} ${i === activeIdx ? "is-active" : ""}`} />
-          ))}
-          <span className={`adm-bar-thumb adm-bar-thumb--${active.color}`} aria-hidden="true" />
-        </div>
-        {next && (
-          <div className="adm-rca-foot">
-            Next level: <strong>{next.name}</strong> at {next.min}%
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-// ─── Community / District Goal (now an editable widget) ─────────────────
-const fmtN = (n) => n.toLocaleString();
-function shortGoal(n) {
-  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(0)}B`;
-  if (n >= 1_000_000)     return `${(n / 1_000_000).toFixed(0)}M`;
-  if (n >= 1_000)         return `${(n / 1_000).toFixed(0)}K`;
-  return String(n);
-}
-export function AdmCommunityGoal({ settings = {} }) {
-  const scope = settings.scope || "community";
-  const g = GOAL_OPTIONS[scope] || GOAL_OPTIONS.community;
-  const pct = Math.min(100, Math.round((g.value / g.goal) * 100));
-  // District goals are set centrally — only the community goal is user-managed.
-  const canEdit = scope === "community";
-  return (
-    <div className="adm-w">
-      <div className="adm-w-head">
-        <div className="adm-w-title">{g.name}</div>
-        {canEdit && <button className="adm-w-action">Update Goal</button>}
-      </div>
-      <div className="adm-w-body adm-goal-widget">
-        <div className="adm-goal-row">
-          <span className="adm-goal-val">{fmtN(g.value)}</span>
-          <span className="adm-goal-meta">/ {shortGoal(g.goal)} {g.unit}</span>
-        </div>
-        <div className="adm-goal-bar">
-          <div className="adm-goal-fill adm-goal-fill--blue" style={{ width: `${pct}%` }} />
-          <span className="adm-bar-thumb adm-bar-thumb--blue" style={{ left: `${pct}%` }} aria-hidden="true" />
-        </div>
-        <div className="adm-goal-pct">{pct}% of goal</div>
-      </div>
-    </div>
-  );
-}
-const GOAL_DEFAULTS = { scope: "community" };
-const GOAL_FIELDS = [
-  { key: "scope", label: "Show", type: "select",
-    help: "Pick which goal to display.",
-    options: [
-      { value: "community", label: "Community Goal" },
-      { value: "district",  label: "District Goal" },
-    ]},
-];
-
 // ─── Catalog ──────────────────────────────────────────────────────────
 // `scrollable: true` means the widget has a fixed height (set in layout) and
 // its body scrolls internally — good for long lists. Otherwise the dashboard
 // auto-sizes the cell to fit content.
 // `roles` controls which views can add a widget from the palette. Omit it for
 // widgets available to everyone (What's Happened, Number Cruncher, Top Books,
-// Most Earned Badges, Community Goal).
+// Most Earned Badges).
 export const WIDGET_CATALOG = {
   "stat-tiles":             { name: "What's Happened",      desc: "At-a-glance metric tiles — pick which ones", min: { w: 2, h: 4 }, component: AdmStatTiles, defaults: STAT_DEFAULTS, settingsFields: STAT_FIELDS, fixedWidth: "full" },
   "flagged-sessions":       { name: "Flagged Sessions",     desc: "Reading sessions auto-flagged for review this week", min: { w: 1, h: 4 }, component: AdmFlaggedSessions, scrollable: true, roles: ["teacher", "media"] },
@@ -880,6 +796,4 @@ export const WIDGET_CATALOG = {
   "questions":              { name: "Number Cruncher",      desc: "Pick which questions to show",        min: { w: 2, h: 14 }, component: AdmQuestions, defaults: QUESTIONS_DEFAULTS, settingsFields: QUESTIONS_FIELDS, scrollable: true },
   "top-books":              { name: "Top Books",            desc: "Most-read titles this week", min: { w: 1, h: 6 }, component: AdmTopBooks, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS, fixedWidth: "full" },
   "top-badges":             { name: "Most Earned Badges",   desc: "Badges earned most this week", min: { w: 1, h: 6 }, component: AdmTopBadges, defaults: TB_DEFAULTS, settingsFields: TB_FIELDS, fixedWidth: "full" },
-  "engagement":             { name: "Engagement",            desc: "Are enough readers (or classes) actively logging?", min: { w: 2, h: 6 }, component: AdmEngagement, size: "small", roles: ["teacher", "media"] },
-  "community-goal":         { name: "Community Goal",        desc: "Progress toward the community or district reading goal", min: { w: 2, h: 4 }, component: AdmCommunityGoal, defaults: GOAL_DEFAULTS, settingsFields: GOAL_FIELDS, titleFn: (s) => (s?.scope === "district" ? "District Goal" : "Community Goal"), size: "small" },
 };

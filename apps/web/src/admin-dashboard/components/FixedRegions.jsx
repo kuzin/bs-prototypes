@@ -1,4 +1,5 @@
-import { FEATURE_BAR, QUICK_ACTIONS, ACTIONS, ADMIN_STATE, ACTION_ROW_CAP } from "../data";
+import { FEATURE_BAR, QUICK_ACTIONS, ENGAGEMENT, GOAL_OPTIONS } from "../data";
+import { SettingsPopover } from "./SettingsPopover";
 
 // ─── Feature announcement bar (admin-controlled, not editable) ───────────
 export function FeatureBar({ onClose }) {
@@ -23,7 +24,7 @@ export function FeatureBar({ onClose }) {
   );
 }
 
-// ─── Rail icons (shared by Flagged Sessions + Quick Actions) ─────────────
+// ─── Rail icons (shared by Quick Actions) ────────────────────────────────
 const ACTION_ICONS = {
   flag: (
     <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -71,55 +72,17 @@ const ACTION_ICONS = {
     </svg>
   ),
 };
-// ─── "This week" attention list (what to pay attention to) ───────────────
-// Vertical, compact list of the things needing attention this week: contextual
-// CTAs derived from ADMIN_STATE (no goal in 12+ months, no live challenges)
-// surface first, then role-relevant actions.
-function ActionList({ role = "teacher" }) {
-  const items = ACTIONS.filter((a) => !a.roles || a.roles.includes(role));
-  const conditional = [];
-  if (ADMIN_STATE.goalUpdatedMonthsAgo > 12) {
-    conditional.push({
-      id: "cta-goal", title: "Set this year's goal", subtitle: `Last updated ${ADMIN_STATE.goalUpdatedMonthsAgo} months ago`,
-      icon: "target", cta: "Set goal", tone: "warn",
-    });
-  }
-  if (ADMIN_STATE.liveChallengeCount === 0) {
-    conditional.push({
-      id: "cta-challenges", title: "Turn on a challenge", subtitle: "No live challenges right now",
-      icon: "trophy", cta: "Auto-publish", tone: "warn",
-    });
-  }
-  const cap = (typeof ACTION_ROW_CAP === "object" ? ACTION_ROW_CAP[role] : ACTION_ROW_CAP) ?? 4;
-  const slotsForRole = Math.max(0, cap - conditional.length);
-  const tiles = [...conditional, ...items.slice(0, slotsForRole)];
-  if (!tiles.length) return null;
-  return (
-    <div className="adm-rail-card adm-rail-card--actions">
-      <div className="adm-rail-head">
-        <h3 className="adm-rail-title">This week</h3>
-      </div>
-      <ul className="adm-rail-actions">
-        {tiles.map((t) => (
-          <li key={t.id} className={`adm-rail-action-row ${t.tone ? `adm-rail-action-row--${t.tone}` : ""}`}>
-            <span className="adm-rail-action-ico">{ACTION_ICONS[t.icon] || ACTION_ICONS.target}</span>
-            <div className="adm-rail-action-text">
-              <div className="adm-rail-action-title">{t.title}</div>
-              <div className="adm-rail-action-sub">{t.subtitle}</div>
-            </div>
-            <button type="button" className={`adm-action-btn ${t.tone ? `adm-action-btn--${t.tone}` : ""}`}>
-              {t.cta || "Open"}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+
+const CogIcon = () => (
+  <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <circle cx="12" cy="12" r="3" />
+    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
+  </svg>
+);
 
 // ─── Quick Actions card ──────────────────────────────────────────────────
-// A compact launcher of the most common jumps, keyed by role. Sits under the
-// Flagged Sessions block. The first three land above the fold.
+// A compact launcher of the most common jumps, keyed by role. The first three
+// land above the fold.
 function QuickActionsCard({ role = "teacher" }) {
   const actions = QUICK_ACTIONS[role] || QUICK_ACTIONS.teacher;
   return (
@@ -145,14 +108,155 @@ function QuickActionsCard({ role = "teacher" }) {
   );
 }
 
+// ─── Engagement card (rail-fixed; no settings) ───────────────────────────
+function EngagementCard() {
+  const { current, levels } = ENGAGEMENT;
+  // Active level = highest `min` ≤ current. Next level (if any) drives the
+  // "Next Level" row at the bottom.
+  let activeIdx = 0;
+  for (let i = 0; i < levels.length; i++) {
+    if (current >= levels[i].min) activeIdx = i;
+  }
+  const active = levels[activeIdx];
+  const next = levels[activeIdx + 1];
+  return (
+    <div className="adm-rail-card adm-rail-card--engagement">
+      <div className="adm-rail-head">
+        <h3 className="adm-rail-title">Engagement</h3>
+      </div>
+      <div className="adm-rca">
+        <div className="adm-rca-row">
+          <span className={`adm-rca-val adm-rca-val--${active.color}`}>{active.name}</span>
+          <span className="adm-rca-meta">{current}% engaged</span>
+        </div>
+        <div className="adm-rca-bar" style={{ "--active": activeIdx }}>
+          {levels.map((lv, i) => (
+            <span key={lv.id} className={`adm-rca-seg adm-rca-seg--${lv.color} ${i === activeIdx ? "is-active" : ""}`} />
+          ))}
+          <span className={`adm-bar-thumb adm-bar-thumb--${active.color}`} aria-hidden="true" />
+        </div>
+        {next && (
+          <div className="adm-rca-foot">
+            Next level: <strong>{next.name}</strong> at {next.min}%
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Community / District Goal card (rail-fixed; scope is editable via cog) ──
+const fmtN = (n) => n.toLocaleString();
+function shortGoal(n) {
+  if (n >= 1_000_000_000) return `${(n / 1_000_000_000).toFixed(0)}B`;
+  if (n >= 1_000_000)     return `${(n / 1_000_000).toFixed(0)}M`;
+  if (n >= 1_000)         return `${(n / 1_000).toFixed(0)}K`;
+  return String(n);
+}
+export const GOAL_FIELDS = [
+  { key: "scope", label: "Show", type: "select",
+    help: "Pick which goal to display.",
+    options: [
+      { value: "community", label: "Community Goal" },
+      { value: "district",  label: "District Goal" },
+    ]},
+];
+export const GOAL_DEFAULTS = { scope: "community" };
+
+function CommunityGoalCard({
+  editing,
+  settings,
+  openSettings,
+  setOpenSettings,
+  onChange,
+  onReset,
+}) {
+  const scope = settings.scope || "community";
+  const g = GOAL_OPTIONS[scope] || GOAL_OPTIONS.community;
+  const pct = Math.min(100, Math.round((g.value / g.goal) * 100));
+  // District goals are set centrally — only the community goal is user-managed.
+  const canEdit = scope === "community";
+  const isSettingsOpen = openSettings?.id === "community-goal";
+  return (
+    <div className="adm-rail-card adm-rail-card--goal">
+      <div className="adm-rail-head">
+        <h3 className="adm-rail-title">{g.name}</h3>
+        <div className="adm-rail-head-actions">
+          {canEdit && !editing && (
+            <button type="button" className="adm-rail-action">Update Goal</button>
+          )}
+          {editing && (
+            <button
+              type="button"
+              className={`adm-rail-cog ${isSettingsOpen ? "is-on" : ""}`}
+              onClick={(e) =>
+                setOpenSettings(
+                  isSettingsOpen
+                    ? null
+                    : { id: "community-goal", anchorRect: e.currentTarget.getBoundingClientRect() }
+                )
+              }
+              title="Goal settings"
+              aria-label="Goal settings"
+            >
+              <CogIcon />
+            </button>
+          )}
+        </div>
+      </div>
+      <div className="adm-goal-widget">
+        <div className="adm-goal-row">
+          <span className="adm-goal-val">{fmtN(g.value)}</span>
+          <span className="adm-goal-meta">/ {shortGoal(g.goal)} {g.unit}</span>
+        </div>
+        <div className="adm-goal-bar">
+          <div className="adm-goal-fill adm-goal-fill--blue" style={{ width: `${pct}%` }} />
+          <span className="adm-bar-thumb adm-bar-thumb--blue" style={{ left: `${pct}%` }} aria-hidden="true" />
+        </div>
+        <div className="adm-goal-pct">{pct}% of goal</div>
+      </div>
+      {isSettingsOpen && (
+        <SettingsPopover
+          anchorRect={openSettings.anchorRect}
+          fields={GOAL_FIELDS}
+          value={settings}
+          defaults={GOAL_DEFAULTS}
+          onChange={onChange}
+          onReset={onReset}
+          onClose={() => setOpenSettings(null)}
+        />
+      )}
+    </div>
+  );
+}
+
 // ─── Right rail ──────────────────────────────────────────────────────────
-// Role-aware Quick Actions launcher + a "This week" attention list. (Flagged
-// Sessions now lives in the editable grid as a widget.)
-export function FixedRail({ editing = false, role = "teacher" }) {
+// Quick Actions launcher, then Engagement (teacher/media only) and the
+// Community/District Goal card. Both rail blocks are fixed (not draggable
+// widgets) but their settings are still editable via the cog in edit mode.
+export function FixedRail({
+  editing = false,
+  role = "teacher",
+  settings = {},
+  updateSettings,
+  resetSettings,
+  openSettings,
+  setOpenSettings,
+}) {
+  const showEngagement = role === "teacher" || role === "media" || role === "kitchen";
+  const goalSettings = { ...GOAL_DEFAULTS, ...(settings["community-goal"] || {}) };
   return (
     <aside className="adm-rail">
       <QuickActionsCard role={role} />
-      <ActionList role={role} />
+      {showEngagement && <EngagementCard />}
+      <CommunityGoalCard
+        editing={editing}
+        settings={goalSettings}
+        openSettings={openSettings}
+        setOpenSettings={setOpenSettings}
+        onChange={(patch) => updateSettings?.("community-goal", patch)}
+        onReset={() => resetSettings?.("community-goal")}
+      />
     </aside>
   );
 }
