@@ -1024,9 +1024,13 @@ button { font-family: inherit; cursor: pointer; }
 .adm-banner--danger .adm-banner-ico { background: #FEE2E2; }
 
 /* ─── Stat tiles ──────────────────────────────────────────────────────── */
+/* Body opts into container queries so the tiles can reshape themselves when
+   the widget is dragged to half width. */
+.adm-w-body:has(> .adm-stats) { container-type: inline-size; }
 .adm-stats {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 16px;
   /* Pack wrapped rows at the top at their natural height — the card auto-fits
      to the tiles (incl. the row gap) instead of stretching them, so there's no
@@ -1042,6 +1046,15 @@ button { font-family: inherit; cursor: pointer; }
   padding: 14px 16px;
   border-radius: 12px;
   border: 1px solid;
+}
+/* Compact mode: 2 columns max so the tiles stay a sensible size, and any
+   leftover odd tile centers (justify-content above) instead of stretching
+   the full width of the cell. */
+@container (max-width: 620px) {
+  .adm-stat {
+    flex-basis: calc(50% - 8px);
+    max-width: calc(50% - 8px);
+  }
 }
 .adm-stats-empty {
   flex: 1;
@@ -1295,8 +1308,12 @@ button { font-family: inherit; cursor: pointer; }
   .adm-drt-avg-row .adm-drt-td--center:not(:nth-child(2)):not(:nth-child(3)) {
     color: #94A3B8; font-size: 12px;
   }
-  /* Tighter week-nav label so it doesn't crowd the arrows. */
-  .adm-drt-week-label { font-size: 12.5px; }
+  /* Tighter week-nav so it doesn't dominate the narrow card. */
+  .adm-drt-week-nav   { padding: 8px 10px; gap: 8px; }
+  .adm-drt-week-label { font-size: 11.5px; font-weight: 700; }
+  .adm-drt-nav-btn    { width: 22px; height: 22px; font-size: 13px; }
+  /* Shrink day-column headers so all 7 fit even with longer student names. */
+  .adm-drt-th--center { font-size: 9.5px; letter-spacing: 0.2px; }
 }
 
 /* ─── Leaderboards ────────────────────────────────────────────────────── */
