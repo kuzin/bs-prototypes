@@ -397,10 +397,15 @@ export const KITCHEN_DEFAULT_SETTINGS = {
   "leaderboard-combo": { entity: "classes" },
 };
 
+// Empty Sink demo view — same shape as Kitchen, but each widget renders its
+// no-data empty state instead of populated content. Useful for reviewing the
+// empty UX across the catalog in one pass.
+export const EMPTY_DEFAULT_SETTINGS = { ...KITCHEN_DEFAULT_SETTINGS };
+
 // Per-role defaults — picked up by loadState(role) when a role has no saved
 // layout yet.
 export const DEFAULT_LAYOUT_BY_ROLE   = { teacher: DEFAULT_LAYOUT,     media: MEDIA_DEFAULT_LAYOUT,     library: LIBRARY_DEFAULT_LAYOUT };
-export const DEFAULT_SETTINGS_BY_ROLE = { teacher: DEFAULT_SETTINGS,   media: MEDIA_DEFAULT_SETTINGS,   library: LIBRARY_DEFAULT_SETTINGS, kitchen: KITCHEN_DEFAULT_SETTINGS };
+export const DEFAULT_SETTINGS_BY_ROLE = { teacher: DEFAULT_SETTINGS,   media: MEDIA_DEFAULT_SETTINGS,   library: LIBRARY_DEFAULT_SETTINGS, kitchen: KITCHEN_DEFAULT_SETTINGS, empty: EMPTY_DEFAULT_SETTINGS };
 export const DEFAULT_PRESET_BY_ROLE   = { teacher: DEFAULT_PRESET_ID,  media: MEDIA_DEFAULT_PRESET_ID,  library: LIBRARY_DEFAULT_PRESET_ID };
 
 // ─── Row-based defaults (flexbox layout — rows of widget ids) ─────────────────
@@ -430,11 +435,15 @@ export const KITCHEN_DEFAULT_ROWS = [
   ["top-badges"],
   ["top-books"],
 ];
+// Empty Sink uses the same row layout as Kitchen so the empty states sit
+// in the same positions as the populated demo.
+export const EMPTY_DEFAULT_ROWS = KITCHEN_DEFAULT_ROWS;
 export const DEFAULT_ROWS_BY_ROLE = {
   teacher: DEFAULT_ROWS,
   media:   MEDIA_DEFAULT_ROWS,
   library: LIBRARY_DEFAULT_ROWS,
   kitchen: KITCHEN_DEFAULT_ROWS,
+  empty:   EMPTY_DEFAULT_ROWS,
 };
 
 // ─── Layout presets ───────────────────────────────────────────────────────────

@@ -22,10 +22,13 @@ const ROLES = [
   { value: "media",   label: "Media Specialist view" },
   { value: "library", label: "Public Library view" },
   { value: "kitchen", label: "Kitchen Sink view" },
+  { value: "empty",   label: "Empty Sink view" },
 ];
-// The Kitchen Sink view is a catalog demo — it shows every widget regardless of
-// the per-widget `roles` gate.
-const widgetAllowed = (cat, role) => !!cat && (role === "kitchen" || !cat.roles || cat.roles.includes(role));
+// Kitchen Sink + Empty Sink are catalog demos — they show every widget
+// regardless of per-widget role gates. Empty Sink additionally tells each
+// widget to render its no-data state.
+const widgetAllowed = (cat, role) =>
+  !!cat && (role === "kitchen" || role === "empty" || !cat.roles || cat.roles.includes(role));
 const ROLE_KEY = "adm-user-role";
 
 function greeting() {

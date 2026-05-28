@@ -982,6 +982,12 @@ button { font-family: inherit; cursor: pointer; }
   overflow: hidden;
   padding: 16px;
 }
+/* Center the EmptyState in widgets that opt into the no-data treatment. */
+.adm-w-body--empty {
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px 16px;
+  min-height: 200px;
+}
 /* Scrollable widget bodies scroll internally */
 .adm-w-body.adm-lb { overflow: auto; }
 /* Quick Links is scrollable too — but its body is edge-to-edge (no padding)
@@ -1364,6 +1370,12 @@ button { font-family: inherit; cursor: pointer; }
   /* Smaller day-column headers. */
   .adm-drt-th--center { font-size: 9px; letter-spacing: 0.2px; }
   .adm-drt-th         { padding-top: 6px; padding-bottom: 6px; }
+
+  /* Shrink the percent-bucket legend so it stays a single row instead of
+     wrapping into 2-line entries. */
+  .adm-drt-legend { font-size: 10.5px; gap: 8px; flex-wrap: nowrap; }
+  .adm-drt-legend > span { white-space: nowrap; }
+  .adm-w-footer.adm-drt-legend { padding: 6px 10px; }
 }
 
 /* ─── Leaderboards ────────────────────────────────────────────────────── */

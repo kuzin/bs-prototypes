@@ -6,8 +6,38 @@ import {
 import { useState } from "react";
 import Tippy from "@tippyjs/react";
 import "tippy.js/dist/tippy.css";
+import { EmptyState } from "../../ris/components/Primitives";
 
 const fmt = (n) => n.toLocaleString();
+
+// ─── Empty-state plumbing ────────────────────────────────────────────────
+// The Empty Sink role view renders every widget in its empty state so we can
+// preview the no-data UX without hand-toggling each widget. Each widget that
+// can be meaningfully empty checks `role === "empty"` and returns a shared
+// shell wrapping <EmptyState>.
+const EmptyBookIcon = () => (
+  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+    <path d="M4 5h6a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H4z" />
+    <path d="M20 5h-6a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h7z" />
+  </svg>
+);
+function WidgetEmpty({ title, action, body, icon = <EmptyBookIcon />, empty }) {
+  return (
+    <div className="adm-w">
+      <div className="adm-w-head">
+        <div className="adm-w-title">{title}</div>
+        {action && <button className="adm-w-action">{action}</button>}
+      </div>
+      <div className="adm-w-body adm-w-body--empty">
+        <EmptyState
+          icon={icon}
+          title={empty.title}
+          description={empty.description}
+        />
+      </div>
+    </div>
+  );
+}
 
 // ─── Width system ────────────────────────────────────────────────────────────
 // Simplified 3-step width: 1/3, 2/3, or full. Internally we still use a
@@ -101,13 +131,35 @@ const STAT_RANGE_LABEL = {
   month: "This Month",
   year:  "This Year",
 };
+// Per-log-type overrides for the count metrics (Minutes / Staff Minutes).
+// Other tiles (Active Readers, Lexile Avg, etc.) are independent of log type.
+const LOG_TYPE_TILES = {
+  minutes: {
+    minutes:      { value: "3,252", label: "Minutes",      hint: "Insights" },
+    staffMinutes: { value: "1,348", label: "Staff Minutes", hint: undefined },
+  },
+  pages: {
+    minutes:      { value: "12,840", label: "Pages",       hint: "Insights" },
+    staffMinutes: { value: "5,210",  label: "Staff Pages", hint: undefined },
+  },
+  books: {
+    minutes:      { value: "287", label: "Books",       hint: "Insights" },
+    staffMinutes: { value: "126", label: "Staff Books", hint: undefined },
+  },
+};
 export function AdmStatTiles({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="What's Happened" action="View report"
+      empty={{ title: "No reading logged yet", description: "Once students start logging, you'll see weekly minutes, active readers, and Lexile averages here." }} />
+  );
   // Tiles available to this role (staff-related ones are media-only)
   const available = STAT_TILES.filter((s) => !s.roles || s.roles.includes(role));
   const selectedIds = settings.selected && settings.selected.length
     ? settings.selected
     : available.map((s) => s.id);
   const range = settings.range || "week";
+  const logType = settings.logType || "minutes";
+  const logOverrides = LOG_TYPE_TILES[logType] || LOG_TYPE_TILES.minutes;
   // Preserve catalog order, drop any selected ids the role can't see.
   const tiles = available.filter((s) => selectedIds.includes(s.id));
   return (
@@ -122,22 +174,24 @@ export function AdmStatTiles({ settings = {}, role = "teacher" }) {
       <div className="adm-w-body">
         <div className="adm-stats">
           {tiles.map((s) => {
-            // Tiles with a destination hint are clickable links for every role.
-            const linkable = !!s.hint;
+            // Count metrics swap their value + label based on the selected
+            // log type (Minutes / Pages / Books).
+            const tile = { ...s, ...(logOverrides[s.id] || {}) };
+            const linkable = !!tile.hint;
             const Tag = linkable ? "a" : "div";
             const linkProps = linkable ? { href: "#", onClick: (e) => e.preventDefault() } : {};
             return (
               <Tag
-                key={s.id}
-                className={`adm-stat adm-stat--${s.color}${linkable ? " adm-stat--link" : ""}`}
+                key={tile.id}
+                className={`adm-stat adm-stat--${tile.color}${linkable ? " adm-stat--link" : ""}`}
                 {...linkProps}
               >
                 <div className="adm-stat-main">
-                  <div className="adm-stat-val">{s.value}</div>
-                  <div className="adm-stat-lbl">{s.label}</div>
+                  <div className="adm-stat-val">{tile.value}</div>
+                  <div className="adm-stat-lbl">{tile.label}</div>
                   {linkable && (
                     <span className="adm-stat-hint">
-                      {s.hint}<span className="adm-stat-hint-arrow" aria-hidden="true">›</span>
+                      {tile.hint}<span className="adm-stat-hint-arrow" aria-hidden="true">›</span>
                     </span>
                   )}
                 </div>
@@ -157,6 +211,7 @@ export function AdmStatTiles({ settings = {}, role = "teacher" }) {
 const STAT_DEFAULTS = {
   selected: STAT_TILES.map((s) => s.id),
   range: "week",
+  logType: "minutes",
 };
 // Role-aware: the multi-select only lists tiles the current role can see, so
 // a teacher doesn't see media-only metrics like "Staff Minutes" in the cog.
@@ -166,6 +221,13 @@ const STAT_FIELDS = (role) => {
     (s) => role === "kitchen" || !s.roles || s.roles.includes(role)
   );
   return [
+    { key: "logType", label: "Log type", type: "select",
+      help: "Switches the primary count tile between minutes, pages, and books.",
+      options: [
+        { value: "minutes", label: "Minutes" },
+        { value: "pages",   label: "Pages" },
+        { value: "books",   label: "Books" },
+      ]},
     { key: "selected", label: "Show metrics", type: "multi",
       help: "Pick which stat tiles appear in this widget.",
       options: visible.map((s) => ({ value: s.id, label: s.label })) },
@@ -200,7 +262,11 @@ const CheckIcon = () => (
     <polyline points="1.5,5 4,7.5 8.5,2.5"/>
   </svg>
 );
-export function AdmDailyTracker({ settings = {} }) {
+export function AdmDailyTracker({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Daily Reading Tracker" action="View all classes"
+      empty={{ title: "No daily logs this week", description: "Set a per-student goal and ask students to log each day. Their daily progress will appear here." }} />
+  );
   const group = settings.group || "class-a";
   const t = DAILY_TRACKER;
   return (
@@ -323,12 +389,12 @@ const RANGE_LABEL = {
 };
 
 function makeLeaderboard(kind, list) {
-  return function ({ settings = {} }) {
+  return function ({ settings = {}, role = "teacher" }) {
     const sort  = settings.sort  || "active-desc";
     const range = settings.range || "week";
     const limit = parseInt(settings.limit || 5, 10);
 
-    if (!list || list.length === 0) {
+    if (role === "empty" || !list || list.length === 0) {
       return (
         <div className="adm-w">
           <div className="adm-w-head">
@@ -419,6 +485,10 @@ function lbEntities(role) {
   ];
 }
 export function AdmLeaderboardCombo({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Leaderboard" action="View in Insights"
+      empty={{ title: "No activity to rank yet", description: "Students and classes will appear here as soon as someone starts logging reading minutes." }} />
+  );
   const entities = lbEntities(role);
   const [picked, setPicked] = useState(settings.entity);
   // Fall back to the role's first entity if the picked value isn't valid for
@@ -473,7 +543,11 @@ const FlagIcon = () => (
     <path d="M5 4h13l-2.5 4 2.5 4H5" />
   </svg>
 );
-export function AdmFlaggedSessions() {
+export function AdmFlaggedSessions({ role = "teacher" } = {}) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Flagged Sessions" action="Review all"
+      empty={{ title: "Nothing to review", description: "Reading Integrity hasn't flagged any sessions this week — your students are reading clean." }} />
+  );
   const f = FLAGGED_SESSIONS;
   const sessions = f.sessions || [];
   return (
@@ -549,7 +623,11 @@ function BookCover({ book, rank }) {
   );
 }
 
-export function AdmTopBooks({ settings = {} }) {
+export function AdmTopBooks({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Top Books" action="View report"
+      empty={{ title: "No books logged yet", description: "As your readers log titles, the most-read books will rank here." }} />
+  );
   const range = settings.range || "week";
   const mult = TB_RANGE_MULT[range] || 1;
   const limit = Number(settings.limit) || 5;
@@ -576,7 +654,11 @@ export function AdmTopBooks({ settings = {} }) {
   );
 }
 
-export function AdmTopBadges({ settings = {} }) {
+export function AdmTopBadges({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Most Earned Badges" action="View report"
+      empty={{ title: "No badges earned yet", description: "Once students hit reading milestones, the badges they earn most will land here." }} />
+  );
   const range = settings.range || "week";
   const mult = TB_RANGE_MULT[range] || 1;
   const limit = Number(settings.limit) || 5;
@@ -750,7 +832,11 @@ const Q_ICONS = {
   ),
 };
 
-export function AdmQuestions({ settings = {} }) {
+export function AdmQuestions({ settings = {}, role = "teacher" }) {
+  if (role === "empty") return (
+    <WidgetEmpty title="Number Cruncher" action="More questions"
+      empty={{ title: "No questions selected", description: "Open the cog to pick the questions you want quick answers to — they'll appear here ready to click." }} />
+  );
   const selectedIds = settings.selected && settings.selected.length
     ? settings.selected
     : QUESTIONS.slice(0, 3).map((q) => q.id);
