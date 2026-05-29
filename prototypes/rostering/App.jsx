@@ -79,6 +79,7 @@ export function App({ scope = 'school' }) {
           />
           <SyncSettingsPage
             filter={filter}
+            savedFilter={savedFilter}
             filterDirty={filterDirty}
             onSetMode={setMode}
             onAddCustom={addCustom}
