@@ -1,0 +1,176 @@
+/* Fills the shared centered Modal box; header pinned, body scrolls. */
+.cu {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 32px);
+  overflow: hidden;
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.cu-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eef2f6;
+}
+
+.cu-title {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+
+.cu-sub {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 2px;
+  line-height: 1.45;
+}
+
+.cu-sub code {
+  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 12px;
+  background: #f1f5f9;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.cu-close {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cu-close:hover {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.cu-loading {
+  padding: 40px;
+  text-align: center;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.cu-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 20px 12px;
+}
+
+.cu-proto {
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cu-proto:last-child {
+  border-bottom: none;
+}
+
+.cu-proto-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.cu-row {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.cu-row-label {
+  flex-shrink: 0;
+  width: 86px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cu-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.cu-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.cu-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 6px;
+  border: 1px solid transparent;
+}
+
+.cu-chip em {
+  font-style: normal;
+  font-weight: 600;
+  opacity: 0.65;
+  font-size: 11px;
+}
+
+.cu-chip--shared {
+  background: #eff6ff;
+  border-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.cu-chip--local {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+}
+
+.cu-empty {
+  font-size: 12px;
+  color: #cbd5e1;
+  font-style: italic;
+}
+
+.cu-foot {
+  border-top: 1px solid #eef2f6;
+  padding: 12px 20px 16px;
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  background: #fafbfc;
+}

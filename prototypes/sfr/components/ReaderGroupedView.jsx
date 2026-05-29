@@ -6,12 +6,6 @@ import '@components/Pill/Pill.css'
 import './SessionsTable.css'
 import './ReaderGroupedView.css'
 
-function StatusBadge({ status }) {
-  if (status === 'unfinished')
-    return <span className="sess-status sess-status--partial">Unfinished</span>
-  return null
-}
-
 const RATING_CONFIG = {
   green: { color: '#16A97A', label: 'Positive', bg: '#F0FDF4' },
   yellow: { color: '#D97706', label: 'Mixed', bg: '#FFFBEB' },

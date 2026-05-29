@@ -135,5 +135,9 @@ export default defineConfig({
   base: BASE,
   resolve: {
     alias: [{ find: '@components', replacement: resolve(ROOT, 'components') }],
+    // Force a single React instance across every entry + pre-bundled dep —
+    // standard hygiene for a multi-entry app with many React-dependent libs
+    // (Radix, dnd-kit, nivo, react-spring).
+    dedupe: ['react', 'react-dom'],
   },
 })

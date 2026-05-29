@@ -1,7 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { RangeSlider } from '@components/Form/Form'
+import { Button } from '@components/Button/Button'
 import '@components/Form/Form.css'
+import '@components/Button/Button.css'
 
 /**
  * Anchored popover that renders a widget's settings form from a schema.
@@ -154,12 +156,12 @@ export function SettingsPopover({
       </div>
 
       <div className="adm-set-foot">
-        <button type="button" className="adm-btn adm-btn--xs" onClick={onReset}>
+        <Button type="button" variant="secondary" size="sm" onClick={onReset}>
           Reset to defaults
-        </button>
-        <button type="button" className="adm-btn adm-btn--xs adm-btn--primary" onClick={onClose}>
+        </Button>
+        <Button type="button" variant="primary" size="sm" onClick={onClose}>
           Done
-        </button>
+        </Button>
       </div>
     </div>,
     document.body,

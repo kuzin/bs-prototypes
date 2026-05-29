@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { Table } from '@components/Table/Table'
 import { Pill } from '@components/Pill/Pill'
+import { Tooltip } from '@components/Primitives/Primitives'
 import '@components/Table/Table.css'
 import '@components/Pill/Pill.css'
+import '@components/Primitives/Primitives.css'
 import './SessionsTable.css'
 
 const RATING_CONFIG = {
@@ -218,13 +220,11 @@ export { FLAG_TYPE_CONFIG, POS_FLAG_CONFIG }
 
 export function FlagIconBadge({ type, cfg }) {
   return (
-    <span
-      className="sess-flag-icon"
-      style={{ background: cfg.bg, color: cfg.color }}
-      data-tooltip={cfg.label}
-    >
-      {cfg.icon}
-    </span>
+    <Tooltip content={cfg.label}>
+      <span className="sess-flag-icon" style={{ background: cfg.bg, color: cfg.color }}>
+        {cfg.icon}
+      </span>
+    </Tooltip>
   )
 }
 
@@ -335,7 +335,7 @@ function TypePill({ session, type }) {
   return null
 }
 
-export function StatusBadge({ status }) {
+export function SessionStatusBadge({ status }) {
   if (status === 'unfinished')
     return <span className="sess-status sess-status--partial">Unfinished</span>
   return null

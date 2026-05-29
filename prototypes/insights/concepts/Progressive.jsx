@@ -5,7 +5,7 @@ import {
   TopBooksGrid,
   TopBadgesRow,
   AgesChart,
-  FilterBar,
+  InsightsFilterBar,
 } from '../components'
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, TOTAL_QUERIES } from '../data'
 
@@ -100,7 +100,7 @@ export function Progressive({ onMeterChange, onOpenDetail, onCustomize, visibleT
 
   return (
     <div className="ins-page">
-      <FilterBar
+      <InsightsFilterBar
         onCustomize={onCustomize}
         visibleCount={visibleTiles.size}
         totalCount={TOTAL_QUERIES}

@@ -5,7 +5,7 @@ import {
   TopBooksGrid,
   TopBadgesRow,
   AgesChart,
-  FilterBar,
+  InsightsFilterBar,
 } from '../components'
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, QUERY_TILES, TOTAL_QUERIES } from '../data'
 import { useFakeBatch } from '../useFakeQuery'
@@ -47,7 +47,7 @@ export function Today({ onMeterChange, onOpenDetail, onCustomize, visibleTiles }
 
   return (
     <div className="ins-page">
-      <FilterBar
+      <InsightsFilterBar
         onCustomize={onCustomize}
         visibleCount={visibleTiles.size}
         totalCount={TOTAL_QUERIES}

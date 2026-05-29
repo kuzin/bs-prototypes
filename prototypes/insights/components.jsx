@@ -364,7 +364,11 @@ export function AgesChart({ ages }) {
 }
 
 // ── Filter bar (chrome only — not a real filter) ────────────────────────
-export function FilterBar({ onCustomize, visibleCount, totalCount }) {
+// Named `InsightsFilterBar` to avoid colliding with the shared
+// `@components/FilterBar/FilterBar`. This one mirrors the production Insights
+// dashboard's gray pill filter row (`.ins-filter*`), which has a distinct look
+// the shared FilterBar (label-above-control card) would not reproduce.
+export function InsightsFilterBar({ onCustomize, visibleCount, totalCount }) {
   return (
     <div className="ins-filters">
       <div className="ins-filters-grid">

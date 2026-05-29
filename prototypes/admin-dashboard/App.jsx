@@ -487,17 +487,14 @@ export function App() {
                   <p>Add widgets to build your dashboard.</p>
                   <div className="adm-empty-actions">
                     {!editing && (
-                      <button className="adm-btn adm-btn--primary" onClick={toggleEditing}>
+                      <Button variant="primary" onClick={toggleEditing}>
                         Edit Dashboard
-                      </button>
+                      </Button>
                     )}
                     {editing && (
-                      <button
-                        className="adm-btn adm-btn--primary"
-                        onClick={() => setPaletteOpen(true)}
-                      >
+                      <Button variant="primary" onClick={() => setPaletteOpen(true)}>
                         ＋ Add Widget
-                      </button>
+                      </Button>
                     )}
                   </div>
                 </div>

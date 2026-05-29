@@ -124,54 +124,6 @@ button {
   gap: 8px;
 }
 
-/* ─── Buttons ──────────────────────────────────────────────────────────── */
-.adm-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 10px;
-  border: var(--border);
-  background: #fff;
-  color: #1e293b;
-  font-weight: 700;
-  font-size: 14px;
-  transition: background 0.15s;
-}
-.adm-btn:hover {
-  background: #f9fafb;
-}
-.adm-btn--primary {
-  background: #1a6dd5;
-  color: #fff;
-  border-color: transparent;
-}
-.adm-btn--primary:hover {
-  background: #1559b7;
-}
-.adm-btn--ghost {
-  background: transparent;
-  border-color: transparent;
-  color: #475569;
-}
-.adm-btn--ghost:hover {
-  background: #f1f5f9;
-}
-.adm-btn--danger {
-  background: #fee2e2;
-  color: #b91c1c;
-  border-color: #fca5a5;
-}
-.adm-btn--xs {
-  padding: 4px 8px;
-  font-size: 12px;
-  gap: 4px;
-  border-radius: 7px;
-}
-.adm-btn--icon {
-  padding: 6px;
-}
-
 /* ─── Edit mode toggle ──────────────────────────────────────────────────── */
 .adm-edit-pill {
   display: inline-flex;
@@ -2895,41 +2847,6 @@ button {
   padding: 24px 16px;
 }
 
-.adm-panel {
-  /* Sit above the 48px PrototypeNav at the bottom so the panel footer is reachable */
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 48px;
-  width: 420px;
-  background: #fff;
-  box-shadow: -16px 0 32px rgba(15, 23, 42, 0.12);
-  z-index: 40;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  transform: translateX(100%);
-  transition: transform 0.22s ease;
-}
-.adm-panel.is-open {
-  transform: translateX(0);
-}
-.adm-panel-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 14px;
-}
-.adm-panel-title {
-  font-size: 16px;
-  font-weight: 800;
-}
-.adm-panel-sub {
-  font-size: 12px;
-  color: #64748b;
-  margin-bottom: 14px;
-}
-
 /* ─── Shared list-card style (Add Widget + Templates panels) ──────────── */
 /* Both panels render the same shape: a thumbnail / preview on the left, a
    title + description in the middle, and an action affordance on the right.
@@ -3153,18 +3070,6 @@ button {
   margin-top: 12px;
   display: flex;
   gap: 8px;
-}
-
-.adm-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.3);
-  z-index: 35;
-}
-
-/* ─── Templates panel ─────────────────────────────────────────────────── */
-.adm-panel--templates {
-  width: 420px;
 }
 
 /* ─── Action row (above the editable grid) ─────────────────────────────── */
