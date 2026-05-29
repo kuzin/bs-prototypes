@@ -114,8 +114,9 @@ export function App() {
   const route = useRoute()
   const [navOpen, setNavOpen] = useState(false)
   const [showTop, setShowTop] = useState(false)
-  // Which sidebar groups are expanded. Starts with the active component's group.
-  const [openGroups, setOpenGroups] = useState(() => new Set(route.group ? [route.group.id] : []))
+  // Which sidebar group is expanded — only one at a time. Starts with the active
+  // component's group.
+  const [openGroup, setOpenGroup] = useState(() => route.group?.id ?? null)
 
   // Close the mobile drawer + jump back to the top whenever the route changes.
   useEffect(() => {
@@ -126,7 +127,7 @@ export function App() {
   // Keep the active component's group expanded when navigating to it.
   useEffect(() => {
     if (!route.group) return
-    setOpenGroups((prev) => (prev.has(route.group.id) ? prev : new Set(prev).add(route.group.id)))
+    setOpenGroup(route.group.id)
   }, [route.group?.id])
 
   // Reveal the back-to-top button once the content area is scrolled.
@@ -139,12 +140,7 @@ export function App() {
     return () => content.removeEventListener('scroll', onScroll)
   }, [])
 
-  const toggleGroup = (id) =>
-    setOpenGroups((prev) => {
-      const next = new Set(prev)
-      next.has(id) ? next.delete(id) : next.add(id)
-      return next
-    })
+  const toggleGroup = (id) => setOpenGroup((prev) => (prev === id ? null : id))
 
   const activeGroupId = route.group?.id ?? null
   const activeSectionId = route.section?.id ?? null
@@ -207,7 +203,7 @@ export function App() {
           </div>
           {GROUPS.map((group, i) => {
             const items = sectionsForGroup(group.id)
-            const isOpen = openGroups.has(group.id)
+            const isOpen = openGroup === group.id
             const isActiveGroup = activeGroupId === group.id
             return (
               <Fragment key={group.id}>
