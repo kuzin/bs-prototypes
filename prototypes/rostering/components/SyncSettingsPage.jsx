@@ -201,30 +201,23 @@ function CustomSubjects({ words, onAdd, onRemove }) {
   )
 }
 
-function ViaPill({ via }) {
-  if (via === 'filter')
-    return (
-      <span className="rost-status rost-status--sync">
-        <span className="rost-status-dot" />
-        Filter
-      </span>
-    )
-  if (via === 'custom')
-    return (
-      <span className="rost-status rost-status--via">
-        <span className="rost-status-dot" />
-        Custom Subject
-      </span>
-    )
-  return (
-    <span className="rost-status rost-status--filter">
+// Of the classes currently syncing, whether the (draft) filter keeps each one
+// or would drop it from the sync.
+function FilterStatusPill({ synced }) {
+  return synced ? (
+    <span className="rost-status rost-status--sync">
       <span className="rost-status-dot" />
-      Not synced
+      Synced
+    </span>
+  ) : (
+    <span className="rost-status rost-status--removed">
+      <span className="rost-status-dot" />
+      Filtered Out
     </span>
   )
 }
 
-function FilterImpact({ filter, scope, schools = [], schoolId, onSchoolId }) {
+function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSchoolId }) {
   const [open, setOpen] = useState(false)
 
   const isDistrict = scope === 'district'
@@ -234,14 +227,18 @@ function FilterImpact({ filter, scope, schools = [], schoolId, onSchoolId }) {
     ? (schools.find((s) => s.id === schoolId)?.classes ?? INCOMING_CLASSES)
     : INCOMING_CLASSES
 
+  // We can only preview against the classes that are actually synced today —
+  // i.e. those the currently-saved filter pulls in. For each, show whether the
+  // edited filter keeps it ("Synced") or would drop it ("Filtered Out").
   const classified = useMemo(
-    () => classes.map((c) => ({ ...c, via: classImportSource(c, filter) })),
-    [classes, filter],
+    () =>
+      classes
+        .filter((c) => classImportSource(c, savedFilter) !== null)
+        .map((c) => ({ ...c, synced: classImportSource(c, filter) !== null })),
+    [classes, filter, savedFilter],
   )
   const total = classified.length
-  const filterCount = classified.filter((c) => c.via === 'filter').length
-  const customCount = classified.filter((c) => c.via === 'custom').length
-  const imported = filterCount + customCount
+  const kept = classified.filter((c) => c.synced).length
 
   const columns = [
     {
@@ -261,7 +258,12 @@ function FilterImpact({ filter, scope, schools = [], schoolId, onSchoolId }) {
     },
     { key: 'teachers', label: 'Teacher(s)', render: (v) => v.join(', ') },
     { key: 'students', label: '# Students', align: 'right', sortable: true },
-    { key: 'via', label: 'Synced via', align: 'right', render: (v) => <ViaPill via={v} /> },
+    {
+      key: 'synced',
+      label: 'Filter Status',
+      align: 'right',
+      render: (v) => <FilterStatusPill synced={v} />,
+    },
   ]
 
   return (
@@ -270,7 +272,7 @@ function FilterImpact({ filter, scope, schools = [], schoolId, onSchoolId }) {
 
       <div className="rost-fi-bar">
         <span className="rost-fi-text">
-          Syncing <b>{imported}</b> of {total} classes
+          Keeping <b>{kept}</b> of {total} synced classes
           {isDistrict && (
             <>
               {' '}
@@ -339,6 +341,7 @@ function FilterImpact({ filter, scope, schools = [], schoolId, onSchoolId }) {
 
 function SubjectRulesSection({
   filter,
+  savedFilter,
   filterDirty,
   onSetMode,
   onAddCustom,
@@ -397,6 +400,7 @@ function SubjectRulesSection({
 
       <FilterImpact
         filter={filter}
+        savedFilter={savedFilter}
         scope={scope}
         schools={schools}
         schoolId={schoolId}
@@ -849,6 +853,7 @@ function DistrictLastSync() {
 // ─── Page composition ─────────────────────────────────────────────────────
 export function SyncSettingsPage({
   filter,
+  savedFilter,
   filterDirty,
   onSetMode,
   onAddCustom,
@@ -865,6 +870,7 @@ export function SyncSettingsPage({
       <ConnectionSection scope={scope} />
       <SubjectRulesSection
         filter={filter}
+        savedFilter={savedFilter}
         filterDirty={filterDirty}
         onSetMode={onSetMode}
         onAddCustom={onAddCustom}
@@ -876,8 +882,9 @@ export function SyncSettingsPage({
         schoolId={schoolId}
         onSchoolId={onSchoolId}
       />
-      <ScheduleSection />
       <LastSyncSection scope={scope} />
+      {/* Least-used control sits at the bottom. */}
+      <ScheduleSection />
     </>
   )
 }
