@@ -2,8 +2,7 @@ import { Children } from 'react'
 import { Toggle } from '@components/Toggle/Toggle'
 
 // A knob is a boolean "flag" when its Field wraps a <Toggle>.
-const isFlag = (field) =>
-  Children.toArray(field?.props?.children).some((c) => c?.type === Toggle)
+const isFlag = (field) => Children.toArray(field?.props?.children).some((c) => c?.type === Toggle)
 
 // Knobs panel: dropdowns / inputs sit in a top "controls" zone; boolean
 // toggles drop into a compact "flags" cluster below, so the two read as

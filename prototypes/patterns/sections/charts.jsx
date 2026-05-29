@@ -12,20 +12,13 @@ import {
   NIVO_THEME,
   SliceTooltip,
 } from '@components/charts/charts'
-import {
-  SECTIONS as HEALTH_SECTIONS,
-} from '@components/ReadingHealth/ReadingHealth'
+import { SECTIONS as HEALTH_SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 import { Table } from '@components/Table/Table'
 import { BarList } from '@components/BarList/BarList'
 import { Funnel } from '@components/Funnel/Funnel'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { Toggle } from '@components/Toggle/Toggle'
-import {
-  Field,
-  Input,
-  RangeSlider,
-  Select,
-} from '@components/Form/Form'
+import { Field, Input, RangeSlider, Select } from '@components/Form/Form'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { RMI_FACTORS } from '../../ris/data'
 import { Knobs, Variant, TABLE_ROWS } from './_shared'
@@ -393,7 +386,11 @@ function ChartCardKnobs() {
                 More content below the cap — scroll to see it (bodyMaxHeight = 120px).
                 <br />
                 <br />
-                Line 1<br />Line 2<br />Line 3<br />Line 4<br />Line 5
+                Line 1<br />
+                Line 2<br />
+                Line 3<br />
+                Line 4<br />
+                Line 5
               </div>
             )}
           </div>
@@ -486,20 +483,12 @@ function TrendChartKnobs() {
         </Field>
         {!isHorizontal && (
           <Field label="yDomain min">
-            <Input
-              type="number"
-              value={yMin}
-              onChange={(e) => setYMin(Number(e.target.value))}
-            />
+            <Input type="number" value={yMin} onChange={(e) => setYMin(Number(e.target.value))} />
           </Field>
         )}
         {!isHorizontal && (
           <Field label="yDomain max">
-            <Input
-              type="number"
-              value={yMax}
-              onChange={(e) => setYMax(Number(e.target.value))}
-            />
+            <Input type="number" value={yMax} onChange={(e) => setYMax(Number(e.target.value))} />
           </Field>
         )}
         {!isHorizontal && (
@@ -537,13 +526,7 @@ function TrendChartKnobs() {
         )}
         {!isHorizontal && (
           <Field label="strokeWidth">
-            <RangeSlider
-              min={1}
-              max={5}
-              step={0.5}
-              value={strokeWidth}
-              onChange={setStrokeWidth}
-            />
+            <RangeSlider min={1} max={5} step={0.5} value={strokeWidth} onChange={setStrokeWidth} />
           </Field>
         )}
         {type === 'area' && (
@@ -1207,352 +1190,341 @@ export const chartsSections = [
   {
     group: 'charts',
     id: 'trend-chart',
-    name: "TrendChart",
+    name: 'TrendChart',
     desc: (
       <>
-                  The default reusable chart for area / line / bar visualizations. Wraps Recharts
-                  and locks in the project's standard margins, tick font, tooltip styling, axis
-                  padding, and height. Pass <code>type</code> (<code>'area' | 'line' | 'bar'</code>
-                  ), <code>data</code>, <code>xKey</code>, <code>yDomain</code>, <code>height</code>{' '}
-                  (<code>'sm' | 'md' | 'lg' | 'xl'</code>), and a <code>series</code> array of{' '}
-                  <code>
-                    {
-                      '{ key, name, color, dashed?, fillOpacity?, strokeWidth?, yAxisId?, colorFn? }'
-                    }
-                  </code>
-                  . Pass <code>yRight</code> for dual-axis trends; pass{' '}
-                  <code>layout="horizontal"</code> + <code>leftMargin</code> for horizontal-bar
-                  rankings. Always use this for new charts — only drop down to Recharts directly for
-                  one-off shapes like scatter or reference lines.
-                </>
+        The default reusable chart for area / line / bar visualizations. Wraps Recharts and locks in
+        the project's standard margins, tick font, tooltip styling, axis padding, and height. Pass{' '}
+        <code>type</code> (<code>'area' | 'line' | 'bar'</code>
+        ), <code>data</code>, <code>xKey</code>, <code>yDomain</code>, <code>height</code> (
+        <code>'sm' | 'md' | 'lg' | 'xl'</code>), and a <code>series</code> array of{' '}
+        <code>
+          {'{ key, name, color, dashed?, fillOpacity?, strokeWidth?, yAxisId?, colorFn? }'}
+        </code>
+        . Pass <code>yRight</code> for dual-axis trends; pass <code>layout="horizontal"</code> +{' '}
+        <code>leftMargin</code> for horizontal-bar rankings. Always use this for new charts — only
+        drop down to Recharts directly for one-off shapes like scatter or reference lines.
+      </>
     ),
     render: () => (
       <>
-              <TrendChartKnobs />
-            </>
+        <TrendChartKnobs />
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'chart-line',
-    name: "Line Chart (Nivo)",
+    name: 'Line Chart (Nivo)',
     desc: (
       <>
-                  Nivo <code>ResponsiveLine</code> + <code>SliceTooltip</code> wrapped in a{' '}
-                  <code>ChartCard</code>. Used in school-detail pages where the rich Nivo
-                  SliceTooltip is needed. For new district-level trend lines, prefer{' '}
-                  <code>TrendChart</code> above.
-                </>
+        Nivo <code>ResponsiveLine</code> + <code>SliceTooltip</code> wrapped in a{' '}
+        <code>ChartCard</code>. Used in school-detail pages where the rich Nivo SliceTooltip is
+        needed. For new district-level trend lines, prefer <code>TrendChart</code> above.
+      </>
     ),
     render: () => (
       <>
-              <LineChartKnobs />
-            </>
+        <LineChartKnobs />
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'chart-bar-grouped',
-    name: "Grouped Bar Chart",
+    name: 'Grouped Bar Chart',
     desc: (
       <>
-                  Nivo <code>ResponsiveBar</code> with <code>groupMode="grouped"</code> +{' '}
-                  <code>BarTooltip</code>. Use for side-by-side comparisons — "this school vs
-                  district" or "actual vs expected".
-                </>
+        Nivo <code>ResponsiveBar</code> with <code>groupMode="grouped"</code> +{' '}
+        <code>BarTooltip</code>. Use for side-by-side comparisons — "this school vs district" or
+        "actual vs expected".
+      </>
     ),
     render: () => (
       <>
-              <GroupedBarKnobs />
-            </>
+        <GroupedBarKnobs />
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'chart-bar-h',
-    name: "Horizontal Bar Chart",
+    name: 'Horizontal Bar Chart',
     desc: (
       <>
-                  Nivo <code>ResponsiveBar</code> with <code>layout="horizontal"</code>. Use for
-                  ranked lists — school rankings and per-grade growth comparisons.
-                </>
+        Nivo <code>ResponsiveBar</code> with <code>layout="horizontal"</code>. Use for ranked lists
+        — school rankings and per-grade growth comparisons.
+      </>
     ),
     render: () => (
       <>
-              <HorizontalBarKnobs />
-            </>
+        <HorizontalBarKnobs />
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'chart-scatter',
-    name: "Scatter Chart",
+    name: 'Scatter Chart',
     desc: (
       <>
-                  Nivo <code>ResponsiveScatterPlot</code> with a highlighted primary series and a
-                  reference marker. Used on the Skills (Lexile) page to show individual school
-                  positioning.
-                </>
+        Nivo <code>ResponsiveScatterPlot</code> with a highlighted primary series and a reference
+        marker. Used on the Skills (Lexile) page to show individual school positioning.
+      </>
     ),
     render: () => (
       <>
-              <ScatterKnobs />
-            </>
+        <ScatterKnobs />
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'stat-card',
-    name: "StatCard",
+    name: 'StatCard',
     desc: (
       <>
-                  Small metric tile shown in a row at the top of a bucket page. Props:{' '}
-                  <code>value</code>, <code>unit</code>, <code>label</code>, <code>footer</code>,{' '}
-                  <code>color</code>, <code>footerColor</code>.
-                </>
+        Small metric tile shown in a row at the top of a bucket page. Props: <code>value</code>,{' '}
+        <code>unit</code>, <code>label</code>, <code>footer</code>, <code>color</code>,{' '}
+        <code>footerColor</code>.
+      </>
     ),
     render: () => (
       <>
-              <StatCardKnobs />
-            </>
+        <StatCardKnobs />
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'chart-card',
-    name: "ChartCard",
+    name: 'ChartCard',
     desc: (
       <>
-                  Wide rectangle with a consistent header / body / footer used for every chart and
-                  panel. Props: <code>title</code>, <code>subtitle</code>, <code>icon</code>,{' '}
-                  <code>accent</code>, <code>action</code>, <code>footer</code>,{' '}
-                  <code>bodyPad</code>, <code>bodyMaxHeight</code> (px — caps body height and
-                  scrolls vertically while keeping sticky table / bar-list headers visible). Knobs
-                  below to preview combinations.
-                </>
+        Wide rectangle with a consistent header / body / footer used for every chart and panel.
+        Props: <code>title</code>, <code>subtitle</code>, <code>icon</code>, <code>accent</code>,{' '}
+        <code>action</code>, <code>footer</code>, <code>bodyPad</code>, <code>bodyMaxHeight</code>{' '}
+        (px — caps body height and scrolls vertically while keeping sticky table / bar-list headers
+        visible). Knobs below to preview combinations.
+      </>
     ),
     render: () => (
       <>
-              <ChartCardKnobs />
-              <div style={{ marginTop: 20 }}>
-                <div className="pt-variant-label">
-                  Table inside ChartCard — <code>bodyPad="flush"</code> + <code>flush</code> on
-                  Table
-                </div>
-                <ChartCard
-                  title="Schools by RMI"
-                  subtitle="Current year average"
-                  accent="#E8866A"
-                  bodyPad="flush"
-                >
-                  <Table
-                    flush
-                    columns={[
-                      { key: 'name', label: 'School' },
-                      {
-                        key: 'students',
-                        label: 'Students',
-                        align: 'right',
-                        render: (v) => v.toLocaleString(),
-                      },
-                      { key: 'rmi', label: 'RMI', align: 'right' },
-                      {
-                        key: 'delta',
-                        label: 'YoY',
-                        align: 'right',
-                        render: (v) => (
-                          <span style={{ color: v >= 0 ? '#16A34A' : '#DC2626', fontWeight: 700 }}>
-                            {v >= 0 ? '↑' : '↓'}
-                            {Math.abs(v)} pts
-                          </span>
-                        ),
-                      },
-                    ]}
-                    rows={TABLE_ROWS}
-                    zebra
-                  />
-                </ChartCard>
-              </div>
-            </>
+        <ChartCardKnobs />
+        <div style={{ marginTop: 20 }}>
+          <div className="pt-variant-label">
+            Table inside ChartCard — <code>bodyPad="flush"</code> + <code>flush</code> on Table
+          </div>
+          <ChartCard
+            title="Schools by RMI"
+            subtitle="Current year average"
+            accent="#E8866A"
+            bodyPad="flush"
+          >
+            <Table
+              flush
+              columns={[
+                { key: 'name', label: 'School' },
+                {
+                  key: 'students',
+                  label: 'Students',
+                  align: 'right',
+                  render: (v) => v.toLocaleString(),
+                },
+                { key: 'rmi', label: 'RMI', align: 'right' },
+                {
+                  key: 'delta',
+                  label: 'YoY',
+                  align: 'right',
+                  render: (v) => (
+                    <span style={{ color: v >= 0 ? '#16A34A' : '#DC2626', fontWeight: 700 }}>
+                      {v >= 0 ? '↑' : '↓'}
+                      {Math.abs(v)} pts
+                    </span>
+                  ),
+                },
+              ]}
+              rows={TABLE_ROWS}
+              zebra
+            />
+          </ChartCard>
+        </div>
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'card-note',
-    name: "CardNote",
+    name: 'CardNote',
     desc: (
       <>
-                  Inline note inside a card body. Two tones: <code>neutral</code> (slate) and{' '}
-                  <code>accent</code> (uses the card's <code>--rc-accent</code>).
-                </>
+        Inline note inside a card body. Two tones: <code>neutral</code> (slate) and{' '}
+        <code>accent</code> (uses the card's <code>--rc-accent</code>).
+      </>
     ),
     render: () => (
       <>
-              <CardNoteKnobs />
-            </>
+        <CardNoteKnobs />
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'chart-legend',
-    name: "ChartLegend",
+    name: 'ChartLegend',
     desc: (
       <>
-                  Footer legend rendered below the chart body. <code>items</code> is an array of{' '}
-                  <code>{'{ color, label, dashed? }'}</code>.
-                </>
+        Footer legend rendered below the chart body. <code>items</code> is an array of{' '}
+        <code>{'{ color, label, dashed? }'}</code>.
+      </>
     ),
     render: () => (
       <>
-              <ChartLegendKnobs />
-            </>
+        <ChartLegendKnobs />
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'bar-list',
-    name: "BarList",
+    name: 'BarList',
     desc: (
       <>
-                  Horizontal bar-list for ranked breakdowns, factor scores, and icon lists. Three
-                  variants: <code>simple</code> (label + bar + value), <code>grouped</code> (icon +
-                  sublabel + bar + score/delta, optionally side-by-side via{' '}
-                  <code>layout="columns"</code>), and <code>iconList</code> (prefix + icon + label,
-                  no bar). Set <code>labelWidth</code> to pin the meta column width and align bars
-                  across rows. Simple-mode rows are separated by hairline rules by default; pass{' '}
-                  <code>divided={'{false}'}</code> to opt out. Pass{' '}
-                  <code>header={'{ label, valueLabel }'}</code> to add a table-style header row
-                  above the bars.
-                </>
+        Horizontal bar-list for ranked breakdowns, factor scores, and icon lists. Three variants:{' '}
+        <code>simple</code> (label + bar + value), <code>grouped</code> (icon + sublabel + bar +
+        score/delta, optionally side-by-side via <code>layout="columns"</code>), and{' '}
+        <code>iconList</code> (prefix + icon + label, no bar). Set <code>labelWidth</code> to pin
+        the meta column width and align bars across rows. Simple-mode rows are separated by hairline
+        rules by default; pass <code>divided={'{false}'}</code> to opt out. Pass{' '}
+        <code>header={'{ label, valueLabel }'}</code> to add a table-style header row above the
+        bars.
+      </>
     ),
     render: () => (
       <>
-              <BarListKnobs />
-            </>
+        <BarListKnobs />
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'funnel',
-    name: "Funnel",
+    name: 'Funnel',
     desc: (
       <>
-                  Stage funnel for conversion / habit-depth flows. Each step shows the count, % of
-                  total, stage label, and an optional <code>↑Δpp</code> revealed on hover. Stacks
-                  vertically — mobile-friendly by default. Pass <code>items</code> as{' '}
-                  <code>{'[{ stage, count, pct, delta }]'}</code>.
-                </>
+        Stage funnel for conversion / habit-depth flows. Each step shows the count, % of total,
+        stage label, and an optional <code>↑Δpp</code> revealed on hover. Stacks vertically —
+        mobile-friendly by default. Pass <code>items</code> as{' '}
+        <code>{'[{ stage, count, pct, delta }]'}</code>.
+      </>
     ),
     render: () => (
       <>
-              <Variant label="Student Engagement Funnel" bare>
-                <ChartCard
-                  title="Student Engagement Funnel"
-                  subtitle="Habit depth across 1,650 students"
-                  accent="#0DA7BC"
-                  bodyPad="padded"
-                  span={2}
-                >
-                  <Funnel
-                    items={[
-                      {
-                        stage: 'Enrolled Students',
-                        note: 'Active roster in Beanstack',
-                        count: 1650,
-                        pct: 100,
-                      },
-                      {
-                        stage: 'Logged This Month',
-                        note: 'At least 1 log in May 2025',
-                        count: 1040,
-                        pct: 63,
-                        delta: 4,
-                      },
-                      {
-                        stage: 'Weekly Habit',
-                        note: '1+ log every week for 4+ weeks',
-                        count: 660,
-                        pct: 40,
-                        delta: 6,
-                      },
-                      {
-                        stage: 'Daily Habit',
-                        note: '5+ days logged per week',
-                        count: 297,
-                        pct: 18,
-                        delta: 3,
-                      },
-                      {
-                        stage: '30-Day Streak',
-                        note: 'Unbroken streak ≥ 30 days',
-                        count: 165,
-                        pct: 10,
-                        delta: 2,
-                      },
-                    ]}
-                  />
-                </ChartCard>
-              </Variant>
-            </>
+        <Variant label="Student Engagement Funnel" bare>
+          <ChartCard
+            title="Student Engagement Funnel"
+            subtitle="Habit depth across 1,650 students"
+            accent="#0DA7BC"
+            bodyPad="padded"
+            span={2}
+          >
+            <Funnel
+              items={[
+                {
+                  stage: 'Enrolled Students',
+                  note: 'Active roster in Beanstack',
+                  count: 1650,
+                  pct: 100,
+                },
+                {
+                  stage: 'Logged This Month',
+                  note: 'At least 1 log in May 2025',
+                  count: 1040,
+                  pct: 63,
+                  delta: 4,
+                },
+                {
+                  stage: 'Weekly Habit',
+                  note: '1+ log every week for 4+ weeks',
+                  count: 660,
+                  pct: 40,
+                  delta: 6,
+                },
+                {
+                  stage: 'Daily Habit',
+                  note: '5+ days logged per week',
+                  count: 297,
+                  pct: 18,
+                  delta: 3,
+                },
+                {
+                  stage: '30-Day Streak',
+                  note: 'Unbroken streak ≥ 30 days',
+                  count: 165,
+                  pct: 10,
+                  delta: 2,
+                },
+              ]}
+            />
+          </ChartCard>
+        </Variant>
+      </>
     ),
   },
   {
     group: 'charts',
     id: 'tooltips',
-    name: "Tooltips",
+    name: 'Tooltips',
     desc: (
       <>
-                  The rich Nivo tooltip pattern: colored accent stripe on the left, uppercase
-                  header, per-series row with optional MoM delta, optional context footer.
-                </>
+        The rich Nivo tooltip pattern: colored accent stripe on the left, uppercase header,
+        per-series row with optional MoM delta, optional context footer.
+      </>
     ),
     render: () => (
       <>
-              <div className="pt-variants pt-variants--3">
-                <Variant label="SliceTooltip — line chart">
-                  <SliceTooltip
-                    slice={fakeSlicePoints([
-                      { serieId: 'Lincoln', color: '#E8866A', x: 'Jan', y: 68 },
-                      { serieId: 'District avg', color: '#CBD5E1', x: 'Jan', y: 72 },
-                    ])}
-                    accent="#E8866A"
-                    allData={RMI_TREND_FIXTURE}
-                    seriesMap={{ Lincoln: 'school', 'District avg': 'district' }}
-                    formatDelta={(d) => `${d > 0 ? '+' : ''}${d} pts`}
-                    context={() => (
-                      <>
-                        <strong>Lincoln</strong> −4 pts below district
-                      </>
-                    )}
-                  />
-                </Variant>
-                <Variant label="BarTooltip — grouped bars">
-                  <BarTooltip
-                    data={{ intrinsic: 14.2, extrinsic: 11.8 }}
-                    indexValue="May"
-                    accent="#E8866A"
-                    format={(v) => `${v.toFixed(1)} /20`}
-                    keys={['intrinsic', 'extrinsic']}
-                    labels={{
-                      intrinsic: { label: 'Intrinsic', color: '#E8866A' },
-                      extrinsic: { label: 'Extrinsic', color: '#CBD5E1' },
-                    }}
-                    context={(d) => (
-                      <>
-                        <strong>Intrinsic</strong> +{(d.intrinsic - d.extrinsic).toFixed(1)} pts
-                        above extrinsic
-                      </>
-                    )}
-                  />
-                </Variant>
-                <Variant label="GradeTooltip — Lexile bars">
-                  <GradeTooltip
-                    data={{ grade: '4th', growth: 78, expected: 55 }}
-                    accent="#7C3AED"
-                  />
-                </Variant>
-              </div>
-            </>
+        <div className="pt-variants pt-variants--3">
+          <Variant label="SliceTooltip — line chart">
+            <SliceTooltip
+              slice={fakeSlicePoints([
+                { serieId: 'Lincoln', color: '#E8866A', x: 'Jan', y: 68 },
+                { serieId: 'District avg', color: '#CBD5E1', x: 'Jan', y: 72 },
+              ])}
+              accent="#E8866A"
+              allData={RMI_TREND_FIXTURE}
+              seriesMap={{ Lincoln: 'school', 'District avg': 'district' }}
+              formatDelta={(d) => `${d > 0 ? '+' : ''}${d} pts`}
+              context={() => (
+                <>
+                  <strong>Lincoln</strong> −4 pts below district
+                </>
+              )}
+            />
+          </Variant>
+          <Variant label="BarTooltip — grouped bars">
+            <BarTooltip
+              data={{ intrinsic: 14.2, extrinsic: 11.8 }}
+              indexValue="May"
+              accent="#E8866A"
+              format={(v) => `${v.toFixed(1)} /20`}
+              keys={['intrinsic', 'extrinsic']}
+              labels={{
+                intrinsic: { label: 'Intrinsic', color: '#E8866A' },
+                extrinsic: { label: 'Extrinsic', color: '#CBD5E1' },
+              }}
+              context={(d) => (
+                <>
+                  <strong>Intrinsic</strong> +{(d.intrinsic - d.extrinsic).toFixed(1)} pts above
+                  extrinsic
+                </>
+              )}
+            />
+          </Variant>
+          <Variant label="GradeTooltip — Lexile bars">
+            <GradeTooltip data={{ grade: '4th', growth: 78, expected: 55 }} accent="#7C3AED" />
+          </Variant>
+        </div>
+      </>
     ),
   },
 ]

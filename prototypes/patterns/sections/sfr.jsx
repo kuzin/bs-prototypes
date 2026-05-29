@@ -236,237 +236,235 @@ export const sfrSections = [
   {
     group: 'sfr',
     id: 'sfr-benny-bubble',
-    name: "BennyBubble",
+    name: 'BennyBubble',
     desc: (
       <>
-                  Benny's avatar + speech bubble with a left-pointing chat arrow. Pass text or JSX
-                  as <code>children</code>. Use <code>{'<strong>'}</code> for bold emphasis. Pass{' '}
-                  <code>timestamp</code> to show an "Analysis last run on …" line below the bubble.
-                </>
+        Benny's avatar + speech bubble with a left-pointing chat arrow. Pass text or JSX as{' '}
+        <code>children</code>. Use <code>{'<strong>'}</code> for bold emphasis. Pass{' '}
+        <code>timestamp</code> to show an "Analysis last run on …" line below the bubble.
+      </>
     ),
     render: () => (
       <>
-              <BennyBubbleKnobs />
-            </>
+        <BennyBubbleKnobs />
+      </>
     ),
   },
   {
     group: 'sfr',
     id: 'sfr-highlight-card',
-    name: "HighlightCard",
+    name: 'HighlightCard',
     desc: (
       <>
-                  Overview card for a student-action category. Props: <code>variant</code> (danger |
-                  success | warning | intercede | neutral), <code>icon</code>, <code>title</code>,{' '}
-                  <code>description</code>, <code>students</code>, <code>totalCount</code>,{' '}
-                  <code>totalLabel</code>, <code>onViewAll</code>.
-                </>
+        Overview card for a student-action category. Props: <code>variant</code> (danger | success |
+        warning | intercede | neutral), <code>icon</code>, <code>title</code>,{' '}
+        <code>description</code>, <code>students</code>, <code>totalCount</code>,{' '}
+        <code>totalLabel</code>, <code>onViewAll</code>.
+      </>
     ),
     render: () => (
       <>
-              <Variant label="danger — integrity flags">
-                <HighlightCard
-                  variant="danger"
-                  icon={
-                    <svg
-                      viewBox="0 0 16 16"
-                      width="18"
-                      height="18"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M3 2v12" />
-                      <path d="M3 2h8l-2 4 2 4H3" />
-                    </svg>
-                  }
-                  title="Validate / Intercede"
-                  description="Students with multiple flagged integrity sessions"
-                  students={[
-                    {
-                      initials: 'TW',
-                      color: '#7C3AED',
-                      name: 'Tyler Williams',
-                      count: 2,
-                      countLabel: 'flags',
-                    },
-                    {
-                      initials: 'MJ',
-                      color: '#0DA7BC',
-                      name: 'Marcus Johnson',
-                      count: 1,
-                      countLabel: 'flags',
-                    },
-                  ]}
-                  totalCount={2}
-                  totalLabel="students"
-                  onViewAll={() => {}}
-                />
-              </Variant>
-              <Variant label="success — celebrate green">
-                <HighlightCard
-                  variant="success"
-                  icon={
-                    <svg
-                      viewBox="0 0 16 16"
-                      width="18"
-                      height="18"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M8 2c.2 1.8-.9 2.6-1.9 3.6C5.2 6.5 4 7.7 4 9.5 4 11.9 5.8 14 8 14s4-2 4-4.5c0-1.4-.5-2.2-1.1-2.8" />
-                    </svg>
-                  }
-                  title="Celebrate"
-                  description="Students with positive engagement Book Talks"
-                  students={[
-                    {
-                      initials: 'CB',
-                      color: '#16A97A',
-                      name: 'Caleb Brown',
-                      count: 3,
-                      countLabel: 'green talks',
-                    },
-                    {
-                      initials: 'ML',
-                      color: '#E8866A',
-                      name: 'Maya Lee',
-                      count: 2,
-                      countLabel: 'green talks',
-                    },
-                    {
-                      initials: 'SC',
-                      color: '#D97706',
-                      name: 'Sofia Chen',
-                      count: 1,
-                      countLabel: 'green talks',
-                    },
-                  ]}
-                  totalCount={5}
-                  totalLabel="students"
-                  onViewAll={() => {}}
-                />
-              </Variant>
-              <Variant label="warning — review mixed">
-                <HighlightCard
-                  variant="warning"
-                  icon={
-                    <svg
-                      viewBox="0 0 16 16"
-                      width="18"
-                      height="18"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <path d="M8 2l1.5 4h4l-3 2.5 1 4L8 10l-3.5 2.5 1-4L2 6h4z" />
-                    </svg>
-                  }
-                  title="Review / Assess"
-                  description="Students with mixed engagement Book Talks"
-                  students={[
-                    {
-                      initials: 'EP',
-                      color: '#7C3AED',
-                      name: 'Emma Parker',
-                      count: 2,
-                      countLabel: 'yellow talks',
-                    },
-                  ]}
-                  totalCount={1}
-                  totalLabel="students"
-                  onViewAll={() => {}}
-                />
-              </Variant>
-              <Variant label="neutral — give time (unfinished)">
-                <HighlightCard
-                  variant="neutral"
-                  icon={
-                    <svg
-                      viewBox="0 0 16 16"
-                      width="18"
-                      height="18"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <circle cx="8" cy="8" r="6" />
-                      <polyline points="8,4 8,8 11,10" />
-                    </svg>
-                  }
-                  title="Give Students Time"
-                  description="Students with unfinished Benny conversations"
-                  students={[
-                    {
-                      initials: 'ZA',
-                      color: '#0DA7BC',
-                      name: 'Zara Ahmed',
-                      count: 1,
-                      countLabel: 'unfinished',
-                    },
-                    {
-                      initials: 'NH',
-                      color: '#475569',
-                      name: 'Noah Harris',
-                      count: 1,
-                      countLabel: 'unfinished',
-                    },
-                  ]}
-                  totalCount={2}
-                  totalLabel="students"
-                  onViewAll={() => {}}
-                />
-              </Variant>
-            </>
+        <Variant label="danger — integrity flags">
+          <HighlightCard
+            variant="danger"
+            icon={
+              <svg
+                viewBox="0 0 16 16"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M3 2v12" />
+                <path d="M3 2h8l-2 4 2 4H3" />
+              </svg>
+            }
+            title="Validate / Intercede"
+            description="Students with multiple flagged integrity sessions"
+            students={[
+              {
+                initials: 'TW',
+                color: '#7C3AED',
+                name: 'Tyler Williams',
+                count: 2,
+                countLabel: 'flags',
+              },
+              {
+                initials: 'MJ',
+                color: '#0DA7BC',
+                name: 'Marcus Johnson',
+                count: 1,
+                countLabel: 'flags',
+              },
+            ]}
+            totalCount={2}
+            totalLabel="students"
+            onViewAll={() => {}}
+          />
+        </Variant>
+        <Variant label="success — celebrate green">
+          <HighlightCard
+            variant="success"
+            icon={
+              <svg
+                viewBox="0 0 16 16"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M8 2c.2 1.8-.9 2.6-1.9 3.6C5.2 6.5 4 7.7 4 9.5 4 11.9 5.8 14 8 14s4-2 4-4.5c0-1.4-.5-2.2-1.1-2.8" />
+              </svg>
+            }
+            title="Celebrate"
+            description="Students with positive engagement Book Talks"
+            students={[
+              {
+                initials: 'CB',
+                color: '#16A97A',
+                name: 'Caleb Brown',
+                count: 3,
+                countLabel: 'green talks',
+              },
+              {
+                initials: 'ML',
+                color: '#E8866A',
+                name: 'Maya Lee',
+                count: 2,
+                countLabel: 'green talks',
+              },
+              {
+                initials: 'SC',
+                color: '#D97706',
+                name: 'Sofia Chen',
+                count: 1,
+                countLabel: 'green talks',
+              },
+            ]}
+            totalCount={5}
+            totalLabel="students"
+            onViewAll={() => {}}
+          />
+        </Variant>
+        <Variant label="warning — review mixed">
+          <HighlightCard
+            variant="warning"
+            icon={
+              <svg
+                viewBox="0 0 16 16"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M8 2l1.5 4h4l-3 2.5 1 4L8 10l-3.5 2.5 1-4L2 6h4z" />
+              </svg>
+            }
+            title="Review / Assess"
+            description="Students with mixed engagement Book Talks"
+            students={[
+              {
+                initials: 'EP',
+                color: '#7C3AED',
+                name: 'Emma Parker',
+                count: 2,
+                countLabel: 'yellow talks',
+              },
+            ]}
+            totalCount={1}
+            totalLabel="students"
+            onViewAll={() => {}}
+          />
+        </Variant>
+        <Variant label="neutral — give time (unfinished)">
+          <HighlightCard
+            variant="neutral"
+            icon={
+              <svg
+                viewBox="0 0 16 16"
+                width="18"
+                height="18"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="8" cy="8" r="6" />
+                <polyline points="8,4 8,8 11,10" />
+              </svg>
+            }
+            title="Give Students Time"
+            description="Students with unfinished Benny conversations"
+            students={[
+              {
+                initials: 'ZA',
+                color: '#0DA7BC',
+                name: 'Zara Ahmed',
+                count: 1,
+                countLabel: 'unfinished',
+              },
+              {
+                initials: 'NH',
+                color: '#475569',
+                name: 'Noah Harris',
+                count: 1,
+                countLabel: 'unfinished',
+              },
+            ]}
+            totalCount={2}
+            totalLabel="students"
+            onViewAll={() => {}}
+          />
+        </Variant>
+      </>
     ),
   },
   {
     group: 'sfr',
     id: 'sfr-sessions-table',
-    name: "SessionsTable",
+    name: 'SessionsTable',
     desc: (
       <>
-                  Table of BTWB sessions. Props: <code>sessions</code> (array),{' '}
-                  <code>onSelectSession</code> (row click + Review button),{' '}
-                  <code>showTypeColumn</code> (bool, default true). Wraps the shared{' '}
-                  <code>Table</code> component with domain-specific columns: student, book, date,
-                  type pill, status pill, engagement dot, flag count.
-                </>
+        Table of BTWB sessions. Props: <code>sessions</code> (array), <code>onSelectSession</code>{' '}
+        (row click + Review button), <code>showTypeColumn</code> (bool, default true). Wraps the
+        shared <code>Table</code> component with domain-specific columns: student, book, date, type
+        pill, status pill, engagement dot, flag count.
+      </>
     ),
     render: () => (
       <>
-              <SessionsTableKnobs />
-            </>
+        <SessionsTableKnobs />
+      </>
     ),
   },
   {
     group: 'sfr',
     id: 'sfr-session-modal',
-    name: "SessionModal",
+    name: 'SessionModal',
     desc: (
       <>
-                  Right-slide detail panel for a single BTWB session. Props: <code>session</code>{' '}
-                  (null = closed), <code>sessions</code> (full list for Next nav),{' '}
-                  <code>onClose</code>, <code>onUpdateSession</code>, <code>onDeleteSession</code>.
-                  Shows integrity flags (with dismiss), engagement rating + override, and full
-                  conversation transcript.
-                </>
+        Right-slide detail panel for a single BTWB session. Props: <code>session</code> (null =
+        closed), <code>sessions</code> (full list for Next nav), <code>onClose</code>,{' '}
+        <code>onUpdateSession</code>, <code>onDeleteSession</code>. Shows integrity flags (with
+        dismiss), engagement rating + override, and full conversation transcript.
+      </>
     ),
     render: () => (
       <>
-              <Variant label="open / closed toggle" bare>
-                <SessionModalDemo />
-              </Variant>
-            </>
+        <Variant label="open / closed toggle" bare>
+          <SessionModalDemo />
+        </Variant>
+      </>
     ),
   },
 ]

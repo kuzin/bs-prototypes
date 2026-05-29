@@ -38,12 +38,12 @@ export const insightsSections = [
     name: 'PanelCard',
     desc: (
       <>
-        A wider Insights panel (Top Books / Top Badges / Ages) with the same{' '}
-        <code>value</code> / <code>loading</code> / <code>empty</code> state machine. The{' '}
-        <code>kind</code> prop (<code>books</code> / <code>badges</code> / <code>ages</code>) picks a
-        content-shaped skeleton so the layout doesn't jump when data lands. A clickable header{' '}
-        <code>View details</code> link appears when <code>onClick</code> is set.
-        Insights-specific — lives in <code>prototypes/insights/</code>.
+        A wider Insights panel (Top Books / Top Badges / Ages) with the same <code>value</code> /{' '}
+        <code>loading</code> / <code>empty</code> state machine. The <code>kind</code> prop (
+        <code>books</code> / <code>badges</code> / <code>ages</code>) picks a content-shaped
+        skeleton so the layout doesn't jump when data lands. A clickable header{' '}
+        <code>View details</code> link appears when <code>onClick</code> is set. Insights-specific —
+        lives in <code>prototypes/insights/</code>.
       </>
     ),
     render: () => (

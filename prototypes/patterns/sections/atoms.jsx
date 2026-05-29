@@ -4,21 +4,21 @@ import { Avatar } from '@components/Avatar/Avatar'
 import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { Toggle } from '@components/Toggle/Toggle'
+import { Field, Input, Radio, RadioGroup, Select } from '@components/Form/Form'
+import { Divider, IconButton, Skeleton, Spinner, Tooltip } from '@components/Primitives/Primitives'
 import {
-  Field,
-  Input,
-  Radio,
-  RadioGroup,
-  Select,
-} from '@components/Form/Form'
-import {
-  Divider,
-  IconButton,
-  Skeleton,
-  Spinner,
-  Tooltip,
-} from '@components/Primitives/Primitives'
-import { Knobs, Variant, PlusIcon, CaretIcon, EditIcon, DuplicateIcon, ArchiveIcon, TrashIcon, MoreIcon, CheckIcon, StarIcon } from './_shared'
+  Knobs,
+  Variant,
+  PlusIcon,
+  CaretIcon,
+  EditIcon,
+  DuplicateIcon,
+  ArchiveIcon,
+  TrashIcon,
+  MoreIcon,
+  CheckIcon,
+  StarIcon,
+} from './_shared'
 
 function ButtonShowcase() {
   return (
@@ -559,12 +559,7 @@ function TooltipKnobs() {
         className="pt-variant-frame"
         style={{ minHeight: 100, justifyContent: 'center', display: 'flex', alignItems: 'center' }}
       >
-        <Tooltip
-          content={content}
-          placement={placement}
-          delay={delay}
-          followCursor={followCursor}
-        >
+        <Tooltip content={content} placement={placement} delay={delay} followCursor={followCursor}>
           <Button variant="secondary">Hover me</Button>
         </Tooltip>
       </div>
@@ -576,271 +571,269 @@ export const atomsSections = [
   {
     group: 'atoms',
     id: 'button',
-    name: "Button",
+    name: 'Button',
     desc: (
       <>
-                  Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>,{' '}
-                  <code>danger</code>, <code>accent</code>. Sizes: <code>sm</code>, <code>md</code>,{' '}
-                  <code>lg</code>. Optional <code>icon</code> / <code>iconRight</code>. Can render
-                  as a link via <code>as="a"</code>.
-                </>
+        Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>,{' '}
+        <code>danger</code>, <code>accent</code>. Sizes: <code>sm</code>, <code>md</code>,{' '}
+        <code>lg</code>. Optional <code>icon</code> / <code>iconRight</code>. Can render as a link
+        via <code>as="a"</code>.
+      </>
     ),
     render: () => (
       <>
-              <ButtonKnobs />
-            </>
+        <ButtonKnobs />
+      </>
     ),
   },
   {
     group: 'atoms',
     id: 'icon-button',
-    name: "IconButton",
+    name: 'IconButton',
     desc: (
       <>
-                  Square button with just an icon. Variants: <code>primary</code>,{' '}
-                  <code>secondary</code>, <code>ghost</code>, <code>danger</code>. Sizes:{' '}
-                  <code>sm</code>, <code>md</code>, <code>lg</code>. Always pair with an{' '}
-                  <code>aria-label</code>.
-                </>
+        Square button with just an icon. Variants: <code>primary</code>, <code>secondary</code>,{' '}
+        <code>ghost</code>, <code>danger</code>. Sizes: <code>sm</code>, <code>md</code>,{' '}
+        <code>lg</code>. Always pair with an <code>aria-label</code>.
+      </>
     ),
     render: () => (
       <>
-              <IconButtonKnobs />
-            </>
+        <IconButtonKnobs />
+      </>
     ),
   },
   {
     group: 'atoms',
     id: 'pill',
-    name: "Pill",
+    name: 'Pill',
     desc: (
       <>
-                  Colored badge / chip. Variants: <code>soft</code> (default, tinted bg + dark
-                  text), <code>filled</code> (solid + white text), <code>outline</code>. Sizes:{' '}
-                  <code>sm</code>, <code>md</code>. Optional left <code>icon</code>.
-                </>
+        Colored badge / chip. Variants: <code>soft</code> (default, tinted bg + dark text),{' '}
+        <code>filled</code> (solid + white text), <code>outline</code>. Sizes: <code>sm</code>,{' '}
+        <code>md</code>. Optional left <code>icon</code>.
+      </>
     ),
     render: () => (
       <>
-              <PillKnobs />
-            </>
+        <PillKnobs />
+      </>
     ),
   },
   {
     group: 'atoms',
     id: 'avatar',
-    name: "Avatar",
+    name: 'Avatar',
     desc: (
       <>
-                  Initials in a colored shape. Props: <code>initials</code>, <code>color</code>,{' '}
-                  <code>size</code> (xs / sm / md / lg / xl), <code>shape</code> (
-                  <code>circle</code> / <code>square</code> / <code>rounded</code>).
-                </>
+        Initials in a colored shape. Props: <code>initials</code>, <code>color</code>,{' '}
+        <code>size</code> (xs / sm / md / lg / xl), <code>shape</code> (<code>circle</code> /{' '}
+        <code>square</code> / <code>rounded</code>).
+      </>
     ),
     render: () => (
       <>
-              <AvatarKnobs />
-            </>
+        <AvatarKnobs />
+      </>
     ),
   },
   {
     group: 'atoms',
     id: 'divider',
-    name: "Divider",
+    name: 'Divider',
     desc: (
       <>
-                  Horizontal rule. Optional <code>label</code> to render an "OR" style separator.{' '}
-                  <code>orientation="vertical"</code> for a thin column divider that stretches to
-                  its flex parent.
-                </>
+        Horizontal rule. Optional <code>label</code> to render an "OR" style separator.{' '}
+        <code>orientation="vertical"</code> for a thin column divider that stretches to its flex
+        parent.
+      </>
     ),
     render: () => (
       <>
-              <DividerKnobs />
-            </>
+        <DividerKnobs />
+      </>
     ),
   },
   {
     group: 'atoms',
     id: 'spinner',
-    name: "Spinner",
+    name: 'Spinner',
     desc: (
       <>
-                  Animated loading indicator. Sizes <code>xs / sm / md / lg / xl</code>. Inherits
-                  current color or set explicitly via <code>color</code>.
-                </>
+        Animated loading indicator. Sizes <code>xs / sm / md / lg / xl</code>. Inherits current
+        color or set explicitly via <code>color</code>.
+      </>
     ),
     render: () => (
       <>
-              <SpinnerKnobs />
-            </>
+        <SpinnerKnobs />
+      </>
     ),
   },
   {
     group: 'atoms',
     id: 'skeleton',
-    name: "Skeleton",
+    name: 'Skeleton',
     desc: (
       <>
-                  Animated loading placeholder. <code>width</code>, <code>height</code>,{' '}
-                  <code>shape</code> (rect/circle), or <code>lines</code> for a multi-row text
-                  placeholder.
-                </>
+        Animated loading placeholder. <code>width</code>, <code>height</code>, <code>shape</code>{' '}
+        (rect/circle), or <code>lines</code> for a multi-row text placeholder.
+      </>
     ),
     render: () => (
       <>
-              <SkeletonKnobs />
-              <div className="pt-variants pt-variants--3">
-                <Variant label="avatar row">
-                  <div
-                    style={{
-                      background: '#fff',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: 10,
-                      padding: 14,
-                      display: 'flex',
-                      gap: 16,
-                      alignItems: 'center',
-                    }}
-                  >
-                    <Skeleton shape="circle" width={44} height={44} />
-                    <div style={{ flex: 1 }}>
-                      <Skeleton width="35%" height={14} />
-                      <div style={{ height: 6 }} />
-                      <Skeleton width="60%" height={12} />
-                    </div>
-                    <Skeleton width={64} height={26} />
-                  </div>
-                </Variant>
-                <Variant label="stat card">
-                  <div
-                    style={{
-                      background: '#fff',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: 10,
-                      padding: '14px 16px',
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 10,
-                    }}
-                  >
-                    <Skeleton width="45%" height={12} />
-                    <Skeleton width="30%" height={28} />
-                    <Skeleton width="55%" height={11} />
-                  </div>
-                </Variant>
-                <Variant label="article / card">
-                  <div
-                    style={{
-                      background: '#fff',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: 10,
-                      padding: 14,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 8,
-                    }}
-                  >
-                    <Skeleton width="100%" height={120} />
-                    <Skeleton width="70%" height={15} />
-                    <Skeleton width="90%" height={12} lines={3} />
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
-                      <Skeleton shape="circle" width={24} height={24} />
-                      <Skeleton width="30%" height={11} />
-                    </div>
-                  </div>
-                </Variant>
-                <Variant label="table rows">
-                  <div
-                    style={{
-                      background: '#fff',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: 10,
-                      overflow: 'hidden',
-                    }}
-                  >
-                    {[100, 80, 70, 60].map((w, i) => (
-                      <div
-                        key={i}
-                        style={{
-                          display: 'flex',
-                          alignItems: 'center',
-                          gap: 12,
-                          padding: '10px 14px',
-                          borderBottom: i < 3 ? '1px solid #F1F5F9' : 'none',
-                        }}
-                      >
-                        <Skeleton shape="circle" width={28} height={28} />
-                        <Skeleton width={`${w}%`} height={13} style={{ flex: 1 }} />
-                        <Skeleton width={40} height={13} />
-                      </div>
-                    ))}
-                  </div>
-                </Variant>
-                <Variant label="form">
-                  <div
-                    style={{
-                      background: '#fff',
-                      border: '1px solid #E5E7EB',
-                      borderRadius: 10,
-                      padding: 16,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 14,
-                    }}
-                  >
-                    {[
-                      ['40%', 32],
-                      ['60%', 32],
-                      ['100%', 72],
-                    ].map(([w, h], i) => (
-                      <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                        <Skeleton width="28%" height={11} />
-                        <Skeleton width={w} height={h} />
-                      </div>
-                    ))}
-                    <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                      <Skeleton width={72} height={32} />
-                      <Skeleton width={88} height={32} />
-                    </div>
-                  </div>
-                </Variant>
+        <SkeletonKnobs />
+        <div className="pt-variants pt-variants--3">
+          <Variant label="avatar row">
+            <div
+              style={{
+                background: '#fff',
+                border: '1px solid #E5E7EB',
+                borderRadius: 10,
+                padding: 14,
+                display: 'flex',
+                gap: 16,
+                alignItems: 'center',
+              }}
+            >
+              <Skeleton shape="circle" width={44} height={44} />
+              <div style={{ flex: 1 }}>
+                <Skeleton width="35%" height={14} />
+                <div style={{ height: 6 }} />
+                <Skeleton width="60%" height={12} />
               </div>
-            </>
+              <Skeleton width={64} height={26} />
+            </div>
+          </Variant>
+          <Variant label="stat card">
+            <div
+              style={{
+                background: '#fff',
+                border: '1px solid #E5E7EB',
+                borderRadius: 10,
+                padding: '14px 16px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 10,
+              }}
+            >
+              <Skeleton width="45%" height={12} />
+              <Skeleton width="30%" height={28} />
+              <Skeleton width="55%" height={11} />
+            </div>
+          </Variant>
+          <Variant label="article / card">
+            <div
+              style={{
+                background: '#fff',
+                border: '1px solid #E5E7EB',
+                borderRadius: 10,
+                padding: 14,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 8,
+              }}
+            >
+              <Skeleton width="100%" height={120} />
+              <Skeleton width="70%" height={15} />
+              <Skeleton width="90%" height={12} lines={3} />
+              <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
+                <Skeleton shape="circle" width={24} height={24} />
+                <Skeleton width="30%" height={11} />
+              </div>
+            </div>
+          </Variant>
+          <Variant label="table rows">
+            <div
+              style={{
+                background: '#fff',
+                border: '1px solid #E5E7EB',
+                borderRadius: 10,
+                overflow: 'hidden',
+              }}
+            >
+              {[100, 80, 70, 60].map((w, i) => (
+                <div
+                  key={i}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 12,
+                    padding: '10px 14px',
+                    borderBottom: i < 3 ? '1px solid #F1F5F9' : 'none',
+                  }}
+                >
+                  <Skeleton shape="circle" width={28} height={28} />
+                  <Skeleton width={`${w}%`} height={13} style={{ flex: 1 }} />
+                  <Skeleton width={40} height={13} />
+                </div>
+              ))}
+            </div>
+          </Variant>
+          <Variant label="form">
+            <div
+              style={{
+                background: '#fff',
+                border: '1px solid #E5E7EB',
+                borderRadius: 10,
+                padding: 16,
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 14,
+              }}
+            >
+              {[
+                ['40%', 32],
+                ['60%', 32],
+                ['100%', 72],
+              ].map(([w, h], i) => (
+                <div key={i} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  <Skeleton width="28%" height={11} />
+                  <Skeleton width={w} height={h} />
+                </div>
+              ))}
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
+                <Skeleton width={72} height={32} />
+                <Skeleton width={88} height={32} />
+              </div>
+            </div>
+          </Variant>
+        </div>
+      </>
     ),
   },
   {
     group: 'atoms',
     id: 'progress-bar',
-    name: "ProgressBar",
+    name: 'ProgressBar',
     desc: (
       <>
-                  Track + fill with optional <code>label</code>, <code>subLabel</code>, and{' '}
-                  <code>valueLabel</code>. Used for cohorts, RMI factors, grade bands, engagement
-                  tiers. Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>.
-                </>
+        Track + fill with optional <code>label</code>, <code>subLabel</code>, and{' '}
+        <code>valueLabel</code>. Used for cohorts, RMI factors, grade bands, engagement tiers.
+        Sizes: <code>sm</code>, <code>md</code>, <code>lg</code>.
+      </>
     ),
     render: () => (
       <>
-              <ProgressBarKnobs />
-            </>
+        <ProgressBarKnobs />
+      </>
     ),
   },
   {
     group: 'atoms',
     id: 'tooltip',
-    name: "Tooltip",
+    name: 'Tooltip',
     desc: (
       <>
-                  Lightweight hover tooltip for explaining icon buttons and labels — not for chart
-                  data. <code>placement</code>: <code>top</code> / <code>bottom</code> /{' '}
-                  <code>left</code> / <code>right</code>.
-                </>
+        Lightweight hover tooltip for explaining icon buttons and labels — not for chart data.{' '}
+        <code>placement</code>: <code>top</code> / <code>bottom</code> / <code>left</code> /{' '}
+        <code>right</code>.
+      </>
     ),
     render: () => (
       <>
-              <TooltipKnobs />
-            </>
+        <TooltipKnobs />
+      </>
     ),
   },
 ]

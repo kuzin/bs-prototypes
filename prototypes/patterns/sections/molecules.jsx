@@ -6,12 +6,7 @@ import { Modal } from '@components/Modal/Modal'
 import { Table } from '@components/Table/Table'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Toggle } from '@components/Toggle/Toggle'
-import {
-  Field,
-  Input,
-  Select,
-  Textarea,
-} from '@components/Form/Form'
+import { Field, Input, Select, Textarea } from '@components/Form/Form'
 import {
   Accordion,
   Banner,
@@ -20,7 +15,18 @@ import {
   IconButton,
   SectionHeading,
 } from '@components/Primitives/Primitives'
-import { Knobs, Variant, PlusIcon, CaretIcon, EditIcon, DuplicateIcon, ArchiveIcon, TrashIcon, MoreIcon, TABLE_ROWS } from './_shared'
+import {
+  Knobs,
+  Variant,
+  PlusIcon,
+  CaretIcon,
+  EditIcon,
+  DuplicateIcon,
+  ArchiveIcon,
+  TrashIcon,
+  MoreIcon,
+  TABLE_ROWS,
+} from './_shared'
 
 function TabsShowcase() {
   const [a, setA] = useState('daily')
@@ -574,76 +580,76 @@ function SideModalShowcase() {
           variant={variant}
           ariaLabel="Marcus Chen — student profile"
         >
-        {({ close }) => (
-          <div className="sp-shell">
-            {/* Left vertical nav (BeanstackProfile-style) */}
-            <nav className="sp-nav">
-              {SP_SECTIONS.map((s, i) => {
-                const active = section === s.id
-                return (
-                  <Fragment key={s.id}>
-                    <button
-                      type="button"
-                      className={`sp-nav-item${active ? ' sp-nav-item--active' : ''}`}
-                      style={
-                        active
-                          ? {
-                              '--nav-active-color': s.color,
-                              '--nav-active-bg': `color-mix(in srgb, ${s.color} 12%, white)`,
-                            }
-                          : undefined
-                      }
-                      onClick={() => setSection(s.id)}
-                      title={s.label}
-                    >
-                      <span className="sp-nav-icon">
-                        <SpNavIcon name={s.icon} />
-                      </span>
-                      <span className="sp-nav-label">{s.label}</span>
-                    </button>
-                    {i === 0 && <div className="sp-nav-divider" />}
-                  </Fragment>
-                )
-              })}
-            </nav>
+          {({ close }) => (
+            <div className="sp-shell">
+              {/* Left vertical nav (BeanstackProfile-style) */}
+              <nav className="sp-nav">
+                {SP_SECTIONS.map((s, i) => {
+                  const active = section === s.id
+                  return (
+                    <Fragment key={s.id}>
+                      <button
+                        type="button"
+                        className={`sp-nav-item${active ? ' sp-nav-item--active' : ''}`}
+                        style={
+                          active
+                            ? {
+                                '--nav-active-color': s.color,
+                                '--nav-active-bg': `color-mix(in srgb, ${s.color} 12%, white)`,
+                              }
+                            : undefined
+                        }
+                        onClick={() => setSection(s.id)}
+                        title={s.label}
+                      >
+                        <span className="sp-nav-icon">
+                          <SpNavIcon name={s.icon} />
+                        </span>
+                        <span className="sp-nav-label">{s.label}</span>
+                      </button>
+                      {i === 0 && <div className="sp-nav-divider" />}
+                    </Fragment>
+                  )
+                })}
+              </nav>
 
-            {/* Main pane */}
-            <div className="sp-pane">
-              <div className="sp-pane-header">
-                <div className="sp-pane-identity">
-                  <Avatar initials="MC" color="#7C3AED" size="md" />
-                  <div className="sp-pane-identity-text">
-                    <div className="sp-pane-name">Marcus Chen</div>
-                    <div className="sp-pane-meta">Grade 5 · Lincoln Elementary</div>
+              {/* Main pane */}
+              <div className="sp-pane">
+                <div className="sp-pane-header">
+                  <div className="sp-pane-identity">
+                    <Avatar initials="MC" color="#7C3AED" size="md" />
+                    <div className="sp-pane-identity-text">
+                      <div className="sp-pane-name">Marcus Chen</div>
+                      <div className="sp-pane-meta">Grade 5 · Lincoln Elementary</div>
+                    </div>
+                  </div>
+                  <div className="sp-pane-actions">
+                    {withActions && (
+                      <Button variant="secondary" size="sm">
+                        Log reading
+                      </Button>
+                    )}
+                    <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close">
+                      <CloseIcon />
+                    </IconButton>
                   </div>
                 </div>
-                <div className="sp-pane-actions">
-                  {withActions && (
-                    <Button variant="secondary" size="sm">
-                      Log reading
-                    </Button>
-                  )}
-                  <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close">
-                    <CloseIcon />
-                  </IconButton>
+
+                <div className="sp-pane-body">
+                  <EmptyState
+                    icon={<EmptyIcon />}
+                    title={empty.title}
+                    description={empty.description}
+                    action={
+                      <Button variant="secondary" size="sm">
+                        Get started
+                      </Button>
+                    }
+                  />
                 </div>
               </div>
-
-              <div className="sp-pane-body">
-                <EmptyState
-                  icon={<EmptyIcon />}
-                  title={empty.title}
-                  description={empty.description}
-                  action={
-                    <Button variant="secondary" size="sm">
-                      Get started
-                    </Button>
-                  }
-                />
-              </div>
             </div>
-          </div>
-        )}
+          )}
         </Modal>
       </div>
     </>
@@ -1039,9 +1045,7 @@ function TableKnobs() {
           onRowClick={clickable ? () => {} : undefined}
           highlightRow={highlight ? (r) => r.id === 'lincoln' : undefined}
           pageSize={paginate ? 3 : undefined}
-          defaultSortKey={
-            sortable && defaultSortKey !== 'none' ? defaultSortKey : undefined
-          }
+          defaultSortKey={sortable && defaultSortKey !== 'none' ? defaultSortKey : undefined}
           defaultSortDir={defaultSortDir}
         />
       </div>
@@ -1055,170 +1059,168 @@ export const moleculesSections = [
   {
     group: 'molecules',
     id: 'tabs',
-    name: "Tabs",
+    name: 'Tabs',
     desc: (
       <>
-                  Horizontal tab strip. <code>items</code> is{' '}
-                  <code>{'[{ id, label, count?, icon? }]'}</code>. Two variants:{' '}
-                  <code>underline</code> (default) and <code>pill</code>.
-                </>
+        Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>.
+        Two variants: <code>underline</code> (default) and <code>pill</code>.
+      </>
     ),
     render: () => (
       <>
-              <TabsKnobs />
-            </>
+        <TabsKnobs />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'flyout',
-    name: "Flyout",
+    name: 'Flyout',
     desc: (
       <>
-                  Anchored popover triggered by a button. Closes on outside click + Escape. Children
-                  can be JSX or a render function that receives <code>{'{ close }'}</code>.{' '}
-                  <strong>Overflow rule:</strong> when a button row has 3+ actions, collapse the
-                  secondary ones into a <code>More</code> (kebab) flyout.
-                </>
+        Anchored popover triggered by a button. Closes on outside click + Escape. Children can be
+        JSX or a render function that receives <code>{'{ close }'}</code>.{' '}
+        <strong>Overflow rule:</strong> when a button row has 3+ actions, collapse the secondary
+        ones into a <code>More</code> (kebab) flyout.
+      </>
     ),
     render: () => (
       <>
-              <FlyoutKnobs />
-              <FlyoutShowcase />
-            </>
+        <FlyoutKnobs />
+        <FlyoutShowcase />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'modal',
-    name: "Modal",
+    name: 'Modal',
     desc: (
       <>
-                  Two variants: <code>side</code> (right-slide panel) and <code>center</code>{' '}
-                  (overlay). Both close on backdrop click + Escape and animate in/out. The centered
-                  modal composes from <code>.modal-image</code>, <code>.modal-header</code>,{' '}
-                  <code>.modal-body</code>, <code>.modal-footer</code> — toggle each below.
-                </>
+        Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both
+        close on backdrop click + Escape and animate in/out. The centered modal composes from{' '}
+        <code>.modal-image</code>, <code>.modal-header</code>, <code>.modal-body</code>,{' '}
+        <code>.modal-footer</code> — toggle each below.
+      </>
     ),
     render: () => (
       <>
-              <div className="pt-variant">
-                <div className="pt-variant-label">variant='center' (overlay)</div>
-                <CenteredModalKnobs />
-              </div>
-              <div className="pt-variant">
-                <div className="pt-variant-label">variant='side' (slide-in)</div>
-                <SideModalShowcase />
-              </div>
-            </>
+        <div className="pt-variant">
+          <div className="pt-variant-label">variant='center' (overlay)</div>
+          <CenteredModalKnobs />
+        </div>
+        <div className="pt-variant">
+          <div className="pt-variant-label">variant='side' (slide-in)</div>
+          <SideModalShowcase />
+        </div>
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'banner',
-    name: "Banner",
+    name: 'Banner',
     desc: (
       <>
-                  Page-level alert / banner. Levels: <code>info</code>, <code>success</code>,{' '}
-                  <code>warning</code>, <code>error</code>. Optional <code>title</code>,{' '}
-                  <code>action</code>, <code>onDismiss</code>.
-                </>
+        Page-level alert / banner. Levels: <code>info</code>, <code>success</code>,{' '}
+        <code>warning</code>, <code>error</code>. Optional <code>title</code>, <code>action</code>,{' '}
+        <code>onDismiss</code>.
+      </>
     ),
     render: () => (
       <>
-              <BannerKnobs />
-            </>
+        <BannerKnobs />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'accordion',
-    name: "Accordion",
+    name: 'Accordion',
     desc: (
       <>
-                  Expand/collapse list. Pass <code>items</code> as{' '}
-                  <code>{'[{ id, title, content }]'}</code>. Optional <code>accent</code> color,{' '}
-                  <code>allowMultiple</code>, <code>defaultOpen</code>.
-                </>
+        Expand/collapse list. Pass <code>items</code> as <code>{'[{ id, title, content }]'}</code>.
+        Optional <code>accent</code> color, <code>allowMultiple</code>, <code>defaultOpen</code>.
+      </>
     ),
     render: () => (
       <>
-              <AccordionKnobs />
-            </>
+        <AccordionKnobs />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'breadcrumb',
-    name: "Breadcrumb",
+    name: 'Breadcrumb',
     desc: (
       <>
-                  Navigation crumbs. Pass <code>items</code> as <code>{'[{ label, href? }]'}</code>{' '}
-                  — the last item is treated as the current page and rendered without a link.
-                </>
+        Navigation crumbs. Pass <code>items</code> as <code>{'[{ label, href? }]'}</code> — the last
+        item is treated as the current page and rendered without a link.
+      </>
     ),
     render: () => (
       <>
-              <div className="pt-variant-frame">
-                <Breadcrumb
-                  items={[
-                    { label: 'Schools', href: '#' },
-                    { label: 'Lincoln Elementary', href: '#' },
-                    { label: 'Motivation' },
-                  ]}
-                />
-              </div>
-            </>
+        <div className="pt-variant-frame">
+          <Breadcrumb
+            items={[
+              { label: 'Schools', href: '#' },
+              { label: 'Lincoln Elementary', href: '#' },
+              { label: 'Motivation' },
+            ]}
+          />
+        </div>
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'empty-state',
-    name: "EmptyState",
+    name: 'EmptyState',
     desc: (
       <>
-                  Empty-list placeholder. Props: <code>icon</code>, <code>title</code>,{' '}
-                  <code>description</code>, <code>action</code>.
-                </>
+        Empty-list placeholder. Props: <code>icon</code>, <code>title</code>,{' '}
+        <code>description</code>, <code>action</code>.
+      </>
     ),
     render: () => (
       <>
-              <EmptyStateKnobs />
-            </>
+        <EmptyStateKnobs />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'section-heading',
-    name: "SectionHeading",
+    name: 'SectionHeading',
     desc: (
       <>
-                  Recurring h2/h3 + optional subtitle + optional right-side action. Used as the
-                  header inside content sections / cards.
-                </>
+        Recurring h2/h3 + optional subtitle + optional right-side action. Used as the header inside
+        content sections / cards.
+      </>
     ),
     render: () => (
       <>
-              <SectionHeadingKnobs />
-            </>
+        <SectionHeadingKnobs />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'table',
-    name: "Table",
+    name: 'Table',
     desc: (
       <>
-                  Pass <code>columns</code> and <code>rows</code>. Each column can have{' '}
-                  <code>align</code>, <code>render</code>, <code>width</code>, <code>sortable</code>
-                  . Props: <code>zebra</code>, <code>compact</code>, <code>flush</code>,{' '}
-                  <code>pageSize</code> (enables pagination), <code>defaultSortKey</code>.
-                </>
+        Pass <code>columns</code> and <code>rows</code>. Each column can have <code>align</code>,{' '}
+        <code>render</code>, <code>width</code>, <code>sortable</code>. Props: <code>zebra</code>,{' '}
+        <code>compact</code>, <code>flush</code>, <code>pageSize</code> (enables pagination),{' '}
+        <code>defaultSortKey</code>.
+      </>
     ),
     render: () => (
       <>
-              <TableKnobs />
-            </>
+        <TableKnobs />
+      </>
     ),
   },
 ]
