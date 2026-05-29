@@ -83,11 +83,7 @@ function FileInputKnobs() {
           <Input value={placeholder} onChange={(e) => setPlaceholder(e.target.value)} />
         </Field>
         <Field label="accept">
-          <Input
-            value={accept}
-            onChange={(e) => setAccept(e.target.value)}
-            placeholder="(any)"
-          />
+          <Input value={accept} onChange={(e) => setAccept(e.target.value)} placeholder="(any)" />
         </Field>
         <Field label="multiple">
           <Toggle checked={multiple} onChange={setMultiple} />
@@ -881,187 +877,182 @@ export const formPatternsSections = [
   {
     group: 'form-patterns',
     id: 'color-input',
-    name: "ColorInput",
+    name: 'ColorInput',
     desc: (
       <>
-                  A styled color swatch + hex readout. Clicking anywhere opens the native color
-                  picker. The swatch uses <code>{'<input type="color">'}</code> with vendor-prefixed
-                  chrome removed.
-                </>
+        A styled color swatch + hex readout. Clicking anywhere opens the native color picker. The
+        swatch uses <code>{'<input type="color">'}</code> with vendor-prefixed chrome removed.
+      </>
     ),
     render: () => (
       <>
-              <ColorInputKnobs />
-            </>
+        <ColorInputKnobs />
+      </>
     ),
   },
   {
     group: 'form-patterns',
     id: 'file-input',
-    name: "FileInput",
+    name: 'FileInput',
     desc: (
       <>
-                  Custom file upload control. A styled button triggers the hidden native input;
-                  selected filename is shown alongside. Supports <code>multiple</code>,{' '}
-                  <code>accept</code>, and <code>disabled</code>.
-                </>
+        Custom file upload control. A styled button triggers the hidden native input; selected
+        filename is shown alongside. Supports <code>multiple</code>, <code>accept</code>, and{' '}
+        <code>disabled</code>.
+      </>
     ),
     render: () => (
       <>
-              <FileInputKnobs />
-            </>
+        <FileInputKnobs />
+      </>
     ),
   },
   {
     group: 'form-patterns',
     id: 'date-input',
-    name: "DatePicker / DateInput",
+    name: 'DatePicker / DateInput',
     desc: (
       <>
-                  <code>DatePicker</code> — calendar popup via Radix Popover with month navigation,
-                  today indicator, and clear. <code>DateInput</code> — lightweight native{' '}
-                  <code>{'<input type="date">'}</code> wrapper for simpler contexts.
-                </>
+        <code>DatePicker</code> — calendar popup via Radix Popover with month navigation, today
+        indicator, and clear. <code>DateInput</code> — lightweight native{' '}
+        <code>{'<input type="date">'}</code> wrapper for simpler contexts.
+      </>
     ),
     render: () => (
       <>
-              <DateInputKnobs />
-            </>
+        <DateInputKnobs />
+      </>
     ),
   },
   {
     group: 'form-patterns',
     id: 'time-input',
-    name: "TimePicker / TimeInput",
+    name: 'TimePicker / TimeInput',
     desc: (
       <>
-                  <code>TimePicker</code> — scrollable time-slot list (configurable step) in a Radix
-                  Popover. <code>TimeInput</code> — lightweight native{' '}
-                  <code>{'<input type="time">'}</code> wrapper for simpler contexts.
-                </>
+        <code>TimePicker</code> — scrollable time-slot list (configurable step) in a Radix Popover.{' '}
+        <code>TimeInput</code> — lightweight native <code>{'<input type="time">'}</code> wrapper for
+        simpler contexts.
+      </>
     ),
     render: () => (
       <>
-              <TimeInputKnobs />
-            </>
+        <TimeInputKnobs />
+      </>
     ),
   },
   {
     group: 'form-patterns',
     id: 'checkbox-group',
-    name: "CheckboxGroup",
+    name: 'CheckboxGroup',
     desc: (
       <>
-                  Multi-select group of checkboxes. <code>CheckboxGroup</code> holds{' '}
-                  <code>value</code> (string[]) + <code>onChange</code>. Children are{' '}
-                  <code>CheckboxGroupItem</code> with a <code>value</code> key. Supports row/column
-                  layout.
-                </>
+        Multi-select group of checkboxes. <code>CheckboxGroup</code> holds <code>value</code>{' '}
+        (string[]) + <code>onChange</code>. Children are <code>CheckboxGroupItem</code> with a{' '}
+        <code>value</code> key. Supports row/column layout.
+      </>
     ),
     render: () => (
       <>
-              <CheckboxGroupKnobs />
-            </>
+        <CheckboxGroupKnobs />
+      </>
     ),
   },
   {
     group: 'form-patterns',
     id: 'multi-select',
-    name: "MultiSelect",
+    name: 'MultiSelect',
     desc: (
       <>
-                  Dropdown that lets users pick multiple items from an <code>options</code> array.
-                  Displays a summary of the selection. Click outside or press Esc to close.
-                </>
+        Dropdown that lets users pick multiple items from an <code>options</code> array. Displays a
+        summary of the selection. Click outside or press Esc to close.
+      </>
     ),
     render: () => (
       <>
-              <MultiSelectKnobs />
-            </>
+        <MultiSelectKnobs />
+      </>
     ),
   },
   {
     group: 'form-patterns',
     id: 'custom-select',
-    name: "CustomSelect",
+    name: 'CustomSelect',
     desc: (
       <>
-                  Radix UI–powered select with consistent cross-browser styling, keyboard
-                  navigation, animated dropdown, and grouped options. Replaces the native{' '}
-                  <code>{'<select>'}</code> chrome entirely.
-                </>
+        Radix UI–powered select with consistent cross-browser styling, keyboard navigation, animated
+        dropdown, and grouped options. Replaces the native <code>{'<select>'}</code> chrome
+        entirely.
+      </>
     ),
     render: () => (
       <>
-              <CustomSelectKnobs />
-            </>
+        <CustomSelectKnobs />
+      </>
     ),
   },
   {
     group: 'form-patterns',
     id: 'filter-bar',
-    name: "FilterBar",
+    name: 'FilterBar',
     desc: (
       <>
-                  <code>FilterBar</code> is a horizontal row of labeled controls (
-                  <code>FilterItem</code> children) with an optional trailing action. Collapses to a
-                  2-column grid on mobile.
-                </>
+        <code>FilterBar</code> is a horizontal row of labeled controls (<code>FilterItem</code>{' '}
+        children) with an optional trailing action. Collapses to a 2-column grid on mobile.
+      </>
     ),
     render: () => (
       <>
-              <FilterBarKnobs />
-            </>
+        <FilterBarKnobs />
+      </>
     ),
   },
   {
     group: 'form-patterns',
     id: 'field-form',
-    name: "Field / Form",
+    name: 'Field / Form',
     desc: (
       <>
-                  <code>Field</code> wraps any input with a label, optional <code>help</code> text,
-                  and an <code>error</code> state. Switch the knob to preview four common form
-                  layouts.
-                </>
+        <code>Field</code> wraps any input with a label, optional <code>help</code> text, and an{' '}
+        <code>error</code> state. Switch the knob to preview four common form layouts.
+      </>
     ),
     render: () => (
       <>
-              <FieldFormKnobs />
-            </>
+        <FieldFormKnobs />
+      </>
     ),
   },
   {
     group: 'form-patterns',
     id: 'active-filters',
-    name: "ActiveFilters",
+    name: 'ActiveFilters',
     desc: (
       <>
-                  Active filter chips rendered below the filter bar. Each chip shows the filter
-                  label and a × to clear it. Props: <code>filters</code> array of{' '}
-                  <code>{'{ key, label, onClear }'}</code>, <code>onClearAll</code> callback.
-                  Renders nothing when <code>filters</code> is empty.
-                </>
+        Active filter chips rendered below the filter bar. Each chip shows the filter label and a ×
+        to clear it. Props: <code>filters</code> array of <code>{'{ key, label, onClear }'}</code>,{' '}
+        <code>onClearAll</code> callback. Renders nothing when <code>filters</code> is empty.
+      </>
     ),
     render: () => (
       <>
-              <Variant label="one filter">
-                <ActiveFilters
-                  filters={[{ key: 'rating', label: 'Engagement: Positive', onClear: () => {} }]}
-                  onClearAll={() => {}}
-                />
-              </Variant>
-              <Variant label="multiple filters">
-                <ActiveFilters
-                  filters={[
-                    { key: 'type', label: 'Type: Flagged', onClear: () => {} },
-                    { key: 'rating', label: 'Engagement: Mixed', onClear: () => {} },
-                    { key: 'status', label: 'Status: Unfinished', onClear: () => {} },
-                  ]}
-                  onClearAll={() => {}}
-                />
-              </Variant>
-            </>
+        <Variant label="one filter">
+          <ActiveFilters
+            filters={[{ key: 'rating', label: 'Engagement: Positive', onClear: () => {} }]}
+            onClearAll={() => {}}
+          />
+        </Variant>
+        <Variant label="multiple filters">
+          <ActiveFilters
+            filters={[
+              { key: 'type', label: 'Type: Flagged', onClear: () => {} },
+              { key: 'rating', label: 'Engagement: Mixed', onClear: () => {} },
+              { key: 'status', label: 'Status: Unfinished', onClear: () => {} },
+            ]}
+            onClearAll={() => {}}
+          />
+        </Variant>
+      </>
     ),
   },
 ]
