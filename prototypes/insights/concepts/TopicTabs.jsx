@@ -5,7 +5,7 @@ import {
   TopBooksGrid,
   TopBadgesRow,
   AgesChart,
-  FilterBar,
+  InsightsFilterBar,
 } from '../components'
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, TOTAL_QUERIES } from '../data'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -96,7 +96,7 @@ export function TopicTabs({ onMeterChange, onOpenDetail, onCustomize, visibleTil
 
   return (
     <div className="ins-page">
-      <FilterBar
+      <InsightsFilterBar
         onCustomize={onCustomize}
         visibleCount={visibleTiles.size}
         totalCount={TOTAL_QUERIES}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { PanelCard, TopBooksGrid, TopBadgesRow, AgesChart, FilterBar } from '../components'
+import { PanelCard, TopBooksGrid, TopBadgesRow, AgesChart, InsightsFilterBar } from '../components'
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, TOTAL_QUERIES, fmt } from '../data'
 
 // Concept: AI snapshot
@@ -73,7 +73,7 @@ export function AISnapshot({ onMeterChange, onOpenDetail, onCustomize, visibleTi
 
   return (
     <div className="ins-page">
-      <FilterBar
+      <InsightsFilterBar
         onCustomize={onCustomize}
         visibleCount={visibleTiles.size}
         totalCount={TOTAL_QUERIES}

@@ -83,15 +83,15 @@ Imports use one alias: `@components` (→ `components/`), e.g. `import { Button 
 There is **one** component system, in `components/` — every prototype draws from it via the `@components` alias. Each component lives in its own folder with its CSS:
 
 - **Atoms & molecules** — `Button`, `Pill`, `Avatar`, `Toggle`, `Tabs`, `Flyout`, `Modal`, `Table`, and `Primitives/` (IconButton, Divider, Spinner, Tooltip, Banner, Breadcrumb, Accordion, EmptyState, Skeleton, SectionHeading)
-- **Forms** — `Form` (Field/Input/Select/Textarea/Checkbox/Radio/…), `CustomSelect`, `FilterBar`, `DatePicker`, `TimePicker`
+- **Forms** — `Form` (Field/Input/Select/Textarea/Checkbox/Radio/…), `CustomSelect`, `FilterBar`, `ActiveFilters`, `DatePicker`, `TimePicker`
 - **Charts & data** — `Cards` (StatCard/ChartCard/CardNote), `charts` (Nivo wrappers + tooltips), `TrendChart`, `BarList`, `Funnel`, `ProgressBar`
 - **Domain** — `ReadingHealth`, `AlertsBanner`, `Hero`, `RmiIcons`, `BennyBubble`
 - **Layout & chrome** — `AppShell` (prop-driven shell: Sidebar + content slot + optional back bar), `Sidebar` (prop-driven nav + school picker), `PrototypeNav`, `BackBar`, `MainRail`
 - **`ui/`** — the student-profile's `bp-`prefixed primitives (`Ic`, `StatusBadge`, `Card`, `SectionHeading`, `GoalRing`, `CoverImage`) plus design tokens (`C`, `LABEL`, `GENRE_COLORS`, `I8_IDS`, `COVER_PALETTES`), imported via `@components/ui`
 
-**The Pattern Library prototype (`prototypes/patterns/`) is the live catalog** — it renders every shared component with interactive knobs, importing them straight from `@components`. When you build a new reusable component, add it to `components/<Name>/` and add a showcase to [prototypes/patterns/App.jsx](prototypes/patterns/App.jsx) — that's the registry every other prototype checks first.
+**The Pattern Library prototype (`prototypes/patterns/`) is the live catalog** — a hash-routed browser (home grid → a dedicated page per component; sidebar groups expand in place) with interactive knobs, importing components straight from `@components`. It's data-driven: each group's showcases + section entries live in [prototypes/patterns/sections/](prototypes/patterns/sections/)`<group>.jsx` (atoms, molecules, form-fields, form-patterns, charts, domain, layout, sfr, insights), with shared knob helpers in `sections/_shared.jsx`. [prototypes/patterns/catalog.jsx](prototypes/patterns/catalog.jsx) stays slim — it assembles `SECTIONS` from the per-group arrays and owns `GROUPS` + `GroupHeader` + the CSS imports; [prototypes/patterns/App.jsx](prototypes/patterns/App.jsx) is the router/shell. When you build a new reusable component, add it to `components/<Name>/` and add an entry to the matching `sections/<group>.jsx` — that's the registry every other prototype checks first.
 
-Components specific to a single prototype stay inside that prototype — e.g. ris's dashboard screens (`SchoolDashboard`, `School*`/`District*`, `RisLayout`, `StudentPanel`) live in `prototypes/ris/components/`. The shared layout (`AppShell`, `Sidebar`) was lifted out of ris so sfr, insights, and rostering can reuse the same shell.
+Components specific to a single prototype stay inside that prototype — e.g. ris's dashboard screens (`SchoolDashboard`, `School*`/`District*`, `RisLayout`, `StudentPanel`) live in `prototypes/ris/components/`. Such prototype-specific patterns are still catalogued in the Pattern Library, but under a group named after the prototype (e.g. **Sessions for Review**, **Insights**) rather than the generic groups. The shared layout (`AppShell`, `Sidebar`) was lifted out of ris so sfr, insights, and rostering can reuse the same shell.
 
 ---
 

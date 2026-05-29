@@ -18,25 +18,69 @@
   z-index: 100;
 }
 
-.proto-nav-back {
+/* Left cluster of icon-only buttons (Prototypes / Patterns / Components). */
+.proto-nav-left {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #444;
-  text-decoration: none;
-  letter-spacing: 0.01em;
-  transition: color 0.15s;
+  gap: 6px;
 }
 
-.proto-nav-back:hover {
-  color: #111;
+.proto-nav-iconbtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5);
+  color: #475569;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.proto-nav-iconbtn:hover {
+  background: #fff;
+  color: #0f172a;
+  border-color: rgba(0, 0, 0, 0.18);
 }
 
 .proto-nav-logo {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
+}
+
+/* "Components" inspector trigger — sits next to the back link; the auto right
+   margin keeps the prototype switcher pinned to the right edge. */
+.proto-nav-usage {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 18px;
+  margin-right: auto;
+  padding: 5px 10px;
+  border-radius: 7px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.5);
+  color: #475569;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    background 0.15s,
+    color 0.15s,
+    border-color 0.15s;
+}
+
+.proto-nav-usage:hover {
+  background: #fff;
+  color: #0f172a;
+  border-color: rgba(0, 0, 0, 0.18);
 }
 
 .proto-nav-switcher {

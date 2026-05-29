@@ -1,7 +1,15 @@
 import { useState, useEffect, useRef } from 'react'
 import { Modal } from '@components/Modal/Modal'
+import { Button } from '@components/Button/Button'
+import { Tabs } from '@components/Tabs/Tabs'
+import { Table } from '@components/Table/Table'
+import { IconButton } from '@components/Primitives/Primitives'
 import { FLAG_TYPE_CONFIG, POS_FLAG_CONFIG } from './SessionsTable'
 import '@components/Modal/Modal.css'
+import '@components/Button/Button.css'
+import '@components/Tabs/Tabs.css'
+import '@components/Table/Table.css'
+import '@components/Primitives/Primitives.css'
 import './SessionModal.css'
 
 const FLAG_DESCS = {
@@ -387,7 +395,7 @@ export function SessionModal({
                 </button>
               </div>
             )}
-            <button className="sm2-close" onClick={onClose} aria-label="Close">
+            <IconButton variant="ghost" onClick={onClose} aria-label="Close" className="sm2-close">
               <svg
                 viewBox="0 0 16 16"
                 width="15"
@@ -400,7 +408,7 @@ export function SessionModal({
                 <line x1="4" y1="4" x2="12" y2="12" />
                 <line x1="12" y1="4" x2="4" y2="12" />
               </svg>
-            </button>
+            </IconButton>
           </div>
         </div>
 
@@ -551,20 +559,20 @@ export function SessionModal({
               <div className="sm2-section-head">
                 <span className="sm2-section-title">Session Details</span>
               </div>
-              <table className="sm2-details-table">
-                <thead>
-                  <tr>
-                    <th>Date Read</th>
-                    <th>Unit</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{dateStr}</td>
-                    <td>{d.minutesLogged.toLocaleString()} Minutes</td>
-                  </tr>
-                </tbody>
-              </table>
+              <Table
+                className="sm2-details-table"
+                columns={[
+                  { key: 'dateRead', label: 'Date Read' },
+                  { key: 'unit', label: 'Unit' },
+                ]}
+                rows={[
+                  {
+                    id: 'details',
+                    dateRead: dateStr,
+                    unit: `${d.minutesLogged.toLocaleString()} Minutes`,
+                  },
+                ]}
+              />
             </div>
 
             {d.engagementRating && (
@@ -719,26 +727,30 @@ export function SessionModal({
 
         {/* Footer */}
         <div className="sm2-footer">
-          <button className="sm2-btn sm2-btn--outline">Edit Session</button>
+          <Button variant="secondary">Edit Session</Button>
           <div className="sm2-footer-actions">
             <button className="sm2-btn sm2-btn--danger">Delete Session</button>
             {canApprove && (
-              <button className="sm2-btn sm2-btn--primary" onClick={() => onApproveRequest?.(d)}>
-                <svg
-                  viewBox="0 0 16 16"
-                  width="13"
-                  height="13"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  style={{ marginRight: 6, verticalAlign: '-2px' }}
-                >
-                  <polyline points="3,8 7,12 13,4" />
-                </svg>
+              <Button
+                variant="primary"
+                onClick={() => onApproveRequest?.(d)}
+                icon={
+                  <svg
+                    viewBox="0 0 16 16"
+                    width="13"
+                    height="13"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="3,8 7,12 13,4" />
+                  </svg>
+                }
+              >
                 Approve Session
-              </button>
+              </Button>
             )}
           </div>
         </div>
@@ -897,25 +909,29 @@ export function ApproveConfirmModal({ open, flagCount, studentName, onCancel, on
           The session will no longer appear in Flagged Sessions and the action will be logged.
         </div>
         <div className="sm2-approve-actions">
-          <button className="sm2-btn sm2-btn--outline" onClick={onCancel}>
+          <Button variant="secondary" onClick={onCancel}>
             Cancel
-          </button>
-          <button className="sm2-btn sm2-btn--primary" onClick={onConfirm}>
-            <svg
-              viewBox="0 0 16 16"
-              width="13"
-              height="13"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              style={{ marginRight: 6, verticalAlign: '-2px' }}
-            >
-              <polyline points="3,8 7,12 13,4" />
-            </svg>
+          </Button>
+          <Button
+            variant="primary"
+            onClick={onConfirm}
+            icon={
+              <svg
+                viewBox="0 0 16 16"
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <polyline points="3,8 7,12 13,4" />
+              </svg>
+            }
+          >
             Approve Session
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>
@@ -955,12 +971,12 @@ function RatingConfirmModal({ open, from, to, onCancel, onConfirm }) {
           This override will be recorded in the change log.
         </div>
         <div className="sm2-approve-actions">
-          <button className="sm2-btn sm2-btn--outline" onClick={onCancel}>
+          <Button variant="secondary" onClick={onCancel}>
             Cancel
-          </button>
-          <button className="sm2-btn sm2-btn--primary" onClick={onConfirm}>
+          </Button>
+          <Button variant="primary" onClick={onConfirm}>
             Change rating
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>
@@ -997,12 +1013,12 @@ function RemoveFlagConfirmModal({ pending, onCancel, onConfirm }) {
           recorded in the change log.
         </div>
         <div className="sm2-approve-actions">
-          <button className="sm2-btn sm2-btn--outline" onClick={onCancel}>
+          <Button variant="secondary" onClick={onCancel}>
             Cancel
-          </button>
-          <button className="sm2-btn sm2-btn--danger-solid" onClick={onConfirm}>
+          </Button>
+          <Button variant="danger" onClick={onConfirm}>
             Remove flag
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>

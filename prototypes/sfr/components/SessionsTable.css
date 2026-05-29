@@ -136,30 +136,6 @@
   position: relative;
 }
 
-.sess-flag-icon[data-tooltip]::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 5px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1e293b;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 500;
-  white-space: nowrap;
-  padding: 4px 8px;
-  border-radius: 5px;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 0.12s;
-  z-index: 100;
-  font-style: normal;
-}
-
-.sess-flag-icon[data-tooltip]:hover::after {
-  opacity: 1;
-}
-
 .sess-flag-badge {
   display: inline-block;
   font-size: 11px;

@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react'
 import { ChartCard } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
 import { Modal } from '@components/Modal/Modal'
+import { Button } from '@components/Button/Button'
 import {
   SOURCE,
   INCOMING_CLASSES,
@@ -289,27 +290,30 @@ function FilterImpact({ filter, scope, schools = [], schoolId, onSchoolId }) {
             </>
           )}
         </span>
-        <button
-          type="button"
-          className="rost-btn rost-btn--ghost rost-fi-btn"
+        <Button
+          variant="secondary"
+          size="sm"
+          className="rost-fi-btn"
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
+          iconRight={
+            <svg
+              className={`rost-fi-chevron${open ? ' rost-fi-chevron--open' : ''}`}
+              viewBox="0 0 16 16"
+              width="14"
+              height="14"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="4,6 8,10 12,6" />
+            </svg>
+          }
         >
           {open ? 'Hide classes' : 'See which classes'}
-          <svg
-            className={`rost-fi-chevron${open ? ' rost-fi-chevron--open' : ''}`}
-            viewBox="0 0 16 16"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="4,6 8,10 12,6" />
-          </svg>
-        </button>
+        </Button>
       </div>
 
       {open && (
@@ -349,12 +353,12 @@ function SubjectRulesSection({
   const isDistrict = scope === 'district'
   const footer = filterDirty ? (
     <div className="rost-card-footer-bar">
-      <button className="rost-btn rost-btn--ghost" onClick={onCancel}>
+      <Button variant="secondary" onClick={onCancel}>
         Cancel
-      </button>
-      <button className="rost-btn rost-btn--primary" onClick={onSave}>
+      </Button>
+      <Button variant="accent" accent="var(--rost-accent)" onClick={onSave}>
         Save rules
-      </button>
+      </Button>
     </div>
   ) : null
 
@@ -430,12 +434,12 @@ function ScheduleSection() {
 
   const footer = dirty ? (
     <div className="rost-card-footer-bar">
-      <button className="rost-btn rost-btn--ghost" onClick={() => setDates(saved)}>
+      <Button variant="secondary" onClick={() => setDates(saved)}>
         Cancel
-      </button>
-      <button className="rost-btn rost-btn--primary" onClick={() => setSaved(dates)}>
+      </Button>
+      <Button variant="accent" accent="var(--rost-accent)" onClick={() => setSaved(dates)}>
         Save
-      </button>
+      </Button>
     </div>
   ) : null
 

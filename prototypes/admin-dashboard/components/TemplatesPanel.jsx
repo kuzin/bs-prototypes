@@ -1,60 +1,86 @@
 import { LAYOUT_PRESETS } from '../data'
+import { Modal } from '@components/Modal/Modal'
+import { Button } from '@components/Button/Button'
+import { IconButton } from '@components/Primitives/Primitives'
+import '@components/Modal/Modal.css'
+import '@components/Button/Button.css'
+import '@components/Primitives/Primitives.css'
+
+const XIcon = () => (
+  <svg
+    viewBox="0 0 24 24"
+    width="18"
+    height="18"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <line x1="6" y1="6" x2="18" y2="18" />
+    <line x1="18" y1="6" x2="6" y2="18" />
+  </svg>
+)
 
 /**
  * Slide-in panel listing layout presets. Picking one replaces the editable
- * grid's layout + per-widget settings. Uses the shared `.adm-card` style so
- * it visually matches the Add Widget panel.
+ * grid's layout + per-widget settings. Uses the shared `Modal variant="side"`
+ * slide-over plus the `.adm-side-*` chrome so it matches the Add Widget panel.
  */
 export function TemplatesPanel({ open, onClose, onApply, currentId, role = 'teacher' }) {
   const presets = LAYOUT_PRESETS.filter((p) => !p.roles || p.roles.includes(role))
   return (
-    <>
-      {open && <div className="adm-overlay" onClick={onClose} />}
-      <aside className={`adm-panel adm-panel--templates ${open ? 'is-open' : ''}`}>
-        <div className="adm-panel-head">
-          <div>
-            <div className="adm-panel-title">Choose a template</div>
-            <div className="adm-panel-sub">
-              {presets.length} layouts · picking one replaces your current dashboard
+    <Modal open={open} onClose={onClose} variant="side" ariaLabel="Choose a template">
+      {({ close }) => (
+        <div className="adm-side-pane">
+          <header className="adm-side-head">
+            <div className="adm-side-head-text">
+              <h2 className="adm-side-title">Choose a template</h2>
+              <div className="adm-side-sub">
+                {presets.length} layouts · picking one replaces your current dashboard
+              </div>
+            </div>
+            <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close">
+              <XIcon />
+            </IconButton>
+          </header>
+
+          <div className="adm-side-body">
+            <div className="adm-card-list">
+              {presets.map((p) => {
+                const isCurrent = currentId === p.id
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    className={`adm-card ${isCurrent ? 'is-current' : ''}`}
+                    onClick={() => onApply(p)}
+                  >
+                    <div className="adm-card-thumb">
+                      <PreviewMini preset={p} />
+                    </div>
+                    <div className="adm-card-body">
+                      <div className="adm-card-title">
+                        {p.name}
+                        {isCurrent && <span className="adm-card-current">Current</span>}
+                      </div>
+                      <p className="adm-card-desc">{p.description}</p>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           </div>
-          <button className="adm-btn adm-btn--ghost adm-btn--icon" onClick={onClose}>
-            ✕
-          </button>
-        </div>
 
-        <div className="adm-card-list">
-          {presets.map((p) => {
-            const isCurrent = currentId === p.id
-            return (
-              <button
-                key={p.id}
-                type="button"
-                className={`adm-card ${isCurrent ? 'is-current' : ''}`}
-                onClick={() => onApply(p)}
-              >
-                <div className="adm-card-thumb">
-                  <PreviewMini preset={p} />
-                </div>
-                <div className="adm-card-body">
-                  <div className="adm-card-title">
-                    {p.name}
-                    {isCurrent && <span className="adm-card-current">Current</span>}
-                  </div>
-                  <p className="adm-card-desc">{p.description}</p>
-                </div>
-              </button>
-            )
-          })}
+          <div className="adm-panel-foot">
+            <Button variant="secondary" onClick={close}>
+              Close
+            </Button>
+          </div>
         </div>
-
-        <div className="adm-panel-foot">
-          <button className="adm-btn" onClick={onClose}>
-            Close
-          </button>
-        </div>
-      </aside>
-    </>
+      )}
+    </Modal>
   )
 }
 

@@ -11,7 +11,7 @@ import '@components/Cards/Cards.css'
  *   color="#E8866A"
  * />
  */
-export function StatCard({ value, unit, label, color }) {
+export function StatCard({ value, unit, label, footer, footerColor, color }) {
   // Explicit `color` wins by setting --rc-stat-color inline. Otherwise the
   // card inherits --rc-accent from the page / enclosing ChartCard via the
   // CSS variable cascade — see .rc-stat in Cards.css.
@@ -23,6 +23,11 @@ export function StatCard({ value, unit, label, color }) {
         {unit && <span className="rc-stat-unit">{unit}</span>}
       </div>
       <div className="rc-stat-lbl">{label}</div>
+      {footer && (
+        <div className="rc-stat-foot" style={footerColor ? { color: footerColor } : undefined}>
+          {footer}
+        </div>
+      )}
     </div>
   )
 }

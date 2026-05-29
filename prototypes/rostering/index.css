@@ -45,46 +45,6 @@
   margin-bottom: 0;
 }
 
-/* ─── Buttons ─────────────────────────────────────────────────────────────── */
-.rost-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 13.5px;
-  font-weight: 600;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition:
-    background 0.15s,
-    border-color 0.15s,
-    color 0.15s;
-}
-.rost-btn--primary {
-  background: var(--rost-accent);
-  color: #fff;
-}
-.rost-btn--primary:hover {
-  background: var(--rost-accent-deep);
-}
-.rost-btn--ghost {
-  background: #fff;
-  color: #374151;
-  border-color: #e5e7eb;
-}
-.rost-btn--ghost:hover {
-  background: #f9fafb;
-}
-.rost-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.rost-btn--primary:disabled:hover {
-  background: var(--rost-accent);
-}
-
 /* ─── Card footer bar (Save/Cancel) ───────────────────────────────────────── */
 .rost-card-footer-bar {
   display: flex;

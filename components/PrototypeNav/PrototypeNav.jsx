@@ -1,18 +1,15 @@
 import { useEffect, useState } from 'react'
 import './PrototypeNav.css'
 import { PROTOTYPES } from '@components/prototypes'
+import { ComponentUsage } from '@components/ComponentUsage/ComponentUsage'
 
 const NAV_PROTOTYPES = PROTOTYPES.filter((p) => p.id !== 'patterns')
 
 export function PrototypeNav({ currentHref }) {
   const [open, setOpen] = useState(false)
+  const [usageOpen, setUsageOpen] = useState(false)
   const currentIdx = NAV_PROTOTYPES.findIndex((p) => p.href === currentHref)
   const current = currentIdx >= 0 ? NAV_PROTOTYPES[currentIdx] : null
-  const prev = currentIdx > 0 ? NAV_PROTOTYPES[currentIdx - 1] : null
-  const next =
-    currentIdx >= 0 && currentIdx < NAV_PROTOTYPES.length - 1
-      ? NAV_PROTOTYPES[currentIdx + 1]
-      : null
 
   useEffect(() => {
     if (!open) return
@@ -25,49 +22,46 @@ export function PrototypeNav({ currentHref }) {
 
   return (
     <nav className="proto-nav">
-      <a href="/bs-prototypes/" className="proto-nav-back">
-        <img src="/bs-prototypes/bs.svg" className="proto-nav-logo" alt="" />
-        <span>Prototypes</span>
-      </a>
+      <div className="proto-nav-left">
+        <a
+          href="/bs-prototypes/"
+          className="proto-nav-iconbtn"
+          title="All prototypes"
+          aria-label="All prototypes"
+        >
+          <img src="/bs-prototypes/bs.svg" className="proto-nav-logo" alt="" />
+        </a>
+        <a
+          href="/bs-prototypes/patterns/"
+          className="proto-nav-iconbtn"
+          title="Pattern Library"
+          aria-label="Pattern Library"
+        >
+          <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M8 2 14 5.2 8 8.4 2 5.2z" />
+            <polyline points="2,9 8,12.2 14,9" />
+            <polyline points="2,12.4 8,15.6 14,12.4" />
+          </svg>
+        </a>
+        <button
+          type="button"
+          className="proto-nav-iconbtn"
+          onClick={() => setUsageOpen(true)}
+          title="Component usage — what each prototype uses"
+          aria-label="Component usage"
+        >
+          <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="2" y="2" width="5" height="5" rx="1" />
+            <rect x="9" y="2" width="5" height="5" rx="1" />
+            <rect x="2" y="9" width="5" height="5" rx="1" />
+            <rect x="9" y="9" width="5" height="5" rx="1" />
+          </svg>
+        </button>
+      </div>
+
+      {usageOpen && <ComponentUsage onClose={() => setUsageOpen(false)} />}
 
       <div className="proto-nav-switcher">
-        {prev ? (
-          <a
-            href={prev.href}
-            className="proto-nav-arrow"
-            title={`Previous: ${prev.name}`}
-            aria-label={`Previous: ${prev.name}`}
-          >
-            <svg
-              viewBox="0 0 16 16"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="10,3 5,8 10,13" />
-            </svg>
-          </a>
-        ) : (
-          <span className="proto-nav-arrow proto-nav-arrow--disabled" aria-hidden="true">
-            <svg
-              viewBox="0 0 16 16"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="10,3 5,8 10,13" />
-            </svg>
-          </span>
-        )}
-
         <div className="proto-nav-select-wrap">
           <button
             type="button"
@@ -77,7 +71,6 @@ export function PrototypeNav({ currentHref }) {
             aria-haspopup="listbox"
             aria-expanded={open}
           >
-            {current && <span className="proto-nav-select-dot" />}
             <span className="proto-nav-select-name">
               {current ? current.name : 'Select prototype'}
             </span>
@@ -135,43 +128,6 @@ export function PrototypeNav({ currentHref }) {
             </>
           )}
         </div>
-
-        {next ? (
-          <a
-            href={next.href}
-            className="proto-nav-arrow"
-            title={`Next: ${next.name}`}
-            aria-label={`Next: ${next.name}`}
-          >
-            <svg
-              viewBox="0 0 16 16"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6,3 11,8 6,13" />
-            </svg>
-          </a>
-        ) : (
-          <span className="proto-nav-arrow proto-nav-arrow--disabled" aria-hidden="true">
-            <svg
-              viewBox="0 0 16 16"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6,3 11,8 6,13" />
-            </svg>
-          </span>
-        )}
       </div>
     </nav>
   )
