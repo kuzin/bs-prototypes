@@ -2967,8 +2967,11 @@ function BadgeRow({
         ) : img ? (
           <img src={img} alt="" draggable={false} />
         ) : (
-          <span className="cc-badgerow-art-ic" style={{ background: color }}>
-            <Ic name={icon} size={20} />
+          <span
+            className="cc-badgerow-art-ic"
+            style={color ? { background: color, color: '#fff' } : undefined}
+          >
+            <Icon name={icon} size={20} />
           </span>
         )}
       </span>
@@ -5103,7 +5106,7 @@ export function RewardsStep({ challenge, update }) {
               return (
                 <BadgeRow
                   key={it.id}
-                  img={badgeImage('ti-gift')}
+                  icon="gift"
                   square
                   title={it.title}
                   meta={b.length ? <BadgeAvatars badges={b} /> : 'Not assigned to a badge'}
@@ -5218,7 +5221,8 @@ export function RewardsStep({ challenge, update }) {
                 {ticketRewards.map((t) => (
                   <BadgeRow
                     key={t.id}
-                    img={t.image || badgeImage('ti-gift')}
+                    img={t.image || null}
+                    icon="gift"
                     square
                     title={t.name}
                     meta={`${t.cost} ticket${t.cost === 1 ? '' : 's'} to enter`}
@@ -5273,7 +5277,7 @@ export function RewardsStep({ challenge, update }) {
                 return (
                   <BadgeRow
                     key={c.id}
-                    img={badgeImage('ti-medal')}
+                    icon="certificate"
                     square
                     title={c.title}
                     meta={cb.length ? <BadgeAvatars badges={cb} /> : 'Not assigned to a badge'}

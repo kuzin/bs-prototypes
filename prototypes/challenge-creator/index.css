@@ -2895,7 +2895,8 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: #fff;
+  background: #eef2f6;
+  color: #64748b;
 }
 /* Non-badge art (rewards, ticket prizes, certificates) reads as a rounded square. */
 .cc-badgerow-art--square,
