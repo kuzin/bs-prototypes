@@ -3877,3 +3877,204 @@
     text-overflow: ellipsis;
   }
 }
+
+/* ── Rewards step ───────────────────────────────────────────────────────── */
+.cc-rewards-drawings-note {
+  margin-bottom: 16px;
+}
+/* Assigned-badge avatars shown on a reward row (in the BadgeRow meta). */
+.cc-badge-avatars {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: middle;
+}
+.cc-badge-avatar {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-grid;
+  place-items: center;
+  background: #eef2f6;
+  box-shadow: 0 0 0 1.5px #fff;
+}
+.cc-badge-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-badge-avatars-label {
+  margin-left: 5px;
+}
+/* Saved-item picker art slot (ticket rewards with an image / icon). */
+.cc-savedreward-art {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #f1f5f9;
+}
+.cc-savedreward-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-reward-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* Ticket-earning source */
+.cc-ticket-source {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.cc-ticket-source-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-ticketbadges {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 2px;
+}
+.cc-ticketbadge {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 7px 11px;
+  background: #fff;
+}
+.cc-ticketbadge.is-on {
+  border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
+  background: color-mix(in srgb, var(--teal) 5%, #fff);
+}
+.cc-ticketbadge-art {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #eef2f6;
+}
+.cc-ticketbadge-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-ticketbadge-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cc-ticketbadge-val {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.cc-ticketbadge-val .ninp {
+  width: 96px;
+}
+/* Saved-reward picker */
+.cc-savedreward-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cc-savedreward {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 13px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.cc-savedreward:hover:not(:disabled) {
+  border-color: #94a3b8;
+}
+.cc-savedreward.is-selected {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
+}
+.cc-savedreward:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+.cc-savedreward.is-selected .cc-tm-check {
+  border-color: var(--teal);
+  background: var(--teal);
+}
+.cc-savedreward.is-selected .cc-tm-check::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2.5px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+.cc-savedreward-info {
+  flex: 1;
+  min-width: 0;
+}
+.cc-savedreward-info strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-savedreward-info span {
+  font-size: 13px;
+  color: var(--muted);
+}
+/* Certificate tag help */
+.cc-cert-tagshelp-lead {
+  margin-bottom: 8px;
+}
+.cc-cert-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.cc-cert-tag {
+  border: 1px solid color-mix(in srgb, var(--teal) 35%, var(--line));
+  border-radius: 999px;
+  padding: 3px 10px;
+  background: #fff;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+.cc-cert-tag:hover {
+  background: color-mix(in srgb, var(--teal) 10%, #fff);
+}
