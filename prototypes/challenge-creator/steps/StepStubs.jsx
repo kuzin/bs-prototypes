@@ -578,8 +578,17 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
   const branchOpts = BRANCHES.map((b) => ({ value: b, label: b }))
   const reg = d.registration || {}
 
-  // Library audiences filter by Age; schools by Grade. Default by site.
-  const basis = d.basis || (isLibrary ? 'age' : 'grade')
+  // Libraries scope by Age or Branch; schools by Grade or Age.
+  const basisOptions = isLibrary
+    ? [
+        { value: 'age', label: 'Age' },
+        { value: 'branch', label: 'Library branch' },
+      ]
+    : [
+        { value: 'grade', label: 'Grade' },
+        { value: 'age', label: 'Age' },
+      ]
+  const basis = basisOptions.some((o) => o.value === d.basis) ? d.basis : basisOptions[0].value
 
   // Banner theme category + its variants; header font loads on demand. Templates
   // declare their own theme (their banner isn't a banner-variant id), so prefer
@@ -959,10 +968,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
           <CustomSelect
             value={basis}
             onChange={(v) => updateDetails({ basis: v })}
-            options={[
-              { value: 'age', label: 'Age' },
-              { value: 'grade', label: 'Grade' },
-            ]}
+            options={basisOptions}
           />
         </Field>
 
@@ -985,6 +991,15 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
               />
             </Field>
           </div>
+        ) : basis === 'branch' ? (
+          <Field label="Branches" className="cc-w-md">
+            <MultiSelect
+              options={branchOpts}
+              value={d.branches}
+              onChange={(v) => updateDetails({ branches: v })}
+              placeholder="All branches"
+            />
+          </Field>
         ) : isSimple ? (
           <Field
             label="Classrooms"
@@ -1006,17 +1021,6 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
               value={d.grades}
               onChange={(v) => updateDetails({ grades: v })}
               placeholder="All grades"
-            />
-          </Field>
-        )}
-
-        {isLibrary && (
-          <Field label="Branches" className="cc-w-md">
-            <MultiSelect
-              options={branchOpts}
-              value={d.branches}
-              onChange={(v) => updateDetails({ branches: v })}
-              placeholder="All branches"
             />
           </Field>
         )}
@@ -1125,7 +1129,6 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
             <div key={f.key} className="cc-reg-row">
               <span className="cc-reg-label">{f.label}</span>
               <div className="cc-reg-toggle">
-                <span className="cc-reg-state">{reg[f.key] ? 'Enabled' : 'Disabled'}</span>
                 <Toggle
                   checked={!!reg[f.key]}
                   size="md"
@@ -3359,9 +3362,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
               <div key={t.key} className={`cc-setting-row${isPrimary ? ' is-disabled' : ''}`}>
                 <span className="cc-setting-label">{t.label}</span>
                 <div className="cc-type-state">
-                  <span className="cc-reg-state">
-                    {isPrimary ? 'Required' : on ? 'Enabled' : 'Disabled'}
-                  </span>
+                  {isPrimary && <span className="cc-reg-state">Required</span>}
                   <Toggle
                     checked={on}
                     size="md"
@@ -3388,7 +3389,6 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
                 <div key={pt.key} className="cc-setting-row">
                   <span className="cc-setting-label">{pt.label}</span>
                   <div className="cc-type-state">
-                    <span className="cc-reg-state">{on ? 'Enabled' : 'Disabled'}</span>
                     <Toggle checked={on} size="md" onChange={(v) => setPointType(pt.key, v)} />
                   </div>
                 </div>
