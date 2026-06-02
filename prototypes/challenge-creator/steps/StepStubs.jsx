@@ -81,23 +81,21 @@ function Tip({ children }) {
 }
 
 // Preset color dots + a custom picker.
-function ColorPicker({ value, presets, fallback, onColor }) {
+// The one color-chip picker for challenge creator: a row of round preset
+// swatches followed by a custom hex input, wrapping together as needed.
+function ColorPicker({ value, presets = [], fallback, onColor }) {
   return (
-    <div className="cc-accent-ctrl">
-      <div className="cc-accent-dots">
-        {presets.map((c) => (
-          <button
-            key={c}
-            type="button"
-            className={`cc-accent-dot${
-              (value || '').toLowerCase() === c.toLowerCase() ? ' is-on' : ''
-            }`}
-            style={{ background: c }}
-            aria-label={`Use ${c}`}
-            onClick={() => onColor(c)}
-          />
-        ))}{' '}
-      </div>
+    <div className="cc-colorpick">
+      {presets.map((c) => (
+        <button
+          key={c}
+          type="button"
+          className={`cc-accent-dot${(value || '').toLowerCase() === c.toLowerCase() ? ' is-on' : ''}`}
+          style={{ background: c }}
+          aria-label={`Use ${c}`}
+          onClick={() => onColor(c)}
+        />
+      ))}
       <ColorInput size="sm" value={value || fallback} onChange={onColor} />
     </div>
   )
@@ -800,23 +798,38 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
           </>
         ) : (
           <>
-            {challenge.templateId === 'scratch' && (
-              <Field label="Theme" className="cc-w-sm">
+            <div className="cc-lookfeel-row">
+              {challenge.templateId === 'scratch' && (
+                <Field label="Theme">
+                  <CustomSelect
+                    value={themeId}
+                    onChange={(id) => {
+                      const first = BANNER_THEMES.find((t) => t.id === id)?.variants[0]
+                      if (first)
+                        updateDetails({
+                          background: { kind: 'preset', id: first.id },
+                          accent: first.color,
+                          accentOverride: false,
+                        })
+                    }}
+                    options={BANNER_THEMES.map((t) => ({ value: t.id, label: t.name }))}
+                  />
+                </Field>
+              )}
+              <Field label="Header font">
                 <CustomSelect
-                  value={themeId}
-                  onChange={(id) => {
-                    const first = BANNER_THEMES.find((t) => t.id === id)?.variants[0]
-                    if (first)
-                      updateDetails({
-                        background: { kind: 'preset', id: first.id },
-                        accent: first.color,
-                        accentOverride: false,
-                      })
+                  value={d.headerFont}
+                  onChange={(v) => {
+                    loadFont(v)
+                    updateDetails({ headerFont: v })
                   }}
-                  options={BANNER_THEMES.map((t) => ({ value: t.id, label: t.name }))}
+                  options={GOOGLE_FONTS.map((f) => ({
+                    value: f.name,
+                    label: <span style={{ fontFamily: fontStack(f.name) }}>{f.name}</span>,
+                  }))}
                 />
               </Field>
-            )}
+            </div>
             <Field label="Banner variation">
               <div className="cc-banner-grid">
                 {themeVariants.map((v) => (
@@ -842,19 +855,6 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                   </button>
                 ))}
               </div>
-            </Field>
-            <Field label="Header font" className="cc-w-sm">
-              <CustomSelect
-                value={d.headerFont}
-                onChange={(v) => {
-                  loadFont(v)
-                  updateDetails({ headerFont: v })
-                }}
-                options={GOOGLE_FONTS.map((f) => ({
-                  value: f.name,
-                  label: <span style={{ fontFamily: fontStack(f.name) }}>{f.name}</span>,
-                }))}
-              />
             </Field>
             <Field label="Title size">
               <RangeSlider
@@ -1835,20 +1835,13 @@ function BadgeBuilder({ onPick, bgImages = [], initial }) {
             </button>
           </div>
           {bgMode === 'color' ? (
-            <div className="cc-accent-ctrl" style={{ marginTop: 10 }}>
-              <div className="cc-accent-dots">
-                {BUILDER_BGS.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    className={`cc-accent-dot${color.toLowerCase() === c.toLowerCase() ? ' is-on' : ''}`}
-                    style={{ background: c }}
-                    aria-label={`Use ${c}`}
-                    onClick={() => setColor(c)}
-                  />
-                ))}{' '}
-              </div>
-              <ColorInput size="sm" value={color} onChange={setColor} />
+            <div style={{ marginTop: 10 }}>
+              <ColorPicker
+                value={color}
+                presets={BUILDER_BGS}
+                fallback={color}
+                onColor={setColor}
+              />
             </div>
           ) : (
             <BgImageGrid themeImages={bgImages} value={image} onChange={setImage} />

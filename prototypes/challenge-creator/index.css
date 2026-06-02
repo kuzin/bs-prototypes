@@ -883,7 +883,8 @@
     0 0 0 3.5px var(--teal);
 }
 /* Color box stays compact instead of filling the row. */
-.cc-accent-ctrl .cinp {
+.cc-accent-ctrl .cinp,
+.cc-colorpick .cinp {
   width: auto;
   flex: none;
 }
@@ -931,20 +932,32 @@
 }
 .cc-color-field-label {
   min-width: 48px;
-}
-.cc-color-merged .cc-accent-ctrl {
-  flex-direction: row;
-  align-items: center;
-  gap: 12px;
-}
-.cc-color-field-label {
   font-size: 12px;
   font-weight: 600;
   color: var(--muted);
 }
+/* The shared color-chip picker: round preset swatches + a custom hex input,
+   wrapping together. Used everywhere a color is picked in challenge creator. */
+.cc-colorpick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
 /* "Look & feel" is a dense form — tighten the gaps between its fields. */
-.cc-panel--lookfeel > .fld {
+.cc-panel--lookfeel > .fld,
+.cc-panel--lookfeel > .cc-lookfeel-row {
   margin-top: 16px;
+}
+/* Theme + Header font sit side by side rather than alone on their own rows. */
+.cc-lookfeel-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 20px;
+}
+.cc-lookfeel-row > .fld {
+  flex: 1 1 200px;
+  max-width: 300px;
 }
 /* Subheader ribbon reveal: text input + color override stacked. */
 .cc-ribbon-reveal {
