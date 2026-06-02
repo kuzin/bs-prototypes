@@ -12,8 +12,50 @@ import {
   Textarea,
 } from '@components/Form/Form'
 import { Spinner } from '@components/Primitives/Primitives'
+import { RichText } from '@components/RichText/RichText'
+import { ImageDropzone } from '@components/ImageDropzone/ImageDropzone'
 import { Icon } from '@components/Icon/Icon'
 import { Knobs } from './_shared'
+
+function RichTextKnobs() {
+  const [html, setHtml] = useState('<p>Tell readers <strong>all about</strong> your challenge!</p>')
+  return (
+    <div className="pt-variant-frame">
+      <div style={{ width: 360, maxWidth: '100%' }}>
+        <RichText value={html} onChange={setHtml} placeholder="Write a description…" />
+        <pre
+          style={{
+            marginTop: 10,
+            fontSize: 11,
+            background: '#f8fafc',
+            padding: 8,
+            borderRadius: 8,
+            whiteSpace: 'pre-wrap',
+            color: '#475569',
+          }}
+        >
+          {html}
+        </pre>
+      </div>
+    </div>
+  )
+}
+
+function ImageDropzoneKnobs() {
+  const [name, setName] = useState('')
+  return (
+    <div className="pt-variant-frame">
+      <div style={{ width: 360, maxWidth: '100%' }}>
+        <ImageDropzone
+          fileName={name}
+          onFile={setName}
+          onClear={() => setName('')}
+          hint={'920 × 351px · jpeg, jpg, gif, png · under 10MB'}
+        />
+      </div>
+    </div>
+  )
+}
 
 function ToggleKnobs() {
   const [checked, setChecked] = useState(true)
@@ -530,6 +572,40 @@ export const formFieldsSections = [
     render: () => (
       <>
         <RangeSliderKnobs />
+      </>
+    ),
+  },
+  {
+    group: 'form-fields',
+    id: 'rich-text',
+    name: 'RichText',
+    desc: (
+      <>
+        Lightweight WYSIWYG editor that emits an HTML string. Toolbar: bold / italic / underline /
+        bullet list / link. Props: <code>value</code>, <code>onChange(html)</code>,{' '}
+        <code>placeholder</code>, <code>minHeight</code>.
+      </>
+    ),
+    render: () => (
+      <>
+        <RichTextKnobs />
+      </>
+    ),
+  },
+  {
+    group: 'form-fields',
+    id: 'image-dropzone',
+    name: 'ImageDropzone',
+    desc: (
+      <>
+        Drag-and-drop (or click-to-browse) image upload. Props: <code>fileName</code>,{' '}
+        <code>onFile(name)</code>, <code>onClear</code>, <code>accept</code>, <code>hint</code>.
+        Prototype-grade — reports the chosen file's name (no real upload).
+      </>
+    ),
+    render: () => (
+      <>
+        <ImageDropzoneKnobs />
       </>
     ),
   },

@@ -1,5 +1,13 @@
 export const PROTOTYPES = [
   {
+    id: 'challenge-creator',
+    name: 'Challenge Creator v2',
+    section: 'Experiments',
+    href: '/bs-prototypes/challenge-creator/',
+    accent: '#F0A024',
+    description: 'Full-screen wizard to create reading challenges — types, badges, rewards.',
+  },
+  {
     id: 'student-profile',
     name: 'Student Profile',
     section: 'Prototypes',

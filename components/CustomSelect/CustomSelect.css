@@ -19,6 +19,12 @@
   user-select: none;
 }
 
+/* Option labels may preview their own font (e.g. the font picker); keep the
+   trigger's selected value in the UI font so all selects look uniform. */
+.csel-trigger [style*='font-family'] {
+  font-family: inherit !important;
+}
+
 .csel-trigger:hover {
   border-color: #94a3b8;
 }
@@ -111,7 +117,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 4px 10px;
   border-radius: 6px;
   font-size: 13px;
   color: #0f172a;
@@ -120,7 +126,7 @@
   transition: background 0.08s;
   -webkit-user-select: none;
   user-select: none;
-  min-height: 34px;
+  min-height: 28px;
 }
 
 .csel-item[data-highlighted] {

@@ -1,4 +1,5 @@
 import { createContext, useContext, useId, useState, useEffect, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { FieldContext, useFieldProps } from '@components/FormContext/FormContext'
 import { Icon } from '@components/Icon/Icon'
 import '@components/Form/Form.css'
@@ -105,7 +106,7 @@ export function Select({ size = 'md', label, children, className = '', ...rest }
       <select id={selectId} className="sel" {...rest}>
         {children}
       </select>
-      <Icon name="chevron-down" size={11} stroke={2} className="sel-caret" />
+      <Icon name="chevron-down" size={15} stroke={2} className="sel-caret" />
     </div>
   )
 
@@ -201,9 +202,20 @@ export function DateInput({ size = 'md', type = 'date', label, className = '', .
   const selfId = useId()
   const inputId = rest.id || fieldId || selfId
 
+  // The native calendar indicator is hidden for a clean look, so open the
+  // native picker on click anywhere in the field.
+  const openPicker = (e) => {
+    const input = e.currentTarget.querySelector('input')
+    try {
+      input?.showPicker?.()
+    } catch {
+      /* showPicker unavailable here — normal focus still works */
+    }
+  }
   const el = (
     <div
-      className={`inp-wrap inp-wrap--${size}${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}
+      className={`inp-wrap inp-wrap--${size} inp-wrap--clickable${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}
+      onClick={openPicker}
     >
       <span className="inp-icon inp-icon--left">
         <Icon name="calendar" size={14} />
@@ -399,24 +411,56 @@ export function MultiSelect({
   disabled = false,
 }) {
   const [open, setOpen] = useState(false)
+  const [coords, setCoords] = useState(null)
   const wrapRef = useRef(null)
+  const popRef = useRef(null)
   const { id: fieldId, hasError } = useFieldProps()
   const selfId = useId()
   const triggerId = fieldId || selfId
 
+  // Measure the trigger so the portaled popup can be positioned under it.
+  // The popup is portaled to <body>, so it also has to (a) inherit the trigger's
+  // font (it leaves any scoped font context) and (b) flip up / clamp height so it
+  // never falls off-screen.
+  function place() {
+    const node = wrapRef.current
+    if (!node) return
+    const r = node.getBoundingClientRect()
+    const cs = getComputedStyle(node)
+    const gap = 4
+    const spaceBelow = window.innerHeight - r.bottom - gap
+    const spaceAbove = r.top - gap
+    const flipUp = spaceBelow < 200 && spaceAbove > spaceBelow
+    const maxHeight = Math.max(120, Math.min(280, flipUp ? spaceAbove : spaceBelow))
+    setCoords({
+      left: r.left,
+      width: r.width,
+      fontFamily: cs.fontFamily,
+      maxHeight,
+      ...(flipUp ? { bottom: window.innerHeight - r.top + gap } : { top: r.bottom + gap }),
+    })
+  }
+
   useEffect(() => {
     if (!open) return
     function onDown(e) {
-      if (!wrapRef.current?.contains(e.target)) setOpen(false)
+      if (!wrapRef.current?.contains(e.target) && !popRef.current?.contains(e.target))
+        setOpen(false)
     }
     function onKey(e) {
       if (e.key === 'Escape') setOpen(false)
     }
+    // Reposition while open (popup is portaled to <body>, so it must track the trigger).
+    place()
     document.addEventListener('mousedown', onDown)
     document.addEventListener('keydown', onKey)
+    window.addEventListener('scroll', place, true)
+    window.addEventListener('resize', place)
     return () => {
       document.removeEventListener('mousedown', onDown)
       document.removeEventListener('keydown', onKey)
+      window.removeEventListener('scroll', place, true)
+      window.removeEventListener('resize', place)
     }
   }, [open])
 
@@ -426,6 +470,10 @@ export function MultiSelect({
       : value.length === 1
         ? (options.find((o) => o.value === value[0])?.label ?? value[0])
         : `${value.length} selected`
+  // Selected options that carry an image — shown as avatars in the closed trigger.
+  const selectedAvatars = value
+    .map((v) => options.find((o) => o.value === v))
+    .filter((o) => o && o.image)
 
   function toggle(v) {
     if (value.includes(v)) onChange?.(value.filter((x) => x !== v))
@@ -441,42 +489,83 @@ export function MultiSelect({
         id={triggerId}
         type="button"
         className={`msel-trigger${open ? ' msel-trigger--open' : ''}`}
-        onClick={() => !disabled && setOpen((v) => !v)}
+        onClick={() => {
+          if (disabled) return
+          if (!open) place()
+          setOpen((v) => !v)
+        }}
         disabled={disabled}
         aria-haspopup="listbox"
         aria-expanded={open}
       >
         <span className={`msel-display${value.length === 0 ? ' msel-display--placeholder' : ''}`}>
-          {displayText}
-        </span>
-        <Icon name="chevron-down" size={11} stroke={2} className="msel-caret" />
-      </button>
-      {open && (
-        <div className="msel-pop" role="listbox" aria-multiselectable="true">
-          {options.length === 0 ? (
-            <div className="msel-empty">No options</div>
-          ) : (
-            options.map((opt) => (
-              <label
-                key={opt.value}
-                className={`msel-opt${opt.disabled ? ' msel-opt--disabled' : ''}`}
-              >
-                <input
-                  type="checkbox"
-                  className="chk-input"
-                  checked={value.includes(opt.value)}
-                  disabled={opt.disabled}
-                  onChange={() => toggle(opt.value)}
-                />
-                <span className="chk-box" aria-hidden="true">
-                  <Icon name="check" size={12} stroke={2} />
+          {selectedAvatars.length > 0 && (
+            <span className="msel-display-avatars">
+              {selectedAvatars.slice(0, 4).map((o) => (
+                <span key={o.value} className="msel-display-av">
+                  <img src={o.image} alt="" />
                 </span>
-                <span className="msel-opt-label">{opt.label}</span>
-              </label>
-            ))
+              ))}
+            </span>
           )}
-        </div>
-      )}
+          <span className="msel-display-text">{displayText}</span>
+        </span>
+        <Icon name="chevron-down" size={15} stroke={2} className="msel-caret" />
+      </button>
+      {open &&
+        coords &&
+        createPortal(
+          <div
+            ref={popRef}
+            className="msel-pop msel-pop--portal"
+            role="listbox"
+            aria-multiselectable="true"
+            style={{
+              position: 'fixed',
+              left: coords.left,
+              width: coords.width,
+              fontFamily: coords.fontFamily,
+              maxHeight: coords.maxHeight,
+              ...(coords.bottom != null ? { bottom: coords.bottom } : { top: coords.top }),
+            }}
+          >
+            <div className="msel-pop-list">
+              {options.length === 0 ? (
+                <div className="msel-empty">No options</div>
+              ) : (
+                options.map((opt) => (
+                  <label
+                    key={opt.value}
+                    className={`msel-opt${opt.disabled ? ' msel-opt--disabled' : ''}`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="chk-input"
+                      checked={value.includes(opt.value)}
+                      disabled={opt.disabled}
+                      onChange={() => toggle(opt.value)}
+                    />
+                    <span className="chk-box" aria-hidden="true">
+                      <Icon name="check" size={12} stroke={2} />
+                    </span>
+                    {opt.image !== undefined && (
+                      <span className="msel-opt-art">
+                        {opt.image ? <img src={opt.image} alt="" /> : null}
+                      </span>
+                    )}
+                    <span className="msel-opt-label">{opt.label}</span>
+                  </label>
+                ))
+              )}
+            </div>
+            <div className="msel-pop-foot">
+              <button type="button" className="msel-done" onClick={() => setOpen(false)}>
+                Done
+              </button>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   )
 

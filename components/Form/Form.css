@@ -51,7 +51,7 @@
 
 .fld-help,
 .fld-error {
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.45;
 }
 
@@ -469,6 +469,11 @@
 .inp--time::-webkit-calendar-picker-indicator {
   display: none;
 }
+/* The whole date field opens the native picker on click. */
+.inp-wrap--clickable,
+.inp-wrap--clickable .inp {
+  cursor: pointer;
+}
 
 /* ── ColorInput ─────────────────────────────────────────────────────────── */
 .cinp {
@@ -706,9 +711,41 @@
 .msel-display {
   flex: 1;
   min-width: 0;
+  min-height: 25px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+}
+.msel-display-text {
+  min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+.msel-display-avatars {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+}
+.msel-display-av {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #eef2f6;
+  display: inline-grid;
+  place-items: center;
+  border: 1.5px solid #fff;
+  box-shadow: 0 0 0 1px #e2e8f0;
+}
+.msel-display-av:not(:first-child) {
+  margin-left: -7px;
+}
+.msel-display-av img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .msel-display--placeholder {
@@ -736,8 +773,44 @@
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
   overflow: hidden;
-  max-height: 220px;
+  max-height: 260px;
+  display: flex;
+  flex-direction: column;
+}
+/* Scrollable option list; the Done footer stays pinned below it. */
+.msel-pop-list {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
+}
+.msel-pop-foot {
+  flex: none;
+  display: flex;
+  justify-content: flex-end;
+  padding: 6px;
+  border-top: 1px solid #e2e8f0;
+  background: #fff;
+}
+.msel-done {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: #fff;
+  background: #1d4ed8;
+  border: 0;
+  border-radius: 6px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.msel-done:hover {
+  background: #1641a8;
+}
+/* Portaled to <body> with fixed coords — must clear the absolute `right` and
+   sit above modals (z-index 200). */
+.msel-pop--portal {
+  right: auto;
+  z-index: 1000;
 }
 
 .msel-opt {
@@ -749,6 +822,21 @@
   font-size: 13px;
   color: #0f172a;
   transition: background 0.1s;
+}
+.msel-opt-art {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #eef2f6;
+  display: grid;
+  place-items: center;
+}
+.msel-opt-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .msel-opt:hover {

@@ -1,0 +1,104 @@
+.stepper {
+  width: 100%;
+}
+.stepper-list {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+}
+.stepper-item {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0;
+  min-width: 0;
+}
+.stepper-item:last-child {
+  flex: 0 0 auto;
+}
+.stepper-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: 0;
+  padding: 6px 10px;
+  cursor: pointer;
+  color: #64748b;
+  font: inherit;
+  border-radius: 9px;
+  white-space: nowrap;
+  transition: background 0.12s ease;
+}
+.stepper-btn:hover {
+  background: #f1f5f9;
+}
+.stepper-dot {
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border-radius: 999px;
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  flex: 0 0 auto;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease;
+}
+.stepper-name {
+  font-size: 13px;
+  font-weight: 600;
+}
+.stepper-item.is-current .stepper-dot {
+  background: var(--stepper-accent, #0da7bc);
+  color: #fff;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--stepper-accent, #0da7bc) 18%, transparent);
+}
+.stepper-item.is-current .stepper-name {
+  color: #0f172a;
+}
+.stepper-item.is-done .stepper-dot {
+  background: var(--stepper-accent, #0da7bc);
+  color: #fff;
+}
+.stepper-item.is-done .stepper-name {
+  color: #334155;
+}
+.stepper-line {
+  flex: 1 1 auto;
+  height: 2px;
+  background: #e2e8f0;
+  margin: 0 6px;
+  min-width: 14px;
+  border-radius: 2px;
+}
+.stepper-item.is-done .stepper-line {
+  background: var(--stepper-accent, #0da7bc);
+  opacity: 0.45;
+}
+
+/* ── Vertical orientation (left rail) ── */
+.stepper--vertical .stepper-list {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+}
+.stepper--vertical .stepper-item {
+  flex: 0 0 auto;
+}
+.stepper--vertical .stepper-line {
+  display: none;
+}
+.stepper--vertical .stepper-btn {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 9px 12px;
+}
+.stepper--vertical .stepper-item.is-current .stepper-btn {
+  background: color-mix(in srgb, var(--stepper-accent, #0da7bc) 12%, transparent);
+}

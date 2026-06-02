@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useRef } from 'react'
 import '@components/Modal/Modal.css'
 
 const ANIM_DURATION = 220
@@ -14,22 +14,33 @@ const ANIM_DURATION = 220
 export function Modal({ open, onClose, variant = 'side', children, ariaLabel }) {
   const [closing, setClosing] = useState(false)
   const [mounted, setMounted] = useState(open)
+  // Keep the last children so the panel still shows its content while it
+  // animates closed (parents often null out the content + `open` together,
+  // which would otherwise leave an empty panel collapsing to a line).
+  const lastChildren = useRef(children)
+  if (open) lastChildren.current = children
 
+  // Request a close — let the parent flip `open`; the effect below plays the
+  // exit animation and unmounts. (Backdrop/Escape route through here too.)
   const handleClose = useCallback(() => {
-    if (!onClose) return
-    setClosing(true)
-    setTimeout(() => {
-      setClosing(false)
-      setMounted(false)
-      onClose()
-    }, ANIM_DURATION)
+    onClose?.()
   }, [onClose])
 
+  // Drive mount/unmount from `open` so closing works whether it's the backdrop,
+  // Escape, OR the parent setting open=false directly (otherwise the overlay
+  // would linger after a button-driven close).
   useEffect(() => {
     if (open) {
       setMounted(true)
       setClosing(false)
+      return
     }
+    setClosing(true)
+    const t = setTimeout(() => {
+      setClosing(false)
+      setMounted(false)
+    }, ANIM_DURATION)
+    return () => clearTimeout(t)
   }, [open])
 
   useEffect(() => {
@@ -44,6 +55,7 @@ export function Modal({ open, onClose, variant = 'side', children, ariaLabel }) 
   if (!mounted) return null
 
   const closingClass = closing ? ' modal--closing' : ''
+  const content = open ? children : lastChildren.current
 
   return (
     <>
@@ -57,7 +69,7 @@ export function Modal({ open, onClose, variant = 'side', children, ariaLabel }) 
         aria-label={ariaLabel}
         aria-modal="true"
       >
-        {typeof children === 'function' ? children({ close: handleClose }) : children}
+        {typeof content === 'function' ? content({ close: handleClose }) : content}
       </div>
     </>
   )

@@ -46,7 +46,7 @@ export function CustomSelect({
     >
       <RadixSelect.Value placeholder={placeholder} />
       <RadixSelect.Icon className="csel-icon">
-        <Icon name="chevron-down" size={11} stroke={2} />
+        <Icon name="chevron-down" size={15} stroke={2} />
       </RadixSelect.Icon>
     </RadixSelect.Trigger>
   )

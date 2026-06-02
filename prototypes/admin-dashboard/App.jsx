@@ -51,27 +51,8 @@ const Cog = () => <Icon name="settings" size={18} />
 const XIcon = () => <Icon name="x" size={18} />
 const Grip = () => <Icon name="grip" size={18} />
 const Megaphone = () => <Icon name="speakerphone" size={16} />
-// Empty-state icon for "every widget is already placed" — a 2x2 grid with
-// a checkmark over the top-right cell.
-const DashboardFullSvg = () => (
-  <svg
-    viewBox="0 0 32 32"
-    width="40"
-    height="40"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <rect x="4" y="4" width="10" height="10" rx="2" />
-    <rect x="4" y="18" width="10" height="10" rx="2" />
-    <rect x="18" y="18" width="10" height="10" rx="2" />
-    <rect x="18" y="4" width="10" height="10" rx="2" fill="currentColor" fillOpacity="0.1" />
-    <polyline points="20.5,9 22.5,11 25.5,7.5" stroke="currentColor" strokeWidth="1.8" />
-  </svg>
-)
+// Empty-state icon for "every widget is already placed" — a dashboard grid.
+const DashboardFullSvg = () => <Icon name="layout-grid" size={40} />
 
 // Tiny visual previews for the Add Widget panel.
 function WidgetThumb({ id }) {

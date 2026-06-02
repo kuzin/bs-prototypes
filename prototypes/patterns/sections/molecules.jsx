@@ -32,6 +32,7 @@ import {
 function TabsShowcase() {
   const [a, setA] = useState('daily')
   const [b, setB] = useState('overview')
+  const [c, setC] = useState('details')
   return (
     <>
       <Variant label="underline (default)">
@@ -56,6 +57,53 @@ function TabsShowcase() {
             { id: 'history', label: 'History' },
           ]}
         />
+      </Variant>
+      {/* In-modal header tabs: full-bleed underline flush under the modal title,
+          with a count pill — as used in the Challenge Creator editor modals. */}
+      <Variant label="in a modal — full-bleed header tabs + count pill">
+        <div
+          style={{
+            width: 'min(440px, 100%)',
+            border: '1px solid #e2e8f0',
+            borderRadius: 14,
+            overflow: 'hidden',
+            background: '#fff',
+            boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '14px 18px',
+            }}
+          >
+            <strong style={{ fontSize: 16, fontWeight: 800, color: '#0f172a' }}>
+              Edit activity badge
+            </strong>
+            <span aria-hidden="true" style={{ color: '#94a3b8', fontSize: 20, lineHeight: 1 }}>
+              ×
+            </span>
+          </div>
+          {/* Negative side margin cancels the body padding so the underline runs edge to edge. */}
+          <div style={{ padding: '0 14px' }}>
+            <Tabs
+              accent="#0DA7BC"
+              active={c}
+              onChange={setC}
+              items={[
+                { id: 'details', label: 'Details' },
+                { id: 'activities', label: 'Activities', count: 2 },
+              ]}
+            />
+          </div>
+          <div style={{ padding: 18, fontSize: 14, color: '#64748b' }}>
+            {c === 'details'
+              ? 'Details panel — badge art, title, description…'
+              : 'Activities panel — the activities readers complete.'}
+          </div>
+        </div>
       </Variant>
     </>
   )
@@ -948,12 +996,14 @@ export const moleculesSections = [
     desc: (
       <>
         Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>.
-        Two variants: <code>underline</code> (default) and <code>pill</code>.
+        Two variants: <code>underline</code> (default) and <code>pill</code>. The underline variant
+        also doubles as a full-bleed header tab bar inside a modal (see the in-modal example below).
       </>
     ),
     render: () => (
       <>
         <TabsKnobs />
+        <TabsShowcase />
       </>
     ),
   },

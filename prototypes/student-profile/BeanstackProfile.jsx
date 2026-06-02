@@ -68,46 +68,9 @@ function sectionScore(key, sec) {
   return key === 'motivation' ? motivationScore(sec) : sec.score
 }
 const STATUS_ICONS = {
-  ok: (c) => (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 16 16"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="8" cy="8" r="8" fill={c} />
-      <path d="M5 8.2 7 10.2 11 6" stroke="#fff" strokeWidth="1.6" />
-    </svg>
-  ),
-  warn: (c) => (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 16 16"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="8" cy="8" r="8" fill={c} />
-      <path d="M8 5.5v3.5" stroke="#fff" strokeWidth="1.7" />
-      <circle cx="8" cy="11.5" r="0.9" fill="#fff" />
-    </svg>
-  ),
-  bad: (c) => (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 16 16"
-      fill="none"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="8" cy="8" r="8" fill={c} />
-      <path d="M5.5 5.5 10.5 10.5M10.5 5.5 5.5 10.5" stroke="#fff" strokeWidth="1.6" />
-    </svg>
-  ),
+  ok: (c) => <Icon name="circle-check-filled" size={20} color={c} />,
+  warn: (c) => <Icon name="alert-circle-filled" size={20} color={c} />,
+  bad: (c) => <Icon name="circle-x-filled" size={20} color={c} />,
 }
 function statusIndicator(score) {
   if (score >= 75) return { render: STATUS_ICONS.ok, color: '#16A97A' }
