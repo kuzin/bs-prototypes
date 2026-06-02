@@ -1,4 +1,4 @@
-import { BOOK_TALKS_TRENDS, BOOK_TALKS_BY_SCHOOL, SCHOOLS, SCHOOL_HEALTH } from '../data'
+import { BOOK_TALKS_TRENDS, BOOK_TALKS_BY_SCHOOL, SCHOOLS, FLAGGED_LOGS } from '../data'
 import { Hero } from '@components/Hero/Hero'
 import { StatCard, ChartCard, CardNote } from '@components/Cards/Cards'
 import { BarList } from '@components/BarList/BarList'
@@ -65,15 +65,10 @@ export function DistrictIntegrity() {
     BOOK_TALKS_BY_SCHOOL.reduce((s, x) => s + x.flagRate, 0) / BOOK_TALKS_BY_SCHOOL.length
   ).toFixed(1)
   const highFlagSchools = BOOK_TALKS_BY_SCHOOL.filter((s) => s.flagRate >= 15)
-  const decliningSchools = BOOK_TALKS_BY_SCHOOL.filter((s) => s.trend < 0)
 
   const completionRanked = [...BOOK_TALKS_BY_SCHOOL].sort(
     (a, b) => b.completionRate - a.completionRate,
   )
-  const rankedByIntegrity = BOOK_TALKS_BY_SCHOOL.map((s) => ({
-    ...s,
-    integrityScore: SCHOOL_HEALTH[s.id].integrity,
-  })).sort((a, b) => b.integrityScore - a.integrityScore)
   const sortedByFlag = [...BOOK_TALKS_BY_SCHOOL].sort((a, b) => b.flagRate - a.flagRate)
 
   return (
@@ -101,18 +96,13 @@ export function DistrictIntegrity() {
               ? highFlagSchools.map((s) => s.name.split(' ')[0]).join(', ')
               : 'All within range'
           }
-          color={highFlagSchools.length > 0 ? FLAG_COLOR : '#16A97A'}
+          color={highFlagSchools.length > 0 ? '#C2410C' : '#15803D'}
         />
         <StatCard
-          value={decliningSchools.length}
-          unit="of 6"
-          label="Schools declining this month"
-          footer={
-            decliningSchools.length > 0
-              ? decliningSchools.map((s) => s.name.split(' ')[0]).join(', ')
-              : 'None this month'
-          }
-          color={decliningSchools.length > 1 ? FLAG_COLOR : '#D97706'}
+          value={`${FLAGGED_LOGS.pct}%`}
+          label="Flagged sessions (all logs)"
+          footer={`↓${Math.abs(FLAGGED_LOGS.delta)}pp vs last week`}
+          footerColor="#15803D"
         />
       </div>
 
@@ -199,29 +189,6 @@ export function DistrictIntegrity() {
             columns={REVIEW_COLUMNS}
             rows={sortedByFlag}
             getRowKey={(r) => r.id}
-          />
-        </ChartCard>
-
-        {/* Integrity score by school — full width */}
-        <ChartCard
-          title="Reading Integrity Score by School"
-          subtitle="Composite: verified-student ratio, flag frequency, Book Talk outcomes · higher is better"
-          icon={INT_ICON}
-          accent={ACCENT}
-          bodyPad="padded"
-          bodyMaxHeight={420}
-          span={2}
-        >
-          <BarList
-            labelWidth={110}
-            header={{ label: 'School', valueLabel: 'Integrity score' }}
-            items={rankedByIntegrity.map((s) => ({
-              label: s.name,
-              value: s.integrityScore,
-              max: 100,
-              color: schoolColor(s.id),
-              valueLabel: `${s.integrityScore}/100`,
-            }))}
           />
         </ChartCard>
       </div>

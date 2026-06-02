@@ -1,15 +1,21 @@
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 import {
-  RMI_TRENDS,
-  SESSION_TRENDS,
+  RMI_TOTAL_TRENDS,
+  RMI_TOTAL_BAND_TRENDS,
+  RMI_GRADE_BANDS,
+  SESSION_BAND_TRENDS,
+  SESSION_BANDS,
   BOOK_TALKS_TRENDS,
   LEXILE_DATA,
-  SCHOOLS,
   DISTRICT,
-  DISTRICT_HEALTH,
+  DISTRICT_RMI,
+  READERS_THIS_WEEK,
+  FLAGGED_LOGS,
+  LEXILE_WEEK,
   SCHOOLS_TO_WATCH,
 } from '../data'
-import { ReadingHealth } from '@components/ReadingHealth/ReadingHealth'
+import { Icon } from '@components/Icon/Icon'
+import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 import { Hero } from '@components/Hero/Hero'
 import { Pill } from '@components/Pill/Pill'
 import { ChartCard } from '@components/Cards/Cards'
@@ -19,14 +25,100 @@ import { SchoolCell } from './SchoolCell'
 import { ChartLegend, NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/charts/charts'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 
-function scoreColor(v) {
-  if (v < 65) return '#E8866A'
-  if (v < 78) return '#D97706'
-  return '#16A97A'
+const SEC = Object.fromEntries(SECTIONS.map((s) => [s.key, s]))
+const GROWTH_COLOR = '#16A97A'
+const DECLINE_COLOR = '#E8866A'
+
+// AA-safe text shade per section (the raw SECTIONS colors fail 4.5:1 on white
+// for the small eyebrow / "View more" text — icon + border keep the brand hue).
+const SEC_TEXT = {
+  motivation: '#C2410C',
+  integrity: '#1D4ED8',
+  habits: '#15803D',
+  skills: '#7C3AED',
 }
 
-function ScoreCell({ value }) {
-  return <span style={{ color: scoreColor(value), fontWeight: 700, fontSize: 15 }}>{value}</span>
+const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
+
+// ── Top summary tiles: one workable metric per area (no 1–100 score) ────────
+const SUMMARY_TILES = [
+  {
+    key: 'motivation',
+    value: DISTRICT_RMI.value.toFixed(1),
+    unit: '/40',
+    metric: 'Avg RMI total',
+    sub: (
+      <span className="ds-tile-trend ds-tile-trend--good">
+        ↑ {DISTRICT_RMI.delta} vs last month
+      </span>
+    ),
+  },
+  {
+    key: 'integrity',
+    value: `${FLAGGED_LOGS.pct}%`,
+    metric: 'Flagged logs this week',
+    sub: (
+      <span className="ds-tile-trend ds-tile-trend--good">
+        ↓ {Math.abs(FLAGGED_LOGS.delta)}pp vs last week
+      </span>
+    ),
+  },
+  {
+    key: 'habits',
+    value: READERS_THIS_WEEK.count.toLocaleString(),
+    metric: 'Readers logged this week',
+    sub: (
+      <span className="ds-tile-sub">
+        {READERS_THIS_WEEK.pct}% of {DISTRICT.students.toLocaleString()} students
+      </span>
+    ),
+  },
+  {
+    key: 'skills',
+    value: signedL(LEXILE_WEEK.growth),
+    metric: 'Lexile growth this week',
+    sub: (
+      <span className="ds-tile-sub">
+        {LEXILE_WEEK.lastWeek}L → {LEXILE_WEEK.thisWeek}L avg
+      </span>
+    ),
+  },
+]
+
+function SummaryTiles({ onNavigate }) {
+  return (
+    <div className="rh-grid ds-summary">
+      {SUMMARY_TILES.map((t) => {
+        const sec = SEC[t.key]
+        return (
+          <button
+            key={t.key}
+            type="button"
+            className="rh-stat rh-stat--clickable ds-tile"
+            style={{ '--sec-color': sec.color, '--sec-bg': sec.bg, '--sec-text': SEC_TEXT[t.key] }}
+            onClick={() => onNavigate(t.key)}
+          >
+            <div className="ds-tile-head">
+              <span className="ds-tile-icon" aria-hidden="true">
+                {sec.icon}
+              </span>
+              <span className="ds-tile-sec">{sec.label}</span>
+            </div>
+            <div className="ds-tile-val">
+              {t.value}
+              {t.unit && <span className="ds-tile-unit">{t.unit}</span>}
+            </div>
+            <div className="ds-tile-metric">{t.metric}</div>
+            <div className="ds-tile-sub-wrap">{t.sub}</div>
+            <div className="rh-stat-more">
+              View more
+              <Icon name="chevron-right" size={10} stroke={2} />
+            </div>
+          </button>
+        )
+      })}
+    </div>
+  )
 }
 
 const STW_COLUMNS = [
@@ -46,30 +138,6 @@ const STW_COLUMNS = [
   },
   { key: 'concern', label: 'Concern' },
   {
-    key: 'motivation',
-    label: 'M',
-    align: 'center',
-    render: (_, r) => <ScoreCell value={r.health.motivation} />,
-  },
-  {
-    key: 'integrity',
-    label: 'I',
-    align: 'center',
-    render: (_, r) => <ScoreCell value={r.health.integrity} />,
-  },
-  {
-    key: 'habits',
-    label: 'H',
-    align: 'center',
-    render: (_, r) => <ScoreCell value={r.health.habits} />,
-  },
-  {
-    key: 'skills',
-    label: 'S',
-    align: 'center',
-    render: (_, r) => <ScoreCell value={r.health.skills} />,
-  },
-  {
     key: 'action',
     label: '',
     align: 'right',
@@ -81,6 +149,12 @@ const STW_COLUMNS = [
   },
 ]
 
+// District RMI trend merged with grade-band lines for the overview chart
+const RMI_OVERVIEW = RMI_TOTAL_BAND_TRENDS.map((row, i) => ({
+  ...row,
+  district: RMI_TOTAL_TRENDS[i].district,
+}))
+
 export function DistrictDashboard({ onNavigate }) {
   return (
     <div className="rc-page">
@@ -90,13 +164,14 @@ export function DistrictDashboard({ onNavigate }) {
         subtitle={`${DISTRICT.schools} schools · ${DISTRICT.students.toLocaleString()} students`}
       />
 
-      <ReadingHealth title={null} data={DISTRICT_HEALTH} onNavigate={onNavigate} />
+      <SummaryTiles onNavigate={onNavigate} />
 
       {/* 2×2 chart grid */}
       <div className="sv-grid">
-        {/* RMI Trends */}
+        {/* RMI Trends — by grade band */}
         <ChartCard
           title="Reading Motivation Index (RMI)"
+          subtitle="Avg RMI total (0–40) by grade band"
           accent="#0DA7BC"
           bodyPad="padded"
           action={
@@ -108,26 +183,23 @@ export function DistrictDashboard({ onNavigate }) {
             <ChartLegend
               items={[
                 { color: '#0DA7BC', label: 'District avg' },
-                ...SCHOOLS.map((s) => ({
-                  color: s.color,
-                  label: s.name.split(' ')[0],
-                  dashed: true,
-                })),
+                ...RMI_GRADE_BANDS.map((b) => ({ color: b.color, label: b.key, dashed: true })),
               ]}
             />
           }
         >
           <TrendChart
             type="area"
-            data={RMI_TRENDS}
-            yDomain={[55, 90]}
+            data={RMI_OVERVIEW}
+            yDomain={[14, 28]}
             height="md"
+            tooltipFormatter={(v) => v.toFixed(1)}
             series={[
               { key: 'district', name: 'District avg', color: '#0DA7BC' },
-              ...SCHOOLS.map((s) => ({
-                key: s.id,
-                name: s.name,
-                color: s.color,
+              ...RMI_GRADE_BANDS.map((b) => ({
+                key: b.key,
+                name: b.key,
+                color: b.color,
                 dashed: true,
                 fillOpacity: 0,
               })),
@@ -135,7 +207,7 @@ export function DistrictDashboard({ onNavigate }) {
           />
         </ChartCard>
 
-        {/* Reading Habits */}
+        {/* Reading Habits — avg session length */}
         <ChartCard
           title="Reading Habits"
           accent="#16A97A"
@@ -146,21 +218,15 @@ export function DistrictDashboard({ onNavigate }) {
             </button>
           }
           footer={
-            <ChartLegend items={[{ color: '#16A97A', label: 'District avg session length' }]} />
+            <ChartLegend items={SESSION_BANDS.map((b) => ({ color: b.color, label: b.label }))} />
           }
         >
-          <div className="dash-inline-stats">
+          <div className="dash-inline-stats dash-inline-stats--2">
             <div className="dash-inline-stat">
               <span className="dash-inline-val">
                 20<span className="dash-inline-unit">min</span>
               </span>
               <span className="dash-inline-lbl">avg session</span>
-            </div>
-            <div className="dash-inline-stat">
-              <span className="dash-inline-val">
-                41<span className="dash-inline-unit">%</span>
-              </span>
-              <span className="dash-inline-lbl">active streaks</span>
             </div>
             <div className="dash-inline-stat">
               <span className="dash-inline-val">3.2</span>
@@ -169,11 +235,11 @@ export function DistrictDashboard({ onNavigate }) {
           </div>
           <TrendChart
             type="area"
-            data={SESSION_TRENDS}
+            data={SESSION_BAND_TRENDS}
             yDomain={[8, 30]}
             height="sm"
             tooltipFormatter={(v) => `${v} min`}
-            series={[{ key: 'district', name: 'District avg', color: '#16A97A' }]}
+            series={SESSION_BANDS.map((b) => ({ key: b.key, name: b.label, color: b.color }))}
           />
         </ChartCard>
 
@@ -210,7 +276,7 @@ export function DistrictDashboard({ onNavigate }) {
           />
         </ChartCard>
 
-        {/* Lexile scatter */}
+        {/* Lexile scatter — growth vs. decline */}
         <ChartCard
           title="Lexile Growth vs. Reading Volume"
           accent="#7C3AED"
@@ -223,8 +289,8 @@ export function DistrictDashboard({ onNavigate }) {
           footer={
             <ChartLegend
               items={[
-                { color: '#0DA7BC', label: 'Above expected growth' },
-                { color: '#E8866A', label: 'Below expected growth' },
+                { color: GROWTH_COLOR, label: 'Growth' },
+                { color: DECLINE_COLOR, label: 'Decline' },
               ]}
             />
           }
@@ -233,8 +299,8 @@ export function DistrictDashboard({ onNavigate }) {
             <ResponsiveScatterPlot
               data={[
                 {
-                  id: 'Above expected',
-                  data: LEXILE_DATA.filter((d) => d.aboveExpected).map((d) => ({
+                  id: 'Growth',
+                  data: LEXILE_DATA.filter((d) => d.lexileGrowth >= 0).map((d) => ({
                     x: d.volume,
                     y: d.lexileGrowth,
                     school: d.school,
@@ -243,8 +309,8 @@ export function DistrictDashboard({ onNavigate }) {
                   })),
                 },
                 {
-                  id: 'Below expected',
-                  data: LEXILE_DATA.filter((d) => !d.aboveExpected).map((d) => ({
+                  id: 'Decline',
+                  data: LEXILE_DATA.filter((d) => d.lexileGrowth < 0).map((d) => ({
                     x: d.volume,
                     y: d.lexileGrowth,
                     school: d.school,
@@ -253,11 +319,12 @@ export function DistrictDashboard({ onNavigate }) {
                   })),
                 },
               ]}
+              ariaLabel="Lexile growth versus average books read per month, by school. Growth is shown in green above the zero line; decline in coral below."
               theme={NIVO_THEME}
               margin={{ top: 16, right: 28, bottom: 56, left: 72 }}
               xScale={{ type: 'linear', min: 15, max: 50 }}
-              yScale={{ type: 'linear', min: 0, max: 130 }}
-              colors={({ serieId }) => (serieId === 'Above expected' ? '#0DA7BC' : '#E8866A')}
+              yScale={{ type: 'linear', min: -20, max: 130 }}
+              colors={({ serieId }) => (serieId === 'Growth' ? GROWTH_COLOR : DECLINE_COLOR)}
               nodeSize={(d) => Math.sqrt(d.data.students / 5)}
               axisBottom={{
                 ...AXIS_BOTTOM,
@@ -279,20 +346,20 @@ export function DistrictDashboard({ onNavigate }) {
                 <div
                   className="sdb-tooltip"
                   style={{
-                    '--tip-accent': node.serieId === 'Above expected' ? '#0DA7BC' : '#E8866A',
+                    '--tip-accent': node.serieId === 'Growth' ? GROWTH_COLOR : DECLINE_COLOR,
                   }}
                 >
                   <div className="sdb-tooltip-header">{node.data.school}</div>
                   <div
                     className="sdb-tooltip-series"
                     style={{
-                      '--series-color': node.serieId === 'Above expected' ? '#0DA7BC' : '#E8866A',
+                      '--series-color': node.serieId === 'Growth' ? GROWTH_COLOR : DECLINE_COLOR,
                     }}
                   >
                     <div className="sdb-tooltip-row">
                       <span className="sdb-tooltip-dot" />
-                      <span className="sdb-tooltip-label">Lexile growth</span>
-                      <span className="sdb-tooltip-val">+{node.data.y}L</span>
+                      <span className="sdb-tooltip-label">Lexile change</span>
+                      <span className="sdb-tooltip-val">{signedL(node.data.y)}</span>
                     </div>
                   </div>
                   <div className="sdb-tooltip-series" style={{ '--series-color': '#94A3B8' }}>

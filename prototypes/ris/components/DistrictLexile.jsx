@@ -21,9 +21,11 @@ import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 const ACCENT = '#7C3AED'
 const ABOVE_COLOR = '#0DA7BC'
 const BELOW_COLOR = '#E8866A'
+const GROWTH_COLOR = '#16A97A'
+const DECLINE_COLOR = '#E8866A'
 const SKL_ICON = SECTIONS.find((s) => s.key === 'skills')?.icon
 
-const EXPECTED_GROWTH = 65
+const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
 
 const STUCK_COLUMNS = [
   { key: 'school', label: 'School', render: (_, r) => <SchoolCell id={r.id} name={r.school} /> },
@@ -33,8 +35,8 @@ const STUCK_COLUMNS = [
     label: 'YTD Growth',
     align: 'center',
     render: (v) => (
-      <Pill color="#D97706" size="sm">
-        +{v}L
+      <Pill color={v < 0 ? '#DC2626' : '#D97706'} size="sm">
+        {signedL(v)}
       </Pill>
     ),
   },
@@ -56,7 +58,7 @@ const STUCK_COLUMNS = [
 ]
 
 export function DistrictLexile() {
-  const stuckSchools = LEXILE_DATA.filter((s) => !s.aboveExpected)
+  const stuckSchools = LEXILE_DATA.filter((s) => s.lexileGrowth < 0)
 
   return (
     <div className="rc-page" style={{ '--rc-accent': ACCENT }}>
@@ -65,12 +67,12 @@ export function DistrictLexile() {
       <div className="rc-stats-row">
         <StatCard label="District avg Lexile growth" value="+82L" footer="YTD vs. expected +65L" />
         <StatCard
-          label="Schools below expected"
+          label="Schools declining"
           value={`${stuckSchools.length} of 6`}
-          footer="stuck or declining"
+          footer="negative Lexile growth"
           color="#DC2626"
         />
-        <StatCard label="Top-growth school" value="Adams High" footer="+112L YTD" color="#16A97A" />
+        <StatCard label="Top-growth school" value="Adams High" footer="+112L YTD" color="#15803D" />
         <StatCard
           label="Students flagged (stuck)"
           value="~1,490"
@@ -83,7 +85,7 @@ export function DistrictLexile() {
         {/* Lexile scatter — full width */}
         <ChartCard
           title="Lexile Growth vs. Reading Volume — by School"
-          subtitle="Bubble size = student count · dashed line = expected growth (+65L)"
+          subtitle="Bubble size = student count · above the line = growth, below = decline"
           icon={SKL_ICON}
           accent={ACCENT}
           bodyPad="padded"
@@ -91,9 +93,8 @@ export function DistrictLexile() {
           footer={
             <ChartLegend
               items={[
-                { color: ABOVE_COLOR, label: 'Above expected growth' },
-                { color: BELOW_COLOR, label: 'Below expected growth' },
-                { color: '#D97706', label: `Expected (+${EXPECTED_GROWTH}L)`, dashed: true },
+                { color: GROWTH_COLOR, label: 'Growth' },
+                { color: DECLINE_COLOR, label: 'Decline' },
               ]}
             />
           }
@@ -112,14 +113,14 @@ export function DistrictLexile() {
                   position: 'insideBottom',
                   offset: -12,
                   fontSize: 13,
-                  fill: '#94A3B8',
+                  fill: '#64748B',
                 }}
               />
               <YAxis
                 dataKey="lexileGrowth"
                 name="Lexile growth"
                 type="number"
-                domain={[0, 130]}
+                domain={[-25, 130]}
                 tick={RCHART_TICK}
                 label={{
                   value: 'Lexile growth (L)',
@@ -127,10 +128,10 @@ export function DistrictLexile() {
                   position: 'insideLeft',
                   offset: 12,
                   fontSize: 13,
-                  fill: '#94A3B8',
+                  fill: '#64748B',
                 }}
               />
-              <ReferenceLine y={EXPECTED_GROWTH} stroke="#D97706" strokeDasharray="5 4" />
+              <ReferenceLine y={0} stroke="#94A3B8" strokeDasharray="5 4" />
               <Tooltip
                 contentStyle={RCHART_TOOLTIP}
                 content={({ payload }) => {
@@ -148,9 +149,9 @@ export function DistrictLexile() {
                     >
                       <div style={{ fontWeight: 700, marginBottom: 4 }}>{d.school}</div>
                       <div>
-                        Lexile growth:{' '}
-                        <b style={{ color: d.aboveExpected ? '#16A97A' : '#DC2626' }}>
-                          +{d.lexileGrowth}L
+                        Lexile change:{' '}
+                        <b style={{ color: d.lexileGrowth >= 0 ? '#15803D' : '#DC2626' }}>
+                          {signedL(d.lexileGrowth)}
                         </b>
                       </div>
                       <div>
@@ -163,11 +164,11 @@ export function DistrictLexile() {
                         style={{
                           marginTop: 4,
                           fontSize: 13,
-                          color: d.aboveExpected ? '#16A97A' : '#DC2626',
+                          color: d.lexileGrowth >= 0 ? '#15803D' : '#DC2626',
                           fontWeight: 600,
                         }}
                       >
-                        {d.aboveExpected ? '✓ Above expected' : '⚠ Below expected'}
+                        {d.lexileGrowth >= 0 ? '✓ Growth' : '⚠ Decline'}
                       </div>
                     </div>
                   )
@@ -175,9 +176,10 @@ export function DistrictLexile() {
               />
               <Scatter
                 data={LEXILE_DATA}
+                isAnimationActive={false}
                 shape={({ cx, cy, payload }) => {
                   const r = Math.sqrt(payload.students / 65)
-                  const fill = payload.aboveExpected ? ABOVE_COLOR : BELOW_COLOR
+                  const fill = payload.lexileGrowth >= 0 ? GROWTH_COLOR : DECLINE_COLOR
                   return (
                     <g>
                       <circle
@@ -238,7 +240,7 @@ export function DistrictLexile() {
               items={[
                 { color: ABOVE_COLOR, label: 'Met/exceeded expected' },
                 { color: BELOW_COLOR, label: 'Below expected' },
-                { color: '#94A3B8', label: 'Expected baseline' },
+                { color: '#64748B', label: 'Expected baseline' },
               ]}
             />
           }

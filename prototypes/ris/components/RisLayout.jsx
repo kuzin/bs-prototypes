@@ -127,7 +127,16 @@ export function RisLayout({ scope, schoolId, onSchoolId, page, onPage }) {
         isSchool && <StudentPanel studentId={openStudent} onClose={() => setOpenStudent(null)} />
       }
     >
-      <div className="app-shell-page">{renderPage()}</div>
+      {/* tabIndex makes the scrollable main region keyboard-reachable (WCAG 2.1.1)
+          on pages whose only controls are disabled or absent. */}
+      <div
+        className={`app-shell-page${isSchool ? '' : ' ris-district'}`}
+        tabIndex={0}
+        role="region"
+        aria-label="Page content"
+      >
+        {renderPage()}
+      </div>
     </AppShell>
   )
 }

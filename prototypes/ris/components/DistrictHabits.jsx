@@ -1,4 +1,12 @@
-import { SESSION_TRENDS, STREAK_DATA, VELOCITY_TRENDS, SCHOOL_STATS, SCHOOLS } from '../data'
+import {
+  SESSION_BAND_TRENDS,
+  SESSION_BANDS,
+  STREAK_DATA,
+  STREAK_GREW_PCT,
+  VELOCITY_TRENDS,
+  SCHOOL_STATS,
+  SCHOOLS,
+} from '../data'
 import { Hero } from '@components/Hero/Hero'
 import { StatCard, ChartCard } from '@components/Cards/Cards'
 import { BarList } from '@components/BarList/BarList'
@@ -26,45 +34,41 @@ export function DistrictHabits() {
 
       <div className="rc-stats-row">
         <StatCard label="District avg session" value="20 min" footer="↑6 min since Sep" />
-        <StatCard label="Active reading streaks" value="41%" footer="of all students" />
+        <StatCard
+          label="Grew reading streak"
+          value={`${STREAK_GREW_PCT}%`}
+          footer="of students this week"
+        />
         <StatCard label="Avg reading days/week" value="3.2 days" footer="district-wide" />
         <StatCard label="Avg books/month" value="2.8 books" footer="all grade levels" />
       </div>
 
       <div className="sv-grid">
-        {/* Session Length Trends — full width */}
+        {/* Session Length Trends — by grade band (scales past 6 schools) */}
         <ChartCard
-          title="Session Length Trends by School"
+          title="Session Length Trends by Grade Band"
           subtitle="Avg session minutes · Sep 2024 – May 2025"
           icon={HAB_ICON}
           accent={ACCENT}
           bodyPad="padded"
           span={2}
           footer={
-            <ChartLegend
-              items={[
-                { color: '#1E293B', label: 'District avg', dashed: true },
-                ...SCHOOLS.map((s) => ({ color: s.color, label: s.name.split(' ')[0] })),
-              ]}
-            />
+            <ChartLegend items={SESSION_BANDS.map((b) => ({ color: b.color, label: b.label }))} />
           }
         >
           <TrendChart
             type="line"
-            data={SESSION_TRENDS}
+            data={SESSION_BAND_TRENDS}
             yDomain={[8, 30]}
             yUnit=" min"
             height="lg"
             tooltipFormatter={(v) => `${v} min`}
-            series={[
-              { key: 'district', name: 'District avg', color: '#1E293B', dashed: true },
-              ...SCHOOLS.map((s) => ({
-                key: s.id,
-                name: s.name.split(' ')[0],
-                color: s.color,
-                strokeWidth: 1.5,
-              })),
-            ]}
+            series={SESSION_BANDS.map((b) => ({
+              key: b.key,
+              name: b.label,
+              color: b.color,
+              strokeWidth: 2,
+            }))}
           />
         </ChartCard>
 

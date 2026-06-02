@@ -67,3 +67,26 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ── District view: readability + WCAG AA normalization ──────────────────────
+   Brand/section colors are reserved for fills, bars, dots and icons (graphical,
+   3:1). Numbers and small text use neutral ink / AA-safe shades so everything
+   clears 4.5:1 on white. Scoped to .ris-district so the School view is
+   unaffected. */
+
+/* Big stat numbers default to neutral ink (the lighter brand accents fail even
+   the 3:1 large-text threshold). Cards that pass an explicit semantic `color`
+   set --rc-stat-color inline, which still wins. */
+.ris-district .rc-stat {
+  --rc-stat-color: #1e293b;
+}
+
+/* "View details / Review / View" links — one readable slate instead of the
+   per-card brand accent (teal/coral/green fail at 13px). */
+.ris-district .rc-card-drill {
+  color: #475569;
+  opacity: 1;
+}
+.ris-district .rc-card-drill:hover:not(:disabled) {
+  color: #1e293b;
+}

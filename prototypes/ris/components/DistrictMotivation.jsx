@@ -1,11 +1,12 @@
 import {
-  RMI_TRENDS,
+  RMI_TOTAL_TRENDS,
+  RMI_TOTAL_BY_SCHOOL,
   SCHOOLS,
-  DISTRICT_HEALTH,
-  SCHOOL_HEALTH,
+  DISTRICT_RMI,
   RMI_FACTORS,
   INTRINSIC_EXTRINSIC_TRENDS,
   MOTIVATION_BY_GRADE,
+  MOTIVATION_BY_GENDER,
   MOTIVATION_SIGNALS,
 } from '../data'
 import { Hero } from '@components/Hero/Hero'
@@ -20,6 +21,11 @@ const ACCENT = '#E8866A'
 const EXTRINSIC_COLOR = '#7CB5F5'
 const MOT_ICON = SECTIONS.find((s) => s.key === 'motivation')?.icon
 
+// RMI bars are shown against a 0–30 reference even though the index tops out at
+// 40 — district scores live in the high teens to mid-20s, so this keeps the
+// bars readable without exaggerating.
+const RMI_BAR_MAX = 30
+
 const factorToItem = (f) => ({
   icon: RMI_ICONS[f.iconKey],
   iconColor: f.color,
@@ -32,21 +38,17 @@ const factorToItem = (f) => ({
 })
 
 export function DistrictMotivation() {
-  const ranked = [...SCHOOLS]
-    .map((s) => ({
-      id: s.id,
-      name: s.name.split(' ')[0],
-      rmi: SCHOOL_HEALTH[s.id].motivation,
-      color: s.color,
-    }))
-    .sort((a, b) => b.rmi - a.rmi)
+  const ranked = RMI_TOTAL_BY_SCHOOL
+  const topSchool = ranked[0]
+  const bottomSchool = ranked[ranked.length - 1]
+
+  const first = RMI_TOTAL_TRENDS[0]
+  const last = RMI_TOTAL_TRENDS[RMI_TOTAL_TRENDS.length - 1]
+  const improvingCount = SCHOOLS.filter((s) => last[s.id] > first[s.id]).length
 
   const intrinsicFactors = RMI_FACTORS.filter((f) => f.kind === 'intrinsic')
   const extrinsicFactors = RMI_FACTORS.filter((f) => f.kind === 'extrinsic')
   const FACTOR_BY_NAME = Object.fromEntries(RMI_FACTORS.map((f) => [f.name, f]))
-  const improvingCount = SCHOOLS.filter((s) => SCHOOL_HEALTH[s.id].dM > 0).length
-  const topSchool = ranked[0]
-  const bottomSchool = ranked[ranked.length - 1]
 
   return (
     <div className="rc-page" style={{ '--rc-accent': ACCENT }}>
@@ -54,18 +56,14 @@ export function DistrictMotivation() {
 
       <div className="rc-stats-row">
         <StatCard
-          value={DISTRICT_HEALTH.motivation}
-          label="District avg RMI"
-          footer={`↑${DISTRICT_HEALTH.dM} pts since Sep 2024`}
+          value={DISTRICT_RMI.value.toFixed(1)}
+          unit="/40"
+          label="District avg RMI total"
+          footer={`↑${DISTRICT_RMI.delta} vs last month`}
         />
-        <StatCard
-          value={improvingCount}
-          unit="of 6"
-          label="Participating Schools"
-          color="#16A97A"
-        />
-        <StatCard value={topSchool.rmi} label="Highest RMI Score" color={topSchool.color} />
-        <StatCard value={bottomSchool.rmi} label="Lowest RMI Score" color={ACCENT} />
+        <StatCard value={improvingCount} unit="of 6" label="Schools improving" color="#15803D" />
+        <StatCard value={topSchool.rmi.toFixed(1)} label="Highest RMI total" />
+        <StatCard value={bottomSchool.rmi.toFixed(1)} label="Lowest RMI total" />
       </div>
 
       <div className="sv-grid">
@@ -122,23 +120,55 @@ export function DistrictMotivation() {
         >
           <BarList
             groups={[
-              { label: 'Intrinsic', labelColor: ACCENT, items: intrinsicFactors.map(factorToItem) },
+              {
+                label: 'Intrinsic',
+                labelColor: '#C2410C',
+                items: intrinsicFactors.map(factorToItem),
+              },
               {
                 label: 'Extrinsic',
-                labelColor: EXTRINSIC_COLOR,
+                labelColor: '#1D4ED8',
                 items: extrinsicFactors.map(factorToItem),
               },
             ]}
           />
         </ChartCard>
 
-        {/* Motivation signals */}
+        {/* Grade band breakdown */}
+        <ChartCard
+          title="Intrinsic vs. Extrinsic by Grade Band"
+          subtitle="Older students show a stronger intrinsic reading identity"
+          icon={MOT_ICON}
+          accent={ACCENT}
+          bodyPad="padded"
+        >
+          <BarList
+            showBar={false}
+            divided
+            header={{ label: 'Top factor by grade', valueLabel: 'Score' }}
+            items={MOTIVATION_BY_GRADE.map((g) => {
+              const factor = FACTOR_BY_NAME[g.topFactor]
+              if (!factor) return null
+              const score = factor.kind === 'intrinsic' ? g.intrinsic : g.extrinsic
+              return {
+                prefix: g.band,
+                icon: RMI_ICONS[factor.iconKey],
+                iconColor: factor.color,
+                label: factor.name,
+                valueLabel: score.toFixed(1),
+              }
+            }).filter(Boolean)}
+          />
+        </ChartCard>
+
+        {/* Motivation signals — full width so the long behavior labels breathe */}
         <ChartCard
           title="Additional Motivation Signals"
           subtitle="% of students exhibiting each self-directed reading behavior · current year"
           icon={MOT_ICON}
           accent={ACCENT}
           bodyPad="padded"
+          span={2}
         >
           <BarList
             divided
@@ -157,39 +187,38 @@ export function DistrictMotivation() {
           </CardNote>
         </ChartCard>
 
-        {/* Grade band breakdown */}
+        {/* Example: RMI broken down by gender — full width */}
         <ChartCard
-          title="Intrinsic vs. Extrinsic by Grade Band"
-          subtitle="RMI subscores out of 20 · older students show stronger intrinsic reading identity"
+          title="RMI by Gender — Example Demographic Cut"
+          subtitle="Avg RMI total (0–40) · one illustrative way to slice motivation data"
           icon={MOT_ICON}
           accent={ACCENT}
           bodyPad="padded"
           span={2}
         >
           <BarList
-            showBar={false}
-            divided
-            header={{ label: 'Top factor by grade', valueLabel: 'Score' }}
-            items={MOTIVATION_BY_GRADE.map((g) => {
-              const factor = FACTOR_BY_NAME[g.topFactor]
-              if (!factor) return null
-              const score = factor.kind === 'intrinsic' ? g.intrinsic : g.extrinsic
-              return {
-                prefix: g.band,
-                icon: RMI_ICONS[factor.iconKey],
-                iconColor: factor.color,
-                label: factor.name,
-                labelColor: factor.color,
-                valueLabel: score.toFixed(1),
-              }
-            }).filter(Boolean)}
+            labelWidth={160}
+            header={{ label: 'Gender', valueLabel: 'RMI total' }}
+            items={MOTIVATION_BY_GENDER.map((g) => ({
+              label: g.gender,
+              tooltip: `Top factor: ${g.topFactor}`,
+              value: g.rmi,
+              max: RMI_BAR_MAX,
+              color: ACCENT,
+              valueLabel: g.rmi.toFixed(1),
+            }))}
           />
+          <CardNote tone="neutral">
+            Breaking RMI down by gender (or grade, school, or program) can surface motivation gaps
+            to target. Here, boys' intrinsic motivation trails girls' by ~1.8 points — worth pairing
+            with reading-diet and choice data before acting.
+          </CardNote>
         </ChartCard>
 
         {/* RMI trend — full width */}
         <ChartCard
           title="Reading Motivation Index — district trend"
-          subtitle="District average vs. individual schools · Sep 2024 – May 2025"
+          subtitle="RMI total (0–40) · district average vs. individual schools · Sep 2024 – May 2025"
           icon={MOT_ICON}
           accent={ACCENT}
           bodyPad="padded"
@@ -209,9 +238,10 @@ export function DistrictMotivation() {
         >
           <TrendChart
             type="area"
-            data={RMI_TRENDS}
-            yDomain={[55, 90]}
+            data={RMI_TOTAL_TRENDS}
+            yDomain={[14, 28]}
             height="lg"
+            tooltipFormatter={(v) => v.toFixed(1)}
             series={[
               { key: 'district', name: 'District avg', color: ACCENT, fillOpacity: 0.2 },
               ...SCHOOLS.map((s) => ({
@@ -229,7 +259,7 @@ export function DistrictMotivation() {
         {/* Schools ranked by RMI */}
         <ChartCard
           title="Schools ranked by Motivation score"
-          subtitle="RMI score (0–100) · current year average"
+          subtitle="RMI total (0–40) · current year average"
           icon={MOT_ICON}
           accent={ACCENT}
           bodyPad="padded"
@@ -237,13 +267,13 @@ export function DistrictMotivation() {
         >
           <BarList
             labelWidth={120}
-            header={{ label: 'School', valueLabel: 'RMI score' }}
+            header={{ label: 'School', valueLabel: 'RMI total' }}
             items={ranked.map((s) => ({
-              label: s.name,
+              label: s.shortName,
               value: s.rmi,
-              max: 100,
+              max: RMI_BAR_MAX,
               color: s.color,
-              valueLabel: String(s.rmi),
+              valueLabel: s.rmi.toFixed(1),
             }))}
           />
         </ChartCard>

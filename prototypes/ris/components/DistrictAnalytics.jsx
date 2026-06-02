@@ -1,6 +1,7 @@
 import {
   ROI_TRENDS,
-  SCHOOL_HEALTH,
+  RMI_TOTAL_BY_SCHOOL,
+  LEXILE_DATA,
   SCHOOLS,
   DISTRICT_FUNNEL,
   BOOK_TALKS_BY_SCHOOL,
@@ -22,15 +23,7 @@ const ACCENT = '#0DA7BC'
 
 const ANALYTICS_ICON = <Icon name="chart-bar" />
 
-const scoreColor = (v) => (v >= 80 ? '#16A97A' : v >= 65 ? '#D97706' : '#E8866A')
-
-function ScoreChip({ value }) {
-  return (
-    <Pill color={scoreColor(value)} variant="soft" size="sm">
-      {value}
-    </Pill>
-  )
-}
+const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
 
 const SCORECARD_COLUMNS = [
   {
@@ -46,23 +39,40 @@ const SCORECARD_COLUMNS = [
     ),
   },
   {
-    key: 'motivation',
-    label: 'Motivation',
+    key: 'rmi',
+    label: 'RMI total',
     align: 'center',
-    render: (v) => <ScoreChip value={v} />,
+    render: (v) => <span style={{ fontWeight: 700 }}>{v.toFixed(1)}</span>,
   },
-  { key: 'integrity', label: 'Integrity', align: 'center', render: (v) => <ScoreChip value={v} /> },
-  { key: 'habits', label: 'Habits', align: 'center', render: (v) => <ScoreChip value={v} /> },
-  { key: 'skills', label: 'Skills', align: 'center', render: (v) => <ScoreChip value={v} /> },
   {
-    key: 'overall',
-    label: 'Overall',
+    key: 'flagRate',
+    label: 'Flag rate',
     align: 'center',
-    render: (v, r) => (
-      <Pill color={r.color} variant="filled" size="sm">
-        {v}
+    render: (v) => (
+      <Pill color={v >= 15 ? '#DC2626' : '#475569'} variant="soft" size="sm">
+        {v}%
       </Pill>
     ),
+  },
+  {
+    key: 'avgSession',
+    label: 'Avg session',
+    align: 'center',
+    render: (v) => `${v} min`,
+  },
+  {
+    key: 'lexileGrowth',
+    label: 'Lexile Δ',
+    align: 'center',
+    render: (v) => (
+      <span style={{ color: v >= 0 ? '#15803D' : '#DC2626', fontWeight: 700 }}>{signedL(v)}</span>
+    ),
+  },
+  {
+    key: 'engagement',
+    label: 'Engagement',
+    align: 'center',
+    render: (v) => <span style={{ color: '#1E293B', fontWeight: 700 }}>{v}%</span>,
   },
   {
     key: 'action',
@@ -123,11 +133,18 @@ const ADOPTION_COLUMNS = [
 ]
 
 export function DistrictAnalytics() {
-  const scorecardData = SCHOOLS.map((s) => {
-    const h = SCHOOL_HEALTH[s.id]
-    const overall = Math.round((h.motivation + h.integrity + h.habits + h.skills) / 4)
-    return { ...s, ...h, overall }
-  }).sort((a, b) => b.overall - a.overall)
+  const rmiById = Object.fromEntries(RMI_TOTAL_BY_SCHOOL.map((s) => [s.id, s.rmi]))
+  const flagById = Object.fromEntries(BOOK_TALKS_BY_SCHOOL.map((s) => [s.id, s.flagRate]))
+  const lexById = Object.fromEntries(LEXILE_DATA.map((s) => [s.id, s.lexileGrowth]))
+  const statsById = Object.fromEntries(SCHOOL_STATS.map((s) => [s.id, s]))
+  const scorecardData = SCHOOLS.map((s) => ({
+    ...s,
+    rmi: rmiById[s.id],
+    flagRate: flagById[s.id],
+    avgSession: statsById[s.id].avgSession,
+    lexileGrowth: lexById[s.id],
+    engagement: statsById[s.id].engagement,
+  })).sort((a, b) => b.engagement - a.engagement)
 
   const districtAvgEng = Math.round(
     SCHOOL_STATS.reduce((s, x) => s + x.engagement, 0) / SCHOOL_STATS.length,
@@ -160,7 +177,7 @@ export function DistrictAnalytics() {
           unit="of 6"
           label="Schools above avg"
           footer={`${districtAvgEng}% district benchmark`}
-          color="#16A97A"
+          color="#15803D"
         />
         <StatCard
           value={`${btAvgCompletion}%`}
@@ -171,7 +188,7 @@ export function DistrictAnalytics() {
           value="r = 0.82"
           label="Engagement ↔ Attendance"
           footer="Positive outcome correlation"
-          color="#16A97A"
+          color="#15803D"
         />
       </div>
 
@@ -179,20 +196,11 @@ export function DistrictAnalytics() {
         {/* School performance scorecard — full width */}
         <ChartCard
           title="School Performance Scorecard"
-          subtitle="All 4 reading health buckets across 6 schools · May 2025 · Sorted by overall score"
+          subtitle="One key metric per reading area — RMI total, flag rate, session, Lexile · May 2025 · sorted by engagement"
           icon={ANALYTICS_ICON}
           accent={ACCENT}
           bodyPad="flush"
           span={2}
-          footer={
-            <ChartLegend
-              items={[
-                { color: '#16A97A', label: '≥80' },
-                { color: '#D97706', label: '65–79' },
-                { color: '#E8866A', label: '<65' },
-              ]}
-            />
-          }
         >
           <Table flush columns={SCORECARD_COLUMNS} rows={scorecardData} getRowKey={(r) => r.id} />
         </ChartCard>

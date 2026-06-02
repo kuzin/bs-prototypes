@@ -32,7 +32,7 @@
 .rc-stat-unit {
   font-size: 14px;
   font-weight: 600;
-  color: #94a3b8;
+  color: #64748b;
 }
 
 .rc-stat-lbl {
@@ -45,7 +45,7 @@
 
 .rc-stat-foot {
   font-size: 12px;
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 600;
   letter-spacing: -0.01em;
   margin-top: 2px;
@@ -123,7 +123,7 @@
 
 .rc-card-sub {
   font-size: 13px;
-  color: #94a3b8;
+  color: #64748b;
   font-weight: 500;
 }
 

@@ -6,7 +6,7 @@ export const NIVO_THEME = {
   axis: {
     ticks: {
       line: { stroke: 'transparent' },
-      text: { fontSize: 13, fill: '#94A3B8', fontFamily: 'inherit' },
+      text: { fontSize: 13, fill: '#64748B', fontFamily: 'inherit' },
     },
     legend: {
       text: {
@@ -40,7 +40,7 @@ export const AXIS_LEFT = { tickSize: 0, tickPadding: 8 }
 // tick fonts, and tooltips look identical across the app.
 
 export const RCHART_MARGIN = { top: 16, right: 8, left: -20, bottom: 0 }
-export const RCHART_TICK = { fontSize: 13, fill: '#94A3B8' }
+export const RCHART_TICK = { fontSize: 13, fill: '#64748B' }
 export const RCHART_GRID = { strokeDasharray: '3 3', stroke: '#F1F5F9' }
 export const RCHART_TOOLTIP = { fontSize: 13, borderRadius: 8, border: '1px solid #E2E8F0' }
 export const RCHART_X_PADDING = { left: 0, right: 0 }
