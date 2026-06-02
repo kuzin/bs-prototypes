@@ -6,6 +6,7 @@ import { FlaggedView } from './FlaggedView'
 import { EngagementView } from './EngagementView'
 import { AllBTWBView } from './AllBTWBView'
 import { SessionModal, ApproveConfirmModal } from './SessionModal'
+import { Icon } from '@components/Icon/Icon'
 import { StudentPanel } from '../../ris/components/StudentPanel'
 import '../../ris/components/StudentPanel.css'
 import '@components/Tabs/Tabs.css'
@@ -162,19 +163,7 @@ export function SfrPage({
             </div>
             {/* Reading Integrity Settings */}
             <button className="sfr-settings-btn" title="Reading Integrity Settings">
-              <svg
-                viewBox="0 0 20 20"
-                width="16"
-                height="16"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="10" cy="10" r="3" />
-                <path d="M10 2v2M10 16v2M2 10h2M16 10h2M4.22 4.22l1.42 1.42M14.36 14.36l1.42 1.42M4.22 15.78l1.42-1.42M14.36 5.64l1.42-1.42" />
-              </svg>
+              <Icon name="settings" size={16} />
               Settings
             </button>
           </div>

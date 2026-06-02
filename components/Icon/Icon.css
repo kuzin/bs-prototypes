@@ -1,0 +1,6 @@
+/* Base alignment for all <Icon> glyphs — inline-friendly, never shrinks in flex. */
+.bp-icon {
+  display: inline-block;
+  vertical-align: middle;
+  flex-shrink: 0;
+}

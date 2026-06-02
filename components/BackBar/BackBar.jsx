@@ -1,3 +1,4 @@
+import { Icon } from '@components/Icon/Icon'
 import './BackBar.css'
 
 /**
@@ -15,18 +16,7 @@ export function BackBar({ label, onClick, href, className = '' }) {
         onClick={onClick}
         className="back-bar-link"
       >
-        <svg
-          viewBox="0 0 16 16"
-          width="11"
-          height="11"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="10,3 5,8 10,13" />
-        </svg>
+        <Icon name="chevron-left" size={11} stroke={2.5} />
         {label}
       </Tag>
     </div>

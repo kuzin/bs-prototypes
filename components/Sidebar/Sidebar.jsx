@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { MainRail } from '@components/MainRail/MainRail'
+import { Icon } from '@components/Icon/Icon'
 import '@components/MainRail/MainRail.css'
 import './Sidebar.css'
 
@@ -24,115 +25,22 @@ import './Sidebar.css'
  */
 
 // ── Icon set ─────────────────────────────────────────────────────────────
+const NAV_ICONS = {
+  overview: 'layout-grid',
+  habits: 'notebook',
+  lexile: 'trending-up',
+  flame: 'flame',
+  shield: 'shield-check',
+  book: 'book',
+  analytics: 'chart-bar',
+  demographics: 'users',
+  person: 'user',
+  flag: 'flag',
+}
+
 function NavIcon({ name }) {
-  const props = {
-    viewBox: '0 0 20 20',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: '1.5',
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    width: 20,
-    height: 20,
-  }
-  switch (name) {
-    case 'overview':
-      return (
-        <svg {...props}>
-          <rect x="3" y="3" width="6" height="6" rx="1.5" />
-          <rect x="11" y="3" width="6" height="6" rx="1.5" />
-          <rect x="3" y="11" width="6" height="6" rx="1.5" />
-          <rect x="11" y="11" width="6" height="6" rx="1.5" />
-        </svg>
-      )
-    case 'habits':
-      return (
-        <svg {...props}>
-          <path d="M5 3h10a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z" />
-          <path d="M7 7h6M7 10h6M7 13h4" />
-        </svg>
-      )
-    case 'lexile':
-      return (
-        <svg {...props}>
-          <polyline points="3,16 8,10 12,13 17,5" />
-          <polyline points="14,5 17,5 17,8" />
-        </svg>
-      )
-    case 'flame':
-      return (
-        <svg {...props}>
-          <path
-            d="M10 2c.2 2.2-1.1 3.2-2.3 4.4C6.5 7.6 5 9.1 5 11.5 5 14.5 7.2 17 10 17s5-2.5 5-5.5c0-1.7-.6-2.7-1.4-3.4-.4.6-1.1.9-1.7 0-.6-.8 0-1.9 0-3.3 0-1.3-.8-2.3-1.7-2.8z"
-            fill="currentColor"
-            fillOpacity="0.15"
-          />
-          <path d="M10 2c.2 2.2-1.1 3.2-2.3 4.4C6.5 7.6 5 9.1 5 11.5 5 14.5 7.2 17 10 17s5-2.5 5-5.5c0-1.7-.6-2.7-1.4-3.4" />
-        </svg>
-      )
-    case 'shield':
-      return (
-        <svg {...props}>
-          <path
-            d="M10 2.5 16 4.5v5.7c0 3.7-2.7 6.7-6 7.6-3.3-.9-6-3.9-6-7.6V4.5z"
-            fill="currentColor"
-            fillOpacity="0.12"
-          />
-          <polyline points="7,10 9.2,12.2 13.2,8" />
-        </svg>
-      )
-    case 'book':
-      return (
-        <svg {...props}>
-          <path
-            d="M3 4c0-.6.4-1 1-1h5.5v14H4c-.6 0-1-.4-1-1V4z"
-            fill="currentColor"
-            fillOpacity="0.12"
-          />
-          <path
-            d="M17 4c0-.6-.4-1-1-1h-5.5v14H16c.6 0 1-.4 1-1V4z"
-            fill="currentColor"
-            fillOpacity="0.12"
-          />
-          <line x1="9.5" y1="3" x2="9.5" y2="17" />
-        </svg>
-      )
-    case 'analytics':
-      return (
-        <svg {...props}>
-          <rect x="3" y="11" width="3" height="6" rx="1" />
-          <rect x="8.5" y="7" width="3" height="10" rx="1" />
-          <rect x="14" y="3" width="3" height="14" rx="1" />
-        </svg>
-      )
-    case 'demographics':
-      return (
-        <svg {...props}>
-          <circle cx="10" cy="6" r="2.5" />
-          <circle cx="4" cy="9" r="2" />
-          <circle cx="16" cy="9" r="2" />
-          <path d="M6 17c0-2.2 1.8-4 4-4s4 1.8 4 4" />
-          <path d="M1 17c0-1.7 1.3-3 3-3" />
-          <path d="M19 17c0-1.7-1.3-3-3-3" />
-        </svg>
-      )
-    case 'person':
-      return (
-        <svg {...props}>
-          <circle cx="10" cy="7" r="3" />
-          <path d="M4 17c0-3.3 2.7-6 6-6s6 2.7 6 6" />
-        </svg>
-      )
-    case 'flag':
-      return (
-        <svg {...props}>
-          <path d="M5 3v14" />
-          <path d="M5 3h10l-2.5 4.5L15 12H5" />
-        </svg>
-      )
-    default:
-      return null
-  }
+  const icon = NAV_ICONS[name]
+  return icon ? <Icon name={icon} size={20} /> : null
 }
 
 // Render a single nav button.
@@ -219,20 +127,7 @@ export function Sidebar({
           onClick={expand}
           aria-label="Expand navigation"
         >
-          <svg
-            viewBox="0 0 20 20"
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="4" y1="6" x2="16" y2="6" />
-            <line x1="4" y1="10" x2="16" y2="10" />
-            <line x1="4" y1="14" x2="16" y2="14" />
-          </svg>
+          <Icon name="menu" size={18} stroke={2} />
         </button>
 
         <div className="sb-sidebar-top">
@@ -246,19 +141,7 @@ export function Sidebar({
             onClick={collapse}
             aria-label="Collapse navigation"
           >
-            <svg
-              viewBox="0 0 20 20"
-              width="16"
-              height="16"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="12,5 6,10 12,15" />
-              <line x1="3" y1="5" x2="3" y2="15" />
-            </svg>
+            <Icon name="chevron-left" size={16} stroke={2} />
           </button>
         </div>
 
@@ -328,20 +211,7 @@ export function Sidebar({
           onClick={expand}
           aria-label="Open navigation"
         >
-          <svg
-            viewBox="0 0 20 20"
-            width="18"
-            height="18"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="4" y1="6" x2="16" y2="6" />
-            <line x1="4" y1="10" x2="16" y2="10" />
-            <line x1="4" y1="14" x2="16" y2="14" />
-          </svg>
+          <Icon name="menu" size={18} stroke={2} />
         </button>
         <img src="/bs-prototypes/bs.svg" className="sb-topbar-logo" alt="" aria-hidden="true" />
         <div className="sb-topbar-page">
@@ -411,17 +281,7 @@ export function SchoolPicker({ schools = [], schoolId, onSchoolId, onAfterChange
           <span className="sb-picker-name">{school.name}</span>
           <span className="sb-picker-grades">{school.grades}</span>
         </div>
-        <svg
-          viewBox="0 0 16 16"
-          width="12"
-          height="12"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-        >
-          <polyline points="4,6 8,10 12,6" />
-        </svg>
+        <Icon name="chevron-down" size={12} stroke={2} />
       </button>
 
       {open && (

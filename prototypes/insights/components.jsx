@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Skeleton } from '@components/Primitives/Primitives'
 import { Button } from '@components/Button/Button'
+import { Icon } from '@components/Icon/Icon'
 import { fmt, coverUrl } from './data'
 
 // ── MetricCard ──────────────────────────────────────────────────────────
@@ -23,19 +24,7 @@ export function MetricCard({ label, note, value, state = 'value', onLoad, onClic
         </div>
         <div className="ins-metric-body">
           <span className="ins-metric-load">
-            <svg
-              viewBox="0 0 16 16"
-              width="13"
-              height="13"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="4,8 8,12 12,8" />
-              <line x1="8" y1="3" x2="8" y2="12" />
-            </svg>
+            <Icon name="download" size={13} stroke={2} />
             Load
           </span>
         </div>
@@ -60,18 +49,7 @@ export function MetricCard({ label, note, value, state = 'value', onLoad, onClic
       </div>
       {clickable && (
         <span className="ins-metric-chev" aria-hidden="true">
-          <svg
-            viewBox="0 0 16 16"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="6,3 11,8 6,13" />
-          </svg>
+          <Icon name="chevron-right" size={14} stroke={2} />
         </span>
       )}
     </Tag>
@@ -89,18 +67,7 @@ export function PanelCard({ title, state = 'value', kind, onLoad, onClick, child
         {clickable && (
           <button className="ins-panel-open" type="button" onClick={onClick}>
             View details
-            <svg
-              viewBox="0 0 16 16"
-              width="12"
-              height="12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6,3 11,8 6,13" />
-            </svg>
+            <Icon name="chevron-right" size={12} stroke={2} />
           </button>
         )}
       </div>
@@ -108,19 +75,7 @@ export function PanelCard({ title, state = 'value', kind, onLoad, onClick, child
         {state === 'loading' && <PanelSkeleton kind={kind} />}
         {state === 'empty' && onLoad && (
           <button type="button" className="ins-panel-load" onClick={onLoad}>
-            <svg
-              viewBox="0 0 16 16"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="4,8 8,12 12,8" />
-              <line x1="8" y1="3" x2="8" y2="12" />
-            </svg>
+            <Icon name="download" size={14} stroke={2} />
             Load this panel
           </button>
         )}
@@ -373,21 +328,7 @@ export function InsightsFilterBar({ onCustomize, visibleCount, totalCount }) {
     <div className="ins-filters">
       <div className="ins-filters-grid">
         <div className="ins-filter">
-          <svg
-            viewBox="0 0 16 16"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect x="2" y="3" width="12" height="11" rx="1.5" />
-            <line x1="2" y1="6" x2="14" y2="6" />
-            <line x1="6" y1="1.5" x2="6" y2="4.5" />
-            <line x1="10" y1="1.5" x2="10" y2="4.5" />
-          </svg>
+          <Icon name="calendar" size={14} />
           <span>This Week (Since Monday)</span>
           <Caret />
         </div>
@@ -428,38 +369,9 @@ export function InsightsFilterBar({ onCustomize, visibleCount, totalCount }) {
 }
 
 function CogIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.7"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="3" />
-      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-    </svg>
-  )
+  return <Icon name="settings" size={18} aria-hidden="true" />
 }
 
 function Caret() {
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      width="10"
-      height="10"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      style={{ marginLeft: 'auto' }}
-    >
-      <polyline points="4,6 8,10 12,6" />
-    </svg>
-  )
+  return <Icon name="chevron-down" size={10} stroke={2} style={{ marginLeft: 'auto' }} />
 }

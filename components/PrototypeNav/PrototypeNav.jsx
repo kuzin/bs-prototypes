@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import './PrototypeNav.css'
 import { PROTOTYPES } from '@components/prototypes'
 import { ComponentUsage } from '@components/ComponentUsage/ComponentUsage'
+import { Icon } from '@components/Icon/Icon'
 
 const NAV_PROTOTYPES = PROTOTYPES.filter((p) => p.id !== 'patterns')
 
@@ -37,20 +38,7 @@ export function PrototypeNav({ currentHref }) {
           title="Pattern Library"
           aria-label="Pattern Library"
         >
-          <svg
-            viewBox="0 0 16 16"
-            width="15"
-            height="15"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M8 2 14 5.2 8 8.4 2 5.2z" />
-            <polyline points="2,9 8,12.2 14,9" />
-            <polyline points="2,12.4 8,15.6 14,12.4" />
-          </svg>
+          <Icon name="layers" size={15} />
         </a>
         <button
           type="button"
@@ -59,21 +47,7 @@ export function PrototypeNav({ currentHref }) {
           title="Component usage — what each prototype uses"
           aria-label="Component usage"
         >
-          <svg
-            viewBox="0 0 16 16"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <rect x="2" y="2" width="5" height="5" rx="1" />
-            <rect x="9" y="2" width="5" height="5" rx="1" />
-            <rect x="2" y="9" width="5" height="5" rx="1" />
-            <rect x="9" y="9" width="5" height="5" rx="1" />
-          </svg>
+          <Icon name="layout-grid" size={14} />
         </button>
       </div>
 
@@ -92,19 +66,7 @@ export function PrototypeNav({ currentHref }) {
             <span className="proto-nav-select-name">
               {current ? current.name : 'Select prototype'}
             </span>
-            <svg
-              className="proto-nav-select-caret"
-              viewBox="0 0 16 16"
-              width="11"
-              height="11"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="4,6 8,10 12,6" />
-            </svg>
+            <Icon name="chevron-down" size={11} stroke={2} className="proto-nav-select-caret" />
           </button>
 
           {open && (
@@ -126,18 +88,7 @@ export function PrototypeNav({ currentHref }) {
                       <span className="proto-nav-option-dot" />
                       <span className="proto-nav-option-name">{p.name}</span>
                       {isCurrent && (
-                        <svg
-                          viewBox="0 0 16 16"
-                          width="12"
-                          height="12"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        >
-                          <polyline points="3,8 7,12 13,4" />
-                        </svg>
+                        <Icon name="check" size={12} stroke={2.5} />
                       )}
                     </a>
                   )

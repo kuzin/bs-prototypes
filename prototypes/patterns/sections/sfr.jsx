@@ -8,6 +8,7 @@ import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { HighlightCard } from '../../sfr/components/Overview'
 import { SessionsTable } from '../../sfr/components/SessionsTable'
 import { SessionModal } from '../../sfr/components/SessionModal'
+import { Icon } from '@components/Icon/Icon'
 import { Knobs, Variant } from './_shared'
 
 function BennyBubbleKnobs() {
@@ -267,21 +268,7 @@ export const sfrSections = [
         <Variant label="danger — integrity flags">
           <HighlightCard
             variant="danger"
-            icon={
-              <svg
-                viewBox="0 0 16 16"
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 2v12" />
-                <path d="M3 2h8l-2 4 2 4H3" />
-              </svg>
-            }
+            icon={<Icon name="flag" size={18} />}
             title="Validate / Intercede"
             description="Students with multiple flagged integrity sessions"
             students={[
@@ -308,20 +295,7 @@ export const sfrSections = [
         <Variant label="success — celebrate green">
           <HighlightCard
             variant="success"
-            icon={
-              <svg
-                viewBox="0 0 16 16"
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M8 2c.2 1.8-.9 2.6-1.9 3.6C5.2 6.5 4 7.7 4 9.5 4 11.9 5.8 14 8 14s4-2 4-4.5c0-1.4-.5-2.2-1.1-2.8" />
-              </svg>
-            }
+            icon={<Icon name="flame" size={18} />}
             title="Celebrate"
             description="Students with positive engagement Book Talks"
             students={[
@@ -355,20 +329,7 @@ export const sfrSections = [
         <Variant label="warning — review mixed">
           <HighlightCard
             variant="warning"
-            icon={
-              <svg
-                viewBox="0 0 16 16"
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M8 2l1.5 4h4l-3 2.5 1 4L8 10l-3.5 2.5 1-4L2 6h4z" />
-              </svg>
-            }
+            icon={<Icon name="star" size={18} />}
             title="Review / Assess"
             description="Students with mixed engagement Book Talks"
             students={[
@@ -388,21 +349,7 @@ export const sfrSections = [
         <Variant label="neutral — give time (unfinished)">
           <HighlightCard
             variant="neutral"
-            icon={
-              <svg
-                viewBox="0 0 16 16"
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="8" cy="8" r="6" />
-                <polyline points="8,4 8,8 11,10" />
-              </svg>
-            }
+            icon={<Icon name="clock" size={18} />}
             title="Give Students Time"
             description="Students with unfinished Benny conversations"
             students={[

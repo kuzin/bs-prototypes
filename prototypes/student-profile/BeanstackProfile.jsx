@@ -26,6 +26,7 @@ import { BackBar } from '@components/BackBar/BackBar'
 import { Sidebar } from '@components/Sidebar/Sidebar'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
+import { Icon } from '@components/Icon/Icon'
 import { SessionModal } from '../sfr/components/SessionModal'
 import { SESSIONS as SFR_SESSIONS } from '../sfr/data'
 
@@ -192,11 +193,7 @@ function StudentActions({ onClose }) {
             setLogOpen(false)
           }}
         >
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <circle cx="8" cy="3.5" r="1.5" fill="currentColor" />
-            <circle cx="8" cy="8" r="1.5" fill="currentColor" />
-            <circle cx="8" cy="12.5" r="1.5" fill="currentColor" />
-          </svg>
+          <Icon name="dots-vertical" size={16} aria-hidden="true" />
         </IconButton>
         {dotsOpen && <DropdownMenu items={dotsItems} onClose={() => setDotsOpen(false)} />}
       </div>
@@ -204,17 +201,7 @@ function StudentActions({ onClose }) {
         <Button
           variant="primary"
           iconRight={
-            <svg
-              viewBox="0 0 12 12"
-              style={{ width: 11, height: 11, flexShrink: 0 }}
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="2,4 6,8 10,4" />
-            </svg>
+            <Icon name="chevron-down" size={11} stroke={2.5} style={{ flexShrink: 0 }} />
           }
           onClick={() => {
             setLogOpen((o) => !o)
@@ -227,18 +214,7 @@ function StudentActions({ onClose }) {
       </div>
       {onClose && (
         <button className="bp-header-close" onClick={onClose} aria-label="Close profile">
-          <svg
-            viewBox="0 0 14 14"
-            width="13"
-            height="13"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="2" y1="2" x2="12" y2="12" />
-            <line x1="12" y1="2" x2="2" y2="12" />
-          </svg>
+          <Icon name="x" size={13} />
         </button>
       )}
     </div>
@@ -824,15 +800,7 @@ function ReadingHeatmap({ goalMinutes, color, data }) {
           disabled={monthOffset >= MAX_OFFSET}
           aria-label="Previous 4 months"
         >
-          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
-            <polyline
-              points="5,1 1,5.5 5,10"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Icon name="chevron-left" size={11} />
         </button>
         <span className="bp-heatmap-nav-label">{navLabel}</span>
         <button
@@ -841,15 +809,7 @@ function ReadingHeatmap({ goalMinutes, color, data }) {
           disabled={monthOffset === 0}
           aria-label="Next 4 months"
         >
-          <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
-            <polyline
-              points="1,1 5,5.5 1,10"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
+          <Icon name="chevron-right" size={11} />
         </button>
       </div>
       <div className="bp-heatmap-body">
@@ -987,15 +947,7 @@ function HabitsDetail({ sec, c }) {
             disabled={weekIdx === sec.weeks.length - 1}
             aria-label="Previous week"
           >
-            <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
-              <polyline
-                points="5,1 1,5.5 5,10"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon name="chevron-left" size={11} />
           </button>
           <span className="bp-goal-week-label">
             {week.label}
@@ -1007,15 +959,7 @@ function HabitsDetail({ sec, c }) {
             disabled={weekIdx === 0}
             aria-label="Next week"
           >
-            <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
-              <polyline
-                points="1,1 5,5.5 1,10"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon name="chevron-right" size={11} />
           </button>
         </div>
         <GoalTracker week={week} goalMinutes={sec.dailyGoalMinutes} />
@@ -2474,26 +2418,10 @@ function ReadingLogPage() {
         <div className="bp-rl-month-label">{month}</div>
         <div className="bp-rl-month-arrows">
           <button className="bp-heatmap-nav-btn" aria-label="Previous month">
-            <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
-              <polyline
-                points="5,1 1,5.5 5,10"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon name="chevron-left" size={11} />
           </button>
           <button className="bp-heatmap-nav-btn" aria-label="Next month">
-            <svg width="6" height="11" viewBox="0 0 6 11" fill="none">
-              <polyline
-                points="1,1 5,5.5 1,10"
-                stroke="currentColor"
-                strokeWidth="1.8"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <Icon name="chevron-right" size={11} />
           </button>
         </div>
       </div>
@@ -2606,33 +2534,11 @@ function AdminMockup({ onStudentClick, selectedKey }) {
           <div className="bp-adm-card">
             <div className="bp-adm-week-nav">
               <IconButton variant="ghost" size="md" aria-label="Previous week">
-                <svg
-                  viewBox="0 0 20 20"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="13,5 7,10 13,15" />
-                </svg>
+                <Icon name="chevron-left" size={16} />
               </IconButton>
               <span className="bp-adm-week-label">5/11 – 5/17 (This Week)</span>
               <IconButton variant="ghost" size="md" aria-label="Next week" style={{ opacity: 0.3 }}>
-                <svg
-                  viewBox="0 0 20 20"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <polyline points="7,5 13,10 7,15" />
-                </svg>
+                <Icon name="chevron-right" size={16} />
               </IconButton>
             </div>
             <table className="tbl tbl--compact tbl--flush">
@@ -2679,19 +2585,7 @@ function AdminMockup({ onStudentClick, selectedKey }) {
                           title="Edit goal"
                           onClick={(e) => e.stopPropagation()}
                         >
-                          <svg
-                            viewBox="0 0 12 12"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            width="11"
-                            height="11"
-                          >
-                            <path d="M8.5 1.5 l2 2 L3 11 l-2.5.5.5-2.5z" />
-                            <path d="M7 3l2 2" />
-                          </svg>
+                          <Icon name="pencil" size={11} />
                         </IconButton>
                       </div>
                     </td>
@@ -2704,18 +2598,7 @@ function AdminMockup({ onStudentClick, selectedKey }) {
                           <span className="bp-adm-dash">–</span>
                         ) : d === true ? (
                           <span className="bp-adm-check-circle">
-                            <svg
-                              viewBox="0 0 10 10"
-                              fill="none"
-                              stroke="currentColor"
-                              strokeWidth="1.8"
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              width="10"
-                              height="10"
-                            >
-                              <polyline points="1.5,5 4,7.5 8.5,2.5" />
-                            </svg>
+                            <Icon name="check" size={10} />
                           </span>
                         ) : (
                           <span

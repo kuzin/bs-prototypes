@@ -1,6 +1,7 @@
 import * as RadixSelect from '@radix-ui/react-select'
 import { useId } from 'react'
 import { useFieldProps } from '@components/FormContext/FormContext'
+import { Icon } from '@components/Icon/Icon'
 import '@components/CustomSelect/CustomSelect.css'
 
 /**
@@ -44,20 +45,8 @@ export function CustomSelect({
       aria-label={label}
     >
       <RadixSelect.Value placeholder={placeholder} />
-      <RadixSelect.Icon className="csel-icon" asChild>
-        <svg
-          viewBox="0 0 16 16"
-          width="11"
-          height="11"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <polyline points="4,6 8,10 12,6" />
-        </svg>
+      <RadixSelect.Icon className="csel-icon">
+        <Icon name="chevron-down" size={11} stroke={2} />
       </RadixSelect.Icon>
     </RadixSelect.Trigger>
   )
@@ -66,18 +55,7 @@ export function CustomSelect({
     <RadixSelect.Portal>
       <RadixSelect.Content className="csel-content" position="popper" sideOffset={4}>
         <RadixSelect.ScrollUpButton className="csel-scroll-btn">
-          <svg
-            viewBox="0 0 16 16"
-            width="12"
-            height="12"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="4,10 8,6 12,10" />
-          </svg>
+          <Icon name="chevron-up" size={12} stroke={2} />
         </RadixSelect.ScrollUpButton>
 
         <RadixSelect.Viewport className="csel-viewport">
@@ -96,18 +74,7 @@ export function CustomSelect({
         </RadixSelect.Viewport>
 
         <RadixSelect.ScrollDownButton className="csel-scroll-btn">
-          <svg
-            viewBox="0 0 16 16"
-            width="12"
-            height="12"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="4,6 8,10 12,6" />
-          </svg>
+          <Icon name="chevron-down" size={12} stroke={2} />
         </RadixSelect.ScrollDownButton>
       </RadixSelect.Content>
     </RadixSelect.Portal>
@@ -136,19 +103,7 @@ function SelectOption({ value, label, disabled }) {
     <RadixSelect.Item value={value} disabled={disabled} className="csel-item">
       <RadixSelect.ItemText>{label}</RadixSelect.ItemText>
       <RadixSelect.ItemIndicator className="csel-item-indicator">
-        <svg
-          viewBox="0 0 12 12"
-          width="12"
-          height="12"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <polyline points="2,6 5,9 10,3" />
-        </svg>
+        <Icon name="check" size={12} stroke={2.5} />
       </RadixSelect.ItemIndicator>
     </RadixSelect.Item>
   )

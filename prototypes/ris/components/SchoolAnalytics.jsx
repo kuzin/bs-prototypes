@@ -24,24 +24,12 @@ import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { BarList } from '@components/BarList/BarList'
 import { Funnel } from '@components/Funnel/Funnel'
 import { TrendChart } from '@components/TrendChart/TrendChart'
+import { Icon } from '@components/Icon/Icon'
 import './SchoolAnalytics.css'
 
 const ANALYTICS_COLOR = '#0DA7BC'
 
-const AnalyticsIcon = () => (
-  <svg
-    viewBox="0 0 20 20"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="3" y="11" width="3" height="6" rx="1" />
-    <rect x="8.5" y="7" width="3" height="10" rx="1" />
-    <rect x="14" y="3" width="3" height="14" rx="1" />
-  </svg>
-)
+const AnalyticsIcon = () => <Icon name="chart-bar" />
 
 // Per-school student engagement funnel — scales district shape to the school's roster
 // and skews depth by the school's overall engagement rate (so weak schools have steeper drop-off).

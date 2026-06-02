@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { PanelCard, TopBooksGrid, TopBadgesRow, AgesChart, InsightsFilterBar } from '../components'
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, TOTAL_QUERIES, fmt } from '../data'
+import { Icon } from '@components/Icon/Icon'
 
 // Concept: AI snapshot
 // One generated paragraph replaces the grid of tiles. Each highlighted number
@@ -89,9 +90,7 @@ export function AISnapshot({ onMeterChange, onOpenDetail, onCustomize, visibleTi
       <div className={`ins-ai-card ins-ai-card--${loading ? 'loading' : 'loaded'}`}>
         <div className="ins-ai-head">
           <span className="ins-ai-badge">
-            <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor" aria-hidden="true">
-              <path d="M8 1l1.4 4.2L13.6 6.6 10 9l1 4-3-2.5L5 13l1-4-3.6-2.4 4.2-1.4z" />
-            </svg>
+            <Icon name="sparkles" size={12} aria-hidden="true" />
             AI Snapshot
           </span>
           <span className="ins-ai-sub">Generated from this week's reading data</span>

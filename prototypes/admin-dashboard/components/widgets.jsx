@@ -14,6 +14,7 @@ import { useState } from 'react'
 import Tippy from '@tippyjs/react'
 import 'tippy.js/dist/tippy.css'
 import { EmptyState } from '@components/Primitives/Primitives'
+import { Icon } from '@components/Icon/Icon'
 
 const fmt = (n) => n.toLocaleString()
 
@@ -78,108 +79,12 @@ export function AdmNotifications() {
 
 // ─── Stat tiles ──────────────────────────────────────────────────────────
 const STAT_ICONS = {
-  clock: (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <polyline points="12,7 12,12 15.5,14" />
-    </svg>
-  ),
-  user: (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="8" r="4" />
-      <path d="M4 20c0-3.866 3.582-7 8-7s8 3.134 8 7" />
-    </svg>
-  ),
-  book: (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H4z" />
-      <path d="M20 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z" />
-    </svg>
-  ),
-  people: (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="9" cy="8" r="3.5" />
-      <circle cx="17" cy="9" r="2.8" />
-      <path d="M2 20c0-3.314 3.134-6 7-6s7 2.686 7 6" />
-      <path d="M15 14c2.761 0 7 1.5 7 6" />
-    </svg>
-  ),
-  timer: (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="12" cy="13" r="8" />
-      <line x1="9" y1="2" x2="15" y2="2" />
-      <line x1="12" y1="13" x2="15.5" y2="9.5" />
-    </svg>
-  ),
-  calendar: (
-    <svg
-      viewBox="0 0 24 24"
-      width="20"
-      height="20"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-      <line x1="8" y1="3" x2="8" y2="7" />
-      <line x1="16" y1="3" x2="16" y2="7" />
-      <polyline points="8,15 11,17 15,13" />
-    </svg>
-  ),
+  clock: <Icon name="clock" size={20} />,
+  user: <Icon name="user" size={20} />,
+  book: <Icon name="book-2" size={20} />,
+  people: <Icon name="users" size={20} />,
+  timer: <Icon name="timer" size={20} />,
+  calendar: <Icon name="calendar-event" size={20} />,
 }
 const STAT_RANGE_LABEL = {
   week: 'This Week',
@@ -333,37 +238,8 @@ const GROUP_LABEL = {
   'grade-3': 'Grade 3',
   'grade-4': 'Grade 4',
 }
-const EditIcon = () => (
-  <svg
-    viewBox="0 0 12 12"
-    width="11"
-    height="11"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M8.5 1.5 l2 2 L3 11 l-2.5.5.5-2.5z" />
-    <path d="M7 3l2 2" />
-  </svg>
-)
-const CheckIcon = () => (
-  <svg
-    viewBox="0 0 10 10"
-    width="10"
-    height="10"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <polyline points="1.5,5 4,7.5 8.5,2.5" />
-  </svg>
-)
+const EditIcon = () => <Icon name="pencil" size={11} />
+const CheckIcon = () => <Icon name="check" size={10} />
 export function AdmDailyTracker({ settings = {}, role = 'teacher' }) {
   if (role === 'empty')
     return (
@@ -693,22 +569,7 @@ export function AdmLeaderboardCombo({ settings = {}, role = 'teacher' }) {
 const LB_COMBO_DEFAULTS = { entity: 'classes' }
 
 // ─── Flagged sessions (Reading Integrity Suite priority card) ─────────────
-const FlagIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    width="22"
-    height="22"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.9"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M5 3v18" />
-    <path d="M5 4h13l-2.5 4 2.5 4H5" />
-  </svg>
-)
+const FlagIcon = () => <Icon name="flag" size={22} />
 export function AdmFlaggedSessions({ role = 'teacher' } = {}) {
   if (role === 'empty')
     return (
@@ -777,11 +638,7 @@ const TB_FIELDS = [
   },
   { key: 'limit', label: 'Show top', type: 'range', min: 5, max: 15, step: 1 },
 ]
-const BadgeStar = () => (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true">
-    <path d="M12 2l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.8 6.2 20.8l1.1-6.5L2.6 8.8l6.5-.9z" />
-  </svg>
-)
+const BadgeStar = () => <Icon name="star-filled" size={26} />
 
 // Real Open Library cover by ISBN; on load failure (offline, missing edition)
 // fall back to a colored block with the title overlaid.
@@ -886,146 +743,14 @@ export function AdmTopBadges({ settings = {}, role = 'teacher' }) {
 // ─── Quick links ──────────────────────────────────────────────────────
 // Per-link semantic icons. Keys match the `icon` field on each LINKS entry.
 const LINK_ICONS = {
-  classes: (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="7" cy="7" r="2.5" />
-      <circle cx="14" cy="8" r="2" />
-      <path d="M2 16c0-2.5 2-4 5-4s5 1.5 5 4" />
-      <path d="M12 16c0-1.8 1.5-3 3-3s3 1.2 3 3" />
-    </svg>
-  ),
-  trophy: (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M5 3h10v4a5 5 0 0 1-10 0z" />
-      <path d="M5 5H3v1a3 3 0 0 0 2 2.8" />
-      <path d="M15 5h2v1a3 3 0 0 1-2 2.8" />
-      <path d="M10 12v3" />
-      <path d="M6.5 17h7" />
-    </svg>
-  ),
-  flag: (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 2v16" />
-      <path d="M4 3h11l-2 3 2 3H4" />
-    </svg>
-  ),
-  target: (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="10" cy="10" r="7.5" />
-      <circle cx="10" cy="10" r="4" />
-      <circle cx="10" cy="10" r="1" fill="currentColor" />
-    </svg>
-  ),
-  chart: (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 17h14" />
-      <rect x="5" y="9" width="2.5" height="6" rx="0.5" />
-      <rect x="9" y="5" width="2.5" height="10" rx="0.5" />
-      <rect x="13" y="11" width="2.5" height="4" rx="0.5" />
-    </svg>
-  ),
-  clipboard: (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="5" y="4" width="10" height="13" rx="1.5" />
-      <rect x="7.5" y="2.5" width="5" height="3" rx="0.8" />
-      <line x1="8" y1="10" x2="13" y2="10" />
-      <line x1="8" y1="13" x2="12" y2="13" />
-    </svg>
-  ),
-  lexile: (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 4h7a3 3 0 0 1 3 3v10a2 2 0 0 0-2-2H3z" />
-      <path d="M17 4h-4a3 3 0 0 0-3 3v10a2 2 0 0 1 2-2h5z" />
-      <path d="M5 8h4M5 11h4" />
-    </svg>
-  ),
-  reward: (
-    <svg
-      viewBox="0 0 20 20"
-      width="16"
-      height="16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="10" cy="8" r="4.5" />
-      <path d="M7 12l-1.5 5L10 15l4.5 2L13 12" />
-      <path d="M10 6v2l1.5 1" />
-    </svg>
-  ),
+  classes: <Icon name="users" size={16} />,
+  trophy: <Icon name="trophy" size={16} />,
+  flag: <Icon name="flag" size={16} />,
+  target: <Icon name="target" size={16} />,
+  chart: <Icon name="chart-bar" size={16} />,
+  clipboard: <Icon name="clipboard-list" size={16} />,
+  lexile: <Icon name="book-2" size={16} />,
+  reward: <Icon name="award" size={16} />,
 }
 export function AdmQuickLinks({ settings = {} }) {
   const selectedIds =
@@ -1073,132 +798,14 @@ const QUICK_LINKS_FIELDS = [
 
 // ─── Quick questions ──────────────────────────────────────────────────
 const Q_ICONS = {
-  clock: (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <polyline points="12,7 12,12 15,15" />
-    </svg>
-  ),
-  calendar: (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <rect x="3" y="5" width="18" height="16" rx="2" />
-      <line x1="3" y1="10" x2="21" y2="10" />
-      <line x1="8" y1="3" x2="8" y2="7" />
-      <line x1="16" y1="3" x2="16" y2="7" />
-    </svg>
-  ),
-  check: (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <polyline points="8,12 11,15 16,9" />
-    </svg>
-  ),
-  target: (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="9" />
-      <circle cx="12" cy="12" r="5" />
-      <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-    </svg>
-  ),
-  book: (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M4 4h7a3 3 0 0 1 3 3v14a2 2 0 0 0-2-2H4z" />
-      <path d="M20 4h-7a3 3 0 0 0-3 3v14a2 2 0 0 1 2-2h8z" />
-    </svg>
-  ),
-  warning: (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M12 3L2 21h20z" />
-      <line x1="12" y1="10" x2="12" y2="14" />
-      <circle cx="12" cy="17" r="0.6" fill="currentColor" />
-    </svg>
-  ),
-  trending: (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="3,17 9,11 13,15 21,7" />
-      <polyline points="15,7 21,7 21,13" />
-    </svg>
-  ),
-  people: (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="9" cy="8" r="3" />
-      <circle cx="17" cy="9" r="2.5" />
-      <path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6" />
-      <path d="M14 14c2.5 0 7 1.5 7 6" />
-    </svg>
-  ),
+  clock: <Icon name="clock" size={18} />,
+  calendar: <Icon name="calendar" size={18} />,
+  check: <Icon name="circle-check" size={18} />,
+  target: <Icon name="target" size={18} />,
+  book: <Icon name="book-2" size={18} />,
+  warning: <Icon name="alert-triangle" size={18} />,
+  trending: <Icon name="trending-up" size={18} />,
+  people: <Icon name="users" size={18} />,
 }
 
 export function AdmQuestions({ settings = {}, role = 'teacher' }) {

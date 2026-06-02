@@ -1,6 +1,7 @@
 import * as Popover from '@radix-ui/react-popover'
 import { useState, useId } from 'react'
 import { useFieldProps } from '@components/FormContext/FormContext'
+import { Icon } from '@components/Icon/Icon'
 import '@components/DatePicker/Picker.css'
 
 /**
@@ -130,23 +131,7 @@ export function DatePicker({
           {selected ? formatDisplay(selected) : placeholder}
         </span>
         {/* Calendar icon */}
-        <svg
-          className="pck-icon"
-          viewBox="0 0 16 16"
-          width="14"
-          height="14"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="2" y="3" width="12" height="11" rx="2" />
-          <line x1="2" y1="7" x2="14" y2="7" />
-          <line x1="5" y1="1" x2="5" y2="5" />
-          <line x1="11" y1="1" x2="11" y2="5" />
-        </svg>
+        <Icon name="calendar" size={14} className="pck-icon" />
       </button>
     </Popover.Trigger>
   )
@@ -167,35 +152,13 @@ export function DatePicker({
             onClick={prevMonth}
             aria-label="Previous month"
           >
-            <svg
-              viewBox="0 0 16 16"
-              width="12"
-              height="12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="10,4 6,8 10,12" />
-            </svg>
+            <Icon name="chevron-left" size={12} stroke={2.2} />
           </button>
           <span className="dpk-month-label">
             {MONTHS[month]} {year}
           </span>
           <button type="button" className="dpk-nav-btn" onClick={nextMonth} aria-label="Next month">
-            <svg
-              viewBox="0 0 16 16"
-              width="12"
-              height="12"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="6,4 10,8 6,12" />
-            </svg>
+            <Icon name="chevron-right" size={12} stroke={2.2} />
           </button>
         </div>
 

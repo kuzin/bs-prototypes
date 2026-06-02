@@ -1,4 +1,5 @@
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Hero/Hero.css'
 
 /**
@@ -29,36 +30,15 @@ import '@components/Hero/Hero.css'
 
 function DeltaArrow({ positive, flat }) {
   if (flat) {
-    return (
-      <svg
-        viewBox="0 0 14 14"
-        width="11"
-        height="11"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <line x1="3" y1="7" x2="11" y2="7" />
-      </svg>
-    )
+    return <Icon name="minus" size={11} stroke={2.5} />
   }
   return (
-    <svg
-      viewBox="0 0 14 14"
-      width="11"
-      height="11"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+    <Icon
+      name="arrow-up"
+      size={11}
+      stroke={2.5}
       style={{ transform: positive ? 'none' : 'rotate(180deg)' }}
-    >
-      <polyline points="3,8 7,4 11,8" />
-      <line x1="7" y1="4" x2="7" y2="12" />
-    </svg>
+    />
   )
 }
 
