@@ -84,7 +84,8 @@ function Tip({ children }) {
 // Preset color dots + a custom picker.
 // The one color-chip picker for challenge creator: a row of round preset
 // swatches followed by a custom hex input, wrapping together as needed.
-function ColorPicker({ value, presets = [], fallback, onColor }) {
+// Exported so the pattern library can catalog it.
+export function ColorPicker({ value, presets = [], fallback, onColor }) {
   return (
     <div className="cc-colorpick">
       <ColorInput size="sm" value={value || fallback} onChange={onColor} />

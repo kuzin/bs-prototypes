@@ -19,6 +19,7 @@ import { domainSections } from './sections/domain'
 import { layoutSections } from './sections/layout'
 import { sfrSections } from './sections/sfr'
 import { insightsSections } from './sections/insights'
+import { challengeCreatorSections } from './sections/challenge-creator'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -45,6 +46,7 @@ import '../sfr/components/SessionModal.css'
 import '../sfr/components/SfrPage.css'
 import '@components/ActiveFilters/ActiveFilters.css'
 import '../insights/index.css'
+import '../challenge-creator/index.css'
 
 import './App.css'
 
@@ -149,6 +151,14 @@ export const GROUPS = [
     color: '#4F46E5',
     icon: <Icon name="layout-grid" size={22} />,
   },
+  {
+    id: 'challenge-creator',
+    kind: 'prototype',
+    title: 'Challenge Creator',
+    desc: 'Components specific to the Challenge Creator V2 prototype — starting with the shared color-chip picker.',
+    color: '#0DA7BC',
+    icon: <Icon name="trophy" size={22} />,
+  },
 ]
 
 export const SECTIONS = [
@@ -161,4 +171,5 @@ export const SECTIONS = [
   ...layoutSections,
   ...sfrSections,
   ...insightsSections,
+  ...challengeCreatorSections,
 ]
