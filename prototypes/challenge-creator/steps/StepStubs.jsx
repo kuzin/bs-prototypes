@@ -3136,10 +3136,11 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   // (required) plus its add-ons. Points challenges also offer repeatable activities.
   // Bingo cards are filled with logging + activity badges, so those are its
   // earnable types (Logging stays the locked primary).
-  const primaryKey = type?.id === 'bingo' ? 'log' : type?.primaryMethod
+  const isBingo = type?.id === 'bingo'
+  const primaryKey = isBingo ? 'log' : type?.primaryMethod
   const earnableTypes = [
     ...new Set(
-      (type?.id === 'bingo'
+      (isBingo
         ? ['log', 'activities']
         : [type?.primaryMethod, ...(type?.addOns || []), ...(isPoints ? ['repeatable'] : [])]
       ).filter(Boolean),
@@ -3317,6 +3318,8 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   const saveBadge = (badge) => {
     if (editor?.target === 'registration') update({ registrationBadge: badge })
     else if (editor?.target === 'completion') update({ completionBadge: badge })
+    else if (editor?.target === 'bingo') update({ bingoBadge: badge })
+    else if (editor?.target === 'fullCard') update({ fullCardBadge: badge })
     else if (editor?.target === 'review') {
       if (editor.index != null)
         update({ reviewBadges: reviewBadges.map((b, idx) => (idx === editor.index ? badge : b)) })
@@ -3332,7 +3335,12 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   }
 
   const pinnedBadge = (slot) =>
-    slot === 'registration' ? challenge.registrationBadge : challenge.completionBadge
+    ({
+      registration: challenge.registrationBadge,
+      completion: challenge.completionBadge,
+      bingo: challenge.bingoBadge,
+      fullCard: challenge.fullCardBadge,
+    })[slot]
   const PinSlot = ({ slot, label }) => {
     const b = pinnedBadge(slot)
     const open = () =>
@@ -3458,10 +3466,29 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
         <PinSlot slot="registration" label="Registration badge" />
       </div>
 
-      <div className="cc-panel">
-        <h3 className="cc-panel-title">Completion badge</h3>
-        <PinSlot slot="completion" label="Completion badge" />
-      </div>
+      {isBingo ? (
+        <>
+          <div className="cc-panel">
+            <h3 className="cc-panel-title">Bingo badge</h3>
+            <p className="cc-method-note cc-method-note--sm">
+              Earned when a reader completes a row, column, or diagonal.
+            </p>
+            <PinSlot slot="bingo" label="Bingo badge" />
+          </div>
+          <div className="cc-panel">
+            <h3 className="cc-panel-title">Full-card badge</h3>
+            <p className="cc-method-note cc-method-note--sm">
+              Earned when a reader fills the entire card.
+            </p>
+            <PinSlot slot="fullCard" label="Full-card badge" />
+          </div>
+        </>
+      ) : (
+        <div className="cc-panel">
+          <h3 className="cc-panel-title">Completion badge</h3>
+          <PinSlot slot="completion" label="Completion badge" />
+        </div>
+      )}
 
       {isPoints && (
         <div className="cc-panel">
@@ -3784,7 +3811,10 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
                     ? 'points'
                     : undefined
             }
-            editing={editor.index != null || ['registration', 'completion'].includes(editor.target)}
+            editing={
+              editor.index != null ||
+              ['registration', 'completion', 'bingo', 'fullCard'].includes(editor.target)
+            }
             extraGroups={badgeExtraGroups}
             defaultGroupId={badgeDefaultGroup}
             bgImages={badgeBgImages}
