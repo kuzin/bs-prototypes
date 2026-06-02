@@ -4201,15 +4201,27 @@ export function SetupStep({ challenge, type, update }) {
         />
         <div className="cc-panel">
           <Field label="Card size">
-            <RadioGroup
-              name="bingoSize"
-              value={size}
-              onChange={(v) => update({ setup: { ...s, bingoSize: v } })}
-            >
-              <Radio value="3x3">3 × 3</Radio>
-              <Radio value="4x4">4 × 4</Radio>
-              <Radio value="5x5">5 × 5</Radio>
-            </RadioGroup>
+            <div className="cc-bingo-sizes">
+              {['3x3', '4x4', '5x5'].map((v) => {
+                const dim = Number(v[0])
+                return (
+                  <button
+                    key={v}
+                    type="button"
+                    className={`cc-bingo-size${size === v ? ' is-active' : ''}`}
+                    aria-pressed={size === v}
+                    onClick={() => update({ setup: { ...s, bingoSize: v } })}
+                  >
+                    <span className="cc-bingo-size-grid" style={{ '--n': dim }}>
+                      {Array.from({ length: dim * dim }).map((_, i) => (
+                        <i key={i} />
+                      ))}
+                    </span>
+                    <span className="cc-bingo-size-label">{v.replace('x', ' × ')}</span>
+                  </button>
+                )
+              })}
+            </div>
           </Field>
           <BingoBoard
             challenge={challenge}
