@@ -3705,7 +3705,6 @@ function RewardEditor({ initial, badges = [], usedBadgeIds = [], onSave, onCance
   const [title, setTitle] = useState(initial?.title || '')
   const [description, setDescription] = useState(initial?.description || '')
   const [badgeIds, setBadgeIds] = useState(initial?.badgeIds || [])
-  const toggleBadge = (id) => setBadgeIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
   return (
     <div className="cc-badge-editor cc-reward-editor">
       <header className="cc-badge-editor-head">
@@ -3719,10 +3718,15 @@ function RewardEditor({ initial, badges = [], usedBadgeIds = [], onSave, onCance
           <Input value={title} maxLength={80} placeholder="e.g. Free Book" onChange={(e) => setTitle(e.target.value)} />
         </Field>
         <Field label="Description" hint="Optional · shown to readers">
-          <Textarea value={description} rows={3} placeholder="What the reader gets…" onChange={(e) => setDescription(e.target.value)} />
+          <RichText value={description} onChange={(html) => setDescription(html)} minHeight={90} placeholder="What the reader gets…" />
         </Field>
-        <Field label="Earned by badge" hint="Each badge can be tied to one reward — used badges are disabled">
-          <BadgeSelect badges={badges} selectedIds={badgeIds} onToggle={toggleBadge} disabledIds={usedBadgeIds} disabledHint="Already rewarded" />
+        <Field label="Earned by badge">
+          <MultiSelect
+            options={badges.map((b) => ({ value: b.id, label: b.name, image: b.img || null, disabled: usedBadgeIds.includes(b.id) && !badgeIds.includes(b.id) }))}
+            value={badgeIds}
+            onChange={setBadgeIds}
+            placeholder="Select badges…"
+          />
         </Field>
       </div>
       <footer className="cc-badge-editor-foot">
@@ -3912,7 +3916,6 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
   const [description, setDescription] = useState(initial?.description || '')
   const [body, setBody] = useState(initial?.body || CERT_EXAMPLE)
   const [badgeIds, setBadgeIds] = useState(initial?.badgeIds || [])
-  const toggleBadge = (id) => setBadgeIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
   const insertTag = (tag) => setBody((b) => (b && !b.endsWith(' ') ? b + ' ' : b) + tag)
   return (
     <div className="cc-badge-editor cc-cert-editor">
@@ -3933,7 +3936,12 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
           <Textarea value={description} rows={2} placeholder="Optional summary…" onChange={(e) => setDescription(e.target.value)} />
         </Field>
         <Field label="Earned by badge" hint="Readers get this certificate when they earn the selected badge(s)">
-          <BadgeSelect badges={badges} selectedIds={badgeIds} onToggle={toggleBadge} />
+          <MultiSelect
+            options={badges.map((b) => ({ value: b.id, label: b.name, image: b.img || null }))}
+            value={badgeIds}
+            onChange={setBadgeIds}
+            placeholder="Select badges…"
+          />
         </Field>
         <Field label="Certificate body">
           <Textarea value={body} rows={4} onChange={(e) => setBody(e.target.value)} />
@@ -4064,7 +4072,6 @@ export function RewardsStep({ challenge, update }) {
                 <Button variant="secondary" size="sm" onClick={() => setTicketEditor({ new: true })}>+ Add ticket reward</Button>
               </>
             )}
-            <span className="cc-reg-state">{ticketsEnabled ? 'Enabled' : 'Disabled'}</span>
             <Toggle checked={ticketsEnabled} size="md" onChange={(v) => setR({ ticketsEnabled: v })} />
           </div>
         </div>
@@ -4140,7 +4147,6 @@ export function RewardsStep({ challenge, update }) {
                 <Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>+ Add certificate</Button>
               </>
             )}
-            <span className="cc-reg-state">{certsEnabled ? 'Enabled' : 'Disabled'}</span>
             <Toggle checked={certsEnabled} size="md" onChange={(v) => setR({ certsEnabled: v })} />
           </div>
         </div>

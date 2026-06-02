@@ -590,6 +590,10 @@
   align-items: center;
   gap: 8px;
 }
+/* Separate the on/off toggle from the action buttons next to it. */
+.cc-panel-actions .tgl {
+  margin-left: 6px;
+}
 /* Vertical rhythm for stacked Form `Field`s in a panel. The design-system
    `.fld` only spaces label→control (gap:6px); the parent supplies the rhythm
    between fields — here 18px between each stacked field / field-row. */
@@ -3888,6 +3892,45 @@
   }
 }
 
+/* ── Mobile (≤640px): tighten chrome + stack dense rows ── */
+@media (max-width: 640px) {
+  .cc-form-inner {
+    padding: 16px 14px;
+  }
+  .cc-panel {
+    padding: 14px;
+  }
+  /* Numbered-dot stepper — full step labels overflow on small screens. */
+  .cc-stepbar {
+    overflow-x: auto;
+  }
+  .cc-stepbar .stepper-name {
+    display: none;
+  }
+  /* Drop the secondary center icon group so the title has room. */
+  .cc-topbar-center {
+    display: none;
+  }
+  /* Panel header + its actions wrap instead of clipping off-screen. */
+  .cc-panel-head {
+    flex-wrap: wrap;
+  }
+  .cc-panel-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  /* Ticket-source option cards stack to one column.
+     Scoped under .cc-root to outrank the later base rule. */
+  .cc-root .cc-optcards {
+    grid-template-columns: 1fr;
+  }
+  /* Template + banner galleries go two-up instead of cramped three-up. */
+  .cc-gallery,
+  .cc-banner-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 /* ── Rewards step ───────────────────────────────────────────────────────── */
 .cc-rewards-drawings-note {
   margin-bottom: 16px;
@@ -4140,6 +4183,10 @@
   gap: 8px;
   font-size: 13px;
   color: var(--ink);
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
 }
 .cc-ticket-allcount .ninp {
   width: 106px;
