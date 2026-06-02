@@ -104,6 +104,7 @@ function InputKnobs() {
   const [withIcon, setIcon] = useState(false)
   const [withIconRight, setIconRight] = useState(false)
   const [withLabel, setLabel] = useState(true)
+  const [required, setRequired] = useState(false)
   const [error, setError] = useState('')
   const [help, setHelp] = useState('')
   const searchIcon = <Icon name="search" />
@@ -135,6 +136,9 @@ function InputKnobs() {
         <Field label="show label">
           <Toggle checked={withLabel} onChange={setLabel} />
         </Field>
+        <Field label="required">
+          <Toggle checked={required} onChange={setRequired} />
+        </Field>
         <Field label="left icon">
           <Toggle checked={withIcon} onChange={setIcon} />
         </Field>
@@ -152,9 +156,10 @@ function InputKnobs() {
         </Field>
       </Knobs>
       <div className="pt-variant-frame">
-        {error || help ? (
+        {error || help || required ? (
           <Field
             label={withLabel ? 'School name' : undefined}
+            required={required}
             help={help || undefined}
             error={error || undefined}
           >

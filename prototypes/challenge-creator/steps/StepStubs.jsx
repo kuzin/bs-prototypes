@@ -646,6 +646,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
         <h3 className="cc-panel-title">Basics</h3>
         <Field
           label="Challenge name"
+          required
           className="cc-w-md"
           hint={`${(d.name || '').length}/${LIMITS.name}`}
           error={errors.name}
@@ -659,16 +660,19 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
         </Field>
         <Field
           label="Challenge description"
-          help="This description shows up when readers are viewing the full challenge. HTML can be used to format the description."
+          help="Shown on the reader's full challenge page."
+          className="cc-w-lg"
         >
           <RichText
             key={challenge.templateId}
             value={d.description}
             onChange={(html) => updateDetails({ description: html })}
             placeholder="Tell your readers all about your challenge!"
+            minHeight={120}
           />
         </Field>
         <Field
+          className="cc-w-lg"
           label={
             <span className="cc-label-wc">
               Challenge preview card description
@@ -679,7 +683,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
               </span>
             </span>
           }
-          help="Appears in challenge cards featured on your landing page and in reader preview cards. HTML isn't supported."
+          help="A short summary for challenge cards and previews."
         >
           <Textarea
             value={d.previewDescription}
@@ -695,10 +699,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
             <DateInput value={d.end} onChange={(e) => updateDetails({ end: e.target.value })} />
           </Field>
         </div>
-        <Field
-          label="Challenge position"
-          help="Select the order in which the challenge will be displayed."
-        >
+        <Field label="Challenge position">
           <NumberInput
             className="cc-num-narrow"
             value={d.position || 1}
@@ -759,7 +760,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
           <>
             <Field
               label="Header image"
-              help="Recommended 920 × 351px · jpeg, jpg, gif, png · under 10MB."
+              help="Recommended 920 × 351px · JPG, PNG, or GIF · under 10MB."
             >
               <ImageDropzone
                 fileName={d.background?.name}
@@ -795,7 +796,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                 </button>
               )}
             </Field>
-            <Field label="Accent color" help="Themes buttons and progress on the reader's page.">
+            <Field label="Accent color" className="cc-w-sm">
               <ColorInput value={d.accent} onChange={(v) => updateDetails({ accent: v })} />
             </Field>
           </>
@@ -1002,12 +1003,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
             />
           </Field>
         ) : isSimple ? (
-          <Field
-            label="Classrooms"
-            help="Pick at least one classroom to publish."
-            className="cc-w-md"
-            error={errors.classrooms}
-          >
+          <Field label="Classrooms" required className="cc-w-md" error={errors.classrooms}>
             <MultiSelect
               options={classOpts}
               value={d.classrooms}

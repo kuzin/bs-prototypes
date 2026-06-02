@@ -43,6 +43,12 @@
   font-weight: 500;
 }
 
+/* Required marker — a small red asterisk after the label text. */
+.fld-req {
+  color: #dc2626;
+  font-weight: 700;
+}
+
 .fld-control {
   display: flex;
   flex-direction: column;
