@@ -36,15 +36,22 @@ export function Field({
   children,
   layout = 'column',
   className = '',
+  required = false,
 }) {
   const id = useId()
   const controlId = htmlFor || id
   return (
-    <FieldContext.Provider value={{ id: controlId, hasError: !!error }}>
+    <FieldContext.Provider value={{ id: controlId, hasError: !!error, required }}>
       <div className={`fld fld--${layout} ${error ? 'fld--has-error' : ''} ${className}`.trim()}>
         {label && (
           <label className="fld-label" htmlFor={controlId}>
             {label}
+            {required && (
+              <span className="fld-req" title="Required">
+                {' '}
+                *
+              </span>
+            )}
             {hint && <span className="fld-hint"> · {hint}</span>}
           </label>
         )}
@@ -61,14 +68,16 @@ export function Field({
 
 // ── Input ────────────────────────────────────────────────────────────────
 export function Input({ size = 'md', icon, iconRight, label, className = '', ...rest }) {
-  const { id: fieldId, hasError } = useFieldProps()
+  const { id: fieldId, hasError, required } = useFieldProps()
   const selfId = useId()
   const inputId = rest.id || fieldId || selfId
+  const ariaRequired = required || undefined
 
   const inputEl =
     !icon && !iconRight ? (
       <input
         id={inputId}
+        aria-required={ariaRequired}
         className={`inp inp--${size}${hasError ? ' inp--error' : ''}${!label && className ? ` ${className}` : ''}`}
         {...rest}
       />
@@ -77,7 +86,7 @@ export function Input({ size = 'md', icon, iconRight, label, className = '', ...
         className={`inp-wrap inp-wrap--${size}${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}
       >
         {icon && <span className="inp-icon inp-icon--left">{icon}</span>}
-        <input id={inputId} className="inp inp--bare" {...rest} />
+        <input id={inputId} aria-required={ariaRequired} className="inp inp--bare" {...rest} />
         {iconRight && <span className="inp-icon inp-icon--right">{iconRight}</span>}
       </div>
     )
@@ -95,7 +104,7 @@ export function Input({ size = 'md', icon, iconRight, label, className = '', ...
 
 // ── Select ───────────────────────────────────────────────────────────────
 export function Select({ size = 'md', label, children, className = '', ...rest }) {
-  const { id: fieldId, hasError } = useFieldProps()
+  const { id: fieldId, hasError, required } = useFieldProps()
   const selfId = useId()
   const selectId = rest.id || fieldId || selfId
 
@@ -103,7 +112,7 @@ export function Select({ size = 'md', label, children, className = '', ...rest }
     <div
       className={`sel-wrap sel-wrap--${size}${hasError ? ' sel-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}
     >
-      <select id={selectId} className="sel" {...rest}>
+      <select id={selectId} aria-required={required || undefined} className="sel" {...rest}>
         {children}
       </select>
       <Icon name="chevron-down" size={15} stroke={2} className="sel-caret" />
@@ -123,13 +132,14 @@ export function Select({ size = 'md', label, children, className = '', ...rest }
 
 // ── Textarea ─────────────────────────────────────────────────────────────
 export function Textarea({ size = 'md', label, className = '', ...rest }) {
-  const { id: fieldId, hasError } = useFieldProps()
+  const { id: fieldId, hasError, required } = useFieldProps()
   const selfId = useId()
   const textareaId = rest.id || fieldId || selfId
 
   const textareaEl = (
     <textarea
       id={textareaId}
+      aria-required={required || undefined}
       className={`txt txt--${size}${hasError ? ' txt--error' : ''}${!label && className ? ` ${className}` : ''}`}
       {...rest}
     />

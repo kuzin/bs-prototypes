@@ -225,21 +225,52 @@ export function App() {
   const idx = steps.findIndex((s) => s.id === stepId)
   const isLast = idx === steps.length - 1
 
-  // ── Validation: errors show inline; Next is disabled until the step is valid ──
+  // ── Validation ──
+  // Errors are computed continuously, but only *revealed* once the user has
+  // attempted to move on (Next / Publish) from a given step. Before that a step
+  // shows required-field markers but no red errors — so you never land on a
+  // fresh step that's already shouting at you. Once revealed, errors clear live
+  // as you fix them.
+  const [revealed, setRevealed] = useState({})
+  const formRef = useRef(null)
+
   const stepErrors = useMemo(
     () => validateStep(stepId, challenge, { role, type }),
     [stepId, challenge, role, type],
   )
   const stepValid = Object.keys(stepErrors).length === 0
+  const visibleErrors = revealed[stepId] ? stepErrors : {}
+
+  const revealStep = (id) => setRevealed((r) => (r[id] ? r : { ...r, [id]: true }))
+  // After revealing, focus the first invalid field's control and scroll it into
+  // view. Scroll is instant — a smooth scroll here got silently cancelled when
+  // the control then took focus, leaving the page where it was.
+  const focusFirstError = () => {
+    setTimeout(() => {
+      const field = formRef.current?.querySelector('.fld--has-error')
+      if (!field) return
+      const control = field.querySelector('input, textarea, select, button, [tabindex]')
+      if (control && typeof control.focus === 'function') control.focus({ preventScroll: true })
+      field.scrollIntoView({ block: 'center' })
+    }, 40)
+  }
 
   const goNext = () => {
-    if (!isLast && stepValid) setStepId(steps[idx + 1].id)
+    if (isLast) return
+    if (!stepValid) {
+      revealStep(stepId)
+      focusFirstError()
+      return
+    }
+    setStepId(steps[idx + 1].id)
   }
   const goPrev = () => idx > 0 && setStepId(steps[idx - 1].id)
   const publish = () => {
     const bad = firstInvalidStep(steps, challenge, { role, type })
     if (bad) {
       setStepId(bad)
+      revealStep(bad)
+      focusFirstError()
       return
     }
     window.alert('Prototype: the challenge would publish now. ✅')
@@ -294,7 +325,7 @@ export function App() {
       </div>
 
       <div className="cc-main">
-        <main className="cc-form">
+        <main className="cc-form" ref={formRef}>
           <div className="cc-form-inner">
             {stepId === 'type' && (
               <TypeStep
@@ -310,7 +341,7 @@ export function App() {
                 type={type}
                 updateDetails={updateDetails}
                 onTemplate={chooseTemplate}
-                errors={stepErrors}
+                errors={visibleErrors}
               />
             )}
             {stepId === 'badges' && (
@@ -319,7 +350,7 @@ export function App() {
                 role={role}
                 type={type}
                 update={update}
-                errors={stepErrors}
+                errors={visibleErrors}
               />
             )}
             {stepId === 'setup' && <SetupStep challenge={challenge} type={type} update={update} />}
@@ -346,12 +377,7 @@ export function App() {
                   Publish challenge
                 </Button>
               ) : (
-                <Button
-                  variant="primary"
-                  accent={type?.accent || '#0DA7BC'}
-                  onClick={goNext}
-                  disabled={!stepValid}
-                >
+                <Button variant="primary" accent={type?.accent || '#0DA7BC'} onClick={goNext}>
                   Next: {steps[idx + 1]?.name}
                 </Button>
               )}

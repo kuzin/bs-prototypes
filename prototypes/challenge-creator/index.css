@@ -38,10 +38,14 @@
 .cc-root .frm-self-label {
   font-size: 14px;
 }
-.cc-root .fld-help,
-.cc-root .fld-error,
-.cc-root .fld-hint {
+.cc-root .fld-error {
   font-size: 14px;
+}
+/* Help + char-counts sit a step below labels (13px = the readability floor) so
+   field labels lead and the form feels less busy. */
+.cc-root .fld-help,
+.cc-root .fld-hint {
+  font-size: 13px;
 }
 .cc-root .inp--md,
 .cc-root .csel-trigger--sm,
@@ -553,8 +557,9 @@
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 14px;
-  padding: 18px;
-  margin-bottom: 16px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 .cc-panel-banner {
   margin: 0 0 14px;
@@ -570,32 +575,16 @@
   gap: 12px;
   margin-bottom: 12px;
 }
-.cc-step {
-  counter-reset: ccpanel;
-}
+/* Plain text section headers — no number, no accent bar. */
 .cc-panel-title {
-  counter-increment: ccpanel;
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 0 0 14px;
+  gap: 8px;
+  margin: 0 0 16px;
   font-size: 16px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--ink);
-}
-.cc-panel-title::before {
-  content: counter(ccpanel);
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--teal) 14%, #fff);
-  color: var(--teal-dk);
-  font-size: 14px;
-  font-weight: 800;
 }
 .cc-panel-head .cc-panel-title {
   margin: 0;
@@ -614,7 +603,7 @@
    between fields — here 18px between each stacked field / field-row. */
 .cc-panel > .fld,
 .cc-panel > .cc-date-row {
-  margin-top: 24px;
+  margin-top: 18px;
 }
 .cc-panel > .cc-panel-title + .fld,
 .cc-panel > .cc-panel-title + .cc-date-row,
@@ -895,6 +884,12 @@
 .cc-w-sm .fld-control {
   max-width: 220px;
 }
+/* Cap text-heavy fields (descriptions) so the form reads as a tidy column
+   rather than sprawling the full panel width. Caps the whole field so an
+   inline word-count stays aligned to the field's right edge. */
+.cc-w-lg {
+  max-width: 560px;
+}
 
 .cc-restore-btn {
   margin-top: 10px;
@@ -1133,7 +1128,7 @@
   color: var(--ink);
 }
 .cc-setting-sub {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--muted);
 }
 
@@ -1551,10 +1546,6 @@
   background: #fff;
   border-radius: 14px;
   overflow: hidden;
-}
-/* Editor section titles aren't part of the page's numbered steps. */
-.cc-badge-editor .cc-panel-title::before {
-  display: none;
 }
 .cc-badge-editor-head {
   display: flex;
