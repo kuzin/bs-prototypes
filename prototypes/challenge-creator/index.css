@@ -2505,10 +2505,12 @@
 /* ── Bingo board (tray + drag-and-drop grid) ── */
 .cc-bingo-board {
   display: grid;
-  grid-template-columns: 1fr minmax(240px, 300px);
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 300px);
   gap: 20px;
   align-items: start;
   margin-top: 16px;
+  box-sizing: border-box;
+  width: 100%;
 }
 @media (max-width: 760px) {
   .cc-bingo-board {
@@ -2621,6 +2623,7 @@
   display: grid;
   grid-template-columns: repeat(var(--n, 4), 1fr);
   gap: 8px;
+  box-sizing: border-box;
   width: 100%;
   max-width: 300px;
   padding: 12px;
