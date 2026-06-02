@@ -89,6 +89,23 @@ There is **one** component system, in `components/` — every prototype draws fr
 - **Layout & chrome** — `AppShell` (prop-driven shell: Sidebar + content slot + optional back bar), `Sidebar` (prop-driven nav + school picker), `PrototypeNav`, `BackBar`, `MainRail`
 - **`ui/`** — the student-profile's `bp-`prefixed primitives (`Ic`, `StatusBadge`, `Card`, `SectionHeading`, `GoalRing`, `CoverImage`) plus design tokens (`C`, `LABEL`, `GENRE_COLORS`, `I8_IDS`, `COVER_PALETTES`), imported via `@components/ui`
 
+### 🔣 Icons
+
+There is **one** icon component — `Icon` (`@components/Icon/Icon`), a house-styled wrapper over [`@tabler/icons-react`](https://tabler.io/icons). Use a semantic kebab-case `name` so call sites stay library-agnostic:
+
+```jsx
+import { Icon } from '@components/Icon/Icon'
+
+<Icon name="flame" />                          // defaults: size 18, stroke 1.8, color currentColor
+<Icon name="chevron-down" size={11} stroke={2} />
+<Icon name="flag" size={16} color="#DC2626" />
+```
+
+- **Don't hand-roll inline `<svg>` glyphs, and don't add Icons8 entries.** To add a glyph, register it in [components/Icon/Icon.jsx](components/Icon/Icon.jsx): import the `IconX` from `@tabler/icons-react` and add a `'kebab-name': IconX` entry (verify the Tabler name exists first). `ICON_NAMES` exports the full list, and the Pattern Library's **first Atom is a live gallery** of every registered name with size/stroke/color knobs.
+- `color` defaults to `currentColor`, so icons inherit the parent's CSS `color` — only pass `color` for an explicit override.
+- The legacy `ui/` `Ic` (`<Ic name="ti-…">`) is a back-compat shim that now renders `<Icon>` under the hood (no more remote Icons8 PNGs). Prefer `<Icon>` in new code.
+- **Exceptions that stay inline SVG** (not single glyphs): brand/partner logos, and drawn graphics like charts, sparklines, and progress / goal / donut rings.
+
 **The Pattern Library prototype (`prototypes/patterns/`) is the live catalog** — a hash-routed browser (home grid → a dedicated page per component; sidebar groups expand in place) with interactive knobs, importing components straight from `@components`. It's data-driven: each group's showcases + section entries live in [prototypes/patterns/sections/](prototypes/patterns/sections/)`<group>.jsx` (atoms, molecules, form-fields, form-patterns, charts, domain, layout, sfr, insights), with shared knob helpers in `sections/_shared.jsx`. [prototypes/patterns/catalog.jsx](prototypes/patterns/catalog.jsx) stays slim — it assembles `SECTIONS` from the per-group arrays and owns `GROUPS` + `GroupHeader` + the CSS imports; [prototypes/patterns/App.jsx](prototypes/patterns/App.jsx) is the router/shell. When you build a new reusable component, add it to `components/<Name>/` and add an entry to the matching `sections/<group>.jsx` — that's the registry every other prototype checks first.
 
 Components specific to a single prototype stay inside that prototype — e.g. ris's dashboard screens (`SchoolDashboard`, `School*`/`District*`, `RisLayout`, `StudentPanel`) live in `prototypes/ris/components/`. Such prototype-specific patterns are still catalogued in the Pattern Library, but under a group named after the prototype (e.g. **Sessions for Review**, **Insights**) rather than the generic groups. The shared layout (`AppShell`, `Sidebar`) was lifted out of ris so sfr, insights, and rostering can reuse the same shell.
@@ -154,7 +171,7 @@ The entry HTML (title from the registry below, `<script>` pointing at this `main
 
 This drives the landing card, the prototype switcher, and the generated page `<title>`.
 
-**3. (Optional) Add a card icon** — `landing/App.jsx`, in the `ICONS` map.
+**3. (Optional) Add a card icon** — `landing/App.jsx`, in the `ICON_NAMES` map: `'my-proto': '<name>'`, where `<name>` is any `<Icon>` registry name (add a new glyph to `components/Icon/Icon.jsx` if none fits). It renders via the shared `<Icon>` — no hand-rolled SVG.
 
 Then `pnpm dev` — it'll show up on the landing page and in the prototype switcher automatically.
 
