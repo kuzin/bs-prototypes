@@ -595,18 +595,13 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
   // that instead of falling back to the first theme.
   const themeId = TEMPLATE_PRESETS[challenge.templateId]?.theme || getBannerTheme(d.background?.id)
   const themeVariants = BANNER_THEMES.find((t) => t.id === themeId)?.variants || []
-  // Font picker: quick chips + an "Other…" chip that reveals the full dropdown.
-  const [fontOther, setFontOther] = useState(false)
-  const isCustomFont = !QUICK_FONTS.some((f) => f.name === d.headerFont)
-  const showOtherFonts = fontOther || isCustomFont
   useEffect(() => {
     loadFont(d.headerFont)
   }, [d.headerFont])
-  // When the "Other" dropdown is open, load every family so each option
-  // renders in its own face.
+  // Load every family so each option in the font dropdown renders in its own face.
   useEffect(() => {
-    if (showOtherFonts) GOOGLE_FONTS.forEach((f) => loadFont(f.name))
-  }, [showOtherFonts])
+    GOOGLE_FONTS.forEach((f) => loadFont(f.name))
+  }, [])
 
   return (
     <section className="cc-step">
@@ -848,60 +843,18 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                 ))}
               </div>
             </Field>
-            <Field label="Header font">
-              <div className="cc-fontpick">
-                {QUICK_FONTS.map((f) => (
-                  <button
-                    key={f.name}
-                    type="button"
-                    className={`cc-font-chip${!showOtherFonts && d.headerFont === f.name ? ' is-on' : ''}`}
-                    style={{ fontFamily: fontStack(f.name) }}
-                    onClick={() => {
-                      setFontOther(false)
-                      updateDetails({ headerFont: f.name })
-                    }}
-                  >
-                    {f.name}
-                  </button>
-                ))}
-                <button
-                  type="button"
-                  className={`cc-font-chip${showOtherFonts ? ' is-on' : ''}`}
-                  onClick={() => {
-                    setFontOther(true)
-                    // The current font is a chip (not in the "Other" list), so the
-                    // dropdown would be empty — select the first other font.
-                    if (QUICK_FONTS.some((q) => q.name === d.headerFont)) {
-                      const first = GOOGLE_FONTS.find(
-                        (f) => !QUICK_FONTS.some((q) => q.name === f.name),
-                      )
-                      if (first) {
-                        loadFont(first.name)
-                        updateDetails({ headerFont: first.name })
-                      }
-                    }
-                  }}
-                >
-                  Other…
-                </button>
-              </div>
-              {showOtherFonts && (
-                <div className="cc-font-more">
-                  <CustomSelect
-                    value={d.headerFont}
-                    onChange={(v) => {
-                      loadFont(v)
-                      updateDetails({ headerFont: v })
-                    }}
-                    options={GOOGLE_FONTS.filter(
-                      (f) => !QUICK_FONTS.some((q) => q.name === f.name),
-                    ).map((f) => ({
-                      value: f.name,
-                      label: <span style={{ fontFamily: fontStack(f.name) }}>{f.name}</span>,
-                    }))}
-                  />
-                </div>
-              )}
+            <Field label="Header font" className="cc-w-sm">
+              <CustomSelect
+                value={d.headerFont}
+                onChange={(v) => {
+                  loadFont(v)
+                  updateDetails({ headerFont: v })
+                }}
+                options={GOOGLE_FONTS.map((f) => ({
+                  value: f.name,
+                  label: <span style={{ fontFamily: fontStack(f.name) }}>{f.name}</span>,
+                }))}
+              />
             </Field>
             <Field label="Title size">
               <RangeSlider
