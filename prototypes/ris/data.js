@@ -264,7 +264,7 @@ export const LEXILE_DATA = [
     school: 'Lincoln',
     id: 'lincoln',
     avgLexile: 620,
-    lexileGrowth: 8,
+    lexileGrowth: -8,
     volume: 41,
     students: 1650,
     aboveExpected: false,
@@ -291,7 +291,7 @@ export const LEXILE_DATA = [
     school: 'Washington',
     id: 'washington',
     avgLexile: 850,
-    lexileGrowth: 22,
+    lexileGrowth: -3,
     volume: 24,
     students: 1980,
     aboveExpected: false,
@@ -338,7 +338,7 @@ export const SCHOOL_STATS = [
     avgSession: 17,
     streakPct: 38,
     rmi: 71,
-    lexileGrowth: 8,
+    lexileGrowth: -8,
     engagement: 63,
   },
   {
@@ -365,7 +365,7 @@ export const SCHOOL_STATS = [
     avgSession: 13,
     streakPct: 29,
     rmi: 62,
-    lexileGrowth: 22,
+    lexileGrowth: -3,
     engagement: 51,
   },
   {
@@ -820,21 +820,21 @@ export const ENGAGEMENT_FUNNEL = [
   },
 ]
 
-// ── Grade-level performance ───────────────────────────────────────────────
+// ── Grade-level performance (RMI total 0–40 + engagement %) ───────────────
 export const GRADE_PERFORMANCE = [
-  { grade: 'K', rmi: 71, engagement: 76, count: 980 },
-  { grade: '1', rmi: 73, engagement: 79, count: 1020 },
-  { grade: '2', rmi: 74, engagement: 78, count: 1050 },
-  { grade: '3', rmi: 75, engagement: 77, count: 1100 },
-  { grade: '4', rmi: 77, engagement: 76, count: 1080 },
-  { grade: '5', rmi: 76, engagement: 74, count: 1060 },
-  { grade: '6', rmi: 74, engagement: 71, count: 1120 },
-  { grade: '7', rmi: 72, engagement: 68, count: 1180 },
-  { grade: '8', rmi: 73, engagement: 69, count: 1200 },
-  { grade: '9', rmi: 74, engagement: 70, count: 1180 },
-  { grade: '10', rmi: 76, engagement: 73, count: 1140 },
-  { grade: '11', rmi: 77, engagement: 75, count: 1090 },
-  { grade: '12', rmi: 75, engagement: 71, count: 1200 },
+  { grade: 'K', rmiTotal: 19.5, engagement: 76, count: 980 },
+  { grade: '1', rmiTotal: 20.5, engagement: 79, count: 1020 },
+  { grade: '2', rmiTotal: 21.0, engagement: 78, count: 1050 },
+  { grade: '3', rmiTotal: 21.5, engagement: 77, count: 1100 },
+  { grade: '4', rmiTotal: 22.5, engagement: 76, count: 1080 },
+  { grade: '5', rmiTotal: 22.0, engagement: 74, count: 1060 },
+  { grade: '6', rmiTotal: 21.0, engagement: 71, count: 1120 },
+  { grade: '7', rmiTotal: 20.0, engagement: 68, count: 1180 },
+  { grade: '8', rmiTotal: 20.5, engagement: 69, count: 1200 },
+  { grade: '9', rmiTotal: 21.0, engagement: 70, count: 1180 },
+  { grade: '10', rmiTotal: 22.0, engagement: 73, count: 1140 },
+  { grade: '11', rmiTotal: 22.5, engagement: 75, count: 1090 },
+  { grade: '12', rmiTotal: 21.5, engagement: 71, count: 1200 },
 ]
 
 // ── Future state: Reading diet mock data ──────────────────────────────────
@@ -854,3 +854,98 @@ export const ROI_TRENDS = MONTHS.map((month, i) => ({
   attendance: [92, 92, 93, 92, 93, 94, 94, 95, 95][i],
   incidents: [38, 36, 34, 35, 32, 30, 29, 27, 26][i],
 }))
+
+// ═══════════════════════════════════════════════════════════════════════════
+// RIS DISTRICT v2 — workable-data metrics (no 1–100 "health score")
+// The district view leans on metrics we can actually compute today: the RMI
+// total (sum of the 10 factors, 0–40), logging counts, flag rates over all
+// logs, and Lexile deltas. The 0–100 SCHOOL_HEALTH / DISTRICT_HEALTH rollups
+// above are kept only for the Analytics & Demographics surfaces.
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Map a 0–100 RMI index onto the RMI total scale (sum of 10 factors, max 40).
+// Lands the district in the low-20s and spreads schools ~15–25.
+const toRmiTotal = (v) => Math.max(0, +(v * 0.5 - 16).toFixed(1))
+
+// Per-school + district RMI total trend (0–40 scale) — derived from RMI_TRENDS
+export const RMI_TOTAL_TRENDS = RMI_TRENDS.map((row) => {
+  const out = { month: row.month }
+  for (const key of Object.keys(row)) {
+    if (key !== 'month') out[key] = toRmiTotal(row[key])
+  }
+  return out
+})
+
+const LATEST_RMI = RMI_TOTAL_TRENDS[RMI_TOTAL_TRENDS.length - 1]
+const PREV_RMI = RMI_TOTAL_TRENDS[RMI_TOTAL_TRENDS.length - 2]
+
+// Current district RMI total + change vs. the previous month
+export const DISTRICT_RMI = {
+  value: LATEST_RMI.district,
+  prev: PREV_RMI.district,
+  delta: +(LATEST_RMI.district - PREV_RMI.district).toFixed(1),
+}
+
+// Per-school RMI total (current month) for the ranked bar + high/low stats
+export const RMI_TOTAL_BY_SCHOOL = SCHOOLS.map((s) => ({
+  id: s.id,
+  name: s.name,
+  shortName: s.name.split(' ')[0],
+  color: s.color,
+  rmi: LATEST_RMI[s.id],
+})).sort((a, b) => b.rmi - a.rmi)
+
+// RMI total by grade band (0–40) — preferred over per-school for big districts
+export const RMI_TOTAL_BAND_TRENDS = MONTHS.map((month, i) => ({
+  month,
+  'K–2': [17.5, 17.8, 18.4, 18.1, 18.9, 19.4, 19.2, 19.8, 20.1][i],
+  '3–5': [18.2, 18.6, 19.2, 18.9, 19.8, 20.4, 20.2, 20.9, 21.3][i],
+  '6–8': [16.8, 17.0, 17.6, 17.3, 18.0, 18.6, 18.3, 18.9, 19.2][i],
+  '9–12': [19.5, 19.9, 20.6, 20.2, 21.2, 22.0, 22.4, 23.1, 23.6][i],
+}))
+
+export const RMI_GRADE_BANDS = [
+  { key: 'K–2', color: '#7CB5F5' },
+  { key: '3–5', color: '#16A97A' },
+  { key: '6–8', color: '#F0C050' },
+  { key: '9–12', color: '#C084FC' },
+]
+
+// Example demographic cut — RMI total broken out by gender (one illustrative slice)
+export const MOTIVATION_BY_GENDER = [
+  { gender: 'Female', rmi: 22.4, intrinsic: 14.6, extrinsic: 11.6, topFactor: 'Enjoyment' },
+  { gender: 'Male', rmi: 20.1, intrinsic: 12.8, extrinsic: 11.9, topFactor: 'Competition' },
+  {
+    gender: 'Non-binary / other',
+    rmi: 21.3,
+    intrinsic: 13.9,
+    extrinsic: 11.4,
+    topFactor: 'Curiosity',
+  },
+]
+
+// Habits — readers who logged this week (of all 12,400 enrolled)
+export const READERS_THIS_WEEK = { count: 5332, pct: 43, prevCount: 4960, prevPct: 40 }
+
+// % of students who grew their reading streak this week (replaces "active streaks")
+export const STREAK_GREW_PCT = 41
+
+// Avg session length (min) by grade band — district-wide, weekly
+export const SESSION_BAND_TRENDS = MONTHS.map((month, i) => ({
+  month,
+  elementary: [15, 16, 17, 16, 18, 19, 20, 21, 21][i],
+  middle: [13, 14, 15, 14, 16, 17, 17, 18, 19][i],
+  high: [17, 18, 20, 19, 21, 23, 24, 25, 26][i],
+}))
+
+export const SESSION_BANDS = [
+  { key: 'elementary', label: 'Elementary', color: '#0DA7BC' },
+  { key: 'middle', label: 'Middle', color: '#16A97A' },
+  { key: 'high', label: 'High', color: '#C084FC' },
+]
+
+// Integrity — % of ALL logged sessions flagged this week (not just Book Talks)
+export const FLAGGED_LOGS = { pct: 2.1, prevPct: 2.4, delta: -0.3 }
+
+// Skills — recent (weekly) Lexile movement for the district
+export const LEXILE_WEEK = { growth: 12, thisWeek: 1018, lastWeek: 1006 }

@@ -1,4 +1,4 @@
-import { SCHOOL_STATS, GRADE_PERFORMANCE } from '../data'
+import { SCHOOL_STATS, GRADE_PERFORMANCE, RMI_TOTAL_BY_SCHOOL } from '../data'
 import { Hero } from '@components/Hero/Hero'
 import { StatCard, ChartCard, CardNote } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
@@ -18,12 +18,16 @@ const DEMOGRAPHICS_ICON = <Icon name="users" />
 
 const TITLE_I_IDS = ['lincoln', 'roosevelt', 'washington']
 
+const RMI_TOTAL_BY_ID = Object.fromEntries(RMI_TOTAL_BY_SCHOOL.map((s) => [s.id, s.rmi]))
+
 function buildTitleIData() {
   const avgField = (arr, field) => Math.round(arr.reduce((s, x) => s + x[field], 0) / arr.length)
+  const avgRmi = (arr) =>
+    +(arr.reduce((s, x) => s + RMI_TOTAL_BY_ID[x.id], 0) / arr.length).toFixed(1)
   const t1 = SCHOOL_STATS.filter((s) => TITLE_I_IDS.includes(s.id))
   const n1 = SCHOOL_STATS.filter((s) => !TITLE_I_IDS.includes(s.id))
   return [
-    { metric: 'RMI Score', max: 100, titleI: avgField(t1, 'rmi'), nonTitleI: avgField(n1, 'rmi') },
+    { metric: 'RMI total', max: 30, titleI: avgRmi(t1), nonTitleI: avgRmi(n1) },
     {
       metric: 'Engagement %',
       max: 100,
@@ -55,7 +59,7 @@ const EQUITY_ROWS = [
   {
     id: 'adams',
     name: 'Adams High',
-    rmi: 83,
+    rmi: 25.5,
     frl: 18,
     titleI: false,
     engagement: 84,
@@ -64,7 +68,7 @@ const EQUITY_ROWS = [
   {
     id: 'jefferson',
     name: 'Jefferson El.',
-    rmi: 80,
+    rmi: 24.0,
     frl: 18,
     titleI: false,
     engagement: 81,
@@ -73,7 +77,7 @@ const EQUITY_ROWS = [
   {
     id: 'kennedy',
     name: 'Kennedy K-8',
-    rmi: 77,
+    rmi: 22.5,
     frl: 31,
     titleI: false,
     engagement: 72,
@@ -82,7 +86,7 @@ const EQUITY_ROWS = [
   {
     id: 'roosevelt',
     name: 'Roosevelt Mid.',
-    rmi: 74,
+    rmi: 21.0,
     frl: 52,
     titleI: true,
     engagement: 74,
@@ -91,26 +95,27 @@ const EQUITY_ROWS = [
   {
     id: 'lincoln',
     name: 'Lincoln El.',
-    rmi: 71,
+    rmi: 19.5,
     frl: 61,
     titleI: true,
     engagement: 63,
-    lexileGrowth: 8,
+    lexileGrowth: -8,
   },
   {
     id: 'washington',
     name: 'Washington Mid.',
-    rmi: 62,
+    rmi: 15.0,
     frl: 68,
     titleI: true,
     engagement: 51,
-    lexileGrowth: 22,
+    lexileGrowth: -3,
   },
 ]
 
+// RMI total (0–40) thresholds
 function rmiColor(rmi) {
-  if (rmi >= 78) return '#0DA7BC'
-  if (rmi >= 70) return '#D97706'
+  if (rmi >= 22) return '#0DA7BC'
+  if (rmi >= 18) return '#D97706'
   return '#E8866A'
 }
 
@@ -142,14 +147,14 @@ const EQUITY_COLUMNS = [
   { key: 'name', label: 'School', render: (_, r) => <SchoolCell id={r.id} name={r.name} /> },
   {
     key: 'rmi',
-    label: 'RMI',
+    label: 'RMI total',
     align: 'right',
-    render: (v) => <span style={{ color: rmiColor(v), fontWeight: 800 }}>{v}</span>,
+    render: (v) => <span style={{ color: rmiColor(v), fontWeight: 800 }}>{v.toFixed(1)}</span>,
   },
   {
     key: 'rmiBar',
-    label: 'Reading Health Index',
-    render: (_, r) => <ProgressBar value={r.rmi} max={100} color={rmiColor(r.rmi)} size="sm" />,
+    label: 'RMI total (0–40)',
+    render: (_, r) => <ProgressBar value={r.rmi} max={30} color={rmiColor(r.rmi)} size="sm" />,
   },
   { key: 'engagement', label: 'Engagement', align: 'right', render: (v) => `${v}%` },
   {
@@ -217,9 +222,9 @@ export function DistrictDemographics() {
       <div className="rc-stats-row">
         <StatCard value={3} label="Title I Schools" footer="Lincoln, Roosevelt, Washington" />
         <StatCard
-          value="−17 pts"
+          value="−5.5 pts"
           label="Title I RMI Gap"
-          footer="vs. non-Title I schools"
+          footer="RMI total vs. non-Title I (0–40)"
           color={T1_COLOR}
         />
         <StatCard value="42%" label="Avg FRL Rate" footer="Free/reduced lunch, district" />
@@ -243,7 +248,7 @@ export function DistrictDemographics() {
           footer={
             <CardNote tone="accent">
               ⚠ Negative correlation detected: the 3 highest FRL schools (Lincoln, Washington,
-              Roosevelt) show the lowest RMI scores. Consider targeted resource allocation or
+              Roosevelt) show the lowest RMI totals. Consider targeted resource allocation or
               additional engagement programs.
             </CardNote>
           }
@@ -254,14 +259,14 @@ export function DistrictDemographics() {
         {/* Grade-level performance */}
         <ChartCard
           title="Performance by Grade Level"
-          subtitle="RMI score distribution across K–12"
+          subtitle="RMI total (0–40) and engagement % across K–12"
           icon={DEMOGRAPHICS_ICON}
           accent={ACCENT}
           bodyPad="padded"
           footer={
             <ChartLegend
               items={[
-                { color: '#0DA7BC', label: 'RMI Score' },
+                { color: '#0DA7BC', label: 'RMI total' },
                 { color: '#7CB5F5', label: 'Engagement %' },
               ]}
             />
@@ -271,13 +276,16 @@ export function DistrictDemographics() {
             type="bar"
             data={GRADE_PERFORMANCE}
             xKey="grade"
-            yDomain={[60, 85]}
+            yDomain={[14, 26]}
+            yRight={{ domain: [60, 85], unit: '%' }}
             height="md"
-            tooltipFormatter={(v, name) => [v, name === 'rmi' ? 'RMI Score' : 'Engagement %']}
+            tooltipFormatter={(v, name) =>
+              name === 'rmiTotal' ? [v.toFixed(1), 'RMI total'] : [`${v}%`, 'Engagement']
+            }
             xPadding={{ left: 12, right: 12 }}
             series={[
-              { key: 'rmi', name: 'RMI Score', color: '#0DA7BC' },
-              { key: 'engagement', name: 'Engagement %', color: '#7CB5F5' },
+              { key: 'rmiTotal', name: 'RMI total', color: '#0DA7BC', yAxisId: 'left' },
+              { key: 'engagement', name: 'Engagement %', color: '#7CB5F5', yAxisId: 'right' },
             ]}
           />
         </ChartCard>
