@@ -3134,11 +3134,15 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   const isPoints = type?.id === 'points'
   // Earnable badge types come from the challenge type: its primary method
   // (required) plus its add-ons. Points challenges also offer repeatable activities.
+  // Bingo cards are filled with logging + activity badges, so those are its
+  // earnable types (Logging stays the locked primary).
+  const primaryKey = type?.id === 'bingo' ? 'log' : type?.primaryMethod
   const earnableTypes = [
     ...new Set(
-      [type?.primaryMethod, ...(type?.addOns || []), ...(isPoints ? ['repeatable'] : [])].filter(
-        Boolean,
-      ),
+      (type?.id === 'bingo'
+        ? ['log', 'activities']
+        : [type?.primaryMethod, ...(type?.addOns || []), ...(isPoints ? ['repeatable'] : [])]
+      ).filter(Boolean),
     ),
   ].map((key) => ({ key, label: METHOD_LABELS[key] || key }))
   const pointTypes = challenge.pointTypes || DEFAULT_POINT_TYPES
@@ -3356,7 +3360,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
         <h3 className="cc-panel-title">Earnable badge types</h3>
         <div className="cc-settings">
           {earnableTypes.map((t) => {
-            const isPrimary = t.key === type?.primaryMethod
+            const isPrimary = t.key === primaryKey
             const on = isPrimary || !!methods[t.key]
             return (
               <div key={t.key} className={`cc-setting-row${isPrimary ? ' is-disabled' : ''}`}>
