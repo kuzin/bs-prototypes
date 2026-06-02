@@ -544,6 +544,10 @@
 .cc-panel-banner {
   margin: 0 0 14px;
 }
+/* Opt-in panel turned off — only the header shows; center it (no body below). */
+.cc-panel--collapsed .cc-panel-head {
+  margin-bottom: 0;
+}
 .cc-panel-head {
   display: flex;
   align-items: center;
@@ -583,6 +587,7 @@
 }
 .cc-panel-actions {
   display: flex;
+  align-items: center;
   gap: 8px;
 }
 /* Vertical rhythm for stacked Form `Field`s in a panel. The design-system
@@ -2844,6 +2849,11 @@
   place-items: center;
   color: #fff;
 }
+/* Non-badge art (rewards, ticket prizes, certificates) reads as a rounded square. */
+.cc-badgerow-art--square,
+.cc-badgerow-art--square .cc-badgerow-art-ic {
+  border-radius: 10px;
+}
 /* Number medallion (used for activity rows in place of badge art). */
 .cc-badgerow-num {
   width: 100%;
@@ -3929,6 +3939,9 @@
   flex-direction: column;
   gap: 16px;
 }
+.cc-narrow-field .ninp {
+  max-width: 150px;
+}
 /* Ticket-earning source */
 .cc-ticket-source {
   display: flex;
@@ -3941,57 +3954,195 @@
   font-weight: 700;
   color: var(--ink);
 }
-.cc-ticketbadges {
+/* Single-select option cards (e.g. how tickets are earned). */
+.cc-optcards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.cc-optcard {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  padding: 12px 14px 12px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+}
+.cc-optcard:hover {
+  border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
+}
+.cc-optcard.is-on {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 7%, #fff);
+}
+.cc-optcard-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: var(--slate, #64748b);
+}
+.cc-optcard.is-on .cc-optcard-ic {
+  background: color-mix(in srgb, var(--teal) 16%, #fff);
+  color: var(--teal-dk);
+}
+.cc-optcard-text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.cc-optcard-text strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-optcard-text span {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--slate, #64748b);
+}
+.cc-optcard-dot {
+  flex: none;
+  margin-top: 1px;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: #fff;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+.cc-optcard.is-on .cc-optcard-dot {
+  border-color: var(--teal);
+  box-shadow: inset 0 0 0 3.5px var(--teal);
+}
+/* Stacked badge selector — shared across reward types + ticket earning. */
+.cc-badgeselect {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-top: 2px;
+  max-height: 300px;
+  overflow: auto;
+  padding: 1px;
 }
-.cc-ticketbadge {
+.cc-bsrow {
   display: flex;
   align-items: center;
   gap: 10px;
-  border: 1px solid var(--line);
+  border: 1.5px solid var(--line);
   border-radius: 10px;
-  padding: 7px 11px;
   background: #fff;
+  padding-right: 12px;
+  transition: border-color 0.12s ease, background 0.12s ease;
 }
-.cc-ticketbadge.is-on {
-  border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
-  background: color-mix(in srgb, var(--teal) 5%, #fff);
+.cc-bsrow.is-on {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
 }
-.cc-ticketbadge-art {
+.cc-bsrow-pick {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 9px 4px 9px 10px;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+.cc-bsrow-check {
   flex: none;
-  width: 30px;
-  height: 30px;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+.cc-bsrow.is-on .cc-bsrow-check {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+.cc-bsrow-check svg {
+  width: 11px;
+  height: 11px;
+}
+.cc-bsrow-art {
+  flex: none;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   overflow: hidden;
   display: grid;
   place-items: center;
   background: #eef2f6;
 }
-.cc-ticketbadge-art img {
+.cc-bsrow-art img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.cc-ticketbadge-name {
-  flex: 1;
-  min-width: 0;
-  font-size: 14px;
+.cc-bsrow-art-ph {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+}
+.cc-bsrow-name {
+  font-size: 13px;
   font-weight: 600;
   color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.cc-ticketbadge-val {
+.cc-bsrow.is-disabled {
+  opacity: 0.55;
+}
+.cc-bsrow.is-disabled .cc-bsrow-pick {
+  cursor: not-allowed;
+}
+.cc-bsrow-used {
+  flex: none;
+  padding-right: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.cc-bsrow-val {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 12px;
   color: var(--muted);
 }
-.cc-ticketbadge-val .ninp {
-  width: 96px;
+.cc-bsrow-val .ninp {
+  width: 106px;
+}
+/* "All badges award N tickets" inline control. */
+.cc-ticket-allcount {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--ink);
+}
+.cc-ticket-allcount .ninp {
+  width: 106px;
 }
 /* Saved-reward picker */
 .cc-savedreward-list {

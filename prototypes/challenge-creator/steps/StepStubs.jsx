@@ -2511,7 +2511,7 @@ function useDragReorder(onMove) {
     onDragEnd: reset,
   })
 }
-function BadgeRow({ num, img, icon, color, title, meta, metaMissing, active, onToggleActive, onEdit, onRemove, drag }) {
+function BadgeRow({ num, img, icon, color, title, meta, metaMissing, active, square, onToggleActive, onEdit, onRemove, drag }) {
   const rowRef = useRef(null)
   const dropCls = drag?.isOver ? (drag.dropBelow ? ' is-drop-after' : ' is-drop-before') : ''
   const handleDragStart = (e) => {
@@ -2544,7 +2544,7 @@ function BadgeRow({ num, img, icon, color, title, meta, metaMissing, active, onT
           <DragDots />
         </span>
       )}
-      <span className="cc-badgerow-art">
+      <span className={`cc-badgerow-art${square ? ' cc-badgerow-art--square' : ''}`}>
         {num != null ? (
           <span className="cc-badgerow-num">{num}</span>
         ) : img ? (
@@ -3701,10 +3701,11 @@ const TICKET_EMPTY_ICON = rwIcon(<><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h14a1.5 1.
 const CERT_EMPTY_ICON = rwIcon(<><rect x="4" y="3.5" width="16" height="12.5" rx="2" /><path d="M7.5 8h9M7.5 11h5.5" /><circle cx="12" cy="18.5" r="2.4" /><path d="M10 20l-.8 3 2.8-1.4 2.8 1.4-.8-3" /></>)
 
 // Reward — a simple title + description prize, assigned to the badge(s) that grant it.
-function RewardEditor({ initial, badges = [], onSave, onCancel }) {
+function RewardEditor({ initial, badges = [], usedBadgeIds = [], onSave, onCancel }) {
   const [title, setTitle] = useState(initial?.title || '')
   const [description, setDescription] = useState(initial?.description || '')
   const [badgeIds, setBadgeIds] = useState(initial?.badgeIds || [])
+  const toggleBadge = (id) => setBadgeIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
   return (
     <div className="cc-badge-editor cc-reward-editor">
       <header className="cc-badge-editor-head">
@@ -3720,12 +3721,8 @@ function RewardEditor({ initial, badges = [], onSave, onCancel }) {
         <Field label="Description" hint="Optional · shown to readers">
           <Textarea value={description} rows={3} placeholder="What the reader gets…" onChange={(e) => setDescription(e.target.value)} />
         </Field>
-        <Field label="Earned by badge" hint="Readers get this reward when they earn the selected badge(s)">
-          {badges.length ? (
-            <MultiSelect value={badgeIds} onChange={setBadgeIds} options={badges.map((b) => ({ value: b.id, label: b.name }))} placeholder="Select badges…" />
-          ) : (
-            <p className="cc-method-note cc-method-note--sm">Add badges in the Badges step first, then assign this reward to them.</p>
-          )}
+        <Field label="Earned by badge" hint="Each badge can be tied to one reward — used badges are disabled">
+          <BadgeSelect badges={badges} selectedIds={badgeIds} onToggle={toggleBadge} disabledIds={usedBadgeIds} disabledHint="Already rewarded" />
         </Field>
       </div>
       <footer className="cc-badge-editor-foot">
@@ -3738,6 +3735,12 @@ function RewardEditor({ initial, badges = [], onSave, onCancel }) {
   )
 }
 // Pick from the saved-rewards library.
+// Mock saved certificates for the certificate Use-existing picker.
+const SAVED_CERTIFICATES = [
+  { id: 'sc-1', title: 'Completion Certificate', bannerTitle: 'Certificate of Completion', description: 'Awarded for finishing the challenge.', body: 'This certificate is proudly presented to {{first_name}} for completing the {{challenge_name}} at {{microsite_name}}.' },
+  { id: 'sc-2', title: 'Participation Certificate', bannerTitle: 'Certificate of Participation', description: 'For taking part in the challenge.', body: 'This certificate recognizes {{first_name}} for participating in {{microsite_name}}’s reading challenge.' },
+  { id: 'sc-3', title: 'Reading Star Award', bannerTitle: 'Reading Star', description: 'For outstanding reading effort.', body: 'Awarded to {{first_name}} for outstanding reading during {{challenge_name}}.' },
+]
 // Mock saved ticket rewards for the ticket Use-existing picker.
 const SAVED_TICKET_REWARDS = [
   { id: 'stk-1', name: 'Pizza Party', description: 'A class pizza party.', cost: 50 },
@@ -3745,20 +3748,33 @@ const SAVED_TICKET_REWARDS = [
   { id: 'stk-3', name: 'Book Bundle', description: 'A bundle of three new books.', cost: 30 },
   { id: 'stk-4', name: 'Reading Gift Basket', description: 'A cozy reading gift basket.', cost: 60 },
 ]
+// How tickets are earned — single-select option cards.
+const TICKET_SOURCES = [
+  { value: 'all', icon: 'ti-medal', label: 'All badges', sub: 'Every badge awards the same number of tickets.' },
+  { value: 'specific', icon: 'ti-list', label: 'Specific badges', sub: 'Pick which badges award tickets, and how many.' },
+  { value: 'none', icon: 'ti-pencil', label: 'Awarded manually', sub: 'Badges don’t award tickets — you grant them yourself.' },
+]
 // Shared "use a saved …" picker — multi-select list of saved items.
 // items: [{ id, key, image?, icon?, title, subtitle }].
-function SavedItemPicker({ title, noun = 'item', items, existingKeys, onAdd, onCancel }) {
+function SavedItemPicker({ title, noun = 'item', items, existingKeys, onAdd, onCancel, badges, disabledBadgeIds = [], disabledBadgeHint = 'Already used' }) {
   const [picked, setPicked] = useState([])
+  const [badgeIds, setBadgeIds] = useState([])
+  const [step, setStep] = useState('pick')
+  const wantsBadges = !!(badges && badges.length)
   const toggle = (id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
+  const toggleBadge = (id) => setBadgeIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
+  const nounLabel = picked.length === 1 ? noun : `${noun}s`
+  const finish = () => { onAdd(items.filter((i) => picked.includes(i.id)), badgeIds); onCancel() }
   return (
     <div className="cc-badge-editor cc-reward-picker">
       <header className="cc-badge-editor-head">
-        <h3>{title}</h3>
+        <h3>{step === 'badges' ? 'Earned by badge' : title}</h3>
         <button type="button" className="cc-badge-editor-close" onClick={onCancel} aria-label="Close">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </header>
       <div className="cc-badge-editor-body">
+        {step === 'pick' ? (
         <ul className="cc-savedreward-list">
           {items.map((it) => {
             const added = existingKeys.has(it.key)
@@ -3780,11 +3796,24 @@ function SavedItemPicker({ title, noun = 'item', items, existingKeys, onAdd, onC
             )
           })}
         </ul>
+        ) : (
+          <>
+            <p className="cc-method-note cc-method-note--sm">Choose which badge(s) earn the {picked.length} selected {nounLabel}.</p>
+            <BadgeSelect badges={badges} selectedIds={badgeIds} onToggle={toggleBadge} disabledIds={disabledBadgeIds} disabledHint={disabledBadgeHint} />
+          </>
+        )}
       </div>
       <footer className="cc-badge-editor-foot">
-        <Button variant="primary" size="md" accent="#0DA7BC" disabled={!picked.length} onClick={() => { onAdd(items.filter((i) => picked.includes(i.id))); onCancel() }}>
-          Add {picked.length || ''} {picked.length === 1 ? noun : `${noun}s`}
-        </Button>
+        {step === 'badges' && <Button variant="secondary" size="md" onClick={() => setStep('pick')}>Back</Button>}
+        {step === 'pick' && wantsBadges ? (
+          <Button variant="primary" size="md" accent="#0DA7BC" disabled={!picked.length} onClick={() => setStep('badges')}>
+            Continue
+          </Button>
+        ) : (
+          <Button variant="primary" size="md" accent="#0DA7BC" disabled={!picked.length} onClick={finish}>
+            Add {picked.length || ''} {nounLabel}
+          </Button>
+        )}
       </footer>
     </div>
   )
@@ -3798,6 +3827,38 @@ function BadgeAvatars({ badges }) {
       ))}
       <span className="cc-badge-avatars-label">{badges.length === 1 ? badges[0].name : `${badges.length} badges`}</span>
     </span>
+  )
+}
+// Gallery-style multi-select of the challenge's badges — the one badge selector
+// used wherever rewards assign to badges (and which badges earn tickets).
+// valueMode adds a per-badge number (e.g. ticket value) on each selected tile.
+function BadgeSelect({ badges, selectedIds, onToggle, valueMode = false, values = {}, onValue, valueLabel = '', disabledIds = [], disabledHint = 'Already used' }) {
+  if (!badges.length) {
+    return <p className="cc-method-note cc-method-note--sm">Add badges in the Badges step first, then assign them here.</p>
+  }
+  return (
+    <div className="cc-badgeselect">
+      {badges.map((b) => {
+        const sel = selectedIds.includes(b.id)
+        const off = !sel && disabledIds.includes(b.id)
+        return (
+          <div key={b.id} className={`cc-bsrow${sel ? ' is-on' : ''}${off ? ' is-disabled' : ''}`}>
+            <button type="button" className="cc-bsrow-pick" onClick={() => onToggle(b.id)} aria-pressed={sel} disabled={off} title={off ? `${b.name} — ${disabledHint}` : b.name}>
+              <span className={`cc-bsrow-check${sel ? ' is-on' : ''}`} aria-hidden="true">{sel && <GalleryCheck />}</span>
+              <span className="cc-bsrow-art">{b.img ? <img src={b.img} alt="" draggable={false} /> : <span className="cc-bsrow-art-ph" />}</span>
+              <span className="cc-bsrow-name">{b.name}</span>
+            </button>
+            {off && <span className="cc-bsrow-used">{disabledHint}</span>}
+            {valueMode && sel && (
+              <div className="cc-bsrow-val">
+                <NumberInput value={values[b.id] ?? 1} min={1} max={100} onChange={(v) => onValue(b.id, v)} />
+                <span>{valueLabel}</span>
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
   )
 }
 // Ticket reward — image + name + description + tickets-to-enter.
@@ -3822,7 +3883,7 @@ function TicketRewardEditor({ initial, onSave, onCancel }) {
         </button>
       </header>
       <div className="cc-badge-editor-body cc-reward-form">
-        <Field label="Image" help="Recommended square · png, jpg · under 10MB.">
+        <Field label="Image" hint="Optional" help="If left blank, a gift icon is shown. Recommended square · png, jpg.">
           <ImageDropzone fileName={imageName} previewSrc={loading ? undefined : image} onFile={onFile} />
         </Field>
         <Field label={<>Name <span className="cc-req">*</span></>}>
@@ -3831,7 +3892,7 @@ function TicketRewardEditor({ initial, onSave, onCancel }) {
         <Field label="Description" hint="Optional">
           <Textarea value={description} rows={3} placeholder="Describe the prize…" onChange={(e) => setDescription(e.target.value)} />
         </Field>
-        <Field label={<>Tickets to enter <span className="cc-req">*</span></>}>
+        <Field label={<>Tickets to enter <span className="cc-req">*</span></>} className="cc-narrow-field">
           <NumberInput value={cost} min={1} max={1000} onChange={setCost} />
         </Field>
       </div>
@@ -3845,11 +3906,13 @@ function TicketRewardEditor({ initial, onSave, onCancel }) {
   )
 }
 // Certificate — printable, with merge tags.
-function CertificateEditor({ initial, onSave, onCancel }) {
+function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
   const [title, setTitle] = useState(initial?.title || '')
   const [bannerTitle, setBannerTitle] = useState(initial?.bannerTitle || 'Certificate of Achievement')
   const [description, setDescription] = useState(initial?.description || '')
   const [body, setBody] = useState(initial?.body || CERT_EXAMPLE)
+  const [badgeIds, setBadgeIds] = useState(initial?.badgeIds || [])
+  const toggleBadge = (id) => setBadgeIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
   const insertTag = (tag) => setBody((b) => (b && !b.endsWith(' ') ? b + ' ' : b) + tag)
   return (
     <div className="cc-badge-editor cc-cert-editor">
@@ -3869,6 +3932,9 @@ function CertificateEditor({ initial, onSave, onCancel }) {
         <Field label="Description" hint="Optional">
           <Textarea value={description} rows={2} placeholder="Optional summary…" onChange={(e) => setDescription(e.target.value)} />
         </Field>
+        <Field label="Earned by badge" hint="Readers get this certificate when they earn the selected badge(s)">
+          <BadgeSelect badges={badges} selectedIds={badgeIds} onToggle={toggleBadge} />
+        </Field>
         <Field label="Certificate body">
           <Textarea value={body} rows={4} onChange={(e) => setBody(e.target.value)} />
         </Field>
@@ -3883,7 +3949,7 @@ function CertificateEditor({ initial, onSave, onCancel }) {
       </div>
       <footer className="cc-badge-editor-foot">
         <Button variant="secondary" size="md" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" size="md" accent="#0DA7BC" disabled={!title.trim()} onClick={() => onSave({ id: initial?.id, title: title.trim(), bannerTitle, description, body })}>
+        <Button variant="primary" size="md" accent="#0DA7BC" disabled={!title.trim()} onClick={() => onSave({ id: initial?.id, title: title.trim(), bannerTitle, description, body, badgeIds })}>
           {initial ? 'Save certificate' : 'Add certificate'}
         </Button>
       </footer>
@@ -3897,6 +3963,7 @@ export function RewardsStep({ challenge, update }) {
   const ticketsEnabled = !!r.ticketsEnabled
   const certsEnabled = !!r.certsEnabled
   const ticketSource = r.ticketSource || 'all'
+  const ticketsPerBadge = r.ticketsPerBadge ?? 1
   const ticketBadges = r.ticketBadges || {}
   const ticketRewards = r.ticketRewards || []
   const certificates = r.certificates || []
@@ -3905,11 +3972,14 @@ export function RewardsStep({ challenge, update }) {
   const [rewardEditor, setRewardEditor] = useState(null)
   const [rewardPicker, setRewardPicker] = useState(false)
   const [ticketPicker, setTicketPicker] = useState(false)
+  const [certPicker, setCertPicker] = useState(false)
   const [ticketEditor, setTicketEditor] = useState(null)
   const [certEditor, setCertEditor] = useState(null)
 
   // Every badge in the challenge, for the "specific badges earn tickets" picker.
   const badgePool = [
+    ...(challenge.registrationBadge?.img ? [{ id: 'reg', name: challenge.registrationBadge.name || 'Registration badge', img: challenge.registrationBadge.img }] : []),
+    ...(challenge.completionBadge?.img ? [{ id: 'comp', name: challenge.completionBadge.name || 'Completion badge', img: challenge.completionBadge.img }] : []),
     ...(challenge.badges || []).map((b, i) => ({ id: `log-${i}`, name: b.name || 'Logging badge', img: b.img || badgeImage(b.icon) })),
     ...(challenge.activityBadges || []).map((b, i) => ({ id: `act-${i}`, name: b.title || b.name || 'Activity badge', img: b.badge?.img })),
     ...(challenge.pointsBadges || []).map((b, i) => ({ id: `pts-${i}`, name: b.name || 'Points badge', img: b.img || badgeImage(b.icon) })),
@@ -3922,7 +3992,7 @@ export function RewardsStep({ challenge, update }) {
     setR({ items: rw.id ? items.map((x) => (x.id === rw.id ? { ...x, ...rw } : x)) : [...items, { ...rw, id: newRewardId('rw'), source: 'custom' }] })
     setRewardEditor(null)
   }
-  const addSavedRewards = (rws) => setR({ items: [...items, ...rws.map((x) => ({ id: newRewardId('rw'), title: x.title, description: x.description, source: 'saved' }))] })
+  const addSavedRewards = (rws, badgeIds = []) => setR({ items: [...items, ...rws.map((x) => ({ id: newRewardId('rw'), title: x.title, description: x.description, badgeIds, source: 'saved' }))] })
   const removeReward = (id) => setR({ items: items.filter((x) => x.id !== id) })
 
   const saveTicket = (t) => {
@@ -3944,6 +4014,7 @@ export function RewardsStep({ challenge, update }) {
     setCertEditor(null)
   }
   const removeCert = (id) => setR({ certificates: certificates.filter((x) => x.id !== id) })
+  const addSavedCerts = (cs, badgeIds = []) => setR({ certificates: [...certificates, ...cs.map((c) => ({ id: newRewardId('ct'), title: c.title, bannerTitle: c.bannerTitle, description: c.description, body: c.body, badgeIds }))] })
 
   return (
     <section className="cc-step">
@@ -3966,6 +4037,7 @@ export function RewardsStep({ challenge, update }) {
                 <BadgeRow
                   key={it.id}
                   img={badgeImage('ti-gift')}
+                  square
                   title={it.title}
                   meta={b.length ? <BadgeAvatars badges={b} /> : 'Not assigned to a badge'}
                   metaMissing={!b.length}
@@ -3982,7 +4054,7 @@ export function RewardsStep({ challenge, update }) {
       </div>
 
       {/* 2 · Ticket rewards (opt-in) */}
-      <div className="cc-panel">
+      <div className={`cc-panel${ticketsEnabled ? '' : ' cc-panel--collapsed'}`}>
         <div className="cc-panel-head">
           <h3 className="cc-panel-title">Ticket rewards</h3>
           <div className="cc-panel-actions">
@@ -3996,48 +4068,56 @@ export function RewardsStep({ challenge, update }) {
             <Toggle checked={ticketsEnabled} size="md" onChange={(v) => setR({ ticketsEnabled: v })} />
           </div>
         </div>
-        {!ticketsEnabled ? (
-          <p className="cc-method-note">
-            Run a ticket raffle — readers earn tickets from badges and enter to win prizes, with winners drawn in Drawings. Turn it on to set it up.
-          </p>
-        ) : (
+        {ticketsEnabled && (
           <>
         <div className="cc-ticket-source">
           <span className="cc-ticket-source-label">How do readers earn tickets?</span>
-          <RadioGroup name="ticketSource" value={ticketSource} onChange={(v) => setR({ ticketSource: v })}>
-            <Radio value="all">All badges earn a ticket</Radio>
-            <Radio value="specific">Specific badges earn tickets</Radio>
-            <Radio value="none">No badges — tickets awarded manually</Radio>
-          </RadioGroup>
-          {ticketSource === 'specific' &&
-            (badgePool.length ? (
-              <div className="cc-ticketbadges">
-                {badgePool.map((b) => {
-                  const on = b.id in ticketBadges
-                  return (
-                    <div key={b.id} className={`cc-ticketbadge${on ? ' is-on' : ''}`}>
-                      <Toggle checked={on} size="sm" onChange={() => toggleTicketBadge(b.id)} />
-                      <span className="cc-ticketbadge-art">{b.img ? <img src={b.img} alt="" draggable={false} /> : null}</span>
-                      <span className="cc-ticketbadge-name">{b.name}</span>
-                      {on && (
-                        <span className="cc-ticketbadge-val">
-                          <NumberInput value={ticketBadges[b.id]} min={1} max={100} onChange={(v) => setTicketBadgeValue(b.id, v)} />
-                          <span>tickets</span>
-                        </span>
-                      )}
-                    </div>
-                  )
-                })}
-              </div>
-            ) : (
-              <p className="cc-method-note cc-method-note--sm">Add badges in the Badges step to choose which ones earn tickets.</p>
-            ))}
+          <div className="cc-optcards" role="radiogroup" aria-label="How do readers earn tickets?">
+            {TICKET_SOURCES.map((o) => {
+              const on = ticketSource === o.value
+              return (
+                <button
+                  key={o.value}
+                  type="button"
+                  role="radio"
+                  aria-checked={on}
+                  className={`cc-optcard${on ? ' is-on' : ''}`}
+                  onClick={() => setR({ ticketSource: o.value })}
+                >
+                  <span className="cc-optcard-ic" aria-hidden="true"><Ic name={o.icon} size={18} format="png" color={on ? '0b7a89' : '64748b'} /></span>
+                  <span className="cc-optcard-text">
+                    <strong>{o.label}</strong>
+                    <span>{o.sub}</span>
+                  </span>
+                  <span className="cc-optcard-dot" aria-hidden="true" />
+                </button>
+              )
+            })}
+          </div>
+          {ticketSource === 'all' && (
+            <div className="cc-ticket-allcount">
+              <span>Each badge awards</span>
+              <NumberInput value={ticketsPerBadge} min={1} max={100} onChange={(v) => setR({ ticketsPerBadge: v })} />
+              <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
+            </div>
+          )}
+          {ticketSource === 'specific' && (
+            <BadgeSelect
+              badges={badgePool}
+              selectedIds={Object.keys(ticketBadges)}
+              onToggle={toggleTicketBadge}
+              valueMode
+              values={ticketBadges}
+              onValue={setTicketBadgeValue}
+              valueLabel="tickets"
+            />
+          )}
         </div>
         <Banner level="info" className="cc-panel-banner">Winners are drawn from ticket holders over in <strong>Drawings</strong>.</Banner>
         {ticketRewards.length ? (
           <div className="cc-badge-rows">
             {ticketRewards.map((t) => (
-              <BadgeRow key={t.id} img={t.image} icon="ti-gift" title={t.name} meta={`${t.cost} ticket${t.cost === 1 ? '' : 's'} to enter`}
+              <BadgeRow key={t.id} img={t.image || badgeImage('ti-gift')} square title={t.name} meta={`${t.cost} ticket${t.cost === 1 ? '' : 's'} to enter`}
                 onEdit={() => setTicketEditor(t)} onRemove={() => removeTicket(t.id)} />
             ))}
           </div>
@@ -4050,38 +4130,42 @@ export function RewardsStep({ challenge, update }) {
       </div>
 
       {/* 3 · Certificates (opt-in) */}
-      <div className="cc-panel">
+      <div className={`cc-panel${certsEnabled ? '' : ' cc-panel--collapsed'}`}>
         <div className="cc-panel-head">
           <h3 className="cc-panel-title">Certificates</h3>
           <div className="cc-panel-actions">
             {certsEnabled && (
-              <Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>+ Add certificate</Button>
+              <>
+                <Button variant="ghost" size="sm" onClick={() => setCertPicker(true)}>Use existing</Button>
+                <Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>+ Add certificate</Button>
+              </>
             )}
             <span className="cc-reg-state">{certsEnabled ? 'Enabled' : 'Disabled'}</span>
             <Toggle checked={certsEnabled} size="md" onChange={(v) => setR({ certsEnabled: v })} />
           </div>
         </div>
-        {!certsEnabled ? (
-          <p className="cc-method-note">
-            Award a printable certificate readers can earn and download, personalized with their name and badges. Turn it on to set it up.
-          </p>
-        ) : certificates.length ? (
+        {certsEnabled && (certificates.length ? (
           <div className="cc-badge-rows">
-            {certificates.map((c) => (
-              <BadgeRow
-                key={c.id}
-                img={badgeImage('ti-medal')}
-                title={c.title}
-                meta={c.bannerTitle}
-                onEdit={() => setCertEditor(c)}
-                onRemove={() => removeCert(c.id)}
-              />
-            ))}
+            {certificates.map((c) => {
+              const cb = assignedBadges(c.badgeIds)
+              return (
+                <BadgeRow
+                  key={c.id}
+                  img={badgeImage('ti-medal')}
+                  square
+                  title={c.title}
+                  meta={cb.length ? <BadgeAvatars badges={cb} /> : 'Not assigned to a badge'}
+                  metaMissing={!cb.length}
+                  onEdit={() => setCertEditor(c)}
+                  onRemove={() => removeCert(c.id)}
+                />
+              )
+            })}
           </div>
         ) : (
           <EmptyState icon={CERT_EMPTY_ICON} title="No certificates yet" description="Create a printable certificate readers earn when they finish."
             action={<Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>+ Add certificate</Button>} />
-        )}
+        ))}
       </div>
 
       <Banner level="info" className="cc-rewards-drawings-note" action={<Button variant="secondary" size="sm">Go to Drawings →</Button>}>
@@ -4089,7 +4173,15 @@ export function RewardsStep({ challenge, update }) {
       </Banner>
 
       <Modal open={!!rewardEditor} onClose={() => setRewardEditor(null)} variant="center" ariaLabel="Reward">
-        {rewardEditor && <RewardEditor initial={rewardEditor.new ? null : rewardEditor} badges={badgePool} onSave={saveReward} onCancel={() => setRewardEditor(null)} />}
+        {rewardEditor && (
+          <RewardEditor
+            initial={rewardEditor.new ? null : rewardEditor}
+            badges={badgePool}
+            usedBadgeIds={items.filter((x) => x.id !== (rewardEditor.new ? null : rewardEditor.id)).flatMap((x) => x.badgeIds || [])}
+            onSave={saveReward}
+            onCancel={() => setRewardEditor(null)}
+          />
+        )}
       </Modal>
       <Modal open={rewardPicker} onClose={() => setRewardPicker(false)} variant="center" ariaLabel="Use a saved reward">
         {rewardPicker && (
@@ -4098,7 +4190,10 @@ export function RewardsStep({ challenge, update }) {
             noun="reward"
             items={SAVED_REWARDS.map((rw) => ({ id: rw.id, key: rw.title, title: rw.title, subtitle: rw.description }))}
             existingKeys={new Set(items.map((x) => x.title))}
-            onAdd={(picked) => addSavedRewards(picked.map((p) => ({ title: p.title, description: p.subtitle })))}
+            badges={badgePool}
+            disabledBadgeIds={items.flatMap((x) => x.badgeIds || [])}
+            disabledBadgeHint="Already rewarded"
+            onAdd={(picked, badgeIds) => addSavedRewards(picked.map((p) => ({ title: p.title, description: p.subtitle })), badgeIds)}
             onCancel={() => setRewardPicker(false)}
           />
         )}
@@ -4119,7 +4214,20 @@ export function RewardsStep({ challenge, update }) {
         {ticketEditor && <TicketRewardEditor initial={ticketEditor.new ? null : ticketEditor} onSave={saveTicket} onCancel={() => setTicketEditor(null)} />}
       </Modal>
       <Modal open={!!certEditor} onClose={() => setCertEditor(null)} variant="center" ariaLabel="Certificate">
-        {certEditor && <CertificateEditor initial={certEditor.new ? null : certEditor} onSave={saveCert} onCancel={() => setCertEditor(null)} />}
+        {certEditor && <CertificateEditor initial={certEditor.new ? null : certEditor} badges={badgePool} onSave={saveCert} onCancel={() => setCertEditor(null)} />}
+      </Modal>
+      <Modal open={certPicker} onClose={() => setCertPicker(false)} variant="center" ariaLabel="Use a saved certificate">
+        {certPicker && (
+          <SavedItemPicker
+            title="Use a saved certificate"
+            noun="certificate"
+            items={SAVED_CERTIFICATES.map((c) => ({ id: c.id, key: c.title, title: c.title, subtitle: c.bannerTitle, bannerTitle: c.bannerTitle, description: c.description, body: c.body }))}
+            existingKeys={new Set(certificates.map((x) => x.title))}
+            badges={badgePool}
+            onAdd={(picked, badgeIds) => addSavedCerts(picked, badgeIds)}
+            onCancel={() => setCertPicker(false)}
+          />
+        )}
       </Modal>
     </section>
   )
