@@ -918,6 +918,26 @@
 .cc-color-reveal {
   padding: 2px 0 12px;
 }
+/* Merged accent + title color pickers, side by side. */
+.cc-color-merged {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+}
+.cc-color-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cc-color-field-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+/* "Look & feel" is a dense form — tighten the gaps between its fields. */
+.cc-panel--lookfeel > .fld {
+  margin-top: 16px;
+}
 /* Subheader ribbon reveal: text input + color override stacked. */
 .cc-ribbon-reveal {
   display: flex;

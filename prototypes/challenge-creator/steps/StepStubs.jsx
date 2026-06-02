@@ -713,7 +713,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
         </Field>
       </div>
 
-      <div className="cc-panel">
+      <div className="cc-panel cc-panel--lookfeel">
         <h3 className="cc-panel-title">Look &amp; feel</h3>
 
         <div className="cc-headtabs" role="tablist" aria-label="Header style">
@@ -807,25 +807,19 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
           <>
             {challenge.templateId === 'scratch' && (
               <Field label="Theme">
-                <div className="cc-fontpick">
-                  {BANNER_THEMES.map((t) => (
-                    <button
-                      key={t.id}
-                      type="button"
-                      className={`cc-font-chip${themeId === t.id ? ' is-on' : ''}`}
-                      onClick={() => {
-                        const first = t.variants[0]
-                        updateDetails({
-                          background: { kind: 'preset', id: first.id },
-                          accent: first.color,
-                          accentOverride: false,
-                        })
-                      }}
-                    >
-                      {t.name}
-                    </button>
-                  ))}
-                </div>
+                <CustomSelect
+                  value={themeId}
+                  onChange={(id) => {
+                    const first = BANNER_THEMES.find((t) => t.id === id)?.variants[0]
+                    if (first)
+                      updateDetails({
+                        background: { kind: 'preset', id: first.id },
+                        accent: first.color,
+                        accentOverride: false,
+                      })
+                  }}
+                  options={BANNER_THEMES.map((t) => ({ value: t.id, label: t.name }))}
+                />
               </Field>
             )}
             <Field label="Banner variation">
@@ -920,28 +914,54 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
               />
             </Field>
             <div className="cc-settings cc-color-settings">
-              <ColorOverride
-                label="Override accent color"
-                sub="Recolors buttons, progress, and the ribbon."
-                enabled={!!d.accentOverride}
-                value={d.accent}
-                presets={themeVariants.map((v) => v.color)}
-                fallback={d.accent || '#0DA7BC'}
-                onToggle={(v) => updateDetails({ accentOverride: v })}
-                onColor={(c) => updateDetails({ accent: c })}
-              />
-              <ColorOverride
-                label="Override title color"
-                sub="Sets the header text color."
-                enabled={!!d.fontColorOverride}
-                value={d.fontColor}
-                presets={['#FFFFFF', '#0F172A', d.accent || '#0DA7BC']}
-                fallback="#FFFFFF"
-                onToggle={(v) =>
-                  updateDetails({ fontColorOverride: v, fontColor: d.fontColor || '#FFFFFF' })
-                }
-                onColor={(c) => updateDetails({ fontColor: c })}
-              />
+              {(() => {
+                const colorsOn = !!d.accentOverride || !!d.fontColorOverride
+                return (
+                  <>
+                    <div className="cc-setting-row">
+                      <div className="cc-setting-text">
+                        <span className="cc-setting-label">Override theme colors</span>
+                        <span className="cc-setting-sub">
+                          Set custom accent &amp; title colors.
+                        </span>
+                      </div>
+                      <Toggle
+                        checked={colorsOn}
+                        size="md"
+                        onChange={(v) =>
+                          updateDetails({
+                            accentOverride: v,
+                            fontColorOverride: v,
+                            ...(v && !d.fontColor ? { fontColor: '#FFFFFF' } : {}),
+                          })
+                        }
+                      />
+                    </div>
+                    {colorsOn && (
+                      <div className="cc-color-reveal cc-color-merged">
+                        <div className="cc-color-field">
+                          <span className="cc-color-field-label">Accent</span>
+                          <ColorPicker
+                            value={d.accent}
+                            presets={themeVariants.map((v) => v.color)}
+                            fallback={d.accent || '#0DA7BC'}
+                            onColor={(c) => updateDetails({ accent: c })}
+                          />
+                        </div>
+                        <div className="cc-color-field">
+                          <span className="cc-color-field-label">Title</span>
+                          <ColorPicker
+                            value={d.fontColor}
+                            presets={['#FFFFFF', '#0F172A', d.accent || '#0DA7BC']}
+                            fallback="#FFFFFF"
+                            onColor={(c) => updateDetails({ fontColor: c })}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </>
+                )
+              })()}
               <div className="cc-setting-row">
                 <div className="cc-setting-text">
                   <span className="cc-setting-label">Show a subheader ribbon</span>
