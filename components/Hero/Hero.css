@@ -60,7 +60,9 @@
 
 .hero-sub {
   font-size: 13px;
-  color: #64748b;
+  /* sits on the gray page background (#f3f4f6), so needs to be darker than the
+     muted gray used inside white cards to clear 4.5:1 */
+  color: #475569;
   margin-top: 2px;
   line-height: 1.4;
 }

@@ -11,8 +11,9 @@ import { TrendChart } from '@components/TrendChart/TrendChart'
 import { Icon } from '@components/Icon/Icon'
 
 const ACCENT = '#7C3AED'
-const T1_COLOR = '#E8866A'
-const N1_COLOR = '#0DA7BC'
+// AA-safe (≥4.5:1 on white) — used as bar fills, legend dots, and label text
+const T1_COLOR = '#C2410C'
+const N1_COLOR = '#0E7490'
 
 const DEMOGRAPHICS_ICON = <Icon name="users" />
 
@@ -149,7 +150,7 @@ const EQUITY_COLUMNS = [
     key: 'rmi',
     label: 'RMI total',
     align: 'right',
-    render: (v) => <span style={{ color: rmiColor(v), fontWeight: 800 }}>{v.toFixed(1)}</span>,
+    render: (v) => <span style={{ color: '#1E293B', fontWeight: 800 }}>{v.toFixed(1)}</span>,
   },
   {
     key: 'rmiBar',
@@ -183,7 +184,7 @@ const EQUITY_COLUMNS = [
           Title I
         </Pill>
       ) : (
-        <span style={{ color: '#CBD5E1' }}>—</span>
+        <span style={{ color: '#64748B' }}>—</span>
       ),
   },
 ]
@@ -198,7 +199,7 @@ const ACTION_COLUMNS = [
     key: 'priority',
     label: 'Priority',
     render: (v) => (
-      <Pill color={v === 'critical' ? '#DC2626' : '#D97706'} variant="filled" size="sm">
+      <Pill color={v === 'critical' ? '#DC2626' : '#B45309'} variant="filled" size="sm">
         {v === 'critical' ? 'High Priority' : 'Monitor'}
       </Pill>
     ),

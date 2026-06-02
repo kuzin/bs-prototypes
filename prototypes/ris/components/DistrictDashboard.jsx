@@ -29,6 +29,15 @@ const SEC = Object.fromEntries(SECTIONS.map((s) => [s.key, s]))
 const GROWTH_COLOR = '#16A97A'
 const DECLINE_COLOR = '#E8866A'
 
+// AA-safe text shade per section (the raw SECTIONS colors fail 4.5:1 on white
+// for the small eyebrow / "View more" text — icon + border keep the brand hue).
+const SEC_TEXT = {
+  motivation: '#C2410C',
+  integrity: '#1D4ED8',
+  habits: '#15803D',
+  skills: '#7C3AED',
+}
+
 const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
 
 // ── Top summary tiles: one workable metric per area (no 1–100 score) ────────
@@ -86,7 +95,7 @@ function SummaryTiles({ onNavigate }) {
             key={t.key}
             type="button"
             className="rh-stat rh-stat--clickable ds-tile"
-            style={{ '--sec-color': sec.color, '--sec-bg': sec.bg }}
+            style={{ '--sec-color': sec.color, '--sec-bg': sec.bg, '--sec-text': SEC_TEXT[t.key] }}
             onClick={() => onNavigate(t.key)}
           >
             <div className="ds-tile-head">
@@ -310,6 +319,7 @@ export function DistrictDashboard({ onNavigate }) {
                   })),
                 },
               ]}
+              ariaLabel="Lexile growth versus average books read per month, by school. Growth is shown in green above the zero line; decline in coral below."
               theme={NIVO_THEME}
               margin={{ top: 16, right: 28, bottom: 56, left: 72 }}
               xScale={{ type: 'linear', min: 15, max: 50 }}

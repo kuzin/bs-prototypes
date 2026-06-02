@@ -65,14 +65,14 @@ const SCORECARD_COLUMNS = [
     label: 'Lexile Δ',
     align: 'center',
     render: (v) => (
-      <span style={{ color: v >= 0 ? '#16A97A' : '#DC2626', fontWeight: 700 }}>{signedL(v)}</span>
+      <span style={{ color: v >= 0 ? '#15803D' : '#DC2626', fontWeight: 700 }}>{signedL(v)}</span>
     ),
   },
   {
     key: 'engagement',
     label: 'Engagement',
     align: 'center',
-    render: (v, r) => <span style={{ color: r.color, fontWeight: 700 }}>{v}%</span>,
+    render: (v) => <span style={{ color: '#1E293B', fontWeight: 700 }}>{v}%</span>,
   },
   {
     key: 'action',
@@ -177,7 +177,7 @@ export function DistrictAnalytics() {
           unit="of 6"
           label="Schools above avg"
           footer={`${districtAvgEng}% district benchmark`}
-          color="#16A97A"
+          color="#15803D"
         />
         <StatCard
           value={`${btAvgCompletion}%`}
@@ -188,7 +188,7 @@ export function DistrictAnalytics() {
           value="r = 0.82"
           label="Engagement ↔ Attendance"
           footer="Positive outcome correlation"
-          color="#16A97A"
+          color="#15803D"
         />
       </div>
 

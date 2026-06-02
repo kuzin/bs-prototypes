@@ -61,13 +61,9 @@ export function DistrictMotivation() {
           label="District avg RMI total"
           footer={`↑${DISTRICT_RMI.delta} vs last month`}
         />
-        <StatCard value={improvingCount} unit="of 6" label="Schools improving" color="#16A97A" />
-        <StatCard
-          value={topSchool.rmi.toFixed(1)}
-          label="Highest RMI total"
-          color={topSchool.color}
-        />
-        <StatCard value={bottomSchool.rmi.toFixed(1)} label="Lowest RMI total" color={ACCENT} />
+        <StatCard value={improvingCount} unit="of 6" label="Schools improving" color="#15803D" />
+        <StatCard value={topSchool.rmi.toFixed(1)} label="Highest RMI total" />
+        <StatCard value={bottomSchool.rmi.toFixed(1)} label="Lowest RMI total" />
       </div>
 
       <div className="sv-grid">
@@ -124,10 +120,14 @@ export function DistrictMotivation() {
         >
           <BarList
             groups={[
-              { label: 'Intrinsic', labelColor: ACCENT, items: intrinsicFactors.map(factorToItem) },
+              {
+                label: 'Intrinsic',
+                labelColor: '#C2410C',
+                items: intrinsicFactors.map(factorToItem),
+              },
               {
                 label: 'Extrinsic',
-                labelColor: EXTRINSIC_COLOR,
+                labelColor: '#1D4ED8',
                 items: extrinsicFactors.map(factorToItem),
               },
             ]}
@@ -155,7 +155,6 @@ export function DistrictMotivation() {
                 icon: RMI_ICONS[factor.iconKey],
                 iconColor: factor.color,
                 label: factor.name,
-                labelColor: factor.color,
                 valueLabel: score.toFixed(1),
               }
             }).filter(Boolean)}

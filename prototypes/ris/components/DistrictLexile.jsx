@@ -72,7 +72,7 @@ export function DistrictLexile() {
           footer="negative Lexile growth"
           color="#DC2626"
         />
-        <StatCard label="Top-growth school" value="Adams High" footer="+112L YTD" color="#16A97A" />
+        <StatCard label="Top-growth school" value="Adams High" footer="+112L YTD" color="#15803D" />
         <StatCard
           label="Students flagged (stuck)"
           value="~1,490"
@@ -113,7 +113,7 @@ export function DistrictLexile() {
                   position: 'insideBottom',
                   offset: -12,
                   fontSize: 13,
-                  fill: '#94A3B8',
+                  fill: '#64748B',
                 }}
               />
               <YAxis
@@ -128,7 +128,7 @@ export function DistrictLexile() {
                   position: 'insideLeft',
                   offset: 12,
                   fontSize: 13,
-                  fill: '#94A3B8',
+                  fill: '#64748B',
                 }}
               />
               <ReferenceLine y={0} stroke="#94A3B8" strokeDasharray="5 4" />
@@ -150,7 +150,7 @@ export function DistrictLexile() {
                       <div style={{ fontWeight: 700, marginBottom: 4 }}>{d.school}</div>
                       <div>
                         Lexile change:{' '}
-                        <b style={{ color: d.lexileGrowth >= 0 ? '#16A97A' : '#DC2626' }}>
+                        <b style={{ color: d.lexileGrowth >= 0 ? '#15803D' : '#DC2626' }}>
                           {signedL(d.lexileGrowth)}
                         </b>
                       </div>
@@ -164,7 +164,7 @@ export function DistrictLexile() {
                         style={{
                           marginTop: 4,
                           fontSize: 13,
-                          color: d.lexileGrowth >= 0 ? '#16A97A' : '#DC2626',
+                          color: d.lexileGrowth >= 0 ? '#15803D' : '#DC2626',
                           fontWeight: 600,
                         }}
                       >
@@ -176,6 +176,7 @@ export function DistrictLexile() {
               />
               <Scatter
                 data={LEXILE_DATA}
+                isAnimationActive={false}
                 shape={({ cx, cy, payload }) => {
                   const r = Math.sqrt(payload.students / 65)
                   const fill = payload.lexileGrowth >= 0 ? GROWTH_COLOR : DECLINE_COLOR
@@ -239,7 +240,7 @@ export function DistrictLexile() {
               items={[
                 { color: ABOVE_COLOR, label: 'Met/exceeded expected' },
                 { color: BELOW_COLOR, label: 'Below expected' },
-                { color: '#94A3B8', label: 'Expected baseline' },
+                { color: '#64748B', label: 'Expected baseline' },
               ]}
             />
           }

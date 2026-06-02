@@ -96,13 +96,13 @@ export function DistrictIntegrity() {
               ? highFlagSchools.map((s) => s.name.split(' ')[0]).join(', ')
               : 'All within range'
           }
-          color={highFlagSchools.length > 0 ? FLAG_COLOR : '#16A97A'}
+          color={highFlagSchools.length > 0 ? '#C2410C' : '#15803D'}
         />
         <StatCard
           value={`${FLAGGED_LOGS.pct}%`}
           label="Flagged sessions (all logs)"
           footer={`↓${Math.abs(FLAGGED_LOGS.delta)}pp vs last week`}
-          footerColor="#16A34A"
+          footerColor="#15803D"
         />
       </div>
 
