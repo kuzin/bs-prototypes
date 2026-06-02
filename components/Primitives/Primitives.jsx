@@ -1,4 +1,5 @@
 import { useState, useRef } from 'react'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Primitives/Primitives.css'
 
 /**
@@ -142,54 +143,10 @@ export function Tooltip({ content, placement = 'top', delay = 0, followCursor = 
  * levels: info | success | warning | error
  */
 const BANNER_ICONS = {
-  info: (
-    <svg viewBox="0 0 16 16" fill="currentColor">
-      <circle cx="8" cy="8" r="7" fillOpacity="0.18" />
-      <circle cx="8" cy="4.5" r="0.9" />
-      <path d="M7 7.2h1.4v5H7z" />
-    </svg>
-  ),
-  success: (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="8" cy="8" r="7" />
-      <polyline points="5,8 7.3,10.3 11.2,5.8" />
-    </svg>
-  ),
-  warning: (
-    <svg viewBox="0 0 16 16" fill="currentColor">
-      <path d="M8 1.4l7.5 13H0.5z" fillOpacity="0.18" />
-      <path
-        d="M8 1.4l7.5 13H0.5z"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinejoin="round"
-      />
-      <circle cx="8" cy="12.4" r="0.9" />
-      <path d="M7.3 6.2h1.4v4.4H7.3z" />
-    </svg>
-  ),
-  error: (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="8" cy="8" r="7" />
-      <line x1="5.5" y1="5.5" x2="10.5" y2="10.5" />
-      <line x1="10.5" y1="5.5" x2="5.5" y2="10.5" />
-    </svg>
-  ),
+  info: <Icon name="info" size={18} />,
+  success: <Icon name="circle-check" size={18} />,
+  warning: <Icon name="alert-triangle" size={18} />,
+  error: <Icon name="circle-x" size={18} />,
 }
 
 export function Banner({
@@ -219,17 +176,7 @@ export function Banner({
           aria-label="Dismiss"
           className="bnr-close"
         >
-          <svg
-            viewBox="0 0 14 14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="3" y1="3" x2="11" y2="11" />
-            <line x1="11" y1="3" x2="3" y2="11" />
-          </svg>
+          <Icon name="x" size={14} />
         </IconButton>
       )}
     </div>
@@ -266,22 +213,7 @@ export function Breadcrumb({ items = [], className = '' }) {
                   {item.label}
                 </span>
               )}
-              {!last && (
-                <svg
-                  className="bcb-sep"
-                  viewBox="0 0 16 16"
-                  width="11"
-                  height="11"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  aria-hidden="true"
-                >
-                  <polyline points="6,3 11,8 6,13" />
-                </svg>
-              )}
+              {!last && <Icon name="chevron-right" size={11} className="bcb-sep" />}
             </li>
           )
         })}
@@ -332,20 +264,7 @@ export function Accordion({
               onClick={() => toggle(item.id)}
             >
               <span className="acd-title">{item.title}</span>
-              <svg
-                className="acd-caret"
-                viewBox="0 0 16 16"
-                width="14"
-                height="14"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-              >
-                <polyline points="4,6 8,10 12,6" />
-              </svg>
+              <Icon name="chevron-down" size={14} className="acd-caret" />
             </button>
             {isOpen && <div className="acd-content">{item.content}</div>}
           </div>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Modal } from '@components/Modal/Modal'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Modal/Modal.css'
 import './ComponentUsage.css'
 
@@ -95,17 +96,7 @@ export function ComponentUsage({ onClose }) {
           <div className="cu-head">
             <div className="cu-title">Component usage</div>
             <button type="button" className="cu-close" onClick={close} aria-label="Close">
-              <svg
-                viewBox="0 0 20 20"
-                width="18"
-                height="18"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-              >
-                <path d="M5 5l10 10M15 5L5 15" />
-              </svg>
+              <Icon name="x" size={18} stroke={2} />
             </button>
           </div>
 

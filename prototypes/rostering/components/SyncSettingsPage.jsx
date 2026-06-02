@@ -3,6 +3,7 @@ import { ChartCard } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
 import { Modal } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
+import { Icon } from '@components/Icon/Icon'
 import {
   SOURCE,
   INCOMING_CLASSES,
@@ -24,65 +25,12 @@ import {
 
 const ACCENT = '#7C5CFA'
 
-// ─── Icons (Feather-style, 24x24 viewBox, 1.8 stroke) ─────────────────────
-const IcRules = (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="9 11 12 14 22 4" />
-    <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" />
-  </svg>
-)
-const IcCalendar = (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="3" y="4" width="18" height="18" rx="2" />
-    <line x1="16" y1="2" x2="16" y2="6" />
-    <line x1="8" y1="2" x2="8" y2="6" />
-    <line x1="3" y1="10" x2="21" y2="10" />
-  </svg>
-)
-const IcHistory = (
-  <svg
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="12" cy="12" r="9" />
-    <polyline points="12 7 12 12 15 14" />
-  </svg>
-)
+// ─── Icons ────────────────────────────────────────────────────────────────
+const IcRules = <Icon name="clipboard-check" />
+const IcCalendar = <Icon name="calendar" />
+const IcHistory = <Icon name="history" />
 function ChevronDown() {
-  return (
-    <svg
-      className="rost-select-chevron"
-      viewBox="0 0 16 16"
-      width="14"
-      height="14"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <polyline points="4,6 8,10 12,6" />
-    </svg>
-  )
+  return <Icon name="chevron-down" size={14} className="rost-select-chevron" aria-hidden="true" />
 }
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
@@ -168,18 +116,7 @@ function CustomSubjects({ words, onAdd, onRemove }) {
             onClick={() => onRemove(w)}
             aria-label={`Remove ${w}`}
           >
-            <svg
-              viewBox="0 0 12 12"
-              width="10"
-              height="10"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-            >
-              <line x1="3" y1="3" x2="9" y2="9" />
-              <line x1="9" y1="3" x2="3" y2="9" />
-            </svg>
+            <Icon name="x" size={10} />
           </button>
         </span>
       ))}
@@ -299,19 +236,11 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
           onClick={() => setOpen((o) => !o)}
           aria-expanded={open}
           iconRight={
-            <svg
+            <Icon
+              name="chevron-down"
+              size={14}
               className={`rost-fi-chevron${open ? ' rost-fi-chevron--open' : ''}`}
-              viewBox="0 0 16 16"
-              width="14"
-              height="14"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="4,6 8,10 12,6" />
-            </svg>
+            />
           }
         >
           {open ? 'Hide classes' : 'See which classes'}
@@ -458,20 +387,7 @@ function ScheduleSection() {
     >
       <div className="rost-info-banner">
         <div className="rost-info-icon">
-          <svg
-            viewBox="0 0 16 16"
-            width="16"
-            height="16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="8" cy="8" r="6.5" />
-            <line x1="8" y1="7" x2="8" y2="11" />
-            <circle cx="8" cy="5" r="0.6" fill="currentColor" />
-          </svg>
+          <Icon name="info" size={16} />
         </div>
         <div>
           Share rostering data up to the pause date and again on the restart date, so no logs are
@@ -555,20 +471,7 @@ function ScheduleSection() {
 
       <div className="rost-warn-banner" style={{ marginTop: 16 }}>
         <div style={{ flexShrink: 0 }}>
-          <svg
-            viewBox="0 0 16 16"
-            width="16"
-            height="16"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="8" cy="8" r="6.5" />
-            <path d="M8 4v5" />
-            <circle cx="8" cy="11.5" r="0.6" fill="currentColor" />
-          </svg>
+          <Icon name="alert-triangle" size={16} />
         </div>
         <div>
           No syncs will run from{' '}
@@ -641,19 +544,7 @@ function SchoolLastSync() {
                   aria-haspopup="dialog"
                 >
                   {it.deact} deactivated
-                  <svg
-                    viewBox="0 0 16 16"
-                    width="11"
-                    height="11"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="3" y1="8" x2="12" y2="8" />
-                    <polyline points="8,4 12,8 8,12" />
-                  </svg>
+                  <Icon name="arrow-right" size={11} />
                 </button>
               )}
               <span className="rost-ls-li-value">{it.value.toLocaleString()}</span>
@@ -680,19 +571,7 @@ function SchoolLastSync() {
                 </div>
               </div>
               <button className="rost-modal-close" onClick={close} aria-label="Close">
-                <svg
-                  viewBox="0 0 16 16"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="4" y1="4" x2="12" y2="12" />
-                  <line x1="12" y1="4" x2="4" y2="12" />
-                </svg>
+                <Icon name="x" size={16} />
               </button>
             </div>
             <div className="modal-body">
@@ -750,19 +629,7 @@ function DistrictLastSync() {
             aria-haspopup="dialog"
           >
             {users.length} deactivated
-            <svg
-              viewBox="0 0 16 16"
-              width="11"
-              height="11"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="3" y1="8" x2="12" y2="8" />
-              <polyline points="8,4 12,8 8,12" />
-            </svg>
+            <Icon name="arrow-right" size={11} />
           </button>
         ),
     },
@@ -804,19 +671,7 @@ function DistrictLastSync() {
                 </div>
               </div>
               <button className="rost-modal-close" onClick={close} aria-label="Close">
-                <svg
-                  viewBox="0 0 16 16"
-                  width="16"
-                  height="16"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <line x1="4" y1="4" x2="12" y2="12" />
-                  <line x1="12" y1="4" x2="4" y2="12" />
-                </svg>
+                <Icon name="x" size={16} />
               </button>
             </div>
             <div className="modal-body">

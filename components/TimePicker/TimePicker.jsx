@@ -1,6 +1,7 @@
 import * as Popover from '@radix-ui/react-popover'
 import { useState, useId, useRef, useEffect } from 'react'
 import { useFieldProps } from '@components/FormContext/FormContext'
+import { Icon } from '@components/Icon/Icon'
 import '@components/DatePicker/Picker.css'
 
 /**
@@ -78,21 +79,7 @@ export function TimePicker({
           {value ? formatDisplay(value) : placeholder}
         </span>
         {/* Clock icon */}
-        <svg
-          className="pck-icon"
-          viewBox="0 0 16 16"
-          width="14"
-          height="14"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="8" cy="8" r="6" />
-          <polyline points="8,5 8,8 10.2,10.2" />
-        </svg>
+        <Icon name="clock" size={14} className="pck-icon" />
       </button>
     </Popover.Trigger>
   )

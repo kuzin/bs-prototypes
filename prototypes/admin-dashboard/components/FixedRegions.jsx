@@ -1,5 +1,6 @@
 import { FEATURE_BAR, QUICK_ACTIONS, ENGAGEMENT, GOAL_OPTIONS } from '../data'
 import { SettingsPopover } from './SettingsPopover'
+import { Icon } from '@components/Icon/Icon'
 
 // ─── Feature announcement bar (admin-controlled, not editable) ───────────
 export function FeatureBar({ onClose }) {
@@ -25,176 +26,18 @@ export function FeatureBar({ onClose }) {
 
 // ─── Rail icons (shared by Quick Actions) ────────────────────────────────
 const ACTION_ICONS = {
-  flag: (
-    <svg
-      viewBox="0 0 20 20"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M4 2v16" />
-      <path d="M4 3h11l-2 3 2 3H4" />
-    </svg>
-  ),
-  reward: (
-    <svg
-      viewBox="0 0 20 20"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="10" cy="8" r="4.5" />
-      <path d="M7 12l-1.5 5L10 15l4.5 2L13 12" />
-    </svg>
-  ),
-  trophy: (
-    <svg
-      viewBox="0 0 20 20"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M5 3h10v4a5 5 0 0 1-10 0z" />
-      <path d="M5 5H3v1a3 3 0 0 0 2 2.8" />
-      <path d="M15 5h2v1a3 3 0 0 1-2 2.8" />
-      <path d="M10 12v3" />
-      <path d="M6.5 17h7" />
-    </svg>
-  ),
-  chart: (
-    <svg
-      viewBox="0 0 20 20"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 17h14" />
-      <rect x="5" y="9" width="2.5" height="6" rx="0.5" />
-      <rect x="9" y="5" width="2.5" height="10" rx="0.5" />
-      <rect x="13" y="11" width="2.5" height="4" rx="0.5" />
-    </svg>
-  ),
-  lexile: (
-    <svg
-      viewBox="0 0 20 20"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 4h7a3 3 0 0 1 3 3v10a2 2 0 0 0-2-2H3z" />
-      <path d="M17 4h-4a3 3 0 0 0-3 3v10a2 2 0 0 1 2-2h5z" />
-    </svg>
-  ),
-  target: (
-    <svg
-      viewBox="0 0 20 20"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="10" cy="10" r="7.5" />
-      <circle cx="10" cy="10" r="4" />
-      <circle cx="10" cy="10" r="1" fill="currentColor" />
-    </svg>
-  ),
-  user: (
-    <svg
-      viewBox="0 0 20 20"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="10" cy="7" r="3.2" />
-      <path d="M3.5 17c0-3.2 2.9-5.5 6.5-5.5s6.5 2.3 6.5 5.5" />
-    </svg>
-  ),
-  classes: (
-    <svg
-      viewBox="0 0 20 20"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <circle cx="7" cy="7" r="2.5" />
-      <circle cx="14" cy="8" r="2" />
-      <path d="M2 16c0-2.5 2-4 5-4s5 1.5 5 4" />
-      <path d="M12 16c0-1.8 1.5-3 3-3s3 1.2 3 3" />
-    </svg>
-  ),
-  book: (
-    <svg
-      viewBox="0 0 20 20"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.8"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M3 4h6a2.5 2.5 0 0 1 2.5 2.5V17a2 2 0 0 0-2-2H3z" />
-      <path d="M17 4h-6A2.5 2.5 0 0 0 8.5 6.5V17a2 2 0 0 1 2-2H17z" />
-    </svg>
-  ),
+  flag: <Icon name="flag" size={18} />,
+  reward: <Icon name="award" size={18} />,
+  trophy: <Icon name="trophy" size={18} />,
+  chart: <Icon name="chart-bar" size={18} />,
+  lexile: <Icon name="book-2" size={18} />,
+  target: <Icon name="target" size={18} />,
+  user: <Icon name="user" size={18} />,
+  classes: <Icon name="users" size={18} />,
+  book: <Icon name="book-2" size={18} />,
 }
 
-const CogIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    width="14"
-    height="14"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <circle cx="12" cy="12" r="3" />
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
-  </svg>
-)
+const CogIcon = () => <Icon name="settings" size={14} />
 
 // ─── Quick Actions card ──────────────────────────────────────────────────
 // A compact launcher of the most common jumps, keyed by role. The first three

@@ -1,5 +1,6 @@
 import React from 'react'
 import { Pill } from '@components/Pill/Pill'
+import { Icon } from '@components/Icon/Icon'
 import { DotsButton, FlagIconBadge, FLAG_TYPE_CONFIG, POS_FLAG_CONFIG } from './SessionsTable'
 import '@components/Table/Table.css'
 import '@components/Pill/Pill.css'
@@ -27,19 +28,7 @@ function FlagCount({ flags }) {
   if (!flags || flags.length === 0) return <span className="sess-na">—</span>
   return (
     <span className="sess-flags sess-flags--neg">
-      <svg
-        viewBox="0 0 16 16"
-        width="13"
-        height="13"
-        fill="none"
-        stroke="#DC2626"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 2v12" />
-        <path d="M3 2h8l-2 4 2 4H3" />
-      </svg>
+      <Icon name="flag" size={13} color="#DC2626" />
       {flags.length}
     </span>
   )
@@ -50,19 +39,7 @@ function PosFlagCount({ flags }) {
   if (flags.length >= 3) {
     return (
       <span className="sess-flags sess-flags--pos">
-        <svg
-          viewBox="0 0 16 16"
-          width="13"
-          height="13"
-          fill="none"
-          stroke="#16A97A"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M3 2v12" />
-          <path d="M3 2h8l-2 4 2 4H3" />
-        </svg>
+        <Icon name="flag" size={13} color="#16A97A" />
         {flags.length}
       </span>
     )
@@ -183,35 +160,11 @@ export function ReaderGroupedView({
               {showEngagementColumn && <th className="tbl-th">ENGAGEMENT</th>}
               {showPosFlags && (
                 <th className="tbl-th">
-                  <svg
-                    viewBox="0 0 16 16"
-                    width="13"
-                    height="13"
-                    fill="none"
-                    stroke="#16A97A"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M3 2v12" />
-                    <path d="M3 2h8l-2 4 2 4H3" />
-                  </svg>
+                  <Icon name="flag" size={13} color="#16A97A" />
                 </th>
               )}
               <th className="tbl-th">
-                <svg
-                  viewBox="0 0 16 16"
-                  width="13"
-                  height="13"
-                  fill="none"
-                  stroke="#DC2626"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M3 2v12" />
-                  <path d="M3 2h8l-2 4 2 4H3" />
-                </svg>
+                <Icon name="flag" size={13} color="#DC2626" />
               </th>
               <th className="tbl-th" />
             </tr>

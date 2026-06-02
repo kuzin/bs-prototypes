@@ -1,5 +1,6 @@
 import { createContext, useContext, useId, useState, useEffect, useRef } from 'react'
 import { FieldContext, useFieldProps } from '@components/FormContext/FormContext'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Form/Form.css'
 
 /**
@@ -104,20 +105,7 @@ export function Select({ size = 'md', label, children, className = '', ...rest }
       <select id={selectId} className="sel" {...rest}>
         {children}
       </select>
-      <svg
-        className="sel-caret"
-        viewBox="0 0 16 16"
-        width="11"
-        height="11"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        aria-hidden="true"
-      >
-        <polyline points="4,6 8,10 12,6" />
-      </svg>
+      <Icon name="chevron-down" size={11} stroke={2} className="sel-caret" />
     </div>
   )
 
@@ -169,18 +157,7 @@ export function Checkbox({ checked, onChange, disabled, children, className = ''
         onChange={(e) => onChange?.(e.target.checked)}
       />
       <span className="chk-box" aria-hidden="true">
-        <svg
-          viewBox="0 0 12 12"
-          width="12"
-          height="12"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="2,6 5,9 10,3" />
-        </svg>
+        <Icon name="check" size={12} stroke={2} />
       </span>
       {children && <span className="chk-label">{children}</span>}
     </label>
@@ -229,22 +206,7 @@ export function DateInput({ size = 'md', type = 'date', label, className = '', .
       className={`inp-wrap inp-wrap--${size}${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}
     >
       <span className="inp-icon inp-icon--left">
-        <svg
-          viewBox="0 0 14 14"
-          width="14"
-          height="14"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="1" y="2.5" width="12" height="11" rx="2" />
-          <line x1="1" y1="6" x2="13" y2="6" />
-          <line x1="4.5" y1="1" x2="4.5" y2="4" />
-          <line x1="9.5" y1="1" x2="9.5" y2="4" />
-        </svg>
+        <Icon name="calendar" size={14} />
       </span>
       <input id={inputId} type={type} className="inp inp--bare inp--date" {...rest} />
     </div>
@@ -272,20 +234,7 @@ export function TimeInput({ size = 'md', label, className = '', ...rest }) {
       className={`inp-wrap inp-wrap--${size}${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}
     >
       <span className="inp-icon inp-icon--left">
-        <svg
-          viewBox="0 0 14 14"
-          width="14"
-          height="14"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <circle cx="7" cy="7" r="6" />
-          <polyline points="7,3.5 7,7 9.5,9" />
-        </svg>
+        <Icon name="clock" size={14} />
       </span>
       <input id={inputId} type="time" className="inp inp--bare inp--time" {...rest} />
     </div>
@@ -387,20 +336,7 @@ export function FileInput({
         onClick={() => inputRef.current?.click()}
         disabled={disabled}
       >
-        <svg
-          viewBox="0 0 14 14"
-          width="12"
-          height="12"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.75"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <path d="M7 1v8M4 4l3-3 3 3" />
-          <path d="M1 10v1.5A1.5 1.5 0 0 0 2.5 13h9a1.5 1.5 0 0 0 1.5-1.5V10" />
-        </svg>
+        <Icon name="upload" size={12} />
         Choose file
       </button>
       <span className={`finp-name${!fileName ? ' finp-name--placeholder' : ''}`}>
@@ -513,20 +449,7 @@ export function MultiSelect({
         <span className={`msel-display${value.length === 0 ? ' msel-display--placeholder' : ''}`}>
           {displayText}
         </span>
-        <svg
-          className="msel-caret"
-          viewBox="0 0 16 16"
-          width="11"
-          height="11"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <polyline points="4,6 8,10 12,6" />
-        </svg>
+        <Icon name="chevron-down" size={11} stroke={2} className="msel-caret" />
       </button>
       {open && (
         <div className="msel-pop" role="listbox" aria-multiselectable="true">
@@ -546,18 +469,7 @@ export function MultiSelect({
                   onChange={() => toggle(opt.value)}
                 />
                 <span className="chk-box" aria-hidden="true">
-                  <svg
-                    viewBox="0 0 12 12"
-                    width="12"
-                    height="12"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="2,6 5,9 10,3" />
-                  </svg>
+                  <Icon name="check" size={12} stroke={2} />
                 </span>
                 <span className="msel-opt-label">{opt.label}</span>
               </label>
@@ -614,17 +526,7 @@ export function NumberInput({
         aria-label="Decrease"
         tabIndex={-1}
       >
-        <svg
-          viewBox="0 0 12 12"
-          width="10"
-          height="10"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        >
-          <line x1="2" y1="6" x2="10" y2="6" />
-        </svg>
+        <Icon name="minus" size={10} stroke={2.5} />
       </button>
       <input
         id={inputId}
@@ -645,18 +547,7 @@ export function NumberInput({
         aria-label="Increase"
         tabIndex={-1}
       >
-        <svg
-          viewBox="0 0 12 12"
-          width="10"
-          height="10"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-        >
-          <line x1="2" y1="6" x2="10" y2="6" />
-          <line x1="6" y1="2" x2="6" y2="10" />
-        </svg>
+        <Icon name="plus" size={10} stroke={2.5} />
       </button>
     </div>
   )

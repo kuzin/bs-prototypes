@@ -14,27 +14,12 @@ import { BarList } from '@components/BarList/BarList'
 import { Table } from '@components/Table/Table'
 import { Pill } from '@components/Pill/Pill'
 import { TrendChart } from '@components/TrendChart/TrendChart'
+import { Icon } from '@components/Icon/Icon'
 import './SchoolDemographics.css'
 
 const DEMO_COLOR = '#7C3AED'
 
-const DemographicsIcon = () => (
-  <svg
-    viewBox="0 0 20 20"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="10" cy="6" r="2.5" />
-    <circle cx="4" cy="9" r="2" />
-    <circle cx="16" cy="9" r="2" />
-    <path d="M6 17c0-2.2 1.8-4 4-4s4 1.8 4 4" />
-    <path d="M1 17c0-1.7 1.3-3 3-3" />
-    <path d="M19 17c0-1.7-1.3-3-3-3" />
-  </svg>
-)
+const DemographicsIcon = () => <Icon name="users" />
 
 function buildCohorts(details) {
   const frl = details.frl

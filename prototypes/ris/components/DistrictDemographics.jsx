@@ -8,28 +8,13 @@ import { BarList } from '@components/BarList/BarList'
 import { SchoolCell } from './SchoolCell'
 import { ChartLegend } from '@components/charts/charts'
 import { TrendChart } from '@components/TrendChart/TrendChart'
+import { Icon } from '@components/Icon/Icon'
 
 const ACCENT = '#7C3AED'
 const T1_COLOR = '#E8866A'
 const N1_COLOR = '#0DA7BC'
 
-const DEMOGRAPHICS_ICON = (
-  <svg
-    viewBox="0 0 20 20"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <circle cx="10" cy="6" r="2.5" />
-    <circle cx="4" cy="9" r="2" />
-    <circle cx="16" cy="9" r="2" />
-    <path d="M6 17c0-2.2 1.8-4 4-4s4 1.8 4 4" />
-    <path d="M1 17c0-1.7 1.3-3 3-3" />
-    <path d="M19 17c0-1.7-1.3-3-3-3" />
-  </svg>
-)
+const DEMOGRAPHICS_ICON = <Icon name="users" />
 
 const TITLE_I_IDS = ['lincoln', 'roosevelt', 'washington']
 

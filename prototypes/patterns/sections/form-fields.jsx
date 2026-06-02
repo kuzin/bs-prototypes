@@ -12,6 +12,7 @@ import {
   Textarea,
 } from '@components/Form/Form'
 import { Spinner } from '@components/Primitives/Primitives'
+import { Icon } from '@components/Icon/Icon'
 import { Knobs } from './_shared'
 
 function ToggleKnobs() {
@@ -63,31 +64,8 @@ function InputKnobs() {
   const [withLabel, setLabel] = useState(true)
   const [error, setError] = useState('')
   const [help, setHelp] = useState('')
-  const searchIcon = (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="7.5" cy="7.5" r="4.5" />
-      <path d="M10.8 10.8 14.5 14.5" />
-    </svg>
-  )
-  const checkIcon = (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="3,8.5 6.5,12 13,4" />
-    </svg>
-  )
+  const searchIcon = <Icon name="search" />
+  const checkIcon = <Icon name="check" />
   return (
     <>
       <Knobs>

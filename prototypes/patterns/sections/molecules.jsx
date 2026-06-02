@@ -15,6 +15,7 @@ import {
   IconButton,
   SectionHeading,
 } from '@components/Primitives/Primitives'
+import { Icon } from '@components/Icon/Icon'
 import {
   Knobs,
   Variant,
@@ -327,19 +328,7 @@ const DEFAULT_MODAL_BODY = `Once deleted, this challenge and its logged minutes 
 If you only want to pause logging without losing data, archive the challenge instead.`
 
 function CloseIcon() {
-  return (
-    <svg
-      viewBox="0 0 14 14"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="3" y1="3" x2="11" y2="11" />
-      <line x1="11" y1="3" x2="3" y2="11" />
-    </svg>
-  )
+  return <Icon name="x" />
 }
 
 function CenteredModalKnobs() {
@@ -475,70 +464,21 @@ const SP_EMPTY = {
 }
 
 function EmptyIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="7" />
-      <line x1="16" y1="16" x2="21" y2="21" />
-    </svg>
-  )
+  return <Icon name="search" />
 }
 
 function SpNavIcon({ name }) {
-  const props = {
-    viewBox: '0 0 20 20',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: '1.6',
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    width: 20,
-    height: 20,
-  }
   switch (name) {
     case 'overview':
-      return (
-        <svg {...props}>
-          <circle cx="10" cy="7" r="3" />
-          <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" />
-        </svg>
-      )
+      return <Icon name="user" size={20} />
     case 'flame':
-      return (
-        <svg {...props}>
-          <path d="M10 2c.2 2.2-1.1 3.2-2.3 4.4C6.5 7.6 5 9.1 5 11.5 5 14.5 7.2 17 10 17s5-2.5 5-5.5c0-1.7-.6-2.7-1.4-3.4" />
-        </svg>
-      )
+      return <Icon name="flame" size={20} />
     case 'shield':
-      return (
-        <svg {...props}>
-          <path d="M10 2.5 16 4.5v5.7c0 3.7-2.7 6.7-6 7.6-3.3-.9-6-3.9-6-7.6V4.5z" />
-          <polyline points="7,10 9.2,12.2 13.2,8" />
-        </svg>
-      )
+      return <Icon name="shield-check" size={20} />
     case 'habits':
-      return (
-        <svg {...props}>
-          <rect x="3" y="4.5" width="14" height="13" rx="1.6" />
-          <line x1="3" y1="8.5" x2="17" y2="8.5" />
-          <line x1="7" y1="2.5" x2="7" y2="5.5" />
-          <line x1="13" y1="2.5" x2="13" y2="5.5" />
-        </svg>
-      )
+      return <Icon name="calendar-event" size={20} />
     case 'book':
-      return (
-        <svg {...props}>
-          <path d="M3 4c0-.6.4-1 1-1h5.5v14H4c-.6 0-1-.4-1-1V4z" />
-          <path d="M17 4c0-.6-.4-1-1-1h-5.5v14H16c.6 0 1-.4 1-1V4z" />
-          <line x1="9.5" y1="3" x2="9.5" y2="17" />
-        </svg>
-      )
+      return <Icon name="book" size={20} />
     default:
       return null
   }
@@ -663,11 +603,7 @@ function BannerKnobs() {
   const [hasAction, setAction] = useState(false)
   const [hasDismiss, setDismiss] = useState(true)
   const [customIcon, setCustomIcon] = useState(false)
-  const sparkleIcon = (
-    <svg viewBox="0 0 16 16" fill="currentColor">
-      <path d="M8 1.5l1.9 4 4.4.6-3.2 3.1.8 4.3L8 11.4l-4 2.1.8-4.3L1.7 6.1 6.1 5.5z" />
-    </svg>
-  )
+  const sparkleIcon = <Icon name="star-filled" />
   return (
     <>
       <Knobs>
@@ -789,61 +725,10 @@ function EmptyStateKnobs() {
   const [actionText, setActionText] = useState('Set thresholds')
   const [hasAction, setHas] = useState(true)
   const ICONS = {
-    search: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="11" cy="11" r="7" />
-        <line x1="16" y1="16" x2="21" y2="21" />
-      </svg>
-    ),
-    inbox: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 13l3-9h12l3 9" />
-        <path d="M3 13v6a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-6" />
-        <path d="M3 13h6l1 2h4l1-2h6" />
-      </svg>
-    ),
-    book: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v15a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2z" />
-        <path d="M4 18a2 2 0 0 1 2-2h13" />
-      </svg>
-    ),
-    chart: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 21h18" />
-        <rect x="6" y="13" width="3" height="6" />
-        <rect x="11" y="9" width="3" height="10" />
-        <rect x="16" y="5" width="3" height="14" />
-      </svg>
-    ),
+    search: <Icon name="search" />,
+    inbox: <Icon name="inbox" />,
+    book: <Icon name="book" />,
+    chart: <Icon name="chart-bar" />,
   }
   return (
     <>

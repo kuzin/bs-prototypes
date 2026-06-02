@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Icon, ICON_NAMES } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Pill } from '@components/Pill/Pill'
@@ -19,6 +20,83 @@ import {
   CheckIcon,
   StarIcon,
 } from './_shared'
+
+function IconShowcase() {
+  const [size, setSize] = useState(24)
+  const [stroke, setStroke] = useState(1.8)
+  const [color, setColor] = useState('#1D4ED8')
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Input
+            type="range"
+            min="14"
+            max="40"
+            value={size}
+            onChange={(e) => setSize(Number(e.target.value))}
+          />
+        </Field>
+        <Field label="stroke">
+          <Input
+            type="range"
+            min="1"
+            max="3"
+            step="0.1"
+            value={stroke}
+            onChange={(e) => setStroke(Number(e.target.value))}
+          />
+        </Field>
+        <Field label="color">
+          <input
+            className="pt-color"
+            type="color"
+            value={color}
+            onChange={(e) => setColor(e.target.value)}
+          />
+        </Field>
+      </Knobs>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(104px, 1fr))',
+          gap: 8,
+          color,
+        }}
+      >
+        {ICON_NAMES.map((name) => (
+          <div
+            key={name}
+            title={name}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 8,
+              padding: '14px 6px',
+              background: '#fff',
+              border: '1px solid #E5E7EB',
+              borderRadius: 8,
+            }}
+          >
+            <Icon name={name} size={size} stroke={stroke} />
+            <span
+              style={{
+                fontSize: 10,
+                color: '#64748B',
+                textAlign: 'center',
+                wordBreak: 'break-word',
+                lineHeight: 1.25,
+              }}
+            >
+              {name}
+            </span>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
 
 function ButtonShowcase() {
   return (
@@ -568,6 +646,26 @@ function TooltipKnobs() {
 }
 
 export const atomsSections = [
+  {
+    group: 'atoms',
+    id: 'icon',
+    name: 'Icon',
+    desc: (
+      <>
+        The single icon system for every prototype — a house-styled wrapper over{' '}
+        <code>@tabler/icons-react</code>. Use a semantic kebab-case <code>name</code> so call sites
+        stay library-agnostic: <code>{'<Icon name="flame" />'}</code>. Props: <code>size</code> (px,
+        default 18), <code>stroke</code> (width, default 1.8), <code>color</code> (defaults to{' '}
+        <code>currentColor</code>), plus <code>className</code> / <code>style</code>. Add new glyphs
+        to the registry in <code>components/Icon/Icon.jsx</code>.
+      </>
+    ),
+    render: () => (
+      <>
+        <IconShowcase />
+      </>
+    ),
+  },
   {
     group: 'atoms',
     id: 'button',

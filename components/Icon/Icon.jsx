@@ -1,0 +1,277 @@
+// ─── Icon ───────────────────────────────────────────────────────────────────
+// Single house-styled icon component for the whole prototype system, backed by
+// the @tabler/icons-react library (premium, consistent stroke set). Use semantic
+// kebab-case names so call sites stay library-agnostic — the registry below is
+// the one place that maps a name to a Tabler glyph. Add new icons here.
+//
+//   import { Icon } from '@components/Icon/Icon'
+//   <Icon name="chevron-down" />              // default size 18, stroke 1.8
+//   <Icon name="flame" size={20} />
+//   <Icon name="flag" size={16} color="#DC2626" />
+//
+// Color: omit `color` to inherit `currentColor` (the usual case). Stroke width
+// and size can be overridden per call site.
+
+import './Icon.css'
+import {
+  // ── navigation / controls ──
+  IconChevronDown,
+  IconChevronUp,
+  IconChevronLeft,
+  IconChevronRight,
+  IconArrowRight,
+  IconArrowLeft,
+  IconArrowUp,
+  IconArrowDown,
+  IconArrowBackUp,
+  IconX,
+  IconCheck,
+  IconPlus,
+  IconMinus,
+  IconDots,
+  IconDotsVertical,
+  IconGripVertical,
+  IconMenu2,
+  // ── status / feedback ──
+  IconInfoCircle,
+  IconCircleCheck,
+  IconCircleCheckFilled,
+  IconCircleX,
+  IconAlertTriangle,
+  IconAlertCircle,
+  IconHelpCircle,
+  // ── reading / domain ──
+  IconBook,
+  IconBook2,
+  IconNotebook,
+  IconFlame,
+  IconFlameFilled,
+  IconShield,
+  IconShieldCheck,
+  IconCalendar,
+  IconCalendarEvent,
+  IconCalendarStats,
+  IconClock,
+  IconStopwatch,
+  IconHistory,
+  IconUser,
+  IconUsers,
+  IconFlag,
+  IconTrophy,
+  IconAward,
+  IconBadge,
+  IconMedal,
+  IconCertificate,
+  IconGift,
+  IconPuzzle,
+  IconTarget,
+  IconStar,
+  IconStarFilled,
+  // ── actions ──
+  IconSettings,
+  IconPencil,
+  IconWriting,
+  IconCopy,
+  IconTrash,
+  IconArchive,
+  IconLink,
+  IconEye,
+  IconSearch,
+  IconDownload,
+  IconUpload,
+  IconPin,
+  IconPinFilled,
+  IconSignature,
+  // ── content / objects ──
+  IconSparkles,
+  IconBulb,
+  IconSpeakerphone,
+  IconSun,
+  IconMoon,
+  IconMoodSmile,
+  IconLock,
+  IconMessageCircle,
+  IconMessageCircleCheck,
+  IconMessageX,
+  IconInbox,
+  IconFileText,
+  IconClipboardCheck,
+  IconClipboardList,
+  IconList,
+  IconAlignLeft,
+  IconScribble,
+  IconWaveSine,
+  // ── layout / structure ──
+  IconLayoutGrid,
+  IconLayoutDashboard,
+  IconLayout,
+  IconLayoutColumns,
+  IconLayoutBottombar,
+  IconStack2,
+  IconAtom,
+  IconForms,
+  IconBrowser,
+  // ── data / analytics ──
+  IconChartBar,
+  IconChartColumn,
+  IconChartLine,
+  IconTrendingUp,
+  IconReportAnalytics,
+  // ── places / sync ──
+  IconSchool,
+  IconBuilding,
+  IconBuildingCommunity,
+  IconArrowsExchange,
+  IconSwitchHorizontal,
+  IconRefresh,
+} from '@tabler/icons-react'
+
+// Semantic name → Tabler component. Keys are kebab-case; a few aliases point at
+// the same glyph so call sites can use the most natural word.
+const REGISTRY = {
+  // navigation / controls
+  'chevron-down': IconChevronDown,
+  'chevron-up': IconChevronUp,
+  'chevron-left': IconChevronLeft,
+  'chevron-right': IconChevronRight,
+  'arrow-right': IconArrowRight,
+  'arrow-left': IconArrowLeft,
+  'arrow-up': IconArrowUp,
+  'arrow-down': IconArrowDown,
+  undo: IconArrowBackUp,
+  x: IconX,
+  close: IconX,
+  check: IconCheck,
+  plus: IconPlus,
+  minus: IconMinus,
+  dots: IconDots,
+  'dots-vertical': IconDotsVertical,
+  grip: IconGripVertical,
+  menu: IconMenu2,
+
+  // status / feedback
+  info: IconInfoCircle,
+  'circle-check': IconCircleCheck,
+  'circle-check-filled': IconCircleCheckFilled,
+  'circle-x': IconCircleX,
+  'alert-triangle': IconAlertTriangle,
+  'alert-circle': IconAlertCircle,
+  help: IconHelpCircle,
+
+  // reading / domain
+  book: IconBook,
+  'book-2': IconBook2,
+  notebook: IconNotebook,
+  'reading-log': IconNotebook,
+  flame: IconFlame,
+  'flame-filled': IconFlameFilled,
+  shield: IconShield,
+  'shield-check': IconShieldCheck,
+  calendar: IconCalendar,
+  'calendar-event': IconCalendarEvent,
+  'calendar-stats': IconCalendarStats,
+  clock: IconClock,
+  timer: IconStopwatch,
+  history: IconHistory,
+  user: IconUser,
+  users: IconUsers,
+  flag: IconFlag,
+  trophy: IconTrophy,
+  award: IconAward,
+  badge: IconBadge,
+  medal: IconMedal,
+  certificate: IconCertificate,
+  gift: IconGift,
+  puzzle: IconPuzzle,
+  target: IconTarget,
+  star: IconStar,
+  'star-filled': IconStarFilled,
+  rating: IconStar,
+
+  // actions
+  settings: IconSettings,
+  gear: IconSettings,
+  pencil: IconPencil,
+  edit: IconPencil,
+  writing: IconWriting,
+  copy: IconCopy,
+  duplicate: IconCopy,
+  trash: IconTrash,
+  archive: IconArchive,
+  link: IconLink,
+  eye: IconEye,
+  search: IconSearch,
+  download: IconDownload,
+  upload: IconUpload,
+  pin: IconPin,
+  'pin-filled': IconPinFilled,
+  signature: IconSignature,
+
+  // content / objects
+  sparkles: IconSparkles,
+  bulb: IconBulb,
+  speakerphone: IconSpeakerphone,
+  megaphone: IconSpeakerphone,
+  sun: IconSun,
+  moon: IconMoon,
+  smile: IconMoodSmile,
+  lock: IconLock,
+  message: IconMessageCircle,
+  'message-circle': IconMessageCircle,
+  'message-check': IconMessageCircleCheck,
+  'message-x': IconMessageX,
+  inbox: IconInbox,
+  'file-text': IconFileText,
+  'clipboard-check': IconClipboardCheck,
+  'clipboard-list': IconClipboardList,
+  list: IconList,
+  'align-left': IconAlignLeft,
+  paragraph: IconAlignLeft,
+  scribble: IconScribble,
+  wave: IconWaveSine,
+
+  // layout / structure
+  'layout-grid': IconLayoutGrid,
+  'layout-dashboard': IconLayoutDashboard,
+  layout: IconLayout,
+  'layout-columns': IconLayoutColumns,
+  'layout-bottombar': IconLayoutBottombar,
+  layers: IconStack2,
+  atom: IconAtom,
+  forms: IconForms,
+  browser: IconBrowser,
+
+  // data / analytics
+  'chart-bar': IconChartBar,
+  'chart-column': IconChartColumn,
+  'chart-line': IconChartLine,
+  'trending-up': IconTrendingUp,
+  'report-analytics': IconReportAnalytics,
+
+  // places / sync
+  school: IconSchool,
+  building: IconBuilding,
+  'building-community': IconBuildingCommunity,
+  'arrows-exchange': IconArrowsExchange,
+  'switch-horizontal': IconSwitchHorizontal,
+  swap: IconSwitchHorizontal,
+  refresh: IconRefresh,
+}
+
+export const ICON_NAMES = Object.keys(REGISTRY)
+
+export function Icon({ name, size = 18, stroke = 1.8, className, ...rest }) {
+  const Glyph = REGISTRY[name]
+  if (!Glyph) {
+    if (import.meta.env.DEV) console.warn(`<Icon>: unknown name "${name}"`)
+    return null
+  }
+  return (
+    <Glyph
+      size={size}
+      stroke={stroke}
+      className={className ? `bp-icon ${className}` : 'bp-icon'}
+      {...rest}
+    />
+  )
+}

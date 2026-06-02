@@ -15,6 +15,7 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { Icon } from '@components/Icon/Icon'
 
 // Row-based, flexbox layout. The dashboard is a stack of rows; each row holds
 // 1–2 cards that split the width equally (flex: 1). Width is therefore pure
@@ -26,22 +27,7 @@ import { CSS } from '@dnd-kit/utilities'
 // Rows hold at most two cards — full width (1) or two columns (2). No thirds.
 const MAX_PER_ROW = 2
 
-const SplitIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    width="16"
-    height="16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <rect x="3" y="5" width="7" height="14" rx="1.5" />
-    <rect x="14" y="5" width="7" height="14" rx="1.5" />
-  </svg>
-)
+const SplitIcon = () => <Icon name="layout-columns" size={16} />
 // Two stacked rows with a downward arrow — signals that dropping here will
 // push the dragged card onto a new row underneath, instead of pairing.
 const NewRowIcon = () => (

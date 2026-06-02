@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { Table } from '@components/Table/Table'
 import { Pill } from '@components/Pill/Pill'
 import { Tooltip } from '@components/Primitives/Primitives'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Table/Table.css'
 import '@components/Pill/Pill.css'
 import '@components/Primitives/Primitives.css'
@@ -30,102 +31,31 @@ const FLAG_TYPE_CONFIG = {
     label: 'Copied Response',
     color: '#DC2626',
     bg: '#FEF2F2',
-    icon: (
-      <svg
-        viewBox="0 0 14 14"
-        width="12"
-        height="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <rect x="1" y="4" width="8" height="9" rx="1.5" />
-        <path d="M4 4V2.5A1.5 1.5 0 0 1 5.5 1h5A1.5 1.5 0 0 1 12 2.5v7A1.5 1.5 0 0 1 10.5 11H10" />
-      </svg>
-    ),
+    icon: <Icon name="copy" size={12} />,
   },
   'no-recall': {
     label: 'Unable to Recall',
     color: '#DC2626',
     bg: '#FEF2F2',
-    icon: (
-      <svg
-        viewBox="0 0 14 14"
-        width="12"
-        height="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="7" cy="7" r="5.5" />
-        <path d="M5.5 5.5a1.8 1.8 0 0 1 3.1 1.2c0 1-1.4 1.5-1.6 2.3" />
-        <circle cx="7" cy="10.5" r="0.6" fill="currentColor" stroke="none" />
-      </svg>
-    ),
+    icon: <Icon name="help" size={12} />,
   },
   minimal: {
     label: 'Minimal Engagement',
     color: '#DC2626',
     bg: '#FEF2F2',
-    icon: (
-      <svg
-        viewBox="0 0 14 14"
-        width="12"
-        height="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M2 4h10M2 7h7M2 10h5" />
-      </svg>
-    ),
+    icon: <Icon name="align-left" size={12} />,
   },
   unintelligible: {
     label: 'Unintelligible',
     color: '#DC2626',
     bg: '#FEF2F2',
-    icon: (
-      <svg
-        viewBox="0 0 14 14"
-        width="12"
-        height="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M2 5.5 Q3.5 3 5 5.5 Q6.5 8 8 5.5 Q9.5 3 11 5.5" />
-        <path d="M2 9 Q3.5 6.5 5 9 Q6.5 11.5 8 9 Q9.5 6.5 11 9" />
-      </svg>
-    ),
+    icon: <Icon name="wave" size={12} />,
   },
   'quit-early': {
     label: 'Did Not Complete',
     color: '#DC2626',
     bg: '#FEF2F2',
-    icon: (
-      <svg
-        viewBox="0 0 14 14"
-        width="12"
-        height="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="7" cy="7" r="5.5" />
-        <line x1="4.5" y1="4.5" x2="9.5" y2="9.5" />
-        <line x1="9.5" y1="4.5" x2="4.5" y2="9.5" />
-      </svg>
-    ),
+    icon: <Icon name="circle-x" size={12} />,
   },
 }
 
@@ -134,85 +64,25 @@ const POS_FLAG_CONFIG = {
     label: 'Positive Sentiment',
     color: '#16A97A',
     bg: '#F0FDF4',
-    icon: (
-      <svg
-        viewBox="0 0 14 14"
-        width="12"
-        height="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="7" cy="7" r="5.5" />
-        <path d="M4.5 8.5 Q7 11 9.5 8.5" />
-        <circle cx="5" cy="5.5" r="0.7" fill="currentColor" stroke="none" />
-        <circle cx="9" cy="5.5" r="0.7" fill="currentColor" stroke="none" />
-      </svg>
-    ),
+    icon: <Icon name="smile" size={12} />,
   },
   'answer-length': {
     label: 'Long Answer',
     color: '#16A97A',
     bg: '#F0FDF4',
-    icon: (
-      <svg
-        viewBox="0 0 14 14"
-        width="12"
-        height="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <line x1="2" y1="4" x2="12" y2="4" />
-        <line x1="2" y1="7" x2="12" y2="7" />
-        <line x1="2" y1="10" x2="8" y2="10" />
-      </svg>
-    ),
+    icon: <Icon name="list" size={12} />,
   },
   'references-details': {
     label: 'References Details',
     color: '#16A97A',
     bg: '#F0FDF4',
-    icon: (
-      <svg
-        viewBox="0 0 14 14"
-        width="12"
-        height="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="6" cy="6" r="4" />
-        <line x1="9" y1="9" x2="12.5" y2="12.5" />
-      </svg>
-    ),
+    icon: <Icon name="search" size={12} />,
   },
   'makes-connection': {
     label: 'Made a Connection',
     color: '#16A97A',
     bg: '#F0FDF4',
-    icon: (
-      <svg
-        viewBox="0 0 14 14"
-        width="12"
-        height="12"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M5.5 8.5L8.5 5.5" />
-        <path d="M4.5 10L3 11.5a2 2 0 0 0 2.8 2.8l.2-.2" />
-        <path d="M9.5 4L11 2.5a2 2 0 0 0-2.8-2.8l-.2.2" />
-      </svg>
-    ),
+    icon: <Icon name="link" size={12} />,
   },
 }
 
@@ -233,19 +103,7 @@ function PosFlagCount({ positiveFlags }) {
   if (positiveFlags.length >= 3) {
     return (
       <span className="sess-flags sess-flags--pos">
-        <svg
-          viewBox="0 0 16 16"
-          width="13"
-          height="13"
-          fill="none"
-          stroke="#16A97A"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M3 2v12" />
-          <path d="M3 2h8l-2 4 2 4H3" />
-        </svg>
+        <Icon name="flag" size={13} color="#16A97A" />
         {positiveFlags.length}
       </span>
     )
@@ -269,19 +127,7 @@ function FlagCount({ flags }) {
   if (!flags || flags.length === 0) return <span className="sess-na">—</span>
   return (
     <span className="sess-flags sess-flags--neg">
-      <svg
-        viewBox="0 0 16 16"
-        width="13"
-        height="13"
-        fill="none"
-        stroke="#DC2626"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 2v12" />
-        <path d="M3 2h8l-2 4 2 4H3" />
-      </svg>
+      <Icon name="flag" size={13} color="#DC2626" />
       {flags.length}
     </span>
   )
@@ -392,19 +238,7 @@ export function RowFlyout({
           onClose()
         }}
       >
-        <svg
-          viewBox="0 0 16 16"
-          width="14"
-          height="14"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z" />
-          <circle cx="8" cy="8" r="2" />
-        </svg>
+        <Icon name="eye" size={14} />
         View details
       </button>
       {onViewProfile && (
@@ -416,35 +250,12 @@ export function RowFlyout({
             onClose()
           }}
         >
-          <svg
-            viewBox="0 0 16 16"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="8" cy="6" r="3" />
-            <path d="M2.5 14a5.5 5.5 0 0 1 11 0" />
-          </svg>
+          <Icon name="user" size={14} />
           View profile
         </button>
       )}
       <button className="sess-flyout-item" onClick={(e) => e.stopPropagation()}>
-        <svg
-          viewBox="0 0 16 16"
-          width="14"
-          height="14"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M11 2l3 3-8 8H3v-3L11 2z" />
-        </svg>
+        <Icon name="pencil" size={14} />
         Edit session
       </button>
       {canApprove && onApproveRequest && (
@@ -456,18 +267,7 @@ export function RowFlyout({
             onClose()
           }}
         >
-          <svg
-            viewBox="0 0 16 16"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="3,8 7,12 13,4" />
-          </svg>
+          <Icon name="check" size={14} />
           Approve session
         </button>
       )}
@@ -476,21 +276,7 @@ export function RowFlyout({
         className="sess-flyout-item sess-flyout-item--danger"
         onClick={(e) => e.stopPropagation()}
       >
-        <svg
-          viewBox="0 0 16 16"
-          width="14"
-          height="14"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="2,4 14,4" />
-          <path d="M5 4V2h6v2" />
-          <path d="M6 7v5M10 7v5" />
-          <path d="M3 4l1 10h8l1-10" />
-        </svg>
+        <Icon name="trash" size={14} />
         Delete session
       </button>
     </div>,
@@ -616,42 +402,14 @@ export function SessionsTable({
       ? [
           {
             key: 'positiveFlags',
-            label: (
-              <svg
-                viewBox="0 0 16 16"
-                width="13"
-                height="13"
-                fill="none"
-                stroke="#16A97A"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M3 2v12" />
-                <path d="M3 2h8l-2 4 2 4H3" />
-              </svg>
-            ),
+            label: <Icon name="flag" size={13} color="#16A97A" />,
             render: (_, row) => <PosFlagCount positiveFlags={row.positiveFlags} />,
           },
         ]
       : []),
     {
       key: 'flags',
-      label: (
-        <svg
-          viewBox="0 0 16 16"
-          width="13"
-          height="13"
-          fill="none"
-          stroke="#DC2626"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M3 2v12" />
-          <path d="M3 2h8l-2 4 2 4H3" />
-        </svg>
-      ),
+      label: <Icon name="flag" size={13} color="#DC2626" />,
       render: (_, row) =>
         showFlagIcons ? <FlagTypeIcons flags={row.flags} /> : <FlagCount flags={row.flags} />,
     },
