@@ -1,0 +1,3879 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Bebas+Neue&family=Fredoka:wght@500;600&family=Lora:wght@600;700&family=Playfair+Display:wght@700&family=Poppins:wght@600;700&display=swap');
+
+/* ─── Challenge Creator V2 ─────────────────────────────────────────────────── */
+.cc-root {
+  --teal: #0da7bc;
+  --teal-dk: #0b7a89;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --line: #e2e8f0;
+  --bg: #f1f5f9;
+  --panel: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 48px; /* leave room for the fixed PrototypeNav bar */
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font-family:
+    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+/* ── Accessibility: lift shared design-system control text within the creator
+   only. Form fields, selects, buttons, toggles, and the stepper render at the
+   design system's default sizes (13–14px); bump them here so nothing reads
+   below ~13px for low-vision users — scoped to .cc-root so other prototypes
+   are unaffected. ── */
+.cc-root .fld-label,
+.cc-root .frm-self-label {
+  font-size: 14px;
+}
+.cc-root .fld-help,
+.cc-root .fld-error,
+.cc-root .fld-hint {
+  font-size: 14px;
+}
+.cc-root .inp--md,
+.cc-root .csel-trigger--sm,
+.cc-root .csel-trigger--md,
+.cc-root .ninp--md .ninp-inp {
+  font-size: 15px;
+}
+.cc-root .csel-item {
+  font-size: 14px;
+}
+.cc-root .csel-group-label {
+  font-size: 14px;
+}
+.cc-root .btn--sm,
+.cc-root .btn--md {
+  font-size: 14px;
+}
+.cc-root .tgl {
+  font-size: 14px;
+}
+.cc-root .stepper-name {
+  font-size: 14px;
+}
+.cc-root .stepper-dot {
+  font-size: 14px;
+}
+/* Darken low-contrast helper/hint text to clear AA (slate-400 ≈ 2.6:1 → slate-500 ≈ 4.5:1). */
+.cc-root .fld-help,
+.cc-root .fld-hint,
+.cc-root .csel-group-label {
+  color: #64748b;
+}
+
+/* ── Top bar ── */
+.cc-topbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+/* Dev controls live dead-center regardless of left/right widths. */
+.cc-topbar-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.cc-devseg {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cc-seg {
+  display: inline-flex;
+  gap: 2px;
+  padding: 2px;
+  background: #f1f5f9;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+.cc-seg-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
+}
+/* Instant tooltip (native title is too slow for icon-only controls). */
+.cc-seg-btn::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 7px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: #0f172a;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.12s ease;
+  z-index: 60;
+}
+.cc-seg-btn:hover::after,
+.cc-seg-btn:focus-visible::after {
+  opacity: 1;
+}
+.cc-seg-btn:hover {
+  color: var(--ink);
+}
+.cc-seg-btn.is-on {
+  background: #fff;
+  color: var(--teal-dk);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.14);
+}
+.cc-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.cc-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cc-exit {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: #475569;
+  text-decoration: none;
+  font-size: 19px;
+}
+.cc-exit:hover {
+  background: #e2e8f0;
+}
+.cc-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 360px;
+  animation: cc-title-in 0.22s ease;
+}
+@keyframes cc-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.cc-status {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #92400e;
+  background: #fef3c7;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+/* ── Autosave indicator ── */
+.cc-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+.cc-save--saved {
+  color: #16a34a;
+}
+.cc-save-spin {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  border-top-color: #64748b;
+  animation: cc-spin 0.7s linear infinite;
+}
+@keyframes cc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Dev panel (collapsible, top-right) ── */
+.cc-devwrap {
+  position: relative;
+}
+.cc-dev-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px dashed #94a3b8;
+  border-radius: 8px;
+  background: repeating-linear-gradient(45deg, #fff, #fff 6px, #f8fafc 6px, #f8fafc 12px);
+  color: #475569;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+.cc-dev-btn.is-open,
+.cc-dev-btn:hover {
+  border-color: #64748b;
+  color: #1e293b;
+}
+.cc-dev-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+.cc-dev-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 41;
+  width: 260px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.3);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cc-dev-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cc-dev-lbl {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+}
+.cc-dev-select {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #334155;
+  cursor: pointer;
+  padding: 7px 9px;
+}
+
+/* ── Step nav bar (top dropdown) ── */
+.cc-stepbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.cc-stepnav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+.cc-stepnav-count {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  white-space: nowrap;
+}
+.cc-stepnav-select {
+  width: 240px;
+}
+
+/* ── Main area: form + preview ── */
+.cc-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  /* Anchor for the absolutely-positioned preview side tab; clip the preview
+     pane as it slides out so it doesn't cause horizontal scroll. */
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Form column: content scrolls; Back/Next pinned to a fixed bottom bar ── */
+.cc-form {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.cc-form-inner {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 28px;
+}
+.cc-form-inner > .cc-step {
+  max-width: 760px;
+  margin: 0 auto;
+}
+.cc-form-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 28px;
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+.cc-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.cc-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cc-footer-warn {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 600;
+  color: #dc2626;
+}
+.cc-footer-warn + .cc-footer-right {
+  margin-left: 12px;
+}
+
+/* ── Preview pane ── */
+.cc-preview {
+  flex: 0 0 380px;
+  border-left: 1px solid var(--line);
+  background: #f8fafc;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  /* Slides out in sync with the side tab (right transition is 0.2s too). */
+  transition: margin-right 0.2s ease, transform 0.2s ease;
+}
+/* Collapsed: pull back its 380px of space and slide off to the right. */
+.cc-preview.is-collapsed {
+  margin-right: -380px;
+  transform: translateX(100%);
+}
+/* Desktop side tab that opens/closes the preview. Hugs the preview's left edge
+   when open; rides the screen's right edge when collapsed. */
+.cc-preview-tab {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  transform: translateY(-50%);
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  width: 30px;
+  padding: 13px 0;
+  border: 1px solid var(--line);
+  border-right: 0;
+  border-radius: 11px 0 0 11px;
+  background: #fff;
+  color: #64748b;
+  cursor: pointer;
+  box-shadow: -3px 0 10px rgba(15, 23, 42, 0.07);
+  transition: right 0.2s ease, color 0.15s ease, background 0.15s ease;
+}
+.cc-preview-tab:hover {
+  color: var(--teal-dk);
+  background: #f8fafc;
+}
+.cc-preview-tab.is-open {
+  /* Matches .cc-preview width so the tab sits on the pane's left edge. */
+  right: 380px;
+}
+.cc-preview-tab-chev {
+  transition: transform 0.2s ease;
+}
+.cc-preview-tab.is-open .cc-preview-tab-chev {
+  transform: rotate(180deg);
+}
+.cc-preview-tab-label {
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+.cc-preview-frame {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 18px;
+  display: flex;
+  justify-content: center;
+}
+
+/* ── Step shell ── */
+/* Wraps the shared <Hero> page header; adds breathing room above + below. */
+.cc-step-head {
+  margin: 14px 0 24px;
+}
+.cc-step-head .hero {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* ── Type picker ── */
+.cc-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+.cc-type-card {
+  --type-accent: var(--teal);
+  text-align: left;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease,
+    transform 0.1s ease;
+}
+.cc-type-card:hover {
+  border-color: var(--type-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px -12px var(--type-accent);
+}
+.cc-type-card.is-selected {
+  border-color: var(--type-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--type-accent) 22%, transparent);
+}
+.cc-type-glyph {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--type-accent);
+  background: color-mix(in srgb, var(--type-accent) 12%, #fff);
+  margin-bottom: 4px;
+}
+.cc-type-name {
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cc-type-tag {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--type-accent);
+  background: color-mix(in srgb, var(--type-accent) 14%, #fff);
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+.cc-type-tagline {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.cc-type-method {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* ── Panels & fields ── */
+.cc-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.cc-panel-banner {
+  margin: 0 0 14px;
+}
+.cc-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.cc-step {
+  counter-reset: ccpanel;
+}
+.cc-panel-title {
+  counter-increment: ccpanel;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.cc-panel-title::before {
+  content: counter(ccpanel);
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--teal) 14%, #fff);
+  color: var(--teal-dk);
+  font-size: 14px;
+  font-weight: 800;
+}
+.cc-panel-head .cc-panel-title {
+  margin: 0;
+}
+.cc-panel-actions {
+  display: flex;
+  gap: 8px;
+}
+/* Vertical rhythm for stacked Form `Field`s in a panel. The design-system
+   `.fld` only spaces label→control (gap:6px); the parent supplies the rhythm
+   between fields — here 18px between each stacked field / field-row. */
+.cc-panel > .fld,
+.cc-panel > .cc-date-row {
+  margin-top: 24px;
+}
+.cc-panel > .cc-panel-title + .fld,
+.cc-panel > .cc-panel-title + .cc-date-row,
+.cc-panel > .cc-panel-head + .fld,
+.cc-panel > .cc-panel-head + .cc-date-row {
+  margin-top: 0;
+}
+.cc-panel--link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+.cc-field {
+  display: block;
+  margin-bottom: 14px;
+}
+.cc-field:last-child {
+  margin-bottom: 0;
+}
+.cc-field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+.cc-field-hint {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+.cc-input {
+  width: 100%;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 15px;
+  background: #fff;
+  color: var(--ink);
+}
+.cc-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+.cc-textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+.cc-input--num {
+  width: 120px;
+}
+.cc-date-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+.cc-date-row .cc-input {
+  width: auto;
+}
+
+.cc-template-banner {
+  margin-top: 14px;
+}
+.cc-link {
+  color: var(--teal-dk);
+  font-weight: 600;
+  text-decoration: none;
+}
+.cc-link:hover {
+  text-decoration: underline;
+}
+
+.cc-num-narrow {
+  width: 140px;
+}
+
+/* ── Header-style tab bar (switches the Look & feel context) ── */
+.cc-headtabs {
+  display: flex;
+  gap: 4px;
+  margin: 0 0 20px;
+  border-bottom: 2px solid var(--line);
+}
+.cc-headtab {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  margin-bottom: -2px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    color 0.15s ease,
+    border-color 0.15s ease;
+}
+.cc-headtab:hover:not(:disabled):not(.is-active) {
+  color: var(--ink);
+}
+.cc-headtab.is-active {
+  color: var(--teal-dk);
+  border-bottom-color: var(--teal);
+}
+.cc-headtab:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+/* Count pill on a tab (matches the shared Tabs .tab-count pattern). */
+.cc-headtab-count {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+  background: #e2e8f0;
+  color: #475569;
+  border-radius: 99px;
+  padding: 3px 7px;
+  min-width: 20px;
+  text-align: center;
+}
+.cc-headtab.is-active .cc-headtab-count {
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  color: currentColor;
+}
+
+/* ── Template gallery ── */
+.cc-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.cc-gallery-card {
+  text-align: left;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cc-gallery-card:hover {
+  border-color: #cbd5e1;
+}
+.cc-gallery-card.is-on {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+.cc-gallery-thumb {
+  /* Match the banner art ratio (1840×702) so the whole banner always shows. */
+  aspect-ratio: 1840 / 702;
+  width: 100%;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 5px;
+}
+.cc-gallery-plus {
+  font-size: 26px;
+  font-weight: 300;
+  color: #64748b;
+}
+.cc-gallery-name {
+  font-weight: 700;
+  font-size: 15px;
+  padding: 0 2px;
+}
+.cc-gallery-blurb {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.4;
+  padding: 0 2px 4px;
+}
+
+/* ── Image / cover swatch pickers ── */
+/* ── Banner variation: real banner-ratio thumbnails ── */
+.cc-banner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 460px;
+}
+.cc-banner-thumb {
+  position: relative;
+  aspect-ratio: 920 / 351;
+  border-radius: 10px;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.12s ease;
+}
+.cc-banner-thumb:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12), 0 4px 10px rgba(15, 23, 42, 0.12);
+}
+.cc-banner-thumb.is-on {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--teal);
+}
+.cc-banner-check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: var(--teal);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
+}
+
+/* ── Accent color: theme presets + custom picker ── */
+/* Swatches wrap in an even grid; the custom-color input sits on its own line
+   below them (consistent across the accent, color, and recolor pickers). */
+.cc-accent-ctrl {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+.cc-accent-dots {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cc-accent-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.15);
+  transition: box-shadow 0.12s ease, transform 0.12s ease;
+}
+.cc-accent-dot:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.25);
+}
+.cc-accent-dot.is-on {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 3.5px var(--teal);
+}
+/* Color box stays compact instead of filling the row. */
+.cc-accent-ctrl .cinp {
+  width: auto;
+  flex: none;
+}
+
+/* ── Constrain over-wide inputs ── */
+.cc-w-md .fld-control {
+  max-width: 380px;
+}
+.cc-w-sm .fld-control {
+  max-width: 220px;
+}
+
+.cc-restore-btn {
+  margin-top: 10px;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+.cc-restore-btn:hover {
+  text-decoration: underline;
+}
+
+/* Opt-in color overrides: availability-style toggle rows + a reveal. */
+.cc-color-settings {
+  margin-top: 0;
+}
+.cc-color-reveal {
+  padding: 2px 0 12px;
+}
+/* Subheader ribbon reveal: text input + color override stacked. */
+.cc-ribbon-reveal {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cc-ribbon-reveal .inp {
+  max-width: 340px;
+}
+
+/* ── Confirm (reset) modal ── */
+.cc-confirm {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28px;
+}
+.cc-confirm h3 {
+  margin: 0 0 8px;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.cc-confirm p {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.cc-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ── Header style choice cards ── */
+.cc-choice-cards {
+  display: flex;
+  gap: 10px;
+}
+.cc-choice-card {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.cc-choice-card:hover {
+  border-color: #cbd5e1;
+}
+.cc-choice-card.is-on {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+.cc-choice-ic {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+  color: var(--teal-dk);
+}
+.cc-choice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.cc-choice-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-choice-sub {
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+/* ── Header font picker (themed challenges) ── */
+.cc-fontpick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cc-font-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 33px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 9px;
+  background: #fff;
+  color: #334155;
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.cc-font-chip:hover {
+  border-color: #64748b;
+}
+.cc-font-chip.is-on {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+.cc-font-more {
+  margin-top: 10px;
+}
+.cc-font-more .csel-trigger {
+  width: 100%;
+}
+
+/* Word counter — sits top-right, inline with the field label */
+.cc-label-wc {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+.cc-wordcount {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+.cc-wordcount.is-over {
+  color: #be123c;
+}
+
+/* ── Setting rows (label + toggle), grouped in a bordered card ── */
+.cc-settings {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 2px 14px;
+}
+.cc-settings .cc-setting-row:first-child {
+  border-top: 0;
+}
+.cc-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+}
+.cc-setting-row.is-disabled .cc-setting-text {
+  opacity: 0.5;
+}
+.cc-setting-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.cc-setting-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cc-setting-sub {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* Code input revealed when "Require a code to register" is on. */
+.cc-code-reveal {
+  padding: 0 0 14px;
+  max-width: 320px;
+}
+.cc-code-reveal .inp {
+  text-transform: uppercase;
+}
+.cc-code-help {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.cc-code-help.is-error {
+  color: #dc2626;
+}
+
+/* ── Alternative challenge cards ── */
+.cc-alt-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cc-alt-card {
+  position: relative;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.cc-alt-card:hover {
+  border-color: #cbd5e1;
+}
+.cc-alt-card.is-on {
+  border-color: #16a97a;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #16a97a 18%, transparent);
+}
+.cc-alt-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-alt-blurb {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* ── Required registration information ── */
+.cc-reg-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+.cc-reg-row:first-of-type {
+  border-top: 0;
+}
+.cc-reg-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cc-reg-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cc-reg-state {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* ── Badge cards (Badges step) ── */
+.cc-badge-grid {
+  display: grid;
+  /* One badge per row — full-width cards. */
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+.cc-badge-card--editable {
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.cc-badge-card--editable:hover {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+.cc-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.cc-badge-ic {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.cc-badge-ic :is(img, svg) {
+  filter: brightness(0) invert(1);
+}
+.cc-badge-card .cc-badge-ic--img {
+  background: none;
+}
+.cc-badge-card .cc-badge-ic--img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: none;
+}
+.cc-badge-name {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.cc-badge-goal {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+/* A logging badge left without a log value — flagged so it gets fixed. */
+.cc-badge-goal--missing {
+  font-weight: 700;
+  color: #dc2626;
+  text-transform: none;
+}
+/* Step-level validation note for the logging-badges panel. */
+.cc-badge-reqnote {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #dc2626;
+}
+/* Inline remove (×) for badge cards and activity rows. */
+.cc-row-remove {
+  flex: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: #64748b;
+  font-size: 20px;
+  line-height: 1;
+  padding: 0 4px;
+  border-radius: 6px;
+}
+.cc-row-remove:hover {
+  color: #dc2626;
+}
+/* Edit + remove controls, pinned to the right of the badge card. */
+.cc-badge-card-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.cc-badge-edit {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  border-radius: 7px;
+  color: #64748b;
+  cursor: pointer;
+}
+.cc-badge-edit:hover {
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+  color: var(--teal-dk);
+}
+/* Remove (trash) button in a badge card — same icon-button shape as edit, red hover. */
+.cc-badge-card-actions .cc-row-remove {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  color: #94a3b8;
+}
+.cc-badge-card-actions .cc-row-remove:hover {
+  background: color-mix(in srgb, #dc2626 12%, #fff);
+  color: #dc2626;
+}
+.cc-activity-row .cc-activity-name {
+  margin-right: auto;
+}
+.cc-inline-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 4px;
+}
+
+/* ── Tip ── */
+.cc-tip-note {
+  margin-top: 14px;
+}
+
+/* ── Badges step ── */
+.cc-method-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+.cc-method-note {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #475569;
+}
+.cc-method-note--sm {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.cc-advanced-toggle {
+  display: block;
+  margin-top: 14px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+.cc-advanced-toggle:hover {
+  text-decoration: underline;
+}
+.cc-method-toggles--nested {
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 14px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.cc-muted {
+  color: #64748b;
+  font-weight: 500;
+}
+.cc-badge-pinned {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+/* Pinned registration / completion badge slots (clickable). */
+.cc-badge-pin {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+}
+/* Match the logging badge cards' hover (teal border + ring). */
+.cc-badge-pin:hover {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+/* Once a badge is chosen the slot reads as a filled, editable row. */
+.cc-badge-pin.is-filled {
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--line);
+}
+.cc-badge-pin-edit {
+  margin-left: auto;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  color: #94a3b8;
+}
+/* Hovering the slot highlights its edit icon like the badge-card edit icon. */
+.cc-badge-pin:hover .cc-badge-pin-edit {
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+  color: var(--teal-dk);
+}
+.cc-badge-pin-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex: none;
+}
+.cc-badge-pin-add {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: #f1f5f9;
+  color: #64748b;
+  font-size: 22px;
+  line-height: 1;
+}
+.cc-badge-pin-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cc-badge-pin-label {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+.cc-badge-pin-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cc-badge-window {
+  padding: 4px 0 0;
+}
+/* One shared error state: both date inputs go red, with a single message below. */
+.cc-badge-window.has-error .inp-wrap {
+  border-color: #dc2626;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #dc2626 14%, transparent);
+}
+.cc-badge-window-wrap {
+  padding-bottom: 14px;
+}
+.cc-badge-window-wrap .cc-badge-reqnote {
+  margin: 8px 0 0;
+}
+
+/* Enabled/Disabled label next to a badge-type toggle. */
+.cc-type-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Time-restriction choice card selected check. */
+.cc-choice-card {
+  position: relative;
+}
+.cc-choice-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+.cc-choice-check::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ── Badge editor modal + picker ── */
+.cc-badge-editor {
+  width: 100%;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+}
+/* Editor section titles aren't part of the page's numbered steps. */
+.cc-badge-editor .cc-panel-title::before {
+  display: none;
+}
+.cc-badge-editor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.cc-badge-editor-head h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+}
+/* "Back to badge details" lives in the header while picking. */
+.cc-badge-editor-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: none;
+  padding: 4px 8px 4px 4px;
+  margin: -4px 0;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+.cc-badge-editor-back:hover {
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+}
+.cc-badge-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+.cc-badge-editor-close {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: #64748b;
+  cursor: pointer;
+}
+.cc-badge-editor-close:hover {
+  background: #f1f5f9;
+  color: var(--ink);
+}
+/* Footer holds Cancel / Save (moved out of the header). */
+.cc-badge-editor-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 13px 18px;
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+.cc-badge-editor-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+/* Picker view: the tab bar spans the full modal width and its underline is the
+   only divider, so the body itself carries no padding (the picker pads its own
+   content). The form view keeps the default body padding. */
+.cc-badge-editor-body:has(.cc-badgepick) {
+  padding: 0;
+  gap: 0;
+}
+.cc-badge-editor-body:has(.cc-badgepick) .cc-badgepick-wrap {
+  gap: 0;
+}
+.cc-badge-editor:has(.cc-badgepick) .cc-badge-editor-head {
+  border-bottom-color: transparent;
+}
+.cc-badge-editor-body .cc-panel {
+  margin: 0;
+}
+.cc-req {
+  color: #dc2626;
+}
+/* Badge editor form — badge art on the left, fields on the right, split by a
+   divider. Sits directly on the editor surface (no nested card). */
+.cc-badge-form {
+  display: grid;
+  grid-template-columns: 148px 1fr;
+  gap: 0;
+  align-items: stretch;
+  padding: 14px 10px;
+}
+.cc-badge-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 28px 8px 8px;
+  border-right: 1px solid var(--line);
+}
+.cc-badge-fields {
+  padding-left: 28px;
+}
+/* The disc is the picker trigger (no separate button) with an edit icon over it. */
+.cc-badge-disc {
+  position: relative;
+  flex: none;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+  transition: box-shadow 0.14s ease;
+}
+.cc-badge-disc:hover {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1), 0 0 0 3px color-mix(in srgb, var(--teal) 22%, transparent);
+}
+.cc-badge-disc img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+.cc-badge-disc.is-empty {
+  border: 1.5px dashed #cbd5e1;
+  background: #f8fafc;
+  box-shadow: none;
+  color: #64748b;
+}
+/* Edit affordance overlaid at the badge's lower-right. */
+.cc-badge-disc-edit {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.25);
+}
+.cc-badge-disc:hover .cc-badge-disc-edit {
+  background: var(--teal-dk);
+}
+.cc-badge-fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  min-width: 0;
+}
+.cc-badge-goal-row {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+.cc-badgepick {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 16px 16px;
+}
+/* Full-bleed tab bar: negative side margins cancel the picker padding so the
+   underline runs edge to edge, while the labels stay aligned with the content. */
+.cc-badgepick-tabs {
+  margin: 0 -16px;
+  padding: 12px 16px 0;
+}
+/* Search + color filter — a full-bleed toolbar band under the tabs, divided
+   from the badge grid by a bottom border. */
+.cc-badgepick-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 -16px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+/* Search field with leading icon + clear button. */
+.cc-badgepick-search {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  height: 38px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+.cc-badgepick-search.is-active,
+.cc-badgepick-search:focus-within {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+.cc-badgepick-search-ic {
+  display: inline-flex;
+  color: #64748b;
+}
+.cc-badgepick-search input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: var(--ink);
+}
+.cc-badgepick-search-clear {
+  border: 0;
+  background: #eef2f6;
+  color: #64748b;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+.cc-badgepick-search-clear:hover {
+  background: #e2e8f0;
+  color: var(--ink);
+}
+
+/* Search result count line. */
+.cc-badgepick-count {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* Color filter — single-select swatch chips, right of the search. */
+.cc-badgepick-colorbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.cc-colorchip {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.cc-colorchip-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--chip);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
+  transition: transform 0.12s ease;
+}
+.cc-colorchip:hover .cc-colorchip-dot {
+  transform: scale(1.14);
+}
+/* Selection ring hugs the dot (not the 20px hit-area) so it stays inside the
+   chip and doesn't crowd its neighbors. */
+.cc-colorchip.is-on .cc-colorchip-dot {
+  box-shadow: 0 0 0 1.5px #fff, 0 0 0 3px var(--chip);
+}
+
+.cc-badgepick-cols {
+  display: grid;
+  grid-template-columns: 212px 1fr;
+  gap: 18px;
+  margin-top: 16px;
+  /* Fixed height so the modal doesn't resize when switching groups. */
+  height: 320px;
+}
+/* Searching hides the sidebar — results span the full width. */
+.cc-badgepick-cols.is-searching {
+  grid-template-columns: 1fr;
+}
+.cc-badgepick-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  height: 100%;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  padding-right: 8px;
+}
+/* Section labels — small + light so they read as headers, not items, with an
+   even gap above each section. */
+.cc-badgepick-grouphead {
+  margin: 15px 0 4px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+}
+.cc-badgepick-grouphead:first-child {
+  margin-top: 2px;
+}
+.cc-badgepick-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  cursor: pointer;
+}
+.cc-badgepick-group-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cc-badgepick-group-count {
+  flex: 0 0 auto;
+  min-width: 24px;
+  height: 21px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #eef2f6;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.cc-badgepick-group:hover {
+  background: #f1f5f9;
+}
+.cc-badgepick-group.is-on {
+  background: color-mix(in srgb, var(--teal) 14%, #fff);
+  color: var(--teal-dk);
+}
+.cc-badgepick-group.is-on .cc-badgepick-group-count {
+  background: color-mix(in srgb, var(--teal) 22%, #fff);
+  color: var(--teal-dk);
+}
+.cc-badgepick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 14px 12px;
+  align-content: start;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  /* Breathing room so the hover lift + selected ring aren't clipped on any
+     edge, plus a right gutter that keeps cards clear of the scrollbar. */
+  padding: 6px 14px 8px 6px;
+}
+.cc-badgepick-empty {
+  grid-column: 1 / -1;
+}
+/* Defined scrollbars so the sidebar + grid clearly read as scroll areas. */
+.cc-badgepick-groups::-webkit-scrollbar,
+.cc-badgepick-grid::-webkit-scrollbar {
+  width: 9px;
+}
+.cc-badgepick-groups::-webkit-scrollbar-track,
+.cc-badgepick-grid::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 999px;
+}
+.cc-badgepick-groups::-webkit-scrollbar-thumb,
+.cc-badgepick-grid::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+  border: 2px solid #f1f5f9;
+}
+.cc-badgepick-groups::-webkit-scrollbar-thumb:hover,
+.cc-badgepick-grid::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Bigger modal for the badge editor; drop the inner card. */
+.modal--center:has(.cc-badge-editor) {
+  width: min(720px, 94vw);
+}
+.modal--center:has(.cc-titlemodal) {
+  width: min(880px, 94vw);
+}
+.cc-badgepick-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cc-badgepick-back {
+  align-self: flex-start;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+.cc-badgepick-back:hover {
+  text-decoration: underline;
+}
+
+/* Upload tab */
+/* Upload + Create tab content sits under the full-bleed tab bar — give it the
+   same top breathing room the Gallery's toolbar band provides. */
+.cc-badge-upload,
+.cc-badge-uploadedit,
+.cc-badge-builder {
+  margin-top: 16px;
+}
+.cc-badge-upload {
+  display: flex;
+  min-height: 360px;
+}
+.cc-badge-uploadedit {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 18px;
+  align-items: stretch;
+  min-height: 360px;
+}
+/* Preview stage — a framed, tinted panel shared by Upload + Create so the badge
+   art reads as a distinct preview and stays vertically centered. */
+.cc-upload-stage,
+.cc-builder-preview {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 14px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+.cc-upload-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12);
+  cursor: grab;
+  touch-action: none;
+}
+.cc-upload-circle:active {
+  cursor: grabbing;
+}
+.cc-upload-checker {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
+    linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
+    linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+  background-size: 16px 16px;
+  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+}
+.cc-upload-circle img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: center;
+  pointer-events: none;
+}
+/* Recolored SVG: the art becomes an alpha mask over a solid tint fill. */
+.cc-upload-tint {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  pointer-events: none;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+/* "Original colors" swatch — a little rainbow to signal "no recolor". */
+.cc-tint-orig {
+  background: conic-gradient(#ef4444, #f59e0b, #22c55e, #0ea5e9, #6366f1, #ec4899, #ef4444);
+}
+/* Recolor panel: flatten swatches on top, then a per-color editor list. */
+.cc-recolor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+.cc-recolor-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+.cc-recolor-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cc-upload-hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+/* "Replace image" lives in the preview stage, right under the image it swaps. */
+.cc-upload-replace {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.cc-upload-replace:hover {
+  border-color: var(--teal);
+  background: #f1f7f8;
+}
+/* Zoom slider sits in the stage, directly under the image it scales — flanked
+   by zoom-out / zoom-in icons and spanning the full stage width. */
+.cc-upload-scale {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 2px;
+}
+.cc-upload-scale-ic {
+  flex: 0 0 auto;
+  color: #94a3b8;
+}
+.cc-upload-scale .rng {
+  flex: 1;
+  min-width: 0;
+}
+.cc-upload-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+/* Full-width "Use this image" CTA pinned to the bottom of the controls. */
+.cc-upload-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: auto;
+}
+.cc-accent-dot--none {
+  background:
+    linear-gradient(45deg, #e2e8f0 25%, #fff 25%, #fff 75%, #e2e8f0 75%) 0 0 / 10px 10px;
+}
+.cc-badge-uploadzone {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #f8fafc;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+.cc-badge-uploadzone:hover {
+  border-color: var(--teal);
+  background: #f1f7f8;
+}
+.cc-badge-uploadicon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--teal);
+  box-shadow: 0 0 0 1px var(--line);
+}
+.cc-badge-uploadzone input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+.cc-badge-uploadhint {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+.cc-badge-uploadhint strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+.cc-badge-uploadzone img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Create tab — same two-column stage + controls layout as Upload. */
+.cc-badge-builder {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 18px;
+  align-items: stretch;
+  min-height: 360px;
+}
+.cc-badgeart {
+  border-radius: 50%;
+  object-fit: cover;
+}
+.cc-badgeart--built {
+  width: 92px;
+  height: 92px;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.18),
+    0 2px 8px rgba(15, 23, 42, 0.2);
+}
+.cc-builder-num {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+}
+.cc-builder-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+/* Confirm button pins to the bottom of the column, like Upload. */
+.cc-builder-controls > :last-child {
+  margin-top: auto;
+}
+.cc-builder-seg {
+  margin-bottom: 0;
+}
+.cc-builder-bgimgs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+/* Number/Letter value sits to the left, font picker fills the rest. */
+.cc-builder-valuerow {
+  display: grid;
+  grid-template-columns: 116px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+/* Grouped background-image picker (Default + theme) shared by Upload + Create. */
+.cc-bggrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+.cc-bglabel {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+.cc-bggrid .cc-builder-bgimgs {
+  margin-top: 0;
+}
+.cc-builder-bgimg {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12);
+}
+.cc-builder-bgimg.is-on {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--teal);
+}
+.cc-builder-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cc-builder-iconbtn {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  cursor: pointer;
+}
+.cc-builder-iconbtn:hover {
+  border-color: #cbd5e1;
+}
+.cc-builder-iconbtn.is-on {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+/* Tile = wrapper (card) holding the pick button + a favorite star. */
+.cc-badgepick-item {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+}
+.cc-badgepick-item:hover {
+  border-color: var(--teal);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+}
+.cc-badgepick-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  background: none;
+  border-radius: 12px;
+  padding: 12px 8px 11px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: #475569;
+}
+/* Favorite star — always faintly visible (discoverable), bold amber when on. */
+.cc-badgepick-fav {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 27px;
+  height: 27px;
+  border: 0;
+  background: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #94a3b8;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 0.12s ease, color 0.12s ease, background 0.12s ease, transform 0.12s ease;
+}
+.cc-badgepick-item:hover .cc-badgepick-fav,
+.cc-badgepick-fav:focus-visible {
+  opacity: 1;
+}
+.cc-badgepick-fav.is-on {
+  opacity: 1;
+  color: #f59e0b;
+  filter: drop-shadow(0 1px 1px rgba(245, 158, 11, 0.35));
+}
+.cc-badgepick-fav:hover {
+  color: #f59e0b;
+  background: color-mix(in srgb, #f59e0b 18%, #fff);
+  transform: scale(1.08);
+}
+/* Art wrapper holds the badge image + the selected check. */
+.cc-badgepick-item-art {
+  position: relative;
+  display: inline-flex;
+  line-height: 0;
+}
+.cc-badgepick-item-art img {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  display: block;
+}
+.cc-badgepick-item-name {
+  line-height: 1.25;
+  /* Reserve two lines so every card is the same height regardless of name length. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.5em;
+}
+.cc-badgepick-item-set {
+  font-size: 12px;
+  font-weight: 600;
+  color: #94a3b8;
+  line-height: 1.2;
+}
+/* Selected: teal ring + a check badge over the art. */
+.cc-badgepick-item.is-selected {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 7%, #fff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 35%, transparent);
+}
+.cc-badgepick-item.is-selected .cc-badgepick-item-name {
+  color: var(--teal-dk);
+}
+.cc-badgepick-check {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff;
+  line-height: 0;
+}
+/* ── Bingo builder ── */
+.cc-bingo-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 4), 1fr);
+  gap: 6px;
+  max-width: 320px;
+  margin-top: 14px;
+}
+.cc-bingo-cell {
+  aspect-ratio: 1;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  color: #64748b;
+  font-size: 19px;
+}
+
+/* ── Reading list ── */
+.cc-rl-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 6px;
+}
+.cc-title-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cc-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: #fff;
+}
+.cc-title-info {
+  flex: 1;
+  min-width: 0;
+}
+.cc-title-info strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-title-info span {
+  font-size: 13px;
+  color: var(--muted);
+}
+/* Book cover (real Open Library art, with a placeholder fallback). */
+.cc-bookcover {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: #eef2f6;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+}
+.cc-bookcover--ph {
+  display: grid;
+  place-items: center;
+  color: #94a3b8;
+  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+}
+.cc-title-cover {
+  width: 36px;
+  height: 50px;
+}
+
+/* ── Reading List "Add a title" modal ── */
+.cc-titlemodal {
+  position: relative;
+  width: 100%;
+  height: min(600px, 86vh);
+  display: flex;
+  flex-direction: column;
+}
+.cc-titlemodal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.18);
+  color: var(--ink);
+  cursor: pointer;
+}
+.cc-titlemodal-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 0;
+}
+.cc-titlemodal-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px;
+  border-right: 1px solid var(--line);
+}
+.cc-titlemodal-tabs {
+  margin: 0;
+}
+.cc-tm-searchby {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-tm-searchby .csel-trigger {
+  flex: 1;
+}
+.cc-tm-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.cc-tm-search-ic {
+  position: absolute;
+  left: 11px;
+  color: var(--muted);
+  display: inline-flex;
+  pointer-events: none;
+}
+.cc-tm-search input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 30px 9px 34px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font: inherit;
+  font-size: 14px;
+}
+.cc-tm-search input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+.cc-tm-search-clear {
+  position: absolute;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.cc-tm-actions {
+  display: flex;
+  gap: 8px;
+}
+.cc-titlemodal-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.cc-tm-resultshead {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid var(--line);
+}
+.cc-tm-resultshead h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.cc-tm-selcount {
+  font-size: 14px;
+  color: var(--muted);
+}
+.cc-tm-resultsbody {
+  flex: 1;
+  overflow: auto;
+  padding: 8px 14px;
+}
+.cc-tm-resultsbody .emp {
+  height: 100%;
+  justify-content: center;
+}
+.cc-tm-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.cc-tm-result {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 10px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+}
+.cc-tm-result:hover:not(:disabled) {
+  background: #f8fafc;
+}
+.cc-tm-result.is-selected {
+  background: color-mix(in srgb, var(--teal) 7%, #fff);
+}
+.cc-tm-result:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+.cc-tm-check {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid #cbd5e1;
+  position: relative;
+}
+.cc-tm-result.is-selected .cc-tm-check {
+  border-color: var(--teal);
+  background: var(--teal);
+}
+.cc-tm-result.is-selected .cc-tm-check::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2.5px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+.cc-tm-cover {
+  width: 40px;
+  height: 56px;
+}
+.cc-tm-info {
+  flex: 1;
+  min-width: 0;
+}
+.cc-tm-info strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-tm-info span {
+  font-size: 13px;
+  color: var(--muted);
+}
+.cc-tm-addedtag {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--teal-dk);
+}
+.cc-tm-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 22px;
+  border-top: 1px solid var(--line);
+}
+
+/* ── Activity badges ── */
+.cc-ab-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cc-ab-listrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+.cc-ab-listart {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.cc-ab-listart img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-ab-listart-empty {
+  width: 100%;
+  height: 100%;
+  background: #eef2f6;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.cc-ab-listinfo {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.cc-ab-listinfo strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cc-ab-listmeta {
+  font-size: 13px;
+  color: var(--muted);
+}
+.cc-ab-inactive {
+  color: #b45309;
+  font-weight: 600;
+}
+.cc-ab-listactions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cc-ab-move {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  color: #64748b;
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+.cc-ab-move:hover:not(:disabled) {
+  border-color: #94a3b8;
+  color: var(--ink);
+}
+.cc-ab-move:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.cc-ab-iconbtn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: #64748b;
+  cursor: pointer;
+}
+.cc-ab-iconbtn:hover {
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+/* Edit (pencil) + remove (trash) reuse the logging-badge icon-button look. */
+.cc-ab-listactions .cc-row-remove,
+.cc-ab-actactions .cc-row-remove {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  color: #94a3b8;
+}
+.cc-ab-listactions .cc-row-remove:hover,
+.cc-ab-actactions .cc-row-remove:hover {
+  background: color-mix(in srgb, #dc2626 12%, #fff);
+  color: #dc2626;
+}
+/* Inactive activity badges read dimmer in the list. */
+.cc-ab-listrow.is-inactive .cc-ab-listart,
+.cc-ab-listrow.is-inactive .cc-ab-listinfo strong {
+  opacity: 0.5;
+}
+
+/* Shared badge row — logging / review / activity badges (consistent props). */
+.cc-badge-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cc-badgerow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 12px;
+  background: #fff;
+  transition: opacity 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+.cc-badgerow {
+  position: relative;
+}
+/* Source row while dragging — a faint dashed ghost in its original spot. */
+.cc-badgerow.is-dragging {
+  opacity: 0.4;
+  border-style: dashed;
+  border-color: var(--teal);
+}
+/* Drop target — tint the row and show a rounded insertion bar in the gap. */
+.cc-badgerow.is-drop-before,
+.cc-badgerow.is-drop-after {
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
+  border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
+}
+.cc-badgerow.is-drop-before::after,
+.cc-badgerow.is-drop-after::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 20%, transparent);
+}
+.cc-badgerow.is-drop-before::after {
+  top: -7px;
+}
+.cc-badgerow.is-drop-after::after {
+  bottom: -7px;
+}
+.cc-badgerow-drag {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: #cbd5e1;
+  cursor: grab;
+}
+.cc-badgerow-drag:active {
+  cursor: grabbing;
+}
+.cc-badgerow-art {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.cc-badgerow-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-badgerow-art-ic {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+/* Number medallion (used for activity rows in place of badge art). */
+.cc-badgerow-num {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--teal) 14%, #fff);
+  color: var(--teal-dk);
+  font-size: 15px;
+  font-weight: 800;
+}
+.cc-badgerow-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.cc-badgerow-info strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cc-badgerow-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+.cc-badgerow-meta.is-missing {
+  color: #dc2626;
+  font-weight: 600;
+}
+.cc-badgerow-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+.cc-badgerow.is-inactive .cc-badgerow-art,
+.cc-badgerow.is-inactive .cc-badgerow-info strong {
+  opacity: 0.45;
+}
+/* Eye toggle = active/inactive indicator (green eye on, grey eye-off when hidden). */
+.cc-badgerow-eye {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  border-radius: 7px;
+  color: #16a34a;
+  cursor: pointer;
+}
+.cc-badgerow-eye:hover {
+  background: color-mix(in srgb, #16a34a 12%, #fff);
+}
+.cc-badgerow-eye.is-off {
+  color: #94a3b8;
+}
+.cc-badgerow-eye.is-off:hover {
+  background: #f1f5f9;
+}
+.cc-badgerow-actions .cc-row-remove {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  color: #94a3b8;
+}
+.cc-badgerow-actions .cc-row-remove:hover {
+  background: color-mix(in srgb, #dc2626 12%, #fff);
+  color: #dc2626;
+}
+.cc-ab-actrow.is-dragging {
+  opacity: 0.5;
+  border-color: var(--teal);
+}
+
+/* Activity badge editor (reuses .cc-badge-editor head/body/foot + modal width) */
+/* Tabs match the badge picker's full-bleed tab bar: body unpadded, tabs span
+   edge-to-edge, header divider hidden, and content panels carry the padding. */
+.cc-badge-editor-body:has(.cc-ab-tabs) {
+  padding: 0;
+  gap: 0;
+}
+.cc-ab-editor .cc-badge-editor-head {
+  border-bottom-color: transparent;
+}
+.cc-ab-tabs {
+  margin: 0;
+  padding: 0 16px;
+}
+/* Three add-actions in a panel head (Use existing / Duplicate / + Create). */
+.cc-actbadge-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+/* Use/Duplicate picker modal — reuses the .cc-badge-editor chrome. */
+.cc-actpicker .cc-badgepick-search {
+  margin: 0 0 14px;
+}
+.cc-actpicker-empty {
+  min-height: 232px;
+  justify-content: center;
+}
+.cc-actpicker-foot {
+  justify-content: space-between;
+  align-items: center;
+}
+.cc-actpicker-page-count {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+.cc-actpicker-page-btns {
+  display: flex;
+  gap: 6px;
+}
+.cc-actpicker-page-btns button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+}
+.cc-actpicker-page-btns button:hover:not(:disabled) {
+  background: #f1f7f8;
+  border-color: var(--teal);
+}
+.cc-actpicker-page-btns button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Quick badge creator */
+.cc-actpicker-sub {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.cc-quick-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.cc-quick-range {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.cc-quick-numstyle {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+.cc-quick-numstyle-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cc-quick-seg {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.cc-quick-seg-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: left;
+  padding: 9px 13px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+.cc-quick-seg-btn:hover {
+  border-color: #94a3b8;
+}
+.cc-quick-seg-btn.is-on {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
+}
+.cc-quick-seg-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-quick-seg-btn.is-on .cc-quick-seg-name {
+  color: var(--teal-dk);
+}
+.cc-quick-seg-eg {
+  font-size: 12px;
+  color: var(--muted);
+}
+.cc-quick-previewhead {
+  margin: 16px 0 8px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.cc-quick-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 220px;
+  overflow: auto;
+}
+.cc-quick-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 11px 5px 5px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: #fff;
+}
+.cc-quick-chip .cc-badgerow-art {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.cc-quick-chip .cc-badgerow-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-quick-chip-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cc-actpicker-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: min-content;
+  gap: 8px;
+  min-height: 232px;
+  align-content: start;
+}
+.cc-actpicker-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+}
+.cc-actpicker-item:hover {
+  border-color: var(--teal);
+  background: #f1f7f8;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+}
+.cc-actpicker-item .cc-badgerow-art {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+.cc-actpicker-item .cc-badgerow-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-actpicker-item-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cc-actpicker-item-info strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-actpicker-item-info span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Pink warning callout (point types, repeatable activities). */
+.cc-warn-note {
+  display: flex;
+  gap: 9px;
+  margin: 0 0 14px;
+  padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, #e11d48 30%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, #e11d48 7%, #fff);
+  color: #9f1239;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.cc-warn-note::before {
+  content: '⚠';
+  flex: none;
+  font-size: 14px;
+  line-height: 1.4;
+}
+/* In the editor fieldscol the flex gap already spaces it — drop the extra margin. */
+.cc-ab-fieldscol .cc-warn-note {
+  margin: 0;
+}
+/* Activity-type select + its one-line example, grouped so the hint hugs the
+   select while the outer form keeps a uniform gap between groups. */
+.cc-ab-actform-type {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.cc-ab-typehint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.cc-ab-activities {
+  padding: 14px 16px;
+}
+/* Details mirrors the logging badge editor's form exactly (.cc-badge-form):
+   same column width, paddings, centered disc, and divider line. */
+.cc-ab-details {
+  display: grid;
+  grid-template-columns: 148px 1fr;
+  gap: 0;
+  align-items: stretch;
+  padding: 16px;
+}
+.cc-ab-artcol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 28px 8px 8px;
+  border-right: 1px solid var(--line);
+}
+.cc-ab-fieldscol {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding-left: 28px;
+}
+.cc-ab-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+  background: #fff;
+}
+.cc-ab-textarea:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+.cc-ab-settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.cc-ab-earn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.cc-ab-earn .fld,
+.cc-ab-earn .inp-wrap {
+  flex: 0 0 90px;
+  width: 90px;
+}
+.cc-ab-earn-suffix {
+  font-size: 14px;
+  color: var(--muted);
+}
+.cc-ab-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.cc-ab-toggle-row strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+.cc-ab-toggle-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.cc-ab-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Activities tab */
+.cc-ab-activities {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cc-ab-actlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cc-ab-actrow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.cc-ab-actinfo {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.cc-ab-actdesc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.35;
+}
+.cc-ab-actlink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal-dk);
+}
+.cc-ab-acttype {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #94a3b8;
+}
+.cc-ab-actactions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.cc-ab-add {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 10px;
+  background: #fff;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+.cc-ab-add:hover {
+  border-color: var(--teal);
+  background: #f1f7f8;
+}
+.cc-ab-add-plus {
+  font-size: 17px;
+  line-height: 1;
+}
+.cc-ab-actform {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  background: #f8fafc;
+}
+.cc-ab-actform-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.cc-ab-actform-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+/* Activity-code chip input: type a code, Enter to add a removable chip. */
+.cc-ab-codes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 6px 8px;
+  background: #fff;
+}
+.cc-ab-codes:focus-within {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+.cc-ab-code-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 4px 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+  color: var(--teal-dk);
+  font-size: 13px;
+  font-weight: 600;
+}
+.cc-ab-code-chip button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 16px;
+  line-height: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+.cc-ab-code-chip button:hover {
+  background: color-mix(in srgb, var(--teal) 22%, #fff);
+}
+.cc-ab-code-input {
+  flex: 1;
+  min-width: 100px;
+  border: 0;
+  outline: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  padding: 4px 2px;
+}
+
+/* ── Gameboard mock ── */
+.cc-board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+.cc-board-space {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  border: 1.5px dashed #cbd5e1;
+  display: grid;
+  place-items: center;
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  flex: 0 0 auto;
+}
+.cc-board-space.is-start,
+.cc-board-space.is-end {
+  border-style: solid;
+  border-color: var(--teal);
+  color: var(--teal-dk);
+  background: color-mix(in srgb, var(--teal) 10%, #fff);
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* ── Mobile click-to-preview ── */
+.cc-preview-mobile-btn {
+  display: none; /* shown only on mobile (see media query); desktop uses the toggle */
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 999px;
+  background: #fff;
+  color: #334155;
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.cc-preview-mobile-btn:hover {
+  border-color: #64748b;
+}
+.cc-mobile-preview {
+  width: 100%;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* Near-full-width preview modal with a small margin so it doesn't clip. */
+.modal--center:has(.cc-mobile-preview) {
+  width: calc(100vw - 28px);
+  max-width: 600px;
+}
+/* In the modal the card sits flush — no accent frame/border around it. */
+.cc-mobile-preview .cc-preview-frame {
+  padding: 0;
+}
+.cc-mobile-preview .cc-pv {
+  max-width: 100%;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* ── Challenge preview (reader-page mock) ── */
+.cc-pv {
+  width: 100%;
+  max-width: none;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px -16px rgba(15, 23, 42, 0.45);
+  /* Fill the pane when content is short, but size to content (and let the
+     frame scroll) when it's tall — instead of clipping the overflow. */
+  align-self: flex-start;
+  min-height: 100%;
+}
+.cc-pv-banner {
+  position: relative;
+  aspect-ratio: 920 / 351;
+  box-sizing: border-box;
+  min-height: 0;
+  overflow: hidden;
+  /* Query container: the title/ribbon size in cqw so the whole header is one
+     composition that scales uniformly — identical in any container. */
+  container-type: size;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  text-align: center;
+  background: #e2e8f0;
+}
+.cc-pv-banner.is-image {
+  background: #cbd5e1;
+}
+.cc-pv-headtext {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Gap scales with the fitted title size, with a bit more separation. */
+  gap: calc(var(--cc-title-cqw, 9.5) * 0.32 * 1cqw);
+}
+.cc-pv-ribbon {
+  display: inline-block;
+  /* Ribbon scales relative to the fitted title; padding in em tracks the ribbon. */
+  font-size: calc(var(--cc-title-cqw, 9.5) * 0.42 * 1cqw);
+  padding: 0.3em 1em;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  /* Notched ribbon ends (>< shape) — percentage so it scales with the ribbon */
+  clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%);
+}
+.cc-pv-loading {
+  display: grid;
+  place-items: center;
+}
+.cc-pv-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 4px solid #cbd5e1;
+  border-top-color: #64748b;
+  animation: cc-spin 0.8s linear infinite;
+}
+.cc-pv-cover {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 40px;
+  height: 52px;
+  border-radius: 7px;
+  z-index: 2;
+}
+.cc-pv-imgicon {
+  color: #fff;
+  opacity: 0.9;
+}
+.cc-pv-title-below {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.cc-pv-banner h3 {
+  margin: 0;
+  /* cqw resolves against the banner (a query container), not the shrink-to-fit
+     parent — otherwise max-width clamps the title to 92% of its OWN width and
+     wraps short titles prematurely. Higher value = wider before breaking. */
+  max-width: 94cqw;
+  color: #fff;
+  font-size: 9.5cqw;
+  font-weight: 800;
+  line-height: 1;
+  /* Optical centering: caps sit high in the line box, so nudge down a touch. */
+  transform: translateY(0.06em);
+  text-shadow: 0 0.4cqw 1.2cqw rgba(0, 0, 0, 0.32);
+  text-wrap: balance;
+  overflow-wrap: normal;
+}
+.cc-pv-body {
+  padding: 18px 16px;
+}
+.cc-pv-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--ink);
+}
+.cc-pv-sk {
+  background: #e2e8f0;
+  border-radius: 8px;
+}
+.cc-pv-sk-block {
+  height: 64px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+.cc-pv-sk-line {
+  height: 11px;
+  margin-bottom: 9px;
+}
+/* Reader "Badges" section header (replaces the old single-tab bar). */
+.cc-pv-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 14px;
+}
+.cc-pv-section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.cc-pv-section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Challenge dates + description in the preview body */
+.cc-pv-dates {
+  /* Tuck right under the title. */
+  margin: -6px 0 12px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+.cc-pv-desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #475569;
+}
+.cc-pv-desc :is(p, ul, ol) {
+  margin: 0 0 8px;
+}
+.cc-pv-desc :is(p, ul, ol):last-child {
+  margin-bottom: 0;
+}
+.cc-pv-desc h2 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 10px 0 4px;
+}
+.cc-pv-desc h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 8px 0 4px;
+}
+.cc-pv-desc ul,
+.cc-pv-desc ol {
+  padding-left: 18px;
+}
+.cc-pv-desc blockquote {
+  margin: 8px 0;
+  padding: 2px 0 2px 10px;
+  border-left: 3px solid #cbd5e1;
+  color: #64748b;
+}
+.cc-pv-desc pre {
+  margin: 8px 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #f1f5f9;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+.cc-pv-desc code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: #f1f5f9;
+  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-size: 0.9em;
+}
+/* Collapsible description animates between the clamp and its full height. */
+.cc-pv-desc.is-collapsible {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+/* Clamped state fades the last line so it reads as "more below". */
+.cc-pv-desc.is-clamped {
+  -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent);
+  mask-image: linear-gradient(180deg, #000 60%, transparent);
+}
+.cc-pv-more {
+  margin-top: 6px;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.cc-pv-more:hover {
+  text-decoration: underline;
+}
+.cc-pv-badges {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+/* Each badge sits in its own card with consistent padding + gap. */
+.cc-pv-badge-cell {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.cc-pv-badge-art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+.cc-pv-badge-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.cc-pv-badge {
+  --c: #7c5cfa;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(circle at 32% 26%, var(--c), color-mix(in srgb, var(--c) 50%, #10184a));
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.22);
+}
+.cc-pv-badge :is(img, svg) {
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+/* ── Badge states ── */
+/* Earned: full color. In progress: slightly dimmed under the ring. */
+.cc-pv-badge-cell.is-progress .cc-pv-badge-art {
+  opacity: 0.82;
+}
+/* Not yet earned: greyed out so earned badges stand out. */
+.cc-pv-badge-cell.is-default .cc-pv-badge-art {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+/* Circular progress ring drawn over an in-progress badge. */
+.cc-pv-badge-ring {
+  position: absolute;
+  inset: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+.cc-pv-ring-track {
+  fill: none;
+  stroke: rgba(15, 23, 42, 0.12);
+  stroke-width: 2.4;
+}
+.cc-pv-ring-fill {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+/* Corner status chips (check for earned, lock for locked). */
+.cc-pv-badge-tag {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+}
+.cc-pv-badge-tag.is-check {
+  background: #16a34a;
+}
+.cc-pv-badge-tag.is-lock {
+  background: #94a3b8;
+}
+/* Prize ribbon sits top-left so it never collides with the status chip. */
+.cc-pv-badge-prize {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #f59e0b;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+}
+
+/* ── Preview icon button: phone only ── */
+/* Desktop (split pane available): hide the footer preview button — the side
+   tab handles open/close there. */
+@media (min-width: 901px) {
+  .cc-preview-icon-btn {
+    display: none;
+  }
+}
+
+/* ── Responsive: collapse preview under the form on narrow screens ── */
+@media (max-width: 900px) {
+  /* Preview becomes a click-to-open overlay; the split pane + side tab hide. */
+  .cc-preview,
+  .cc-preview-tab {
+    display: none;
+  }
+  .cc-preview-mobile-btn {
+    display: inline-flex;
+  }
+  /* Step dropdown fills the bar on mobile. */
+  .cc-stepbar {
+    padding: 8px 12px;
+  }
+  .cc-stepnav-select {
+    flex: 1;
+    width: auto;
+  }
+  /* Tighten the top bar so it doesn't overflow on small screens. */
+  .cc-topbar {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .cc-status,
+  .cc-save,
+  .cc-form-footer .tgl {
+    display: none;
+  }
+  .cc-title {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}

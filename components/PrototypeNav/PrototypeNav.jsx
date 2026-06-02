@@ -5,6 +5,24 @@ import { ComponentUsage } from '@components/ComponentUsage/ComponentUsage'
 
 const NAV_PROTOTYPES = PROTOTYPES.filter((p) => p.id !== 'patterns')
 
+// Group the switcher options by section (Prototypes first, then Experiments).
+const SECTION_ORDER = ['Prototypes', 'Experiments']
+const NAV_SECTIONS = (() => {
+  const groups = new Map()
+  for (const p of NAV_PROTOTYPES) {
+    const key = p.section || 'Prototypes'
+    if (!groups.has(key)) groups.set(key, [])
+    groups.get(key).push(p)
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => {
+      const ai = SECTION_ORDER.indexOf(a)
+      const bi = SECTION_ORDER.indexOf(b)
+      return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
+    })
+    .map(([title, items]) => ({ title, items }))
+})()
+
 export function PrototypeNav({ currentHref }) {
   const [open, setOpen] = useState(false)
   const [usageOpen, setUsageOpen] = useState(false)
@@ -93,37 +111,46 @@ export function PrototypeNav({ currentHref }) {
             <>
               <div className="proto-nav-backdrop" onClick={() => setOpen(false)} />
               <div className="proto-nav-dropdown" role="listbox">
-                {NAV_PROTOTYPES.map((p) => {
-                  const isCurrent = p.href === currentHref
-                  return (
-                    <a
-                      key={p.href}
-                      href={isCurrent ? undefined : p.href}
-                      className={`proto-nav-option${isCurrent ? ' proto-nav-option--active' : ''}`}
-                      style={{ '--accent': p.accent }}
-                      role="option"
-                      aria-current={isCurrent ? 'page' : undefined}
-                      onClick={isCurrent ? (e) => e.preventDefault() : undefined}
-                    >
-                      <span className="proto-nav-option-dot" />
-                      <span className="proto-nav-option-name">{p.name}</span>
-                      {isCurrent && (
-                        <svg
-                          viewBox="0 0 16 16"
-                          width="12"
-                          height="12"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
+                {NAV_SECTIONS.map((section) => (
+                  <div
+                    key={section.title}
+                    className="proto-nav-group"
+                    role="group"
+                    aria-label={section.title}
+                  >
+                    <div className="proto-nav-group-label">{section.title}</div>
+                    {section.items.map((p) => {
+                      const isCurrent = p.href === currentHref
+                      return (
+                        <a
+                          key={p.href}
+                          href={isCurrent ? undefined : p.href}
+                          className={`proto-nav-option${isCurrent ? ' proto-nav-option--active' : ''}`}
+                          style={{ '--accent': p.accent }}
+                          role="option"
+                          aria-current={isCurrent ? 'page' : undefined}
+                          onClick={isCurrent ? (e) => e.preventDefault() : undefined}
                         >
-                          <polyline points="3,8 7,12 13,4" />
-                        </svg>
-                      )}
-                    </a>
-                  )
-                })}
+                          <span className="proto-nav-option-name">{p.name}</span>
+                          {isCurrent && (
+                            <svg
+                              viewBox="0 0 16 16"
+                              width="12"
+                              height="12"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2.5"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <polyline points="3,8 7,12 13,4" />
+                            </svg>
+                          )}
+                        </a>
+                      )
+                    })}
+                  </div>
+                ))}
               </div>
             </>
           )}

@@ -7,6 +7,13 @@
       "runtimeArgs": ["dev"],
       "port": 5173,
       "autoPort": true
+    },
+    {
+      "name": "cc",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["dev", "--port", "5180"],
+      "port": 5180,
+      "autoPort": true
     }
   ],
   "autoVerify": false

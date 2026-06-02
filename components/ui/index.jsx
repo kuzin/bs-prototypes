@@ -4,12 +4,16 @@ import { I8_IDS, I8_TOKEN, COVER_PALETTES } from './tokens.js'
 export { C, LABEL, GENRE_COLORS, I8_TOKEN, I8_IDS, COVER_PALETTES } from './tokens.js'
 
 // ─── Icon ─────────────────────────────────────────────────────────────────────
-export function Ic({ name, size = 16, style = {} }) {
+// Icons8 supports SVG output and server-side recoloring via `&color=<hex>`.
+// Pass `color` to tint the glyph (e.g. color="#0DA7BC"); omit for the default.
+// `format` defaults to svg (crisp at any size); pass format="png" for raster.
+export function Ic({ name, size = 16, color, format = 'svg', style = {} }) {
   const id = I8_IDS[name]
   if (!id) return null
+  const colorParam = color ? `&color=${String(color).replace('#', '')}` : ''
   return (
     <img
-      src={`https://img.icons8.com/?id=${id}&format=png&size=${size * 2}&token=${I8_TOKEN}`}
+      src={`https://img.icons8.com/?id=${id}&format=${format}&size=${size * 2}${colorParam}&token=${I8_TOKEN}`}
       width={size}
       height={size}
       alt=""

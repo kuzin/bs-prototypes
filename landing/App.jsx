@@ -22,6 +22,26 @@ const SECTIONS = (() => {
 })()
 
 const ICONS = {
+  // Challenge Creator — a trophy
+  'challenge-creator': (
+    <svg
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M7 4h10v3.5a5 5 0 0 1-10 0z" />
+      <path d="M7 5H4.5v1A3.5 3.5 0 0 0 8 9.5" />
+      <path d="M17 5h2.5v1A3.5 3.5 0 0 1 16 9.5" />
+      <path d="M12 12.5V16" />
+      <path d="M9 20h6l-.6-4H9.6z" />
+    </svg>
+  ),
   // Student Profile — a person bust
   'student-profile': (
     <svg

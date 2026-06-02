@@ -243,12 +243,24 @@
   background: color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-.proto-nav-option-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: var(--accent);
-  flex-shrink: 0;
+/* Section groups inside the switcher dropdown */
+.proto-nav-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.proto-nav-group + .proto-nav-group {
+  margin-top: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
+}
+.proto-nav-group-label {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #94a3b8;
+  padding: 4px 10px 2px;
 }
 
 .proto-nav-option-name {

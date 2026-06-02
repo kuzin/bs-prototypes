@@ -224,9 +224,20 @@ export function DateInput({ size = 'md', type = 'date', label, className = '', .
   const selfId = useId()
   const inputId = rest.id || fieldId || selfId
 
+  // The native calendar indicator is hidden for a clean look, so open the
+  // native picker on click anywhere in the field.
+  const openPicker = (e) => {
+    const input = e.currentTarget.querySelector('input')
+    try {
+      input?.showPicker?.()
+    } catch {
+      /* showPicker unavailable here — normal focus still works */
+    }
+  }
   const el = (
     <div
-      className={`inp-wrap inp-wrap--${size}${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}
+      className={`inp-wrap inp-wrap--${size} inp-wrap--clickable${hasError ? ' inp-wrap--error' : ''}${!label && className ? ` ${className}` : ''}`}
+      onClick={openPicker}
     >
       <span className="inp-icon inp-icon--left">
         <svg

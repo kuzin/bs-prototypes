@@ -111,7 +111,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 4px 10px;
   border-radius: 6px;
   font-size: 13px;
   color: #0f172a;
@@ -120,7 +120,7 @@
   transition: background 0.08s;
   -webkit-user-select: none;
   user-select: none;
-  min-height: 34px;
+  min-height: 28px;
 }
 
 .csel-item[data-highlighted] {

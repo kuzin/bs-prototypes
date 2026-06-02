@@ -51,7 +51,7 @@
 
 .fld-help,
 .fld-error {
-  font-size: 13px;
+  font-size: 12px;
   line-height: 1.45;
 }
 
@@ -468,6 +468,11 @@
 .inp--date::-webkit-calendar-picker-indicator,
 .inp--time::-webkit-calendar-picker-indicator {
   display: none;
+}
+/* The whole date field opens the native picker on click. */
+.inp-wrap--clickable,
+.inp-wrap--clickable .inp {
+  cursor: pointer;
 }
 
 /* ── ColorInput ─────────────────────────────────────────────────────────── */
