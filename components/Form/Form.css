@@ -544,11 +544,11 @@
   border: none;
 }
 .cinp-swatch::-webkit-color-swatch {
-  border: none;
+  border: 1px solid rgba(15, 23, 42, 0.16);
   border-radius: 4px;
 }
 .cinp-swatch::-moz-color-swatch {
-  border: none;
+  border: 1px solid rgba(15, 23, 42, 0.16);
   border-radius: 4px;
 }
 
@@ -859,10 +859,25 @@
 }
 
 .msel-empty {
-  padding: 10px 12px;
-  font-size: 13px;
-  color: #94a3b8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 18px 14px;
   text-align: center;
+}
+.msel-empty-ic {
+  color: #cbd5e1;
+}
+.msel-empty-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+}
+.msel-empty-hint {
+  font-size: 12px;
+  color: #94a3b8;
+  line-height: 1.4;
 }
 
 /* ── NumberInput ────────────────────────────────────────────────────────── */

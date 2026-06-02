@@ -40,6 +40,41 @@
   margin: 0 4px;
   background: #e2e8f0;
 }
+/* Personalization token chips (opt-in via the `tokens` prop). */
+.rtx-tokens {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 8px;
+  border-bottom: 1px solid #e2e8f0;
+  background: #fbfdfe;
+}
+.rtx-tokens-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  margin-right: 2px;
+}
+.rtx-token {
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  border-radius: 999px;
+  padding: 2px 9px;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  color: #0b7a89;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+}
+.rtx-token:hover {
+  background: #e6f6f8;
+  border-color: #0da7bc;
+  color: #0b7a89;
+}
 .rtx-html-toggle {
   margin-left: auto;
   font-size: 12px;

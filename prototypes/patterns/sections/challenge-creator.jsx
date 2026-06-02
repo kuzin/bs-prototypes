@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Field, Input } from '@components/Form/Form'
 import { Toggle } from '@components/Toggle/Toggle'
-import { ColorPicker } from '../../challenge-creator/steps/StepStubs'
+import { ColorPicker, BadgeMultiSelect } from '../../challenge-creator/steps/StepStubs'
 import { Knobs, Variant } from './_shared'
 
 const PRESETS = [
@@ -52,7 +52,56 @@ function ColorPickerKnobs() {
   )
 }
 
+const circleBadge = (c) =>
+  `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="${c}"/></svg>`,
+  )}`
+const SAMPLE_BADGES = [
+  { id: 'b1', name: 'First Book', img: circleBadge('#0DA7BC') },
+  { id: 'b2', name: 'Bookworm', img: circleBadge('#16A97A') },
+  { id: 'b3', name: '5-Day Streak', img: circleBadge('#7C3AED') },
+  { id: 'b4', name: 'Top Reviewer', img: circleBadge('#DB2777') },
+]
+
+function BadgeMultiSelectKnobs() {
+  const [value, setValue] = useState(['b1'])
+  const [hasBadges, setHasBadges] = useState(true)
+  return (
+    <>
+      <Knobs>
+        <Field label="has badges">
+          <Toggle checked={hasBadges} onChange={setHasBadges} />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <BadgeMultiSelect
+          badges={hasBadges ? SAMPLE_BADGES : []}
+          value={value}
+          onChange={setValue}
+          emptyHint="Add badges on the Badges step first."
+        />
+      </div>
+    </>
+  )
+}
+
 export const challengeCreatorSections = [
+  {
+    group: 'challenge-creator',
+    id: 'cc-badgemultiselect',
+    name: 'BadgeMultiSelect',
+    desc: (
+      <>
+        The badge-selection pattern used wherever badges are chosen (certificates, rewards,
+        completion requirements). A <code>MultiSelect</code> over a normalized badge pool (
+        <code>{`{ id, name, img }`}</code>) — thumbnails show in the trigger and option rows, with a
+        friendly empty state. Props: <code>badges</code>, <code>value</code>, <code>onChange</code>,{' '}
+        <code>disabledIds</code>, <code>emptyHint</code>. Build the pool with{' '}
+        <code>badgePoolOf(challenge)</code>.
+      </>
+    ),
+    render: () => <BadgeMultiSelectKnobs />,
+  },
   {
     group: 'challenge-creator',
     id: 'cc-colorpicker',

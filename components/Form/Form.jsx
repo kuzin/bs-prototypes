@@ -419,6 +419,8 @@ export function MultiSelect({
   label,
   className = '',
   disabled = false,
+  emptyText = 'Nothing to choose yet',
+  emptyHint,
 }) {
   const [open, setOpen] = useState(false)
   const [coords, setCoords] = useState(null)
@@ -454,8 +456,13 @@ export function MultiSelect({
   useEffect(() => {
     if (!open) return
     function onDown(e) {
-      if (!wrapRef.current?.contains(e.target) && !popRef.current?.contains(e.target))
-        setOpen(false)
+      if (wrapRef.current?.contains(e.target) || popRef.current?.contains(e.target)) return
+      // A <label> bound to the trigger forwards its click to it — closing here
+      // would let that forwarded click re-toggle the menu open. Let the trigger
+      // handle it (it just closes) instead of double-firing.
+      const lbl = e.target?.closest?.('label')
+      if (lbl && lbl.getAttribute('for') === triggerId) return
+      setOpen(false)
     }
     function onKey(e) {
       if (e.key === 'Escape') setOpen(false)
@@ -541,7 +548,11 @@ export function MultiSelect({
           >
             <div className="msel-pop-list">
               {options.length === 0 ? (
-                <div className="msel-empty">No options</div>
+                <div className="msel-empty">
+                  <Icon name="inbox" size={22} className="msel-empty-ic" />
+                  <span className="msel-empty-text">{emptyText}</span>
+                  {emptyHint && <span className="msel-empty-hint">{emptyHint}</span>}
+                </div>
               ) : (
                 options.map((opt) => (
                   <label

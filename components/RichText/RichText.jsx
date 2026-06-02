@@ -50,6 +50,7 @@ export function RichText({
   placeholder = '',
   minHeight = 140,
   className = '',
+  tokens = [],
 }) {
   const ref = useRef(null)
   const [mode, setMode] = useState('rich')
@@ -88,6 +89,14 @@ export function RichText({
   const format = (cmd, arg = null) => {
     document.execCommand(cmd, false, arg)
     ref.current?.focus()
+    emit()
+  }
+
+  // Insert a personalization token (e.g. {{first_name}}) at the cursor. mousedown
+  // preventDefault keeps the editor's selection, so it lands where the caret is.
+  const insertToken = (token) => {
+    if (document.activeElement !== ref.current) ref.current?.focus()
+    document.execCommand('insertText', false, token)
     emit()
   }
 
@@ -146,6 +155,25 @@ export function RichText({
           &lt;/&gt;
         </button>
       </div>
+      {tokens.length > 0 && mode === 'rich' && (
+        <div className="rtx-tokens">
+          <span className="rtx-tokens-label">Insert:</span>
+          {tokens.map((t) => (
+            <button
+              key={t}
+              type="button"
+              className="rtx-token"
+              title={`Insert ${t}`}
+              onMouseDown={(e) => {
+                e.preventDefault()
+                insertToken(t)
+              }}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+      )}
       {mode === 'html' ? (
         <textarea
           className="rtx-html"

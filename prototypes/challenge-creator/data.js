@@ -174,38 +174,70 @@ export const TEMPLATES = [
   {
     id: 'benny',
     name: 'Have You Seen Benny?',
-    typeIds: ['logging', 'activities'],
+    typeIds: ['logging', 'activity'],
     blurb: 'A reading hunt with Beanstack’s mascot.',
   },
   {
     id: 'era',
     name: 'In My Reading Era',
-    typeIds: ['logging', 'reviews'],
+    typeIds: ['logging', 'reviews', 'gameboard'],
     blurb: 'Journey through your reading eras.',
   },
   {
     id: 'glow',
     name: 'Glow Party',
-    typeIds: ['logging', 'points', 'activities'],
+    typeIds: ['logging', 'points', 'activity', 'gameboard'],
     blurb: 'A bright, neon reading celebration.',
   },
   {
     id: 'comics',
     name: 'Comics Choice',
-    typeIds: ['bingo', 'readingList', 'reviews'],
+    typeIds: ['bingo', 'reading-list', 'reviews'],
     blurb: 'Celebrate comics and graphic novels.',
   },
   {
     id: 'hhm',
     name: 'Hispanic Heritage Month',
-    typeIds: ['logging', 'readingList', 'activities', 'points'],
+    typeIds: ['logging', 'reading-list', 'activity', 'points'],
     blurb: 'Celebrate Hispanic & Latino voices.',
   },
   {
     id: 'botb',
     name: 'Battle of the Books',
-    typeIds: ['logging', 'bingo', 'readingList', 'reviews'],
+    typeIds: ['logging', 'bingo', 'reading-list', 'reviews'],
     blurb: 'Competitive reading from a title list.',
+  },
+  // Type-specific templates (one challenge type each), built from existing theme
+  // art rather than a dedicated asset folder.
+  {
+    id: 'summer-list',
+    name: 'Summer Reading List',
+    typeIds: ['reading-list'],
+    blurb: 'A curated summer reading list to log title by title.',
+  },
+  {
+    id: 'library-adventure',
+    name: 'Library Adventure',
+    typeIds: ['activity'],
+    blurb: 'Complete library activities to earn badges.',
+  },
+  {
+    id: 'reading-bingo',
+    name: 'Reading Bingo',
+    typeIds: ['bingo'],
+    blurb: 'Fill a card with reading and activity tiles.',
+  },
+  {
+    id: 'points-quest',
+    name: 'Points Quest',
+    typeIds: ['points'],
+    blurb: 'Rack up points to reach the stars.',
+  },
+  {
+    id: 'reading-quest',
+    name: 'Reading Quest',
+    typeIds: ['gameboard'],
+    blurb: 'Journey along a forest reading trail.',
   },
 ]
 // Cap the gallery at 5 templates per type (plus the "Start from scratch" card).
@@ -815,18 +847,23 @@ const BASE_STEP_NAMES = {
 }
 
 export function getSteps({ mode, role, type }) {
+  // Reading lists pick their titles up front (before badges); bingo/gameboard
+  // build the board later (after rewards), once badges + prizes are decided.
+  const isReadingList = type?.primaryMethod === 'readingList'
+  const setupStep = { id: 'setup', name: type?.setupName || BASE_STEP_NAMES.setup }
   const steps = [
     { id: 'type', name: BASE_STEP_NAMES.type },
     { id: 'details', name: BASE_STEP_NAMES.details },
-    { id: 'badges', name: BASE_STEP_NAMES.badges },
   ]
-  // Step 4 — type-specific setup, only for types that need it.
-  if (type?.setup) steps.push({ id: 'setup', name: type.setupName || BASE_STEP_NAMES.setup })
-  // Step 5 — rewards/tickets: full challenge-creator roles, plus logging
-  // challenges always get a rewards tab. (Hidden for template/district mode.)
-  const showRewards = mode === 'challenge' && (role?.tier === 'full' || type?.id === 'logging')
+  if (type?.setup && isReadingList) steps.push(setupStep)
+  steps.push({ id: 'badges', name: BASE_STEP_NAMES.badges })
+  // Rewards/tickets/certificates: full creators only (MS+, public librarian).
+  // Teacher/MS (simple) can't access rewards in the creator, per Beanstack's
+  // classroom-challenge permissions.
+  const showRewards = mode === 'challenge' && role?.tier === 'full'
   if (showRewards) steps.push({ id: 'rewards', name: BASE_STEP_NAMES.rewards })
-  // Step 6 — completion, unless it's implicit (bingo).
+  if (type?.setup && !isReadingList) steps.push(setupStep)
+  // Completion, unless it's implicit (bingo).
   if (!type?.autoComplete) steps.push({ id: 'completion', name: BASE_STEP_NAMES.completion })
   return steps
 }
@@ -892,6 +929,13 @@ export function blankChallenge(typeId) {
       bingoSize: '4x4',
       titles: [],
       boardSpaces: 12,
+      // Gameboard
+      gameboardCells: [], // logging-badge ids placed along the board (in order)
+      gameboardTheme: null, // null → defaults to the applied template's theme, else 'meadow'
+      gameboardColor: '#16A97A', // custom-theme color scheme
+      gbShowRewards: true, // show reward/gift markers on the board
+      gbShowHalfway: true, // show a halfway marker
+      gbBadges: 8, // number of badge spaces on the board
     },
     rewards: { perBadge: {}, library: [], tickets: [] },
     completion: { mode: 'all', required: [] },
@@ -1011,6 +1055,48 @@ const tplBadge = (id, file, name) => {
   return img ? { name, img } : null
 }
 
+// Build a template's default rewards. Ids are prefixed by the template id so
+// they're stable across edits (and never collide with `newRewardId`'s timestamp
+// format). Each template seeds a completion certificate plus a prize or two;
+// some add a ticket-raffle prize where it fits the theme. badgeIds start empty —
+// the creator assigns rewards to specific badges. Shapes match RewardsStep's
+// saveReward / saveTicket / saveCert.
+const tplRewards = (id, { prizes = [], certificate, tickets = [] }) => ({
+  // Default rewards are earned on challenge completion (the `comp` badge), so
+  // they arrive pre-assigned rather than "Not assigned to a badge".
+  items: prizes.map((p, i) => ({
+    id: `${id}-rw-${i + 1}`,
+    title: p.title,
+    description: p.description || '',
+    badgeIds: p.badgeIds || ['comp'],
+    source: 'template',
+  })),
+  certsEnabled: !!certificate,
+  certificates: certificate
+    ? [
+        {
+          id: `${id}-ct-1`,
+          title: certificate.title,
+          bannerTitle: certificate.bannerTitle || 'Certificate of Achievement',
+          description: certificate.description || '',
+          body: certificate.body || '',
+          badgeIds: certificate.badgeIds || ['comp'],
+        },
+      ]
+    : [],
+  ticketsEnabled: tickets.length > 0,
+  ticketSource: 'all',
+  ticketsPerBadge: 1,
+  ticketBadges: {},
+  ticketRewards: tickets.map((t, i) => ({
+    id: `${id}-tr-${i + 1}`,
+    name: t.name,
+    description: t.description || '',
+    cost: t.cost || 5,
+    image: null,
+  })),
+})
+
 export const TEMPLATE_PRESETS = {
   benny: {
     name: 'Have You Seen Benny?',
@@ -1021,6 +1107,17 @@ export const TEMPLATE_PRESETS = {
     description:
       '<p>Help readers spot <strong>Benny the Bean</strong> all around your library or school as they log their reading and complete activities.</p>',
     previewDescription: 'A Benny-themed reading hunt — log reading to find Benny around town.',
+    rewards: tplRewards('benny', {
+      prizes: [
+        { title: 'Benny Sticker Pack', description: 'A sheet of Benny the Bean stickers.' },
+        { title: 'Beanstack Bookmark', description: 'A collectible Benny bookmark.' },
+      ],
+      certificate: {
+        title: 'Benny Reader Certificate',
+        bannerTitle: 'Certificate of Reading',
+        description: 'Awarded for spotting Benny all season long.',
+      },
+    }),
   },
   era: {
     name: 'In My Reading Era',
@@ -1031,6 +1128,19 @@ export const TEMPLATE_PRESETS = {
     description:
       '<p>Move through your <strong>reading eras</strong> — log books and unlock a badge for every era you enter.</p>',
     previewDescription: 'Journey through your reading eras and collect a badge for each one.',
+    rewards: tplRewards('era', {
+      prizes: [
+        {
+          title: 'Free Book of Your Choice',
+          description: 'Pick any book to keep from the prize cart.',
+        },
+      ],
+      certificate: {
+        title: 'Reading Era Certificate',
+        bannerTitle: 'Certificate of Achievement',
+        description: 'Awarded for journeying through every reading era.',
+      },
+    }),
   },
   glow: {
     name: 'Glow Party',
@@ -1041,6 +1151,30 @@ export const TEMPLATE_PRESETS = {
     description:
       '<p>Lights down, books up! A glowing, neon reading celebration with badges to collect all night long.</p>',
     previewDescription: 'A bright, neon reading party — log reading and light up your badges.',
+    rewards: tplRewards('glow', {
+      prizes: [{ title: 'Glow Wristband', description: 'A light-up wristband for the party.' }],
+      certificate: {
+        title: 'Glow Reader Certificate',
+        bannerTitle: 'Certificate of Achievement',
+      },
+      tickets: [
+        {
+          name: 'Glow Party Invite',
+          description: 'An invite to the end-of-challenge glow party.',
+          cost: 5,
+        },
+        {
+          name: 'Front-Row Glow Seat',
+          description: 'A reserved front-row seat at the glow party.',
+          cost: 10,
+        },
+        {
+          name: 'Light-Up Gift Bag',
+          description: 'A goodie bag of glow-in-the-dark prizes.',
+          cost: 20,
+        },
+      ],
+    }),
   },
   comics: {
     name: 'Comics Choice',
@@ -1051,6 +1185,19 @@ export const TEMPLATE_PRESETS = {
     description:
       '<p>POW! BAM! Celebrate graphic novels and comics — log your reading to earn comic-book badges.</p>',
     previewDescription: 'A comic-book themed challenge celebrating graphic novels and comics.',
+    rewards: tplRewards('comics', {
+      prizes: [
+        { title: 'Graphic Novel of Your Choice', description: 'Pick a graphic novel to keep.' },
+        {
+          title: 'Comic Creator Kit',
+          description: 'Pens, panels, and paper to make your own comic.',
+        },
+      ],
+      certificate: {
+        title: 'Comics Champion Certificate',
+        bannerTitle: 'Certificate of Achievement',
+      },
+    }),
   },
   hhm: {
     name: 'Hispanic Heritage Month',
@@ -1062,6 +1209,18 @@ export const TEMPLATE_PRESETS = {
       '<p>Celebrate <strong>Hispanic Heritage Month</strong> with books by and about Hispanic and Latino authors, artists, and changemakers.</p>',
     previewDescription:
       'Celebrate Hispanic Heritage Month with books by and about Hispanic voices.',
+    rewards: tplRewards('hhm', {
+      prizes: [
+        {
+          title: 'Featured Author Book',
+          description: 'A book by a celebrated Hispanic or Latino author.',
+        },
+      ],
+      certificate: {
+        title: 'Hispanic Heritage Reader Certificate',
+        bannerTitle: 'Certificate of Achievement',
+      },
+    }),
   },
   botb: {
     name: 'Battle of the Books',
@@ -1072,6 +1231,181 @@ export const TEMPLATE_PRESETS = {
     description:
       '<p>Get <strong>battle ready!</strong> Read from the official Battle of the Books list and test your knowledge against other teams.</p>',
     previewDescription: 'Read the official Battle of the Books list and compete with other teams.',
+    rewards: tplRewards('botb', {
+      prizes: [{ title: 'Team Trophy', description: 'For the winning Battle of the Books team.' }],
+      certificate: {
+        title: 'Battle of the Books Certificate',
+        bannerTitle: 'Certificate of Achievement',
+      },
+      tickets: [
+        {
+          name: 'Pizza Party',
+          description: 'A class pizza party for the top-reading team.',
+          cost: 10,
+        },
+        {
+          name: 'Author Video Call',
+          description: 'A live video call with a featured author.',
+          cost: 25,
+        },
+        {
+          name: 'Champion Medal Set',
+          description: 'Medals for every member of the winning team.',
+          cost: 15,
+        },
+      ],
+    }),
+  },
+  // ── Type-specific templates (no asset folder — built from theme art) ──
+  // Reading List Challenge: a curated title list + logging badges to log them.
+  'summer-list': {
+    name: 'Summer Reading List',
+    accent: '#2563EB',
+    theme: 'summer',
+    banner: summer1,
+    badges: themeBadges('summer')
+      .slice(0, 8)
+      .map((b, i) => ({
+        name: [
+          'First Read',
+          'Bookworm',
+          'Page-Turner',
+          'Story Seeker',
+          'Chapter Champ',
+          'Summer Scholar',
+          'Library Legend',
+          'Reading Star',
+        ][i],
+        img: b.img,
+      })),
+    titles: BOOK_CATALOG.slice(0, 10),
+    description:
+      '<p>Read your way through our hand-picked <strong>summer reading list</strong> — log each title to earn a badge and finish the list.</p>',
+    previewDescription: 'A curated summer reading list — log each title to earn badges.',
+    rewards: tplRewards('summer-list', {
+      prizes: [
+        { title: 'Free Book', description: 'Pick any book to keep when you finish the list.' },
+      ],
+      certificate: {
+        title: 'Summer Reading Certificate',
+        bannerTitle: 'Certificate of Achievement',
+      },
+    }),
+  },
+  // Activity Challenge: a set of activity badges, each earned by completing a task.
+  'library-adventure': {
+    name: 'Library Adventure',
+    accent: '#16A34A',
+    theme: 'animals',
+    banner: animals1,
+    badges: themeBadges('animals')
+      .slice(0, 6)
+      .map((b, i) => ({
+        name: ['Explorer', 'Adventurer', 'Trailblazer', 'Pathfinder', 'Pioneer', 'Champion'][i],
+        img: b.img,
+      })),
+    activityBadges: [
+      ['Visit the Library', 'Stop by your local library branch and check out a book.'],
+      ['Read Outside', 'Find a cozy outdoor spot and read for 20 minutes.'],
+      ['Attend an Event', 'Join a story time, book club, or library program.'],
+      ['Share a Book', 'Recommend a favorite book to a friend or family member.'],
+      ['Explore a New Genre', 'Read something you’ve never tried before.'],
+      ['Meet the Librarian', 'Ask your librarian for a personalized recommendation.'],
+    ].map(([title, description], i) => ({
+      id: `tpl-act-${i}`,
+      title,
+      badge: { img: themeBadges('animals')[i]?.img },
+      activities: [{ type: 'activity', description, linkTitle: '', linkUrl: '', codes: [] }],
+    })),
+    description:
+      '<p>Go on a <strong>library adventure</strong> — complete activities around your library to earn a badge for each one.</p>',
+    previewDescription: 'Complete library activities to earn a badge for each adventure.',
+    rewards: tplRewards('library-adventure', {
+      prizes: [{ title: 'Adventurer’s Tote Bag', description: 'A library tote for your finds.' }],
+      certificate: {
+        title: 'Library Adventurer Certificate',
+        bannerTitle: 'Certificate of Achievement',
+      },
+    }),
+  },
+  // Bingo: theme badges fill the card (applyTemplate also seeds activity tiles).
+  'reading-bingo': {
+    name: 'Reading Bingo',
+    accent: '#0891B2',
+    theme: 'ocean',
+    banner: ocean1,
+    badges: themeBadges('ocean')
+      .slice(0, 6)
+      .map((b, i) => ({
+        name: ['Splash', 'Wave Rider', 'Deep Diver', 'Treasure Hunter', 'Sea Star', 'Captain'][i],
+        img: b.img,
+      })),
+    description:
+      '<p>Dive into <strong>Reading Bingo</strong> — fill a card with reading and activity tiles to earn a row, column, or the whole card.</p>',
+    previewDescription: 'Fill a bingo card with reading and activity tiles.',
+    rewards: tplRewards('reading-bingo', {
+      prizes: [{ title: 'Beach Read Bundle', description: 'A bundle of summer paperbacks.' }],
+      certificate: {
+        title: 'Reading Bingo Certificate',
+        bannerTitle: 'Certificate of Achievement',
+      },
+    }),
+  },
+  // Points: theme badges become a points ladder (applyTemplate → withPointMilestones).
+  'points-quest': {
+    name: 'Points Quest',
+    accent: '#6D28D9',
+    theme: 'space',
+    banner: space1,
+    badges: themeBadges('space')
+      .slice(0, 6)
+      .map((b, i) => ({
+        name: ['Liftoff', 'In Orbit', 'Moonwalk', 'Stargazer', 'Galaxy', 'Cosmonaut'][i],
+        img: b.img,
+      })),
+    description:
+      '<p>Launch into a <strong>Points Quest</strong> — earn points from reading and activities to reach the stars.</p>',
+    previewDescription: 'Rack up points from reading and activities to reach the stars.',
+    rewards: tplRewards('points-quest', {
+      prizes: [
+        { title: 'Galaxy Sticker Sheet', description: 'A sheet of holographic space stickers.' },
+      ],
+      certificate: { title: 'Points Quest Certificate', bannerTitle: 'Certificate of Achievement' },
+    }),
+  },
+  // Gameboard: theme badges line the board (logging).
+  'reading-quest': {
+    name: 'Reading Quest',
+    accent: '#3F6B2E',
+    theme: 'forest',
+    banner: forest1,
+    badges: themeBadges('forest')
+      .slice(0, 8)
+      .map((b, i) => ({
+        name: [
+          'Sprout',
+          'Explorer',
+          'Trailblazer',
+          'Climber',
+          'Summit',
+          'Ranger',
+          'Guardian',
+          'Legend',
+        ][i],
+        img: b.img,
+      })),
+    description:
+      '<p>Set off on a <strong>Reading Quest</strong> — travel a forest trail, logging books to advance from space to space.</p>',
+    previewDescription: 'Travel a forest reading trail, logging books to advance.',
+    rewards: tplRewards('reading-quest', {
+      prizes: [
+        { title: 'Explorer’s Compass', description: 'A keepsake compass for finishing the trail.' },
+      ],
+      certificate: {
+        title: 'Reading Quest Certificate',
+        bannerTitle: 'Certificate of Achievement',
+      },
+    }),
   },
 }
 
@@ -1096,6 +1430,15 @@ export const withPointMilestones = (badges = []) =>
     goal: Number(b.goal) >= 1 ? b.goal : (i + 1) * 50,
   }))
 
+// Review badges are earned by writing N reviews. Seed an increasing ladder
+// (1, 2, 3, …) so a reviews template's badges always have a goal.
+export const withReviewMilestones = (badges = []) =>
+  badges.map((b, i) => ({
+    name: b.name,
+    img: b.img,
+    goal: Number(b.goal) >= 1 ? b.goal : i + 1,
+  }))
+
 // Starter activity badges seeded into bingo templates so the card has a mix of
 // logging + activity tiles to drag on. Art borrows the template's own badge set
 // (falls back to a generic star) so it stays on-theme.
@@ -1113,6 +1456,16 @@ const bingoActivityBadges = (preset) =>
     activities: [{ type, description, linkTitle: '', linkUrl: '', codes: [] }],
   }))
 
+// Turn a template's plain badge set into activity badges, so a (multi-type)
+// template applied to an Activity challenge still seeds something to earn.
+const badgesToActivityBadges = (badges = []) =>
+  badges.map((b, i) => ({
+    id: `tpl-act-${i}`,
+    title: b.name || `Activity ${i + 1}`,
+    badge: { img: b.img },
+    activities: [{ type: 'activity', description: '', linkTitle: '', linkUrl: '', codes: [] }],
+  }))
+
 export function applyTemplate(challenge, templateId) {
   if (!templateId || templateId === 'scratch') {
     // Start from scratch = a fresh blank challenge of the same type (also clears
@@ -1124,6 +1477,12 @@ export function applyTemplate(challenge, templateId) {
   return {
     ...challenge,
     templateId,
+    // Seed the template's default rewards (cloned so edits never touch the preset).
+    rewards: preset.rewards ? JSON.parse(JSON.stringify(preset.rewards)) : challenge.rewards,
+    // Reading-list templates ship a curated title list → seed it into setup.
+    ...(preset.titles
+      ? { setup: { ...challenge.setup, titles: preset.titles.map((t) => ({ ...t })) } }
+      : {}),
     details: {
       ...challenge.details,
       name: preset.name,
@@ -1133,32 +1492,44 @@ export function applyTemplate(challenge, templateId) {
       background: { kind: 'upload', name: `${preset.name} banner`, src: preset.banner },
       templateBanner: preset.banner,
     },
-    // Scaffolded starter badges — each carries a descriptive name, plus a log
-    // milestone when this is a logging challenge so none lack a log value.
-    // Points challenges seed Points badges (earned at point thresholds) instead,
-    // and start with no logging badges (logging is off by default for points).
-    badges:
-      getType(challenge.typeId)?.primaryMethod === 'log'
-        ? withLogMilestones(preset.badges)
-        : getType(challenge.typeId)?.primaryMethod === 'points'
-          ? []
-          : preset.badges.map((b) => ({ ...b })),
+    // Scaffolded starter badges, seeded into the array that matches the type's
+    // primary method: points → Points badges, reviews → Review badges (logging
+    // stays off), everything else → logging badges (always run withLogMilestones
+    // so each carries a log value, never "Needs a log value").
+    badges: ['points', 'reviews', 'activities'].includes(getType(challenge.typeId)?.primaryMethod)
+      ? []
+      : withLogMilestones(preset.badges),
     pointsBadges:
       getType(challenge.typeId)?.primaryMethod === 'points'
         ? withPointMilestones(preset.badges)
         : challenge.pointsBadges || [],
+    reviewBadges:
+      getType(challenge.typeId)?.primaryMethod === 'reviews'
+        ? withReviewMilestones(preset.badges)
+        : challenge.reviewBadges || [],
     // The template also seeds the registration + completion badges: its own
-    // themed art when the folder has it, else a generic star/trophy.
+    // dedicated art when the folder has it, else borrow from the template's own
+    // badge set so they stay on-theme (the first badge for registration, the
+    // last for completion) — generic star/trophy only as a final fallback.
     registrationBadge: preset.registrationBadge ||
       tplBadge(templateId, 'registration.png', 'Welcome badge') || {
         name: 'Welcome badge',
-        img: badgeStar,
+        img: preset.badges?.[0]?.img || badgeStar,
       },
     completionBadge: preset.completionBadge ||
       tplBadge(templateId, 'completion.png', 'Challenge complete') || {
         name: 'Challenge complete',
-        img: badgeTrophy,
+        img: preset.badges?.[preset.badges.length - 1]?.img || badgeTrophy,
       },
+    // Activity-primary templates ship their own activity badges (each earned by
+    // completing a task) — seed them directly.
+    ...(getType(challenge.typeId)?.primaryMethod === 'activities'
+      ? {
+          activityBadges: preset.activityBadges
+            ? preset.activityBadges.map((a) => ({ ...a }))
+            : badgesToActivityBadges(preset.badges),
+        }
+      : {}),
     // Bingo cards don't use a completion badge — they earn a bingo badge (a row,
     // column, or diagonal) and a full-card badge — and the card is filled with
     // logging + activity tiles, so seed a starter set of activity badges too.

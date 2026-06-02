@@ -9,6 +9,8 @@ import {
   badgeImage,
   themeBadges,
   getBannerTheme,
+  getType,
+  SAMPLE_TITLES,
   BADGE_COLORS,
 } from './data'
 
@@ -78,13 +80,18 @@ function dateRange(start, end) {
 export function Preview({ challenge }) {
   const d = challenge.details
   const accent = d.accent || '#0DA7BC'
-  // Ribbon follows the accent unless the reader chose to override its color.
-  const ribbonColor = (d.subheader?.overrideColor && d.subheader?.color) || accent
+  // Ribbon color defaults to the accent; the ribbon settings can override it.
+  const ribbonColor = d.subheader?.color || accent
   // The ribbon background is the color mixed 84% with white; pick readable text.
   const ribbonBg = mixRgb(ribbonColor, '#ffffff', 0.84)
+  const ribbonFont = fontStack(d.subheader?.font || d.headerFont)
   const ribbonStyle = ribbonBg
-    ? { background: `rgb(${ribbonBg.join(',')})`, color: readableOn(ribbonBg) }
-    : { background: `color-mix(in srgb, ${ribbonColor} 84%, #fff)` }
+    ? {
+        background: `rgb(${ribbonBg.join(',')})`,
+        color: readableOn(ribbonBg),
+        fontFamily: ribbonFont,
+      }
+    : { background: `color-mix(in srgb, ${ribbonColor} 84%, #fff)`, fontFamily: ribbonFont }
   // Title color: white by default, or the reader's opt-in override.
   const titleColor = (d.fontColorOverride && d.fontColor) || undefined
   const dateLabel = dateRange(d.start, d.end)
@@ -108,6 +115,41 @@ export function Preview({ challenge }) {
   const completion = challenge.completionBadge?.img ? challenge.completionBadge : null
   const badges = [...(reg ? [reg] : []), ...core, ...(completion ? [completion] : [])]
 
+  // Rewards: prizes + (enabled) ticket prizes + (enabled) certificates, flattened
+  // to a simple {art, title, sub} list for the reader card.
+  const rw = challenge.rewards || {}
+  const rewards = [
+    ...(rw.items || []).map((x) => ({
+      key: x.id,
+      img: x.image,
+      icon: x.icon || 'gift',
+      title: x.title,
+      sub: x.subtitle || 'Prize',
+    })),
+    ...(rw.ticketsEnabled ? rw.ticketRewards || [] : []).map((x) => ({
+      key: x.id,
+      img: x.image,
+      icon: 'ticket',
+      title: x.name || x.title,
+      sub: x.cost ? `${x.cost} ticket${x.cost === 1 ? '' : 's'} to enter` : 'Raffle prize',
+    })),
+    ...(rw.certsEnabled ? rw.certificates || [] : []).map((x) => ({
+      key: x.id,
+      icon: 'certificate',
+      title: x.title,
+      sub: 'Certificate',
+    })),
+  ].filter((x) => x.title)
+
+  // Reading list: only for reading-list challenges; falls back to the samples the
+  // setup step seeds so the section never previews empty.
+  const isReadingList = getType(challenge.typeId)?.primaryMethod === 'readingList'
+  const titles = isReadingList
+    ? challenge.setup?.titles?.length
+      ? challenge.setup.titles
+      : SAMPLE_TITLES
+    : []
+
   const bannerRef = useRef(null)
   const titleRef = useRef(null)
 
@@ -118,6 +160,17 @@ export function Preview({ challenge }) {
   const [descExpanded, setDescExpanded] = useState(false)
   const [descOverflow, setDescOverflow] = useState(false)
   const [descFullH, setDescFullH] = useState(0)
+
+  // Content tabs — only the sections that actually have content.
+  const pvTabs = [
+    isReadingList && titles.length
+      ? { id: 'titles', label: 'Reading list', count: titles.length }
+      : null,
+    { id: 'badges', label: 'Badges', count: badges.length },
+    rewards.length ? { id: 'rewards', label: 'Rewards', count: rewards.length } : null,
+  ].filter(Boolean)
+  const [pvTab, setPvTab] = useState('badges')
+  const activeTab = pvTabs.some((t) => t.id === pvTab) ? pvTab : pvTabs[0]?.id
   useLayoutEffect(() => {
     const el = descRef.current
     if (!el || !hasDesc) {
@@ -132,7 +185,8 @@ export function Preview({ challenge }) {
 
   useEffect(() => {
     loadFont(d.headerFont)
-  }, [d.headerFont])
+    if (d.subheader?.font) loadFont(d.subheader.font)
+  }, [d.headerFont, d.subheader?.font])
 
   // Fit the title to the banner, then express the result in cqw (relative to the
   // banner) so it shrinks long titles AND stays identical at any banner size.
@@ -151,8 +205,9 @@ export function Preview({ challenge }) {
         el.style.fontSize = `${pxVal}px`
         bn.style.setProperty('--cc-title-cqw', ((pxVal / W) * 100).toFixed(3))
       }
-      // Base size (9.5cqw) × the user's scale; the loop still shrinks to fit.
-      let px = 0.095 * W * (d.headerFontSize || 1)
+      // Base size (9.5cqw) × the user's scale (only when title-size is on); the
+      // loop still shrinks to fit.
+      let px = 0.095 * W * ((d.titleSizeOn && d.headerFontSize) || 1)
       apply(px)
       let guard = 0
       // Shrink only to fit the banner height; words wrap (never break mid-word).
@@ -172,7 +227,15 @@ export function Preview({ challenge }) {
       clearTimeout(t)
       ro.disconnect()
     }
-  }, [title, titleFont, d.headerFontSize, uploaded, d.subheader?.enabled, d.subheader?.text])
+  }, [
+    title,
+    titleFont,
+    d.headerFontSize,
+    d.titleSizeOn,
+    uploaded,
+    d.subheader?.enabled,
+    d.subheader?.text,
+  ])
 
   return (
     <div className="cc-pv">
@@ -258,36 +321,86 @@ export function Preview({ challenge }) {
           </>
         )}
 
-        <div className="cc-pv-section">
-          <h4 className="cc-pv-section-title">Badges</h4>
-          {badges.length > 0 && (
-            <span
-              className="cc-pv-section-count"
-              style={{ color: accent, background: `color-mix(in srgb, ${accent} 13%, #fff)` }}
-            >
-              {badges.length}
-            </span>
-          )}
-        </div>
+        {pvTabs.length > 0 && (
+          <>
+            <div className="cc-pv-tabs" role="tablist">
+              {pvTabs.map((t) => {
+                const on = activeTab === t.id
+                return (
+                  <button
+                    key={t.id}
+                    type="button"
+                    role="tab"
+                    aria-selected={on}
+                    className={`cc-pv-tab${on ? ' is-active' : ''}`}
+                    style={on ? { color: accent } : undefined}
+                    onClick={() => setPvTab(t.id)}
+                  >
+                    {t.label}
+                    <span className="cc-pv-tab-count">{t.count}</span>
+                  </button>
+                )
+              })}
+            </div>
 
-        <div className="cc-pv-badges">
-          {badges.map((b, i) => {
-            const bImg = b.img || badgeImage(b.icon)
-            return (
-              <div key={i} className="cc-pv-badge-cell">
-                <div className="cc-pv-badge-art">
-                  {bImg ? (
-                    <img className="cc-pv-badge-img" src={bImg} alt="" />
-                  ) : (
-                    <span className="cc-pv-badge" style={{ '--c': b.color || accent }}>
-                      <Ic name={b.icon || 'ti-badge'} size={26} />
+            {activeTab === 'titles' && (
+              <div className="cc-pv-titles">
+                {titles.slice(0, 12).map((t, i) => (
+                  <div key={t.id || t.isbn || i} className="cc-pv-title-row">
+                    <span className="cc-pv-title-cover">
+                      {t.cover ? (
+                        <img src={t.cover} alt="" loading="lazy" />
+                      ) : (
+                        <Icon name="book" size={16} />
+                      )}
                     </span>
-                  )}
-                </div>
+                    <span className="cc-pv-title-info">
+                      <strong>{t.title}</strong>
+                      {t.author && <span>{t.author}</span>}
+                    </span>
+                  </div>
+                ))}
               </div>
-            )
-          })}
-        </div>
+            )}
+
+            {activeTab === 'badges' && (
+              <div className="cc-pv-badges">
+                {badges.map((b, i) => {
+                  const bImg = b.img || badgeImage(b.icon)
+                  return (
+                    <div key={i} className="cc-pv-badge-cell">
+                      <div className="cc-pv-badge-art">
+                        {bImg ? (
+                          <img className="cc-pv-badge-img" src={bImg} alt="" />
+                        ) : (
+                          <span className="cc-pv-badge" style={{ '--c': b.color || accent }}>
+                            <Ic name={b.icon || 'ti-badge'} size={26} />
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+
+            {activeTab === 'rewards' && (
+              <div className="cc-pv-rewards">
+                {rewards.map((r) => (
+                  <div key={r.key} className="cc-pv-reward">
+                    <span className="cc-pv-reward-art" style={{ '--c': accent }}>
+                      {r.img ? <img src={r.img} alt="" /> : <Icon name={r.icon} size={18} />}
+                    </span>
+                    <span className="cc-pv-reward-info">
+                      <strong>{r.title}</strong>
+                      {r.sub && <span>{r.sub}</span>}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
       </div>
     </div>
   )
