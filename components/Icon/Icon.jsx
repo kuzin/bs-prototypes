@@ -103,6 +103,7 @@ import {
   IconScribble,
   IconWaveSine,
   // ── layout / structure ──
+  IconRoute,
   IconLayoutGrid,
   IconLayoutDashboard,
   IconLayout,
@@ -233,6 +234,7 @@ const REGISTRY = {
   wave: IconWaveSine,
 
   // layout / structure
+  route: IconRoute,
   'layout-grid': IconLayoutGrid,
   'layout-dashboard': IconLayoutDashboard,
   layout: IconLayout,
