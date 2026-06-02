@@ -106,7 +106,7 @@ export function Select({ size = 'md', label, children, className = '', ...rest }
       <select id={selectId} className="sel" {...rest}>
         {children}
       </select>
-      <Icon name="chevron-down" size={11} stroke={2} className="sel-caret" />
+      <Icon name="chevron-down" size={15} stroke={2} className="sel-caret" />
     </div>
   )
 
@@ -510,7 +510,7 @@ export function MultiSelect({
           )}
           <span className="msel-display-text">{displayText}</span>
         </span>
-        <Icon name="chevron-down" size={11} stroke={2} className="msel-caret" />
+        <Icon name="chevron-down" size={15} stroke={2} className="msel-caret" />
       </button>
       {open &&
         coords &&

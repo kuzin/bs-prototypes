@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
+import { renderToStaticMarkup } from 'react-dom/server'
 import {
   Field,
   Input,
@@ -86,7 +87,8 @@ function Tip({ children }) {
 function ColorPicker({ value, presets = [], fallback, onColor }) {
   return (
     <div className="cc-colorpick">
-      {presets.map((c) => (
+      <ColorInput size="sm" value={value || fallback} onChange={onColor} />
+      {presets.slice(0, 8).map((c) => (
         <button
           key={c}
           type="button"
@@ -96,7 +98,6 @@ function ColorPicker({ value, presets = [], fallback, onColor }) {
           onClick={() => onColor(c)}
         />
       ))}
-      <ColorInput size="sm" value={value || fallback} onChange={onColor} />
     </div>
   )
 }
@@ -360,22 +361,14 @@ async function composeBadge(bg, content, font) {
   } else {
     const ic = BUILDER_ICONS.find((i) => i.id === content.value)
     if (ic) {
-      const scale = (size * 0.5) / 24
-      ctx.save()
-      ctx.translate(size / 2 - 12 * scale, size / 2 - 12 * scale)
-      ctx.scale(scale, scale)
-      const p = new Path2D(ic.path)
-      if (ic.mode === 'stroke') {
-        ctx.strokeStyle = fg
-        ctx.lineWidth = 1.7
-        ctx.lineCap = 'round'
-        ctx.lineJoin = 'round'
-        ctx.stroke(p)
-      } else {
-        ctx.fillStyle = fg
-        ctx.fill(p)
+      // Rasterize the same Tabler glyph the picker renders, so the saved badge
+      // matches what was chosen.
+      const svg = renderToStaticMarkup(<Icon name={ic.name} size={24} stroke={2} color={fg} />)
+      const im = await loadImage(`data:image/svg+xml,${encodeURIComponent(svg)}`)
+      if (im) {
+        const s = size * 0.5
+        ctx.drawImage(im, (size - s) / 2, (size - s) / 2, s, s)
       }
-      ctx.restore()
     }
   }
   return c.toDataURL('image/png')
