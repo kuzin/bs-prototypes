@@ -4110,37 +4110,39 @@ function BingoBoard({ challenge, size, cells, onChange }) {
           if (p?.from === 'cell') clear(p.index)
         }}
       >
-        <div className="cc-bingo-tray-head">
-          <span className="cc-bingo-tray-title">Drag badges onto the card</span>
-          <span className="cc-bingo-tray-count">
-            {placed.size}/{n} placed
-          </span>
-        </div>
-        {pool.length ? (
-          <div className="cc-bingo-tray-list">
-            {pool.map((b) => {
-              const used = placed.has(b.id)
-              return (
-                <div
-                  key={b.id}
-                  className={`cc-bingo-chip${used ? ' is-used' : ''}`}
-                  draggable={!used}
-                  onDragStart={(e) => !used && setPayload(e, { from: 'tray', id: b.id })}
-                  title={b.name}
-                >
-                  <span className="cc-bingo-chip-art">
-                    <Art b={b} size={20} />
-                  </span>
-                  <span className="cc-bingo-chip-name">{b.name}</span>
-                </div>
-              )
-            })}
+        <div className="cc-bingo-tray-inner">
+          <div className="cc-bingo-tray-head">
+            <span className="cc-bingo-tray-title">Drag badges onto the card</span>
+            <span className="cc-bingo-tray-count">
+              {placed.size}/{n} placed
+            </span>
           </div>
-        ) : (
-          <p className="cc-method-note cc-method-note--sm">
-            Add logging, activity, or review badges on the Badges step, then drag them here.
-          </p>
-        )}
+          {pool.length ? (
+            <div className="cc-bingo-tray-list">
+              {pool.map((b) => {
+                const used = placed.has(b.id)
+                return (
+                  <div
+                    key={b.id}
+                    className={`cc-bingo-chip${used ? ' is-used' : ''}`}
+                    draggable={!used}
+                    onDragStart={(e) => !used && setPayload(e, { from: 'tray', id: b.id })}
+                    title={b.name}
+                  >
+                    <span className="cc-bingo-chip-art">
+                      <Art b={b} size={20} />
+                    </span>
+                    <span className="cc-bingo-chip-name">{b.name}</span>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <p className="cc-method-note cc-method-note--sm">
+              Add logging, activity, or review badges on the Badges step, then drag them here.
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="cc-bingo-grid" style={{ '--n': size[0] }}>

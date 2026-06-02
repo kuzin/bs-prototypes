@@ -2508,7 +2508,7 @@
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
   gap: 20px;
-  align-items: start;
+  align-items: stretch;
   margin-top: 16px;
   box-sizing: border-box;
   width: 100%;
@@ -2517,18 +2517,37 @@
   .cc-bingo-board {
     grid-template-columns: 1fr;
   }
+  /* Stacked: let the tray flow with its content (no card to match height to). */
+  .cc-bingo-tray {
+    min-height: 0;
+  }
+  .cc-bingo-tray-inner {
+    position: static;
+  }
+  .cc-bingo-tray-list {
+    max-height: 320px;
+  }
 }
+/* The tray stretches to the card grid's height (align-items: stretch on the
+   board). Its content is absolutely positioned so the tray never dictates the
+   row height — only the grid does — and the badge list scrolls inside. */
 .cc-bingo-tray {
-  display: flex;
-  flex-direction: column;
-  max-height: 340px;
+  position: relative;
+  min-height: 240px;
   border: 1.5px dashed var(--line);
   border-radius: 14px;
   background: #f8fafc;
-  padding: 14px;
+  overflow: hidden;
   transition:
     border-color 0.12s,
     background 0.12s;
+}
+.cc-bingo-tray-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
 }
 .cc-bingo-tray.is-over {
   border-color: var(--teal);
@@ -2560,6 +2579,8 @@
   display: flex;
   flex-direction: column;
   gap: 6px;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
   margin: -2px -4px -2px -2px;
   padding: 2px 4px 2px 2px;
@@ -2627,6 +2648,7 @@
   box-sizing: border-box;
   width: 100%;
   justify-self: stretch;
+  align-self: start;
   padding: 12px;
   background: linear-gradient(135deg, #f8fafc, #e9eef5);
   border: 1px solid var(--line);
