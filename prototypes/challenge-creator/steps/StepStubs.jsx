@@ -5181,7 +5181,7 @@ export function RewardsStep({ challenge, update }) {
                       onClick={() => setR({ ticketSource: o.value })}
                     >
                       <span className="cc-optcard-ic" aria-hidden="true">
-                        <Icon name={o.icon} size={18} color={on ? '#0b7a89' : '#64748b'} />
+                        <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
                       </span>
                       <span className="cc-optcard-text">
                         <strong>{o.label}</strong>
