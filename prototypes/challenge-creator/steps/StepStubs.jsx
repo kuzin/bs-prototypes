@@ -3470,16 +3470,10 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
         <>
           <div className="cc-panel">
             <h3 className="cc-panel-title">Bingo badge</h3>
-            <p className="cc-method-note cc-method-note--sm">
-              Earned when a reader completes a row, column, or diagonal.
-            </p>
             <PinSlot slot="bingo" label="Bingo badge" />
           </div>
           <div className="cc-panel">
             <h3 className="cc-panel-title">Full-card badge</h3>
-            <p className="cc-method-note cc-method-note--sm">
-              Earned when a reader fills the entire card.
-            </p>
             <PinSlot slot="fullCard" label="Full-card badge" />
           </div>
         </>
