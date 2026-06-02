@@ -9,28 +9,13 @@ import {
 } from '../components'
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, TOTAL_QUERIES } from '../data'
 import { Button } from '@components/Button/Button'
+import { Icon } from '@components/Icon/Icon'
 
 const DEFAULT_PINNED = new Set(['active-readers', 'new-registrations', 'books-read', 'top-books'])
 
 function PinIcon({ filled }) {
-  // Push-pin drawn upright, head at top, stem pointing down.
-  // Outline + crossbar always render; fill toggles for pinned state.
-  return (
-    <svg
-      viewBox="0 0 16 16"
-      width="13"
-      height="13"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.4"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d="M6 2 L10 2 L10 6 L12 9 L4 9 L6 6 Z" fill={filled ? 'currentColor' : 'none'} />
-      <line x1="8" y1="9" x2="8" y2="14" />
-    </svg>
-  )
+  // Push-pin: filled glyph for pinned state, outline otherwise.
+  return <Icon name={filled ? 'pin-filled' : 'pin'} size={13} aria-hidden="true" />
 }
 
 export function Pinned({ onMeterChange, onOpenDetail, onCustomize, visibleTiles }) {

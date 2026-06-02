@@ -1,25 +1,15 @@
 import { useState } from 'react'
-import { I8_IDS, I8_TOKEN, COVER_PALETTES } from './tokens.js'
+import { COVER_PALETTES } from './tokens.js'
+import { Icon } from '@components/Icon/Icon'
 
 export { C, LABEL, GENRE_COLORS, I8_TOKEN, I8_IDS, COVER_PALETTES } from './tokens.js'
 
 // ─── Icon ─────────────────────────────────────────────────────────────────────
-// Icons8 supports SVG output and server-side recoloring via `&color=<hex>`.
-// Pass `color` to tint the glyph (e.g. color="#0DA7BC"); omit for the default.
-// `format` defaults to svg (crisp at any size); pass format="png" for raster.
-export function Ic({ name, size = 16, color, format = 'svg', style = {} }) {
-  const id = I8_IDS[name]
-  if (!id) return null
-  const colorParam = color ? `&color=${String(color).replace('#', '')}` : ''
-  return (
-    <img
-      src={`https://img.icons8.com/?id=${id}&format=${format}&size=${size * 2}${colorParam}&token=${I8_TOKEN}`}
-      width={size}
-      height={size}
-      alt=""
-      style={{ display: 'inline-block', verticalAlign: 'middle', flexShrink: 0, ...style }}
-    />
-  )
+// Legacy shim: `ti-*` names now render crisp Tabler glyphs via the shared <Icon>
+// registry (no more remote Icons8 PNGs). Stripping the `ti-` prefix yields the
+// registry's semantic name. Prefer <Icon name="…"> directly in new code.
+export function Ic({ name, size = 16, style = {} }) {
+  return <Icon name={name.replace(/^ti-/, '')} size={size} style={style} />
 }
 
 // ─── Status badge ──────────────────────────────────────────────────────────────
@@ -116,20 +106,7 @@ export function CoverImage({ isbn, title }) {
         className="bp-title-cover bp-title-cover--placeholder"
         style={{ background: bg, color: fg }}
       >
-        <svg
-          width="18"
-          height="18"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          opacity="0.6"
-        >
-          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-          <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-        </svg>
+        <Icon name="book" size={18} style={{ opacity: 0.6 }} />
       </div>
     )
   }

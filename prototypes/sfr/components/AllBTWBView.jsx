@@ -4,6 +4,7 @@ import { Select } from '@components/Form/Form'
 import { SessionsTable } from './SessionsTable'
 import { ReaderGroupedView } from './ReaderGroupedView'
 import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
+import { Icon } from '@components/Icon/Icon'
 import '@components/FilterBar/FilterBar.css'
 import '@components/Form/Form.css'
 import './ListView.css'
@@ -95,19 +96,7 @@ export function AllBTWBView({
       <div className="lv-toolbar">
         <div className="lv-count">{sessions.length} Book Talks Total</div>
         <div className="lv-search-wrap">
-          <svg
-            className="lv-search-icon"
-            viewBox="0 0 16 16"
-            width="14"
-            height="14"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-          >
-            <circle cx="7" cy="7" r="4.5" />
-            <line x1="10.5" y1="10.5" x2="14" y2="14" />
-          </svg>
+          <Icon name="search" size={14} className="lv-search-icon" />
           <input
             className="lv-search"
             type="search"

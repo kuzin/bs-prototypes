@@ -9,6 +9,7 @@ import {
 } from '../components'
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, TOTAL_QUERIES } from '../data'
 import { Button } from '@components/Button/Button'
+import { Icon } from '@components/Icon/Icon'
 
 // Concept F: Filter-first
 // The filter form is editable, but nothing fires until the user clicks
@@ -88,21 +89,7 @@ export function FilterFirst({ onMeterChange, onOpenDetail, onCustomize, visibleT
 
       {!loaded && !loading ? (
         <div className="ins-empty-state">
-          <svg
-            viewBox="0 0 64 64"
-            width="48"
-            height="48"
-            fill="none"
-            stroke="#94A3B8"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="8" y1="56" x2="56" y2="56" />
-            <rect x="14" y="38" width="8" height="18" rx="1.5" />
-            <rect x="28" y="26" width="8" height="30" rx="1.5" />
-            <rect x="42" y="44" width="8" height="12" rx="1.5" />
-          </svg>
+          <Icon name="chart-bar" size={48} color="#94A3B8" />
           <h3>Pick your filters, then load</h3>
           <p>
             Nothing fires until you click <strong>Update Insights</strong>. Adjust the period,

@@ -8,6 +8,7 @@ import {
   InsightsFilterBar,
 } from '../components'
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, TOTAL_QUERIES } from '../data'
+import { Icon } from '@components/Icon/Icon'
 
 // Concept G: Search palette
 // The dashboard opens with a search input. The user picks (or types) a metric;
@@ -81,19 +82,7 @@ export function SearchPalette({ onMeterChange, onOpenDetail, onCustomize, visibl
 
       <div className="ins-palette">
         <div className="ins-palette-input">
-          <svg
-            viewBox="0 0 24 24"
-            width="20"
-            height="20"
-            fill="none"
-            stroke="#94A3B8"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <line x1="16.5" y1="16.5" x2="21" y2="21" />
-          </svg>
+          <Icon name="search" size={20} color="#94A3B8" />
           <input
             ref={inputRef}
             type="text"
@@ -144,19 +133,7 @@ export function SearchPalette({ onMeterChange, onOpenDetail, onCustomize, visibl
 
       {openedIds.length === 0 ? (
         <div className="ins-empty-state">
-          <svg
-            viewBox="0 0 64 64"
-            width="48"
-            height="48"
-            fill="none"
-            stroke="#94A3B8"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <circle cx="28" cy="28" r="18" />
-            <line x1="42" y1="42" x2="54" y2="54" />
-          </svg>
+          <Icon name="search" size={48} color="#94A3B8" />
           <h3>Nothing loaded yet</h3>
           <p>Pick a metric or panel to load just that one — perfect for ad-hoc lookups.</p>
         </div>

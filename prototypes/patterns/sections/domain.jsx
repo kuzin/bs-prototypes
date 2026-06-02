@@ -165,129 +165,127 @@ export const domainSections = [
   {
     group: 'domain',
     id: 'health-stat',
-    name: "HealthStat",
+    name: 'HealthStat',
     desc: (
       <>
-                  Single health-area tile (one of Motivation / Integrity / Habits / Skills). Props:{' '}
-                  <code>section</code>, <code>score</code>, <code>delta</code>, <code>onClick</code>
-                  . Renders as a button when <code>onClick</code> is provided.
-                </>
+        Single health-area tile (one of Motivation / Integrity / Habits / Skills). Props:{' '}
+        <code>section</code>, <code>score</code>, <code>delta</code>, <code>onClick</code>. Renders
+        as a button when <code>onClick</code> is provided.
+      </>
     ),
     render: () => (
       <>
-              <HealthStatKnobs />
-            </>
+        <HealthStatKnobs />
+      </>
     ),
   },
   {
     group: 'domain',
     id: 'reading-health',
-    name: "ReadingHealth",
+    name: 'ReadingHealth',
     desc: (
       <>
-                  Full 4-tile grid wrapping HealthStat. Props: <code>title</code>, <code>data</code>
-                  , <code>onNavigate</code>.
-                </>
+        Full 4-tile grid wrapping HealthStat. Props: <code>title</code>, <code>data</code>,{' '}
+        <code>onNavigate</code>.
+      </>
     ),
     render: () => (
       <>
-              <ReadingHealthKnobs />
-            </>
+        <ReadingHealthKnobs />
+      </>
     ),
   },
   {
     group: 'domain',
     id: 'alert-row',
-    name: "AlertRow",
+    name: 'AlertRow',
     desc: (
       <>
-                  Single alert tile. Props: <code>level</code> (critical | warning | positive |
-                  info), <code>title</code> (bold prefix), <code>description</code> (longer text),{' '}
-                  <code>action</code>, <code>onAction</code>. Collapses to stacked layout on narrow
-                  viewports.
-                </>
+        Single alert tile. Props: <code>level</code> (critical | warning | positive | info),{' '}
+        <code>title</code> (bold prefix), <code>description</code> (longer text),{' '}
+        <code>action</code>, <code>onAction</code>. Collapses to stacked layout on narrow viewports.
+      </>
     ),
     render: () => (
       <>
-              <AlertRowKnobs />
-            </>
+        <AlertRowKnobs />
+      </>
     ),
   },
   {
     group: 'domain',
     id: 'alerts-banner',
-    name: "AlertsBanner",
+    name: 'AlertsBanner',
     desc: (
       <>
-                  List wrapper around AlertRow. Pass <code>alerts</code> array and optional{' '}
-                  <code>onNavigate</code>. Returns null when no alerts.
-                </>
+        List wrapper around AlertRow. Pass <code>alerts</code> array and optional{' '}
+        <code>onNavigate</code>. Returns null when no alerts.
+      </>
     ),
     render: () => (
       <>
-              <Variant label="multiple alerts" bare>
-                <AlertsBanner alerts={SAMPLE_ALERTS} onNavigate={() => {}} />
-              </Variant>
-            </>
+        <Variant label="multiple alerts" bare>
+          <AlertsBanner alerts={SAMPLE_ALERTS} onNavigate={() => {}} />
+        </Variant>
+      </>
     ),
   },
   {
     group: 'domain',
     id: 'rmi-icons',
-    name: "RMI Icons",
+    name: 'RMI Icons',
     desc: (
       <>
-                  10 SVG icons keyed by motivation factor. Use via{' '}
-                  <code>{'<RMI_ICONS[factor.iconKey] />'}</code>. Inherit color from CSS{' '}
-                  <code>color</code>.
-                </>
+        10 SVG icons keyed by motivation factor. Use via{' '}
+        <code>{'<RMI_ICONS[factor.iconKey] />'}</code>. Inherit color from CSS <code>color</code>.
+      </>
     ),
     render: () => (
       <>
-              <div className="pt-icons">
-                {RMI_FACTORS.map((f) => (
-                  <div key={f.name} className="pt-icon-cell">
-                    <div
-                      className="pt-icon-bg"
-                      style={{
-                        '--c': f.color,
-                        '--bg': `color-mix(in srgb, ${f.color} 10%, white)`,
-                      }}
-                    >
-                      {RMI_ICONS[f.iconKey]}
-                    </div>
-                    <div className="pt-icon-name">{f.name}</div>
-                    <div className="pt-icon-key">{f.iconKey}</div>
-                  </div>
-                ))}
+        <div className="pt-icons">
+          {RMI_FACTORS.map((f) => (
+            <div key={f.name} className="pt-icon-cell">
+              <div
+                className="pt-icon-bg"
+                style={{
+                  '--c': f.color,
+                  '--bg': `color-mix(in srgb, ${f.color} 10%, white)`,
+                }}
+              >
+                {RMI_ICONS[f.iconKey]}
               </div>
-            </>
+              <div className="pt-icon-name">{f.name}</div>
+              <div className="pt-icon-key">{f.iconKey}</div>
+            </div>
+          ))}
+        </div>
+      </>
     ),
   },
   {
     group: 'domain',
     id: 'health-icons',
-    name: "Reading Health Icons",
+    name: 'Reading Health Icons',
     desc: (
       <>
-                  The four health-area icons from <code>SECTIONS</code> (Motivation, Integrity,
-                  Habits, Skills). Used in dashboard cards and bucket page heroes.
-                </>
+        The four health-area icons from <code>SECTIONS</code> (Motivation, Integrity, Habits,
+        Skills). Used in dashboard cards and bucket page heroes.
+      </>
     ),
     render: () => (
       <>
-              <div className="pt-icons">
-                {HEALTH_SECTIONS.map((s) => (
-                  <div key={s.key} className="pt-icon-cell">
-                    <div className="pt-icon-bg" style={{ '--c': s.color, '--bg': s.bg }}>
-                      {s.icon}
-                    </div>
-                    <div className="pt-icon-name">{s.label}</div>
-                    <div className="pt-icon-key">{s.key}</div>
-                  </div>
-                ))}
+        <div className="pt-icons">
+          {HEALTH_SECTIONS.map((s) => (
+            <div key={s.key} className="pt-icon-cell">
+              <div className="pt-icon-bg" style={{ '--c': s.color, '--bg': s.bg }}>
+                {s.icon}
               </div>
-            </>
+              <div className="pt-icon-name">{s.label}</div>
+              <div className="pt-icon-key">{s.key}</div>
+            </div>
+          ))}
+        </div>
+      </>
     ),
   },
 ]

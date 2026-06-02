@@ -14,6 +14,7 @@ import {
 import { Spinner } from '@components/Primitives/Primitives'
 import { RichText } from '@components/RichText/RichText'
 import { ImageDropzone } from '@components/ImageDropzone/ImageDropzone'
+import { Icon } from '@components/Icon/Icon'
 import { Knobs } from './_shared'
 
 function RichTextKnobs() {
@@ -105,31 +106,8 @@ function InputKnobs() {
   const [withLabel, setLabel] = useState(true)
   const [error, setError] = useState('')
   const [help, setHelp] = useState('')
-  const searchIcon = (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="7.5" cy="7.5" r="4.5" />
-      <path d="M10.8 10.8 14.5 14.5" />
-    </svg>
-  )
-  const checkIcon = (
-    <svg
-      viewBox="0 0 16 16"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <polyline points="3,8.5 6.5,12 13,4" />
-    </svg>
-  )
+  const searchIcon = <Icon name="search" />
+  const checkIcon = <Icon name="check" />
   return (
     <>
       <Knobs>
@@ -410,7 +388,14 @@ function NumberInputKnobs() {
         </Field>
       </Knobs>
       <div className="pt-variant-frame">
-        <NumberInput value={value} onChange={setValue} min={min} max={max} step={step} size={size} />
+        <NumberInput
+          value={value}
+          onChange={setValue}
+          min={min}
+          max={max}
+          step={step}
+          size={size}
+        />
       </div>
     </>
   )
@@ -473,129 +458,121 @@ export const formFieldsSections = [
   {
     group: 'form-fields',
     id: 'toggle',
-    name: "Toggle",
+    name: 'Toggle',
     desc: (
       <>
-                  iOS-style switch. Props: <code>checked</code>, <code>onChange</code>,{' '}
-                  <code>disabled</code>, <code>size</code> (sm/md), optional label as children.
-                </>
+        iOS-style switch. Props: <code>checked</code>, <code>onChange</code>, <code>disabled</code>,{' '}
+        <code>size</code> (sm/md), optional label as children.
+      </>
     ),
     render: () => (
       <>
-              <ToggleKnobs />
-            </>
+        <ToggleKnobs />
+      </>
     ),
   },
   {
     group: 'form-fields',
     id: 'input',
-    name: "Input",
+    name: 'Input',
     desc: (
       <>
-                  Text input. Sizes <code>sm</code> / <code>md</code> / <code>lg</code>. Optional{' '}
-                  <code>icon</code> + <code>iconRight</code>. Picks up id, error state, and ARIA
-                  from the parent <code>Field</code>.
-                </>
+        Text input. Sizes <code>sm</code> / <code>md</code> / <code>lg</code>. Optional{' '}
+        <code>icon</code> + <code>iconRight</code>. Picks up id, error state, and ARIA from the
+        parent <code>Field</code>.
+      </>
     ),
     render: () => (
       <>
-              <InputKnobs />
-            </>
+        <InputKnobs />
+      </>
     ),
   },
   {
     group: 'form-fields',
     id: 'select',
-    name: "Select",
+    name: 'Select',
     desc: (
       <>
-                  Wrapped native <code>{'<select>'}</code> with a consistent caret + focus ring.
-                  Same size scale as Input.
-                </>
+        Wrapped native <code>{'<select>'}</code> with a consistent caret + focus ring. Same size
+        scale as Input.
+      </>
     ),
     render: () => (
       <>
-              <SelectKnobs />
-            </>
+        <SelectKnobs />
+      </>
     ),
   },
   {
     group: 'form-fields',
     id: 'textarea',
-    name: "Textarea",
-    desc: (
-      <>Multi-line text input. Resizes vertically by default.</>
-    ),
+    name: 'Textarea',
+    desc: <>Multi-line text input. Resizes vertically by default.</>,
     render: () => (
       <>
-              <TextareaKnobs />
-            </>
+        <TextareaKnobs />
+      </>
     ),
   },
   {
     group: 'form-fields',
     id: 'checkbox',
-    name: "Checkbox",
-    desc: (
-      <>
-                  Boolean control with a colored check icon when on. Use for non-exclusive options.
-                </>
-    ),
+    name: 'Checkbox',
+    desc: <>Boolean control with a colored check icon when on. Use for non-exclusive options.</>,
     render: () => (
       <>
-              <CheckboxKnobs />
-            </>
+        <CheckboxKnobs />
+      </>
     ),
   },
   {
     group: 'form-fields',
     id: 'radio',
-    name: "RadioGroup",
+    name: 'RadioGroup',
     desc: (
       <>
-                  Mutually exclusive options. <code>RadioGroup</code> takes <code>name</code>,{' '}
-                  <code>value</code>, <code>onChange</code>, optional <code>layout</code>{' '}
-                  (row/column). Children are <code>Radio</code> with a <code>value</code>.
-                </>
+        Mutually exclusive options. <code>RadioGroup</code> takes <code>name</code>,{' '}
+        <code>value</code>, <code>onChange</code>, optional <code>layout</code> (row/column).
+        Children are <code>Radio</code> with a <code>value</code>.
+      </>
     ),
     render: () => (
       <>
-              <RadioKnobs />
-            </>
+        <RadioKnobs />
+      </>
     ),
   },
   {
     group: 'form-fields',
     id: 'number-input',
-    name: "NumberInput",
+    name: 'NumberInput',
     desc: (
       <>
-                  A number field with decrement/increment buttons. Respects <code>min</code>,{' '}
-                  <code>max</code>, and <code>step</code>. Buttons disable at the bounds. Spinner
-                  arrows are hidden via CSS.
-                </>
+        A number field with decrement/increment buttons. Respects <code>min</code>, <code>max</code>
+        , and <code>step</code>. Buttons disable at the bounds. Spinner arrows are hidden via CSS.
+      </>
     ),
     render: () => (
       <>
-              <NumberInputKnobs />
-            </>
+        <NumberInputKnobs />
+      </>
     ),
   },
   {
     group: 'form-fields',
     id: 'range-slider',
-    name: "RangeSlider",
+    name: 'RangeSlider',
     desc: (
       <>
-                  Styled <code>{'<input type="range">'}</code> with a filled track that updates via
-                  a CSS variable and a value readout. Pass <code>showValue={'{false}'}</code> to
-                  hide the label.
-                </>
+        Styled <code>{'<input type="range">'}</code> with a filled track that updates via a CSS
+        variable and a value readout. Pass <code>showValue={'{false}'}</code> to hide the label.
+      </>
     ),
     render: () => (
       <>
-              <RangeSliderKnobs />
-            </>
+        <RangeSliderKnobs />
+      </>
     ),
   },
   {

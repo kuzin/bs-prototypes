@@ -2,27 +2,13 @@ import { Modal } from '@components/Modal/Modal'
 import { Table } from '@components/Table/Table'
 import { Button } from '@components/Button/Button'
 import { IconButton } from '@components/Primitives/Primitives'
+import { Icon } from '@components/Icon/Icon'
 import { METRIC_DETAILS, fmt } from './data'
 import '@components/Modal/Modal.css'
 import '@components/Table/Table.css'
 
 function CloseIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="18"
-      height="18"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <line x1="6" y1="6" x2="18" y2="18" />
-      <line x1="18" y1="6" x2="6" y2="18" />
-    </svg>
-  )
+  return <Icon name="x" size={18} aria-hidden="true" />
 }
 
 export function MetricModal({ metricId, value, open, onClose }) {

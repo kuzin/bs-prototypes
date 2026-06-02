@@ -3681,16 +3681,20 @@ button {
 
 /* ─── Quick Actions rail card ─────────────────────────────────────────── */
 .adm-quick-actions {
-  display: flex;
-  flex-direction: column;
+  /* Two-column grid keeps the launcher compact so Engagement and the
+     Community/District Goal stay above the fold. minmax(0, 1fr) lets columns
+     shrink below content width so long labels ellipsis instead of widening
+     the card. */
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
 }
 .adm-quick-action {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 7px;
   min-width: 0;
-  padding: 9px 10px;
+  padding: 8px 9px;
   border-radius: 10px;
   border: 1px solid #e5e7eb;
   background: #f8fafc;
@@ -3712,8 +3716,8 @@ button {
   transform: scale(0.98);
 }
 .adm-quick-action-ico {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 8px;
   display: inline-flex;
   align-items: center;
@@ -3734,14 +3738,9 @@ button {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+/* The chevron is redundant in the compact two-column launcher and would steal
+   label room, forcing long labels to ellipsis. Hide it here; the hover/active
+   states already signal the tiles are tappable. */
 .adm-quick-action-chev {
-  color: #94a3b8;
-  font-size: 22px;
-  font-weight: 700;
-  line-height: 1;
-  flex-shrink: 0;
-  margin-top: -2px;
-}
-.adm-quick-action:hover .adm-quick-action-chev {
-  color: #1a6dd5;
+  display: none;
 }

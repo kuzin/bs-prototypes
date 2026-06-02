@@ -15,24 +15,12 @@ import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { SchoolCell } from './SchoolCell'
 import { ChartLegend } from '@components/charts/charts'
 import { TrendChart } from '@components/TrendChart/TrendChart'
+import { Icon } from '@components/Icon/Icon'
 import './DistrictAnalytics.css'
 
 const ACCENT = '#0DA7BC'
 
-const ANALYTICS_ICON = (
-  <svg
-    viewBox="0 0 20 20"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="3" y="11" width="3" height="6" rx="1" />
-    <rect x="8.5" y="7" width="3" height="10" rx="1" />
-    <rect x="14" y="3" width="3" height="14" rx="1" />
-  </svg>
-)
+const ANALYTICS_ICON = <Icon name="chart-bar" />
 
 const scoreColor = (v) => (v >= 80 ? '#16A97A' : v >= 65 ? '#D97706' : '#E8866A')
 

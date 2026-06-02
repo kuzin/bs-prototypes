@@ -6,12 +6,7 @@ import { Modal } from '@components/Modal/Modal'
 import { Table } from '@components/Table/Table'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Toggle } from '@components/Toggle/Toggle'
-import {
-  Field,
-  Input,
-  Select,
-  Textarea,
-} from '@components/Form/Form'
+import { Field, Input, Select, Textarea } from '@components/Form/Form'
 import {
   Accordion,
   Banner,
@@ -20,7 +15,19 @@ import {
   IconButton,
   SectionHeading,
 } from '@components/Primitives/Primitives'
-import { Knobs, Variant, PlusIcon, CaretIcon, EditIcon, DuplicateIcon, ArchiveIcon, TrashIcon, MoreIcon, TABLE_ROWS } from './_shared'
+import { Icon } from '@components/Icon/Icon'
+import {
+  Knobs,
+  Variant,
+  PlusIcon,
+  CaretIcon,
+  EditIcon,
+  DuplicateIcon,
+  ArchiveIcon,
+  TrashIcon,
+  MoreIcon,
+  TABLE_ROWS,
+} from './_shared'
 
 function TabsShowcase() {
   const [a, setA] = useState('daily')
@@ -360,19 +367,7 @@ const DEFAULT_MODAL_BODY = `Once deleted, this challenge and its logged minutes 
 If you only want to pause logging without losing data, archive the challenge instead.`
 
 function CloseIcon() {
-  return (
-    <svg
-      viewBox="0 0 14 14"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <line x1="3" y1="3" x2="11" y2="11" />
-      <line x1="11" y1="3" x2="3" y2="11" />
-    </svg>
-  )
+  return <Icon name="x" />
 }
 
 function CenteredModalKnobs() {
@@ -508,70 +503,21 @@ const SP_EMPTY = {
 }
 
 function EmptyIcon() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="11" cy="11" r="7" />
-      <line x1="16" y1="16" x2="21" y2="21" />
-    </svg>
-  )
+  return <Icon name="search" />
 }
 
 function SpNavIcon({ name }) {
-  const props = {
-    viewBox: '0 0 20 20',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: '1.6',
-    strokeLinecap: 'round',
-    strokeLinejoin: 'round',
-    width: 20,
-    height: 20,
-  }
   switch (name) {
     case 'overview':
-      return (
-        <svg {...props}>
-          <circle cx="10" cy="7" r="3" />
-          <path d="M3 17c0-3.3 3.1-6 7-6s7 2.7 7 6" />
-        </svg>
-      )
+      return <Icon name="user" size={20} />
     case 'flame':
-      return (
-        <svg {...props}>
-          <path d="M10 2c.2 2.2-1.1 3.2-2.3 4.4C6.5 7.6 5 9.1 5 11.5 5 14.5 7.2 17 10 17s5-2.5 5-5.5c0-1.7-.6-2.7-1.4-3.4" />
-        </svg>
-      )
+      return <Icon name="flame" size={20} />
     case 'shield':
-      return (
-        <svg {...props}>
-          <path d="M10 2.5 16 4.5v5.7c0 3.7-2.7 6.7-6 7.6-3.3-.9-6-3.9-6-7.6V4.5z" />
-          <polyline points="7,10 9.2,12.2 13.2,8" />
-        </svg>
-      )
+      return <Icon name="shield-check" size={20} />
     case 'habits':
-      return (
-        <svg {...props}>
-          <rect x="3" y="4.5" width="14" height="13" rx="1.6" />
-          <line x1="3" y1="8.5" x2="17" y2="8.5" />
-          <line x1="7" y1="2.5" x2="7" y2="5.5" />
-          <line x1="13" y1="2.5" x2="13" y2="5.5" />
-        </svg>
-      )
+      return <Icon name="calendar-event" size={20} />
     case 'book':
-      return (
-        <svg {...props}>
-          <path d="M3 4c0-.6.4-1 1-1h5.5v14H4c-.6 0-1-.4-1-1V4z" />
-          <path d="M17 4c0-.6-.4-1-1-1h-5.5v14H16c.6 0 1-.4 1-1V4z" />
-          <line x1="9.5" y1="3" x2="9.5" y2="17" />
-        </svg>
-      )
+      return <Icon name="book" size={20} />
     default:
       return null
   }
@@ -613,76 +559,76 @@ function SideModalShowcase() {
           variant={variant}
           ariaLabel="Marcus Chen — student profile"
         >
-        {({ close }) => (
-          <div className="sp-shell">
-            {/* Left vertical nav (BeanstackProfile-style) */}
-            <nav className="sp-nav">
-              {SP_SECTIONS.map((s, i) => {
-                const active = section === s.id
-                return (
-                  <Fragment key={s.id}>
-                    <button
-                      type="button"
-                      className={`sp-nav-item${active ? ' sp-nav-item--active' : ''}`}
-                      style={
-                        active
-                          ? {
-                              '--nav-active-color': s.color,
-                              '--nav-active-bg': `color-mix(in srgb, ${s.color} 12%, white)`,
-                            }
-                          : undefined
-                      }
-                      onClick={() => setSection(s.id)}
-                      title={s.label}
-                    >
-                      <span className="sp-nav-icon">
-                        <SpNavIcon name={s.icon} />
-                      </span>
-                      <span className="sp-nav-label">{s.label}</span>
-                    </button>
-                    {i === 0 && <div className="sp-nav-divider" />}
-                  </Fragment>
-                )
-              })}
-            </nav>
+          {({ close }) => (
+            <div className="sp-shell">
+              {/* Left vertical nav (BeanstackProfile-style) */}
+              <nav className="sp-nav">
+                {SP_SECTIONS.map((s, i) => {
+                  const active = section === s.id
+                  return (
+                    <Fragment key={s.id}>
+                      <button
+                        type="button"
+                        className={`sp-nav-item${active ? ' sp-nav-item--active' : ''}`}
+                        style={
+                          active
+                            ? {
+                                '--nav-active-color': s.color,
+                                '--nav-active-bg': `color-mix(in srgb, ${s.color} 12%, white)`,
+                              }
+                            : undefined
+                        }
+                        onClick={() => setSection(s.id)}
+                        title={s.label}
+                      >
+                        <span className="sp-nav-icon">
+                          <SpNavIcon name={s.icon} />
+                        </span>
+                        <span className="sp-nav-label">{s.label}</span>
+                      </button>
+                      {i === 0 && <div className="sp-nav-divider" />}
+                    </Fragment>
+                  )
+                })}
+              </nav>
 
-            {/* Main pane */}
-            <div className="sp-pane">
-              <div className="sp-pane-header">
-                <div className="sp-pane-identity">
-                  <Avatar initials="MC" color="#7C3AED" size="md" />
-                  <div className="sp-pane-identity-text">
-                    <div className="sp-pane-name">Marcus Chen</div>
-                    <div className="sp-pane-meta">Grade 5 · Lincoln Elementary</div>
+              {/* Main pane */}
+              <div className="sp-pane">
+                <div className="sp-pane-header">
+                  <div className="sp-pane-identity">
+                    <Avatar initials="MC" color="#7C3AED" size="md" />
+                    <div className="sp-pane-identity-text">
+                      <div className="sp-pane-name">Marcus Chen</div>
+                      <div className="sp-pane-meta">Grade 5 · Lincoln Elementary</div>
+                    </div>
+                  </div>
+                  <div className="sp-pane-actions">
+                    {withActions && (
+                      <Button variant="secondary" size="sm">
+                        Log reading
+                      </Button>
+                    )}
+                    <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close">
+                      <CloseIcon />
+                    </IconButton>
                   </div>
                 </div>
-                <div className="sp-pane-actions">
-                  {withActions && (
-                    <Button variant="secondary" size="sm">
-                      Log reading
-                    </Button>
-                  )}
-                  <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close">
-                    <CloseIcon />
-                  </IconButton>
+
+                <div className="sp-pane-body">
+                  <EmptyState
+                    icon={<EmptyIcon />}
+                    title={empty.title}
+                    description={empty.description}
+                    action={
+                      <Button variant="secondary" size="sm">
+                        Get started
+                      </Button>
+                    }
+                  />
                 </div>
               </div>
-
-              <div className="sp-pane-body">
-                <EmptyState
-                  icon={<EmptyIcon />}
-                  title={empty.title}
-                  description={empty.description}
-                  action={
-                    <Button variant="secondary" size="sm">
-                      Get started
-                    </Button>
-                  }
-                />
-              </div>
             </div>
-          </div>
-        )}
+          )}
         </Modal>
       </div>
     </>
@@ -696,11 +642,7 @@ function BannerKnobs() {
   const [hasAction, setAction] = useState(false)
   const [hasDismiss, setDismiss] = useState(true)
   const [customIcon, setCustomIcon] = useState(false)
-  const sparkleIcon = (
-    <svg viewBox="0 0 16 16" fill="currentColor">
-      <path d="M8 1.5l1.9 4 4.4.6-3.2 3.1.8 4.3L8 11.4l-4 2.1.8-4.3L1.7 6.1 6.1 5.5z" />
-    </svg>
-  )
+  const sparkleIcon = <Icon name="star-filled" />
   return (
     <>
       <Knobs>
@@ -822,61 +764,10 @@ function EmptyStateKnobs() {
   const [actionText, setActionText] = useState('Set thresholds')
   const [hasAction, setHas] = useState(true)
   const ICONS = {
-    search: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <circle cx="11" cy="11" r="7" />
-        <line x1="16" y1="16" x2="21" y2="21" />
-      </svg>
-    ),
-    inbox: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 13l3-9h12l3 9" />
-        <path d="M3 13v6a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-6" />
-        <path d="M3 13h6l1 2h4l1-2h6" />
-      </svg>
-    ),
-    book: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M4 5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v15a1 1 0 0 1-1 1H6a2 2 0 0 1-2-2z" />
-        <path d="M4 18a2 2 0 0 1 2-2h13" />
-      </svg>
-    ),
-    chart: (
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path d="M3 21h18" />
-        <rect x="6" y="13" width="3" height="6" />
-        <rect x="11" y="9" width="3" height="10" />
-        <rect x="16" y="5" width="3" height="14" />
-      </svg>
-    ),
+    search: <Icon name="search" />,
+    inbox: <Icon name="inbox" />,
+    book: <Icon name="book" />,
+    chart: <Icon name="chart-bar" />,
   }
   return (
     <>
@@ -1078,9 +969,7 @@ function TableKnobs() {
           onRowClick={clickable ? () => {} : undefined}
           highlightRow={highlight ? (r) => r.id === 'lincoln' : undefined}
           pageSize={paginate ? 3 : undefined}
-          defaultSortKey={
-            sortable && defaultSortKey !== 'none' ? defaultSortKey : undefined
-          }
+          defaultSortKey={sortable && defaultSortKey !== 'none' ? defaultSortKey : undefined}
           defaultSortDir={defaultSortDir}
         />
       </div>
@@ -1094,173 +983,171 @@ export const moleculesSections = [
   {
     group: 'molecules',
     id: 'tabs',
-    name: "Tabs",
+    name: 'Tabs',
     desc: (
       <>
-                  Horizontal tab strip. <code>items</code> is{' '}
-                  <code>{'[{ id, label, count?, icon? }]'}</code>. Two variants:{' '}
-                  <code>underline</code> (default) and <code>pill</code>. The underline
-                  variant also doubles as a full-bleed header tab bar inside a modal
-                  (see the in-modal example below).
-                </>
+        Horizontal tab strip. <code>items</code> is{' '}
+        <code>{'[{ id, label, count?, icon? }]'}</code>. Two variants: <code>underline</code>{' '}
+        (default) and <code>pill</code>. The underline variant also doubles as a full-bleed
+        header tab bar inside a modal (see the in-modal example below).
+      </>
     ),
     render: () => (
       <>
-              <TabsKnobs />
-              <TabsShowcase />
-            </>
+        <TabsKnobs />
+        <TabsShowcase />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'flyout',
-    name: "Flyout",
+    name: 'Flyout',
     desc: (
       <>
-                  Anchored popover triggered by a button. Closes on outside click + Escape. Children
-                  can be JSX or a render function that receives <code>{'{ close }'}</code>.{' '}
-                  <strong>Overflow rule:</strong> when a button row has 3+ actions, collapse the
-                  secondary ones into a <code>More</code> (kebab) flyout.
-                </>
+        Anchored popover triggered by a button. Closes on outside click + Escape. Children can be
+        JSX or a render function that receives <code>{'{ close }'}</code>.{' '}
+        <strong>Overflow rule:</strong> when a button row has 3+ actions, collapse the secondary
+        ones into a <code>More</code> (kebab) flyout.
+      </>
     ),
     render: () => (
       <>
-              <FlyoutKnobs />
-              <FlyoutShowcase />
-            </>
+        <FlyoutKnobs />
+        <FlyoutShowcase />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'modal',
-    name: "Modal",
+    name: 'Modal',
     desc: (
       <>
-                  Two variants: <code>side</code> (right-slide panel) and <code>center</code>{' '}
-                  (overlay). Both close on backdrop click + Escape and animate in/out. The centered
-                  modal composes from <code>.modal-image</code>, <code>.modal-header</code>,{' '}
-                  <code>.modal-body</code>, <code>.modal-footer</code> — toggle each below.
-                </>
+        Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both
+        close on backdrop click + Escape and animate in/out. The centered modal composes from{' '}
+        <code>.modal-image</code>, <code>.modal-header</code>, <code>.modal-body</code>,{' '}
+        <code>.modal-footer</code> — toggle each below.
+      </>
     ),
     render: () => (
       <>
-              <div className="pt-variant">
-                <div className="pt-variant-label">variant='center' (overlay)</div>
-                <CenteredModalKnobs />
-              </div>
-              <div className="pt-variant">
-                <div className="pt-variant-label">variant='side' (slide-in)</div>
-                <SideModalShowcase />
-              </div>
-            </>
+        <div className="pt-variant">
+          <div className="pt-variant-label">variant='center' (overlay)</div>
+          <CenteredModalKnobs />
+        </div>
+        <div className="pt-variant">
+          <div className="pt-variant-label">variant='side' (slide-in)</div>
+          <SideModalShowcase />
+        </div>
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'banner',
-    name: "Banner",
+    name: 'Banner',
     desc: (
       <>
-                  Page-level alert / banner. Levels: <code>info</code>, <code>success</code>,{' '}
-                  <code>warning</code>, <code>error</code>. Optional <code>title</code>,{' '}
-                  <code>action</code>, <code>onDismiss</code>.
-                </>
+        Page-level alert / banner. Levels: <code>info</code>, <code>success</code>,{' '}
+        <code>warning</code>, <code>error</code>. Optional <code>title</code>, <code>action</code>,{' '}
+        <code>onDismiss</code>.
+      </>
     ),
     render: () => (
       <>
-              <BannerKnobs />
-            </>
+        <BannerKnobs />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'accordion',
-    name: "Accordion",
+    name: 'Accordion',
     desc: (
       <>
-                  Expand/collapse list. Pass <code>items</code> as{' '}
-                  <code>{'[{ id, title, content }]'}</code>. Optional <code>accent</code> color,{' '}
-                  <code>allowMultiple</code>, <code>defaultOpen</code>.
-                </>
+        Expand/collapse list. Pass <code>items</code> as <code>{'[{ id, title, content }]'}</code>.
+        Optional <code>accent</code> color, <code>allowMultiple</code>, <code>defaultOpen</code>.
+      </>
     ),
     render: () => (
       <>
-              <AccordionKnobs />
-            </>
+        <AccordionKnobs />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'breadcrumb',
-    name: "Breadcrumb",
+    name: 'Breadcrumb',
     desc: (
       <>
-                  Navigation crumbs. Pass <code>items</code> as <code>{'[{ label, href? }]'}</code>{' '}
-                  — the last item is treated as the current page and rendered without a link.
-                </>
+        Navigation crumbs. Pass <code>items</code> as <code>{'[{ label, href? }]'}</code> — the last
+        item is treated as the current page and rendered without a link.
+      </>
     ),
     render: () => (
       <>
-              <div className="pt-variant-frame">
-                <Breadcrumb
-                  items={[
-                    { label: 'Schools', href: '#' },
-                    { label: 'Lincoln Elementary', href: '#' },
-                    { label: 'Motivation' },
-                  ]}
-                />
-              </div>
-            </>
+        <div className="pt-variant-frame">
+          <Breadcrumb
+            items={[
+              { label: 'Schools', href: '#' },
+              { label: 'Lincoln Elementary', href: '#' },
+              { label: 'Motivation' },
+            ]}
+          />
+        </div>
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'empty-state',
-    name: "EmptyState",
+    name: 'EmptyState',
     desc: (
       <>
-                  Empty-list placeholder. Props: <code>icon</code>, <code>title</code>,{' '}
-                  <code>description</code>, <code>action</code>.
-                </>
+        Empty-list placeholder. Props: <code>icon</code>, <code>title</code>,{' '}
+        <code>description</code>, <code>action</code>.
+      </>
     ),
     render: () => (
       <>
-              <EmptyStateKnobs />
-            </>
+        <EmptyStateKnobs />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'section-heading',
-    name: "SectionHeading",
+    name: 'SectionHeading',
     desc: (
       <>
-                  Recurring h2/h3 + optional subtitle + optional right-side action. Used as the
-                  header inside content sections / cards.
-                </>
+        Recurring h2/h3 + optional subtitle + optional right-side action. Used as the header inside
+        content sections / cards.
+      </>
     ),
     render: () => (
       <>
-              <SectionHeadingKnobs />
-            </>
+        <SectionHeadingKnobs />
+      </>
     ),
   },
   {
     group: 'molecules',
     id: 'table',
-    name: "Table",
+    name: 'Table',
     desc: (
       <>
-                  Pass <code>columns</code> and <code>rows</code>. Each column can have{' '}
-                  <code>align</code>, <code>render</code>, <code>width</code>, <code>sortable</code>
-                  . Props: <code>zebra</code>, <code>compact</code>, <code>flush</code>,{' '}
-                  <code>pageSize</code> (enables pagination), <code>defaultSortKey</code>.
-                </>
+        Pass <code>columns</code> and <code>rows</code>. Each column can have <code>align</code>,{' '}
+        <code>render</code>, <code>width</code>, <code>sortable</code>. Props: <code>zebra</code>,{' '}
+        <code>compact</code>, <code>flush</code>, <code>pageSize</code> (enables pagination),{' '}
+        <code>defaultSortKey</code>.
+      </>
     ),
     render: () => (
       <>
-              <TableKnobs />
-            </>
+        <TableKnobs />
+      </>
     ),
   },
 ]

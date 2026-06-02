@@ -1,7 +1,5 @@
 import { useState } from 'react'
-import {
-  SECTIONS as HEALTH_SECTIONS,
-} from '@components/ReadingHealth/ReadingHealth'
+import { SECTIONS as HEALTH_SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 import { Hero } from '@components/Hero/Hero'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { SchoolPicker, Sidebar } from '@components/Sidebar/Sidebar'
@@ -310,77 +308,74 @@ export const layoutSections = [
   {
     group: 'layout',
     id: 'hero',
-    name: "Hero",
+    name: 'Hero',
     desc: (
       <>
-                  One unified page header. <code>mode</code> picks between the three shapes:{' '}
-                  <code>bucket</code> (auto-derive icon/title/accent from SECTIONS + right-side
-                  score), <code>avatar</code> (overview-style), and <code>icon</code>{' '}
-                  (analytics-style with subtitle).
-                </>
+        One unified page header. <code>mode</code> picks between the three shapes:{' '}
+        <code>bucket</code> (auto-derive icon/title/accent from SECTIONS + right-side score),{' '}
+        <code>avatar</code> (overview-style), and <code>icon</code> (analytics-style with subtitle).
+      </>
     ),
     render: () => (
       <>
-              <HeroKnobs />
-            </>
+        <HeroKnobs />
+      </>
     ),
   },
   {
     group: 'layout',
     id: 'back-bar',
-    name: "BackBar",
+    name: 'BackBar',
     desc: (
       <>
-                  "‹ Back to X" link styled like a breadcrumb. Renders as a button or anchor. Props:{' '}
-                  <code>label</code>, <code>onClick</code> or <code>href</code>. Lives at the top of
-                  a content area against the page background; the preview wraps it in a grey frame
-                  so it's visible.
-                </>
+        "‹ Back to X" link styled like a breadcrumb. Renders as a button or anchor. Props:{' '}
+        <code>label</code>, <code>onClick</code> or <code>href</code>. Lives at the top of a content
+        area against the page background; the preview wraps it in a grey frame so it's visible.
+      </>
     ),
     render: () => (
       <>
-              <BackBarKnobs />
-            </>
+        <BackBarKnobs />
+      </>
     ),
   },
   {
     group: 'layout',
     id: 'sidebar',
-    name: "Sidebar",
+    name: 'Sidebar',
     desc: (
       <>
-                  The full navigation chrome used by every admin prototype — narrow Beanstack rail
-                  (MainRail) + the blue gradient sidebar. Props: <code>nav</code>,{' '}
-                  <code>active</code>, <code>onNavigate</code>, <code>title</code>,{' '}
-                  <code>subtitle</code>, <code>badges</code>, <code>picker</code> slot (typically{' '}
-                  <code>SchoolPicker</code>), <code>mainRailIndex</code>.
-                </>
+        The full navigation chrome used by every admin prototype — narrow Beanstack rail (MainRail)
+        + the blue gradient sidebar. Props: <code>nav</code>, <code>active</code>,{' '}
+        <code>onNavigate</code>, <code>title</code>, <code>subtitle</code>, <code>badges</code>,{' '}
+        <code>picker</code> slot (typically <code>SchoolPicker</code>), <code>mainRailIndex</code>.
+      </>
     ),
     render: () => (
       <>
-              <SidebarKnobs />
-            </>
+        <SidebarKnobs />
+      </>
     ),
   },
   {
     group: 'layout',
     id: 'prototype-nav',
-    name: "PrototypeNav",
+    name: 'PrototypeNav',
     desc: (
       <>
-                  Fixed bar at the bottom of every prototype page. Shows the current prototype name
-                  with prev/next arrows and a dropdown to jump directly to any other prototype.
-                  Props: <code>currentHref</code>.
-                </>
+        Fixed bar at the bottom of every prototype page. Shows the current prototype name with
+        prev/next arrows and a dropdown to jump directly to any other prototype. Props:{' '}
+        <code>currentHref</code>.
+      </>
     ),
     render: () => (
       <>
-              <div className="pt-section-desc">
-                The PrototypeNav is rendered at the bottom of this page itself — scroll to see it.
-                It picks up the current prototype from <code>currentHref</code> and shows prev/next
-                arrows for the other prototypes.
-              </div>
-            </>
+        <div className="pt-section-desc">
+          The PrototypeNav is rendered at the bottom of this page itself — scroll to see it. It
+          picks up the current prototype from <code>currentHref</code> and shows prev/next arrows
+          for the other prototypes.
+        </div>
+      </>
     ),
   },
 ]

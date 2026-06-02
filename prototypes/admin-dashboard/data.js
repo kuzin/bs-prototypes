@@ -604,8 +604,18 @@ export const DEFAULT_PRESET_BY_ROLE = {
 // ─── Row-based defaults (flexbox layout — rows of widget ids) ─────────────────
 // The dashboard is a stack of rows; each row holds 1–3 cards that split the
 // width equally (flex). Full-bleed widgets (fixedWidth) sit alone in their row.
-export const DEFAULT_ROWS = [['stat-tiles', 'flagged-sessions'], ['daily-tracker']]
-export const MEDIA_DEFAULT_ROWS = [['stat-tiles'], ['leaderboard-combo', 'flagged-sessions']]
+// Teacher lands on the Daily Reading Tracker beside Flagged Sessions up top,
+// with What's Happened metrics and the Number Cruncher question list below.
+export const DEFAULT_ROWS = [
+  ['daily-tracker', 'flagged-sessions'],
+  ['stat-tiles', 'questions'],
+]
+// Media Specialist lands on What's Happened metrics beside Flagged Sessions up
+// top, with the Leaderboard and Number Cruncher question list below.
+export const MEDIA_DEFAULT_ROWS = [
+  ['stat-tiles', 'flagged-sessions'],
+  ['leaderboard-combo', 'questions'],
+]
 export const LIBRARY_DEFAULT_ROWS = [['leaderboard-combo'], ['stat-tiles']]
 // Kitchen Sink: a demo view that places every widget at once (role gating is
 // bypassed for this view), so the whole catalog can be eyeballed on one page.

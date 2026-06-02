@@ -1,9 +1,9 @@
 import { Children } from 'react'
 import { Toggle } from '@components/Toggle/Toggle'
+import { Icon } from '@components/Icon/Icon'
 
 // A knob is a boolean "flag" when its Field wraps a <Toggle>.
-const isFlag = (field) =>
-  Children.toArray(field?.props?.children).some((c) => c?.type === Toggle)
+const isFlag = (field) => Children.toArray(field?.props?.children).some((c) => c?.type === Toggle)
 
 // Knobs panel: dropdowns / inputs sit in a top "controls" zone; boolean
 // toggles drop into a compact "flags" cluster below, so the two read as
@@ -36,116 +36,23 @@ export function Variant({ label, children, bare, full }) {
   )
 }
 
-export const PlusIcon = () => (
-  <svg
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <line x1="8" y1="3" x2="8" y2="13" />
-    <line x1="3" y1="8" x2="13" y2="8" />
-  </svg>
-)
+export const PlusIcon = () => <Icon name="plus" size={16} />
 
-export const CaretIcon = () => (
-  <svg
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="4,6 8,10 12,6" />
-  </svg>
-)
+export const CaretIcon = () => <Icon name="chevron-down" size={16} />
 
-export const EditIcon = () => (
-  <svg
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M11.5 2.5l2 2L6 12l-3 1 1-3 7.5-7.5z" />
-  </svg>
-)
+export const EditIcon = () => <Icon name="pencil" size={16} />
 
-export const DuplicateIcon = () => (
-  <svg
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="4" y="4" width="9" height="9" rx="1.5" />
-    <path d="M3 11V4a1 1 0 0 1 1-1h7" />
-  </svg>
-)
+export const DuplicateIcon = () => <Icon name="copy" size={16} />
 
-export const ArchiveIcon = () => (
-  <svg
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="2" y="3" width="12" height="3" rx="0.5" />
-    <path d="M3 6v7a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V6" />
-    <line x1="6.5" y1="9" x2="9.5" y2="9" />
-  </svg>
-)
+export const ArchiveIcon = () => <Icon name="archive" size={16} />
 
-export const TrashIcon = () => (
-  <svg
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.6"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M3 4h10" />
-    <path d="M5.5 4V3a1 1 0 0 1 1-1h3a1 1 0 0 1 1 1v1" />
-    <path d="M4.5 4l.6 9a1 1 0 0 0 1 1h3.8a1 1 0 0 0 1-1l.6-9" />
-  </svg>
-)
+export const TrashIcon = () => <Icon name="trash" size={16} />
 
-export const MoreIcon = () => (
-  <svg viewBox="0 0 16 16" fill="currentColor">
-    <circle cx="3.5" cy="8" r="1.4" />
-    <circle cx="8" cy="8" r="1.4" />
-    <circle cx="12.5" cy="8" r="1.4" />
-  </svg>
-)
+export const MoreIcon = () => <Icon name="dots" size={16} />
 
-export const CheckIcon = () => (
-  <svg
-    viewBox="0 0 16 16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2.5"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <polyline points="3,8 7,12 13,4" />
-  </svg>
-)
+export const CheckIcon = () => <Icon name="check" size={16} stroke={2.5} />
 
-export const StarIcon = () => (
-  <svg viewBox="0 0 16 16" fill="currentColor">
-    <path d="M8 1.5l1.9 4 4.4.6-3.2 3.1.8 4.3L8 11.4l-4 2.1.8-4.3L1.7 6.1 6.1 5.5z" />
-  </svg>
-)
+export const StarIcon = () => <Icon name="star-filled" size={16} />
 
 export const TABLE_ROWS = [
   { id: 'jefferson', name: 'Jefferson', rmi: 80, delta: 8, students: 1820 },

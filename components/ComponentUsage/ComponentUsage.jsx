@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Modal } from '@components/Modal/Modal'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Modal/Modal.css'
 import './ComponentUsage.css'
 
@@ -48,7 +49,10 @@ function analyze(sources) {
     for (const im of src.matchAll(/from\s+['"](\.[^'"]+)['"]/g)) {
       const rel = im[1]
       if (/\.css$/.test(rel)) continue
-      const base = rel.split('/').pop().replace(/\.(jsx|js)$/, '')
+      const base = rel
+        .split('/')
+        .pop()
+        .replace(/\.(jsx|js)$/, '')
       // Capitalized basename = a component file; skip the prototype's own root App.
       if (/^[A-Z]/.test(base) && base !== 'App') p.local.add(base)
     }
@@ -63,13 +67,13 @@ export function ComponentUsage({ onClose }) {
   // Load + analyze on mount.
   useEffect(() => {
     let alive = true
-    Promise.all(
-      Object.entries(PROTO_RAW).map(async ([path, load]) => [path, await load()]),
-    ).then((entries) => {
-      if (!alive) return
-      setData(analyze(Object.fromEntries(entries)))
-      setLoading(false)
-    })
+    Promise.all(Object.entries(PROTO_RAW).map(async ([path, load]) => [path, await load()])).then(
+      (entries) => {
+        if (!alive) return
+        setData(analyze(Object.fromEntries(entries)))
+        setLoading(false)
+      },
+    )
     return () => {
       alive = false
     }
@@ -92,9 +96,7 @@ export function ComponentUsage({ onClose }) {
           <div className="cu-head">
             <div className="cu-title">Component usage</div>
             <button type="button" className="cu-close" onClick={close} aria-label="Close">
-              <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                <path d="M5 5l10 10M15 5L5 15" />
-              </svg>
+              <Icon name="x" size={18} stroke={2} />
             </button>
           </div>
 
@@ -130,7 +132,11 @@ export function ComponentUsage({ onClose }) {
                       <div className="cu-chips">
                         {local.length === 0 && <span className="cu-empty">none</span>}
                         {local.map((name) => (
-                          <span key={name} className="cu-chip cu-chip--local" title="Prototype-local — candidate to promote to @components">
+                          <span
+                            key={name}
+                            className="cu-chip cu-chip--local"
+                            title="Prototype-local — candidate to promote to @components"
+                          >
                             {name}
                           </span>
                         ))}

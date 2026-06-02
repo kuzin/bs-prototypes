@@ -1,3 +1,4 @@
+import { Icon } from '@components/Icon/Icon'
 import '@components/ReadingHealth/ReadingHealth.css'
 
 export const SECTIONS = [
@@ -8,11 +9,7 @@ export const SECTIONS = [
     color: '#E8866A',
     bg: '#FDEEE6',
     deltaKey: 'dM',
-    icon: (
-      <svg viewBox="0 0 20 20" width="20" height="20" fill="currentColor">
-        <path d="M10 1.5c.2 2.4-1.2 3.4-2.5 4.7-1.3 1.3-2.7 2.9-2.7 5.5 0 2.9 2.3 5.3 5.2 5.3s5.2-2.4 5.2-5.3c0-1.8-.7-2.9-1.5-3.7-.4.7-1.2 1-1.9 0-.6-.9 0-2 0-3.5 0-1.4-.9-2.5-1.8-3z" />
-      </svg>
-    ),
+    icon: <Icon name="flame-filled" size={20} />,
   },
   {
     key: 'integrity',
@@ -21,25 +18,7 @@ export const SECTIONS = [
     color: '#1D4ED8',
     bg: '#E8EFFE',
     deltaKey: 'dI',
-    icon: (
-      <svg
-        viewBox="0 0 20 20"
-        width="20"
-        height="20"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path
-          d="M10 1.8 16.5 4v6.2c0 4-3 7.2-6.5 8.2-3.5-1-6.5-4.2-6.5-8.2V4z"
-          fill="currentColor"
-          fillOpacity="0.15"
-        />
-        <polyline points="6.8,10.2 9,12.4 13.4,7.8" />
-      </svg>
-    ),
+    icon: <Icon name="shield-check" size={20} />,
   },
   {
     key: 'habits',
@@ -48,35 +27,7 @@ export const SECTIONS = [
     color: '#16A97A',
     bg: '#E6F8EF',
     deltaKey: 'dH',
-    icon: (
-      <svg
-        viewBox="0 0 20 20"
-        width="20"
-        height="20"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <rect
-          x="3"
-          y="4.5"
-          width="14"
-          height="13"
-          rx="1.6"
-          fill="currentColor"
-          fillOpacity="0.12"
-        />
-        <line x1="3" y1="8.5" x2="17" y2="8.5" />
-        <line x1="7" y1="2.5" x2="7" y2="5.5" />
-        <line x1="13" y1="2.5" x2="13" y2="5.5" />
-        <circle cx="7" cy="12" r="0.9" fill="currentColor" />
-        <circle cx="10" cy="12" r="0.9" fill="currentColor" />
-        <circle cx="13" cy="12" r="0.9" fill="currentColor" />
-        <circle cx="7" cy="15" r="0.9" fill="currentColor" />
-      </svg>
-    ),
+    icon: <Icon name="calendar" size={20} />,
   },
   {
     key: 'skills',
@@ -85,30 +36,7 @@ export const SECTIONS = [
     color: '#7C3AED',
     bg: '#F1EBFF',
     deltaKey: 'dS',
-    icon: (
-      <svg
-        viewBox="0 0 20 20"
-        width="20"
-        height="20"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.6"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      >
-        <path
-          d="M3 4c0-.6.4-1 1-1h5.5v14H4c-.6 0-1-.4-1-1V4z"
-          fill="currentColor"
-          fillOpacity="0.12"
-        />
-        <path
-          d="M17 4c0-.6-.4-1-1-1h-5.5v14H16c.6 0 1-.4 1-1V4z"
-          fill="currentColor"
-          fillOpacity="0.12"
-        />
-        <line x1="9.5" y1="3" x2="9.5" y2="17" />
-      </svg>
-    ),
+    icon: <Icon name="book" size={20} />,
   },
 ]
 
@@ -144,18 +72,7 @@ export function HealthStat({ section, score, delta, onClick }) {
       {onClick && (
         <div className="rh-stat-more">
           View more
-          <svg
-            viewBox="0 0 12 12"
-            width="10"
-            height="10"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="5,3 8,6 5,9" />
-          </svg>
+          <Icon name="chevron-right" size={10} stroke={2} />
         </div>
       )}
     </Tag>

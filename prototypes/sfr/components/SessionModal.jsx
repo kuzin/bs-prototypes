@@ -4,6 +4,7 @@ import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Table } from '@components/Table/Table'
 import { IconButton } from '@components/Primitives/Primitives'
+import { Icon } from '@components/Icon/Icon'
 import { FLAG_TYPE_CONFIG, POS_FLAG_CONFIG } from './SessionsTable'
 import '@components/Modal/Modal.css'
 import '@components/Button/Button.css'
@@ -87,18 +88,7 @@ function FlagRow({ flag, onRequestRemove }) {
       </div>
       {onRequestRemove && (
         <button className="sm2-flag-remove" onClick={onRequestRemove} title="Remove flag">
-          <svg
-            viewBox="0 0 12 12"
-            width="10"
-            height="10"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="2" y1="2" x2="10" y2="10" />
-            <line x1="10" y1="2" x2="2" y2="10" />
-          </svg>
+          <Icon name="x" size={10} />
         </button>
       )}
     </div>
@@ -117,18 +107,7 @@ function PosFlagRow({ flag, onRequestRemove }) {
       </div>
       {onRequestRemove && (
         <button className="sm2-flag-remove" onClick={onRequestRemove} title="Remove flag">
-          <svg
-            viewBox="0 0 12 12"
-            width="10"
-            height="10"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-          >
-            <line x1="2" y1="2" x2="10" y2="10" />
-            <line x1="10" y1="2" x2="2" y2="10" />
-          </svg>
+          <Icon name="x" size={10} />
         </button>
       )}
     </div>
@@ -156,35 +135,7 @@ function AnnotationBlock({ msg }) {
     <div
       className={`sm2-annotation${isPositive ? ' sm2-annotation--positive' : ' sm2-annotation--warning'}`}
     >
-      {isPositive ? (
-        <svg
-          viewBox="0 0 16 16"
-          width="13"
-          height="13"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <polyline points="2,8 6,12 14,4" />
-        </svg>
-      ) : (
-        <svg
-          viewBox="0 0 16 16"
-          width="13"
-          height="13"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M8 2a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5z" />
-          <line x1="8" y1="6" x2="8" y2="8.5" />
-          <circle cx="8" cy="10.5" r="0.7" fill="currentColor" />
-        </svg>
-      )}
+      {isPositive ? <Icon name="check" size={13} /> : <Icon name="alert-circle" size={13} />}
       <span>{msg.text}</span>
     </div>
   )
@@ -328,19 +279,7 @@ export function SessionModal({
             <span className="sm2-student-name">{d.student.name}</span>
             {onViewProfile && (
               <button className="sm2-view-profile" onClick={() => onViewProfile(d.student)}>
-                <svg
-                  viewBox="0 0 16 16"
-                  width="13"
-                  height="13"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <circle cx="8" cy="6" r="3" />
-                  <path d="M2.5 14a5.5 5.5 0 0 1 11 0" />
-                </svg>
+                <Icon name="user" size={13} />
                 View profile
               </button>
             )}
@@ -354,18 +293,7 @@ export function SessionModal({
                   onClick={onPrev}
                   title="Previous session (←)"
                 >
-                  <svg
-                    viewBox="0 0 16 16"
-                    width="14"
-                    height="14"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="9,3 4,8 9,13" />
-                  </svg>
+                  <Icon name="chevron-left" size={14} stroke={2.2} />
                   <span className="sm2-nav-label">Prev</span>
                 </button>
                 <span className="sm2-nav-count">
@@ -380,34 +308,12 @@ export function SessionModal({
                   title="Next session (→)"
                 >
                   <span className="sm2-nav-label">Next</span>
-                  <svg
-                    viewBox="0 0 16 16"
-                    width="14"
-                    height="14"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="7,3 12,8 7,13" />
-                  </svg>
+                  <Icon name="chevron-right" size={14} stroke={2.2} />
                 </button>
               </div>
             )}
             <IconButton variant="ghost" onClick={onClose} aria-label="Close" className="sm2-close">
-              <svg
-                viewBox="0 0 16 16"
-                width="15"
-                height="15"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-              >
-                <line x1="4" y1="4" x2="12" y2="12" />
-                <line x1="12" y1="4" x2="4" y2="12" />
-              </svg>
+              <Icon name="x" size={15} stroke={2.2} />
             </IconButton>
           </div>
         </div>
@@ -417,19 +323,7 @@ export function SessionModal({
           {/* Left: book info + reading log */}
           <div className="sm2-sidebar">
             <div className="sm2-cover" style={{ background: d.book.color }}>
-              <svg
-                viewBox="0 0 24 24"
-                width="36"
-                height="36"
-                fill="none"
-                stroke="rgba(255,255,255,0.65)"
-                strokeWidth="1.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
-                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
-              </svg>
+              <Icon name="book" size={36} color="rgba(255,255,255,0.65)" />
             </div>
             <div className="sm2-cover-title">{d.book.title}</div>
             <div className="sm2-cover-author">{d.book.author}</div>
@@ -610,20 +504,12 @@ export function SessionModal({
               <div className="sm2-section">
                 <div className="sm2-section-head">
                   <span className="sm2-section-title sm2-section-title--pos">
-                    <svg
-                      viewBox="0 0 16 16"
-                      width="13"
-                      height="13"
-                      fill="none"
-                      stroke="#16A97A"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    <Icon
+                      name="flag"
+                      size={13}
+                      color="#16A97A"
                       style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
-                    >
-                      <path d="M3 2v12" />
-                      <path d="M3 2h8l-2 4 2 4H3" />
-                    </svg>
+                    />
                     Flags
                   </span>
                 </div>
@@ -647,20 +533,12 @@ export function SessionModal({
               <div className="sm2-section">
                 <div className="sm2-section-head">
                   <span className="sm2-section-title sm2-section-title--neg">
-                    <svg
-                      viewBox="0 0 16 16"
-                      width="13"
-                      height="13"
-                      fill="none"
-                      stroke="#DC2626"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
+                    <Icon
+                      name="flag"
+                      size={13}
+                      color="#DC2626"
                       style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
-                    >
-                      <path d="M3 2v12" />
-                      <path d="M3 2h8l-2 4 2 4H3" />
-                    </svg>
+                    />
                     Flags
                   </span>
                 </div>
@@ -695,19 +573,7 @@ export function SessionModal({
               </div>
               {d.status === 'unfinished' && (
                 <div className="sm2-unfinished-banner">
-                  <svg
-                    viewBox="0 0 16 16"
-                    width="14"
-                    height="14"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="8" cy="8" r="6" />
-                    <polyline points="8,5 8,8 10.5,10" />
-                  </svg>
+                  <Icon name="clock" size={14} />
                   The student didn't finish this conversation — Benny is still waiting for a
                   response.
                 </div>
@@ -734,20 +600,7 @@ export function SessionModal({
               <Button
                 variant="primary"
                 onClick={() => onApproveRequest?.(d)}
-                icon={
-                  <svg
-                    viewBox="0 0 16 16"
-                    width="13"
-                    height="13"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2.2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="3,8 7,12 13,4" />
-                  </svg>
-                }
+                icon={<Icon name="check" size={13} stroke={2.2} />}
               >
                 Approve Session
               </Button>
@@ -816,19 +669,7 @@ function ChangeLogRow({ entry, onUndo }) {
             <span className={`sm2-rating-pill sm2-rating-pill--${entry.from}`}>
               {RATING_LABELS[entry.from]}
             </span>
-            <svg
-              viewBox="0 0 12 12"
-              width="10"
-              height="10"
-              fill="none"
-              stroke="#94A3B8"
-              strokeWidth="1.8"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <line x1="2" y1="6" x2="10" y2="6" />
-              <polyline points="7,3 10,6 7,9" />
-            </svg>
+            <Icon name="arrow-right" size={10} color="#94A3B8" />
             <span className={`sm2-rating-pill sm2-rating-pill--${entry.to}`}>
               {RATING_LABELS[entry.to]}
             </span>
@@ -853,19 +694,7 @@ function ChangeLogRow({ entry, onUndo }) {
         </div>
         {onUndo && (
           <button className="sm2-changelog-undo" onClick={onUndo} title="Undo this change">
-            <svg
-              viewBox="0 0 16 16"
-              width="11"
-              height="11"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <polyline points="3,7 6,4 6,10" />
-              <path d="M6 7h5a3 3 0 0 1 0 6H9" />
-            </svg>
+            <Icon name="undo" size={11} />
             Undo
           </button>
         )}
@@ -880,18 +709,7 @@ export function ApproveConfirmModal({ open, flagCount, studentName, onCancel, on
     <Modal open={open} onClose={onCancel} variant="center" ariaLabel="Approve session">
       <div className="sm2-approve-shell">
         <div className="sm2-approve-icon">
-          <svg
-            viewBox="0 0 24 24"
-            width="28"
-            height="28"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="5,12 10,17 19,8" />
-          </svg>
+          <Icon name="check" size={28} />
         </div>
         <div className="sm2-approve-title">Approve this session?</div>
         <div className="sm2-approve-body">
@@ -915,20 +733,7 @@ export function ApproveConfirmModal({ open, flagCount, studentName, onCancel, on
           <Button
             variant="primary"
             onClick={onConfirm}
-            icon={
-              <svg
-                viewBox="0 0 16 16"
-                width="13"
-                height="13"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polyline points="3,8 7,12 13,4" />
-              </svg>
-            }
+            icon={<Icon name="check" size={13} stroke={2.2} />}
           >
             Approve Session
           </Button>
@@ -949,19 +754,7 @@ function RatingConfirmModal({ open, from, to, onCancel, onConfirm }) {
           className="sm2-approve-icon"
           style={{ background: ICON_BG[to], color: ICON_COLOR[to] }}
         >
-          <svg
-            viewBox="0 0 24 24"
-            width="26"
-            height="26"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M3 12h14" />
-            <polyline points="13,7 18,12 13,17" />
-          </svg>
+          <Icon name="arrow-right" size={26} />
         </div>
         <div className="sm2-approve-title">Change engagement rating?</div>
         <div className="sm2-approve-body">
@@ -993,19 +786,7 @@ function RemoveFlagConfirmModal({ pending, onCancel, onConfirm }) {
     <Modal open={true} onClose={onCancel} variant="center" ariaLabel="Remove flag">
       <div className="sm2-approve-shell">
         <div className="sm2-approve-icon sm2-approve-icon--danger">
-          <svg
-            viewBox="0 0 24 24"
-            width="26"
-            height="26"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <line x1="6" y1="6" x2="18" y2="18" />
-            <line x1="18" y1="6" x2="6" y2="18" />
-          </svg>
+          <Icon name="x" size={26} />
         </div>
         <div className="sm2-approve-title">Remove this {isPositive ? 'positive ' : ''}flag?</div>
         <div className="sm2-approve-body">
