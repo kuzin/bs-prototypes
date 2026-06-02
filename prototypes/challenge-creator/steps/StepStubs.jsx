@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo, useId } from 'react'
 import { renderToStaticMarkup } from 'react-dom/server'
 import {
   Field,
@@ -22,10 +22,19 @@ import { Hero } from '@components/Hero/Hero'
 import { Modal } from '@components/Modal/Modal'
 import { Ic } from '@components/ui'
 import { Icon } from '@components/Icon/Icon'
+import gbMeadow from '../assets/gameboard/meadow.png'
+import gbWinter from '../assets/gameboard/winter.png'
+import gbAurora from '../assets/gameboard/aurora.png'
+import gbSpooky from '../assets/gameboard/spooky.png'
+import gbGlow from '../assets/gameboard/glow.png'
+import gbEra from '../assets/gameboard/era.png'
+import gbOcean from '../assets/gameboard/ocean.png'
+import gbJungle from '../assets/gameboard/jungle.png'
 import { LIMITS } from '../validation'
 import {
   METHODS,
   BANNER_THEMES,
+  themeBadges,
   BANNERS,
   GRADES,
   CLASSROOMS,
@@ -65,10 +74,10 @@ const STEP_ICONS = {
   prizes: <Icon name="gift" size={22} />,
   completion: <Icon name="flag" size={22} />,
 }
-function StepHead({ title, sub, icon }) {
+function StepHead({ title, sub }) {
   return (
     <div className="cc-step-head">
-      <Hero icon={icon} title={title} subtitle={sub} accent="#0DA7BC" />
+      <Hero title={title} subtitle={sub} accent="#0DA7BC" />
     </div>
   )
 }
@@ -85,11 +94,12 @@ function Tip({ children }) {
 // The one color-chip picker for challenge creator: a row of round preset
 // swatches followed by a custom hex input, wrapping together as needed.
 // Exported so the pattern library can catalog it.
-export function ColorPicker({ value, presets = [], fallback, onColor }) {
+export function ColorPicker({ value, presets = [], fallback, onColor, maxPresets = 8 }) {
   return (
     <div className="cc-colorpick">
       <ColorInput size="sm" value={value || fallback} onChange={onColor} />
-      {presets.slice(0, 8).map((c) => (
+      {presets.length > 0 && <span className="cc-colorpick-divider" aria-hidden="true" />}
+      {presets.slice(0, maxPresets).map((c) => (
         <button
           key={c}
           type="button"
@@ -104,25 +114,6 @@ export function ColorPicker({ value, presets = [], fallback, onColor }) {
 }
 
 // Opt-in color override rendered as an availability-style toggle row + reveal.
-function ColorOverride({ label, sub, enabled, value, presets, fallback, onToggle, onColor }) {
-  return (
-    <>
-      <div className="cc-setting-row">
-        <div className="cc-setting-text">
-          <span className="cc-setting-label">{label}</span>
-          {sub && <span className="cc-setting-sub">{sub}</span>}
-        </div>
-        <Toggle checked={enabled} size="md" onChange={onToggle} />
-      </div>
-      {enabled && (
-        <div className="cc-color-reveal">
-          <ColorPicker value={value} presets={presets} fallback={fallback} onColor={onColor} />
-        </div>
-      )}
-    </>
-  )
-}
-
 const thumbStyle = (templateId) => ({
   backgroundImage: `url("${TEMPLATE_PRESETS[templateId]?.banner}")`,
   backgroundSize: 'cover',
@@ -325,7 +316,7 @@ async function composeBadge(bg, content, font) {
       const w = im.width * scale
       const h = im.height * scale
       ctx.drawImage(im, (size - w) / 2, (size - h) / 2, w, h)
-      ctx.fillStyle = 'rgba(15,23,42,0.34)' // scrim for legibility
+      ctx.fillStyle = 'rgba(15,23,42,0.18)' // light scrim for legibility (kept subtle)
       ctx.fillRect(0, 0, size, size)
     } else {
       ctx.fillStyle = bg.color || '#0DA7BC'
@@ -527,10 +518,10 @@ function getDefaultBgImages() {
 
 // Grouped grid of background images — "Default" set plus (when present) the
 // challenge theme's banners. Shared by the Upload + Create tabs.
-function BgImageGrid({ themeImages = [], value, onChange }) {
+function BgImageGrid({ themeImages = [], themeLabel = 'From this theme', value, onChange }) {
   const groups = [
     { label: 'Default', images: [...themeBgImages('default'), ...getDefaultBgImages()] },
-    ...(themeImages.length ? [{ label: 'From this theme', images: themeImages }] : []),
+    ...(themeImages.length ? [{ label: themeLabel, images: themeImages }] : []),
   ]
   return (
     <div className="cc-bggrid">
@@ -816,7 +807,25 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                           accentOverride: false,
                         })
                     }}
-                    options={BANNER_THEMES.map((t) => ({ value: t.id, label: t.name }))}
+                    options={BANNER_THEMES.map((t) => {
+                      // Badge-style preview: the theme's first themed medallion in
+                      // its default color, so you can see the scheme before picking.
+                      const sample = themeBadges(t.id)[0]?.img
+                      return {
+                        value: t.id,
+                        label: (
+                          <span className="cc-theme-opt">
+                            <span
+                              className="cc-theme-opt-badge"
+                              style={{ '--c': t.variants[0]?.color }}
+                            >
+                              {sample && <img src={sample} alt="" />}
+                            </span>
+                            {t.name}
+                          </span>
+                        ),
+                      }
+                    })}
                   />
                 </Field>
               )}
@@ -860,16 +869,6 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                 ))}
               </div>
             </Field>
-            <Field label="Title size">
-              <RangeSlider
-                min={0.6}
-                max={1.4}
-                step={0.05}
-                value={d.headerFontSize ?? 0.85}
-                showValue={false}
-                onChange={(v) => updateDetails({ headerFontSize: v })}
-              />
-            </Field>
             <div className="cc-settings cc-color-settings">
               {(() => {
                 const colorsOn = !!d.accentOverride || !!d.fontColorOverride
@@ -878,9 +877,6 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                     <div className="cc-setting-row">
                       <div className="cc-setting-text">
                         <span className="cc-setting-label">Override theme colors</span>
-                        <span className="cc-setting-sub">
-                          Set custom accent &amp; title colors.
-                        </span>
                       </div>
                       <Toggle
                         checked={colorsOn}
@@ -921,8 +917,29 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
               })()}
               <div className="cc-setting-row">
                 <div className="cc-setting-text">
+                  <span className="cc-setting-label">Customize title size</span>
+                </div>
+                <Toggle
+                  checked={!!d.titleSizeOn}
+                  size="md"
+                  onChange={(v) => updateDetails({ titleSizeOn: v })}
+                />
+              </div>
+              {d.titleSizeOn && (
+                <div className="cc-color-reveal">
+                  <RangeSlider
+                    min={0.6}
+                    max={1.4}
+                    step={0.05}
+                    value={d.headerFontSize ?? 1}
+                    showValue={false}
+                    onChange={(v) => updateDetails({ headerFontSize: v })}
+                  />
+                </div>
+              )}
+              <div className="cc-setting-row">
+                <div className="cc-setting-text">
                   <span className="cc-setting-label">Show a subheader ribbon</span>
-                  <span className="cc-setting-sub">A small accent ribbon beneath the title.</span>
                 </div>
                 <Toggle
                   checked={!!d.subheader?.enabled}
@@ -932,31 +949,37 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
               </div>
               {d.subheader?.enabled && (
                 <div className="cc-color-reveal cc-ribbon-reveal">
-                  <Input
-                    value={d.subheader?.text || ''}
-                    placeholder="Reading Challenge"
-                    maxLength={28}
-                    onChange={(e) =>
-                      updateDetails({ subheader: { ...d.subheader, text: e.target.value } })
-                    }
-                  />
-                  <ColorOverride
-                    label="Override ribbon color"
-                    enabled={!!d.subheader?.overrideColor}
-                    value={d.subheader?.color}
-                    presets={themeVariants.map((v) => v.color)}
-                    fallback={d.accent || '#0DA7BC'}
-                    onToggle={(v) =>
-                      updateDetails({
-                        subheader: {
-                          ...d.subheader,
-                          overrideColor: v,
-                          color: d.subheader?.color || d.accent || '#0DA7BC',
-                        },
-                      })
-                    }
-                    onColor={(c) => updateDetails({ subheader: { ...d.subheader, color: c } })}
-                  />
+                  <Field label="Ribbon text">
+                    <Input
+                      value={d.subheader?.text || ''}
+                      placeholder="Reading Challenge"
+                      maxLength={28}
+                      onChange={(e) =>
+                        updateDetails({ subheader: { ...d.subheader, text: e.target.value } })
+                      }
+                    />
+                  </Field>
+                  <Field label="Ribbon font">
+                    <CustomSelect
+                      value={d.subheader?.font || d.headerFont}
+                      onChange={(v) => {
+                        loadFont(v)
+                        updateDetails({ subheader: { ...d.subheader, font: v } })
+                      }}
+                      options={GOOGLE_FONTS.map((f) => ({
+                        value: f.name,
+                        label: <span style={{ fontFamily: fontStack(f.name) }}>{f.name}</span>,
+                      }))}
+                    />
+                  </Field>
+                  <Field label="Ribbon color">
+                    <ColorPicker
+                      value={d.subheader?.color}
+                      presets={themeVariants.map((v) => v.color)}
+                      fallback={d.accent || '#0DA7BC'}
+                      onColor={(c) => updateDetails({ subheader: { ...d.subheader, color: c } })}
+                    />
+                  </Field>
                 </div>
               )}
             </div>
@@ -1446,7 +1469,7 @@ const GRADIENT_TINTS = [
   ['#8B5CF6', '#EC4899'],
   ['#22C55E', '#06B6D4'],
 ]
-function BadgeUpload({ onPick, bgImages = [], initial }) {
+function BadgeUpload({ onPick, bgImages = [], bgLabel, initial }) {
   const [src, setSrc] = useState(initial?.src ?? null)
   const [bgMode, setBgMode] = useState(initial?.bgMode || 'color') // color | image
   const [panel, setPanel] = useState(initial?.bgMode || 'color') // color | image | recolor (tab)
@@ -1646,7 +1669,12 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
             </div>
           )}
           {panel === 'image' && (
-            <BgImageGrid themeImages={bgImages} value={bgImage} onChange={setBgImage} />
+            <BgImageGrid
+              themeImages={bgImages}
+              themeLabel={bgLabel}
+              value={bgImage}
+              onChange={setBgImage}
+            />
           )}
           {panel === 'recolor' && (
             <div className="cc-recolor">
@@ -1746,7 +1774,7 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
 
 // Create: pick a background (color or theme/template image) + an icon or
 // number (with a font choice); flatten to an image on save.
-function BadgeBuilder({ onPick, bgImages = [], initial }) {
+function BadgeBuilder({ onPick, bgImages = [], bgLabel, initial }) {
   const [bgMode, setBgMode] = useState(initial?.bgMode || 'color') // color | image
   const [color, setColor] = useState(initial?.color || BUILDER_BGS[0])
   const [image, setImage] = useState(initial?.image || bgImages[0] || getDefaultBgImages()[0])
@@ -1837,7 +1865,12 @@ function BadgeBuilder({ onPick, bgImages = [], initial }) {
               />
             </div>
           ) : (
-            <BgImageGrid themeImages={bgImages} value={image} onChange={setImage} />
+            <BgImageGrid
+              themeImages={bgImages}
+              themeLabel={bgLabel}
+              value={image}
+              onChange={setImage}
+            />
           )}
         </Field>
         <Field>
@@ -1921,6 +1954,7 @@ function BadgePicker({
   extraGroups,
   defaultGroupId,
   bgImages,
+  bgLabel,
   selectedImg,
   editSource,
   editInit,
@@ -1966,6 +2000,7 @@ function BadgePicker({
         <BadgeUpload
           onPick={onPick}
           bgImages={bgImages}
+          bgLabel={bgLabel}
           initial={editSource === 'upload' ? editInit : undefined}
         />
       )}
@@ -1973,6 +2008,7 @@ function BadgePicker({
         <BadgeBuilder
           onPick={onPick}
           bgImages={bgImages}
+          bgLabel={bgLabel}
           initial={editSource === 'create' ? editInit : undefined}
         />
       )}
@@ -1990,6 +2026,7 @@ function BadgeEditor({
   extraGroups,
   defaultGroupId,
   bgImages,
+  bgLabel,
   onSave,
   onCancel,
 }) {
@@ -2040,6 +2077,7 @@ function BadgeEditor({
               extraGroups={extraGroups}
               defaultGroupId={defaultGroupId}
               bgImages={bgImages}
+              bgLabel={bgLabel}
               selectedImg={badge?.img}
               editSource={badge?.source}
               editInit={badge?.edit}
@@ -2300,6 +2338,7 @@ function ActivityBadgeEditor({
   extraGroups,
   defaultGroupId,
   bgImages,
+  bgLabel,
   prereqOptions = [],
   onSave,
   onCancel,
@@ -2411,6 +2450,7 @@ function ActivityBadgeEditor({
               extraGroups={extraGroups}
               defaultGroupId={defaultGroupId}
               bgImages={bgImages}
+              bgLabel={bgLabel}
               selectedImg={badge?.img}
               editSource={badge?.source}
               editInit={badge?.edit}
@@ -2824,52 +2864,47 @@ function BadgeRow({
 }
 
 const QUICK_COLORS = ['#0DA7BC', '#7C5CFA', '#E8866A', '#16A97A', '#F0C050', '#E8456B']
-// Build one numbered, theme-backed badge (the "custom" builder, image bg + number).
-const composeQuickBadge = (bgImage, num) =>
-  composeBadge(
-    bgImage ? { image: bgImage } : { color: QUICK_COLORS[(num - 1) % QUICK_COLORS.length] },
-    { type: 'number', value: String(num) },
-    'Poppins',
-  )
+// Build one numbered badge from a background ({ image } or { color }) + a number.
+const composeQuickBadge = (bg, num) =>
+  composeBadge(bg, { type: 'number', value: String(num) }, 'Poppins')
 
-// Quick-create a ladder of sequential logging badges from a log type + range.
-// Each badge uses the theme's "custom image" background with a sequence number.
-function QuickBadgeCreator({ bgImage, onCreate, onCancel }) {
+// Quick-create a ladder of logging badges from ONE sentence: "a badge every N
+// <unit>, up to M". Milestones auto-derive (N, 2N, 3N, … ≤ M); each badge shows
+// its logged amount. Background = one row of swatches (images + colors).
+function QuickBadgeCreator({ bgImages = [], onCreate, onCancel }) {
   const [logType, setLogType] = useState('books')
-  const [start, setStart] = useState(5)
-  const [step, setStep] = useState(5)
+  const [increment, setIncrement] = useState(5)
   const [count, setCount] = useState(5)
-  const [numMode, setNumMode] = useState('seq') // seq = 1,2,3… · goal = the logged amount
+  const imageOpts = (bgImages.length ? bgImages : getDefaultBgImages()).slice(0, 6)
+  // Unified background: { image } or { color }.
+  const [bg, setBg] = useState(imageOpts[0] ? { image: imageOpts[0] } : { color: QUICK_COLORS[0] })
   const [arts, setArts] = useState([])
   const label = LOG_TYPES.find((t) => t.value === logType)?.label || 'Books'
   const single = label.replace(/s$/, '')
+  const inc = Math.max(1, increment || 1)
+  // One badge per increment: inc, 2·inc, … (count of them), capped at 20.
   const n = Math.max(1, Math.min(count || 1, 20))
   const items = Array.from({ length: n }, (_, i) => {
-    const goal = (start || 1) + i * (step || 1)
-    return {
-      num: i + 1,
-      goal,
-      badgeNum: numMode === 'goal' ? goal : i + 1,
-      name: `${goal} ${goal === 1 ? single : label}`,
-    }
+    const goal = (i + 1) * inc
+    return { goal, name: `${goal} ${goal === 1 ? single : label}` }
   })
-  // Art depends on the badge numbers (which mode + range drive) and the theme image.
-  const numsKey = items.map((it) => it.badgeNum).join(',')
+  const numsKey = items.map((it) => it.goal).join(',')
+  const bgKey = bg.image ? `i:${bg.image}` : `c:${bg.color}`
   useEffect(() => {
     let alive = true
     ;(async () => {
       const out = []
-      for (const it of items) out.push(await composeQuickBadge(bgImage, it.badgeNum))
+      for (const it of items) out.push(await composeQuickBadge(bg, it.goal))
       if (alive) setArts(out)
     })()
     return () => {
       alive = false
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [numsKey, bgImage])
-  const valid = count >= 1 && start >= 1 && step >= 1
+  }, [numsKey, bgKey])
+  const valid = inc >= 1 && n >= 1
   const make = async () => {
-    const imgs = await Promise.all(items.map((it) => composeQuickBadge(bgImage, it.badgeNum)))
+    const imgs = await Promise.all(items.map((it) => composeQuickBadge(bg, it.goal)))
     onCreate(
       items.map((it, i) => ({
         name: it.name,
@@ -2878,11 +2913,11 @@ function QuickBadgeCreator({ bgImage, onCreate, onCancel }) {
         img: imgs[i],
         source: 'create',
         edit: {
-          bgMode: bgImage ? 'image' : 'color',
-          image: bgImage,
-          color: QUICK_COLORS[i % QUICK_COLORS.length],
+          bgMode: bg.image ? 'image' : 'color',
+          image: bg.image,
+          color: bg.color || QUICK_COLORS[0],
           mode: 'number',
-          num: it.badgeNum,
+          num: it.goal,
           font: 'Poppins',
         },
       })),
@@ -2902,69 +2937,71 @@ function QuickBadgeCreator({ bgImage, onCreate, onCancel }) {
         </button>
       </header>
       <div className="cc-badge-editor-body cc-quick-body">
-        <Field label="What are readers logging?">
-          <CustomSelect
-            value={logType}
-            onChange={setLogType}
-            options={LOG_TYPES.map((t) => ({ value: t.value, label: t.label }))}
-          />
-        </Field>
-        <div className="cc-quick-range">
-          <Field label="Start at">
-            <NumberInput value={start} min={1} max={100000} onChange={setStart} />
-          </Field>
-          <Field label="Increase by">
-            <NumberInput value={step} min={1} max={10000} onChange={setStep} />
-          </Field>
-          <Field label="How many badges">
+        <div className="cc-quick-rows">
+          <div className="cc-quick-row">
+            <span className="cc-quick-row-label">Set your badge increment</span>
+            <NumberInput value={increment} min={1} max={10000} onChange={setIncrement} />
+            <span className="cc-quick-unit-sel">
+              <CustomSelect
+                value={logType}
+                onChange={setLogType}
+                options={LOG_TYPES.map((t) => ({ value: t.value, label: t.label.toLowerCase() }))}
+              />
+            </span>
+          </div>
+          <div className="cc-quick-row">
+            <span className="cc-quick-row-label">How many badges?</span>
             <NumberInput value={count} min={1} max={20} onChange={setCount} />
-          </Field>
-        </div>
-        <div className="cc-quick-numstyle">
-          <span className="cc-quick-numstyle-label">Number shown on each badge</span>
-          <div className="cc-quick-seg" role="group" aria-label="Number shown on each badge">
-            <button
-              type="button"
-              className={`cc-quick-seg-btn${numMode === 'seq' ? ' is-on' : ''}`}
-              aria-pressed={numMode === 'seq'}
-              onClick={() => setNumMode('seq')}
-            >
-              <span className="cc-quick-seg-name">Sequence</span>
-              <span className="cc-quick-seg-eg">1, 2, 3…</span>
-            </button>
-            <button
-              type="button"
-              className={`cc-quick-seg-btn${numMode === 'goal' ? ' is-on' : ''}`}
-              aria-pressed={numMode === 'goal'}
-              onClick={() => setNumMode('goal')}
-            >
-              <span className="cc-quick-seg-name">Logged amount</span>
-              <span className="cc-quick-seg-eg">
-                {items
-                  .map((it) => it.goal)
-                  .slice(0, 3)
-                  .join(', ')}
-                …
-              </span>
-            </button>
           </div>
         </div>
-        <div className="cc-quick-previewhead">
-          Preview · {items.length} {items.length === 1 ? 'badge' : 'badges'}
+
+        <div className="cc-quick-bgrow">
+          <span className="cc-quick-bglabel">Background</span>
+          <div className="cc-quick-swatches">
+            {imageOpts.map((src) => (
+              <button
+                key={src}
+                type="button"
+                className={`cc-quick-swatch${bg.image === src ? ' is-on' : ''}`}
+                onClick={() => setBg({ image: src })}
+                aria-label="Image background"
+                aria-pressed={bg.image === src}
+              >
+                <img src={src} alt="" />
+              </button>
+            ))}
+            <span className="cc-quick-swatch-sep" aria-hidden="true" />
+            {QUICK_COLORS.map((c) => (
+              <button
+                key={c}
+                type="button"
+                className={`cc-quick-swatch${bg.color === c ? ' is-on' : ''}`}
+                style={{ background: c }}
+                onClick={() => setBg({ color: c })}
+                aria-label={`Color background ${c}`}
+                aria-pressed={bg.color === c}
+              />
+            ))}
+          </div>
         </div>
-        <div className="cc-quick-preview">
-          {items.map((it, i) => (
-            <div key={i} className="cc-quick-chip">
-              <span className="cc-badgerow-art">
+
+        <div className="cc-quick-result">
+          <div className="cc-quick-strip">
+            {items.map((it, i) => (
+              <span key={i} className="cc-quick-badge" title={it.name}>
                 {arts[i] ? (
-                  <img src={arts[i]} alt="" draggable={false} />
+                  <img src={arts[i]} alt={it.name} draggable={false} />
                 ) : (
-                  <span className="cc-badgerow-num">{it.num}</span>
+                  <span className="cc-quick-badge-ph">{it.goal}</span>
                 )}
               </span>
-              <span className="cc-quick-chip-name">{it.name}</span>
-            </div>
-          ))}
+            ))}
+          </div>
+          <p className="cc-quick-result-note">
+            {items.length > 1
+              ? `${items[0].goal}–${items[items.length - 1].goal} ${label.toLowerCase()}`
+              : items[0].name}
+          </p>
         </div>
       </div>
       <footer className="cc-badge-editor-foot">
@@ -3100,12 +3137,14 @@ function ActivityBadgePicker({ source, mode, onPick, onCancel }) {
 }
 
 // Three add-actions shared by the Activity-badges and Repeatable-activities panels.
-function ActBadgeActions({ onUse, onDuplicate, onCreate }) {
+function ActBadgeActions({ onUse, onDuplicate, onCreate, allowUse = true }) {
   return (
     <div className="cc-panel-actions cc-actbadge-actions">
-      <Button variant="ghost" size="sm" onClick={onUse}>
-        Use existing
-      </Button>
+      {allowUse && (
+        <Button variant="ghost" size="sm" onClick={onUse}>
+          Use existing
+        </Button>
+      )}
       <Button variant="ghost" size="sm" onClick={onDuplicate}>
         Duplicate
       </Button>
@@ -3169,6 +3208,9 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   const badgeTime = challenge.badgeTime || 'any'
   const bw = challenge.badgeWindow || { start: '', end: '' }
   const setWindow = (patch) => update({ badgeWindow: { ...bw, ...patch } })
+  // Teacher/MS (simple) get a stripped-down creator: no badge-time restrictions,
+  // and activity badges can only be created/duplicated (not "used from existing").
+  const isSimple = role?.tier === 'simple'
 
   // Promote the template's badge set (or the chosen theme set) in the picker.
   const preset =
@@ -3217,9 +3259,13 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
     : badgeThemeId
       ? `theme-${badgeThemeId}`
       : undefined
-  // "From this theme" backgrounds for the badge builder/upload — real
-  // illustrative art per theme (themes without art simply show nothing here).
-  const badgeBgImages = themeBgImages(badgeThemeId)
+  // Badge builder/upload backgrounds. A template and a theme are mutually
+  // exclusive: when a template is applied, offer ITS images ("From this
+  // template"); otherwise the theme's illustrative art ("From this theme").
+  const badgeBgImages = preset
+    ? preset.badges.map((b) => b.img).filter(Boolean)
+    : themeBgImages(badgeThemeId)
+  const badgeBgLabel = preset ? 'From this template' : 'From this theme'
   const [editor, setEditor] = useState(null)
   const [abEditor, setAbEditor] = useState(null) // activity badge editor: {index|null, initial}
   const [actPicker, setActPicker] = useState(null) // {repeatable, mode:'use'|'duplicate'}
@@ -3413,7 +3459,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
         </div>
       )}
 
-      {!isBingo && (
+      {!isBingo && !isSimple && (
         <div className="cc-panel">
           <h3 className="cc-panel-title">Badge time restrictions</h3>
           <div className="cc-settings">
@@ -3609,6 +3655,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
           <div className="cc-panel-head">
             <h3 className="cc-panel-title">Activity badges</h3>
             <ActBadgeActions
+              allowUse={!isSimple}
               onUse={() => setActPicker({ repeatable: false, mode: 'use' })}
               onDuplicate={() => setActPicker({ repeatable: false, mode: 'duplicate' })}
               onCreate={() => setAbEditor({ index: null })}
@@ -3648,6 +3695,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
           <div className="cc-panel-head">
             <h3 className="cc-panel-title">Repeatable activities</h3>
             <ActBadgeActions
+              allowUse={!isSimple}
               onUse={() => setActPicker({ repeatable: true, mode: 'use' })}
               onDuplicate={() => setActPicker({ repeatable: true, mode: 'duplicate' })}
               onCreate={() => setAbEditor({ index: null, repeatable: true })}
@@ -3748,7 +3796,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
       >
         {quickBadge && (
           <QuickBadgeCreator
-            bgImage={badgeBgImages[0]}
+            bgImages={badgeBgImages}
             onCreate={quickCreateBadges}
             onCancel={() => setQuickBadge(false)}
           />
@@ -3785,6 +3833,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
             extraGroups={badgeExtraGroups}
             defaultGroupId={badgeDefaultGroup}
             bgImages={badgeBgImages}
+            bgLabel={badgeBgLabel}
             prereqOptions={activityBadges
               .filter((_, idx) => abEditor.repeatable || idx !== abEditor.index)
               .map((ab) => ({ value: ab.id, label: ab.title || ab.name || 'Untitled badge' }))}
@@ -3820,6 +3869,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
             extraGroups={badgeExtraGroups}
             defaultGroupId={badgeDefaultGroup}
             bgImages={badgeBgImages}
+            bgLabel={badgeBgLabel}
             onSave={saveBadge}
             onCancel={() => setEditor(null)}
           />
@@ -4019,6 +4069,18 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
   )
 }
 
+// Hover tooltip on a placed badge — its type (logging / activity / review) and
+// how it's earned. Shared by the bingo card + gameboard.
+function BadgeTip({ name, kind, meta, shown }) {
+  return (
+    <span className={`cc-badge-tip${shown ? ' is-shown' : ''}`} role="tooltip">
+      <strong>{name}</strong>
+      {kind && <span className="cc-badge-tip-kind">{kind}</span>}
+      {meta && <span className="cc-badge-tip-req">{meta}</span>}
+    </span>
+  )
+}
+
 // Drag-and-drop bingo card editor: drag badges from the tray into grid cells,
 // drag a placed badge cell-to-cell to swap, or drop it back on the tray (or hit
 // ×) to clear it.
@@ -4026,23 +4088,42 @@ function BingoBoard({ challenge, size, cells, onChange }) {
   const n = cells.length
   const [over, setOver] = useState(null)
   const [trayOver, setTrayOver] = useState(false)
+  const [tipIdx, setTipIdx] = useState(null)
   const pool = useMemo(
     () => [
-      ...(challenge.badges || []).map((b, i) => ({
-        id: `log-${i}`,
-        name: b.name || 'Logging badge',
-        img: b.img || badgeImage(b.icon),
-      })),
-      ...(challenge.activityBadges || []).map((b, i) => ({
-        id: `act-${i}`,
-        name: b.title || b.name || 'Activity badge',
-        img: b.badge?.img,
-      })),
-      ...(challenge.reviewBadges || []).map((b, i) => ({
-        id: `rev-${i}`,
-        name: b.name || 'Review badge',
-        img: b.img || badgeImage(b.icon),
-      })),
+      ...(challenge.badges || []).map((b, i) => {
+        const unit = b.logType || 'books'
+        const goal = Number(b.goal) >= 1 ? b.goal : i + 1
+        return {
+          id: `log-${i}`,
+          name: b.name || 'Logging badge',
+          img: b.img || badgeImage(b.icon),
+          kind: 'Logging badge',
+          meta: `Log ${goal} ${goal === 1 ? unit.replace(/s$/, '') : unit}`,
+        }
+      }),
+      ...(challenge.activityBadges || []).map((b, i) => {
+        const nA = b.activities?.length || 0
+        return {
+          id: `act-${i}`,
+          name: b.title || b.name || 'Activity badge',
+          img: b.badge?.img,
+          kind: 'Activity badge',
+          meta: nA
+            ? `Complete ${nA} ${nA === 1 ? 'activity' : 'activities'}`
+            : 'Complete an activity',
+        }
+      }),
+      ...(challenge.reviewBadges || []).map((b, i) => {
+        const goal = Number(b.goal) >= 1 ? b.goal : 1
+        return {
+          id: `rev-${i}`,
+          name: b.name || 'Review badge',
+          img: b.img || badgeImage(b.icon),
+          kind: 'Review badge',
+          meta: `Write ${goal} ${goal === 1 ? 'review' : 'reviews'}`,
+        }
+      }),
     ],
     [challenge.badges, challenge.activityBadges, challenge.reviewBadges],
   )
@@ -4091,6 +4172,18 @@ function BingoBoard({ challenge, size, cells, onChange }) {
       <Icon name="award" size={sz} className="cc-bingo-art-fallback" />
     )
 
+  // Nothing to place yet — show an empty state instead of a blank grid + tray.
+  if (!pool.length) {
+    return (
+      <EmptyState
+        className="cc-bingo-empty"
+        icon={<Icon name="award" size={26} />}
+        title="No badges to arrange yet"
+        description="Add logging, activity, or review badges on the Badges step, then arrange them on the card here."
+      />
+    )
+  }
+
   return (
     <div className="cc-bingo-board">
       <div
@@ -4129,7 +4222,10 @@ function BingoBoard({ challenge, size, cells, onChange }) {
                     <span className="cc-bingo-chip-art">
                       <Art b={b} size={20} />
                     </span>
-                    <span className="cc-bingo-chip-name">{b.name}</span>
+                    <span className="cc-bingo-chip-text">
+                      <span className="cc-bingo-chip-name">{b.name}</span>
+                      {b.meta && <span className="cc-bingo-chip-meta">{b.meta}</span>}
+                    </span>
                   </div>
                 )
               })}
@@ -4161,9 +4257,11 @@ function BingoBoard({ challenge, size, cells, onChange }) {
                   className="cc-bingo-placed"
                   draggable
                   onDragStart={(e) => setPayload(e, { from: 'cell', index: i, id })}
-                  title={b.name}
+                  onMouseEnter={() => setTipIdx(i)}
+                  onMouseLeave={() => setTipIdx((o) => (o === i ? null : o))}
                 >
                   <Art b={b} size={26} />
+                  <BadgeTip name={b.name} kind={b.kind} meta={b.meta} shown={tipIdx === i} />
                   <button
                     type="button"
                     className="cc-bingo-cell-x"
@@ -4179,6 +4277,375 @@ function BingoBoard({ challenge, size, cells, onChange }) {
             </div>
           )
         })}
+      </div>
+    </div>
+  )
+}
+
+// ─── Gameboard ────────────────────────────────────────────────────────────────
+export const GAMEBOARD_THEMES = [
+  { id: 'meadow', name: 'Meadow', bgImg: gbMeadow, track: '#ecd6a4', ink: '#6e8a2e' },
+  { id: 'ocean', name: 'Ocean', bgImg: gbOcean, track: '#c3e5f0', ink: '#2a6e82' },
+  { id: 'jungle', name: 'Jungle', bgImg: gbJungle, track: '#d8ecb2', ink: '#3f6b2e' },
+  { id: 'winter', name: 'Winter', bgImg: gbWinter, track: '#d3e7f5', ink: '#3a6b8a' },
+  { id: 'aurora', name: 'Aurora', bgImg: gbAurora, track: '#e7c6e0', ink: '#7a2f63' },
+  { id: 'spooky', name: 'Spooky', bgImg: gbSpooky, track: '#d9cff0', ink: '#5a4f86' },
+]
+export const gameboardTheme = (id) =>
+  GAMEBOARD_THEMES.find((t) => t.id === id) || GAMEBOARD_THEMES[0]
+// Dedicated gameboard background art per template (not the challenge banner).
+export const GAMEBOARD_TEMPLATE_BG = { glow: gbGlow, era: gbEra }
+// Resolve the selected theme to { bgImg | board, track, ink }. Handles the
+// generic themes, a "custom" color, and a "template" theme (uses the applied
+// challenge template's banner art as the board background).
+export function resolveGameboardTheme(theme, { custom, templateBanner } = {}) {
+  if (theme === 'custom')
+    return {
+      board: `linear-gradient(165deg, ${custom}, ${custom})`,
+      track: '#ffffff',
+      ink: '#0f172a',
+    }
+  if (theme === 'template' && templateBanner)
+    return { bgImg: templateBanner, track: '#ffffff', ink: '#0f172a' }
+  return gameboardTheme(theme)
+}
+
+// START / HALFWAY / FINISH labels, curved around the disc via an SVG arc (like
+// the mock). variant 'top' arcs over the top; 'bottom' smiles under the bottom.
+function CurvedLabel({ text, variant = 'top', radius = 36 }) {
+  const id = useId().replace(/:/g, '')
+  const r = radius
+  const box = (r + 13) * 2
+  const c = box / 2
+  // Both variants are arcs of the same radius so top + bottom match exactly;
+  // 'top' arcs over (text above the path), 'bottom' smiles under it.
+  const bottom = variant === 'bottom'
+  const d = bottom
+    ? `M ${c - r} ${c} A ${r} ${r} 0 0 0 ${c + r} ${c}`
+    : `M ${c - r} ${c} A ${r} ${r} 0 0 1 ${c + r} ${c}`
+  return (
+    <svg
+      className={`cc-gb-arc cc-gb-arc--${variant}`}
+      width={box}
+      height={box}
+      viewBox={`0 0 ${box} ${box}`}
+      aria-hidden="true"
+    >
+      <path id={id} d={d} fill="none" />
+      <text className="cc-gb-arc-text" dominantBaseline={bottom ? 'hanging' : 'auto'}>
+        <textPath href={`#${id}`} startOffset="50%" textAnchor="middle">
+          {text}
+        </textPath>
+      </text>
+    </svg>
+  )
+}
+
+// A functional, drag-and-drop board: logging badges line a winding path from
+// START to FINISH. Badges drag in from the tray (preset with the logging
+// badges); activity badges live in the tray but can't be placed on the board.
+function GameBoard({
+  cells,
+  pool,
+  activityPool = [],
+  onChange,
+  themeObj,
+  showRewards,
+  showHalfway,
+  regBadge,
+  compBadge,
+}) {
+  const [over, setOver] = useState(null)
+  const [trayOver, setTrayOver] = useState(false)
+  const [tipId, setTipId] = useState(null)
+  // Measure the available width so the board can choose how many columns fit and
+  // stay responsive (down to a single vertical column on narrow screens).
+  const boardRef = useRef(null)
+  const [avail, setAvail] = useState(0)
+  useEffect(() => {
+    const el = boardRef.current
+    if (!el) return
+    const measure = () => setAvail(el.clientWidth)
+    measure()
+    const ro = new ResizeObserver(measure)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  const byId = Object.fromEntries(pool.map((b) => [b.id, b]))
+  const placed = new Set(cells.filter(Boolean))
+  const th = themeObj || GAMEBOARD_THEMES[0]
+  const boardStyle = th.bgImg
+    ? { backgroundImage: `url(${th.bgImg})`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    : { background: th.board }
+
+  const setPayload = (e, data) => {
+    try {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('text/plain', JSON.stringify(data))
+    } catch {
+      /* some browsers restrict dataTransfer */
+    }
+  }
+  const readPayload = (e) => {
+    try {
+      return JSON.parse(e.dataTransfer.getData('text/plain'))
+    } catch {
+      return null
+    }
+  }
+  const dropOnCell = (e, target) => {
+    e.preventDefault()
+    setOver(null)
+    const p = readPayload(e)
+    if (!p || p.kind === 'activity') return
+    const next = cells.slice()
+    if (p.from === 'tray') next[target] = p.id
+    else if (p.from === 'cell' && p.index !== target) {
+      next[target] = cells[p.index]
+      next[p.index] = cells[target]
+    }
+    onChange(next)
+  }
+  const clear = (i) => {
+    const next = cells.slice()
+    next[i] = null
+    onChange(next)
+  }
+
+  const Art = ({ b }) =>
+    b?.img ? (
+      <img src={b.img} alt="" draggable={false} />
+    ) : (
+      <Icon name="award" size={22} className="cc-gb-art-fallback" />
+    )
+
+  // One consistent round badge ghost for BOTH drag directions (tray→board and
+  // board→tray). Building a dedicated element — rather than snapshotting the
+  // small chip art one way and the larger placed disc the other — keeps the
+  // grab fully round and the same size whichever way you drag.
+  const setRoundDragImage = (e, src) => {
+    const ghost = document.createElement('div')
+    ghost.className = 'cc-gb-drag-ghost'
+    if (src) {
+      const img = document.createElement('img')
+      img.src = src
+      ghost.appendChild(img)
+    }
+    document.body.appendChild(ghost)
+    e.dataTransfer.setDragImage(ghost, 30, 30)
+    // Remove once the browser has snapshotted it for the drag image.
+    setTimeout(() => ghost.remove(), 0)
+  }
+
+  const half = showHalfway ? Math.floor(cells.length / 2) : -1
+
+  // Nothing to place yet — show a real empty state instead of an empty board.
+  if (!pool.length) {
+    return (
+      <EmptyState
+        className="cc-gb-empty"
+        icon={<Icon name="route" size={26} />}
+        title="No badges to place yet"
+        description="Add logging badges on the Badges step, then drag them onto the board here."
+      />
+    )
+  }
+
+  // Serpentine grid → pixel centers; the connecting "road" is drawn as ONE SVG
+  // stroke with round joins/caps, so the bends are smoothly rounded like the
+  // mock. Discs sit on the vertices (including the turns = the edge badges).
+  const CELL = 108
+  const ROAD = 24
+  // How many columns fit the measured width (1 → a single vertical column).
+  const COLS = Math.max(1, Math.min(6, Math.floor((avail - 36) / CELL) || 1))
+  const seq = [
+    { kind: 'start' },
+    ...cells.map((id, i) => ({ kind: 'cell', id, i })),
+    { kind: 'finish' },
+  ]
+  const layout = seq.map((node, idx) => {
+    const row = Math.floor(idx / COLS)
+    const within = idx % COLS
+    const col = row % 2 === 0 ? within : COLS - 1 - within // boustrophedon
+    return { node, cx: col * CELL + CELL / 2, cy: row * CELL + CELL / 2 }
+  })
+  const boardW = COLS * CELL
+  const boardH = (Math.floor((seq.length - 1) / COLS) + 1) * CELL
+  const pathD = layout.map((p, i) => `${i ? 'L' : 'M'} ${p.cx} ${p.cy}`).join(' ')
+
+  const renderNode = ({ node, cx, cy }) => {
+    const place = { left: cx, top: cy }
+    if (node.kind === 'start')
+      return (
+        <span key="start" className="cc-gb-node cc-gb-end" style={place}>
+          <CurvedLabel text="START" variant="top" radius={44} />
+          <span className="cc-gb-disc">
+            {regBadge?.img ? <img src={regBadge.img} alt="" /> : <Icon name="flag" size={20} />}
+          </span>
+        </span>
+      )
+    if (node.kind === 'finish')
+      return (
+        <span key="finish" className="cc-gb-node cc-gb-end" style={place}>
+          <CurvedLabel text="FINISH" variant="top" radius={44} />
+          <span className="cc-gb-disc">
+            {compBadge?.img ? <img src={compBadge.img} alt="" /> : <Icon name="trophy" size={20} />}
+          </span>
+        </span>
+      )
+    const { id, i } = node
+    const b = id ? byId[id] : null
+    const reward = showRewards && b?.reward
+    return (
+      <span key={i} className="cc-gb-node" style={place}>
+        {i === half && <CurvedLabel text="HALFWAY" variant="top" radius={44} />}
+        <span
+          className={`cc-gb-disc${b ? ' is-filled' : ''}${over === i ? ' is-over' : ''}`}
+          onDragOver={(e) => {
+            e.preventDefault()
+            if (over !== i) setOver(i)
+          }}
+          onDragLeave={() => setOver((o) => (o === i ? null : o))}
+          onDrop={(e) => dropOnCell(e, i)}
+        >
+          {b ? (
+            <span
+              className="cc-gb-placed"
+              draggable
+              onDragStart={(e) => {
+                setRoundDragImage(e, b.img)
+                setPayload(e, { from: 'cell', index: i, id })
+              }}
+              onMouseEnter={() => setTipId(id)}
+              onMouseLeave={() => setTipId((o) => (o === id ? null : o))}
+            >
+              <Art b={b} />
+              <BadgeTip name={b.name} kind={b.kind} meta={b.meta} shown={tipId === id} />
+              <button
+                type="button"
+                className="cc-bingo-cell-x"
+                onClick={() => clear(i)}
+                aria-label={`Remove ${b.name}`}
+              >
+                <Icon name="x" size={12} stroke={2.5} />
+              </button>
+            </span>
+          ) : (
+            <span className="cc-gb-plus" aria-hidden="true">
+              <Icon name="plus" size={18} stroke={2.5} />
+            </span>
+          )}
+        </span>
+        {reward && (
+          <span className="cc-gb-reward" title="Awards a reward">
+            <Icon name="gift" size={12} />
+          </span>
+        )}
+      </span>
+    )
+  }
+
+  return (
+    <div className="cc-gb">
+      <div
+        className={`cc-bingo-tray${trayOver ? ' is-over' : ''}`}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setTrayOver(true)
+        }}
+        onDragLeave={() => setTrayOver(false)}
+        onDrop={(e) => {
+          e.preventDefault()
+          setTrayOver(false)
+          const p = readPayload(e)
+          if (p?.from === 'cell') clear(p.index)
+        }}
+      >
+        <div className="cc-bingo-tray-inner">
+          <div className="cc-bingo-tray-head">
+            <span className="cc-bingo-tray-title">Drag badges onto the board</span>
+            <span className="cc-bingo-tray-count">
+              {placed.size}/{cells.length} placed
+            </span>
+          </div>
+          {pool.length ? (
+            <div className="cc-bingo-tray-list">
+              {pool.map((b) => {
+                const used = placed.has(b.id)
+                return (
+                  <div
+                    key={b.id}
+                    className={`cc-bingo-chip${used ? ' is-used' : ''}`}
+                    draggable={!used}
+                    onDragStart={(e) => {
+                      if (used) return
+                      setRoundDragImage(e, b.img)
+                      setPayload(e, { from: 'tray', id: b.id })
+                    }}
+                    title={b.name}
+                  >
+                    <span className="cc-bingo-chip-art">
+                      <Art b={b} />
+                    </span>
+                    <span className="cc-bingo-chip-text">
+                      <span className="cc-bingo-chip-name">{b.name}</span>
+                      {b.meta && <span className="cc-bingo-chip-meta">{b.meta}</span>}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          ) : (
+            <p className="cc-method-note cc-method-note--sm">
+              Add logging badges on the Badges step, then drag them onto the board.
+            </p>
+          )}
+          {activityPool.length > 0 && (
+            <div className="cc-gb-tray-activity">
+              <span className="cc-gb-tray-sublabel">Activity badges (not placed on the board)</span>
+              <div className="cc-bingo-tray-list">
+                {activityPool.map((b) => (
+                  <div
+                    key={b.id}
+                    className="cc-bingo-chip is-activity"
+                    title={`${b.name} — earned by activity, not placed on the board`}
+                  >
+                    <span className="cc-bingo-chip-art">
+                      <Art b={b} />
+                    </span>
+                    <span className="cc-bingo-chip-name">{b.name}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      <div
+        ref={boardRef}
+        className="cc-gb-board"
+        style={{ ...boardStyle, '--ink': th.ink, '--track': th.track }}
+      >
+        <div className="cc-gb-track-wrap" style={{ width: boardW, height: boardH }}>
+          <svg
+            className="cc-gb-track"
+            width={boardW}
+            height={boardH}
+            viewBox={`0 0 ${boardW} ${boardH}`}
+            aria-hidden="true"
+          >
+            <path
+              d={pathD}
+              fill="none"
+              stroke="var(--track)"
+              strokeWidth={ROAD}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+          {layout.map(renderNode)}
+        </div>
       </div>
     </div>
   )
@@ -4230,49 +4697,228 @@ export function SetupStep({ challenge, type, update }) {
             cells={cells}
             onChange={(next) => update({ setup: { ...s, bingoCells: next } })}
           />
-          <Tip>
-            A {size} card needs exactly {n} logging / activity / review badges — no empty spaces.
-          </Tip>
         </div>
       </section>
     )
   }
   if (type?.id === 'gameboard') {
-    const spaces = s.boardSpaces || 12
+    const n = s.gbBadges || 8
+    // Which badges award a reward (reward/cert assignment or tickets) — so the
+    // board flags those spaces. Shared with the Badges step + bingo.
+    const rewardedIds = rewardedBadgeIds(challenge)
+    // Logging badges line the board; activity badges ride along in the tray only.
+    const loggingPool = (challenge.badges || []).map((b, i) => {
+      const unit = b.logType || 'books'
+      const goal = Number(b.goal) >= 1 ? b.goal : i + 1
+      return {
+        id: `log-${i}`,
+        name: b.name || 'Logging badge',
+        img: b.img || badgeImage(b.icon),
+        logType: unit,
+        goal,
+        kind: 'Logging badge',
+        meta: `Log ${goal} ${goal === 1 ? unit.replace(/s$/, '') : unit}`,
+        reward: rewardedIds.has(`log-${i}`),
+      }
+    })
+    const activityPool = (challenge.activityBadges || []).map((b, i) => {
+      const nA = b.activities?.length || 0
+      return {
+        id: `act-${i}`,
+        name: b.title || b.name || 'Activity badge',
+        img: b.badge?.img,
+        kind: 'Activity badge',
+        meta: nA
+          ? `Complete ${nA} ${nA === 1 ? 'activity' : 'activities'}`
+          : 'Complete an activity',
+      }
+    })
+    // Preset the board with the logging badges (in order); pad/clamp to n spaces.
+    const saved = s.gameboardCells
+    const base = saved && saved.length ? saved : loggingPool.slice(0, n).map((b) => b.id)
+    const cells = Array.from({ length: n }, (_, i) => base[i] ?? null)
+    const setSetup = (patch) => update({ setup: { ...s, ...patch } })
+    // Lay the logging badges onto the board in their natural ladder: grouped by
+    // log type, then by ascending goal (Log 1 → Log 2 → …). Fills slots in order.
+    const quickOrderBoard = () => {
+      const ordered = [...loggingPool].sort((a, b) =>
+        a.logType === b.logType
+          ? (a.goal || 0) - (b.goal || 0)
+          : String(a.logType).localeCompare(String(b.logType)),
+      )
+      setSetup({ gameboardCells: Array.from({ length: n }, (_, i) => ordered[i]?.id ?? null) })
+    }
+    // A template-derived theme: a dedicated generated gameboard background for
+    // the applied challenge template (falls back to the banner if none exists).
+    const hasTemplate = challenge.templateId && challenge.templateId !== 'scratch'
+    const templateBg = hasTemplate
+      ? GAMEBOARD_TEMPLATE_BG[challenge.templateId] ||
+        TEMPLATE_PRESETS[challenge.templateId]?.banner
+      : null
+    const templateName = templateBg ? TEMPLATE_PRESETS[challenge.templateId]?.name : null
+    // Default to the template's own theme when one's applied; else the first generic.
+    const theme = s.gameboardTheme || (templateBg ? 'template' : 'meadow')
+    let themeObj = resolveGameboardTheme(theme, {
+      custom: s.gameboardColor || '#16A97A',
+      templateBanner: templateBg,
+    })
+    if (theme === 'custom' && s.gameboardBg)
+      themeObj = { bgImg: s.gameboardBg, track: '#ffffff', ink: '#0f172a' }
     return (
       <section className="cc-step">
         <StepHead
           title="Gameboard"
-          sub="Build the board readers move along as they read and complete activities."
+          sub="Theme the board, then drag badges onto the path readers travel as they read."
           icon={STEP_ICONS.gameboard}
         />
+
         <div className="cc-panel">
-          <Field
-            label="Number of spaces"
-            help="Readers advance one space per logged book or completed activity."
-          >
+          <h3 className="cc-panel-title">Gameboard theme</h3>
+          <div className="cc-gb-themes">
+            {templateBg && (
+              <button
+                type="button"
+                className={`cc-gb-theme cc-gb-theme--template${theme === 'template' ? ' is-on' : ''}`}
+                style={{ backgroundImage: `url(${templateBg})` }}
+                aria-pressed={theme === 'template'}
+                onClick={() => setSetup({ gameboardTheme: 'template' })}
+                title={`${templateName} theme`}
+              >
+                {theme === 'template' && (
+                  <span className="cc-gb-theme-check">
+                    <Icon name="check" size={13} stroke={3} color="#fff" />
+                  </span>
+                )}
+                <span className="cc-gb-theme-name">{templateName}</span>
+              </button>
+            )}
+            {GAMEBOARD_THEMES.map((t) => (
+              <button
+                key={t.id}
+                type="button"
+                className={`cc-gb-theme${theme === t.id ? ' is-on' : ''}`}
+                style={{ backgroundImage: `url(${t.bgImg})` }}
+                aria-pressed={theme === t.id}
+                onClick={() => setSetup({ gameboardTheme: t.id })}
+              >
+                {theme === t.id && (
+                  <span className="cc-gb-theme-check">
+                    <Icon name="check" size={13} stroke={3} color="#fff" />
+                  </span>
+                )}
+                <span className="cc-gb-theme-name">{t.name}</span>
+              </button>
+            ))}
+            <button
+              type="button"
+              className={`cc-gb-theme cc-gb-theme--custom${theme === 'custom' ? ' is-on' : ''}`}
+              aria-pressed={theme === 'custom'}
+              onClick={() => setSetup({ gameboardTheme: 'custom' })}
+            >
+              {theme === 'custom' && (
+                <span className="cc-gb-theme-check cc-gb-theme-check--dark">
+                  <Icon name="check" size={13} stroke={3} color="#fff" />
+                </span>
+              )}
+              <Icon name="photo" size={20} />
+              <span className="cc-gb-theme-name">Custom</span>
+            </button>
+          </div>
+          {theme === 'custom' && (
+            <div className="cc-gb-custom">
+              <Field label="Color scheme">
+                <ColorPicker
+                  value={s.gameboardColor}
+                  presets={[
+                    '#16A97A',
+                    '#0DA7BC',
+                    '#0E7490',
+                    '#2563EB',
+                    '#1E3A8A',
+                    '#6366F1',
+                    '#7C3AED',
+                    '#DB2777',
+                    '#E8453A',
+                    '#EA580C',
+                    '#F59E0B',
+                    '#65A30D',
+                  ]}
+                  maxPresets={12}
+                  fallback="#16A97A"
+                  onColor={(c) => setSetup({ gameboardColor: c })}
+                />
+              </Field>
+              <Field
+                label="Background image"
+                help="Recommended 1200 × 1200px · JPG, PNG, or GIF · under 10MB."
+              >
+                <ImageDropzone
+                  fileName={s.gameboardBgName}
+                  previewSrc={s.gameboardBg}
+                  onFile={(name) =>
+                    setSetup({ gameboardBgName: name, gameboardBg: FAKE_UPLOAD_IMG })
+                  }
+                  onClear={() => setSetup({ gameboardBgName: '', gameboardBg: null })}
+                />
+              </Field>
+            </div>
+          )}
+        </div>
+
+        <div className="cc-panel">
+          <h3 className="cc-panel-title">Gameboard settings</h3>
+          <div className="cc-settings">
+            <SettingRow
+              label="Show reward types"
+              sub="Mark spaces that award a prize with a gift icon."
+              checked={s.gbShowRewards !== false}
+              onChange={(v) => setSetup({ gbShowRewards: v })}
+            />
+            <SettingRow
+              label="Show a halfway marker"
+              sub="Call out the midpoint of the board."
+              checked={s.gbShowHalfway !== false}
+              onChange={(v) => setSetup({ gbShowHalfway: v })}
+            />
+          </div>
+          <Field label="Number of badges" className="cc-w-sm">
             <NumberInput
-              value={spaces}
+              value={n}
               min={4}
-              max={30}
-              onChange={(n) => update({ setup: { ...s, boardSpaces: n } })}
+              max={20}
+              onChange={(v) => {
+                const next = Array.from({ length: v }, (_, i) => cells[i] ?? null)
+                setSetup({ gbBadges: v, gameboardCells: next })
+              }}
             />
           </Field>
-          <div className="cc-board">
-            {Array.from({ length: spaces }).map((_, i) => (
-              <span
-                key={i}
-                className={`cc-board-space${i === 0 ? ' is-start' : ''}${
-                  i === spaces - 1 ? ' is-end' : ''
-                }`}
+        </div>
+
+        <div className="cc-panel">
+          <div className="cc-panel-head">
+            <h3 className="cc-panel-title">Gameboard setup</h3>
+            <div className="cc-panel-actions">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={quickOrderBoard}
+                disabled={!loggingPool.length}
               >
-                {i === 0 ? 'Start' : i === spaces - 1 ? 'End' : i + 1}
-              </span>
-            ))}
+                ⚡ Quick order
+              </Button>
+            </div>
           </div>
-          <Tip>
-            Reaching the final space completes the challenge — no separate completion rule needed.
-          </Tip>
+          <GameBoard
+            cells={cells}
+            pool={loggingPool}
+            activityPool={activityPool}
+            themeObj={themeObj}
+            showRewards={s.gbShowRewards !== false}
+            showHalfway={s.gbShowHalfway !== false}
+            regBadge={challenge.registrationBadge}
+            compBadge={challenge.completionBadge}
+            onChange={(next) => setSetup({ gameboardCells: next })}
+          />
         </div>
       </section>
     )
@@ -4440,16 +5086,12 @@ function RewardEditor({ initial, badges = [], usedBadgeIds = [], onSave, onCance
           />
         </Field>
         <Field label="Earned by badge">
-          <MultiSelect
-            options={badges.map((b) => ({
-              value: b.id,
-              label: b.name,
-              image: b.img || null,
-              disabled: usedBadgeIds.includes(b.id) && !badgeIds.includes(b.id),
-            }))}
+          <BadgeMultiSelect
+            badges={badges}
             value={badgeIds}
             onChange={setBadgeIds}
-            placeholder="Select badges…"
+            disabledIds={usedBadgeIds}
+            emptyHint="Add badges on the Badges step, then assign this reward to them."
           />
         </Field>
       </div>
@@ -4731,6 +5373,100 @@ function BadgeSelect({
     </div>
   )
 }
+
+// Normalized badge pool ({ id, name, img }) shared by every badge picker.
+// Registration/completion badges are opt-in: rewards & certificates can attach
+// to them, but completion requirements don't count them.
+export function badgePoolOf(challenge, { includeRegComp = false } = {}) {
+  const c = challenge || {}
+  return [
+    ...(includeRegComp && c.registrationBadge?.img
+      ? [
+          {
+            id: 'reg',
+            name: c.registrationBadge.name || 'Registration badge',
+            img: c.registrationBadge.img,
+          },
+        ]
+      : []),
+    ...(includeRegComp && c.completionBadge?.img
+      ? [
+          {
+            id: 'comp',
+            name: c.completionBadge.name || 'Completion badge',
+            img: c.completionBadge.img,
+          },
+        ]
+      : []),
+    ...(c.badges || []).map((b, i) => ({
+      id: `log-${i}`,
+      name: b.name || 'Logging badge',
+      img: b.img || badgeImage(b.icon),
+    })),
+    ...(c.activityBadges || []).map((b, i) => ({
+      id: `act-${i}`,
+      name: b.title || b.name || 'Activity badge',
+      img: b.badge?.img,
+    })),
+    ...(c.pointsBadges || []).map((b, i) => ({
+      id: `pts-${i}`,
+      name: b.name || 'Points badge',
+      img: b.img || badgeImage(b.icon),
+    })),
+    ...(c.reviewBadges || []).map((b, i) => ({
+      id: `rev-${i}`,
+      name: b.name || 'Review badge',
+      img: b.img || badgeImage(b.icon),
+    })),
+  ]
+}
+
+// Badge ids that currently earn a reward: assigned to a reward item or a
+// certificate, or earning a raffle ticket when tickets are on (source 'all' =
+// every badge; 'specific' = the chosen ones; 'manual' = none). Used to flag
+// rewarded badges across the Badges step, gameboard, and bingo.
+export function rewardedBadgeIds(challenge) {
+  const r = challenge?.rewards || {}
+  const ids = new Set([
+    ...(r.items || []).flatMap((x) => x.badgeIds || []),
+    ...(r.certificates || []).flatMap((x) => x.badgeIds || []),
+  ])
+  if (r.ticketsEnabled) {
+    const source = r.ticketSource || 'all'
+    if (source === 'specific') Object.keys(r.ticketBadges || {}).forEach((id) => ids.add(id))
+    else if (source !== 'manual')
+      badgePoolOf(challenge, { includeRegComp: true }).forEach((b) => ids.add(b.id))
+  }
+  return ids
+}
+
+// The badge-selection pattern: a dropdown multi-select over a normalized badge
+// pool, with thumbnails and a consistent "no badges yet" empty state. Use this
+// anywhere badges are chosen (certificates, rewards, completion requirements).
+export function BadgeMultiSelect({
+  badges = [],
+  value = [],
+  onChange,
+  placeholder = 'Select badges…',
+  emptyHint = 'Add badges on the Badges step first.',
+  disabledIds = [],
+}) {
+  return (
+    <MultiSelect
+      options={badges.map((b) => ({
+        value: b.id,
+        label: b.name,
+        image: b.img || null,
+        disabled: disabledIds.includes(b.id) && !value.includes(b.id),
+      }))}
+      value={value}
+      onChange={onChange}
+      placeholder={placeholder}
+      emptyText="No badges yet"
+      emptyHint={emptyHint}
+    />
+  )
+}
 // Ticket reward — image + name + description + tickets-to-enter.
 function TicketRewardEditor({ initial, onSave, onCancel }) {
   const [image, setImage] = useState(initial?.image || null)
@@ -4840,7 +5576,6 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
   const [description, setDescription] = useState(initial?.description || '')
   const [body, setBody] = useState(initial?.body || CERT_EXAMPLE)
   const [badgeIds, setBadgeIds] = useState(initial?.badgeIds || [])
-  const insertTag = (tag) => setBody((b) => (b && !b.endsWith(' ') ? b + ' ' : b) + tag)
   return (
     <div className="cc-badge-editor cc-cert-editor">
       <header className="cc-badge-editor-head">
@@ -4886,30 +5621,23 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
             onChange={(e) => setDescription(e.target.value)}
           />
         </Field>
-        <Field
-          label="Earned by badge"
-          hint="Readers get this certificate when they earn the selected badge(s)"
-        >
-          <MultiSelect
-            options={badges.map((b) => ({ value: b.id, label: b.name, image: b.img || null }))}
+        <Field label="Earned by badge">
+          <BadgeMultiSelect
+            badges={badges}
             value={badgeIds}
             onChange={setBadgeIds}
-            placeholder="Select badges…"
+            emptyHint="Add badges on the Badges step, then assign this certificate to them."
           />
         </Field>
         <Field label="Certificate body">
-          <Textarea value={body} rows={4} onChange={(e) => setBody(e.target.value)} />
+          <RichText
+            value={body}
+            onChange={setBody}
+            tokens={CERT_TAGS}
+            minHeight={120}
+            placeholder="Write the certificate text…"
+          />
         </Field>
-        <Banner level="info" className="cc-cert-tagshelp">
-          <div className="cc-cert-tagshelp-lead">Personalize with tags — click to insert:</div>
-          <div className="cc-cert-tags">
-            {CERT_TAGS.map((t) => (
-              <button type="button" key={t} className="cc-cert-tag" onClick={() => insertTag(t)}>
-                {t}
-              </button>
-            ))}
-          </div>
-        </Banner>
       </div>
       <footer className="cc-badge-editor-foot">
         <Button variant="secondary" size="md" onClick={onCancel}>
@@ -4958,46 +5686,7 @@ export function RewardsStep({ challenge, update }) {
   const [certEditor, setCertEditor] = useState(null)
 
   // Every badge in the challenge, for the "specific badges earn tickets" picker.
-  const badgePool = [
-    ...(challenge.registrationBadge?.img
-      ? [
-          {
-            id: 'reg',
-            name: challenge.registrationBadge.name || 'Registration badge',
-            img: challenge.registrationBadge.img,
-          },
-        ]
-      : []),
-    ...(challenge.completionBadge?.img
-      ? [
-          {
-            id: 'comp',
-            name: challenge.completionBadge.name || 'Completion badge',
-            img: challenge.completionBadge.img,
-          },
-        ]
-      : []),
-    ...(challenge.badges || []).map((b, i) => ({
-      id: `log-${i}`,
-      name: b.name || 'Logging badge',
-      img: b.img || badgeImage(b.icon),
-    })),
-    ...(challenge.activityBadges || []).map((b, i) => ({
-      id: `act-${i}`,
-      name: b.title || b.name || 'Activity badge',
-      img: b.badge?.img,
-    })),
-    ...(challenge.pointsBadges || []).map((b, i) => ({
-      id: `pts-${i}`,
-      name: b.name || 'Points badge',
-      img: b.img || badgeImage(b.icon),
-    })),
-    ...(challenge.reviewBadges || []).map((b, i) => ({
-      id: `rev-${i}`,
-      name: b.name || 'Review badge',
-      img: b.img || badgeImage(b.icon),
-    })),
-  ]
+  const badgePool = badgePoolOf(challenge, { includeRegComp: true })
   const badgeById = Object.fromEntries(badgePool.map((b) => [b.id, b]))
   const assignedBadges = (ids) => (ids || []).map((id) => badgeById[id]).filter(Boolean)
 
@@ -5162,60 +5851,62 @@ export function RewardsStep({ challenge, update }) {
             <div className="cc-ticket-source">
               <span className="cc-ticket-source-label">How do readers earn tickets?</span>
               <div
-                className="cc-optcards"
+                className="cc-optcards cc-optcards--stack"
                 role="radiogroup"
                 aria-label="How do readers earn tickets?"
               >
                 {TICKET_SOURCES.map((o) => {
                   const on = ticketSource === o.value
                   return (
-                    <button
-                      key={o.value}
-                      type="button"
-                      role="radio"
-                      aria-checked={on}
-                      className={`cc-optcard${on ? ' is-on' : ''}`}
-                      onClick={() => setR({ ticketSource: o.value })}
-                    >
-                      <span className="cc-optcard-ic" aria-hidden="true">
-                        <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
-                      </span>
-                      <span className="cc-optcard-text">
-                        <strong>{o.label}</strong>
-                        <span>{o.sub}</span>
-                      </span>
-                      <span className="cc-optcard-dot" aria-hidden="true" />
-                    </button>
+                    <div key={o.value} className={`cc-optrow${on ? ' is-on' : ''}`}>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        className={`cc-optcard${on ? ' is-on' : ''}`}
+                        onClick={() => setR({ ticketSource: o.value })}
+                      >
+                        <span className="cc-optcard-ic" aria-hidden="true">
+                          <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
+                        </span>
+                        <span className="cc-optcard-text">
+                          <strong>{o.label}</strong>
+                          <span>{o.sub}</span>
+                        </span>
+                        <span className="cc-optcard-dot" aria-hidden="true" />
+                      </button>
+                      {on && o.value === 'all' && (
+                        <div className="cc-optcard-sub">
+                          <div className="cc-ticket-allcount">
+                            <span>Each badge awards</span>
+                            <NumberInput
+                              value={ticketsPerBadge}
+                              min={1}
+                              max={100}
+                              onChange={(v) => setR({ ticketsPerBadge: v })}
+                            />
+                            <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
+                          </div>
+                        </div>
+                      )}
+                      {on && o.value === 'specific' && (
+                        <div className="cc-optcard-sub">
+                          <BadgeSelect
+                            badges={badgePool}
+                            selectedIds={Object.keys(ticketBadges)}
+                            onToggle={toggleTicketBadge}
+                            valueMode
+                            values={ticketBadges}
+                            onValue={setTicketBadgeValue}
+                            valueLabel="tickets"
+                          />
+                        </div>
+                      )}
+                    </div>
                   )
                 })}
               </div>
-              {ticketSource === 'all' && (
-                <div className="cc-ticket-allcount">
-                  <span>Each badge awards</span>
-                  <NumberInput
-                    value={ticketsPerBadge}
-                    min={1}
-                    max={100}
-                    onChange={(v) => setR({ ticketsPerBadge: v })}
-                  />
-                  <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
-                </div>
-              )}
-              {ticketSource === 'specific' && (
-                <BadgeSelect
-                  badges={badgePool}
-                  selectedIds={Object.keys(ticketBadges)}
-                  onToggle={toggleTicketBadge}
-                  valueMode
-                  values={ticketBadges}
-                  onValue={setTicketBadgeValue}
-                  valueLabel="tickets"
-                />
-              )}
             </div>
-            <Banner level="info" className="cc-panel-banner">
-              Winners are drawn from ticket holders over in <strong>Drawings</strong>.
-            </Banner>
             {ticketRewards.length ? (
               <div className="cc-badge-rows">
                 {ticketRewards.map((t) => (
@@ -5454,19 +6145,19 @@ const BADGE_REQ_OPTIONS = [
     value: 'all',
     icon: 'circle-check',
     title: 'Require all badges',
-    desc: 'Readers must earn all badges to complete this challenge.',
+    desc: 'Readers must earn every badge.',
   },
   {
     value: 'specific',
     icon: 'badge',
     title: 'Require specific badges',
-    desc: 'Readers must earn specific badges, selected by you below, to complete this challenge.',
+    desc: 'Readers must earn the badges you choose below.',
   },
   {
     value: 'some',
     icon: 'medal',
     title: 'Require some badges',
-    desc: 'Readers must earn some number of badges. You can also require specific badges plus a number of any others — registration and completion badges don’t count.',
+    desc: 'Readers must earn a set number of badges — you can also require specific ones.',
   },
 ]
 const TITLE_REQ_OPTIONS = [
@@ -5474,19 +6165,19 @@ const TITLE_REQ_OPTIONS = [
     value: 'all',
     icon: 'book-2',
     title: 'Require all titles',
-    desc: 'Readers must complete all titles in the reading list to complete this challenge.',
+    desc: 'Readers must complete every title.',
   },
   {
     value: 'specific',
     icon: 'book',
     title: 'Require specific titles',
-    desc: 'Readers must complete specific titles, selected by you below, to complete this challenge.',
+    desc: 'Readers must complete the titles you choose below.',
   },
   {
     value: 'some',
     icon: 'list',
     title: 'Require some titles',
-    desc: 'Readers must complete some number of titles. You can also require specific titles plus a number of any others.',
+    desc: 'Readers must complete a set number of titles — you can also require specific ones.',
   },
 ]
 
@@ -5522,18 +6213,13 @@ function ReqCards({ options, value, onChange }) {
 
 export function CompletionStep({ challenge, update }) {
   const c = challenge.completion || {}
-  const isRLC =
-    challenge.typeId === 'readingList' || challenge.type?.primaryMethod === 'readingList'
+  const isRLC = challenge.typeId === 'reading-list'
   const titlesEnabled = !!c.titlesEnabled
   const setC = (patch) => update({ completion: { ...c, ...patch } })
 
-  // Pools for the "specific …" sub-pickers.
-  const badgeOpts = [
-    ...(challenge.badges || []),
-    ...(challenge.activityBadges || []),
-    ...(challenge.pointsBadges || []),
-    ...(challenge.reviewBadges || []),
-  ].map((b, i) => ({ value: `b-${i}`, label: b.title || b.name || `Badge ${i + 1}` }))
+  // Pools for the "specific …" sub-pickers. Earned/completion badges don't count
+  // toward completion, so they're excluded here.
+  const badgePool = badgePoolOf(challenge)
   const titleOpts = (challenge.setup?.titles || SAMPLE_TITLES).map((t, i) => ({
     value: `t-${i}`,
     label: t.title || t,
@@ -5624,24 +6310,27 @@ export function CompletionStep({ challenge, update }) {
             <NumberInput
               value={c.count ?? 1}
               min={1}
-              max={badgeOpts.length || 99}
+              max={badgePool.length || 99}
               onChange={(n) => setC({ count: n })}
             />
           </Field>
         )}
-        {(c.mode === 'specific' || c.mode === 'some') && badgeOpts.length > 0 && (
-          <Field
-            label={c.mode === 'some' ? 'Required specific badges (optional)' : 'Required badges'}
-          >
-            <MultiSelect
-              options={badgeOpts}
-              value={c.required || []}
-              onChange={(v) => setC({ required: v })}
-              placeholder="Select badges"
-            />
-          </Field>
-        )}
-        <Tip>Requiring logging badges shows readers a “Units Read” progress card.</Tip>
+        {(c.mode === 'specific' || c.mode === 'some') &&
+          (badgePool.length > 0 ? (
+            <Field
+              label={c.mode === 'some' ? 'Required specific badges (optional)' : 'Required badges'}
+            >
+              <BadgeMultiSelect
+                badges={badgePool}
+                value={c.required || []}
+                onChange={(v) => setC({ required: v })}
+              />
+            </Field>
+          ) : (
+            <Banner level="warning" className="cc-panel-banner">
+              Add badges on the Badges step, then choose the required ones here.
+            </Banner>
+          ))}
       </div>
     </section>
   )

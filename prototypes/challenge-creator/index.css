@@ -430,21 +430,19 @@
   gap: 7px;
   width: 30px;
   padding: 13px 0;
-  border: 1px solid var(--line);
+  border: 1px solid rgba(255, 255, 255, 0.18);
   border-right: 0;
   border-radius: 11px 0 0 11px;
-  background: #fff;
-  color: #64748b;
+  /* background is set inline to match the preview pane (previewBg). */
+  color: rgba(255, 255, 255, 0.92);
   cursor: pointer;
-  box-shadow: -3px 0 10px rgba(15, 23, 42, 0.07);
+  box-shadow: -3px 0 10px rgba(15, 23, 42, 0.14);
   transition:
     right 0.2s ease,
-    color 0.15s ease,
-    background 0.15s ease;
+    filter 0.15s ease;
 }
 .cc-preview-tab:hover {
-  color: var(--teal-dk);
-  background: #f8fafc;
+  filter: brightness(1.08);
 }
 .cc-preview-tab.is-open {
   /* Matches .cc-preview width so the tab sits on the pane's left edge. */
@@ -459,10 +457,13 @@
 .cc-preview-tab-label {
   writing-mode: vertical-rl;
   transform: rotate(180deg);
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;
+  /* Subtle on the dark tab so the label reads as part of it; the chevron
+     (brighter) carries the affordance. */
+  color: rgba(255, 255, 255, 0.5);
 }
 .cc-preview-frame {
   flex: 1 1 auto;
@@ -562,7 +563,12 @@
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 .cc-panel-banner {
-  margin: 0 0 14px;
+  margin: 14px 0;
+}
+/* A trailing banner (e.g. the completion "add badges first" notice) shouldn't
+   add space below itself before the panel edge. */
+.cc-panel-banner:last-child {
+  margin-bottom: 0;
 }
 /* Opt-in panel turned off — only the header shows; center it (no body below). */
 .cc-panel--collapsed .cc-panel-head {
@@ -856,7 +862,8 @@
   border: 0;
   padding: 0;
   cursor: pointer;
-  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.15);
+  /* Stronger ring so white / very light chips stay visible. */
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.22);
   transition:
     box-shadow 0.12s ease,
     transform 0.12s ease;
@@ -911,7 +918,7 @@
   margin-top: 0;
 }
 .cc-color-reveal {
-  padding: 2px 0 4px;
+  padding: 10px 0 14px;
 }
 /* Merged accent + title color pickers, stacked; chips sit beside the input. */
 .cc-color-merged {
@@ -938,6 +945,14 @@
   align-items: center;
   gap: 8px;
 }
+/* Separates the hex input from the preset chips. */
+.cc-colorpick-divider {
+  align-self: stretch;
+  width: 1px;
+  min-height: 22px;
+  margin: 0 6px;
+  background: var(--line, #e2e8f0);
+}
 /* "Look & feel" is a dense form — tighten the gaps between its fields. */
 .cc-panel--lookfeel > .fld,
 .cc-panel--lookfeel > .cc-lookfeel-row {
@@ -957,10 +972,10 @@
 .cc-ribbon-reveal {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
-.cc-ribbon-reveal .inp {
-  max-width: 340px;
+.cc-ribbon-reveal .fld {
+  max-width: 360px;
 }
 
 /* ── Confirm (reset) modal ── */
@@ -2446,6 +2461,7 @@
   flex-wrap: wrap;
 }
 .cc-bingo-size {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2494,30 +2510,15 @@
 }
 
 /* ── Bingo board (tray + drag-and-drop grid) ── */
-/* Tray takes ~1/3, the card grid the remaining ~2/3. */
+/* Full-width drag tray on top, the card grid centered below — same stacked
+   layout as the gameboard. */
 .cc-bingo-board {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
-  gap: 20px;
-  align-items: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin-top: 16px;
   box-sizing: border-box;
   width: 100%;
-}
-@media (max-width: 760px) {
-  .cc-bingo-board {
-    grid-template-columns: 1fr;
-  }
-  /* Stacked: let the tray flow with its content (no card to match height to). */
-  .cc-bingo-tray {
-    min-height: 0;
-  }
-  .cc-bingo-tray-inner {
-    position: static;
-  }
-  .cc-bingo-tray-list {
-    max-height: 320px;
-  }
 }
 /* The tray stretches to the card grid's height (align-items: stretch on the
    board). Its content is absolutely positioned so the tray never dictates the
@@ -2546,7 +2547,7 @@
 }
 .cc-bingo-tray-head {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 10px;
   margin-bottom: 12px;
@@ -2555,6 +2556,27 @@
   font-size: 13px;
   font-weight: 700;
   color: #334155;
+}
+/* A single round badge ghost used as the drag image in both directions, so the
+   grab is fully round and the same size whichever way you drag. Rendered
+   off-screen; removed right after the browser snapshots it. */
+.cc-gb-drag-ghost {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.32);
+  pointer-events: none;
+}
+.cc-gb-drag-ghost img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .cc-bingo-tray-count {
   font-size: 12px;
@@ -2596,7 +2618,6 @@
 }
 .cc-bingo-chip:active {
   cursor: grabbing;
-  transform: scale(0.98);
 }
 .cc-bingo-chip.is-used {
   opacity: 0.4;
@@ -2623,12 +2644,24 @@
 .cc-bingo-art-fallback {
   color: #94a3b8;
 }
+.cc-bingo-chip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
 .cc-bingo-chip-name {
   font-size: 13px;
   font-weight: 600;
   color: #1e293b;
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cc-bingo-chip-meta {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
   white-space: nowrap;
 }
 
@@ -2638,8 +2671,7 @@
   gap: 8px;
   box-sizing: border-box;
   width: 100%;
-  justify-self: stretch;
-  align-self: start;
+  align-self: stretch;
   padding: 12px;
   background: linear-gradient(135deg, #f8fafc, #e9eef5);
   border: 1px solid var(--line);
@@ -2655,11 +2687,15 @@
   display: grid;
   place-items: center;
   color: #b0bccc;
-  overflow: hidden;
+  /* visible so a placed badge's hover tooltip isn't clipped by the cell */
+  overflow: visible;
   transition:
     border-color 0.12s,
     background 0.12s,
     box-shadow 0.12s;
+}
+.cc-bingo-cell:hover {
+  z-index: 5;
 }
 .cc-bingo-cell.is-filled {
   border-style: solid;
@@ -2731,6 +2767,70 @@
 .cc-bingo-cell-x:hover {
   background: var(--red, #dc2626);
   transform: scale(1.1);
+}
+
+/* ── Hover tooltip on a placed badge (bingo card + gameboard) ── */
+.cc-badge-tip {
+  position: absolute;
+  bottom: calc(100% + 9px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 30;
+  width: max-content;
+  max-width: 190px;
+  padding: 7px 11px;
+  border-radius: 9px;
+  background: #0f172a;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.38);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+}
+.cc-badge-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: #0f172a;
+}
+.cc-badge-tip strong {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+.cc-badge-tip-kind {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+}
+.cc-badge-tip-req {
+  font-size: 12px;
+  color: #cbd5e1;
+}
+.cc-bingo-placed:hover .cc-badge-tip,
+.cc-gb-placed:hover .cc-badge-tip,
+.cc-badge-tip.is-shown {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+/* Raise the hovered disc/cell so its tooltip sits above neighbors. */
+.cc-gb-node:hover,
+.cc-gb-node:has(.cc-badge-tip.is-shown) {
+  z-index: 10;
+}
+.cc-bingo-cell:has(.cc-badge-tip.is-shown) {
+  z-index: 5;
 }
 
 /* ── Reading list ── */
@@ -3315,8 +3415,11 @@
   align-items: center;
   gap: 4px;
 }
-/* Use/Duplicate picker modal — reuses the .cc-badge-editor chrome. */
+/* Use/Duplicate picker modal — reuses the .cc-badge-editor chrome. The shared
+   search has flex:1 (to grow in a row); here it's in a flex column, so pin it to
+   its natural height instead of letting it stretch tall. */
 .cc-actpicker .cc-badgepick-search {
+  flex: none;
   margin: 0 0 14px;
 }
 .cc-actpicker-empty {
@@ -3370,102 +3473,138 @@
   flex-direction: column;
   gap: 18px;
 }
-.cc-quick-range {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-.cc-quick-numstyle {
+/* Two labeled rows: "Set your badge increment [N] [unit]" + "How many badges? [N]". */
+.cc-quick-rows {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 14px;
 }
-.cc-quick-numstyle-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--ink);
-}
-.cc-quick-seg {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-.cc-quick-seg-btn {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  text-align: left;
-  padding: 9px 13px;
-  border: 1.5px solid var(--line);
-  border-radius: 10px;
-  background: #fff;
-  font: inherit;
-  cursor: pointer;
-  transition:
-    border-color 0.12s ease,
-    background 0.12s ease;
-}
-.cc-quick-seg-btn:hover {
-  border-color: #94a3b8;
-}
-.cc-quick-seg-btn.is-on {
-  border-color: var(--teal);
-  background: color-mix(in srgb, var(--teal) 6%, #fff);
-}
-.cc-quick-seg-name {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.cc-quick-seg-btn.is-on .cc-quick-seg-name {
-  color: var(--teal-dk);
-}
-.cc-quick-seg-eg {
-  font-size: 12px;
-  color: var(--muted);
-}
-.cc-quick-previewhead {
-  margin: 16px 0 8px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-.cc-quick-preview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  max-height: 220px;
-  overflow: auto;
-}
-.cc-quick-chip {
+.cc-quick-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 11px 5px 5px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  background: #fff;
+  gap: 10px;
+  flex-wrap: wrap;
 }
-.cc-quick-chip .cc-badgerow-art {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
+.cc-quick-row-label {
   flex: none;
+  width: 200px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink, #1e293b);
 }
-.cc-quick-chip .cc-badgerow-art img {
+/* Inputs share one height so the two rows line up. */
+.cc-quick-row .ninp {
+  flex: 0 0 auto;
+  width: 116px;
+  height: 42px;
+}
+.cc-quick-unit-sel {
+  display: inline-flex;
+  width: 132px;
+  height: 42px;
+}
+.cc-quick-unit-sel > * {
+  width: 100%;
+  height: 100%;
+}
+@media (max-width: 520px) {
+  .cc-quick-row-label {
+    width: auto;
+  }
+}
+
+/* Background — one row of round swatches (images, then colors). */
+.cc-quick-bgrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cc-quick-bglabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+}
+.cc-quick-swatches {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.cc-quick-swatch {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+.cc-quick-swatch img {
+  display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
-.cc-quick-chip-name {
+.cc-quick-swatch.is-on {
+  border-color: var(--teal, #0b7d8a);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal, #0b7d8a) 32%, #fff);
+}
+.cc-quick-swatch-sep {
+  width: 1px;
+  align-self: stretch;
+  min-height: 22px;
+  margin: 0 2px;
+  background: var(--line, #e2e8f0);
+}
+
+/* Result strip — the badges as they'll be created. */
+.cc-quick-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+  border-radius: 12px;
+  background: #f1f5f9;
+}
+.cc-quick-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+.cc-quick-badge {
+  width: 50px;
+  height: 50px;
+  flex: none;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.14);
+}
+.cc-quick-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-quick-badge-ph {
+  font-size: 15px;
+  font-weight: 800;
+  color: #64748b;
+}
+.cc-quick-result-note {
+  margin: 0;
   font-size: 13px;
   font-weight: 600;
-  color: var(--ink);
+  color: var(--muted, #64748b);
 }
 .cc-actpicker-list {
   display: grid;
@@ -3801,33 +3940,216 @@
 }
 
 /* ── Gameboard mock ── */
-.cc-board {
+/* ── Gameboard ── */
+.cc-gb {
   display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 14px;
+  flex-direction: column;
+  gap: 14px;
 }
-.cc-board-space {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  border: 1.5px dashed #cbd5e1;
+.cc-gb-board {
+  border-radius: 16px;
+  padding: 22px 18px;
+  display: flex;
+  justify-content: center;
+}
+/* Sized to the path; holds the SVG road + the absolutely-placed disc nodes. */
+.cc-gb-track-wrap {
+  position: relative;
+}
+.cc-gb-track {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: visible;
+}
+.cc-gb-node {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%);
   display: grid;
   place-items: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: #64748b;
-  flex: 0 0 auto;
 }
-.cc-board-space.is-start,
-.cc-board-space.is-end {
-  border-style: solid;
+/* START / HALFWAY / FINISH labels, curved on an SVG arc around the disc. */
+.cc-gb-arc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+.cc-gb-arc-text {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  fill: var(--ink, #7a5b2e);
+  /* White outline so the label stays legible over the themed background. */
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+.cc-gb-disc {
+  position: relative;
+  z-index: 1;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--track, #efe1c2);
+  /* A light "halo" in the track color surrounds each disc so it bulges over the
+     connector road, covering the connector ends for a seamless path. */
+  box-shadow:
+    0 0 0 8px var(--track, #efe1c2),
+    0 3px 8px rgba(15, 23, 42, 0.28);
+}
+.cc-gb-disc.is-over {
+  outline: 2px dashed #fff;
+  outline-offset: 2px;
+}
+.cc-gb-disc img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+/* Empty board slot: a dashed ring + plus, not a number. */
+.cc-gb-plus {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px dashed var(--ink, #7a5b2e);
+  color: var(--ink, #7a5b2e);
+  opacity: 0.55;
+  display: grid;
+  place-items: center;
+}
+.cc-gb-art-fallback {
+  color: var(--ink, #7a5b2e);
+}
+.cc-gb-placed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1; /* force a square so the badge image crops to a true circle */
+  cursor: grab;
+}
+.cc-gb-placed img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+.cc-gb-reward {
+  position: absolute;
+  z-index: 2;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  /* Tied to the board theme: the gift sits in the theme's deep "ink" color with
+     a white ring so it lifts off the road. */
+  background: var(--ink, #475569);
+  display: grid;
+  place-items: center;
+  color: #fff;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.95),
+    0 1px 4px rgba(15, 23, 42, 0.3);
+}
+/* Gameboard theme picker */
+.cc-gb-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+.cc-gb-theme {
+  position: relative;
+  width: auto;
+  height: 96px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  padding: 8px 10px;
+  color: #fff;
+  font: inherit;
+  overflow: hidden;
+  background-color: #e2e8f0;
+  background-size: cover;
+  background-position: center;
+}
+/* Legibility scrim behind the theme name. */
+.cc-gb-theme:not(.cc-gb-theme--custom)::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.45), transparent);
+}
+.cc-gb-theme .cc-gb-theme-name {
+  position: relative;
+  z-index: 1;
+}
+.cc-gb-theme.is-on {
   border-color: var(--teal);
-  color: var(--teal-dk);
-  background: color-mix(in srgb, var(--teal) 10%, #fff);
-  font-size: 14px;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 25%, transparent);
+}
+.cc-gb-theme-name {
+  font-size: 13px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.cc-gb-theme--custom {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: #f1f5f9;
+  border: 2px dashed #cbd5e1;
+  color: #64748b;
+}
+.cc-gb-theme--custom .cc-gb-theme-name {
+  text-shadow: none;
+}
+.cc-gb-theme-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--teal);
+  display: grid;
+  place-items: center;
+}
+.cc-gb-custom {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.cc-gb-tray-activity {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+.cc-gb-tray-sublabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.cc-bingo-chip.is-activity {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 /* ── Mobile click-to-preview ── */
@@ -4015,6 +4337,128 @@
   font-size: 14px;
   font-weight: 800;
   line-height: 1;
+}
+
+/* Preview content selector — a segmented pill control (Reading list / Badges / Rewards). */
+.cc-pv-seg {
+  display: flex;
+  gap: 3px;
+  margin: 18px 0 14px;
+  padding: 4px;
+  background: #eef2f6;
+  border-radius: 11px;
+}
+.cc-pv-seg-btn {
+  flex: 1;
+  appearance: none;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #64748b;
+  cursor: pointer;
+  padding: 7px 8px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition:
+    background 0.14s,
+    color 0.14s,
+    box-shadow 0.14s;
+}
+.cc-pv-seg-btn:hover:not(.is-active) {
+  color: #334155;
+}
+.cc-pv-seg-btn.is-active {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14);
+}
+.cc-pv-seg-count {
+  font-size: 11px;
+  font-weight: 800;
+  color: currentColor;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: 999px;
+  min-width: 18px;
+  height: 17px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Theme dropdown option: a small badge-style preview + the theme name. */
+.cc-theme-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+.cc-theme-opt-badge {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--c, #cbd5e1);
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.6),
+    0 1px 3px rgba(15, 23, 42, 0.22);
+}
+.cc-theme-opt-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Rewards list in the preview */
+.cc-pv-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cc-pv-reward {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cc-pv-reward-art {
+  --c: #0da7bc;
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 12%, #fff);
+  overflow: hidden;
+}
+.cc-pv-reward-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.cc-pv-reward-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.cc-pv-reward-info strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.cc-pv-reward-info span {
+  font-size: 12.5px;
+  color: #64748b;
 }
 
 /* Challenge dates + description in the preview body */
@@ -4372,6 +4816,13 @@
 .cc-optcards--stack {
   grid-template-columns: 1fr;
 }
+/* In the big stacked cards, center the icon + radio dot against the text. */
+.cc-optcards--stack .cc-optcard {
+  align-items: center;
+}
+.cc-optcards--stack .cc-optcard-dot {
+  margin-top: 0;
+}
 .cc-optcard {
   display: flex;
   align-items: flex-start;
@@ -4563,6 +5014,29 @@
 }
 /* "All badges award N tickets" inline control — tinted to read as a
    continuation of the selected "All badges" option. */
+/* An option card whose control reveals INSIDE the card when it's active. */
+.cc-optrow {
+  display: flex;
+  flex-direction: column;
+}
+/* Only merge into one card when there's actually a control below; an active
+   option with no sub-control keeps its normal rounded card. */
+.cc-optrow.is-on:has(.cc-optcard-sub) {
+  border-radius: 14px;
+  box-shadow: 0 3px 14px color-mix(in srgb, var(--teal) 20%, transparent);
+}
+.cc-optrow.is-on:has(.cc-optcard-sub) .cc-optcard {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: none;
+}
+.cc-optcard-sub {
+  border: 1.5px solid var(--teal);
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
+  padding: 12px 14px 14px;
+}
 .cc-ticket-allcount {
   display: flex;
   align-items: center;
@@ -4574,6 +5048,13 @@
   border: 1px solid color-mix(in srgb, var(--teal) 28%, var(--line));
   border-radius: 12px;
   padding: 12px 16px;
+}
+/* Inside an option card, the control drops its own card chrome. */
+.cc-optcard-sub .cc-ticket-allcount {
+  border: 0;
+  background: none;
+  border-radius: 0;
+  padding: 0;
 }
 .cc-ticket-allcount .ninp {
   width: 106px;
@@ -4639,27 +5120,4 @@
 .cc-savedreward-info span {
   font-size: 13px;
   color: var(--muted);
-}
-/* Certificate tag help */
-.cc-cert-tagshelp-lead {
-  margin-bottom: 8px;
-}
-.cc-cert-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.cc-cert-tag {
-  border: 1px solid color-mix(in srgb, var(--teal) 35%, var(--line));
-  border-radius: 999px;
-  padding: 3px 10px;
-  background: #fff;
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: var(--teal-dk);
-  cursor: pointer;
-}
-.cc-cert-tag:hover {
-  background: color-mix(in srgb, var(--teal) 10%, #fff);
 }

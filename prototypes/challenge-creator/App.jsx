@@ -97,18 +97,23 @@ function Seg({ value, onChange, options, label }) {
 }
 function DevControls({ mode, roleId, onMode, onRole }) {
   const roles = getRoles(mode)
+  // Template-creation mode is hidden for now (to be rebuilt later); only show the
+  // Mode switcher if more than one mode remains.
+  const modeOptions = MODES.filter((m) => m.id !== 'template')
   return (
     <div className="cc-devseg">
-      <Seg
-        label="Mode"
-        value={mode}
-        onChange={onMode}
-        options={MODES.map((m) => ({
-          value: m.id,
-          title: `Mode: ${m.name}`,
-          icon: MODE_ICON[m.id],
-        }))}
-      />
+      {modeOptions.length > 1 && (
+        <Seg
+          label="Mode"
+          value={mode}
+          onChange={onMode}
+          options={modeOptions.map((m) => ({
+            value: m.id,
+            title: `Mode: ${m.name}`,
+            icon: MODE_ICON[m.id],
+          }))}
+        />
+      )}
       <Seg
         label="View as"
         value={roleId}
@@ -155,6 +160,7 @@ export function App() {
   const [dirty, setDirty] = useState(false)
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [pendingType, setPendingType] = useState(null)
+  const [confirmPublish, setConfirmPublish] = useState(false)
 
   const firstRun = useRef(true)
   const saveTimer = useRef(null)
@@ -265,6 +271,7 @@ export function App() {
     setStepId(steps[idx + 1].id)
   }
   const goPrev = () => idx > 0 && setStepId(steps[idx - 1].id)
+  // Publishing is a deliberate step: validate first, then confirm.
   const publish = () => {
     const bad = firstInvalidStep(steps, challenge, { role, type })
     if (bad) {
@@ -273,6 +280,10 @@ export function App() {
       focusFirstError()
       return
     }
+    setConfirmPublish(true)
+  }
+  const doPublish = () => {
+    setConfirmPublish(false)
     window.alert('Prototype: the challenge would publish now. ✅')
   }
   // Preview: split-pane toggle on desktop, full-screen modal on mobile.
@@ -392,6 +403,7 @@ export function App() {
           <button
             type="button"
             className={`cc-preview-tab${previewOpen ? ' is-open' : ''}`}
+            style={{ background: previewBg }}
             onClick={() => setPreviewOpen((v) => !v)}
             aria-label={previewOpen ? 'Hide challenge preview' : 'Show challenge preview'}
             aria-expanded={previewOpen}
@@ -468,6 +480,33 @@ export function App() {
                 }}
               >
                 Yes, change type
+              </Button>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={confirmPublish}
+        onClose={() => setConfirmPublish(false)}
+        variant="center"
+        ariaLabel="Publish challenge?"
+      >
+        {({ close }) => (
+          <div className="cc-confirm">
+            <h3>Publish this {mode === 'template' ? 'template' : 'challenge'}?</h3>
+            <p>
+              {mode === 'template'
+                ? 'Schools will be able to find and run this template.'
+                : 'Readers will be able to find and join it right away.'}{' '}
+              You can still edit it after publishing.
+            </p>
+            <div className="cc-confirm-actions">
+              <Button variant="secondary" onClick={close}>
+                Keep editing
+              </Button>
+              <Button variant="primary" accent="#0DA7BC" onClick={doPublish}>
+                Yes, publish
               </Button>
             </div>
           </div>
