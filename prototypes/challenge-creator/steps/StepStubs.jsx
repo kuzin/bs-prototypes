@@ -806,7 +806,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
         ) : (
           <>
             {challenge.templateId === 'scratch' && (
-              <Field label="Theme">
+              <Field label="Theme" className="cc-w-sm">
                 <CustomSelect
                   value={themeId}
                   onChange={(id) => {

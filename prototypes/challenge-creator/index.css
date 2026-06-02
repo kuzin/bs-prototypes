@@ -918,16 +918,24 @@
 .cc-color-reveal {
   padding: 2px 0 12px;
 }
-/* Merged accent + title color pickers, side by side. */
+/* Merged accent + title color pickers, stacked; chips sit beside the input. */
 .cc-color-merged {
   display: flex;
-  flex-wrap: wrap;
-  gap: 14px 28px;
+  flex-direction: column;
+  gap: 12px;
 }
 .cc-color-field {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 12px;
+}
+.cc-color-field-label {
+  min-width: 48px;
+}
+.cc-color-merged .cc-accent-ctrl {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
 }
 .cc-color-field-label {
   font-size: 12px;
