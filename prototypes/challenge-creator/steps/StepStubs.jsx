@@ -74,10 +74,10 @@ const STEP_ICONS = {
   prizes: <Icon name="gift" size={22} />,
   completion: <Icon name="flag" size={22} />,
 }
-function StepHead({ title, sub, icon }) {
+function StepHead({ title, sub }) {
   return (
     <div className="cc-step-head">
-      <Hero icon={icon} title={title} subtitle={sub} accent="#0DA7BC" />
+      <Hero title={title} subtitle={sub} accent="#0DA7BC" />
     </div>
   )
 }
@@ -5858,49 +5858,54 @@ export function RewardsStep({ challenge, update }) {
                 {TICKET_SOURCES.map((o) => {
                   const on = ticketSource === o.value
                   return (
-                    <button
-                      key={o.value}
-                      type="button"
-                      role="radio"
-                      aria-checked={on}
-                      className={`cc-optcard${on ? ' is-on' : ''}`}
-                      onClick={() => setR({ ticketSource: o.value })}
-                    >
-                      <span className="cc-optcard-ic" aria-hidden="true">
-                        <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
-                      </span>
-                      <span className="cc-optcard-text">
-                        <strong>{o.label}</strong>
-                        <span>{o.sub}</span>
-                      </span>
-                      <span className="cc-optcard-dot" aria-hidden="true" />
-                    </button>
+                    <div key={o.value} className={`cc-optrow${on ? ' is-on' : ''}`}>
+                      <button
+                        type="button"
+                        role="radio"
+                        aria-checked={on}
+                        className={`cc-optcard${on ? ' is-on' : ''}`}
+                        onClick={() => setR({ ticketSource: o.value })}
+                      >
+                        <span className="cc-optcard-ic" aria-hidden="true">
+                          <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
+                        </span>
+                        <span className="cc-optcard-text">
+                          <strong>{o.label}</strong>
+                          <span>{o.sub}</span>
+                        </span>
+                        <span className="cc-optcard-dot" aria-hidden="true" />
+                      </button>
+                      {on && o.value === 'all' && (
+                        <div className="cc-optcard-sub">
+                          <div className="cc-ticket-allcount">
+                            <span>Each badge awards</span>
+                            <NumberInput
+                              value={ticketsPerBadge}
+                              min={1}
+                              max={100}
+                              onChange={(v) => setR({ ticketsPerBadge: v })}
+                            />
+                            <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
+                          </div>
+                        </div>
+                      )}
+                      {on && o.value === 'specific' && (
+                        <div className="cc-optcard-sub">
+                          <BadgeSelect
+                            badges={badgePool}
+                            selectedIds={Object.keys(ticketBadges)}
+                            onToggle={toggleTicketBadge}
+                            valueMode
+                            values={ticketBadges}
+                            onValue={setTicketBadgeValue}
+                            valueLabel="tickets"
+                          />
+                        </div>
+                      )}
+                    </div>
                   )
                 })}
               </div>
-              {ticketSource === 'all' && (
-                <div className="cc-ticket-allcount">
-                  <span>Each badge awards</span>
-                  <NumberInput
-                    value={ticketsPerBadge}
-                    min={1}
-                    max={100}
-                    onChange={(v) => setR({ ticketsPerBadge: v })}
-                  />
-                  <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
-                </div>
-              )}
-              {ticketSource === 'specific' && (
-                <BadgeSelect
-                  badges={badgePool}
-                  selectedIds={Object.keys(ticketBadges)}
-                  onToggle={toggleTicketBadge}
-                  valueMode
-                  values={ticketBadges}
-                  onValue={setTicketBadgeValue}
-                  valueLabel="tickets"
-                />
-              )}
             </div>
             {ticketRewards.length ? (
               <div className="cc-badge-rows">

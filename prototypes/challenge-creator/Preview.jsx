@@ -323,7 +323,7 @@ export function Preview({ challenge }) {
 
         {pvTabs.length > 0 && (
           <>
-            <div className="cc-pv-tabs" role="tablist">
+            <div className="cc-pv-seg" role="tablist">
               {pvTabs.map((t) => {
                 const on = activeTab === t.id
                 return (
@@ -332,12 +332,12 @@ export function Preview({ challenge }) {
                     type="button"
                     role="tab"
                     aria-selected={on}
-                    className={`cc-pv-tab${on ? ' is-active' : ''}`}
+                    className={`cc-pv-seg-btn${on ? ' is-active' : ''}`}
                     style={on ? { color: accent } : undefined}
                     onClick={() => setPvTab(t.id)}
                   >
                     {t.label}
-                    <span className="cc-pv-tab-count">{t.count}</span>
+                    <span className="cc-pv-seg-count">{t.count}</span>
                   </button>
                 )
               })}
