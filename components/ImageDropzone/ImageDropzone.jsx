@@ -1,4 +1,5 @@
 import { useRef, useState } from 'react'
+import { Icon } from '@components/Icon/Icon'
 import '@components/ImageDropzone/ImageDropzone.css'
 
 /**
@@ -62,22 +63,7 @@ export function ImageDropzone({
       {previewSrc ? (
         <img className="idz-preview" src={previewSrc} alt="" />
       ) : (
-        <svg
-          className="idz-icon"
-          viewBox="0 0 24 24"
-          width="28"
-          height="28"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.6"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          aria-hidden="true"
-        >
-          <rect x="3" y="4" width="18" height="16" rx="2.5" />
-          <circle cx="8.5" cy="9.5" r="1.6" />
-          <path d="M21 16l-5-5-9 9" />
-        </svg>
+        <Icon name="photo" size={28} className="idz-icon" />
       )}
       {fileName ? (
         <span className="idz-file">{fileName}</span>

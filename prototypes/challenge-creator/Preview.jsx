@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { Ic } from '@components/ui'
+import { Icon } from '@components/Icon/Icon'
 import {
   getBackground,
   bannerImage,
@@ -67,26 +68,6 @@ function dateRange(start, end) {
   if (a) return `Starts ${fmt(a)}`
   if (b) return `Ends ${fmt(b)}`
   return null
-}
-
-function ImageGlyph() {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="30"
-      height="30"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.6"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <rect x="3" y="4" width="18" height="16" rx="2.5" />
-      <circle cx="8.5" cy="9.5" r="1.6" />
-      <path d="M21 16l-5-5-9 9" />
-    </svg>
-  )
 }
 
 /**
@@ -222,7 +203,7 @@ export function Preview({ challenge }) {
             </span>
           ) : uploadSrc ? null : (
             <span className="cc-pv-imgicon">
-              <ImageGlyph />
+              <Icon name="photo" size={30} />
             </span>
           )
         ) : (

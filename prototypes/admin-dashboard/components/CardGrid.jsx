@@ -28,25 +28,9 @@ import { Icon } from '@components/Icon/Icon'
 const MAX_PER_ROW = 2
 
 const SplitIcon = () => <Icon name="layout-columns" size={16} />
-// Two stacked rows with a downward arrow — signals that dropping here will
-// push the dragged card onto a new row underneath, instead of pairing.
-const NewRowIcon = () => (
-  <svg
-    viewBox="0 0 24 24"
-    width="16"
-    height="16"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <rect x="4" y="4" width="16" height="6" rx="1.5" />
-    <path d="M12 13v6" />
-    <polyline points="9,16 12,19 15,16" />
-  </svg>
-)
+// A downward arrow — signals that dropping here will push the dragged card onto
+// a new row underneath, instead of pairing.
+const NewRowIcon = () => <Icon name="arrow-down" size={16} />
 // Hover hint shown on the card under the cursor: whether dropping will pair the
 // two side-by-side (split) or push the dragged card to a new row below
 // (locked — happens when the target's row is full or contains a full-bleed widget).

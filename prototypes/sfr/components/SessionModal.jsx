@@ -475,9 +475,7 @@ export function SessionModal({
                   <span className="sm2-section-title">Engagement Rating</span>
                   {d.changeLog?.some((e) => e.kind === 'rating') && (
                     <span className="sm2-rating-overridden-pill">
-                      <svg viewBox="0 0 12 12" width="10" height="10" fill="currentColor">
-                        <circle cx="6" cy="6" r="3" />
-                      </svg>
+                      <Icon name="point-filled" size={10} />
                       Overridden
                     </span>
                   )}

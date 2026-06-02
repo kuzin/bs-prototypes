@@ -63,65 +63,18 @@ const normalizeChallenge = (c) => {
 
 // ── Dev/preview controls (NOT real product controls) ──
 // Small icon segmented controls centered in the header: Mode + View-as role.
-const sv = (paths) => (
-  <svg
-    viewBox="0 0 24 24"
-    width="15"
-    height="15"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.8"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    {paths}
-  </svg>
-)
 const MODE_ICON = {
   // Challenge = a flag/goal; Template = stacked layers.
-  challenge: sv(
-    <>
-      <path d="M5 21V4" />
-      <path d="M5 4h12l-2.2 3.5L17 11H5" />
-    </>,
-  ),
-  template: sv(
-    <>
-      <rect x="4" y="4" width="13" height="13" rx="2" />
-      <path d="M8 20h11a1 1 0 0 0 1-1V8" />
-    </>,
-  ),
+  challenge: <Icon name="flag" size={15} />,
+  template: <Icon name="layers" size={15} />,
 }
 const ROLE_ICON = {
-  // Teacher = mortarboard; School admin = school building; Librarian = book;
+  // Teacher = school; School admin = building; Librarian = book;
   // District = multiple buildings.
-  teacher: sv(
-    <>
-      <path d="M3 8l9-4 9 4-9 4-9-4z" />
-      <path d="M7 10.5V15c0 1.1 2.2 2.5 5 2.5s5-1.4 5-2.5v-4.5" />
-    </>,
-  ),
-  msplus: sv(
-    <>
-      <path d="M4 21V8l8-4 8 4v13" />
-      <path d="M9 21v-5h6v5" />
-      <path d="M9 11h.01M15 11h.01" />
-    </>,
-  ),
-  librarian: sv(
-    <>
-      <path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3z" transform="translate(0 -1)" />
-      <path d="M5 4v16a3 3 0 0 1 3-3h9" />
-    </>,
-  ),
-  district: sv(
-    <>
-      <rect x="3" y="9" width="7" height="12" rx="1" />
-      <rect x="12" y="4" width="9" height="17" rx="1" />
-      <path d="M15 8h.01M18 8h.01M15 12h.01M18 12h.01" />
-    </>,
-  ),
+  teacher: <Icon name="school" size={15} />,
+  msplus: <Icon name="building" size={15} />,
+  librarian: <Icon name="book" size={15} />,
+  district: <Icon name="building-community" size={15} />,
 }
 function Seg({ value, onChange, options, label }) {
   return (

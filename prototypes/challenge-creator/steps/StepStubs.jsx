@@ -54,76 +54,15 @@ import {
 } from '../data'
 
 // ─── shared bits ──────────────────────────────────────────────────────────────
-// Page-header icons per step (Lucide-style, drawn by the shared <Hero>).
-const ic = (d) => (
-  <svg
-    viewBox="0 0 24 24"
-    width="22"
-    height="22"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    {d}
-  </svg>
-)
+// Page-header icons per step (drawn by the shared <Hero>).
 const STEP_ICONS = {
-  details: ic(
-    <>
-      <line x1="4" y1="21" x2="4" y2="14" />
-      <line x1="4" y1="10" x2="4" y2="3" />
-      <line x1="12" y1="21" x2="12" y2="12" />
-      <line x1="12" y1="8" x2="12" y2="3" />
-      <line x1="20" y1="21" x2="20" y2="16" />
-      <line x1="20" y1="12" x2="20" y2="3" />
-      <line x1="1" y1="14" x2="7" y2="14" />
-      <line x1="9" y1="8" x2="15" y2="8" />
-      <line x1="17" y1="16" x2="23" y2="16" />
-    </>,
-  ),
-  badges: ic(
-    <>
-      <circle cx="12" cy="8" r="6" />
-      <path d="M8.2 13.5L7 22l5-3 5 3-1.2-8.5" />
-    </>,
-  ),
-  bingo: ic(
-    <>
-      <rect x="3" y="3" width="18" height="18" rx="2" />
-      <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
-    </>,
-  ),
-  gameboard: ic(
-    <>
-      <path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3z" />
-      <path d="M9 3v15M15 6v15" />
-    </>,
-  ),
-  readingList: ic(
-    <>
-      <line x1="8" y1="6" x2="21" y2="6" />
-      <line x1="8" y1="12" x2="21" y2="12" />
-      <line x1="8" y1="18" x2="21" y2="18" />
-      <line x1="3" y1="6" x2="3.01" y2="6" />
-      <line x1="3" y1="12" x2="3.01" y2="12" />
-      <line x1="3" y1="18" x2="3.01" y2="18" />
-    </>,
-  ),
-  prizes: ic(
-    <>
-      <rect x="3" y="8" width="18" height="4" rx="1" />
-      <path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8" />
-      <path d="M12 8S10.5 3 7.5 3a2.5 2.5 0 0 0 0 5H12zM12 8s1.5-5 4.5-5a2.5 2.5 0 0 1 0 5H12z" />
-    </>,
-  ),
-  completion: ic(
-    <>
-      <path d="M4 22V4a1 1 0 0 1 1-1h13l-2.5 4.5L18 12H5" />
-    </>,
-  ),
+  details: <Icon name="settings" size={22} />,
+  badges: <Icon name="award" size={22} />,
+  bingo: <Icon name="layout-grid" size={22} />,
+  gameboard: <Icon name="route" size={22} />,
+  readingList: <Icon name="list" size={22} />,
+  prizes: <Icon name="gift" size={22} />,
+  completion: <Icon name="flag" size={22} />,
 }
 function StepHead({ title, sub, icon }) {
   return (
@@ -229,66 +168,81 @@ const BUILDER_BGS = [
 ]
 // Clean 24×24 icon paths (Lucide/Feather geometry). Stroke icons draw as
 // outlines; fill icons as solids — both centered in the 24-unit box.
+// Badge-icon picker entries. `name` drives the on-screen <Icon> render; `path`
+// + `mode` are kept for the canvas badge compositor (composeBadge), which draws
+// the glyph onto a <canvas> and so can't use the React <Icon> component.
 const BUILDER_ICONS = [
   {
     id: 'star',
+    name: 'star',
     mode: 'stroke',
     path: 'M12 2.5l2.95 5.98 6.6.96-4.77 4.65 1.13 6.57L12 17.55 6.09 20.66l1.13-6.57L2.45 9.44l6.6-.96z',
   },
   {
     id: 'heart',
+    name: 'heart',
     mode: 'stroke',
     path: 'M19.5 5.3a4.6 4.6 0 0 0-6.5 0L12 6.3l-1-1a4.6 4.6 0 1 0-6.5 6.5l1 1L12 20.3l6.5-6.5 1-1a4.6 4.6 0 0 0 0-6.5z',
   },
   {
     id: 'flame',
+    name: 'flame',
     mode: 'stroke',
     path: 'M12 2.5c2.5 3 4.5 5 4.5 8.5a4.5 4.5 0 0 1-9 0c0-1.3.4-2.3 1.1-3.3.2 1.6 1 2.4 2 2.4 1.2 0 1.6-1 1.4-2.6-.2-1.9-.5-3.5-1-5z',
   },
-  { id: 'check', mode: 'stroke', path: 'M20 6.5L9.2 17.3 4 12.1' },
+  { id: 'check', name: 'check', mode: 'stroke', path: 'M20 6.5L9.2 17.3 4 12.1' },
   {
     id: 'trophy',
+    name: 'trophy',
     mode: 'stroke',
     path: 'M7 4.5h10v4a5 5 0 0 1-10 0zM7 6H4.5v1.5A2.5 2.5 0 0 0 7 10M17 6h2.5v1.5A2.5 2.5 0 0 1 17 10M10 14.5h4M9.5 20h5M12 14.5V18M9.5 20h5',
   },
-  { id: 'bolt', mode: 'stroke', path: 'M13.5 2.5L5 13.5h5.5L10 21.5 19 10h-5.5z' },
+  { id: 'bolt', name: 'bolt', mode: 'stroke', path: 'M13.5 2.5L5 13.5h5.5L10 21.5 19 10h-5.5z' },
   {
     id: 'book',
+    name: 'book',
     mode: 'stroke',
     path: 'M4 4.5h11a2.5 2.5 0 0 1 2.5 2.5v12.5a2 2 0 0 0-2-2H4zM4 4.5v13',
   },
   {
     id: 'medal',
+    name: 'medal',
     mode: 'stroke',
     path: 'M8 2.5l2.5 4M16 2.5l-2.5 4M12 21.5a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11z',
   },
   {
     id: 'crown',
+    name: 'crown',
     mode: 'stroke',
     path: 'M3 7.5l3.5 3L12 4l5.5 6.5L21 7.5l-1.5 11h-15zM4.5 18.5h15',
   },
   {
     id: 'rocket',
+    name: 'rocket',
     mode: 'stroke',
     path: 'M12 2.5c3 1.5 5 4.5 5 8.5 0 2-.7 3.6-1.5 4.5h-7C7.7 14.6 7 13 7 11c0-4 2-7 5-8.5zM12 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM9.5 15.5L8 19l2.5-1.5M14.5 15.5L16 19l-2.5-1.5',
   },
   {
     id: 'target',
+    name: 'target',
     mode: 'stroke',
     path: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
   },
   {
     id: 'sun',
+    name: 'sun',
     mode: 'stroke',
     path: 'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8L6 18M18 6l1.8-1.8',
   },
   {
     id: 'leaf',
+    name: 'leaf',
     mode: 'stroke',
     path: 'M5 19c-1-7 3.5-13.5 14-13.5C19 15.5 13 20 6.5 19zM5 19c2.5-4 5-6.5 9-8.5',
   },
   {
     id: 'smile',
+    name: 'smile',
     mode: 'stroke',
     path: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8.5 14c.8 1.2 2 2 3.5 2s2.7-.8 3.5-2M9 9.5h.01M15 9.5h.01',
   },
@@ -489,18 +443,7 @@ async function composeUpload({ src, bg, bgImage, tint, scale, x, y }) {
 }
 
 function BuilderIcon({ icon, color, size = 22 }) {
-  return (
-    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true">
-      <path
-        d={icon.path}
-        fill={icon.mode === 'fill' ? color : 'none'}
-        stroke={icon.mode === 'stroke' ? color : 'none'}
-        strokeWidth="1.7"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
+  return <Icon name={icon.name} color={color} size={size} />
 }
 
 // Generic background images for the Upload + Create tabs — gradients + a few
@@ -795,23 +738,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
               }
             }}
           >
-            <svg
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <circle cx="13.5" cy="6.5" r="1.5" />
-              <circle cx="17.5" cy="10.5" r="1.5" />
-              <circle cx="8.5" cy="7.5" r="1.5" />
-              <circle cx="6.5" cy="12.5" r="1.5" />
-              <path d="M12 2a10 10 0 1 0 0 20 2.5 2.5 0 0 0 2-4 2.5 2.5 0 0 1 2-4h2a4 4 0 0 0 4-4 10 10 0 0 0-10-8z" />
-            </svg>
+            <Icon name="palette" size={18} />
             Use a theme
           </button>
           <button
@@ -827,21 +754,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
               }
             }}
           >
-            <svg
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <rect x="3" y="3" width="18" height="18" rx="3" />
-              <circle cx="8.5" cy="8.5" r="1.5" />
-              <path d="M21 15l-5-5L5 21" />
-            </svg>
+            <Icon name="photo" size={18} />
             Upload an image
           </button>
         </div>
@@ -1700,21 +1613,7 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
         </div>
         <p className="cc-upload-hint">Drag to reposition</p>
         <div className="cc-upload-scale">
-          <svg
-            className="cc-upload-scale-ic"
-            viewBox="0 0 24 24"
-            width="15"
-            height="15"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="M21 21l-3.6-3.6M8 11h6" />
-          </svg>
+          <Icon name="zoom-out" size={15} className="cc-upload-scale-ic" />
           <RangeSlider
             min={0.5}
             max={2.5}
@@ -1723,21 +1622,7 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
             showValue={false}
             onChange={setScale}
           />
-          <svg
-            className="cc-upload-scale-ic"
-            viewBox="0 0 24 24"
-            width="15"
-            height="15"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            aria-hidden="true"
-          >
-            <circle cx="11" cy="11" r="7" />
-            <path d="M21 21l-3.6-3.6M11 8v6M8 11h6" />
-          </svg>
+          <Icon name="zoom-in" size={15} className="cc-upload-scale-ic" />
         </div>
         <button type="button" className="cc-upload-replace" onClick={() => setSrc(null)}>
           <Icon name="refresh" size={14} />
@@ -2215,25 +2100,7 @@ function BadgeEditor({
                 onClick={() => setPicking(true)}
                 aria-label={badge?.img ? 'Change badge' : 'Choose a badge'}
               >
-                {badge?.img ? (
-                  <img src={badge.img} alt="" />
-                ) : (
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="34"
-                    height="34"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                  >
-                    <rect x="3" y="3" width="18" height="18" rx="3" />
-                    <circle cx="8.5" cy="8.5" r="1.6" />
-                    <path d="M21 15l-5-5L5 21" />
-                  </svg>
-                )}
+                {badge?.img ? <img src={badge.img} alt="" /> : <Icon name="photo" size={34} />}
                 {/* Edit affordance overlaid on the badge (replaces the separate button). */}
                 <span className="cc-badge-disc-edit" aria-hidden="true">
                   <Icon name="pencil" size={15} />
@@ -2625,25 +2492,7 @@ function ActivityBadgeEditor({
                     onClick={() => setPicking(true)}
                     aria-label={badge?.img ? 'Change badge' : 'Choose a badge'}
                   >
-                    {badge?.img ? (
-                      <img src={badge.img} alt="" />
-                    ) : (
-                      <svg
-                        viewBox="0 0 24 24"
-                        width="34"
-                        height="34"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.8"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <rect x="3" y="3" width="18" height="18" rx="3" />
-                        <circle cx="8.5" cy="8.5" r="1.6" />
-                        <path d="M21 15l-5-5L5 21" />
-                      </svg>
-                    )}
+                    {badge?.img ? <img src={badge.img} alt="" /> : <Icon name="photo" size={34} />}
                     <span className="cc-badge-disc-edit" aria-hidden="true">
                       <Icon name="pencil" size={15} />
                     </span>
@@ -4371,31 +4220,8 @@ const CERT_TAGS = [
 const CERT_EXAMPLE =
   'This certificate is proudly presented to {{first_name}} for earning the {{earned_badge_title}} during {{microsite_name}} Summer Reading challenge.'
 
-const rwIcon = (paths) => (
-  <svg
-    viewBox="0 0 24 24"
-    width="26"
-    height="26"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.7"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    {paths}
-  </svg>
-)
 const REWARD_EMPTY_ICON = <Icon name="gift" size={26} />
-const TICKET_EMPTY_ICON = rwIcon(
-  <>
-    <path
-      d="M3.5 8.5A1.5 1.5 0 0 1 5 7h14a1.5 1.5 0 0 1 1.5 1.5 1.5 1.5 0 0 0 0 3A1.5 1.5 0 0 1 19 13H5a1.5 1.5 0 0 1-1.5-1.5 1.5 1.5 0 0 0 0-3z"
-      transform="translate(0 2)"
-    />
-    <path d="M14.5 8v9" strokeDasharray="2 2.2" />
-  </>,
-)
+const TICKET_EMPTY_ICON = <Icon name="ticket" size={26} />
 const CERT_EMPTY_ICON = <Icon name="certificate" size={26} />
 
 // Reward — a simple title + description prize, assigned to the badge(s) that grant it.
