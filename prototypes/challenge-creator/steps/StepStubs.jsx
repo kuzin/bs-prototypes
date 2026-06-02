@@ -4200,29 +4200,31 @@ export function SetupStep({ challenge, type, update }) {
           icon={STEP_ICONS.bingo}
         />
         <div className="cc-panel">
-          <Field label="Card size">
-            <div className="cc-bingo-sizes">
-              {['3x3', '4x4', '5x5'].map((v) => {
-                const dim = Number(v[0])
-                return (
-                  <button
-                    key={v}
-                    type="button"
-                    className={`cc-bingo-size${size === v ? ' is-active' : ''}`}
-                    aria-pressed={size === v}
-                    onClick={() => update({ setup: { ...s, bingoSize: v } })}
-                  >
-                    <span className="cc-bingo-size-grid" style={{ '--n': dim }}>
-                      {Array.from({ length: dim * dim }).map((_, i) => (
-                        <i key={i} />
-                      ))}
-                    </span>
-                    <span className="cc-bingo-size-label">{v.replace('x', ' × ')}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </Field>
+          <h3 className="cc-panel-title">Card size</h3>
+          <div className="cc-bingo-sizes">
+            {['3x3', '4x4', '5x5'].map((v) => {
+              const dim = Number(v[0])
+              return (
+                <button
+                  key={v}
+                  type="button"
+                  className={`cc-bingo-size${size === v ? ' is-active' : ''}`}
+                  aria-pressed={size === v}
+                  onClick={() => update({ setup: { ...s, bingoSize: v } })}
+                >
+                  <span className="cc-bingo-size-grid" style={{ '--n': dim }}>
+                    {Array.from({ length: dim * dim }).map((_, i) => (
+                      <i key={i} />
+                    ))}
+                  </span>
+                  <span className="cc-bingo-size-label">{v.replace('x', ' × ')}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+        <div className="cc-panel">
+          <h3 className="cc-panel-title">Arrange the card</h3>
           <BingoBoard
             challenge={challenge}
             size={size}
