@@ -4101,6 +4101,10 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
 }
+/* Full-width stacked variant (e.g. completion requirement cards). */
+.cc-optcards--stack {
+  grid-template-columns: 1fr;
+}
 .cc-optcard {
   display: flex;
   align-items: flex-start;
