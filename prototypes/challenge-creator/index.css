@@ -19,7 +19,14 @@
   background: var(--bg);
   color: var(--ink);
   font-family:
-    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
 }
 
 /* ── Accessibility: lift shared design-system control text within the creator
@@ -112,7 +119,10 @@
   background: transparent;
   color: #64748b;
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    background 0.12s ease,
+    color 0.12s ease,
+    box-shadow 0.12s ease;
 }
 /* Instant tooltip (native title is too slow for icon-only controls). */
 .cc-seg-btn::after {
@@ -393,7 +403,9 @@
   flex-direction: column;
   min-height: 0;
   /* Slides out in sync with the side tab (right transition is 0.2s too). */
-  transition: margin-right 0.2s ease, transform 0.2s ease;
+  transition:
+    margin-right 0.2s ease,
+    transform 0.2s ease;
 }
 /* Collapsed: pull back its 380px of space and slide off to the right. */
 .cc-preview.is-collapsed {
@@ -421,7 +433,10 @@
   color: #64748b;
   cursor: pointer;
   box-shadow: -3px 0 10px rgba(15, 23, 42, 0.07);
-  transition: right 0.2s ease, color 0.15s ease, background 0.15s ease;
+  transition:
+    right 0.2s ease,
+    color 0.15s ease,
+    background 0.15s ease;
 }
 .cc-preview-tab:hover {
   color: var(--teal-dk);
@@ -809,7 +824,9 @@
 }
 .cc-banner-thumb:hover {
   transform: translateY(-1px);
-  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12), 0 4px 10px rgba(15, 23, 42, 0.12);
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.12),
+    0 4px 10px rgba(15, 23, 42, 0.12);
 }
 .cc-banner-thumb.is-on {
   box-shadow:
@@ -852,7 +869,9 @@
   padding: 0;
   cursor: pointer;
   box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.15);
-  transition: box-shadow 0.12s ease, transform 0.12s ease;
+  transition:
+    box-shadow 0.12s ease,
+    transform 0.12s ease;
 }
 .cc-accent-dot:hover {
   transform: scale(1.08);
@@ -1366,7 +1385,9 @@
   background: #fff;
   cursor: pointer;
   text-align: left;
-  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
 }
 /* Match the logging badge cards' hover (teal border + ring). */
 .cc-badge-pin:hover {
@@ -1623,7 +1644,9 @@
   transition: box-shadow 0.14s ease;
 }
 .cc-badge-disc:hover {
-  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1), 0 0 0 3px color-mix(in srgb, var(--teal) 22%, transparent);
+  box-shadow:
+    0 4px 14px rgba(15, 23, 42, 0.1),
+    0 0 0 3px color-mix(in srgb, var(--teal) 22%, transparent);
 }
 .cc-badge-disc img {
   width: 100%;
@@ -1703,7 +1726,9 @@
   border: 1px solid var(--line);
   border-radius: 9px;
   background: #fff;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
 }
 .cc-badgepick-search.is-active,
 .cc-badgepick-search:focus-within {
@@ -1781,7 +1806,9 @@
 /* Selection ring hugs the dot (not the 20px hit-area) so it stays inside the
    chip and doesn't crowd its neighbors. */
 .cc-colorchip.is-on .cc-colorchip-dot {
-  box-shadow: 0 0 0 1.5px #fff, 0 0 0 3px var(--chip);
+  box-shadow:
+    0 0 0 1.5px #fff,
+    0 0 0 3px var(--chip);
 }
 
 .cc-badgepick-cols {
@@ -1985,7 +2012,11 @@
     linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
     linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
   background-size: 16px 16px;
-  background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
 }
 .cc-upload-circle img {
   position: absolute;
@@ -2054,7 +2085,9 @@
   font-weight: 600;
   color: var(--teal-dk);
   cursor: pointer;
-  transition: border-color 0.12s ease, background 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
 }
 .cc-upload-replace:hover {
   border-color: var(--teal);
@@ -2090,8 +2123,7 @@
   margin-top: auto;
 }
 .cc-accent-dot--none {
-  background:
-    linear-gradient(45deg, #e2e8f0 25%, #fff 25%, #fff 75%, #e2e8f0 75%) 0 0 / 10px 10px;
+  background: linear-gradient(45deg, #e2e8f0 25%, #fff 25%, #fff 75%, #e2e8f0 75%) 0 0 / 10px 10px;
 }
 .cc-badge-uploadzone {
   position: relative;
@@ -2103,7 +2135,9 @@
   border-radius: 12px;
   background: #f8fafc;
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
 }
 .cc-badge-uploadzone:hover {
   border-color: var(--teal);
@@ -2260,7 +2294,10 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   background: #fff;
-  transition: border-color 0.14s ease, box-shadow 0.14s ease, transform 0.14s ease;
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease,
+    transform 0.14s ease;
 }
 .cc-badgepick-item:hover {
   border-color: var(--teal);
@@ -2300,7 +2337,11 @@
   color: #94a3b8;
   cursor: pointer;
   opacity: 0.55;
-  transition: opacity 0.12s ease, color 0.12s ease, background 0.12s ease, transform 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    color 0.12s ease,
+    background 0.12s ease,
+    transform 0.12s ease;
 }
 .cc-badgepick-item:hover .cc-badgepick-fav,
 .cc-badgepick-fav:focus-visible {
@@ -2787,7 +2828,10 @@
   border-radius: 12px;
   padding: 9px 12px;
   background: #fff;
-  transition: opacity 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease;
 }
 .cc-badgerow {
   position: relative;
@@ -2992,7 +3036,10 @@
   background: #fff;
   color: var(--ink);
   cursor: pointer;
-  transition: background 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    opacity 0.12s ease;
 }
 .cc-actpicker-page-btns button:hover:not(:disabled) {
   background: #f1f7f8;
@@ -3045,7 +3092,9 @@
   background: #fff;
   font: inherit;
   cursor: pointer;
-  transition: border-color 0.12s ease, background 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
 }
 .cc-quick-seg-btn:hover {
   border-color: #94a3b8;
@@ -3127,7 +3176,10 @@
   padding: 9px 12px;
   background: #fff;
   cursor: pointer;
-  transition: border-color 0.12s ease, box-shadow 0.12s ease, background 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
 }
 .cc-actpicker-item:hover {
   border-color: var(--teal);
@@ -3769,7 +3821,11 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: radial-gradient(circle at 32% 26%, var(--c), color-mix(in srgb, var(--c) 50%, #10184a));
+  background: radial-gradient(
+    circle at 32% 26%,
+    var(--c),
+    color-mix(in srgb, var(--c) 50%, #10184a)
+  );
   box-shadow:
     inset 0 0 0 2px rgba(255, 255, 255, 0.12),
     0 2px 8px rgba(15, 23, 42, 0.22);
@@ -4014,7 +4070,10 @@
   background: #fff;
   cursor: pointer;
   font: inherit;
-  transition: border-color 0.12s, background 0.12s, box-shadow 0.12s;
+  transition:
+    border-color 0.12s,
+    background 0.12s,
+    box-shadow 0.12s;
 }
 .cc-optcard:hover {
   border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
@@ -4062,7 +4121,9 @@
   border-radius: 50%;
   border: 2px solid var(--line);
   background: #fff;
-  transition: border-color 0.12s, box-shadow 0.12s;
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
 }
 .cc-optcard.is-on .cc-optcard-dot {
   border-color: var(--teal);
@@ -4085,7 +4146,9 @@
   border-radius: 10px;
   background: #fff;
   padding-right: 12px;
-  transition: border-color 0.12s ease, background 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
 }
 .cc-bsrow.is-on {
   border-color: var(--teal);

@@ -20,6 +20,7 @@ import { Banner, EmptyState } from '@components/Primitives/Primitives'
 import { Hero } from '@components/Hero/Hero'
 import { Modal } from '@components/Modal/Modal'
 import { Ic } from '@components/ui'
+import { Icon } from '@components/Icon/Icon'
 import { LIMITS } from '../validation'
 import {
   METHODS,
@@ -55,18 +56,74 @@ import {
 // ─── shared bits ──────────────────────────────────────────────────────────────
 // Page-header icons per step (Lucide-style, drawn by the shared <Hero>).
 const ic = (d) => (
-  <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    width="22"
+    height="22"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     {d}
   </svg>
 )
 const STEP_ICONS = {
-  details: ic(<><line x1="4" y1="21" x2="4" y2="14" /><line x1="4" y1="10" x2="4" y2="3" /><line x1="12" y1="21" x2="12" y2="12" /><line x1="12" y1="8" x2="12" y2="3" /><line x1="20" y1="21" x2="20" y2="16" /><line x1="20" y1="12" x2="20" y2="3" /><line x1="1" y1="14" x2="7" y2="14" /><line x1="9" y1="8" x2="15" y2="8" /><line x1="17" y1="16" x2="23" y2="16" /></>),
-  badges: ic(<><circle cx="12" cy="8" r="6" /><path d="M8.2 13.5L7 22l5-3 5 3-1.2-8.5" /></>),
-  bingo: ic(<><rect x="3" y="3" width="18" height="18" rx="2" /><path d="M3 9h18M3 15h18M9 3v18M15 3v18" /></>),
-  gameboard: ic(<><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3z" /><path d="M9 3v15M15 6v15" /></>),
-  readingList: ic(<><line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" /><line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" /></>),
-  prizes: ic(<><rect x="3" y="8" width="18" height="4" rx="1" /><path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8" /><path d="M12 8S10.5 3 7.5 3a2.5 2.5 0 0 0 0 5H12zM12 8s1.5-5 4.5-5a2.5 2.5 0 0 1 0 5H12z" /></>),
-  completion: ic(<><path d="M4 22V4a1 1 0 0 1 1-1h13l-2.5 4.5L18 12H5" /></>),
+  details: ic(
+    <>
+      <line x1="4" y1="21" x2="4" y2="14" />
+      <line x1="4" y1="10" x2="4" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12" y2="3" />
+      <line x1="20" y1="21" x2="20" y2="16" />
+      <line x1="20" y1="12" x2="20" y2="3" />
+      <line x1="1" y1="14" x2="7" y2="14" />
+      <line x1="9" y1="8" x2="15" y2="8" />
+      <line x1="17" y1="16" x2="23" y2="16" />
+    </>,
+  ),
+  badges: ic(
+    <>
+      <circle cx="12" cy="8" r="6" />
+      <path d="M8.2 13.5L7 22l5-3 5 3-1.2-8.5" />
+    </>,
+  ),
+  bingo: ic(
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="2" />
+      <path d="M3 9h18M3 15h18M9 3v18M15 3v18" />
+    </>,
+  ),
+  gameboard: ic(
+    <>
+      <path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3z" />
+      <path d="M9 3v15M15 6v15" />
+    </>,
+  ),
+  readingList: ic(
+    <>
+      <line x1="8" y1="6" x2="21" y2="6" />
+      <line x1="8" y1="12" x2="21" y2="12" />
+      <line x1="8" y1="18" x2="21" y2="18" />
+      <line x1="3" y1="6" x2="3.01" y2="6" />
+      <line x1="3" y1="12" x2="3.01" y2="12" />
+      <line x1="3" y1="18" x2="3.01" y2="18" />
+    </>,
+  ),
+  prizes: ic(
+    <>
+      <rect x="3" y="8" width="18" height="4" rx="1" />
+      <path d="M12 8v13M5 12v8a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-8" />
+      <path d="M12 8S10.5 3 7.5 3a2.5 2.5 0 0 0 0 5H12zM12 8s1.5-5 4.5-5a2.5 2.5 0 0 1 0 5H12z" />
+    </>,
+  ),
+  completion: ic(
+    <>
+      <path d="M4 22V4a1 1 0 0 1 1-1h13l-2.5 4.5L18 12H5" />
+    </>,
+  ),
 }
 function StepHead({ title, sub, icon }) {
   return (
@@ -100,7 +157,8 @@ function ColorPicker({ value, presets, fallback, onColor }) {
             aria-label={`Use ${c}`}
             onClick={() => onColor(c)}
           />
-        ))}      </div>
+        ))}{' '}
+      </div>
       <ColorInput size="sm" value={value || fallback} onChange={onColor} />
     </div>
   )
@@ -133,11 +191,7 @@ const thumbStyle = (templateId) => ({
 })
 
 // Count words for the preview-card description helper text.
-const wordCount = (s) =>
-  (s || '')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean).length
+const wordCount = (s) => (s || '').trim().split(/\s+/).filter(Boolean).length
 
 const REGISTRATION_FIELDS = [
   { key: 'gender', label: 'Gender' },
@@ -160,31 +214,95 @@ function SettingRow({ label, sub, checked, onChange, disabled }) {
 
 // ─── Badge builder bits (create-a-badge) ────────────────────────────────────
 const BUILDER_BGS = [
-  '#0DA7BC', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899', '#FB7185',
-  '#EF4444', '#F97316', '#F59E0B', '#84CC16', '#16A97A', '#0F172A',
+  '#0DA7BC',
+  '#3B82F6',
+  '#6366F1',
+  '#8B5CF6',
+  '#EC4899',
+  '#FB7185',
+  '#EF4444',
+  '#F97316',
+  '#F59E0B',
+  '#84CC16',
+  '#16A97A',
+  '#0F172A',
 ]
 // Clean 24×24 icon paths (Lucide/Feather geometry). Stroke icons draw as
 // outlines; fill icons as solids — both centered in the 24-unit box.
 const BUILDER_ICONS = [
-  { id: 'star', mode: 'stroke', path: 'M12 2.5l2.95 5.98 6.6.96-4.77 4.65 1.13 6.57L12 17.55 6.09 20.66l1.13-6.57L2.45 9.44l6.6-.96z' },
-  { id: 'heart', mode: 'stroke', path: 'M19.5 5.3a4.6 4.6 0 0 0-6.5 0L12 6.3l-1-1a4.6 4.6 0 1 0-6.5 6.5l1 1L12 20.3l6.5-6.5 1-1a4.6 4.6 0 0 0 0-6.5z' },
-  { id: 'flame', mode: 'stroke', path: 'M12 2.5c2.5 3 4.5 5 4.5 8.5a4.5 4.5 0 0 1-9 0c0-1.3.4-2.3 1.1-3.3.2 1.6 1 2.4 2 2.4 1.2 0 1.6-1 1.4-2.6-.2-1.9-.5-3.5-1-5z' },
+  {
+    id: 'star',
+    mode: 'stroke',
+    path: 'M12 2.5l2.95 5.98 6.6.96-4.77 4.65 1.13 6.57L12 17.55 6.09 20.66l1.13-6.57L2.45 9.44l6.6-.96z',
+  },
+  {
+    id: 'heart',
+    mode: 'stroke',
+    path: 'M19.5 5.3a4.6 4.6 0 0 0-6.5 0L12 6.3l-1-1a4.6 4.6 0 1 0-6.5 6.5l1 1L12 20.3l6.5-6.5 1-1a4.6 4.6 0 0 0 0-6.5z',
+  },
+  {
+    id: 'flame',
+    mode: 'stroke',
+    path: 'M12 2.5c2.5 3 4.5 5 4.5 8.5a4.5 4.5 0 0 1-9 0c0-1.3.4-2.3 1.1-3.3.2 1.6 1 2.4 2 2.4 1.2 0 1.6-1 1.4-2.6-.2-1.9-.5-3.5-1-5z',
+  },
   { id: 'check', mode: 'stroke', path: 'M20 6.5L9.2 17.3 4 12.1' },
-  { id: 'trophy', mode: 'stroke', path: 'M7 4.5h10v4a5 5 0 0 1-10 0zM7 6H4.5v1.5A2.5 2.5 0 0 0 7 10M17 6h2.5v1.5A2.5 2.5 0 0 1 17 10M10 14.5h4M9.5 20h5M12 14.5V18M9.5 20h5' },
+  {
+    id: 'trophy',
+    mode: 'stroke',
+    path: 'M7 4.5h10v4a5 5 0 0 1-10 0zM7 6H4.5v1.5A2.5 2.5 0 0 0 7 10M17 6h2.5v1.5A2.5 2.5 0 0 1 17 10M10 14.5h4M9.5 20h5M12 14.5V18M9.5 20h5',
+  },
   { id: 'bolt', mode: 'stroke', path: 'M13.5 2.5L5 13.5h5.5L10 21.5 19 10h-5.5z' },
-  { id: 'book', mode: 'stroke', path: 'M4 4.5h11a2.5 2.5 0 0 1 2.5 2.5v12.5a2 2 0 0 0-2-2H4zM4 4.5v13' },
-  { id: 'medal', mode: 'stroke', path: 'M8 2.5l2.5 4M16 2.5l-2.5 4M12 21.5a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11z' },
-  { id: 'crown', mode: 'stroke', path: 'M3 7.5l3.5 3L12 4l5.5 6.5L21 7.5l-1.5 11h-15zM4.5 18.5h15' },
-  { id: 'rocket', mode: 'stroke', path: 'M12 2.5c3 1.5 5 4.5 5 8.5 0 2-.7 3.6-1.5 4.5h-7C7.7 14.6 7 13 7 11c0-4 2-7 5-8.5zM12 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM9.5 15.5L8 19l2.5-1.5M14.5 15.5L16 19l-2.5-1.5' },
-  { id: 'target', mode: 'stroke', path: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z' },
-  { id: 'sun', mode: 'stroke', path: 'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8L6 18M18 6l1.8-1.8' },
-  { id: 'leaf', mode: 'stroke', path: 'M5 19c-1-7 3.5-13.5 14-13.5C19 15.5 13 20 6.5 19zM5 19c2.5-4 5-6.5 9-8.5' },
-  { id: 'smile', mode: 'stroke', path: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8.5 14c.8 1.2 2 2 3.5 2s2.7-.8 3.5-2M9 9.5h.01M15 9.5h.01' },
+  {
+    id: 'book',
+    mode: 'stroke',
+    path: 'M4 4.5h11a2.5 2.5 0 0 1 2.5 2.5v12.5a2 2 0 0 0-2-2H4zM4 4.5v13',
+  },
+  {
+    id: 'medal',
+    mode: 'stroke',
+    path: 'M8 2.5l2.5 4M16 2.5l-2.5 4M12 21.5a5.5 5.5 0 1 0 0-11 5.5 5.5 0 0 0 0 11z',
+  },
+  {
+    id: 'crown',
+    mode: 'stroke',
+    path: 'M3 7.5l3.5 3L12 4l5.5 6.5L21 7.5l-1.5 11h-15zM4.5 18.5h15',
+  },
+  {
+    id: 'rocket',
+    mode: 'stroke',
+    path: 'M12 2.5c3 1.5 5 4.5 5 8.5 0 2-.7 3.6-1.5 4.5h-7C7.7 14.6 7 13 7 11c0-4 2-7 5-8.5zM12 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3zM9.5 15.5L8 19l2.5-1.5M14.5 15.5L16 19l-2.5-1.5',
+  },
+  {
+    id: 'target',
+    mode: 'stroke',
+    path: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 16a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM12 13a1 1 0 1 0 0-2 1 1 0 0 0 0 2z',
+  },
+  {
+    id: 'sun',
+    mode: 'stroke',
+    path: 'M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9zM12 2.5v2.5M12 19v2.5M4.2 4.2l1.8 1.8M18 18l1.8 1.8M2.5 12H5M19 12h2.5M4.2 19.8L6 18M18 6l1.8-1.8',
+  },
+  {
+    id: 'leaf',
+    mode: 'stroke',
+    path: 'M5 19c-1-7 3.5-13.5 14-13.5C19 15.5 13 20 6.5 19zM5 19c2.5-4 5-6.5 9-8.5',
+  },
+  {
+    id: 'smile',
+    mode: 'stroke',
+    path: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM8.5 14c.8 1.2 2 2 3.5 2s2.7-.8 3.5-2M9 9.5h.01M15 9.5h.01',
+  },
 ]
 
 function builderText(hex) {
   const h = String(hex || '').replace('#', '')
-  const n = h.length === 3 ? h.split('').map((c) => c + c).join('') : h
+  const n =
+    h.length === 3
+      ? h
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : h
   if (n.length !== 6) return '#ffffff'
   const int = parseInt(n, 16)
   const [r, g, b] = [(int >> 16) & 255, (int >> 8) & 255, int & 255]
@@ -425,8 +543,16 @@ const bgConfetti = (cols, base = ['#1E293B', '#0F172A']) =>
     ctx.fillStyle = g
     ctx.fillRect(0, 0, s, s)
     const pts = [
-      [38, 48], [152, 30], [92, 92], [182, 112], [30, 140],
-      [120, 152], [68, 182], [172, 178], [58, 104], [110, 38],
+      [38, 48],
+      [152, 30],
+      [92, 92],
+      [182, 112],
+      [30, 140],
+      [120, 152],
+      [68, 182],
+      [172, 178],
+      [58, 104],
+      [110, 38],
     ]
     pts.forEach((p, i) => {
       ctx.fillStyle = cols[i % cols.length]
@@ -541,7 +667,11 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
 
   return (
     <section className="cc-step">
-      <StepHead title="Details & settings" sub="Start from a template or scratch, then set the basics." icon={STEP_ICONS.details} />
+      <StepHead
+        title="Details & settings"
+        sub="Start from a template or scratch, then set the basics."
+        icon={STEP_ICONS.details}
+      />
 
       <div className="cc-panel">
         <h3 className="cc-panel-title">Start from a template</h3>
@@ -626,7 +756,10 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
             <DateInput value={d.end} onChange={(e) => updateDetails({ end: e.target.value })} />
           </Field>
         </div>
-        <Field label="Challenge position" help="Select the order in which the challenge will be displayed.">
+        <Field
+          label="Challenge position"
+          help="Select the order in which the challenge will be displayed."
+        >
           <NumberInput
             className="cc-num-narrow"
             value={d.position || 1}
@@ -655,11 +788,24 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
             onClick={() => {
               if (bgUploaded) {
                 const variant = BANNER_THEMES[0].variants[0]
-                updateDetails({ background: { kind: 'preset', id: variant.id }, accent: variant.color })
+                updateDetails({
+                  background: { kind: 'preset', id: variant.id },
+                  accent: variant.color,
+                })
               }
             }}
           >
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <circle cx="13.5" cy="6.5" r="1.5" />
               <circle cx="17.5" cy="10.5" r="1.5" />
               <circle cx="8.5" cy="7.5" r="1.5" />
@@ -675,11 +821,23 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
             className={`cc-headtab${bgUploaded ? ' is-active' : ''}`}
             onClick={() => {
               if (!bgUploaded) {
-                updateDetails({ background: { kind: 'upload', name: d.background?.name || 'header.jpg' } })
+                updateDetails({
+                  background: { kind: 'upload', name: d.background?.name || 'header.jpg' },
+                })
               }
             }}
           >
-            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <svg
+              viewBox="0 0 24 24"
+              width="18"
+              height="18"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.7"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
               <rect x="3" y="3" width="18" height="18" rx="3" />
               <circle cx="8.5" cy="8.5" r="1.5" />
               <path d="M21 15l-5-5L5 21" />
@@ -699,9 +857,12 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                 previewSrc={d.background?.loading ? undefined : d.background?.src}
                 onFile={(name) => {
                   // Fake the upload: show a loading state, then reveal the image.
-                  updateDetails({ background: { kind: 'upload', name, src: FAKE_UPLOAD_IMG, loading: true } })
+                  updateDetails({
+                    background: { kind: 'upload', name, src: FAKE_UPLOAD_IMG, loading: true },
+                  })
                   setTimeout(
-                    () => updateDetails({ background: { kind: 'upload', name, src: FAKE_UPLOAD_IMG } }),
+                    () =>
+                      updateDetails({ background: { kind: 'upload', name, src: FAKE_UPLOAD_IMG } }),
                     1100,
                   )
                 }}
@@ -713,7 +874,11 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                   className="cc-restore-btn"
                   onClick={() =>
                     updateDetails({
-                      background: { kind: 'upload', name: 'Template banner', src: d.templateBanner },
+                      background: {
+                        kind: 'upload',
+                        name: 'Template banner',
+                        src: d.templateBanner,
+                      },
                     })
                   }
                 >
@@ -769,9 +934,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                   >
                     {d.background?.id === v.id && (
                       <span className="cc-banner-check" aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="#fff" strokeWidth="3.4" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M5 13l4 4L19 7" />
-                        </svg>
+                        <Icon name="check" size={13} stroke={3.4} color="#fff" />
                       </span>
                     )}
                   </button>
@@ -927,10 +1090,20 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
         {basis === 'age' ? (
           <div className="cc-date-row">
             <Field label="For ages…">
-              <NumberInput value={d.ageMin} min={0} max={120} onChange={(n) => updateDetails({ ageMin: n })} />
+              <NumberInput
+                value={d.ageMin}
+                min={0}
+                max={120}
+                onChange={(n) => updateDetails({ ageMin: n })}
+              />
             </Field>
             <Field label="To…">
-              <NumberInput value={d.ageMax} min={0} max={120} onChange={(n) => updateDetails({ ageMax: n })} />
+              <NumberInput
+                value={d.ageMax}
+                min={0}
+                max={120}
+                onChange={(n) => updateDetails({ ageMax: n })}
+              />
             </Field>
           </div>
         ) : isSimple ? (
@@ -970,7 +1143,10 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
         )}
 
         {isTemplate && (
-          <Field label="Publish to schools" help="District templates publish out to selected schools.">
+          <Field
+            label="Publish to schools"
+            help="District templates publish out to selected schools."
+          >
             <MultiSelect
               options={[
                 { value: 'maple', label: 'Maplewood Elementary' },
@@ -1006,9 +1182,7 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
                     placeholder="e.g. READ2026"
                     maxLength={25}
                     aria-invalid={!!(errors.code || codeError)}
-                    onChange={(e) =>
-                      updateDetails({ code: e.target.value.replace(/\s/g, '') })
-                    }
+                    onChange={(e) => updateDetails({ code: e.target.value.replace(/\s/g, '') })}
                   />
                   <p className={`cc-code-help${errors.code || codeError ? ' is-error' : ''}`}>
                     {errors.code ||
@@ -1059,7 +1233,9 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
           </>
         )}
         {isSimple && (
-          <Tip>Teacher/MS view — advanced options (staff, landing, alternative challenges) are hidden.</Tip>
+          <Tip>
+            Teacher/MS view — advanced options (staff, landing, alternative challenges) are hidden.
+          </Tip>
         )}
       </div>
 
@@ -1093,15 +1269,12 @@ function PointsEarning({ methods, setMethod }) {
   return (
     <>
       <p className="cc-method-note">
-        In a points challenge, <strong>reading, activities, and reviews all convert into points</strong> —
-        point values are configured once in your site's points settings. Readers unlock{' '}
-        <strong>point badges</strong> at the milestones you choose.
+        In a points challenge,{' '}
+        <strong>reading, activities, and reviews all convert into points</strong> — point values are
+        configured once in your site's points settings. Readers unlock <strong>point badges</strong>{' '}
+        at the milestones you choose.
       </p>
-      <Toggle
-        checked={!!methods.activities}
-        onChange={(v) => setMethod('activities', v)}
-        size="md"
-      >
+      <Toggle checked={!!methods.activities} onChange={(v) => setMethod('activities', v)} size="md">
         Add optional activity badges
         <span className="cc-muted"> — earned by finishing specific activities</span>
       </Toggle>
@@ -1116,8 +1289,8 @@ function PointsEarning({ methods, setMethod }) {
       {advanced && (
         <div className="cc-method-toggles cc-method-toggles--nested">
           <p className="cc-method-note cc-method-note--sm">
-            Most points challenges don't need these — reading and reviews already earn points.
-            Turn these on only if you also want stand-alone badges for them.
+            Most points challenges don't need these — reading and reviews already earn points. Turn
+            these on only if you also want stand-alone badges for them.
           </p>
           <Toggle checked={!!methods.log} onChange={(v) => setMethod('log', v)} size="md">
             Separate logging badges
@@ -1149,26 +1322,13 @@ const METHOD_LABELS = {
 
 // Small inline glyphs for the gallery (search, clear, selected check).
 function GallerySearchIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <circle cx="11" cy="11" r="7" />
-      <path d="M21 21l-3.6-3.6" />
-    </svg>
-  )
+  return <Icon name="search" size={16} />
 }
 function GalleryCheck() {
-  return (
-    <svg viewBox="0 0 16 16" width="11" height="11" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="3,8.5 6.5,12 13,4.5" />
-    </svg>
-  )
+  return <Icon name="check" size={11} stroke={2.6} />
 }
 function TrashIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M4 7h16M10 11v6M14 11v6M5 7l1 13a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1l1-13M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3" />
-    </svg>
-  )
+  return <Icon name="trash" size={15} />
 }
 
 // Gallery: a left nav (Recommended · Favorites · Recently used · Subjects ·
@@ -1183,14 +1343,20 @@ function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selectedImg })
     const seen = new Set()
     const out = []
     for (const g of [...extraGroups, ...themeGroups]) {
-      for (const b of g.badges) if (!seen.has(b.img)) { seen.add(b.img); out.push({ ...b, _setId: g.id, _group: g.name }) }
+      for (const b of g.badges)
+        if (!seen.has(b.img)) {
+          seen.add(b.img)
+          out.push({ ...b, _setId: g.id, _group: g.name })
+        }
     }
     return out
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extraKey])
   const byImg = useMemo(() => new Map(catalog.map((b) => [b.img, b])), [catalog])
   // A badge's subjects = name-keyword matches ∪ its set's subjects.
-  const badgeSubjects = (b) => [...new Set([...subjectsOf(b.name), ...(SET_SUBJECTS[b._setId] || [])])]
+  const badgeSubjects = (b) => [
+    ...new Set([...subjectsOf(b.name), ...(SET_SUBJECTS[b._setId] || [])]),
+  ]
   const subjectGroups = useMemo(
     () => BADGE_SUBJECTS.filter((s) => catalog.some((b) => badgeSubjects(b).includes(s.id))),
     [catalog],
@@ -1306,7 +1472,11 @@ function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selectedImg })
             {extraGroups.map((g) => navBtn(g.id, g.name, g.badges.length))}
             {subjectGroups.length > 0 && <p className="cc-badgepick-grouphead">By subject</p>}
             {subjectGroups.map((s) =>
-              navBtn(`subj:${s.id}`, s.name, catalog.filter((b) => badgeSubjects(b).includes(s.id)).length),
+              navBtn(
+                `subj:${s.id}`,
+                s.name,
+                catalog.filter((b) => badgeSubjects(b).includes(s.id)).length,
+              ),
             )}
             <p className="cc-badgepick-grouphead">By theme</p>
             {themeGroups.map((g) => navBtn(g.id, g.name, g.badges.length))}
@@ -1334,7 +1504,9 @@ function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selectedImg })
                     )}
                   </span>
                   <span className="cc-badgepick-item-name">{b.name}</span>
-                  {filtering && b._group && <span className="cc-badgepick-item-set">{b._group}</span>}
+                  {filtering && b._group && (
+                    <span className="cc-badgepick-item-set">{b._group}</span>
+                  )}
                 </button>
               </div>
             ))
@@ -1355,13 +1527,38 @@ function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selectedImg })
 // Upload: load a file, pick a background (for transparency), then scale and
 // drag-reposition the graphic inside the badge circle before flattening.
 const UPLOAD_BGS = [
-  'transparent', '#FFFFFF', '#0DA7BC', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899',
-  '#FB7185', '#EF4444', '#F97316', '#F59E0B', '#84CC16', '#16A97A', '#06B6D4', '#0F172A',
+  'transparent',
+  '#FFFFFF',
+  '#0DA7BC',
+  '#3B82F6',
+  '#6366F1',
+  '#8B5CF6',
+  '#EC4899',
+  '#FB7185',
+  '#EF4444',
+  '#F97316',
+  '#F59E0B',
+  '#84CC16',
+  '#16A97A',
+  '#06B6D4',
+  '#0F172A',
 ]
 // Recolor tints offered for uploaded SVGs.
 const TINT_COLORS = [
-  '#0F172A', '#FFFFFF', '#0DA7BC', '#3B82F6', '#6366F1', '#8B5CF6', '#EC4899',
-  '#FB7185', '#EF4444', '#F97316', '#F59E0B', '#84CC16', '#16A97A', '#06B6D4',
+  '#0F172A',
+  '#FFFFFF',
+  '#0DA7BC',
+  '#3B82F6',
+  '#6366F1',
+  '#8B5CF6',
+  '#EC4899',
+  '#FB7185',
+  '#EF4444',
+  '#F97316',
+  '#F59E0B',
+  '#84CC16',
+  '#16A97A',
+  '#06B6D4',
 ]
 // Multicolor (gradient) recolor options for SVGs — [from, to] stops.
 const GRADIENT_TINTS = [
@@ -1457,11 +1654,7 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
         <label className="cc-badge-uploadzone">
           <span className="cc-badge-uploadhint">
             <span className="cc-badge-uploadicon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <path d="M12 16V4" />
-                <path d="M7 9l5-5 5 5" />
-              </svg>
+              <Icon name="upload" size={26} />
             </span>
             <strong>Upload a badge image</strong>
             <span>PNG or SVG, square works best</span>
@@ -1478,7 +1671,11 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
           className="cc-upload-circle"
           style={
             usingImage
-              ? { backgroundImage: `url("${bgImage}")`, backgroundSize: 'cover', backgroundPosition: 'center' }
+              ? {
+                  backgroundImage: `url("${bgImage}")`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                }
               : { background: bg === 'transparent' ? undefined : bg }
           }
           onPointerDown={onDown}
@@ -1503,37 +1700,73 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
         </div>
         <p className="cc-upload-hint">Drag to reposition</p>
         <div className="cc-upload-scale">
-          <svg className="cc-upload-scale-ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <svg
+            className="cc-upload-scale-ic"
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
             <circle cx="11" cy="11" r="7" />
             <path d="M21 21l-3.6-3.6M8 11h6" />
           </svg>
-          <RangeSlider min={0.5} max={2.5} step={0.05} value={scale} showValue={false} onChange={setScale} />
-          <svg className="cc-upload-scale-ic" viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+          <RangeSlider
+            min={0.5}
+            max={2.5}
+            step={0.05}
+            value={scale}
+            showValue={false}
+            onChange={setScale}
+          />
+          <svg
+            className="cc-upload-scale-ic"
+            viewBox="0 0 24 24"
+            width="15"
+            height="15"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+          >
             <circle cx="11" cy="11" r="7" />
             <path d="M21 21l-3.6-3.6M11 8v6M8 11h6" />
           </svg>
         </div>
         <button type="button" className="cc-upload-replace" onClick={() => setSrc(null)}>
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-            <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
-            <path d="M21 3v5h-5" />
-            <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
-            <path d="M3 21v-5h5" />
-          </svg>
+          <Icon name="refresh" size={14} />
           Replace image
         </button>
       </div>
       <div className="cc-upload-controls">
         <Field>
           <div className="cc-headtabs cc-builder-seg">
-            <button type="button" className={`cc-headtab${panel === 'color' ? ' is-active' : ''}`} onClick={() => selectPanel('color')}>
+            <button
+              type="button"
+              className={`cc-headtab${panel === 'color' ? ' is-active' : ''}`}
+              onClick={() => selectPanel('color')}
+            >
               Color
             </button>
-            <button type="button" className={`cc-headtab${panel === 'image' ? ' is-active' : ''}`} onClick={() => selectPanel('image')}>
+            <button
+              type="button"
+              className={`cc-headtab${panel === 'image' ? ' is-active' : ''}`}
+              onClick={() => selectPanel('image')}
+            >
               Image
             </button>
             {isSvg && (
-              <button type="button" className={`cc-headtab${panel === 'recolor' ? ' is-active' : ''}`} onClick={() => selectPanel('recolor')}>
+              <button
+                type="button"
+                className={`cc-headtab${panel === 'recolor' ? ' is-active' : ''}`}
+                onClick={() => selectPanel('recolor')}
+              >
                 Recolor
               </button>
             )}
@@ -1552,8 +1785,13 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
                     aria-label={c === 'transparent' ? 'Transparent' : `Use ${c}`}
                     onClick={() => setBg(c)}
                   />
-                ))}              </div>
-              <ColorInput size="sm" value={bg === 'transparent' ? '#FFFFFF' : bg} onChange={setBg} />
+                ))}{' '}
+              </div>
+              <ColorInput
+                size="sm"
+                value={bg === 'transparent' ? '#FFFFFF' : bg}
+                onChange={setBg}
+              />
             </div>
           )}
           {panel === 'image' && (
@@ -1564,39 +1802,41 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
               {/* Quick flatten swatches only make sense for a 1-color SVG; a
                   multicolor SVG uses the per-color editors instead. */}
               {svgColors.length <= 1 && (
-              <div className="cc-accent-dots">
-                <button
-                  type="button"
-                  className={`cc-accent-dot cc-tint-orig${tint === null && !remapped ? ' is-on' : ''}`}
-                  aria-label="Keep original colors"
-                  title="Original colors"
-                  onClick={() => setSwatch(null)}
-                />
-                {TINT_COLORS.map((c) => (
+                <div className="cc-accent-dots">
                   <button
-                    key={c}
                     type="button"
-                    className={`cc-accent-dot${typeof tint === 'string' && tint.toLowerCase() === c.toLowerCase() ? ' is-on' : ''}`}
-                    style={{ background: c }}
-                    aria-label={`Recolor all to ${c}`}
-                    onClick={() => setSwatch(c)}
+                    className={`cc-accent-dot cc-tint-orig${tint === null && !remapped ? ' is-on' : ''}`}
+                    aria-label="Keep original colors"
+                    title="Original colors"
+                    onClick={() => setSwatch(null)}
                   />
-                ))}
-                {GRADIENT_TINTS.map((g) => (
-                  <button
-                    key={g.join()}
-                    type="button"
-                    className={`cc-accent-dot${tint && tint.g && tint.g.join() === g.join() ? ' is-on' : ''}`}
-                    style={{ background: `linear-gradient(135deg, ${g[0]}, ${g[1]})` }}
-                    aria-label={`Recolor with a ${g[0]} to ${g[1]} gradient`}
-                    onClick={() => setSwatch({ g })}
-                  />
-                ))}
-              </div>
+                  {TINT_COLORS.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      className={`cc-accent-dot${typeof tint === 'string' && tint.toLowerCase() === c.toLowerCase() ? ' is-on' : ''}`}
+                      style={{ background: c }}
+                      aria-label={`Recolor all to ${c}`}
+                      onClick={() => setSwatch(c)}
+                    />
+                  ))}
+                  {GRADIENT_TINTS.map((g) => (
+                    <button
+                      key={g.join()}
+                      type="button"
+                      className={`cc-accent-dot${tint && tint.g && tint.g.join() === g.join() ? ' is-on' : ''}`}
+                      style={{ background: `linear-gradient(135deg, ${g[0]}, ${g[1]})` }}
+                      aria-label={`Recolor with a ${g[0]} to ${g[1]} gradient`}
+                      onClick={() => setSwatch({ g })}
+                    />
+                  ))}
+                </div>
               )}
               {svgColors.length > 0 && (
                 <div className="cc-recolor-each">
-                  <span className="cc-recolor-label">{svgColors.length > 1 ? 'Edit each color' : 'Custom color'}</span>
+                  <span className="cc-recolor-label">
+                    {svgColors.length > 1 ? 'Edit each color' : 'Custom color'}
+                  </span>
                   <div className="cc-recolor-list">
                     {svgColors.map((orig) => (
                       <ColorInput
@@ -1629,7 +1869,19 @@ function BadgeUpload({ onPick, bgImages = [], initial }) {
                   y: pos.y,
                 }),
                 source: 'upload',
-                edit: { src, bgMode, bg, bgImage, tint, scale, pos, isSvg, svgText, svgColors, colorMap },
+                edit: {
+                  src,
+                  bgMode,
+                  bg,
+                  bgImage,
+                  tint,
+                  scale,
+                  pos,
+                  isSvg,
+                  svgText,
+                  svgColors,
+                  colorMap,
+                },
               })
             }
           >
@@ -1658,7 +1910,11 @@ function BadgeBuilder({ onPick, bgImages = [], initial }) {
   const valueText = mode === 'number' ? String(num) : letter
   const numSvgFs = valueText.length >= 3 ? 27 : valueText.length === 2 ? 34 : 42
   const previewStyle = usingImage
-    ? { backgroundImage: `linear-gradient(rgba(15,23,42,0.34), rgba(15,23,42,0.34)), url("${image}")`, backgroundSize: 'cover', backgroundPosition: 'center' }
+    ? {
+        backgroundImage: `linear-gradient(rgba(15,23,42,0.34), rgba(15,23,42,0.34)), url("${image}")`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }
     : { background: color }
   const save = async () => {
     onPick({
@@ -1678,7 +1934,13 @@ function BadgeBuilder({ onPick, bgImages = [], initial }) {
           {mode === 'icon' ? (
             <BuilderIcon icon={activeIcon} color={fg} size={46} />
           ) : (
-            <svg className="cc-builder-numsvg" viewBox="0 0 100 100" width="92" height="92" aria-hidden="true">
+            <svg
+              className="cc-builder-numsvg"
+              viewBox="0 0 100 100"
+              width="92"
+              height="92"
+              aria-hidden="true"
+            >
               <text
                 x="50"
                 y="50"
@@ -1699,7 +1961,11 @@ function BadgeBuilder({ onPick, bgImages = [], initial }) {
       <div className="cc-builder-controls">
         <Field>
           <div className="cc-headtabs cc-builder-seg">
-            <button type="button" className={`cc-headtab${bgMode === 'color' ? ' is-active' : ''}`} onClick={() => setBgMode('color')}>
+            <button
+              type="button"
+              className={`cc-headtab${bgMode === 'color' ? ' is-active' : ''}`}
+              onClick={() => setBgMode('color')}
+            >
               Color
             </button>
             <button
@@ -1722,7 +1988,8 @@ function BadgeBuilder({ onPick, bgImages = [], initial }) {
                     aria-label={`Use ${c}`}
                     onClick={() => setColor(c)}
                   />
-                ))}              </div>
+                ))}{' '}
+              </div>
               <ColorInput size="sm" value={color} onChange={setColor} />
             </div>
           ) : (
@@ -1731,13 +1998,25 @@ function BadgeBuilder({ onPick, bgImages = [], initial }) {
         </Field>
         <Field>
           <div className="cc-headtabs cc-builder-seg">
-            <button type="button" className={`cc-headtab${mode === 'number' ? ' is-active' : ''}`} onClick={() => setMode('number')}>
+            <button
+              type="button"
+              className={`cc-headtab${mode === 'number' ? ' is-active' : ''}`}
+              onClick={() => setMode('number')}
+            >
               Number
             </button>
-            <button type="button" className={`cc-headtab${mode === 'letter' ? ' is-active' : ''}`} onClick={() => setMode('letter')}>
+            <button
+              type="button"
+              className={`cc-headtab${mode === 'letter' ? ' is-active' : ''}`}
+              onClick={() => setMode('letter')}
+            >
               Letter
             </button>
-            <button type="button" className={`cc-headtab${mode === 'icon' ? ' is-active' : ''}`} onClick={() => setMode('icon')}>
+            <button
+              type="button"
+              className={`cc-headtab${mode === 'icon' ? ' is-active' : ''}`}
+              onClick={() => setMode('icon')}
+            >
               Icon
             </button>
           </div>
@@ -1793,19 +2072,41 @@ function BadgeBuilder({ onPick, bgImages = [], initial }) {
 }
 
 // Badge picker: Gallery (grouped, promoted) / Upload / Create.
-function BadgePicker({ onPick, extraGroups, defaultGroupId, bgImages, selectedImg, editSource, editInit }) {
+function BadgePicker({
+  onPick,
+  extraGroups,
+  defaultGroupId,
+  bgImages,
+  selectedImg,
+  editSource,
+  editInit,
+}) {
   // Editing a custom badge opens straight to the tab it was made on.
-  const [tab, setTab] = useState(editSource === 'upload' || editSource === 'create' ? editSource : 'gallery')
+  const [tab, setTab] = useState(
+    editSource === 'upload' || editSource === 'create' ? editSource : 'gallery',
+  )
   return (
     <div className="cc-badgepick">
       <div className="cc-headtabs cc-badgepick-tabs">
-        <button type="button" className={`cc-headtab${tab === 'gallery' ? ' is-active' : ''}`} onClick={() => setTab('gallery')}>
+        <button
+          type="button"
+          className={`cc-headtab${tab === 'gallery' ? ' is-active' : ''}`}
+          onClick={() => setTab('gallery')}
+        >
           Gallery
         </button>
-        <button type="button" className={`cc-headtab${tab === 'upload' ? ' is-active' : ''}`} onClick={() => setTab('upload')}>
+        <button
+          type="button"
+          className={`cc-headtab${tab === 'upload' ? ' is-active' : ''}`}
+          onClick={() => setTab('upload')}
+        >
           Upload
         </button>
-        <button type="button" className={`cc-headtab${tab === 'create' ? ' is-active' : ''}`} onClick={() => setTab('create')}>
+        <button
+          type="button"
+          className={`cc-headtab${tab === 'create' ? ' is-active' : ''}`}
+          onClick={() => setTab('create')}
+        >
           Create
         </button>
       </div>
@@ -1818,10 +2119,18 @@ function BadgePicker({ onPick, extraGroups, defaultGroupId, bgImages, selectedIm
         />
       )}
       {tab === 'upload' && (
-        <BadgeUpload onPick={onPick} bgImages={bgImages} initial={editSource === 'upload' ? editInit : undefined} />
+        <BadgeUpload
+          onPick={onPick}
+          bgImages={bgImages}
+          initial={editSource === 'upload' ? editInit : undefined}
+        />
       )}
       {tab === 'create' && (
-        <BadgeBuilder onPick={onPick} bgImages={bgImages} initial={editSource === 'create' ? editInit : undefined} />
+        <BadgeBuilder
+          onPick={onPick}
+          bgImages={bgImages}
+          initial={editSource === 'create' ? editInit : undefined}
+        />
       )}
     </div>
   )
@@ -1829,7 +2138,17 @@ function BadgePicker({ onPick, extraGroups, defaultGroupId, bgImages, selectedIm
 
 // Badge editor: choose a badge medallion, name it, and (for logging badges)
 // set the log type + goal value.
-function BadgeEditor({ title, initial, goalMode, editing, extraGroups, defaultGroupId, bgImages, onSave, onCancel }) {
+function BadgeEditor({
+  title,
+  initial,
+  goalMode,
+  editing,
+  extraGroups,
+  defaultGroupId,
+  bgImages,
+  onSave,
+  onCancel,
+}) {
   const [badge, setBadge] = useState(initial || null)
   const [name, setName] = useState(initial?.name || '')
   const [logType, setLogType] = useState(initial?.logType || '')
@@ -1855,18 +2174,19 @@ function BadgeEditor({ title, initial, goalMode, editing, extraGroups, defaultGr
       <header className="cc-badge-editor-head">
         {picking ? (
           <button type="button" className="cc-badge-editor-back" onClick={() => setPicking(false)}>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
+            <Icon name="chevron-left" size={16} />
             Back to badge details
           </button>
         ) : (
           <h3>{title}</h3>
         )}
-        <button type="button" className="cc-badge-editor-close" onClick={onCancel} aria-label="Close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
+        <button
+          type="button"
+          className="cc-badge-editor-close"
+          onClick={onCancel}
+          aria-label="Close"
+        >
+          <Icon name="x" size={18} />
         </button>
       </header>
       <div className="cc-badge-editor-body">
@@ -1916,10 +2236,7 @@ function BadgeEditor({ title, initial, goalMode, editing, extraGroups, defaultGr
                 )}
                 {/* Edit affordance overlaid on the badge (replaces the separate button). */}
                 <span className="cc-badge-disc-edit" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M12 20h9" />
-                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                  </svg>
+                  <Icon name="pencil" size={15} />
                 </span>
               </button>
             </div>
@@ -1985,7 +2302,13 @@ function BadgeEditor({ title, initial, goalMode, editing, extraGroups, defaultGr
                     </>
                   }
                 >
-                  <NumberInput value={goal} min={1} max={100000} step={10} onChange={(n) => setGoal(n)} />
+                  <NumberInput
+                    value={goal}
+                    min={1}
+                    max={100000}
+                    step={10}
+                    onChange={(n) => setGoal(n)}
+                  />
                 </Field>
               )}
             </div>
@@ -2013,9 +2336,18 @@ function BadgeEditor({ title, initial, goalMode, editing, extraGroups, defaultGr
 // large enough to exercise search + paging.
 const glowImg = (f) => new URL(`../assets/templates/glow/${f}`, import.meta.url).href
 const LIB_ART = [
-  'stars.png', 'fireworks.png', 'music-notes.png', 'cake.png', 'cupcake.png',
-  'party-hats.png', 'magic-wand.png', 'microphone.png', 'open-book.png',
-  'standing-books.png', 'apple-stack.png', 'grad-stack.png',
+  'stars.png',
+  'fireworks.png',
+  'music-notes.png',
+  'cake.png',
+  'cupcake.png',
+  'party-hats.png',
+  'magic-wand.png',
+  'microphone.png',
+  'open-book.png',
+  'standing-books.png',
+  'apple-stack.png',
+  'grad-stack.png',
 ].map(glowImg)
 const LIB_ENTRIES = [
   ['Share a Shelfie', 'social', 'Post a photo of your bookshelf'],
@@ -2084,7 +2416,9 @@ const ACTIVITY_FIELDS = {
     { k: 'linkUrl', label: 'Link URL', ph: 'https://…' },
   ],
   video: [{ k: 'linkUrl', label: 'Video URL', ph: 'https://youtube.com/watch?v=…' }],
-  listen: [{ k: 'linkUrl', label: 'Audio / podcast URL', ph: 'https://open.spotify.com/episode/…' }],
+  listen: [
+    { k: 'linkUrl', label: 'Audio / podcast URL', ph: 'https://open.spotify.com/episode/…' },
+  ],
   quiz: [{ k: 'linkUrl', label: 'Quiz link', ph: 'https://forms.gle/… or kahoot.it/…' }],
   survey: [{ k: 'linkUrl', label: 'Survey / poll link', ph: 'https://forms.gle/…' }],
   event: [
@@ -2104,44 +2438,54 @@ const POINT_TYPES = [
   { key: 'activities', label: 'Activities' },
   { key: 'reviews', label: 'Reviews' },
 ]
-const DEFAULT_POINT_TYPES = { minutes: true, pages: true, books: true, activities: true, reviews: false }
+const DEFAULT_POINT_TYPES = {
+  minutes: true,
+  pages: true,
+  books: true,
+  activities: true,
+  reviews: false,
+}
 // Shared icon for badge-list empty states (a simple award medal).
-const BADGE_EMPTY_ICON = (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="12" cy="9" r="5.5" />
-    <path d="M8.5 13.5 7 21l5-2.6L17 21l-1.5-7.5" />
-  </svg>
-)
+const BADGE_EMPTY_ICON = <Icon name="award" size={26} />
 // Search / no-results empty state icon.
-const SEARCH_EMPTY_ICON = (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <circle cx="11" cy="11" r="6.5" />
-    <path d="M20 20l-4.2-4.2" />
-  </svg>
-)
+const SEARCH_EMPTY_ICON = <Icon name="search" size={26} />
 // Open-book empty state icon (reading list).
-const BOOK_EMPTY_ICON = (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M4 5.5C6 4.4 9 4.4 12 6c3-1.6 6-1.6 8-.5v12c-2-1.1-5-1.1-8 .5-3-1.6-6-1.6-8-.5z" />
-    <path d="M12 6v12" />
-  </svg>
-)
-const stripHtml = (html) => String(html || '').replace(/<[^>]+>/g, '').replace(/&nbsp;/g, ' ').trim()
+const BOOK_EMPTY_ICON = <Icon name="book" size={26} />
+const stripHtml = (html) =>
+  String(html || '')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .trim()
 // A short secondary line for an activity row (no type label — keep it clean).
 const activityMeta = (a) => {
-  if (a.type === 'code') return a.codes?.length ? `${a.codes.length} code${a.codes.length === 1 ? '' : 's'}` : ACTIVITY_TYPE_LABEL(a.type)
+  if (a.type === 'code')
+    return a.codes?.length
+      ? `${a.codes.length} code${a.codes.length === 1 ? '' : 's'}`
+      : ACTIVITY_TYPE_LABEL(a.type)
   return a.linkTitle || a.linkUrl || ACTIVITY_TYPE_LABEL(a.type)
 }
 
 // An activity badge = badge art + settings + a list of activities readers do to
 // earn it. Streamlined into one modal with Details / Activities tabs.
-function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaultGroupId, bgImages, prereqOptions = [], onSave, onCancel }) {
+function ActivityBadgeEditor({
+  initial,
+  editing,
+  repeatable,
+  extraGroups,
+  defaultGroupId,
+  bgImages,
+  prereqOptions = [],
+  onSave,
+  onCancel,
+}) {
   const [tab, setTab] = useState('details') // details | activities
   const [badge, setBadge] = useState(initial?.badge || null)
   const [title, setTitle] = useState(initial?.title || initial?.name || '')
   const [description, setDescription] = useState(initial?.description || '')
   const [active, setActive] = useState(initial?.active ?? true)
-  const [earn, setEarn] = useState(initial?.earn != null && initial?.earn !== '' ? String(initial.earn) : '')
+  const [earn, setEarn] = useState(
+    initial?.earn != null && initial?.earn !== '' ? String(initial.earn) : '',
+  )
   const [prereqId, setPrereqId] = useState(initial?.prereqId || '')
   const [dateRestrict, setDateRestrict] = useState(initial?.dateRestrict ?? false)
   const [dateWindow, setDateWindow] = useState(initial?.dateWindow || { start: '', end: '' })
@@ -2165,7 +2509,15 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
       activities,
     })
 
-  const blankAct = { index: null, type: 'activity', description: '', linkTitle: '', linkUrl: '', codes: [], codeDraft: '' }
+  const blankAct = {
+    index: null,
+    type: 'activity',
+    description: '',
+    linkTitle: '',
+    linkUrl: '',
+    codes: [],
+    codeDraft: '',
+  }
   const openActForm = (i) =>
     setActForm(i == null ? blankAct : { ...blankAct, index: i, ...activities[i], codeDraft: '' })
   const saveActForm = () => {
@@ -2177,7 +2529,9 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
       linkUrl: f.linkUrl,
       codes: f.codes || [],
     }
-    setActivities(f.index == null ? [...activities, a] : activities.map((x, idx) => (idx === f.index ? a : x)))
+    setActivities(
+      f.index == null ? [...activities, a] : activities.map((x, idx) => (idx === f.index ? a : x)),
+    )
     setActForm(null)
   }
   const addCode = () => {
@@ -2185,7 +2539,8 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
     if (!c) return
     setActForm({ ...actForm, codes: [...(actForm.codes || []), c], codeDraft: '' })
   }
-  const removeCode = (i) => setActForm({ ...actForm, codes: (actForm.codes || []).filter((_, idx) => idx !== i) })
+  const removeCode = (i) =>
+    setActForm({ ...actForm, codes: (actForm.codes || []).filter((_, idx) => idx !== i) })
   const removeAct = (i) => setActivities(activities.filter((_, idx) => idx !== i))
   const reorderAct = (from, to) => {
     const next = activities.slice()
@@ -2200,9 +2555,7 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
       <header className="cc-badge-editor-head">
         {picking ? (
           <button type="button" className="cc-badge-editor-back" onClick={() => setPicking(false)}>
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <path d="M15 18l-6-6 6-6" />
-            </svg>
+            <Icon name="chevron-left" size={16} />
             Back to badge details
           </button>
         ) : (
@@ -2216,10 +2569,13 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                 : 'Create activity badge'}
           </h3>
         )}
-        <button type="button" className="cc-badge-editor-close" onClick={onCancel} aria-label="Close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
+        <button
+          type="button"
+          className="cc-badge-editor-close"
+          onClick={onCancel}
+          aria-label="Close"
+        >
+          <Icon name="x" size={18} />
         </button>
       </header>
       <div className="cc-badge-editor-body">
@@ -2242,12 +2598,22 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
         ) : (
           <>
             <div className="cc-headtabs cc-ab-tabs">
-              <button type="button" className={`cc-headtab${tab === 'details' ? ' is-active' : ''}`} onClick={() => setTab('details')}>
+              <button
+                type="button"
+                className={`cc-headtab${tab === 'details' ? ' is-active' : ''}`}
+                onClick={() => setTab('details')}
+              >
                 Details
               </button>
-              <button type="button" className={`cc-headtab${tab === 'activities' ? ' is-active' : ''}`} onClick={() => setTab('activities')}>
+              <button
+                type="button"
+                className={`cc-headtab${tab === 'activities' ? ' is-active' : ''}`}
+                onClick={() => setTab('activities')}
+              >
                 Activities
-                {activities.length ? <span className="cc-headtab-count">{activities.length}</span> : null}
+                {activities.length ? (
+                  <span className="cc-headtab-count">{activities.length}</span>
+                ) : null}
               </button>
             </div>
             {tab === 'details' ? (
@@ -2262,23 +2628,42 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                     {badge?.img ? (
                       <img src={badge.img} alt="" />
                     ) : (
-                      <svg viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <svg
+                        viewBox="0 0 24 24"
+                        width="34"
+                        height="34"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
                         <rect x="3" y="3" width="18" height="18" rx="3" />
                         <circle cx="8.5" cy="8.5" r="1.6" />
                         <path d="M21 15l-5-5L5 21" />
                       </svg>
                     )}
                     <span className="cc-badge-disc-edit" aria-hidden="true">
-                      <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M12 20h9" />
-                        <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-                      </svg>
+                      <Icon name="pencil" size={15} />
                     </span>
                   </button>
                 </div>
                 <div className="cc-ab-fieldscol">
-                  <Field label={<>Title <span className="cc-req">*</span></>} hint="Shown to readers">
-                    <Input value={title} maxLength={80} placeholder="e.g. Cupid's Arrows" onChange={(e) => setTitle(e.target.value)} />
+                  <Field
+                    label={
+                      <>
+                        Title <span className="cc-req">*</span>
+                      </>
+                    }
+                    hint="Shown to readers"
+                  >
+                    <Input
+                      value={title}
+                      maxLength={80}
+                      placeholder="e.g. Cupid's Arrows"
+                      onChange={(e) => setTitle(e.target.value)}
+                    />
                   </Field>
                   <Field label="Description" hint="Optional · shown to readers">
                     <RichText
@@ -2291,7 +2676,8 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                   {repeatable ? (
                     <div className="cc-warn-note">
                       Completing repeatable activities can earn points for readers (and thus points
-                      badges), but the repeatable activity badge itself can never be earned or completed.
+                      badges), but the repeatable activity badge itself can never be earned or
+                      completed.
                     </div>
                   ) : (
                     <div className="cc-ab-settings">
@@ -2303,7 +2689,9 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                             placeholder="All"
                             onChange={(e) => setEarn(e.target.value.replace(/[^0-9]/g, ''))}
                           />
-                          <span className="cc-ab-earn-suffix">{earn === '1' ? 'activity' : 'activities'}</span>
+                          <span className="cc-ab-earn-suffix">
+                            {earn === '1' ? 'activity' : 'activities'}
+                          </span>
                         </div>
                       </Field>
                       <Field label="Prerequisite badge">
@@ -2318,7 +2706,9 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                   <div className="cc-ab-toggle-row">
                     <div>
                       <strong>Restrict to certain dates</strong>
-                      <span className="cc-ab-toggle-sub">Readers can only complete activities within these dates.</span>
+                      <span className="cc-ab-toggle-sub">
+                        Readers can only complete activities within these dates.
+                      </span>
                     </div>
                     <Toggle checked={dateRestrict} onChange={setDateRestrict} size="md">
                       {dateRestrict ? 'On' : 'Off'}
@@ -2327,10 +2717,20 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                   {dateRestrict && (
                     <div className="cc-ab-dates">
                       <Field label="Start">
-                        <input type="date" className="inp inp--md" value={dateWindow.start} onChange={(e) => setDateWindow({ ...dateWindow, start: e.target.value })} />
+                        <input
+                          type="date"
+                          className="inp inp--md"
+                          value={dateWindow.start}
+                          onChange={(e) => setDateWindow({ ...dateWindow, start: e.target.value })}
+                        />
                       </Field>
                       <Field label="End">
-                        <input type="date" className="inp inp--md" value={dateWindow.end} onChange={(e) => setDateWindow({ ...dateWindow, end: e.target.value })} />
+                        <input
+                          type="date"
+                          className="inp inp--md"
+                          value={dateWindow.end}
+                          onChange={(e) => setDateWindow({ ...dateWindow, end: e.target.value })}
+                        />
                       </Field>
                     </div>
                   )}
@@ -2357,12 +2757,23 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                   <div className="cc-ab-actform">
                     <div className="cc-ab-actform-type">
                       <Field label="Activity type">
-                        <CustomSelect value={actForm.type} onChange={(v) => setActForm({ ...actForm, type: v })} options={ACTIVITY_TYPES} />
+                        <CustomSelect
+                          value={actForm.type}
+                          onChange={(v) => setActForm({ ...actForm, type: v })}
+                          options={ACTIVITY_TYPES}
+                        />
                       </Field>
-                      {ACTIVITY_TYPE_HINT[actForm.type] && <p className="cc-ab-typehint">{ACTIVITY_TYPE_HINT[actForm.type]}</p>}
+                      {ACTIVITY_TYPE_HINT[actForm.type] && (
+                        <p className="cc-ab-typehint">{ACTIVITY_TYPE_HINT[actForm.type]}</p>
+                      )}
                     </div>
                     <Field label="Description" hint="Optional">
-                      <RichText value={actForm.description} onChange={(html) => setActForm({ ...actForm, description: html })} minHeight={80} placeholder="What should the reader do?" />
+                      <RichText
+                        value={actForm.description}
+                        onChange={(html) => setActForm({ ...actForm, description: html })}
+                        minHeight={80}
+                        placeholder="What should the reader do?"
+                      />
                     </Field>
                     {actForm.type === 'code' ? (
                       <Field label="Activity codes" hint='Press "Enter" after each code'>
@@ -2370,7 +2781,13 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                           {(actForm.codes || []).map((c, i) => (
                             <span key={i} className="cc-ab-code-chip">
                               {c}
-                              <button type="button" onClick={() => removeCode(i)} aria-label={`Remove ${c}`}>×</button>
+                              <button
+                                type="button"
+                                onClick={() => removeCode(i)}
+                                aria-label={`Remove ${c}`}
+                              >
+                                ×
+                              </button>
                             </span>
                           ))}
                           <input
@@ -2388,7 +2805,11 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                         </div>
                       </Field>
                     ) : ACTIVITY_FIELDS[actForm.type]?.length ? (
-                      <div className={ACTIVITY_FIELDS[actForm.type].length > 1 ? 'cc-ab-actform-row' : ''}>
+                      <div
+                        className={
+                          ACTIVITY_FIELDS[actForm.type].length > 1 ? 'cc-ab-actform-row' : ''
+                        }
+                      >
                         {ACTIVITY_FIELDS[actForm.type].map((f) => (
                           <Field key={f.k} label={f.label}>
                             <Input
@@ -2402,8 +2823,12 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
                       </div>
                     ) : null}
                     <div className="cc-ab-actform-foot">
-                      <Button variant="secondary" size="sm" onClick={() => setActForm(null)}>Cancel</Button>
-                      <Button variant="primary" size="sm" accent="#0DA7BC" onClick={saveActForm}>{actForm.index == null ? 'Add activity' : 'Save activity'}</Button>
+                      <Button variant="secondary" size="sm" onClick={() => setActForm(null)}>
+                        Cancel
+                      </Button>
+                      <Button variant="primary" size="sm" accent="#0DA7BC" onClick={saveActForm}>
+                        {actForm.index == null ? 'Add activity' : 'Save activity'}
+                      </Button>
                     </div>
                   </div>
                 ) : activities.length > 0 ? (
@@ -2429,7 +2854,9 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
       </div>
       {!picking && (
         <footer className="cc-badge-editor-foot">
-          <Button variant="secondary" size="md" onClick={onCancel}>Cancel</Button>
+          <Button variant="secondary" size="md" onClick={onCancel}>
+            Cancel
+          </Button>
           <Button variant="primary" size="md" accent="#0DA7BC" disabled={!valid} onClick={save}>
             {editing ? 'Save badge' : 'Create badge'}
           </Button>
@@ -2441,37 +2868,13 @@ function ActivityBadgeEditor({ initial, editing, repeatable, extraGroups, defaul
 
 // ── Shared badge row (logging / review / activity badges) ──
 function DragDots() {
-  return (
-    <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-      <circle cx="9" cy="6" r="1.5" />
-      <circle cx="15" cy="6" r="1.5" />
-      <circle cx="9" cy="12" r="1.5" />
-      <circle cx="15" cy="12" r="1.5" />
-      <circle cx="9" cy="18" r="1.5" />
-      <circle cx="15" cy="18" r="1.5" />
-    </svg>
-  )
+  return <Icon name="grip" size={16} />
 }
 function EyeIcon({ off }) {
-  return off ? (
-    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M9.9 5.1A9.3 9.3 0 0 1 12 5c5.5 0 9 7 9 7a13.6 13.6 0 0 1-2.2 2.9M6.5 6.6C4 8.2 3 11.4 3 12c0 0 3.5 7 9 7 1.6 0 3-.4 4.2-1.1" />
-      <path d="M10.6 10.6a2 2 0 0 0 2.8 2.8M3 3l18 18" />
-    </svg>
-  ) : (
-    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M3 12s3.5-7 9-7 9 7 9 7-3.5 7-9 7-9-7-9-7z" />
-      <circle cx="12" cy="12" r="2.6" />
-    </svg>
-  )
+  return <Icon name={off ? 'eye-off' : 'eye'} size={17} />
 }
 function PencilIcon() {
-  return (
-    <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <path d="M12 20h9" />
-      <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z" />
-    </svg>
-  )
+  return <Icon name="pencil" size={15} />
 }
 // Drag-to-reorder for a list; getProps(index) spreads onto the draggable row.
 function useDragReorder(onMove) {
@@ -2511,7 +2914,21 @@ function useDragReorder(onMove) {
     onDragEnd: reset,
   })
 }
-function BadgeRow({ num, img, icon, color, title, meta, metaMissing, active, square, onToggleActive, onEdit, onRemove, drag }) {
+function BadgeRow({
+  num,
+  img,
+  icon,
+  color,
+  title,
+  meta,
+  metaMissing,
+  active,
+  square,
+  onToggleActive,
+  onEdit,
+  onRemove,
+  drag,
+}) {
   const rowRef = useRef(null)
   const dropCls = drag?.isOver ? (drag.dropBelow ? ' is-drop-after' : ' is-drop-before') : ''
   const handleDragStart = (e) => {
@@ -2550,12 +2967,16 @@ function BadgeRow({ num, img, icon, color, title, meta, metaMissing, active, squ
         ) : img ? (
           <img src={img} alt="" draggable={false} />
         ) : (
-          <span className="cc-badgerow-art-ic" style={{ background: color }}><Ic name={icon} size={20} /></span>
+          <span className="cc-badgerow-art-ic" style={{ background: color }}>
+            <Ic name={icon} size={20} />
+          </span>
         )}
       </span>
       <div className="cc-badgerow-info">
         <strong>{title || 'Untitled badge'}</strong>
-        {meta && <span className={`cc-badgerow-meta${metaMissing ? ' is-missing' : ''}`}>{meta}</span>}
+        {meta && (
+          <span className={`cc-badgerow-meta${metaMissing ? ' is-missing' : ''}`}>{meta}</span>
+        )}
       </div>
       <div className="cc-badgerow-actions">
         {onToggleActive && (
@@ -2563,7 +2984,9 @@ function BadgeRow({ num, img, icon, color, title, meta, metaMissing, active, squ
             type="button"
             className={`cc-badgerow-eye${active === false ? ' is-off' : ''}`}
             onClick={onToggleActive}
-            aria-label={active === false ? 'Inactive — click to activate' : 'Active — click to deactivate'}
+            aria-label={
+              active === false ? 'Inactive — click to activate' : 'Active — click to deactivate'
+            }
             title={active === false ? 'Inactive' : 'Active'}
           >
             <EyeIcon off={active === false} />
@@ -2575,7 +2998,12 @@ function BadgeRow({ num, img, icon, color, title, meta, metaMissing, active, squ
           </button>
         )}
         {onRemove && (
-          <button type="button" className="cc-row-remove" onClick={onRemove} aria-label="Remove badge">
+          <button
+            type="button"
+            className="cc-row-remove"
+            onClick={onRemove}
+            aria-label="Remove badge"
+          >
             <TrashIcon />
           </button>
         )}
@@ -2607,7 +3035,12 @@ function QuickBadgeCreator({ bgImage, onCreate, onCancel }) {
   const n = Math.max(1, Math.min(count || 1, 20))
   const items = Array.from({ length: n }, (_, i) => {
     const goal = (start || 1) + i * (step || 1)
-    return { num: i + 1, goal, badgeNum: numMode === 'goal' ? goal : i + 1, name: `${goal} ${goal === 1 ? single : label}` }
+    return {
+      num: i + 1,
+      goal,
+      badgeNum: numMode === 'goal' ? goal : i + 1,
+      name: `${goal} ${goal === 1 ? single : label}`,
+    }
   })
   // Art depends on the badge numbers (which mode + range drive) and the theme image.
   const numsKey = items.map((it) => it.badgeNum).join(',')
@@ -2633,7 +3066,14 @@ function QuickBadgeCreator({ bgImage, onCreate, onCancel }) {
         logType,
         img: imgs[i],
         source: 'create',
-        edit: { bgMode: bgImage ? 'image' : 'color', image: bgImage, color: QUICK_COLORS[i % QUICK_COLORS.length], mode: 'number', num: it.badgeNum, font: 'Poppins' },
+        edit: {
+          bgMode: bgImage ? 'image' : 'color',
+          image: bgImage,
+          color: QUICK_COLORS[i % QUICK_COLORS.length],
+          mode: 'number',
+          num: it.badgeNum,
+          font: 'Poppins',
+        },
       })),
     )
   }
@@ -2641,15 +3081,22 @@ function QuickBadgeCreator({ bgImage, onCreate, onCancel }) {
     <div className="cc-badge-editor cc-quickbadge">
       <header className="cc-badge-editor-head">
         <h3>Quick-create logging badges</h3>
-        <button type="button" className="cc-badge-editor-close" onClick={onCancel} aria-label="Close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
+        <button
+          type="button"
+          className="cc-badge-editor-close"
+          onClick={onCancel}
+          aria-label="Close"
+        >
+          <Icon name="x" size={18} />
         </button>
       </header>
       <div className="cc-badge-editor-body cc-quick-body">
         <Field label="What are readers logging?">
-          <CustomSelect value={logType} onChange={setLogType} options={LOG_TYPES.map((t) => ({ value: t.value, label: t.label }))} />
+          <CustomSelect
+            value={logType}
+            onChange={setLogType}
+            options={LOG_TYPES.map((t) => ({ value: t.value, label: t.label }))}
+          />
         </Field>
         <div className="cc-quick-range">
           <Field label="Start at">
@@ -2681,22 +3128,38 @@ function QuickBadgeCreator({ bgImage, onCreate, onCancel }) {
               onClick={() => setNumMode('goal')}
             >
               <span className="cc-quick-seg-name">Logged amount</span>
-              <span className="cc-quick-seg-eg">{items.map((it) => it.goal).slice(0, 3).join(', ')}…</span>
+              <span className="cc-quick-seg-eg">
+                {items
+                  .map((it) => it.goal)
+                  .slice(0, 3)
+                  .join(', ')}
+                …
+              </span>
             </button>
           </div>
         </div>
-        <div className="cc-quick-previewhead">Preview · {items.length} {items.length === 1 ? 'badge' : 'badges'}</div>
+        <div className="cc-quick-previewhead">
+          Preview · {items.length} {items.length === 1 ? 'badge' : 'badges'}
+        </div>
         <div className="cc-quick-preview">
           {items.map((it, i) => (
             <div key={i} className="cc-quick-chip">
-              <span className="cc-badgerow-art">{arts[i] ? <img src={arts[i]} alt="" draggable={false} /> : <span className="cc-badgerow-num">{it.num}</span>}</span>
+              <span className="cc-badgerow-art">
+                {arts[i] ? (
+                  <img src={arts[i]} alt="" draggable={false} />
+                ) : (
+                  <span className="cc-badgerow-num">{it.num}</span>
+                )}
+              </span>
               <span className="cc-quick-chip-name">{it.name}</span>
             </div>
           ))}
         </div>
       </div>
       <footer className="cc-badge-editor-foot">
-        <Button variant="secondary" size="md" onClick={onCancel}>Cancel</Button>
+        <Button variant="secondary" size="md" onClick={onCancel}>
+          Cancel
+        </Button>
         <Button variant="primary" size="md" accent="#0DA7BC" disabled={!valid} onClick={make}>
           Create {items.length} {items.length === 1 ? 'badge' : 'badges'}
         </Button>
@@ -2711,7 +3174,9 @@ function ActivityBadgePicker({ source, mode, onPick, onCancel }) {
   const [page, setPage] = useState(0)
   const pageSize = 8
   const q = query.trim().toLowerCase()
-  const filtered = q ? source.filter((b) => (b.title || b.name || '').toLowerCase().includes(q)) : source
+  const filtered = q
+    ? source.filter((b) => (b.title || b.name || '').toLowerCase().includes(q))
+    : source
   const pages = Math.max(1, Math.ceil(filtered.length / pageSize))
   const cur = Math.min(page, pages - 1)
   const start = cur * pageSize
@@ -2723,22 +3188,37 @@ function ActivityBadgePicker({ source, mode, onPick, onCancel }) {
   return (
     <div className="cc-badge-editor cc-actpicker">
       <header className="cc-badge-editor-head">
-        <h3>{mode === 'duplicate' ? 'Duplicate an activity badge' : 'Use an existing activity badge'}</h3>
-        <button type="button" className="cc-badge-editor-close" onClick={onCancel} aria-label="Close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-            <path d="M6 6l12 12M18 6L6 18" />
-          </svg>
+        <h3>
+          {mode === 'duplicate' ? 'Duplicate an activity badge' : 'Use an existing activity badge'}
+        </h3>
+        <button
+          type="button"
+          className="cc-badge-editor-close"
+          onClick={onCancel}
+          aria-label="Close"
+        >
+          <Icon name="x" size={18} />
         </button>
       </header>
       <div className="cc-badge-editor-body">
         <div className={`cc-badgepick-search${q ? ' is-active' : ''}`}>
-          <span className="cc-badgepick-search-ic"><GallerySearchIcon /></span>
-          <input value={query} placeholder="Search badges…" onChange={(e) => setQ(e.target.value)} aria-label="Search badges" />
+          <span className="cc-badgepick-search-ic">
+            <GallerySearchIcon />
+          </span>
+          <input
+            value={query}
+            placeholder="Search badges…"
+            onChange={(e) => setQ(e.target.value)}
+            aria-label="Search badges"
+          />
           {query && (
-            <button type="button" className="cc-badgepick-search-clear" onClick={() => setQ('')} aria-label="Clear search">
-              <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
-                <path d="M6 6l12 12M18 6L6 18" />
-              </svg>
+            <button
+              type="button"
+              className="cc-badgepick-search-clear"
+              onClick={() => setQ('')}
+              aria-label="Clear search"
+            >
+              <Icon name="x" size={14} stroke={2.2} />
             </button>
           )}
         </div>
@@ -2747,13 +3227,24 @@ function ActivityBadgePicker({ source, mode, onPick, onCancel }) {
             {shown.map((b) => {
               const nA = b.activities?.length || 0
               return (
-                <button key={b.id || b.name} type="button" className="cc-actpicker-item" onClick={() => onPick(b)}>
+                <button
+                  key={b.id || b.name}
+                  type="button"
+                  className="cc-actpicker-item"
+                  onClick={() => onPick(b)}
+                >
                   <span className="cc-badgerow-art">
-                    {b.badge?.img ? <img src={b.badge.img} alt="" draggable={false} /> : <span className="cc-badgerow-num">?</span>}
+                    {b.badge?.img ? (
+                      <img src={b.badge.img} alt="" draggable={false} />
+                    ) : (
+                      <span className="cc-badgerow-num">?</span>
+                    )}
                   </span>
                   <span className="cc-actpicker-item-info">
                     <strong>{b.title || b.name}</strong>
-                    <span>{nA} {nA === 1 ? 'activity' : 'activities'}</span>
+                    <span>
+                      {nA} {nA === 1 ? 'activity' : 'activities'}
+                    </span>
                   </span>
                 </button>
               )
@@ -2770,14 +3261,26 @@ function ActivityBadgePicker({ source, mode, onPick, onCancel }) {
       </div>
       <footer className="cc-badge-editor-foot cc-actpicker-foot">
         <span className="cc-actpicker-page-count">
-          {filtered.length ? `${start + 1}–${Math.min(start + pageSize, filtered.length)} of ${filtered.length}` : '0 results'}
+          {filtered.length
+            ? `${start + 1}–${Math.min(start + pageSize, filtered.length)} of ${filtered.length}`
+            : '0 results'}
         </span>
         <div className="cc-actpicker-page-btns">
-          <button type="button" disabled={cur <= 0} onClick={() => setPage(cur - 1)} aria-label="Previous page">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18l-6-6 6-6" /></svg>
+          <button
+            type="button"
+            disabled={cur <= 0}
+            onClick={() => setPage(cur - 1)}
+            aria-label="Previous page"
+          >
+            <Icon name="chevron-left" size={16} />
           </button>
-          <button type="button" disabled={cur >= pages - 1} onClick={() => setPage(cur + 1)} aria-label="Next page">
-            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 6l6 6-6 6" /></svg>
+          <button
+            type="button"
+            disabled={cur >= pages - 1}
+            onClick={() => setPage(cur + 1)}
+            aria-label="Next page"
+          >
+            <Icon name="chevron-right" size={16} />
           </button>
         </div>
       </footer>
@@ -2789,9 +3292,15 @@ function ActivityBadgePicker({ source, mode, onPick, onCancel }) {
 function ActBadgeActions({ onUse, onDuplicate, onCreate }) {
   return (
     <div className="cc-panel-actions cc-actbadge-actions">
-      <Button variant="ghost" size="sm" onClick={onUse}>Use existing</Button>
-      <Button variant="ghost" size="sm" onClick={onDuplicate}>Duplicate</Button>
-      <Button variant="secondary" size="sm" onClick={onCreate}>+ Create a badge</Button>
+      <Button variant="ghost" size="sm" onClick={onUse}>
+        Use existing
+      </Button>
+      <Button variant="ghost" size="sm" onClick={onDuplicate}>
+        Duplicate
+      </Button>
+      <Button variant="secondary" size="sm" onClick={onCreate}>
+        + Create a badge
+      </Button>
     </div>
   )
 }
@@ -2804,23 +3313,32 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   const repeatableActivities = challenge.repeatableActivities || []
   const pointsBadges = challenge.pointsBadges || []
   // "Logging" badges cover both generic logging and Reading List (specific titles).
-  const loggingOn = !!methods.log || !!methods.readingList || ['log', 'readingList'].includes(type?.primaryMethod)
+  const loggingOn =
+    !!methods.log || !!methods.readingList || ['log', 'readingList'].includes(type?.primaryMethod)
   const activitiesOn = !!methods.activities || type?.primaryMethod === 'activities'
   const reviewsOn = !!methods.reviews || type?.primaryMethod === 'reviews'
   const isPoints = type?.id === 'points'
   // Earnable badge types come from the challenge type: its primary method
   // (required) plus its add-ons. Points challenges also offer repeatable activities.
   const earnableTypes = [
-    ...new Set([type?.primaryMethod, ...(type?.addOns || []), ...(isPoints ? ['repeatable'] : [])].filter(Boolean)),
+    ...new Set(
+      [type?.primaryMethod, ...(type?.addOns || []), ...(isPoints ? ['repeatable'] : [])].filter(
+        Boolean,
+      ),
+    ),
   ].map((key) => ({ key, label: METHOD_LABELS[key] || key }))
   const pointTypes = challenge.pointTypes || DEFAULT_POINT_TYPES
   const setPointType = (k, v) => update({ pointTypes: { ...pointTypes, [k]: v } })
   // Migrate older points drafts (template badges seeded as logging) into Points
   // badges once, so they stop showing "Needs a log value" under a hidden panel.
   useEffect(() => {
-    if (isPoints && !loggingOn && challenge.pointsBadges == null && (challenge.badges?.length)) {
+    if (isPoints && !loggingOn && challenge.pointsBadges == null && challenge.badges?.length) {
       update({
-        pointsBadges: challenge.badges.map((b, i) => ({ name: b.name, img: b.img, goal: (i + 1) * 50 })),
+        pointsBadges: challenge.badges.map((b, i) => ({
+          name: b.name,
+          img: b.img,
+          goal: (i + 1) * 50,
+        })),
         badges: [],
       })
     }
@@ -2851,10 +3369,22 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
             })),
             // The theme's registration + completion art is selectable too.
             ...(challenge.registrationBadge?.img
-              ? [{ id: 'tpl-reg', name: challenge.registrationBadge.name || 'Registration badge', img: challenge.registrationBadge.img }]
+              ? [
+                  {
+                    id: 'tpl-reg',
+                    name: challenge.registrationBadge.name || 'Registration badge',
+                    img: challenge.registrationBadge.img,
+                  },
+                ]
               : []),
             ...(challenge.completionBadge?.img
-              ? [{ id: 'tpl-comp', name: challenge.completionBadge.name || 'Completion badge', img: challenge.completionBadge.img }]
+              ? [
+                  {
+                    id: 'tpl-comp',
+                    name: challenge.completionBadge.name || 'Completion badge',
+                    img: challenge.completionBadge.img,
+                  },
+                ]
               : []),
           ],
         },
@@ -2949,7 +3479,13 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
       setAbEditor({
         index: null,
         repeatable,
-        initial: { ...src, id: undefined, name: `${name} (copy)`, title: `${name} (copy)`, activities },
+        initial: {
+          ...src,
+          id: undefined,
+          name: `${name} (copy)`,
+          title: `${name} (copy)`,
+          activities,
+        },
       })
     } else {
       const copy = { ...src, id: `ab-${Date.now()}`, activities }
@@ -2981,7 +3517,8 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
     slot === 'registration' ? challenge.registrationBadge : challenge.completionBadge
   const PinSlot = ({ slot, label }) => {
     const b = pinnedBadge(slot)
-    const open = () => setEditor({ title: `Select ${label.toLowerCase()}`, target: slot, initial: b })
+    const open = () =>
+      setEditor({ title: `Select ${label.toLowerCase()}`, target: slot, initial: b })
     if (!b?.img) {
       return (
         <button type="button" className="cc-badge-pin" onClick={open}>
@@ -2995,29 +3532,35 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
 
   return (
     <section className="cc-step">
-      <StepHead title="Badges & activities" sub="Choose how readers earn, then add the badges they'll collect." icon={STEP_ICONS.badges} />
+      <StepHead
+        title="Badges & activities"
+        sub="Choose how readers earn, then add the badges they'll collect."
+        icon={STEP_ICONS.badges}
+      />
 
       <div className="cc-panel">
         <h3 className="cc-panel-title">Earnable badge types</h3>
         <div className="cc-settings">
           {earnableTypes.map((t) => {
-              const isPrimary = t.key === type?.primaryMethod
-              const on = isPrimary || !!methods[t.key]
-              return (
-                <div key={t.key} className={`cc-setting-row${isPrimary ? ' is-disabled' : ''}`}>
-                  <span className="cc-setting-label">{t.label}</span>
-                  <div className="cc-type-state">
-                    <span className="cc-reg-state">{isPrimary ? 'Required' : on ? 'Enabled' : 'Disabled'}</span>
-                    <Toggle
-                      checked={on}
-                      size="md"
-                      disabled={isPrimary}
-                      onChange={(v) => (v ? setMethod(t.key, true) : setConfirmType(t))}
-                    />
-                  </div>
+            const isPrimary = t.key === type?.primaryMethod
+            const on = isPrimary || !!methods[t.key]
+            return (
+              <div key={t.key} className={`cc-setting-row${isPrimary ? ' is-disabled' : ''}`}>
+                <span className="cc-setting-label">{t.label}</span>
+                <div className="cc-type-state">
+                  <span className="cc-reg-state">
+                    {isPrimary ? 'Required' : on ? 'Enabled' : 'Disabled'}
+                  </span>
+                  <Toggle
+                    checked={on}
+                    size="md"
+                    disabled={isPrimary}
+                    onChange={(v) => (v ? setMethod(t.key, true) : setConfirmType(t))}
+                  />
                 </div>
-              )
-            })}
+              </div>
+            )
+          })}
         </div>
       </div>
 
@@ -3076,9 +3619,14 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
           </div>
           {badgeTime === 'restricted' && (
             <div className="cc-badge-window-wrap">
-              <div className={`cc-date-row cc-badge-window${errors.badgeWindow ? ' has-error' : ''}`}>
+              <div
+                className={`cc-date-row cc-badge-window${errors.badgeWindow ? ' has-error' : ''}`}
+              >
                 <Field label="Badges can be earned from…">
-                  <DateInput value={bw.start} onChange={(e) => setWindow({ start: e.target.value })} />
+                  <DateInput
+                    value={bw.start}
+                    onChange={(e) => setWindow({ start: e.target.value })}
+                  />
                 </Field>
                 <Field label="Until…">
                   <DateInput value={bw.end} onChange={(e) => setWindow({ end: e.target.value })} />
@@ -3128,7 +3676,14 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
                     title={b.name}
                     meta={b.goal ? `Earn ${b.goal} points` : 'Needs a points value'}
                     metaMissing={!b.goal}
-                    onEdit={() => setEditor({ title: 'Edit points badge', target: 'points', index: i, initial: b })}
+                    onEdit={() =>
+                      setEditor({
+                        title: 'Edit points badge',
+                        target: 'points',
+                        index: i,
+                        initial: b,
+                      })
+                    }
                     onRemove={() => removePointsBadge(i)}
                   />
                 ))}
@@ -3144,63 +3699,65 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
       )}
 
       {loggingOn && (
-      <div className="cc-panel">
-        <div className="cc-panel-head">
-          <h3 className="cc-panel-title">Logging badges</h3>
-          <div className="cc-panel-actions">
-            <Button variant="ghost" size="sm" onClick={() => setQuickBadge(true)}>
-              ⚡ Quick-create
-            </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setEditor({ title: 'Add a badge', target: 'milestone' })}
-            >
-              + Add badge
-            </Button>
+        <div className="cc-panel">
+          <div className="cc-panel-head">
+            <h3 className="cc-panel-title">Logging badges</h3>
+            <div className="cc-panel-actions">
+              <Button variant="ghost" size="sm" onClick={() => setQuickBadge(true)}>
+                ⚡ Quick-create
+              </Button>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setEditor({ title: 'Add a badge', target: 'milestone' })}
+              >
+                + Add badge
+              </Button>
+            </div>
           </div>
+          {type?.primaryMethod === 'readingList' && (
+            <Banner level="info" className="cc-panel-banner">
+              Readers enrolled in a Reading List challenge will earn logging badges only for reading
+              the specific titles added to your Reading List.
+            </Banner>
+          )}
+          {errors.badges && <p className="cc-badge-reqnote">{errors.badges}</p>}
+          {badges.length > 0 ? (
+            <div className="cc-badge-rows">
+              {badges
+                // Show in increasing order of the logging requirement (goal);
+                // badges without a goal sort to the end. Keep the original index
+                // so edit/remove still target the right badge.
+                .map((b, i) => ({ b, i }))
+                .sort((a, z) => (a.b.goal ?? Infinity) - (z.b.goal ?? Infinity))
+                .map(({ b, i }) => (
+                  <BadgeRow
+                    key={i}
+                    img={b.img || badgeImage(b.icon)}
+                    icon={b.icon}
+                    color={b.color}
+                    title={b.name}
+                    meta={
+                      b.goal && b.logType
+                        ? `Log ${b.goal} ${b.goal === 1 ? b.logType.replace(/s$/, '') : b.logType}`
+                        : 'Needs a log value'
+                    }
+                    metaMissing={!(b.goal && b.logType)}
+                    onEdit={() =>
+                      setEditor({ title: 'Edit badge', target: 'milestone', index: i, initial: b })
+                    }
+                    onRemove={() => removeBadge(i)}
+                  />
+                ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={BADGE_EMPTY_ICON}
+              title="No badges yet"
+              description="Add the badges readers will earn as they read."
+            />
+          )}
         </div>
-        {type?.primaryMethod === 'readingList' && (
-          <Banner level="info" className="cc-panel-banner">
-            Readers enrolled in a Reading List challenge will earn logging badges only for reading the
-            specific titles added to your Reading List.
-          </Banner>
-        )}
-        {errors.badges && <p className="cc-badge-reqnote">{errors.badges}</p>}
-        {badges.length > 0 ? (
-          <div className="cc-badge-rows">
-            {badges
-              // Show in increasing order of the logging requirement (goal);
-              // badges without a goal sort to the end. Keep the original index
-              // so edit/remove still target the right badge.
-              .map((b, i) => ({ b, i }))
-              .sort((a, z) => (a.b.goal ?? Infinity) - (z.b.goal ?? Infinity))
-              .map(({ b, i }) => (
-                <BadgeRow
-                  key={i}
-                  img={b.img || badgeImage(b.icon)}
-                  icon={b.icon}
-                  color={b.color}
-                  title={b.name}
-                  meta={
-                    b.goal && b.logType
-                      ? `Log ${b.goal} ${b.goal === 1 ? b.logType.replace(/s$/, '') : b.logType}`
-                      : 'Needs a log value'
-                  }
-                  metaMissing={!(b.goal && b.logType)}
-                  onEdit={() => setEditor({ title: 'Edit badge', target: 'milestone', index: i, initial: b })}
-                  onRemove={() => removeBadge(i)}
-                />
-              ))}
-          </div>
-        ) : (
-          <EmptyState
-            icon={BADGE_EMPTY_ICON}
-            title="No badges yet"
-            description="Add the badges readers will earn as they read."
-          />
-        )}
-      </div>
       )}
 
       {activitiesOn && (
@@ -3253,8 +3810,8 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
             />
           </div>
           <div className="cc-warn-note">
-            Completing repeatable activities earns points (and thus points badges), but the repeatable
-            activity badges themselves can never be earned or completed.
+            Completing repeatable activities earns points (and thus points badges), but the
+            repeatable activity badges themselves can never be earned or completed.
           </div>
           {repeatableActivities.length ? (
             <div className="cc-badge-rows">
@@ -3311,9 +3868,20 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
                     icon={b.icon}
                     color={b.color}
                     title={b.name}
-                    meta={b.goal ? `Write ${b.goal} ${b.goal === 1 ? 'review' : 'reviews'}` : 'Needs a review goal'}
+                    meta={
+                      b.goal
+                        ? `Write ${b.goal} ${b.goal === 1 ? 'review' : 'reviews'}`
+                        : 'Needs a review goal'
+                    }
                     metaMissing={!b.goal}
-                    onEdit={() => setEditor({ title: 'Edit review badge', target: 'review', index: i, initial: b })}
+                    onEdit={() =>
+                      setEditor({
+                        title: 'Edit review badge',
+                        target: 'review',
+                        index: i,
+                        initial: b,
+                      })
+                    }
                     onRemove={() => removeReviewBadge(i)}
                   />
                 ))}
@@ -3328,11 +3896,27 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
         </div>
       )}
 
-      <Modal open={quickBadge} onClose={() => setQuickBadge(false)} variant="center" ariaLabel="Quick badge creator">
-        {quickBadge && <QuickBadgeCreator bgImage={badgeBgImages[0]} onCreate={quickCreateBadges} onCancel={() => setQuickBadge(false)} />}
+      <Modal
+        open={quickBadge}
+        onClose={() => setQuickBadge(false)}
+        variant="center"
+        ariaLabel="Quick badge creator"
+      >
+        {quickBadge && (
+          <QuickBadgeCreator
+            bgImage={badgeBgImages[0]}
+            onCreate={quickCreateBadges}
+            onCancel={() => setQuickBadge(false)}
+          />
+        )}
       </Modal>
 
-      <Modal open={!!actPicker} onClose={() => setActPicker(null)} variant="center" ariaLabel="Choose an activity badge">
+      <Modal
+        open={!!actPicker}
+        onClose={() => setActPicker(null)}
+        variant="center"
+        ariaLabel="Choose an activity badge"
+      >
         {actPicker && (
           <ActivityBadgePicker
             source={existingActivityBadges}
@@ -3343,7 +3927,12 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
         )}
       </Modal>
 
-      <Modal open={!!abEditor} onClose={() => setAbEditor(null)} variant="center" ariaLabel="Activity badge editor">
+      <Modal
+        open={!!abEditor}
+        onClose={() => setAbEditor(null)}
+        variant="center"
+        ariaLabel="Activity badge editor"
+      >
         {abEditor && (
           <ActivityBadgeEditor
             initial={abEditor.initial}
@@ -3361,7 +3950,12 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
         )}
       </Modal>
 
-      <Modal open={!!editor} onClose={() => setEditor(null)} variant="center" ariaLabel="Badge editor">
+      <Modal
+        open={!!editor}
+        onClose={() => setEditor(null)}
+        variant="center"
+        ariaLabel="Badge editor"
+      >
         {editor && (
           <BadgeEditor
             title={editor.title}
@@ -3426,14 +4020,19 @@ function BookCover({ src, className = '' }) {
   if (!src || err) {
     return (
       <span className={`cc-bookcover cc-bookcover--ph ${className}`.trim()} aria-hidden="true">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 5.5C6 4.4 9 4.4 12 6c3-1.6 6-1.6 8-.5v12c-2-1.1-5-1.1-8 .5-3-1.6-6-1.6-8-.5z" />
-          <path d="M12 6v12" />
-        </svg>
+        <Icon name="book" size={20} />
       </span>
     )
   }
-  return <img className={`cc-bookcover ${className}`.trim()} src={src} alt="" draggable={false} onError={() => setErr(true)} />
+  return (
+    <img
+      className={`cc-bookcover ${className}`.trim()}
+      src={src}
+      alt=""
+      draggable={false}
+      onError={() => setErr(true)}
+    />
+  )
 }
 
 const BOOK_SEARCH_FIELDS = [
@@ -3452,7 +4051,11 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
     if (!submitted) return []
     const q = submitted.q.trim().toLowerCase()
     if (!q) return BOOK_CATALOG
-    return BOOK_CATALOG.filter((b) => String(b[submitted.field] || '').toLowerCase().includes(q))
+    return BOOK_CATALOG.filter((b) =>
+      String(b[submitted.field] || '')
+        .toLowerCase()
+        .includes(q),
+    )
   }, [submitted])
   const runSearch = () => setSubmitted({ field, q: query })
   const clear = () => {
@@ -3468,21 +4071,23 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
   return (
     <div className="cc-titlemodal">
       <button type="button" className="cc-titlemodal-close" onClick={onClose} aria-label="Close">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-          <path d="M6 6l12 12M18 6L6 18" />
-        </svg>
+        <Icon name="x" size={20} />
       </button>
       <div className="cc-titlemodal-grid">
         <div className="cc-titlemodal-side">
           <div className="cc-headtabs cc-titlemodal-tabs">
-            <button type="button" className="cc-headtab is-active">Web</button>
+            <button type="button" className="cc-headtab is-active">
+              Web
+            </button>
           </div>
           <div className="cc-tm-searchby">
             <span>Search By</span>
             <CustomSelect value={field} onChange={setField} options={BOOK_SEARCH_FIELDS} />
           </div>
           <div className="cc-tm-search">
-            <span className="cc-tm-search-ic"><GallerySearchIcon /></span>
+            <span className="cc-tm-search-ic">
+              <GallerySearchIcon />
+            </span>
             <input
               value={query}
               placeholder={`Search by ${BOOK_SEARCH_FIELDS.find((f) => f.value === field)?.label.toLowerCase()}…`}
@@ -3491,14 +4096,23 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
               aria-label="Search books"
             />
             {query && (
-              <button type="button" className="cc-tm-search-clear" onClick={() => setQuery('')} aria-label="Clear">
-                <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+              <button
+                type="button"
+                className="cc-tm-search-clear"
+                onClick={() => setQuery('')}
+                aria-label="Clear"
+              >
+                <Icon name="x" size={14} stroke={2.2} />
               </button>
             )}
           </div>
           <div className="cc-tm-actions">
-            <Button variant="primary" size="md" onClick={runSearch}>Search</Button>
-            <Button variant="secondary" size="md" onClick={clear}>Clear</Button>
+            <Button variant="primary" size="md" onClick={runSearch}>
+              Search
+            </Button>
+            <Button variant="secondary" size="md" onClick={clear}>
+              Clear
+            </Button>
           </div>
         </div>
         <div className="cc-titlemodal-main">
@@ -3540,7 +4154,11 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
                 })}
               </ul>
             ) : (
-              <EmptyState icon={SEARCH_EMPTY_ICON} title="No matches" description={`No books match “${submitted.q}”.`} />
+              <EmptyState
+                icon={SEARCH_EMPTY_ICON}
+                title="No matches"
+                description={`No books match “${submitted.q}”.`}
+              />
             )}
           </div>
           <div className="cc-tm-foot">
@@ -3562,7 +4180,11 @@ export function SetupStep({ challenge, type, update }) {
     const n = { '3x3': 9, '4x4': 16, '5x5': 25 }[size]
     return (
       <section className="cc-step">
-        <StepHead title="Bingo card" sub="Pick a card size, then arrange badges on the grid." icon={STEP_ICONS.bingo} />
+        <StepHead
+          title="Bingo card"
+          sub="Pick a card size, then arrange badges on the grid."
+          icon={STEP_ICONS.bingo}
+        />
         <div className="cc-panel">
           <Field label="Card size">
             <RadioGroup
@@ -3593,9 +4215,16 @@ export function SetupStep({ challenge, type, update }) {
     const spaces = s.boardSpaces || 12
     return (
       <section className="cc-step">
-        <StepHead title="Gameboard" sub="Build the board readers move along as they read and complete activities." icon={STEP_ICONS.gameboard} />
+        <StepHead
+          title="Gameboard"
+          sub="Build the board readers move along as they read and complete activities."
+          icon={STEP_ICONS.gameboard}
+        />
         <div className="cc-panel">
-          <Field label="Number of spaces" help="Readers advance one space per logged book or completed activity.">
+          <Field
+            label="Number of spaces"
+            help="Readers advance one space per logged book or completed activity."
+          >
             <NumberInput
               value={spaces}
               min={4}
@@ -3615,7 +4244,9 @@ export function SetupStep({ challenge, type, update }) {
               </span>
             ))}
           </div>
-          <Tip>Reaching the final space completes the challenge — no separate completion rule needed.</Tip>
+          <Tip>
+            Reaching the final space completes the challenge — no separate completion rule needed.
+          </Tip>
         </div>
       </section>
     )
@@ -3629,14 +4260,23 @@ export function SetupStep({ challenge, type, update }) {
   const removeTitle = (i) => setTitles(titles.filter((_, idx) => idx !== i))
   return (
     <section className="cc-step">
-      <StepHead title="Reading list" sub="Add the specific titles readers must log (up to 30)." icon={STEP_ICONS.readingList} />
+      <StepHead
+        title="Reading list"
+        sub="Add the specific titles readers must log (up to 30)."
+        icon={STEP_ICONS.readingList}
+      />
       <div className="cc-panel">
         <div className="cc-panel-head">
           <h3 className="cc-panel-title">
             Titles <span className="cc-rl-count">{titles.length} / 30</span>
           </h3>
           <div className="cc-panel-actions">
-            <Button variant="secondary" size="sm" disabled={titles.length >= 30} onClick={() => setTitleModal(true)}>
+            <Button
+              variant="secondary"
+              size="sm"
+              disabled={titles.length >= 30}
+              onClick={() => setTitleModal(true)}
+            >
               + Add titles
             </Button>
           </div>
@@ -3650,7 +4290,12 @@ export function SetupStep({ challenge, type, update }) {
                   <strong>{t.title}</strong>
                   <span>{t.author}</span>
                 </div>
-                <button type="button" className="cc-row-remove" onClick={() => removeTitle(i)} aria-label={`Remove ${t.title}`}>
+                <button
+                  type="button"
+                  className="cc-row-remove"
+                  onClick={() => removeTitle(i)}
+                  aria-label={`Remove ${t.title}`}
+                >
                   <TrashIcon />
                 </button>
               </li>
@@ -3670,8 +4315,19 @@ export function SetupStep({ challenge, type, update }) {
         )}
         <Tip>Book completions are always tracked in a reading-list challenge.</Tip>
       </div>
-      <Modal open={titleModal} onClose={() => setTitleModal(false)} variant="center" ariaLabel="Add a title">
-        {titleModal && <ReadingListTitleModal existing={titles} onAdd={addTitles} onClose={() => setTitleModal(false)} />}
+      <Modal
+        open={titleModal}
+        onClose={() => setTitleModal(false)}
+        variant="center"
+        ariaLabel="Add a title"
+      >
+        {titleModal && (
+          <ReadingListTitleModal
+            existing={titles}
+            onAdd={addTitles}
+            onClose={() => setTitleModal(false)}
+          />
+        )}
       </Modal>
     </section>
   )
@@ -3683,22 +4339,61 @@ const newRewardId = (p) => `${p}-${Date.now()}-${_rid++}`
 // Mock "saved rewards" library for the Use-existing picker.
 const SAVED_REWARDS = [
   { id: 'sr-1', title: 'Free Book', description: 'Pick any book from the prize cart to keep.' },
-  { id: 'sr-2', title: 'Bookstore Gift Card', description: 'A $10 gift card to the local bookstore.' },
+  {
+    id: 'sr-2',
+    title: 'Bookstore Gift Card',
+    description: 'A $10 gift card to the local bookstore.',
+  },
   { id: 'sr-3', title: 'Extra Recess', description: '15 minutes of extra recess or free time.' },
-  { id: 'sr-4', title: 'Lunch with the Librarian', description: 'A special lunch with the school librarian.' },
-  { id: 'sr-5', title: 'Collectible Bookmark Set', description: 'A set of collectible reading bookmarks.' },
+  {
+    id: 'sr-4',
+    title: 'Lunch with the Librarian',
+    description: 'A special lunch with the school librarian.',
+  },
+  {
+    id: 'sr-5',
+    title: 'Collectible Bookmark Set',
+    description: 'A set of collectible reading bookmarks.',
+  },
   { id: 'sr-6', title: 'Homework Pass', description: 'Skip one homework assignment.' },
 ]
-const CERT_TAGS = ['{{first_name}}', '{{last_name}}', '{{earned_badge_title}}', '{{microsite_name}}', '{{challenge_name}}', '{{date}}']
+const CERT_TAGS = [
+  '{{first_name}}',
+  '{{last_name}}',
+  '{{earned_badge_title}}',
+  '{{microsite_name}}',
+  '{{challenge_name}}',
+  '{{date}}',
+]
 const CERT_EXAMPLE =
   'This certificate is proudly presented to {{first_name}} for earning the {{earned_badge_title}} during {{microsite_name}} Summer Reading challenge.'
 
 const rwIcon = (paths) => (
-  <svg viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths}</svg>
+  <svg
+    viewBox="0 0 24 24"
+    width="26"
+    height="26"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.7"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    {paths}
+  </svg>
 )
-const REWARD_EMPTY_ICON = rwIcon(<><rect x="3.5" y="9" width="17" height="11.5" rx="1.5" /><path d="M3 9h18v3.2H3zM12 9v11.5" /><path d="M12 9C11 6 9 4.5 7.6 5.6 6.4 6.6 8.5 9 12 9zM12 9c1-3 3-4.5 4.4-3.4C17.6 6.6 15.5 9 12 9z" /></>)
-const TICKET_EMPTY_ICON = rwIcon(<><path d="M3.5 8.5A1.5 1.5 0 0 1 5 7h14a1.5 1.5 0 0 1 1.5 1.5 1.5 1.5 0 0 0 0 3A1.5 1.5 0 0 1 19 13H5a1.5 1.5 0 0 1-1.5-1.5 1.5 1.5 0 0 0 0-3z" transform="translate(0 2)" /><path d="M14.5 8v9" strokeDasharray="2 2.2" /></>)
-const CERT_EMPTY_ICON = rwIcon(<><rect x="4" y="3.5" width="16" height="12.5" rx="2" /><path d="M7.5 8h9M7.5 11h5.5" /><circle cx="12" cy="18.5" r="2.4" /><path d="M10 20l-.8 3 2.8-1.4 2.8 1.4-.8-3" /></>)
+const REWARD_EMPTY_ICON = <Icon name="gift" size={26} />
+const TICKET_EMPTY_ICON = rwIcon(
+  <>
+    <path
+      d="M3.5 8.5A1.5 1.5 0 0 1 5 7h14a1.5 1.5 0 0 1 1.5 1.5 1.5 1.5 0 0 0 0 3A1.5 1.5 0 0 1 19 13H5a1.5 1.5 0 0 1-1.5-1.5 1.5 1.5 0 0 0 0-3z"
+      transform="translate(0 2)"
+    />
+    <path d="M14.5 8v9" strokeDasharray="2 2.2" />
+  </>,
+)
+const CERT_EMPTY_ICON = <Icon name="certificate" size={26} />
 
 // Reward — a simple title + description prize, assigned to the badge(s) that grant it.
 function RewardEditor({ initial, badges = [], usedBadgeIds = [], onSave, onCancel }) {
@@ -3709,20 +4404,46 @@ function RewardEditor({ initial, badges = [], usedBadgeIds = [], onSave, onCance
     <div className="cc-badge-editor cc-reward-editor">
       <header className="cc-badge-editor-head">
         <h3>{initial ? 'Edit reward' : 'Create reward'}</h3>
-        <button type="button" className="cc-badge-editor-close" onClick={onCancel} aria-label="Close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        <button
+          type="button"
+          className="cc-badge-editor-close"
+          onClick={onCancel}
+          aria-label="Close"
+        >
+          <Icon name="x" size={18} />
         </button>
       </header>
       <div className="cc-badge-editor-body cc-reward-form">
-        <Field label={<>Title <span className="cc-req">*</span></>}>
-          <Input value={title} maxLength={80} placeholder="e.g. Free Book" onChange={(e) => setTitle(e.target.value)} />
+        <Field
+          label={
+            <>
+              Title <span className="cc-req">*</span>
+            </>
+          }
+        >
+          <Input
+            value={title}
+            maxLength={80}
+            placeholder="e.g. Free Book"
+            onChange={(e) => setTitle(e.target.value)}
+          />
         </Field>
         <Field label="Description" hint="Optional · shown to readers">
-          <RichText value={description} onChange={(html) => setDescription(html)} minHeight={90} placeholder="What the reader gets…" />
+          <RichText
+            value={description}
+            onChange={(html) => setDescription(html)}
+            minHeight={90}
+            placeholder="What the reader gets…"
+          />
         </Field>
         <Field label="Earned by badge">
           <MultiSelect
-            options={badges.map((b) => ({ value: b.id, label: b.name, image: b.img || null, disabled: usedBadgeIds.includes(b.id) && !badgeIds.includes(b.id) }))}
+            options={badges.map((b) => ({
+              value: b.id,
+              label: b.name,
+              image: b.img || null,
+              disabled: usedBadgeIds.includes(b.id) && !badgeIds.includes(b.id),
+            }))}
             value={badgeIds}
             onChange={setBadgeIds}
             placeholder="Select badges…"
@@ -3730,8 +4451,16 @@ function RewardEditor({ initial, badges = [], usedBadgeIds = [], onSave, onCance
         </Field>
       </div>
       <footer className="cc-badge-editor-foot">
-        <Button variant="secondary" size="md" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" size="md" accent="#0DA7BC" disabled={!title.trim()} onClick={() => onSave({ id: initial?.id, title: title.trim(), description, badgeIds })}>
+        <Button variant="secondary" size="md" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          size="md"
+          accent="#0DA7BC"
+          disabled={!title.trim()}
+          onClick={() => onSave({ id: initial?.id, title: title.trim(), description, badgeIds })}
+        >
           {initial ? 'Save reward' : 'Add reward'}
         </Button>
       </footer>
@@ -3741,80 +4470,176 @@ function RewardEditor({ initial, badges = [], usedBadgeIds = [], onSave, onCance
 // Pick from the saved-rewards library.
 // Mock saved certificates for the certificate Use-existing picker.
 const SAVED_CERTIFICATES = [
-  { id: 'sc-1', title: 'Completion Certificate', bannerTitle: 'Certificate of Completion', description: 'Awarded for finishing the challenge.', body: 'This certificate is proudly presented to {{first_name}} for completing the {{challenge_name}} at {{microsite_name}}.' },
-  { id: 'sc-2', title: 'Participation Certificate', bannerTitle: 'Certificate of Participation', description: 'For taking part in the challenge.', body: 'This certificate recognizes {{first_name}} for participating in {{microsite_name}}’s reading challenge.' },
-  { id: 'sc-3', title: 'Reading Star Award', bannerTitle: 'Reading Star', description: 'For outstanding reading effort.', body: 'Awarded to {{first_name}} for outstanding reading during {{challenge_name}}.' },
+  {
+    id: 'sc-1',
+    title: 'Completion Certificate',
+    bannerTitle: 'Certificate of Completion',
+    description: 'Awarded for finishing the challenge.',
+    body: 'This certificate is proudly presented to {{first_name}} for completing the {{challenge_name}} at {{microsite_name}}.',
+  },
+  {
+    id: 'sc-2',
+    title: 'Participation Certificate',
+    bannerTitle: 'Certificate of Participation',
+    description: 'For taking part in the challenge.',
+    body: 'This certificate recognizes {{first_name}} for participating in {{microsite_name}}’s reading challenge.',
+  },
+  {
+    id: 'sc-3',
+    title: 'Reading Star Award',
+    bannerTitle: 'Reading Star',
+    description: 'For outstanding reading effort.',
+    body: 'Awarded to {{first_name}} for outstanding reading during {{challenge_name}}.',
+  },
 ]
 // Mock saved ticket rewards for the ticket Use-existing picker.
 const SAVED_TICKET_REWARDS = [
   { id: 'stk-1', name: 'Pizza Party', description: 'A class pizza party.', cost: 50 },
   { id: 'stk-2', name: 'Movie Afternoon', description: 'A movie & popcorn afternoon.', cost: 40 },
   { id: 'stk-3', name: 'Book Bundle', description: 'A bundle of three new books.', cost: 30 },
-  { id: 'stk-4', name: 'Reading Gift Basket', description: 'A cozy reading gift basket.', cost: 60 },
+  {
+    id: 'stk-4',
+    name: 'Reading Gift Basket',
+    description: 'A cozy reading gift basket.',
+    cost: 60,
+  },
 ]
 // How tickets are earned — single-select option cards.
 const TICKET_SOURCES = [
-  { value: 'all', icon: 'ti-medal', label: 'All badges', sub: 'Every badge awards the same number of tickets.' },
-  { value: 'specific', icon: 'ti-list', label: 'Specific badges', sub: 'Pick which badges award tickets, and how many.' },
-  { value: 'none', icon: 'ti-pencil', label: 'Awarded manually', sub: 'Badges don’t award tickets — you grant them yourself.' },
+  {
+    value: 'all',
+    icon: 'medal',
+    label: 'All badges',
+    sub: 'Every badge awards the same number of tickets.',
+  },
+  {
+    value: 'specific',
+    icon: 'list',
+    label: 'Specific badges',
+    sub: 'Pick which badges award tickets, and how many.',
+  },
+  {
+    value: 'none',
+    icon: 'pencil',
+    label: 'Awarded manually',
+    sub: 'Badges don’t award tickets — you grant them yourself.',
+  },
 ]
 // Shared "use a saved …" picker — multi-select list of saved items.
 // items: [{ id, key, image?, icon?, title, subtitle }].
-function SavedItemPicker({ title, noun = 'item', items, existingKeys, onAdd, onCancel, badges, disabledBadgeIds = [], disabledBadgeHint = 'Already used' }) {
+function SavedItemPicker({
+  title,
+  noun = 'item',
+  items,
+  existingKeys,
+  onAdd,
+  onCancel,
+  badges,
+  disabledBadgeIds = [],
+  disabledBadgeHint = 'Already used',
+}) {
   const [picked, setPicked] = useState([])
   const [badgeIds, setBadgeIds] = useState([])
   const [step, setStep] = useState('pick')
   const wantsBadges = !!(badges && badges.length)
   const toggle = (id) => setPicked((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
-  const toggleBadge = (id) => setBadgeIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
+  const toggleBadge = (id) =>
+    setBadgeIds((p) => (p.includes(id) ? p.filter((x) => x !== id) : [...p, id]))
   const nounLabel = picked.length === 1 ? noun : `${noun}s`
-  const finish = () => { onAdd(items.filter((i) => picked.includes(i.id)), badgeIds); onCancel() }
+  const finish = () => {
+    onAdd(
+      items.filter((i) => picked.includes(i.id)),
+      badgeIds,
+    )
+    onCancel()
+  }
   return (
     <div className="cc-badge-editor cc-reward-picker">
       <header className="cc-badge-editor-head">
         <h3>{step === 'badges' ? 'Earned by badge' : title}</h3>
-        <button type="button" className="cc-badge-editor-close" onClick={onCancel} aria-label="Close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        <button
+          type="button"
+          className="cc-badge-editor-close"
+          onClick={onCancel}
+          aria-label="Close"
+        >
+          <Icon name="x" size={18} />
         </button>
       </header>
       <div className="cc-badge-editor-body">
         {step === 'pick' ? (
-        <ul className="cc-savedreward-list">
-          {items.map((it) => {
-            const added = existingKeys.has(it.key)
-            const sel = picked.includes(it.id)
-            return (
-              <li key={it.id}>
-                <button type="button" className={`cc-savedreward${sel ? ' is-selected' : ''}`} disabled={added} onClick={() => toggle(it.id)} aria-pressed={sel}>
-                  <span className="cc-tm-check" aria-hidden="true" />
-                  {it.image !== undefined && (
-                    <span className="cc-savedreward-art">{it.image ? <img src={it.image} alt="" /> : <Ic name={it.icon || 'ti-gift'} size={20} />}</span>
-                  )}
-                  <span className="cc-savedreward-info">
-                    <strong>{it.title}</strong>
-                    <span>{it.subtitle}</span>
-                  </span>
-                  {added && <span className="cc-tm-addedtag">Added</span>}
-                </button>
-              </li>
-            )
-          })}
-        </ul>
+          <ul className="cc-savedreward-list">
+            {items.map((it) => {
+              const added = existingKeys.has(it.key)
+              const sel = picked.includes(it.id)
+              return (
+                <li key={it.id}>
+                  <button
+                    type="button"
+                    className={`cc-savedreward${sel ? ' is-selected' : ''}`}
+                    disabled={added}
+                    onClick={() => toggle(it.id)}
+                    aria-pressed={sel}
+                  >
+                    <span className="cc-tm-check" aria-hidden="true" />
+                    {it.image !== undefined && (
+                      <span className="cc-savedreward-art">
+                        {it.image ? (
+                          <img src={it.image} alt="" />
+                        ) : (
+                          <Ic name={it.icon || 'ti-gift'} size={20} />
+                        )}
+                      </span>
+                    )}
+                    <span className="cc-savedreward-info">
+                      <strong>{it.title}</strong>
+                      <span>{it.subtitle}</span>
+                    </span>
+                    {added && <span className="cc-tm-addedtag">Added</span>}
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
         ) : (
           <>
-            <p className="cc-method-note cc-method-note--sm">Choose which badge(s) earn the {picked.length} selected {nounLabel}.</p>
-            <BadgeSelect badges={badges} selectedIds={badgeIds} onToggle={toggleBadge} disabledIds={disabledBadgeIds} disabledHint={disabledBadgeHint} />
+            <p className="cc-method-note cc-method-note--sm">
+              Choose which badge(s) earn the {picked.length} selected {nounLabel}.
+            </p>
+            <BadgeSelect
+              badges={badges}
+              selectedIds={badgeIds}
+              onToggle={toggleBadge}
+              disabledIds={disabledBadgeIds}
+              disabledHint={disabledBadgeHint}
+            />
           </>
         )}
       </div>
       <footer className="cc-badge-editor-foot">
-        {step === 'badges' && <Button variant="secondary" size="md" onClick={() => setStep('pick')}>Back</Button>}
+        {step === 'badges' && (
+          <Button variant="secondary" size="md" onClick={() => setStep('pick')}>
+            Back
+          </Button>
+        )}
         {step === 'pick' && wantsBadges ? (
-          <Button variant="primary" size="md" accent="#0DA7BC" disabled={!picked.length} onClick={() => setStep('badges')}>
+          <Button
+            variant="primary"
+            size="md"
+            accent="#0DA7BC"
+            disabled={!picked.length}
+            onClick={() => setStep('badges')}
+          >
             Continue
           </Button>
         ) : (
-          <Button variant="primary" size="md" accent="#0DA7BC" disabled={!picked.length} onClick={finish}>
+          <Button
+            variant="primary"
+            size="md"
+            accent="#0DA7BC"
+            disabled={!picked.length}
+            onClick={finish}
+          >
             Add {picked.length || ''} {nounLabel}
           </Button>
         )}
@@ -3827,18 +4652,36 @@ function BadgeAvatars({ badges }) {
   return (
     <span className="cc-badge-avatars">
       {badges.slice(0, 6).map((b) => (
-        <span key={b.id} className="cc-badge-avatar" title={b.name}>{b.img ? <img src={b.img} alt="" /> : null}</span>
+        <span key={b.id} className="cc-badge-avatar" title={b.name}>
+          {b.img ? <img src={b.img} alt="" /> : null}
+        </span>
       ))}
-      <span className="cc-badge-avatars-label">{badges.length === 1 ? badges[0].name : `${badges.length} badges`}</span>
+      <span className="cc-badge-avatars-label">
+        {badges.length === 1 ? badges[0].name : `${badges.length} badges`}
+      </span>
     </span>
   )
 }
 // Gallery-style multi-select of the challenge's badges — the one badge selector
 // used wherever rewards assign to badges (and which badges earn tickets).
 // valueMode adds a per-badge number (e.g. ticket value) on each selected tile.
-function BadgeSelect({ badges, selectedIds, onToggle, valueMode = false, values = {}, onValue, valueLabel = '', disabledIds = [], disabledHint = 'Already used' }) {
+function BadgeSelect({
+  badges,
+  selectedIds,
+  onToggle,
+  valueMode = false,
+  values = {},
+  onValue,
+  valueLabel = '',
+  disabledIds = [],
+  disabledHint = 'Already used',
+}) {
   if (!badges.length) {
-    return <p className="cc-method-note cc-method-note--sm">Add badges in the Badges step first, then assign them here.</p>
+    return (
+      <p className="cc-method-note cc-method-note--sm">
+        Add badges in the Badges step first, then assign them here.
+      </p>
+    )
   }
   return (
     <div className="cc-badgeselect">
@@ -3847,15 +4690,35 @@ function BadgeSelect({ badges, selectedIds, onToggle, valueMode = false, values 
         const off = !sel && disabledIds.includes(b.id)
         return (
           <div key={b.id} className={`cc-bsrow${sel ? ' is-on' : ''}${off ? ' is-disabled' : ''}`}>
-            <button type="button" className="cc-bsrow-pick" onClick={() => onToggle(b.id)} aria-pressed={sel} disabled={off} title={off ? `${b.name} — ${disabledHint}` : b.name}>
-              <span className={`cc-bsrow-check${sel ? ' is-on' : ''}`} aria-hidden="true">{sel && <GalleryCheck />}</span>
-              <span className="cc-bsrow-art">{b.img ? <img src={b.img} alt="" draggable={false} /> : <span className="cc-bsrow-art-ph" />}</span>
+            <button
+              type="button"
+              className="cc-bsrow-pick"
+              onClick={() => onToggle(b.id)}
+              aria-pressed={sel}
+              disabled={off}
+              title={off ? `${b.name} — ${disabledHint}` : b.name}
+            >
+              <span className={`cc-bsrow-check${sel ? ' is-on' : ''}`} aria-hidden="true">
+                {sel && <GalleryCheck />}
+              </span>
+              <span className="cc-bsrow-art">
+                {b.img ? (
+                  <img src={b.img} alt="" draggable={false} />
+                ) : (
+                  <span className="cc-bsrow-art-ph" />
+                )}
+              </span>
               <span className="cc-bsrow-name">{b.name}</span>
             </button>
             {off && <span className="cc-bsrow-used">{disabledHint}</span>}
             {valueMode && sel && (
               <div className="cc-bsrow-val">
-                <NumberInput value={values[b.id] ?? 1} min={1} max={100} onChange={(v) => onValue(b.id, v)} />
+                <NumberInput
+                  value={values[b.id] ?? 1}
+                  min={1}
+                  max={100}
+                  onChange={(v) => onValue(b.id, v)}
+                />
                 <span>{valueLabel}</span>
               </div>
             )}
@@ -3876,33 +4739,89 @@ function TicketRewardEditor({ initial, onSave, onCancel }) {
   const onFile = (fn) => {
     setImageName(fn)
     setLoading(true)
-    setTimeout(() => { setImage(FAKE_UPLOAD_IMG); setLoading(false) }, 900)
+    setTimeout(() => {
+      setImage(FAKE_UPLOAD_IMG)
+      setLoading(false)
+    }, 900)
   }
   return (
     <div className="cc-badge-editor cc-ticket-editor">
       <header className="cc-badge-editor-head">
         <h3>{initial ? 'Edit ticket reward' : 'Add ticket reward'}</h3>
-        <button type="button" className="cc-badge-editor-close" onClick={onCancel} aria-label="Close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        <button
+          type="button"
+          className="cc-badge-editor-close"
+          onClick={onCancel}
+          aria-label="Close"
+        >
+          <Icon name="x" size={18} />
         </button>
       </header>
       <div className="cc-badge-editor-body cc-reward-form">
-        <Field label="Image" hint="Optional" help="If left blank, a gift icon is shown. Recommended square · png, jpg.">
-          <ImageDropzone fileName={imageName} previewSrc={loading ? undefined : image} onFile={onFile} />
+        <Field
+          label="Image"
+          hint="Optional"
+          help="If left blank, a gift icon is shown. Recommended square · png, jpg."
+        >
+          <ImageDropzone
+            fileName={imageName}
+            previewSrc={loading ? undefined : image}
+            onFile={onFile}
+          />
         </Field>
-        <Field label={<>Name <span className="cc-req">*</span></>}>
-          <Input value={name} maxLength={80} placeholder="e.g. Pizza Party" onChange={(e) => setName(e.target.value)} />
+        <Field
+          label={
+            <>
+              Name <span className="cc-req">*</span>
+            </>
+          }
+        >
+          <Input
+            value={name}
+            maxLength={80}
+            placeholder="e.g. Pizza Party"
+            onChange={(e) => setName(e.target.value)}
+          />
         </Field>
         <Field label="Description" hint="Optional">
-          <Textarea value={description} rows={3} placeholder="Describe the prize…" onChange={(e) => setDescription(e.target.value)} />
+          <Textarea
+            value={description}
+            rows={3}
+            placeholder="Describe the prize…"
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </Field>
-        <Field label={<>Tickets to enter <span className="cc-req">*</span></>} className="cc-narrow-field">
+        <Field
+          label={
+            <>
+              Tickets to enter <span className="cc-req">*</span>
+            </>
+          }
+          className="cc-narrow-field"
+        >
           <NumberInput value={cost} min={1} max={1000} onChange={setCost} />
         </Field>
       </div>
       <footer className="cc-badge-editor-foot">
-        <Button variant="secondary" size="md" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" size="md" accent="#0DA7BC" disabled={!name.trim() || !(cost >= 1)} onClick={() => onSave({ id: initial?.id, image, imageName, name: name.trim(), description, cost: Number(cost) })}>
+        <Button variant="secondary" size="md" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          size="md"
+          accent="#0DA7BC"
+          disabled={!name.trim() || !(cost >= 1)}
+          onClick={() =>
+            onSave({
+              id: initial?.id,
+              image,
+              imageName,
+              name: name.trim(),
+              description,
+              cost: Number(cost),
+            })
+          }
+        >
           {initial ? 'Save ticket reward' : 'Add ticket reward'}
         </Button>
       </footer>
@@ -3912,7 +4831,9 @@ function TicketRewardEditor({ initial, onSave, onCancel }) {
 // Certificate — printable, with merge tags.
 function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
   const [title, setTitle] = useState(initial?.title || '')
-  const [bannerTitle, setBannerTitle] = useState(initial?.bannerTitle || 'Certificate of Achievement')
+  const [bannerTitle, setBannerTitle] = useState(
+    initial?.bannerTitle || 'Certificate of Achievement',
+  )
   const [description, setDescription] = useState(initial?.description || '')
   const [body, setBody] = useState(initial?.body || CERT_EXAMPLE)
   const [badgeIds, setBadgeIds] = useState(initial?.badgeIds || [])
@@ -3921,21 +4842,51 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
     <div className="cc-badge-editor cc-cert-editor">
       <header className="cc-badge-editor-head">
         <h3>{initial ? 'Edit certificate' : 'Create certificate'}</h3>
-        <button type="button" className="cc-badge-editor-close" onClick={onCancel} aria-label="Close">
-          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 6l12 12M18 6L6 18" /></svg>
+        <button
+          type="button"
+          className="cc-badge-editor-close"
+          onClick={onCancel}
+          aria-label="Close"
+        >
+          <Icon name="x" size={18} />
         </button>
       </header>
       <div className="cc-badge-editor-body cc-reward-form">
-        <Field label={<>Title <span className="cc-req">*</span></>} hint="Internal name">
-          <Input value={title} maxLength={80} placeholder="e.g. Summer Reading Certificate" onChange={(e) => setTitle(e.target.value)} />
+        <Field
+          label={
+            <>
+              Title <span className="cc-req">*</span>
+            </>
+          }
+          hint="Internal name"
+        >
+          <Input
+            value={title}
+            maxLength={80}
+            placeholder="e.g. Summer Reading Certificate"
+            onChange={(e) => setTitle(e.target.value)}
+          />
         </Field>
         <Field label="Title in banner" hint="Shown across the top of the certificate">
-          <Input value={bannerTitle} maxLength={80} placeholder="e.g. Certificate of Achievement" onChange={(e) => setBannerTitle(e.target.value)} />
+          <Input
+            value={bannerTitle}
+            maxLength={80}
+            placeholder="e.g. Certificate of Achievement"
+            onChange={(e) => setBannerTitle(e.target.value)}
+          />
         </Field>
         <Field label="Description" hint="Optional">
-          <Textarea value={description} rows={2} placeholder="Optional summary…" onChange={(e) => setDescription(e.target.value)} />
+          <Textarea
+            value={description}
+            rows={2}
+            placeholder="Optional summary…"
+            onChange={(e) => setDescription(e.target.value)}
+          />
         </Field>
-        <Field label="Earned by badge" hint="Readers get this certificate when they earn the selected badge(s)">
+        <Field
+          label="Earned by badge"
+          hint="Readers get this certificate when they earn the selected badge(s)"
+        >
           <MultiSelect
             options={badges.map((b) => ({ value: b.id, label: b.name, image: b.img || null }))}
             value={badgeIds}
@@ -3950,14 +4901,33 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
           <div className="cc-cert-tagshelp-lead">Personalize with tags — click to insert:</div>
           <div className="cc-cert-tags">
             {CERT_TAGS.map((t) => (
-              <button type="button" key={t} className="cc-cert-tag" onClick={() => insertTag(t)}>{t}</button>
+              <button type="button" key={t} className="cc-cert-tag" onClick={() => insertTag(t)}>
+                {t}
+              </button>
             ))}
           </div>
         </Banner>
       </div>
       <footer className="cc-badge-editor-foot">
-        <Button variant="secondary" size="md" onClick={onCancel}>Cancel</Button>
-        <Button variant="primary" size="md" accent="#0DA7BC" disabled={!title.trim()} onClick={() => onSave({ id: initial?.id, title: title.trim(), bannerTitle, description, body, badgeIds })}>
+        <Button variant="secondary" size="md" onClick={onCancel}>
+          Cancel
+        </Button>
+        <Button
+          variant="primary"
+          size="md"
+          accent="#0DA7BC"
+          disabled={!title.trim()}
+          onClick={() =>
+            onSave({
+              id: initial?.id,
+              title: title.trim(),
+              bannerTitle,
+              description,
+              body,
+              badgeIds,
+            })
+          }
+        >
           {initial ? 'Save certificate' : 'Add certificate'}
         </Button>
       </footer>
@@ -3986,29 +4956,93 @@ export function RewardsStep({ challenge, update }) {
 
   // Every badge in the challenge, for the "specific badges earn tickets" picker.
   const badgePool = [
-    ...(challenge.registrationBadge?.img ? [{ id: 'reg', name: challenge.registrationBadge.name || 'Registration badge', img: challenge.registrationBadge.img }] : []),
-    ...(challenge.completionBadge?.img ? [{ id: 'comp', name: challenge.completionBadge.name || 'Completion badge', img: challenge.completionBadge.img }] : []),
-    ...(challenge.badges || []).map((b, i) => ({ id: `log-${i}`, name: b.name || 'Logging badge', img: b.img || badgeImage(b.icon) })),
-    ...(challenge.activityBadges || []).map((b, i) => ({ id: `act-${i}`, name: b.title || b.name || 'Activity badge', img: b.badge?.img })),
-    ...(challenge.pointsBadges || []).map((b, i) => ({ id: `pts-${i}`, name: b.name || 'Points badge', img: b.img || badgeImage(b.icon) })),
-    ...(challenge.reviewBadges || []).map((b, i) => ({ id: `rev-${i}`, name: b.name || 'Review badge', img: b.img || badgeImage(b.icon) })),
+    ...(challenge.registrationBadge?.img
+      ? [
+          {
+            id: 'reg',
+            name: challenge.registrationBadge.name || 'Registration badge',
+            img: challenge.registrationBadge.img,
+          },
+        ]
+      : []),
+    ...(challenge.completionBadge?.img
+      ? [
+          {
+            id: 'comp',
+            name: challenge.completionBadge.name || 'Completion badge',
+            img: challenge.completionBadge.img,
+          },
+        ]
+      : []),
+    ...(challenge.badges || []).map((b, i) => ({
+      id: `log-${i}`,
+      name: b.name || 'Logging badge',
+      img: b.img || badgeImage(b.icon),
+    })),
+    ...(challenge.activityBadges || []).map((b, i) => ({
+      id: `act-${i}`,
+      name: b.title || b.name || 'Activity badge',
+      img: b.badge?.img,
+    })),
+    ...(challenge.pointsBadges || []).map((b, i) => ({
+      id: `pts-${i}`,
+      name: b.name || 'Points badge',
+      img: b.img || badgeImage(b.icon),
+    })),
+    ...(challenge.reviewBadges || []).map((b, i) => ({
+      id: `rev-${i}`,
+      name: b.name || 'Review badge',
+      img: b.img || badgeImage(b.icon),
+    })),
   ]
   const badgeById = Object.fromEntries(badgePool.map((b) => [b.id, b]))
   const assignedBadges = (ids) => (ids || []).map((id) => badgeById[id]).filter(Boolean)
 
   const saveReward = (rw) => {
-    setR({ items: rw.id ? items.map((x) => (x.id === rw.id ? { ...x, ...rw } : x)) : [...items, { ...rw, id: newRewardId('rw'), source: 'custom' }] })
+    setR({
+      items: rw.id
+        ? items.map((x) => (x.id === rw.id ? { ...x, ...rw } : x))
+        : [...items, { ...rw, id: newRewardId('rw'), source: 'custom' }],
+    })
     setRewardEditor(null)
   }
-  const addSavedRewards = (rws, badgeIds = []) => setR({ items: [...items, ...rws.map((x) => ({ id: newRewardId('rw'), title: x.title, description: x.description, badgeIds, source: 'saved' }))] })
+  const addSavedRewards = (rws, badgeIds = []) =>
+    setR({
+      items: [
+        ...items,
+        ...rws.map((x) => ({
+          id: newRewardId('rw'),
+          title: x.title,
+          description: x.description,
+          badgeIds,
+          source: 'saved',
+        })),
+      ],
+    })
   const removeReward = (id) => setR({ items: items.filter((x) => x.id !== id) })
 
   const saveTicket = (t) => {
-    setR({ ticketRewards: t.id ? ticketRewards.map((x) => (x.id === t.id ? { ...x, ...t } : x)) : [...ticketRewards, { ...t, id: newRewardId('tr') }] })
+    setR({
+      ticketRewards: t.id
+        ? ticketRewards.map((x) => (x.id === t.id ? { ...x, ...t } : x))
+        : [...ticketRewards, { ...t, id: newRewardId('tr') }],
+    })
     setTicketEditor(null)
   }
   const removeTicket = (id) => setR({ ticketRewards: ticketRewards.filter((x) => x.id !== id) })
-  const addSavedTickets = (ts) => setR({ ticketRewards: [...ticketRewards, ...ts.map((t) => ({ id: newRewardId('tr'), name: t.title, description: t.description, cost: t.cost, image: null }))] })
+  const addSavedTickets = (ts) =>
+    setR({
+      ticketRewards: [
+        ...ticketRewards,
+        ...ts.map((t) => ({
+          id: newRewardId('tr'),
+          name: t.title,
+          description: t.description,
+          cost: t.cost,
+          image: null,
+        })),
+      ],
+    })
   const toggleTicketBadge = (id) => {
     const next = { ...ticketBadges }
     if (id in next) delete next[id]
@@ -4018,23 +5052,48 @@ export function RewardsStep({ challenge, update }) {
   const setTicketBadgeValue = (id, v) => setR({ ticketBadges: { ...ticketBadges, [id]: v } })
 
   const saveCert = (c) => {
-    setR({ certificates: c.id ? certificates.map((x) => (x.id === c.id ? { ...x, ...c } : x)) : [...certificates, { ...c, id: newRewardId('ct') }] })
+    setR({
+      certificates: c.id
+        ? certificates.map((x) => (x.id === c.id ? { ...x, ...c } : x))
+        : [...certificates, { ...c, id: newRewardId('ct') }],
+    })
     setCertEditor(null)
   }
   const removeCert = (id) => setR({ certificates: certificates.filter((x) => x.id !== id) })
-  const addSavedCerts = (cs, badgeIds = []) => setR({ certificates: [...certificates, ...cs.map((c) => ({ id: newRewardId('ct'), title: c.title, bannerTitle: c.bannerTitle, description: c.description, body: c.body, badgeIds }))] })
+  const addSavedCerts = (cs, badgeIds = []) =>
+    setR({
+      certificates: [
+        ...certificates,
+        ...cs.map((c) => ({
+          id: newRewardId('ct'),
+          title: c.title,
+          bannerTitle: c.bannerTitle,
+          description: c.description,
+          body: c.body,
+          badgeIds,
+        })),
+      ],
+    })
 
   return (
     <section className="cc-step">
-      <StepHead title="Rewards" sub="Set up the prizes, tickets, and certificates readers can earn." icon={STEP_ICONS.prizes} />
+      <StepHead
+        title="Rewards"
+        sub="Set up the prizes, tickets, and certificates readers can earn."
+        icon={STEP_ICONS.prizes}
+      />
 
       {/* 1 · Rewards */}
       <div className="cc-panel">
         <div className="cc-panel-head">
           <h3 className="cc-panel-title">Rewards</h3>
           <div className="cc-panel-actions">
-            <Button variant="ghost" size="sm" onClick={() => setRewardPicker(true)}>Use existing</Button>
-            <Button variant="secondary" size="sm" onClick={() => setRewardEditor({ new: true })}>+ Create reward</Button>
+            <Button variant="ghost" size="sm" onClick={() => setRewardPicker(true)}>
+              Use existing
+            </Button>
+            <Button variant="secondary" size="sm" onClick={() => setRewardEditor({ new: true })}>
+              + Create reward
+            </Button>
           </div>
         </div>
         {items.length ? (
@@ -4056,8 +5115,16 @@ export function RewardsStep({ challenge, update }) {
             })}
           </div>
         ) : (
-          <EmptyState icon={REWARD_EMPTY_ICON} title="No rewards yet" description="Add a reward readers can earn — pick a saved one or write your own."
-            action={<Button variant="secondary" size="sm" onClick={() => setRewardEditor({ new: true })}>+ Create reward</Button>} />
+          <EmptyState
+            icon={REWARD_EMPTY_ICON}
+            title="No rewards yet"
+            description="Add a reward readers can earn — pick a saved one or write your own."
+            action={
+              <Button variant="secondary" size="sm" onClick={() => setRewardEditor({ new: true })}>
+                + Create reward
+              </Button>
+            }
+          />
         )}
       </div>
 
@@ -4068,70 +5135,114 @@ export function RewardsStep({ challenge, update }) {
           <div className="cc-panel-actions">
             {ticketsEnabled && (
               <>
-                <Button variant="ghost" size="sm" onClick={() => setTicketPicker(true)}>Use existing</Button>
-                <Button variant="secondary" size="sm" onClick={() => setTicketEditor({ new: true })}>+ Add ticket reward</Button>
+                <Button variant="ghost" size="sm" onClick={() => setTicketPicker(true)}>
+                  Use existing
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setTicketEditor({ new: true })}
+                >
+                  + Add ticket reward
+                </Button>
               </>
             )}
-            <Toggle checked={ticketsEnabled} size="md" onChange={(v) => setR({ ticketsEnabled: v })} />
+            <Toggle
+              checked={ticketsEnabled}
+              size="md"
+              onChange={(v) => setR({ ticketsEnabled: v })}
+            />
           </div>
         </div>
         {ticketsEnabled && (
           <>
-        <div className="cc-ticket-source">
-          <span className="cc-ticket-source-label">How do readers earn tickets?</span>
-          <div className="cc-optcards" role="radiogroup" aria-label="How do readers earn tickets?">
-            {TICKET_SOURCES.map((o) => {
-              const on = ticketSource === o.value
-              return (
-                <button
-                  key={o.value}
-                  type="button"
-                  role="radio"
-                  aria-checked={on}
-                  className={`cc-optcard${on ? ' is-on' : ''}`}
-                  onClick={() => setR({ ticketSource: o.value })}
-                >
-                  <span className="cc-optcard-ic" aria-hidden="true"><Ic name={o.icon} size={18} format="png" color={on ? '0b7a89' : '64748b'} /></span>
-                  <span className="cc-optcard-text">
-                    <strong>{o.label}</strong>
-                    <span>{o.sub}</span>
-                  </span>
-                  <span className="cc-optcard-dot" aria-hidden="true" />
-                </button>
-              )
-            })}
-          </div>
-          {ticketSource === 'all' && (
-            <div className="cc-ticket-allcount">
-              <span>Each badge awards</span>
-              <NumberInput value={ticketsPerBadge} min={1} max={100} onChange={(v) => setR({ ticketsPerBadge: v })} />
-              <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
+            <div className="cc-ticket-source">
+              <span className="cc-ticket-source-label">How do readers earn tickets?</span>
+              <div
+                className="cc-optcards"
+                role="radiogroup"
+                aria-label="How do readers earn tickets?"
+              >
+                {TICKET_SOURCES.map((o) => {
+                  const on = ticketSource === o.value
+                  return (
+                    <button
+                      key={o.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={on}
+                      className={`cc-optcard${on ? ' is-on' : ''}`}
+                      onClick={() => setR({ ticketSource: o.value })}
+                    >
+                      <span className="cc-optcard-ic" aria-hidden="true">
+                        <Icon name={o.icon} size={18} color={on ? '#0b7a89' : '#64748b'} />
+                      </span>
+                      <span className="cc-optcard-text">
+                        <strong>{o.label}</strong>
+                        <span>{o.sub}</span>
+                      </span>
+                      <span className="cc-optcard-dot" aria-hidden="true" />
+                    </button>
+                  )
+                })}
+              </div>
+              {ticketSource === 'all' && (
+                <div className="cc-ticket-allcount">
+                  <span>Each badge awards</span>
+                  <NumberInput
+                    value={ticketsPerBadge}
+                    min={1}
+                    max={100}
+                    onChange={(v) => setR({ ticketsPerBadge: v })}
+                  />
+                  <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
+                </div>
+              )}
+              {ticketSource === 'specific' && (
+                <BadgeSelect
+                  badges={badgePool}
+                  selectedIds={Object.keys(ticketBadges)}
+                  onToggle={toggleTicketBadge}
+                  valueMode
+                  values={ticketBadges}
+                  onValue={setTicketBadgeValue}
+                  valueLabel="tickets"
+                />
+              )}
             </div>
-          )}
-          {ticketSource === 'specific' && (
-            <BadgeSelect
-              badges={badgePool}
-              selectedIds={Object.keys(ticketBadges)}
-              onToggle={toggleTicketBadge}
-              valueMode
-              values={ticketBadges}
-              onValue={setTicketBadgeValue}
-              valueLabel="tickets"
-            />
-          )}
-        </div>
-        <Banner level="info" className="cc-panel-banner">Winners are drawn from ticket holders over in <strong>Drawings</strong>.</Banner>
-        {ticketRewards.length ? (
-          <div className="cc-badge-rows">
-            {ticketRewards.map((t) => (
-              <BadgeRow key={t.id} img={t.image || badgeImage('ti-gift')} square title={t.name} meta={`${t.cost} ticket${t.cost === 1 ? '' : 's'} to enter`}
-                onEdit={() => setTicketEditor(t)} onRemove={() => removeTicket(t.id)} />
-            ))}
-          </div>
-        ) : (
-          <EmptyState icon={TICKET_EMPTY_ICON} title="No ticket rewards yet" description="Add a prize readers enter to win with the tickets they collect."
-            action={<Button variant="secondary" size="sm" onClick={() => setTicketEditor({ new: true })}>+ Add ticket reward</Button>} />
-        )}
+            <Banner level="info" className="cc-panel-banner">
+              Winners are drawn from ticket holders over in <strong>Drawings</strong>.
+            </Banner>
+            {ticketRewards.length ? (
+              <div className="cc-badge-rows">
+                {ticketRewards.map((t) => (
+                  <BadgeRow
+                    key={t.id}
+                    img={t.image || badgeImage('ti-gift')}
+                    square
+                    title={t.name}
+                    meta={`${t.cost} ticket${t.cost === 1 ? '' : 's'} to enter`}
+                    onEdit={() => setTicketEditor(t)}
+                    onRemove={() => removeTicket(t.id)}
+                  />
+                ))}
+              </div>
+            ) : (
+              <EmptyState
+                icon={TICKET_EMPTY_ICON}
+                title="No ticket rewards yet"
+                description="Add a prize readers enter to win with the tickets they collect."
+                action={
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setTicketEditor({ new: true })}
+                  >
+                    + Add ticket reward
+                  </Button>
+                }
+              />
+            )}
           </>
         )}
       </div>
@@ -4143,91 +5254,185 @@ export function RewardsStep({ challenge, update }) {
           <div className="cc-panel-actions">
             {certsEnabled && (
               <>
-                <Button variant="ghost" size="sm" onClick={() => setCertPicker(true)}>Use existing</Button>
-                <Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>+ Add certificate</Button>
+                <Button variant="ghost" size="sm" onClick={() => setCertPicker(true)}>
+                  Use existing
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>
+                  + Add certificate
+                </Button>
               </>
             )}
             <Toggle checked={certsEnabled} size="md" onChange={(v) => setR({ certsEnabled: v })} />
           </div>
         </div>
-        {certsEnabled && (certificates.length ? (
-          <div className="cc-badge-rows">
-            {certificates.map((c) => {
-              const cb = assignedBadges(c.badgeIds)
-              return (
-                <BadgeRow
-                  key={c.id}
-                  img={badgeImage('ti-medal')}
-                  square
-                  title={c.title}
-                  meta={cb.length ? <BadgeAvatars badges={cb} /> : 'Not assigned to a badge'}
-                  metaMissing={!cb.length}
-                  onEdit={() => setCertEditor(c)}
-                  onRemove={() => removeCert(c.id)}
-                />
-              )
-            })}
-          </div>
-        ) : (
-          <EmptyState icon={CERT_EMPTY_ICON} title="No certificates yet" description="Create a printable certificate readers earn when they finish."
-            action={<Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>+ Add certificate</Button>} />
-        ))}
+        {certsEnabled &&
+          (certificates.length ? (
+            <div className="cc-badge-rows">
+              {certificates.map((c) => {
+                const cb = assignedBadges(c.badgeIds)
+                return (
+                  <BadgeRow
+                    key={c.id}
+                    img={badgeImage('ti-medal')}
+                    square
+                    title={c.title}
+                    meta={cb.length ? <BadgeAvatars badges={cb} /> : 'Not assigned to a badge'}
+                    metaMissing={!cb.length}
+                    onEdit={() => setCertEditor(c)}
+                    onRemove={() => removeCert(c.id)}
+                  />
+                )
+              })}
+            </div>
+          ) : (
+            <EmptyState
+              icon={CERT_EMPTY_ICON}
+              title="No certificates yet"
+              description="Create a printable certificate readers earn when they finish."
+              action={
+                <Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>
+                  + Add certificate
+                </Button>
+              }
+            />
+          ))}
       </div>
 
-      <Banner level="info" className="cc-rewards-drawings-note" action={<Button variant="secondary" size="sm">Go to Drawings →</Button>}>
-        Drawings are run from this challenge’s data in the <strong>Drawings</strong> tool — pick winners from badge earners or ticket holders there.
+      <Banner
+        level="info"
+        className="cc-rewards-drawings-note"
+        action={
+          <Button variant="secondary" size="sm">
+            Go to Drawings →
+          </Button>
+        }
+      >
+        Drawings are run from this challenge’s data in the <strong>Drawings</strong> tool — pick
+        winners from badge earners or ticket holders there.
       </Banner>
 
-      <Modal open={!!rewardEditor} onClose={() => setRewardEditor(null)} variant="center" ariaLabel="Reward">
+      <Modal
+        open={!!rewardEditor}
+        onClose={() => setRewardEditor(null)}
+        variant="center"
+        ariaLabel="Reward"
+      >
         {rewardEditor && (
           <RewardEditor
             initial={rewardEditor.new ? null : rewardEditor}
             badges={badgePool}
-            usedBadgeIds={items.filter((x) => x.id !== (rewardEditor.new ? null : rewardEditor.id)).flatMap((x) => x.badgeIds || [])}
+            usedBadgeIds={items
+              .filter((x) => x.id !== (rewardEditor.new ? null : rewardEditor.id))
+              .flatMap((x) => x.badgeIds || [])}
             onSave={saveReward}
             onCancel={() => setRewardEditor(null)}
           />
         )}
       </Modal>
-      <Modal open={rewardPicker} onClose={() => setRewardPicker(false)} variant="center" ariaLabel="Use a saved reward">
+      <Modal
+        open={rewardPicker}
+        onClose={() => setRewardPicker(false)}
+        variant="center"
+        ariaLabel="Use a saved reward"
+      >
         {rewardPicker && (
           <SavedItemPicker
             title="Use a saved reward"
             noun="reward"
-            items={SAVED_REWARDS.map((rw) => ({ id: rw.id, key: rw.title, title: rw.title, subtitle: rw.description }))}
+            items={SAVED_REWARDS.map((rw) => ({
+              id: rw.id,
+              key: rw.title,
+              title: rw.title,
+              subtitle: rw.description,
+            }))}
             existingKeys={new Set(items.map((x) => x.title))}
             badges={badgePool}
             disabledBadgeIds={items.flatMap((x) => x.badgeIds || [])}
             disabledBadgeHint="Already rewarded"
-            onAdd={(picked, badgeIds) => addSavedRewards(picked.map((p) => ({ title: p.title, description: p.subtitle })), badgeIds)}
+            onAdd={(picked, badgeIds) =>
+              addSavedRewards(
+                picked.map((p) => ({ title: p.title, description: p.subtitle })),
+                badgeIds,
+              )
+            }
             onCancel={() => setRewardPicker(false)}
           />
         )}
       </Modal>
-      <Modal open={ticketPicker} onClose={() => setTicketPicker(false)} variant="center" ariaLabel="Use a saved ticket reward">
+      <Modal
+        open={ticketPicker}
+        onClose={() => setTicketPicker(false)}
+        variant="center"
+        ariaLabel="Use a saved ticket reward"
+      >
         {ticketPicker && (
           <SavedItemPicker
             title="Use a saved ticket reward"
             noun="ticket reward"
-            items={SAVED_TICKET_REWARDS.map((t) => ({ id: t.id, key: t.name, image: null, icon: 'ti-gift', title: t.name, subtitle: `${t.description} · ${t.cost} tickets`, description: t.description, cost: t.cost }))}
+            items={SAVED_TICKET_REWARDS.map((t) => ({
+              id: t.id,
+              key: t.name,
+              image: null,
+              icon: 'ti-gift',
+              title: t.name,
+              subtitle: `${t.description} · ${t.cost} tickets`,
+              description: t.description,
+              cost: t.cost,
+            }))}
             existingKeys={new Set(ticketRewards.map((x) => x.name))}
             onAdd={(picked) => addSavedTickets(picked)}
             onCancel={() => setTicketPicker(false)}
           />
         )}
       </Modal>
-      <Modal open={!!ticketEditor} onClose={() => setTicketEditor(null)} variant="center" ariaLabel="Ticket reward">
-        {ticketEditor && <TicketRewardEditor initial={ticketEditor.new ? null : ticketEditor} onSave={saveTicket} onCancel={() => setTicketEditor(null)} />}
+      <Modal
+        open={!!ticketEditor}
+        onClose={() => setTicketEditor(null)}
+        variant="center"
+        ariaLabel="Ticket reward"
+      >
+        {ticketEditor && (
+          <TicketRewardEditor
+            initial={ticketEditor.new ? null : ticketEditor}
+            onSave={saveTicket}
+            onCancel={() => setTicketEditor(null)}
+          />
+        )}
       </Modal>
-      <Modal open={!!certEditor} onClose={() => setCertEditor(null)} variant="center" ariaLabel="Certificate">
-        {certEditor && <CertificateEditor initial={certEditor.new ? null : certEditor} badges={badgePool} onSave={saveCert} onCancel={() => setCertEditor(null)} />}
+      <Modal
+        open={!!certEditor}
+        onClose={() => setCertEditor(null)}
+        variant="center"
+        ariaLabel="Certificate"
+      >
+        {certEditor && (
+          <CertificateEditor
+            initial={certEditor.new ? null : certEditor}
+            badges={badgePool}
+            onSave={saveCert}
+            onCancel={() => setCertEditor(null)}
+          />
+        )}
       </Modal>
-      <Modal open={certPicker} onClose={() => setCertPicker(false)} variant="center" ariaLabel="Use a saved certificate">
+      <Modal
+        open={certPicker}
+        onClose={() => setCertPicker(false)}
+        variant="center"
+        ariaLabel="Use a saved certificate"
+      >
         {certPicker && (
           <SavedItemPicker
             title="Use a saved certificate"
             noun="certificate"
-            items={SAVED_CERTIFICATES.map((c) => ({ id: c.id, key: c.title, title: c.title, subtitle: c.bannerTitle, bannerTitle: c.bannerTitle, description: c.description, body: c.body }))}
+            items={SAVED_CERTIFICATES.map((c) => ({
+              id: c.id,
+              key: c.title,
+              title: c.title,
+              subtitle: c.bannerTitle,
+              bannerTitle: c.bannerTitle,
+              description: c.description,
+              body: c.body,
+            }))}
             existingKeys={new Set(certificates.map((x) => x.title))}
             badges={badgePool}
             onAdd={(picked, badgeIds) => addSavedCerts(picked, badgeIds)}
@@ -4244,7 +5449,11 @@ export function CompletionStep({ challenge, update }) {
   const c = challenge.completion
   return (
     <section className="cc-step">
-      <StepHead title="Completion" sub="Decide what it takes to finish the challenge." icon={STEP_ICONS.completion} />
+      <StepHead
+        title="Completion"
+        sub="Decide what it takes to finish the challenge."
+        icon={STEP_ICONS.completion}
+      />
       <div className="cc-panel">
         <RadioGroup
           name="completion"

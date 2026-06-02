@@ -28,7 +28,7 @@ function validateDetails(challenge, { role } = {}) {
   }
 
   // Teacher/MS challenges publish to specific classrooms — at least one required.
-  if (role?.tier === 'simple' && (d.basis || 'grade') !== 'age' && !(d.classrooms?.length)) {
+  if (role?.tier === 'simple' && (d.basis || 'grade') !== 'age' && !d.classrooms?.length) {
     errors.classrooms = 'Pick at least one classroom.'
   }
 
@@ -52,9 +52,7 @@ function validateBadges(challenge, { type } = {}) {
   // Every logging badge must carry a log value (log type + goal ≥ 1).
   const loggingOn = type?.primaryMethod === 'log' || !!challenge.methods?.log
   if (loggingOn) {
-    const incomplete = (challenge.badges || []).some(
-      (b) => !b.logType || !(Number(b.goal) >= 1),
-    )
+    const incomplete = (challenge.badges || []).some((b) => !b.logType || !(Number(b.goal) >= 1))
     if (incomplete) errors.badges = 'Give every logging badge a log type and goal.'
   }
   return errors

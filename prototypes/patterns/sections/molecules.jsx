@@ -71,8 +71,17 @@ function TabsShowcase() {
             boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '14px 18px' }}>
-            <strong style={{ fontSize: 16, fontWeight: 800, color: '#0f172a' }}>Edit activity badge</strong>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '14px 18px',
+            }}
+          >
+            <strong style={{ fontSize: 16, fontWeight: 800, color: '#0f172a' }}>
+              Edit activity badge
+            </strong>
             <span aria-hidden="true" style={{ color: '#94a3b8', fontSize: 20, lineHeight: 1 }}>
               ×
             </span>
@@ -986,10 +995,9 @@ export const moleculesSections = [
     name: 'Tabs',
     desc: (
       <>
-        Horizontal tab strip. <code>items</code> is{' '}
-        <code>{'[{ id, label, count?, icon? }]'}</code>. Two variants: <code>underline</code>{' '}
-        (default) and <code>pill</code>. The underline variant also doubles as a full-bleed
-        header tab bar inside a modal (see the in-modal example below).
+        Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>.
+        Two variants: <code>underline</code> (default) and <code>pill</code>. The underline variant
+        also doubles as a full-bleed header tab bar inside a modal (see the in-modal example below).
       </>
     ),
     render: () => (

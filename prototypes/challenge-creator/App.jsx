@@ -5,6 +5,7 @@ import { Toggle } from '@components/Toggle/Toggle'
 import { Stepper } from '@components/Stepper/Stepper'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { Modal } from '@components/Modal/Modal'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Button/Button.css'
 import '@components/Toggle/Toggle.css'
 
@@ -63,22 +64,64 @@ const normalizeChallenge = (c) => {
 // ── Dev/preview controls (NOT real product controls) ──
 // Small icon segmented controls centered in the header: Mode + View-as role.
 const sv = (paths) => (
-  <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+  <svg
+    viewBox="0 0 24 24"
+    width="15"
+    height="15"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
     {paths}
   </svg>
 )
 const MODE_ICON = {
   // Challenge = a flag/goal; Template = stacked layers.
-  challenge: sv(<><path d="M5 21V4" /><path d="M5 4h12l-2.2 3.5L17 11H5" /></>),
-  template: sv(<><rect x="4" y="4" width="13" height="13" rx="2" /><path d="M8 20h11a1 1 0 0 0 1-1V8" /></>),
+  challenge: sv(
+    <>
+      <path d="M5 21V4" />
+      <path d="M5 4h12l-2.2 3.5L17 11H5" />
+    </>,
+  ),
+  template: sv(
+    <>
+      <rect x="4" y="4" width="13" height="13" rx="2" />
+      <path d="M8 20h11a1 1 0 0 0 1-1V8" />
+    </>,
+  ),
 }
 const ROLE_ICON = {
   // Teacher = mortarboard; School admin = school building; Librarian = book;
   // District = multiple buildings.
-  teacher: sv(<><path d="M3 8l9-4 9 4-9 4-9-4z" /><path d="M7 10.5V15c0 1.1 2.2 2.5 5 2.5s5-1.4 5-2.5v-4.5" /></>),
-  msplus: sv(<><path d="M4 21V8l8-4 8 4v13" /><path d="M9 21v-5h6v5" /><path d="M9 11h.01M15 11h.01" /></>),
-  librarian: sv(<><path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3z" transform="translate(0 -1)" /><path d="M5 4v16a3 3 0 0 1 3-3h9" /></>),
-  district: sv(<><rect x="3" y="9" width="7" height="12" rx="1" /><rect x="12" y="4" width="9" height="17" rx="1" /><path d="M15 8h.01M18 8h.01M15 12h.01M18 12h.01" /></>),
+  teacher: sv(
+    <>
+      <path d="M3 8l9-4 9 4-9 4-9-4z" />
+      <path d="M7 10.5V15c0 1.1 2.2 2.5 5 2.5s5-1.4 5-2.5v-4.5" />
+    </>,
+  ),
+  msplus: sv(
+    <>
+      <path d="M4 21V8l8-4 8 4v13" />
+      <path d="M9 21v-5h6v5" />
+      <path d="M9 11h.01M15 11h.01" />
+    </>,
+  ),
+  librarian: sv(
+    <>
+      <path d="M5 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3 3z" transform="translate(0 -1)" />
+      <path d="M5 4v16a3 3 0 0 1 3-3h9" />
+    </>,
+  ),
+  district: sv(
+    <>
+      <rect x="3" y="9" width="7" height="12" rx="1" />
+      <rect x="12" y="4" width="9" height="17" rx="1" />
+      <path d="M15 8h.01M18 8h.01M15 12h.01M18 12h.01" />
+    </>,
+  ),
 }
 function Seg({ value, onChange, options, label }) {
   return (
@@ -107,13 +150,21 @@ function DevControls({ mode, roleId, onMode, onRole }) {
         label="Mode"
         value={mode}
         onChange={onMode}
-        options={MODES.map((m) => ({ value: m.id, title: `Mode: ${m.name}`, icon: MODE_ICON[m.id] }))}
+        options={MODES.map((m) => ({
+          value: m.id,
+          title: `Mode: ${m.name}`,
+          icon: MODE_ICON[m.id],
+        }))}
       />
       <Seg
         label="View as"
         value={roleId}
         onChange={onRole}
-        options={roles.map((r) => ({ value: r.id, title: `View as ${r.name}`, icon: ROLE_ICON[r.id] }))}
+        options={roles.map((r) => ({
+          value: r.id,
+          title: `View as ${r.name}`,
+          icon: ROLE_ICON[r.id],
+        }))}
       />
     </div>
   )
@@ -128,18 +179,7 @@ function SaveStatus({ state }) {
         </>
       ) : (
         <>
-          <svg
-            viewBox="0 0 16 16"
-            width="13"
-            height="13"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <polyline points="3,8 7,12 13,4" />
-          </svg>
+          <Icon name="check" size={13} stroke={2.2} />
           Saved
         </>
       )}
@@ -345,19 +385,7 @@ export function App() {
                   onClick={togglePreview}
                   aria-label="Preview"
                 >
-                  <svg
-                    viewBox="0 0 24 24"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.9"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z" />
-                    <circle cx="12" cy="12" r="3" />
-                  </svg>
+                  <Icon name="eye" size={16} />
                 </IconButton>
               )}
               {isLast ? (
@@ -390,20 +418,7 @@ export function App() {
             aria-expanded={previewOpen}
             title={previewOpen ? 'Hide preview' : 'Show preview'}
           >
-            <svg
-              className="cc-preview-tab-chev"
-              viewBox="0 0 24 24"
-              width="18"
-              height="18"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              aria-hidden="true"
-            >
-              <path d="M15 6l-6 6 6 6" />
-            </svg>
+            <Icon className="cc-preview-tab-chev" name="chevron-left" size={18} stroke={2.2} />
             <span className="cc-preview-tab-label">Preview</span>
           </button>
         )}
@@ -426,11 +441,8 @@ export function App() {
           <div className="cc-confirm">
             <h3>Reset your customizations?</h3>
             <p>
-              {pendingTemplate === 'scratch'
-                ? 'Starting from scratch'
-                : 'Switching templates'}{' '}
-              will replace your current title, description, banner, and badges. This can’t be
-              undone.
+              {pendingTemplate === 'scratch' ? 'Starting from scratch' : 'Switching templates'} will
+              replace your current title, description, banner, and badges. This can’t be undone.
             </p>
             <div className="cc-confirm-actions">
               <Button variant="secondary" onClick={close}>
@@ -502,9 +514,7 @@ export function App() {
                 aria-label="Close preview"
                 className="modal-close"
               >
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                  <path d="M6 6l12 12M18 6L6 18" />
-                </svg>
+                <Icon name="x" size={18} />
               </IconButton>
             </div>
             <div className="cc-preview-frame" style={{ background: previewBg }}>

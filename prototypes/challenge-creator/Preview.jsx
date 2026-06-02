@@ -19,7 +19,13 @@ const SAMPLE = ['ti-book-2', 'ti-flame', 'ti-star', 'ti-medal', 'ti-trophy', 'ti
 // ── Color helpers: pick a readable text color for a given background ──────────
 function hexToRgb(hex) {
   const h = String(hex || '').replace('#', '')
-  const n = h.length === 3 ? h.split('').map((c) => c + c).join('') : h
+  const n =
+    h.length === 3
+      ? h
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : h
   if (n.length !== 6) return null
   const int = parseInt(n, 16)
   return [(int >> 16) & 255, (int >> 8) & 255, int & 255]

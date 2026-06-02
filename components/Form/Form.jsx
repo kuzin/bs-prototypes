@@ -444,7 +444,8 @@ export function MultiSelect({
   useEffect(() => {
     if (!open) return
     function onDown(e) {
-      if (!wrapRef.current?.contains(e.target) && !popRef.current?.contains(e.target)) setOpen(false)
+      if (!wrapRef.current?.contains(e.target) && !popRef.current?.contains(e.target))
+        setOpen(false)
     }
     function onKey(e) {
       if (e.key === 'Escape') setOpen(false)
@@ -511,56 +512,60 @@ export function MultiSelect({
         </span>
         <Icon name="chevron-down" size={11} stroke={2} className="msel-caret" />
       </button>
-      {open && coords && createPortal(
-        <div
-          ref={popRef}
-          className="msel-pop msel-pop--portal"
-          role="listbox"
-          aria-multiselectable="true"
-          style={{
-            position: 'fixed',
-            left: coords.left,
-            width: coords.width,
-            fontFamily: coords.fontFamily,
-            maxHeight: coords.maxHeight,
-            ...(coords.bottom != null ? { bottom: coords.bottom } : { top: coords.top }),
-          }}
-        >
-          <div className="msel-pop-list">
-          {options.length === 0 ? (
-            <div className="msel-empty">No options</div>
-          ) : (
-            options.map((opt) => (
-              <label
-                key={opt.value}
-                className={`msel-opt${opt.disabled ? ' msel-opt--disabled' : ''}`}
-              >
-                <input
-                  type="checkbox"
-                  className="chk-input"
-                  checked={value.includes(opt.value)}
-                  disabled={opt.disabled}
-                  onChange={() => toggle(opt.value)}
-                />
-                <span className="chk-box" aria-hidden="true">
-                  <Icon name="check" size={12} stroke={2} />
-                </span>
-                {opt.image !== undefined && (
-                  <span className="msel-opt-art">{opt.image ? <img src={opt.image} alt="" /> : null}</span>
-                )}
-                <span className="msel-opt-label">{opt.label}</span>
-              </label>
-            ))
-          )}
-          </div>
-          <div className="msel-pop-foot">
-            <button type="button" className="msel-done" onClick={() => setOpen(false)}>
-              Done
-            </button>
-          </div>
-        </div>,
-        document.body,
-      )}
+      {open &&
+        coords &&
+        createPortal(
+          <div
+            ref={popRef}
+            className="msel-pop msel-pop--portal"
+            role="listbox"
+            aria-multiselectable="true"
+            style={{
+              position: 'fixed',
+              left: coords.left,
+              width: coords.width,
+              fontFamily: coords.fontFamily,
+              maxHeight: coords.maxHeight,
+              ...(coords.bottom != null ? { bottom: coords.bottom } : { top: coords.top }),
+            }}
+          >
+            <div className="msel-pop-list">
+              {options.length === 0 ? (
+                <div className="msel-empty">No options</div>
+              ) : (
+                options.map((opt) => (
+                  <label
+                    key={opt.value}
+                    className={`msel-opt${opt.disabled ? ' msel-opt--disabled' : ''}`}
+                  >
+                    <input
+                      type="checkbox"
+                      className="chk-input"
+                      checked={value.includes(opt.value)}
+                      disabled={opt.disabled}
+                      onChange={() => toggle(opt.value)}
+                    />
+                    <span className="chk-box" aria-hidden="true">
+                      <Icon name="check" size={12} stroke={2} />
+                    </span>
+                    {opt.image !== undefined && (
+                      <span className="msel-opt-art">
+                        {opt.image ? <img src={opt.image} alt="" /> : null}
+                      </span>
+                    )}
+                    <span className="msel-opt-label">{opt.label}</span>
+                  </label>
+                ))
+              )}
+            </div>
+            <div className="msel-pop-foot">
+              <button type="button" className="msel-done" onClick={() => setOpen(false)}>
+                Done
+              </button>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   )
 

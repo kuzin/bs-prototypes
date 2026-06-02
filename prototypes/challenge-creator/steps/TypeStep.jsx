@@ -1,4 +1,5 @@
 import { Hero } from '@components/Hero/Hero'
+import { Icon } from '@components/Icon/Icon'
 
 // Per-type inline glyphs (24×24, stroke, currentColor) — tinted by each type accent.
 const GLYPHS = {
@@ -20,7 +21,9 @@ const GLYPHS = {
       <path d="M9.33 4.5v15M14.67 4.5v15M4.5 9.33h15M4.5 14.67h15" />
     </>
   ),
-  points: <path d="M12 4l2.35 4.76 5.25.76-3.8 3.7.9 5.23L12 16.74l-4.7 2.47.9-5.23-3.8-3.7 5.25-.76z" />,
+  points: (
+    <path d="M12 4l2.35 4.76 5.25.76-3.8 3.7.9 5.23L12 16.74l-4.7 2.47.9-5.23-3.8-3.7 5.25-.76z" />
+  ),
   'reading-list': (
     <>
       <circle cx="4.5" cy="6" r="1.3" />
@@ -74,14 +77,7 @@ export function TypeStep({ types, value, onSelect }) {
     <section className="cc-step">
       <div className="cc-step-head">
         <Hero
-          icon={
-            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" />
-            </svg>
-          }
+          icon={<Icon name="layout-grid" size={22} />}
           title="Choose a challenge type"
           subtitle="Pick the main way readers earn badges — you can layer on more in the Badges step."
           accent="#0DA7BC"

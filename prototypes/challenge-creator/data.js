@@ -60,7 +60,9 @@ export const ROLES_BY_MODE = {
     { id: 'msplus', name: 'MS+ · School Admin', site: 'school', tier: 'full' },
     { id: 'librarian', name: 'Public Librarian', site: 'library', tier: 'full' },
   ],
-  template: [{ id: 'district', name: 'District Admin', site: 'school', tier: 'full', isTemplate: true }],
+  template: [
+    { id: 'district', name: 'District Admin', site: 'school', tier: 'full', isTemplate: true },
+  ],
 }
 
 export const getRoles = (mode) => ROLES_BY_MODE[mode] ?? ROLES_BY_MODE.challenge
@@ -169,12 +171,42 @@ export const getTypesForRole = (role) =>
 // A template's art is theme — the same theme can seed different mechanics — so
 // each lists every challenge type it suits (so every type has options to pick).
 export const TEMPLATES = [
-  { id: 'benny', name: 'Have You Seen Benny?', typeIds: ['logging', 'activities'], blurb: 'A reading hunt with Beanstack’s mascot.' },
-  { id: 'era', name: 'In My Reading Era', typeIds: ['logging', 'reviews'], blurb: 'Journey through your reading eras.' },
-  { id: 'glow', name: 'Glow Party', typeIds: ['logging', 'points', 'activities'], blurb: 'A bright, neon reading celebration.' },
-  { id: 'comics', name: 'Comics Choice', typeIds: ['bingo', 'readingList', 'reviews'], blurb: 'Celebrate comics and graphic novels.' },
-  { id: 'hhm', name: 'Hispanic Heritage Month', typeIds: ['logging', 'readingList', 'activities', 'points'], blurb: 'Celebrate Hispanic & Latino voices.' },
-  { id: 'botb', name: 'Battle of the Books', typeIds: ['logging', 'bingo', 'readingList', 'reviews'], blurb: 'Competitive reading from a title list.' },
+  {
+    id: 'benny',
+    name: 'Have You Seen Benny?',
+    typeIds: ['logging', 'activities'],
+    blurb: 'A reading hunt with Beanstack’s mascot.',
+  },
+  {
+    id: 'era',
+    name: 'In My Reading Era',
+    typeIds: ['logging', 'reviews'],
+    blurb: 'Journey through your reading eras.',
+  },
+  {
+    id: 'glow',
+    name: 'Glow Party',
+    typeIds: ['logging', 'points', 'activities'],
+    blurb: 'A bright, neon reading celebration.',
+  },
+  {
+    id: 'comics',
+    name: 'Comics Choice',
+    typeIds: ['bingo', 'readingList', 'reviews'],
+    blurb: 'Celebrate comics and graphic novels.',
+  },
+  {
+    id: 'hhm',
+    name: 'Hispanic Heritage Month',
+    typeIds: ['logging', 'readingList', 'activities', 'points'],
+    blurb: 'Celebrate Hispanic & Latino voices.',
+  },
+  {
+    id: 'botb',
+    name: 'Battle of the Books',
+    typeIds: ['logging', 'bingo', 'readingList', 'reviews'],
+    blurb: 'Competitive reading from a title list.',
+  },
 ]
 // Cap the gallery at 5 templates per type (plus the "Start from scratch" card).
 export const getTemplatesForType = (typeId) =>
@@ -240,16 +272,36 @@ export function loadFont(name) {
 // challenge's background id; `color` is the representative hue (drives the
 // derived accent + the load-fallback background).
 const BANNER_VARIANT_IMG = {
-  'reading-1': reading1, 'reading-2': reading2, 'reading-3': reading3,
-  'summer-1': summer1, 'summer-2': summer2, 'summer-3': summer3,
-  'autumn-1': autumn1, 'autumn-2': autumn2, 'autumn-3': autumn3,
-  'space-1': space1, 'space-2': space2, 'space-3': space3,
-  'forest-1': forest1, 'forest-2': forest2, 'forest-3': forest3,
-  'celebration-1': celebration1, 'celebration-2': celebration2, 'celebration-3': celebration3,
-  'winter-1': winter1, 'winter-2': winter2, 'winter-3': winter3,
-  'ocean-1': ocean1, 'ocean-2': ocean2, 'ocean-3': ocean3,
-  'animals-1': animals1, 'animals-2': animals2, 'animals-3': animals3,
-  'fantasy-1': fantasy1, 'fantasy-2': fantasy2, 'fantasy-3': fantasy3,
+  'reading-1': reading1,
+  'reading-2': reading2,
+  'reading-3': reading3,
+  'summer-1': summer1,
+  'summer-2': summer2,
+  'summer-3': summer3,
+  'autumn-1': autumn1,
+  'autumn-2': autumn2,
+  'autumn-3': autumn3,
+  'space-1': space1,
+  'space-2': space2,
+  'space-3': space3,
+  'forest-1': forest1,
+  'forest-2': forest2,
+  'forest-3': forest3,
+  'celebration-1': celebration1,
+  'celebration-2': celebration2,
+  'celebration-3': celebration3,
+  'winter-1': winter1,
+  'winter-2': winter2,
+  'winter-3': winter3,
+  'ocean-1': ocean1,
+  'ocean-2': ocean2,
+  'ocean-3': ocean3,
+  'animals-1': animals1,
+  'animals-2': animals2,
+  'animals-3': animals3,
+  'fantasy-1': fantasy1,
+  'fantasy-2': fantasy2,
+  'fantasy-3': fantasy3,
 }
 
 export const BANNER_THEMES = [
@@ -349,7 +401,8 @@ export const BANNER_THEMES = [
 export const BANNERS = BANNER_THEMES.flatMap((t) =>
   t.variants.map((v) => ({ ...v, themeId: t.id, label: t.name, img: BANNER_VARIANT_IMG[v.id] })),
 )
-export const getBannerTheme = (id) => BANNERS.find((b) => b.id === id)?.themeId ?? BANNER_THEMES[0].id
+export const getBannerTheme = (id) =>
+  BANNERS.find((b) => b.id === id)?.themeId ?? BANNER_THEMES[0].id
 
 export function bannerImage(id) {
   const b = BANNERS.find((x) => x.id === id) ?? BANNERS[0]
@@ -377,8 +430,16 @@ export const GRADES = ['Pre-K', 'K', '1', '2', '3', '4', '5', '6', '7', '8']
 
 // Icon keys (from @components/ui I8_IDS) usable as badge glyphs.
 export const BADGE_ICONS = [
-  'ti-book-2', 'ti-flame', 'ti-star', 'ti-medal', 'ti-trophy',
-  'ti-puzzle', 'ti-gift', 'ti-certificate', 'ti-reading-log', 'ti-rating',
+  'ti-book-2',
+  'ti-flame',
+  'ti-star',
+  'ti-medal',
+  'ti-trophy',
+  'ti-puzzle',
+  'ti-gift',
+  'ti-certificate',
+  'ti-reading-log',
+  'ti-rating',
 ]
 export const BADGE_COLORS = ['#0DA7BC', '#E8866A', '#7C5CFA', '#16A97A', '#F0C050', '#E8456B']
 
@@ -415,7 +476,9 @@ const BADGE_BG_ASSETS = import.meta.glob('./assets/badge-bgs/*.png', {
 })
 const BADGE_BG_SLOTS = [1, 2, 3, 4, 5, 6]
 export const themeBgImages = (themeId) =>
-  BADGE_BG_SLOTS.map((n) => BADGE_BG_ASSETS[`./assets/badge-bgs/${themeId}-${n}.png`]).filter(Boolean)
+  BADGE_BG_SLOTS.map((n) => BADGE_BG_ASSETS[`./assets/badge-bgs/${themeId}-${n}.png`]).filter(
+    Boolean,
+  )
 
 // Logging badge "values": what readers count toward, and how much.
 export const LOG_TYPES = [
@@ -438,13 +501,67 @@ const MEDALLION_BADGES = [
 // Descriptive name per theme badge (slot 1–8) — what each medallion depicts.
 // Drives the gallery labels AND keyword subject-tagging.
 const THEME_BADGE_NAMES = {
-  reading: ['Open Book', 'Reading Glasses', 'Storybook', 'Book Stack', 'Bookmark', 'Reading Specs', 'Quill Pen', 'Library Books'],
-  summer: ['Sunshine', 'Popsicle', 'Beach Ball', 'Sunglasses', 'Ice Cream', 'Beach Day', 'Cool Shades', 'Ice Pop'],
-  autumn: ['Maple Leaf', 'Acorn', 'Pumpkin', 'Apple', 'Acorn Cap', 'Harvest Pumpkin', 'Crisp Apple', 'Oak Leaf'],
-  space: ['Rocket', 'Planet', 'Shooting Star', 'Astronaut', 'Ringed Planet', 'Crescent Moon', 'Comet', 'Space Helmet'],
+  reading: [
+    'Open Book',
+    'Reading Glasses',
+    'Storybook',
+    'Book Stack',
+    'Bookmark',
+    'Reading Specs',
+    'Quill Pen',
+    'Library Books',
+  ],
+  summer: [
+    'Sunshine',
+    'Popsicle',
+    'Beach Ball',
+    'Sunglasses',
+    'Ice Cream',
+    'Beach Day',
+    'Cool Shades',
+    'Ice Pop',
+  ],
+  autumn: [
+    'Maple Leaf',
+    'Acorn',
+    'Pumpkin',
+    'Apple',
+    'Acorn Cap',
+    'Harvest Pumpkin',
+    'Crisp Apple',
+    'Oak Leaf',
+  ],
+  space: [
+    'Rocket',
+    'Planet',
+    'Shooting Star',
+    'Astronaut',
+    'Ringed Planet',
+    'Crescent Moon',
+    'Comet',
+    'Space Helmet',
+  ],
   forest: ['Pine Tree', 'Fox', 'Mushroom', 'Campfire', 'Evergreen', 'Toadstool', 'Deer', 'Bonfire'],
-  celebration: ['Balloon', 'Party Popper', 'Party Decor', 'Cupcake', 'Party Hat', 'Gift Box', 'Confetti', 'Sweet Treat'],
-  winter: ['Snowflake', 'Mitten', 'Hot Cocoa', 'Snowman', 'Scarf', 'Snowy Pine', 'Ice Skate', 'Penguin'],
+  celebration: [
+    'Balloon',
+    'Party Popper',
+    'Party Decor',
+    'Cupcake',
+    'Party Hat',
+    'Gift Box',
+    'Confetti',
+    'Sweet Treat',
+  ],
+  winter: [
+    'Snowflake',
+    'Mitten',
+    'Hot Cocoa',
+    'Snowman',
+    'Scarf',
+    'Snowy Pine',
+    'Ice Skate',
+    'Penguin',
+  ],
   ocean: ['Wave', 'Fish', 'Whale', 'Seashell', 'Anchor', 'Starfish', 'Octopus', 'Sailboat'],
   animals: ['Fox', 'Owl', 'Rabbit', 'Elephant', 'Lion', 'Bird', 'Turtle', 'Paw Print'],
   fantasy: ['Dragon', 'Castle', 'Wizard Hat', 'Magic Wand', 'Crown', 'Potion', 'Unicorn', 'Shield'],
@@ -454,7 +571,9 @@ export const PICKER_BADGE_GROUPS = [
   ...BANNER_THEMES.map((t) => ({
     id: `theme-${t.id}`,
     name: `${t.name} set`,
-    badges: THEME_BADGE_SLOTS.map((n) => THEME_BADGE_ASSETS[`./assets/theme-badges/${t.id}-${n}.png`])
+    badges: THEME_BADGE_SLOTS.map(
+      (n) => THEME_BADGE_ASSETS[`./assets/theme-badges/${t.id}-${n}.png`],
+    )
       .filter(Boolean)
       .map((img, i) => ({
         id: `${t.id}-${i + 1}`,
@@ -471,16 +590,45 @@ export const PICKER_BADGES = PICKER_BADGE_GROUPS.flatMap((g) => g.badges)
 // Cross-cutting subject tags, matched loosely against a badge's name (so a
 // "Subject" view pulls e.g. every animal badge across all sets).
 export const BADGE_SUBJECTS = [
-  { id: 'symbols', name: 'Symbols', re: /book|star|rising|medal|trophy|champion|flame|streak|gift|reward|bookmark|glasses|quill|crown|shield/i },
-  { id: 'animals', name: 'Animals', re: /fox|owl|rabbit|elephant|lion|bird|turtle|paw|deer|penguin|whale|fish|octopus|dragon|unicorn/i },
-  { id: 'nature', name: 'Nature', re: /tree|leaf|leaves|mushroom|wave|shell|flower|flores|sun|snow|mitten|scarf|pine|acorn|apple|pumpkin/i },
-  { id: 'food', name: 'Food', re: /taco|flan|empanada|arepa|plantain|guac|corn|lime|ice cream|popsicle|cupcake|cake|cocoa/i },
-  { id: 'celebration', name: 'Celebration', re: /balloon|confetti|party|firework|music|microphone|hooray|bingo|maraca|pinata|piñata|flamenco|salsa|sombrero|stars|celebration/i },
+  {
+    id: 'symbols',
+    name: 'Symbols',
+    re: /book|star|rising|medal|trophy|champion|flame|streak|gift|reward|bookmark|glasses|quill|crown|shield/i,
+  },
+  {
+    id: 'animals',
+    name: 'Animals',
+    re: /fox|owl|rabbit|elephant|lion|bird|turtle|paw|deer|penguin|whale|fish|octopus|dragon|unicorn/i,
+  },
+  {
+    id: 'nature',
+    name: 'Nature',
+    re: /tree|leaf|leaves|mushroom|wave|shell|flower|flores|sun|snow|mitten|scarf|pine|acorn|apple|pumpkin/i,
+  },
+  {
+    id: 'food',
+    name: 'Food',
+    re: /taco|flan|empanada|arepa|plantain|guac|corn|lime|ice cream|popsicle|cupcake|cake|cocoa/i,
+  },
+  {
+    id: 'celebration',
+    name: 'Celebration',
+    re: /balloon|confetti|party|firework|music|microphone|hooray|bingo|maraca|pinata|piñata|flamenco|salsa|sombrero|stars|celebration/i,
+  },
   { id: 'space', name: 'Space', re: /planet|rocket|moon|comet|astronaut|space/i },
-  { id: 'comics', name: 'Comics', re: /bam|bang|pow|zap|crash|boom|flash|poof|whoa|blah|quiz|crossroad|bright|all.?star/i },
-  { id: 'magic', name: 'Magic', re: /dragon|castle|wizard|wand|potion|unicorn|magic|crown|shield/i },
+  {
+    id: 'comics',
+    name: 'Comics',
+    re: /bam|bang|pow|zap|crash|boom|flash|poof|whoa|blah|quiz|crossroad|bright|all.?star/i,
+  },
+  {
+    id: 'magic',
+    name: 'Magic',
+    re: /dragon|castle|wizard|wand|potion|unicorn|magic|crown|shield/i,
+  },
 ]
-export const subjectsOf = (name = '') => BADGE_SUBJECTS.filter((s) => s.re.test(name)).map((s) => s.id)
+export const subjectsOf = (name = '') =>
+  BADGE_SUBJECTS.filter((s) => s.re.test(name)).map((s) => s.id)
 // Theme badges have generic names ("Winter 5"), so a set also lends its subjects
 // to its badges (combined with name-keyword matching for descriptively-named ones).
 export const SET_SUBJECTS = {
@@ -511,8 +659,12 @@ export const COLOR_BUCKETS = [
   { id: 'neutral', name: 'Neutral', hex: '#94a3b8' },
 ]
 function _hueBucket(r, g, b) {
-  r /= 255; g /= 255; b /= 255
-  const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min
+  r /= 255
+  g /= 255
+  b /= 255
+  const max = Math.max(r, g, b),
+    min = Math.min(r, g, b),
+    d = max - min
   const l = (max + min) / 2
   const s = d === 0 ? 0 : d / (1 - Math.abs(2 * l - 1))
   if (s < 0.16 || l < 0.12 || l > 0.94) return 'neutral'
@@ -520,7 +672,8 @@ function _hueBucket(r, g, b) {
   if (max === r) h = ((g - b) / d) % 6
   else if (max === g) h = (b - r) / d + 2
   else h = (r - g) / d + 4
-  h *= 60; if (h < 0) h += 360
+  h *= 60
+  if (h < 0) h += 360
   if (h < 15 || h >= 345) return 'red'
   if (h < 40) return 'orange'
   if (h < 66) return 'yellow'
@@ -534,29 +687,40 @@ const _colorCache = new Map()
 export const badgeColor = (url) => _colorCache.get(url) || null
 export async function ensureBadgeColors(urls = []) {
   await Promise.all(
-    urls.filter((u) => u && !_colorCache.has(u)).map(async (u) => {
-      try {
-        const img = new Image()
-        img.src = u
-        await img.decode()
-        const S = 24
-        const c = document.createElement('canvas')
-        c.width = S; c.height = S
-        const ctx = c.getContext('2d', { willReadFrequently: true })
-        ctx.drawImage(img, 0, 0, S, S)
-        const { data } = ctx.getImageData(0, 0, S, S)
-        let r = 0, g = 0, b = 0, n = 0
-        for (let i = 0; i < data.length; i += 4) {
-          if (data[i + 3] < 128) continue
-          const rr = data[i], gg = data[i + 1], bb = data[i + 2]
-          if (rr > 235 && gg > 235 && bb > 235) continue // skip near-white background
-          r += rr; g += gg; b += bb; n++
+    urls
+      .filter((u) => u && !_colorCache.has(u))
+      .map(async (u) => {
+        try {
+          const img = new Image()
+          img.src = u
+          await img.decode()
+          const S = 24
+          const c = document.createElement('canvas')
+          c.width = S
+          c.height = S
+          const ctx = c.getContext('2d', { willReadFrequently: true })
+          ctx.drawImage(img, 0, 0, S, S)
+          const { data } = ctx.getImageData(0, 0, S, S)
+          let r = 0,
+            g = 0,
+            b = 0,
+            n = 0
+          for (let i = 0; i < data.length; i += 4) {
+            if (data[i + 3] < 128) continue
+            const rr = data[i],
+              gg = data[i + 1],
+              bb = data[i + 2]
+            if (rr > 235 && gg > 235 && bb > 235) continue // skip near-white background
+            r += rr
+            g += gg
+            b += bb
+            n++
+          }
+          _colorCache.set(u, n ? _hueBucket(r / n, g / n, b / n) : 'neutral')
+        } catch {
+          _colorCache.set(u, 'neutral')
         }
-        _colorCache.set(u, n ? _hueBucket(r / n, g / n, b / n) : 'neutral')
-      } catch {
-        _colorCache.set(u, 'neutral')
-      }
-    }),
+      }),
   )
 }
 
@@ -564,7 +728,11 @@ export async function ensureBadgeColors(urls = []) {
 const FAV_KEY = 'cc-fav-badges'
 const RECENT_KEY = 'cc-recent-badges'
 const _readKeys = (k) => {
-  try { return JSON.parse(localStorage.getItem(k)) || [] } catch { return [] }
+  try {
+    return JSON.parse(localStorage.getItem(k)) || []
+  } catch {
+    return []
+  }
 }
 export const getFavoriteBadges = () => _readKeys(FAV_KEY)
 export const toggleFavoriteBadge = (img) => {
@@ -734,7 +902,10 @@ export const getBackground = (id) => BANNERS.find((b) => b.id === id) ?? BANNERS
 
 // ─── Template presets — real Beanstack challenges (banner with baked-in text +
 // the challenge's own badge set). Assets loaded from assets/templates/<id>/. ──
-const TPL_ASSETS = import.meta.glob('./assets/templates/*/*.png', { eager: true, import: 'default' })
+const TPL_ASSETS = import.meta.glob('./assets/templates/*/*.png', {
+  eager: true,
+  import: 'default',
+})
 const tplAsset = (id, file) => TPL_ASSETS[`./assets/templates/${id}/${file}`]
 
 // Curated badge set per template — [file, name]. Each template keeps a single,
@@ -889,7 +1060,8 @@ export const TEMPLATE_PRESETS = {
     badges: tplBadges('hhm'),
     description:
       '<p>Celebrate <strong>Hispanic Heritage Month</strong> with books by and about Hispanic and Latino authors, artists, and changemakers.</p>',
-    previewDescription: 'Celebrate Hispanic Heritage Month with books by and about Hispanic voices.',
+    previewDescription:
+      'Celebrate Hispanic Heritage Month with books by and about Hispanic voices.',
   },
   botb: {
     name: 'Battle of the Books',
@@ -960,13 +1132,15 @@ export function applyTemplate(challenge, templateId) {
         : challenge.pointsBadges || [],
     // The template also seeds the registration + completion badges: its own
     // themed art when the folder has it, else a generic star/trophy.
-    registrationBadge:
-      preset.registrationBadge ||
-      tplBadge(templateId, 'registration.png', 'Welcome badge') ||
-      { name: 'Welcome badge', img: badgeStar },
-    completionBadge:
-      preset.completionBadge ||
-      tplBadge(templateId, 'completion.png', 'Challenge complete') ||
-      { name: 'Challenge complete', img: badgeTrophy },
+    registrationBadge: preset.registrationBadge ||
+      tplBadge(templateId, 'registration.png', 'Welcome badge') || {
+        name: 'Welcome badge',
+        img: badgeStar,
+      },
+    completionBadge: preset.completionBadge ||
+      tplBadge(templateId, 'completion.png', 'Challenge complete') || {
+        name: 'Challenge complete',
+        img: badgeTrophy,
+      },
   }
 }

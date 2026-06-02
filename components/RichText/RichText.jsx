@@ -16,7 +16,15 @@ const HTML_PROP = 'inner' + 'HTML'
 
 const ICONS = {
   ul: (
-    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+    <svg
+      viewBox="0 0 16 16"
+      width="15"
+      height="15"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+    >
       <circle cx="2.5" cy="4" r="1" fill="currentColor" stroke="none" />
       <circle cx="2.5" cy="8" r="1" fill="currentColor" stroke="none" />
       <circle cx="2.5" cy="12" r="1" fill="currentColor" stroke="none" />
@@ -26,7 +34,16 @@ const ICONS = {
     </svg>
   ),
   ol: (
-    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 16 16"
+      width="15"
+      height="15"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <line x1="6.5" y1="4" x2="14" y2="4" />
       <line x1="6.5" y1="8" x2="14" y2="8" />
       <line x1="6.5" y1="12" x2="14" y2="12" />
@@ -35,7 +52,16 @@ const ICONS = {
     </svg>
   ),
   link: (
-    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 16 16"
+      width="15"
+      height="15"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M6.5 9.5l3-3M7 4.5l.9-.9a2.6 2.6 0 0 1 3.7 3.7l-.9.9M9 11.5l-.9.9a2.6 2.6 0 0 1-3.7-3.7l.9-.9" />
     </svg>
   ),
@@ -45,7 +71,16 @@ const ICONS = {
     </svg>
   ),
   code: (
-    <svg viewBox="0 0 16 16" width="15" height="15" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      viewBox="0 0 16 16"
+      width="15"
+      height="15"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M5.5 5L2.5 8l3 3M10.5 5l3 3-3 3" />
     </svg>
   ),
@@ -55,7 +90,12 @@ const TOOLS = [
   { cmd: 'bold', title: 'Bold', label: 'B', style: { fontWeight: 800 } },
   { cmd: 'italic', title: 'Italic', label: 'I', style: { fontStyle: 'italic' } },
   { cmd: 'underline', title: 'Underline', label: 'U', style: { textDecoration: 'underline' } },
-  { cmd: 'strikeThrough', title: 'Strikethrough', label: 'S', style: { textDecoration: 'line-through' } },
+  {
+    cmd: 'strikeThrough',
+    title: 'Strikethrough',
+    label: 'S',
+    style: { textDecoration: 'line-through' },
+  },
   { sep: true },
   { cmd: 'formatBlock', arg: 'h2', title: 'Heading 1', label: 'H1' },
   { cmd: 'formatBlock', arg: 'h3', title: 'Heading 2', label: 'H2', style: { fontSize: 12 } },
@@ -67,7 +107,13 @@ const TOOLS = [
   { cmd: 'createLink', title: 'Insert link', icon: 'link', prompt: true },
 ]
 
-export function RichText({ value = '', onChange, placeholder = '', minHeight = 140, className = '' }) {
+export function RichText({
+  value = '',
+  onChange,
+  placeholder = '',
+  minHeight = 140,
+  className = '',
+}) {
   const ref = useRef(null)
   const [mode, setMode] = useState('rich')
 
