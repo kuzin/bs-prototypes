@@ -3410,56 +3410,61 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
         </div>
       )}
 
-      <div className="cc-panel">
-        <h3 className="cc-panel-title">Badge time restrictions</h3>
-        <div className="cc-settings">
-          <div className="cc-setting-row">
-            <div className="cc-setting-text">
-              <span className="cc-setting-label">Restrict when badges can be earned</span>
-              <span className="cc-setting-sub">
-                By default badges can be earned any time within the challenge dates.
-              </span>
-            </div>
-            <Toggle
-              checked={badgeTime === 'restricted'}
-              size="md"
-              onChange={(v) =>
-                update(
-                  v
-                    ? {
-                        badgeTime: 'restricted',
-                        // Default the window to the challenge dates so it never
-                        // opens in an empty/error state.
-                        badgeWindow: {
-                          start: bw.start || challenge.details?.start || '',
-                          end: bw.end || challenge.details?.end || '',
-                        },
-                      }
-                    : { badgeTime: 'any' },
-                )
-              }
-            />
-          </div>
-          {badgeTime === 'restricted' && (
-            <div className="cc-badge-window-wrap">
-              <div
-                className={`cc-date-row cc-badge-window${errors.badgeWindow ? ' has-error' : ''}`}
-              >
-                <Field label="Badges can be earned from…">
-                  <DateInput
-                    value={bw.start}
-                    onChange={(e) => setWindow({ start: e.target.value })}
-                  />
-                </Field>
-                <Field label="Until…">
-                  <DateInput value={bw.end} onChange={(e) => setWindow({ end: e.target.value })} />
-                </Field>
+      {!isBingo && (
+        <div className="cc-panel">
+          <h3 className="cc-panel-title">Badge time restrictions</h3>
+          <div className="cc-settings">
+            <div className="cc-setting-row">
+              <div className="cc-setting-text">
+                <span className="cc-setting-label">Restrict when badges can be earned</span>
+                <span className="cc-setting-sub">
+                  By default badges can be earned any time within the challenge dates.
+                </span>
               </div>
-              {errors.badgeWindow && <p className="cc-badge-reqnote">{errors.badgeWindow}</p>}
+              <Toggle
+                checked={badgeTime === 'restricted'}
+                size="md"
+                onChange={(v) =>
+                  update(
+                    v
+                      ? {
+                          badgeTime: 'restricted',
+                          // Default the window to the challenge dates so it never
+                          // opens in an empty/error state.
+                          badgeWindow: {
+                            start: bw.start || challenge.details?.start || '',
+                            end: bw.end || challenge.details?.end || '',
+                          },
+                        }
+                      : { badgeTime: 'any' },
+                  )
+                }
+              />
             </div>
-          )}
+            {badgeTime === 'restricted' && (
+              <div className="cc-badge-window-wrap">
+                <div
+                  className={`cc-date-row cc-badge-window${errors.badgeWindow ? ' has-error' : ''}`}
+                >
+                  <Field label="Badges can be earned from…">
+                    <DateInput
+                      value={bw.start}
+                      onChange={(e) => setWindow({ start: e.target.value })}
+                    />
+                  </Field>
+                  <Field label="Until…">
+                    <DateInput
+                      value={bw.end}
+                      onChange={(e) => setWindow({ end: e.target.value })}
+                    />
+                  </Field>
+                </div>
+                {errors.badgeWindow && <p className="cc-badge-reqnote">{errors.badgeWindow}</p>}
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       <div className="cc-panel">
         <h3 className="cc-panel-title">Registration badge</h3>
@@ -4011,17 +4016,181 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
   )
 }
 
+// Drag-and-drop bingo card editor: drag badges from the tray into grid cells,
+// drag a placed badge cell-to-cell to swap, or drop it back on the tray (or hit
+// ×) to clear it.
+function BingoBoard({ challenge, size, cells, onChange }) {
+  const n = cells.length
+  const [over, setOver] = useState(null)
+  const [trayOver, setTrayOver] = useState(false)
+  const pool = useMemo(
+    () => [
+      ...(challenge.badges || []).map((b, i) => ({
+        id: `log-${i}`,
+        name: b.name || 'Logging badge',
+        img: b.img || badgeImage(b.icon),
+      })),
+      ...(challenge.activityBadges || []).map((b, i) => ({
+        id: `act-${i}`,
+        name: b.title || b.name || 'Activity badge',
+        img: b.badge?.img,
+      })),
+      ...(challenge.reviewBadges || []).map((b, i) => ({
+        id: `rev-${i}`,
+        name: b.name || 'Review badge',
+        img: b.img || badgeImage(b.icon),
+      })),
+    ],
+    [challenge.badges, challenge.activityBadges, challenge.reviewBadges],
+  )
+  const byId = Object.fromEntries(pool.map((b) => [b.id, b]))
+  const placed = new Set(cells.filter(Boolean))
+
+  const setPayload = (e, data) => {
+    try {
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('text/plain', JSON.stringify(data))
+    } catch {
+      /* some browsers restrict dataTransfer */
+    }
+  }
+  const readPayload = (e) => {
+    try {
+      return JSON.parse(e.dataTransfer.getData('text/plain'))
+    } catch {
+      return null
+    }
+  }
+  const dropOnCell = (e, target) => {
+    e.preventDefault()
+    setOver(null)
+    const p = readPayload(e)
+    if (!p) return
+    const next = cells.slice()
+    if (p.from === 'tray') {
+      next[target] = p.id
+    } else if (p.from === 'cell' && p.index !== target) {
+      next[target] = cells[p.index]
+      next[p.index] = cells[target]
+    }
+    onChange(next)
+  }
+  const clear = (i) => {
+    const next = cells.slice()
+    next[i] = null
+    onChange(next)
+  }
+
+  const Art = ({ b, size: sz }) =>
+    b.img ? (
+      <img src={b.img} alt="" draggable={false} />
+    ) : (
+      <Icon name="award" size={sz} className="cc-bingo-art-fallback" />
+    )
+
+  return (
+    <div className="cc-bingo-board">
+      <div
+        className={`cc-bingo-tray${trayOver ? ' is-over' : ''}`}
+        onDragOver={(e) => {
+          e.preventDefault()
+          setTrayOver(true)
+        }}
+        onDragLeave={() => setTrayOver(false)}
+        onDrop={(e) => {
+          e.preventDefault()
+          setTrayOver(false)
+          const p = readPayload(e)
+          if (p?.from === 'cell') clear(p.index)
+        }}
+      >
+        <div className="cc-bingo-tray-head">
+          <span className="cc-bingo-tray-title">Drag badges onto the card</span>
+          <span className="cc-bingo-tray-count">
+            {placed.size}/{n} placed
+          </span>
+        </div>
+        {pool.length ? (
+          <div className="cc-bingo-tray-list">
+            {pool.map((b) => {
+              const used = placed.has(b.id)
+              return (
+                <div
+                  key={b.id}
+                  className={`cc-bingo-chip${used ? ' is-used' : ''}`}
+                  draggable={!used}
+                  onDragStart={(e) => !used && setPayload(e, { from: 'tray', id: b.id })}
+                  title={b.name}
+                >
+                  <span className="cc-bingo-chip-art">
+                    <Art b={b} size={20} />
+                  </span>
+                  <span className="cc-bingo-chip-name">{b.name}</span>
+                </div>
+              )
+            })}
+          </div>
+        ) : (
+          <p className="cc-method-note cc-method-note--sm">
+            Add logging, activity, or review badges on the Badges step, then drag them here.
+          </p>
+        )}
+      </div>
+
+      <div className="cc-bingo-grid" style={{ '--n': size[0] }}>
+        {cells.map((id, i) => {
+          const b = id ? byId[id] : null
+          return (
+            <div
+              key={i}
+              className={`cc-bingo-cell${b ? ' is-filled' : ''}${over === i ? ' is-over' : ''}`}
+              onDragOver={(e) => {
+                e.preventDefault()
+                if (over !== i) setOver(i)
+              }}
+              onDragLeave={() => setOver((o) => (o === i ? null : o))}
+              onDrop={(e) => dropOnCell(e, i)}
+            >
+              {b ? (
+                <div
+                  className="cc-bingo-placed"
+                  draggable
+                  onDragStart={(e) => setPayload(e, { from: 'cell', index: i, id })}
+                  title={b.name}
+                >
+                  <Art b={b} size={26} />
+                  <button
+                    type="button"
+                    className="cc-bingo-cell-x"
+                    onClick={() => clear(i)}
+                    aria-label={`Remove ${b.name}`}
+                  >
+                    <Icon name="x" size={12} stroke={2.5} />
+                  </button>
+                </div>
+              ) : (
+                <Icon name="plus" size={18} className="cc-bingo-cell-plus" />
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export function SetupStep({ challenge, type, update }) {
   const s = challenge.setup
   const [titleModal, setTitleModal] = useState(false)
   if (type?.id === 'bingo') {
     const size = s.bingoSize
     const n = { '3x3': 9, '4x4': 16, '5x5': 25 }[size]
+    const cells = Array.from({ length: n }, (_, i) => (s.bingoCells || [])[i] ?? null)
     return (
       <section className="cc-step">
         <StepHead
           title="Bingo card"
-          sub="Pick a card size, then arrange badges on the grid."
+          sub="Pick a card size, then drag badges onto the grid."
           icon={STEP_ICONS.bingo}
         />
         <div className="cc-panel">
@@ -4036,13 +4205,12 @@ export function SetupStep({ challenge, type, update }) {
               <Radio value="5x5">5 × 5</Radio>
             </RadioGroup>
           </Field>
-          <div className="cc-bingo-grid" style={{ '--n': size[0] }}>
-            {Array.from({ length: n }).map((_, i) => (
-              <span key={i} className="cc-bingo-cell">
-                +
-              </span>
-            ))}
-          </div>
+          <BingoBoard
+            challenge={challenge}
+            size={size}
+            cells={cells}
+            onChange={(next) => update({ setup: { ...s, bingoCells: next } })}
+          />
           <Tip>
             A {size} card needs exactly {n} logging / activity / review badges — no empty spaces.
           </Tip>
