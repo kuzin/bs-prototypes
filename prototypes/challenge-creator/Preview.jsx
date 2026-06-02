@@ -9,8 +9,6 @@ import {
   badgeImage,
   themeBadges,
   getBannerTheme,
-  getType,
-  SAMPLE_TITLES,
   BADGE_COLORS,
 } from './data'
 
@@ -141,15 +139,6 @@ export function Preview({ challenge }) {
     })),
   ].filter((x) => x.title)
 
-  // Reading list: only for reading-list challenges; falls back to the samples the
-  // setup step seeds so the section never previews empty.
-  const isReadingList = getType(challenge.typeId)?.primaryMethod === 'readingList'
-  const titles = isReadingList
-    ? challenge.setup?.titles?.length
-      ? challenge.setup.titles
-      : SAMPLE_TITLES
-    : []
-
   const bannerRef = useRef(null)
   const titleRef = useRef(null)
 
@@ -163,9 +152,6 @@ export function Preview({ challenge }) {
 
   // Content tabs — only the sections that actually have content.
   const pvTabs = [
-    isReadingList && titles.length
-      ? { id: 'titles', label: 'Reading list', count: titles.length }
-      : null,
     { id: 'badges', label: 'Badges', count: badges.length },
     rewards.length ? { id: 'rewards', label: 'Rewards', count: rewards.length } : null,
   ].filter(Boolean)
@@ -342,26 +328,6 @@ export function Preview({ challenge }) {
                 )
               })}
             </div>
-
-            {activeTab === 'titles' && (
-              <div className="cc-pv-titles">
-                {titles.slice(0, 12).map((t, i) => (
-                  <div key={t.id || t.isbn || i} className="cc-pv-title-row">
-                    <span className="cc-pv-title-cover">
-                      {t.cover ? (
-                        <img src={t.cover} alt="" loading="lazy" />
-                      ) : (
-                        <Icon name="book" size={16} />
-                      )}
-                    </span>
-                    <span className="cc-pv-title-info">
-                      <strong>{t.title}</strong>
-                      {t.author && <span>{t.author}</span>}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
 
             {activeTab === 'badges' && (
               <div className="cc-pv-badges">
