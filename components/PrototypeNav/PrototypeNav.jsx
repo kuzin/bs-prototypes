@@ -87,9 +87,7 @@ export function PrototypeNav({ currentHref }) {
                     >
                       <span className="proto-nav-option-dot" />
                       <span className="proto-nav-option-name">{p.name}</span>
-                      {isCurrent && (
-                        <Icon name="check" size={12} stroke={2.5} />
-                      )}
+                      {isCurrent && <Icon name="check" size={12} stroke={2.5} />}
                     </a>
                   )
                 })}

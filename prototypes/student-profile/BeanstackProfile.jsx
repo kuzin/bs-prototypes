@@ -200,9 +200,7 @@ function StudentActions({ onClose }) {
       <div className="bp-dropdown-anchor">
         <Button
           variant="primary"
-          iconRight={
-            <Icon name="chevron-down" size={11} stroke={2.5} style={{ flexShrink: 0 }} />
-          }
+          iconRight={<Icon name="chevron-down" size={11} stroke={2.5} style={{ flexShrink: 0 }} />}
           onClick={() => {
             setLogOpen((o) => !o)
             setDotsOpen(false)

@@ -135,11 +135,7 @@ function AnnotationBlock({ msg }) {
     <div
       className={`sm2-annotation${isPositive ? ' sm2-annotation--positive' : ' sm2-annotation--warning'}`}
     >
-      {isPositive ? (
-        <Icon name="check" size={13} />
-      ) : (
-        <Icon name="alert-circle" size={13} />
-      )}
+      {isPositive ? <Icon name="check" size={13} /> : <Icon name="alert-circle" size={13} />}
       <span>{msg.text}</span>
     </div>
   )
