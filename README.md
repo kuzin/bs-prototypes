@@ -145,7 +145,7 @@ There's no HTML to write and no entry list to edit — a prototype is just a fol
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App'
+import { App } from './App' // App.jsx uses a named export: `export function App() { … }`
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
