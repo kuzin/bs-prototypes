@@ -1096,6 +1096,23 @@ export const withPointMilestones = (badges = []) =>
     goal: Number(b.goal) >= 1 ? b.goal : (i + 1) * 50,
   }))
 
+// Starter activity badges seeded into bingo templates so the card has a mix of
+// logging + activity tiles to drag on. Art borrows the template's own badge set
+// (falls back to a generic star) so it stays on-theme.
+const BINGO_ACTIVITY_SEED = [
+  ['Library Scavenger Hunt', 'activity', 'Find the hidden bookmarks around the library'],
+  ['Story Time', 'event', 'Attend a story time session'],
+  ['Read Aloud', 'video', 'Record yourself reading a favorite page'],
+  ['Write a Review', 'review', 'Review a book you finished'],
+]
+const bingoActivityBadges = (preset) =>
+  BINGO_ACTIVITY_SEED.map(([title, type, description], i) => ({
+    id: `tpl-act-${i}`,
+    title,
+    badge: { img: preset.badges?.[i % (preset.badges.length || 1)]?.img || badgeStar },
+    activities: [{ type, description, linkTitle: '', linkUrl: '', codes: [] }],
+  }))
+
 export function applyTemplate(challenge, templateId) {
   if (!templateId || templateId === 'scratch') {
     // Start from scratch = a fresh blank challenge of the same type (also clears
@@ -1142,5 +1159,20 @@ export function applyTemplate(challenge, templateId) {
         name: 'Challenge complete',
         img: badgeTrophy,
       },
+    // Bingo cards don't use a completion badge — they earn a bingo badge (a row,
+    // column, or diagonal) and a full-card badge — and the card is filled with
+    // logging + activity tiles, so seed a starter set of activity badges too.
+    ...(getType(challenge.typeId)?.id === 'bingo'
+      ? {
+          activityBadges: bingoActivityBadges(preset),
+          bingoBadge: preset.bingoBadge ||
+            tplBadge(templateId, 'bingo.png', 'Bingo!') || { name: 'Bingo!', img: badgeMedal },
+          fullCardBadge: preset.fullCardBadge ||
+            tplBadge(templateId, 'completion.png', 'Full card!') || {
+              name: 'Full card!',
+              img: badgeTrophy,
+            },
+        }
+      : {}),
   }
 }

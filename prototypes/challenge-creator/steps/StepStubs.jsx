@@ -3127,9 +3127,15 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   const repeatableActivities = challenge.repeatableActivities || []
   const pointsBadges = challenge.pointsBadges || []
   // "Logging" badges cover both generic logging and Reading List (specific titles).
+  // Bingo cards are filled with both logging and activity tiles, so both badge
+  // panels show regardless of the per-method toggles.
   const loggingOn =
-    !!methods.log || !!methods.readingList || ['log', 'readingList'].includes(type?.primaryMethod)
-  const activitiesOn = !!methods.activities || type?.primaryMethod === 'activities'
+    !!methods.log ||
+    !!methods.readingList ||
+    ['log', 'readingList'].includes(type?.primaryMethod) ||
+    type?.id === 'bingo'
+  const activitiesOn =
+    !!methods.activities || type?.primaryMethod === 'activities' || type?.id === 'bingo'
   const reviewsOn = !!methods.reviews || type?.primaryMethod === 'reviews'
   const isPoints = type?.id === 'points'
   // Earnable badge types come from the challenge type: its primary method
