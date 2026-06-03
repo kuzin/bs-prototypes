@@ -180,6 +180,7 @@ export function TrendChart({
           axisRight={null}
           layers={layers}
           isInteractive
+          animate={false}
           tooltip={({ indexValue }) => {
             const orig = rowByX.get(indexValue) ?? {}
             if (tooltipContent) {
@@ -317,6 +318,7 @@ export function TrendChart({
               }
         }
         layers={layers}
+        animate={false}
         enableSlices="x"
         sliceTooltip={({ slice }) => {
           const header = slice.points[0]?.data?.x
