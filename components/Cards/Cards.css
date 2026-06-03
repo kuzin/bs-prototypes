@@ -189,29 +189,9 @@
   flex-direction: column;
 }
 
-/* Recharts' <ResponsiveContainer> pins a max-width on the wrapper from
-   its initial measurement, which prevents the SVG from re-rendering at
-   the full body width once flex layout settles. Clear the cap and
-   force the container to take the full body width. `min-width: 0`
-   stops the body's flex-item default (`min-width: auto = content`)
-   from refusing to shrink past the SVG's intrinsic size.
-
-   `flex: 1 1 auto` + `height: auto !important` lets the container grow
-   vertically to fill the body's remaining space when the card row is
-   stretched taller than the chart's prop height. The container's
-   inline `height: Npx` becomes a soft minimum instead of a hard cap. */
-.rc-card-body .recharts-responsive-container {
-  flex: 1 1 auto;
-  width: 100% !important;
-  min-width: 0;
-  height: auto !important;
-  max-width: none !important;
-  max-height: none !important;
-}
-.rc-card-body .recharts-responsive-container > .recharts-wrapper {
-  max-width: none !important;
-  max-height: none !important;
-}
+/* Trend/Nivo charts fill the remaining card-body height through their own
+   inline `flex: 1 1 auto; min-height` wrapper, so no container override is
+   needed here (the body is a flex column — see .rc-card-body above). */
 
 .rc-card-foot {
   padding: 10px 16px 12px;

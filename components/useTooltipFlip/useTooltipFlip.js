@@ -1,9 +1,9 @@
 import { useEffect } from 'react'
 
 /**
- * Re-positions Nivo (.sdb-tooltip) and Recharts (.recharts-tooltip-wrapper)
- * tooltips so they never cross into the sidebar (the .rl-content's
- * left edge) or off the right edge of the viewport. The chart library
+ * Re-positions Nivo (.sdb-tooltip) chart tooltips so they never cross into
+ * the sidebar (the .rl-content's left edge) or off the right edge of the
+ * viewport. The chart library
  * keeps writing its own transform on every mousemove, so this observer
  * re-applies the clamp every time the wrapper's style changes — guarded
  * with a data-attribute flag so it doesn't recurse on its own writes.
@@ -26,12 +26,9 @@ export function useTooltipFlip({ leftBoundSelector = '.rl-content', margin = 12 
     // tooltip subtree.
     function findWrapper(node) {
       if (!node || node.nodeType !== 1) return null
-      if (node.classList?.contains('recharts-tooltip-wrapper')) return node
       if (node.classList?.contains('sdb-tooltip')) return node.parentElement
       const sdb = node.querySelector?.('.sdb-tooltip')
       if (sdb) return sdb.parentElement
-      const r = node.querySelector?.('.recharts-tooltip-wrapper')
-      if (r) return r
       return null
     }
 
@@ -69,8 +66,7 @@ export function useTooltipFlip({ leftBoundSelector = '.rl-content', margin = 12 
         } else if (m.type === 'attributes') {
           // style mutation on a tooltip wrapper — re-clamp.
           const t = m.target
-          if (t.classList?.contains('recharts-tooltip-wrapper')) clamp(t)
-          else if (t.querySelector?.('.sdb-tooltip')) clamp(t)
+          if (t.querySelector?.('.sdb-tooltip')) clamp(t)
         }
       }
     })
