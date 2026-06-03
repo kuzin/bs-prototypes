@@ -16,8 +16,6 @@ import 'tippy.js/dist/tippy.css'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 
-const fmt = (n) => n.toLocaleString()
-
 // ─── Empty-state plumbing ────────────────────────────────────────────────
 // The Empty Sink role view renders every widget in its empty state so we can
 // preview the no-data UX without hand-toggling each widget. Each widget that

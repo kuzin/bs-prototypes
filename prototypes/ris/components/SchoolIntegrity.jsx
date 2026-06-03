@@ -17,13 +17,11 @@ const COMPLETION_COLOR = '#1D4ED8'
 const FLAG_COLOR = '#E8866A'
 const INT_ICON = SECTIONS.find((s) => s.key === 'integrity')?.icon
 
-export function SchoolIntegrity({ schoolId, onBack }) {
+export function SchoolIntegrity({ schoolId }) {
   const school = SCHOOLS.find((s) => s.id === schoolId)
-  const health = SCHOOL_HEALTH[schoolId]
   const trend = SCHOOL_INTEGRITY_TRENDS[schoolId]
   const stats = BOOK_TALKS_BY_SCHOOL.find((b) => b.id === schoolId)
   const latest = trend[trend.length - 1]
-  const shortName = school.name.split(' ')[0]
 
   const ranked = [...BOOK_TALKS_BY_SCHOOL]
     .map((b) => ({ ...b, name: b.name.split(' ')[0], isThis: b.id === schoolId }))

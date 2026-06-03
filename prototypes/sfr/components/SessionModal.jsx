@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Modal } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -255,11 +255,6 @@ export function SessionModal({
     month: '2-digit',
     day: '2-digit',
     year: '2-digit',
-  })
-  const createdStr = new Date(d.date).toLocaleDateString('en-US', {
-    month: 'numeric',
-    day: 'numeric',
-    year: 'numeric',
   })
   const hasFlags = d.flags && d.flags.length > 0
   const isApproved = d.changeLog?.some((e) => e.kind === 'approved')

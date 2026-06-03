@@ -12,7 +12,7 @@ import '../../ris/components/StudentPanel.css'
 import '@components/Tabs/Tabs.css'
 import './SfrPage.css'
 
-function buildNav(sessions) {
+function buildNav() {
   return [
     { id: 'classes', label: 'Classes', icon: 'demographics' },
     { id: 'students', label: 'Students', icon: 'person' },
@@ -52,7 +52,6 @@ export function SfrPage({
   selectedSession,
   onSelectSession,
   onUpdateSession,
-  onDeleteSession,
   onBack,
 }) {
   const [groupBy, setGroupBy] = useState('session') // 'session' | 'reader'

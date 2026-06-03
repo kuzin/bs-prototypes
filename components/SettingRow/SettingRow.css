@@ -1,0 +1,44 @@
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+}
+.setting-row.is-disabled .setting-row-text {
+  opacity: 0.5;
+}
+.setting-row-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.setting-row-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+}
+.setting-row-sub {
+  font-size: 13px;
+  color: #64748b;
+}
+.setting-row-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.setting-row-state {
+  font-size: 14px;
+  font-weight: 600;
+  color: #64748b;
+}
+
+/* Stack rows in a list to get hairline dividers between them. */
+.setting-list > .setting-row {
+  border-top: 1px solid #e2e8f0;
+}
+.setting-list > .setting-row:first-child {
+  border-top: 0;
+}

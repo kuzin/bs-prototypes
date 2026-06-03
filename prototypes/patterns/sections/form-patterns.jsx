@@ -29,7 +29,7 @@ import { Knobs, Variant } from './_shared'
 function ColorInputKnobs() {
   const [value, setValue] = useState('#1D4ED8')
   const [size, setSize] = useState('md')
-  const [label, setLabel] = useState('Accent color')
+  const [label] = useState('Accent color')
   const [showLabel, setShowLabel] = useState(true)
   const [disabled, setDisabled] = useState(false)
   return (

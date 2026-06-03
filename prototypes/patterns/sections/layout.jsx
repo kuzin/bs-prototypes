@@ -6,9 +6,10 @@ import { SchoolPicker, Sidebar } from '@components/Sidebar/Sidebar'
 import { Button } from '@components/Button/Button'
 import { BackBar } from '@components/BackBar/BackBar'
 import { Toggle } from '@components/Toggle/Toggle'
+import { SectionCard } from '@components/SectionCard/SectionCard'
 import { Field, Input, Select } from '@components/Form/Form'
 import { SCHOOLS } from '../../ris/data'
-import { Knobs } from './_shared'
+import { Knobs, Variant } from './_shared'
 
 const SIDEBAR_NAV_SETS = {
   ris: {
@@ -304,6 +305,34 @@ function BackBarKnobs() {
   )
 }
 
+function SectionCardShowcase() {
+  return (
+    <>
+      <Variant label="plain (default) — bold title above the body">
+        <SectionCard title="Availability">
+          <div className="pt-section-desc" style={{ margin: 0 }}>
+            Body content — fields, settings rows, anything.
+          </div>
+        </SectionCard>
+      </Variant>
+      <Variant label="header='bar' — tinted full-width header strip">
+        <SectionCard header="bar" title="When should Benny engage students in a Book Talk?">
+          <div className="pt-section-desc" style={{ margin: 0 }}>
+            Body sits below the header bar.
+          </div>
+        </SectionCard>
+      </Variant>
+      <Variant label="with right-side actions">
+        <SectionCard title="Earnable badges" actions={<Button>Add badge</Button>}>
+          <div className="pt-section-desc" style={{ margin: 0 }}>
+            Actions sit opposite the title in the header.
+          </div>
+        </SectionCard>
+      </Variant>
+    </>
+  )
+}
+
 export const layoutSections = [
   {
     group: 'layout',
@@ -375,6 +404,25 @@ export const layoutSections = [
           picks up the current prototype from <code>currentHref</code> and shows prev/next arrows
           for the other prototypes.
         </div>
+      </>
+    ),
+  },
+  {
+    group: 'layout',
+    id: 'section-card',
+    name: 'SectionCard',
+    desc: (
+      <>
+        A titled card: optional header (<code>title</code> + right-side <code>actions</code>) over a
+        body. <code>header="plain"</code> (default) puts a bold title above the body;{' '}
+        <code>header="bar"</code> renders a tinted full-width header strip. Replaces the ad-hoc
+        panel / section-card markup hand-rolled across prototypes (e.g. challenge-creator’s{' '}
+        <code>cc-panel</code>).
+      </>
+    ),
+    render: () => (
+      <>
+        <SectionCardShowcase />
       </>
     ),
   },

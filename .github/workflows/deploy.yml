@@ -32,12 +32,9 @@ jobs:
       - name: Build
         run: pnpm build
 
-      - name: Assemble pages artifact
-        run: cp -r dist/. pages/
-
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: pages
+          path: dist
 
   deploy:
     needs: build

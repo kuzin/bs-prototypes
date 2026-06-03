@@ -15,21 +15,24 @@ import {
 import { Toggle } from '@components/Toggle/Toggle'
 import { Button } from '@components/Button/Button'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
+import { Tabs } from '@components/Tabs/Tabs'
 import { RichText } from '@components/RichText/RichText'
 import { ImageDropzone } from '@components/ImageDropzone/ImageDropzone'
 import { Banner, EmptyState } from '@components/Primitives/Primitives'
 import { Hero } from '@components/Hero/Hero'
+import { SectionCard } from '@components/SectionCard/SectionCard'
+import { SettingRow, SettingList } from '@components/SettingRow/SettingRow'
 import { Modal } from '@components/Modal/Modal'
 import { Ic } from '@components/ui'
 import { Icon } from '@components/Icon/Icon'
-import gbMeadow from '../assets/gameboard/meadow.png'
-import gbWinter from '../assets/gameboard/winter.png'
-import gbAurora from '../assets/gameboard/aurora.png'
-import gbSpooky from '../assets/gameboard/spooky.png'
-import gbGlow from '../assets/gameboard/glow.png'
-import gbEra from '../assets/gameboard/era.png'
-import gbOcean from '../assets/gameboard/ocean.png'
-import gbJungle from '../assets/gameboard/jungle.png'
+import gbMeadow from '../assets/gameboard/meadow.webp'
+import gbWinter from '../assets/gameboard/winter.webp'
+import gbAurora from '../assets/gameboard/aurora.webp'
+import gbSpooky from '../assets/gameboard/spooky.webp'
+import gbGlow from '../assets/gameboard/glow.webp'
+import gbEra from '../assets/gameboard/era.webp'
+import gbOcean from '../assets/gameboard/ocean.webp'
+import gbJungle from '../assets/gameboard/jungle.webp'
 import { LIMITS } from '../validation'
 import {
   METHODS,
@@ -129,15 +132,57 @@ const REGISTRATION_FIELDS = [
   { key: 'branch', label: 'Library Branch' },
 ]
 
-// Small label + toggle row used for the yes/no settings in Availability.
-function SettingRow({ label, sub, checked, onChange, disabled }) {
+// Book Talks step — opt into Benny (AI reading conversations) for logging
+// challenges at schools. Built entirely from shared primitives: <SectionCard>,
+// <SettingList>/<SettingRow>, plus a small examples callout.
+export function BookTalksStep({ challenge, update }) {
+  const bt = challenge.bookTalks || {}
+  const on = !!bt.onTitleCompletions
   return (
-    <div className={`cc-setting-row${disabled ? ' is-disabled' : ''}`}>
-      <div className="cc-setting-text">
-        <span className="cc-setting-label">{label}</span>
-        {sub && <span className="cc-setting-sub">{sub}</span>}
+    <div className="cc-booktalks">
+      <div className="cc-bt-intro">
+        <img className="cc-bt-benny" src="/bs-prototypes/benny.png" alt="" />
+        <h2>Book Talks</h2>
+        <p>
+          Activate Benny, our AI-powered teacher’s assistant, to engage students in a conversation
+          and help you cultivate a culture of reading.
+        </p>
+        <p>
+          Once a student completes a Book Talk, you can view the analysis in your Sessions for
+          Review page. <a href="#book-talks-learn-more">Learn more.</a>
+        </p>
       </div>
-      <Toggle checked={checked} onChange={onChange} size="md" disabled={disabled} />
+
+      <SectionCard header="bar" title="When should Benny engage students in a Book Talk?">
+        <SettingList>
+          <SettingRow
+            label="On Title Completions"
+            state={on ? 'Enabled' : 'Disabled'}
+            checked={on}
+            onChange={(v) => update({ bookTalks: { ...bt, onTitleCompletions: v } })}
+          />
+        </SettingList>
+      </SectionCard>
+
+      <SectionCard header="bar" title="What Benny helps measure …">
+        <div className="cc-bt-measure">
+          <h4>Engagement</h4>
+          <p>
+            We define engagement as reading the student likely reported accurately and where the
+            student indicated a positive reading experience.
+          </p>
+          <div className="cc-bt-examples">
+            <p>
+              Benny <strong>may</strong> ask questions like …
+            </p>
+            <ul>
+              <li>Did you like or dislike the book? Why?</li>
+              <li>Would you recommend this book to a friend? Why or why not?</li>
+              <li>How did this story make you feel?</li>
+            </ul>
+          </div>
+        </div>
+      </SectionCard>
     </div>
   )
 }
@@ -547,7 +592,7 @@ function BgImageGrid({ themeImages = [], themeLabel = 'From this theme', value, 
 }
 
 // ─── Step 2 · Details ───────────────────────────────────────────────────────
-export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, errors = {} }) {
+export function DetailsStep({ challenge, role, updateDetails, onTemplate, errors = {} }) {
   const d = challenge.details
   const templates = [
     { id: 'scratch', name: 'Start from scratch', blurb: 'A blank challenge you build yourself.' },
@@ -704,47 +749,37 @@ export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, 
       <div className="cc-panel cc-panel--lookfeel">
         <h3 className="cc-panel-title">Look &amp; feel</h3>
 
-        <div className="cc-headtabs" role="tablist" aria-label="Header style">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={!bgUploaded}
-            disabled={challenge.templateId !== 'scratch'}
-            title={
-              challenge.templateId !== 'scratch'
-                ? 'This template uses its own banner. Start from scratch to use a theme.'
-                : undefined
-            }
-            className={`cc-headtab${!bgUploaded ? ' is-active' : ''}`}
-            onClick={() => {
-              if (bgUploaded) {
+        <div style={{ marginBottom: 20 }}>
+          <Tabs
+            accent="#0DA7BC"
+            active={bgUploaded ? 'upload' : 'theme'}
+            onChange={(id) => {
+              if (id === 'theme' && bgUploaded) {
                 const variant = BANNER_THEMES[0].variants[0]
                 updateDetails({
                   background: { kind: 'preset', id: variant.id },
                   accent: variant.color,
                 })
-              }
-            }}
-          >
-            <Icon name="palette" size={18} />
-            Use a theme
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={bgUploaded}
-            className={`cc-headtab${bgUploaded ? ' is-active' : ''}`}
-            onClick={() => {
-              if (!bgUploaded) {
+              } else if (id === 'upload' && !bgUploaded) {
                 updateDetails({
                   background: { kind: 'upload', name: d.background?.name || 'header.jpg' },
                 })
               }
             }}
-          >
-            <Icon name="photo" size={18} />
-            Upload an image
-          </button>
+            items={[
+              {
+                id: 'theme',
+                label: 'Use a theme',
+                icon: <Icon name="palette" size={18} />,
+                disabled: challenge.templateId !== 'scratch',
+                title:
+                  challenge.templateId !== 'scratch'
+                    ? 'This template uses its own banner. Start from scratch to use a theme.'
+                    : undefined,
+              },
+              { id: 'upload', label: 'Upload an image', icon: <Icon name="photo" size={18} /> },
+            ]}
+          />
         </div>
 
         {bgUploaded ? (
@@ -1254,7 +1289,6 @@ function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selectedImg })
     return out
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extraKey])
-  const byImg = useMemo(() => new Map(catalog.map((b) => [b.img, b])), [catalog])
   // A badge's subjects = name-keyword matches ∪ its set's subjects.
   const badgeSubjects = (b) => [
     ...new Set([...subjectsOf(b.name), ...(SET_SUBJECTS[b._setId] || [])]),
@@ -1620,31 +1654,17 @@ function BadgeUpload({ onPick, bgImages = [], bgLabel, initial }) {
       </div>
       <div className="cc-upload-controls">
         <Field>
-          <div className="cc-headtabs cc-builder-seg">
-            <button
-              type="button"
-              className={`cc-headtab${panel === 'color' ? ' is-active' : ''}`}
-              onClick={() => selectPanel('color')}
-            >
-              Color
-            </button>
-            <button
-              type="button"
-              className={`cc-headtab${panel === 'image' ? ' is-active' : ''}`}
-              onClick={() => selectPanel('image')}
-            >
-              Image
-            </button>
-            {isSvg && (
-              <button
-                type="button"
-                className={`cc-headtab${panel === 'recolor' ? ' is-active' : ''}`}
-                onClick={() => selectPanel('recolor')}
-              >
-                Recolor
-              </button>
-            )}
-          </div>
+          <Tabs
+            className="cc-builder-seg"
+            accent="#0DA7BC"
+            active={panel}
+            onChange={selectPanel}
+            items={[
+              { id: 'color', label: 'Color' },
+              { id: 'image', label: 'Image' },
+              ...(isSvg ? [{ id: 'recolor', label: 'Recolor' }] : []),
+            ]}
+          />
           {panel === 'color' && (
             <div className="cc-accent-ctrl" style={{ marginTop: 10 }}>
               <div className="cc-accent-dots">
@@ -1839,22 +1859,16 @@ function BadgeBuilder({ onPick, bgImages = [], bgLabel, initial }) {
       </div>
       <div className="cc-builder-controls">
         <Field>
-          <div className="cc-headtabs cc-builder-seg">
-            <button
-              type="button"
-              className={`cc-headtab${bgMode === 'color' ? ' is-active' : ''}`}
-              onClick={() => setBgMode('color')}
-            >
-              Color
-            </button>
-            <button
-              type="button"
-              className={`cc-headtab${bgMode === 'image' ? ' is-active' : ''}`}
-              onClick={() => setBgMode('image')}
-            >
-              Image
-            </button>
-          </div>
+          <Tabs
+            className="cc-builder-seg"
+            accent="#0DA7BC"
+            active={bgMode}
+            onChange={setBgMode}
+            items={[
+              { id: 'color', label: 'Color' },
+              { id: 'image', label: 'Image' },
+            ]}
+          />
           {bgMode === 'color' ? (
             <div style={{ marginTop: 10 }}>
               <ColorPicker
@@ -1874,29 +1888,17 @@ function BadgeBuilder({ onPick, bgImages = [], bgLabel, initial }) {
           )}
         </Field>
         <Field>
-          <div className="cc-headtabs cc-builder-seg">
-            <button
-              type="button"
-              className={`cc-headtab${mode === 'number' ? ' is-active' : ''}`}
-              onClick={() => setMode('number')}
-            >
-              Number
-            </button>
-            <button
-              type="button"
-              className={`cc-headtab${mode === 'letter' ? ' is-active' : ''}`}
-              onClick={() => setMode('letter')}
-            >
-              Letter
-            </button>
-            <button
-              type="button"
-              className={`cc-headtab${mode === 'icon' ? ' is-active' : ''}`}
-              onClick={() => setMode('icon')}
-            >
-              Icon
-            </button>
-          </div>
+          <Tabs
+            className="cc-builder-seg"
+            accent="#0DA7BC"
+            active={mode}
+            onChange={setMode}
+            items={[
+              { id: 'number', label: 'Number' },
+              { id: 'letter', label: 'Letter' },
+              { id: 'icon', label: 'Icon' },
+            ]}
+          />
         </Field>
         {mode === 'icon' ? (
           <Field>
@@ -1965,29 +1967,17 @@ function BadgePicker({
   )
   return (
     <div className="cc-badgepick">
-      <div className="cc-headtabs cc-badgepick-tabs">
-        <button
-          type="button"
-          className={`cc-headtab${tab === 'gallery' ? ' is-active' : ''}`}
-          onClick={() => setTab('gallery')}
-        >
-          Gallery
-        </button>
-        <button
-          type="button"
-          className={`cc-headtab${tab === 'upload' ? ' is-active' : ''}`}
-          onClick={() => setTab('upload')}
-        >
-          Upload
-        </button>
-        <button
-          type="button"
-          className={`cc-headtab${tab === 'create' ? ' is-active' : ''}`}
-          onClick={() => setTab('create')}
-        >
-          Create
-        </button>
-      </div>
+      <Tabs
+        className="cc-badgepick-tabs"
+        accent="#0DA7BC"
+        active={tab}
+        onChange={setTab}
+        items={[
+          { id: 'gallery', label: 'Gallery' },
+          { id: 'upload', label: 'Upload' },
+          { id: 'create', label: 'Create' },
+        ]}
+      />
       {tab === 'gallery' && (
         <BadgeGallery
           onPick={onPick}
@@ -2200,18 +2190,18 @@ function BadgeEditor({
 // large enough to exercise search + paging.
 const glowImg = (f) => new URL(`../assets/templates/glow/${f}`, import.meta.url).href
 const LIB_ART = [
-  'stars.png',
-  'fireworks.png',
-  'music-notes.png',
-  'cake.png',
-  'cupcake.png',
-  'party-hats.png',
-  'magic-wand.png',
-  'microphone.png',
-  'open-book.png',
-  'standing-books.png',
-  'apple-stack.png',
-  'grad-stack.png',
+  'stars.webp',
+  'fireworks.webp',
+  'music-notes.webp',
+  'cake.webp',
+  'cupcake.webp',
+  'party-hats.webp',
+  'magic-wand.webp',
+  'microphone.webp',
+  'open-book.webp',
+  'standing-books.webp',
+  'apple-stack.webp',
+  'grad-stack.webp',
 ].map(glowImg)
 const LIB_ENTRIES = [
   ['Share a Shelfie', 'social', 'Post a photo of your bookshelf'],
@@ -2347,7 +2337,7 @@ function ActivityBadgeEditor({
   const [badge, setBadge] = useState(initial?.badge || null)
   const [title, setTitle] = useState(initial?.title || initial?.name || '')
   const [description, setDescription] = useState(initial?.description || '')
-  const [active, setActive] = useState(initial?.active ?? true)
+  const [active] = useState(initial?.active ?? true)
   const [earn, setEarn] = useState(
     initial?.earn != null && initial?.earn !== '' ? String(initial.earn) : '',
   )
@@ -2463,25 +2453,16 @@ function ActivityBadgeEditor({
           </div>
         ) : (
           <>
-            <div className="cc-headtabs cc-ab-tabs">
-              <button
-                type="button"
-                className={`cc-headtab${tab === 'details' ? ' is-active' : ''}`}
-                onClick={() => setTab('details')}
-              >
-                Details
-              </button>
-              <button
-                type="button"
-                className={`cc-headtab${tab === 'activities' ? ' is-active' : ''}`}
-                onClick={() => setTab('activities')}
-              >
-                Activities
-                {activities.length ? (
-                  <span className="cc-headtab-count">{activities.length}</span>
-                ) : null}
-              </button>
-            </div>
+            <Tabs
+              className="cc-ab-tabs"
+              accent="#0DA7BC"
+              active={tab}
+              onChange={setTab}
+              items={[
+                { id: 'details', label: 'Details' },
+                { id: 'activities', label: 'Activities', count: activities.length || undefined },
+              ]}
+            />
             {tab === 'details' ? (
               <div className="cc-ab-details">
                 <div className="cc-ab-artcol">
@@ -3272,10 +3253,6 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   const [quickBadge, setQuickBadge] = useState(false)
   const [confirmType, setConfirmType] = useState(null)
   const setMethod = (m, val) => update({ methods: { ...methods, [m]: val } })
-  const toggleMethod = (m) => {
-    if (m === type?.primaryMethod) return
-    setMethod(m, !methods[m])
-  }
   const removeBadge = (i) => update({ badges: badges.filter((_, idx) => idx !== i) })
   const quickCreateBadges = (newBadges) => {
     update({ badges: [...badges, ...newBadges] })
@@ -3972,11 +3949,12 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
       </button>
       <div className="cc-titlemodal-grid">
         <div className="cc-titlemodal-side">
-          <div className="cc-headtabs cc-titlemodal-tabs">
-            <button type="button" className="cc-headtab is-active">
-              Web
-            </button>
-          </div>
+          <Tabs
+            className="cc-titlemodal-tabs"
+            accent="#0DA7BC"
+            active="web"
+            items={[{ id: 'web', label: 'Web' }]}
+          />
           <div className="cc-tm-searchby">
             <span>Search By</span>
             <CustomSelect value={field} onChange={setField} options={BOOK_SEARCH_FIELDS} />

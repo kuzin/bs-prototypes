@@ -11,10 +11,22 @@ import '@components/Tabs/Tabs.css'
  *   ]}
  * />
  */
-export function Tabs({ active, onChange, items, variant = 'underline', size = 'md', accent }) {
+export function Tabs({
+  active,
+  onChange,
+  items,
+  variant = 'underline',
+  size = 'md',
+  accent,
+  className = '',
+}) {
   const style = accent ? { '--tab-accent': accent } : undefined
   return (
-    <div className={`tabs tabs--${variant} tabs--${size}`} role="tablist" style={style}>
+    <div
+      className={`tabs tabs--${variant} tabs--${size} ${className}`.trim()}
+      role="tablist"
+      style={style}
+    >
       {items.map((item) => (
         <button
           key={item.id}
@@ -22,6 +34,7 @@ export function Tabs({ active, onChange, items, variant = 'underline', size = 'm
           type="button"
           aria-selected={active === item.id}
           disabled={item.disabled}
+          title={item.title}
           className={`tab${active === item.id ? ' tab--active' : ''}${item.disabled ? ' tab--disabled' : ''}`}
           onClick={() => !item.disabled && onChange?.(item.id)}
         >

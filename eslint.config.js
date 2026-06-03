@@ -31,8 +31,11 @@ export default [
 
       // Prototype-sandbox ergonomics — surface as warnings, don't fail the build:
       'react-hooks/exhaustive-deps': 'warn',
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'no-unused-vars': ['warn', { varsIgnorePattern: '^[A-Z_]', argsIgnorePattern: '^_' }],
+
+      // Fast Refresh hygiene only — irrelevant to a static prototype build, and it
+      // drowned out real warnings (97 of them). Off so `pnpm lint` stays meaningful.
+      'react-refresh/only-export-components': 'off',
 
       // This codebase doesn't use PropTypes; JSX is unescaped on purpose in copy;
       // component factories return anonymous components by design.

@@ -3,42 +3,42 @@
 // the creator adapt to (mode, role, challenge type).
 
 // AI-generated illustration assets (flat-vector). Vite resolves these to URLs.
-import reading1 from './assets/banners/reading-1.png'
-import reading2 from './assets/banners/reading-2.png'
-import reading3 from './assets/banners/reading-3.png'
-import summer1 from './assets/banners/summer-1.png'
-import summer2 from './assets/banners/summer-2.png'
-import summer3 from './assets/banners/summer-3.png'
-import autumn1 from './assets/banners/autumn-1.png'
-import autumn2 from './assets/banners/autumn-2.png'
-import autumn3 from './assets/banners/autumn-3.png'
-import space1 from './assets/banners/space-1.png'
-import space2 from './assets/banners/space-2.png'
-import space3 from './assets/banners/space-3.png'
-import forest1 from './assets/banners/forest-1.png'
-import forest2 from './assets/banners/forest-2.png'
-import forest3 from './assets/banners/forest-3.png'
-import celebration1 from './assets/banners/celebration-1.png'
-import celebration2 from './assets/banners/celebration-2.png'
-import celebration3 from './assets/banners/celebration-3.png'
-import winter1 from './assets/banners/winter-1.png'
-import winter2 from './assets/banners/winter-2.png'
-import winter3 from './assets/banners/winter-3.png'
-import ocean1 from './assets/banners/ocean-1.png'
-import ocean2 from './assets/banners/ocean-2.png'
-import ocean3 from './assets/banners/ocean-3.png'
-import animals1 from './assets/banners/animals-1.png'
-import animals2 from './assets/banners/animals-2.png'
-import animals3 from './assets/banners/animals-3.png'
-import fantasy1 from './assets/banners/fantasy-1.png'
-import fantasy2 from './assets/banners/fantasy-2.png'
-import fantasy3 from './assets/banners/fantasy-3.png'
-import badgeBook from './assets/badges/book.png'
-import badgeFlame from './assets/badges/flame.png'
-import badgeStar from './assets/badges/star.png'
-import badgeMedal from './assets/badges/medal.png'
-import badgeTrophy from './assets/badges/trophy.png'
-import badgeGift from './assets/badges/gift.png'
+import reading1 from './assets/banners/reading-1.webp'
+import reading2 from './assets/banners/reading-2.webp'
+import reading3 from './assets/banners/reading-3.webp'
+import summer1 from './assets/banners/summer-1.webp'
+import summer2 from './assets/banners/summer-2.webp'
+import summer3 from './assets/banners/summer-3.webp'
+import autumn1 from './assets/banners/autumn-1.webp'
+import autumn2 from './assets/banners/autumn-2.webp'
+import autumn3 from './assets/banners/autumn-3.webp'
+import space1 from './assets/banners/space-1.webp'
+import space2 from './assets/banners/space-2.webp'
+import space3 from './assets/banners/space-3.webp'
+import forest1 from './assets/banners/forest-1.webp'
+import forest2 from './assets/banners/forest-2.webp'
+import forest3 from './assets/banners/forest-3.webp'
+import celebration1 from './assets/banners/celebration-1.webp'
+import celebration2 from './assets/banners/celebration-2.webp'
+import celebration3 from './assets/banners/celebration-3.webp'
+import winter1 from './assets/banners/winter-1.webp'
+import winter2 from './assets/banners/winter-2.webp'
+import winter3 from './assets/banners/winter-3.webp'
+import ocean1 from './assets/banners/ocean-1.webp'
+import ocean2 from './assets/banners/ocean-2.webp'
+import ocean3 from './assets/banners/ocean-3.webp'
+import animals1 from './assets/banners/animals-1.webp'
+import animals2 from './assets/banners/animals-2.webp'
+import animals3 from './assets/banners/animals-3.webp'
+import fantasy1 from './assets/banners/fantasy-1.webp'
+import fantasy2 from './assets/banners/fantasy-2.webp'
+import fantasy3 from './assets/banners/fantasy-3.webp'
+import badgeBook from './assets/badges/book.webp'
+import badgeFlame from './assets/badges/flame.webp'
+import badgeStar from './assets/badges/star.webp'
+import badgeMedal from './assets/badges/medal.webp'
+import badgeTrophy from './assets/badges/trophy.webp'
+import badgeGift from './assets/badges/gift.webp'
 
 export const THEME = {
   teal: '#0DA7BC', // Beanstack primary
@@ -455,28 +455,28 @@ const BADGE_IMG = {
 }
 export const badgeImage = (icon) => BADGE_IMG[icon]
 
-// Per-theme generated badge sets (assets/theme-badges/<theme>-<n>.png). Used as
+// Per-theme generated badge sets (assets/theme-badges/<theme>-<n>.webp). Used as
 // a theme's default badges in the preview when the user hasn't added their own.
-const THEME_BADGE_ASSETS = import.meta.glob('./assets/theme-badges/*.png', {
+const THEME_BADGE_ASSETS = import.meta.glob('./assets/theme-badges/*.webp', {
   eager: true,
   import: 'default',
 })
 // Up to 8 badges per theme; missing files are filtered out.
 const THEME_BADGE_SLOTS = [1, 2, 3, 4, 5, 6, 7, 8]
 export const themeBadges = (themeId) =>
-  THEME_BADGE_SLOTS.map((n) => THEME_BADGE_ASSETS[`./assets/theme-badges/${themeId}-${n}.png`])
+  THEME_BADGE_SLOTS.map((n) => THEME_BADGE_ASSETS[`./assets/theme-badges/${themeId}-${n}.webp`])
     .filter(Boolean)
     .map((img) => ({ img }))
 
 // Real flat-vector background art per theme, for the badge builder/upload
 // "From this theme" picker. Only the themes with assets on disk return images.
-const BADGE_BG_ASSETS = import.meta.glob('./assets/badge-bgs/*.png', {
+const BADGE_BG_ASSETS = import.meta.glob('./assets/badge-bgs/*.webp', {
   eager: true,
   import: 'default',
 })
 const BADGE_BG_SLOTS = [1, 2, 3, 4, 5, 6]
 export const themeBgImages = (themeId) =>
-  BADGE_BG_SLOTS.map((n) => BADGE_BG_ASSETS[`./assets/badge-bgs/${themeId}-${n}.png`]).filter(
+  BADGE_BG_SLOTS.map((n) => BADGE_BG_ASSETS[`./assets/badge-bgs/${themeId}-${n}.webp`]).filter(
     Boolean,
   )
 
@@ -572,7 +572,7 @@ export const PICKER_BADGE_GROUPS = [
     id: `theme-${t.id}`,
     name: `${t.name} set`,
     badges: THEME_BADGE_SLOTS.map(
-      (n) => THEME_BADGE_ASSETS[`./assets/theme-badges/${t.id}-${n}.png`],
+      (n) => THEME_BADGE_ASSETS[`./assets/theme-badges/${t.id}-${n}.webp`],
     )
       .filter(Boolean)
       .map((img, i) => ({
@@ -831,6 +831,10 @@ export function getSteps({ mode, role, type }) {
   const showRewards = mode === 'challenge' && role?.tier === 'full'
   if (showRewards) steps.push({ id: 'rewards', name: BASE_STEP_NAMES.rewards })
   if (type?.setup && !isReadingList) steps.push(setupStep)
+  // Book Talks (AI reading conversations) — logging-style challenges at schools only.
+  if (type?.primaryMethod === 'log' && role?.site === 'school') {
+    steps.push({ id: 'bookTalks', name: 'Book Talks' })
+  }
   // Completion, unless it's implicit (bingo).
   if (!type?.autoComplete) steps.push({ id: 'completion', name: BASE_STEP_NAMES.completion })
   return steps
@@ -907,6 +911,7 @@ export function blankChallenge(typeId) {
     },
     rewards: { perBadge: {}, library: [], tickets: [] },
     completion: { mode: 'all', required: [] },
+    bookTalks: { onTitleCompletions: false },
   }
 }
 
@@ -914,7 +919,7 @@ export const getBackground = (id) => BANNERS.find((b) => b.id === id) ?? BANNERS
 
 // ─── Template presets — real Beanstack challenges (banner with baked-in text +
 // the challenge's own badge set). Assets loaded from assets/templates/<id>/. ──
-const TPL_ASSETS = import.meta.glob('./assets/templates/*/*.png', {
+const TPL_ASSETS = import.meta.glob('./assets/templates/*/*.webp', {
   eager: true,
   import: 'default',
 })
@@ -927,85 +932,85 @@ const tplAsset = (id, file) => TPL_ASSETS[`./assets/templates/${id}/${file}`]
 const TEMPLATE_BADGES = {
   // Benny — the full no-text ("- Blank") character set, named from the real library.
   benny: [
-    ['book-lover.png', 'Book Lover'],
-    ['hit-the-books.png', 'Hit the Books'],
-    ['reading-explorer.png', 'Reading Explorer'],
-    ['speed-reader.png', 'Speed Reader'],
-    ['reading-star.png', 'Reading Star'],
-    ['reading-champion.png', 'Reading Champion'],
-    ['reading-royalty.png', 'Reading Royalty'],
-    ['rock-star.png', 'Rock Star'],
-    ['top-reader.png', 'Top Reader'],
-    ['out-of-this-world.png', 'Out of This World'],
+    ['book-lover.webp', 'Book Lover'],
+    ['hit-the-books.webp', 'Hit the Books'],
+    ['reading-explorer.webp', 'Reading Explorer'],
+    ['speed-reader.webp', 'Speed Reader'],
+    ['reading-star.webp', 'Reading Star'],
+    ['reading-champion.webp', 'Reading Champion'],
+    ['reading-royalty.webp', 'Reading Royalty'],
+    ['rock-star.webp', 'Rock Star'],
+    ['top-reader.webp', 'Top Reader'],
+    ['out-of-this-world.webp', 'Out of This World'],
   ],
   // In My Reading Era — kid character portraits, named for reading "eras".
   era: [
-    ['kid-1.png', 'Cozy Reading Era'],
-    ['kid-2.png', 'Daydreamer Era'],
-    ['kid-3.png', 'Imagination Era'],
-    ['kid-4.png', 'Sunny Stories Era'],
-    ['kid-5.png', 'Adventure Era'],
-    ['kid-6.png', 'Page-Turner Era'],
-    ['kid-7.png', 'Curious Reader Era'],
-    ['kid-8.png', 'Storytime Era'],
+    ['kid-1.webp', 'Cozy Reading Era'],
+    ['kid-2.webp', 'Daydreamer Era'],
+    ['kid-3.webp', 'Imagination Era'],
+    ['kid-4.webp', 'Sunny Stories Era'],
+    ['kid-5.webp', 'Adventure Era'],
+    ['kid-6.webp', 'Page-Turner Era'],
+    ['kid-7.webp', 'Curious Reader Era'],
+    ['kid-8.webp', 'Storytime Era'],
   ],
   // Glow Party — neon icon set.
   glow: [
-    ['open-book.png', 'Open Book'],
-    ['standing-books.png', 'Book Stack'],
-    ['grad-stack.png', 'Top of the Class'],
-    ['apple-stack.png', "Teacher's Pet"],
-    ['cake.png', 'Celebration Cake'],
-    ['cupcake.png', 'Sweet Treat'],
-    ['fireworks.png', 'Fireworks'],
-    ['music-notes.png', 'Music Notes'],
-    ['microphone.png', 'On the Mic'],
-    ['stars.png', 'Star Power'],
-    ['magic-wand.png', 'Magic Touch'],
-    ['party-hats.png', 'Party Time'],
+    ['open-book.webp', 'Open Book'],
+    ['standing-books.webp', 'Book Stack'],
+    ['grad-stack.webp', 'Top of the Class'],
+    ['apple-stack.webp', "Teacher's Pet"],
+    ['cake.webp', 'Celebration Cake'],
+    ['cupcake.webp', 'Sweet Treat'],
+    ['fireworks.webp', 'Fireworks'],
+    ['music-notes.webp', 'Music Notes'],
+    ['microphone.webp', 'On the Mic'],
+    ['stars.webp', 'Star Power'],
+    ['magic-wand.webp', 'Magic Touch'],
+    ['party-hats.webp', 'Party Time'],
   ],
   // Comics Choice — comic-burst onomatopoeia set.
   comics: [
-    ['bam.png', 'BAM!'],
-    ['bang.png', 'BANG!'],
-    ['boom.png', 'BOOM!'],
-    ['pow.png', 'POW!'],
-    ['zap.png', 'ZAP!'],
-    ['flash.png', 'FLASH!'],
-    ['pop.png', 'POP!'],
-    ['poof.png', 'POOF!'],
-    ['whoa.png', 'Whoa!'],
-    ['hooray.png', 'Hooray!'],
-    ['bingo.png', 'Bingo!'],
-    ['blah.png', 'Blah Blah Blah'],
+    ['bam.webp', 'BAM!'],
+    ['bang.webp', 'BANG!'],
+    ['boom.webp', 'BOOM!'],
+    ['pow.webp', 'POW!'],
+    ['zap.webp', 'ZAP!'],
+    ['flash.webp', 'FLASH!'],
+    ['pop.webp', 'POP!'],
+    ['poof.webp', 'POOF!'],
+    ['whoa.webp', 'Whoa!'],
+    ['hooray.webp', 'Hooray!'],
+    ['bingo.webp', 'Bingo!'],
+    ['blah.webp', 'Blah Blah Blah'],
   ],
   // Hispanic Heritage Month — cultural icon set.
   hhm: [
-    ['chichen-itza.png', 'Chichén Itzá'],
-    ['taco.png', 'Tacos'],
-    ['empanada-lime.png', 'Empanadas & Lime'],
-    ['arepa-corn.png', 'Arepas & Corn'],
-    ['plantains-guac.png', 'Plátanos & Guac'],
-    ['flan.png', 'Flan'],
-    ['maracas.png', 'Maracas'],
-    ['flamenco.png', 'Flamenco'],
-    ['salsa-dancing.png', 'Salsa Dancing'],
-    ['sombrero.png', 'Sombrero'],
-    ['pinata.png', 'Piñata'],
-    ['flowers.png', 'Flores'],
+    ['chichen-itza.webp', 'Chichén Itzá'],
+    ['taco.webp', 'Tacos'],
+    ['empanada-lime.webp', 'Empanadas & Lime'],
+    ['arepa-corn.webp', 'Arepas & Corn'],
+    ['plantains-guac.webp', 'Plátanos & Guac'],
+    ['flan.webp', 'Flan'],
+    ['maracas.webp', 'Maracas'],
+    ['flamenco.webp', 'Flamenco'],
+    ['salsa-dancing.webp', 'Salsa Dancing'],
+    ['sombrero.webp', 'Sombrero'],
+    ['pinata.webp', 'Piñata'],
+    ['flowers.webp', 'Flores'],
   ],
   // Battle of the Books — comic pop-art set.
   botb: [
-    ['bam.png', 'BAM!'],
-    ['bang.png', 'BANG!'],
-    ['pow.png', 'POW!'],
-    ['zap.png', 'ZAP!'],
-    ['crash.png', 'CRASH!'],
-    ['direction.png', 'Crossroads'],
-    ['questions.png', 'Quiz Master'],
-    ['lightbulb.png', 'Bright Idea'],
-    ['star.png', 'All-Star'],
-    ['open-book.png', 'Open Book'],
+    ['bam.webp', 'BAM!'],
+    ['bang.webp', 'BANG!'],
+    ['pow.webp', 'POW!'],
+    ['zap.webp', 'ZAP!'],
+    ['crash.webp', 'CRASH!'],
+    ['direction.webp', 'Crossroads'],
+    ['questions.webp', 'Quiz Master'],
+    ['lightbulb.webp', 'Bright Idea'],
+    ['star.webp', 'All-Star'],
+    ['open-book.webp', 'Open Book'],
   ],
 }
 const tplBadges = (id) =>
@@ -1070,7 +1075,7 @@ export const TEMPLATE_PRESETS = {
     name: 'Have You Seen Benny?',
     accent: '#16A97A',
     theme: 'forest',
-    banner: tplAsset('benny', 'banner.png'),
+    banner: tplAsset('benny', 'banner.webp'),
     badges: tplBadges('benny'),
     description:
       '<p>Help readers spot <strong>Benny the Bean</strong> all around your library or school as they log their reading and complete activities.</p>',
@@ -1091,7 +1096,7 @@ export const TEMPLATE_PRESETS = {
     name: 'In My Reading Era',
     accent: '#0EA5B7',
     theme: 'reading',
-    banner: tplAsset('era', 'banner.png'),
+    banner: tplAsset('era', 'banner.webp'),
     badges: tplBadges('era'),
     description:
       '<p>Move through your <strong>reading eras</strong> — log books and unlock a badge for every era you enter.</p>',
@@ -1114,7 +1119,7 @@ export const TEMPLATE_PRESETS = {
     name: 'Glow Party',
     accent: '#7C3AED',
     theme: 'celebration',
-    banner: tplAsset('glow', 'banner.png'),
+    banner: tplAsset('glow', 'banner.webp'),
     badges: tplBadges('glow'),
     description:
       '<p>Lights down, books up! A glowing, neon reading celebration with badges to collect all night long.</p>',
@@ -1148,7 +1153,7 @@ export const TEMPLATE_PRESETS = {
     name: 'Comics Choice',
     accent: '#DB2777',
     theme: 'fantasy',
-    banner: tplAsset('comics', 'banner.png'),
+    banner: tplAsset('comics', 'banner.webp'),
     badges: tplBadges('comics'),
     description:
       '<p>POW! BAM! Celebrate graphic novels and comics — log your reading to earn comic-book badges.</p>',
@@ -1171,7 +1176,7 @@ export const TEMPLATE_PRESETS = {
     name: 'Hispanic Heritage Month',
     accent: '#0F766E',
     theme: 'celebration',
-    banner: tplAsset('hhm', 'banner.png'),
+    banner: tplAsset('hhm', 'banner.webp'),
     badges: tplBadges('hhm'),
     description:
       '<p>Celebrate <strong>Hispanic Heritage Month</strong> with books by and about Hispanic and Latino authors, artists, and changemakers.</p>',
@@ -1194,7 +1199,7 @@ export const TEMPLATE_PRESETS = {
     name: 'Battle of the Books',
     accent: '#E8453A',
     theme: 'reading',
-    banner: tplAsset('botb', 'banner.png'),
+    banner: tplAsset('botb', 'banner.webp'),
     badges: tplBadges('botb'),
     description:
       '<p>Get <strong>battle ready!</strong> Read from the official Battle of the Books list and test your knowledge against other teams.</p>',
@@ -1329,12 +1334,12 @@ export function applyTemplate(challenge, templateId) {
     // badge set so they stay on-theme (the first badge for registration, the
     // last for completion) — generic star/trophy only as a final fallback.
     registrationBadge: preset.registrationBadge ||
-      tplBadge(templateId, 'registration.png', 'Welcome badge') || {
+      tplBadge(templateId, 'registration.webp', 'Welcome badge') || {
         name: 'Welcome badge',
         img: preset.badges?.[0]?.img || badgeStar,
       },
     completionBadge: preset.completionBadge ||
-      tplBadge(templateId, 'completion.png', 'Challenge complete') || {
+      tplBadge(templateId, 'completion.webp', 'Challenge complete') || {
         name: 'Challenge complete',
         img: preset.badges?.[preset.badges.length - 1]?.img || badgeTrophy,
       },
@@ -1354,9 +1359,9 @@ export function applyTemplate(challenge, templateId) {
       ? {
           activityBadges: bingoActivityBadges(preset),
           bingoBadge: preset.bingoBadge ||
-            tplBadge(templateId, 'bingo.png', 'Bingo!') || { name: 'Bingo!', img: badgeMedal },
+            tplBadge(templateId, 'bingo.webp', 'Bingo!') || { name: 'Bingo!', img: badgeMedal },
           fullCardBadge: preset.fullCardBadge ||
-            tplBadge(templateId, 'completion.png', 'Full card!') || {
+            tplBadge(templateId, 'completion.webp', 'Full card!') || {
               name: 'Full card!',
               img: badgeTrophy,
             },

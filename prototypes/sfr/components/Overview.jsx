@@ -10,7 +10,6 @@ export function HighlightCard({
   title,
   description,
   sessions = [],
-  totalCount,
   viewAllLabel,
   onViewAll,
   onSelectSession,

@@ -119,13 +119,15 @@ pnpm install
 pnpm dev          # starts the Vite dev server (all prototypes)
 pnpm build        # builds all prototypes into dist/
 pnpm preview      # serve the production build locally
+pnpm new <id>     # scaffold a new prototype (files + registry entry + landing icon)
 pnpm lint         # ESLint (flat config; warnings ok, errors fail)
 pnpm lint:fix     # ESLint with --fix
 pnpm format       # Prettier --write across the repo
 pnpm format:check # Prettier check (no writes)
+pnpm check        # verify prototype folders ↔ registry ↔ landing icons are in sync
 ```
 
-Node version is pinned in `.nvmrc` (20). CI runs `pnpm lint` before building. ESLint is tuned for a prototype sandbox: real-bug rules (e.g. `react-hooks/rules-of-hooks`) are **errors**, while stylistic/unused-var rules are **warnings** so experiments stay lintable. Prettier is configured (`.prettierrc`) but not yet applied repo-wide — run `pnpm format` as its own commit when you want to normalize formatting.
+Node version is pinned in `.nvmrc` (20). CI (`verify`) runs `pnpm lint`, `pnpm format:check`, `pnpm check`, then `pnpm build`. ESLint is tuned for a prototype sandbox: real-bug rules (e.g. `react-hooks/rules-of-hooks`) are **errors**, while stylistic/unused-var rules are **warnings** so experiments stay lintable. Prettier formatting is enforced by `format:check`, and a [husky](https://typicode.github.io/husky/) pre-commit hook runs `lint-staged` to auto-format staged files — so commits stay clean without thinking about it.
 
 Local URLs:
 
@@ -137,6 +139,10 @@ Local URLs:
 ## ➕ Adding a new prototype
 
 There's no HTML to write and no entry list to edit — a prototype is just a folder under `prototypes/` with a `main.jsx`. To add one called `my-proto`:
+
+> **Shortcut:** `pnpm new my-proto` does all three steps below — creates the folder + files, adds the
+> `components/prototypes.js` entry, and registers the landing-card icon. Flags: `--name`, `--section`,
+> `--accent`, `--icon`, `--desc`. The manual steps below are what it automates.
 
 **1. Create the React app** — `prototypes/my-proto/{main.jsx,App.jsx,index.css}`
 
