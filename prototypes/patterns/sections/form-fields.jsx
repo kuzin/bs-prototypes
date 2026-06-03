@@ -13,6 +13,7 @@ import {
 } from '@components/Form/Form'
 import { Spinner } from '@components/Primitives/Primitives'
 import { RichText } from '@components/RichText/RichText'
+import { SearchInput } from '@components/SearchInput/SearchInput'
 import { ImageDropzone } from '@components/ImageDropzone/ImageDropzone'
 import { Icon } from '@components/Icon/Icon'
 import { Knobs } from './_shared'
@@ -459,6 +460,15 @@ function RangeSliderKnobs() {
   )
 }
 
+function SearchInputKnobs() {
+  const [value, setValue] = useState('')
+  return (
+    <div style={{ maxWidth: 360 }}>
+      <SearchInput value={value} onChange={setValue} placeholder="Search all badges" />
+    </div>
+  )
+}
+
 export const formFieldsSections = [
   {
     group: 'form-fields',
@@ -611,6 +621,24 @@ export const formFieldsSections = [
     render: () => (
       <>
         <ImageDropzoneKnobs />
+      </>
+    ),
+  },
+  {
+    group: 'form-fields',
+    id: 'search-input',
+    name: 'SearchInput',
+    desc: (
+      <>
+        A search field — leading magnifier, text input, and a clear button that appears once there’s
+        a value. Controlled via <code>value</code> + <code>onChange(next)</code> (gets the new
+        string, and <code>&apos;&apos;</code> on clear). Defaults to <code>flex: 1</code>; pass{' '}
+        <code>className</code> for layout overrides.
+      </>
+    ),
+    render: () => (
+      <>
+        <SearchInputKnobs />
       </>
     ),
   },
