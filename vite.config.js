@@ -133,6 +133,12 @@ function generatedEntries() {
 export default defineConfig({
   plugins: [react(), generatedEntries()],
   base: BASE,
+  optimizeDeps: {
+    // Entry HTML is generated in memory (see generatedEntries), so Vite's dep
+    // scanner has no on-disk .html to crawl — and Vite 8's scanner errors trying
+    // to resolve the build inputs. Point it at the real entry modules instead.
+    entries: ['landing/main.jsx', 'prototypes/*/main.jsx'],
+  },
   resolve: {
     alias: [{ find: '@components', replacement: resolve(ROOT, 'components') }],
     // Force a single React instance across every entry + pre-bundled dep —

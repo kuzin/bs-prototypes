@@ -63,6 +63,11 @@ import { Icon } from '@components/Icon/Icon'
 ## Dev workflow & checks
 
 - For new work, branch off `main` (e.g. `claude/<name>`); open a PR rather than pushing to `main`.
+- **Toolchain:** Node **24** (pinned in `.nvmrc` + `.tool-versions`; Vite needs ≥ 20.19), Vite **8**
+  (rolldown), React **19**, pnpm via corepack. ESLint is intentionally held at **9** —
+  `eslint-plugin-react@7.37.5` peer-caps it at `^9.7`, so don't bump to 10 until that plugin ships
+  ESLint-10 support. The entry HTML is generated in memory, so `optimizeDeps.entries` in
+  [vite.config.js](vite.config.js) points Vite's dep scanner at the real `main.jsx` files.
 - Before pushing, run **`pnpm build` + `pnpm lint` + `pnpm format` + `pnpm check`**. CI (`verify`)
   runs `pnpm lint`, `pnpm format:check`, `pnpm check`, then `pnpm build` — a Prettier miss **or** a
   registry drift (a prototype folder / `prototypes.js` entry / landing icon out of sync) fails CI.
