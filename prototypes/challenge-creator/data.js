@@ -831,6 +831,10 @@ export function getSteps({ mode, role, type }) {
   const showRewards = mode === 'challenge' && role?.tier === 'full'
   if (showRewards) steps.push({ id: 'rewards', name: BASE_STEP_NAMES.rewards })
   if (type?.setup && !isReadingList) steps.push(setupStep)
+  // Book Talks (AI reading conversations) — logging-style challenges at schools only.
+  if (type?.primaryMethod === 'log' && role?.site === 'school') {
+    steps.push({ id: 'bookTalks', name: 'Book Talks' })
+  }
   // Completion, unless it's implicit (bingo).
   if (!type?.autoComplete) steps.push({ id: 'completion', name: BASE_STEP_NAMES.completion })
   return steps
@@ -907,6 +911,7 @@ export function blankChallenge(typeId) {
     },
     rewards: { perBadge: {}, library: [], tickets: [] },
     completion: { mode: 'all', required: [] },
+    bookTalks: { onTitleCompletions: false },
   }
 }
 

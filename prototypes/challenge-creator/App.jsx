@@ -22,7 +22,14 @@ import {
 } from './data'
 import { validateStep, firstInvalidStep } from './validation'
 import { TypeStep } from './steps/TypeStep'
-import { DetailsStep, BadgesStep, SetupStep, RewardsStep, CompletionStep } from './steps/StepStubs'
+import {
+  DetailsStep,
+  BadgesStep,
+  SetupStep,
+  RewardsStep,
+  CompletionStep,
+  BookTalksStep,
+} from './steps/StepStubs'
 import { Preview } from './Preview'
 import './index.css'
 
@@ -52,6 +59,7 @@ const normalizeChallenge = (c) => {
     setup: { ...blank.setup, ...c?.setup },
     rewards: { ...blank.rewards, ...c?.rewards },
     completion: { ...blank.completion, ...c?.completion },
+    bookTalks: { ...blank.bookTalks, ...c?.bookTalks },
   }
   // Logging challenges: backfill any logging badge missing a log value (older
   // drafts saved template badges without one).
@@ -366,6 +374,7 @@ export function App() {
             )}
             {stepId === 'setup' && <SetupStep challenge={challenge} type={type} update={update} />}
             {stepId === 'rewards' && <RewardsStep challenge={challenge} update={update} />}
+            {stepId === 'bookTalks' && <BookTalksStep challenge={challenge} update={update} />}
             {stepId === 'completion' && <CompletionStep challenge={challenge} update={update} />}
           </div>
 

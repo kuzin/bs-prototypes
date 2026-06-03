@@ -19,6 +19,8 @@ import { RichText } from '@components/RichText/RichText'
 import { ImageDropzone } from '@components/ImageDropzone/ImageDropzone'
 import { Banner, EmptyState } from '@components/Primitives/Primitives'
 import { Hero } from '@components/Hero/Hero'
+import { SectionCard } from '@components/SectionCard/SectionCard'
+import { SettingRow, SettingList } from '@components/SettingRow/SettingRow'
 import { Modal } from '@components/Modal/Modal'
 import { Ic } from '@components/ui'
 import { Icon } from '@components/Icon/Icon'
@@ -129,15 +131,57 @@ const REGISTRATION_FIELDS = [
   { key: 'branch', label: 'Library Branch' },
 ]
 
-// Small label + toggle row used for the yes/no settings in Availability.
-function SettingRow({ label, sub, checked, onChange, disabled }) {
+// Book Talks step — opt into Benny (AI reading conversations) for logging
+// challenges at schools. Built entirely from shared primitives: <SectionCard>,
+// <SettingList>/<SettingRow>, plus a small examples callout.
+export function BookTalksStep({ challenge, update }) {
+  const bt = challenge.bookTalks || {}
+  const on = !!bt.onTitleCompletions
   return (
-    <div className={`cc-setting-row${disabled ? ' is-disabled' : ''}`}>
-      <div className="cc-setting-text">
-        <span className="cc-setting-label">{label}</span>
-        {sub && <span className="cc-setting-sub">{sub}</span>}
+    <div className="cc-booktalks">
+      <div className="cc-bt-intro">
+        <img className="cc-bt-benny" src="/bs-prototypes/benny.png" alt="" />
+        <h2>Book Talks</h2>
+        <p>
+          Activate Benny, our AI-powered teacher’s assistant, to engage students in a conversation
+          and help you cultivate a culture of reading.
+        </p>
+        <p>
+          Once a student completes a Book Talk, you can view the analysis in your Sessions for
+          Review page. <a href="#book-talks-learn-more">Learn more.</a>
+        </p>
       </div>
-      <Toggle checked={checked} onChange={onChange} size="md" disabled={disabled} />
+
+      <SectionCard header="bar" title="When should Benny engage students in a Book Talk?">
+        <SettingList>
+          <SettingRow
+            label="On Title Completions"
+            state={on ? 'Enabled' : 'Disabled'}
+            checked={on}
+            onChange={(v) => update({ bookTalks: { ...bt, onTitleCompletions: v } })}
+          />
+        </SettingList>
+      </SectionCard>
+
+      <SectionCard header="bar" title="What Benny helps measure …">
+        <div className="cc-bt-measure">
+          <h4>Engagement</h4>
+          <p>
+            We define engagement as reading the student likely reported accurately and where the
+            student indicated a positive reading experience.
+          </p>
+          <div className="cc-bt-examples">
+            <p>
+              Benny <strong>may</strong> ask questions like …
+            </p>
+            <ul>
+              <li>Did you like or dislike the book? Why?</li>
+              <li>Would you recommend this book to a friend? Why or why not?</li>
+              <li>How did this story make you feel?</li>
+            </ul>
+          </div>
+        </div>
+      </SectionCard>
     </div>
   )
 }
