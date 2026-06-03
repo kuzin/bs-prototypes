@@ -16,6 +16,7 @@ import { Toggle } from '@components/Toggle/Toggle'
 import { Button } from '@components/Button/Button'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
 import { Tabs } from '@components/Tabs/Tabs'
+import { SearchInput } from '@components/SearchInput/SearchInput'
 import { RichText } from '@components/RichText/RichText'
 import { ImageDropzone } from '@components/ImageDropzone/ImageDropzone'
 import { Banner, EmptyState } from '@components/Primitives/Primitives'
@@ -1258,9 +1259,6 @@ const METHOD_LABELS = {
 }
 
 // Small inline glyphs for the gallery (search, clear, selected check).
-function GallerySearchIcon() {
-  return <Icon name="search" size={16} />
-}
 function GalleryCheck() {
   return <Icon name="check" size={11} stroke={2.6} />
 }
@@ -1352,28 +1350,7 @@ function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selectedImg })
   return (
     <>
       <div className="cc-badgepick-topbar">
-        <div className={`cc-badgepick-search${searching ? ' is-active' : ''}`}>
-          <span className="cc-badgepick-search-ic">
-            <GallerySearchIcon />
-          </span>
-          <input
-            type="text"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search all badges"
-            aria-label="Search all badges"
-          />
-          {searching && (
-            <button
-              type="button"
-              className="cc-badgepick-search-clear"
-              onClick={() => setQ('')}
-              aria-label="Clear search"
-            >
-              ×
-            </button>
-          )}
-        </div>
+        <SearchInput value={q} onChange={setQ} placeholder="Search all badges" />
         {presentColors.length > 1 && (
           <div className="cc-badgepick-colorbar" role="radiogroup" aria-label="Filter by color">
             {presentColors.map((c) => (
@@ -3030,27 +3007,7 @@ function ActivityBadgePicker({ source, mode, onPick, onCancel }) {
         </button>
       </header>
       <div className="cc-badge-editor-body">
-        <div className={`cc-badgepick-search${q ? ' is-active' : ''}`}>
-          <span className="cc-badgepick-search-ic">
-            <GallerySearchIcon />
-          </span>
-          <input
-            value={query}
-            placeholder="Search badges…"
-            onChange={(e) => setQ(e.target.value)}
-            aria-label="Search badges"
-          />
-          {query && (
-            <button
-              type="button"
-              className="cc-badgepick-search-clear"
-              onClick={() => setQ('')}
-              aria-label="Clear search"
-            >
-              <Icon name="x" size={14} stroke={2.2} />
-            </button>
-          )}
-        </div>
+        <SearchInput value={query} onChange={setQ} placeholder="Search badges…" />
         {shown.length ? (
           <div className="cc-actpicker-list">
             {shown.map((b) => {
@@ -3961,7 +3918,7 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
           </div>
           <div className="cc-tm-search">
             <span className="cc-tm-search-ic">
-              <GallerySearchIcon />
+              <Icon name="search" size={16} />
             </span>
             <input
               value={query}

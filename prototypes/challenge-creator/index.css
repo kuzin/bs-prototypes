@@ -1785,57 +1785,8 @@
   padding: 16px;
   border-bottom: 1px solid var(--line);
 }
-/* Search field with leading icon + clear button. */
-.cc-badgepick-search {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 10px;
-  height: 38px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-  background: #fff;
-  transition:
-    border-color 0.15s ease,
-    box-shadow 0.15s ease;
-}
-.cc-badgepick-search.is-active,
-.cc-badgepick-search:focus-within {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 16%, transparent);
-}
-.cc-badgepick-search-ic {
-  display: inline-flex;
-  color: #64748b;
-}
-.cc-badgepick-search input {
-  flex: 1;
-  border: 0;
-  outline: none;
-  background: none;
-  font: inherit;
-  font-size: 14px;
-  color: var(--ink);
-}
-.cc-badgepick-search-clear {
-  border: 0;
-  background: #eef2f6;
-  color: #64748b;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  font-size: 16px;
-  line-height: 1;
-  cursor: pointer;
-}
-.cc-badgepick-search-clear:hover {
-  background: #e2e8f0;
-  color: var(--ink);
-}
+/* Badge-picker search now uses the shared <SearchInput> (@components/SearchInput).
+   Only the .cc-actpicker layout override remains (below). */
 
 /* Search result count line. */
 .cc-badgepick-count {
@@ -3443,7 +3394,7 @@
 /* Use/Duplicate picker modal — reuses the .cc-badge-editor chrome. The shared
    search has flex:1 (to grow in a row); here it's in a flex column, so pin it to
    its natural height instead of letting it stretch tall. */
-.cc-actpicker .cc-badgepick-search {
+.cc-actpicker .search-input {
   flex: none;
   margin: 0 0 14px;
 }
