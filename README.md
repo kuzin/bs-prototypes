@@ -127,7 +127,7 @@ pnpm format:check # Prettier check (no writes)
 pnpm check        # verify prototype folders ↔ registry ↔ landing icons are in sync
 ```
 
-Node version is pinned in `.nvmrc` (20). CI (`verify`) runs `pnpm lint`, `pnpm format:check`, `pnpm check`, then `pnpm build`. ESLint is tuned for a prototype sandbox: real-bug rules (e.g. `react-hooks/rules-of-hooks`) are **errors**, while stylistic/unused-var rules are **warnings** so experiments stay lintable. Prettier formatting is enforced by `format:check`, and a [husky](https://typicode.github.io/husky/) pre-commit hook runs `lint-staged` to auto-format staged files — so commits stay clean without thinking about it.
+Node version is pinned to **24** — in `.nvmrc` (nvm / CI) and `.tool-versions` (asdf); run `nvm use` or `asdf install` to match. Vite 8 requires Node ≥ 20.19, so the old Node 20 pin no longer satisfies the toolchain. pnpm comes via [corepack](https://nodejs.org/api/corepack.html) (the `packageManager` field pins `pnpm@9`), so `pnpm install` just works once the right Node is active. CI (`verify`) runs `pnpm lint`, `pnpm format:check`, `pnpm check`, then `pnpm build`. ESLint is tuned for a prototype sandbox: real-bug rules (e.g. `react-hooks/rules-of-hooks`) are **errors**, while stylistic/unused-var rules are **warnings** so experiments stay lintable. Prettier formatting is enforced by `format:check`, and a [husky](https://typicode.github.io/husky/) pre-commit hook runs `lint-staged` to auto-format staged files — so commits stay clean without thinking about it.
 
 Local URLs:
 
