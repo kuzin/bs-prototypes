@@ -7,6 +7,7 @@ import { Table } from '@components/Table/Table'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Toggle } from '@components/Toggle/Toggle'
 import { Field, Input, Select, Textarea } from '@components/Form/Form'
+import { SettingRow, SettingList } from '@components/SettingRow/SettingRow'
 import {
   Accordion,
   Banner,
@@ -988,6 +989,41 @@ function TableKnobs() {
 
 // ── Knobs panel wrapper ──────────────────────────────────────────────────
 
+function SettingRowShowcase() {
+  const [a, setA] = useState(false)
+  const [b, setB] = useState(true)
+  const [c, setC] = useState('grade')
+  return (
+    <Variant label="a SettingList of rows — toggle + state text, sub-text, custom control">
+      <div style={{ width: 'min(560px, 100%)' }}>
+        <SettingList>
+          <SettingRow
+            label="On Title Completions"
+            state={a ? 'Enabled' : 'Disabled'}
+            checked={a}
+            onChange={setA}
+          />
+          <SettingRow
+            label="Featured"
+            sub="Pin this challenge to the top of the list"
+            checked={b}
+            onChange={setB}
+          />
+          <SettingRow
+            label="Audience"
+            control={
+              <Select value={c} onChange={(e) => setC(e.target.value)}>
+                <option value="grade">By grade</option>
+                <option value="all">Everyone</option>
+              </Select>
+            }
+          />
+        </SettingList>
+      </div>
+    </Variant>
+  )
+}
+
 export const moleculesSections = [
   {
     group: 'molecules',
@@ -1155,6 +1191,24 @@ export const moleculesSections = [
     render: () => (
       <>
         <TableKnobs />
+      </>
+    ),
+  },
+  {
+    group: 'molecules',
+    id: 'setting-row',
+    name: 'SettingRow',
+    desc: (
+      <>
+        A labeled settings row: <code>label</code> (+ optional <code>sub</code>) on the left, a
+        control on the right. Defaults to a <code>Toggle</code> (pass <code>checked</code>/
+        <code>onChange</code>, plus optional <code>state</code> text like “Disabled”), or pass any{' '}
+        <code>control</code>. Wrap rows in <code>&lt;SettingList&gt;</code> for hairline dividers.
+      </>
+    ),
+    render: () => (
+      <>
+        <SettingRowShowcase />
       </>
     ),
   },

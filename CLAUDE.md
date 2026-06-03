@@ -45,6 +45,9 @@ import { Icon } from '@components/Icon/Icon'
 
 ## Prototypes
 
+- **Fastest path: `pnpm new <id>`** scaffolds the folder + `main.jsx`/`App.jsx`/`index.css`, the
+  `components/prototypes.js` entry, **and** the landing-card icon in one step (flags:
+  `--name`/`--section`/`--accent`/`--icon`/`--desc`). The bullets below are the manual equivalent.
 - A prototype is just a folder `prototypes/<slug>/` containing `main.jsx` — the build
   **auto-discovers** it. **No HTML to write and no `vite.config.js` to edit.**
 - `App` is a **named** export — match the existing convention, not a default export:
@@ -60,10 +63,12 @@ import { Icon } from '@components/Icon/Icon'
 ## Dev workflow & checks
 
 - For new work, branch off `main` (e.g. `claude/<name>`); open a PR rather than pushing to `main`.
-- Before pushing, run **`pnpm build` + `pnpm lint` + `pnpm format`**. CI (`verify`) runs
-  `pnpm lint` **and** `pnpm format:check` — a Prettier miss fails CI, so `pnpm format` first.
-  ESLint is tuned for a sandbox: real-bug rules are **errors**, stylistic/unused-var rules are
-  **warnings** (warnings are OK; errors fail).
+- Before pushing, run **`pnpm build` + `pnpm lint` + `pnpm format` + `pnpm check`**. CI (`verify`)
+  runs `pnpm lint`, `pnpm format:check`, `pnpm check`, then `pnpm build` — a Prettier miss **or** a
+  registry drift (a prototype folder / `prototypes.js` entry / landing icon out of sync) fails CI.
+  A husky pre-commit hook auto-formats staged files via `lint-staged`, so formatting usually stays
+  clean on its own. ESLint is tuned for a sandbox: real-bug rules are **errors**, stylistic/unused-var
+  rules are **warnings** (warnings are OK; errors fail).
 - **Verify in the browser**, not just a green build — run `pnpm dev` and look at the actual screen,
   especially after large or delegated edits. If you resized the preview for testing, reset it to a
   natural desktop size before finishing.

@@ -22,14 +22,14 @@ import { Hero } from '@components/Hero/Hero'
 import { Modal } from '@components/Modal/Modal'
 import { Ic } from '@components/ui'
 import { Icon } from '@components/Icon/Icon'
-import gbMeadow from '../assets/gameboard/meadow.png'
-import gbWinter from '../assets/gameboard/winter.png'
-import gbAurora from '../assets/gameboard/aurora.png'
-import gbSpooky from '../assets/gameboard/spooky.png'
-import gbGlow from '../assets/gameboard/glow.png'
-import gbEra from '../assets/gameboard/era.png'
-import gbOcean from '../assets/gameboard/ocean.png'
-import gbJungle from '../assets/gameboard/jungle.png'
+import gbMeadow from '../assets/gameboard/meadow.webp'
+import gbWinter from '../assets/gameboard/winter.webp'
+import gbAurora from '../assets/gameboard/aurora.webp'
+import gbSpooky from '../assets/gameboard/spooky.webp'
+import gbGlow from '../assets/gameboard/glow.webp'
+import gbEra from '../assets/gameboard/era.webp'
+import gbOcean from '../assets/gameboard/ocean.webp'
+import gbJungle from '../assets/gameboard/jungle.webp'
 import { LIMITS } from '../validation'
 import {
   METHODS,
@@ -547,7 +547,7 @@ function BgImageGrid({ themeImages = [], themeLabel = 'From this theme', value, 
 }
 
 // ─── Step 2 · Details ───────────────────────────────────────────────────────
-export function DetailsStep({ challenge, role, type, updateDetails, onTemplate, errors = {} }) {
+export function DetailsStep({ challenge, role, updateDetails, onTemplate, errors = {} }) {
   const d = challenge.details
   const templates = [
     { id: 'scratch', name: 'Start from scratch', blurb: 'A blank challenge you build yourself.' },
@@ -1254,7 +1254,6 @@ function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selectedImg })
     return out
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [extraKey])
-  const byImg = useMemo(() => new Map(catalog.map((b) => [b.img, b])), [catalog])
   // A badge's subjects = name-keyword matches ∪ its set's subjects.
   const badgeSubjects = (b) => [
     ...new Set([...subjectsOf(b.name), ...(SET_SUBJECTS[b._setId] || [])]),
@@ -2200,18 +2199,18 @@ function BadgeEditor({
 // large enough to exercise search + paging.
 const glowImg = (f) => new URL(`../assets/templates/glow/${f}`, import.meta.url).href
 const LIB_ART = [
-  'stars.png',
-  'fireworks.png',
-  'music-notes.png',
-  'cake.png',
-  'cupcake.png',
-  'party-hats.png',
-  'magic-wand.png',
-  'microphone.png',
-  'open-book.png',
-  'standing-books.png',
-  'apple-stack.png',
-  'grad-stack.png',
+  'stars.webp',
+  'fireworks.webp',
+  'music-notes.webp',
+  'cake.webp',
+  'cupcake.webp',
+  'party-hats.webp',
+  'magic-wand.webp',
+  'microphone.webp',
+  'open-book.webp',
+  'standing-books.webp',
+  'apple-stack.webp',
+  'grad-stack.webp',
 ].map(glowImg)
 const LIB_ENTRIES = [
   ['Share a Shelfie', 'social', 'Post a photo of your bookshelf'],
@@ -2347,7 +2346,7 @@ function ActivityBadgeEditor({
   const [badge, setBadge] = useState(initial?.badge || null)
   const [title, setTitle] = useState(initial?.title || initial?.name || '')
   const [description, setDescription] = useState(initial?.description || '')
-  const [active, setActive] = useState(initial?.active ?? true)
+  const [active] = useState(initial?.active ?? true)
   const [earn, setEarn] = useState(
     initial?.earn != null && initial?.earn !== '' ? String(initial.earn) : '',
   )
@@ -3272,10 +3271,6 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   const [quickBadge, setQuickBadge] = useState(false)
   const [confirmType, setConfirmType] = useState(null)
   const setMethod = (m, val) => update({ methods: { ...methods, [m]: val } })
-  const toggleMethod = (m) => {
-    if (m === type?.primaryMethod) return
-    setMethod(m, !methods[m])
-  }
   const removeBadge = (i) => update({ badges: badges.filter((_, idx) => idx !== i) })
   const quickCreateBadges = (newBadges) => {
     update({ badges: [...badges, ...newBadges] })

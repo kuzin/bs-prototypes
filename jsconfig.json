@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "target": "ESNext",
+    "jsx": "react-jsx",
+    "checkJs": false,
+    "baseUrl": ".",
+    "paths": {
+      "@components/*": ["components/*"]
+    }
+  },
+  "include": ["components", "landing", "prototypes", "scripts"],
+  "exclude": ["node_modules", "dist"]
+}
