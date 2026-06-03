@@ -15,6 +15,7 @@ import {
 import { Toggle } from '@components/Toggle/Toggle'
 import { Button } from '@components/Button/Button'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
+import { Tabs } from '@components/Tabs/Tabs'
 import { RichText } from '@components/RichText/RichText'
 import { ImageDropzone } from '@components/ImageDropzone/ImageDropzone'
 import { Banner, EmptyState } from '@components/Primitives/Primitives'
@@ -748,47 +749,37 @@ export function DetailsStep({ challenge, role, updateDetails, onTemplate, errors
       <div className="cc-panel cc-panel--lookfeel">
         <h3 className="cc-panel-title">Look &amp; feel</h3>
 
-        <div className="cc-headtabs" role="tablist" aria-label="Header style">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={!bgUploaded}
-            disabled={challenge.templateId !== 'scratch'}
-            title={
-              challenge.templateId !== 'scratch'
-                ? 'This template uses its own banner. Start from scratch to use a theme.'
-                : undefined
-            }
-            className={`cc-headtab${!bgUploaded ? ' is-active' : ''}`}
-            onClick={() => {
-              if (bgUploaded) {
+        <div style={{ marginBottom: 20 }}>
+          <Tabs
+            accent="#0DA7BC"
+            active={bgUploaded ? 'upload' : 'theme'}
+            onChange={(id) => {
+              if (id === 'theme' && bgUploaded) {
                 const variant = BANNER_THEMES[0].variants[0]
                 updateDetails({
                   background: { kind: 'preset', id: variant.id },
                   accent: variant.color,
                 })
-              }
-            }}
-          >
-            <Icon name="palette" size={18} />
-            Use a theme
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={bgUploaded}
-            className={`cc-headtab${bgUploaded ? ' is-active' : ''}`}
-            onClick={() => {
-              if (!bgUploaded) {
+              } else if (id === 'upload' && !bgUploaded) {
                 updateDetails({
                   background: { kind: 'upload', name: d.background?.name || 'header.jpg' },
                 })
               }
             }}
-          >
-            <Icon name="photo" size={18} />
-            Upload an image
-          </button>
+            items={[
+              {
+                id: 'theme',
+                label: 'Use a theme',
+                icon: <Icon name="palette" size={18} />,
+                disabled: challenge.templateId !== 'scratch',
+                title:
+                  challenge.templateId !== 'scratch'
+                    ? 'This template uses its own banner. Start from scratch to use a theme.'
+                    : undefined,
+              },
+              { id: 'upload', label: 'Upload an image', icon: <Icon name="photo" size={18} /> },
+            ]}
+          />
         </div>
 
         {bgUploaded ? (
@@ -1663,31 +1654,17 @@ function BadgeUpload({ onPick, bgImages = [], bgLabel, initial }) {
       </div>
       <div className="cc-upload-controls">
         <Field>
-          <div className="cc-headtabs cc-builder-seg">
-            <button
-              type="button"
-              className={`cc-headtab${panel === 'color' ? ' is-active' : ''}`}
-              onClick={() => selectPanel('color')}
-            >
-              Color
-            </button>
-            <button
-              type="button"
-              className={`cc-headtab${panel === 'image' ? ' is-active' : ''}`}
-              onClick={() => selectPanel('image')}
-            >
-              Image
-            </button>
-            {isSvg && (
-              <button
-                type="button"
-                className={`cc-headtab${panel === 'recolor' ? ' is-active' : ''}`}
-                onClick={() => selectPanel('recolor')}
-              >
-                Recolor
-              </button>
-            )}
-          </div>
+          <Tabs
+            className="cc-builder-seg"
+            accent="#0DA7BC"
+            active={panel}
+            onChange={selectPanel}
+            items={[
+              { id: 'color', label: 'Color' },
+              { id: 'image', label: 'Image' },
+              ...(isSvg ? [{ id: 'recolor', label: 'Recolor' }] : []),
+            ]}
+          />
           {panel === 'color' && (
             <div className="cc-accent-ctrl" style={{ marginTop: 10 }}>
               <div className="cc-accent-dots">
@@ -1882,22 +1859,16 @@ function BadgeBuilder({ onPick, bgImages = [], bgLabel, initial }) {
       </div>
       <div className="cc-builder-controls">
         <Field>
-          <div className="cc-headtabs cc-builder-seg">
-            <button
-              type="button"
-              className={`cc-headtab${bgMode === 'color' ? ' is-active' : ''}`}
-              onClick={() => setBgMode('color')}
-            >
-              Color
-            </button>
-            <button
-              type="button"
-              className={`cc-headtab${bgMode === 'image' ? ' is-active' : ''}`}
-              onClick={() => setBgMode('image')}
-            >
-              Image
-            </button>
-          </div>
+          <Tabs
+            className="cc-builder-seg"
+            accent="#0DA7BC"
+            active={bgMode}
+            onChange={setBgMode}
+            items={[
+              { id: 'color', label: 'Color' },
+              { id: 'image', label: 'Image' },
+            ]}
+          />
           {bgMode === 'color' ? (
             <div style={{ marginTop: 10 }}>
               <ColorPicker
@@ -1917,29 +1888,17 @@ function BadgeBuilder({ onPick, bgImages = [], bgLabel, initial }) {
           )}
         </Field>
         <Field>
-          <div className="cc-headtabs cc-builder-seg">
-            <button
-              type="button"
-              className={`cc-headtab${mode === 'number' ? ' is-active' : ''}`}
-              onClick={() => setMode('number')}
-            >
-              Number
-            </button>
-            <button
-              type="button"
-              className={`cc-headtab${mode === 'letter' ? ' is-active' : ''}`}
-              onClick={() => setMode('letter')}
-            >
-              Letter
-            </button>
-            <button
-              type="button"
-              className={`cc-headtab${mode === 'icon' ? ' is-active' : ''}`}
-              onClick={() => setMode('icon')}
-            >
-              Icon
-            </button>
-          </div>
+          <Tabs
+            className="cc-builder-seg"
+            accent="#0DA7BC"
+            active={mode}
+            onChange={setMode}
+            items={[
+              { id: 'number', label: 'Number' },
+              { id: 'letter', label: 'Letter' },
+              { id: 'icon', label: 'Icon' },
+            ]}
+          />
         </Field>
         {mode === 'icon' ? (
           <Field>
@@ -2008,29 +1967,17 @@ function BadgePicker({
   )
   return (
     <div className="cc-badgepick">
-      <div className="cc-headtabs cc-badgepick-tabs">
-        <button
-          type="button"
-          className={`cc-headtab${tab === 'gallery' ? ' is-active' : ''}`}
-          onClick={() => setTab('gallery')}
-        >
-          Gallery
-        </button>
-        <button
-          type="button"
-          className={`cc-headtab${tab === 'upload' ? ' is-active' : ''}`}
-          onClick={() => setTab('upload')}
-        >
-          Upload
-        </button>
-        <button
-          type="button"
-          className={`cc-headtab${tab === 'create' ? ' is-active' : ''}`}
-          onClick={() => setTab('create')}
-        >
-          Create
-        </button>
-      </div>
+      <Tabs
+        className="cc-badgepick-tabs"
+        accent="#0DA7BC"
+        active={tab}
+        onChange={setTab}
+        items={[
+          { id: 'gallery', label: 'Gallery' },
+          { id: 'upload', label: 'Upload' },
+          { id: 'create', label: 'Create' },
+        ]}
+      />
       {tab === 'gallery' && (
         <BadgeGallery
           onPick={onPick}
@@ -2506,25 +2453,16 @@ function ActivityBadgeEditor({
           </div>
         ) : (
           <>
-            <div className="cc-headtabs cc-ab-tabs">
-              <button
-                type="button"
-                className={`cc-headtab${tab === 'details' ? ' is-active' : ''}`}
-                onClick={() => setTab('details')}
-              >
-                Details
-              </button>
-              <button
-                type="button"
-                className={`cc-headtab${tab === 'activities' ? ' is-active' : ''}`}
-                onClick={() => setTab('activities')}
-              >
-                Activities
-                {activities.length ? (
-                  <span className="cc-headtab-count">{activities.length}</span>
-                ) : null}
-              </button>
-            </div>
+            <Tabs
+              className="cc-ab-tabs"
+              accent="#0DA7BC"
+              active={tab}
+              onChange={setTab}
+              items={[
+                { id: 'details', label: 'Details' },
+                { id: 'activities', label: 'Activities', count: activities.length || undefined },
+              ]}
+            />
             {tab === 'details' ? (
               <div className="cc-ab-details">
                 <div className="cc-ab-artcol">
@@ -4011,11 +3949,12 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
       </button>
       <div className="cc-titlemodal-grid">
         <div className="cc-titlemodal-side">
-          <div className="cc-headtabs cc-titlemodal-tabs">
-            <button type="button" className="cc-headtab is-active">
-              Web
-            </button>
-          </div>
+          <Tabs
+            className="cc-titlemodal-tabs"
+            accent="#0DA7BC"
+            active="web"
+            items={[{ id: 'web', label: 'Web' }]}
+          />
           <div className="cc-tm-searchby">
             <span>Search By</span>
             <CustomSelect value={field} onChange={setField} options={BOOK_SEARCH_FIELDS} />

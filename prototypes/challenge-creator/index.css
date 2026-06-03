@@ -692,58 +692,10 @@
   width: 140px;
 }
 
-/* ── Header-style tab bar (switches the Look & feel context) ── */
-.cc-headtabs {
-  display: flex;
-  gap: 4px;
-  margin: 0 0 20px;
-  border-bottom: 2px solid var(--line);
-}
-.cc-headtab {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 16px;
-  margin-bottom: -2px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  background: none;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
-}
-.cc-headtab:hover:not(:disabled):not(.is-active) {
-  color: var(--ink);
-}
-.cc-headtab.is-active {
-  color: var(--teal-dk);
-  border-bottom-color: var(--teal);
-}
-.cc-headtab:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-/* Count pill on a tab (matches the shared Tabs .tab-count pattern). */
-.cc-headtab-count {
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
-  background: #e2e8f0;
-  color: #475569;
-  border-radius: 99px;
-  padding: 3px 7px;
-  min-width: 20px;
-  text-align: center;
-}
-.cc-headtab.is-active .cc-headtab-count {
-  background: color-mix(in srgb, currentColor 16%, transparent);
-  color: currentColor;
-}
+/* Header-style / segmented tab bars now use the shared <Tabs> (underline variant).
+   Only the layout-specific spacing modifiers remain (.cc-builder-seg,
+   .cc-badgepick-tabs, .cc-ab-tabs, .cc-titlemodal-tabs) — applied via Tabs'
+   className prop. */
 
 /* ── Template gallery ── */
 .cc-gallery {
