@@ -1,20 +1,11 @@
-import {
-  ScatterChart,
-  Scatter,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
-} from 'recharts'
+import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 import { LEXILE_DATA, LEXILE_BY_GRADE, SCHOOLS } from '../data'
 import { Hero } from '@components/Hero/Hero'
 import { StatCard, ChartCard, CardNote } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
 import { Pill } from '@components/Pill/Pill'
 import { SchoolCell } from './SchoolCell'
-import { ChartLegend, RCHART_TICK, RCHART_GRID, RCHART_TOOLTIP } from '@components/charts/charts'
+import { ChartLegend, NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/charts/charts'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 
@@ -99,114 +90,118 @@ export function DistrictLexile() {
             />
           }
         >
-          <ResponsiveContainer width="100%" height={380}>
-            <ScatterChart margin={{ top: 16, right: 16, left: 8, bottom: 24 }}>
-              <CartesianGrid {...RCHART_GRID} />
-              <XAxis
-                dataKey="volume"
-                name="Books/mo"
-                type="number"
-                domain={[15, 50]}
-                tick={RCHART_TICK}
-                label={{
-                  value: 'Avg books/month',
-                  position: 'insideBottom',
-                  offset: -12,
-                  fontSize: 13,
-                  fill: '#64748B',
-                }}
-              />
-              <YAxis
-                dataKey="lexileGrowth"
-                name="Lexile growth"
-                type="number"
-                domain={[-25, 130]}
-                tick={RCHART_TICK}
-                label={{
-                  value: 'Lexile growth (L)',
-                  angle: -90,
-                  position: 'insideLeft',
-                  offset: 12,
-                  fontSize: 13,
-                  fill: '#64748B',
-                }}
-              />
-              <ReferenceLine y={0} stroke="#94A3B8" strokeDasharray="5 4" />
-              <Tooltip
-                contentStyle={RCHART_TOOLTIP}
-                content={({ payload }) => {
-                  if (!payload?.length) return null
-                  const d = payload[0].payload
-                  return (
-                    <div
-                      style={{
-                        background: '#fff',
-                        border: '1px solid #E2E8F0',
-                        borderRadius: 8,
-                        padding: '8px 12px',
-                        fontSize: 13,
-                      }}
-                    >
-                      <div style={{ fontWeight: 700, marginBottom: 4 }}>{d.school}</div>
-                      <div>
-                        Lexile change:{' '}
-                        <b style={{ color: d.lexileGrowth >= 0 ? '#15803D' : '#DC2626' }}>
-                          {signedL(d.lexileGrowth)}
-                        </b>
-                      </div>
-                      <div>
-                        Avg books/mo: <b>{d.volume}</b>
-                      </div>
-                      <div>
-                        Students: <b>{d.students.toLocaleString()}</b>
-                      </div>
-                      <div
+          <div style={{ flex: 1, minHeight: 380 }}>
+            <ResponsiveScatterPlot
+              data={[
+                {
+                  id: 'Growth',
+                  data: LEXILE_DATA.filter((d) => d.lexileGrowth >= 0).map((d) => ({
+                    x: d.volume,
+                    y: d.lexileGrowth,
+                    school: d.school,
+                    students: d.students,
+                    id: d.id,
+                  })),
+                },
+                {
+                  id: 'Decline',
+                  data: LEXILE_DATA.filter((d) => d.lexileGrowth < 0).map((d) => ({
+                    x: d.volume,
+                    y: d.lexileGrowth,
+                    school: d.school,
+                    students: d.students,
+                    id: d.id,
+                  })),
+                },
+              ]}
+              ariaLabel="Lexile growth versus average books read per month, by school. Growth is shown in green above the zero line; decline in coral below."
+              theme={NIVO_THEME}
+              margin={{ top: 24, right: 28, bottom: 56, left: 72 }}
+              xScale={{ type: 'linear', min: 15, max: 50 }}
+              yScale={{ type: 'linear', min: -25, max: 130 }}
+              colors={({ serieId }) => (serieId === 'Growth' ? GROWTH_COLOR : DECLINE_COLOR)}
+              nodeSize={(d) => 2 * Math.sqrt(d.data.students / 65)}
+              axisBottom={{
+                ...AXIS_BOTTOM,
+                legend: 'Avg books/month',
+                legendOffset: 44,
+                legendPosition: 'middle',
+                tickValues: 5,
+              }}
+              axisLeft={{
+                ...AXIS_LEFT,
+                format: (v) => `${v}L`,
+                legend: 'Lexile growth',
+                legendOffset: -58,
+                legendPosition: 'middle',
+                tickValues: 6,
+              }}
+              enableGridX={false}
+              markers={[
+                {
+                  axis: 'y',
+                  value: 0,
+                  lineStyle: { stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '5 4' },
+                },
+              ]}
+              layers={[
+                'grid',
+                'axes',
+                'markers',
+                'nodes',
+                ({ nodes }) => (
+                  <g>
+                    {nodes.map((node) => (
+                      <text
+                        key={node.id}
+                        x={node.x}
+                        y={node.y - node.size / 2 - 4}
+                        textAnchor="middle"
                         style={{
-                          marginTop: 4,
-                          fontSize: 13,
-                          color: d.lexileGrowth >= 0 ? '#15803D' : '#DC2626',
+                          fontSize: 10,
                           fontWeight: 600,
+                          fill: '#475569',
+                          pointerEvents: 'none',
                         }}
                       >
-                        {d.lexileGrowth >= 0 ? '✓ Growth' : '⚠ Decline'}
-                      </div>
-                    </div>
-                  )
-                }}
-              />
-              <Scatter
-                data={LEXILE_DATA}
-                isAnimationActive={false}
-                shape={({ cx, cy, payload }) => {
-                  const r = Math.sqrt(payload.students / 65)
-                  const fill = payload.lexileGrowth >= 0 ? GROWTH_COLOR : DECLINE_COLOR
-                  return (
-                    <g>
-                      <circle
-                        cx={cx}
-                        cy={cy}
-                        r={r}
-                        fill={fill}
-                        opacity={0.85}
-                        stroke="#fff"
-                        strokeWidth={2}
-                      />
-                      <text
-                        x={cx}
-                        y={cy - r - 4}
-                        textAnchor="middle"
-                        fontSize={10}
-                        fill="#475569"
-                        fontWeight={600}
-                      >
-                        {payload.school.split(' ')[0]}
+                        {node.data.school.split(' ')[0]}
                       </text>
-                    </g>
-                  )
-                }}
-              />
-            </ScatterChart>
-          </ResponsiveContainer>
+                    ))}
+                  </g>
+                ),
+                'mesh',
+              ]}
+              tooltip={({ node }) => (
+                <div
+                  className="sdb-tooltip"
+                  style={{ '--tip-accent': node.data.y >= 0 ? GROWTH_COLOR : DECLINE_COLOR }}
+                >
+                  <div className="sdb-tooltip-header">{node.data.school}</div>
+                  <div
+                    className="sdb-tooltip-series"
+                    style={{ '--series-color': node.data.y >= 0 ? GROWTH_COLOR : DECLINE_COLOR }}
+                  >
+                    <div className="sdb-tooltip-row">
+                      <span className="sdb-tooltip-dot" />
+                      <span className="sdb-tooltip-label">Lexile change</span>
+                      <span className="sdb-tooltip-val">{signedL(node.data.y)}</span>
+                    </div>
+                  </div>
+                  <div className="sdb-tooltip-series" style={{ '--series-color': '#94A3B8' }}>
+                    <div className="sdb-tooltip-row">
+                      <span className="sdb-tooltip-dot" />
+                      <span className="sdb-tooltip-label">Avg books/mo</span>
+                      <span className="sdb-tooltip-val">{node.data.x}</span>
+                    </div>
+                  </div>
+                  <div className="sdb-tooltip-context">
+                    {node.data.students.toLocaleString()} students ·{' '}
+                    {node.data.y >= 0 ? '✓ Growth' : '⚠ Decline'}
+                  </div>
+                </div>
+              )}
+            />
+          </div>
         </ChartCard>
 
         {/* Stuck Lexile Alerts */}

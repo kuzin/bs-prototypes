@@ -28,7 +28,6 @@
     "react-dom": "^18.3.1",
     "react-grid-layout": "^2.2.3",
     "react-resizable": "^4.0.1",
-    "recharts": "^2.13.3",
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {

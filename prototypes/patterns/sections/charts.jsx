@@ -1193,8 +1193,8 @@ export const chartsSections = [
     name: 'TrendChart',
     desc: (
       <>
-        The default reusable chart for area / line / bar visualizations. Wraps Recharts and locks in
-        the project's standard margins, tick font, tooltip styling, axis padding, and height. Pass{' '}
+        The default reusable chart for area / line / bar visualizations. Wraps Nivo and locks in the
+        project's standard margins, tick font, tooltip styling, axis padding, and height. Pass{' '}
         <code>type</code> (<code>'area' | 'line' | 'bar'</code>
         ), <code>data</code>, <code>xKey</code>, <code>yDomain</code>, <code>height</code> (
         <code>'sm' | 'md' | 'lg' | 'xl'</code>), and a <code>series</code> array of{' '}
@@ -1203,7 +1203,7 @@ export const chartsSections = [
         </code>
         . Pass <code>yRight</code> for dual-axis trends; pass <code>layout="horizontal"</code> +{' '}
         <code>leftMargin</code> for horizontal-bar rankings. Always use this for new charts — only
-        drop down to Recharts directly for one-off shapes like scatter or reference lines.
+        drop down to Nivo directly for one-off shapes like scatter plots or custom layers.
       </>
     ),
     render: () => (
