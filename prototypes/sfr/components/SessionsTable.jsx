@@ -88,7 +88,7 @@ const POS_FLAG_CONFIG = {
 
 export { FLAG_TYPE_CONFIG, POS_FLAG_CONFIG }
 
-export function FlagIconBadge({ type, cfg }) {
+export function FlagIconBadge({ cfg }) {
   return (
     <Tooltip content={cfg.label}>
       <span className="sess-flag-icon" style={{ background: cfg.bg, color: cfg.color }}>
@@ -219,7 +219,6 @@ export function RowFlyout({
     }
   }, [onClose])
 
-  const hasFlags = session.flags?.length > 0
   const isApproved = session.changeLog?.some((e) => e.kind === 'approved')
   const canApprove = (session.type === 'flagged' || session.type === 'both') && !isApproved
 

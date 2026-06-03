@@ -1121,8 +1121,7 @@ function LexileChart({ history, gradeLevel, gradeLevelLabel, color }) {
 }
 
 // ─── Skills detail ────────────────────────────────────────────────────────────
-function SkillsDetail({ sec, c, firstName }) {
-  const maxL = 1000
+function SkillsDetail({ sec, c }) {
   const deltaUp = sec.monthlyDelta >= 0
   return (
     <>

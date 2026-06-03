@@ -28,7 +28,7 @@ const EXTRINSIC_COLOR = '#7CB5F5'
 const MOT_ICON = SECTIONS.find((s) => s.key === 'motivation')?.icon
 const FACTOR_BY_NAME = Object.fromEntries(RMI_FACTORS.map((f) => [f.name, f]))
 
-export function SchoolMotivation({ schoolId, onBack }) {
+export function SchoolMotivation({ schoolId }) {
   const school = SCHOOLS.find((s) => s.id === schoolId)
   const health = SCHOOL_HEALTH[schoolId]
   const shortName = school.name.split(' ')[0]

@@ -692,58 +692,10 @@
   width: 140px;
 }
 
-/* ── Header-style tab bar (switches the Look & feel context) ── */
-.cc-headtabs {
-  display: flex;
-  gap: 4px;
-  margin: 0 0 20px;
-  border-bottom: 2px solid var(--line);
-}
-.cc-headtab {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 10px 16px;
-  margin-bottom: -2px;
-  border: 0;
-  border-bottom: 2px solid transparent;
-  background: none;
-  font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--muted);
-  cursor: pointer;
-  transition:
-    color 0.15s ease,
-    border-color 0.15s ease;
-}
-.cc-headtab:hover:not(:disabled):not(.is-active) {
-  color: var(--ink);
-}
-.cc-headtab.is-active {
-  color: var(--teal-dk);
-  border-bottom-color: var(--teal);
-}
-.cc-headtab:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-/* Count pill on a tab (matches the shared Tabs .tab-count pattern). */
-.cc-headtab-count {
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1;
-  background: #e2e8f0;
-  color: #475569;
-  border-radius: 99px;
-  padding: 3px 7px;
-  min-width: 20px;
-  text-align: center;
-}
-.cc-headtab.is-active .cc-headtab-count {
-  background: color-mix(in srgb, currentColor 16%, transparent);
-  color: currentColor;
-}
+/* Header-style / segmented tab bars now use the shared <Tabs> (underline variant).
+   Only the layout-specific spacing modifiers remain (.cc-builder-seg,
+   .cc-badgepick-tabs, .cc-ab-tabs, .cc-titlemodal-tabs) — applied via Tabs'
+   className prop. */
 
 /* ── Template gallery ── */
 .cc-gallery {
@@ -1116,6 +1068,79 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 2px 14px;
+}
+/* Shared <SettingRow> (class .setting-row) inside the legacy .cc-settings card
+   keeps row dividers — the shared component only draws them inside <SettingList>. */
+.cc-settings .setting-row {
+  border-top: 1px solid var(--line);
+}
+.cc-settings .setting-row:first-child {
+  border-top: 0;
+}
+
+/* ── Book Talks step ── */
+.cc-bt-intro {
+  max-width: 620px;
+  margin: 8px auto 28px;
+  text-align: center;
+}
+.cc-bt-benny {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  margin-bottom: 12px;
+}
+.cc-bt-intro h2 {
+  margin: 0 0 14px;
+  font-size: 24px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.cc-bt-intro p {
+  margin: 0 0 12px;
+  font-size: 15px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.cc-bt-intro p:last-child {
+  margin-bottom: 0;
+}
+.cc-bt-intro a {
+  color: var(--teal-dk);
+  font-weight: 700;
+}
+.cc-bt-measure h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-bt-measure > p {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.cc-bt-examples {
+  background: #f1f5f9;
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.cc-bt-examples p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  font-style: italic;
+  color: #475569;
+}
+.cc-bt-examples ul {
+  margin: 0;
+  padding-left: 20px;
+}
+.cc-bt-examples li {
+  font-size: 14px;
+  line-height: 1.7;
+  color: #334155;
 }
 .cc-settings .cc-setting-row:first-child {
   border-top: 0;

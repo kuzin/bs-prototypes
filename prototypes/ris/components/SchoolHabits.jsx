@@ -26,10 +26,9 @@ import './SchoolHabits.css'
 const HABITS_COLOR = '#16A97A'
 const HABITS_ICON = SECTIONS.find((s) => s.key === 'habits')?.icon
 
-export function SchoolHabits({ schoolId, onBack }) {
+export function SchoolHabits({ schoolId }) {
   const school = SCHOOLS.find((s) => s.id === schoolId)
   const stats = SCHOOL_STATS.find((s) => s.id === schoolId)
-  const health = SCHOOL_HEALTH[schoolId]
   const shortName = school.name.split(' ')[0]
 
   const sessionData = SESSION_TRENDS.map((d) => ({

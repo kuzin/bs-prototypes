@@ -8,10 +8,16 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "new": "node scripts/new-prototype.js",
+    "check": "node scripts/check-prototypes.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,jsx,css,json,md,yml,yaml}": "prettier --write"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -32,17 +38,19 @@
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
-    "@eslint/js": "^9.13.0",
+    "@eslint/js": "^9.39.4",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@vitejs/plugin-react": "^4.3.3",
-    "eslint": "^9.13.0",
+    "@vitejs/plugin-react": "^5.2.0",
+    "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-react": "^7.37.2",
-    "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.14",
-    "globals": "^15.11.0",
+    "eslint-plugin-react": "^7.37.5",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-react-refresh": "^0.5.2",
+    "globals": "^17.6.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
     "prettier": "^3.8.3",
-    "vite": "^5.4.10"
+    "vite": "^6.4.3"
   }
 }

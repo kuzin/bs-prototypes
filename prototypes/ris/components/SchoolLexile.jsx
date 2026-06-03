@@ -10,9 +10,8 @@ const SKILLS_COLOR = '#7C3AED'
 const EXPECTED_GROWTH = 65
 const SKILLS_ICON = SECTIONS.find((s) => s.key === 'skills')?.icon
 
-export function SchoolLexile({ schoolId, onBack }) {
+export function SchoolLexile({ schoolId }) {
   const school = SCHOOLS.find((s) => s.id === schoolId)
-  const health = SCHOOL_HEALTH[schoolId]
   const lexile = LEXILE_DATA.find((d) => d.id === schoolId)
   const grades = SCHOOL_LEXILE_BY_GRADE[schoolId]
   const shortName = school.name.split(' ')[0]
