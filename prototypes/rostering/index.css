@@ -349,36 +349,23 @@
   display: flex;
   flex: 1 1 auto;
   flex-direction: row;
-  align-items: flex-end;
+  align-items: center;
   flex-wrap: wrap;
   gap: 6px 16px;
   min-width: 0;
 }
-/* Count sits beside the picker, aligned with the trigger (below the caption). */
-.rost-fi-school + .rost-fi-text {
-  padding-bottom: 9px;
-}
-/* The school picker reuses the shared CustomSelect (with its label as the
-   caption); constrain the labeled wrapper so the trigger isn't full-width. */
-.rost-fi-school {
+/* The school picker reuses the shared CustomSelect; with no label the class
+   lands on the trigger itself, so size + accent it directly. */
+.rost-fi-school.csel-trigger {
   width: min(320px, 100%);
-}
-.rost-fi-school .frm-self-label {
-  font-size: 10.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: #6b7280;
-}
-.rost-fi-school .csel-trigger {
   font-weight: 700;
   color: var(--rost-accent-deep);
 }
-.rost-fi-school .csel-trigger:hover {
+.rost-fi-school.csel-trigger:hover {
   border-color: var(--rost-accent);
 }
-.rost-fi-school .csel-trigger:focus-visible,
-.rost-fi-school .csel-trigger[data-state='open'] {
+.rost-fi-school.csel-trigger:focus-visible,
+.rost-fi-school.csel-trigger[data-state='open'] {
   border-color: var(--rost-accent);
   box-shadow: 0 0 0 3px var(--rost-accent-soft);
 }

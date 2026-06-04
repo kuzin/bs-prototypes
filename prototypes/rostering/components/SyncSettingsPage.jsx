@@ -288,7 +288,7 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
               options={schools.map((s) => ({ value: s.id, label: s.name }))}
               value={schoolId}
               onChange={onSchoolId}
-              label="Previewing"
+              placeholder="Choose a school"
               size="md"
               className="rost-fi-school"
             />
