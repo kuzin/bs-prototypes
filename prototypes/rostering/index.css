@@ -235,10 +235,28 @@
   gap: 3px;
   min-width: 0;
 }
+.rost-mode-card-titlerow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 .rost-mode-card-title {
   font-size: 14px;
   font-weight: 700;
   color: #111827;
+}
+.rost-mode-card-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--rost-green-soft);
+  color: #0f7350;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 .rost-mode-card-desc {
   font-size: 12.5px;
@@ -325,37 +343,31 @@
 .rost-fi {
   margin-top: 22px;
 }
-/* District version: inline school picker that sits inside the count line.
-   appearance:none hides the native arrow; we draw our own chevron via a
-   background SVG so it sits cleanly inside the inline pill. */
-.rost-fi-school-select {
-  appearance: none;
-  -webkit-appearance: none;
-  font: inherit;
+/* District version: the per-school preview picker stacks under a small caption,
+   with the synced-count reading as a quiet sub-line below it. */
+.rost-fi-summary {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  min-width: 0;
+}
+/* The school picker reuses the shared CustomSelect; with no label the class
+   lands on the trigger itself, so size + accent it directly. */
+.rost-fi-school.csel-trigger {
+  width: min(320px, 100%);
   font-weight: 700;
-  color: var(--rost-accent-deep, #5b3fc8);
-  background-color: #fff;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235B3FC8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><polyline points='4,6 8,10 12,6'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 7px center;
-  background-size: 12px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 2px 24px 2px 8px;
-  cursor: pointer;
-  margin-left: 2px;
-  vertical-align: baseline;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+  color: var(--rost-accent-deep);
 }
-.rost-fi-school-select:hover {
-  border-color: var(--rost-accent, #7c5cfa);
+.rost-fi-school.csel-trigger:hover {
+  border-color: var(--rost-accent);
 }
-.rost-fi-school-select:focus-visible {
-  outline: none;
-  border-color: var(--rost-accent, #7c5cfa);
-  box-shadow: 0 0 0 3px var(--rost-accent-soft, #eeeafe);
+.rost-fi-school.csel-trigger:focus-visible,
+.rost-fi-school.csel-trigger[data-state='open'] {
+  border-color: var(--rost-accent);
+  box-shadow: 0 0 0 3px var(--rost-accent-soft);
 }
 /* District Last Sync table: borders off — rows read via zebra striping only */
 .rost-ls-tbl .tbl-th {
@@ -371,6 +383,10 @@
   justify-content: space-between;
   gap: 14px;
   flex-wrap: wrap;
+  padding: 14px 16px;
+  background: #f9fafb;
+  border: 1px solid #eceef1;
+  border-radius: 10px;
 }
 .rost-fi-text {
   font-size: 13.5px;
@@ -406,6 +422,135 @@
 }
 .rost-fi-panel {
   margin-top: 14px;
+}
+
+/* "Hold tight, grabbing this preview" loading state in the count line —
+   a glowing accent pill with a shimmer sweep + bouncing dots. */
+.rost-fi-loading {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 14px 5px 10px;
+  border-radius: 999px;
+  background: linear-gradient(120deg, var(--rost-accent-soft) 0%, #f4effe 100%);
+  box-shadow: inset 0 0 0 1px rgba(124, 92, 250, 0.16);
+  color: var(--rost-accent-deep);
+  font-weight: 800;
+  font-size: 12.5px;
+  letter-spacing: -0.005em;
+  overflow: hidden;
+  animation: rost-fi-loading-pop 0.22s ease-out;
+}
+.rost-fi-loading > * {
+  position: relative;
+  z-index: 1;
+}
+/* light sweep across the pill */
+.rost-fi-loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background: linear-gradient(
+    110deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.75) 50%,
+    transparent 75%
+  );
+  transform: translateX(-120%);
+  animation: rost-fi-sweep 1.3s ease-in-out infinite;
+}
+.rost-fi-loading .spn {
+  color: var(--rost-accent);
+}
+@keyframes rost-fi-sweep {
+  to {
+    transform: translateX(120%);
+  }
+}
+@keyframes rost-fi-loading-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rost-fi-loading::after {
+    animation: none;
+  }
+}
+
+/* Added / removed deltas next to the count */
+.rost-fi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+  vertical-align: baseline;
+}
+.rost-fi-delta-add,
+.rost-fi-delta-rem {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.rost-fi-delta-add {
+  background: var(--rost-green-soft);
+  color: #0f7350;
+}
+.rost-fi-delta-rem {
+  background: var(--rost-red-soft);
+  color: var(--rost-red);
+}
+
+/* Loading state shown while the expanded class list "fetches" */
+.rost-fi-panel-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 180px;
+  border: 1px solid #eef0f3;
+  border-radius: 12px;
+  background: #fcfbff;
+  color: var(--rost-accent-deep);
+  font-size: 13px;
+  font-weight: 700;
+}
+.rost-fi-panel-loading .spn {
+  color: var(--rost-accent);
+}
+
+/* Preview table toolbar: search + segmented view + count */
+.rost-fi-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.rost-fi-search {
+  flex: 1 1 220px;
+  min-width: 180px;
+  max-width: 340px;
+}
+.rost-fi-count {
+  margin-left: auto;
+  color: #6b7280;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 /* ─── Filter bar (search + segmented + count) ─────────────────────────────── */
@@ -575,6 +720,15 @@
 .rost-status--removed .rost-status-dot {
   background: var(--rost-red);
 }
+/* Newly added (will start syncing) — green with a leading + glyph */
+.rost-status--added {
+  background: var(--rost-green-soft);
+  color: #0f7350;
+  box-shadow: inset 0 0 0 1px rgba(22, 169, 122, 0.28);
+}
+.rost-status svg {
+  display: block;
+}
 
 /* ─── Schedule (Summer pause) — banners + date fields ─────────────────────── */
 .rost-info-banner {
@@ -709,21 +863,27 @@
 .rost-ls-li-deact {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   font: inherit;
   font-size: 12px;
   font-weight: 700;
   color: var(--rost-blue);
-  background: var(--rost-blue-soft);
-  border: none;
-  border-radius: 999px;
-  padding: 3px 10px;
+  background: #fff;
+  border: 1px solid #c9d8fb;
+  border-radius: 8px;
+  padding: 5px 11px;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.12s;
+  box-shadow: 0 1px 1px rgba(16, 24, 40, 0.04);
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    box-shadow 0.12s;
 }
 .rost-ls-li-deact:hover {
-  background: #c9dbfb;
+  background: var(--rost-blue-soft);
+  border-color: var(--rost-blue);
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.18);
 }
 .rost-ls-li-deact svg {
   transition: transform 0.12s;
@@ -772,14 +932,43 @@
 
 /* ─── Deactivation modal ──────────────────────────────────────────────────── */
 .modal--center:has(.rost-deact-modal) {
-  width: min(640px, calc(100vw - 32px));
+  width: min(680px, calc(100vw - 32px));
 }
 .rost-deact-modal .modal-body {
-  padding: 0;
+  padding: 16px 20px 20px;
 }
 .rost-deact-modal .rost-ls-drill-table {
   border: none;
   border-radius: 0;
+}
+
+/* Scalable deactivated-user list (search + paginated table) */
+.rost-deact-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.rost-deact-search {
+  flex: 1 1 220px;
+  min-width: 180px;
+  max-width: 320px;
+}
+/* Cap the table so even a 300-row site keeps the dialog on-screen; the body
+   scrolls and pagination sits below. */
+.rost-deact-tablewrap {
+  border: 1px solid #eef0f3;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.rost-deact-tablewrap .tbl-scroll {
+  max-height: 46vh;
+  overflow-y: auto;
+}
+.rost-deact-tablewrap .rost-ls-drill-name {
+  font-weight: 600;
+  color: #111827;
 }
 .rost-deact-sub {
   margin-top: 3px;

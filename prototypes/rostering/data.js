@@ -53,16 +53,23 @@ export const SUBJECT_CATEGORY = {
 
 // ─── Import filter (per-school) ──────────────────────────────────────────────
 // mode:
+//   'import_all'                 → import every class Clever sends (best practice)
 //   'filtered_import'            → import ELA + Homeroom classes
 //   'import__filtered_and_other' → import ELA + Homeroom + Other classes
 // customSubjects: extra keywords. A class also imports when its name or subject
 // contains one of these — ON TOP OF whatever the mode pulls in.
 export const MODE_CATEGORIES = {
+  import_all: Object.keys(CATEGORY_LABEL),
   filtered_import: ['ela', 'homeroom'],
   import__filtered_and_other: ['ela', 'homeroom', 'other'],
 }
 
 export const MODE_OPTIONS = [
+  {
+    id: 'import_all',
+    label: 'All Subjects',
+    desc: 'Import every class Clever sends. The simplest setup — nothing is filtered out.',
+  },
   {
     id: 'filtered_import',
     label: 'ELA & Homeroom only',
@@ -201,10 +208,111 @@ export function classImportSource(cls, filter) {
   return null
 }
 
+// ─── Deactivated-user generation ─────────────────────────────────────────────
+// Deactivated lists are intentionally LARGE — at end of year a real site can
+// have hundreds of deactivations (graduating cohorts, transfers). The drill-down
+// modals must stay usable at that scale (search + pagination), so we generate the
+// rows deterministically rather than hand-listing a handful.
+const FIRST_NAMES = [
+  'Harper',
+  'Janesha',
+  'Ayden',
+  'Jacqueline',
+  'Devon',
+  'Mia',
+  'Caleb',
+  'Nadia',
+  'Owen',
+  'Priya',
+  'Marcus',
+  'Tasha',
+  'Elena',
+  'Jamal',
+  'Sofia',
+  'Liam',
+  'Aaliyah',
+  'Mateo',
+  'Chloe',
+  'Ethan',
+  'Zoe',
+  'Noah',
+  'Layla',
+  'Isaac',
+  'Amara',
+  'Diego',
+  'Ruby',
+  'Kai',
+  'Nina',
+  'Omar',
+  'Quinn',
+  'Talia',
+]
+const LAST_NAMES = [
+  'Gantt',
+  'Salters',
+  'Carter',
+  'McDaniel',
+  'Boyd',
+  'Nunez',
+  'Frye',
+  'Rahman',
+  'Vance',
+  'Desai',
+  'Greene',
+  'Williams',
+  'Morales',
+  'Brooks',
+  'Pham',
+  'Okafor',
+  'Reyes',
+  'Holcombe',
+  'Pruitt',
+  'Bell',
+  'Park',
+  'Davis',
+  'Chen',
+  'Patel',
+  'Foster',
+  'Nguyen',
+  'Sloan',
+  'Avery',
+  'Marsh',
+  'Cole',
+  'Webb',
+  'Ruiz',
+]
+
+function deactName(i) {
+  // The `+ floor(i / len)` term advances the last name once per full cycle of
+  // first names, so first/last don't move in lockstep (which would otherwise
+  // repeat the same handful of full names over and over).
+  const first = FIRST_NAMES[(i * 7 + 3) % FIRST_NAMES.length]
+  const last = LAST_NAMES[(i * 13 + 5 + Math.floor(i / FIRST_NAMES.length)) % LAST_NAMES.length]
+  return `${first} ${last}`
+}
+
+// Build `n` deactivated users. `role` fixes the type (school view splits the two
+// lists); leave it null for the district view's mixed Teacher/Student list.
+function buildDeactivated(n, { offset = 0, role = null } = {}) {
+  return Array.from({ length: n }, (_, i) => {
+    const k = offset + i
+    const early = k % 3 === 0
+    return {
+      name: deactName(k),
+      role: role ?? (k % 5 === 0 ? 'Teacher' : 'Student'),
+      deactivatedAt: early ? '2026-05-16T04:48:00' : '2026-05-20T02:41:00',
+      scheduledDeletion: early ? '2026-05-24' : '2026-05-31',
+    }
+  })
+}
+
 // ─── Last sync snapshot (school-tool style) ──────────────────────────────────
 // Totals from the most recent sync, with the deactivated users behind each
 // "Deactivated" count. Deactivated users are deleted on their scheduled date
 // unless they reappear in a later sync.
+const STILES_TEACHERS_DEACT = buildDeactivated(11, { offset: 0, role: 'Teacher' })
+const STILES_STUDENTS_DEACT = buildDeactivated(214, { offset: 40, role: 'Student' })
+
 export const LAST_SYNC = {
   at: '2026-05-26T02:00:00-04:00',
   result: 'success',
@@ -212,32 +320,8 @@ export const LAST_SYNC = {
   students: 1204,
   sections: 72,
   enrollments: 5412,
-  teachersDeactivated: [
-    {
-      name: 'Marcus Greene',
-      deactivatedAt: '2026-05-20T02:41:00',
-      scheduledDeletion: '2026-05-31',
-    },
-    {
-      name: 'Tasha Williams',
-      deactivatedAt: '2026-05-20T02:41:00',
-      scheduledDeletion: '2026-05-31',
-    },
-  ],
-  studentsDeactivated: [
-    { name: 'Harper Gantt', deactivatedAt: '2026-05-16T04:48:00', scheduledDeletion: '2026-05-24' },
-    {
-      name: 'Janesha Salters',
-      deactivatedAt: '2026-05-16T04:48:00',
-      scheduledDeletion: '2026-05-24',
-    },
-    { name: 'Ayden Carter', deactivatedAt: '2026-05-20T02:41:00', scheduledDeletion: '2026-05-31' },
-    {
-      name: 'Jacqueline McDaniel',
-      deactivatedAt: '2026-05-20T02:41:00',
-      scheduledDeletion: '2026-05-31',
-    },
-  ],
+  teachersDeactivated: STILES_TEACHERS_DEACT,
+  studentsDeactivated: STILES_STUDENTS_DEACT,
 }
 
 // ─── District context (powers the district version of this prototype) ─────────
@@ -253,37 +337,11 @@ function scaleCounts(counts, factor) {
   return out
 }
 
-// Per-school deactivated-user pool for the Last Sync drill-down modals.
-const DEACT_POOL = [
-  { name: 'Marcus Greene', role: 'Teacher' },
-  { name: 'Harper Gantt', role: 'Student' },
-  { name: 'Tasha Williams', role: 'Teacher' },
-  { name: 'Janesha Salters', role: 'Student' },
-  { name: 'Ayden Carter', role: 'Student' },
-  { name: 'Jacqueline McDaniel', role: 'Teacher' },
-  { name: 'Devon Boyd', role: 'Student' },
-  { name: 'Mia Nunez', role: 'Student' },
-  { name: 'Caleb Frye', role: 'Student' },
-  { name: 'Nadia Rahman', role: 'Teacher' },
-  { name: 'Owen Vance', role: 'Student' },
-  { name: 'Priya Desai', role: 'Teacher' },
-]
-
-function buildDeactivated(n, offset = 0) {
-  return Array.from({ length: n }, (_, i) => {
-    const u = DEACT_POOL[(offset + i) % DEACT_POOL.length]
-    const early = i % 2 === 0
-    return {
-      ...u,
-      deactivatedAt: early ? '2026-05-16T04:48:00' : '2026-05-20T02:41:00',
-      scheduledDeletion: early ? '2026-05-24' : '2026-05-31',
-    }
-  })
-}
-
 // Each school carries its own roster (for the filter preview), last-sync totals,
 // and deactivated-user list (for the Last Sync table + drill-down modal). Stiles
-// Point's numbers match the school version's LAST_SYNC.
+// Point's numbers match the school version's LAST_SYNC (teachers + students
+// deactivated combined into one mixed list). Counts vary widely so the district's
+// drill-down modals are exercised at real end-of-year scale (some run to 300+).
 export const SCHOOLS = [
   {
     id: 'stiles-point',
@@ -293,7 +351,7 @@ export const SCHOOLS = [
     students: 1204,
     sections: 72,
     enrollments: 5412,
-    deactivatedUsers: buildDeactivated(6, 0),
+    deactivatedUsers: [...STILES_TEACHERS_DEACT, ...STILES_STUDENTS_DEACT],
     classes: INCOMING_CLASSES,
   },
   {
@@ -304,7 +362,7 @@ export const SCHOOLS = [
     students: 1098,
     sections: 66,
     enrollments: 4940,
-    deactivatedUsers: buildDeactivated(3, 2),
+    deactivatedUsers: buildDeactivated(186, { offset: 9 }),
     classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 0.88), 'ji'),
   },
   {
@@ -315,7 +373,7 @@ export const SCHOOLS = [
     students: 1012,
     sections: 60,
     enrollments: 4550,
-    deactivatedUsers: buildDeactivated(2, 5),
+    deactivatedUsers: buildDeactivated(97, { offset: 23 }),
     classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 0.74), 'hv'),
   },
   {
@@ -326,7 +384,7 @@ export const SCHOOLS = [
     students: 1340,
     sections: 80,
     enrollments: 6030,
-    deactivatedUsers: buildDeactivated(5, 7),
+    deactivatedUsers: buildDeactivated(0),
     classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 1.18), 'ml'),
   },
   {
@@ -337,7 +395,7 @@ export const SCHOOLS = [
     students: 1486,
     sections: 88,
     enrollments: 6680,
-    deactivatedUsers: buildDeactivated(4, 1),
+    deactivatedUsers: buildDeactivated(148, { offset: 51 }),
     classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 1.32), 'cr'),
   },
   {
@@ -348,7 +406,7 @@ export const SCHOOLS = [
     students: 1720,
     sections: 102,
     enrollments: 7740,
-    deactivatedUsers: buildDeactivated(6, 4),
+    deactivatedUsers: buildDeactivated(312, { offset: 7 }),
     classes: buildClasses(scaleCounts(SUBJECT_COUNTS, 1.5), 'fj'),
   },
 ]
