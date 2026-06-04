@@ -1,9 +1,12 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { ChartCard } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
 import { Modal } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
+import { Spinner } from '@components/Primitives/Primitives'
+import '@components/Primitives/Primitives.css'
+import { SearchInput } from '@components/SearchInput/SearchInput'
 import {
   SOURCE,
   INCOMING_CLASSES,
@@ -86,7 +89,10 @@ function ModeCard({ option, active, onSelect }) {
         aria-hidden="true"
       />
       <span className="rost-mode-card-body">
-        <span className="rost-mode-card-title">{option.label}</span>
+        <span className="rost-mode-card-titlerow">
+          <span className="rost-mode-card-title">{option.label}</span>
+          {option.tag && <span className="rost-mode-card-tag">{option.tag}</span>}
+        </span>
         <span className="rost-mode-card-desc">{option.desc}</span>
       </span>
     </button>
@@ -138,24 +144,48 @@ function CustomSubjects({ words, onAdd, onRemove }) {
   )
 }
 
-// Of the classes currently syncing, whether the (draft) filter keeps each one
-// or would drop it from the sync.
-function FilterStatusPill({ synced }) {
-  return synced ? (
-    <span className="rost-status rost-status--sync">
-      <span className="rost-status-dot" />
-      Synced
-    </span>
-  ) : (
-    <span className="rost-status rost-status--removed">
-      <span className="rost-status-dot" />
-      Filtered Out
+// Each class's status relative to the saved filter: it's being newly added,
+// removed, kept (already synced), or left out — so the preview shows additions
+// AND subtractions, not just what's dropped.
+function classStatus(cls, filter, savedFilter) {
+  const before = classImportSource(cls, savedFilter) !== null
+  const after = classImportSource(cls, filter) !== null
+  if (!before && after) return 'adding'
+  if (before && !after) return 'removing'
+  return after ? 'synced' : 'excluded'
+}
+
+const STATUS_META = {
+  adding: { cls: 'rost-status--added', label: 'Adding', icon: 'plus' },
+  removing: { cls: 'rost-status--removed', label: 'Removing', icon: 'minus' },
+  synced: { cls: 'rost-status--sync', label: 'Synced', icon: null },
+  excluded: { cls: 'rost-status--filter', label: 'Not synced', icon: null },
+}
+
+function ClassStatusPill({ status }) {
+  const m = STATUS_META[status]
+  return (
+    <span className={`rost-status ${m.cls}`}>
+      {m.icon ? (
+        <Icon name={m.icon} size={11} stroke={2.4} />
+      ) : (
+        <span className="rost-status-dot" />
+      )}
+      {m.label}
     </span>
   )
 }
 
+const VIEW_OPTIONS = [
+  { id: 'syncing', label: 'Syncing' },
+  { id: 'changes', label: 'Changes' },
+  { id: 'all', label: 'All' },
+]
+
 function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSchoolId }) {
   const [open, setOpen] = useState(false)
+  const [view, setView] = useState('syncing') // 'syncing' | 'changes' | 'all'
+  const [query, setQuery] = useState('')
 
   const isDistrict = scope === 'district'
   // District: preview the filter against the chosen school's roster. School: the
@@ -164,18 +194,60 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
     ? (schools.find((s) => s.id === schoolId)?.classes ?? INCOMING_CLASSES)
     : INCOMING_CLASSES
 
-  // We can only preview against the classes that are actually synced today —
-  // i.e. those the currently-saved filter pulls in. For each, show whether the
-  // edited filter keeps it ("Synced") or would drop it ("Filtered Out").
+  // Classify EVERY incoming class so the preview reflects the full picture —
+  // what the edited filter will add as well as what it'll remove.
   const classified = useMemo(
-    () =>
-      classes
-        .filter((c) => classImportSource(c, savedFilter) !== null)
-        .map((c) => ({ ...c, synced: classImportSource(c, filter) !== null })),
+    () => classes.map((c) => ({ ...c, status: classStatus(c, filter, savedFilter) })),
     [classes, filter, savedFilter],
   )
   const total = classified.length
-  const kept = classified.filter((c) => c.synced).length
+  const afterCount = classified.filter((c) => c.status === 'synced' || c.status === 'adding').length
+  const addCount = classified.filter((c) => c.status === 'adding').length
+  const remCount = classified.filter((c) => c.status === 'removing').length
+  const changeCount = addCount + remCount
+
+  // Simulate the round-trip of fetching a fresh preview whenever the filter (or
+  // the previewed school) changes — "hold tight, grabbing this for you", same as
+  // the wait after a CSV roster upload. Skip the very first render.
+  const previewKey = `${filter.mode}|${[...filter.customSubjects]
+    .map((w) => w.toLowerCase())
+    .sort()
+    .join(',')}|${schoolId ?? ''}`
+  const [previewing, setPreviewing] = useState(false)
+  const firstRun = useRef(true)
+  useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false
+      return
+    }
+    setPreviewing(true)
+    const t = setTimeout(() => setPreviewing(false), 750)
+    return () => clearTimeout(t)
+  }, [previewKey])
+
+  // Expanding the class list also "goes and fetches" the per-class breakdown —
+  // show a brief loading state in the panel each time it opens.
+  const [opening, setOpening] = useState(false)
+  useEffect(() => {
+    if (!open) return
+    setOpening(true)
+    const t = setTimeout(() => setOpening(false), 600)
+    return () => clearTimeout(t)
+  }, [open])
+
+  // Table rows: apply the segmented view, then the text search.
+  const rows = useMemo(() => {
+    let r = classified
+    if (view === 'syncing') r = r.filter((c) => c.status === 'synced' || c.status === 'adding')
+    else if (view === 'changes')
+      r = r.filter((c) => c.status === 'adding' || c.status === 'removing')
+    const q = query.trim().toLowerCase()
+    if (q)
+      r = r.filter((c) =>
+        `${c.name} ${c.subject} ${c.teachers.join(' ')}`.toLowerCase().includes(q),
+      )
+    return r
+  }, [classified, view, query])
 
   const columns = [
     {
@@ -191,15 +263,16 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
     {
       key: 'subject',
       label: 'Subject',
+      sortable: true,
       render: (v) => <span style={{ fontWeight: 600, fontSize: 13 }}>{v}</span>,
     },
     { key: 'teachers', label: 'Teacher(s)', render: (v) => v.join(', ') },
     { key: 'students', label: '# Students', align: 'right', sortable: true },
     {
-      key: 'synced',
+      key: 'status',
       label: 'Filter Status',
       align: 'right',
-      render: (v) => <FilterStatusPill synced={v} />,
+      render: (v) => <ClassStatusPill status={v} />,
     },
   ]
 
@@ -209,11 +282,9 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
 
       <div className="rost-fi-bar">
         <span className="rost-fi-text">
-          Keeping <b>{kept}</b> of {total} synced classes
           {isDistrict && (
             <>
-              {' '}
-              for{' '}
+              Previewing{' '}
               <select
                 className="rost-fi-school-select"
                 value={schoolId}
@@ -225,7 +296,25 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
                     {s.name}
                   </option>
                 ))}
-              </select>
+              </select>{' '}
+              —{' '}
+            </>
+          )}
+          {previewing ? (
+            <span className="rost-fi-loading">
+              <Spinner size="sm" />
+              Fetching preview…
+            </span>
+          ) : (
+            <>
+              {isDistrict ? 'syncing' : 'Syncing'} <b>{afterCount.toLocaleString()}</b> of{' '}
+              {total.toLocaleString()} classes
+              {changeCount > 0 && (
+                <span className="rost-fi-delta">
+                  {addCount > 0 && <span className="rost-fi-delta-add">+{addCount} added</span>}
+                  {remCount > 0 && <span className="rost-fi-delta-rem">−{remCount} removed</span>}
+                </span>
+              )}
             </>
           )}
         </span>
@@ -249,19 +338,53 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
 
       {open && (
         <div className="rost-fi-panel">
-          <div className="rost-card rost-classes-table" style={{ padding: 0 }}>
-            <Table
-              columns={columns}
-              rows={classified}
-              getRowKey={(r) => r.id}
-              zebra
-              stickyHeader
-              scrollX
-              pageSize={12}
-              flush
-              empty="No classes."
-            />
-          </div>
+          {opening ? (
+            <div className="rost-fi-panel-loading">
+              <Spinner />
+              <span>Fetching classes…</span>
+            </div>
+          ) : (
+            <>
+              <div className="rost-fi-toolbar">
+                <SearchInput
+                  value={query}
+                  onChange={setQuery}
+                  placeholder="Search classes, subjects, teachers…"
+                  className="rost-fi-search"
+                />
+                <div className="rost-seg" role="tablist" aria-label="Filter preview view">
+                  {VIEW_OPTIONS.map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={view === v.id}
+                      className={`rost-seg-btn${view === v.id ? ' rost-seg-btn--active' : ''}`}
+                      onClick={() => setView(v.id)}
+                    >
+                      {v.label}
+                      {v.id === 'changes' && changeCount > 0 && ` (${changeCount})`}
+                    </button>
+                  ))}
+                </div>
+                <span className="rost-fi-count">{rows.length.toLocaleString()} shown</span>
+              </div>
+              <div className="rost-card rost-classes-table" style={{ padding: 0 }}>
+                <Table
+                  columns={columns}
+                  rows={rows}
+                  getRowKey={(r) => r.id}
+                  zebra
+                  stickyHeader
+                  scrollX
+                  pageSize={12}
+                  flush
+                  loading={previewing}
+                  empty={query ? 'No classes match your search.' : 'No classes in this view.'}
+                />
+              </div>
+            </>
+          )}
         </div>
       )}
     </div>
@@ -319,13 +442,23 @@ function SubjectRulesSection({
         ))}
       </div>
 
-      <div className="rost-rules-label rost-rules-label--spaced">
-        Custom subjects <span className="rost-rules-label-opt">optional</span>
-      </div>
-      <div className="rost-rules-help">
-        Also sync any class whose name contains one of these keywords.
-      </div>
-      <CustomSubjects words={filter.customSubjects} onAdd={onAddCustom} onRemove={onRemoveCustom} />
+      {/* Custom keywords are pointless under "All Subjects" — everything imports
+          already — so hide the section in that mode. */}
+      {filter.mode !== 'import_all' && (
+        <>
+          <div className="rost-rules-label rost-rules-label--spaced">
+            Custom subjects <span className="rost-rules-label-opt">optional</span>
+          </div>
+          <div className="rost-rules-help">
+            Also sync any class whose name contains one of these keywords.
+          </div>
+          <CustomSubjects
+            words={filter.customSubjects}
+            onAdd={onAddCustom}
+            onRemove={onRemoveCustom}
+          />
+        </>
+      )}
 
       <FilterImpact
         filter={filter}
@@ -504,21 +637,122 @@ function fmtScheduledDeletion(date) {
   })
 }
 
+// Scalable deactivated-user list for the drill-down modals. A site can deactivate
+// hundreds of users at end of year, so this searches + paginates via the shared
+// Table rather than dumping every row into one long scroll.
+function DeactivatedList({ users, showType = false, initialRole = 'all' }) {
+  const [query, setQuery] = useState('')
+  // Mixed teacher + student lists can be filtered by role. `initialRole` lets a
+  // caller open straight onto a specific tab (e.g. the school view's Teachers row
+  // opens this already filtered to Teachers).
+  const [role, setRole] = useState(initialRole) // 'all' | 'Teacher' | 'Student'
+  const roleCounts = useMemo(
+    () => ({
+      Teacher: users.filter((u) => u.role === 'Teacher').length,
+      Student: users.filter((u) => u.role === 'Student').length,
+    }),
+    [users],
+  )
+  const rows = useMemo(() => {
+    let r = users
+    if (showType && role !== 'all') r = r.filter((u) => u.role === role)
+    const q = query.trim().toLowerCase()
+    if (q) r = r.filter((u) => `${u.name} ${u.role ?? ''}`.toLowerCase().includes(q))
+    return r
+  }, [users, query, role, showType])
+
+  const columns = [
+    {
+      key: 'name',
+      label: 'User Name',
+      sortable: true,
+      render: (v) => <span className="rost-ls-drill-name">{v}</span>,
+    },
+    ...(showType ? [{ key: 'role', label: 'Type', sortable: true }] : []),
+    {
+      key: 'deactivatedAt',
+      label: 'Deactivation Date',
+      sortable: true,
+      render: (v) => fmtDeactivatedAt(v),
+    },
+    {
+      key: 'scheduledDeletion',
+      label: 'Scheduled Deletion',
+      sortable: true,
+      render: (v) => fmtScheduledDeletion(v),
+    },
+  ]
+
+  return (
+    <div className="rost-deact-list">
+      <div className="rost-deact-toolbar">
+        <SearchInput
+          value={query}
+          onChange={setQuery}
+          placeholder="Search by name…"
+          className="rost-deact-search"
+        />
+        {showType && (
+          <div className="rost-seg" role="tablist" aria-label="Filter by user type">
+            {[
+              { id: 'all', label: `All (${users.length})` },
+              { id: 'Teacher', label: `Teachers (${roleCounts.Teacher})` },
+              { id: 'Student', label: `Students (${roleCounts.Student})` },
+            ].map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                role="tab"
+                aria-selected={role === opt.id}
+                className={`rost-seg-btn${role === opt.id ? ' rost-seg-btn--active' : ''}`}
+                onClick={() => setRole(opt.id)}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
+        <span className="rost-fi-count">
+          {rows.length.toLocaleString()}
+          {rows.length !== users.length ? ` of ${users.length.toLocaleString()}` : ''} users
+        </span>
+      </div>
+      <div className="rost-deact-tablewrap">
+        <Table
+          columns={columns}
+          rows={rows}
+          getRowKey={(r, i) => `${r.name}-${i}`}
+          zebra
+          stickyHeader
+          scrollX
+          flush
+          pageSize={9}
+          defaultSortKey="name"
+          empty="No users match your search."
+        />
+      </div>
+    </div>
+  )
+}
+
 function LastSyncSection({ scope }) {
   return scope === 'district' ? <DistrictLastSync /> : <SchoolLastSync />
 }
 
 // School: one school's most recent sync; deactivations open a drill-down modal.
 function SchoolLastSync() {
-  const [drill, setDrill] = useState(null) // 'teachers' | 'students' | null
+  // Which role tab to open the (combined) modal on: 'Teacher' | 'Student' | null.
+  const [drill, setDrill] = useState(null)
   const ls = LAST_SYNC
   const tD = ls.teachersDeactivated
   const sD = ls.studentsDeactivated
-  const drillRows = drill === 'teachers' ? tD : drill === 'students' ? sD : []
+  // One combined list, same as the district modal — the clicked row just picks
+  // which tab it opens on.
+  const allDeactivated = useMemo(() => [...tD, ...sD], [tD, sD])
 
   const items = [
-    { key: 'teachers', label: 'Teachers', value: ls.teachers, deact: tD.length },
-    { key: 'students', label: 'Students', value: ls.students, deact: sD.length },
+    { key: 'teachers', role: 'Teacher', label: 'Teachers', value: ls.teachers, deact: tD.length },
+    { key: 'students', role: 'Student', label: 'Students', value: ls.students, deact: sD.length },
     { key: 'sections', label: 'Sections', value: ls.sections },
     { key: 'enrollments', label: 'Enrollments', value: ls.enrollments },
   ]
@@ -540,7 +774,7 @@ function SchoolLastSync() {
                 <button
                   type="button"
                   className="rost-ls-li-deact"
-                  onClick={() => setDrill(it.key)}
+                  onClick={() => setDrill(it.role)}
                   aria-haspopup="dialog"
                 >
                   {it.deact} deactivated
@@ -563,9 +797,7 @@ function SchoolLastSync() {
           <div className="rost-deact-modal">
             <div className="modal-header">
               <div className="modal-header-text">
-                <h3 className="modal-title">
-                  Deactivated {drill === 'teachers' ? 'teachers' : 'students'}
-                </h3>
+                <h3 className="modal-title">Deactivated users</h3>
                 <div className="rost-deact-sub">
                   Removed on the deletion date unless they return in a later sync.
                 </div>
@@ -575,26 +807,12 @@ function SchoolLastSync() {
               </button>
             </div>
             <div className="modal-body">
-              <table className="rost-ls-drill-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>User Name</th>
-                    <th>Deactivation Date</th>
-                    <th>Scheduled Deletion</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {drillRows.map((r, i) => (
-                    <tr key={r.name}>
-                      <td>{i + 1}</td>
-                      <td className="rost-ls-drill-name">{r.name}</td>
-                      <td>{fmtDeactivatedAt(r.deactivatedAt)}</td>
-                      <td>{fmtScheduledDeletion(r.scheduledDeletion)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DeactivatedList
+                key={drill}
+                users={allDeactivated}
+                showType
+                initialRole={drill ?? 'all'}
+              />
             </div>
           </div>
         )}
@@ -675,28 +893,7 @@ function DistrictLastSync() {
               </button>
             </div>
             <div className="modal-body">
-              <table className="rost-ls-drill-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>User Name</th>
-                    <th>Type</th>
-                    <th>Deactivation Date</th>
-                    <th>Scheduled Deletion</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {(drillSchool?.deactivatedUsers ?? []).map((r, i) => (
-                    <tr key={r.name}>
-                      <td>{i + 1}</td>
-                      <td className="rost-ls-drill-name">{r.name}</td>
-                      <td>{r.role}</td>
-                      <td>{fmtDeactivatedAt(r.deactivatedAt)}</td>
-                      <td>{fmtScheduledDeletion(r.scheduledDeletion)}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <DeactivatedList users={drillSchool?.deactivatedUsers ?? []} showType />
             </div>
           </div>
         )}

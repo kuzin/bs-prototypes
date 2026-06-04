@@ -235,10 +235,28 @@
   gap: 3px;
   min-width: 0;
 }
+.rost-mode-card-titlerow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
 .rost-mode-card-title {
   font-size: 14px;
   font-weight: 700;
   color: #111827;
+}
+.rost-mode-card-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 999px;
+  background: var(--rost-green-soft);
+  color: #0f7350;
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
 }
 .rost-mode-card-desc {
   font-size: 12.5px;
@@ -408,6 +426,86 @@
   margin-top: 14px;
 }
 
+/* "Hold tight, grabbing this preview" loading state in the count line */
+.rost-fi-loading {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--rost-accent-deep);
+  font-weight: 700;
+}
+.rost-fi-loading .spn {
+  color: var(--rost-accent);
+}
+
+/* Added / removed deltas next to the count */
+.rost-fi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 10px;
+  vertical-align: baseline;
+}
+.rost-fi-delta-add,
+.rost-fi-delta-rem {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 9px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+.rost-fi-delta-add {
+  background: var(--rost-green-soft);
+  color: #0f7350;
+}
+.rost-fi-delta-rem {
+  background: var(--rost-red-soft);
+  color: var(--rost-red);
+}
+
+/* Loading state shown while the expanded class list "fetches" */
+.rost-fi-panel-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 180px;
+  border: 1px solid #eef0f3;
+  border-radius: 12px;
+  background: #fcfbff;
+  color: var(--rost-accent-deep);
+  font-size: 13px;
+  font-weight: 700;
+}
+.rost-fi-panel-loading .spn {
+  color: var(--rost-accent);
+}
+
+/* Preview table toolbar: search + segmented view + count */
+.rost-fi-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.rost-fi-search {
+  flex: 1 1 220px;
+  min-width: 180px;
+  max-width: 340px;
+}
+.rost-fi-count {
+  margin-left: auto;
+  color: #6b7280;
+  font-size: 12.5px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
 /* ─── Filter bar (search + segmented + count) ─────────────────────────────── */
 .rost-filters {
   display: flex;
@@ -575,6 +673,15 @@
 .rost-status--removed .rost-status-dot {
   background: var(--rost-red);
 }
+/* Newly added (will start syncing) — green with a leading + glyph */
+.rost-status--added {
+  background: var(--rost-green-soft);
+  color: #0f7350;
+  box-shadow: inset 0 0 0 1px rgba(22, 169, 122, 0.28);
+}
+.rost-status svg {
+  display: block;
+}
 
 /* ─── Schedule (Summer pause) — banners + date fields ─────────────────────── */
 .rost-info-banner {
@@ -709,21 +816,27 @@
 .rost-ls-li-deact {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   font: inherit;
   font-size: 12px;
   font-weight: 700;
   color: var(--rost-blue);
-  background: var(--rost-blue-soft);
-  border: none;
-  border-radius: 999px;
-  padding: 3px 10px;
+  background: #fff;
+  border: 1px solid #c9d8fb;
+  border-radius: 8px;
+  padding: 5px 11px;
   cursor: pointer;
   white-space: nowrap;
-  transition: background 0.12s;
+  box-shadow: 0 1px 1px rgba(16, 24, 40, 0.04);
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    box-shadow 0.12s;
 }
 .rost-ls-li-deact:hover {
-  background: #c9dbfb;
+  background: var(--rost-blue-soft);
+  border-color: var(--rost-blue);
+  box-shadow: 0 1px 3px rgba(37, 99, 235, 0.18);
 }
 .rost-ls-li-deact svg {
   transition: transform 0.12s;
@@ -772,14 +885,43 @@
 
 /* ─── Deactivation modal ──────────────────────────────────────────────────── */
 .modal--center:has(.rost-deact-modal) {
-  width: min(640px, calc(100vw - 32px));
+  width: min(680px, calc(100vw - 32px));
 }
 .rost-deact-modal .modal-body {
-  padding: 0;
+  padding: 16px 20px 20px;
 }
 .rost-deact-modal .rost-ls-drill-table {
   border: none;
   border-radius: 0;
+}
+
+/* Scalable deactivated-user list (search + paginated table) */
+.rost-deact-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+.rost-deact-search {
+  flex: 1 1 220px;
+  min-width: 180px;
+  max-width: 320px;
+}
+/* Cap the table so even a 300-row site keeps the dialog on-screen; the body
+   scrolls and pagination sits below. */
+.rost-deact-tablewrap {
+  border: 1px solid #eef0f3;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.rost-deact-tablewrap .tbl-scroll {
+  max-height: 46vh;
+  overflow-y: auto;
+}
+.rost-deact-tablewrap .rost-ls-drill-name {
+  font-weight: 600;
+  color: #111827;
 }
 .rost-deact-sub {
   margin-top: 3px;
