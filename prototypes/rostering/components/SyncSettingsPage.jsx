@@ -301,9 +301,14 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
             </>
           )}
           {previewing ? (
-            <span className="rost-fi-loading">
+            <span className="rost-fi-loading" role="status">
               <Spinner size="sm" />
-              Fetching preview…
+              <span className="rost-fi-loading-text">Fetching preview</span>
+              <span className="rost-fi-dots" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+              </span>
             </span>
           ) : (
             <>
