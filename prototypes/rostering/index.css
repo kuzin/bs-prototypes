@@ -343,37 +343,38 @@
 .rost-fi {
   margin-top: 22px;
 }
-/* District version: inline school picker that sits inside the count line.
-   appearance:none hides the native arrow; we draw our own chevron via a
-   background SVG so it sits cleanly inside the inline pill. */
-.rost-fi-school-select {
-  appearance: none;
-  -webkit-appearance: none;
-  font: inherit;
+/* District version: the per-school preview picker stacks under a small caption,
+   with the synced-count reading as a quiet sub-line below it. */
+.rost-fi-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  min-width: 0;
+}
+/* The school picker reuses the shared CustomSelect (with its label as the
+   caption); constrain the labeled wrapper so the trigger isn't full-width. */
+.rost-fi-school {
+  width: min(320px, 100%);
+}
+.rost-fi-school .frm-self-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #6b7280;
+}
+.rost-fi-school .csel-trigger {
   font-weight: 700;
-  color: var(--rost-accent-deep, #5b3fc8);
-  background-color: #fff;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235B3FC8' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'><polyline points='4,6 8,10 12,6'/></svg>");
-  background-repeat: no-repeat;
-  background-position: right 7px center;
-  background-size: 12px 12px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  padding: 2px 24px 2px 8px;
-  cursor: pointer;
-  margin-left: 2px;
-  vertical-align: baseline;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
+  color: var(--rost-accent-deep);
 }
-.rost-fi-school-select:hover {
-  border-color: var(--rost-accent, #7c5cfa);
+.rost-fi-school .csel-trigger:hover {
+  border-color: var(--rost-accent);
 }
-.rost-fi-school-select:focus-visible {
-  outline: none;
-  border-color: var(--rost-accent, #7c5cfa);
-  box-shadow: 0 0 0 3px var(--rost-accent-soft, #eeeafe);
+.rost-fi-school .csel-trigger:focus-visible,
+.rost-fi-school .csel-trigger[data-state='open'] {
+  border-color: var(--rost-accent);
+  box-shadow: 0 0 0 3px var(--rost-accent-soft);
 }
 /* District Last Sync table: borders off — rows read via zebra striping only */
 .rost-ls-tbl .tbl-th {

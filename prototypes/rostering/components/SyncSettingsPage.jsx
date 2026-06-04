@@ -7,6 +7,7 @@ import { Icon } from '@components/Icon/Icon'
 import { Spinner } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 import { SearchInput } from '@components/SearchInput/SearchInput'
+import { CustomSelect } from '@components/CustomSelect/CustomSelect'
 import {
   SOURCE,
   INCOMING_CLASSES,
@@ -281,43 +282,36 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
       <div className="rost-rules-label">Filter preview</div>
 
       <div className="rost-fi-bar">
-        <span className="rost-fi-text">
+        <div className="rost-fi-summary">
           {isDistrict && (
-            <>
-              Previewing{' '}
-              <select
-                className="rost-fi-school-select"
-                value={schoolId}
-                onChange={(e) => onSchoolId(e.target.value)}
-                aria-label="Choose a school to preview the filter against"
-              >
-                {schools.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>{' '}
-              —{' '}
-            </>
+            <CustomSelect
+              options={schools.map((s) => ({ value: s.id, label: s.name }))}
+              value={schoolId}
+              onChange={onSchoolId}
+              label="Previewing"
+              size="md"
+              className="rost-fi-school"
+            />
           )}
-          {previewing ? (
-            <span className="rost-fi-loading" role="status">
-              <Spinner size="sm" />
-              <span className="rost-fi-loading-text">Fetching preview…</span>
-            </span>
-          ) : (
-            <>
-              {isDistrict ? 'syncing' : 'Syncing'} <b>{afterCount.toLocaleString()}</b> of{' '}
-              {total.toLocaleString()} classes
-              {changeCount > 0 && (
-                <span className="rost-fi-delta">
-                  {addCount > 0 && <span className="rost-fi-delta-add">+{addCount} added</span>}
-                  {remCount > 0 && <span className="rost-fi-delta-rem">−{remCount} removed</span>}
-                </span>
-              )}
-            </>
-          )}
-        </span>
+          <div className="rost-fi-text">
+            {previewing ? (
+              <span className="rost-fi-loading" role="status">
+                <Spinner size="sm" />
+                <span className="rost-fi-loading-text">Fetching preview…</span>
+              </span>
+            ) : (
+              <>
+                Syncing <b>{afterCount.toLocaleString()}</b> of {total.toLocaleString()} classes
+                {changeCount > 0 && (
+                  <span className="rost-fi-delta">
+                    {addCount > 0 && <span className="rost-fi-delta-add">+{addCount} added</span>}
+                    {remCount > 0 && <span className="rost-fi-delta-rem">−{remCount} removed</span>}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
+        </div>
         <Button
           variant="secondary"
           size="sm"
