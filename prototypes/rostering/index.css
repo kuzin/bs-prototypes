@@ -347,10 +347,16 @@
    with the synced-count reading as a quiet sub-line below it. */
 .rost-fi-summary {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 10px;
+  flex: 1 1 auto;
+  flex-direction: row;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 6px 16px;
   min-width: 0;
+}
+/* Count sits beside the picker, aligned with the trigger (below the caption). */
+.rost-fi-school + .rost-fi-text {
+  padding-bottom: 9px;
 }
 /* The school picker reuses the shared CustomSelect (with its label as the
    caption); constrain the labeled wrapper so the trigger isn't full-width. */
