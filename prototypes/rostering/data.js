@@ -69,7 +69,6 @@ export const MODE_OPTIONS = [
     id: 'import_all',
     label: 'All Subjects',
     desc: 'Import every class Clever sends. The simplest setup — nothing is filtered out.',
-    tag: 'Recommended',
   },
   {
     id: 'filtered_import',
