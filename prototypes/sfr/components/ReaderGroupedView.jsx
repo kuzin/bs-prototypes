@@ -17,9 +17,8 @@ function RatingDot({ rating }) {
   if (!rating) return <span className="sess-na">—</span>
   const cfg = RATING_CONFIG[rating]
   return (
-    <span className="sess-rating" style={{ background: cfg.bg }}>
-      <span className="sess-rating-dot" style={{ background: cfg.color }} />
-      <span style={{ color: cfg.color, fontWeight: 700, fontSize: 12 }}>{cfg.label}</span>
+    <span className="sess-rating" style={{ background: cfg.bg, borderColor: `${cfg.color}33` }}>
+      <span style={{ color: cfg.color }}>{cfg.label}</span>
     </span>
   )
 }

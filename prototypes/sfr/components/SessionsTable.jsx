@@ -19,9 +19,8 @@ function RatingDot({ rating }) {
   if (!rating) return <span className="sess-na">—</span>
   const cfg = RATING_CONFIG[rating]
   return (
-    <span className="sess-rating" style={{ background: cfg.bg }}>
-      <span className="sess-rating-dot" style={{ background: cfg.color }} />
-      <span style={{ color: cfg.color, fontWeight: 700, fontSize: 12 }}>{cfg.label}</span>
+    <span className="sess-rating" style={{ background: cfg.bg, borderColor: `${cfg.color}33` }}>
+      <span style={{ color: cfg.color }}>{cfg.label}</span>
     </span>
   )
 }
@@ -328,6 +327,9 @@ export function SessionsTable({
   hideStudentColumns = false,
   onClearFilters,
 }) {
+  // Show a Source column when sessions carry an origin (Activity Badge book
+  // talks vs. post-logging title completions). Off for plain BTWB lists.
+  const showSource = sessions.some((s) => s.source)
   const columns = [
     {
       key: 'date',
@@ -379,6 +381,22 @@ export function SessionsTable({
         </span>
       ),
     },
+    ...(showSource
+      ? [
+          {
+            key: 'source',
+            label: 'Source',
+            render: (_, row) => {
+              const activity = row.source === 'activity'
+              return (
+                <span className={`sess-source-tag${activity ? '' : ' sess-source-tag--title'}`}>
+                  {activity ? 'Activity Badge' : 'Title Completion'}
+                </span>
+              )
+            },
+          },
+        ]
+      : []),
     ...(showTypeColumn
       ? [
           {

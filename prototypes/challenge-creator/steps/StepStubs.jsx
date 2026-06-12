@@ -1272,7 +1272,7 @@ function TrashIcon() {
 // Themes), a color-swatch refine bar, and a searchable grid. Tiles can be
 // favorited (star) and remember recently-used badges; color is auto-derived
 // from each badge image.
-function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selectedImg }) {
+export function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selectedImg }) {
   const themeGroups = PICKER_BADGE_GROUPS
   // Stable key so the memo/effect only re-run when the template set changes.
   const extraKey = extraGroups.map((g) => g.id).join(',')
@@ -2722,7 +2722,7 @@ function useDragReorder(onMove) {
     onDragEnd: reset,
   })
 }
-function BadgeRow({
+export function BadgeRow({
   num,
   img,
   icon,
@@ -3848,7 +3848,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
 
 // ─── Step 4 · Type-specific setup (Bingo / Points / Reading List) ─────────────
 // Book cover with a graceful fallback when the Open Library image 404s.
-function BookCover({ src, className = '' }) {
+export function BookCover({ src, className = '' }) {
   const [err, setErr] = useState(false)
   if (!src || err) {
     return (

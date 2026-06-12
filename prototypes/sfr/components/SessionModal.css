@@ -658,6 +658,21 @@
   border-left: 1px solid #e2e8f0;
 }
 
+/* ── Conversation prompt (activity-badge Book Talks only) ── */
+.sm2-prompt {
+  border: 1px solid #cffafe;
+  background: #f5feff;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.sm2-prompt-text {
+  margin: 0;
+  font-size: 13px;
+  color: #334155;
+  line-height: 1.5;
+}
+
 /* ── Flags ── */
 .sm2-flags-list {
   background: #f8fafc;

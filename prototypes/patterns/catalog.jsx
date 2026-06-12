@@ -20,6 +20,7 @@ import { layoutSections } from './sections/layout'
 import { sfrSections } from './sections/sfr'
 import { insightsSections } from './sections/insights'
 import { challengeCreatorSections } from './sections/challenge-creator'
+import { bookTalksSections } from './sections/book-talks'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -47,6 +48,7 @@ import '../sfr/components/SfrPage.css'
 import '@components/ActiveFilters/ActiveFilters.css'
 import '../insights/index.css'
 import '../challenge-creator/index.css'
+import '../book-talks/index.css'
 
 import './App.css'
 
@@ -159,6 +161,14 @@ export const GROUPS = [
     color: '#0DA7BC',
     icon: <Icon name="trophy" size={22} />,
   },
+  {
+    id: 'book-talks',
+    kind: 'prototype',
+    title: 'Benny Book Talks',
+    desc: 'Components for the Benny Book Talks prototype — chat bubbles, the live Benny chat modal, and the teacher conversation review.',
+    color: '#14B8A6',
+    icon: <Icon name="message-chatbot" size={22} />,
+  },
 ]
 
 export const SECTIONS = [
@@ -172,4 +182,5 @@ export const SECTIONS = [
   ...sfrSections,
   ...insightsSections,
   ...challengeCreatorSections,
+  ...bookTalksSections,
 ]

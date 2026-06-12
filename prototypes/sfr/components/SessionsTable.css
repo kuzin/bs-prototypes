@@ -46,16 +46,43 @@
   text-overflow: ellipsis;
 }
 
+/* Table pills share one geometry (matches the shared <Pill size="sm">):
+   11px / weight 600 / 3px 8px / pill radius / subtle tinted border. */
 .sess-unfinished-badge {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
   font-size: 11px;
   font-weight: 600;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 99px;
   background: #fff7ed;
   color: #d97706;
+  border: 1px solid color-mix(in srgb, #d97706 20%, transparent);
   white-space: nowrap;
   flex-shrink: 0;
+}
+
+/* Source of the Benny conversation — "Activity Badge" book talks (a self-
+   contained AI chat) vs the default post-logging check-in. */
+.sess-source-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 99px;
+  background: #ecfeff;
+  color: #0e7490;
+  border: 1px solid color-mix(in srgb, #0e7490 20%, transparent);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* Post-logging title-completion check-ins (the existing BTWB trigger). */
+.sess-source-tag--title {
+  background: #f1f5f9;
+  color: #475569;
+  border-color: color-mix(in srgb, #475569 20%, transparent);
 }
 
 .sess-rating {
@@ -64,14 +91,9 @@
   gap: 5px;
   padding: 3px 8px;
   border-radius: 99px;
-  font-size: 12px;
-}
-
-.sess-rating-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  border: 1px solid transparent;
 }
 
 .sess-flags {

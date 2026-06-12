@@ -37,6 +37,7 @@ const ICON_NAMES = {
   rostering: 'arrows-exchange', // sync between systems
   'rostering-district': 'refresh', // district-wide sync
   insights: 'chart-bar', // analytics
+  'book-talks': 'message-circle',
 }
 
 const ICONS = Object.fromEntries(
