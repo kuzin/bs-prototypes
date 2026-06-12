@@ -95,4 +95,12 @@ export const PROTOTYPES = [
     accent: '#7C3AED',
     description: 'Shared RIS components — cards, charts, tooltips, icons.',
   },
+  {
+    id: 'book-talks',
+    name: 'Book Talk Badges',
+    section: 'Prototypes',
+    href: '/bs-prototypes/book-talks/',
+    accent: '#14B8A6',
+    description: 'Self-contained Benny Book Talk activity badge — chat to earn it.',
+  },
 ]

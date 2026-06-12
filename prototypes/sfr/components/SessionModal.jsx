@@ -422,22 +422,29 @@ export function SessionModal({
                   })}
                 </div>
 
-                <div className="sm2-sessions-subhead sm2-sessions-subhead--logs">Reading Logs</div>
-                <ul className="sm2-readlog-list">
-                  {readingLog
-                    .filter((e) => !e.hasBTWB)
-                    .map((entry, i) => (
-                      <li key={i} className="sm2-readlog-row">
-                        <span className="sm2-readlog-date">
-                          {entry.date.toLocaleDateString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </span>
-                        <span className="sm2-readlog-mins">{entry.minutes} min</span>
-                      </li>
-                    ))}
-                </ul>
+                {/* Activity-badge book talks aren't tied to a reading log. */}
+                {d.source !== 'activity' && (
+                  <>
+                    <div className="sm2-sessions-subhead sm2-sessions-subhead--logs">
+                      Reading Logs
+                    </div>
+                    <ul className="sm2-readlog-list">
+                      {readingLog
+                        .filter((e) => !e.hasBTWB)
+                        .map((entry, i) => (
+                          <li key={i} className="sm2-readlog-row">
+                            <span className="sm2-readlog-date">
+                              {entry.date.toLocaleDateString('en-US', {
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </span>
+                            <span className="sm2-readlog-mins">{entry.minutes} min</span>
+                          </li>
+                        ))}
+                    </ul>
+                  </>
+                )}
               </div>
             )}
           </div>
@@ -451,18 +458,34 @@ export function SessionModal({
               <Table
                 className="sm2-details-table"
                 columns={[
-                  { key: 'dateRead', label: 'Date Read' },
-                  { key: 'unit', label: 'Unit' },
+                  { key: 'dateRead', label: d.source === 'activity' ? 'Date' : 'Date Read' },
+                  { key: 'unit', label: d.source === 'activity' ? 'Activity' : 'Unit' },
                 ]}
                 rows={[
                   {
                     id: 'details',
                     dateRead: dateStr,
-                    unit: `${d.minutesLogged.toLocaleString()} Minutes`,
+                    unit:
+                      d.source === 'activity'
+                        ? d.activityName || 'Book Talk'
+                        : `${d.minutesLogged.toLocaleString()} Minutes`,
                   },
                 ]}
               />
             </div>
+
+            {/* Activity-badge Book Talks run from a teacher-chosen prompt — show
+                it so the teacher knows what Benny was working from. */}
+            {d.source === 'activity' && d.promptText && (
+              <div className="sm2-section">
+                <div className="sm2-section-head">
+                  <span className="sm2-section-title">Conversation Prompt</span>
+                </div>
+                <div className="sm2-prompt">
+                  <p className="sm2-prompt-text">{d.promptText}</p>
+                </div>
+              </div>
+            )}
 
             {d.engagementRating && (
               <div className="sm2-section">
@@ -584,22 +607,25 @@ export function SessionModal({
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="sm2-footer">
-          <Button variant="secondary">Edit Session</Button>
-          <div className="sm2-footer-actions">
-            <button className="sm2-btn sm2-btn--danger">Delete Session</button>
-            {canApprove && (
-              <Button
-                variant="primary"
-                onClick={() => onApproveRequest?.(d)}
-                icon={<Icon name="check" size={13} stroke={2.2} />}
-              >
-                Approve Session
-              </Button>
-            )}
+        {/* Footer — integrity actions; an activity-badge Book Talk isn't an
+            integrity session, so it has no Approve/Edit/Delete bar. */}
+        {d.source !== 'activity' && (
+          <div className="sm2-footer">
+            <Button variant="secondary">Edit Session</Button>
+            <div className="sm2-footer-actions">
+              <button className="sm2-btn sm2-btn--danger">Delete Session</button>
+              {canApprove && (
+                <Button
+                  variant="primary"
+                  onClick={() => onApproveRequest?.(d)}
+                  icon={<Icon name="check" size={13} stroke={2.2} />}
+                >
+                  Approve Session
+                </Button>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <RatingConfirmModal

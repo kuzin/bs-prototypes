@@ -16,19 +16,33 @@ export function AllBTWBView({
   onViewProfile,
   groupBy,
   defaultFilters = {},
+  allowSourceFilter = false,
 }) {
   const [search, setSearch] = useState('')
   const [type, setType] = useState(defaultFilters.type ?? 'all')
   const [rating, setRating] = useState(defaultFilters.rating ?? 'all')
   const [status, setStatus] = useState(defaultFilters.status ?? 'all')
   const [posFlags, setPosFlags] = useState(defaultFilters.posFlags ?? 'all')
+  const [source, setSource] = useState(defaultFilters.source ?? 'all')
 
   useEffect(() => {
     setType(defaultFilters.type ?? 'all')
     setRating(defaultFilters.rating ?? 'all')
     setStatus(defaultFilters.status ?? 'all')
     setPosFlags(defaultFilters.posFlags ?? 'all')
-  }, [defaultFilters.type, defaultFilters.rating, defaultFilters.status, defaultFilters.posFlags])
+    setSource(defaultFilters.source ?? 'all')
+  }, [
+    defaultFilters.type,
+    defaultFilters.rating,
+    defaultFilters.status,
+    defaultFilters.posFlags,
+    defaultFilters.source,
+  ])
+
+  // The Book Talks prototype tags each conversation with a `source` (Activity
+  // Badge vs Title Completion); SFR's own sessions have none, so this filter
+  // only surfaces where sources exist.
+  const hasSource = sessions.some((s) => s.source)
 
   const wasApproved = (s) => s.changeLog?.some((e) => e.kind === 'approved')
   const filtered = sessions.filter((s) => {
@@ -47,16 +61,18 @@ export function AllBTWBView({
     const matchPosFlags =
       posFlags === 'all' ||
       (posFlags === 'has' ? s.positiveFlags?.length > 0 : s.positiveFlags?.length === 0)
+    const matchSource = source === 'all' || s.source === source
     const matchSearch =
       !search ||
       s.student.name.toLowerCase().includes(search.toLowerCase()) ||
       s.book.title.toLowerCase().includes(search.toLowerCase())
-    return matchType && matchRating && matchStatus && matchPosFlags && matchSearch
+    return matchType && matchRating && matchStatus && matchPosFlags && matchSource && matchSearch
   })
 
   const TYPE_LABELS = { flagged: 'Flagged', engagement: 'Engagement', approved: 'Approved' }
   const RATING_LABELS = { green: 'Positive', yellow: 'Mixed', red: 'Disengaged' }
   const STATUS_LABELS = { completed: 'Completed', unfinished: 'Unfinished' }
+  const SOURCE_LABELS = { activity: 'Activity Badge', title: 'Title Completion' }
   const activeFilters = [
     ...(search ? [{ key: 'search', label: `"${search}"`, onClear: () => setSearch('') }] : []),
     ...(type !== 'all'
@@ -86,6 +102,15 @@ export function AllBTWBView({
             key: 'posFlags',
             label: posFlags === 'has' ? 'Has positive flags' : 'No positive flags',
             onClear: () => setPosFlags('all'),
+          },
+        ]
+      : []),
+    ...(allowSourceFilter && source !== 'all'
+      ? [
+          {
+            key: 'source',
+            label: `Source: ${SOURCE_LABELS[source]}`,
+            onClear: () => setSource('all'),
           },
         ]
       : []),
@@ -138,6 +163,15 @@ export function AllBTWBView({
               <option value="none">No positive flags</option>
             </Select>
           </FilterItem>
+          {allowSourceFilter && hasSource && (
+            <FilterItem label="Source">
+              <Select value={source} onChange={(e) => setSource(e.target.value)}>
+                <option value="all">All sources</option>
+                <option value="activity">Activity Badge</option>
+                <option value="title">Title Completion</option>
+              </Select>
+            </FilterItem>
+          )}
         </FilterBar>
         <ActiveFilters
           filters={activeFilters}
@@ -147,6 +181,7 @@ export function AllBTWBView({
             setRating('all')
             setStatus('all')
             setPosFlags('all')
+            setSource('all')
           }}
         />
       </div>
@@ -164,6 +199,7 @@ export function AllBTWBView({
             setRating('all')
             setStatus('all')
             setPosFlags('all')
+            setSource('all')
           }}
         />
       ) : (
@@ -180,6 +216,7 @@ export function AllBTWBView({
             setRating('all')
             setStatus('all')
             setPosFlags('all')
+            setSource('all')
           }}
         />
       )}
