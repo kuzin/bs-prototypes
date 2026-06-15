@@ -31,23 +31,23 @@
 
 /* ── Soft (default) — pale tint, dark text ───────────────────────────────── */
 .pill--soft {
-  color: color-mix(in srgb, var(--pill-color, #475569) 55%, #334155);
-  background: color-mix(in srgb, var(--pill-color, #475569) 12%, white);
-  border-color: color-mix(in srgb, var(--pill-color, #475569) 22%, transparent);
+  color: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 55%, var(--c-slate-700));
+  background: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 12%, white);
+  border-color: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 22%, transparent);
 }
 
 /* ── Filled — solid background, white text ───────────────────────────────── */
 .pill--filled {
   color: #fff;
-  background: var(--pill-color, #475569);
-  border-color: var(--pill-color, #475569);
+  background: var(--pill-color, var(--c-slate-600));
+  border-color: var(--pill-color, var(--c-slate-600));
 }
 
 /* ── Outline — transparent, colored text + border ────────────────────────── */
 .pill--outline {
-  color: var(--pill-color, #475569);
+  color: var(--pill-color, var(--c-slate-600));
   background: transparent;
-  border-color: color-mix(in srgb, var(--pill-color, #475569) 45%, transparent);
+  border-color: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 45%, transparent);
 }
 
 /* Optical centering: nudge label text down slightly so cap-height aligns

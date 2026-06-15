@@ -5,7 +5,7 @@
 .rh-title {
   font-size: 14px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--c-slate-800);
   letter-spacing: -0.01em;
   margin: 0 0 10px;
 }
@@ -88,7 +88,7 @@
 .rh-stat-label {
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-slate-800);
   margin-top: 4px;
 }
 
@@ -102,7 +102,7 @@
 
 .rh-stat-desc {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,10 +119,10 @@
   color: #16a34a;
 }
 .rh-delta--down {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 .rh-delta--flat {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 
 .rh-stat-more {

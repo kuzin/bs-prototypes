@@ -1,7 +1,7 @@
 /* ── Divider ────────────────────────────────────────────────────────────── */
 .dvd {
   border: 0;
-  background: #e5e7eb;
+  background: var(--c-gray-200);
   height: 1px;
   width: 100%;
   margin: 0;
@@ -25,13 +25,13 @@
 .dvd-line {
   flex: 1;
   height: 1px;
-  background: #e5e7eb;
+  background: var(--c-gray-200);
 }
 
 .dvd-label {
   font-size: 13px;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -43,7 +43,7 @@
   border-right-color: transparent;
   border-radius: 50%;
   animation: spn-spin 0.6s linear infinite;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 
 .spn--xs {
@@ -129,9 +129,9 @@
 
 /* Variants */
 .icnb--primary {
-  background: #1d4ed8;
+  background: var(--c-blue-700);
   color: #fff;
-  border-color: #1d4ed8;
+  border-color: var(--c-blue-700);
 }
 .icnb--primary:hover:not(:disabled) {
   background: #1e40af;
@@ -140,28 +140,28 @@
 
 .icnb--secondary {
   background: #fff;
-  color: #475569;
-  border-color: #cbd5e1;
+  color: var(--c-slate-600);
+  border-color: var(--c-slate-300);
 }
 .icnb--secondary:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #94a3b8;
-  color: #1e293b;
+  background: var(--c-slate-50);
+  border-color: var(--c-slate-400);
+  color: var(--c-slate-800);
 }
 
 .icnb--ghost {
   background: transparent;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .icnb--ghost:hover:not(:disabled) {
-  background: #f1f5f9;
-  color: #1e293b;
+  background: var(--c-slate-100);
+  color: var(--c-slate-800);
 }
 
 .icnb--danger {
-  background: #dc2626;
+  background: var(--c-red-600);
   color: #fff;
-  border-color: #dc2626;
+  border-color: var(--c-red-600);
 }
 .icnb--danger:hover:not(:disabled) {
   background: #b91c1c;
@@ -177,7 +177,7 @@
 .ttp-bubble {
   position: absolute;
   z-index: 100;
-  background: #0f172a;
+  background: var(--c-slate-900);
   color: #fff;
   font-size: 13px;
   font-weight: 500;
@@ -273,13 +273,13 @@
 
 .bnr-title {
   font-weight: 700;
-  color: #0f172a;
+  color: var(--c-slate-900);
   margin-bottom: 2px;
   line-height: 1.35;
 }
 
 .bnr-msg {
-  color: #475569;
+  color: var(--c-slate-600);
   line-height: 1.5;
 }
 
@@ -296,7 +296,7 @@
   border-color: #bfdbfe;
 }
 .bnr--info .bnr-icon {
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 
 .bnr--success {
@@ -312,7 +312,7 @@
   border-color: #fde68a;
 }
 .bnr--warning .bnr-icon {
-  color: #d97706;
+  color: var(--c-amber-600);
 }
 
 .bnr--error {
@@ -320,7 +320,7 @@
   border-color: #fecaca;
 }
 .bnr--error .bnr-icon {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 
 /* ── Mobile: stack body/action vertically, full-width action ──────────── */
@@ -370,42 +370,42 @@
 
 .bcb-link {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.1s;
 }
 
 .bcb-link:hover {
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 
 .bcb-current {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   font-weight: 500;
 }
 
 .bcb-current--last {
-  color: #0f172a;
+  color: var(--c-slate-900);
   font-weight: 700;
 }
 
 .bcb-sep {
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   flex-shrink: 0;
 }
 
 /* ── Accordion ──────────────────────────────────────────────────────────── */
 .acd {
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--c-gray-200);
   border-radius: 10px;
   overflow: hidden;
 }
 
 .acd-item + .acd-item {
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--c-slate-100);
 }
 
 .acd-trigger {
@@ -420,21 +420,21 @@
   font: inherit;
   font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--c-slate-900);
   cursor: pointer;
   text-align: left;
   transition: color 0.12s;
 }
 
 .acd-trigger:hover {
-  color: var(--acd-accent, #1d4ed8);
+  color: var(--acd-accent, var(--c-blue-700));
 }
 .acd-trigger:hover .acd-caret {
-  color: var(--acd-accent, #1d4ed8);
+  color: var(--acd-accent, var(--c-blue-700));
 }
 
 .acd-item--open .acd-trigger {
-  color: var(--acd-accent, #1d4ed8);
+  color: var(--acd-accent, var(--c-blue-700));
 }
 
 .acd-title {
@@ -442,7 +442,7 @@
 }
 
 .acd-caret {
-  color: #94a3b8;
+  color: var(--c-slate-400);
   transition:
     transform 0.18s,
     color 0.12s;
@@ -451,12 +451,12 @@
 
 .acd-item--open .acd-caret {
   transform: rotate(180deg);
-  color: var(--acd-accent, #1d4ed8);
+  color: var(--acd-accent, var(--c-blue-700));
 }
 
 .acd-content {
   padding: 0 16px 14px;
-  color: #475569;
+  color: var(--c-slate-600);
   font-size: 13px;
   line-height: 1.55;
 }
@@ -475,8 +475,8 @@
   width: 52px;
   height: 52px;
   border-radius: 13px;
-  background: #f1f5f9;
-  color: #94a3b8;
+  background: var(--c-slate-100);
+  color: var(--c-slate-400);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -491,12 +491,12 @@
 .emp-title {
   font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 
 .emp-desc {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   line-height: 1.5;
   max-width: 360px;
 }
@@ -508,7 +508,7 @@
 /* Dashed placeholder variant — "nothing loaded / nothing here yet" cards.
    Icon renders bare (no chip) at its passed size. */
 .emp--dashed {
-  border: 1.5px dashed #cbd5e1;
+  border: 1.5px dashed var(--c-slate-300);
   border-radius: 12px;
   background: #fff;
   padding: 56px 24px;
@@ -542,8 +542,13 @@
 
 .skl {
   display: inline-block;
-  background: #f1f5f9;
-  background-image: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 40%, #f1f5f9 80%);
+  background: var(--c-slate-100);
+  background-image: linear-gradient(
+    90deg,
+    var(--c-slate-100) 0%,
+    var(--c-slate-200) 40%,
+    var(--c-slate-100) 80%
+  );
   background-size: 200px 100%;
   background-repeat: no-repeat;
   animation: skl-shimmer 1.3s linear infinite;
@@ -577,7 +582,7 @@
 .sct-title {
   font-size: 14px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   letter-spacing: -0.01em;
   margin: 0;
   line-height: 1.25;
@@ -594,12 +599,12 @@ h3.sct-title {
 h4.sct-title {
   font-size: 13px;
   font-weight: 700;
-  color: #334155;
+  color: var(--c-slate-700);
 }
 
 .sct-sub {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   margin-top: 2px;
 }
 

@@ -2,12 +2,12 @@
 
 /* ─── Challenge Creator V2 ─────────────────────────────────────────────────── */
 .cc-root {
-  --teal: #0da7bc;
+  --teal: var(--c-brand-teal);
   --teal-dk: #0b7a89;
-  --ink: #0f172a;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --bg: #f1f5f9;
+  --ink: var(--c-slate-900);
+  --muted: var(--c-slate-500);
+  --line: var(--c-slate-200);
+  --bg: var(--c-slate-100);
   --panel: #ffffff;
   position: fixed;
   top: 0;
@@ -76,7 +76,7 @@
 .cc-root .fld-help,
 .cc-root .fld-hint,
 .cc-root .csel-group-label {
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 /* ── Top bar ── */
@@ -107,7 +107,7 @@
   display: inline-flex;
   gap: 2px;
   padding: 2px;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   border: 1px solid var(--line);
   border-radius: 8px;
 }
@@ -121,7 +121,7 @@
   border: 0;
   border-radius: 6px;
   background: transparent;
-  color: #64748b;
+  color: var(--c-slate-500);
   cursor: pointer;
   transition:
     background 0.12s ease,
@@ -137,7 +137,7 @@
   transform: translateX(-50%);
   padding: 4px 8px;
   border-radius: 6px;
-  background: #0f172a;
+  background: var(--c-slate-900);
   color: #fff;
   font-size: 11px;
   font-weight: 600;
@@ -176,13 +176,13 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--c-slate-100);
+  color: var(--c-slate-600);
   text-decoration: none;
   font-size: 19px;
 }
 .cc-exit:hover {
-  background: #e2e8f0;
+  background: var(--c-slate-200);
 }
 .cc-title {
   font-weight: 700;
@@ -222,7 +222,7 @@
   gap: 5px;
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .cc-save--saved {
   color: #16a34a;
@@ -231,8 +231,8 @@
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  border: 2px solid #cbd5e1;
-  border-top-color: #64748b;
+  border: 2px solid var(--c-slate-300);
+  border-top-color: var(--c-slate-500);
   animation: cc-spin 0.7s linear infinite;
 }
 @keyframes cc-spin {
@@ -251,10 +251,16 @@
   gap: 6px;
   height: 30px;
   padding: 0 10px;
-  border: 1px dashed #94a3b8;
+  border: 1px dashed var(--c-slate-400);
   border-radius: 8px;
-  background: repeating-linear-gradient(45deg, #fff, #fff 6px, #f8fafc 6px, #f8fafc 12px);
-  color: #475569;
+  background: repeating-linear-gradient(
+    45deg,
+    #fff,
+    #fff 6px,
+    var(--c-slate-50) 6px,
+    var(--c-slate-50) 12px
+  );
+  color: var(--c-slate-600);
   font: inherit;
   font-size: 14px;
   font-weight: 800;
@@ -263,8 +269,8 @@
 }
 .cc-dev-btn.is-open,
 .cc-dev-btn:hover {
-  border-color: #64748b;
-  color: #1e293b;
+  border-color: var(--c-slate-500);
+  color: var(--c-slate-800);
 }
 .cc-dev-backdrop {
   position: fixed;
@@ -296,17 +302,17 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .cc-dev-select {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--c-slate-300);
   border-radius: 8px;
   background: #fff;
   font: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: #334155;
+  color: var(--c-slate-700);
   cursor: pointer;
   padding: 7px 9px;
 }
@@ -332,7 +338,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748b;
+  color: var(--c-slate-500);
   white-space: nowrap;
 }
 .cc-stepnav-select {
@@ -392,7 +398,7 @@
   margin-left: auto;
   font-size: 14px;
   font-weight: 600;
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 .cc-footer-warn + .cc-footer-right {
   margin-left: 12px;
@@ -402,7 +408,7 @@
 .cc-preview {
   flex: 0 0 380px;
   border-left: 1px solid var(--line);
-  background: #f8fafc;
+  background: var(--c-slate-50);
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -550,7 +556,7 @@
   margin-top: 6px;
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 /* ── Panels & fields ── */
@@ -646,7 +652,7 @@
 }
 .cc-input {
   width: 100%;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--c-slate-300);
   border-radius: 9px;
   padding: 9px 11px;
   font: inherit;
@@ -715,7 +721,7 @@
   gap: 3px;
 }
 .cc-gallery-card:hover {
-  border-color: #cbd5e1;
+  border-color: var(--c-slate-300);
 }
 .cc-gallery-card.is-on {
   border-color: var(--teal);
@@ -733,7 +739,7 @@
 .cc-gallery-plus {
   font-size: 26px;
   font-weight: 300;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .cc-gallery-name {
   font-weight: 700;
@@ -903,7 +909,7 @@
   width: 1px;
   min-height: 22px;
   margin: 0 6px;
-  background: var(--line, #e2e8f0);
+  background: var(--line, var(--c-slate-200));
 }
 /* "Look & feel" is a dense form — tighten the gaps between its fields. */
 .cc-panel--lookfeel > .fld,
@@ -976,7 +982,7 @@
     box-shadow 0.12s ease;
 }
 .cc-choice-card:hover {
-  border-color: #cbd5e1;
+  border-color: var(--c-slate-300);
 }
 .cc-choice-card.is-on {
   border-color: var(--teal);
@@ -1021,10 +1027,10 @@
   height: 33px;
   box-sizing: border-box;
   padding: 0 14px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--c-slate-300);
   border-radius: 9px;
   background: #fff;
-  color: #334155;
+  color: var(--c-slate-700);
   font-size: 15px;
   cursor: pointer;
   transition:
@@ -1032,7 +1038,7 @@
     box-shadow 0.12s ease;
 }
 .cc-font-chip:hover {
-  border-color: #64748b;
+  border-color: var(--c-slate-500);
 }
 .cc-font-chip.is-on {
   border-color: var(--teal);
@@ -1056,7 +1062,7 @@
 .cc-wordcount {
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .cc-wordcount.is-over {
   color: #be123c;
@@ -1147,7 +1153,7 @@
   line-height: 1.4;
 }
 .cc-code-help.is-error {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 
 /* ── Alternative challenge cards ── */
@@ -1172,11 +1178,11 @@
     box-shadow 0.12s ease;
 }
 .cc-alt-card:hover {
-  border-color: #cbd5e1;
+  border-color: var(--c-slate-300);
 }
 .cc-alt-card.is-on {
-  border-color: #16a97a;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #16a97a 18%, transparent);
+  border-color: var(--c-brand-green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-brand-green) 18%, transparent);
 }
 .cc-alt-name {
   font-size: 15px;
@@ -1280,7 +1286,7 @@
 /* A logging badge left without a log value — flagged so it gets fixed. */
 .cc-badge-goal--missing {
   font-weight: 700;
-  color: #dc2626;
+  color: var(--c-red-600);
   text-transform: none;
 }
 /* Step-level validation note for the logging-badges panel. */
@@ -1288,7 +1294,7 @@
   margin: 0 0 12px;
   font-size: 14px;
   font-weight: 600;
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 /* Inline remove (×) for badge cards and activity rows. */
 .cc-row-remove {
@@ -1296,14 +1302,14 @@
   border: 0;
   background: none;
   cursor: pointer;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 20px;
   line-height: 1;
   padding: 0 4px;
   border-radius: 6px;
 }
 .cc-row-remove:hover {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 /* Edit + remove controls, pinned to the right of the badge card. */
 .cc-badge-card-actions {
@@ -1321,7 +1327,7 @@
   border: 0;
   background: none;
   border-radius: 7px;
-  color: #64748b;
+  color: var(--c-slate-500);
   cursor: pointer;
 }
 .cc-badge-edit:hover {
@@ -1336,11 +1342,11 @@
   height: 28px;
   padding: 0;
   border-radius: 7px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-badge-card-actions .cc-row-remove:hover {
-  background: color-mix(in srgb, #dc2626 12%, #fff);
-  color: #dc2626;
+  background: color-mix(in srgb, var(--c-red-600) 12%, #fff);
+  color: var(--c-red-600);
 }
 .cc-activity-row .cc-activity-name {
   margin-right: auto;
@@ -1367,7 +1373,7 @@
   margin: 0 0 14px;
   font-size: 14px;
   line-height: 1.5;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 .cc-method-note--sm {
   margin: 0;
@@ -1394,12 +1400,12 @@
   gap: 12px;
   margin-top: 10px;
   padding: 14px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
   border: 1px solid var(--line);
   border-radius: 10px;
 }
 .cc-muted {
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 500;
 }
 .cc-badge-pinned {
@@ -1414,7 +1420,7 @@
   display: flex;
   align-items: center;
   gap: 11px;
-  border: 1.5px dashed #cbd5e1;
+  border: 1.5px dashed var(--c-slate-300);
   border-radius: 10px;
   padding: 10px 12px;
   background: #fff;
@@ -1443,7 +1449,7 @@
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 /* Hovering the slot highlights its edit icon like the badge-card edit icon. */
 .cc-badge-pin:hover .cc-badge-pin-edit {
@@ -1463,8 +1469,8 @@
   flex: none;
   display: grid;
   place-items: center;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--c-slate-100);
+  color: var(--c-slate-500);
   font-size: 22px;
   line-height: 1;
 }
@@ -1478,7 +1484,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .cc-badge-pin-name {
   flex: 1;
@@ -1496,8 +1502,8 @@
 }
 /* One shared error state: both date inputs go red, with a single message below. */
 .cc-badge-window.has-error .inp-wrap {
-  border-color: #dc2626;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #dc2626 14%, transparent);
+  border-color: var(--c-red-600);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 14%, transparent);
 }
 .cc-badge-window-wrap {
   padding-bottom: 14px;
@@ -1593,11 +1599,11 @@
   border: 0;
   border-radius: 8px;
   background: none;
-  color: #64748b;
+  color: var(--c-slate-500);
   cursor: pointer;
 }
 .cc-badge-editor-close:hover {
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   color: var(--ink);
 }
 /* Footer holds Cancel / Save (moved out of the header). */
@@ -1635,7 +1641,7 @@
   margin: 0;
 }
 .cc-req {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 /* Badge editor form — badge art on the left, fields on the right, split by a
    divider. Sits directly on the editor surface (no nested card). */
@@ -1687,10 +1693,10 @@
   display: block;
 }
 .cc-badge-disc.is-empty {
-  border: 1.5px dashed #cbd5e1;
-  background: #f8fafc;
+  border: 1.5px dashed var(--c-slate-300);
+  background: var(--c-slate-50);
   box-shadow: none;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 /* Edit affordance overlaid at the badge's lower-right. */
 .cc-badge-disc-edit {
@@ -1753,7 +1759,7 @@
   margin: 2px 0 0;
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 /* Color filter — single-select swatch chips, right of the search. */
@@ -1823,7 +1829,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-badgepick-grouphead:first-child {
   margin-top: 2px;
@@ -1841,7 +1847,7 @@
   font: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: #475569;
+  color: var(--c-slate-600);
   cursor: pointer;
 }
 .cc-badgepick-group-name {
@@ -1857,7 +1863,7 @@
   padding: 0 7px;
   border-radius: 999px;
   background: #eef2f6;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 13px;
   font-weight: 700;
   display: inline-flex;
@@ -1865,7 +1871,7 @@
   justify-content: center;
 }
 .cc-badgepick-group:hover {
-  background: #f1f5f9;
+  background: var(--c-slate-100);
 }
 .cc-badgepick-group.is-on {
   background: color-mix(in srgb, var(--teal) 14%, #fff);
@@ -1897,18 +1903,18 @@
 }
 .cc-badgepick-groups::-webkit-scrollbar-track,
 .cc-badgepick-grid::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   border-radius: 999px;
 }
 .cc-badgepick-groups::-webkit-scrollbar-thumb,
 .cc-badgepick-grid::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--c-slate-300);
   border-radius: 999px;
-  border: 2px solid #f1f5f9;
+  border: 2px solid var(--c-slate-100);
 }
 .cc-badgepick-groups::-webkit-scrollbar-thumb:hover,
 .cc-badgepick-grid::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: var(--c-slate-400);
 }
 
 /* Bigger modal for the badge editor; drop the inner card. */
@@ -1968,7 +1974,7 @@
   justify-content: center;
   gap: 10px;
   padding: 16px 14px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
   border: 1px solid var(--line);
   border-radius: 12px;
 }
@@ -1989,10 +1995,10 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(45deg, #e2e8f0 25%, transparent 25%),
-    linear-gradient(-45deg, #e2e8f0 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, #e2e8f0 75%),
-    linear-gradient(-45deg, transparent 75%, #e2e8f0 75%);
+    linear-gradient(45deg, var(--c-slate-200) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--c-slate-200) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--c-slate-200) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--c-slate-200) 75%);
   background-size: 16px 16px;
   background-position:
     0 0,
@@ -2040,7 +2046,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-recolor-list {
   display: flex;
@@ -2086,7 +2092,7 @@
 }
 .cc-upload-scale-ic {
   flex: 0 0 auto;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-upload-scale .rng {
   flex: 1;
@@ -2105,7 +2111,14 @@
   margin-top: auto;
 }
 .cc-accent-dot--none {
-  background: linear-gradient(45deg, #e2e8f0 25%, #fff 25%, #fff 75%, #e2e8f0 75%) 0 0 / 10px 10px;
+  background: linear-gradient(
+      45deg,
+      var(--c-slate-200) 25%,
+      #fff 25%,
+      #fff 75%,
+      var(--c-slate-200) 75%
+    )
+    0 0 / 10px 10px;
 }
 .cc-badge-uploadzone {
   position: relative;
@@ -2113,9 +2126,9 @@
   width: 100%;
   display: grid;
   place-items: center;
-  border: 1.5px dashed #cbd5e1;
+  border: 1.5px dashed var(--c-slate-300);
   border-radius: 12px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
   cursor: pointer;
   transition:
     border-color 0.15s ease,
@@ -2227,7 +2240,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-bggrid .cc-builder-bgimgs {
   margin-top: 0;
@@ -2264,7 +2277,7 @@
   cursor: pointer;
 }
 .cc-builder-iconbtn:hover {
-  border-color: #cbd5e1;
+  border-color: var(--c-slate-300);
 }
 .cc-builder-iconbtn.is-on {
   border-color: var(--teal);
@@ -2302,7 +2315,7 @@
   font-size: 13px;
   font-weight: 600;
   text-align: center;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 /* Favorite star — always faintly visible (discoverable), bold amber when on. */
 .cc-badgepick-fav {
@@ -2316,7 +2329,7 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   cursor: pointer;
   opacity: 0.55;
   transition:
@@ -2363,7 +2376,7 @@
 .cc-badgepick-item-set {
   font-size: 12px;
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   line-height: 1.2;
 }
 /* Selected: teal ring + a check badge over the art. */
@@ -2414,7 +2427,7 @@
     box-shadow 0.12s;
 }
 .cc-bingo-size:hover {
-  border-color: #94a3b8;
+  border-color: var(--c-slate-400);
 }
 .cc-bingo-size.is-active {
   border-color: var(--teal);
@@ -2430,7 +2443,7 @@
 }
 .cc-bingo-size-grid i {
   border-radius: 2px;
-  background: #cbd5e1;
+  background: var(--c-slate-300);
   transition: background 0.12s;
 }
 .cc-bingo-size.is-active .cc-bingo-size-grid i {
@@ -2439,7 +2452,7 @@
 .cc-bingo-size-label {
   font-size: 13px;
   font-weight: 700;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 .cc-bingo-size.is-active .cc-bingo-size-label {
   color: var(--teal);
@@ -2464,7 +2477,7 @@
   min-height: 240px;
   border: 1.5px dashed var(--line);
   border-radius: 14px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
   overflow: hidden;
   transition:
     border-color 0.12s,
@@ -2491,7 +2504,7 @@
 .cc-bingo-tray-title {
   font-size: 13px;
   font-weight: 700;
-  color: #334155;
+  color: var(--c-slate-700);
 }
 /* A single round badge ghost used as the drag image in both directions, so the
    grab is fully round and the same size whichever way you drag. Rendered
@@ -2578,7 +2591,7 @@
   border-radius: 50%;
 }
 .cc-bingo-art-fallback {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-bingo-chip-text {
   display: flex;
@@ -2589,7 +2602,7 @@
 .cc-bingo-chip-name {
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--c-slate-800);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2597,7 +2610,7 @@
 .cc-bingo-chip-meta {
   font-size: 11px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
   white-space: nowrap;
 }
 
@@ -2609,7 +2622,7 @@
   width: 100%;
   align-self: stretch;
   padding: 12px;
-  background: linear-gradient(135deg, #f8fafc, #e9eef5);
+  background: linear-gradient(135deg, var(--c-slate-50), #e9eef5);
   border: 1px solid var(--line);
   border-radius: 16px;
   box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.05);
@@ -2617,7 +2630,7 @@
 .cc-bingo-cell {
   position: relative;
   aspect-ratio: 1;
-  border: 1.5px dashed #cbd5e1;
+  border: 1.5px dashed var(--c-slate-300);
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.55);
   display: grid;
@@ -2679,7 +2692,7 @@
   flex: none;
   border: 2px solid #fff;
   border-radius: 50%;
-  background: #0f172a;
+  background: var(--c-slate-900);
   color: #fff;
   display: inline-flex;
   align-items: center;
@@ -2701,7 +2714,7 @@
   transform: scale(1);
 }
 .cc-bingo-cell-x:hover {
-  background: var(--red, #dc2626);
+  background: var(--red, var(--c-red-600));
   transform: scale(1.1);
 }
 
@@ -2716,7 +2729,7 @@
   max-width: 190px;
   padding: 7px 11px;
   border-radius: 9px;
-  background: #0f172a;
+  background: var(--c-slate-900);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -2736,7 +2749,7 @@
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-top-color: #0f172a;
+  border-top-color: var(--c-slate-900);
 }
 .cc-badge-tip strong {
   font-size: 13px;
@@ -2752,7 +2765,7 @@
 }
 .cc-badge-tip-req {
   font-size: 12px;
-  color: #cbd5e1;
+  color: var(--c-slate-300);
 }
 .cc-bingo-placed:hover .cc-badge-tip,
 .cc-gb-placed:hover .cc-badge-tip,
@@ -2820,8 +2833,8 @@
 .cc-bookcover--ph {
   display: grid;
   place-items: center;
-  color: #94a3b8;
-  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  color: var(--c-slate-400);
+  background: linear-gradient(135deg, var(--c-slate-200), var(--c-slate-300));
 }
 .cc-title-cover {
   width: 36px;
@@ -2973,7 +2986,7 @@
   border-bottom: 1px solid var(--line);
 }
 .cc-tm-result:hover:not(:disabled) {
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 .cc-tm-result.is-selected {
   background: color-mix(in srgb, var(--teal) 7%, #fff);
@@ -2987,7 +3000,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  border: 2px solid #cbd5e1;
+  border: 2px solid var(--c-slate-300);
   position: relative;
 }
 .cc-tm-result.is-selected .cc-tm-check {
@@ -3108,13 +3121,13 @@
   border: 1px solid var(--line);
   border-radius: 7px;
   background: #fff;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 13px;
   line-height: 1;
   cursor: pointer;
 }
 .cc-ab-move:hover:not(:disabled) {
-  border-color: #94a3b8;
+  border-color: var(--c-slate-400);
   color: var(--ink);
 }
 .cc-ab-move:disabled {
@@ -3129,12 +3142,12 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
-  color: #64748b;
+  color: var(--c-slate-500);
   cursor: pointer;
 }
 .cc-ab-iconbtn:hover {
   border-color: #fca5a5;
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 /* Edit (pencil) + remove (trash) reuse the logging-badge icon-button look. */
 .cc-ab-listactions .cc-row-remove,
@@ -3145,12 +3158,12 @@
   height: 28px;
   padding: 0;
   border-radius: 7px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-ab-listactions .cc-row-remove:hover,
 .cc-ab-actactions .cc-row-remove:hover {
-  background: color-mix(in srgb, #dc2626 12%, #fff);
-  color: #dc2626;
+  background: color-mix(in srgb, var(--c-red-600) 12%, #fff);
+  color: var(--c-red-600);
 }
 /* Inactive activity badges read dimmer in the list. */
 .cc-ab-listrow.is-inactive .cc-ab-listart,
@@ -3213,7 +3226,7 @@
   flex: 0 0 auto;
   display: grid;
   place-items: center;
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   cursor: grab;
 }
 .cc-badgerow-drag:active {
@@ -3240,7 +3253,7 @@
   display: grid;
   place-items: center;
   background: #eef2f6;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 /* Non-badge art (rewards, ticket prizes, certificates) reads as a rounded square. */
 .cc-badgerow-art--square,
@@ -3279,7 +3292,7 @@
   color: var(--muted);
 }
 .cc-badgerow-meta.is-missing {
-  color: #dc2626;
+  color: var(--c-red-600);
   font-weight: 600;
 }
 .cc-badgerow-actions {
@@ -3308,10 +3321,10 @@
   background: color-mix(in srgb, #16a34a 12%, #fff);
 }
 .cc-badgerow-eye.is-off {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-badgerow-eye.is-off:hover {
-  background: #f1f5f9;
+  background: var(--c-slate-100);
 }
 .cc-badgerow-actions .cc-row-remove {
   display: grid;
@@ -3320,11 +3333,11 @@
   height: 28px;
   padding: 0;
   border-radius: 7px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-badgerow-actions .cc-row-remove:hover {
-  background: color-mix(in srgb, #dc2626 12%, #fff);
-  color: #dc2626;
+  background: color-mix(in srgb, var(--c-red-600) 12%, #fff);
+  color: var(--c-red-600);
 }
 .cc-ab-actrow.is-dragging {
   opacity: 0.5;
@@ -3426,7 +3439,7 @@
   width: 200px;
   font-size: 15px;
   font-weight: 600;
-  color: var(--ink, #1e293b);
+  color: var(--ink, var(--c-slate-800));
 }
 /* Inputs share one height so the two rows line up. */
 .cc-quick-row .ninp {
@@ -3459,7 +3472,7 @@
 .cc-quick-bglabel {
   font-size: 14px;
   font-weight: 700;
-  color: #334155;
+  color: var(--c-slate-700);
 }
 .cc-quick-swatches {
   display: flex;
@@ -3496,7 +3509,7 @@
   align-self: stretch;
   min-height: 22px;
   margin: 0 2px;
-  background: var(--line, #e2e8f0);
+  background: var(--line, var(--c-slate-200));
 }
 
 /* Result strip — the badges as they'll be created. */
@@ -3507,7 +3520,7 @@
   gap: 10px;
   padding: 18px 16px;
   border-radius: 12px;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
 }
 .cc-quick-strip {
   display: flex;
@@ -3534,13 +3547,13 @@
 .cc-quick-badge-ph {
   font-size: 15px;
   font-weight: 800;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .cc-quick-result-note {
   margin: 0;
   font-size: 13px;
   font-weight: 600;
-  color: var(--muted, #64748b);
+  color: var(--muted, var(--c-slate-500));
 }
 .cc-actpicker-list {
   display: grid;
@@ -3772,7 +3785,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .cc-ab-actactions {
   flex: 0 0 auto;
@@ -3785,7 +3798,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border: 1.5px dashed #cbd5e1;
+  border: 1.5px dashed var(--c-slate-300);
   border-radius: 10px;
   background: #fff;
   padding: 9px 14px;
@@ -3810,7 +3823,7 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 14px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 .cc-ab-actform-row {
   display: grid;
@@ -3990,7 +4003,7 @@
   border-radius: 50%;
   /* Tied to the board theme: the gift sits in the theme's deep "ink" color with
      a white ring so it lifts off the road. */
-  background: var(--ink, #475569);
+  background: var(--ink, var(--c-slate-600));
   display: grid;
   place-items: center;
   color: #fff;
@@ -4017,7 +4030,7 @@
   color: #fff;
   font: inherit;
   overflow: hidden;
-  background-color: #e2e8f0;
+  background-color: var(--c-slate-200);
   background-size: cover;
   background-position: center;
 }
@@ -4047,9 +4060,9 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: #f1f5f9;
-  border: 2px dashed #cbd5e1;
-  color: #64748b;
+  background: var(--c-slate-100);
+  border: 2px dashed var(--c-slate-300);
+  color: var(--c-slate-500);
 }
 .cc-gb-theme--custom .cc-gb-theme-name {
   text-shadow: none;
@@ -4094,17 +4107,17 @@
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--c-slate-300);
   border-radius: 999px;
   background: #fff;
-  color: #334155;
+  color: var(--c-slate-700);
   font: inherit;
   font-weight: 600;
   font-size: 14px;
   cursor: pointer;
 }
 .cc-preview-mobile-btn:hover {
-  border-color: #64748b;
+  border-color: var(--c-slate-500);
 }
 .cc-mobile-preview {
   width: 100%;
@@ -4154,10 +4167,10 @@
   place-items: center;
   padding: 0;
   text-align: center;
-  background: #e2e8f0;
+  background: var(--c-slate-200);
 }
 .cc-pv-banner.is-image {
-  background: #cbd5e1;
+  background: var(--c-slate-300);
 }
 .cc-pv-headtext {
   display: flex;
@@ -4185,8 +4198,8 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  border: 4px solid #cbd5e1;
-  border-top-color: #64748b;
+  border: 4px solid var(--c-slate-300);
+  border-top-color: var(--c-slate-500);
   animation: cc-spin 0.8s linear infinite;
 }
 .cc-pv-cover {
@@ -4236,7 +4249,7 @@
   color: var(--ink);
 }
 .cc-pv-sk {
-  background: #e2e8f0;
+  background: var(--c-slate-200);
   border-radius: 8px;
 }
 .cc-pv-sk-block {
@@ -4292,7 +4305,7 @@
   font: inherit;
   font-size: 13px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--c-slate-500);
   cursor: pointer;
   padding: 7px 8px;
   border-radius: 8px;
@@ -4306,7 +4319,7 @@
     box-shadow 0.14s;
 }
 .cc-pv-seg-btn:hover:not(.is-active) {
-  color: #334155;
+  color: var(--c-slate-700);
 }
 .cc-pv-seg-btn.is-active {
   background: #fff;
@@ -4337,7 +4350,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--c, #cbd5e1);
+  background: var(--c, var(--c-slate-300));
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -4363,7 +4376,7 @@
   gap: 10px;
 }
 .cc-pv-reward-art {
-  --c: #0da7bc;
+  --c: var(--c-brand-teal);
   flex: none;
   width: 38px;
   height: 38px;
@@ -4394,7 +4407,7 @@
 }
 .cc-pv-reward-info span {
   font-size: 12.5px;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 /* Challenge dates + description in the preview body */
@@ -4404,12 +4417,12 @@
   text-align: left;
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .cc-pv-desc {
   font-size: 14px;
   line-height: 1.5;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 .cc-pv-desc :is(p, ul, ol) {
   margin: 0 0 8px;
@@ -4436,14 +4449,14 @@
 .cc-pv-desc blockquote {
   margin: 8px 0;
   padding: 2px 0 2px 10px;
-  border-left: 3px solid #cbd5e1;
-  color: #64748b;
+  border-left: 3px solid var(--c-slate-300);
+  color: var(--c-slate-500);
 }
 .cc-pv-desc pre {
   margin: 8px 0;
   padding: 8px 10px;
   border-radius: 6px;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   font-size: 14px;
   white-space: pre-wrap;
@@ -4452,7 +4465,7 @@
 .cc-pv-desc code {
   padding: 1px 5px;
   border-radius: 4px;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
   font-size: 0.9em;
 }
@@ -4574,7 +4587,7 @@
   background: #16a34a;
 }
 .cc-pv-badge-tag.is-lock {
-  background: #94a3b8;
+  background: var(--c-slate-400);
 }
 /* Prize ribbon sits top-left so it never collides with the status chip. */
 .cc-pv-badge-prize {
@@ -4715,7 +4728,7 @@
   overflow: hidden;
   display: grid;
   place-items: center;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
 }
 .cc-savedreward-art img {
   width: 100%;
@@ -4794,7 +4807,7 @@
   height: 38px;
   border-radius: 50%;
   background: #eef2f6;
-  color: var(--slate, #64748b);
+  color: var(--slate, var(--c-slate-500));
   transition:
     background 0.12s,
     color 0.12s,
@@ -4820,7 +4833,7 @@
 .cc-optcard-text span {
   font-size: 12px;
   line-height: 1.35;
-  color: var(--slate, #64748b);
+  color: var(--slate, var(--c-slate-500));
 }
 .cc-optcard-dot {
   flex: none;
@@ -4913,7 +4926,7 @@
 .cc-bsrow-art-ph {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #e2e8f0, #cbd5e1);
+  background: linear-gradient(135deg, var(--c-slate-200), var(--c-slate-300));
 }
 .cc-bsrow-name {
   font-size: 13px;
@@ -4980,7 +4993,7 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--ink);
-  background: color-mix(in srgb, var(--teal) 6%, #f8fafc);
+  background: color-mix(in srgb, var(--teal) 6%, var(--c-slate-50));
   border: 1px solid color-mix(in srgb, var(--teal) 28%, var(--line));
   border-radius: 12px;
   padding: 12px 16px;
@@ -5018,7 +5031,7 @@
   cursor: pointer;
 }
 .cc-savedreward:hover:not(:disabled) {
-  border-color: #94a3b8;
+  border-color: var(--c-slate-400);
 }
 .cc-savedreward.is-selected {
   border-color: var(--teal);

@@ -14,8 +14,8 @@ body {
     'Segoe UI',
     Roboto,
     sans-serif;
-  background: #f1f5f9;
-  color: #1e293b;
+  background: var(--c-slate-100);
+  color: var(--c-slate-800);
   -webkit-font-smoothing: antialiased;
 }
 h1,
@@ -40,11 +40,11 @@ button {
 .bt-h1 {
   font-size: 26px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   letter-spacing: -0.01em;
 }
 .bt-muted {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 
 .bt-panel {
@@ -58,7 +58,7 @@ button {
 .bt-panel-title {
   font-size: 16px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   margin-bottom: 14px;
 }
 
@@ -146,15 +146,15 @@ button {
 .cc-badge-editor {
   --teal: #14b8a6;
   --teal-dk: #0d8a82;
-  --ink: #0f172a;
-  --muted: #64748b;
-  --line: #e2e8f0;
-  --bg: #f1f5f9;
+  --ink: var(--c-slate-900);
+  --muted: var(--c-slate-500);
+  --line: var(--c-slate-200);
+  --bg: var(--c-slate-100);
   --panel: #ffffff;
 }
 /* Full-bleed page (its own top bar + centered body) — matches the other tabs. */
 .bt-create {
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   min-height: calc(100vh - 48px);
 }
 /* Centered single-column content under the wizard bar. */
@@ -177,7 +177,7 @@ button {
    create view, like the nav/tab bars on the other tabs. */
 .bt-wizard-bar {
   background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--c-gray-200);
   padding: 14px max(24px, calc((100% - 1240px) / 2));
 }
 /* The shared Stepper stretches its connector lines to fill equal-flex items,
@@ -202,7 +202,7 @@ button {
 .bt-panel-sub {
   margin: 4px 0 0;
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   max-width: 60ch;
   line-height: 1.45;
 }
@@ -226,9 +226,9 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--c-slate-200);
   background: #fff;
-  color: #475569;
+  color: var(--c-slate-600);
   font-size: 12.5px;
   font-weight: 700;
   padding: 5px 11px;
@@ -256,7 +256,7 @@ button {
   gap: 12px;
   margin-top: 11px;
   padding: 12px 14px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
   border: 1px solid #e9eef3;
   border-radius: 12px;
 }
@@ -265,7 +265,7 @@ button {
   height: 44px;
   border-radius: 50%;
   background: #fff;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--c-slate-200);
   padding: 2px;
   object-fit: contain;
   flex-shrink: 0;
@@ -273,7 +273,7 @@ button {
 .bt-prompt-selected p {
   margin: 0;
   font-size: 13.5px;
-  color: #334155;
+  color: var(--c-slate-700);
   line-height: 1.5;
 }
 
@@ -289,7 +289,7 @@ button {
 }
 .bt-exchanges-hint {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 /* ─── Student reader (challenge page) ───────────────────────────────────── */
@@ -323,12 +323,12 @@ button {
 .bt-reader-title {
   font-size: 28px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--c-slate-800);
   letter-spacing: -0.01em;
 }
 .bt-reader-dates {
   font-size: 15px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 600;
   margin-top: 8px;
 }
@@ -355,11 +355,11 @@ button {
 .bt-reader-h2 {
   font-size: 24px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 .bt-reader-badgecount {
   font-size: 14px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 600;
   margin-top: 4px;
 }
@@ -410,7 +410,7 @@ button {
   display: grid;
   place-items: center;
   padding: 4px;
-  border: 3px solid #e2e8f0;
+  border: 3px solid var(--c-slate-200);
 }
 .bt-rcard-ring.is-done {
   border-color: #22c55e;
@@ -446,12 +446,12 @@ button {
 .bt-rcard-name {
   font-size: 16px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--c-slate-800);
   margin-top: 14px;
 }
 .bt-rcard-sub {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   margin-top: 2px;
 }
 .bt-rcard-foot {
@@ -470,7 +470,7 @@ button {
   color: #16a34a;
 }
 .bt-rcard-foot.is-todo {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .bt-rcard-foot.is-cta {
   color: #0d8a82;
@@ -495,14 +495,14 @@ button {
   height: 30px;
   border: 0;
   border-radius: 8px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--c-slate-100);
+  color: var(--c-slate-500);
   display: grid;
   place-items: center;
   cursor: pointer;
 }
 .bt-detail-close:hover {
-  background: #e2e8f0;
+  background: var(--c-slate-200);
 }
 .bt-detail-ring {
   position: relative;
@@ -546,7 +546,7 @@ button {
 .bt-detail-name {
   font-size: 21px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   margin-top: 4px;
 }
 .bt-detail-earned {
@@ -556,12 +556,12 @@ button {
   margin-top: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .bt-detail-desc {
   margin: 14px 0 20px;
   font-size: 14px;
-  color: #475569;
+  color: var(--c-slate-600);
   line-height: 1.5;
 }
 
@@ -573,7 +573,7 @@ button {
 
 /* ─── Teacher review = Sessions for Review (full-bleed) ─────────────────── */
 .bt-reviewx {
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   min-height: calc(100vh - 48px);
 }
 /* Content area below the reused SFR header/tabs bars. */
@@ -627,12 +627,12 @@ button {
 .bt-stat-value {
   font-size: 28px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   line-height: 1.1;
 }
 .bt-stat-label {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 600;
 }
 .bt-stat--good .bt-stat-icon {
@@ -645,11 +645,11 @@ button {
 }
 .bt-stat--warn .bt-stat-icon {
   background: #fee2e2;
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 .bt-stat--neutral .bt-stat-icon {
-  background: #e2e8f0;
-  color: #64748b;
+  background: var(--c-slate-200);
+  color: var(--c-slate-500);
 }
 
 .bt-roster {
@@ -669,17 +669,17 @@ button {
 }
 .bt-roster-head {
   height: 44px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
   border-bottom: 1px solid #eef2f6;
   font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .bt-roster-row {
   height: 60px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
 }
 .bt-roster-row:last-child {
   border-bottom: 0;
@@ -695,7 +695,7 @@ button {
 .bt-roster-name {
   font-weight: 700;
   font-size: 14px;
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 .bt-view-btn {
   display: inline-flex;
@@ -717,7 +717,7 @@ button {
 .bt-view-btn:disabled {
   border-color: transparent;
   background: transparent;
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   cursor: default;
 }
 .bt-flag-count {
@@ -735,7 +735,7 @@ button {
 }
 .bt-flag-count--neg {
   background: #fef2f2;
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 
 /* status + rating chips (shared by roster + review modal) */
@@ -764,10 +764,10 @@ button {
   background: #f59e0b;
 }
 .bt-status--not-started {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .bt-status--not-started .bt-status-dot {
-  background: #cbd5e1;
+  background: var(--c-slate-300);
 }
 .bt-rating {
   display: inline-flex;
@@ -794,7 +794,7 @@ button {
   background: #f59e0b;
 }
 .bt-rating--red {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 .bt-rating--red .bt-rating-dot {
   background: #ef4444;
@@ -829,8 +829,8 @@ button {
   line-height: 1.45;
 }
 .bt-bubble--benny {
-  background: #f1f5f9;
-  color: #1e293b;
+  background: var(--c-slate-100);
+  color: var(--c-slate-800);
   border-top-left-radius: 5px;
 }
 .bt-bubble--student {
@@ -875,7 +875,7 @@ button {
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #94a3b8;
+  background: var(--c-slate-400);
   animation: bt-typing 1.2s infinite ease-in-out;
 }
 .bt-typing-dot:nth-child(2) {
@@ -1017,13 +1017,13 @@ button {
 /* The dimmed low-effort chip — tapping it gives Benny a minimal answer (the
    off-track path). Muted so it reads as the half-hearted option. */
 .bt-chip--weak {
-  background: #f1f5f9;
-  border-color: #e2e8f0;
-  color: #94a3b8;
+  background: var(--c-slate-100);
+  border-color: var(--c-slate-200);
+  color: var(--c-slate-400);
 }
 .bt-chip--weak:hover {
-  background: #e2e8f0;
-  border-color: #cbd5e1;
+  background: var(--c-slate-200);
+  border-color: var(--c-slate-300);
 }
 .bt-chat-composer {
   display: flex;
@@ -1032,7 +1032,7 @@ button {
 }
 .bt-chat-input {
   flex: 1;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--c-slate-200);
   border-radius: 999px;
   padding: 11px 16px;
   font-size: 14.5px;
@@ -1047,9 +1047,9 @@ button {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--c-slate-200);
   background: #fff;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1057,8 +1057,8 @@ button {
   flex-shrink: 0;
 }
 .bt-chat-mic:hover {
-  color: #64748b;
-  background: #f8fafc;
+  color: var(--c-slate-500);
+  background: var(--c-slate-50);
 }
 /* Recording — the transcript types straight into the input. */
 .bt-chat-mic.is-listening {
@@ -1068,7 +1068,7 @@ button {
   animation: bt-mic-pulse 1.3s ease-in-out infinite;
 }
 .bt-chat-mic.is-listening:hover {
-  background: #dc2626;
+  background: var(--c-red-600);
   color: #fff;
 }
 @keyframes bt-mic-pulse {
@@ -1187,7 +1187,7 @@ button {
 .bt-chat-done-btn {
   width: 100%;
   border: 0;
-  background: #16a97a;
+  background: var(--c-brand-green);
   color: #fff;
   font-weight: 800;
   font-size: 15px;
@@ -1245,7 +1245,7 @@ button {
   border: 0;
   border-radius: 50%;
   background: rgba(15, 23, 42, 0.06);
-  color: #475569;
+  color: var(--c-slate-600);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1327,11 +1327,11 @@ button {
 .bt-award-title {
   font-size: 19px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 .bt-award-name {
   font-size: 14px;
-  color: #64748b;
+  color: var(--c-slate-500);
   margin-top: 2px;
 }
 /* Lift the celebration modal (+ its backdrop) above the chat modal it pops
@@ -1364,11 +1364,11 @@ button {
   border-bottom: 1px solid #eef2f6;
 }
 .bt-review-head .bt-chat-close {
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--c-slate-100);
+  color: var(--c-slate-500);
 }
 .bt-review-head .bt-chat-close:hover {
-  background: #e2e8f0;
+  background: var(--c-slate-200);
 }
 .bt-review-head-left {
   display: flex;
@@ -1378,11 +1378,11 @@ button {
 .bt-review-name {
   font-size: 17px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 .bt-review-sub {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .bt-review-cols {
   flex: 1;
@@ -1404,23 +1404,23 @@ button {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   margin-bottom: 8px;
 }
 .bt-side-label--pos {
   color: #059669;
 }
 .bt-side-label--neg {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 .bt-side-meta {
   font-size: 12.5px;
-  color: #64748b;
+  color: var(--c-slate-500);
   margin-top: 6px;
 }
 .bt-side-note {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   margin-top: 7px;
   line-height: 1.4;
 }
@@ -1445,16 +1445,16 @@ button {
   color: #059669;
 }
 .bt-flag-row--neg .bt-flag-icon {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 .bt-flag-label {
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 .bt-flag-desc {
   font-size: 12px;
-  color: #64748b;
+  color: var(--c-slate-500);
   line-height: 1.35;
   margin-top: 1px;
 }
@@ -1470,7 +1470,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   text-align: center;
 }
 .bt-review-unfinished {

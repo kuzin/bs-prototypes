@@ -21,7 +21,7 @@
 .lv-count {
   font-size: 16px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-slate-800);
   white-space: nowrap;
 }
 
@@ -35,25 +35,25 @@
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: #94a3b8;
+  color: var(--c-slate-400);
   pointer-events: none;
 }
 
 .lv-search {
   width: 220px;
   padding: 7px 12px 7px 30px;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--c-slate-200);
   border-radius: 8px;
   font-size: 13px;
   font-family: inherit;
-  color: #1e293b;
+  color: var(--c-slate-800);
   background: #fff;
   outline: none;
   transition: border-color 0.15s;
 }
 .lv-search:focus {
-  border-color: #1d4ed8;
+  border-color: var(--c-blue-700);
 }
 .lv-search::placeholder {
-  color: #cbd5e1;
+  color: var(--c-slate-300);
 }

@@ -29,7 +29,7 @@
   height: 52px;
   border-radius: 14px;
   background: #fef2f2;
-  color: #dc2626;
+  color: var(--c-red-600);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -44,14 +44,14 @@
 .dash-sfr-cta-title {
   font-size: 16px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--c-slate-800);
   margin-bottom: 4px;
   letter-spacing: -0.01em;
 }
 
 .dash-sfr-cta-desc {
   font-size: 13.5px;
-  color: #64748b;
+  color: var(--c-slate-500);
   line-height: 1.5;
   margin-bottom: 10px;
 }
@@ -68,7 +68,7 @@
   padding: 2px 9px;
   border-radius: 99px;
   background: #fef2f2;
-  color: #dc2626;
+  color: var(--c-red-600);
   border: 1px solid #fecaca;
 }
 
@@ -104,7 +104,7 @@
 
 .dash-widget {
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--c-gray-200);
   border-radius: 12px;
   padding: 16px 18px;
 }
@@ -112,7 +112,7 @@
 .dash-widget-val {
   font-size: 26px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--c-slate-800);
   letter-spacing: -0.03em;
   line-height: 1;
   margin-bottom: 4px;
@@ -121,13 +121,13 @@
 .dash-widget-label {
   font-size: 13px;
   font-weight: 700;
-  color: #334155;
+  color: var(--c-slate-700);
   margin-bottom: 2px;
 }
 
 .dash-widget-sub {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 
 /* ── Activity list ── */
@@ -148,7 +148,7 @@
 }
 
 .dash-activity-row:hover {
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 
 .dash-activity-avatar {
@@ -174,12 +174,12 @@
 .dash-activity-name {
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 
 .dash-activity-book {
   font-size: 12px;
-  color: #64748b;
+  color: var(--c-slate-500);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -195,10 +195,10 @@
 .dash-activity-mins {
   font-size: 13px;
   font-weight: 700;
-  color: #334155;
+  color: var(--c-slate-700);
 }
 
 .dash-activity-time {
   font-size: 12px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }

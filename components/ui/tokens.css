@@ -1,0 +1,36 @@
+/**
+ * Color tokens — the single source of truth for the palette shared across every
+ * prototype. Loaded once per entry (imported at the top of each main.jsx).
+ *
+ * The neutral + accent values are exactly Tailwind's slate / red / amber / blue /
+ * violet scales; the brand colors are Beanstack's teal / green / coral.
+ *
+ * This layer is intentionally PRIMITIVE — one token per hex, so the migration is
+ * mechanical and value-preserving. Semantic aliases (--c-text, --c-border, …) can
+ * be layered on top in a follow-up once roles are settled.
+ */
+:root {
+  /* Neutrals — Tailwind slate */
+  --c-slate-50: #f8fafc;
+  --c-slate-100: #f1f5f9;
+  --c-slate-200: #e2e8f0;
+  --c-slate-300: #cbd5e1;
+  --c-slate-400: #94a3b8;
+  --c-slate-500: #64748b;
+  --c-slate-600: #475569;
+  --c-slate-700: #334155;
+  --c-slate-800: #1e293b;
+  --c-slate-900: #0f172a;
+  --c-gray-200: #e5e7eb;
+
+  /* Accent / status — Tailwind */
+  --c-red-600: #dc2626;
+  --c-amber-600: #d97706;
+  --c-blue-700: #1d4ed8;
+  --c-violet-600: #7c3aed;
+
+  /* Brand — Beanstack */
+  --c-brand-teal: #0da7bc;
+  --c-brand-green: #16a97a;
+  --c-brand-coral: #e8866a;
+}

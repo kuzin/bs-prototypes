@@ -15,7 +15,7 @@ body {
     Roboto,
     sans-serif;
   background: #f3f4f6;
-  color: #1e293b;
+  color: var(--c-slate-800);
   -webkit-font-smoothing: antialiased;
 }
 h1,
@@ -41,8 +41,8 @@ body,
 .ins-shell {
   --accent: #6366f1;
   --accent-tint: #eef2ff;
-  --border: #e5e7eb;
-  --muted: #64748b;
+  --border: var(--c-gray-200);
+  --muted: var(--c-slate-500);
   --max-w: 1280px;
 
   position: fixed;
@@ -84,7 +84,7 @@ body,
 .ins-h1 {
   font-size: 28px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   letter-spacing: -0.01em;
 }
 .ins-h1-context {
@@ -129,7 +129,7 @@ body,
   background: #fff;
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: var(--c-slate-600);
   border-radius: 999px;
   white-space: nowrap;
   cursor: pointer;
@@ -139,8 +139,8 @@ body,
     border-color 0.12s;
 }
 .ins-tab:hover {
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--c-slate-50);
+  color: var(--c-slate-900);
 }
 .ins-tab--active,
 .ins-tab--active:hover {
@@ -179,7 +179,7 @@ body,
 .ins-meter-headline {
   font-size: 15px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 .ins-meter-cost {
   font-size: 12.5px;
@@ -251,12 +251,12 @@ body,
   font-size: 30px;
   font-weight: 800;
   line-height: 1;
-  color: #0f172a;
+  color: var(--c-slate-900);
   letter-spacing: -0.02em;
 }
 .ins-qmeter-bar {
   height: 4px;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -313,11 +313,11 @@ body,
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--c-slate-800);
   border: 1px solid transparent;
   min-width: 0;
 }
@@ -332,7 +332,7 @@ body,
   white-space: nowrap;
 }
 .ins-filter--muted {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .ins-filter-dot {
   flex-shrink: 0;
@@ -436,7 +436,7 @@ button.ins-metric {
   position: absolute;
   top: 14px;
   right: 14px;
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   transition:
     color 0.12s,
     transform 0.12s;
@@ -451,12 +451,12 @@ button.ins-metric {
   gap: 2px;
   padding-bottom: 10px;
   margin-bottom: 10px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
 }
 .ins-metric-label {
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 .ins-metric-note {
   font-size: 11px;
@@ -470,22 +470,28 @@ button.ins-metric {
 .ins-metric-value {
   font-size: 30px;
   font-weight: 400;
-  color: #0f172a;
+  color: var(--c-slate-900);
   line-height: 1;
   letter-spacing: -0.01em;
 }
 .ins-metric-empty {
   font-size: 28px;
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   font-weight: 300;
 }
 .ins-metric--empty {
-  background: repeating-linear-gradient(135deg, #fff, #fff 6px, #f8fafc 6px, #f8fafc 12px);
+  background: repeating-linear-gradient(
+    135deg,
+    #fff,
+    #fff 6px,
+    var(--c-slate-50) 6px,
+    var(--c-slate-50) 12px
+  );
   border-style: dashed;
-  border-color: #cbd5e1;
+  border-color: var(--c-slate-300);
 }
 .ins-metric--loading .ins-metric-value {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 
 /* ─── Panels (top books / badges / ages) ───────────────────────────────── */
@@ -505,7 +511,7 @@ button.ins-metric {
 .ins-panel-title {
   font-size: 14px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 .ins-panel-open {
   display: inline-flex;
@@ -529,9 +535,15 @@ button.ins-metric {
   min-height: 110px;
 }
 .ins-panel--empty {
-  background: repeating-linear-gradient(135deg, #fff, #fff 6px, #f8fafc 6px, #f8fafc 12px);
+  background: repeating-linear-gradient(
+    135deg,
+    #fff,
+    #fff 6px,
+    var(--c-slate-50) 6px,
+    var(--c-slate-50) 12px
+  );
   border-style: dashed;
-  border-color: #cbd5e1;
+  border-color: var(--c-slate-300);
 }
 .ins-panel-empty {
   display: flex;
@@ -562,7 +574,12 @@ button.ins-metric {
   }
 }
 .ins-book--skel {
-  background: linear-gradient(110deg, #e2e8f0 30%, #f1f5f9 50%, #e2e8f0 70%);
+  background: linear-gradient(
+    110deg,
+    var(--c-slate-200) 30%,
+    var(--c-slate-100) 50%,
+    var(--c-slate-200) 70%
+  );
   background-size: 200% 100%;
   animation: ins-skel-shimmer 1.4s linear infinite;
   box-shadow: none;
@@ -579,7 +596,12 @@ button.ins-metric {
   width: 56px;
   height: 56px;
   border-radius: 999px;
-  background: linear-gradient(110deg, #e2e8f0 30%, #f1f5f9 50%, #e2e8f0 70%);
+  background: linear-gradient(
+    110deg,
+    var(--c-slate-200) 30%,
+    var(--c-slate-100) 50%,
+    var(--c-slate-200) 70%
+  );
   background-size: 200% 100%;
   animation: ins-skel-shimmer 1.4s linear infinite;
 }
@@ -587,11 +609,16 @@ button.ins-metric {
   width: 48px;
   height: 10px;
   border-radius: 4px;
-  background: #e2e8f0;
+  background: var(--c-slate-200);
   animation: ins-skel-pulse 1.4s ease-in-out infinite;
 }
 .ins-age-bar--skel {
-  background: linear-gradient(110deg, #e2e8f0 30%, #f1f5f9 50%, #e2e8f0 70%);
+  background: linear-gradient(
+    110deg,
+    var(--c-slate-200) 30%,
+    var(--c-slate-100) 50%,
+    var(--c-slate-200) 70%
+  );
   background-size: 200% 100%;
   animation: ins-skel-shimmer 1.4s linear infinite;
 }
@@ -599,7 +626,7 @@ button.ins-metric {
   width: 14px;
   height: 8px;
   border-radius: 3px;
-  background: #e2e8f0;
+  background: var(--c-slate-200);
   animation: ins-skel-pulse 1.4s ease-in-out infinite;
 }
 
@@ -644,7 +671,7 @@ button.ins-metric {
   overflow: hidden;
   position: relative;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-  background: #1e293b;
+  background: var(--c-slate-800);
 }
 .ins-book img {
   width: 100%;
@@ -688,7 +715,7 @@ button.ins-metric {
 }
 .ins-badge-label {
   font-size: 12px;
-  color: #1e293b;
+  color: var(--c-slate-800);
   font-weight: 700;
 }
 .ins-badge-count {
@@ -721,7 +748,7 @@ button.ins-metric {
 }
 .ins-age-bar {
   width: 100%;
-  background: #94a3b8;
+  background: var(--c-slate-400);
   border-radius: 3px 3px 0 0;
   min-height: 2px;
 }
@@ -740,8 +767,8 @@ button.ins-metric {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--c-slate-100);
+  color: var(--c-slate-600);
 }
 .ins-pill--cost {
   background: #eef2ff;
@@ -755,7 +782,7 @@ button.ins-metric {
   justify-content: space-between;
   gap: 16px;
   padding: 14px 18px;
-  background: linear-gradient(180deg, #fafafe, #f1f5f9);
+  background: linear-gradient(180deg, #fafafe, var(--c-slate-100));
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   border-radius: 12px;
 }
@@ -774,7 +801,7 @@ button.ins-metric {
 }
 .ins-edit-bar-hint {
   font-size: 13px;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 .ins-edit-bar-r {
   display: flex;
@@ -832,7 +859,7 @@ button.ins-metric {
   font: inherit;
   font-size: 11.5px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--c-slate-500);
   letter-spacing: 0.02em;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
@@ -906,7 +933,7 @@ button.ins-metric {
 .ins-cust-section-label {
   font-size: 11px;
   font-weight: 800;
-  color: #475569;
+  color: var(--c-slate-600);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -935,7 +962,7 @@ button.ins-metric {
   display: flex;
   flex-direction: column;
   background: #fff;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--c-slate-200);
   border-radius: 10px;
   padding: 0;
   overflow: hidden;
@@ -948,7 +975,7 @@ button.ins-metric {
     transform 0.08s;
 }
 .ins-cust-card:hover {
-  border-color: #94a3b8;
+  border-color: var(--c-slate-400);
 }
 .ins-cust-card:active {
   transform: scale(0.995);
@@ -966,8 +993,8 @@ button.ins-metric {
   align-items: center;
   justify-content: center;
   padding: 14px 14px 12px;
-  background: #f8fafc;
-  border-bottom: 1px solid #e2e8f0;
+  background: var(--c-slate-50);
+  border-bottom: 1px solid var(--c-slate-200);
   min-height: 70px;
   transition: background 0.14s;
 }
@@ -987,7 +1014,7 @@ button.ins-metric {
 .ins-cust-card-label {
   font-size: 12.5px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--c-slate-800);
   line-height: 1.25;
   min-width: 0;
   overflow: hidden;
@@ -1000,7 +1027,7 @@ button.ins-metric {
   width: 28px;
   height: 16px;
   border-radius: 999px;
-  background: #cbd5e1;
+  background: var(--c-slate-300);
   position: relative;
   transition: background 0.14s;
 }
@@ -1040,7 +1067,7 @@ button.ins-metric {
 .ins-cust-thumb-num {
   font-size: 22px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--c-slate-800);
   line-height: 1;
 }
 .ins-cust-card--on .ins-cust-thumb-num {
@@ -1049,7 +1076,7 @@ button.ins-metric {
 .ins-cust-thumb-line {
   width: 56%;
   height: 4px;
-  background: #cbd5e1;
+  background: var(--c-slate-300);
   border-radius: 2px;
 }
 .ins-cust-card--on .ins-cust-thumb-line {
@@ -1065,7 +1092,7 @@ button.ins-metric {
 }
 .ins-cust-thumb--books > span {
   aspect-ratio: 2 / 3;
-  background: #cbd5e1;
+  background: var(--c-slate-300);
   border-radius: 2px;
 }
 .ins-cust-card--on .ins-cust-thumb--books > span {
@@ -1079,8 +1106,8 @@ button.ins-metric {
   width: 26px;
   height: 26px;
   border-radius: 999px;
-  background: #cbd5e1;
-  border: 2px solid #94a3b8;
+  background: var(--c-slate-300);
+  border: 2px solid var(--c-slate-400);
 }
 .ins-cust-card--on .ins-cust-thumb--badges > span {
   background: color-mix(in srgb, var(--accent) 35%, #fff);
@@ -1097,7 +1124,7 @@ button.ins-metric {
 }
 .ins-cust-thumb--bars > span {
   flex: 1;
-  background: #cbd5e1;
+  background: var(--c-slate-300);
   border-radius: 2px 2px 0 0;
   min-height: 4px;
 }
@@ -1113,7 +1140,7 @@ button.ins-metric {
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;
-  color: #64748b;
+  color: var(--c-slate-500);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1163,9 +1190,15 @@ button.ins-metric {
 .ins-metric--load {
   text-align: left;
   cursor: pointer;
-  background: repeating-linear-gradient(135deg, #fff, #fff 6px, #f8fafc 6px, #f8fafc 12px);
+  background: repeating-linear-gradient(
+    135deg,
+    #fff,
+    #fff 6px,
+    var(--c-slate-50) 6px,
+    var(--c-slate-50) 12px
+  );
   border-style: dashed;
-  border-color: #cbd5e1;
+  border-color: var(--c-slate-300);
   transition:
     border-color 0.14s,
     color 0.14s,
@@ -1181,7 +1214,7 @@ button.ins-metric {
   gap: 6px;
   font-size: 12px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--c-slate-500);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -1196,12 +1229,12 @@ button.ins-metric {
   margin: 16px auto;
   padding: 10px 18px;
   background: #fff;
-  border: 1.5px dashed #cbd5e1;
+  border: 1.5px dashed var(--c-slate-300);
   border-radius: 999px;
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: var(--c-slate-600);
   cursor: pointer;
   transition:
     border-color 0.14s,
@@ -1257,7 +1290,7 @@ button.ins-metric {
 }
 .ins-update-text strong {
   font-size: 13.5px;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 .ins-update-text span {
   font-size: 12.5px;
@@ -1279,8 +1312,8 @@ button.ins-metric {
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background: #f8fafc;
-  border: 1.5px solid #e2e8f0;
+  background: var(--c-slate-50);
+  border: 1.5px solid var(--c-slate-200);
   border-radius: 10px;
   transition:
     border-color 0.14s,
@@ -1296,11 +1329,11 @@ button.ins-metric {
   background: transparent;
   font: inherit;
   font-size: 15px;
-  color: #0f172a;
+  color: var(--c-slate-900);
   outline: none;
 }
 .ins-palette-input input::placeholder {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 
 .ins-palette-matches {
@@ -1321,7 +1354,7 @@ button.ins-metric {
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--c-slate-800);
   cursor: pointer;
   text-align: left;
 }
@@ -1336,7 +1369,7 @@ button.ins-metric {
   text-transform: uppercase;
   color: var(--muted);
   padding: 2px 8px;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   border-radius: 999px;
 }
 
@@ -1354,14 +1387,14 @@ button.ins-metric {
   color: var(--muted);
 }
 .ins-palette-chip {
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   border: 1px solid transparent;
   padding: 6px 12px;
   border-radius: 999px;
   font: inherit;
   font-size: 12.5px;
   font-weight: 600;
-  color: #475569;
+  color: var(--c-slate-600);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -1399,7 +1432,7 @@ button.ins-metric {
 .ins-consol-title {
   font-size: 14px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   letter-spacing: -0.01em;
 }
 .ins-spark {
@@ -1425,7 +1458,7 @@ button.ins-metric {
   transition: background 0.12s;
 }
 .ins-consol-metric:hover {
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 .ins-consol-metric:disabled {
   cursor: default;
@@ -1433,7 +1466,7 @@ button.ins-metric {
 .ins-consol-metric-num {
   font-size: 24px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--c-slate-900);
   line-height: 1;
 }
 .ins-consol-metric-lbl {
@@ -1475,7 +1508,7 @@ button.ins-metric {
 .ins-ai-text {
   font-size: 17px;
   line-height: 1.55;
-  color: #0f172a;
+  color: var(--c-slate-900);
   margin-bottom: 14px;
 }
 .ins-ai-stat {

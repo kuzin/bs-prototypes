@@ -446,7 +446,7 @@ body[data-theme='dark'] {
 
 .jf-mark {
   display: inline-flex;
-  color: #0da7bc;
+  color: var(--c-brand-teal);
 }
 
 .jf-footer-bottom-right {

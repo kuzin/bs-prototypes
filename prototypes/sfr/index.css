@@ -15,7 +15,7 @@ body {
     Roboto,
     sans-serif;
   background: #f3f4f6;
-  color: #1e293b;
+  color: var(--c-slate-800);
   -webkit-font-smoothing: antialiased;
 }
 

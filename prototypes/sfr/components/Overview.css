@@ -10,7 +10,7 @@
   align-items: flex-start;
   gap: 12px;
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--c-gray-200);
   border-radius: 14px;
   padding: 16px 18px;
 }
@@ -70,14 +70,14 @@
 .ov-card-title {
   font-size: 13px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--c-slate-800);
   margin-bottom: 2px;
   letter-spacing: -0.01em;
 }
 
 .ov-card-desc {
   font-size: 12px;
-  color: #64748b;
+  color: var(--c-slate-500);
   line-height: 1.35;
 }
 
@@ -140,7 +140,7 @@
 .ov-student-name {
   font-size: 13px;
   font-weight: 600;
-  color: #1e293b;
+  color: var(--c-slate-800);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -149,7 +149,7 @@
 .ov-student-book {
   font-size: 11px;
   font-weight: 400;
-  color: #64748b;
+  color: var(--c-slate-500);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -164,7 +164,7 @@
 
 .ov-row-chevron {
   flex-shrink: 0;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   opacity: 0.45;
   transition:
     opacity 0.12s,
@@ -175,7 +175,7 @@
 .ov-view-all {
   font-size: 12.5px;
   font-weight: 700;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
   background: none;
   border: none;
   cursor: pointer;
