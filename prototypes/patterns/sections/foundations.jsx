@@ -268,6 +268,84 @@ function Radii() {
   )
 }
 
+const SHADOWS = ['--shadow-sm', '--shadow-md', '--shadow-lg']
+const SPACING = [
+  '--space-2',
+  '--space-4',
+  '--space-6',
+  '--space-8',
+  '--space-10',
+  '--space-12',
+  '--space-16',
+  '--space-20',
+  '--space-24',
+  '--space-32',
+]
+
+function Shadows() {
+  const vals = useTokenValues(SHADOWS)
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+        gap: 20,
+        background: 'var(--c-slate-50)',
+        padding: 24,
+        borderRadius: 'var(--radius-xl)',
+      }}
+    >
+      {SHADOWS.map((t) => (
+        <div key={t} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div
+            style={{
+              height: 72,
+              background: '#fff',
+              borderRadius: 'var(--radius-lg)',
+              boxShadow: `var(${t})`,
+            }}
+          />
+          <div>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: 'var(--c-slate-800)',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              {t}
+            </div>
+            <div style={{ ...META, fontSize: 10 }}>{vals[t]}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function Spacing() {
+  const vals = useTokenValues(SPACING)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {SPACING.map((t) => (
+        <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <code style={{ ...META, width: 80, flexShrink: 0 }}>{t}</code>
+          <span style={{ ...META, width: 40, flexShrink: 0 }}>{vals[t]}</span>
+          <div
+            style={{
+              height: 16,
+              width: `var(${t})`,
+              background: 'var(--c-brand-teal)',
+              borderRadius: 'var(--radius-xs)',
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export const foundationsSections = [
   {
     group: 'foundations',
@@ -311,5 +389,31 @@ export const foundationsSections = [
       </>
     ),
     render: () => <Radii />,
+  },
+  {
+    group: 'foundations',
+    id: 'elevation',
+    name: 'Elevation',
+    desc: (
+      <>
+        Box-shadow elevation scale (<code>--shadow-sm</code> / <code>--shadow-md</code> /{' '}
+        <code>--shadow-lg</code>) — a hairline lift, raised cards and popovers, and modal overlays.
+        Accent focus-rings are separate and derive from the color tokens.
+      </>
+    ),
+    render: () => <Shadows />,
+  },
+  {
+    group: 'foundations',
+    id: 'spacing',
+    name: 'Spacing',
+    desc: (
+      <>
+        The spacing steps (<code>--space-*</code>, named by px) that recur in padding, gap and
+        margin. The documented rhythm to adopt going forward — raw px values still appear at call
+        sites.
+      </>
+    ),
+    render: () => <Spacing />,
   },
 ]

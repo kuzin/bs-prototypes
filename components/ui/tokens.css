@@ -1,17 +1,18 @@
 /**
- * Design tokens — the single source of truth for color, typography and radii
- * shared across every prototype. Loaded once per entry (imported at the top of
- * each main.jsx).
+ * Design tokens — the single source of truth for color, typography, radii,
+ * elevation and spacing shared across every prototype. Loaded once per entry
+ * (imported at the top of each main.jsx).
  *
  * Color (--c-*): the neutral + accent values are exactly Tailwind's slate / red /
  * amber / blue / violet scales; the brand colors are Beanstack's teal / green /
  * coral. Primitive — one token per hex — so the color migration is mechanical and
  * value-preserving.
  *
- * Typography (--font-*, --text-*, --fw-*) + radii (--radius-*) capture the scales
- * already in use as the standard going forward. The font families are migrated to
- * tokens; adopting the size / weight / radius tokens at every call site is
- * incremental (raw px values still appear and are fine).
+ * Typography (--font-*, --text-*, --fw-*), radii (--radius-*), elevation
+ * (--shadow-*) and spacing (--space-*) capture the scales already in use as the
+ * standard going forward. The font families are migrated to tokens; adopting the
+ * size / weight / radius / shadow / spacing tokens at every call site is
+ * incremental (raw values still appear and are fine).
  */
 :root {
   /* Neutrals — Tailwind slate */
@@ -70,4 +71,21 @@
   --radius-2xl: 14px;
   --radius-pill: 999px;
   --radius-full: 50%;
+
+  /* Elevation (box-shadow) */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 8px 28px rgba(15, 23, 42, 0.14);
+
+  /* Spacing scale (px) */
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
 }
