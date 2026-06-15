@@ -32,7 +32,7 @@
 
 .da-callout-lbl {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   line-height: 1.3;
 }
 

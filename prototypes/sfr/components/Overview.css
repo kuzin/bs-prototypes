@@ -77,7 +77,7 @@
 
 .ov-card-desc {
   font-size: 12px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   line-height: 1.35;
 }
 
@@ -149,7 +149,7 @@
 .ov-student-book {
   font-size: 11px;
   font-weight: 400;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -164,7 +164,7 @@
 
 .ov-row-chevron {
   flex-shrink: 0;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   opacity: 0.45;
   transition:
     opacity 0.12s,

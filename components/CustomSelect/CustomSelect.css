@@ -7,9 +7,9 @@
   box-sizing: border-box;
   font: inherit;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   cursor: pointer;
   gap: 8px;
   transition:
@@ -38,7 +38,7 @@
 
 .csel-trigger[data-disabled] {
   background: var(--c-slate-50);
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   cursor: not-allowed;
 }
 
@@ -65,7 +65,7 @@
 }
 
 .csel-icon {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   flex-shrink: 0;
   transition: transform 0.15s;
 }
@@ -79,7 +79,7 @@
   /* Portal renders outside .pt-shell, so set font explicitly */
   font-family: var(--font-sans);
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
   overflow: hidden;
@@ -113,7 +113,7 @@
   padding: 4px 10px;
   border-radius: 6px;
   font-size: 13px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   cursor: pointer;
   outline: none;
   transition: background 0.08s;
@@ -149,7 +149,7 @@
   padding: 8px 10px 4px;
   font-size: 11px;
   font-weight: 700;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -160,7 +160,7 @@
   align-items: center;
   justify-content: center;
   height: 24px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   cursor: default;
   background: #fff;
 }

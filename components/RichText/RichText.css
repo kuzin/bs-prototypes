@@ -1,5 +1,5 @@
 .rtx {
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 9px;
   overflow: hidden;
   background: #fff;
@@ -13,7 +13,7 @@
   align-items: center;
   gap: 2px;
   padding: 6px;
-  border-bottom: 1px solid var(--c-slate-200);
+  border-bottom: 1px solid var(--c-border);
   background: var(--c-slate-50);
 }
 .rtx-tool {
@@ -32,7 +32,7 @@
 }
 .rtx-tool:hover {
   background: var(--c-slate-200);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .rtx-sep {
   width: 1px;
@@ -47,17 +47,17 @@
   align-items: center;
   gap: 5px;
   padding: 7px 8px;
-  border-bottom: 1px solid var(--c-slate-200);
+  border-bottom: 1px solid var(--c-border);
   background: #fbfdfe;
 }
 .rtx-tokens-label {
   font-size: 12px;
   font-weight: 700;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-right: 2px;
 }
 .rtx-token {
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   background: #fff;
   border-radius: 999px;
   padding: 2px 9px;
@@ -89,14 +89,14 @@
   padding: 10px 12px;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   outline: none;
   overflow-y: auto;
   max-height: 280px;
 }
 .rtx-editor:empty::before {
   content: attr(data-placeholder);
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 .rtx-editor > :first-child {
   margin-top: 0;
@@ -143,7 +143,7 @@
 .rtx-editor blockquote {
   margin: 8px 0;
   padding: 2px 0 2px 12px;
-  border-left: 3px solid var(--c-slate-300);
+  border-left: 3px solid var(--c-border-strong);
   color: var(--c-slate-600);
 }
 .rtx-editor pre {

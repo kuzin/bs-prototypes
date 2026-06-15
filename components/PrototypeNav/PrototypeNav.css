@@ -45,7 +45,7 @@
 
 .proto-nav-iconbtn:hover {
   background: #fff;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   border-color: rgba(0, 0, 0, 0.18);
 }
 
@@ -79,7 +79,7 @@
 
 .proto-nav-usage:hover {
   background: #fff;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   border-color: rgba(0, 0, 0, 0.18);
 }
 
@@ -159,7 +159,7 @@
 }
 
 .proto-nav-select--empty {
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   background: rgba(0, 0, 0, 0.04);
   border-color: rgba(0, 0, 0, 0.08);
 }
@@ -261,7 +261,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   padding: 4px 10px 2px;
 }
 

@@ -346,6 +346,77 @@ function Spacing() {
   )
 }
 
+const SEMANTIC = [
+  {
+    label: 'Text',
+    rows: [
+      ['--c-text', '--c-slate-900'],
+      ['--c-text-muted', '--c-slate-500'],
+      ['--c-text-subtle', '--c-slate-400'],
+    ],
+  },
+  {
+    label: 'Surfaces',
+    rows: [
+      ['--c-surface', '#fff'],
+      ['--c-bg', '--c-slate-50'],
+      ['--c-bg-muted', '--c-slate-100'],
+    ],
+  },
+  {
+    label: 'Borders',
+    rows: [
+      ['--c-border', '--c-slate-200'],
+      ['--c-border-strong', '--c-slate-300'],
+    ],
+  },
+  {
+    label: 'Intent',
+    rows: [
+      ['--c-brand', '--c-brand-teal'],
+      ['--c-danger', '--c-red-600'],
+      ['--c-warning', '--c-amber-600'],
+      ['--c-success', '--c-brand-green'],
+      ['--c-info', '--c-blue-700'],
+    ],
+  },
+]
+const SEMANTIC_TOKENS = SEMANTIC.flatMap((g) => g.rows.map((r) => r[0]))
+
+function Semantic() {
+  const vals = useTokenValues(SEMANTIC_TOKENS)
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      {SEMANTIC.map((g) => (
+        <div key={g.label}>
+          <div style={SECTION_LABEL}>{g.label}</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {g.rows.map(([alias, maps]) => (
+              <div key={alias} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div
+                  style={{
+                    width: 28,
+                    height: 28,
+                    flexShrink: 0,
+                    borderRadius: 'var(--radius-sm)',
+                    background: `var(${alias})`,
+                    border: '1px solid var(--c-border)',
+                  }}
+                />
+                <code style={{ ...META, width: 150, flexShrink: 0, color: 'var(--c-text)' }}>
+                  {alias}
+                </code>
+                <span style={META}>→ {maps.startsWith('--') ? `var(${maps})` : maps}</span>
+                <span style={{ ...META, marginLeft: 'auto' }}>{vals[alias]}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export const foundationsSections = [
   {
     group: 'foundations',
@@ -415,5 +486,21 @@ export const foundationsSections = [
       </>
     ),
     render: () => <Spacing />,
+  },
+  {
+    group: 'foundations',
+    id: 'semantic',
+    name: 'Semantic',
+    desc: (
+      <>
+        Role aliases mapped onto the color primitives — <code>--c-text</code>,{' '}
+        <code>--c-surface</code>, <code>--c-border</code>, intent colors (<code>--c-danger</code> /{' '}
+        <code>--c-warning</code> / <code>--c-success</code> / <code>--c-info</code>) and{' '}
+        <code>--c-brand</code>. Prefer these in new code — the indirection lets a role restyle in
+        one place. Text + border roles are adopted across CSS; surfaces / intent are the documented
+        standard to adopt incrementally.
+      </>
+    ),
+    render: () => <Semantic />,
   },
 ]

@@ -29,13 +29,13 @@
 .dm-action-school {
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   line-height: 1.3;
 }
 
 .dm-action-frl {
   font-weight: 500;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 
 .dm-action-text {

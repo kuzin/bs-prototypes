@@ -8,7 +8,7 @@
 .af-label {
   font-size: 12px;
   font-weight: 600;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   margin-right: 2px;
   white-space: nowrap;
 }
@@ -39,7 +39,7 @@
 .af-clear-all {
   font-size: 12px;
   font-weight: 600;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   background: none;
   border: none;
   cursor: pointer;

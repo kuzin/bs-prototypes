@@ -31,7 +31,7 @@
 .dvd-label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -141,7 +141,7 @@
 .icnb--secondary {
   background: #fff;
   color: var(--c-slate-600);
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
 }
 .icnb--secondary:hover:not(:disabled) {
   background: var(--c-slate-50);
@@ -151,7 +151,7 @@
 
 .icnb--ghost {
   background: transparent;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 .icnb--ghost:hover:not(:disabled) {
   background: var(--c-slate-100);
@@ -273,7 +273,7 @@
 
 .bnr-title {
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   margin-bottom: 2px;
   line-height: 1.35;
 }
@@ -370,7 +370,7 @@
 
 .bcb-link {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.1s;
@@ -382,12 +382,12 @@
 
 .bcb-current {
   font-size: 13px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   font-weight: 500;
 }
 
 .bcb-current--last {
-  color: var(--c-slate-900);
+  color: var(--c-text);
   font-weight: 700;
 }
 
@@ -420,7 +420,7 @@
   font: inherit;
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   cursor: pointer;
   text-align: left;
   transition: color 0.12s;
@@ -442,7 +442,7 @@
 }
 
 .acd-caret {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   transition:
     transform 0.18s,
     color 0.12s;
@@ -476,7 +476,7 @@
   height: 52px;
   border-radius: 13px;
   background: var(--c-slate-100);
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -491,12 +491,12 @@
 .emp-title {
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 
 .emp-desc {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   line-height: 1.5;
   max-width: 360px;
 }
@@ -508,7 +508,7 @@
 /* Dashed placeholder variant — "nothing loaded / nothing here yet" cards.
    Icon renders bare (no chip) at its passed size. */
 .emp--dashed {
-  border: 1.5px dashed var(--c-slate-300);
+  border: 1.5px dashed var(--c-border-strong);
   border-radius: 12px;
   background: #fff;
   padding: 56px 24px;
@@ -582,7 +582,7 @@
 .sct-title {
   font-size: 14px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   letter-spacing: -0.01em;
   margin: 0;
   line-height: 1.25;
@@ -604,7 +604,7 @@ h4.sct-title {
 
 .sct-sub {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-top: 2px;
 }
 

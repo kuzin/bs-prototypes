@@ -39,7 +39,7 @@
 }
 
 .fld-hint {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   font-weight: 500;
 }
 
@@ -62,7 +62,7 @@
 }
 
 .fld-help {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 .fld-error {
   color: var(--c-red-600);
@@ -75,9 +75,9 @@
   width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   transition:
     border-color 0.12s,
     box-shadow 0.12s;
@@ -94,12 +94,12 @@
 }
 
 .inp::placeholder {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 .inp:disabled {
   background: var(--c-slate-50);
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   cursor: not-allowed;
 }
 
@@ -132,7 +132,7 @@
   display: flex;
   align-items: center;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
   transition:
     border-color 0.12s,
@@ -170,7 +170,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   flex-shrink: 0;
 }
 
@@ -222,9 +222,9 @@
   font: inherit;
   width: 100%;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   padding-right: 32px;
   cursor: pointer;
   -webkit-appearance: none;
@@ -247,7 +247,7 @@
 
 .sel:disabled {
   background: var(--c-slate-50);
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   cursor: not-allowed;
 }
 
@@ -277,7 +277,7 @@
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   pointer-events: none;
 }
 
@@ -288,9 +288,9 @@
   max-width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   padding: 8px 12px;
   font-size: 13px;
   resize: vertical;
@@ -347,7 +347,7 @@
   width: 18px;
   height: 18px;
   background: #fff;
-  border: 1.5px solid var(--c-slate-300);
+  border: 1.5px solid var(--c-border-strong);
   border-radius: 5px;
   color: transparent;
   transition:
@@ -421,7 +421,7 @@
   width: 18px;
   height: 18px;
   background: #fff;
-  border: 1.5px solid var(--c-slate-300);
+  border: 1.5px solid var(--c-border-strong);
   border-radius: 50%;
   position: relative;
   transition:
@@ -489,7 +489,7 @@
   width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
   transition:
     border-color 0.12s,
@@ -589,7 +589,7 @@
   flex-shrink: 0;
   font: inherit;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
   color: var(--c-slate-700);
   cursor: pointer;
@@ -634,7 +634,7 @@
 }
 
 .finp-name--placeholder {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 /* ── CheckboxGroup ──────────────────────────────────────────────────────── */
@@ -665,9 +665,9 @@
   box-sizing: border-box;
   font: inherit;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   cursor: pointer;
   text-align: left;
   gap: 8px;
@@ -689,7 +689,7 @@
 
 .msel-trigger:disabled {
   background: var(--c-slate-50);
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   cursor: not-allowed;
 }
 
@@ -755,12 +755,12 @@
 }
 
 .msel-display--placeholder {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 .msel-caret {
   flex-shrink: 0;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   transition: transform 0.15s;
 }
 
@@ -775,7 +775,7 @@
   right: 0;
   z-index: 50;
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
   box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
   overflow: hidden;
@@ -794,7 +794,7 @@
   display: flex;
   justify-content: flex-end;
   padding: 6px;
-  border-top: 1px solid var(--c-slate-200);
+  border-top: 1px solid var(--c-border);
   background: #fff;
 }
 .msel-done {
@@ -826,7 +826,7 @@
   padding: 8px 12px;
   cursor: pointer;
   font-size: 13px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   transition: background 0.1s;
 }
 .msel-opt-art {
@@ -872,11 +872,11 @@
 .msel-empty-text {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 .msel-empty-hint {
   font-size: 12px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   line-height: 1.4;
 }
 
@@ -887,7 +887,7 @@
   width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
   overflow: hidden;
   transition:
@@ -914,7 +914,7 @@
   flex-shrink: 0;
   background: transparent;
   border: none;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   cursor: pointer;
   transition:
     background 0.1s,
@@ -925,7 +925,7 @@
 
 .ninp-btn:hover:not(:disabled) {
   background: var(--c-slate-100);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .ninp-btn:disabled {
   color: var(--c-slate-300);
@@ -948,7 +948,7 @@
   font: inherit;
   border: none;
   background: transparent;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   text-align: center;
   outline: none;
   -moz-appearance: textfield;

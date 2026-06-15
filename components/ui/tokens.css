@@ -13,6 +13,11 @@
  * standard going forward. The font families are migrated to tokens; adopting the
  * size / weight / radius / shadow / spacing tokens at every call site is
  * incremental (raw values still appear and are fine).
+ *
+ * Semantic aliases (--c-text, --c-surface, --c-border, --c-danger, …) map roles
+ * onto the color primitives — prefer them in new code so a role can restyle in
+ * one place. Text + border roles are migrated in CSS; surfaces / intent are the
+ * documented standard to adopt incrementally.
  */
 :root {
   /* Neutrals — Tailwind slate */
@@ -88,4 +93,24 @@
   --space-20: 20px;
   --space-24: 24px;
   --space-32: 32px;
+
+  /* ── Semantic aliases — roles mapped onto the primitives above. Prefer these in
+     new code: the indirection lets a role restyle in one place. ─────────────── */
+  /* Text */
+  --c-text: var(--c-slate-900);
+  --c-text-muted: var(--c-slate-500);
+  --c-text-subtle: var(--c-slate-400);
+  /* Surfaces */
+  --c-surface: #fff;
+  --c-bg: var(--c-slate-50);
+  --c-bg-muted: var(--c-slate-100);
+  /* Borders */
+  --c-border: var(--c-slate-200);
+  --c-border-strong: var(--c-slate-300);
+  /* Intent */
+  --c-brand: var(--c-brand-teal);
+  --c-danger: var(--c-red-600);
+  --c-warning: var(--c-amber-600);
+  --c-success: var(--c-brand-green);
+  --c-info: var(--c-blue-700);
 }

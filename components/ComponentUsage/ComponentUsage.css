@@ -20,12 +20,12 @@
   font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 
 .cu-sub {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-top: 2px;
   line-height: 1.45;
 }
@@ -45,7 +45,7 @@
   border-radius: 8px;
   border: 1px solid var(--c-gray-200);
   background: #fff;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -54,13 +54,13 @@
 
 .cu-close:hover {
   background: var(--c-slate-50);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 
 .cu-loading {
   padding: 40px;
   text-align: center;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   font-size: 14px;
 }
 
@@ -83,7 +83,7 @@
 .cu-proto-name {
   font-size: 14px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   margin-bottom: 8px;
 }
 
@@ -101,7 +101,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   display: flex;
   align-items: center;
   gap: 6px;

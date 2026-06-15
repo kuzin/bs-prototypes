@@ -40,7 +40,7 @@
 .wa-logo-word {
   font-size: 18px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   letter-spacing: -0.02em;
 }
 
@@ -198,7 +198,7 @@
 .wa-h2 {
   font-size: 28px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   letter-spacing: -0.02em;
 }
 
@@ -221,7 +221,7 @@
 }
 .wa-scope-btn--active {
   background: #ffffff;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
 }
 
@@ -232,12 +232,12 @@
 .wa-group-title {
   font-size: 18px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   margin-bottom: 2px;
 }
 .wa-group-sub {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-bottom: 14px;
 }
 
@@ -307,19 +307,19 @@
 }
 .wa-chcard-title {
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   font-size: 15px;
 }
 .wa-chcard-dates {
   font-size: 12px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-top: 2px;
 }
 
 /* Add tile */
 .wa-chcard--add {
   border-style: dashed;
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
   background: var(--c-slate-50);
   min-height: 220px;
   align-items: center;
@@ -340,10 +340,10 @@
   height: 44px;
   border-radius: 999px;
   background: #ffffff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   font-size: 24px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -377,11 +377,11 @@
 .wa-goalcard-title {
   font-size: 16px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .wa-goalcard-sub {
   font-size: 12.5px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-top: 2px;
   line-height: 1.4;
 }
@@ -398,7 +398,7 @@
 }
 .wa-goalcard-denom {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-weight: 600;
 }
 
@@ -470,7 +470,7 @@
 }
 .wa-leadcard-name {
   flex: 1;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   font-weight: 600;
 }
 .wa-leadcard-val {
@@ -516,7 +516,7 @@
   font-weight: 600;
 }
 .wa-footer-links a:hover {
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .wa-footer-lang {
   background: transparent;
@@ -557,13 +557,13 @@
 }
 .wa-footer-copy {
   font-size: 12.5px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 .wa-footer-copy a {
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   text-decoration: none;
 }
 .wa-footer-copy a:hover {

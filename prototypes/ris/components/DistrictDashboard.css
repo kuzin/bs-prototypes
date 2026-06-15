@@ -141,12 +141,12 @@
 .dash-inline-unit {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 
 .dash-inline-lbl {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-weight: 600;
   letter-spacing: -0.01em;
 }

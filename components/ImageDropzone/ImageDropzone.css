@@ -1,5 +1,5 @@
 .idz {
-  border: 2px dashed var(--c-slate-300);
+  border: 2px dashed var(--c-border-strong);
   border-radius: 12px;
   padding: 22px;
   display: flex;
@@ -32,7 +32,7 @@
   display: none;
 }
 .idz-icon {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 .idz-preview {
   /* Size to the image (not the full box) so the rounded corners land on the
@@ -48,16 +48,16 @@
   color: var(--c-slate-600);
 }
 .idz-prompt strong {
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .idz-file {
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .idz-hint {
   font-size: 11.5px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   line-height: 1.5;
   white-space: pre-line;
 }

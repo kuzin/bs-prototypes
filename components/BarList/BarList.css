@@ -129,7 +129,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   white-space: nowrap;
 }
 
@@ -204,7 +204,7 @@
   flex-shrink: 0;
   color: color-mix(in srgb, var(--bl-ic, var(--c-slate-400)) 55%, var(--c-slate-700));
   background: var(--bl-ic-bg, var(--c-slate-50));
-  border: 1px solid color-mix(in srgb, var(--bl-ic, var(--c-slate-400)) 25%, var(--c-slate-200));
+  border: 1px solid color-mix(in srgb, var(--bl-ic, var(--c-slate-400)) 25%, var(--c-border));
 }
 
 .bl-icon svg {
@@ -234,12 +234,12 @@
 .bl-row--icon .bl-meta:not(:has(.bl-sublabel)) .bl-label {
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 
 .bl-sublabel {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -279,7 +279,7 @@
 
 .bl-subvalue {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-variant-numeric: tabular-nums;
 }
 

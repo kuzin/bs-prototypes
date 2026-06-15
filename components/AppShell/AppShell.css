@@ -76,7 +76,7 @@
 
 .app-shell-header-meta {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 
 /* ── Mobile: stack the sidebar (its topbar) above content instead of beside

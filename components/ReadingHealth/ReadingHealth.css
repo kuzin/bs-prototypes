@@ -102,7 +102,7 @@
 
 .rh-stat-desc {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -122,7 +122,7 @@
   color: var(--c-red-600);
 }
 .rh-delta--flat {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 .rh-stat-more {

@@ -1,6 +1,6 @@
 .sess-date {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   white-space: nowrap;
 }
 
@@ -194,7 +194,7 @@
   position: fixed;
   z-index: 500;
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   box-shadow:
     0 8px 24px rgba(15, 23, 42, 0.14),
@@ -236,7 +236,7 @@
 }
 .sess-flyout-item:hover {
   background: var(--c-slate-100);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .sess-flyout-item--danger {
   color: var(--c-red-600);
@@ -259,7 +259,7 @@
   justify-content: center;
   gap: 3px;
   background: #fff;
-  border: 1.5px solid var(--c-slate-200);
+  border: 1.5px solid var(--c-border);
   cursor: pointer;
   padding: 6px 10px;
   border-radius: 7px;
@@ -270,7 +270,7 @@
 }
 .sess-dots:hover {
   background: var(--c-slate-50);
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
 }
 .sess-dots span {
   display: block;

@@ -125,7 +125,7 @@ button {
   border-radius: 999px;
   font-weight: 700;
   font-size: 13px;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   background: #fff;
   color: var(--c-slate-700);
 }
@@ -271,7 +271,7 @@ button {
 }
 .adm-feature-title {
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   font-size: 14px;
   line-height: 1.3;
 }
@@ -310,7 +310,7 @@ button {
 }
 .adm-feature-close:hover {
   background: rgba(15, 23, 42, 0.06);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 
 @media (max-width: 720px) {
@@ -429,7 +429,7 @@ button {
   color: var(--c-violet-600);
 }
 .adm-rca-meta {
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-size: 13px;
   font-weight: 600;
 }
@@ -440,7 +440,7 @@ button {
 }
 .adm-rca-foot strong {
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 
 /* ─── Main row: editable grid + right rail ────────────────────────────── */
@@ -538,7 +538,7 @@ button {
   align-items: center;
   justify-content: center;
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 7px;
   color: var(--c-slate-600);
   padding: 0;
@@ -551,8 +551,8 @@ button {
 }
 .adm-rail-cog:hover {
   background: var(--c-slate-100);
-  color: var(--c-slate-900);
-  border-color: var(--c-slate-300);
+  color: var(--c-text);
+  border-color: var(--c-border-strong);
 }
 .adm-rail-cog svg {
   display: block;
@@ -577,7 +577,7 @@ button {
   color: #1a6dd5;
 }
 .adm-rail-goal-meta {
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-size: 13px;
   font-weight: 600;
 }
@@ -740,7 +740,7 @@ button {
 }
 .adm-news-cat {
   font-size: 11px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-weight: 700;
   text-transform: capitalize;
   letter-spacing: 0.02em;
@@ -952,7 +952,7 @@ button {
   right: 0;
   top: 8px;
   bottom: 8px;
-  border: 2px dashed var(--c-slate-300);
+  border: 2px dashed var(--c-border-strong);
   border-radius: 7px;
   transition:
     background 0.12s,
@@ -970,7 +970,7 @@ button {
 }
 .adm-grid-wrap.is-editing {
   /* Dashed outline communicates "this is your editable area". */
-  border: 2px dashed var(--c-slate-300);
+  border: 2px dashed var(--c-border-strong);
   border-radius: 14px;
   padding: 14px;
   background: rgba(255, 255, 255, 0.45);
@@ -1092,7 +1092,7 @@ button {
    border color in edit/required states. Same 1px width in every state so
    the cells read consistently. */
 .adm-cell--editing {
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
 }
 .adm-cell--editing:hover {
   border-color: var(--c-slate-400);
@@ -1124,7 +1124,7 @@ button {
   z-index: 60;
   width: 280px;
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 12px;
   box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
   font-size: 13px;
@@ -1142,7 +1142,7 @@ button {
 .adm-set-title {
   font-weight: 800;
   font-size: 13px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .adm-set-close {
   width: 22px;
@@ -1150,12 +1150,12 @@ button {
   border: 0;
   background: transparent;
   border-radius: 6px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-size: 12px;
 }
 .adm-set-close:hover {
   background: var(--c-slate-100);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .adm-set-body {
   padding: 12px;
@@ -1180,12 +1180,12 @@ button {
 .adm-set-input {
   width: 100%;
   padding: 7px 9px;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
   background: #fff;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   font-family: inherit;
 }
 .adm-set-input:focus {
@@ -1203,7 +1203,7 @@ button {
   max-height: 180px;
   overflow-y: auto;
   padding: 6px 8px;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 8px;
   background: var(--c-slate-50);
 }
@@ -1223,7 +1223,7 @@ button {
 
 .adm-set-help {
   font-size: 11px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 .adm-set-foot {
@@ -1313,7 +1313,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   width: 20px;
   flex-shrink: 0;
 }
@@ -1342,7 +1342,7 @@ button {
   align-items: center;
   justify-content: center;
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 9px;
   color: var(--c-slate-600);
   cursor: pointer;
@@ -1358,8 +1358,8 @@ button {
 }
 .adm-cell-action:hover {
   background: var(--c-slate-100);
-  color: var(--c-slate-900);
-  border-color: var(--c-slate-300);
+  color: var(--c-text);
+  border-color: var(--c-border-strong);
 }
 .adm-cell-action.is-on {
   background: #1a6dd5;
@@ -1384,7 +1384,7 @@ button {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 /* ─── Segmented width control ───────────────────────────────────────── */
@@ -1392,7 +1392,7 @@ button {
   display: inline-flex;
   align-self: center;
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 9px;
   overflow: hidden;
   flex-shrink: 0;
@@ -1406,7 +1406,7 @@ button {
   font-size: 12px;
   color: var(--c-slate-600);
   cursor: pointer;
-  border-right: 1px solid var(--c-slate-200);
+  border-right: 1px solid var(--c-border);
   min-width: 32px;
   transition:
     background 0.15s,
@@ -1417,7 +1417,7 @@ button {
 }
 .adm-cell-width button:hover {
   background: var(--c-slate-100);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .adm-cell-width button.is-active {
   background: #1a6dd5;
@@ -1425,7 +1425,7 @@ button {
 }
 .adm-cell-action:hover {
   background: var(--c-slate-100);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .adm-cell-action.is-on {
   background: #1a6dd5;
@@ -1511,7 +1511,7 @@ button {
 .adm-w-meta {
   font-size: 12px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 .adm-w-body {
   flex: 1;
@@ -1698,7 +1698,7 @@ button {
   padding: 24px;
   text-align: center;
   font-size: 13px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 .adm-stat-ico {
   width: 36px;
@@ -1816,7 +1816,7 @@ button {
   color: #1a6dd5;
 }
 .adm-goal .adm-goal-meta {
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-size: 13px;
   font-weight: 600;
 }
@@ -1901,7 +1901,7 @@ button {
 }
 .adm-goal-empty p {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-bottom: 12px;
 }
 
@@ -1972,7 +1972,7 @@ button {
 .adm-drt-th {
   font-size: 11px;
   font-weight: 800;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.3px;
   background: var(--c-slate-50);
@@ -2006,7 +2006,7 @@ button {
 .adm-drt-rank-num {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   flex-shrink: 0;
   min-width: 18px;
   font-variant-numeric: tabular-nums;
@@ -2037,9 +2037,9 @@ button {
   width: 22px;
   height: 22px;
   border-radius: 6px;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   background: var(--c-slate-50);
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
@@ -2219,7 +2219,7 @@ button {
 
   /* Class Average row percentages: tone down to muted small text. */
   .adm-drt-avg-row .adm-drt-td--center:not(:nth-child(2)):not(:nth-child(3)) {
-    color: var(--c-slate-400);
+    color: var(--c-text-subtle);
     font-size: 11px;
   }
   .adm-drt-avg-row .adm-drt-td {
@@ -2319,7 +2319,7 @@ button {
 }
 .adm-lb-empty p {
   font-size: 12px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 
 /* ─── Checklist ──────────────────────────────────────────────────────── */
@@ -2373,7 +2373,7 @@ button {
   width: 18px;
   height: 18px;
   border-radius: 5px;
-  border: 2px solid var(--c-slate-300);
+  border: 2px solid var(--c-border-strong);
   background: #fff;
   display: inline-flex;
   align-items: center;
@@ -2502,7 +2502,7 @@ button {
 }
 .adm-com-cat {
   font-size: 11px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -2561,7 +2561,7 @@ button {
 }
 .adm-link-arrow {
   margin-left: auto;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   font-size: 18px;
   line-height: 1;
 }
@@ -2638,7 +2638,7 @@ button {
 }
 .adm-question-arrow {
   margin-left: auto;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   font-size: 18px;
   line-height: 1;
   flex-shrink: 0;
@@ -2758,14 +2758,14 @@ button {
 .adm-side-title {
   font-size: 16px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   letter-spacing: -0.01em;
   line-height: 1.2;
   margin: 0;
 }
 .adm-side-sub {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 .adm-side-body {
   flex: 1;
@@ -2797,7 +2797,7 @@ button {
   align-items: center;
   padding: 12px 14px;
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 12px;
   cursor: pointer;
   text-align: left;
@@ -2844,7 +2844,7 @@ button {
   gap: 8px;
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   line-height: 1.25;
   letter-spacing: -0.005em;
 }
@@ -2860,13 +2860,13 @@ button {
 }
 .adm-card-desc {
   font-size: 12.5px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   line-height: 1.45;
   margin: 0;
 }
 .adm-card-meta {
   font-size: 11.5px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   font-weight: 600;
   margin-top: 2px;
 }
@@ -2988,7 +2988,7 @@ button {
   background: #1a6dd5;
 }
 .thumb-empty {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   font-size: 9px;
   font-weight: 800;
   text-transform: uppercase;
@@ -3051,12 +3051,12 @@ button {
   gap: 8px;
   font-weight: 700;
   font-size: 14px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   line-height: 1.25;
 }
 .adm-action-sub {
   font-size: 12px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   line-height: 1.35;
 }
 .adm-action-btn {
@@ -3151,7 +3151,7 @@ button {
   color: #1a6dd5;
 }
 .adm-goal-widget .adm-goal-meta {
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-size: 13px;
   font-weight: 600;
 }
@@ -3234,7 +3234,7 @@ button {
 }
 .adm-flagged-book {
   font-size: 12px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-top: 1px;
   white-space: nowrap;
   overflow: hidden;
@@ -3345,7 +3345,7 @@ button {
 }
 .adm-lbc-rank--plain {
   background: var(--c-slate-100);
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 .adm-lbc-name {
   flex: 1;
@@ -3446,7 +3446,7 @@ button {
   height: 22px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.92);
-  color: var(--c-slate-900);
+  color: var(--c-text);
   font-size: 12px;
   font-weight: 800;
   display: inline-flex;
@@ -3456,7 +3456,7 @@ button {
 .adm-shelf-meta {
   font-size: 12px;
   font-weight: 700;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 
 .adm-badge-item {
