@@ -11,7 +11,7 @@
   border-radius: 99px;
   background: var(--c-slate-900);
   color: #fff;
-  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  font-family: var(--font-sans);
   font-size: 13px;
   font-weight: 700;
   border: none;
@@ -38,7 +38,7 @@
   gap: 8px;
   background: var(--c-slate-900);
   color: #fff;
-  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 600;
   padding: 6px 10px;
@@ -75,13 +75,7 @@
   grid-template-rows: 1fr;
   grid-template-areas: 'side content';
   background: #f3f4f6;
-  font-family:
-    'Nunito',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-sans);
   color: var(--c-slate-800);
 }
 
@@ -391,7 +385,7 @@
 }
 
 .pt-section-desc code {
-  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 13px;
   padding: 1px 6px;
   background: var(--c-slate-100);
@@ -496,7 +490,7 @@
   align-self: center;
   font-size: 13px;
   color: var(--c-slate-400);
-  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
 }
 
 /* ── Knobs panel ─────────────────────────────────────────────────────────── */
@@ -904,7 +898,7 @@
 .pt-icon-key {
   font-size: 13px;
   color: var(--c-slate-400);
-  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
 }
 
 /* ---------------------------------------------------------------------------
@@ -995,7 +989,7 @@
 }
 
 .pt-comp-card-desc code {
-  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 11.5px;
   padding: 0 3px;
   background: var(--c-slate-100);

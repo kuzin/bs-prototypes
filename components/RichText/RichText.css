@@ -62,7 +62,7 @@
   border-radius: 999px;
   padding: 2px 9px;
   font-size: 12px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   color: #0b7a89;
   cursor: pointer;
   transition:
@@ -151,7 +151,7 @@
   padding: 8px 10px;
   border-radius: 6px;
   background: var(--c-slate-100);
-  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 12.5px;
   white-space: pre-wrap;
   overflow-x: auto;
@@ -160,7 +160,7 @@
   padding: 1px 5px;
   border-radius: 4px;
   background: var(--c-slate-100);
-  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.9em;
 }
 /* HTML source view styled as a code editor (dark theme). */
@@ -172,7 +172,7 @@
   outline: none;
   resize: vertical;
   padding: 12px 14px;
-  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 12.5px;
   line-height: 1.6;
   tab-size: 2;

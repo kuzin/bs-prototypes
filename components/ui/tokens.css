@@ -1,13 +1,17 @@
 /**
- * Color tokens — the single source of truth for the palette shared across every
- * prototype. Loaded once per entry (imported at the top of each main.jsx).
+ * Design tokens — the single source of truth for color, typography and radii
+ * shared across every prototype. Loaded once per entry (imported at the top of
+ * each main.jsx).
  *
- * The neutral + accent values are exactly Tailwind's slate / red / amber / blue /
- * violet scales; the brand colors are Beanstack's teal / green / coral.
+ * Color (--c-*): the neutral + accent values are exactly Tailwind's slate / red /
+ * amber / blue / violet scales; the brand colors are Beanstack's teal / green /
+ * coral. Primitive — one token per hex — so the color migration is mechanical and
+ * value-preserving.
  *
- * This layer is intentionally PRIMITIVE — one token per hex, so the migration is
- * mechanical and value-preserving. Semantic aliases (--c-text, --c-border, …) can
- * be layered on top in a follow-up once roles are settled.
+ * Typography (--font-*, --text-*, --fw-*) + radii (--radius-*) capture the scales
+ * already in use as the standard going forward. The font families are migrated to
+ * tokens; adopting the size / weight / radius tokens at every call site is
+ * incremental (raw px values still appear and are fine).
  */
 :root {
   /* Neutrals — Tailwind slate */
@@ -33,4 +37,37 @@
   --c-brand-teal: #0da7bc;
   --c-brand-green: #16a97a;
   --c-brand-coral: #e8866a;
+
+  /* Font families */
+  --font-sans: 'Nunito', 'Trebuchet MS', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Type scale (px) — 13px is the body default */
+  --text-2xs: 10px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 28px;
+
+  /* Font weights */
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+  --fw-black: 900;
+
+  /* Corner radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 14px;
+  --radius-pill: 999px;
+  --radius-full: 50%;
 }

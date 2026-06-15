@@ -104,6 +104,170 @@ function ColorSwatches() {
   )
 }
 
+const SECTION_LABEL = {
+  fontSize: 12,
+  fontWeight: 700,
+  textTransform: 'uppercase',
+  letterSpacing: '0.05em',
+  color: 'var(--c-slate-500)',
+  marginBottom: 10,
+}
+const META = { fontSize: 11, color: 'var(--c-slate-400)', fontFamily: 'var(--font-mono)' }
+
+const TYPE_SCALE = [
+  '--text-2xs',
+  '--text-xs',
+  '--text-sm',
+  '--text-base',
+  '--text-md',
+  '--text-lg',
+  '--text-xl',
+  '--text-2xl',
+  '--text-3xl',
+]
+const WEIGHTS = [
+  ['--fw-normal', 'Normal'],
+  ['--fw-medium', 'Medium'],
+  ['--fw-semibold', 'Semibold'],
+  ['--fw-bold', 'Bold'],
+  ['--fw-extrabold', 'Extrabold'],
+  ['--fw-black', 'Black'],
+]
+const RADII = [
+  '--radius-xs',
+  '--radius-sm',
+  '--radius-md',
+  '--radius-lg',
+  '--radius-xl',
+  '--radius-2xl',
+  '--radius-pill',
+  '--radius-full',
+]
+
+function useTokenValues(names) {
+  const [vals, setVals] = useState({})
+  useEffect(() => {
+    const cs = getComputedStyle(document.documentElement)
+    setVals(Object.fromEntries(names.map((n) => [n, cs.getPropertyValue(n).trim()])))
+    // names is a stable module-level array per caller
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+  return vals
+}
+
+function Typography() {
+  const vals = useTokenValues([...TYPE_SCALE, ...WEIGHTS.map((w) => w[0])])
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
+      <div>
+        <div style={SECTION_LABEL}>Font families</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div>
+            <div
+              style={{
+                fontFamily: 'var(--font-sans)',
+                fontSize: 22,
+                fontWeight: 'var(--fw-bold)',
+                color: 'var(--c-slate-900)',
+              }}
+            >
+              Nunito — the joyful sans for every prototype
+            </div>
+            <code style={META}>--font-sans</code>
+          </div>
+          <div>
+            <div
+              style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'var(--c-slate-800)' }}
+            >
+              const minutesRead = 1_204 // monospace for code + data
+            </div>
+            <code style={META}>--font-mono</code>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style={SECTION_LABEL}>Type scale</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {TYPE_SCALE.map((t) => (
+            <div key={t} style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+              <code style={{ ...META, width: 86, flexShrink: 0 }}>{t}</code>
+              <span style={{ ...META, width: 44, flexShrink: 0 }}>{vals[t]}</span>
+              <span
+                style={{
+                  fontSize: `var(${t})`,
+                  fontWeight: 'var(--fw-bold)',
+                  color: 'var(--c-slate-900)',
+                }}
+              >
+                The quick brown fox
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <div style={SECTION_LABEL}>Font weights</div>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+          {WEIGHTS.map(([w, label]) => (
+            <div key={w} style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+              <code style={{ ...META, width: 108, flexShrink: 0 }}>{w}</code>
+              <span style={{ ...META, width: 36, flexShrink: 0 }}>{vals[w]}</span>
+              <span style={{ fontSize: 16, fontWeight: `var(${w})`, color: 'var(--c-slate-900)' }}>
+                {label} — Reading Motivation Index
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Radii() {
+  const vals = useTokenValues(RADII)
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fill, minmax(116px, 1fr))',
+        gap: 14,
+      }}
+    >
+      {RADII.map((t) => (
+        <div
+          key={t}
+          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
+        >
+          <div
+            style={{
+              width: 76,
+              height: 76,
+              background: 'var(--c-slate-100)',
+              border: '2px solid var(--c-brand-teal)',
+              borderRadius: `var(${t})`,
+            }}
+          />
+          <div style={{ textAlign: 'center' }}>
+            <div
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: 'var(--c-slate-800)',
+                fontFamily: 'var(--font-mono)',
+              }}
+            >
+              {t}
+            </div>
+            <div style={META}>{vals[t]}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 export const foundationsSections = [
   {
     group: 'foundations',
@@ -119,5 +283,33 @@ export const foundationsSections = [
       </>
     ),
     render: () => <ColorSwatches />,
+  },
+  {
+    group: 'foundations',
+    id: 'typography',
+    name: 'Typography',
+    desc: (
+      <>
+        The type system: <strong>Nunito</strong> (<code>--font-sans</code>) for everything, a
+        monospace stack (<code>--font-mono</code>) for code and data, plus the size scale (
+        <code>--text-*</code>, 13px body default) and the weight set (<code>--fw-*</code>). Font
+        families are tokenized at every call site; the size / weight tokens are the standard to
+        adopt going forward.
+      </>
+    ),
+    render: () => <Typography />,
+  },
+  {
+    group: 'foundations',
+    id: 'radius',
+    name: 'Radius',
+    desc: (
+      <>
+        Corner-radius scale (<code>--radius-*</code>) — from <code>xs</code> (4px) through{' '}
+        <code>2xl</code> (14px), plus <code>pill</code> (999px) and <code>full</code> (50%, for
+        circles). The values that recur across cards, buttons, inputs and chips.
+      </>
+    ),
+    render: () => <Radii />,
   },
 ]

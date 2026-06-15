@@ -4457,7 +4457,7 @@
   padding: 8px 10px;
   border-radius: 6px;
   background: var(--c-slate-100);
-  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 14px;
   white-space: pre-wrap;
   overflow-x: auto;
@@ -4466,7 +4466,7 @@
   padding: 1px 5px;
   border-radius: 4px;
   background: var(--c-slate-100);
-  font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 0.9em;
 }
 /* Collapsible description animates between the clamp and its full height. */

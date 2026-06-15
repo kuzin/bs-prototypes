@@ -627,7 +627,7 @@
 .rost-class-cell-code {
   font-size: 11px;
   color: #9ca3af;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-mono);
 }
 
 /* ─── Status pills ────────────────────────────────────────────────────────── */

@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
 
 .proto-nav {
-  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  font-family: var(--font-sans);
   display: flex;
   align-items: center;
   justify-content: space-between;

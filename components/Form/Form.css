@@ -556,7 +556,7 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-700);
-  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   letter-spacing: 0.03em;
 }
 
