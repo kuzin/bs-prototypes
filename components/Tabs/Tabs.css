@@ -95,6 +95,16 @@
   font-size: 14px;
 }
 
+/* ── Full-width modifier — equal-flex tabs for segmented-control layouts ───── */
+.tabs--block {
+  display: flex;
+}
+.tabs--block .tab {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
+}
+
 /* ── Shared ──────────────────────────────────────────────────────────────── */
 .tab-count {
   font-size: 13px;

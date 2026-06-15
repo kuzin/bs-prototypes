@@ -10,18 +10,18 @@ import '@components/Primitives/Primitives.css'
 import './SessionsTable.css'
 
 const RATING_CONFIG = {
-  green: { color: '#16A97A', label: 'Positive', bg: '#F0FDF4' },
-  yellow: { color: '#D97706', label: 'Mixed', bg: '#FFFBEB' },
-  red: { color: '#DC2626', label: 'Disengaged', bg: '#FEF2F2' },
+  green: { color: '#16A97A', label: 'Positive' },
+  yellow: { color: '#D97706', label: 'Mixed' },
+  red: { color: '#DC2626', label: 'Disengaged' },
 }
 
-function RatingDot({ rating }) {
+export function RatingDot({ rating }) {
   if (!rating) return <span className="sess-na">—</span>
   const cfg = RATING_CONFIG[rating]
   return (
-    <span className="sess-rating" style={{ background: cfg.bg, borderColor: `${cfg.color}33` }}>
-      <span style={{ color: cfg.color }}>{cfg.label}</span>
-    </span>
+    <Pill color={cfg.color} variant="soft" size="sm">
+      {cfg.label}
+    </Pill>
   )
 }
 
@@ -97,7 +97,7 @@ export function FlagIconBadge({ cfg }) {
   )
 }
 
-function PosFlagCount({ positiveFlags }) {
+export function PosFlagCount({ positiveFlags }) {
   if (!positiveFlags || positiveFlags.length === 0) return <span className="sess-na">—</span>
   if (positiveFlags.length >= 3) {
     return (
@@ -122,7 +122,7 @@ function PosFlagCount({ positiveFlags }) {
   )
 }
 
-function FlagCount({ flags }) {
+export function FlagCount({ flags }) {
   if (!flags || flags.length === 0) return <span className="sess-na">—</span>
   return (
     <span className="sess-flags sess-flags--neg">
@@ -132,7 +132,7 @@ function FlagCount({ flags }) {
   )
 }
 
-function FlagTypeIcons({ flags }) {
+export function FlagTypeIcons({ flags }) {
   if (!flags || flags.length === 0) return <span className="sess-na">—</span>
   if (flags.length >= 3) return <FlagCount flags={flags} />
   return (
@@ -150,7 +150,7 @@ function FlagTypeIcons({ flags }) {
   )
 }
 
-function TypePill({ session, type }) {
+export function TypePill({ session, type }) {
   const wasApproved = session?.changeLog?.some((e) => e.kind === 'approved')
   if (wasApproved) {
     return (

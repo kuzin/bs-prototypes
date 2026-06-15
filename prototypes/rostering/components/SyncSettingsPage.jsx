@@ -4,6 +4,7 @@ import { Table } from '@components/Table/Table'
 import { Modal } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
+import { Tabs } from '@components/Tabs/Tabs'
 import { Spinner } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 import { SearchInput } from '@components/SearchInput/SearchInput'
@@ -346,21 +347,19 @@ function FilterImpact({ filter, savedFilter, scope, schools = [], schoolId, onSc
                   placeholder="Search classes, subjects, teachers…"
                   className="rost-fi-search"
                 />
-                <div className="rost-seg" role="tablist" aria-label="Filter preview view">
-                  {VIEW_OPTIONS.map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      role="tab"
-                      aria-selected={view === v.id}
-                      className={`rost-seg-btn${view === v.id ? ' rost-seg-btn--active' : ''}`}
-                      onClick={() => setView(v.id)}
-                    >
-                      {v.label}
-                      {v.id === 'changes' && changeCount > 0 && ` (${changeCount})`}
-                    </button>
-                  ))}
-                </div>
+                <Tabs
+                  variant="pill"
+                  ariaLabel="Filter preview view"
+                  active={view}
+                  onChange={setView}
+                  items={VIEW_OPTIONS.map((v) => ({
+                    id: v.id,
+                    label:
+                      v.id === 'changes' && changeCount > 0
+                        ? `${v.label} (${changeCount})`
+                        : v.label,
+                  }))}
+                />
                 <span className="rost-fi-count">{rows.length.toLocaleString()} shown</span>
               </div>
               <div className="rost-card rost-classes-table" style={{ padding: 0 }}>
@@ -687,24 +686,17 @@ function DeactivatedList({ users, showType = false, initialRole = 'all' }) {
           className="rost-deact-search"
         />
         {showType && (
-          <div className="rost-seg" role="tablist" aria-label="Filter by user type">
-            {[
+          <Tabs
+            variant="pill"
+            ariaLabel="Filter by user type"
+            active={role}
+            onChange={setRole}
+            items={[
               { id: 'all', label: `All (${users.length})` },
               { id: 'Teacher', label: `Teachers (${roleCounts.Teacher})` },
               { id: 'Student', label: `Students (${roleCounts.Student})` },
-            ].map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                role="tab"
-                aria-selected={role === opt.id}
-                className={`rost-seg-btn${role === opt.id ? ' rost-seg-btn--active' : ''}`}
-                onClick={() => setRole(opt.id)}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
+            ]}
+          />
         )}
         <span className="rost-fi-count">
           {rows.length.toLocaleString()}

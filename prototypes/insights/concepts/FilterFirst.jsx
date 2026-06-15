@@ -10,6 +10,7 @@ import {
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, TOTAL_QUERIES } from '../data'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
+import { EmptyState } from '@components/Primitives/Primitives'
 
 // Concept F: Filter-first
 // The filter form is editable, but nothing fires until the user clicks
@@ -88,14 +89,17 @@ export function FilterFirst({ onMeterChange, onOpenDetail, onCustomize, visibleT
       </div>
 
       {!loaded && !loading ? (
-        <div className="ins-empty-state">
-          <Icon name="chart-bar" size={48} color="#94A3B8" />
-          <h3>Pick your filters, then load</h3>
-          <p>
-            Nothing fires until you click <strong>Update Insights</strong>. Adjust the period,
-            segment, and age range up top — they all bundle into a single query.
-          </p>
-        </div>
+        <EmptyState
+          variant="dashed"
+          icon={<Icon name="chart-bar" size={48} color="#94A3B8" />}
+          title="Pick your filters, then load"
+          description={
+            <>
+              Nothing fires until you click <strong>Update Insights</strong>. Adjust the period,
+              segment, and age range up top — they all bundle into a single query.
+            </>
+          }
+        />
       ) : (
         <>
           {visibleMetrics.length > 0 && (

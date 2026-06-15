@@ -358,22 +358,23 @@ export function App() {
                 </div>
               )}
               {visibleRows.length === 0 ? (
-                <div className="adm-empty">
-                  <h3>Your dashboard is empty</h3>
-                  <p>Add widgets to build your dashboard.</p>
-                  <div className="adm-empty-actions">
-                    {!editing && (
+                <EmptyState
+                  variant="dashed"
+                  className="adm-empty"
+                  title="Your dashboard is empty"
+                  description="Add widgets to build your dashboard."
+                  action={
+                    !editing ? (
                       <Button variant="primary" onClick={toggleEditing}>
                         Edit Dashboard
                       </Button>
-                    )}
-                    {editing && (
+                    ) : (
                       <Button variant="primary" onClick={() => setPaletteOpen(true)}>
                         ＋ Add Widget
                       </Button>
-                    )}
-                  </div>
-                </div>
+                    )
+                  }
+                />
               ) : (
                 <CardGrid
                   rows={visibleRows}

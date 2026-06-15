@@ -1,103 +1,20 @@
 import React from 'react'
-import { Pill } from '@components/Pill/Pill'
 import { Icon } from '@components/Icon/Icon'
-import { DotsButton, FlagIconBadge, FLAG_TYPE_CONFIG, POS_FLAG_CONFIG } from './SessionsTable'
+import {
+  DotsButton,
+  RatingDot,
+  FlagCount,
+  PosFlagCount,
+  FlagTypeIcons,
+  TypePill,
+} from './SessionsTable'
 import '@components/Table/Table.css'
 import '@components/Pill/Pill.css'
 import './SessionsTable.css'
 import './ReaderGroupedView.css'
 
-const RATING_CONFIG = {
-  green: { color: '#16A97A', label: 'Positive', bg: '#F0FDF4' },
-  yellow: { color: '#D97706', label: 'Mixed', bg: '#FFFBEB' },
-  red: { color: '#DC2626', label: 'Disengaged', bg: '#FEF2F2' },
-}
-
-function RatingDot({ rating }) {
-  if (!rating) return <span className="sess-na">—</span>
-  const cfg = RATING_CONFIG[rating]
-  return (
-    <span className="sess-rating" style={{ background: cfg.bg, borderColor: `${cfg.color}33` }}>
-      <span style={{ color: cfg.color }}>{cfg.label}</span>
-    </span>
-  )
-}
-
-function FlagCount({ flags }) {
-  if (!flags || flags.length === 0) return <span className="sess-na">—</span>
-  return (
-    <span className="sess-flags sess-flags--neg">
-      <Icon name="flag" size={13} color="#DC2626" />
-      {flags.length}
-    </span>
-  )
-}
-
-function PosFlagCount({ flags }) {
-  if (!flags || flags.length === 0) return <span className="sess-na">—</span>
-  if (flags.length >= 3) {
-    return (
-      <span className="sess-flags sess-flags--pos">
-        <Icon name="flag" size={13} color="#16A97A" />
-        {flags.length}
-      </span>
-    )
-  }
-  return (
-    <span className="sess-flag-icons">
-      {flags.map((f, i) => {
-        const cfg = POS_FLAG_CONFIG[f.type] ?? {
-          label: f.type,
-          color: '#16A97A',
-          bg: '#F0FDF4',
-          icon: null,
-        }
-        return <FlagIconBadge key={i} type={f.type} cfg={cfg} />
-      })}
-    </span>
-  )
-}
-
-function FlagTypeIcons({ flags }) {
-  if (!flags || flags.length === 0) return <span className="sess-na">—</span>
-  if (flags.length >= 3) return <FlagCount flags={flags} />
-  return (
-    <span className="sess-flag-icons">
-      {flags.map((f, i) => {
-        const cfg = FLAG_TYPE_CONFIG[f.type] ?? {
-          label: f.type,
-          color: '#DC2626',
-          bg: '#FEF2F2',
-          icon: null,
-        }
-        return <FlagIconBadge key={i} type={f.type} cfg={cfg} />
-      })}
-    </span>
-  )
-}
-
-function TypePill({ session, type }) {
-  if (session?.changeLog?.some((e) => e.kind === 'approved')) {
-    return (
-      <Pill color="#16A97A" variant="soft" size="sm">
-        Approved
-      </Pill>
-    )
-  }
-  if (type === 'flagged')
-    return (
-      <Pill color="#DC2626" variant="soft" size="sm">
-        Flagged
-      </Pill>
-    )
-  if (type === 'engagement')
-    return (
-      <Pill color="#0DA7BC" variant="soft" size="sm">
-        Engagement
-      </Pill>
-    )
-  return null
-}
+// Session-badge helpers (RatingDot, FlagCount, PosFlagCount, FlagTypeIcons,
+// TypePill) are shared from ./SessionsTable — imported above.
 
 export function ReaderGroupedView({
   sessions,
@@ -222,7 +139,7 @@ export function ReaderGroupedView({
                       )}
                       {showPosFlags && (
                         <td className="tbl-td">
-                          <PosFlagCount flags={s.positiveFlags} />
+                          <PosFlagCount positiveFlags={s.positiveFlags} />
                         </td>
                       )}
                       <td className="tbl-td">

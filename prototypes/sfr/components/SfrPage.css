@@ -5,38 +5,7 @@
   flex-shrink: 0;
 }
 
-/* By Session / By Reader toggle */
-.sfr-view-toggle {
-  display: flex;
-  background: #f1f5f9;
-  border-radius: 8px;
-  padding: 3px;
-  gap: 2px;
-}
-
-.sfr-view-btn {
-  padding: 5px 13px;
-  border-radius: 6px;
-  border: none;
-  background: none;
-  font-size: 13px;
-  font-weight: 600;
-  color: #64748b;
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    background 0.12s,
-    color 0.12s;
-  white-space: nowrap;
-}
-.sfr-view-btn:hover {
-  color: #1e293b;
-}
-.sfr-view-btn--active {
-  background: #fff;
-  color: #1e293b;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.1);
-}
+/* By Session / By Reader toggle → shared <Tabs variant="pill"> */
 
 /* Settings button */
 .sfr-settings-btn {

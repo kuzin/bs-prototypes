@@ -146,20 +146,15 @@ export function SfrPage({
           </div>
           <div className="sfr-header-actions">
             {/* By Session / By Reader toggle */}
-            <div className="sfr-view-toggle">
-              <button
-                className={`sfr-view-btn${groupBy === 'session' ? ' sfr-view-btn--active' : ''}`}
-                onClick={() => setGroupBy('session')}
-              >
-                By Session
-              </button>
-              <button
-                className={`sfr-view-btn${groupBy === 'reader' ? ' sfr-view-btn--active' : ''}`}
-                onClick={() => setGroupBy('reader')}
-              >
-                By Reader
-              </button>
-            </div>
+            <Tabs
+              variant="pill"
+              active={groupBy}
+              onChange={setGroupBy}
+              items={[
+                { id: 'session', label: 'By Session' },
+                { id: 'reader', label: 'By Reader' },
+              ]}
+            />
             {/* Reading Integrity Settings */}
             <button className="sfr-settings-btn" title="Reading Integrity Settings">
               <Icon name="settings" size={16} />
