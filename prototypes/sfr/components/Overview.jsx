@@ -1,4 +1,9 @@
-import { FlagIconBadge, FLAG_TYPE_CONFIG, POS_FLAG_CONFIG } from './SessionsTable'
+import {
+  FlagIconBadge,
+  FLAG_TYPE_CONFIG,
+  POS_FLAG_CONFIG,
+  SafetySeverityTag,
+} from './SessionsTable'
 import { Icon } from '@components/Icon/Icon'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import '@components/BennyBubble/BennyBubble.css'
@@ -81,6 +86,7 @@ export function HighlightCard({
               <span className="ov-student-book">{s.book.title}</span>
             </div>
             <div className="ov-student-flags">
+              {s.safety && <SafetySeverityTag severity={s.safety.severity} />}
               {s.flags?.map((f) => {
                 const cfg = FLAG_TYPE_CONFIG[f.type]
                 return cfg ? <FlagIconBadge key={f.id} type={f.type} cfg={cfg} /> : null
@@ -114,11 +120,26 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
   const completedBTWB = sessions.filter((s) => s.status === 'completed').length
   const overThreshold = sessions.filter((s) => s.minutesLogged > 50).length
 
+  // Safety signals are additive + orthogonal — only the Safety Signals prototype
+  // attaches them, so this card/summary line stays hidden in SFR's own prototype.
+  const SEV_ORDER = { critical: 0, warning: 1, possible: 2 }
+  const safetySessions = sessions.filter((s) => s.safety)
+  const safetyOpen = safetySessions
+    .filter((s) => s.safety.status !== 'resolved')
+    .sort((a, b) => SEV_ORDER[a.safety.severity] - SEV_ORDER[b.safety.severity])
+
   return (
     <div className="ov-shell">
       {/* Benny summary */}
       <div className="ov-summary">
         <BennyBubble>
+          {safetyOpen.length > 0 && (
+            <>
+              <strong>{safetyOpen.length}</strong> Book{' '}
+              {safetyOpen.length === 1 ? 'Talk needs' : 'Talks need'} a safety review this week —
+              see Safety Signals below.{' '}
+            </>
+          )}
           Students started <strong>{totalBTWB}</strong> Book Talks with Benny and completed{' '}
           <strong>{completedBTWB}</strong> so far this week. Most students are positively engaged in
           the books they finished, while Beanstack detected <strong>{overThreshold}</strong> logs
@@ -128,6 +149,18 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
 
       {/* Highlights grid */}
       <div className="ov-grid">
+        {safetySessions.length > 0 && (
+          <HighlightCard
+            variant="danger"
+            icon={<Icon name="shield-heart" size={18} />}
+            title="Safety Signals"
+            description="Students who may be at risk — review and respond"
+            sessions={safetyOpen.length ? safetyOpen : safetySessions}
+            viewAllLabel="View all safety signals"
+            onViewAll={() => onGoToTab('safety', {})}
+            onSelectSession={onSelectSession}
+          />
+        )}
         <HighlightCard
           variant="danger"
           icon={<Icon name="flag" size={18} />}

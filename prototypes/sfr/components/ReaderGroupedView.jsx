@@ -58,7 +58,7 @@ export function ReaderGroupedView({
   return (
     <div className="rgv-shell">
       <div style={{ overflowX: 'auto' }}>
-        <table className="tbl tbl--compact rgv-table">
+        <table className="tbl rgv-table">
           <colgroup>
             <col style={{ width: 90 }} />
             <col />

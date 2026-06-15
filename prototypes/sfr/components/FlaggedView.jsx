@@ -173,10 +173,7 @@ export function FlaggedView({
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
-          showTypeColumn={false}
           showFlagIcons
-          showPosFlags={false}
-          showEngagementColumn={false}
           onClearFilters={() => {
             setSearch('')
             setGrade('all')
@@ -192,10 +189,7 @@ export function FlaggedView({
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
-          showTypeColumn={false}
           showFlagIcons
-          showPosFlags={false}
-          showEngagementColumn={false}
           onClearFilters={() => {
             setSearch('')
             setGrade('all')

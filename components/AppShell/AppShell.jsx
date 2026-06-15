@@ -1,5 +1,7 @@
 import { Sidebar } from '@components/Sidebar/Sidebar'
+import { MainRail } from '@components/MainRail/MainRail'
 import { BackBar } from '@components/BackBar/BackBar'
+import '@components/MainRail/MainRail.css'
 import './AppShell.css'
 
 /**
@@ -9,6 +11,7 @@ import './AppShell.css'
  *
  * <AppShell
  *   sidebar={{ title: 'Insights', nav: NAV, active: page, onNavigate: setPage }}
+ *   mainRailIndex={3}                 // render just the MainRail (no sidebar)
  *   className="my-prototype"          // extra class on the outer shell
  *   contentClassName="my-content"     // extra class on the content column
  *   backBar={{ label: 'Back', onClick: goBack }}
@@ -19,6 +22,7 @@ import './AppShell.css'
  */
 export function AppShell({
   sidebar,
+  mainRailIndex,
   className = '',
   contentClassName = '',
   backBar,
@@ -27,7 +31,11 @@ export function AppShell({
 }) {
   return (
     <div className={['app-shell', className].filter(Boolean).join(' ')}>
-      <Sidebar {...sidebar} />
+      {sidebar ? (
+        <Sidebar {...sidebar} />
+      ) : mainRailIndex !== undefined ? (
+        <MainRail activeIndex={mainRailIndex} />
+      ) : null}
 
       <div className={['app-shell-content', contentClassName].filter(Boolean).join(' ')}>
         {backBar && <BackBar label={backBar.label} onClick={backBar.onClick} />}
