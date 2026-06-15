@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { RangeSlider } from '@components/Form/Form'
 import { Button } from '@components/Button/Button'
+import { Toggle } from '@components/Toggle/Toggle'
 import '@components/Form/Form.css'
 import '@components/Button/Button.css'
 
@@ -106,17 +107,9 @@ export function SettingsPopover({
               </select>
             )}
             {f.type === 'toggle' && (
-              <label className="adm-set-toggle">
-                <input
-                  type="checkbox"
-                  checked={!!v[f.key]}
-                  onChange={(e) => onChange({ [f.key]: e.target.checked })}
-                />
-                <span className="adm-set-toggle-track">
-                  <span className="adm-set-toggle-thumb" />
-                </span>
-                <span className="adm-set-toggle-text">{v[f.key] ? 'On' : 'Off'}</span>
-              </label>
+              <Toggle checked={!!v[f.key]} onChange={(checked) => onChange({ [f.key]: checked })}>
+                {v[f.key] ? 'On' : 'Off'}
+              </Toggle>
             )}
             {f.type === 'range' && (
               <RangeSlider

@@ -590,46 +590,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Segmented control */
-.rost-seg {
-  display: inline-flex;
-  background: #f3f4f6;
-  border-radius: 8px;
-  padding: 3px;
-}
-.rost-seg-btn {
-  padding: 5px 12px;
-  border: none;
-  background: transparent;
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #6b7280;
-  border-radius: 6px;
-  cursor: pointer;
-  transition:
-    background 0.15s,
-    color 0.15s,
-    box-shadow 0.15s;
-  white-space: nowrap;
-}
-.rost-seg-btn:hover {
-  color: #111827;
-}
-.rost-seg-btn--active {
-  background: #fff;
-  color: #111827;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.08);
-}
-
-/* Full-width segmented control inside the filter preview */
-.rost-filters .rost-seg {
-  display: flex;
-  width: 100%;
-}
-.rost-filters .rost-seg-btn {
-  flex: 1;
-}
+/* Segmented control → shared <Tabs variant="pill"> */
 
 /* ─── Classes table (filter impact) ───────────────────────────────────────── */
 .rost-card {

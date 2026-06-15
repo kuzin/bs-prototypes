@@ -283,9 +283,16 @@ export function Accordion({
  *   action={<Button>Set thresholds</Button>}
  * />
  */
-export function EmptyState({ icon, title, description, action, className = '' }) {
+export function EmptyState({
+  icon,
+  title,
+  description,
+  action,
+  variant = 'plain',
+  className = '',
+}) {
   return (
-    <div className={`emp ${className}`.trim()}>
+    <div className={`emp emp--${variant} ${className}`.trim()}>
       {icon && (
         <div className="emp-icon" aria-hidden="true">
           {icon}

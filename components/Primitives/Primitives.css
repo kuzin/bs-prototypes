@@ -505,6 +505,31 @@
   margin-top: 10px;
 }
 
+/* Dashed placeholder variant — "nothing loaded / nothing here yet" cards.
+   Icon renders bare (no chip) at its passed size. */
+.emp--dashed {
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 12px;
+  background: #fff;
+  padding: 56px 24px;
+}
+.emp--dashed .emp-icon {
+  width: auto;
+  height: auto;
+  background: none;
+  border-radius: 0;
+}
+.emp--dashed .emp-icon svg {
+  width: 48px;
+  height: 48px;
+}
+.emp--dashed .emp-title {
+  font-size: 16px;
+}
+.emp--dashed .emp-desc {
+  max-width: 480px;
+}
+
 /* ── Skeleton ───────────────────────────────────────────────────────────── */
 @keyframes skl-shimmer {
   0% {

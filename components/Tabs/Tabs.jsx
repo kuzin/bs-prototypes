@@ -17,14 +17,17 @@ export function Tabs({
   items,
   variant = 'underline',
   size = 'md',
+  block = false,
   accent,
+  ariaLabel,
   className = '',
 }) {
   const style = accent ? { '--tab-accent': accent } : undefined
   return (
     <div
-      className={`tabs tabs--${variant} tabs--${size} ${className}`.trim()}
+      className={`tabs tabs--${variant} tabs--${size}${block ? ' tabs--block' : ''} ${className}`.trim()}
       role="tablist"
+      aria-label={ariaLabel}
       style={style}
     >
       {items.map((item) => (

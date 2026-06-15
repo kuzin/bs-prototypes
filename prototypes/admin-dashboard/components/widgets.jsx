@@ -15,6 +15,7 @@ import Tippy from '@tippyjs/react'
 import 'tippy.js/dist/tippy.css'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
+import { Tabs } from '@components/Tabs/Tabs'
 
 // ─── Empty-state plumbing ────────────────────────────────────────────────
 // The Empty Sink role view renders every widget in its empty state so we can
@@ -537,20 +538,16 @@ export function AdmLeaderboardCombo({ settings = {}, role = 'teacher' }) {
         <button className="adm-w-action">View in Insights</button>
       </div>
       <div className="adm-w-body adm-lbc">
-        <div className="adm-lbc-toggle" role="tablist" aria-label="Leaderboard view">
-          {entities.map((e) => (
-            <button
-              key={e.value}
-              type="button"
-              role="tab"
-              aria-selected={activeValue === e.value}
-              className={activeValue === e.value ? 'is-active' : ''}
-              onClick={() => setPicked(e.value)}
-            >
-              {e.label}
-            </button>
-          ))}
-        </div>
+        <Tabs
+          variant="pill"
+          block
+          accent="#1A6DD5"
+          ariaLabel="Leaderboard view"
+          className="adm-lbc-toggle"
+          active={activeValue}
+          onChange={setPicked}
+          items={entities.map((e) => ({ id: e.value, label: e.label }))}
+        />
         <ol className="adm-lbc-list">
           {top.map((r, i) => (
             <li key={r.id} className="adm-lbc-row">

@@ -9,6 +9,7 @@ import {
 } from '../components'
 import { METRICS, TOP_BOOKS, TOP_BADGES, AGES, TOTAL_QUERIES } from '../data'
 import { Icon } from '@components/Icon/Icon'
+import { EmptyState } from '@components/Primitives/Primitives'
 
 // Concept G: Search palette
 // The dashboard opens with a search input. The user picks (or types) a metric;
@@ -132,11 +133,12 @@ export function SearchPalette({ onMeterChange, onOpenDetail, onCustomize, visibl
       </div>
 
       {openedIds.length === 0 ? (
-        <div className="ins-empty-state">
-          <Icon name="search" size={48} color="#94A3B8" />
-          <h3>Nothing loaded yet</h3>
-          <p>Pick a metric or panel to load just that one — perfect for ad-hoc lookups.</p>
-        </div>
+        <EmptyState
+          variant="dashed"
+          icon={<Icon name="search" size={48} color="#94A3B8" />}
+          title="Nothing loaded yet"
+          description="Pick a metric or panel to load just that one — perfect for ad-hoc lookups."
+        />
       ) : (
         <>
           {/* Render metrics that have been opened */}

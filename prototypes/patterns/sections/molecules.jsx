@@ -34,6 +34,7 @@ function TabsShowcase() {
   const [a, setA] = useState('daily')
   const [b, setB] = useState('overview')
   const [c, setC] = useState('details')
+  const [seg, setSeg] = useState('classes')
   return (
     <>
       <Variant label="underline (default)">
@@ -56,6 +57,19 @@ function TabsShowcase() {
             { id: 'overview', label: 'Overview' },
             { id: 'detail', label: 'Detail' },
             { id: 'history', label: 'History' },
+          ]}
+        />
+      </Variant>
+      <Variant label="pill + block (full-width segmented control)">
+        <Tabs
+          variant="pill"
+          block
+          ariaLabel="Leaderboard view"
+          active={seg}
+          onChange={setSeg}
+          items={[
+            { id: 'classes', label: 'Top Classes' },
+            { id: 'students', label: 'Students' },
           ]}
         />
       </Variant>
@@ -773,6 +787,7 @@ function EmptyStateKnobs() {
   const [iconKey, setIcon] = useState('search')
   const [actionText, setActionText] = useState('Set thresholds')
   const [hasAction, setHas] = useState(true)
+  const [variant, setVariant] = useState('plain')
   const ICONS = {
     search: <Icon name="search" />,
     inbox: <Icon name="inbox" />,
@@ -793,6 +808,12 @@ function EmptyStateKnobs() {
             <option value="chart">chart</option>
           </Select>
         </Field>
+        <Field label="variant">
+          <Select value={variant} onChange={(e) => setVariant(e.target.value)}>
+            <option value="plain">plain</option>
+            <option value="dashed">dashed</option>
+          </Select>
+        </Field>
         <Field label="action">
           <Toggle checked={hasAction} onChange={setHas} />
         </Field>
@@ -807,6 +828,7 @@ function EmptyStateKnobs() {
       </Knobs>
       <div className="pt-variant-frame">
         <EmptyState
+          variant={variant}
           icon={ICONS[iconKey]}
           title={title}
           description={desc}
