@@ -7,9 +7,9 @@
   box-sizing: border-box;
   font: inherit;
   background: #fff;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--c-slate-300);
   border-radius: 8px;
-  color: #0f172a;
+  color: var(--c-slate-900);
   cursor: pointer;
   gap: 8px;
   text-align: left;
@@ -21,26 +21,26 @@
 }
 
 .pck-trigger:hover {
-  border-color: #94a3b8;
+  border-color: var(--c-slate-400);
 }
 
 .pck-trigger:focus-visible {
   outline: none;
-  border-color: #1d4ed8;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #1d4ed8 18%, transparent);
+  border-color: var(--c-blue-700);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
 }
 
 .pck-trigger[disabled] {
-  background: #f8fafc;
-  color: #94a3b8;
+  background: var(--c-slate-50);
+  color: var(--c-slate-400);
   cursor: not-allowed;
 }
 
 .pck-trigger--error {
-  border-color: #dc2626;
+  border-color: var(--c-red-600);
 }
 .pck-trigger--error:focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, #dc2626 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 18%, transparent);
 }
 
 .pck-trigger--sm {
@@ -58,10 +58,10 @@
 }
 
 .pck-placeholder {
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .pck-icon {
-  color: #94a3b8;
+  color: var(--c-slate-400);
   flex-shrink: 0;
 }
 
@@ -82,16 +82,9 @@
 /* ══════════════════════════════════════════════════════════════════════════ */
 
 .dpk-content {
-  font-family:
-    'Nunito',
-    'Trebuchet MS',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-sans);
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-slate-200);
   border-radius: 12px;
   box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
   padding: 14px;
@@ -119,21 +112,21 @@
   background: none;
   border-radius: 6px;
   cursor: pointer;
-  color: #64748b;
+  color: var(--c-slate-500);
   font: inherit;
   transition:
     background 0.1s,
     color 0.1s;
 }
 .dpk-nav-btn:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--c-slate-100);
+  color: var(--c-slate-900);
 }
 
 .dpk-month-label {
   font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--c-slate-900);
   letter-spacing: 0.01em;
 }
 
@@ -147,7 +140,7 @@
 .dpk-day-hdr {
   font-size: 11px;
   font-weight: 700;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   text-align: center;
   padding: 4px 0 6px;
   text-transform: uppercase;
@@ -165,7 +158,7 @@
   border-radius: 50%;
   font: inherit;
   font-size: 13px;
-  color: #0f172a;
+  color: var(--c-slate-900);
   cursor: pointer;
   transition:
     background 0.08s,
@@ -173,15 +166,15 @@
 }
 .dpk-day:hover {
   background: #eff6ff;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 .dpk-day--today {
-  box-shadow: inset 0 0 0 1.5px #1d4ed8;
-  color: #1d4ed8;
+  box-shadow: inset 0 0 0 1.5px var(--c-blue-700);
+  color: var(--c-blue-700);
   font-weight: 700;
 }
 .dpk-day--sel {
-  background: #1d4ed8;
+  background: var(--c-blue-700);
   color: #fff;
   font-weight: 700;
   box-shadow: none;
@@ -190,11 +183,11 @@
   background: #1e40af;
 }
 .dpk-day--outside {
-  color: #cbd5e1;
+  color: var(--c-slate-300);
 }
 .dpk-day--outside:hover {
-  background: #f8fafc;
-  color: #94a3b8;
+  background: var(--c-slate-50);
+  color: var(--c-slate-400);
 }
 
 /* Year selector row (shown when clicking month label) */
@@ -209,28 +202,28 @@
   font: inherit;
   font-size: 14px;
   font-weight: 700;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--c-slate-300);
   border-radius: 6px;
   padding: 4px 8px;
   text-align: center;
 }
 .dpk-year-inp:focus {
   outline: none;
-  border-color: #1d4ed8;
+  border-color: var(--c-blue-700);
 }
 
 /* Clear link */
 .dpk-footer {
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--c-slate-100);
   display: flex;
   justify-content: flex-end;
 }
 .dpk-clear {
   font: inherit;
   font-size: 12px;
-  color: #64748b;
+  color: var(--c-slate-500);
   background: none;
   border: none;
   cursor: pointer;
@@ -238,7 +231,7 @@
   border-radius: 4px;
 }
 .dpk-clear:hover {
-  color: #dc2626;
+  color: var(--c-red-600);
   background: #fef2f2;
 }
 
@@ -247,16 +240,9 @@
 /* ══════════════════════════════════════════════════════════════════════════ */
 
 .tpk-content {
-  font-family:
-    'Nunito',
-    'Trebuchet MS',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-sans);
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-slate-200);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
   z-index: 200;
@@ -270,7 +256,7 @@
   overflow-y: auto;
   padding: 4px;
   scrollbar-width: thin;
-  scrollbar-color: #cbd5e1 transparent;
+  scrollbar-color: var(--c-slate-300) transparent;
 }
 .tpk-list::-webkit-scrollbar {
   width: 4px;
@@ -279,7 +265,7 @@
   background: transparent;
 }
 .tpk-list::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: var(--c-slate-300);
   border-radius: 4px;
 }
 
@@ -291,7 +277,7 @@
   background: none;
   font: inherit;
   font-size: 13px;
-  color: #0f172a;
+  color: var(--c-slate-900);
   cursor: pointer;
   text-align: left;
   border-radius: 6px;
@@ -299,10 +285,10 @@
 }
 .tpk-item:hover {
   background: #eff6ff;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 .tpk-item--sel {
   font-weight: 700;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
   background: #eff6ff;
 }

@@ -51,9 +51,9 @@
 /* ── Variants ────────────────────────────────────────────────────────────── */
 /* Primary — solid brand blue */
 .btn--primary {
-  background: #1d4ed8;
+  background: var(--c-blue-700);
   color: #fff;
-  border-color: #1d4ed8;
+  border-color: var(--c-blue-700);
 }
 .btn--primary:hover:not(:disabled) {
   background: #1e40af;
@@ -63,30 +63,30 @@
 /* Secondary — white with border */
 .btn--secondary {
   background: #fff;
-  color: #1e293b;
-  border-color: #cbd5e1;
+  color: var(--c-slate-800);
+  border-color: var(--c-slate-300);
 }
 .btn--secondary:hover:not(:disabled) {
-  background: #f8fafc;
-  border-color: #94a3b8;
+  background: var(--c-slate-50);
+  border-color: var(--c-slate-400);
 }
 
 /* Ghost — transparent */
 .btn--ghost {
   background: transparent;
-  color: #475569;
+  color: var(--c-slate-600);
   border-color: transparent;
 }
 .btn--ghost:hover:not(:disabled) {
-  background: #f1f5f9;
-  color: #1e293b;
+  background: var(--c-slate-100);
+  color: var(--c-slate-800);
 }
 
 /* Danger — red */
 .btn--danger {
-  background: #dc2626;
+  background: var(--c-red-600);
   color: #fff;
-  border-color: #dc2626;
+  border-color: var(--c-red-600);
 }
 .btn--danger:hover:not(:disabled) {
   background: #b91c1c;
@@ -95,13 +95,13 @@
 
 /* Accent — uses --btn-accent (defaults to slate) */
 .btn--accent {
-  background: var(--btn-accent, #475569);
+  background: var(--btn-accent, var(--c-slate-600));
   color: #fff;
-  border-color: var(--btn-accent, #475569);
+  border-color: var(--btn-accent, var(--c-slate-600));
 }
 .btn--accent:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--btn-accent, #475569) 88%, black);
-  border-color: color-mix(in srgb, var(--btn-accent, #475569) 88%, black);
+  background: color-mix(in srgb, var(--btn-accent, var(--c-slate-600)) 88%, black);
+  border-color: color-mix(in srgb, var(--btn-accent, var(--c-slate-600)) 88%, black);
 }
 
 /* ── Icon slot ───────────────────────────────────────────────────────────── */

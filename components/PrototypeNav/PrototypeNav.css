@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
 
 .proto-nav {
-  font-family: 'Nunito', 'Trebuchet MS', sans-serif;
+  font-family: var(--font-sans);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -34,7 +34,7 @@
   border-radius: 7px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.5);
-  color: #475569;
+  color: var(--c-slate-600);
   cursor: pointer;
   text-decoration: none;
   transition:
@@ -45,7 +45,7 @@
 
 .proto-nav-iconbtn:hover {
   background: #fff;
-  color: #0f172a;
+  color: var(--c-slate-900);
   border-color: rgba(0, 0, 0, 0.18);
 }
 
@@ -66,7 +66,7 @@
   border-radius: 7px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.5);
-  color: #475569;
+  color: var(--c-slate-600);
   font-family: inherit;
   font-size: 12.5px;
   font-weight: 700;
@@ -79,7 +79,7 @@
 
 .proto-nav-usage:hover {
   background: #fff;
-  color: #0f172a;
+  color: var(--c-slate-900);
   border-color: rgba(0, 0, 0, 0.18);
 }
 
@@ -97,7 +97,7 @@
   width: 26px;
   height: 26px;
   border-radius: 99px;
-  color: #475569;
+  color: var(--c-slate-600);
   background: rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(0, 0, 0, 0.08);
   text-decoration: none;
@@ -114,7 +114,7 @@
 }
 
 .proto-nav-arrow--disabled {
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   background: transparent;
   border-color: rgba(0, 0, 0, 0.04);
   cursor: not-allowed;
@@ -122,7 +122,7 @@
 
 .proto-nav-arrow--disabled:hover {
   background: transparent;
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   border-color: rgba(0, 0, 0, 0.04);
 }
 
@@ -143,7 +143,7 @@
   font-weight: 600;
   /* dark label (not the raw accent) so light accents like teal clear 4.5:1 on
      the accent-tinted background; the dot + border keep the brand color */
-  color: #1e293b;
+  color: var(--c-slate-800);
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
   cursor: pointer;
@@ -159,7 +159,7 @@
 }
 
 .proto-nav-select--empty {
-  color: #64748b;
+  color: var(--c-slate-500);
   background: rgba(0, 0, 0, 0.04);
   border-color: rgba(0, 0, 0, 0.08);
 }
@@ -224,14 +224,14 @@
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: #1e293b;
+  color: var(--c-slate-800);
   text-decoration: none;
   cursor: pointer;
   transition: background 0.1s;
 }
 
 .proto-nav-option:hover {
-  background: #f1f5f9;
+  background: var(--c-slate-100);
 }
 
 .proto-nav-option--active {
@@ -261,7 +261,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   padding: 4px 10px 2px;
 }
 

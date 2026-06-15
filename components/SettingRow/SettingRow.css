@@ -17,11 +17,11 @@
 .setting-row-label {
   font-size: 14px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 .setting-row-sub {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .setting-row-control {
   display: flex;
@@ -32,12 +32,12 @@
 .setting-row-state {
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 /* Stack rows in a list to get hairline dividers between them. */
 .setting-list > .setting-row {
-  border-top: 1px solid #e2e8f0;
+  border-top: 1px solid var(--c-slate-200);
 }
 .setting-list > .setting-row:first-child {
   border-top: 0;

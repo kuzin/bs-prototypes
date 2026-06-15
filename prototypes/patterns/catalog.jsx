@@ -10,6 +10,7 @@ import { useSyncExternalStore } from 'react'
 
 import { Icon } from '@components/Icon/Icon'
 
+import { foundationsSections } from './sections/foundations'
 import { atomsSections } from './sections/atoms'
 import { moleculesSections } from './sections/molecules'
 import { formFieldsSections } from './sections/form-fields'
@@ -88,6 +89,13 @@ export function BreakpointIndicator() {
 }
 
 export const GROUPS = [
+  {
+    id: 'foundations',
+    title: 'Foundations',
+    desc: 'Design tokens — the shared color palette every component and prototype draws from.',
+    color: '#0DA7BC',
+    icon: <Icon name="palette" size={22} />,
+  },
   {
     id: 'atoms',
     title: 'Atoms',
@@ -172,6 +180,7 @@ export const GROUPS = [
 ]
 
 export const SECTIONS = [
+  ...foundationsSections,
   ...atomsSections,
   ...moleculesSections,
   ...formFieldsSections,

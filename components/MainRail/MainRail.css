@@ -67,7 +67,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #1d4ed8;
+  background: var(--c-blue-700);
   color: #fff;
   font-size: 13px;
   font-weight: 800;

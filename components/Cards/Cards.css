@@ -4,9 +4,9 @@
    by an enclosing ChartCard), and finally falls back to a neutral default if
    nothing is set. Only the value text uses the resolved color. */
 .rc-stat {
-  --rc-stat-color: var(--rc-accent, #0f172a);
+  --rc-stat-color: var(--rc-accent, var(--c-slate-900));
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--c-gray-200);
   border-radius: 12px;
   padding: 18px 16px;
   display: flex;
@@ -32,12 +32,12 @@
 .rc-stat-unit {
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 .rc-stat-lbl {
   font-size: 15px;
-  color: #1e293b;
+  color: var(--c-slate-800);
   font-weight: 700;
   letter-spacing: -0.01em;
   margin-top: 4px;
@@ -45,7 +45,7 @@
 
 .rc-stat-foot {
   font-size: 12px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 600;
   letter-spacing: -0.01em;
   margin-top: 2px;
@@ -54,7 +54,7 @@
 /* ── Chart / content card ──────────────────────────────────────────────── */
 .rc-card {
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--c-gray-200);
   border-radius: 14px;
   display: flex;
   flex-direction: column;
@@ -85,16 +85,16 @@
   align-items: center;
   gap: 10px;
   padding: 14px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
 }
 
 .rc-card-icon {
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  background: var(--rc-accent-bg, #f8fafc);
-  color: var(--rc-accent, #475569);
-  border: 1px solid color-mix(in srgb, var(--rc-accent, #94a3b8) 20%, transparent);
+  background: var(--rc-accent-bg, var(--c-slate-50));
+  color: var(--rc-accent, var(--c-slate-600));
+  border: 1px solid color-mix(in srgb, var(--rc-accent, var(--c-slate-400)) 20%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -117,13 +117,13 @@
 .rc-card-title {
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-slate-800);
   letter-spacing: -0.01em;
 }
 
 .rc-card-sub {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 500;
 }
 
@@ -134,7 +134,7 @@
 .rc-card-drill {
   font-size: 13px;
   font-weight: 600;
-  color: var(--rc-accent, #475569);
+  color: var(--rc-accent, var(--c-slate-600));
   background: none;
   border: none;
   cursor: pointer;
@@ -195,7 +195,7 @@
 
 .rc-card-foot {
   padding: 10px 16px 12px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--c-slate-100);
 }
 
 /* ── Inline note inside a card body ────────────────────────────────────── */
@@ -205,7 +205,7 @@
   border-radius: 6px;
   font-size: 13px;
   line-height: 1.5;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 
 .rc-card-body--flush > .rc-card-note {
@@ -213,15 +213,15 @@
 }
 
 .rc-card-note--neutral {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: var(--c-slate-50);
+  border: 1px solid var(--c-slate-200);
 }
 .rc-card-note--accent {
   background: var(--rc-accent-bg, #fff7f5);
-  border: 1px solid color-mix(in srgb, var(--rc-accent, #e8866a) 25%, white);
+  border: 1px solid color-mix(in srgb, var(--rc-accent, var(--c-brand-coral)) 25%, white);
 }
 .rc-card-note--accent strong {
-  color: var(--rc-accent, #e8866a);
+  color: var(--rc-accent, var(--c-brand-coral));
 }
 
 /* ── Page root — flex column with 16px gap. Used by every district view

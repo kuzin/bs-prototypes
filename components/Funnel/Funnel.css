@@ -34,7 +34,7 @@
 .fn-pct {
   font-size: 13px;
   font-weight: 800;
-  color: #475569;
+  color: var(--c-slate-600);
   text-align: right;
   font-variant-numeric: tabular-nums;
   letter-spacing: -0.01em;
@@ -73,7 +73,7 @@
   align-items: baseline;
   gap: 8px;
   font-size: 13px;
-  color: #1e293b;
+  color: var(--c-slate-800);
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
@@ -86,7 +86,7 @@
 
 .fn-stage {
   font-weight: 500;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 
 /* ── Color-scale legend at the bottom ──────────────────────────────────── */
@@ -95,9 +95,9 @@
   align-items: center;
   gap: 10px;
   padding-top: 10px;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--c-slate-100);
   font-size: 12px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 500;
 }
 

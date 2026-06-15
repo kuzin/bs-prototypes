@@ -14,11 +14,11 @@
   gap: 6px;
   padding: 7px 13px;
   border-radius: 8px;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--c-slate-200);
   background: #fff;
   font-size: 13px;
   font-weight: 600;
-  color: #475569;
+  color: var(--c-slate-600);
   cursor: pointer;
   font-family: inherit;
   transition:
@@ -28,14 +28,14 @@
   white-space: nowrap;
 }
 .sfr-settings-btn:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  color: #1e293b;
+  background: var(--c-slate-50);
+  border-color: var(--c-slate-300);
+  color: var(--c-slate-800);
 }
 
 .sfr-tabs-bar {
   background: #fff;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--c-gray-200);
   padding: 0 max(24px, calc((100% - 1440px) / 2));
   flex-shrink: 0;
 }
@@ -48,7 +48,7 @@
   gap: 8px;
   padding: 80px 40px;
   text-align: center;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 15px;
   font-weight: 600;
 }
@@ -61,7 +61,7 @@
 .sfr-stub-sub {
   font-size: 13px;
   font-weight: 400;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   max-width: 360px;
   line-height: 1.5;
 }

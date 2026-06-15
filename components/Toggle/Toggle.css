@@ -6,7 +6,7 @@
   -webkit-user-select: none;
   user-select: none;
   font-size: 13px;
-  color: #334155;
+  color: var(--c-slate-700);
 }
 
 .tgl--disabled {
@@ -25,7 +25,7 @@
 .tgl-track {
   position: relative;
   display: inline-block;
-  background: #cbd5e1;
+  background: var(--c-slate-300);
   border-radius: 999px;
   transition: background 0.16s ease;
   flex-shrink: 0;
@@ -83,11 +83,11 @@
 
 /* Checked state */
 .tgl-input:checked + .tgl-track {
-  background: #1d4ed8;
+  background: var(--c-blue-700);
 }
 
 .tgl:hover .tgl-track {
-  background: #94a3b8;
+  background: var(--c-slate-400);
 }
 
 .tgl:hover .tgl-input:checked + .tgl-track {
@@ -95,7 +95,7 @@
 }
 
 .tgl-input:focus-visible + .tgl-track {
-  outline: 2px solid #1d4ed8;
+  outline: 2px solid var(--c-blue-700);
   outline-offset: 2px;
 }
 

@@ -1,13 +1,13 @@
 .sess-date {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   white-space: nowrap;
 }
 
 .sess-student-name {
   font-size: 13px;
   font-weight: 600;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
   white-space: nowrap;
   cursor: pointer;
 }
@@ -26,7 +26,7 @@
 
 .sess-grade {
   font-size: 13px;
-  color: #475569;
+  color: var(--c-slate-600);
   white-space: nowrap;
 }
 
@@ -39,7 +39,7 @@
 .sess-book-title {
   font-size: 13px;
   font-weight: 500;
-  color: #1e293b;
+  color: var(--c-slate-800);
   max-width: 200px;
   white-space: nowrap;
   overflow: hidden;
@@ -56,8 +56,8 @@
   padding: 3px 8px;
   border-radius: 99px;
   background: #fff7ed;
-  color: #d97706;
-  border: 1px solid color-mix(in srgb, #d97706 20%, transparent);
+  color: var(--c-amber-600);
+  border: 1px solid color-mix(in srgb, var(--c-amber-600) 20%, transparent);
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -80,9 +80,9 @@
 }
 /* Post-logging title-completion check-ins (the existing BTWB trigger). */
 .sess-source-tag--title {
-  background: #f1f5f9;
-  color: #475569;
-  border-color: color-mix(in srgb, #475569 20%, transparent);
+  background: var(--c-slate-100);
+  color: var(--c-slate-600);
+  border-color: color-mix(in srgb, var(--c-slate-600) 20%, transparent);
 }
 
 /* Engagement rating badge → shared <Pill variant="soft" size="sm"> */
@@ -93,19 +93,19 @@
   gap: 4px;
   font-size: 13px;
   font-weight: 700;
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 
 .sess-flags--pos {
-  color: #16a97a;
+  color: var(--c-brand-green);
 }
 
 .sess-flags--neg {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 
 .sess-na {
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   font-size: 13px;
 }
 
@@ -169,11 +169,11 @@
 }
 .sess-status--done {
   background: #f0fdf4;
-  color: #16a97a;
+  color: var(--c-brand-green);
 }
 .sess-status--partial {
   background: #fff7ed;
-  color: #d97706;
+  color: var(--c-amber-600);
 }
 
 /* Action column — right-aligned and vertically centered */
@@ -194,7 +194,7 @@
   position: fixed;
   z-index: 500;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-slate-200);
   border-radius: 10px;
   box-shadow:
     0 8px 24px rgba(15, 23, 42, 0.14),
@@ -226,7 +226,7 @@
   border-radius: 7px;
   font-size: 13px;
   font-weight: 500;
-  color: #334155;
+  color: var(--c-slate-700);
   cursor: pointer;
   font-family: inherit;
   text-align: left;
@@ -235,11 +235,11 @@
     color 0.1s;
 }
 .sess-flyout-item:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--c-slate-100);
+  color: var(--c-slate-900);
 }
 .sess-flyout-item--danger {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 .sess-flyout-item--danger:hover {
   background: #fef2f2;
@@ -248,7 +248,7 @@
 
 .sess-flyout-divider {
   height: 1px;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   margin: 3px 4px;
 }
 
@@ -259,7 +259,7 @@
   justify-content: center;
   gap: 3px;
   background: #fff;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid var(--c-slate-200);
   cursor: pointer;
   padding: 6px 10px;
   border-radius: 7px;
@@ -269,16 +269,16 @@
   vertical-align: middle;
 }
 .sess-dots:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
+  background: var(--c-slate-50);
+  border-color: var(--c-slate-300);
 }
 .sess-dots span {
   display: block;
   width: 3.5px;
   height: 3.5px;
   border-radius: 50%;
-  background: #64748b;
+  background: var(--c-slate-500);
 }
 .sess-dots:hover span {
-  background: #334155;
+  background: var(--c-slate-700);
 }

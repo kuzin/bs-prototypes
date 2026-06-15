@@ -3,9 +3,9 @@
   border-collapse: separate;
   border-spacing: 0;
   font-size: 13px;
-  color: #1e293b;
+  color: var(--c-slate-800);
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--c-gray-200);
   border-radius: 10px;
   overflow: hidden;
 }
@@ -15,12 +15,12 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 12px;
   padding: 14px 12px;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
-  background: #f8fafc;
+  border-top: 1px solid var(--c-gray-200);
+  border-bottom: 1px solid var(--c-gray-200);
+  background: var(--c-slate-50);
   white-space: nowrap;
 }
 
@@ -30,10 +30,10 @@
   transition: color 0.1s;
 }
 .tbl-th--sortable:hover {
-  color: #475569;
+  color: var(--c-slate-600);
 }
 .tbl-th--sorted {
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 
 .tbl-sort-icon {
@@ -50,12 +50,12 @@
 }
 .tbl-sort-icon--active {
   opacity: 1;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 
 .tbl-td {
   padding: 10px 12px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
   vertical-align: middle;
   background: #fff;
 }
@@ -70,7 +70,7 @@
 }
 
 .tbl-row--clickable:hover .tbl-td {
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 
 .tbl-cell--right {
@@ -92,7 +92,7 @@
 
 .tbl--bordered .tbl-td,
 .tbl--bordered .tbl-th {
-  border-right: 1px solid #f1f5f9;
+  border-right: 1px solid var(--c-slate-100);
 }
 .tbl--bordered .tbl-td:last-child,
 .tbl--bordered .tbl-th:last-child {
@@ -108,7 +108,7 @@
 .tbl-state {
   padding: 22px 12px;
   text-align: center;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 13px;
   font-style: italic;
   background: #fff;
@@ -124,8 +124,8 @@
 /* ── Pagination ──────────────────────────────────────────────────────────── */
 .tbl-pagination {
   padding: 8px 12px;
-  border-top: 1px solid #e5e7eb;
-  background: #f8fafc;
+  border-top: 1px solid var(--c-gray-200);
+  background: var(--c-slate-50);
   text-align: right;
 }
 
@@ -136,9 +136,9 @@
   width: 28px;
   height: 28px;
   border-radius: 6px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--c-gray-200);
   background: #fff;
-  color: #475569;
+  color: var(--c-slate-600);
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
@@ -147,8 +147,8 @@
     border-color 0.1s;
 }
 .tbl-pg-btn:hover:not(:disabled) {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
+  background: var(--c-slate-100);
+  border-color: var(--c-slate-300);
 }
 .tbl-pg-btn:disabled {
   opacity: 0.35;
@@ -159,13 +159,13 @@
   display: inline-block;
   font-size: 12px;
   font-weight: 600;
-  color: #475569;
+  color: var(--c-slate-600);
   margin: 0 8px;
   min-width: 48px;
   text-align: center;
 }
 .tbl-pg-sep {
-  color: #cbd5e1;
+  color: var(--c-slate-300);
 }
 
 /* ── Flush variant — edge-to-edge inside ChartCard bodyPad="flush" ────────── */
@@ -221,7 +221,7 @@
     display: none;
   }
   .tbl--collapse .tbl-row {
-    border-bottom: 1px solid #e2e8f0;
+    border-bottom: 1px solid var(--c-slate-200);
     padding: 10px 12px;
   }
   .tbl--collapse .tbl-row:last-child {
@@ -242,7 +242,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: #64748b;
+    color: var(--c-slate-500);
     margin-bottom: 2px;
   }
   /* When there's no label (e.g. the action column), drop the placeholder

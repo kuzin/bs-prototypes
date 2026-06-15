@@ -6,16 +6,9 @@
 }
 body {
   margin: 0;
-  font-family:
-    'Nunito',
-    'Trebuchet MS',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-sans);
   background: #f3f4f6;
-  color: #1e293b;
+  color: var(--c-slate-800);
   -webkit-font-smoothing: antialiased;
 }
 h1,
@@ -37,9 +30,8 @@ button {
   --col-gap: 16px;
   --row-h: 130px;
   --radius: 14px;
-  --border: 1px solid #e5e7eb;
-  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --border: 1px solid var(--c-gray-200);
+  /* --shadow-sm / --shadow-md are now global design tokens (components/ui/tokens.css) */
 
   /* tones */
   --red-bg: #fee2e2;
@@ -59,7 +51,7 @@ button {
   --teal-fg: #0f766e;
   --blue-bg: #dbeafe;
   --blue-bd: #93c5fd;
-  --blue-fg: #1d4ed8;
+  --blue-fg: var(--c-blue-700);
   --purple-bg: #ede9fe;
   --purple-bd: #c4b5fd;
   --purple-fg: #6d28d9;
@@ -133,9 +125,9 @@ button {
   border-radius: 999px;
   font-weight: 700;
   font-size: 13px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--c-slate-300);
   background: #fff;
-  color: #334155;
+  color: var(--c-slate-700);
 }
 .adm-edit-pill.is-on {
   background: #1a6dd5;
@@ -229,8 +221,8 @@ button {
 .adm-alert--info {
   background: #eff6ff;
   border-color: #bfdbfe;
-  color: #1d4ed8;
-  --alert-tone: #1d4ed8;
+  color: var(--c-blue-700);
+  --alert-tone: var(--c-blue-700);
 }
 .adm-alert--good {
   background: #ecfdf5;
@@ -279,13 +271,13 @@ button {
 }
 .adm-feature-title {
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   font-size: 14px;
   line-height: 1.3;
 }
 .adm-feature-body {
   font-size: 13px;
-  color: #334155;
+  color: var(--c-slate-700);
   margin-top: 2px;
   line-height: 1.4;
 }
@@ -312,13 +304,13 @@ button {
   background: transparent;
   border: 0;
   border-radius: 7px;
-  color: #475569;
+  color: var(--c-slate-600);
   font-size: 13px;
   cursor: pointer;
 }
 .adm-feature-close:hover {
   background: rgba(15, 23, 42, 0.06);
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 
 @media (max-width: 720px) {
@@ -371,7 +363,7 @@ button {
   font-weight: 800;
 }
 .adm-rca-level--orange {
-  color: #d97706;
+  color: var(--c-amber-600);
 }
 .adm-rca-level--green {
   color: #059669;
@@ -380,7 +372,7 @@ button {
   color: #2563eb;
 }
 .adm-rca-level--purple {
-  color: #7c3aed;
+  color: var(--c-violet-600);
 }
 
 /* Same height as .adm-goal-bar so Engagement + Community Goal align visually
@@ -425,7 +417,7 @@ button {
   line-height: 1.1;
 }
 .adm-rca-val--orange {
-  color: #d97706;
+  color: var(--c-amber-600);
 }
 .adm-rca-val--green {
   color: #059669;
@@ -434,21 +426,21 @@ button {
   color: #2563eb;
 }
 .adm-rca-val--purple {
-  color: #7c3aed;
+  color: var(--c-violet-600);
 }
 .adm-rca-meta {
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 13px;
   font-weight: 600;
 }
 .adm-rca-foot {
   font-size: 12px;
   font-weight: 600;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 .adm-rca-foot strong {
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 
 /* ─── Main row: editable grid + right rail ────────────────────────────── */
@@ -546,9 +538,9 @@ button {
   align-items: center;
   justify-content: center;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-slate-200);
   border-radius: 7px;
-  color: #475569;
+  color: var(--c-slate-600);
   padding: 0;
   line-height: 0;
   cursor: pointer;
@@ -558,9 +550,9 @@ button {
     color 0.15s;
 }
 .adm-rail-cog:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-  border-color: #cbd5e1;
+  background: var(--c-slate-100);
+  color: var(--c-slate-900);
+  border-color: var(--c-slate-300);
 }
 .adm-rail-cog svg {
   display: block;
@@ -585,7 +577,7 @@ button {
   color: #1a6dd5;
 }
 .adm-rail-goal-meta {
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 13px;
   font-weight: 600;
 }
@@ -645,7 +637,7 @@ button {
   font-size: 20px;
 }
 .adm-news-event-edu {
-  color: #d97706;
+  color: var(--c-amber-600);
 }
 .adm-news-event-sub {
   font-weight: 800;
@@ -704,7 +696,7 @@ button {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 .adm-news-badge--gold {
-  background: linear-gradient(135deg, #f59e0b, #d97706);
+  background: linear-gradient(135deg, #f59e0b, var(--c-amber-600));
 }
 .adm-news-badge--green {
   background: linear-gradient(135deg, #10b981, #047857);
@@ -748,7 +740,7 @@ button {
 }
 .adm-news-cat {
   font-size: 11px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 700;
   text-transform: capitalize;
   letter-spacing: 0.02em;
@@ -905,7 +897,7 @@ button {
    blue "will split" ring. */
 .adm-grid-card.is-drop-locked > .adm-cell {
   box-shadow:
-    0 0 0 2px #d97706,
+    0 0 0 2px var(--c-amber-600),
     var(--shadow-md);
 }
 /* Hover hint badge centered on the target card during a drag. */
@@ -960,7 +952,7 @@ button {
   right: 0;
   top: 8px;
   bottom: 8px;
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed var(--c-slate-300);
   border-radius: 7px;
   transition:
     background 0.12s,
@@ -978,7 +970,7 @@ button {
 }
 .adm-grid-wrap.is-editing {
   /* Dashed outline communicates "this is your editable area". */
-  border: 2px dashed #cbd5e1;
+  border: 2px dashed var(--c-slate-300);
   border-radius: 14px;
   padding: 14px;
   background: rgba(255, 255, 255, 0.45);
@@ -1100,10 +1092,10 @@ button {
    border color in edit/required states. Same 1px width in every state so
    the cells read consistently. */
 .adm-cell--editing {
-  border-color: #cbd5e1;
+  border-color: var(--c-slate-300);
 }
 .adm-cell--editing:hover {
-  border-color: #94a3b8;
+  border-color: var(--c-slate-400);
   box-shadow: var(--shadow-md);
 }
 /* In edit mode, the chrome row replaces the widget's own header. */
@@ -1122,7 +1114,7 @@ button {
 .adm-cell--required .adm-cell-handle {
   background: #eff6ff;
   border-color: #bfdbfe;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
   cursor: default;
 }
 
@@ -1132,7 +1124,7 @@ button {
   z-index: 60;
   width: 280px;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-slate-200);
   border-radius: 12px;
   box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
   font-size: 13px;
@@ -1145,12 +1137,12 @@ button {
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
 }
 .adm-set-title {
   font-weight: 800;
   font-size: 13px;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 .adm-set-close {
   width: 22px;
@@ -1158,12 +1150,12 @@ button {
   border: 0;
   background: transparent;
   border-radius: 6px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 12px;
 }
 .adm-set-close:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--c-slate-100);
+  color: var(--c-slate-900);
 }
 .adm-set-body {
   padding: 12px;
@@ -1181,19 +1173,19 @@ button {
 .adm-set-label {
   font-size: 11px;
   font-weight: 800;
-  color: #475569;
+  color: var(--c-slate-600);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 .adm-set-input {
   width: 100%;
   padding: 7px 9px;
-  border: 1px solid #cbd5e1;
+  border: 1px solid var(--c-slate-300);
   border-radius: 8px;
   background: #fff;
   font-size: 13px;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--c-slate-900);
   font-family: inherit;
 }
 .adm-set-input:focus {
@@ -1211,16 +1203,16 @@ button {
   max-height: 180px;
   overflow-y: auto;
   padding: 6px 8px;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-slate-200);
   border-radius: 8px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 .adm-set-multi-row {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #334155;
+  color: var(--c-slate-700);
   font-weight: 600;
   cursor: pointer;
   padding: 3px 0;
@@ -1231,7 +1223,7 @@ button {
 
 .adm-set-help {
   font-size: 11px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 
 .adm-set-foot {
@@ -1239,15 +1231,15 @@ button {
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  border-top: 1px solid #f1f5f9;
-  background: #f8fafc;
+  border-top: 1px solid var(--c-slate-100);
+  background: var(--c-slate-50);
 }
 
 /* ─── Edit-mode hint banner ───────────────────────────────────────────── */
 .adm-edit-hint {
   background: #eff6ff;
   border: 1px solid #bfdbfe;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 13px;
@@ -1288,8 +1280,8 @@ button {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 12px;
-  background: #f8fafc;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--c-slate-50);
+  border-bottom: 1px solid var(--c-gray-200);
   min-height: 56px;
   flex-shrink: 0;
 }
@@ -1299,7 +1291,7 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #1e293b;
+  color: var(--c-slate-800);
   font-size: 15px;
   font-weight: 800;
   user-select: none;
@@ -1321,7 +1313,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   width: 20px;
   flex-shrink: 0;
 }
@@ -1350,9 +1342,9 @@ button {
   align-items: center;
   justify-content: center;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-slate-200);
   border-radius: 9px;
-  color: #475569;
+  color: var(--c-slate-600);
   cursor: pointer;
   padding: 0;
   line-height: 0;
@@ -1365,9 +1357,9 @@ button {
   display: block;
 }
 .adm-cell-action:hover {
-  background: #f1f5f9;
-  color: #0f172a;
-  border-color: #cbd5e1;
+  background: var(--c-slate-100);
+  color: var(--c-slate-900);
+  border-color: var(--c-slate-300);
 }
 .adm-cell-action.is-on {
   background: #1a6dd5;
@@ -1382,8 +1374,8 @@ button {
   justify-content: center;
   gap: 10px;
   padding: 8px 12px;
-  background: #f8fafc;
-  border-top: 1px solid #e5e7eb;
+  background: var(--c-slate-50);
+  border-top: 1px solid var(--c-gray-200);
   min-height: 48px;
   flex-shrink: 0;
 }
@@ -1392,7 +1384,7 @@ button {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 
 /* ─── Segmented width control ───────────────────────────────────────── */
@@ -1400,7 +1392,7 @@ button {
   display: inline-flex;
   align-self: center;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-slate-200);
   border-radius: 9px;
   overflow: hidden;
   flex-shrink: 0;
@@ -1412,9 +1404,9 @@ button {
   background: transparent;
   font-weight: 800;
   font-size: 12px;
-  color: #475569;
+  color: var(--c-slate-600);
   cursor: pointer;
-  border-right: 1px solid #e2e8f0;
+  border-right: 1px solid var(--c-slate-200);
   min-width: 32px;
   transition:
     background 0.15s,
@@ -1424,16 +1416,16 @@ button {
   border-right: 0;
 }
 .adm-cell-width button:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--c-slate-100);
+  color: var(--c-slate-900);
 }
 .adm-cell-width button.is-active {
   background: #1a6dd5;
   color: #fff;
 }
 .adm-cell-action:hover {
-  background: #f1f5f9;
-  color: #0f172a;
+  background: var(--c-slate-100);
+  color: var(--c-slate-900);
 }
 .adm-cell-action.is-on {
   background: #1a6dd5;
@@ -1466,8 +1458,8 @@ button {
   justify-content: space-between;
   gap: 8px;
   padding: 11px 16px;
-  background: #f8fafc;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--c-slate-50);
+  border-bottom: 1px solid var(--c-gray-200);
   flex-shrink: 0;
   /* Match the height of a head WITH an action button so head-less widgets
      line up across the row. The button is ~29px tall (6px top/bottom padding
@@ -1519,7 +1511,7 @@ button {
 .adm-w-meta {
   font-size: 12px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .adm-w-body {
   flex: 1;
@@ -1553,10 +1545,10 @@ button {
 .adm-w-footer {
   flex-shrink: 0;
   padding: 10px 16px;
-  background: #f8fafc;
-  border-top: 1px solid #e5e7eb;
+  background: var(--c-slate-50);
+  border-top: 1px solid var(--c-gray-200);
   font-size: 13px;
-  color: #475569;
+  color: var(--c-slate-600);
   font-weight: 600;
 }
 
@@ -1611,7 +1603,7 @@ button {
 .adm-banner--info {
   background: #eff6ff;
   border-color: #bfdbfe;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 .adm-banner--info .adm-banner-ico {
   background: #dbeafe;
@@ -1706,7 +1698,7 @@ button {
   padding: 24px;
   text-align: center;
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
 }
 .adm-stat-ico {
   width: 36px;
@@ -1751,7 +1743,7 @@ button {
 .adm-stat--blue {
   background: #dbeafe;
   border-color: #93c5fd;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 .adm-stat--purple {
   background: #ede9fe;
@@ -1824,13 +1816,13 @@ button {
   color: #1a6dd5;
 }
 .adm-goal .adm-goal-meta {
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 13px;
   font-weight: 600;
 }
 .adm-goal-bar {
   height: 10px;
-  background: #e5e7eb;
+  background: var(--c-gray-200);
   border-radius: 999px;
   position: relative;
 }
@@ -1868,10 +1860,10 @@ button {
   margin: 3px auto 0;
 }
 .adm-bar-thumb--orange {
-  border-color: #d97706;
+  border-color: var(--c-amber-600);
 }
 .adm-bar-thumb--orange::after {
-  background: #d97706;
+  background: var(--c-amber-600);
 }
 .adm-bar-thumb--green {
   border-color: #059669;
@@ -1886,10 +1878,10 @@ button {
   background: #2563eb;
 }
 .adm-bar-thumb--purple {
-  border-color: #7c3aed;
+  border-color: var(--c-violet-600);
 }
 .adm-bar-thumb--purple::after {
-  background: #7c3aed;
+  background: var(--c-violet-600);
 }
 /* Engagement bar: thumb centered over the active 4-segment slot. */
 .adm-rca-bar .adm-bar-thumb {
@@ -1901,7 +1893,7 @@ button {
   border-radius: 12px;
   padding: 20px;
   text-align: center;
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 .adm-goal-empty h4 {
   font-weight: 800;
@@ -1909,7 +1901,7 @@ button {
 }
 .adm-goal-empty p {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   margin-bottom: 12px;
 }
 
@@ -1959,7 +1951,7 @@ button {
   transition: background 0.12s;
 }
 .adm-drt-nav-btn:hover:not(:disabled) {
-  background: #e5e7eb;
+  background: var(--c-gray-200);
 }
 .adm-drt-nav-btn:disabled {
   opacity: 0.3;
@@ -1974,16 +1966,16 @@ button {
 .adm-drt-th,
 .adm-drt-td {
   padding: 10px 8px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
   text-align: left;
 }
 .adm-drt-th {
   font-size: 11px;
   font-weight: 800;
-  color: #64748b;
+  color: var(--c-slate-500);
   text-transform: uppercase;
   letter-spacing: 0.3px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 .adm-drt-th--student {
   padding-left: 16px;
@@ -2003,7 +1995,7 @@ button {
 }
 .adm-drt-row .adm-drt-td {
   font-weight: 600;
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 .adm-drt-student {
   display: flex;
@@ -2014,7 +2006,7 @@ button {
 .adm-drt-rank-num {
   font-size: 13px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--c-slate-500);
   flex-shrink: 0;
   min-width: 18px;
   font-variant-numeric: tabular-nums;
@@ -2036,7 +2028,7 @@ button {
 }
 .adm-drt-goal-val {
   font-size: 13px;
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 .adm-drt-edit-btn {
   display: inline-flex;
@@ -2045,9 +2037,9 @@ button {
   width: 22px;
   height: 22px;
   border-radius: 6px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-  color: #64748b;
+  border: 1px solid var(--c-slate-200);
+  background: var(--c-slate-50);
+  color: var(--c-slate-500);
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
@@ -2059,7 +2051,7 @@ button {
 .adm-drt-edit-btn:hover {
   background: #eff6ff;
   border-color: #bfdbfe;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 .adm-drt-pct {
   display: inline-block;
@@ -2070,15 +2062,15 @@ button {
 }
 .adm-drt-pct--blue {
   background: #dbeafe;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 .adm-drt-pct--orange {
   background: #fef3c7;
-  color: #d97706;
+  color: var(--c-amber-600);
 }
 .adm-drt-pct--red {
   background: #fee2e2;
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 .adm-drt-check {
   display: inline-flex;
@@ -2092,7 +2084,7 @@ button {
   flex-shrink: 0;
 }
 .adm-drt-dash {
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   font-size: 15px;
 }
 .adm-drt-avg-row .adm-drt-td {
@@ -2114,13 +2106,13 @@ button {
   font-size: 13px;
 }
 .adm-drt-legend .lg-red {
-  color: #dc2626;
+  color: var(--c-red-600);
 }
 .adm-drt-legend .lg-yellow {
-  color: #d97706;
+  color: var(--c-amber-600);
 }
 .adm-drt-legend .lg-blue {
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 .adm-drt-legend .lg-green {
   color: #10b981;
@@ -2222,12 +2214,12 @@ button {
     vertical-align: middle;
     font-size: 13px;
     line-height: 16px;
-    color: #cbd5e1;
+    color: var(--c-slate-300);
   }
 
   /* Class Average row percentages: tone down to muted small text. */
   .adm-drt-avg-row .adm-drt-td--center:not(:nth-child(2)):not(:nth-child(3)) {
-    color: #94a3b8;
+    color: var(--c-slate-400);
     font-size: 11px;
   }
   .adm-drt-avg-row .adm-drt-td {
@@ -2297,7 +2289,7 @@ button {
   display: flex;
   justify-content: space-between;
   padding: 8px 16px;
-  border-bottom: 1px dashed #e5e7eb;
+  border-bottom: 1px dashed var(--c-gray-200);
   font-size: 13px;
 }
 .adm-lb-row:last-child {
@@ -2308,7 +2300,7 @@ button {
   font-weight: 700;
 }
 .adm-lb-val {
-  color: #475569;
+  color: var(--c-slate-600);
   font-weight: 600;
 }
 .adm-lb-empty {
@@ -2327,7 +2319,7 @@ button {
 }
 .adm-lb-empty p {
   font-size: 12px;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 /* ─── Checklist ──────────────────────────────────────────────────────── */
@@ -2341,13 +2333,13 @@ button {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: #475569;
+  color: var(--c-slate-600);
   font-weight: 700;
 }
 .adm-check-prog-bar {
   flex: 1;
   height: 6px;
-  background: #e5e7eb;
+  background: var(--c-gray-200);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -2370,7 +2362,7 @@ button {
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  background: #f8fafc;
+  background: var(--c-slate-50);
   border-radius: 10px;
   border: 1px solid transparent;
 }
@@ -2381,7 +2373,7 @@ button {
   width: 18px;
   height: 18px;
   border-radius: 5px;
-  border: 2px solid #cbd5e1;
+  border: 2px solid var(--c-slate-300);
   background: #fff;
   display: inline-flex;
   align-items: center;
@@ -2402,7 +2394,7 @@ button {
 .adm-check-label {
   font-weight: 700;
   font-size: 13px;
-  color: #1e293b;
+  color: var(--c-slate-800);
 }
 .adm-check-action {
   font-size: 12px;
@@ -2510,7 +2502,7 @@ button {
 }
 .adm-com-cat {
   font-size: 11px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -2543,10 +2535,10 @@ button {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
   background: #fff;
   text-decoration: none;
-  color: #1e293b;
+  color: var(--c-slate-800);
   font-weight: 600;
   font-size: 14px;
   transition: background 0.12s;
@@ -2555,7 +2547,7 @@ button {
   border-bottom: 0;
 }
 .adm-link:hover {
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 .adm-link-ico {
   width: 32px;
@@ -2569,7 +2561,7 @@ button {
 }
 .adm-link-arrow {
   margin-left: auto;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   font-size: 18px;
   line-height: 1;
 }
@@ -2583,7 +2575,7 @@ button {
 }
 .adm-link--blue .adm-link-ico {
   background: #dbeafe;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 .adm-link--green .adm-link-ico {
   background: #d1fae5;
@@ -2613,11 +2605,11 @@ button {
   gap: 12px;
   padding: 12px 16px;
   border: 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
   background: #fff;
   font-weight: 600;
   font-size: 14px;
-  color: #1e293b;
+  color: var(--c-slate-800);
   text-align: left;
   line-height: 1.35;
   cursor: pointer;
@@ -2627,7 +2619,7 @@ button {
   border-bottom: 0;
 }
 .adm-question:hover {
-  background: #f8fafc;
+  background: var(--c-slate-50);
 }
 .adm-question-ico {
   width: 32px;
@@ -2637,7 +2629,7 @@ button {
   align-items: center;
   justify-content: center;
   background: #eff6ff;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
   flex-shrink: 0;
 }
 .adm-question-text {
@@ -2646,7 +2638,7 @@ button {
 }
 .adm-question-arrow {
   margin-left: auto;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   font-size: 18px;
   line-height: 1;
   flex-shrink: 0;
@@ -2709,7 +2701,7 @@ button {
 .adm-ad--blue {
   background: #dbeafe;
   border-color: #93c5fd;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 .adm-ad--blue .adm-ad-top {
   background: #eff6ff;
@@ -2766,20 +2758,20 @@ button {
 .adm-side-title {
   font-size: 16px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   letter-spacing: -0.01em;
   line-height: 1.2;
   margin: 0;
 }
 .adm-side-sub {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 .adm-side-body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  background: #f8fafc;
+  background: var(--c-slate-50);
   padding: 16px;
 }
 .adm-side-body--empty {
@@ -2805,7 +2797,7 @@ button {
   align-items: center;
   padding: 12px 14px;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--c-slate-200);
   border-radius: 12px;
   cursor: pointer;
   text-align: left;
@@ -2827,8 +2819,8 @@ button {
   flex-shrink: 0;
   width: 64px;
   height: 56px;
-  background: #f8fafc;
-  border: 1px solid #e5e7eb;
+  background: var(--c-slate-50);
+  border: 1px solid var(--c-gray-200);
   border-radius: 8px;
   padding: 7px;
   display: flex;
@@ -2852,7 +2844,7 @@ button {
   gap: 8px;
   font-size: 14px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--c-slate-900);
   line-height: 1.25;
   letter-spacing: -0.005em;
 }
@@ -2868,13 +2860,13 @@ button {
 }
 .adm-card-desc {
   font-size: 12.5px;
-  color: #64748b;
+  color: var(--c-slate-500);
   line-height: 1.45;
   margin: 0;
 }
 .adm-card-meta {
   font-size: 11.5px;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   font-weight: 600;
   margin-top: 2px;
 }
@@ -2990,13 +2982,13 @@ button {
   border-radius: 1.5px;
   /* shrink slightly so neighboring bars have a visible gap */
   padding: 0;
-  box-shadow: inset 0 0 0 0.5px #f8fafc;
+  box-shadow: inset 0 0 0 0.5px var(--c-slate-50);
 }
 .adm-card.is-current .thumb-layout > span {
   background: #1a6dd5;
 }
 .thumb-empty {
-  color: #94a3b8;
+  color: var(--c-slate-400);
   font-size: 9px;
   font-weight: 800;
   text-transform: uppercase;
@@ -3059,12 +3051,12 @@ button {
   gap: 8px;
   font-weight: 700;
   font-size: 14px;
-  color: #0f172a;
+  color: var(--c-slate-900);
   line-height: 1.25;
 }
 .adm-action-sub {
   font-size: 12px;
-  color: #64748b;
+  color: var(--c-slate-500);
   line-height: 1.35;
 }
 .adm-action-btn {
@@ -3098,7 +3090,7 @@ button {
 }
 .adm-action-btn--warn:hover {
   background: #fffbeb;
-  border-color: #d97706;
+  border-color: var(--c-amber-600);
 }
 
 /* Condense on narrow viewports: hide subtitle, shrink padding, stack to a
@@ -3159,14 +3151,14 @@ button {
   color: #1a6dd5;
 }
 .adm-goal-widget .adm-goal-meta {
-  color: #64748b;
+  color: var(--c-slate-500);
   font-size: 13px;
   font-weight: 600;
 }
 .adm-goal-pct {
   font-size: 12px;
   font-weight: 700;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 
 /* ─── Clickable stat tiles (destination hint) ─────────────────────────── */
@@ -3225,7 +3217,7 @@ button {
   align-items: center;
   gap: 10px;
   padding: 9px 16px;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
 }
 .adm-flagged-row:last-child {
   border-bottom: 0;
@@ -3242,7 +3234,7 @@ button {
 }
 .adm-flagged-book {
   font-size: 12px;
-  color: #64748b;
+  color: var(--c-slate-500);
   margin-top: 1px;
   white-space: nowrap;
   overflow: hidden;
@@ -3323,7 +3315,7 @@ button {
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  border-bottom: 1px dashed #e5e7eb;
+  border-bottom: 1px dashed var(--c-gray-200);
 }
 .adm-lbc-row:last-child {
   border-bottom: 0;
@@ -3344,16 +3336,16 @@ button {
   color: #92400e;
 }
 .adm-lbc-rank--silver {
-  background: #e5e7eb;
+  background: var(--c-gray-200);
   color: #374151;
 }
 .adm-lbc-rank--bronze {
-  background: #d97706;
+  background: var(--c-amber-600);
   color: #fff;
 }
 .adm-lbc-rank--plain {
-  background: #f1f5f9;
-  color: #64748b;
+  background: var(--c-slate-100);
+  color: var(--c-slate-500);
 }
 .adm-lbc-name {
   flex: 1;
@@ -3367,7 +3359,7 @@ button {
 }
 .adm-lbc-val {
   font-weight: 700;
-  color: #475569;
+  color: var(--c-slate-600);
   font-size: 13px;
   flex-shrink: 0;
 }
@@ -3421,7 +3413,7 @@ button {
   aspect-ratio: 2 / 3;
   border-radius: 8px;
   color: #fff;
-  background: #e2e8f0;
+  background: var(--c-slate-200);
   box-shadow: 0 6px 14px rgba(15, 23, 42, 0.16);
   overflow: hidden;
 }
@@ -3454,7 +3446,7 @@ button {
   height: 22px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.92);
-  color: #0f172a;
+  color: var(--c-slate-900);
   font-size: 12px;
   font-weight: 800;
   display: inline-flex;
@@ -3464,7 +3456,7 @@ button {
 .adm-shelf-meta {
   font-size: 12px;
   font-weight: 700;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 .adm-badge-item {
@@ -3489,10 +3481,10 @@ button {
   background: linear-gradient(135deg, #34d399, #047857);
 }
 .adm-badge-medal--yellow {
-  background: linear-gradient(135deg, #fcd34d, #d97706);
+  background: linear-gradient(135deg, #fcd34d, var(--c-amber-600));
 }
 .adm-badge-medal--blue {
-  background: linear-gradient(135deg, #60a5fa, #1d4ed8);
+  background: linear-gradient(135deg, #60a5fa, var(--c-blue-700));
 }
 .adm-badge-medal--purple {
   background: linear-gradient(135deg, #a78bfa, #6d28d9);
@@ -3613,10 +3605,10 @@ button {
   min-width: 0;
   padding: 8px 9px;
   border-radius: 10px;
-  border: 1px solid #e5e7eb;
-  background: #f8fafc;
+  border: 1px solid var(--c-gray-200);
+  background: var(--c-slate-50);
   text-decoration: none;
-  color: #1e293b;
+  color: var(--c-slate-800);
   font-weight: 700;
   font-size: 12.5px;
   transition:
@@ -3640,7 +3632,7 @@ button {
   align-items: center;
   justify-content: center;
   background: #dbeafe;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
   flex-shrink: 0;
 }
 .adm-quick-action-ico svg {

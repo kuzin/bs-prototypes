@@ -4,13 +4,7 @@
   flex-direction: column;
   max-height: calc(100vh - 32px);
   overflow: hidden;
-  font-family:
-    'Nunito',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-sans);
 }
 
 .cu-head {
@@ -26,20 +20,20 @@
   font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 
 .cu-sub {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   margin-top: 2px;
   line-height: 1.45;
 }
 
 .cu-sub code {
-  font-family: 'SF Mono', Menlo, Consolas, monospace;
+  font-family: var(--font-mono);
   font-size: 12px;
-  background: #f1f5f9;
+  background: var(--c-slate-100);
   padding: 1px 5px;
   border-radius: 4px;
 }
@@ -49,9 +43,9 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--c-gray-200);
   background: #fff;
-  color: #64748b;
+  color: var(--c-slate-500);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -59,14 +53,14 @@
 }
 
 .cu-close:hover {
-  background: #f8fafc;
-  color: #0f172a;
+  background: var(--c-slate-50);
+  color: var(--c-slate-900);
 }
 
 .cu-loading {
   padding: 40px;
   text-align: center;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   font-size: 14px;
 }
 
@@ -79,7 +73,7 @@
 
 .cu-proto {
   padding: 14px 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid var(--c-slate-100);
 }
 
 .cu-proto:last-child {
@@ -89,7 +83,7 @@
 .cu-proto-name {
   font-size: 14px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--c-slate-900);
   margin-bottom: 8px;
 }
 
@@ -107,7 +101,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #94a3b8;
+  color: var(--c-slate-400);
   display: flex;
   align-items: center;
   gap: 6px;
@@ -121,8 +115,8 @@
   height: 16px;
   padding: 0 4px;
   border-radius: 8px;
-  background: #f1f5f9;
-  color: #475569;
+  background: var(--c-slate-100);
+  color: var(--c-slate-600);
   font-size: 11px;
   font-weight: 800;
   letter-spacing: 0;
@@ -157,7 +151,7 @@
 .cu-chip--shared {
   background: #eff6ff;
   border-color: #dbeafe;
-  color: #1d4ed8;
+  color: var(--c-blue-700);
 }
 
 .cu-chip--local {
@@ -168,7 +162,7 @@
 
 .cu-empty {
   font-size: 12px;
-  color: #cbd5e1;
+  color: var(--c-slate-300);
   font-style: italic;
 }
 

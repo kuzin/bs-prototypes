@@ -35,20 +35,20 @@
   letter-spacing: 0.03em;
   text-transform: uppercase;
   /* AA-safe text shade of the section color (icon/border keep --sec-color) */
-  color: var(--sec-text, #475569);
+  color: var(--sec-text, var(--c-slate-600));
 }
 
 /* The tile's "View more" link inherits the AA-safe section text shade rather
    than the raw (lighter) brand color used by .rh-stat-more. */
 .ds-tile .rh-stat-more {
-  color: var(--sec-text, #475569);
+  color: var(--sec-text, var(--c-slate-600));
   border-top-color: color-mix(in srgb, var(--sec-color) 18%, transparent);
 }
 
 .ds-tile-val {
   font-size: 28px;
   font-weight: 800;
-  color: #1e293b;
+  color: var(--c-slate-800);
   letter-spacing: -0.03em;
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -59,14 +59,14 @@
   font-weight: 700;
   /* tiles have a tinted (--sec-bg) background, so muted grays need to be darker
      than on white to clear 4.5:1 */
-  color: #475569;
+  color: var(--c-slate-600);
   margin-left: 2px;
 }
 
 .ds-tile-metric {
   font-size: 13px;
   font-weight: 700;
-  color: #475569;
+  color: var(--c-slate-600);
   margin-top: 6px;
 }
 
@@ -77,7 +77,7 @@
 
 .ds-tile-sub {
   font-size: 12.5px;
-  color: #475569;
+  color: var(--c-slate-600);
   font-weight: 600;
 }
 
@@ -97,7 +97,7 @@
 }
 
 .ds-tile-trend--flat {
-  color: #475569;
+  color: var(--c-slate-600);
 }
 
 /* Inline mini-stats inside the Reading Habits card. Big numbers with
@@ -119,7 +119,7 @@
   align-items: center;
   gap: 3px;
   padding: 2px 8px;
-  border-left: 1px solid #f1f5f9;
+  border-left: 1px solid var(--c-slate-100);
 }
 
 .dash-inline-stat:first-child {
@@ -131,7 +131,7 @@
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.05;
-  color: var(--rc-accent, #0f172a);
+  color: var(--rc-accent, var(--c-slate-900));
   display: inline-flex;
   align-items: baseline;
   gap: 4px;
@@ -141,12 +141,12 @@
 .dash-inline-unit {
   font-size: 13px;
   font-weight: 600;
-  color: #64748b;
+  color: var(--c-slate-500);
 }
 
 .dash-inline-lbl {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-weight: 600;
   letter-spacing: -0.01em;
 }

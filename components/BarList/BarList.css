@@ -62,7 +62,7 @@
 }
 
 .bl-divider {
-  background: #f1f5f9;
+  background: var(--c-slate-100);
 }
 .bl--stack > .bl-divider {
   height: 1px;
@@ -83,7 +83,7 @@
   padding: 14px 0;
 }
 .bl--divided > .bl-row + .bl-row {
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid var(--c-slate-100);
 }
 /* Tighten the first/last data row's outer padding — but leave the
    header strip alone so it keeps its symmetric 14px top/bottom. */
@@ -114,9 +114,9 @@
    the first row sits flush against the border-bottom like a `<tbody>`
    does after a `<thead>`. */
 .bl-row.bl-header {
-  background: #f8fafc;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
+  background: var(--c-slate-50);
+  border-top: 1px solid var(--c-gray-200);
+  border-bottom: 1px solid var(--c-gray-200);
   padding: 14px 16px;
   margin: 0 -16px;
   position: sticky;
@@ -129,7 +129,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: #64748b;
+  color: var(--c-slate-500);
   white-space: nowrap;
 }
 
@@ -190,7 +190,7 @@
 .bl-prefix {
   font-size: 13px;
   font-weight: 700;
-  color: #475569;
+  color: var(--c-slate-600);
 }
 
 /* ── Icon ───────────────────────────────────────────────────────────────── */
@@ -202,9 +202,9 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: color-mix(in srgb, var(--bl-ic, #94a3b8) 55%, #334155);
-  background: var(--bl-ic-bg, #f8fafc);
-  border: 1px solid color-mix(in srgb, var(--bl-ic, #94a3b8) 25%, #e2e8f0);
+  color: color-mix(in srgb, var(--bl-ic, var(--c-slate-400)) 55%, var(--c-slate-700));
+  background: var(--bl-ic-bg, var(--c-slate-50));
+  border: 1px solid color-mix(in srgb, var(--bl-ic, var(--c-slate-400)) 25%, var(--c-slate-200));
 }
 
 .bl-icon svg {
@@ -223,7 +223,7 @@
 .bl-label {
   font-size: 13px;
   font-weight: 600;
-  color: #334155;
+  color: var(--c-slate-700);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -234,12 +234,12 @@
 .bl-row--icon .bl-meta:not(:has(.bl-sublabel)) .bl-label {
   font-size: 15px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--c-slate-900);
 }
 
 .bl-sublabel {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -250,7 +250,7 @@
   display: flex;
   justify-content: var(--bl-bar-justify, flex-start);
   height: var(--bl-bar-h, 6px);
-  background: var(--bl-bar-bg, #f1f5f9);
+  background: var(--bl-bar-bg, var(--c-slate-100));
   border-radius: var(--bl-bar-radius, 99px);
   overflow: hidden;
 }
@@ -273,13 +273,13 @@
 .bl-value {
   font-size: 13px;
   font-weight: 700;
-  color: #1e293b;
+  color: var(--c-slate-800);
   font-variant-numeric: tabular-nums;
 }
 
 .bl-subvalue {
   font-size: 13px;
-  color: #64748b;
+  color: var(--c-slate-500);
   font-variant-numeric: tabular-nums;
 }
 
@@ -290,8 +290,8 @@
 }
 
 .bl-delta--pos {
-  color: #16a97a;
+  color: var(--c-brand-green);
 }
 .bl-delta--neg {
-  color: #e8866a;
+  color: var(--c-brand-coral);
 }
