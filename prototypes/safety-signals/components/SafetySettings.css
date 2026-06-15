@@ -1,0 +1,205 @@
+.modal--center:has(.sg-settings) {
+  width: min(600px, calc(100vw - 32px));
+}
+
+.sg-settings {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 64px);
+}
+
+.sg-settings-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #f1f5f9;
+}
+.sg-settings-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+}
+.sg-settings-sub {
+  font-size: 13px;
+  color: #64748b;
+  margin-top: 2px;
+}
+
+.sg-settings-body {
+  padding: 16px 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.sg-set-section-title {
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+.sg-set-note {
+  font-size: 12.5px;
+  color: #64748b;
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+/* Concern label (icon + name) inside the shared SettingRow */
+.sg-set-cat-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #b91c1c;
+}
+.sg-set-cat-label svg {
+  flex-shrink: 0;
+}
+/* Neutral variant — used for the "Notification emails" master row (not a concern) */
+.sg-set-cat-label--neutral {
+  color: #0f172a;
+}
+
+/* ── Notification recipients ── */
+.sg-recip {
+  margin-top: 14px;
+}
+.sg-recip-head {
+  font-size: 12px;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 8px;
+}
+.sg-recip-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  color: #1e293b;
+}
+.sg-recip-role {
+  font-size: 11px;
+  font-weight: 700;
+  color: #64748b;
+  background: #f1f5f9;
+  border-radius: 99px;
+  padding: 1px 8px;
+}
+.sg-recip-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 1px solid #e2e8f0;
+  background: #fff;
+  color: #94a3b8;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+}
+.sg-recip-remove:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #dc2626;
+}
+.sg-recip-role--auto {
+  color: #0369a1;
+  background: #e0f2fe;
+}
+
+/* Add-recipient autocomplete (sits at the top of the list; opens downward) */
+.sg-recip-add {
+  position: relative;
+  margin-bottom: 10px;
+}
+.sg-recip-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(15, 23, 42, 0.14);
+  padding: 5px;
+  max-height: 244px;
+  overflow-y: auto;
+  z-index: 20;
+}
+.sg-recip-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: 7px;
+  padding: 8px 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+.sg-recip-opt:hover {
+  background: #f1f5f9;
+}
+.sg-recip-opt-ic {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #eef2f6;
+  color: #475569;
+  flex-shrink: 0;
+}
+.sg-recip-opt-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+.sg-recip-opt-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1e293b;
+}
+.sg-recip-opt-sub {
+  font-size: 11.5px;
+  color: #94a3b8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sg-recip-opt-tag {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #0369a1;
+  background: #e0f2fe;
+  border-radius: 99px;
+  padding: 1px 7px;
+  flex-shrink: 0;
+}
+
+.sg-settings-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid #e2e8f0;
+  background: #f8fafc;
+}

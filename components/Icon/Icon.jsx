@@ -149,6 +149,27 @@ import {
   IconArrowsExchange,
   IconSwitchHorizontal,
   IconRefresh,
+  // ── safety / wellbeing / notifications ──
+  IconBell,
+  IconBellRinging,
+  IconMail,
+  IconPhone,
+  IconPhoneCall,
+  IconLifebuoy,
+  IconMoodSad,
+  IconMoodCry,
+  IconMoodHappy,
+  IconMoodNeutral,
+  IconHeartHandshake,
+  IconShieldHeart,
+  IconShieldExclamation,
+  IconExternalLink,
+  IconHeartbeat,
+  IconActivityHeartbeat,
+  IconUserShield,
+  IconMessageReport,
+  IconFirstAidKit,
+  IconAlertHexagon,
 } from '@tabler/icons-react'
 
 // Semantic name → Tabler component. Keys are kebab-case; a few aliases point at
@@ -306,6 +327,29 @@ const REGISTRY = {
   'switch-horizontal': IconSwitchHorizontal,
   swap: IconSwitchHorizontal,
   refresh: IconRefresh,
+
+  // safety / wellbeing / notifications
+  bell: IconBell,
+  'bell-ringing': IconBellRinging,
+  mail: IconMail,
+  email: IconMail,
+  phone: IconPhone,
+  'phone-call': IconPhoneCall,
+  lifebuoy: IconLifebuoy,
+  'mood-sad': IconMoodSad,
+  'mood-cry': IconMoodCry,
+  'mood-happy': IconMoodHappy,
+  'mood-neutral': IconMoodNeutral,
+  'heart-handshake': IconHeartHandshake,
+  'shield-heart': IconShieldHeart,
+  'shield-alert': IconShieldExclamation,
+  'external-link': IconExternalLink,
+  heartbeat: IconHeartbeat,
+  'activity-pulse': IconActivityHeartbeat,
+  'user-shield': IconUserShield,
+  'message-report': IconMessageReport,
+  'first-aid': IconFirstAidKit,
+  'alert-hexagon': IconAlertHexagon,
 }
 
 export const ICON_NAMES = Object.keys(REGISTRY)

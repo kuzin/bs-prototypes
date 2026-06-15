@@ -103,4 +103,12 @@ export const PROTOTYPES = [
     accent: '#14B8A6',
     description: 'Self-contained Benny Book Talk activity badge — chat to earn it.',
   },
+  {
+    id: 'safety-signals',
+    name: 'Safety Signals',
+    section: 'Prototypes',
+    href: '/bs-prototypes/safety-signals/',
+    accent: '#DC2626',
+    description: 'Flag Benny chats for self-harm & safety risk — Critical / Warning / Possible.',
+  },
 ]

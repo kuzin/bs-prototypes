@@ -87,6 +87,20 @@
 
 /* Engagement rating badge → shared <Pill variant="soft" size="sm"> */
 
+/* Safety severity tag (Safety Signals prototype only) */
+.sess-safety-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 99px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
 .sess-flags {
   display: inline-flex;
   align-items: center;

@@ -221,7 +221,6 @@ export function EngagementView({
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
-          showTypeColumn={false}
           showFlagIcons
           onClearFilters={() => {
             setSearch('')
@@ -240,7 +239,6 @@ export function EngagementView({
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
-          showTypeColumn={false}
           showFlagIcons
           onClearFilters={() => {
             setSearch('')

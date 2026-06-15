@@ -1,40 +1,42 @@
 import { AppShell } from '@components/AppShell/AppShell'
 import { Skeleton } from '@components/Primitives/Primitives'
 import { AlertsBanner } from '@components/AlertsBanner/AlertsBanner'
+import { SITE, isSafety, isSafetyOpen } from '../data'
 import '@components/Primitives/Primitives.css'
-import './DashboardView.css'
+import '../../sfr/components/DashboardView.css'
 
-export function DashboardView({ sessions, onGoToSfr }) {
+export function DashboardView({ sessions, onGoToReview }) {
+  const open = sessions.filter(isSafetyOpen)
+  const critical = open.filter((s) => s.safety.severity === 'critical').length
+  const otherSafety = open.length - critical
   const flagged = sessions.filter(
-    (s) => (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0,
+    (s) => !isSafety(s) && (s.type === 'flagged' || s.type === 'both') && s.flags?.length,
   ).length
-  const mixed = sessions.filter((s) => s.engagementRating === 'yellow').length
-  const positive = sessions.filter((s) => s.engagementRating === 'green').length
 
   const alerts = [
-    flagged > 0 && {
-      id: 'flagged',
+    critical > 0 && {
+      id: 'critical',
       level: 'critical',
-      title: `${flagged} flagged ${flagged === 1 ? 'session' : 'sessions'} need review`,
-      description: 'Possible reading-integrity concerns in Book Talks with Benny.',
+      title: `${critical} critical safety ${critical === 1 ? 'signal' : 'signals'}`,
+      description: 'Self-harm, threats, or abuse flagged in Book Talks — review and escalate.',
       action: 'Review',
-      tab: 'sfr',
+      tab: 'safety',
     },
-    mixed > 0 && {
-      id: 'mixed',
+    otherSafety > 0 && {
+      id: 'other',
       level: 'warning',
-      title: `${mixed} ${mixed === 1 ? 'session needs' : 'sessions need'} a closer look`,
-      description: 'Mixed engagement — students who may need a check-in.',
+      title: `${otherSafety} safety ${otherSafety === 1 ? 'signal' : 'signals'} to review`,
+      description: 'Distress, bullying, or low-confidence keyword matches flagged this week.',
       action: 'Review',
-      tab: 'sfr',
+      tab: 'safety',
     },
-    positive > 0 && {
-      id: 'positive',
-      level: 'positive',
-      title: `${positive} students positively engaged`,
-      description: 'Strong Book Talk conversations worth celebrating.',
+    flagged > 0 && {
+      id: 'integrity',
+      level: 'info',
+      title: `${flagged} flagged for reading integrity`,
+      description: 'Possible copied or low-effort responses in Book Talk conversations.',
       action: 'Review',
-      tab: 'sfr',
+      tab: 'flagged',
     },
   ].filter(Boolean)
 
@@ -44,17 +46,15 @@ export function DashboardView({ sessions, onGoToSfr }) {
         <div className="app-shell-header-identity">
           <div
             className="app-shell-header-avatar"
-            style={{ background: 'linear-gradient(135deg, #059669 0%, #16A97A 100%)' }}
+            style={{ background: 'linear-gradient(135deg, #DC2626 0%, #F87171 100%)' }}
           >
-            CR
+            MR
           </div>
           <div className="app-shell-header-text">
             <div className="app-shell-header-name-row">
-              <span className="app-shell-header-name">Good morning, Ms. Reyes</span>
+              <span className="app-shell-header-name">Good morning, {SITE.admin}</span>
             </div>
-            <div className="app-shell-header-meta">
-              Classic and Readers · Thursday, May 21, 2026
-            </div>
+            <div className="app-shell-header-meta">{SITE.school} · Monday, June 15, 2026</div>
           </div>
         </div>
       </div>
@@ -67,7 +67,7 @@ export function DashboardView({ sessions, onGoToSfr }) {
               <span className="dh-alerts-title">Alerts</span>
               <span className="dh-alerts-count">{alerts.length}</span>
             </div>
-            <AlertsBanner alerts={alerts} onNavigate={() => onGoToSfr()} />
+            <AlertsBanner alerts={alerts} onNavigate={(tab) => onGoToReview(tab)} />
           </>
         )}
 
@@ -75,22 +75,22 @@ export function DashboardView({ sessions, onGoToSfr }) {
         <div className="dh-card">
           <div className="dh-card-head">
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <Skeleton width={180} height={16} />
-              <Skeleton width={200} height={12} />
+              <Skeleton width={160} height={16} />
+              <Skeleton width={210} height={12} />
             </div>
             <Skeleton width={64} height={14} />
           </div>
           <div className="dash-activity-list">
-            {Array.from({ length: 5 }).map((_, i) => (
+            {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="dash-activity-row">
                 <Skeleton shape="circle" width={34} height={34} style={{ flexShrink: 0 }} />
                 <div className="dash-activity-info">
-                  <Skeleton width={120} height={13} style={{ marginBottom: 5 }} />
+                  <Skeleton width={130} height={13} style={{ marginBottom: 5 }} />
                   <Skeleton width={90} height={11} />
                 </div>
                 <div className="dash-activity-right">
-                  <Skeleton width={44} height={13} style={{ marginBottom: 5 }} />
-                  <Skeleton width={44} height={11} />
+                  <Skeleton width={48} height={13} style={{ marginBottom: 5 }} />
+                  <Skeleton width={48} height={11} />
                 </div>
               </div>
             ))}

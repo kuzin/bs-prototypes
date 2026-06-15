@@ -87,6 +87,75 @@ const POS_FLAG_CONFIG = {
 
 export { FLAG_TYPE_CONFIG, POS_FLAG_CONFIG }
 
+// ── Safety signals (self-harm / harm-to-others review) ───────────────────────
+// Additive: only the Safety Signals prototype attaches `session.safety`. SFR's
+// own sessions have none, so the Safety column / tags below never render there.
+export const SAFETY_SEVERITY = {
+  critical: {
+    label: 'Critical',
+    sub: 'Imminent risk',
+    color: '#DC2626',
+    bg: '#FEF2F2',
+    border: '#FECACA',
+    icon: 'alert-hexagon',
+    blurb: 'Explicit self-harm, threats to others, or abuse. Escalate now.',
+  },
+  warning: {
+    label: 'Warning',
+    sub: 'Concerning',
+    color: '#D97706',
+    bg: '#FFFBEB',
+    border: '#FDE68A',
+    icon: 'alert-triangle',
+    blurb: 'Distress, hopelessness, or bullying. Review promptly.',
+  },
+  possible: {
+    label: 'Possible',
+    sub: 'Low confidence',
+    color: '#CA8A04',
+    bg: '#FEFCE8',
+    border: '#FEF08A',
+    icon: 'help',
+    blurb: 'A keyword match that may be benign. Logged for awareness.',
+  },
+}
+
+export const SAFETY_CATEGORY = {
+  'self-harm': { label: 'Self-Harm', icon: 'mood-cry' },
+  'harm-others': { label: 'Harm to Others', icon: 'alert-triangle' },
+  abuse: { label: 'Possible Abuse', icon: 'shield-alert' },
+  bullying: { label: 'Bullying', icon: 'message-report' },
+  distress: { label: 'Emotional Distress', icon: 'mood-sad' },
+}
+
+export function safetyStatusMeta(safety) {
+  if (safety.status === 'resolved') {
+    return safety.resolution === 'dismissed'
+      ? { label: 'Dismissed', color: '#64748B', bg: '#F1F5F9' }
+      : { label: 'Resolved', color: '#16A97A', bg: '#F0FDF4' }
+  }
+  return { label: 'Unresolved', color: '#DC2626', bg: '#FEF2F2' }
+}
+
+export function SafetySeverityTag({ severity }) {
+  const cfg = SAFETY_SEVERITY[severity]
+  if (!cfg) return null
+  return (
+    <Tooltip content={`${cfg.label} — ${cfg.sub}. ${cfg.blurb}`}>
+      <span
+        className="sess-safety-tag"
+        style={{
+          color: cfg.color,
+          background: cfg.bg,
+          borderColor: `${cfg.color}40`,
+        }}
+      >
+        {cfg.label}
+      </span>
+    </Tooltip>
+  )
+}
+
 export function FlagIconBadge({ cfg }) {
   return (
     <Tooltip content={cfg.label}>
@@ -324,12 +393,17 @@ export function SessionsTable({
   showFlagIcons = false,
   showPosFlags = true,
   showEngagementColumn = true,
+  showFlagsColumn = true,
+  safetyDetail = false,
   hideStudentColumns = false,
   onClearFilters,
 }) {
   // Show a Source column when sessions carry an origin (Activity Badge book
   // talks vs. post-logging title completions). Off for plain BTWB lists.
   const showSource = sessions.some((s) => s.source)
+  // Show a Safety column when any session carries a safety signal (Safety
+  // Signals prototype). SFR's own sessions have none, so this stays off there.
+  const showSafety = sessions.some((s) => s.safety)
   const columns = [
     {
       key: 'date',
@@ -381,6 +455,37 @@ export function SessionsTable({
         </span>
       ),
     },
+    ...(showSafety
+      ? [
+          {
+            key: 'safety',
+            label: 'Safety',
+            render: (_, row) =>
+              row.safety ? (
+                <SafetySeverityTag severity={row.safety.severity} />
+              ) : (
+                <span className="sess-na">—</span>
+              ),
+          },
+        ]
+      : []),
+    ...(safetyDetail
+      ? [
+          {
+            key: 'safetyStatus',
+            label: 'Status',
+            render: (_, row) => {
+              if (!row.safety) return <span className="sess-na">—</span>
+              const m = safetyStatusMeta(row.safety)
+              return (
+                <Pill color={m.color} variant="soft" size="sm">
+                  {m.label}
+                </Pill>
+              )
+            },
+          },
+        ]
+      : []),
     ...(showSource
       ? [
           {
@@ -424,12 +529,16 @@ export function SessionsTable({
           },
         ]
       : []),
-    {
-      key: 'flags',
-      label: <Icon name="flag" size={13} color="#DC2626" />,
-      render: (_, row) =>
-        showFlagIcons ? <FlagTypeIcons flags={row.flags} /> : <FlagCount flags={row.flags} />,
-    },
+    ...(showFlagsColumn
+      ? [
+          {
+            key: 'flags',
+            label: <Icon name="flag" size={13} color="#DC2626" />,
+            render: (_, row) =>
+              showFlagIcons ? <FlagTypeIcons flags={row.flags} /> : <FlagCount flags={row.flags} />,
+          },
+        ]
+      : []),
     {
       key: 'action',
       label: '',
@@ -462,7 +571,6 @@ export function SessionsTable({
         rows={sessions}
         getRowKey={(r) => r.id}
         onRowClick={onSelectSession}
-        compact
         pageSize={12}
         empty={emptyNode}
       />

@@ -1,0 +1,43 @@
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family:
+    'Nunito',
+    'Trebuchet MS',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background: #f3f4f6;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+p {
+  margin: 0;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* ─── Layout ───────────────────────────────────────────────────────────── */
+.sg-shell {
+  height: 100%;
+}
