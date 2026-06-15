@@ -36,7 +36,7 @@
 .rgv-name {
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 
 .rgv-name--link {
@@ -53,14 +53,14 @@
 
 .rgv-grade {
   font-size: 12px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 .rgv-count {
   margin-left: auto;
   font-size: 12px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   background: var(--c-slate-100);
   padding: 2px 9px;
   border-radius: 99px;
@@ -80,7 +80,7 @@
   gap: 10px;
   font-size: 13px;
   font-style: italic;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   padding: 32px;
   text-align: center;
 }

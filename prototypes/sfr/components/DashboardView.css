@@ -51,7 +51,7 @@
 
 .dash-sfr-cta-desc {
   font-size: 13.5px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   line-height: 1.5;
   margin-bottom: 10px;
 }
@@ -127,7 +127,7 @@
 
 .dash-widget-sub {
   font-size: 12px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 /* ── Activity list ── */
@@ -179,7 +179,7 @@
 
 .dash-activity-book {
   font-size: 12px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -200,5 +200,5 @@
 
 .dash-activity-time {
   font-size: 12px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }

@@ -7,9 +7,9 @@
   box-sizing: border-box;
   font: inherit;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 8px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   cursor: pointer;
   gap: 8px;
   text-align: left;
@@ -32,7 +32,7 @@
 
 .pck-trigger[disabled] {
   background: var(--c-slate-50);
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   cursor: not-allowed;
 }
 
@@ -58,10 +58,10 @@
 }
 
 .pck-placeholder {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 .pck-icon {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   flex-shrink: 0;
 }
 
@@ -84,7 +84,7 @@
 .dpk-content {
   font-family: var(--font-sans);
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 12px;
   box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
   padding: 14px;
@@ -112,7 +112,7 @@
   background: none;
   border-radius: 6px;
   cursor: pointer;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font: inherit;
   transition:
     background 0.1s,
@@ -120,13 +120,13 @@
 }
 .dpk-nav-btn:hover {
   background: var(--c-slate-100);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 
 .dpk-month-label {
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   letter-spacing: 0.01em;
 }
 
@@ -140,7 +140,7 @@
 .dpk-day-hdr {
   font-size: 11px;
   font-weight: 700;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   text-align: center;
   padding: 4px 0 6px;
   text-transform: uppercase;
@@ -158,7 +158,7 @@
   border-radius: 50%;
   font: inherit;
   font-size: 13px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   cursor: pointer;
   transition:
     background 0.08s,
@@ -187,7 +187,7 @@
 }
 .dpk-day--outside:hover {
   background: var(--c-slate-50);
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 /* Year selector row (shown when clicking month label) */
@@ -202,7 +202,7 @@
   font: inherit;
   font-size: 14px;
   font-weight: 700;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-border-strong);
   border-radius: 6px;
   padding: 4px 8px;
   text-align: center;
@@ -223,7 +223,7 @@
 .dpk-clear {
   font: inherit;
   font-size: 12px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   background: none;
   border: none;
   cursor: pointer;
@@ -242,7 +242,7 @@
 .tpk-content {
   font-family: var(--font-sans);
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
   z-index: 200;
@@ -277,7 +277,7 @@
   background: none;
   font: inherit;
   font-size: 13px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   cursor: pointer;
   text-align: left;
   border-radius: 6px;

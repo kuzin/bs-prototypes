@@ -77,7 +77,7 @@ body,
 .ins-h1 {
   font-size: 28px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   letter-spacing: -0.01em;
 }
 .ins-h1-context {
@@ -133,7 +133,7 @@ body,
 }
 .ins-tab:hover {
   background: var(--c-slate-50);
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .ins-tab--active,
 .ins-tab--active:hover {
@@ -172,7 +172,7 @@ body,
 .ins-meter-headline {
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .ins-meter-cost {
   font-size: 12.5px;
@@ -244,7 +244,7 @@ body,
   font-size: 30px;
   font-weight: 800;
   line-height: 1;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   letter-spacing: -0.02em;
 }
 .ins-qmeter-bar {
@@ -325,7 +325,7 @@ body,
   white-space: nowrap;
 }
 .ins-filter--muted {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 .ins-filter-dot {
   flex-shrink: 0;
@@ -463,7 +463,7 @@ button.ins-metric {
 .ins-metric-value {
   font-size: 30px;
   font-weight: 400;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   line-height: 1;
   letter-spacing: -0.01em;
 }
@@ -481,10 +481,10 @@ button.ins-metric {
     var(--c-slate-50) 12px
   );
   border-style: dashed;
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
 }
 .ins-metric--loading .ins-metric-value {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 /* ─── Panels (top books / badges / ages) ───────────────────────────────── */
@@ -536,7 +536,7 @@ button.ins-metric {
     var(--c-slate-50) 12px
   );
   border-style: dashed;
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
 }
 .ins-panel-empty {
   display: flex;
@@ -852,7 +852,7 @@ button.ins-metric {
   font: inherit;
   font-size: 11.5px;
   font-weight: 700;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   letter-spacing: 0.02em;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
@@ -955,7 +955,7 @@ button.ins-metric {
   display: flex;
   flex-direction: column;
   background: #fff;
-  border: 1.5px solid var(--c-slate-200);
+  border: 1.5px solid var(--c-border);
   border-radius: 10px;
   padding: 0;
   overflow: hidden;
@@ -987,7 +987,7 @@ button.ins-metric {
   justify-content: center;
   padding: 14px 14px 12px;
   background: var(--c-slate-50);
-  border-bottom: 1px solid var(--c-slate-200);
+  border-bottom: 1px solid var(--c-border);
   min-height: 70px;
   transition: background 0.14s;
 }
@@ -1133,7 +1133,7 @@ button.ins-metric {
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1191,7 +1191,7 @@ button.ins-metric {
     var(--c-slate-50) 12px
   );
   border-style: dashed;
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
   transition:
     border-color 0.14s,
     color 0.14s,
@@ -1207,7 +1207,7 @@ button.ins-metric {
   gap: 6px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -1222,7 +1222,7 @@ button.ins-metric {
   margin: 16px auto;
   padding: 10px 18px;
   background: #fff;
-  border: 1.5px dashed var(--c-slate-300);
+  border: 1.5px dashed var(--c-border-strong);
   border-radius: 999px;
   font: inherit;
   font-size: 13px;
@@ -1283,7 +1283,7 @@ button.ins-metric {
 }
 .ins-update-text strong {
   font-size: 13.5px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .ins-update-text span {
   font-size: 12.5px;
@@ -1306,7 +1306,7 @@ button.ins-metric {
   gap: 10px;
   padding: 10px 14px;
   background: var(--c-slate-50);
-  border: 1.5px solid var(--c-slate-200);
+  border: 1.5px solid var(--c-border);
   border-radius: 10px;
   transition:
     border-color 0.14s,
@@ -1322,11 +1322,11 @@ button.ins-metric {
   background: transparent;
   font: inherit;
   font-size: 15px;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   outline: none;
 }
 .ins-palette-input input::placeholder {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 .ins-palette-matches {
@@ -1425,7 +1425,7 @@ button.ins-metric {
 .ins-consol-title {
   font-size: 14px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   letter-spacing: -0.01em;
 }
 .ins-spark {
@@ -1459,7 +1459,7 @@ button.ins-metric {
 .ins-consol-metric-num {
   font-size: 24px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   line-height: 1;
 }
 .ins-consol-metric-lbl {
@@ -1501,7 +1501,7 @@ button.ins-metric {
 .ins-ai-text {
   font-size: 17px;
   line-height: 1.55;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   margin-bottom: 14px;
 }
 .ins-ai-stat {

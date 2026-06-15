@@ -27,7 +27,7 @@
 
 .pgb-sub {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -36,7 +36,7 @@
 .pgb-value {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }

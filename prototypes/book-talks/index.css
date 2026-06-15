@@ -33,11 +33,11 @@ button {
 .bt-h1 {
   font-size: 26px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   letter-spacing: -0.01em;
 }
 .bt-muted {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 .bt-panel {
@@ -51,7 +51,7 @@ button {
 .bt-panel-title {
   font-size: 16px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   margin-bottom: 14px;
 }
 
@@ -195,7 +195,7 @@ button {
 .bt-panel-sub {
   margin: 4px 0 0;
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   max-width: 60ch;
   line-height: 1.45;
 }
@@ -219,7 +219,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  border: 1.5px solid var(--c-slate-200);
+  border: 1.5px solid var(--c-border);
   background: #fff;
   color: var(--c-slate-600);
   font-size: 12.5px;
@@ -258,7 +258,7 @@ button {
   height: 44px;
   border-radius: 50%;
   background: #fff;
-  border: 1.5px solid var(--c-slate-200);
+  border: 1.5px solid var(--c-border);
   padding: 2px;
   object-fit: contain;
   flex-shrink: 0;
@@ -282,7 +282,7 @@ button {
 }
 .bt-exchanges-hint {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 
 /* ─── Student reader (challenge page) ───────────────────────────────────── */
@@ -321,7 +321,7 @@ button {
 }
 .bt-reader-dates {
   font-size: 15px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-weight: 600;
   margin-top: 8px;
 }
@@ -352,7 +352,7 @@ button {
 }
 .bt-reader-badgecount {
   font-size: 14px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-weight: 600;
   margin-top: 4px;
 }
@@ -403,7 +403,7 @@ button {
   display: grid;
   place-items: center;
   padding: 4px;
-  border: 3px solid var(--c-slate-200);
+  border: 3px solid var(--c-border);
 }
 .bt-rcard-ring.is-done {
   border-color: #22c55e;
@@ -444,7 +444,7 @@ button {
 }
 .bt-rcard-sub {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-top: 2px;
 }
 .bt-rcard-foot {
@@ -463,7 +463,7 @@ button {
   color: #16a34a;
 }
 .bt-rcard-foot.is-todo {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 .bt-rcard-foot.is-cta {
   color: #0d8a82;
@@ -489,7 +489,7 @@ button {
   border: 0;
   border-radius: 8px;
   background: var(--c-slate-100);
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   display: grid;
   place-items: center;
   cursor: pointer;
@@ -539,7 +539,7 @@ button {
 .bt-detail-name {
   font-size: 21px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   margin-top: 4px;
 }
 .bt-detail-earned {
@@ -549,7 +549,7 @@ button {
   margin-top: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 .bt-detail-desc {
   margin: 14px 0 20px;
@@ -620,12 +620,12 @@ button {
 .bt-stat-value {
   font-size: 28px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   line-height: 1.1;
 }
 .bt-stat-label {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-weight: 600;
 }
 .bt-stat--good .bt-stat-icon {
@@ -642,7 +642,7 @@ button {
 }
 .bt-stat--neutral .bt-stat-icon {
   background: var(--c-slate-200);
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 
 .bt-roster {
@@ -668,7 +668,7 @@ button {
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 .bt-roster-row {
   height: 60px;
@@ -757,7 +757,7 @@ button {
   background: #f59e0b;
 }
 .bt-status--not-started {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 .bt-status--not-started .bt-status-dot {
   background: var(--c-slate-300);
@@ -1011,12 +1011,12 @@ button {
    off-track path). Muted so it reads as the half-hearted option. */
 .bt-chip--weak {
   background: var(--c-slate-100);
-  border-color: var(--c-slate-200);
-  color: var(--c-slate-400);
+  border-color: var(--c-border);
+  color: var(--c-text-subtle);
 }
 .bt-chip--weak:hover {
   background: var(--c-slate-200);
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
 }
 .bt-chat-composer {
   display: flex;
@@ -1025,7 +1025,7 @@ button {
 }
 .bt-chat-input {
   flex: 1;
-  border: 1.5px solid var(--c-slate-200);
+  border: 1.5px solid var(--c-border);
   border-radius: 999px;
   padding: 11px 16px;
   font-size: 14.5px;
@@ -1040,9 +1040,9 @@ button {
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  border: 1.5px solid var(--c-slate-200);
+  border: 1.5px solid var(--c-border);
   background: #fff;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1050,7 +1050,7 @@ button {
   flex-shrink: 0;
 }
 .bt-chat-mic:hover {
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   background: var(--c-slate-50);
 }
 /* Recording — the transcript types straight into the input. */
@@ -1320,11 +1320,11 @@ button {
 .bt-award-title {
   font-size: 19px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .bt-award-name {
   font-size: 14px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-top: 2px;
 }
 /* Lift the celebration modal (+ its backdrop) above the chat modal it pops
@@ -1358,7 +1358,7 @@ button {
 }
 .bt-review-head .bt-chat-close {
   background: var(--c-slate-100);
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 .bt-review-head .bt-chat-close:hover {
   background: var(--c-slate-200);
@@ -1371,11 +1371,11 @@ button {
 .bt-review-name {
   font-size: 17px;
   font-weight: 800;
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .bt-review-sub {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 .bt-review-cols {
   flex: 1;
@@ -1397,7 +1397,7 @@ button {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   margin-bottom: 8px;
 }
 .bt-side-label--pos {
@@ -1408,12 +1408,12 @@ button {
 }
 .bt-side-meta {
   font-size: 12.5px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-top: 6px;
 }
 .bt-side-note {
   font-size: 12px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   margin-top: 7px;
   line-height: 1.4;
 }
@@ -1447,7 +1447,7 @@ button {
 }
 .bt-flag-desc {
   font-size: 12px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   line-height: 1.35;
   margin-top: 1px;
 }
@@ -1463,7 +1463,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
   text-align: center;
 }
 .bt-review-unfinished {

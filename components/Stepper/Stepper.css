@@ -26,7 +26,7 @@
   border: 0;
   padding: 6px 10px;
   cursor: pointer;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font: inherit;
   border-radius: 9px;
   white-space: nowrap;
@@ -61,7 +61,7 @@
     color-mix(in srgb, var(--stepper-accent, var(--c-brand-teal)) 18%, transparent);
 }
 .stepper-item.is-current .stepper-name {
-  color: var(--c-slate-900);
+  color: var(--c-text);
 }
 .stepper-item.is-done .stepper-dot {
   background: var(--stepper-accent, var(--c-brand-teal));

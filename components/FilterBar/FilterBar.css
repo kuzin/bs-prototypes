@@ -30,7 +30,7 @@
 .fltr-lbl {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   margin-bottom: 5px;
   line-height: 1;
 }

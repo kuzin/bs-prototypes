@@ -15,7 +15,7 @@
   font: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   cursor: pointer;
   padding: 10px 14px;
   display: inline-flex;
@@ -67,7 +67,7 @@
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   cursor: pointer;
   padding: 6px 12px;
   border-radius: 7px;

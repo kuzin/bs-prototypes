@@ -64,7 +64,7 @@
 .btn--secondary {
   background: #fff;
   color: var(--c-slate-800);
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
 }
 .btn--secondary:hover:not(:disabled) {
   background: var(--c-slate-50);

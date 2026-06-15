@@ -27,7 +27,7 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
 }
 
 .sdb-legend-swatch {
@@ -41,7 +41,7 @@
 /* ── Tooltip ──────────────────────────────────────────────────────────────── */
 .sdb-tooltip {
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-border);
   border-radius: 10px;
   box-shadow:
     0 1px 2px rgba(15, 23, 42, 0.04),
@@ -84,7 +84,7 @@
 .sdb-tooltip-header {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding-bottom: 8px;
@@ -121,7 +121,7 @@
 .sdb-tooltip-val {
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-slate-900);
+  color: var(--c-text);
   font-variant-numeric: tabular-nums;
 }
 
@@ -142,7 +142,7 @@
   color: var(--c-red-600);
 }
 .sdb-tooltip-delta--neutral {
-  color: var(--c-slate-400);
+  color: var(--c-text-subtle);
 }
 
 .sdb-tooltip-arrow {
@@ -155,11 +155,11 @@
   padding-top: 8px;
   border-top: 1px solid var(--c-slate-100);
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-weight: 500;
 }
 
 .sdb-tooltip-context strong {
-  color: var(--c-slate-900);
+  color: var(--c-text);
   font-weight: 700;
 }

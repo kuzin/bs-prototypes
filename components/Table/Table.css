@@ -15,7 +15,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-size: 12px;
   padding: 14px 12px;
   border-top: 1px solid var(--c-gray-200);
@@ -108,7 +108,7 @@
 .tbl-state {
   padding: 22px 12px;
   text-align: center;
-  color: var(--c-slate-500);
+  color: var(--c-text-muted);
   font-size: 13px;
   font-style: italic;
   background: #fff;
@@ -148,7 +148,7 @@
 }
 .tbl-pg-btn:hover:not(:disabled) {
   background: var(--c-slate-100);
-  border-color: var(--c-slate-300);
+  border-color: var(--c-border-strong);
 }
 .tbl-pg-btn:disabled {
   opacity: 0.35;
@@ -221,7 +221,7 @@
     display: none;
   }
   .tbl--collapse .tbl-row {
-    border-bottom: 1px solid var(--c-slate-200);
+    border-bottom: 1px solid var(--c-border);
     padding: 10px 12px;
   }
   .tbl--collapse .tbl-row:last-child {
@@ -242,7 +242,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--c-slate-500);
+    color: var(--c-text-muted);
     margin-bottom: 2px;
   }
   /* When there's no label (e.g. the action column), drop the placeholder
