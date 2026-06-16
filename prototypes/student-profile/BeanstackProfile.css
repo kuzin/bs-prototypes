@@ -446,19 +446,6 @@
   background: #059669;
 }
 
-/* ─── Section tag (chip with icon in Recommended Actions) ────────────────── */
-.bp-section-tag {
-  background: var(--tag-bg);
-  color: var(--tag-color);
-  font-weight: 800;
-  font-size: 13px;
-  border-radius: 100px;
-  padding: 2px 9px;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-}
-
 /* ─── Action footer (suggested action at bottom of detail cards) ──────────── */
 .bp-action-footer-item {
   padding-top: 10px;
@@ -863,42 +850,6 @@
   font-family: inherit;
   padding: 0;
   margin-bottom: 14px;
-}
-
-.bp-section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.bp-section-header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.bp-section-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--section-bg);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.bp-section-meta {
-  font-size: 13px;
-  color: #707070;
-  font-weight: 600;
-}
-
-.bp-section-title {
-  font-size: 20px;
-  font-weight: 800;
-  color: #424242;
 }
 
 /* ─── Motivation detail ──────────────────────────────────────────────────── */
@@ -1322,20 +1273,6 @@
 
 .bp-streak-pb-label strong {
   color: #424242;
-}
-
-.bp-streak-pb-track {
-  height: 8px;
-  background: #ebebeb;
-  border-radius: 100px;
-  overflow: hidden;
-  margin-bottom: 6px;
-}
-
-.bp-streak-pb-fill {
-  height: 100%;
-  border-radius: 100px;
-  transition: width 0.5s ease;
 }
 
 .bp-streak-pb-sub {
@@ -2288,85 +2225,7 @@
   color: var(--c-red-600);
 }
 
-/* ─── Sessions table (Integrity detail) ──────────────────────────────────────── */
-.bp-sessions-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 18px;
-  border-bottom: 1.5px solid #eaeaea;
-  background: #fafafa;
-  border-radius: 12px 12px 0 0;
-}
-
-.bp-sessions-col {
-  font-size: 13px;
-  font-weight: 700;
-  color: #acacac;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.bp-sessions-col--date {
-  width: 76px;
-  flex-shrink: 0;
-}
-.bp-sessions-col--title {
-  flex: 1;
-  min-width: 0;
-}
-.bp-sessions-col--flags {
-  width: 90px;
-  flex-shrink: 0;
-  text-align: right;
-}
-
-.bp-session-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 11px 18px;
-  border-bottom: 1px solid #f2f2f2;
-  transition: background 0.1s;
-}
-
-.bp-session-row:last-child {
-  border-bottom: none;
-  border-radius: 0 0 12px 12px;
-}
-.bp-session-row:hover {
-  background: #fafafa;
-}
-.bp-session-row--clickable {
-  cursor: pointer;
-}
-.bp-session-row--clickable:focus-visible {
-  outline: 2px solid #1a6dd5;
-  outline-offset: -2px;
-}
-.bp-session-row--clickable .bp-session-title {
-  color: #1a6dd5;
-}
-
-.bp-session-date {
-  font-size: 13px;
-  font-weight: 600;
-  color: #707070;
-  width: 76px;
-  flex-shrink: 0;
-}
-
-.bp-session-title {
-  flex: 1;
-  min-width: 0;
-  font-size: 13px;
-  font-weight: 600;
-  color: #424242;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+/* ─── Session flag chips (Integrity detail) ──────────────────────────────────── */
 .bp-session-flags {
   display: flex;
   gap: 5px;
@@ -2429,63 +2288,6 @@
 .bp-nav-item--compact {
   min-height: 36px;
   padding: 6px 0;
-}
-
-/* ─── Dropdown menu ──────────────────────────────────────────────────────── */
-.bp-dropdown-anchor {
-  position: relative;
-}
-
-.bp-dropdown-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-}
-
-.bp-dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  background: #fff;
-  border-radius: 12px;
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.16),
-    0 2px 8px rgba(0, 0, 0, 0.08);
-  min-width: 190px;
-  overflow: hidden;
-  z-index: 101;
-  padding: 6px 0;
-}
-
-.bp-dropdown-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 18px;
-  background: none;
-  border: none;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  color: #2d2d2d;
-  cursor: pointer;
-  text-align: left;
-  transition: background 0.1s;
-}
-
-.bp-dropdown-item:hover {
-  background: #f5f7fa;
-}
-
-.bp-dropdown-item-icon {
-  font-size: 16px;
-}
-
-.bp-dropdown-divider {
-  height: 1px;
-  background: #f0f0f0;
-  margin: 4px 0;
 }
 
 /* ─── Admin mockup styles ────────────────────────────────────────────────── */
@@ -2790,36 +2592,8 @@
   cursor: pointer;
 }
 
-.bp-adm-tabs {
-  display: flex;
-  gap: 24px;
-  width: 100%;
-  border-bottom: 1.5px solid var(--c-gray-200);
+.bp-adm-tabs-wrap {
   margin-bottom: 16px;
-}
-
-.bp-adm-tab {
-  font-size: 14px;
-  font-weight: 700;
-  color: #6b7280;
-  padding: 4px 0 11px;
-  cursor: pointer;
-  position: relative;
-}
-
-.bp-adm-tab--active {
-  color: #111;
-}
-
-.bp-adm-tab--active::after {
-  content: '';
-  position: absolute;
-  bottom: -1.5px;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--c-blue-700);
-  border-radius: 2px;
 }
 
 .bp-adm-filter-wrap {
