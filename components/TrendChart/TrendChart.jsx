@@ -76,6 +76,8 @@ export function TrendChart({
   series,
   tooltipFormatter,
   tooltipContent, // ({ payload }) => JSX — wins over tooltipFormatter when set
+  sliceTooltip, // line/area only: ({ slice }) => JSX — raw Nivo slice escape hatch for rich
+  // tooltips (e.g. the shared <SliceTooltip> with MoM deltas); wins over tooltipContent/Formatter
   barCategoryGap, // accepted for API compatibility (unused by Nivo grouping)
   barGap, // accepted for API compatibility (unused by Nivo grouping)
   xPadding, // accepted for API compatibility (Nivo handles edge insets via band padding)
@@ -320,28 +322,31 @@ export function TrendChart({
         layers={layers}
         animate={false}
         enableSlices="x"
-        sliceTooltip={({ slice }) => {
-          const header = slice.points[0]?.data?.x
-          if (tooltipContent) {
-            const payload = slice.points.map((p) => {
+        sliceTooltip={
+          sliceTooltip ??
+          (({ slice }) => {
+            const header = slice.points[0]?.data?.x
+            if (tooltipContent) {
+              const payload = slice.points.map((p) => {
+                const cfg = cfgByName.get(p.serieId)
+                return {
+                  payload: rowByX.get(p.data.x),
+                  value: p.data.y,
+                  name: p.serieId,
+                  color: p.serieColor,
+                  dataKey: cfg?.key,
+                }
+              })
+              return tooltipContent({ payload, label: header })
+            }
+            const rows = slice.points.map((p) => {
               const cfg = cfgByName.get(p.serieId)
-              return {
-                payload: rowByX.get(p.data.x),
-                value: p.data.y,
-                name: p.serieId,
-                color: p.serieColor,
-                dataKey: cfg?.key,
-              }
+              const [v, n] = applyFmt(p.data.y, p.serieId, cfg?.isRight)
+              return { name: n, value: v, color: p.serieColor }
             })
-            return tooltipContent({ payload, label: header })
-          }
-          const rows = slice.points.map((p) => {
-            const cfg = cfgByName.get(p.serieId)
-            const [v, n] = applyFmt(p.data.y, p.serieId, cfg?.isRight)
-            return { name: n, value: v, color: p.serieColor }
+            return <TcTooltip header={header} rows={rows} accent={accent} />
           })
-          return <TcTooltip header={header} rows={rows} accent={accent} />
-        }}
+        }
       />
     </div>
   )

@@ -1,4 +1,3 @@
-import { ResponsiveLine } from '@nivo/line'
 import {
   SCHOOLS,
   SCHOOL_STATS,
@@ -11,14 +10,7 @@ import {
   LEXILE_BY_GRADE,
 } from '../data'
 import { Hero } from '@components/Hero/Hero'
-import {
-  NIVO_THEME,
-  LINE_MARGIN,
-  AXIS_BOTTOM,
-  AXIS_LEFT,
-  SliceTooltip,
-  ChartLegend,
-} from '@components/charts/charts'
+import { SliceTooltip, ChartLegend } from '@components/charts/charts'
 import { StatCard, ChartCard } from '@components/Cards/Cards'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { BarList } from '@components/BarList/BarList'
@@ -117,33 +109,6 @@ export function SchoolAnalytics({ schoolId }) {
   const gradeNames = gradeIdxs.map((i) => LEXILE_BY_GRADE[i].grade.replace(/(st|nd|rd|th)/, ''))
   const schoolGrades = GRADE_PERFORMANCE.filter((g) => gradeNames.includes(g.grade))
 
-  const rmiNivo = [
-    { id: shortName, color: school.color, data: rmiData.map((d) => ({ x: d.month, y: d.school })) },
-    {
-      id: 'District avg',
-      color: '#CBD5E1',
-      data: rmiData.map((d) => ({ x: d.month, y: d.district })),
-    },
-  ]
-
-  const roiNivo = [
-    {
-      id: 'Engagement %',
-      color: school.color,
-      data: ROI_TRENDS.map((d) => ({ x: d.month, y: d.engagement })),
-    },
-    {
-      id: 'Attendance %',
-      color: '#16A97A',
-      data: ROI_TRENDS.map((d) => ({ x: d.month, y: d.attendance })),
-    },
-    {
-      id: 'Incidents',
-      color: '#E8866A',
-      data: ROI_TRENDS.map((d) => ({ x: d.month, y: d.incidents })),
-    },
-  ]
-
   return (
     <div className="an-root">
       <Hero
@@ -232,32 +197,27 @@ export function SchoolAnalytics({ schoolId }) {
             />
           }
         >
-          <div style={{ flex: 1, minHeight: 240 }}>
-            <ResponsiveLine
-              data={rmiNivo}
-              theme={NIVO_THEME}
-              margin={LINE_MARGIN}
-              xScale={{ type: 'point' }}
-              yScale={{ type: 'linear', min: 55, max: 90 }}
-              curve="monotoneX"
-              colors={(d) => d.color}
-              lineWidth={2.5}
-              enablePoints={false}
-              enableGridX={false}
-              axisBottom={AXIS_BOTTOM}
-              axisLeft={{ ...AXIS_LEFT, tickValues: [60, 70, 80, 90] }}
-              enableSlices="x"
-              sliceTooltip={({ slice }) => (
-                <SliceTooltip
-                  slice={slice}
-                  accent={ANALYTICS_COLOR}
-                  allData={rmiData}
-                  seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
-                  formatDelta={(d) => `${d > 0 ? '+' : ''}${d} pts`}
-                />
-              )}
-            />
-          </div>
+          <TrendChart
+            type="line"
+            data={rmiData}
+            xKey="month"
+            yDomain={[55, 90]}
+            yTicks={[60, 70, 80, 90]}
+            height="md"
+            series={[
+              { key: 'school', name: shortName, color: school.color },
+              { key: 'district', name: 'District avg', color: '#CBD5E1', dashed: true },
+            ]}
+            sliceTooltip={({ slice }) => (
+              <SliceTooltip
+                slice={slice}
+                accent={ANALYTICS_COLOR}
+                allData={rmiData}
+                seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
+                formatDelta={(d) => `${d > 0 ? '+' : ''}${d} pts`}
+              />
+            )}
+          />
         </ChartCard>
 
         <ChartCard
@@ -307,36 +267,31 @@ export function SchoolAnalytics({ schoolId }) {
             />
           }
         >
-          <div style={{ flex: 1, minHeight: 240 }}>
-            <ResponsiveLine
-              data={roiNivo}
-              theme={NIVO_THEME}
-              margin={LINE_MARGIN}
-              xScale={{ type: 'point' }}
-              yScale={{ type: 'linear', min: 20, max: 100 }}
-              curve="monotoneX"
-              colors={(d) => d.color}
-              lineWidth={2.2}
-              enablePoints={false}
-              enableGridX={false}
-              axisBottom={AXIS_BOTTOM}
-              axisLeft={AXIS_LEFT}
-              enableSlices="x"
-              sliceTooltip={({ slice }) => (
-                <SliceTooltip
-                  slice={slice}
-                  accent={ANALYTICS_COLOR}
-                  allData={ROI_TRENDS}
-                  seriesMap={{
-                    'Engagement %': 'engagement',
-                    'Attendance %': 'attendance',
-                    Incidents: 'incidents',
-                  }}
-                  inverseSeries={['Incidents']}
-                />
-              )}
-            />
-          </div>
+          <TrendChart
+            type="line"
+            data={ROI_TRENDS}
+            xKey="month"
+            yDomain={[20, 100]}
+            height="md"
+            series={[
+              { key: 'engagement', name: 'Engagement %', color: school.color },
+              { key: 'attendance', name: 'Attendance %', color: '#16A97A', dashed: true },
+              { key: 'incidents', name: 'Incidents', color: '#E8866A', dashed: true },
+            ]}
+            sliceTooltip={({ slice }) => (
+              <SliceTooltip
+                slice={slice}
+                accent={ANALYTICS_COLOR}
+                allData={ROI_TRENDS}
+                seriesMap={{
+                  'Engagement %': 'engagement',
+                  'Attendance %': 'attendance',
+                  Incidents: 'incidents',
+                }}
+                inverseSeries={['Incidents']}
+              />
+            )}
+          />
         </ChartCard>
       </div>
     </div>

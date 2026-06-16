@@ -14,8 +14,9 @@ import { ChartLegend } from '@components/charts/charts'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 
-const ACCENT = '#16A97A'
-const HAB_ICON = SECTIONS.find((s) => s.key === 'habits')?.icon
+const HABITS = SECTIONS.find((s) => s.key === 'habits')
+const ACCENT = HABITS.color
+const HAB_ICON = HABITS.icon
 
 const DISTRICT_AVG_SESSION = 20
 

@@ -1,4 +1,3 @@
-import { ResponsiveLine } from '@nivo/line'
 import {
   SCHOOLS,
   SCHOOL_STATS,
@@ -10,21 +9,15 @@ import {
 } from '../data'
 import { Hero } from '@components/Hero/Hero'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
-import {
-  NIVO_THEME,
-  LINE_MARGIN,
-  AXIS_BOTTOM,
-  AXIS_LEFT,
-  SliceTooltip,
-  ChartLegend,
-} from '@components/charts/charts'
+import { SliceTooltip, ChartLegend } from '@components/charts/charts'
 import { StatCard, ChartCard } from '@components/Cards/Cards'
 import { BarList } from '@components/BarList/BarList'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import './SchoolHabits.css'
 
-const HABITS_COLOR = '#16A97A'
-const HABITS_ICON = SECTIONS.find((s) => s.key === 'habits')?.icon
+const HABITS = SECTIONS.find((s) => s.key === 'habits')
+const HABITS_COLOR = HABITS.color
+const HABITS_ICON = HABITS.icon
 
 export function SchoolHabits({ schoolId }) {
   const school = SCHOOLS.find((s) => s.id === schoolId)
@@ -46,33 +39,6 @@ export function SchoolHabits({ schoolId }) {
         .reduce((a, [, v]) => a + v, 0) / 6,
     ),
   }))
-
-  const sessionNivo = [
-    {
-      id: shortName,
-      color: school.color,
-      data: sessionData.map((d) => ({ x: d.month, y: d.school })),
-    },
-    {
-      id: 'District avg',
-      color: '#CBD5E1',
-      data: sessionData.map((d) => ({ x: d.month, y: d.district })),
-    },
-  ]
-
-  const velocityNivo = [
-    {
-      id: 'Elementary',
-      color: '#0DA7BC',
-      data: VELOCITY_TRENDS.map((d) => ({ x: d.month, y: d.elementary })),
-    },
-    {
-      id: 'Middle',
-      color: '#16A97A',
-      data: VELOCITY_TRENDS.map((d) => ({ x: d.month, y: d.middle })),
-    },
-    { id: 'High', color: '#C084FC', data: VELOCITY_TRENDS.map((d) => ({ x: d.month, y: d.high })) },
-  ]
 
   return (
     <div className="mot-root">
@@ -108,60 +74,49 @@ export function SchoolHabits({ schoolId }) {
             />
           }
         >
-          <div style={{ flex: 1, minHeight: 240 }}>
-            <ResponsiveLine
-              data={sessionNivo}
-              theme={NIVO_THEME}
-              margin={LINE_MARGIN}
-              xScale={{ type: 'point' }}
-              yScale={{ type: 'linear', min: 6, max: 32 }}
-              curve="monotoneX"
-              colors={(d) => d.color}
-              lineWidth={2.5}
-              enablePoints={false}
-              enableArea
-              areaOpacity={0.08}
-              enableGridX={false}
-              axisBottom={AXIS_BOTTOM}
-              axisLeft={{ ...AXIS_LEFT, format: (v) => `${v}m`, tickValues: [10, 20, 30] }}
-              defs={[
-                {
-                  id: 'sessGrad',
-                  type: 'linearGradient',
-                  colors: [
-                    { offset: 0, color: school.color, opacity: 0.22 },
-                    { offset: 100, color: school.color, opacity: 0 },
-                  ],
-                },
-              ]}
-              fill={[{ match: { id: shortName }, id: 'sessGrad' }]}
-              enableSlices="x"
-              sliceTooltip={({ slice }) => (
-                <SliceTooltip
-                  slice={slice}
-                  accent={HABITS_COLOR}
-                  allData={sessionData}
-                  seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
-                  formatY={(v) => `${v} min`}
-                  formatDelta={(d) => `${d > 0 ? '+' : ''}${d} min`}
-                  context={(s) => {
-                    const my = s.points.find((p) => p.serieId === shortName)?.data.y
-                    const dist = s.points.find((p) => p.serieId === 'District avg')?.data.y
-                    if (my == null || dist == null) return null
-                    const gap = my - dist
-                    return gap === 0 ? (
-                      <>On pace with district</>
-                    ) : (
-                      <>
-                        <strong>{shortName}</strong> {gap > 0 ? '+' : ''}
-                        {gap} min {gap > 0 ? 'above' : 'below'} district
-                      </>
-                    )
-                  }}
-                />
-              )}
-            />
-          </div>
+          <TrendChart
+            type="area"
+            data={sessionData}
+            xKey="month"
+            yDomain={[6, 32]}
+            yUnit="m"
+            yTicks={[10, 20, 30]}
+            height="md"
+            series={[
+              { key: 'school', name: shortName, color: school.color, fillOpacity: 0.22 },
+              {
+                key: 'district',
+                name: 'District avg',
+                color: '#CBD5E1',
+                dashed: true,
+                fillOpacity: 0,
+              },
+            ]}
+            sliceTooltip={({ slice }) => (
+              <SliceTooltip
+                slice={slice}
+                accent={HABITS_COLOR}
+                allData={sessionData}
+                seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
+                formatY={(v) => `${v} min`}
+                formatDelta={(d) => `${d > 0 ? '+' : ''}${d} min`}
+                context={(s) => {
+                  const my = s.points.find((p) => p.serieId === shortName)?.data.y
+                  const dist = s.points.find((p) => p.serieId === 'District avg')?.data.y
+                  if (my == null || dist == null) return null
+                  const gap = my - dist
+                  return gap === 0 ? (
+                    <>On pace with district</>
+                  ) : (
+                    <>
+                      <strong>{shortName}</strong> {gap > 0 ? '+' : ''}
+                      {gap} min {gap > 0 ? 'above' : 'below'} district
+                    </>
+                  )
+                }}
+              />
+            )}
+          />
         </ChartCard>
 
         <ChartCard
@@ -210,36 +165,30 @@ export function SchoolHabits({ schoolId }) {
             />
           }
         >
-          <div style={{ flex: 1, minHeight: 240 }}>
-            <ResponsiveLine
-              data={velocityNivo}
-              theme={NIVO_THEME}
-              margin={{ ...LINE_MARGIN, left: 52 }}
-              xScale={{ type: 'point' }}
-              yScale={{ type: 'linear', min: 1, max: 5 }}
-              curve="monotoneX"
-              colors={(d) => d.color}
-              lineWidth={2}
-              enablePoints={false}
-              enableArea
-              areaBaselineValue={1}
-              areaOpacity={0.12}
-              enableGridX={false}
-              axisBottom={AXIS_BOTTOM}
-              axisLeft={{ ...AXIS_LEFT, format: (v) => `${v} bks`, tickValues: [1, 2, 3, 4, 5] }}
-              enableSlices="x"
-              sliceTooltip={({ slice }) => (
-                <SliceTooltip
-                  slice={slice}
-                  accent={HABITS_COLOR}
-                  allData={VELOCITY_TRENDS}
-                  seriesMap={{ Elementary: 'elementary', Middle: 'middle', High: 'high' }}
-                  formatY={(v) => `${v.toFixed(1)} bks/mo`}
-                  formatDelta={(d) => `${d > 0 ? '+' : ''}${d.toFixed(1)}`}
-                />
-              )}
-            />
-          </div>
+          <TrendChart
+            type="area"
+            data={VELOCITY_TRENDS}
+            xKey="month"
+            yDomain={[1, 5]}
+            yUnit=" bks"
+            yTicks={[1, 2, 3, 4, 5]}
+            height="md"
+            series={[
+              { key: 'elementary', name: 'Elementary', color: '#0DA7BC', fillOpacity: 0.12 },
+              { key: 'middle', name: 'Middle', color: '#16A97A', fillOpacity: 0.12 },
+              { key: 'high', name: 'High', color: '#C084FC', fillOpacity: 0.12 },
+            ]}
+            sliceTooltip={({ slice }) => (
+              <SliceTooltip
+                slice={slice}
+                accent={HABITS_COLOR}
+                allData={VELOCITY_TRENDS}
+                seriesMap={{ Elementary: 'elementary', Middle: 'middle', High: 'high' }}
+                formatY={(v) => `${v.toFixed(1)} bks/mo`}
+                formatDelta={(d) => `${d > 0 ? '+' : ''}${d.toFixed(1)}`}
+              />
+            )}
+          />
         </ChartCard>
 
         <ChartCard

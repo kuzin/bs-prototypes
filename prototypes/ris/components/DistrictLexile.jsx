@@ -1,5 +1,5 @@
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
-import { LEXILE_DATA, LEXILE_BY_GRADE, SCHOOLS } from '../data'
+import { LEXILE_DATA, LEXILE_BY_GRADE, SCHOOLS, signedL } from '../data'
 import { Hero } from '@components/Hero/Hero'
 import { StatCard, ChartCard, CardNote } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
@@ -9,14 +9,13 @@ import { ChartLegend, NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/cha
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 
-const ACCENT = '#7C3AED'
+const SKILLS = SECTIONS.find((s) => s.key === 'skills')
+const ACCENT = SKILLS.color
 const ABOVE_COLOR = '#0DA7BC'
 const BELOW_COLOR = '#E8866A'
 const GROWTH_COLOR = '#16A97A'
 const DECLINE_COLOR = '#E8866A'
-const SKL_ICON = SECTIONS.find((s) => s.key === 'skills')?.icon
-
-const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
+const SKL_ICON = SKILLS.icon
 
 const STUCK_COLUMNS = [
   { key: 'school', label: 'School', render: (_, r) => <SchoolCell id={r.id} name={r.school} /> },

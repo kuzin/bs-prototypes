@@ -1,4 +1,3 @@
-import { ResponsiveLine } from '@nivo/line'
 import {
   SCHOOLS,
   SCHOOL_HEALTH,
@@ -11,14 +10,7 @@ import { StudentsToWatch } from './StudentsToWatch'
 import { Hero } from '@components/Hero/Hero'
 import { AlertsBanner } from '@components/AlertsBanner/AlertsBanner'
 import { ReadingHealth, SECTIONS } from '@components/ReadingHealth/ReadingHealth'
-import {
-  NIVO_THEME,
-  LINE_MARGIN,
-  AXIS_BOTTOM,
-  AXIS_LEFT,
-  SliceTooltip,
-  ChartLegend,
-} from '@components/charts/charts'
+import { SliceTooltip, ChartLegend } from '@components/charts/charts'
 import { ChartCard } from '@components/Cards/Cards'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import './SchoolDashboard.css'
@@ -91,38 +83,6 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
     lexileByGrade.reduce((s, d) => s + d.expected, 0) / lexileByGrade.length,
   )
 
-  // ── Nivo data shapes ────────────────────────────────────────────────────────
-  const rmiNivo = [
-    { id: shortName, color: school.color, data: rmiData.map((d) => ({ x: d.month, y: d.school })) },
-    {
-      id: 'District avg',
-      color: '#CBD5E1',
-      data: rmiData.map((d) => ({ x: d.month, y: d.district })),
-    },
-  ]
-
-  const integrityNivo = [
-    {
-      id: 'Book Talk completion',
-      color: '#1D4ED8',
-      data: integrityData.map((d) => ({ x: d.month, y: d.completionRate })),
-    },
-    {
-      id: 'Flag rate',
-      color: '#E8866A',
-      data: integrityData.map((d) => ({ x: d.month, y: d.flagRate })),
-    },
-  ]
-
-  const goalsNivo = [
-    { id: shortName, color: '#16A97A', data: goalsData.map((d) => ({ x: d.month, y: d.school })) },
-    {
-      id: 'District avg',
-      color: '#CBD5E1',
-      data: goalsData.map((d) => ({ x: d.month, y: d.district })),
-    },
-  ]
-
   return (
     <div className="sdb">
       <Hero
@@ -152,33 +112,23 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             />
           }
         >
-          <ResponsiveLine
-            data={rmiNivo}
-            theme={NIVO_THEME}
-            margin={LINE_MARGIN}
-            xScale={{ type: 'point' }}
-            yScale={{ type: 'linear', min: 55, max: 90 }}
-            curve="monotoneX"
-            colors={(d) => d.color}
-            lineWidth={2.5}
-            enablePoints={false}
-            enableArea
-            areaOpacity={0.08}
-            enableGridX={false}
-            axisBottom={AXIS_BOTTOM}
-            axisLeft={{ ...AXIS_LEFT, tickValues: [60, 70, 80, 90] }}
-            defs={[
+          <TrendChart
+            type="area"
+            data={rmiData}
+            xKey="month"
+            yDomain={[55, 90]}
+            yTicks={[60, 70, 80, 90]}
+            height="sm"
+            series={[
+              { key: 'school', name: shortName, color: school.color, fillOpacity: 0.25 },
               {
-                id: 'motGrad',
-                type: 'linearGradient',
-                colors: [
-                  { offset: 0, color: school.color, opacity: 0.25 },
-                  { offset: 100, color: school.color, opacity: 0 },
-                ],
+                key: 'district',
+                name: 'District avg',
+                color: '#CBD5E1',
+                dashed: true,
+                fillOpacity: 0,
               },
             ]}
-            fill={[{ match: { id: shortName }, id: 'motGrad' }]}
-            enableSlices="x"
             sliceTooltip={({ slice }) => (
               <SliceTooltip
                 slice={slice}
@@ -218,20 +168,18 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             />
           }
         >
-          <ResponsiveLine
-            data={integrityNivo}
-            theme={NIVO_THEME}
-            margin={LINE_MARGIN}
-            xScale={{ type: 'point' }}
-            yScale={{ type: 'linear', min: 0, max: 100 }}
-            curve="monotoneX"
-            colors={(d) => d.color}
-            lineWidth={2.5}
-            enablePoints={false}
-            enableGridX={false}
-            axisBottom={AXIS_BOTTOM}
-            axisLeft={{ ...AXIS_LEFT, format: (v) => `${v}%`, tickValues: [0, 25, 50, 75, 100] }}
-            enableSlices="x"
+          <TrendChart
+            type="line"
+            data={integrityData}
+            xKey="month"
+            yDomain={[0, 100]}
+            yUnit="%"
+            yTicks={[0, 25, 50, 75, 100]}
+            height="sm"
+            series={[
+              { key: 'completionRate', name: 'Book Talk completion', color: '#1D4ED8' },
+              { key: 'flagRate', name: 'Flag rate', color: '#E8866A', dashed: true },
+            ]}
             sliceTooltip={({ slice }) => (
               <SliceTooltip
                 slice={slice}
@@ -259,33 +207,24 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             />
           }
         >
-          <ResponsiveLine
-            data={goalsNivo}
-            theme={NIVO_THEME}
-            margin={LINE_MARGIN}
-            xScale={{ type: 'point' }}
-            yScale={{ type: 'linear', min: 30, max: 100 }}
-            curve="monotoneX"
-            colors={(d) => d.color}
-            lineWidth={2.5}
-            enablePoints={false}
-            enableArea
-            areaOpacity={0.08}
-            enableGridX={false}
-            axisBottom={AXIS_BOTTOM}
-            axisLeft={{ ...AXIS_LEFT, format: (v) => `${v}%`, tickValues: [40, 60, 80, 100] }}
-            defs={[
+          <TrendChart
+            type="area"
+            data={goalsData}
+            xKey="month"
+            yDomain={[30, 100]}
+            yUnit="%"
+            yTicks={[40, 60, 80, 100]}
+            height="sm"
+            series={[
+              { key: 'school', name: shortName, color: '#16A97A', fillOpacity: 0.25 },
               {
-                id: 'habGrad',
-                type: 'linearGradient',
-                colors: [
-                  { offset: 0, color: '#16A97A', opacity: 0.25 },
-                  { offset: 100, color: '#16A97A', opacity: 0 },
-                ],
+                key: 'district',
+                name: 'District avg',
+                color: '#CBD5E1',
+                dashed: true,
+                fillOpacity: 0,
               },
             ]}
-            fill={[{ match: { id: shortName }, id: 'habGrad' }]}
-            enableSlices="x"
             sliceTooltip={({ slice }) => (
               <SliceTooltip
                 slice={slice}
