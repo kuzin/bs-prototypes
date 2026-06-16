@@ -1091,6 +1091,28 @@ button {
 }
 
 /* ─── Text-to-speech (Benny reads aloud) ────────────────────────────────── */
+/* In-header voice picker — audition Benny's hosted (ElevenLabs) voices on the
+   fly; picking one re-speaks his last line so you hear it immediately. */
+.bt-chat-voice {
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  padding: 5px 7px;
+  max-width: 116px;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+.bt-chat-voice:hover {
+  background: rgba(255, 255, 255, 0.26);
+}
+.bt-chat-voice option {
+  color: #0c3a39; /* readable in the native (light) dropdown menu */
+}
+
 /* Header mute/unmute toggle. */
 .bt-tts-toggle {
   border: 0;
