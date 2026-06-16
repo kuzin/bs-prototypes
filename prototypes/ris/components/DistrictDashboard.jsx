@@ -13,6 +13,7 @@ import {
   FLAGGED_LOGS,
   LEXILE_WEEK,
   SCHOOLS_TO_WATCH,
+  signedL,
 } from '../data'
 import { Icon } from '@components/Icon/Icon'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
@@ -37,8 +38,6 @@ const SEC_TEXT = {
   habits: '#15803D',
   skills: '#7C3AED',
 }
-
-const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
 
 // ── Top summary tiles: one workable metric per area (no 1–100 score) ────────
 const SUMMARY_TILES = [

@@ -23,6 +23,7 @@ import { insightsSections } from './sections/insights'
 import { challengeCreatorSections } from './sections/challenge-creator'
 import { bookTalksSections } from './sections/book-talks'
 import { studentProfileSections } from './sections/student-profile'
+import { risSections } from './sections/ris'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -30,6 +31,8 @@ import '../ris/index.css'
 // Bring in CSS for the components so they render properly here
 import '@components/Cards/Cards.css'
 import '../ris/components/SchoolDashboard.css'
+import '../ris/components/SchoolCell.css'
+import '../ris/components/StudentsToWatch.css'
 import '@components/ReadingHealth/ReadingHealth.css'
 import '@components/AlertsBanner/AlertsBanner.css'
 import '@components/Hero/Hero.css'
@@ -187,6 +190,14 @@ export const GROUPS = [
     color: '#E8866A',
     icon: <Icon name="user" size={22} />,
   },
+  {
+    id: 'ris',
+    kind: 'prototype',
+    title: 'RIS',
+    desc: 'Reusable pieces from the Reading Information System (School + District) — the school-identity cell and the dashboard students-to-watch list.',
+    color: '#1D4ED8',
+    icon: <Icon name="report-analytics" size={22} />,
+  },
 ]
 
 export const SECTIONS = [
@@ -203,4 +214,5 @@ export const SECTIONS = [
   ...challengeCreatorSections,
   ...bookTalksSections,
   ...studentProfileSections,
+  ...risSections,
 ]

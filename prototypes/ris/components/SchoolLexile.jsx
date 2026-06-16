@@ -6,9 +6,10 @@ import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT, ChartLegend } from '@components/cha
 import { StatCard, ChartCard } from '@components/Cards/Cards'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 
-const SKILLS_COLOR = '#7C3AED'
+const SKILLS = SECTIONS.find((s) => s.key === 'skills')
+const SKILLS_COLOR = SKILLS.color
 const EXPECTED_GROWTH = 65
-const SKILLS_ICON = SECTIONS.find((s) => s.key === 'skills')?.icon
+const SKILLS_ICON = SKILLS.icon
 
 export function SchoolLexile({ schoolId }) {
   const school = SCHOOLS.find((s) => s.id === schoolId)

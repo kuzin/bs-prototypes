@@ -9,9 +9,10 @@ import { ChartLegend } from '@components/charts/charts'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 
-const ACCENT = '#1D4ED8'
+const INTEGRITY = SECTIONS.find((s) => s.key === 'integrity')
+const ACCENT = INTEGRITY.color
 const FLAG_COLOR = '#E8866A'
-const INT_ICON = SECTIONS.find((s) => s.key === 'integrity')?.icon
+const INT_ICON = INTEGRITY.icon
 
 function schoolColor(id) {
   return SCHOOLS.find((s) => s.id === id)?.color ?? '#94A3B8'

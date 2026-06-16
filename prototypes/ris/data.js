@@ -1,5 +1,8 @@
 // Riverside Unified School District — mock data
 
+// Shared formatter: signed Lexile delta, e.g. "+12L" / "-5L".
+export const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
+
 export const DISTRICT = {
   name: 'Riverside Unified School District',
   students: 12400,

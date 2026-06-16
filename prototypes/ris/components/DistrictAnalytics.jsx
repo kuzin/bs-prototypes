@@ -6,6 +6,7 @@ import {
   DISTRICT_FUNNEL,
   BOOK_TALKS_BY_SCHOOL,
   SCHOOL_STATS,
+  signedL,
 } from '../data'
 import { Hero } from '@components/Hero/Hero'
 import { Funnel } from '@components/Funnel/Funnel'
@@ -22,8 +23,6 @@ import './DistrictAnalytics.css'
 const ACCENT = '#0DA7BC'
 
 const ANALYTICS_ICON = <Icon name="chart-bar" />
-
-const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
 
 const SCORECARD_COLUMNS = [
   {
