@@ -17,15 +17,9 @@ import {
   faceFor,
 } from '../data'
 
-import '@components/Primitives/Primitives.css'
+import { synthesizeVoice, stripForSpeech, DEFAULT_VOICE_ID, VOICES, hasVoiceKey } from '../voice'
 
-// Strip emoji + symbols so the speech synthesizer doesn't read "🌱" as
-// "seedling" mid-sentence.
-const stripForSpeech = (s) =>
-  String(s)
-    .replace(/[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
-    .replace(/\s+/g, ' ')
-    .trim()
+import '@components/Primitives/Primitives.css'
 
 // The live conversation. Benny greets, then asks questions derived from the
 // teacher's prompt; once the student has given `badge.minExchanges` solid
@@ -48,12 +42,21 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
   const [draft, setDraft] = useState('')
   const [awarded, setAwarded] = useState(false)
   const [voiceOn, setVoiceOn] = useState(true) // Benny reads his messages aloud (TTS)
+  const [voiceId, setVoiceId] = useState(DEFAULT_VOICE_ID) // which ElevenLabs voice
   const [speakingIdx, setSpeakingIdx] = useState(null) // which message is "playing"
   const [listening, setListening] = useState(false) // voice-to-text capture
   const scrollRef = useRef(null)
   const timers = useRef([])
   const recognitionRef = useRef(null) // active SpeechRecognition, if supported
   const simRef = useRef(false) // a simulated capture is streaming
+  // Voice playback (ElevenLabs audio): one clip at a time, fed by a queue so
+  // Benny's lines play in turn instead of cutting each other off.
+  const audioRef = useRef(null) // the <audio> currently playing
+  const queueRef = useRef([]) // pending [{ idx, text }] to speak
+  const drainRef = useRef(false) // queue is being drained
+  const genRef = useRef(0) // bumped on stop to invalidate in-flight playback
+  const voiceRef = useRef(voiceId) // latest selected voice (for queued lines)
+  const spokenRef = useRef(-1) // last message index auto-read (guards re-reads)
 
   const need = badge.minExchanges
   const script = useMemo(() => deriveScript(badge.promptId), [badge.promptId])
@@ -62,6 +65,145 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
     const t = setTimeout(fn, ms)
     timers.current.push(t)
   }, [])
+
+  // Keep the latest selected voice available to queued/async playback.
+  useEffect(() => {
+    voiceRef.current = voiceId
+  }, [voiceId])
+
+  // ── Benny's voice — ElevenLabs audio, with a browser-speech fallback ───────
+  // Stop all playback now: pause the current clip, empty the queue, and bump
+  // the generation so any in-flight fetch resolves quietly. Used for turn-taking
+  // (the student answers), muting, the mic, and resets.
+  const stopAudio = useCallback(() => {
+    genRef.current += 1
+    queueRef.current = []
+    drainRef.current = false
+    if (audioRef.current) {
+      try {
+        audioRef.current.pause()
+      } catch {
+        /* ignore */
+      }
+      audioRef.current = null
+    }
+    window.speechSynthesis?.cancel()
+    setSpeakingIdx(null)
+  }, [])
+
+  // Fallback when ElevenLabs is unavailable (no key / offline / out of credits):
+  // the browser's built-in speech. Resolves when the line finishes so the queue
+  // advances either way.
+  const speakFallback = useCallback(
+    (idx, text) =>
+      new Promise((resolve) => {
+        const spoken = stripForSpeech(text)
+        const synth = typeof window !== 'undefined' ? window.speechSynthesis : null
+        if (!synth || !spoken) {
+          // No speech at all — animate the bubble for a beat so it isn't dead-silent.
+          setSpeakingIdx(idx)
+          after(Math.min(6000, 1400 + (spoken.length || 24) * 55), () => {
+            setSpeakingIdx((cur) => (cur === idx ? null : cur))
+            resolve()
+          })
+          return
+        }
+        try {
+          const u = new SpeechSynthesisUtterance(spoken)
+          u.rate = 1.0
+          u.pitch = 1.15
+          u.onstart = () => setSpeakingIdx(idx)
+          u.onend = () => {
+            setSpeakingIdx((cur) => (cur === idx ? null : cur))
+            resolve()
+          }
+          u.onerror = () => {
+            setSpeakingIdx((cur) => (cur === idx ? null : cur))
+            resolve()
+          }
+          synth.speak(u)
+        } catch {
+          setSpeakingIdx((cur) => (cur === idx ? null : cur))
+          resolve()
+        }
+      }),
+    [after],
+  )
+
+  // Synthesize + play one line; resolve when it ends. `speakingIdx` drives the
+  // bubble equalizer off real playback. A generation mismatch (a stop happened
+  // while we were fetching/playing) resolves silently.
+  const playOne = useCallback(
+    (idx, text) =>
+      new Promise((resolve) => {
+        const gen = genRef.current
+        synthesizeVoice(text, voiceRef.current)
+          .then((url) => {
+            if (gen !== genRef.current) return resolve()
+            const audio = new Audio(url)
+            audioRef.current = audio
+            const fin = () => {
+              if (audioRef.current === audio) audioRef.current = null
+              setSpeakingIdx((cur) => (cur === idx ? null : cur))
+              resolve()
+            }
+            audio.onplay = () => {
+              if (gen === genRef.current) setSpeakingIdx(idx)
+            }
+            audio.onended = fin
+            audio.onerror = fin
+            audio.play().catch(fin) // autoplay blocked → just move on
+          })
+          .catch(() => {
+            // ElevenLabs failed for this line — use the browser voice instead.
+            if (gen !== genRef.current) return resolve()
+            speakFallback(idx, text).then(resolve)
+          })
+      }),
+    [speakFallback],
+  )
+
+  // Play the queue one line at a time.
+  const drain = useCallback(async () => {
+    if (drainRef.current) return
+    drainRef.current = true
+    while (queueRef.current.length) {
+      const item = queueRef.current.shift()
+      await playOne(item.idx, item.text)
+    }
+    drainRef.current = false
+  }, [playOne])
+
+  // Public API (call sites unchanged): interrupt=true (a manual replay) cuts off
+  // current speech and plays now; interrupt=false (auto-read) queues.
+  const speak = useCallback(
+    (idx, text, opts) => {
+      if (opts?.interrupt !== false) stopAudio()
+      queueRef.current.push({ idx, text })
+      drain()
+    },
+    [stopAudio, drain],
+  )
+
+  // Switch Benny's voice mid-chat. Update the ref synchronously so the preview
+  // uses the new voice right away, then (if not muted) re-speak his latest line
+  // so you can hear the difference on the spot.
+  const pickVoice = useCallback(
+    (id) => {
+      setVoiceId(id)
+      voiceRef.current = id
+      if (!voiceOn) return
+      let idx = -1
+      for (let i = messages.length - 1; i >= 0; i--) {
+        if (messages[i].role === 'benny') {
+          idx = i
+          break
+        }
+      }
+      if (idx >= 0) speak(idx, messages[idx].text)
+    },
+    [voiceOn, messages, speak],
+  )
 
   const sayBenny = useCallback(
     (text, delay = 900, emotion = 'happy') => {
@@ -78,7 +220,8 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
   const start = useCallback(() => {
     timers.current.forEach(clearTimeout)
     timers.current = []
-    window.speechSynthesis?.cancel()
+    stopAudio()
+    spokenRef.current = -1
     recognitionRef.current?.abort?.()
     recognitionRef.current = null
     simRef.current = false
@@ -97,64 +240,13 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
     after(1700, () =>
       setMessages((m) => [...m, { role: 'benny', text: script[0].q, emotion: 'happy' }]),
     )
-  }, [after, sayBenny, script])
+  }, [after, sayBenny, script, stopAudio])
 
   // Close the whole experience — dismiss the award modal and the chat together.
   const finish = useCallback(() => {
     setAwarded(false)
     onClose?.()
   }, [onClose])
-
-  // Real text-to-speech via the Web Speech API (built in — no dependency).
-  // `speakingIdx` drives the bubble's equalizer; the utterance's events clear it
-  // when speech ends, and a length-based safety timer clears it if speech is
-  // blocked/unsupported so the animation never sticks.
-  const speak = useCallback(
-    (idx, text, opts) => {
-      // interrupt=true (manual replay) cuts off current speech and plays now;
-      // interrupt=false (auto-read) queues so messages don't cut each other off.
-      const interrupt = opts?.interrupt !== false
-      const spoken = stripForSpeech(text)
-      const synth = typeof window !== 'undefined' ? window.speechSynthesis : null
-      if (!synth || !spoken) {
-        // No speech available — just animate the bubble for a beat.
-        setSpeakingIdx(idx)
-        after(Math.min(6000, 1400 + (spoken.length || 24) * 55), () =>
-          setSpeakingIdx((cur) => (cur === idx ? null : cur)),
-        )
-        return
-      }
-      try {
-        if (interrupt) {
-          synth.cancel()
-          setSpeakingIdx(idx) // immediate feedback for a manual replay
-        }
-        const u = new SpeechSynthesisUtterance(spoken)
-        // Benny's voice — Reed (a softer, gender-neutral macOS voice), with
-        // graceful fallbacks for machines that lack it.
-        const voices = synth.getVoices() || []
-        const voice =
-          voices.find((v) => /^Reed\b/i.test(v.name)) ||
-          voices.find((v) => /^Flo\b/i.test(v.name)) ||
-          voices.find((v) => /^Sandy\b/i.test(v.name)) ||
-          voices.find((v) => /^Junior\b/i.test(v.name)) ||
-          null
-        if (voice) u.voice = voice
-        u.rate = 1.0
-        u.pitch = 1.2 // a touch higher → reads younger / less gendered
-        // Drive the equalizer off real playback so queued messages animate in
-        // turn (and one never cuts off another).
-        u.onstart = () => setSpeakingIdx(idx)
-        u.onend = () => setSpeakingIdx((cur) => (cur === idx ? null : cur))
-        u.onerror = () => setSpeakingIdx((cur) => (cur === idx ? null : cur))
-        synth.speak(u)
-      } catch {
-        setSpeakingIdx(idx)
-        after(1800, () => setSpeakingIdx((cur) => (cur === idx ? null : cur)))
-      }
-    },
-    [after],
-  )
 
   // Kick off / reset the conversation each time the modal opens.
   useEffect(() => {
@@ -163,7 +255,7 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
     return () => {
       timers.current.forEach(clearTimeout)
       timers.current = []
-      window.speechSynthesis?.cancel()
+      stopAudio()
       recognitionRef.current?.abort?.()
       recognitionRef.current = null
     }
@@ -176,11 +268,14 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
     if (el) el.scrollTop = el.scrollHeight
   }, [messages, typing])
 
-  // When TTS is on, read each new Benny message aloud as it arrives.
+  // When TTS is on, read each new Benny message aloud as it arrives. Guarded by
+  // index so a re-render (or React's dev double-invoke) can't read it twice.
   useEffect(() => {
     if (!voiceOn) return
     const idx = messages.length - 1
     if (idx < 0 || messages[idx].role !== 'benny') return
+    if (spokenRef.current === idx) return
+    spokenRef.current = idx
     speak(idx, messages[idx].text, { interrupt: false })
   }, [messages, voiceOn, speak])
 
@@ -189,7 +284,7 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
     if (!value || done || failed || typing) return
     // The student answered — stop whatever Benny was reading so his next line
     // speaks cleanly (turn-taking) rather than queueing behind stale audio.
-    window.speechSynthesis?.cancel()
+    stopAudio()
     setDraft('')
     const weakAnswer = isWeakAnswer(value)
     setMessages((m) => [...m, { role: 'student', text: value }])
@@ -274,8 +369,7 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
   function startListening() {
     if (typing || done || failed) return
     // Stop Benny reading aloud so his TTS doesn't bleed into the mic.
-    window.speechSynthesis?.cancel()
-    setSpeakingIdx(null)
+    stopAudio()
     setDraft('')
     const SR =
       typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition)
@@ -328,11 +422,25 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
               <div className="bt-chat-head-title">Book Talk with Benny</div>
             </div>
             <div className="bt-chat-head-right">
+              {hasVoiceKey() && (
+                <select
+                  className="bt-chat-voice"
+                  value={voiceId}
+                  onChange={(e) => pickVoice(e.target.value)}
+                  title="Change Benny's voice"
+                  aria-label="Benny's voice"
+                >
+                  {VOICES.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.name}
+                    </option>
+                  ))}
+                </select>
+              )}
               <button
                 className={`bt-tts-toggle${voiceOn ? ' is-on' : ''}`}
                 onClick={() => {
-                  window.speechSynthesis?.cancel()
-                  setSpeakingIdx(null)
+                  stopAudio()
                   setVoiceOn((v) => !v)
                 }}
                 aria-pressed={voiceOn}
