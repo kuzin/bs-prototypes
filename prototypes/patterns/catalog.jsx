@@ -22,6 +22,7 @@ import { sfrSections } from './sections/sfr'
 import { insightsSections } from './sections/insights'
 import { challengeCreatorSections } from './sections/challenge-creator'
 import { bookTalksSections } from './sections/book-talks'
+import { studentProfileSections } from './sections/student-profile'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -50,6 +51,7 @@ import '@components/ActiveFilters/ActiveFilters.css'
 import '../insights/index.css'
 import '../challenge-creator/index.css'
 import '../book-talks/index.css'
+import '../student-profile/BeanstackProfile.css'
 
 import './App.css'
 
@@ -177,6 +179,14 @@ export const GROUPS = [
     color: '#14B8A6',
     icon: <Icon name="message-chatbot" size={22} />,
   },
+  {
+    id: 'student-profile',
+    kind: 'prototype',
+    title: 'Student Profile',
+    desc: 'Components for the Student Profile prototype — status badges, the daily goal ring, RMI donuts, the weekly goal tracker, and the reading-activity heatmap.',
+    color: '#E8866A',
+    icon: <Icon name="user" size={22} />,
+  },
 ]
 
 export const SECTIONS = [
@@ -192,4 +202,5 @@ export const SECTIONS = [
   ...insightsSections,
   ...challengeCreatorSections,
   ...bookTalksSections,
+  ...studentProfileSections,
 ]

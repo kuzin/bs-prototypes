@@ -1,9 +1,12 @@
 // ─── Design tokens ────────────────────────────────────────────────────────────
+// Section colors mirror ReadingHealth's SECTIONS (the canonical app palette) so the
+// Student Profile stays in sync with the landing cards, ReadingHealth tiles, and RIS.
+// `bar` = accent (charts / Hero icon / fills); `bg`/`text` = soft tile + chip tint.
 export const C = {
-  motivation: { bg: '#FEDDD1', text: '#993C1D', bar: '#E8866A', icon: 'ti-flame' },
-  integrity: { bg: '#D0E3FF', text: '#185FA5', bar: '#7CB5F5', icon: 'ti-shield-check' },
-  habits: { bg: '#CBFDE5', text: '#0F6E56', bar: '#16A97A', icon: 'ti-calendar-stats' },
-  skills: { bg: '#FFDF91', text: '#633806', bar: '#F0C050', icon: 'ti-book-2' },
+  motivation: { bg: '#FDEEE6', text: '#993C1D', bar: '#E8866A', icon: 'ti-flame' },
+  integrity: { bg: '#E8EFFE', text: '#1E40AF', bar: '#1D4ED8', icon: 'ti-shield-check' },
+  habits: { bg: '#E6F8EF', text: '#0F6E56', bar: '#16A97A', icon: 'ti-calendar-stats' },
+  skills: { bg: '#F1EBFF', text: '#5B21B6', bar: '#7C3AED', icon: 'ti-book-2' },
 }
 
 export const LABEL = {

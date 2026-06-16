@@ -1,16 +1,15 @@
 import { useState, cloneElement } from 'react'
-import '@components/ui/BeanstackProfile.css'
+import './BeanstackProfile.css'
+import '../ris/components/SchoolDashboard.css'
+import { C, LABEL, Ic } from '@components/ui'
+import { StatusBadge, Card, SectionHeading, GoalRing, CoverImage } from './components/kit'
 import {
-  C,
-  LABEL,
-  GENRE_COLORS,
-  Ic,
-  StatusBadge,
-  Card,
-  SectionHeading,
-  GoalRing,
-  CoverImage,
-} from '@components/ui'
+  DonutChart,
+  SplitDonutChart,
+  ReadingHeatmap,
+  GoalTracker,
+  EXTRINSIC_COLOR,
+} from './components/widgets'
 import { Button } from '@components/Button/Button'
 import { Select } from '@components/Form/Form'
 import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
@@ -21,12 +20,18 @@ import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { BarList } from '@components/BarList/BarList'
 import { StatCard, CardNote, ChartCard } from '@components/Cards/Cards'
+import { Table } from '@components/Table/Table'
 import '@components/Table/Table.css'
 import { BackBar } from '@components/BackBar/BackBar'
 import { Sidebar } from '@components/Sidebar/Sidebar'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { Icon } from '@components/Icon/Icon'
+import { Flyout } from '@components/Flyout/Flyout'
+import { Tabs } from '@components/Tabs/Tabs'
+import { Hero } from '@components/Hero/Hero'
+import { TrendChart } from '@components/TrendChart/TrendChart'
+import { ChartLegend } from '@components/charts/charts'
 import { SessionModal } from '../sfr/components/SessionModal'
 import { SESSIONS as SFR_SESSIONS } from '../sfr/data'
 
@@ -78,17 +83,6 @@ function statusIndicator(score) {
   return { render: STATUS_ICONS.bad, color: '#DC2626' }
 }
 
-// ─── Section tag chip ─────────────────────────────────────────────────────────
-function SectionTag({ sectionKey }) {
-  const c = C[sectionKey]
-  return (
-    <span className="bp-section-tag" style={{ '--tag-bg': c.bg, '--tag-color': c.text }}>
-      <Ic name={c.icon} size={11} />
-      {LABEL[sectionKey]}
-    </span>
-  )
-}
-
 // ─── Action footer ────────────────────────────────────────────────────────────
 function ActionFooter({ actions }) {
   return (
@@ -107,72 +101,66 @@ function ActionFooter({ actions }) {
 // ─── Dropdown menu ────────────────────────────────────────────────────────────
 function DropdownMenu({ items, onClose }) {
   return (
-    <>
-      <div className="bp-dropdown-backdrop" onClick={onClose} />
-      <div className="bp-dropdown">
-        {items.map((item, i) =>
-          item.divider ? (
-            <div key={i} className="bp-dropdown-divider" />
-          ) : (
-            <button
-              key={i}
-              className="bp-dropdown-item"
-              onClick={onClose}
-              style={item.color ? { color: item.color } : {}}
-            >
-              {item.icon && <span className="bp-dropdown-item-icon">{item.icon}</span>}
-              {item.label}
-            </button>
-          ),
-        )}
-      </div>
-    </>
+    <div className="flyout-menu">
+      {items.map((item, i) =>
+        item.divider ? (
+          <div key={i} className="flyout-menu-sep" />
+        ) : (
+          <button
+            key={i}
+            type="button"
+            className={`flyout-menu-item${item.danger ? ' flyout-menu-item--danger' : ''}`}
+            onClick={onClose}
+            style={item.color && !item.danger ? { color: item.color } : undefined}
+          >
+            {item.icon && <span className="flyout-menu-icon">{item.icon}</span>}
+            {item.label}
+          </button>
+        ),
+      )}
+    </div>
   )
 }
 
 // ─── Reusable student action buttons (3-dots + Log + Close) ──────────────────
 function StudentActions({ onClose }) {
-  const [dotsOpen, setDotsOpen] = useState(false)
-  const [logOpen, setLogOpen] = useState(false)
-
   const dotsItems = [
     { label: 'Add a Review' },
     { label: 'Add Notes' },
     { divider: true },
     { label: 'Verify Student', icon: '✅', color: '#1D4ED8' },
-    { label: 'Suspend Student', icon: '🚫', color: '#DC2626' },
+    { label: 'Suspend Student', icon: '🚫', danger: true },
   ]
   const logItems = [{ label: 'Log Reading' }, { label: 'Log Activities' }]
 
   return (
     <div className="bp-student-actions">
-      <div className="bp-dropdown-anchor">
-        <IconButton
-          variant="ghost"
-          size="md"
-          aria-label="More options"
-          onClick={() => {
-            setDotsOpen((o) => !o)
-            setLogOpen(false)
-          }}
-        >
-          <Icon name="dots-vertical" size={16} aria-hidden="true" />
-        </IconButton>
-        {dotsOpen && <DropdownMenu items={dotsItems} onClose={() => setDotsOpen(false)} />}
-      </div>
-      <div className="bp-dropdown-anchor">
-        <Button
-          variant="primary"
-          iconRight={<Icon name="chevron-down" size={11} stroke={2.5} style={{ flexShrink: 0 }} />}
-          onClick={() => {
-            setLogOpen((o) => !o)
-            setDotsOpen(false)
-          }}
-        >
-          Log
-        </Button>
-        {logOpen && <DropdownMenu items={logItems} onClose={() => setLogOpen(false)} />}
-      </div>
+      <Flyout
+        placement="bottom-end"
+        trigger={({ toggle }) => (
+          <IconButton variant="ghost" size="md" aria-label="More options" onClick={toggle}>
+            <Icon name="dots-vertical" size={16} aria-hidden="true" />
+          </IconButton>
+        )}
+      >
+        {({ close }) => <DropdownMenu items={dotsItems} onClose={close} />}
+      </Flyout>
+      <Flyout
+        placement="bottom-end"
+        trigger={({ toggle }) => (
+          <Button
+            variant="primary"
+            iconRight={
+              <Icon name="chevron-down" size={11} stroke={2.5} style={{ flexShrink: 0 }} />
+            }
+            onClick={toggle}
+          >
+            Log
+          </Button>
+        )}
+      >
+        {({ close }) => <DropdownMenu items={logItems} onClose={close} />}
+      </Flyout>
       {onClose && (
         <button className="bp-header-close" onClick={onClose} aria-label="Close profile">
           <Icon name="x" size={13} />
@@ -195,7 +183,7 @@ function StudentHeader({ student, onClose }) {
             .slice(0, 2)}
           color="#1D4ED8"
           size="lg"
-          shape="rounded"
+          shape="square"
         />
         <div>
           <div className="bp-panel-name">{student.name}</div>
@@ -268,24 +256,11 @@ function LeftNav({ activeSection, onNavigate }) {
   )
 }
 
-// ─── Shared page header ───────────────────────────────────────────────────────
-function PageHeader({ icon, title, right }) {
-  return (
-    <div className="bp-section-header">
-      <div className="bp-section-header-left">
-        <Ic name={icon} size={20} style={{ opacity: 0.5 }} />
-        <div className="bp-section-title">{title}</div>
-      </div>
-      {right && <div>{right}</div>}
-    </div>
-  )
-}
-
 // ─── Overview ─────────────────────────────────────────────────────────────────
 function Overview({ student, onNavigate }) {
   return (
     <div className="bp-content">
-      <PageHeader icon="ti-user" iconBg="#E6F1FF" title="Overview" right={null} />
+      <Hero icon={<Ic name="ti-user" />} title="Overview" accent="#64748B" accentBg="#F1F5F9" />
 
       {/* Snapshot tiles */}
       <div className="bp-tiles">
@@ -389,7 +364,13 @@ function Overview({ student, onNavigate }) {
             <div className="bp-action-body">
               <div className="bp-action-title">{action.title}</div>
               <div className="bp-action-text">{action.body}</div>
-              <SectionTag sectionKey={action.section} />
+              <Pill
+                color={C[action.section].bar}
+                size="sm"
+                icon={<Ic name={C[action.section].icon} />}
+              >
+                {LABEL[action.section]}
+              </Pill>
             </div>
           </div>
         ))}
@@ -405,11 +386,12 @@ function SectionDetail({ student, sectionKey }) {
   const firstName = student.name.split(' ')[0]
   return (
     <div className="bp-content">
-      <PageHeader
-        icon={c.icon}
-        iconBg={c.bg}
+      <Hero
+        icon={<Ic name={c.icon} />}
         title={`Reading ${LABEL[sectionKey]}`}
-        right={<StatusBadge label={sec.status} size={13} accent={c.bar} />}
+        accent={c.bar}
+        accentBg={c.bg}
+        action={<StatusBadge label={sec.status} size={13} accent={c.bar} />}
       />
       {sectionKey === 'motivation' && <MotivationDetail sec={sec} c={c} />}
       {sectionKey === 'integrity' && <IntegrityDetail sec={sec} c={c} />}
@@ -418,89 +400,6 @@ function SectionDetail({ student, sectionKey }) {
       <Card>
         <ActionFooter actions={sec.actions} />
       </Card>
-    </div>
-  )
-}
-
-// ─── Donut charts ────────────────────────────────────────────────────────────
-const EXTRINSIC_COLOR = '#94A3B8'
-
-function DonutChart({ value, max, label, color, size = 84 }) {
-  const sw = 9
-  const r = (size - sw) / 2
-  const circ = 2 * Math.PI * r
-  const dash = circ * Math.max(0, Math.min(1, value / max))
-  const mid = size / 2
-  return (
-    <div className="bp-donut-wrap">
-      <div className="bp-donut-chart" style={{ width: size, height: size }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-          <circle cx={mid} cy={mid} r={r} fill="none" stroke="#E5E7EB" strokeWidth={sw} />
-          <circle
-            cx={mid}
-            cy={mid}
-            r={r}
-            fill="none"
-            stroke={color}
-            strokeWidth={sw}
-            strokeLinecap="round"
-            strokeDasharray={`${dash} ${circ - dash}`}
-            transform={`rotate(-90 ${mid} ${mid})`}
-          />
-        </svg>
-        <div className="bp-donut-center">
-          <span className="bp-donut-val">{value}</span>
-          <span className="bp-donut-max">/{max}</span>
-        </div>
-      </div>
-      <div className="bp-donut-label">{label}</div>
-    </div>
-  )
-}
-
-function SplitDonutChart({ intrinsicVal, extrinsicVal, max, label, intrinsicColor, size = 84 }) {
-  const sw = 9
-  const r = (size - sw) / 2
-  const circ = 2 * Math.PI * r
-  const mid = size / 2
-  const dash1 = circ * Math.max(0, Math.min(1, intrinsicVal / max))
-  const dash2 = circ * Math.max(0, Math.min(1, extrinsicVal / max))
-  const angle1 = (intrinsicVal / max) * 360
-  const total = Math.round((intrinsicVal + extrinsicVal) * 10) / 10
-  return (
-    <div className="bp-donut-wrap">
-      <div className="bp-donut-chart" style={{ width: size, height: size }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-          <circle cx={mid} cy={mid} r={r} fill="none" stroke="#E5E7EB" strokeWidth={sw} />
-          <circle
-            cx={mid}
-            cy={mid}
-            r={r}
-            fill="none"
-            stroke={intrinsicColor}
-            strokeWidth={sw}
-            strokeLinecap="round"
-            strokeDasharray={`${dash1} ${circ - dash1}`}
-            transform={`rotate(-90 ${mid} ${mid})`}
-          />
-          <circle
-            cx={mid}
-            cy={mid}
-            r={r}
-            fill="none"
-            stroke={EXTRINSIC_COLOR}
-            strokeWidth={sw}
-            strokeLinecap="round"
-            strokeDasharray={`${dash2} ${circ - dash2}`}
-            transform={`rotate(${-90 + angle1} ${mid} ${mid})`}
-          />
-        </svg>
-        <div className="bp-donut-center">
-          <span className="bp-donut-val">{total}</span>
-          <span className="bp-donut-max">/{max}</span>
-        </div>
-      </div>
-      <div className="bp-donut-label">{label}</div>
     </div>
   )
 }
@@ -642,29 +541,29 @@ function IntegrityDetail({ sec }) {
       </Card>
 
       <Card flush>
-        <div className="bp-sessions-header">
-          <span className="bp-sessions-col bp-sessions-col--date">Date</span>
-          <span className="bp-sessions-col bp-sessions-col--title">Title</span>
-          <span className="bp-sessions-col bp-sessions-col--flags">Flags</span>
-        </div>
-        {sec.sessions.map((s, i) => (
-          <div
-            key={i}
-            className="bp-session-row bp-session-row--clickable"
-            onClick={() => openRow(i)}
-            onKeyDown={(e) => (e.key === 'Enter' || e.key === ' ') && openRow(i)}
-            role="button"
-            tabIndex={0}
-          >
-            <span className="bp-session-date">{s.date}</span>
-            <span className="bp-session-title">{s.title}</span>
-            <span className="bp-session-flags">
-              {s.flags.map((f) => (
-                <SessionFlag key={f} type={f} />
-              ))}
-            </span>
-          </div>
-        ))}
+        <Table
+          flush
+          compact
+          columns={[
+            { key: 'date', label: 'Date', width: 96 },
+            { key: 'title', label: 'Title' },
+            {
+              key: 'flags',
+              label: 'Flags',
+              align: 'right',
+              render: (flags) => (
+                <span className="bp-session-flags">
+                  {flags.map((f) => (
+                    <SessionFlag key={f} type={f} />
+                  ))}
+                </span>
+              ),
+            },
+          ]}
+          rows={sec.sessions}
+          getRowKey={(r, i) => i}
+          onRowClick={(row) => openRow(sec.sessions.indexOf(row))}
+        />
       </Card>
 
       <SessionModal
@@ -675,202 +574,6 @@ function IntegrityDetail({ sec }) {
         onSelectSession={setOpenSession}
       />
     </>
-  )
-}
-
-// ─── Reading heatmap ──────────────────────────────────────────────────────────
-function ReadingHeatmap({ goalMinutes, color, data }) {
-  const [monthOffset, setMonthOffset] = useState(0) // 0 = most recent 3-month window
-  const MAX_OFFSET = 19 // go back to Sep 2023
-
-  const today = new Date('2025-05-15')
-
-  // End of window: last day of (today's month − monthOffset)
-  const windowEndMonth = new Date(today.getFullYear(), today.getMonth() - monthOffset + 1, 0)
-  const windowEnd = monthOffset === 0 ? today : windowEndMonth
-
-  // Start of window: first day of the month 3 months before windowEnd's month
-  const windowStart = new Date(windowEndMonth.getFullYear(), windowEndMonth.getMonth() - 3, 1)
-
-  // Grid starts on the Sunday on or before windowStart
-  const gridStart = new Date(windowStart)
-  gridStart.setDate(gridStart.getDate() - gridStart.getDay())
-
-  const FIXED_WEEKS = 18 // always render exactly 18 columns so grid height never jumps
-  const weeks = []
-  const cur = new Date(gridStart)
-  while (weeks.length < FIXED_WEEKS) {
-    const week = []
-    for (let i = 0; i < 7; i++) {
-      const key = cur.toISOString().slice(0, 10)
-      const inRange = cur >= windowStart && cur <= windowEnd
-      week.push({
-        key,
-        mins: inRange ? (data[key] ?? 0) : 0,
-        inRange,
-        month: cur.getMonth(),
-        dateObj: new Date(cur),
-      })
-      cur.setDate(cur.getDate() + 1)
-    }
-    weeks.push(week)
-  }
-
-  const allDays = weeks
-    .flat()
-    .filter((d) => d.inRange)
-    .sort((a, b) => (a.key < b.key ? -1 : 1))
-  const streakMap = {}
-  let run = 0
-  allDays.forEach((d) => {
-    run = d.mins > 0 ? run + 1 : 0
-    streakMap[d.key] = run
-  })
-
-  const monthLabels = []
-  let lastMonth = -1
-  weeks.forEach((week, wi) => {
-    const first = week.find((d) => d.inRange)
-    if (first && first.month !== lastMonth) {
-      monthLabels.push({ wi, label: first.dateObj.toLocaleString('en-US', { month: 'short' }) })
-      lastMonth = first.month
-    }
-  })
-
-  // Nav label: "Mar – May 2025" or "Dec 2024 – Feb 2025"
-  const fmtMonth = (d) => d.toLocaleString('en-US', { month: 'short' })
-  const navLabel =
-    windowStart.getFullYear() === windowEnd.getFullYear()
-      ? `${fmtMonth(windowStart)} – ${fmtMonth(windowEnd)} ${windowEnd.getFullYear()}`
-      : `${fmtMonth(windowStart)} ${windowStart.getFullYear()} – ${fmtMonth(windowEnd)} ${windowEnd.getFullYear()}`
-
-  const getBg = ({ mins, inRange }) => {
-    if (!inRange || mins === undefined) return 'transparent'
-    if (mins === 0) return '#EAECF0'
-    return color
-  }
-
-  const DAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', '']
-
-  return (
-    <div className="bp-heatmap">
-      <div className="bp-heatmap-nav">
-        <button
-          className="bp-heatmap-nav-btn"
-          onClick={() => setMonthOffset((o) => Math.min(o + 1, MAX_OFFSET))}
-          disabled={monthOffset >= MAX_OFFSET}
-          aria-label="Previous 4 months"
-        >
-          <Icon name="chevron-left" size={11} />
-        </button>
-        <span className="bp-heatmap-nav-label">{navLabel}</span>
-        <button
-          className="bp-heatmap-nav-btn"
-          onClick={() => setMonthOffset((o) => Math.max(o - 1, 0))}
-          disabled={monthOffset === 0}
-          aria-label="Next 4 months"
-        >
-          <Icon name="chevron-right" size={11} />
-        </button>
-      </div>
-      <div className="bp-heatmap-body">
-        <div className="bp-heatmap-day-labels">
-          {DAY_LABELS.map((d, i) => (
-            <span key={i} className="bp-heatmap-day-label">
-              {d}
-            </span>
-          ))}
-        </div>
-        <div className="bp-heatmap-grid">
-          {weeks.map((week, wi) => (
-            <div key={wi} className="bp-heatmap-col">
-              {week.map((day, di) => {
-                const goalMet = day.inRange && day.mins >= goalMinutes
-                const inStreak = day.inRange && streakMap[day.key] >= 2
-                let cls = 'bp-heatmap-cell'
-                if (goalMet) cls += ' bp-heatmap-cell--goal'
-                if (inStreak) cls += ' bp-heatmap-cell--streak'
-                let tip = null
-                if (day.inRange) {
-                  const label = day.dateObj.toLocaleString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })
-                  const minsTxt = day.mins > 0 ? `${day.mins} min` : 'No reading'
-                  const badges = [
-                    goalMet && 'Goal met',
-                    inStreak && `🔥 ${streakMap[day.key]}-day streak`,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')
-                  tip = badges ? `${label} · ${minsTxt} · ${badges}` : `${label} · ${minsTxt}`
-                }
-                return (
-                  <div
-                    key={di}
-                    className={cls}
-                    style={{ '--cell-bg': getBg(day) }}
-                    data-tooltip={tip ?? undefined}
-                  />
-                )
-              })}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="bp-heatmap-months">
-        <div className="bp-heatmap-month-spacer" />
-        {monthLabels.map((m, i) => {
-          const span = (monthLabels[i + 1]?.wi ?? weeks.length) - m.wi
-          return (
-            <div key={i} className="bp-heatmap-month-label" style={{ flex: span }}>
-              {m.label}
-            </div>
-          )
-        })}
-      </div>
-    </div>
-  )
-}
-
-// ─── Goal tracker ─────────────────────────────────────────────────────────────
-function GoalTracker({ week, goalMinutes }) {
-  return (
-    <div className="bp-goal-tracker">
-      {week.days.map((d, i) => {
-        const met = d.minutes !== null && d.minutes >= goalMinutes
-        const pending = d.minutes === null
-        const isToday =
-          pending && week.current && i === week.days.findIndex((x) => x.minutes === null)
-        const prevMet =
-          i > 0 && week.days[i - 1].minutes !== null && week.days[i - 1].minutes >= goalMinutes
-
-        const circleCls = met
-          ? 'bp-goal-circle--met'
-          : isToday
-            ? 'bp-goal-circle--today'
-            : pending
-              ? 'bp-goal-circle--future'
-              : 'bp-goal-circle--missed'
-
-        return (
-          <div key={i} className="bp-goal-day">
-            <div className="bp-goal-mins-area">
-              {met && <span className="bp-goal-mins">{d.minutes}m</span>}
-            </div>
-            <div className="bp-goal-circle-row">
-              {i > 0 && (
-                <div className={`bp-goal-conn${met && prevMet ? ' bp-goal-conn--lit' : ''}`} />
-              )}
-              <div className={`bp-goal-circle ${circleCls}`}>★</div>
-            </div>
-            <span className={`bp-goal-day-label${isToday ? ' bp-goal-day-label--today' : ''}`}>
-              {d.day}
-            </span>
-          </div>
-        )
-      })}
-    </div>
   )
 }
 
@@ -950,12 +653,7 @@ function HabitsDetail({ sec, c }) {
               </CardNote>
             ) : (
               <>
-                <div className="bp-streak-pb-track">
-                  <div
-                    className="bp-streak-pb-fill"
-                    style={{ width: `${(sec.daysRead30 / 30) * 100}%`, background: c.bar }}
-                  />
-                </div>
+                <ProgressBar value={sec.daysRead30} max={30} color={c.bar} size="sm" />
                 <div className="bp-streak-pb-sub">
                   Personal best: <strong>{sec.personalBest} days</strong> in a row
                 </div>
@@ -1043,83 +741,6 @@ function HabitsDetail({ sec, c }) {
   )
 }
 
-// ─── Lexile trend chart ───────────────────────────────────────────────────────
-function LexileChart({ history, gradeLevel, gradeLevelLabel, color }) {
-  const W = 540,
-    H = 140
-  const PAD = { top: 20, right: 70, bottom: 30, left: 42 }
-  const chartW = W - PAD.left - PAD.right
-  const chartH = H - PAD.top - PAD.bottom
-  const minL = 400,
-    maxL = 1000
-  const toX = (i) => PAD.left + (i / (history.length - 1)) * chartW
-  const toY = (l) => PAD.top + chartH - ((l - minL) / (maxL - minL)) * chartH
-  const points = history.map((d, i) => [toX(i), toY(d.avg)])
-  const polyline = points.map((p) => p.join(',')).join(' ')
-  const glY = toY(gradeLevel)
-
-  return (
-    <svg viewBox={`0 0 ${W} ${H}`} style={{ width: '100%', height: 'auto', display: 'block' }}>
-      {[500, 600, 700, 800, 900].map((l) => (
-        <line
-          key={l}
-          x1={PAD.left}
-          y1={toY(l)}
-          x2={W - PAD.right}
-          y2={toY(l)}
-          stroke="#F0F0F0"
-          strokeWidth={1}
-        />
-      ))}
-      {[400, 500, 600, 700, 800, 900, 1000].map((l) => (
-        <text key={l} x={PAD.left - 6} y={toY(l) + 4} fontSize={10} fill="#BFBFBF" textAnchor="end">
-          {l}L
-        </text>
-      ))}
-      <line
-        x1={PAD.left}
-        y1={glY}
-        x2={W - PAD.right}
-        y2={glY}
-        stroke="#9CA3AF"
-        strokeWidth={1.5}
-        strokeDasharray="5 4"
-      />
-      <text x={W - PAD.right + 6} y={glY} fontSize={10} fill="#9CA3AF" dominantBaseline="middle">
-        {gradeLevelLabel || 'Grade'}
-      </text>
-      <polyline
-        points={polyline}
-        fill="none"
-        stroke={color}
-        strokeWidth={2.5}
-        strokeLinejoin="round"
-        strokeLinecap="round"
-      />
-      {points.map((p, i) => (
-        <g key={i}>
-          <circle cx={p[0]} cy={p[1]} r={5} fill={color} stroke="#fff" strokeWidth={2} />
-          <text
-            x={p[0]}
-            y={p[1] - 11}
-            fontSize={10}
-            fill={color}
-            textAnchor="middle"
-            fontWeight="700"
-          >
-            {history[i].avg}L
-          </text>
-        </g>
-      ))}
-      {history.map((d, i) => (
-        <text key={i} x={toX(i)} y={H - 4} fontSize={10} fill="#ACACAC" textAnchor="middle">
-          {d.month}
-        </text>
-      ))}
-    </svg>
-  )
-}
-
 // ─── Skills detail ────────────────────────────────────────────────────────────
 function SkillsDetail({ sec, c }) {
   const deltaUp = sec.monthlyDelta >= 0
@@ -1127,17 +748,42 @@ function SkillsDetail({ sec, c }) {
     <>
       <Card>
         <SectionHeading>Lexile Trend</SectionHeading>
-        <LexileChart
-          history={sec.lexileHistory}
-          gradeLevel={sec.gradeLevel}
-          gradeLevelLabel={sec.gradeLevelLabel}
-          color={c.bar}
+        <div style={{ height: 180 }}>
+          <TrendChart
+            type="line"
+            data={sec.lexileHistory.map((d) => ({
+              month: d.month,
+              avg: d.avg,
+              grade: sec.gradeLevel,
+            }))}
+            xKey="month"
+            yDomain={[400, 1000]}
+            yTicks={[400, 500, 600, 700, 800, 900, 1000]}
+            yUnit="L"
+            height="sm"
+            series={[
+              { key: 'avg', name: 'Lexile', color: c.bar },
+              {
+                key: 'grade',
+                name: sec.gradeLevelLabel || 'Grade level',
+                color: '#9CA3AF',
+                dashed: true,
+                fillOpacity: 0,
+              },
+            ]}
+          />
+        </div>
+        <ChartLegend
+          items={[
+            { color: c.bar, label: 'Monthly Lexile' },
+            { color: '#9CA3AF', label: sec.gradeLevelLabel || 'Grade level', dashed: true },
+          ]}
         />
         <div className="bp-lexile-summary">
           <span className="bp-lexile-summary-label">Monthly Lexile average</span>
           <div className="bp-lexile-summary-right">
             <span className="bp-lexile-avg">{sec.monthlyAvg}L</span>
-            <Pill variant={deltaUp ? 'success' : 'error'} size="sm">
+            <Pill color={deltaUp ? '#16A34A' : '#DC2626'} size="sm">
               {deltaUp ? '↑' : '↓'}
               {Math.abs(sec.monthlyDelta)}L vs Apr
             </Pill>
@@ -2364,11 +2010,12 @@ function ReadingLogPage() {
   const [month] = useState('July 2024')
   return (
     <div className="bp-content">
-      <PageHeader
-        icon="ti-reading-log"
-        iconBg="#E0F2FE"
+      <Hero
+        icon={<Ic name="ti-reading-log" />}
         title="Reading Log"
-        right={
+        accent="#0284C7"
+        accentBg="#E0F2FE"
+        action={
           <Button variant="ghost" size="sm">
             Print log
           </Button>
@@ -2417,7 +2064,12 @@ function PlaceholderPage({ pageKey }) {
   const item = NAV_ITEMS.find((n) => !n.divider && n.section === pageKey)
   return (
     <div className="bp-content">
-      <PageHeader icon={item?.icon || 'ti-user'} iconBg="#F0F0F0" title={item?.label || pageKey} />
+      <Hero
+        icon={<Ic name={item?.icon || 'ti-user'} />}
+        title={item?.label || pageKey}
+        accent="#94A3B8"
+        accentBg="#F1F5F9"
+      />
       <EmptyState title="Coming soon" description="This section is coming soon." />
     </div>
   )
@@ -2425,6 +2077,7 @@ function PlaceholderPage({ pageKey }) {
 
 // ─── Admin mockup ─────────────────────────────────────────────────────────────
 function AdminMockup({ onStudentClick, selectedKey }) {
+  const [admTab, setAdmTab] = useState('daily')
   return (
     <div className="bp-adm">
       <Sidebar
@@ -2458,12 +2111,16 @@ function AdminMockup({ onStudentClick, selectedKey }) {
             </div>
           </div>
 
-          <div className="bp-adm-tabs">
-            {['Daily Reading', 'Students', 'Earned Rewards'].map((t, i) => (
-              <div key={t} className={`bp-adm-tab${i === 0 ? ' bp-adm-tab--active' : ''}`}>
-                {t}
-              </div>
-            ))}
+          <div className="bp-adm-tabs-wrap">
+            <Tabs
+              active={admTab}
+              onChange={setAdmTab}
+              items={[
+                { id: 'daily', label: 'Daily Reading' },
+                { id: 'students', label: 'Students' },
+                { id: 'rewards', label: 'Earned Rewards' },
+              ]}
+            />
           </div>
 
           <div className="bp-adm-filter-wrap">
