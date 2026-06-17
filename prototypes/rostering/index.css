@@ -751,39 +751,6 @@
 .rost-select-wrap--day {
   width: 96px;
 }
-.rost-select {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 100%;
-  padding: 9px 32px 9px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font: inherit;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #111827;
-  background: #fff;
-  cursor: pointer;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-}
-.rost-select:hover {
-  border-color: #9ca3af;
-}
-.rost-select:focus {
-  outline: none;
-  border-color: var(--rost-accent);
-  box-shadow: 0 0 0 3px rgba(124, 92, 250, 0.15);
-}
-.rost-select-chevron {
-  position: absolute;
-  right: 11px;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6b7280;
-  pointer-events: none;
-}
 
 /* ─── Last sync — totals as a two-line list ───────────────────────────────── */
 .rc-card-body--flush:has(.rost-ls-list) {

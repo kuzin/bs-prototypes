@@ -34,9 +34,6 @@ const ACCENT = '#7C5CFA'
 const IcRules = <Icon name="clipboard-check" />
 const IcCalendar = <Icon name="calendar" />
 const IcHistory = <Icon name="history" />
-function ChevronDown() {
-  return <Icon name="chevron-down" size={14} className="rost-select-chevron" aria-hidden="true" />
-}
 
 // ─── Helpers ───────────────────────────────────────────────────────────────
 function fmtSyncTime(iso) {
@@ -526,33 +523,21 @@ function ScheduleSection() {
         <div className="rost-field-help">Usually your last day of school.</div>
         <div className="rost-field-row">
           <div className="rost-select-wrap rost-select-wrap--day">
-            <select
-              value={dates.pauseDay}
-              onChange={(e) => set('pauseDay')(+e.target.value)}
-              className="rost-select"
-            >
-              {DAYS.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-            <ChevronDown />
+            <CustomSelect
+              size="md"
+              value={String(dates.pauseDay)}
+              onChange={(v) => set('pauseDay')(+v)}
+              options={DAYS.map((d) => ({ value: String(d), label: String(d) }))}
+            />
           </div>
           <span className="rost-field-of">of</span>
           <div className="rost-select-wrap rost-select-wrap--grow">
-            <select
+            <CustomSelect
+              size="md"
               value={dates.pauseMonth}
-              onChange={(e) => set('pauseMonth')(e.target.value)}
-              className="rost-select"
-            >
-              {MONTHS.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-            <ChevronDown />
+              onChange={set('pauseMonth')}
+              options={MONTHS.map((m) => ({ value: m, label: m }))}
+            />
           </div>
         </div>
       </div>
@@ -564,33 +549,21 @@ function ScheduleSection() {
         </div>
         <div className="rost-field-row">
           <div className="rost-select-wrap rost-select-wrap--day">
-            <select
-              value={dates.restartDay}
-              onChange={(e) => set('restartDay')(+e.target.value)}
-              className="rost-select"
-            >
-              {DAYS.map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
-              ))}
-            </select>
-            <ChevronDown />
+            <CustomSelect
+              size="md"
+              value={String(dates.restartDay)}
+              onChange={(v) => set('restartDay')(+v)}
+              options={DAYS.map((d) => ({ value: String(d), label: String(d) }))}
+            />
           </div>
           <span className="rost-field-of">of</span>
           <div className="rost-select-wrap rost-select-wrap--grow">
-            <select
+            <CustomSelect
+              size="md"
               value={dates.restartMonth}
-              onChange={(e) => set('restartMonth')(e.target.value)}
-              className="rost-select"
-            >
-              {MONTHS.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </select>
-            <ChevronDown />
+              onChange={set('restartMonth')}
+              options={MONTHS.map((m) => ({ value: m, label: m }))}
+            />
           </div>
         </div>
       </div>
