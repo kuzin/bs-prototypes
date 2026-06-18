@@ -87,6 +87,7 @@ import {
   IconEye,
   IconEyeOff,
   IconSearch,
+  IconFilter,
   IconDownload,
   IconUpload,
   IconPin,
@@ -109,6 +110,12 @@ import {
   IconVolume,
   IconVolumeOff,
   IconPlayerStopFilled,
+  IconPlayerPlayFilled,
+  IconPlayerPauseFilled,
+  IconRewindBackward15,
+  IconRewindForward15,
+  IconConfetti,
+  IconApple,
   IconSend,
   IconInbox,
   IconFileText,
@@ -170,6 +177,17 @@ import {
   IconMessageReport,
   IconFirstAidKit,
   IconAlertHexagon,
+  // ── book discovery ──
+  IconHeadphones,
+  IconDeviceTablet,
+  IconNews,
+  IconBookmark,
+  IconBookmarkFilled,
+  IconCompass,
+  IconThumbUp,
+  IconThumbUpFilled,
+  IconShare,
+  IconChecks,
 } from '@tabler/icons-react'
 
 // Semantic name → Tabler component. Keys are kebab-case; a few aliases point at
@@ -257,6 +275,7 @@ const REGISTRY = {
   eye: IconEye,
   'eye-off': IconEyeOff,
   search: IconSearch,
+  filter: IconFilter,
   download: IconDownload,
   upload: IconUpload,
   pin: IconPin,
@@ -282,6 +301,12 @@ const REGISTRY = {
   volume: IconVolume,
   'volume-off': IconVolumeOff,
   'player-stop-filled': IconPlayerStopFilled,
+  'play-filled': IconPlayerPlayFilled,
+  'pause-filled': IconPlayerPauseFilled,
+  'rewind-backward-15': IconRewindBackward15,
+  'rewind-forward-15': IconRewindForward15,
+  confetti: IconConfetti,
+  apple: IconApple,
   send: IconSend,
   inbox: IconInbox,
   'file-text': IconFileText,
@@ -350,6 +375,18 @@ const REGISTRY = {
   'message-report': IconMessageReport,
   'first-aid': IconFirstAidKit,
   'alert-hexagon': IconAlertHexagon,
+
+  // book discovery
+  headphones: IconHeadphones,
+  'device-tablet': IconDeviceTablet,
+  news: IconNews,
+  bookmark: IconBookmark,
+  'bookmark-filled': IconBookmarkFilled,
+  compass: IconCompass,
+  'thumb-up': IconThumbUp,
+  'thumb-up-filled': IconThumbUpFilled,
+  share: IconShare,
+  checks: IconChecks,
 }
 
 export const ICON_NAMES = Object.keys(REGISTRY)

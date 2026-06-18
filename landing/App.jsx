@@ -39,6 +39,7 @@ const ICON_NAMES = {
   insights: 'chart-bar', // analytics
   'book-talks': 'message-circle',
   'safety-signals': 'shield-heart',
+  books: 'book-2',
 }
 
 const ICONS = Object.fromEntries(
