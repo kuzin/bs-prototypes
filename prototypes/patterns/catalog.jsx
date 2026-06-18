@@ -23,6 +23,7 @@ import { insightsSections } from './sections/insights'
 import { challengeCreatorSections } from './sections/challenge-creator'
 import { bookTalksSections } from './sections/book-talks'
 import { studentProfileSections } from './sections/student-profile'
+import { booksSections } from './sections/books'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -52,6 +53,7 @@ import '../insights/index.css'
 import '../challenge-creator/index.css'
 import '../book-talks/index.css'
 import '../student-profile/BeanstackProfile.css'
+import '../books/index.css'
 
 import './App.css'
 
@@ -187,6 +189,14 @@ export const GROUPS = [
     color: '#E8866A',
     icon: <Icon name="user" size={22} />,
   },
+  {
+    id: 'books',
+    kind: 'prototype',
+    title: 'Book Discovery',
+    desc: 'Components for the Book Discovery prototype — book covers with gradient fallbacks, the star-rating family, shelf cards, the horizontal shelf, and partner branding.',
+    color: '#0D9488',
+    icon: <Icon name="compass" size={22} />,
+  },
 ]
 
 export const SECTIONS = [
@@ -203,4 +213,5 @@ export const SECTIONS = [
   ...challengeCreatorSections,
   ...bookTalksSections,
   ...studentProfileSections,
+  ...booksSections,
 ]

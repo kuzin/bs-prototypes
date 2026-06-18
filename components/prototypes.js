@@ -111,4 +111,13 @@ export const PROTOTYPES = [
     accent: '#DC2626',
     description: 'Flag Benny chats for self-harm & safety risk — Critical / Warning / Possible.',
   },
+  {
+    id: 'books',
+    name: 'Book Discovery',
+    section: 'Prototypes',
+    href: '/bs-prototypes/books/',
+    accent: '#0D9488',
+    description:
+      'Reader-facing book pages — discover, reviews, Benny recommendations, and partner shelves.',
+  },
 ]
