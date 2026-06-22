@@ -1,0 +1,137 @@
+{
+  "projectId": "726ebb74-67f4-412e-9bd9-5afe68efd2f9",
+  "shape": "package",
+  "pkg": "bs-prototypes",
+  "globalName": "Joyful",
+  "srcDir": "components",
+  "entry": "./.design-sync/__synth_entry__.js",
+  "tsconfig": ".design-sync/tsconfig.aliases.json",
+  "tokensPkg": "bs-prototypes",
+  "tokensGlob": ".design-sync/styles/ds-globals.css",
+  "readmeHeader": ".design-sync/conventions.md",
+  "docsDir": ".design-sync/groups",
+  "componentSrcMap": {
+    "C": null,
+    "Ic": null,
+    "ComponentUsage": null,
+    "SliceTooltip": null,
+    "GradeTooltip": null,
+    "BarTooltip": null
+  },
+  "dtsPropsFor": {
+    "Button": "as?: 'button' | 'a' | React.ElementType;\n  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'accent';\n  size?: 'sm' | 'md' | 'lg';\n  icon?: React.ReactNode;\n  iconRight?: React.ReactNode;\n  disabled?: boolean;\n  loading?: boolean;\n  /** CSS color used to tint variant=\"accent\". */\n  accent?: string;\n  className?: string;\n  children?: React.ReactNode;\n  [key: string]: unknown;",
+    "Tabs": "active?: string;\n  onChange?: (id: string) => void;\n  items: Array<{ id: string; label: string; count?: number; icon?: React.ReactNode; disabled?: boolean; title?: string }>;\n  variant?: 'underline' | 'pill';\n  size?: 'sm' | 'md' | 'lg';\n  block?: boolean;\n  accent?: string;\n  ariaLabel?: string;\n  className?: string;",
+    "EmptyState": "icon?: React.ReactNode;\n  title?: string;\n  description?: string;\n  action?: React.ReactNode;\n  variant?: 'plain' | 'dashed';\n  className?: string;",
+    "Field": "label?: React.ReactNode;\n  help?: React.ReactNode;\n  error?: React.ReactNode;\n  hint?: React.ReactNode;\n  htmlFor?: string;\n  layout?: 'column' | 'row';\n  required?: boolean;\n  className?: string;\n  children?: React.ReactNode;",
+    "Input": "size?: 'sm' | 'md' | 'lg';\n  icon?: React.ReactNode;\n  iconRight?: React.ReactNode;\n  label?: React.ReactNode;\n  value?: string;\n  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;\n  placeholder?: string;\n  type?: string;\n  disabled?: boolean;\n  className?: string;\n  id?: string;",
+    "Textarea": "size?: 'sm' | 'md' | 'lg';\n  label?: React.ReactNode;\n  value?: string;\n  onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;\n  placeholder?: string;\n  rows?: number;\n  disabled?: boolean;\n  className?: string;\n  id?: string;",
+    "Select": "size?: 'sm' | 'md' | 'lg';\n  label?: React.ReactNode;\n  value?: string;\n  onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;\n  disabled?: boolean;\n  className?: string;\n  id?: string;\n  children?: React.ReactNode;",
+    "Checkbox": "checked?: boolean;\n  onChange?: (checked: boolean) => void;\n  disabled?: boolean;\n  className?: string;\n  children?: React.ReactNode;",
+    "CheckboxGroup": "value?: string[];\n  onChange?: (value: string[]) => void;\n  layout?: 'column' | 'row';\n  className?: string;\n  children?: React.ReactNode;",
+    "CheckboxGroupItem": "value: string;\n  disabled?: boolean;\n  className?: string;\n  children?: React.ReactNode;",
+    "Radio": "value: string;\n  disabled?: boolean;\n  className?: string;\n  children?: React.ReactNode;",
+    "RadioGroup": "name?: string;\n  value?: string;\n  onChange?: (value: string) => void;\n  layout?: 'column' | 'row';\n  className?: string;\n  children?: React.ReactNode;",
+    "NumberInput": "size?: 'sm' | 'md' | 'lg';\n  min?: number;\n  max?: number;\n  step?: number;\n  value?: number;\n  onChange?: (value: number) => void;\n  label?: React.ReactNode;\n  disabled?: boolean;\n  className?: string;\n  id?: string;",
+    "ColorInput": "size?: 'sm' | 'md';\nvalue?: string;        // hex string, e.g. '#0DA7BC'\nonChange?: (value: string) => void;\nlabel?: string;\nclassName?: string;\ndisabled?: boolean;",
+    "DateInput": "size?: 'sm' | 'md';\ntype?: 'date' | 'datetime-local' | 'month' | 'week';  // default 'date'\nvalue?: string;\nonChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;\nlabel?: string;\nclassName?: string;\ndisabled?: boolean;\nmin?: string;\nmax?: string;",
+    "TimeInput": "size?: 'sm' | 'md';\nvalue?: string;        // 'HH:MM'\nonChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;\nlabel?: string;\nclassName?: string;\ndisabled?: boolean;",
+    "FileInput": "size?: 'sm' | 'md';\nlabel?: string;\naccept?: string;\nmultiple?: boolean;\nplaceholder?: string;   // default 'No file chosen'\nonChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;\nclassName?: string;\ndisabled?: boolean;",
+    "MultiSelect": "options?: Array<{ value: string; label: string; disabled?: boolean; image?: string }>;\nvalue?: string[];\nonChange?: (value: string[]) => void;\nplaceholder?: string;   // default 'Select…'\nsize?: 'sm' | 'md';\nlabel?: string;\nclassName?: string;\ndisabled?: boolean;\nemptyText?: string;     // default 'Nothing to choose yet'\nemptyHint?: string;",
+    "RangeSlider": "min?: number;           // default 0\nmax?: number;           // default 100\nstep?: number;          // default 1\nvalue?: number;         // default 50\nonChange?: (value: number) => void;\nshowValue?: boolean;    // default true\nlabel?: string;\nclassName?: string;",
+    "ImageDropzone": "fileName?: string;\nonFile?: (fileName: string) => void;\naccept?: string;        // default 'image/*'\nhint?: string;\nclassName?: string;\nonClear?: () => void;   // shows a Remove button when set + fileName present\npreviewSrc?: string;    // renders an <img> preview instead of the photo icon",
+    "RichText": "value?: string;         // HTML string\nonChange?: (html: string) => void;\nplaceholder?: string;\nminHeight?: number;     // default 140\nclassName?: string;\ntokens?: string[];      // personalization chips, e.g. ['{{first_name}}']",
+    "SearchInput": "value: string;\nonChange: (value: string) => void;   // receives next string, '' when cleared\nplaceholder?: string;   // default 'Search…'\nariaLabel?: string;\nclassName?: string;",
+    "Avatar": "initials?: string;\ncolor?: string;\nsize?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';\nshape?: 'circle' | 'square';\nclassName?: string;",
+    "Icon": "/** Semantic kebab-case name from the registry (ICON_NAMES). */\nname: string;\nsize?: number;\nstroke?: number;\n/** Color override; inherits currentColor by default. */\ncolor?: string;\nclassName?: string;\n[key: string]: unknown;",
+    "Pill": "color?: string;\nvariant?: 'soft' | 'filled' | 'outline';\nsize?: 'sm' | 'md';\nicon?: React.ReactNode;\nclassName?: string;\nchildren?: React.ReactNode;",
+    "ProgressBar": "value: number;\nmax?: number;\ncolor?: string;\nlabel?: React.ReactNode;\nvalueLabel?: React.ReactNode;\nsubLabel?: React.ReactNode;\nsize?: 'sm' | 'md' | 'lg';\n/** Bar + value on one line, no header row. */\ninline?: boolean;\nclassName?: string;",
+    "Toggle": "checked?: boolean;\nonChange?: (checked: boolean) => void;\ndisabled?: boolean;\nsize?: 'sm' | 'md' | 'lg';\nname?: string;\nclassName?: string;\nchildren?: React.ReactNode;",
+    "Flyout": "/** Render-prop for the anchor; receives { open, toggle, close }. */\ntrigger: (state: { open: boolean; toggle: () => void; close: () => void }) => React.ReactNode;\n/** Popover content; node, or a render-prop receiving { close }. */\nchildren: React.ReactNode | ((state: { close: () => void }) => React.ReactNode);\nplacement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end' | 'auto';\noffset?: number;",
+    "Modal": "open: boolean;\nonClose?: () => void;\nvariant?: 'side' | 'center';\nariaLabel?: string;\n/** Content; node, or a render-prop receiving { close }. Compose with the\n *  modal-header / modal-body / modal-footer / modal-title / modal-close slots. */\nchildren: React.ReactNode | ((state: { close: () => void }) => React.ReactNode);",
+    "SettingRow": "label?: React.ReactNode;\nsub?: React.ReactNode;\n/** Custom right-side control; defaults to a <Toggle>. */\ncontrol?: React.ReactNode;\n/** Text shown before the default toggle (e.g. \"Disabled\"). */\nstate?: string;\nchecked?: boolean;\nonChange?: (checked: boolean) => void;\ndisabled?: boolean;\nsize?: 'sm' | 'md' | 'lg';",
+    "SettingList": "children?: React.ReactNode;\nclassName?: string;",
+    "Stepper": "steps: Array<{ id: string; name: string }>;\ncurrent?: string;\nonStep?: (id: string) => void;\n/** CSS color for active/done dots; defaults to Beanstack teal. */\naccent?: string;\norientation?: 'horizontal' | 'vertical';\nclassName?: string;",
+    "Table": "columns: Array<{\n  key: string;\n  label: React.ReactNode;\n  align?: 'left' | 'right' | 'center';\n  sortable?: boolean;\n  width?: number | string;\n  render?: (value: unknown, row: Record<string, unknown>) => React.ReactNode;\n}>;\nrows: Array<Record<string, unknown>>;\ngetRowKey?: (row: Record<string, unknown>, i: number) => React.Key;\nonRowClick?: (row: Record<string, unknown>) => void;\nzebra?: boolean;\ncompact?: boolean;\nbordered?: boolean;\nflush?: boolean;\ncollapse?: boolean;\nscrollX?: boolean;\nstickyHeader?: boolean;\nloading?: boolean;\nempty?: React.ReactNode;\nhighlightRow?: (row: Record<string, unknown>) => boolean;\npageSize?: number;\ndefaultSortKey?: string;\ndefaultSortDir?: 'asc' | 'desc';\nclassName?: string;",
+    "Divider": "label?: string;\n  orientation?: 'horizontal' | 'vertical';\n  className?: string;",
+    "Spinner": "size?: 'sm' | 'md' | 'lg';\n  /** CSS color override; defaults to currentColor. */\n  color?: string;\n  className?: string;",
+    "IconButton": "variant?: 'secondary' | 'primary' | 'ghost' | 'danger';\n  size?: 'sm' | 'md' | 'lg';\n  disabled?: boolean;\n  className?: string;\n  children?: React.ReactNode;\n  [key: string]: unknown;",
+    "Tooltip": "content: React.ReactNode;\n  placement?: 'top' | 'bottom' | 'left' | 'right' | 'auto';\n  delay?: number;\n  /** Position the bubble at the pointer and track it on move. */\n  followCursor?: boolean;\n  children: React.ReactNode;",
+    "Skeleton": "width?: number | string;\n  height?: number | string;\n  shape?: 'rect' | 'circle';\n  /** Render a multi-line text skeleton (last line shortened). */\n  lines?: number;\n  className?: string;\n  style?: React.CSSProperties;",
+    "SectionHeading": "title: React.ReactNode;\n  subtitle?: React.ReactNode;\n  action?: React.ReactNode;\n  level?: 'h2' | 'h3' | 'h4';\n  className?: string;",
+    "Accordion": "items: Array<{ id: string; title: React.ReactNode; content: React.ReactNode }>;\n  defaultOpen?: string[];\n  /** Allow more than one section open at once. */\n  allowMultiple?: boolean;\n  /** CSS color for the active/open accent (--acd-accent). */\n  accent?: string;\n  className?: string;",
+    "Banner": "level?: 'info' | 'success' | 'warning' | 'error';\n  title?: React.ReactNode;\n  /** Override the default level icon. */\n  icon?: React.ReactNode;\n  /** Show a dismiss (x) button; called on click. */\n  onDismiss?: () => void;\n  action?: React.ReactNode;\n  children?: React.ReactNode;\n  className?: string;",
+    "Breadcrumb": "items?: Array<{ label: React.ReactNode; href?: string }>;\n  className?: string;",
+    "AlertRow": "level?: 'critical' | 'warning' | 'positive' | 'info';\ntitle?: React.ReactNode;\ndescription?: React.ReactNode;\naction?: React.ReactNode;\nonAction?: () => void;",
+    "AlertsBanner": "alerts: Array<{\n  id: string | number;\n  level?: 'critical' | 'warning' | 'positive' | 'info';\n  title?: React.ReactNode;\n  description?: React.ReactNode;\n  action?: React.ReactNode;\n  tab?: string;\n}>;\nonNavigate?: (tab: string) => void;",
+    "HealthStat": "section: {\n  key?: string;\n  label: string;\n  description?: string;\n  color: string;   // accent color (--sec-color)\n  bg: string;      // tile background (--sec-bg)\n  icon: React.ReactNode;\n};\nscore: number;\ndelta?: number;     // signed; >0 → green '↑ N pts', <0 → red '↓ N pts', 0 → grey '±0'\nonClick?: () => void;  // when set, renders as <button> + a 'View more ›' footer",
+    "ReadingHealth": "title?: string;   // default 'Reading Health'\ndata: {\n  motivation: number; integrity: number; habits: number; skills: number;\n  dM?: number; dI?: number; dH?: number; dS?: number;  // signed deltas per section\n};\nonNavigate?: (sectionKey: string) => void;  // makes each tile clickable",
+    "BennyBubble": "children: React.ReactNode;   // bubble body; <strong> is styled (bold, navy)\ntimestamp?: string;          // renders 'Analysis last run on <timestamp>' subline",
+    "AppShell": "sidebar?: { title?: string; subtitle?: string; nav: NavItem[]; active?: string; onNavigate?: (id: string) => void; badges?: Record<string, number>; picker?: React.ReactNode };\nmainRailIndex?: number;        // render bare MainRail (no sidebar) at this index\nclassName?: string;\ncontentClassName?: string;\nbackBar?: { label: string; onClick?: () => void };\nafter?: React.ReactNode;       // fixed overlays, siblings of content column\nchildren?: React.ReactNode;    // page content",
+    "Sidebar": "nav?: Array<{ id?: string; label: string; icon?: string; subgroup?: boolean; type?: 'section'; section?: string }>;\nactive?: string;\nonNavigate?: (id: string) => void;   // passes the item id directly\ntitle?: string;\nsubtitle?: string;\nbadges?: Record<string, number>;     // keyed by nav item id\npicker?: React.ReactNode;            // typically <SchoolPicker/>\nmainRailIndex?: number;              // default 4\nclassName?: string;",
+    "SchoolPicker": "schools?: Array<{ id: string; name: string; grades: string; color: string }>;\nschoolId?: string;\nonSchoolId?: (id: string) => void;   // passes id directly\nonAfterChange?: (id: string) => void;",
+    "Hero": "bucket?: 'motivation' | 'integrity' | 'habits' | 'skills';   // auto-derives icon/title/accent/accentBg from SECTIONS\ninitials?: string;            // colored square avatar (mutually exclusive with icon)\nicon?: React.ReactNode;       // tinted icon block (mutually exclusive with initials)\ntitle?: string;               // required (auto from bucket)\nsubtitle?: string;\nscore?: number;               // big number on right, rendered as \"<score>/100\"\ndelta?: number;               // ↑/↓ pts indicator; 0 → ±0 flat\naccent?: string;              // icon stroke / avatar bg / score color\naccentBg?: string;            // icon block background tint\naction?: React.ReactNode;     // right-side slot (e.g. a Button)",
+    "MainRail": "activeIndex?: number;   // 0–7, default 4\nclassName?: string;",
+    "PrototypeNav": "currentHref?: string;   // e.g. '/bs-prototypes/ris/' — selects + accent-tints that prototype; '' → 'Select prototype' empty state",
+    "SectionCard": "title?: string;\nactions?: React.ReactNode;            // right-side header slot\nheader?: 'plain' | 'bar';             // default 'plain'; 'bar' = tinted full-width strip + divider\nchildren?: React.ReactNode;\nclassName?: string;",
+    "BackBar": "label: string;\nonClick?: () => void;\nhref?: string;                        // renders an <a> instead of <button>\nclassName?: string;",
+    "ActiveFilters": "filters: Array<{ key: string; label: React.ReactNode; onClear?: () => void }>;\nonClearAll?: () => void;",
+    "CustomSelect": "options?: Array<\n  | { value: string; label: string; disabled?: boolean }\n  | { group: string; options: Array<{ value: string; label: string; disabled?: boolean }> }\n>;\nvalue?: string;\nonChange?: (value: string) => void;   // passes the VALUE, not an event (Radix Select)\nplaceholder?: string;                 // default 'Select…'\nsize?: 'sm' | 'md' | 'lg';            // default 'md'\nlabel?: string;\ndisabled?: boolean;\nclassName?: string;",
+    "DatePicker": "value?: Date | string | null;\nonChange?: (date: Date | null) => void;   // called with a Date (or null on Clear)\nplaceholder?: string;                      // default 'Pick a date'\nsize?: 'sm' | 'md' | 'lg';                 // default 'md'\nlabel?: string;\ndisabled?: boolean;\nclearable?: boolean;                       // default true\nclassName?: string;",
+    "TimePicker": "value?: string | null;                     // 24-hour 'HH:MM'\nonChange?: (time: string | null) => void;  // called with 'HH:MM' (or null on Clear)\nplaceholder?: string;                      // default 'Pick a time'\nsize?: 'sm' | 'md' | 'lg';                 // default 'md'\nlabel?: string;\ndisabled?: boolean;\nstep?: 15 | 30 | 60;                       // minutes between slots, default 30\nclearable?: boolean;                       // default true\nclassName?: string;",
+    "FilterBar": "children?: React.ReactNode;   // typically <FilterItem> cells\naction?: React.ReactNode;     // right-aligned action (e.g. a <Button>)\nclassName?: string;",
+    "FilterItem": "label?: React.ReactNode;      // small uppercase-ish label above the control\nchildren?: React.ReactNode;   // the control (Select / CustomSelect / etc.)\nclassName?: string;",
+    "BarList": "// Flat list:\nitems?: Array<{\n  prefix?: React.ReactNode;\n  icon?: React.ReactNode;\n  iconColor?: string;\n  label?: React.ReactNode;\n  labelColor?: string;\n  sublabel?: React.ReactNode;\n  tooltip?: string;            // native title tooltip on the label\n  value?: number;\n  max?: number;                // default 100\n  color?: string;              // default '#94A3B8'\n  valueLabel?: React.ReactNode;\n  subValue?: React.ReactNode;\n  delta?: number;              // up/down arrow + magnitude\n}>;\n// Grouped two-column mode:\ngroups?: Array<{ label?: React.ReactNode; labelColor?: string; items: BarListItem[] }>;\nlayout?: 'stack' | 'columns';  // default 'stack'\nshowBar?: boolean;             // default true; false = icon list, no bars\nlabelWidth?: number;           // px — fix meta column width to align bars\nbarAlign?: 'start' | 'center'; // 'center' = funnel-taper look\nbarHeight?: number;            // px bar thickness\ndivided?: boolean;             // default true (hairline dividers, simple-items mode)\nheader?: { label: React.ReactNode; valueLabel: React.ReactNode };",
+    "CardNote": "tone?: 'neutral' | 'accent';   // ONLY these two are styled in Cards.css; default 'neutral'.\n                               // 'accent' tint inherits the enclosing ChartCard's --rc-accent.\nchildren?: React.ReactNode;",
+    "ChartCard": "title?: React.ReactNode;\nsubtitle?: React.ReactNode;\nicon?: React.ReactNode;\naccent?: string;                          // sets --rc-accent / --rc-accent-bg cascade\naction?: React.ReactNode;                 // right side of header\nfooter?: React.ReactNode;                 // e.g. a legend\nchildren?: React.ReactNode;               // body (chart / BarList / CardNote / …)\nbodyPad?: 'flush' | 'padded';             // default 'flush'\nbodyMaxHeight?: number;                   // px — caps body height + scrolls\nclassName?: string;\nspan?: 1 | 2;                             // 2 = wide (spans the grid)",
+    "ChartLegend": "items: Array<{ color: string; label: React.ReactNode; dashed?: boolean }>;",
+    "Funnel": "items: Array<{\n  stage: string;\n  count: number;\n  pct: number;        // 0–100; drives bar width AND label position\n  delta?: number;     // when nonzero, hovering the row shows a delta Tooltip\n}>;",
+    "StatCard": "value: React.ReactNode;       // number or string (e.g. '1,284', '88%')\nunit?: React.ReactNode;       // small suffix after value (e.g. '/40')\nlabel: React.ReactNode;\nfooter?: React.ReactNode;     // small caption (e.g. trend)\nfooterColor?: string;         // CSS color for the footer text\ncolor?: string;               // accent color for the value (else inherits --rc-accent)",
+    "TrendChart": "type?: 'area' | 'line' | 'bar';            // default 'area'\nlayout?: 'vertical' | 'horizontal';        // default 'vertical'; 'horizontal' = category on Y\ndata: Array<Record<string, number | string>>;\nxKey?: string;                             // category field; default 'month'\nyDomain?: [number, number];                // value-axis domain\nyUnit?: string;                            // value-axis suffix (e.g. ' min', '%', 'L')\nyTickCount?: number;\nyTicks?: number[];                         // explicit tick values\nyRight?: { domain: [number, number]; unit?: string; tickCount?: number };  // second Y axis (vertical only)\nyAxisHidden?: boolean;\nheight?: 'sm' | 'md' | 'lg' | 'xl' | number;  // default 'md' (sm180/md240/lg320/xl380)\nseries: Array<{\n  key: string;\n  name: string;\n  color: string;\n  dashed?: boolean;\n  strokeWidth?: number;\n  fillOpacity?: number;        // 0 = line only (no area gradient)\n  colorFn?: (row: Record<string, unknown>) => string;\n  yAxisId?: 'left' | 'right';\n}>;\ntooltipFormatter?: (value: number, name: string) => string | [string, string];\ntooltipContent?: (args: { payload: Array<{ payload: unknown; value: number; name: string; color: string; dataKey?: string }>; label: React.ReactNode }) => React.ReactNode;\nleftMargin?: number;           // override left margin (horizontal layout long labels)"
+  },
+  "overrides": {
+    "Modal": {
+      "cardMode": "single",
+      "primaryStory": "Center"
+    },
+    "Table": {
+      "cardMode": "column"
+    },
+    "Banner": {
+      "cardMode": "column"
+    },
+    "AlertRow": {
+      "cardMode": "column"
+    },
+    "AlertsBanner": {
+      "cardMode": "column"
+    },
+    "ReadingHealth": {
+      "cardMode": "column"
+    },
+    "AppShell": {
+      "cardMode": "column"
+    },
+    "Sidebar": {
+      "cardMode": "column"
+    },
+    "MainRail": {
+      "cardMode": "column"
+    },
+    "Hero": {
+      "cardMode": "column"
+    },
+    "ChartCard": {
+      "cardMode": "column"
+    },
+    "TrendChart": {
+      "cardMode": "column"
+    },
+    "Funnel": {
+      "cardMode": "single",
+      "primaryStory": "ChallengeFunnel"
+    },
+    "PrototypeNav": {
+      "cardMode": "column"
+    }
+  }
+}

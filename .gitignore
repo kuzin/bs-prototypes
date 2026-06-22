@@ -9,3 +9,12 @@ dist-ssr
 *.log
 .claude/settings.local.json
 .claude/worktrees/
+
+# design-sync (claude.ai/design): staged scripts, build output, machine state.
+# The durable .design-sync/ inputs (config.json, NOTES.md, previews/, styles/,
+# tsconfig.aliases.json, overrides/) ARE committed.
+.ds-sync/
+ds-bundle/
+.design-sync/.cache/
+.design-sync/learnings/
+.design-sync/node_modules

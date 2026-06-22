@@ -1,0 +1,157 @@
+/**
+ * Joyful Prototype Components — global stylesheet for Claude Design.
+ *
+ * Ships three things rendered designs need but that individual components
+ * don't import themselves:
+ *   1. The Nunito brand webfont (the repo references 'Nunito' by name but
+ *      never ships it — prototypes rely on it being system-installed or load
+ *      it ad-hoc; here we load it remotely so designs render on-brand).
+ *   2. The design tokens (:root custom properties) — mirrored verbatim from
+ *      components/ui/tokens.css, which the app imports per-entry, not per
+ *      component, so it never rides into the component bundle.
+ *   3. A small base layer (box-sizing, body font/colour, button inherit),
+ *      mirrored from the scaffold base in scripts/new-prototype.js.
+ *
+ * RE-SYNC: if components/ui/tokens.css changes, refresh the :root block below.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
+
+:root {
+  /* Neutrals — Tailwind slate */
+  --c-slate-50: #f8fafc;
+  --c-slate-100: #f1f5f9;
+  --c-slate-200: #e2e8f0;
+  --c-slate-300: #cbd5e1;
+  --c-slate-400: #94a3b8;
+  --c-slate-500: #64748b;
+  --c-slate-600: #475569;
+  --c-slate-700: #334155;
+  --c-slate-800: #1e293b;
+  --c-slate-900: #0f172a;
+  --c-gray-200: #e5e7eb;
+
+  /* Accent / status — Tailwind */
+  --c-red-600: #dc2626;
+  --c-amber-600: #d97706;
+  --c-blue-700: #1d4ed8;
+  --c-violet-600: #7c3aed;
+
+  /* Brand — Beanstack */
+  --c-brand-teal: #0da7bc;
+  --c-brand-green: #16a97a;
+  --c-brand-coral: #e8866a;
+
+  /* Font families */
+  --font-sans: 'Nunito', 'Trebuchet MS', sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* Type scale (px) — 13px is the body default */
+  --text-2xs: 10px;
+  --text-xs: 11px;
+  --text-sm: 12px;
+  --text-base: 13px;
+  --text-md: 14px;
+  --text-lg: 16px;
+  --text-xl: 18px;
+  --text-2xl: 22px;
+  --text-3xl: 28px;
+
+  /* Font weights */
+  --fw-normal: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+  --fw-extrabold: 800;
+  --fw-black: 900;
+
+  /* Corner radii */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 10px;
+  --radius-xl: 12px;
+  --radius-2xl: 14px;
+  --radius-pill: 999px;
+  --radius-full: 50%;
+
+  /* Elevation (box-shadow) */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 8px 28px rgba(15, 23, 42, 0.14);
+
+  /* Spacing scale (px) */
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-6: 6px;
+  --space-8: 8px;
+  --space-10: 10px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-20: 20px;
+  --space-24: 24px;
+  --space-32: 32px;
+
+  /* Semantic aliases — roles mapped onto the primitives above. */
+  /* Text */
+  --c-text: var(--c-slate-900);
+  --c-text-muted: var(--c-slate-500);
+  --c-text-subtle: var(--c-slate-400);
+  /* Surfaces */
+  --c-surface: #fff;
+  --c-bg: var(--c-slate-50);
+  --c-bg-muted: var(--c-slate-100);
+  /* Borders */
+  --c-border: var(--c-slate-200);
+  --c-border-strong: var(--c-slate-300);
+  /* Intent */
+  --c-brand: var(--c-brand-teal);
+  --c-danger: var(--c-red-600);
+  --c-warning: var(--c-amber-600);
+  --c-success: var(--c-brand-green);
+  --c-info: var(--c-blue-700);
+}
+
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+}
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--c-text);
+  background: var(--c-surface);
+  -webkit-font-smoothing: antialiased;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* ChartLegend (components/charts/charts.jsx) self-imports no CSS; its styles live
+   in prototypes/ris/components/SchoolDashboard.css, which the design-sync bundle
+   doesn't ship. Mirrored here so ChartLegend renders with swatches + spacing. */
+.sdb-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+.sdb-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--c-text-muted);
+}
+.sdb-legend-swatch {
+  display: inline-block;
+  width: 18px;
+  height: 2.5px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
