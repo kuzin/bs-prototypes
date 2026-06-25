@@ -575,11 +575,268 @@ const CONV_GREEN_IVAN = [
   { role: 'annotation', sentiment: 'positive', text: 'Benny noted a detailed response!' },
 ]
 
+// ── Crisis resources Benny can surface (safety signals) ───────────────────────
+const RES = {
+  988: {
+    name: '988 Suicide & Crisis Lifeline',
+    contact: 'Call or text 988',
+    url: 'https://988lifeline.org',
+    blurb: '24/7 free, confidential support for people in distress.',
+  },
+  text: {
+    name: 'Crisis Text Line',
+    contact: 'Text HOME to 741741',
+    url: 'https://www.crisistextline.org',
+    blurb: 'Text-based crisis support, any time.',
+  },
+  trevor: {
+    name: 'The Trevor Project',
+    contact: '1-866-488-7386',
+    url: 'https://www.thetrevorproject.org/get-help',
+    blurb: 'Crisis support for LGBTQ+ young people.',
+  },
+  childhelp: {
+    name: 'Childhelp National Child Abuse Hotline',
+    contact: '1-800-422-4453',
+    url: 'https://childhelphotline.org',
+    blurb: 'Help and reporting for child abuse and neglect.',
+  },
+}
+const res = (...keys) => keys.map((k) => RES[k])
+
+// ── Safety-signal conversations ───────────────────────────────────────────────
+// SFR transcript shape + safety extras: student.trigger highlights the message
+// that raised the signal; annotation.tone:'safety'; role:'resources' carries the
+// crisis resources Benny showed the student inline.
+const CONV_MAYA = [
+  {
+    role: 'benny',
+    text: "Hi Maya! I see you've been reading The Giver. How far into the book are you?",
+  },
+  { role: 'student', text: 'im really sad' },
+  {
+    role: 'benny',
+    text: "I'm sorry to hear that. Would you like to share what's making you feel sad? Sometimes talking about it can help.",
+  },
+  { role: 'student', text: 'i want to hurt myself', trigger: true },
+  {
+    role: 'annotation',
+    tone: 'safety',
+    text: 'Safety signal — possible self-harm. Benny paused the Book Talk and shared support resources.',
+  },
+  {
+    role: 'benny',
+    text: "It's really important to talk to someone who can help you. You're not alone, Maya — please reach out to a trusted adult right now, like a parent, teacher, or school counselor.",
+  },
+  { role: 'resources', items: res('988', 'text', 'trevor') },
+]
+
+const CONV_JAYLEN = [
+  {
+    role: 'benny',
+    text: "Hey Jaylen! You've been reading Hatchet. What's the most intense moment Brian has faced so far?",
+  },
+  {
+    role: 'student',
+    text: "i don't care about the book. some kids at school keep messing with me and i want to make them pay",
+  },
+  {
+    role: 'benny',
+    text: "That sounds really frustrating, and I can tell you're hurting. Can you tell me more about what's been happening?",
+  },
+  { role: 'student', text: 'i want to bring something and hurt them so they stop', trigger: true },
+  {
+    role: 'annotation',
+    tone: 'safety',
+    text: 'Safety signal — possible threat to harm others. Benny shared resources and ended the activity for review.',
+  },
+  {
+    role: 'benny',
+    text: "I'm really glad you told me. When things feel this big, the safest thing is to talk to a trusted adult today — a teacher, your counselor, or a parent. They can help make this stop. You don't have to handle it on your own.",
+  },
+  { role: 'resources', items: res('988', 'text') },
+]
+
+const CONV_MARCUS = [
+  {
+    role: 'benny',
+    text: 'Hi Marcus! I see you finished Wonder. What did you think about how Auggie was treated at school?',
+  },
+  {
+    role: 'student',
+    text: "it made me think about home. when my mom's boyfriend gets mad he hits me and i don't want to go back",
+    trigger: true,
+  },
+  {
+    role: 'annotation',
+    tone: 'safety',
+    text: 'Safety signal — possible abuse disclosure. Benny responded supportively and surfaced resources.',
+  },
+  {
+    role: 'benny',
+    text: "Thank you for trusting me with that, Marcus. No one should be hurt at home, and it's not your fault. It's really important to tell a trusted adult at school today, like your teacher or counselor, so they can help keep you safe.",
+  },
+  { role: 'resources', items: res('childhelp') },
+]
+
+const CONV_TYLER = [
+  {
+    role: 'benny',
+    text: 'Hi Tyler! You logged some time on Holes today. What did you think of Stanley so far?',
+  },
+  {
+    role: 'student',
+    text: 'idk. i hate myself honestly. everyone would be better off without me',
+    trigger: true,
+  },
+  {
+    role: 'annotation',
+    tone: 'safety',
+    text: 'Safety signal — hopelessness / possible self-harm.',
+  },
+  {
+    role: 'benny',
+    text: "I'm really sorry you're feeling that way, Tyler. Those feelings are heavy and you deserve support. Please talk to a trusted adult — a parent, teacher, or counselor — about how you're feeling. You matter.",
+  },
+  { role: 'resources', items: res('988', 'text') },
+]
+
+const CONV_EMMA = [
+  {
+    role: 'benny',
+    text: "Hi Emma! How's Charlotte's Web going? Do you have a favorite character yet?",
+  },
+  {
+    role: 'student',
+    text: "i guess. some kids keep saying mean stuff about me every day and i don't want to come to school anymore",
+    trigger: true,
+  },
+  {
+    role: 'annotation',
+    tone: 'safety',
+    text: 'Safety signal — possible bullying / school avoidance.',
+  },
+  {
+    role: 'benny',
+    text: "I'm sorry that's happening — no one deserves to be treated that way. Telling a trusted adult like your teacher or counselor can really help, and they can make it stop. Would you like help thinking of who to talk to?",
+  },
+  { role: 'resources', items: res('text') },
+]
+
+const CONV_SOFIA = [
+  {
+    role: 'benny',
+    text: 'Hi Sofia! You finished The One and Only Ivan — what did you think of Ivan?',
+  },
+  {
+    role: 'student',
+    text: "he was kind of sad and lonely. i've been feeling really sad lately too and i don't know why",
+    trigger: true,
+  },
+  { role: 'annotation', tone: 'safety', text: 'Safety signal — emotional distress.' },
+  {
+    role: 'benny',
+    text: "Thanks for sharing that with me, Sofia. It's okay to feel sad sometimes, and talking about it helps. A trusted adult — like your teacher, counselor, or a parent — would want to know so they can support you.",
+  },
+  { role: 'resources', items: res('988') },
+]
+
+const CONV_NOAH = [
+  {
+    role: 'benny',
+    text: "Hi Noah! You've been reading The Giver. What's been the most surprising part?",
+  },
+  {
+    role: 'student',
+    text: 'the part where they release people. i was like whoa they basically kill the baby, that was crazy',
+    trigger: true,
+  },
+  {
+    role: 'annotation',
+    tone: 'info',
+    text: 'Keyword match ("kill") while describing a plot point in the book. Low-confidence signal, logged for awareness.',
+  },
+  {
+    role: 'benny',
+    text: "That part surprises a lot of readers! It's one of the big turning points. What did it make you think about Jonas's community?",
+  },
+  {
+    role: 'student',
+    text: "that it's not as perfect as everyone thinks. it's actually kind of scary",
+  },
+]
+
+const CONV_LILY = [
+  { role: 'benny', text: "Hey Lily! How's Diary of a Wimpy Kid? Are you enjoying it?" },
+  {
+    role: 'student',
+    text: 'omg this book is killing me 😂 in a good way, so funny',
+    trigger: true,
+  },
+  {
+    role: 'annotation',
+    tone: 'info',
+    text: 'Keyword match ("killing me") in casual, positive context. Low-confidence signal.',
+  },
+  {
+    role: 'benny',
+    text: "Haha, I love that it's making you laugh! What's the funniest thing that's happened to Greg so far?",
+  },
+  { role: 'student', text: 'the cheese touch part 😭 everyone runs away from him' },
+]
+
+const CONV_ZARA = [
+  {
+    role: 'benny',
+    text: "Hi Zara! You've been reading Wonder. What do you think of the story so far?",
+  },
+  {
+    role: 'student',
+    text: 'i feel bad for auggie. in my old school a kid got picked on like that and it was really mean',
+    trigger: true,
+  },
+  {
+    role: 'annotation',
+    tone: 'info',
+    text: 'Keyword match ("picked on") referring to a character / past event, not the student. Low-confidence signal.',
+  },
+  {
+    role: 'benny',
+    text: "That's a really kind thing to notice. Why do you think people sometimes treat others that way in the story?",
+  },
+  { role: 'student', text: "because they don't take time to know them first" },
+]
+
 // ── Sessions ──────────────────────────────────────────────────────────────────
 
 let _id = 1
 function sess(studentId, bookKey, overrides) {
   return { id: `sess-${_id++}`, student: student(studentId), book: BOOKS[bookKey], ...overrides }
+}
+
+function notif(role, name, channel, at, status) {
+  return { role, name, channel, at, status }
+}
+
+// Safety-signal Book Talks — SFR-shaped, carrying an additive `safety` object.
+function safetySess(studentId, bookKey, o) {
+  const { safety, conversation, ...rest } = o
+  return {
+    id: `sess-${_id++}`,
+    student: student(studentId),
+    book: BOOKS[bookKey],
+    type: 'engagement',
+    status: 'completed',
+    challenge: 'Summer Reading',
+    engagementRating: null,
+    minutesLogged: 46,
+    flags: [],
+    positiveFlags: [],
+    conversation,
+    changeLog: o.changeLog || [],
+    ...(safety ? { safety } : {}),
+    ...rest,
+  }
 }
 
 export const SESSIONS = [
@@ -1027,4 +1284,298 @@ export const SESSIONS = [
       },
     ],
   }),
+
+  // ── Safety signals — Book Talks carrying an additive `safety` object ──
+  // Critical
+  safetySess('stu-2', 'the_giver', {
+    date: '2026-06-15',
+    conversation: CONV_MAYA,
+    changeLog: [
+      {
+        id: 'cl-my1',
+        kind: 'note',
+        by: 'Mr. Ellis',
+        at: '2026-06-15T10:20:00',
+        note: "Reached Maya's guardian by phone; in-person check-in scheduled for this afternoon.",
+      },
+      {
+        id: 'cl-my2',
+        kind: 'note',
+        by: 'Ms. Reyes',
+        at: '2026-06-15T10:38:00',
+        note: 'Counselor and I will meet with Maya together. Documenting every step per protocol.',
+      },
+    ],
+    safety: {
+      severity: 'critical',
+      category: 'self-harm',
+      at: '2026-06-15T10:14:00',
+      excerpt: 'i want to hurt myself',
+      summary: 'Maya stated she wants to hurt herself during a Book Talk about The Giver.',
+      status: 'new',
+      resources: res('988', 'text', 'trevor'),
+      notified: [
+        notif('Teacher', 'Mr. Okafor', 'email', '2026-06-15T10:14:00', 'opened'),
+        notif('Counselor', 'Mr. Ellis', 'email', '2026-06-15T10:14:00', 'opened'),
+        notif('Principal', 'Ms. Reyes', 'in-app', '2026-06-15T10:14:00', 'sent'),
+      ],
+    },
+  }),
+  safetySess('stu-5', 'hatchet', {
+    date: '2026-06-15',
+    conversation: CONV_JAYLEN,
+    changeLog: [
+      {
+        id: 'cl-j1',
+        kind: 'note',
+        by: 'Mr. Ellis',
+        at: '2026-06-15T09:05:00',
+        note: 'Looped in family and met with student. Safety plan in progress.',
+      },
+      {
+        id: 'cl-j2',
+        kind: 'note',
+        by: 'Ms. Reyes',
+        at: '2026-06-15T09:40:00',
+        note: 'Notified the district safety lead and documented the incident report.',
+      },
+      {
+        id: 'cl-j3',
+        kind: 'note',
+        by: 'Mr. Okafor',
+        at: '2026-06-15T12:10:00',
+        note: 'Jaylen returned to class calmly after the counselor meeting. Monitoring through the week.',
+      },
+    ],
+    safety: {
+      severity: 'critical',
+      category: 'harm-others',
+      at: '2026-06-15T08:47:00',
+      excerpt: 'i want to bring something and hurt them so they stop',
+      summary: 'Jaylen described wanting to harm other students.',
+      status: 'new',
+      resources: res('988', 'text'),
+      notified: [
+        notif('Teacher', 'Mr. Okafor', 'email', '2026-06-15T08:47:00', 'opened'),
+        notif('Counselor', 'Mr. Ellis', 'email', '2026-06-15T08:47:00', 'opened'),
+        notif('Principal', 'Ms. Reyes', 'in-app', '2026-06-15T08:47:00', 'opened'),
+      ],
+    },
+  }),
+  safetySess('stu-3', 'wonder', {
+    date: '2026-06-14',
+    conversation: CONV_MARCUS,
+    changeLog: [
+      {
+        id: 'cl-m1',
+        kind: 'note',
+        by: 'Mr. Ellis',
+        at: '2026-06-14T14:31:00',
+        note: 'Mandated report filed. Counselor following up.',
+      },
+    ],
+    safety: {
+      severity: 'critical',
+      category: 'abuse',
+      at: '2026-06-14T14:20:00',
+      excerpt: "when my mom's boyfriend gets mad he hits me",
+      summary: 'Marcus disclosed possible physical abuse at home.',
+      status: 'new',
+      resources: res('childhelp'),
+      notified: [
+        notif('Teacher', 'Mrs. Johnson', 'email', '2026-06-14T14:20:00', 'opened'),
+        notif('Counselor', 'Mr. Ellis', 'email', '2026-06-14T14:20:00', 'opened'),
+        notif('Principal', 'Ms. Reyes', 'in-app', '2026-06-14T14:20:00', 'opened'),
+      ],
+    },
+  }),
+  // Warning
+  safetySess('stu-1', 'holes', {
+    date: '2026-06-15',
+    type: 'both',
+    engagementRating: 'red',
+    flags: [
+      {
+        id: 'tf1',
+        type: 'minimal',
+        label: 'Minimal engagement',
+        description: 'Very brief, low-effort answers about the book.',
+      },
+    ],
+    conversation: CONV_TYLER,
+    changeLog: [
+      {
+        id: 'cl-t1',
+        kind: 'note',
+        by: 'Mrs. Johnson',
+        at: '2026-06-15T09:42:00',
+        note: 'Tyler seemed withdrawn in class this morning — flagging for the counselor to follow up.',
+      },
+      {
+        id: 'cl-t2',
+        kind: 'rating',
+        from: 'yellow',
+        to: 'red',
+        by: 'Ms. Reyes',
+        at: '2026-06-15T10:06:00',
+        note: 'Re-rated to Disengaged after re-reading — answers were minimal throughout.',
+      },
+      {
+        id: 'cl-t3',
+        kind: 'note',
+        by: 'Mr. Ellis',
+        at: '2026-06-15T11:25:00',
+        note: 'Met with Tyler 1:1. He opened up a little; scheduled a follow-up for Thursday.',
+      },
+    ],
+    safety: {
+      severity: 'warning',
+      category: 'self-harm',
+      at: '2026-06-15T09:38:00',
+      excerpt: 'everyone would be better off without me',
+      summary: 'Tyler expressed hopelessness and self-directed negative talk.',
+      status: 'new',
+      resources: res('988', 'text'),
+      notified: [
+        notif('Teacher', 'Mrs. Johnson', 'email', '2026-06-15T09:38:00', 'opened'),
+        notif('Counselor', 'Mr. Ellis', 'email', '2026-06-15T09:38:00', 'sent'),
+      ],
+    },
+  }),
+  safetySess('stu-6', 'charlottes_web', {
+    date: '2026-06-14',
+    engagementRating: 'yellow',
+    conversation: CONV_EMMA,
+    changeLog: [
+      {
+        id: 'cl-e1',
+        kind: 'note',
+        by: 'Mrs. Johnson',
+        at: '2026-06-14T11:40:00',
+        note: 'Talked with Emma at recess. Watching the friend group.',
+      },
+    ],
+    safety: {
+      severity: 'warning',
+      category: 'bullying',
+      at: '2026-06-14T11:02:00',
+      excerpt: "i don't want to come to school anymore",
+      summary: 'Emma reported ongoing bullying and school avoidance.',
+      status: 'new',
+      resources: res('text'),
+      notified: [
+        notif('Teacher', 'Mrs. Johnson', 'email', '2026-06-14T11:02:00', 'opened'),
+        notif('Counselor', 'Mr. Ellis', 'email', '2026-06-14T11:02:00', 'opened'),
+      ],
+    },
+  }),
+  safetySess('stu-4', 'ivan', {
+    date: '2026-06-13',
+    engagementRating: 'yellow',
+    conversation: CONV_SOFIA,
+    changeLog: [
+      {
+        id: 'cl-s1',
+        kind: 'safety-resolved',
+        resolution: 'supported',
+        by: 'Mr. Ellis',
+        at: '2026-06-13T15:10:00',
+        note: 'Met with Sofia and set up weekly counselor check-ins. Family notified.',
+      },
+    ],
+    safety: {
+      severity: 'warning',
+      category: 'distress',
+      at: '2026-06-13T13:15:00',
+      excerpt: "i've been feeling really sad lately and i don't know why",
+      summary: 'Sofia described persistent sadness.',
+      status: 'resolved',
+      resolution: 'supported',
+      resources: res('988'),
+      notified: [
+        notif('Teacher', 'Mr. Kim', 'email', '2026-06-13T13:15:00', 'opened'),
+        notif('Counselor', 'Mr. Ellis', 'email', '2026-06-13T13:15:00', 'opened'),
+      ],
+    },
+  }),
+  // Possible
+  safetySess('stu-8', 'the_giver', {
+    date: '2026-06-15',
+    engagementRating: 'green',
+    conversation: CONV_NOAH,
+    safety: {
+      severity: 'possible',
+      category: 'self-harm',
+      at: '2026-06-15T10:05:00',
+      excerpt: 'they basically kill the baby',
+      summary: 'Keyword "kill" matched while describing a plot point in the book.',
+      status: 'new',
+      resources: [],
+      notified: [notif('Teacher', 'Mrs. Johnson', 'digest', '2026-06-15T10:05:00', 'queued')],
+    },
+  }),
+  safetySess('stu-7', 'wimpy_kid', {
+    date: '2026-06-14',
+    type: 'both',
+    flags: [
+      {
+        id: 'lf1',
+        type: 'copy-paste',
+        label: 'Copied response detected',
+        description: 'One answer appears pasted from a summary.',
+      },
+    ],
+    conversation: CONV_LILY,
+    changeLog: [
+      {
+        id: 'cl-l1',
+        kind: 'safety-resolved',
+        resolution: 'dismissed',
+        by: 'Mr. Kim',
+        at: '2026-06-14T16:00:00',
+        note: 'Figure of speech — not a concern.',
+      },
+    ],
+    safety: {
+      severity: 'possible',
+      category: 'distress',
+      at: '2026-06-14T09:50:00',
+      excerpt: 'this book is killing me 😂',
+      summary: 'Keyword "killing me" matched in casual, positive context.',
+      status: 'resolved',
+      resolution: 'dismissed',
+      resources: [],
+      notified: [notif('Teacher', 'Mr. Kim', 'digest', '2026-06-14T09:50:00', 'sent')],
+    },
+  }),
+  safetySess('stu-9', 'wonder', {
+    date: '2026-06-13',
+    status: 'unfinished',
+    conversation: CONV_ZARA,
+    changeLog: [
+      {
+        id: 'cl-z1',
+        kind: 'safety-resolved',
+        resolution: 'dismissed',
+        by: 'Mr. Okafor',
+        at: '2026-06-13T14:45:00',
+        note: 'About a book character and her old school — no current concern.',
+      },
+    ],
+    safety: {
+      severity: 'possible',
+      category: 'bullying',
+      at: '2026-06-13T10:25:00',
+      excerpt: 'a kid got picked on like that',
+      summary: 'Keyword "picked on" referred to a character / past event, not the student.',
+      status: 'resolved',
+      resolution: 'dismissed',
+      resources: [],
+      notified: [notif('Teacher', 'Mr. Okafor', 'digest', '2026-06-13T10:25:00', 'sent')],
+    },
+  }),
 ]
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+export const isSafety = (s) => !!s.safety
+export const isSafetyOpen = (s) => s.safety && s.safety.status !== 'resolved'

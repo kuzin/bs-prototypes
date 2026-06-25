@@ -8,6 +8,9 @@ import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { HighlightCard } from '../../sfr/components/Overview'
 import { SessionsTable } from '../../sfr/components/SessionsTable'
 import { SessionModal } from '../../sfr/components/SessionModal'
+import { SafetyView } from '../../sfr/components/SafetyView'
+import { SafetySettings } from '../../sfr/components/SafetySettings'
+import { SESSIONS } from '../../sfr/data'
 import { Icon } from '@components/Icon/Icon'
 import { Knobs, Variant } from './_shared'
 
@@ -233,6 +236,21 @@ function SessionsTableKnobs() {
   )
 }
 
+function SafetySettingsDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <div style={{ padding: 16, display: 'flex', gap: 12, alignItems: 'center' }}>
+      <Button variant="primary" size="sm" accent="#16A97A" onClick={() => setOpen(true)}>
+        Open Safety Settings →
+      </Button>
+      {open && (
+        <span style={{ fontSize: 13, color: '#64748B' }}>Modal open — Cancel or × to close</span>
+      )}
+      <SafetySettings open={open} onClose={() => setOpen(false)} />
+    </div>
+  )
+}
+
 export const sfrSections = [
   {
     group: 'sfr',
@@ -412,6 +430,42 @@ export const sfrSections = [
           <SessionModalDemo />
         </Variant>
       </>
+    ),
+  },
+  {
+    group: 'sfr',
+    id: 'sfr-safety-view',
+    name: 'SafetyView',
+    desc: (
+      <>
+        The Safety Signals tab — filters Book Talks down to those carrying a wellbeing{' '}
+        <code>safety</code> signal (severity · concern · status · grade) and lists them in the
+        shared <code>SessionsTable</code> with severity + status columns (<code>safetyDetail</code>
+        ). Props: <code>sessions</code>, <code>onSelectSession</code>, <code>defaultFilters</code>.
+      </>
+    ),
+    render: () => (
+      <div className="pt-variant-frame pt-variant-frame--full">
+        <SafetyView sessions={SESSIONS} onSelectSession={() => {}} />
+      </div>
+    ),
+  },
+  {
+    group: 'sfr',
+    id: 'sfr-safety-settings',
+    name: 'SafetySettings',
+    desc: (
+      <>
+        Modal for configuring safety detection — which concern categories Benny watches for, the
+        email threshold, and a searchable recipient directory. Props: <code>open</code>,{' '}
+        <code>onClose</code>. Built from shared <code>SettingRow</code> / <code>SettingList</code>,{' '}
+        <code>SearchInput</code>, and <code>Select</code>.
+      </>
+    ),
+    render: () => (
+      <Variant label="open / closed toggle" bare>
+        <SafetySettingsDemo />
+      </Variant>
     ),
   },
 ]

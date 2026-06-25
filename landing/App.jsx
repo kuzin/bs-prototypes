@@ -38,7 +38,6 @@ const ICON_NAMES = {
   'rostering-district': 'refresh', // district-wide sync
   insights: 'chart-bar', // analytics
   'book-talks': 'message-circle',
-  'safety-signals': 'shield-heart',
   books: 'book-2',
 }
 
