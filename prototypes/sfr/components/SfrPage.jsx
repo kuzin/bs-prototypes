@@ -2,12 +2,15 @@ import { useState } from 'react'
 import { AppShell } from '@components/AppShell/AppShell'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Overview } from './Overview'
+import { SafetyView } from './SafetyView'
 import { FlaggedView } from './FlaggedView'
 import { EngagementView } from './EngagementView'
 import { AllBTWBView } from './AllBTWBView'
 import { SessionModal, ApproveConfirmModal } from './SessionModal'
+import { SafetySettings } from './SafetySettings'
 import { Icon } from '@components/Icon/Icon'
 import { StudentPanel } from '../../ris/components/StudentPanel'
+import { SITE, isSafetyOpen } from '../data'
 import '../../ris/components/StudentPanel.css'
 import '@components/Tabs/Tabs.css'
 import './SfrPage.css'
@@ -20,6 +23,7 @@ function buildNav() {
     { id: 'earned-rewards', label: 'Earned Rewards', icon: 'habits', subgroup: true },
     { id: 'book-talks', label: 'Book Talks', icon: 'book' },
     { id: 'overview', label: 'Overview', icon: 'overview', subgroup: true },
+    { id: 'safety', label: 'Safety Signals', icon: 'shield', subgroup: true },
     { id: 'flagged', label: 'Flagged Sessions', icon: 'flag', subgroup: true },
     { id: 'engagement', label: 'Engagement Sessions', icon: 'flame', subgroup: true },
     { id: 'all', label: 'All Book Talks', icon: 'book', subgroup: true },
@@ -30,6 +34,7 @@ function buildNav() {
 
 function buildBadges(sessions) {
   return {
+    safety: sessions.filter(isSafetyOpen).length,
     flagged: sessions.filter(
       (s) => (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0,
     ).length,
@@ -40,6 +45,7 @@ function buildBadges(sessions) {
 
 const TAB_ITEMS = [
   { id: 'overview', label: 'Overview' },
+  { id: 'safety', label: 'Safety Signals' },
   { id: 'flagged', label: 'Flagged Sessions' },
   { id: 'engagement', label: 'Engagement Sessions' },
   { id: 'all', label: 'All Book Talks' },
@@ -59,6 +65,9 @@ export function SfrPage({
   const [sessionList, setSessionList] = useState([])
   const [approveTarget, setApproveTarget] = useState(null)
   const [profileStudent, setProfileStudent] = useState(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+
+  const badges = buildBadges(sessions)
 
   function confirmApprove() {
     if (!approveTarget) return
@@ -69,7 +78,7 @@ export function SfrPage({
     const nextType = previousType === 'both' ? 'engagement' : null
     const entry = {
       id: `log-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-      by: 'Mr. Garcia',
+      by: SITE.admin,
       at: new Date().toISOString(),
       kind: 'approved',
       removedCount: clearedFlags.length,
@@ -117,7 +126,7 @@ export function SfrPage({
           subtitle: 'Find and log for students and classes.',
           nav: buildNav(sessions),
           active: activeTab,
-          badges: buildBadges(sessions),
+          badges,
           onNavigate: (id) => {
             if (id === 'classes') return
             if (id === 'book-talks') {
@@ -155,8 +164,12 @@ export function SfrPage({
                 { id: 'reader', label: 'By Reader' },
               ]}
             />
-            {/* Reading Integrity Settings */}
-            <button className="sfr-settings-btn" title="Reading Integrity Settings">
+            {/* Trigger words & notification settings */}
+            <button
+              className="sfr-settings-btn"
+              title="Trigger words & notification settings"
+              onClick={() => setSettingsOpen(true)}
+            >
               <Icon name="settings" size={16} />
               Settings
             </button>
@@ -166,20 +179,7 @@ export function SfrPage({
         {/* Tabs */}
         <div className="sfr-tabs-bar">
           <Tabs
-            items={TAB_ITEMS.map((t) => ({
-              ...t,
-              count:
-                t.id === 'flagged'
-                  ? sessions.filter(
-                      (s) =>
-                        (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0,
-                    ).length
-                  : t.id === 'engagement'
-                    ? sessions.filter((s) => s.type === 'engagement' || s.type === 'both').length
-                    : t.id === 'all'
-                      ? sessions.length
-                      : undefined,
-            }))}
+            items={TAB_ITEMS.map((t) => ({ ...t, count: badges[t.id] }))}
             active={activeTab}
             onChange={onActiveTab}
             accent="#16A97A"
@@ -192,6 +192,13 @@ export function SfrPage({
               sessions={sessions}
               onGoToTab={goToTabWithFilters}
               onSelectSession={handleSelectSession}
+            />
+          )}
+          {activeTab === 'safety' && (
+            <SafetyView
+              sessions={sessions}
+              onSelectSession={handleSelectSession}
+              defaultFilters={tabFilters}
             />
           )}
           {activeTab === 'flagged' && (
@@ -240,6 +247,7 @@ export function SfrPage({
       <SessionModal
         session={selectedSession}
         allSessions={sessions}
+        reviewer={SITE.admin}
         onClose={() => onSelectSession(null)}
         onUpdateSession={onUpdateSession}
         onSelectSession={onSelectSession}
@@ -260,6 +268,8 @@ export function SfrPage({
         onCancel={() => setApproveTarget(null)}
         onConfirm={confirmApprove}
       />
+
+      <SafetySettings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </>
   )
 }

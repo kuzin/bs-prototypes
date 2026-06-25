@@ -27,8 +27,8 @@ export function App() {
         {page === 'dashboard' ? (
           <DashboardView
             sessions={sessions}
-            onGoToSfr={() => {
-              setActiveTab('overview')
+            onGoToSfr={(tab = 'overview') => {
+              setActiveTab(tab)
               setPage('sfr')
             }}
           />

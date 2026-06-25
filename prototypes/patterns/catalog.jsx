@@ -153,7 +153,7 @@ export const GROUPS = [
     id: 'sfr',
     kind: 'prototype',
     title: 'Sessions for Review',
-    desc: 'Components for the SfR prototype — overview highlight cards, sessions table, and the session detail modal.',
+    desc: 'Components for the SfR prototype — overview highlight cards, sessions table, the session detail modal, and the safety-signal review view + settings.',
     color: '#16A97A',
     icon: <Icon name="message-check" size={22} />,
   },

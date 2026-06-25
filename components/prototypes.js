@@ -37,7 +37,7 @@ export const PROTOTYPES = [
     section: 'Prototypes',
     href: '/bs-prototypes/sfr/',
     accent: '#16A97A',
-    description: 'Redesigned Sessions for Review with AI summary.',
+    description: 'Review Book Talks for integrity, engagement, and student-safety signals.',
   },
   {
     id: 'admin-dashboard',
@@ -102,14 +102,6 @@ export const PROTOTYPES = [
     href: '/bs-prototypes/book-talks/',
     accent: '#14B8A6',
     description: 'Self-contained Benny Book Talk activity badge — chat to earn it.',
-  },
-  {
-    id: 'safety-signals',
-    name: 'Safety Signals',
-    section: 'Prototypes',
-    href: '/bs-prototypes/safety-signals/',
-    accent: '#DC2626',
-    description: 'Flag Benny chats for self-harm & safety risk — Critical / Warning / Possible.',
   },
   {
     id: 'books',

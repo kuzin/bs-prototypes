@@ -3,11 +3,11 @@ import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import { Select } from '@components/Form/Form'
 import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
 import { Icon } from '@components/Icon/Icon'
-import { SessionsTable, SAFETY_SEVERITY, SAFETY_CATEGORY } from '../../sfr/components/SessionsTable'
+import { SessionsTable, SAFETY_SEVERITY, SAFETY_CATEGORY } from './SessionsTable'
 import { isSafety, isSafetyOpen } from '../data'
 import '@components/FilterBar/FilterBar.css'
 import '@components/Form/Form.css'
-import '../../sfr/components/ListView.css'
+import './ListView.css'
 
 const STATUS_LABELS = {
   open: 'Open',

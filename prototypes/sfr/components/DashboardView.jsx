@@ -1,32 +1,44 @@
 import { AppShell } from '@components/AppShell/AppShell'
 import { Skeleton } from '@components/Primitives/Primitives'
 import { AlertsBanner } from '@components/AlertsBanner/AlertsBanner'
+import { isSafety, isSafetyOpen } from '../data'
 import '@components/Primitives/Primitives.css'
 import './DashboardView.css'
 
 export function DashboardView({ sessions, onGoToSfr }) {
+  const openSafety = sessions.filter(isSafetyOpen)
+  const critical = openSafety.filter((s) => s.safety.severity === 'critical').length
+  const otherSafety = openSafety.length - critical
   const flagged = sessions.filter(
-    (s) => (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0,
+    (s) =>
+      !isSafety(s) && (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0,
   ).length
-  const mixed = sessions.filter((s) => s.engagementRating === 'yellow').length
   const positive = sessions.filter((s) => s.engagementRating === 'green').length
 
   const alerts = [
+    critical > 0 && {
+      id: 'critical',
+      level: 'critical',
+      title: `${critical} critical safety ${critical === 1 ? 'signal' : 'signals'}`,
+      description: 'Self-harm, threats, or abuse flagged in Book Talks — review and escalate.',
+      action: 'Review',
+      tab: 'safety',
+    },
+    otherSafety > 0 && {
+      id: 'other-safety',
+      level: 'warning',
+      title: `${otherSafety} safety ${otherSafety === 1 ? 'signal' : 'signals'} to review`,
+      description: 'Distress, bullying, or low-confidence keyword matches flagged this week.',
+      action: 'Review',
+      tab: 'safety',
+    },
     flagged > 0 && {
       id: 'flagged',
-      level: 'critical',
-      title: `${flagged} flagged ${flagged === 1 ? 'session' : 'sessions'} need review`,
-      description: 'Possible reading-integrity concerns in Book Talks with Benny.',
+      level: 'info',
+      title: `${flagged} flagged for reading integrity`,
+      description: 'Possible copied or low-effort responses in Book Talk conversations.',
       action: 'Review',
-      tab: 'sfr',
-    },
-    mixed > 0 && {
-      id: 'mixed',
-      level: 'warning',
-      title: `${mixed} ${mixed === 1 ? 'session needs' : 'sessions need'} a closer look`,
-      description: 'Mixed engagement — students who may need a check-in.',
-      action: 'Review',
-      tab: 'sfr',
+      tab: 'flagged',
     },
     positive > 0 && {
       id: 'positive',
@@ -34,7 +46,7 @@ export function DashboardView({ sessions, onGoToSfr }) {
       title: `${positive} students positively engaged`,
       description: 'Strong Book Talk conversations worth celebrating.',
       action: 'Review',
-      tab: 'sfr',
+      tab: 'engagement',
     },
   ].filter(Boolean)
 
@@ -67,7 +79,7 @@ export function DashboardView({ sessions, onGoToSfr }) {
               <span className="dh-alerts-title">Alerts</span>
               <span className="dh-alerts-count">{alerts.length}</span>
             </div>
-            <AlertsBanner alerts={alerts} onNavigate={() => onGoToSfr()} />
+            <AlertsBanner alerts={alerts} onNavigate={(tab) => onGoToSfr(tab)} />
           </>
         )}
 

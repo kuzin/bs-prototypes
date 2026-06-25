@@ -6,7 +6,7 @@ import { SearchInput } from '@components/SearchInput/SearchInput'
 import { IconButton } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 import { SettingRow, SettingList } from '@components/SettingRow/SettingRow'
-import { SAFETY_CATEGORY } from '../../sfr/components/SessionsTable'
+import { SAFETY_CATEGORY } from './SessionsTable'
 import '@components/Form/Form.css'
 import './SafetySettings.css'
 
