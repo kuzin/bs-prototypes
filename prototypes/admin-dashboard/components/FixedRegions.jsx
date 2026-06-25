@@ -1,4 +1,12 @@
-import { FEATURE_BAR, QUICK_ACTIONS, ENGAGEMENT, GOAL_OPTIONS } from '../data'
+import { useState } from 'react'
+import {
+  FEATURE_BAR,
+  QUICK_ACTIONS,
+  ENGAGEMENT,
+  GOAL_OPTIONS,
+  RCA_PROMOS,
+  RCA_TEACHER,
+} from '../data'
 import { SettingsPopover } from './SettingsPopover'
 import { Icon } from '@components/Icon/Icon'
 
@@ -42,12 +50,55 @@ const CogIcon = () => <Icon name="settings" size={14} />
 // ─── Quick Actions card ──────────────────────────────────────────────────
 // A compact launcher of the most common jumps, keyed by role. The first three
 // land above the fold.
-function QuickActionsCard({ role = 'teacher' }) {
-  const actions = QUICK_ACTIONS[role] || QUICK_ACTIONS.teacher
+const QUICK_ACTIONS_FIELDS = [
+  {
+    key: 'limit',
+    label: 'Show',
+    type: 'select',
+    help: 'Number of quick actions to display.',
+    options: [
+      { value: '3', label: 'Top 3' },
+      { value: '4', label: 'Top 4' },
+      { value: '5', label: 'Top 5' },
+      { value: 'all', label: 'All' },
+    ],
+  },
+]
+const QUICK_ACTIONS_DEFAULTS = { limit: 'all' }
+
+function QuickActionsCard({
+  role = 'teacher',
+  settings = {},
+  openSettings,
+  setOpenSettings,
+  onChange,
+  onReset,
+}) {
+  const allActions = QUICK_ACTIONS[role] || QUICK_ACTIONS.teacher
+  const limit = settings.limit === 'all' ? Infinity : parseInt(settings.limit, 10)
+  const actions = isFinite(limit) ? allActions.slice(0, limit) : allActions
+  const isSettingsOpen = openSettings?.id === 'quick-actions'
   return (
     <div className="adm-rail-card adm-rail-card--quick">
       <div className="adm-rail-head">
         <h3 className="adm-rail-title">Quick Actions</h3>
+        <div className="adm-rail-head-actions">
+          <button
+            type="button"
+            className={`adm-rail-cog ${isSettingsOpen ? 'is-on' : ''}`}
+            onClick={(e) =>
+              setOpenSettings?.(
+                isSettingsOpen
+                  ? null
+                  : { id: 'quick-actions', anchorRect: e.currentTarget.getBoundingClientRect() },
+              )
+            }
+            title="Quick Actions settings"
+            aria-label="Quick Actions settings"
+          >
+            <CogIcon />
+          </button>
+        </div>
       </div>
       <div className="adm-quick-actions">
         {actions.map((a) => (
@@ -62,45 +113,183 @@ function QuickActionsCard({ role = 'teacher' }) {
           </a>
         ))}
       </div>
+      {isSettingsOpen && (
+        <SettingsPopover
+          anchorRect={openSettings.anchorRect}
+          fields={QUICK_ACTIONS_FIELDS}
+          value={{ ...QUICK_ACTIONS_DEFAULTS, ...settings }}
+          defaults={QUICK_ACTIONS_DEFAULTS}
+          onChange={onChange}
+          onReset={onReset}
+          onClose={() => setOpenSettings?.(null)}
+        />
+      )}
     </div>
   )
 }
 
 // ─── Engagement card (rail-fixed; no settings) ───────────────────────────
-function EngagementCard() {
+
+// Splits promo text around the highlighted phrase and wraps it in <strong>.
+function PromoText({ text, highlight }) {
+  if (!highlight || !text.includes(highlight)) return <p>{text}</p>
+  const [before, after] = text.split(highlight)
+  return (
+    <p>
+      {before}
+      <strong className="adm-rca-promo-hl">{highlight}</strong>
+      {after}
+    </p>
+  )
+}
+
+function EngagementCard({ role = 'teacher' }) {
+  const [bennySent, setBennySent] = useState(false)
   const { current, levels } = ENGAGEMENT
-  // Active level = highest `min` ≤ current. Next level (if any) drives the
-  // "Next Level" row at the bottom.
+
   let activeIdx = 0
   for (let i = 0; i < levels.length; i++) {
     if (current >= levels[i].min) activeIdx = i
   }
   const active = levels[activeIdx]
   const next = levels[activeIdx + 1]
+
+  const segBar = (
+    <div className="adm-rca-bar" style={{ '--active': activeIdx }}>
+      {levels.map((lv, i) => (
+        <span
+          key={lv.id}
+          className={`adm-rca-seg adm-rca-seg--${lv.color} ${i === activeIdx ? 'is-active' : ''}`}
+        />
+      ))}
+      <span className={`adm-bar-thumb adm-bar-thumb--${active.color}`} aria-hidden="true" />
+    </div>
+  )
+
+  // ── Teacher view ─────────────────────────────────────────────────────────
+  if (role === 'teacher') {
+    const { activeStudents, targetStudents, prizeCount, state } = RCA_TEACHER
+    const bandTone =
+      activeStudents < 5 ? 'red' : activeStudents < targetStudents ? 'amber' : 'green'
+    const effectiveState = bennySent ? 'in-progress' : state
+
+    return (
+      <div className="adm-rail-card adm-rail-card--engagement">
+        <div className="adm-rail-head">
+          <h3 className="adm-rail-title">Engagement</h3>
+        </div>
+        <div className="adm-rca">
+          {segBar}
+          <div className={`adm-rca-active-band adm-rca-active-band--${bandTone}`}>
+            {activeStudents} Active Student{activeStudents !== 1 ? 's' : ''}
+          </div>
+          {effectiveState === 'shipped' ? (
+            <div className="adm-rca-shipped">
+              <img
+                src="/bs-prototypes/benny-excited.svg"
+                alt=""
+                className="adm-rca-shipped-benny"
+              />
+              <div className="adm-rca-shipped-body">
+                <strong>Your Benny is on its way!</strong>
+                <p>
+                  Share a photo using <strong>#bennysightings</strong> and we might feature you!
+                </p>
+                <button
+                  type="button"
+                  className="adm-rca-shipped-dismiss"
+                  onClick={() => setBennySent(true)}
+                >
+                  × Dismiss
+                </button>
+              </div>
+            </div>
+          ) : effectiveState === 'earned' ? (
+            <div className="adm-rca-benny-promo">
+              <img src="/bs-prototypes/benny-happy.svg" alt="" className="adm-rca-benny-img" />
+              <div>
+                <p>
+                  Congratulations! {targetStudents} of your students have logged. Get your{' '}
+                  <strong className="adm-rca-benny-prize">{prizeCount} free Benny plushies!</strong>
+                </p>
+                <button type="button" className="adm-rca-promo-action">
+                  Redeem
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="adm-rca-benny-promo">
+              <img src="/bs-prototypes/benny-happy.svg" alt="" className="adm-rca-benny-img" />
+              <p>
+                The first 3 teachers to reach {targetStudents} active students will win{' '}
+                <strong className="adm-rca-benny-prize">{prizeCount} free Benny plushies!</strong>
+              </p>
+            </div>
+          )}
+          <a href="#" className="adm-rca-learn" onClick={(e) => e.preventDefault()}>
+            Get your badge and learn more ›
+          </a>
+        </div>
+      </div>
+    )
+  }
+
+  // ── Media Specialist (+ kitchen demo) view ───────────────────────────────
+  const isNewcomer = current === 0
+  const levelId = isNewcomer ? 'newcomer' : active.id
+  const levelName = isNewcomer ? 'Newcomer' : active.name
+  const article = /^[aeiou]/i.test(levelName) ? 'an' : 'a'
+  const promo = RCA_PROMOS[levelId]
+
   return (
     <div className="adm-rail-card adm-rail-card--engagement">
       <div className="adm-rail-head">
         <h3 className="adm-rail-title">Engagement</h3>
       </div>
       <div className="adm-rca">
-        <div className="adm-rca-row">
-          <span className={`adm-rca-val adm-rca-val--${active.color}`}>{active.name}</span>
-          <span className="adm-rca-meta">{current}% engaged</span>
-        </div>
-        <div className="adm-rca-bar" style={{ '--active': activeIdx }}>
-          {levels.map((lv, i) => (
+        <div className="adm-rca-level-row">
+          <div className="adm-rca-level-text">
+            <span className="adm-rca-level-caption">Your school is currently {article}</span>
             <span
-              key={lv.id}
-              className={`adm-rca-seg adm-rca-seg--${lv.color} ${i === activeIdx ? 'is-active' : ''}`}
-            />
-          ))}
-          <span className={`adm-bar-thumb adm-bar-thumb--${active.color}`} aria-hidden="true" />
+              className={`adm-rca-level-name adm-rca-level--${isNewcomer ? 'gray' : active.color}`}
+            >
+              {levelName}
+            </span>
+          </div>
+          <div className={`adm-rca-badge adm-rca-badge--${levelId}`} aria-hidden="true" />
+        </div>
+        {segBar}
+        <div className={`adm-rca-band adm-rca-band--${levelId}`}>
+          <span>Engagement</span>
+          <span>{current}%</span>
         </div>
         {next && (
           <div className="adm-rca-foot">
-            Next level: <strong>{next.name}</strong> at {next.min}%
+            Next Level: <strong>{next.name}</strong> · {next.min}%
           </div>
         )}
+        {promo && (
+          <div className="adm-rca-promo">
+            <span className="adm-rca-promo-ico" aria-hidden="true">
+              💰
+            </span>
+            <div className="adm-rca-promo-body">
+              <PromoText text={promo.text} highlight={promo.highlight} />
+              {promo.action && (
+                <button
+                  type="button"
+                  className="adm-rca-promo-action"
+                  onClick={(e) => e.preventDefault()}
+                >
+                  {promo.action}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+        <a href="#" className="adm-rca-learn" onClick={(e) => e.preventDefault()}>
+          Get your badge and learn more ›
+        </a>
       </div>
     </div>
   )
@@ -128,18 +317,10 @@ export const GOAL_FIELDS = [
 ]
 export const GOAL_DEFAULTS = { scope: 'community' }
 
-function CommunityGoalCard({
-  editing,
-  settings,
-  openSettings,
-  setOpenSettings,
-  onChange,
-  onReset,
-}) {
+function CommunityGoalCard({ settings, openSettings, setOpenSettings, onChange, onReset }) {
   const scope = settings.scope || 'community'
   const g = GOAL_OPTIONS[scope] || GOAL_OPTIONS.community
   const pct = Math.min(100, Math.round((g.value / g.goal) * 100))
-  // District goals are set centrally — only the community goal is user-managed.
   const canEdit = scope === 'community'
   const isSettingsOpen = openSettings?.id === 'community-goal'
   return (
@@ -147,28 +328,26 @@ function CommunityGoalCard({
       <div className="adm-rail-head">
         <h3 className="adm-rail-title">{g.name}</h3>
         <div className="adm-rail-head-actions">
-          {canEdit && !editing && (
+          {canEdit && (
             <button type="button" className="adm-rail-action">
               Update Goal
             </button>
           )}
-          {editing && (
-            <button
-              type="button"
-              className={`adm-rail-cog ${isSettingsOpen ? 'is-on' : ''}`}
-              onClick={(e) =>
-                setOpenSettings(
-                  isSettingsOpen
-                    ? null
-                    : { id: 'community-goal', anchorRect: e.currentTarget.getBoundingClientRect() },
-                )
-              }
-              title="Goal settings"
-              aria-label="Goal settings"
-            >
-              <CogIcon />
-            </button>
-          )}
+          <button
+            type="button"
+            className={`adm-rail-cog ${isSettingsOpen ? 'is-on' : ''}`}
+            onClick={(e) =>
+              setOpenSettings(
+                isSettingsOpen
+                  ? null
+                  : { id: 'community-goal', anchorRect: e.currentTarget.getBoundingClientRect() },
+              )
+            }
+            title="Goal settings"
+            aria-label="Goal settings"
+          >
+            <CogIcon />
+          </button>
         </div>
       </div>
       <div className="adm-goal-widget">
@@ -223,12 +402,19 @@ export function FixedRail({
     role === 'kitchen-full' ||
     role === 'empty'
   const goalSettings = { ...GOAL_DEFAULTS, ...(settings['community-goal'] || {}) }
+  const qaSettings = { ...QUICK_ACTIONS_DEFAULTS, ...(settings['quick-actions'] || {}) }
   return (
     <aside className="adm-rail">
-      <QuickActionsCard role={role} />
-      {showEngagement && <EngagementCard />}
+      <QuickActionsCard
+        role={role}
+        settings={qaSettings}
+        openSettings={openSettings}
+        setOpenSettings={setOpenSettings}
+        onChange={(patch) => updateSettings?.('quick-actions', patch)}
+        onReset={() => resetSettings?.('quick-actions')}
+      />
+      {showEngagement && <EngagementCard role={role} />}
       <CommunityGoalCard
-        editing={editing}
         settings={goalSettings}
         openSettings={openSettings}
         setOpenSettings={setOpenSettings}
