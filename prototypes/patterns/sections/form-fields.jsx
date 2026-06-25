@@ -22,7 +22,7 @@ function RichTextKnobs() {
   const [html, setHtml] = useState('<p>Tell readers <strong>all about</strong> your challenge!</p>')
   return (
     <div className="pt-variant-frame">
-      <div style={{ width: 360, maxWidth: '100%' }}>
+      <div>
         <RichText value={html} onChange={setHtml} placeholder="Write a description…" />
         <pre
           style={{
@@ -46,7 +46,7 @@ function ImageDropzoneKnobs() {
   const [name, setName] = useState('')
   return (
     <div className="pt-variant-frame">
-      <div style={{ width: 360, maxWidth: '100%' }}>
+      <div>
         <ImageDropzone
           fileName={name}
           onFile={setName}
@@ -394,14 +394,18 @@ function NumberInputKnobs() {
         </Field>
       </Knobs>
       <div className="pt-variant-frame">
-        <NumberInput
-          value={value}
-          onChange={setValue}
-          min={min}
-          max={max}
-          step={step}
-          size={size}
-        />
+        {/* .ninp is width:100% (fills a form field), so cap it here to demo its
+            natural stepper size rather than letting it span the whole frame. */}
+        <div style={{ maxWidth: 220 }}>
+          <NumberInput
+            value={value}
+            onChange={setValue}
+            min={min}
+            max={max}
+            step={step}
+            size={size}
+          />
+        </div>
       </div>
     </>
   )

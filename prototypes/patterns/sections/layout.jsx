@@ -135,9 +135,6 @@ function HeroKnobs() {
   const [accent, setAccent] = useState('#E8866A')
   const [accentBg, setAccentBg] = useState('#FDF1ED')
   const [withAction, setAction] = useState(true)
-  const [withScore, setWithScore] = useState(true)
-  const [score, setScore] = useState(71)
-  const [delta, setDelta] = useState(7)
 
   const modeSelect = (
     <Field label="mode">
@@ -185,36 +182,9 @@ function HeroKnobs() {
               onChange={(e) => setAccentBg(e.target.value)}
             />
           </Field>
-          <Field label="score card">
-            <Toggle checked={withScore} onChange={setWithScore} />
-          </Field>
-          {withScore && (
-            <Field label="score">
-              <Input
-                type="number"
-                value={score}
-                onChange={(e) => setScore(Number(e.target.value))}
-              />
-            </Field>
-          )}
-          {withScore && (
-            <Field label="delta">
-              <Input
-                type="number"
-                value={delta}
-                onChange={(e) => setDelta(Number(e.target.value))}
-              />
-            </Field>
-          )}
           {actionToggle}
         </Knobs>
-        <Hero
-          bucket={bucket}
-          accentBg={accentBg}
-          score={withScore ? score : undefined}
-          delta={withScore ? delta : undefined}
-          action={actionNode}
-        />
+        <Hero bucket={bucket} accentBg={accentBg} action={actionNode} />
       </>
     )
   }
@@ -341,8 +311,8 @@ export const layoutSections = [
     desc: (
       <>
         One unified page header. <code>mode</code> picks between the three shapes:{' '}
-        <code>bucket</code> (auto-derive icon/title/accent from SECTIONS + right-side score),{' '}
-        <code>avatar</code> (overview-style), and <code>icon</code> (analytics-style with subtitle).
+        <code>bucket</code> (auto-derive icon/title/accent from SECTIONS), <code>avatar</code>{' '}
+        (overview-style), and <code>icon</code> (analytics-style with subtitle).
       </>
     ),
     render: () => (
