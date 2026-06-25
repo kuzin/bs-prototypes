@@ -45,12 +45,9 @@ function greeting() {
 
 // Small icon helpers (use SVG so they scale with the Button)
 const Caret = () => <Icon name="chevron-down" size={11} />
-const Pencil = () => <Icon name="pencil" size={13} />
-const Check = () => <Icon name="check" size={13} stroke={2.4} />
 const Cog = () => <Icon name="settings" size={18} />
 const XIcon = () => <Icon name="x" size={18} />
 const Grip = () => <Icon name="grip" size={18} />
-const Megaphone = () => <Icon name="speakerphone" size={16} />
 // Empty-state icon for "every widget is already placed" — a dashboard grid.
 const DashboardFullSvg = () => <Icon name="layout-grid" size={40} />
 
@@ -141,7 +138,10 @@ function saveState(role, state) {
 }
 
 export function App() {
-  const [editing, setEditing] = useState(false)
+  // Edit mode is disabled — this dashboard is presented view-only. With `editing`
+  // pinned false, every edit/adjust affordance (drag, add-widget palette,
+  // per-widget settings, width controls, edit hint) is gated off and never renders.
+  const editing = false
   const [role, setRole] = useState(() => {
     try {
       return localStorage.getItem(ROLE_KEY) || 'teacher'
@@ -179,10 +179,6 @@ export function App() {
     try {
       localStorage.setItem('adm-feature-on', next ? '1' : '0')
     } catch {}
-  }
-  const toggleEditing = () => {
-    setOpenSettings(null)
-    setEditing((e) => !e)
   }
   const resetDashboard = () => {
     try {
@@ -236,6 +232,7 @@ export function App() {
         className={[
           'adm-cell',
           editing && 'adm-cell--editing',
+          hasSettings && 'adm-cell--has-settings',
           cat.scrollable && 'adm-cell--scroll',
           cat.size === 'small' && 'adm-cell--small',
         ]
@@ -291,6 +288,23 @@ export function App() {
             onClose={() => setOpenSettings(null)}
           />
         )}
+        {/* Per-block settings — always visible (no edit mode); opens this widget's
+            settings popover. Layout editing (drag / add / remove) stays hidden. */}
+        {hasSettings && (
+          <button
+            type="button"
+            className={`adm-w-settings ${isSettingsOpen ? 'is-on' : ''}`}
+            onClick={(e) =>
+              setOpenSettings(
+                isSettingsOpen ? null : { id, anchorRect: e.currentTarget.getBoundingClientRect() },
+              )
+            }
+            title="Widget settings"
+            aria-label="Widget settings"
+          >
+            <Cog />
+          </button>
+        )}
         <Comp settings={{ ...(cat.defaults || {}), ...widgetSettings }} role={role} />
       </div>
     )
@@ -318,22 +332,6 @@ export function App() {
               <Button variant="primary" iconRight={<Caret />}>
                 Log Reading
               </Button>
-              <Button
-                variant={featureOn ? 'primary' : 'secondary'}
-                icon={<Megaphone />}
-                onClick={toggleFeature}
-                title={featureOn ? 'Hide feature announcement' : 'Show feature announcement'}
-                aria-label="Toggle feature announcement"
-                className="adm-edit-btn"
-              />
-              <Button
-                variant={editing ? 'primary' : 'secondary'}
-                icon={editing ? <Check /> : <Pencil />}
-                onClick={toggleEditing}
-                title={editing ? 'Done editing' : 'Edit dashboard'}
-                aria-label={editing ? 'Done editing' : 'Edit dashboard'}
-                className="adm-edit-btn"
-              />
             </div>
           </header>
 
@@ -362,18 +360,7 @@ export function App() {
                   variant="dashed"
                   className="adm-empty"
                   title="Your dashboard is empty"
-                  description="Add widgets to build your dashboard."
-                  action={
-                    !editing ? (
-                      <Button variant="primary" onClick={toggleEditing}>
-                        Edit Dashboard
-                      </Button>
-                    ) : (
-                      <Button variant="primary" onClick={() => setPaletteOpen(true)}>
-                        ＋ Add Widget
-                      </Button>
-                    )
-                  }
+                  description="There are no widgets to show for this view."
                 />
               ) : (
                 <CardGrid

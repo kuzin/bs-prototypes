@@ -61,6 +61,37 @@ export const ENGAGEMENT = {
   ],
 }
 
+// Promotional content shown in the Engagement card per RCA level (media view).
+// `highlight` is the substring to bold in green. `action` is the CTA label.
+export const RCA_PROMOS = {
+  newcomer: null,
+  spark: {
+    text: 'Earn a $25 gift card when your school reaches Igniter status!',
+    highlight: '$25 gift card',
+    action: null,
+  },
+  igniter: {
+    text: 'Confirm your contact details for a chance to win a $100 gift card when your school reaches Trailblazer!',
+    highlight: '$100 gift card',
+    action: 'Confirm Contact Details',
+  },
+  pathfinder: {
+    text: 'Confirm your contact details for a chance to win a $100 gift card when your school reaches Trailblazer!',
+    highlight: '$100 gift card',
+    action: 'Confirm Contact Details',
+  },
+  trailblazer: null,
+}
+
+// Teacher active-student contest data.
+// state: 'in-progress' | 'earned' | 'shipped'
+export const RCA_TEACHER = {
+  activeStudents: 6,
+  targetStudents: 10,
+  prizeCount: 3,
+  state: 'in-progress',
+}
+
 // ─── Fixed right rail — What's New cards ──────────────────────────────────────
 export const WHATS_NEW = [
   {
