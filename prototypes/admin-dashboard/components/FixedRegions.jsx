@@ -164,7 +164,6 @@ function PromoText({ text, highlight }) {
 }
 
 function EngagementCard({ role = 'teacher' }) {
-  const [bennySent, setBennySent] = useState(false)
   const { current, levels } = ENGAGEMENT
 
   let activeIdx = 0
@@ -188,10 +187,9 @@ function EngagementCard({ role = 'teacher' }) {
 
   // ── Teacher view ─────────────────────────────────────────────────────────
   if (role === 'teacher') {
-    const { activeStudents, targetStudents, prizeCount, state } = RCA_TEACHER
+    const { activeStudents, targetStudents } = RCA_TEACHER
     const bandTone =
       activeStudents < 5 ? 'red' : activeStudents < targetStudents ? 'amber' : 'green'
-    const effectiveState = bennySent ? 'in-progress' : state
 
     return (
       <div className="adm-rail-card adm-rail-card--engagement">
@@ -203,49 +201,6 @@ function EngagementCard({ role = 'teacher' }) {
           <div className={`adm-rca-active-band adm-rca-active-band--${bandTone}`}>
             {activeStudents} Active Student{activeStudents !== 1 ? 's' : ''}
           </div>
-          {effectiveState === 'shipped' ? (
-            <div className="adm-rca-shipped">
-              <img
-                src="/bs-prototypes/benny-excited.svg"
-                alt=""
-                className="adm-rca-shipped-benny"
-              />
-              <div className="adm-rca-shipped-body">
-                <strong>Your Benny is on its way!</strong>
-                <p>
-                  Share a photo using <strong>#bennysightings</strong> and we might feature you!
-                </p>
-                <button
-                  type="button"
-                  className="adm-rca-shipped-dismiss"
-                  onClick={() => setBennySent(true)}
-                >
-                  × Dismiss
-                </button>
-              </div>
-            </div>
-          ) : effectiveState === 'earned' ? (
-            <div className="adm-rca-benny-promo">
-              <img src="/bs-prototypes/benny-happy.svg" alt="" className="adm-rca-benny-img" />
-              <div>
-                <p>
-                  Congratulations! {targetStudents} of your students have logged. Get your{' '}
-                  <strong className="adm-rca-benny-prize">{prizeCount} free Benny plushies!</strong>
-                </p>
-                <button type="button" className="adm-rca-promo-action">
-                  Redeem
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="adm-rca-benny-promo">
-              <img src="/bs-prototypes/benny-happy.svg" alt="" className="adm-rca-benny-img" />
-              <p>
-                The first 3 teachers to reach {targetStudents} active students will win{' '}
-                <strong className="adm-rca-benny-prize">{prizeCount} free Benny plushies!</strong>
-              </p>
-            </div>
-          )}
           <a href="#" className="adm-rca-learn" onClick={(e) => e.preventDefault()}>
             Get your badge and learn more ›
           </a>
