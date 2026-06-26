@@ -24,6 +24,7 @@ import { challengeCreatorSections } from './sections/challenge-creator'
 import { bookTalksSections } from './sections/book-talks'
 import { studentProfileSections } from './sections/student-profile'
 import { booksSections } from './sections/books'
+import { adminDashboardSections } from './sections/admin-dashboard'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -54,6 +55,7 @@ import '../challenge-creator/index.css'
 import '../book-talks/index.css'
 import '../student-profile/BeanstackProfile.css'
 import '../books/index.css'
+import '../admin-dashboard/index.css'
 
 import './App.css'
 
@@ -197,6 +199,14 @@ export const GROUPS = [
     color: '#0D9488',
     icon: <Icon name="compass" size={22} />,
   },
+  {
+    id: 'admin-dashboard',
+    kind: 'prototype',
+    title: 'Admin Dashboard',
+    desc: 'Components for the Admin Dashboard prototype — the anchored settings popover used by per-widget and rail-card settings.',
+    color: '#2563EB',
+    icon: <Icon name="layout-dashboard" size={22} />,
+  },
 ]
 
 export const SECTIONS = [
@@ -214,4 +224,5 @@ export const SECTIONS = [
   ...bookTalksSections,
   ...studentProfileSections,
   ...booksSections,
+  ...adminDashboardSections,
 ]

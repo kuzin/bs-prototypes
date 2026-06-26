@@ -156,15 +156,11 @@ export function SettingsPopover({
                 )}
               </div>
             )}
-            {f.help && <div className="adm-set-help">{f.help}</div>}
           </div>
         ))}
       </div>
 
       <div className="adm-set-foot">
-        <Button type="button" variant="secondary" size="sm" onClick={onReset}>
-          Reset to defaults
-        </Button>
         <Button type="button" variant="primary" size="sm" onClick={onClose}>
           Done
         </Button>

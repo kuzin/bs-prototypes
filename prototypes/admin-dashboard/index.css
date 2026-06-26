@@ -87,7 +87,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 28px 0 24px;
+  padding: 40px 0 24px;
   margin-bottom: 8px;
   gap: 20px;
   flex-wrap: wrap;
@@ -263,27 +263,6 @@ button {
 }
 
 /* Non-dismissible promo bar — white background, blue border, icon-in-box */
-.adm-promo-bar {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  margin-bottom: 16px;
-  background: #fff;
-  border: 1.5px solid #bfdbfe;
-  border-radius: 14px;
-}
-.adm-promo-bar-icon {
-  flex-shrink: 0;
-  width: 40px;
-  height: 40px;
-  background: #dbeafe;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--adm-accent);
-}
 .adm-feature-badge {
   flex-shrink: 0;
   background: var(--adm-accent);
@@ -1506,7 +1485,7 @@ button {
 .adm-set-foot {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 10px 12px;
   border-top: 1px solid var(--c-slate-100);
   background: var(--c-slate-50);
