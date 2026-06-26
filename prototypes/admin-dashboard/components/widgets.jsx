@@ -115,7 +115,7 @@ export function AdmStatTiles({ settings = {}, role = 'teacher' }) {
     return (
       <WidgetEmpty
         title="What's Happened"
-        action="View Report"
+        action="View in Insights"
         empty={{
           title: 'No reading logged yet',
           description:
@@ -141,7 +141,7 @@ export function AdmStatTiles({ settings = {}, role = 'teacher' }) {
           What's Happened
           <span className="adm-w-meta">{STAT_RANGE_LABEL[range]}</span>
         </div>
-        <button className="adm-w-action">View Report</button>
+        <button className="adm-w-action">View in Insights</button>
       </div>
       <div className="adm-w-body">
         <div className="adm-stats">
