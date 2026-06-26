@@ -1506,7 +1506,7 @@ button {
 .adm-set-foot {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   padding: 10px 12px;
   border-top: 1px solid var(--c-slate-100);
   background: var(--c-slate-50);
