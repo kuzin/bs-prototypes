@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   FEATURE_BAR,
+  PROMO_BAR,
   QUICK_ACTIONS,
   ENGAGEMENT,
   GOAL_OPTIONS,
@@ -32,6 +33,25 @@ export function FeatureBar({ onClose }) {
   )
 }
 
+// ─── Promo bar (non-dismissible) ─────────────────────────────────────────
+export function PromoBar() {
+  if (!PROMO_BAR) return null
+  return (
+    <div className="adm-promo-bar">
+      <div className="adm-promo-bar-icon" aria-hidden="true">
+        <Icon name={PROMO_BAR.icon} size={20} />
+      </div>
+      <div className="adm-feature-text">
+        <div className="adm-feature-title">{PROMO_BAR.title}</div>
+        <div className="adm-feature-body">{PROMO_BAR.body}</div>
+      </div>
+      <a className="adm-feature-cta" href={PROMO_BAR.href}>
+        {PROMO_BAR.cta}
+      </a>
+    </div>
+  )
+}
+
 // ─── Rail icons (shared by Quick Actions) ────────────────────────────────
 const ACTION_ICONS = {
   flag: <Icon name="flag" size={18} />,
@@ -48,57 +68,13 @@ const ACTION_ICONS = {
 const CogIcon = () => <Icon name="settings" size={14} />
 
 // ─── Quick Actions card ──────────────────────────────────────────────────
-// A compact launcher of the most common jumps, keyed by role. The first three
-// land above the fold.
-const QUICK_ACTIONS_FIELDS = [
-  {
-    key: 'limit',
-    label: 'Show',
-    type: 'select',
-    help: 'Number of quick actions to display.',
-    options: [
-      { value: '3', label: 'Top 3' },
-      { value: '4', label: 'Top 4' },
-      { value: '5', label: 'Top 5' },
-      { value: 'all', label: 'All' },
-    ],
-  },
-]
-const QUICK_ACTIONS_DEFAULTS = { limit: 'all' }
-
-function QuickActionsCard({
-  role = 'teacher',
-  settings = {},
-  openSettings,
-  setOpenSettings,
-  onChange,
-  onReset,
-}) {
-  const allActions = QUICK_ACTIONS[role] || QUICK_ACTIONS.teacher
-  const limit = settings.limit === 'all' ? Infinity : parseInt(settings.limit, 10)
-  const actions = isFinite(limit) ? allActions.slice(0, limit) : allActions
-  const isSettingsOpen = openSettings?.id === 'quick-actions'
+// A compact launcher of the most common jumps, keyed by role.
+function QuickActionsCard({ role = 'teacher' }) {
+  const actions = QUICK_ACTIONS[role] || QUICK_ACTIONS.teacher
   return (
     <div className="adm-rail-card adm-rail-card--quick">
       <div className="adm-rail-head">
         <h3 className="adm-rail-title">Quick Actions</h3>
-        <div className="adm-rail-head-actions">
-          <button
-            type="button"
-            className={`adm-rail-cog ${isSettingsOpen ? 'is-on' : ''}`}
-            onClick={(e) =>
-              setOpenSettings?.(
-                isSettingsOpen
-                  ? null
-                  : { id: 'quick-actions', anchorRect: e.currentTarget.getBoundingClientRect() },
-              )
-            }
-            title="Quick Actions settings"
-            aria-label="Quick Actions settings"
-          >
-            <CogIcon />
-          </button>
-        </div>
       </div>
       <div className="adm-quick-actions">
         {actions.map((a) => (
@@ -113,17 +89,6 @@ function QuickActionsCard({
           </a>
         ))}
       </div>
-      {isSettingsOpen && (
-        <SettingsPopover
-          anchorRect={openSettings.anchorRect}
-          fields={QUICK_ACTIONS_FIELDS}
-          value={{ ...QUICK_ACTIONS_DEFAULTS, ...settings }}
-          defaults={QUICK_ACTIONS_DEFAULTS}
-          onChange={onChange}
-          onReset={onReset}
-          onClose={() => setOpenSettings?.(null)}
-        />
-      )}
     </div>
   )
 }
@@ -144,7 +109,6 @@ function PromoText({ text, highlight }) {
 }
 
 function EngagementCard({ role = 'teacher' }) {
-  const [bennySent, setBennySent] = useState(false)
   const { current, levels } = ENGAGEMENT
 
   let activeIdx = 0
@@ -168,10 +132,9 @@ function EngagementCard({ role = 'teacher' }) {
 
   // ── Teacher view ─────────────────────────────────────────────────────────
   if (role === 'teacher') {
-    const { activeStudents, targetStudents, prizeCount, state } = RCA_TEACHER
+    const { activeStudents, targetStudents } = RCA_TEACHER
     const bandTone =
       activeStudents < 5 ? 'red' : activeStudents < targetStudents ? 'amber' : 'green'
-    const effectiveState = bennySent ? 'in-progress' : state
 
     return (
       <div className="adm-rail-card adm-rail-card--engagement">
@@ -183,52 +146,6 @@ function EngagementCard({ role = 'teacher' }) {
           <div className={`adm-rca-active-band adm-rca-active-band--${bandTone}`}>
             {activeStudents} Active Student{activeStudents !== 1 ? 's' : ''}
           </div>
-          {effectiveState === 'shipped' ? (
-            <div className="adm-rca-shipped">
-              <img
-                src="/bs-prototypes/benny-excited.svg"
-                alt=""
-                className="adm-rca-shipped-benny"
-              />
-              <div className="adm-rca-shipped-body">
-                <strong>Your Benny is on its way!</strong>
-                <p>
-                  Share a photo using <strong>#bennysightings</strong> and we might feature you!
-                </p>
-                <button
-                  type="button"
-                  className="adm-rca-shipped-dismiss"
-                  onClick={() => setBennySent(true)}
-                >
-                  × Dismiss
-                </button>
-              </div>
-            </div>
-          ) : effectiveState === 'earned' ? (
-            <div className="adm-rca-benny-promo">
-              <img src="/bs-prototypes/benny-happy.svg" alt="" className="adm-rca-benny-img" />
-              <div>
-                <p>
-                  Congratulations! {targetStudents} of your students have logged. Get your{' '}
-                  <strong className="adm-rca-benny-prize">{prizeCount} free Benny plushies!</strong>
-                </p>
-                <button type="button" className="adm-rca-promo-action">
-                  Redeem
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="adm-rca-benny-promo">
-              <img src="/bs-prototypes/benny-happy.svg" alt="" className="adm-rca-benny-img" />
-              <p>
-                The first 3 teachers to reach {targetStudents} active students will win{' '}
-                <strong className="adm-rca-benny-prize">{prizeCount} free Benny plushies!</strong>
-              </p>
-            </div>
-          )}
-          <a href="#" className="adm-rca-learn" onClick={(e) => e.preventDefault()}>
-            Get your badge and learn more ›
-          </a>
         </div>
       </div>
     )
@@ -256,7 +173,6 @@ function EngagementCard({ role = 'teacher' }) {
               {levelName}
             </span>
           </div>
-          <div className={`adm-rca-badge adm-rca-badge--${levelId}`} aria-hidden="true" />
         </div>
         {segBar}
         <div className={`adm-rca-band adm-rca-band--${levelId}`}>
@@ -270,9 +186,6 @@ function EngagementCard({ role = 'teacher' }) {
         )}
         {promo && (
           <div className="adm-rca-promo">
-            <span className="adm-rca-promo-ico" aria-hidden="true">
-              💰
-            </span>
             <div className="adm-rca-promo-body">
               <PromoText text={promo.text} highlight={promo.highlight} />
               {promo.action && (
@@ -402,18 +315,9 @@ export function FixedRail({
     role === 'kitchen-full' ||
     role === 'empty'
   const goalSettings = { ...GOAL_DEFAULTS, ...(settings['community-goal'] || {}) }
-  const qaSettings = { ...QUICK_ACTIONS_DEFAULTS, ...(settings['quick-actions'] || {}) }
   return (
     <aside className="adm-rail">
-      <QuickActionsCard
-        role={role}
-        settings={qaSettings}
-        openSettings={openSettings}
-        setOpenSettings={setOpenSettings}
-        onChange={(patch) => updateSettings?.('quick-actions', patch)}
-        onReset={() => resetSettings?.('quick-actions')}
-      />
-      {showEngagement && <EngagementCard role={role} />}
+      <QuickActionsCard role={role} />
       <CommunityGoalCard
         settings={goalSettings}
         openSettings={openSettings}
@@ -421,6 +325,7 @@ export function FixedRail({
         onChange={(patch) => updateSettings?.('community-goal', patch)}
         onReset={() => resetSettings?.('community-goal')}
       />
+      {showEngagement && <EngagementCard role={role} />}
     </aside>
   )
 }

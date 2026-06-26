@@ -3,7 +3,7 @@ import { useState } from 'react'
 import { DEFAULT_ROWS_BY_ROLE, DEFAULT_SETTINGS_BY_ROLE } from './data'
 import { WIDGET_CATALOG } from './components/widgets'
 import { SettingsPopover } from './components/SettingsPopover'
-import { FixedRail, FeatureBar } from './components/FixedRegions'
+import { FixedRail, FeatureBar, PromoBar } from './components/FixedRegions'
 import { CardGrid } from './components/CardGrid'
 import { MainRail } from '@components/MainRail/MainRail'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
@@ -336,6 +336,7 @@ export function App() {
           </header>
 
           {featureOn && <FeatureBar onClose={toggleFeature} />}
+          <PromoBar />
 
           <div className="adm-main">
             <div className={`adm-grid-wrap ${editing ? 'is-editing' : ''}`}>

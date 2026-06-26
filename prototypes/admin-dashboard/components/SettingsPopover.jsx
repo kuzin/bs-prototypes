@@ -125,11 +125,16 @@ export function SettingsPopover({
                 {f.options.map((o) => {
                   const arr = Array.isArray(v[f.key]) ? v[f.key] : []
                   const checked = arr.includes(o.value)
+                  const atMax = f.max != null && arr.length >= f.max && !checked
                   return (
-                    <label key={o.value} className="adm-set-multi-row">
+                    <label
+                      key={o.value}
+                      className={`adm-set-multi-row ${atMax ? 'is-disabled' : ''}`}
+                    >
                       <input
                         type="checkbox"
                         checked={checked}
+                        disabled={atMax}
                         onChange={(e) => {
                           const next = e.target.checked
                             ? [...arr, o.value]
@@ -141,6 +146,14 @@ export function SettingsPopover({
                     </label>
                   )
                 })}
+                {f.max != null && (
+                  <div className="adm-set-help">
+                    {(() => {
+                      const arr = Array.isArray(v[f.key]) ? v[f.key] : []
+                      return `${arr.length} / ${f.max} selected`
+                    })()}
+                  </div>
+                )}
               </div>
             )}
             {f.help && <div className="adm-set-help">{f.help}</div>}
