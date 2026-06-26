@@ -112,9 +112,6 @@ function EngagementCard({ role = 'teacher' }) {
 
   // ── Teacher view ─────────────────────────────────────────────────────────
   if (role === 'teacher') {
-    const { activeStudents, targetStudents } = RCA_TEACHER
-    const bandTone =
-      activeStudents < 5 ? 'red' : activeStudents < targetStudents ? 'amber' : 'green'
     const isNewcomerT = current === 0
     const levelIdT = isNewcomerT ? 'newcomer' : active.id
     const levelNameT = isNewcomerT ? 'Newcomer' : active.name
@@ -146,9 +143,6 @@ function EngagementCard({ role = 'teacher' }) {
               Next Level: <strong>{next.name}</strong> · {next.min}%
             </div>
           )}
-          <div className={`adm-rca-active-band adm-rca-active-band--${bandTone}`}>
-            {activeStudents} Active Student{activeStudents !== 1 ? 's' : ''}
-          </div>
         </div>
       </div>
     )
