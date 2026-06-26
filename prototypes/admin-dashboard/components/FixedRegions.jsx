@@ -413,7 +413,6 @@ export function FixedRail({
         onChange={(patch) => updateSettings?.('quick-actions', patch)}
         onReset={() => resetSettings?.('quick-actions')}
       />
-      {showEngagement && <EngagementCard role={role} />}
       <CommunityGoalCard
         settings={goalSettings}
         openSettings={openSettings}
@@ -421,6 +420,7 @@ export function FixedRail({
         onChange={(patch) => updateSettings?.('community-goal', patch)}
         onReset={() => resetSettings?.('community-goal')}
       />
+      {showEngagement && <EngagementCard role={role} />}
     </aside>
   )
 }
