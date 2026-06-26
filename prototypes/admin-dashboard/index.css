@@ -1493,6 +1493,10 @@ button {
 .adm-set-multi-row input {
   accent-color: var(--adm-accent);
 }
+.adm-set-multi-row.is-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
 
 .adm-set-help {
   font-size: 11px;

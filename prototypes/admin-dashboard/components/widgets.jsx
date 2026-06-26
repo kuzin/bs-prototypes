@@ -209,7 +209,8 @@ const STAT_FIELDS = (role) => {
       key: 'selected',
       label: 'Show metrics',
       type: 'multi',
-      help: 'Pick which stat tiles appear in this widget.',
+      max: 4,
+      help: 'Pick up to 4 stat tiles to show in this widget.',
       options: visible.map((s) => ({ value: s.id, label: s.label })),
     },
     {
