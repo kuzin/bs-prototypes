@@ -505,7 +505,7 @@ function lbEntities(role) {
   }
   return [
     { value: 'classes', label: 'Top Classes', list: LEADERBOARDS.classes },
-    { value: 'students', label: 'Students', list: LEADERBOARDS.students },
+    { value: 'students', label: 'Top Students', list: LEADERBOARDS.students },
   ]
 }
 export function AdmLeaderboardCombo({ settings = {}, role = 'teacher' }) {
