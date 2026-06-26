@@ -37,6 +37,15 @@ export const GOAL_OPTIONS = {
 // Back-compat alias for components still importing COMMUNITY_GOAL
 export const COMMUNITY_GOAL = GOAL_OPTIONS.community
 
+// ─── Fixed top — promo bar (non-dismissible) ─────────────────────────────────
+export const PROMO_BAR = {
+  icon: 'mail',
+  title: 'Need help setting goals for your students?',
+  body: 'Our Reading Motivation Index can help!',
+  cta: 'Learn More',
+  href: '#',
+}
+
 // ─── Fixed top — feature announcement bar ─────────────────────────────────────
 export const FEATURE_BAR = {
   badge: 'New',

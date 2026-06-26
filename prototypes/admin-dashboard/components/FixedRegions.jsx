@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import {
   FEATURE_BAR,
+  PROMO_BAR,
   QUICK_ACTIONS,
   ENGAGEMENT,
   GOAL_OPTIONS,
@@ -28,6 +29,25 @@ export function FeatureBar({ onClose }) {
           ✕
         </button>
       )}
+    </div>
+  )
+}
+
+// ─── Promo bar (non-dismissible) ─────────────────────────────────────────
+export function PromoBar() {
+  if (!PROMO_BAR) return null
+  return (
+    <div className="adm-promo-bar">
+      <div className="adm-promo-bar-icon" aria-hidden="true">
+        <Icon name={PROMO_BAR.icon} size={20} />
+      </div>
+      <div className="adm-feature-text">
+        <div className="adm-feature-title">{PROMO_BAR.title}</div>
+        <div className="adm-feature-body">{PROMO_BAR.body}</div>
+      </div>
+      <a className="adm-feature-cta" href={PROMO_BAR.href}>
+        {PROMO_BAR.cta}
+      </a>
     </div>
   )
 }
