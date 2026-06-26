@@ -23,11 +23,6 @@ export function FeatureBar({ onClose }) {
       <a className="adm-feature-cta" href={FEATURE_BAR.href}>
         {FEATURE_BAR.cta}
       </a>
-      {onClose && (
-        <button type="button" className="adm-feature-close" onClick={onClose} aria-label="Dismiss">
-          ✕
-        </button>
-      )}
     </div>
   )
 }
@@ -112,9 +107,10 @@ function EngagementCard({ role = 'teacher' }) {
 
   // ── Teacher view ─────────────────────────────────────────────────────────
   if (role === 'teacher') {
-    const { activeStudents, targetStudents } = RCA_TEACHER
-    const bandTone =
-      activeStudents < 5 ? 'red' : activeStudents < targetStudents ? 'amber' : 'green'
+    const isNewcomerT = current === 0
+    const levelIdT = isNewcomerT ? 'newcomer' : active.id
+    const levelNameT = isNewcomerT ? 'Newcomer' : active.name
+    const articleT = /^[aeiou]/i.test(levelNameT) ? 'an' : 'a'
 
     return (
       <div className="adm-rail-card adm-rail-card--engagement">
@@ -122,10 +118,26 @@ function EngagementCard({ role = 'teacher' }) {
           <h3 className="adm-rail-title">Engagement</h3>
         </div>
         <div className="adm-rca">
-          {segBar}
-          <div className={`adm-rca-active-band adm-rca-active-band--${bandTone}`}>
-            {activeStudents} Active Student{activeStudents !== 1 ? 's' : ''}
+          <div className="adm-rca-level-row">
+            <div className="adm-rca-level-text">
+              <span className="adm-rca-level-caption">Your school is currently {articleT}</span>
+              <span
+                className={`adm-rca-level-name adm-rca-level--${isNewcomerT ? 'gray' : active.color}`}
+              >
+                {levelNameT}
+              </span>
+            </div>
           </div>
+          {segBar}
+          <div className={`adm-rca-band adm-rca-band--${levelIdT}`}>
+            <span>Engagement</span>
+            <span>{current}%</span>
+          </div>
+          {next && (
+            <div className="adm-rca-foot">
+              Next Level: <strong>{next.name}</strong> · {next.min}%
+            </div>
+          )}
         </div>
       </div>
     )
