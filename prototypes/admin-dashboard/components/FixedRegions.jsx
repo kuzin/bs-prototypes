@@ -23,11 +23,6 @@ export function FeatureBar({ onClose }) {
       <a className="adm-feature-cta" href={FEATURE_BAR.href}>
         {FEATURE_BAR.cta}
       </a>
-      {onClose && (
-        <button type="button" className="adm-feature-close" onClick={onClose} aria-label="Dismiss">
-          ✕
-        </button>
-      )}
     </div>
   )
 }
