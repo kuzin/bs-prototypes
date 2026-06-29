@@ -1766,7 +1766,8 @@ button {
 /* ─── Per-block settings button (always visible, view-only dashboard) ─────── */
 .adm-w-settings {
   position: absolute;
-  top: 11px;
+  top: 50%;
+  transform: translateY(-50%);
   right: 12px;
   z-index: 5;
   width: 30px;
