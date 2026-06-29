@@ -825,11 +825,19 @@ export function AdmQuestions({ settings = {}, role = 'teacher' }) {
   return (
     <div className="adm-w">
       <div className="adm-w-head">
-        <div className="adm-w-title">
-          Number Cruncher
-          <span className="adm-w-meta">
-            {list.length} question{list.length === 1 ? '' : 's'}
-          </span>
+        <div className="adm-nc-head-left">
+          <img
+            src="/bs-prototypes/benny-thinking.svg"
+            alt=""
+            className="adm-nc-benny"
+            aria-hidden="true"
+          />
+          <div className="adm-w-title">
+            Number Cruncher
+            <span className="adm-w-meta">
+              {list.length} question{list.length === 1 ? '' : 's'}
+            </span>
+          </div>
         </div>
         <button className="adm-w-action">More Questions</button>
       </div>
