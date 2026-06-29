@@ -820,7 +820,7 @@ export function AdmQuestions({ settings = {}, role = 'teacher' }) {
   const selectedIds =
     settings.selected && settings.selected.length
       ? settings.selected
-      : QUESTIONS.slice(0, 3).map((q) => q.id)
+      : QUESTIONS.slice(0, 4).map((q) => q.id)
   const list = QUESTIONS.filter((q) => selectedIds.includes(q.id))
   return (
     <div className="adm-w">
@@ -860,7 +860,7 @@ export function AdmQuestions({ settings = {}, role = 'teacher' }) {
     </div>
   )
 }
-const QUESTIONS_DEFAULTS = { selected: ['q1', 'q2', 'q3'] }
+const QUESTIONS_DEFAULTS = { selected: ['q1', 'q2', 'q3', 'q4'] }
 const QUESTIONS_FIELDS = [
   {
     key: 'selected',
