@@ -820,16 +820,24 @@ export function AdmQuestions({ settings = {}, role = 'teacher' }) {
   const selectedIds =
     settings.selected && settings.selected.length
       ? settings.selected
-      : QUESTIONS.slice(0, 3).map((q) => q.id)
+      : QUESTIONS.slice(0, 4).map((q) => q.id)
   const list = QUESTIONS.filter((q) => selectedIds.includes(q.id))
   return (
     <div className="adm-w">
       <div className="adm-w-head">
-        <div className="adm-w-title">
-          Number Cruncher
-          <span className="adm-w-meta">
-            {list.length} question{list.length === 1 ? '' : 's'}
-          </span>
+        <div className="adm-nc-head-left">
+          <img
+            src="/bs-prototypes/benny-thinking.svg"
+            alt=""
+            className="adm-nc-benny"
+            aria-hidden="true"
+          />
+          <div className="adm-w-title">
+            Number Cruncher
+            <span className="adm-w-meta">
+              {list.length} question{list.length === 1 ? '' : 's'}
+            </span>
+          </div>
         </div>
         <button className="adm-w-action">More Questions</button>
       </div>
@@ -852,7 +860,7 @@ export function AdmQuestions({ settings = {}, role = 'teacher' }) {
     </div>
   )
 }
-const QUESTIONS_DEFAULTS = { selected: ['q1', 'q2', 'q3'] }
+const QUESTIONS_DEFAULTS = { selected: ['q1', 'q2', 'q3', 'q4'] }
 const QUESTIONS_FIELDS = [
   {
     key: 'selected',

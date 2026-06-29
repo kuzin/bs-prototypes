@@ -1731,6 +1731,22 @@ button {
   min-width: 0;
   line-height: 1.25;
 }
+/* Number Cruncher header — Benny mascot sits left of the title */
+.adm-nc-head-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+.adm-nc-benny {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+  background: #e0f2fe;
+}
 .adm-w-action {
   height: 30px;
   font-size: 12.5px;
@@ -1766,7 +1782,10 @@ button {
 /* ─── Per-block settings button (always visible, view-only dashboard) ─────── */
 .adm-w-settings {
   position: absolute;
-  top: 11px;
+  /* Vertically centered against the 57px widget header (title + meta).
+     (57 − 30)/2 ≈ 13px + 1px cell border = 14px — matches the flex-centered
+     action link (View in Insights ›, View All Classes ›) beside it. */
+  top: 14px;
   right: 12px;
   z-index: 5;
   width: 30px;
