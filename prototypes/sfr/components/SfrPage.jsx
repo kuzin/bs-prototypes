@@ -7,8 +7,6 @@ import { FlaggedView } from './FlaggedView'
 import { EngagementView } from './EngagementView'
 import { AllBTWBView } from './AllBTWBView'
 import { SessionModal, ApproveConfirmModal } from './SessionModal'
-import { SafetySettings } from './SafetySettings'
-import { Icon } from '@components/Icon/Icon'
 import { StudentPanel } from '../../ris/components/StudentPanel'
 import { SITE, isSafetyOpen } from '../data'
 import '../../ris/components/StudentPanel.css'
@@ -65,7 +63,6 @@ export function SfrPage({
   const [sessionList, setSessionList] = useState([])
   const [approveTarget, setApproveTarget] = useState(null)
   const [profileStudent, setProfileStudent] = useState(null)
-  const [settingsOpen, setSettingsOpen] = useState(false)
 
   const badges = buildBadges(sessions)
 
@@ -164,15 +161,6 @@ export function SfrPage({
                 { id: 'reader', label: 'By Reader' },
               ]}
             />
-            {/* Trigger words & notification settings */}
-            <button
-              className="sfr-settings-btn"
-              title="Trigger words & notification settings"
-              onClick={() => setSettingsOpen(true)}
-            >
-              <Icon name="settings" size={16} />
-              Settings
-            </button>
           </div>
         </div>
 
@@ -268,8 +256,6 @@ export function SfrPage({
         onCancel={() => setApproveTarget(null)}
         onConfirm={confirmApprove}
       />
-
-      <SafetySettings open={settingsOpen} onClose={() => setSettingsOpen(false)} />
     </>
   )
 }

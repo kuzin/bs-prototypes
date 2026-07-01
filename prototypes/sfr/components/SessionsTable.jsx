@@ -567,6 +567,7 @@ export function SessionsTable({
   return (
     <div style={{ overflowX: 'auto', minWidth: 0 }}>
       <Table
+        className="sess-table"
         columns={columns}
         rows={sessions}
         getRowKey={(r) => r.id}

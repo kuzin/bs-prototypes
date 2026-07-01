@@ -1,3 +1,8 @@
+/* Extra bottom padding so PrototypeNav (48px) doesn't clip the page */
+.app-shell-page {
+  padding-bottom: 68px;
+}
+
 .sfr-header-actions {
   display: flex;
   align-items: center;
@@ -6,32 +11,6 @@
 }
 
 /* By Session / By Reader toggle → shared <Tabs variant="pill"> */
-
-/* Settings button */
-.sfr-settings-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 13px;
-  border-radius: 8px;
-  border: 1.5px solid var(--c-border);
-  background: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--c-slate-600);
-  cursor: pointer;
-  font-family: inherit;
-  transition:
-    background 0.12s,
-    border-color 0.12s,
-    color 0.12s;
-  white-space: nowrap;
-}
-.sfr-settings-btn:hover {
-  background: var(--c-slate-50);
-  border-color: var(--c-border-strong);
-  color: var(--c-slate-800);
-}
 
 .sfr-tabs-bar {
   background: #fff;

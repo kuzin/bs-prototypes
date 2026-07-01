@@ -1,0 +1,115 @@
+/* ════════════════════════════════════════════════════════════════════════
+   Sessions to Review — the SFR review hub card for the Admin-Dashboard-V2 mock.
+   Reuses the admin .adm-w / .adm-flagged card chrome; everything below is the
+   scoped sfr- layer that welds the four dashboard alerts into the card as a
+   segmented filter + contextual note, and makes each session row clickable.
+   The card is teal-accented (the one SFR-branded card in the blue V2 frame).
+   ════════════════════════════════════════════════════════════════════════ */
+
+/* Teal accent for this card only — the rest of the mock keeps the admin blue. */
+.sfr-review {
+  --adm-accent: #16a97a;
+}
+.sfr-review .adm-w-action {
+  border-color: #b7e4d6;
+}
+.sfr-review .adm-w-action:hover {
+  background: #f0fdf9;
+  border-color: #16a97a;
+}
+
+/* ── Segmented alert band (pinned between the head and the scrolling list) ── */
+.sfr-seg-bar {
+  flex-shrink: 0;
+  padding: 10px 10px;
+  border-bottom: 1px solid var(--c-slate-100);
+  background: #fff;
+}
+/* Tighten the pill control so all four segments + count badges fit on one line
+   at the card's width (no wrapping). */
+.sfr-seg-bar .tabs--pill {
+  gap: 2px;
+  padding: 3px;
+}
+.sfr-seg-bar .tabs--pill .tab {
+  padding: 6px 6px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ── Count pills embedded in each segment label (the alerts, worked in) ── */
+.sfr-seg-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  margin-left: 4px;
+  padding: 0 4px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+.sfr-seg-badge--neutral {
+  background: var(--c-slate-200);
+  color: var(--c-slate-700);
+}
+.sfr-seg-badge--critical {
+  background: #fee2e2;
+  color: #991b1b;
+}
+.sfr-seg-badge--warning {
+  background: #fef3c7;
+  color: #78350f;
+}
+.sfr-seg-badge--info {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+.sfr-seg-badge--positive {
+  background: #dcfce7;
+  color: #14532d;
+}
+
+/* ── Make the admin flagged-row an interactive button ── */
+.sfr-review-row {
+  width: 100%;
+  border: 0;
+  border-bottom: 1px solid var(--c-slate-100);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+.sfr-review-row:last-child {
+  border-bottom: 0;
+}
+.sfr-review-row:hover {
+  background: var(--c-slate-50);
+}
+.sfr-review-chev {
+  flex-shrink: 0;
+  color: var(--c-text-muted);
+  transition: transform 0.12s;
+}
+.sfr-review-row:hover .sfr-review-chev {
+  color: var(--c-slate-700);
+  transform: translateX(2px);
+}
+.sfr-review-tail {
+  justify-content: center;
+  gap: 4px;
+  color: var(--adm-accent);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+/* ── Empty state fills the fixed scroll body ── */
+.sfr-review-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}

@@ -132,7 +132,6 @@ export function ReviewView({ badge }) {
             <div className="ov-grid">
               <HighlightCard
                 variant="danger"
-                icon={<Icon name="flag" size={18} />}
                 title="Validate / Intercede"
                 description="Book Talks with integrity flags"
                 sessions={flagged}
@@ -142,7 +141,6 @@ export function ReviewView({ badge }) {
               />
               <HighlightCard
                 variant="success"
-                icon={<Icon name="flame" size={18} />}
                 title="Celebrate"
                 description="Students positively engaged in their Book Talk"
                 sessions={green}
@@ -152,7 +150,6 @@ export function ReviewView({ badge }) {
               />
               <HighlightCard
                 variant="warning"
-                icon={<Icon name="star" size={18} />}
                 title="Review / Assess"
                 description="Students with a mixed Book Talk"
                 sessions={yellow}
@@ -162,7 +159,6 @@ export function ReviewView({ badge }) {
               />
               <HighlightCard
                 variant="intercede"
-                icon={<Icon name="flame" size={18} />}
                 title="Intercede"
                 description="Students who seemed disengaged"
                 sessions={red}
@@ -172,7 +168,6 @@ export function ReviewView({ badge }) {
               />
               <HighlightCard
                 variant="neutral"
-                icon={<Icon name="clock" size={18} />}
                 title="Give Students Time"
                 description="Unfinished Book Talk conversations"
                 sessions={unfinished}

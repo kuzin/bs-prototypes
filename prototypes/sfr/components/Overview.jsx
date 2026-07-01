@@ -6,12 +6,12 @@ import {
 } from './SessionsTable'
 import { Icon } from '@components/Icon/Icon'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
+import { SEV_ORDER } from '../data'
 import '@components/BennyBubble/BennyBubble.css'
 import './Overview.css'
 
 export function HighlightCard({
-  variant,
-  icon,
+  variant = 'neutral',
   title,
   description,
   sessions = [],
@@ -19,60 +19,11 @@ export function HighlightCard({
   onViewAll,
   onSelectSession,
 }) {
-  const VARIANTS = {
-    danger: {
-      bg: '#FEF2F2',
-      border: '#FECACA',
-      iconBg: '#FEE2E2',
-      iconColor: '#DC2626',
-      tagBg: '#FEE2E2',
-      tagColor: '#991B1B',
-    },
-    success: {
-      bg: '#F0FDF4',
-      border: '#BBF7D0',
-      iconBg: '#DCFCE7',
-      iconColor: '#16A97A',
-      tagBg: '#DCFCE7',
-      tagColor: '#14532D',
-    },
-    warning: {
-      bg: '#FFFBEB',
-      border: '#FDE68A',
-      iconBg: '#FEF3C7',
-      iconColor: '#D97706',
-      tagBg: '#FEF3C7',
-      tagColor: '#78350F',
-    },
-    neutral: {
-      bg: '#F0F9FF',
-      border: '#BAE6FD',
-      iconBg: '#E0F2FE',
-      iconColor: '#0369A1',
-      tagBg: '#E0F2FE',
-      tagColor: '#0C4A6E',
-    },
-    intercede: {
-      bg: '#FFF1F2',
-      border: '#FECDD3',
-      iconBg: '#FFE4E6',
-      iconColor: '#E11D48',
-      tagBg: '#FFE4E6',
-      tagColor: '#9F1239',
-    },
-  }
-  const v = VARIANTS[variant] ?? VARIANTS.neutral
-
   return (
-    <div className="ov-card" style={{ background: v.bg, borderColor: v.border }}>
-      <div className="ov-card-header">
-        <div className="ov-card-icon" style={{ background: v.iconBg, color: v.iconColor }}>
-          {icon}
-        </div>
-        <div className="ov-card-titles">
-          <div className="ov-card-title">{title}</div>
-          <div className="ov-card-desc">{description}</div>
-        </div>
+    <div className={`ov-card ov-card--${variant}`}>
+      <div className="ov-card-titles">
+        <div className="ov-card-title">{title}</div>
+        <div className="ov-card-desc">{description}</div>
       </div>
       <div className="ov-student-list">
         {sessions.slice(0, 3).map((s, i) => (
@@ -96,7 +47,7 @@ export function HighlightCard({
                 return cfg ? <FlagIconBadge key={pf.id} type={pf.type} cfg={cfg} /> : null
               })}
             </div>
-            <Icon name="chevron-right" size={12} className="ov-row-chevron" />
+            <Icon name="chevron-right" size={14} className="ov-row-chevron" />
           </button>
         ))}
       </div>
@@ -122,7 +73,6 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
 
   // Safety signals are additive + orthogonal — only the Safety Signals prototype
   // attaches them, so this card/summary line stays hidden in SFR's own prototype.
-  const SEV_ORDER = { critical: 0, warning: 1, possible: 2 }
   const safetySessions = sessions.filter((s) => s.safety)
   const safetyOpen = safetySessions
     .filter((s) => s.safety.status !== 'resolved')
@@ -152,7 +102,6 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
         {safetySessions.length > 0 && (
           <HighlightCard
             variant="danger"
-            icon={<Icon name="shield-heart" size={18} />}
             title="Safety Signals"
             description="Students who may be at risk — review and respond"
             sessions={safetyOpen.length ? safetyOpen : safetySessions}
@@ -163,7 +112,6 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
         )}
         <HighlightCard
           variant="danger"
-          icon={<Icon name="flag" size={18} />}
           title="Validate / Intercede"
           description="Students with multiple flagged integrity sessions"
           sessions={flaggedSessions}
@@ -174,7 +122,6 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
         />
         <HighlightCard
           variant="success"
-          icon={<Icon name="flame" size={18} />}
           title="Celebrate"
           description="Students with positive engagement Book Talks"
           sessions={greenSessions}
@@ -185,7 +132,6 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
         />
         <HighlightCard
           variant="warning"
-          icon={<Icon name="star" size={18} />}
           title="Review / Assess"
           description="Students with mixed engagement Book Talks"
           sessions={yellowSessions}
@@ -196,7 +142,6 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
         />
         <HighlightCard
           variant="intercede"
-          icon={<Icon name="flame" size={18} />}
           title="Intercede"
           description="Students showing disengagement in their Book Talks"
           sessions={redSessions}
@@ -207,7 +152,6 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
         />
         <HighlightCard
           variant="neutral"
-          icon={<Icon name="clock" size={18} />}
           title="Give Students Time"
           description="Students with unfinished Benny conversations"
           sessions={unfinished}

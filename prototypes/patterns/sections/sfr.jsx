@@ -9,10 +9,11 @@ import { HighlightCard } from '../../sfr/components/Overview'
 import { SessionsTable } from '../../sfr/components/SessionsTable'
 import { SessionModal } from '../../sfr/components/SessionModal'
 import { SafetyView } from '../../sfr/components/SafetyView'
-import { SafetySettings } from '../../sfr/components/SafetySettings'
+import { SessionsToReview } from '../../sfr/components/SessionsToReview'
 import { SESSIONS } from '../../sfr/data'
-import { Icon } from '@components/Icon/Icon'
 import { Knobs, Variant } from './_shared'
+// SessionsToReview borrows the admin-dashboard .adm card chrome; those styles are
+// already loaded globally by patterns/catalog.jsx.
 
 function BennyBubbleKnobs() {
   const [text, setText] = useState(
@@ -236,17 +237,14 @@ function SessionsTableKnobs() {
   )
 }
 
-function SafetySettingsDemo() {
-  const [open, setOpen] = useState(false)
+function SessionsToReviewDemo() {
   return (
-    <div style={{ padding: 16, display: 'flex', gap: 12, alignItems: 'center' }}>
-      <Button variant="primary" size="sm" accent="#16A97A" onClick={() => setOpen(true)}>
-        Open Safety Settings →
-      </Button>
-      {open && (
-        <span style={{ fontSize: 13, color: '#64748B' }}>Modal open — Cancel or × to close</span>
-      )}
-      <SafetySettings open={open} onClose={() => setOpen(false)} />
+    <div className="adm" style={{ padding: 16, maxWidth: 460 }}>
+      <div className="adm-grid-card">
+        <div className="adm-cell adm-cell--scroll">
+          <SessionsToReview sessions={SESSIONS} onGoToSfr={() => {}} />
+        </div>
+      </div>
     </div>
   )
 }
@@ -275,10 +273,10 @@ export const sfrSections = [
     name: 'HighlightCard',
     desc: (
       <>
-        Overview card for a student-action category. Props: <code>variant</code> (danger | success |
-        warning | intercede | neutral), <code>icon</code>, <code>title</code>,{' '}
-        <code>description</code>, <code>students</code>, <code>totalCount</code>,{' '}
-        <code>totalLabel</code>, <code>onViewAll</code>.
+        Overview card for a student-action category — a white card with a subtle category-colored
+        border (no icon, toned-down fill). Props: <code>variant</code> (danger | success | warning |
+        intercede | neutral), <code>title</code>, <code>description</code>, <code>sessions</code>,{' '}
+        <code>viewAllLabel</code>, <code>onViewAll</code>, <code>onSelectSession</code>.
       </>
     ),
     render: () => (
@@ -286,7 +284,6 @@ export const sfrSections = [
         <Variant label="danger — integrity flags">
           <HighlightCard
             variant="danger"
-            icon={<Icon name="flag" size={18} />}
             title="Validate / Intercede"
             description="Students with multiple flagged integrity sessions"
             students={[
@@ -313,7 +310,6 @@ export const sfrSections = [
         <Variant label="success — celebrate green">
           <HighlightCard
             variant="success"
-            icon={<Icon name="flame" size={18} />}
             title="Celebrate"
             description="Students with positive engagement Book Talks"
             students={[
@@ -347,7 +343,6 @@ export const sfrSections = [
         <Variant label="warning — review mixed">
           <HighlightCard
             variant="warning"
-            icon={<Icon name="star" size={18} />}
             title="Review / Assess"
             description="Students with mixed engagement Book Talks"
             students={[
@@ -367,7 +362,6 @@ export const sfrSections = [
         <Variant label="neutral — give time (unfinished)">
           <HighlightCard
             variant="neutral"
-            icon={<Icon name="clock" size={18} />}
             title="Give Students Time"
             description="Students with unfinished Benny conversations"
             students={[
@@ -452,19 +446,24 @@ export const sfrSections = [
   },
   {
     group: 'sfr',
-    id: 'sfr-safety-settings',
-    name: 'SafetySettings',
+    id: 'sfr-sessions-to-review',
+    name: 'SessionsToReview',
     desc: (
       <>
-        Modal for configuring safety detection — which concern categories Benny watches for, the
-        email threshold, and a searchable recipient directory. Props: <code>open</code>,{' '}
-        <code>onClose</code>. Built from shared <code>SettingRow</code> / <code>SettingList</code>,{' '}
-        <code>SearchInput</code>, and <code>Select</code>.
+        The SFR review hub as a single Admin-Dashboard-V2 card — the dashboard's four alerts are
+        worked in as a segmented filter whose count badges <em>are</em> the alert numbers (All ·
+        Safety · Integrity · Celebrate). Selecting a segment filters the in-card session list in
+        place; rows + <code>Review All</code> deep-link into the SfrPage tabs via{' '}
+        <code>onGoToSfr</code>. Reuses the admin <code>.adm-w</code>/<code>.adm-flagged</code>{' '}
+        chrome and SFR's own <code>SafetySeverityTag</code>/<code>FlagIconBadge</code> row badges.
+        Note the deliberate two-layer color: the Integrity <em>segment</em> badge is blue (alert
+        taxonomy), while a per-row integrity flag stays red (its severity). Props:{' '}
+        <code>sessions</code>, <code>onGoToSfr</code>.
       </>
     ),
     render: () => (
-      <Variant label="open / closed toggle" bare>
-        <SafetySettingsDemo />
+      <Variant label="segmented alert hub" bare>
+        <SessionsToReviewDemo />
       </Variant>
     ),
   },

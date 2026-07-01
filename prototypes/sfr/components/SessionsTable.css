@@ -1,3 +1,16 @@
+/* ── Tighter, cleaner SFR sessions table (scoped to .sess-table) ──
+   The shared <Table> default is roomy; the review tables are dense lists, so
+   trim the header + row padding and keep every row to a single line. */
+.sess-table .tbl-th {
+  padding: 8px 12px;
+  letter-spacing: 0.04em;
+  background: #fff;
+  border-top: none;
+}
+.sess-table .tbl-td {
+  padding: 6px 12px;
+}
+
 .sess-date {
   font-size: 13px;
   color: var(--c-text-muted);
@@ -148,7 +161,7 @@
 
 .sess-flag-icons {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 4px;
 }
 
@@ -156,8 +169,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 19px;
+  height: 19px;
   border-radius: 6px;
   flex-shrink: 0;
   position: relative;
@@ -266,25 +279,23 @@
   margin: 3px 4px;
 }
 
-/* Three-dot action button */
+/* Three-dot action button — borderless at rest (the dots are the affordance);
+   a subtle pill appears on hover so the action column stays uncluttered. */
 .sess-dots {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 3px;
-  background: #fff;
-  border: 1.5px solid var(--c-border);
+  background: transparent;
+  border: none;
   cursor: pointer;
-  padding: 6px 10px;
+  padding: 5px 8px;
   border-radius: 7px;
-  transition:
-    background 0.1s,
-    border-color 0.1s;
+  transition: background 0.1s;
   vertical-align: middle;
 }
 .sess-dots:hover {
-  background: var(--c-slate-50);
-  border-color: var(--c-border-strong);
+  background: var(--c-slate-100);
 }
 .sess-dots span {
   display: block;

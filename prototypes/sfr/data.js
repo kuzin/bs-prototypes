@@ -1579,3 +1579,11 @@ export const SESSIONS = [
 // ── Helpers ───────────────────────────────────────────────────────────────────
 export const isSafety = (s) => !!s.safety
 export const isSafetyOpen = (s) => s.safety && s.safety.status !== 'resolved'
+
+// Severity sort order, used wherever open safety signals are ranked.
+export const SEV_ORDER = { critical: 0, warning: 1, possible: 2 }
+
+// Reading-integrity flag, excluding sessions that are primarily safety signals
+// (so safety + integrity aren't double-counted in the dashboard review hub).
+export const isIntegrityFlagged = (s) =>
+  !isSafety(s) && (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0
