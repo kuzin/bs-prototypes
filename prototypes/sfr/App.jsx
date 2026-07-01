@@ -23,16 +23,20 @@ export function App() {
 
   return (
     <>
-      <div className="sfr-shell">
-        {page === 'dashboard' ? (
-          <DashboardView
-            sessions={sessions}
-            onGoToSfr={(tab = 'overview') => {
-              setActiveTab(tab)
-              setPage('sfr')
-            }}
-          />
-        ) : (
+      {/* The dashboard renders the admin .adm-shell (its own position:fixed root
+          that already reserves bottom:48px for PrototypeNav), so it must NOT be
+          nested inside .sfr-shell — that would double-stack fixed shells. Only
+          SfrPage keeps the .sfr-shell wrapper. */}
+      {page === 'dashboard' ? (
+        <DashboardView
+          sessions={sessions}
+          onGoToSfr={(tab = 'overview') => {
+            setActiveTab(tab)
+            setPage('sfr')
+          }}
+        />
+      ) : (
+        <div className="sfr-shell">
           <SfrPage
             sessions={sessions}
             activeTab={activeTab}
@@ -43,8 +47,8 @@ export function App() {
             onDeleteSession={handleDeleteSession}
             onBack={() => setPage('dashboard')}
           />
-        )}
-      </div>
+        </div>
+      )}
       <PrototypeNav currentHref="/bs-prototypes/sfr/" />
     </>
   )
