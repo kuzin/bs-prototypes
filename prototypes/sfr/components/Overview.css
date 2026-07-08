@@ -2,6 +2,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  container-type: inline-size;
 }
 
 /* ── Benny summary ── */
@@ -15,24 +16,23 @@
   padding: 16px 18px;
 }
 
-/* ── Highlights grid ── */
+/* ── Highlights grid ──
+   auto-fit + minmax collapses to a single column once a card would drop below
+   its comfortable content width — tracking the sidebar's icon/full toggle and
+   viewport width alike, instead of a hardcoded breakpoint that could still
+   overflow at in-between widths. */
 .ov-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 12px;
 }
 
-/* 5th card (or any last card that starts a new row alone) spans full width */
-.ov-grid > :last-child:nth-child(odd) {
-  grid-column: 1 / -1;
-}
-
-@media (max-width: 699px) {
-  .ov-grid {
-    grid-template-columns: 1fr;
-  }
+/* 5th card (or any last card that starts a new row alone) spans full width,
+   but only while the grid is actually 2-up — in the 1-column fallback this
+   would be a no-op anyway, so gate it on a wide-enough container. */
+@container (min-width: 612px) {
   .ov-grid > :last-child:nth-child(odd) {
-    grid-column: auto;
+    grid-column: 1 / -1;
   }
 }
 

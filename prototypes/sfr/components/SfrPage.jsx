@@ -21,10 +21,10 @@ function buildNav() {
     { id: 'earned-rewards', label: 'Earned Rewards', icon: 'habits', subgroup: true },
     { id: 'book-talks', label: 'Book Talks', icon: 'book' },
     { id: 'overview', label: 'Overview', icon: 'overview', subgroup: true },
+    { id: 'all', label: 'All Book Talks', icon: 'book', subgroup: true },
     { id: 'safety', label: 'Safety Signals', icon: 'shield', subgroup: true },
     { id: 'flagged', label: 'Flagged Sessions', icon: 'flag', subgroup: true },
     { id: 'engagement', label: 'Engagement Sessions', icon: 'flame', subgroup: true },
-    { id: 'all', label: 'All Book Talks', icon: 'book', subgroup: true },
     { id: 'staff', label: 'Staff', icon: 'person' },
     { id: 'groups', label: 'Groups', icon: 'overview' },
   ]
@@ -43,10 +43,10 @@ function buildBadges(sessions) {
 
 const TAB_ITEMS = [
   { id: 'overview', label: 'Overview' },
-  { id: 'safety', label: 'Safety Signals' },
+  { id: 'all', label: 'All Book Talks' },
+  { id: 'safety', label: 'Safety Signals', danger: true },
   { id: 'flagged', label: 'Flagged Sessions' },
   { id: 'engagement', label: 'Engagement Sessions' },
-  { id: 'all', label: 'All Book Talks' },
 ]
 
 export function SfrPage({
