@@ -112,4 +112,12 @@ export const PROTOTYPES = [
     description:
       'Reader-facing book pages — discover, reviews, Benny recommendations, and partner shelves.',
   },
+  {
+    id: 'logging-flow',
+    name: 'Logging Flow',
+    section: 'Experiments',
+    href: '/bs-prototypes/logging-flow/',
+    accent: '#1A6DD5',
+    description: 'Beanstack combined reading-log flow — search, log minutes/pages, timer, review.',
+  },
 ]
