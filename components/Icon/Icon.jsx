@@ -46,6 +46,7 @@ import {
   // ── reading / domain ──
   IconBook,
   IconBook2,
+  IconBarcode,
   IconNotebook,
   IconFlame,
   IconFlameFilled,
@@ -228,6 +229,7 @@ const REGISTRY = {
   // reading / domain
   book: IconBook,
   'book-2': IconBook2,
+  barcode: IconBarcode,
   notebook: IconNotebook,
   'reading-log': IconNotebook,
   flame: IconFlame,

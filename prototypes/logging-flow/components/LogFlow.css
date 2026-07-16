@@ -1,0 +1,812 @@
+/* ── Full-screen logging overlay ─────────────────────────────────────────── */
+
+.lf-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: #ffffff;
+  overflow-y: auto;
+  animation: lf-fade 0.18s ease;
+}
+@keyframes lf-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.lf-scroll {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 64px 24px 96px;
+}
+
+/* corner buttons (gray rounded squares, as in the mocks) */
+.lf-iconbtn {
+  position: fixed;
+  z-index: 110;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 9px;
+  background: #f1f3f5;
+  color: #495057;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.lf-iconbtn:hover {
+  background: #e5e8eb;
+}
+.lf-close {
+  top: 18px;
+  right: 18px;
+}
+.lf-back {
+  top: 18px;
+  left: 18px;
+}
+
+/* ── Shared bits ─────────────────────────────────────────────────────────── */
+
+.lf-h1 {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #1f2933;
+  text-align: center;
+}
+.lf-h1--left {
+  text-align: left;
+}
+
+.lf-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: 700;
+  color: #1a6dd5;
+  cursor: pointer;
+}
+.lf-link:hover {
+  text-decoration: underline;
+}
+
+.lf-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: #1f2933;
+  margin-bottom: 8px;
+}
+
+.lf-input {
+  width: 100%;
+  border: 1.5px solid #dee2e6;
+  border-radius: 10px;
+  padding: 13px 14px;
+  font: inherit;
+  font-size: 15px;
+  color: #1f2933;
+  background: #fff;
+  outline: none;
+}
+.lf-input::placeholder {
+  color: #adb5bd;
+}
+.lf-input:focus {
+  border-color: #1a6dd5;
+  box-shadow: 0 0 0 3px rgba(26, 109, 213, 0.12);
+}
+.lf-input--warn,
+.lf-input--warn:focus {
+  border-color: #e8a33d;
+  box-shadow: 0 0 0 3px rgba(232, 163, 61, 0.16);
+}
+.lf-input--sm {
+  padding: 8px 10px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+.lf-textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.lf-field {
+  margin-top: 22px;
+}
+
+.lf-rule {
+  border: 0;
+  border-top: 1px solid #eceef0;
+  margin: 18px 0;
+}
+
+/* ── Reader line ─────────────────────────────────────────────────────────── */
+
+.lf-readerline {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: center;
+  font-size: 15px;
+  color: #495057;
+  flex-wrap: wrap;
+}
+.lf-readerlabel {
+  font-weight: 600;
+}
+.lf-readerpill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #fce9e1;
+  border-radius: 999px;
+  padding: 4px 14px 4px 4px;
+  font-weight: 800;
+  color: #2e2422;
+}
+.lf-readerline .lf-link {
+  border-left: 1px solid #dee2e6;
+  padding-left: 12px;
+}
+
+/* ── Step 1: search ──────────────────────────────────────────────────────── */
+
+.lf-search .lf-h1 {
+  margin: 18px 0 26px;
+}
+
+.lf-searchrow {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  max-width: 560px;
+  margin: 0 auto;
+}
+.lf-searchrow .search-input {
+  flex: 1;
+  border: 1.5px solid #dee2e6;
+  border-radius: 10px;
+  background: #fff;
+  height: 52px;
+}
+.lf-searchdiv {
+  width: 1px;
+  background: #e9ecef;
+  align-self: stretch;
+}
+
+.lf-scanner {
+  margin: 22px auto 0;
+  max-width: 360px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+.lf-scanner-frame {
+  position: relative;
+  width: 220px;
+  height: 130px;
+  border: 2px dashed #ced4da;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #868e96;
+  background: #f8f9fa;
+  overflow: hidden;
+}
+.lf-scanner-line {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  height: 2px;
+  background: #1a6dd5;
+  box-shadow: 0 0 8px rgba(26, 109, 213, 0.6);
+  animation: lf-scan 1.6s ease-in-out infinite alternate;
+}
+@keyframes lf-scan {
+  from {
+    top: 24px;
+  }
+  to {
+    bottom: 24px;
+    top: auto;
+  }
+}
+.lf-scanner-hint {
+  font-size: 13.5px;
+  color: #868e96;
+}
+.lf-scanner-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* search results */
+.lf-results {
+  max-width: 560px;
+  margin: 18px auto 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lf-noresults {
+  text-align: center;
+  color: #868e96;
+  font-size: 14px;
+}
+.lf-resultrow {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  border: 1px solid #eceef0;
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 14px;
+  text-align: left;
+}
+.lf-resultrow:hover {
+  border-color: #cfd4d9;
+  background: #fafbfc;
+}
+.lf-resultmeta {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lf-resulttitle {
+  font-weight: 800;
+  color: #1f2933;
+  font-size: 14.5px;
+}
+.lf-resultauthor {
+  font-size: 12.5px;
+  color: #868e96;
+}
+.lf-resultchev {
+  color: #adb5bd;
+}
+
+/* panels (reading list + recently logged) */
+.lf-panel {
+  margin: 22px auto 0;
+  max-width: 560px;
+  background: #f6f7f8;
+  border-radius: 16px;
+  padding: 20px;
+}
+.lf-panel-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1f2933;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+.lf-coverrow {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
+.lf-coverrow--center {
+  justify-content: center;
+}
+.lf-coverbtn {
+  border: 0;
+  background: none;
+  padding: 0;
+  border-radius: 6px;
+  transition: transform 0.12s ease;
+}
+.lf-coverbtn:hover {
+  transform: translateY(-3px);
+}
+
+/* reading-list challenge band */
+.lf-rlband {
+  position: relative;
+  padding: 18px 18px 16px;
+  overflow: hidden;
+}
+.lf-rlbanner {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 132px;
+  border-radius: 14px;
+  padding: 20px 24px;
+  background:
+    radial-gradient(circle at 18% 18%, rgba(250, 204, 21, 0.3), transparent 26%),
+    radial-gradient(circle at 82% 24%, rgba(56, 189, 248, 0.28), transparent 28%),
+    linear-gradient(135deg, #35106e 0%, #6421a7 48%, #0f766e 100%);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 12px 24px rgba(53, 16, 110, 0.22);
+  overflow: hidden;
+}
+.lf-rlbanner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(90deg, transparent 0 12%, rgba(255, 255, 255, 0.08) 12% 13%, transparent 13%);
+  background-size:
+    10px 10px,
+    100% 100%;
+  pointer-events: none;
+}
+.lf-rlbanner::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, #f43f5e, #fb923c, #facc15, #4ade80, #38bdf8, #a78bfa);
+}
+.lf-rl-name {
+  max-width: 360px;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.02;
+  text-transform: uppercase;
+  position: relative;
+}
+.lf-rlbyline {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0.82;
+  line-height: 1.25;
+  position: relative;
+}
+.lf-coverrow--rl {
+  justify-content: center;
+  margin-top: 18px;
+}
+
+/* per-title completion state inside the cover row */
+.lf-rltitle {
+  position: relative;
+  overflow: visible;
+}
+.lf-rltitle.is-logged .bkcov {
+  filter: saturate(0.85);
+}
+.lf-rltitle.is-logged .bkcov::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.32);
+  border-radius: inherit;
+}
+.lf-rlcheck {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #16a34a;
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
+}
+.lf-rladd {
+  position: absolute;
+  left: 50%;
+  bottom: 6px;
+  transform: translate(-50%, 4px);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #1f2933;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+}
+.lf-rltitle:hover .lf-rladd {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+.lf-viewall {
+  display: block;
+  text-align: center;
+  margin: 14px auto 0;
+}
+
+.lf-escape {
+  text-align: center;
+  margin-top: 26px;
+  font-size: 14px;
+  color: #868e96;
+}
+
+/* ── Step 2: details ─────────────────────────────────────────────────────── */
+
+.lf-details {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 40px;
+  align-items: start;
+  padding-top: 8px;
+}
+@media (max-width: 620px) {
+  .lf-details {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+}
+.lf-details-cover {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.lf-coverttl {
+  font-weight: 800;
+  font-size: 15px;
+  color: #1f2933;
+  margin-top: 12px;
+  line-height: 1.25;
+}
+.lf-coverauth {
+  font-size: 13px;
+  color: #868e96;
+  margin-top: 2px;
+}
+.lf-manualfields {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+.lf-manualfields .lf-field {
+  margin-top: 0;
+}
+
+.lf-daterow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.lf-datevalue {
+  font-size: 15px;
+  color: #495057;
+  margin-top: -2px;
+}
+.lf-datechange {
+  position: relative;
+}
+.lf-datemenu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 5;
+  background: #fff;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+  padding: 6px;
+  min-width: 150px;
+}
+.lf-datemenu-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  color: #1f2933;
+  padding: 8px 10px;
+  border-radius: 7px;
+}
+.lf-datemenu-item:hover {
+  background: #f1f3f5;
+}
+.lf-datemenu-item.is-active {
+  color: #1a6dd5;
+  font-weight: 800;
+}
+
+.lf-inputrow {
+  display: flex;
+  gap: 12px;
+}
+.lf-inputrow .lf-input {
+  flex: 1;
+}
+.lf-inputrow .btn {
+  white-space: nowrap;
+}
+
+.lf-warn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #cf8a17;
+}
+
+.lf-attest {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 22px;
+  border: 1.5px solid #e8a33d;
+  background: #fffaf0;
+  border-radius: 12px;
+  padding: 16px;
+  font-size: 14px;
+  color: #5c4a1e;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.lf-attest input {
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  accent-color: #1a6dd5;
+  flex-shrink: 0;
+}
+.lf-attest-emoji {
+  font-size: 22px;
+  margin-left: auto;
+}
+
+.lf-logbtn {
+  margin-top: 26px;
+}
+
+/* ── Step 3: timer ───────────────────────────────────────────────────────── */
+
+.lf-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 36px;
+  padding-top: 24px;
+}
+.lf-ring-wrap {
+  position: relative;
+  width: 300px;
+  height: 300px;
+}
+.lf-ring {
+  width: 300px;
+  height: 300px;
+}
+.lf-ring-track {
+  fill: none;
+  stroke: #eef0f2;
+  stroke-width: 16;
+}
+.lf-ring-fill {
+  fill: none;
+  stroke: #1a6dd5;
+  stroke-width: 16;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.9s linear;
+}
+.lf-ring-time {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: #1f2933;
+  font-variant-numeric: tabular-nums;
+}
+.lf-ring-hh {
+  color: #adb5bd;
+}
+
+.lf-timer-controls {
+  display: flex;
+  gap: 18px;
+}
+.lf-circlebtn {
+  width: 52px;
+  height: 52px;
+  border-radius: 999px;
+  border: 1px solid #e9ecef;
+  background: #f8f9fa;
+  color: #495057;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.lf-circlebtn:hover {
+  background: #eceef0;
+}
+
+/* ── Step 4: review ──────────────────────────────────────────────────────── */
+
+.lf-review {
+  max-width: 420px;
+  margin: 0 auto;
+}
+.lf-review .lf-h1 {
+  margin-bottom: 8px;
+}
+.lf-emojis {
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+.lf-emoji {
+  border: 1px solid #eceef0;
+  background: #fff;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
+  font-size: 18px;
+  line-height: 1;
+}
+.lf-emoji:hover {
+  background: #f1f3f5;
+}
+.lf-review-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+/* ── Reader picker ───────────────────────────────────────────────────────── */
+
+.lf-readerpicker {
+  text-align: center;
+}
+.lf-readerpicker .lf-h1 {
+  margin-bottom: 28px;
+}
+.lf-readerlist {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  max-width: 520px;
+  margin: 0 auto;
+}
+.lf-readercard {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  border: 1.5px solid #eceef0;
+  border-radius: 16px;
+  background: #fff;
+  padding: 22px 16px;
+}
+.lf-readercard:hover {
+  border-color: #cfd4d9;
+}
+.lf-readercard.is-active {
+  border-color: #1a6dd5;
+  background: #f5f9ff;
+}
+.lf-readercard-name {
+  font-weight: 800;
+  color: #1f2933;
+  font-size: 14.5px;
+}
+.lf-readercard-grade {
+  font-size: 12.5px;
+  color: #868e96;
+}
+.lf-readercard-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #1a6dd5;
+}
+
+/* ── Success ─────────────────────────────────────────────────────────────── */
+
+.lf-success {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding-top: 24px;
+}
+.lf-success-burst {
+  width: 104px;
+  height: 104px;
+  border-radius: 999px;
+  background: linear-gradient(150deg, #1a6dd5 0%, #0da7bc 100%);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 30px rgba(26, 109, 213, 0.3);
+  animation: lf-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes lf-pop {
+  from {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.lf-success-sub {
+  font-size: 15px;
+  color: #495057;
+  max-width: 420px;
+  line-height: 1.5;
+}
+.lf-success-sub strong {
+  color: #1f2933;
+}
+.lf-success-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #f6f7f8;
+  border-radius: 16px;
+  padding: 18px 28px;
+  margin: 6px 0;
+}
+.lf-success-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.lf-success-statnum {
+  font-size: 30px;
+  font-weight: 900;
+  color: #1a6dd5;
+  line-height: 1;
+}
+.lf-success-statlbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: #868e96;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.lf-success-review {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #16a97a;
+  border-left: 1px solid #e0e3e6;
+  padding-left: 18px;
+}
