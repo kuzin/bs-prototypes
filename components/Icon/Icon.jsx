@@ -189,6 +189,13 @@ import {
   IconThumbUpFilled,
   IconShare,
   IconChecks,
+  // ── pick your path (learning destinations) ──
+  IconBallBasketball,
+  IconTools,
+  IconPaw,
+  IconGauge,
+  IconRuler,
+  IconRun,
 } from '@tabler/icons-react'
 
 // Semantic name → Tabler component. Keys are kebab-case; a few aliases point at
@@ -389,6 +396,14 @@ const REGISTRY = {
   'thumb-up-filled': IconThumbUpFilled,
   share: IconShare,
   checks: IconChecks,
+
+  // pick your path (learning destinations)
+  'ball-basketball': IconBallBasketball,
+  tools: IconTools,
+  paw: IconPaw,
+  gauge: IconGauge,
+  ruler: IconRuler,
+  run: IconRun,
 }
 
 export const ICON_NAMES = Object.keys(REGISTRY)
