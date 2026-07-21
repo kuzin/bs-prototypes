@@ -40,6 +40,7 @@ const ICON_NAMES = {
   'book-talks': 'message-circle',
   books: 'book-2',
   'logging-flow': 'reading-log',
+  'pick-your-path': 'route',
 }
 
 const ICONS = Object.fromEntries(

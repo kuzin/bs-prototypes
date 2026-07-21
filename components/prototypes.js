@@ -120,4 +120,13 @@ export const PROTOTYPES = [
     accent: '#1A6DD5',
     description: 'Beanstack combined reading-log flow — search, log minutes/pages, timer, review.',
   },
+  {
+    id: 'pick-your-path',
+    name: 'Pick Your Path',
+    section: 'Experiments',
+    href: '/bs-prototypes/pick-your-path/',
+    accent: '#0F766E',
+    description:
+      'Teacher sets a learning Destination; students pick a high-interest Path to build background knowledge and earn badges.',
+  },
 ]

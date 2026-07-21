@@ -1,0 +1,1371 @@
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family:
+    'Nunito',
+    'Trebuchet MS',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background: #eef1f4;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+p {
+  margin: 0;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.pyp-app {
+  --pyp-teal: #0f766e;
+  --pyp-ink: #14312e;
+  --pyp-muted: #64748b;
+  --pyp-line: #e2e8f0;
+  --pyp-bg: #eef1f4;
+  --pyp-panel: #ffffff;
+  /* Spacing system — one source of truth so page rhythm stays consistent. */
+  --pyp-gutter: 24px; /* horizontal page padding */
+  --pyp-maxw: 1080px; /* student content width */
+  --pyp-maxw-narrow: 920px; /* teacher form width */
+  --pyp-pad: 20px; /* card / section / panel padding */
+  --pyp-gap: 24px; /* gap between stacked sections */
+  min-height: 100%;
+}
+.pyp-dot {
+  color: #cbd5e1;
+  margin: 0 2px;
+}
+
+/* Theme the shared primary Button teal to match this prototype. Modals portal
+   to <body> (outside .pyp-app), so the modal content roots are listed too. */
+.pyp-app .btn--primary,
+.pyp-activity .btn--primary,
+.pyp-celebrate .btn--primary {
+  background: var(--pyp-teal);
+  border-color: var(--pyp-teal);
+}
+.pyp-app .btn--primary:hover:not(:disabled),
+.pyp-activity .btn--primary:hover:not(:disabled),
+.pyp-celebrate .btn--primary:hover:not(:disabled) {
+  background: #0b5c55;
+  border-color: #0b5c55;
+}
+
+/* ─── Dev / preview toolbar ────────────────────────────────────────────── */
+.pyp-devbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 7px 16px;
+  background: #0f172a;
+  color: #cbd5e1;
+  border-bottom: 1px solid #1e293b;
+}
+.pyp-devbar-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+.pyp-devbar-views {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+.pyp-devbar-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #cbd5e1;
+  font-size: 13px;
+  font-weight: 700;
+  transition: all 0.12s ease;
+}
+.pyp-devbar-btn:hover {
+  background: #1e293b;
+  color: #fff;
+}
+.pyp-devbar-btn.is-active {
+  background: #14b8a6;
+  color: #04211d;
+}
+.pyp-devbar-reset {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  background: transparent;
+  color: #94a3b8;
+  font-size: 12.5px;
+  font-weight: 700;
+}
+.pyp-devbar-reset:hover {
+  color: #fff;
+  border-color: #475569;
+}
+
+/* ─── Shared brand logo ────────────────────────────────────────────────── */
+.pyp-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.pyp-logo-mark {
+  width: 26px;
+  height: 26px;
+}
+.pyp-logo-word {
+  font-size: 20px;
+  font-weight: 800;
+  color: #0f766e;
+  letter-spacing: -0.01em;
+}
+/* ─── Teacher: admin chrome ────────────────────────────────────────────── */
+.pyp-stepbar {
+  background: #fff;
+  border-bottom: 1px solid var(--pyp-line);
+}
+.pyp-stepbar-inner {
+  max-width: var(--pyp-maxw-narrow);
+  margin: 0 auto;
+  padding: 14px var(--pyp-gutter);
+}
+.pyp-teacher-body {
+  max-width: var(--pyp-maxw-narrow);
+  margin: 0 auto;
+  padding: 22px var(--pyp-gutter) 72px;
+}
+
+/* Page head */
+.pyp-page-head {
+  margin-bottom: 18px;
+}
+.pyp-page-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+  line-height: 1.2;
+}
+.pyp-page-sub {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--pyp-muted);
+  max-width: 60ch;
+}
+
+/* Teacher panels (SectionCard) */
+.pyp-teacher-body .section-card {
+  margin-bottom: 18px;
+}
+.pyp-panel-sub {
+  font-size: 13.5px;
+  color: var(--pyp-muted);
+  margin: -6px 0 16px;
+}
+
+/* Destination catalog grid */
+.pyp-dest-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+.pyp-dest-card {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border: 1.5px solid var(--pyp-line);
+  border-radius: 14px;
+  background: #fff;
+  text-align: left;
+  transition: all 0.14s ease;
+}
+.pyp-dest-card:not(.is-disabled):hover {
+  border-color: #99f6e4;
+  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.08);
+}
+.pyp-dest-card.is-selected {
+  border-color: #0f766e;
+  background: #f0fdfa;
+  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.12);
+}
+.pyp-dest-card.is-disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.pyp-dest-icon {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: #f1f5f9;
+  color: #0f766e;
+  display: grid;
+  place-items: center;
+}
+.pyp-dest-card.is-selected .pyp-dest-icon {
+  background: #ccfbf1;
+}
+.pyp-dest-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pyp-dest-subject {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pyp-muted);
+}
+.pyp-dest-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+  line-height: 1.2;
+}
+.pyp-dest-check {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+}
+
+/* Path picker (teacher) — bold illustrated cards, grid */
+.pyp-pathset {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.pyp-pathoffer {
+  background: #fff;
+  border: 1px solid var(--pyp-line);
+  border-radius: 16px;
+  transition: border-color 0.14s ease;
+}
+.pyp-pathoffer.is-on {
+  border-color: color-mix(in srgb, var(--path-color) 45%, var(--pyp-line));
+}
+.pyp-pathoffer-band {
+  position: relative;
+  min-height: 130px;
+  padding: 16px 20px;
+  border-radius: 16px 16px 0 0;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  background-size: cover;
+  background-position: center;
+  transition: filter 0.14s ease;
+}
+.pyp-pathoffer.is-off .pyp-pathoffer-band {
+  filter: grayscale(0.35) brightness(0.92);
+}
+.pyp-pathoffer-name {
+  flex: 1 1 auto;
+  font-size: 19px;
+  font-weight: 800;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Frosted pill so the toggle stays legible over any part of the illustration */
+.pyp-pathoffer-toggle {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  padding: 5px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+.pyp-pathoffer-body {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1.3fr 1fr;
+  gap: 28px;
+}
+.pyp-pathoffer-sec {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.pyp-pathoffer-seclabel {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pyp-muted);
+}
+.pyp-pathoffer-covers,
+.pyp-pathoffer-activities,
+.pyp-badgepreview {
+  transition: opacity 0.14s ease;
+}
+.pyp-pathoffer.is-off .pyp-pathoffer-covers,
+.pyp-pathoffer.is-off .pyp-pathoffer-activities,
+.pyp-pathoffer.is-off .pyp-badgepreview {
+  opacity: 0.45;
+}
+.pyp-pathoffer-activities {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pyp-pathoffer-activity {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+.pyp-pathoffer-activity-icon {
+  flex: 0 0 auto;
+  width: 24px;
+  height: 24px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  margin-top: 1px;
+  background: color-mix(in srgb, var(--path-color) 12%, #fff);
+  color: var(--path-color);
+}
+.pyp-pathoffer-activity-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.pyp-pathoffer-activity-name {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+}
+.pyp-pathoffer-activity-desc {
+  font-size: 11.5px;
+  color: var(--pyp-muted);
+  line-height: 1.35;
+}
+.pyp-badgepreview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.pyp-badgepreview-item {
+  cursor: default;
+}
+
+/* Assign bar */
+/* ─── Reader chrome (student) ──────────────────────────────────────────── */
+.pyp-reader {
+  min-height: 100%;
+}
+.pyp-topbar {
+  background: #fff;
+  border-bottom: 1px solid var(--pyp-line);
+}
+.pyp-topbar-inner {
+  max-width: var(--pyp-maxw);
+  margin: 0 auto;
+  padding: 12px var(--pyp-gutter);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.pyp-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 8px;
+}
+.pyp-topbar-user {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.pyp-user-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px 4px 4px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--pyp-ink);
+}
+.pyp-user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #0f766e;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  font-weight: 800;
+}
+.pyp-icon-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--pyp-muted);
+  display: grid;
+  place-items: center;
+}
+.pyp-icon-btn:hover {
+  background: #f1f5f9;
+  color: var(--pyp-ink);
+}
+.pyp-tabsbar {
+  max-width: var(--pyp-maxw);
+  margin: 0 auto;
+  padding: 0 var(--pyp-gutter);
+}
+
+.pyp-reader-body {
+  padding: 28px 0 72px;
+}
+.pyp-reader-inner {
+  max-width: var(--pyp-maxw);
+  margin: 0 auto;
+  padding: 0 var(--pyp-gutter);
+}
+.pyp-h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+}
+.pyp-h2 svg {
+  color: var(--path-color, #0f766e);
+}
+
+/* ─── Destination band (pick + destination) ───────────────────────────── */
+.pyp-dest-band {
+  background: linear-gradient(135deg, #0f766e 0%, #0b3b39 100%);
+  color: #fff;
+}
+.pyp-dest-band-inner {
+  max-width: var(--pyp-maxw);
+  margin: 0 auto;
+  padding: 32px var(--pyp-gutter);
+  min-height: 196px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+}
+.pyp-dest-band-title {
+  font-size: 34px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.pyp-dest-band-sub {
+  margin-top: 8px;
+  font-size: 15px;
+  max-width: 64ch;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.pyp-dest-band-tag {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 6px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+.pyp-changepath {
+  position: absolute;
+  top: 50%;
+  right: var(--pyp-gutter);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border-radius: 9px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+.pyp-changepath:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+/* ─── Pick screen ─────────────────────────────────────────────────────── */
+.pyp-pick-head {
+  margin: 0 0 16px;
+}
+.pyp-pick-sub {
+  font-size: 14.5px;
+  color: var(--pyp-muted);
+  margin-top: 4px;
+}
+.pyp-pathgrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+}
+.pyp-pathcard {
+  display: flex;
+  flex-direction: column;
+  border-radius: 18px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--pyp-line);
+  box-shadow: 0 6px 20px rgba(15, 23, 42, 0.06);
+  transition:
+    transform 0.16s ease,
+    box-shadow 0.16s ease;
+}
+.pyp-pathcard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.12);
+}
+.pyp-pathcard-band {
+  position: relative;
+  min-height: 190px;
+  padding: 20px 22px 18px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background-size: cover;
+  background-position: center;
+}
+.pyp-pathcard-name {
+  font-size: 20px;
+  font-weight: 800;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+.pyp-pathcard-tag {
+  font-size: 13.5px;
+  color: rgba(255, 255, 255, 0.94);
+  margin-top: 4px;
+  line-height: 1.4;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.pyp-pathcard-body {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.pyp-pathcard-cta {
+  width: 100%;
+  justify-content: center;
+  font-size: 15.5px;
+  padding: 14px 0;
+  background: var(--path-color) !important;
+  border-color: var(--path-color) !important;
+}
+.pyp-pathcard-cta:hover {
+  filter: brightness(0.94);
+}
+
+/* ─── Destination screen ──────────────────────────────────────────────── */
+.pyp-statstrip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin: 0 0 24px;
+}
+.pyp-stat {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid var(--pyp-line);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+}
+.pyp-stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+.pyp-stat-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+.pyp-stat-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+  line-height: 1.1;
+}
+.pyp-stat-label {
+  font-size: 12.5px;
+  color: var(--pyp-muted);
+  font-weight: 600;
+}
+
+/* Challenge sub-tabs + tab panels */
+.pyp-dest-subtabs {
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--pyp-line);
+}
+.pyp-tabpanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pyp-gap);
+}
+.pyp-badgegallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: 22px 12px;
+  margin-top: 16px;
+}
+.pyp-section {
+  background: #fff;
+  border: 1px solid var(--pyp-line);
+  border-radius: 16px;
+  padding: var(--pyp-pad);
+}
+.pyp-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.pyp-section-count {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--path-color, #0f766e);
+  background: color-mix(in srgb, var(--path-color, #0f766e) 10%, #fff);
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+.pyp-section-sub {
+  font-size: 13.5px;
+  color: var(--pyp-muted);
+  margin: -4px 0 12px;
+}
+
+/* Title rows */
+.pyp-titles {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+.pyp-title {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px;
+  border: 1px solid var(--pyp-line);
+  border-radius: 13px;
+  transition: border-color 0.14s ease;
+}
+.pyp-title.is-read {
+  background: #f8fafc;
+  border-color: #e2e8f0;
+}
+.pyp-title-cover {
+  flex: 0 0 auto;
+  width: 66px;
+}
+.pyp-title-info {
+  flex: 1;
+  min-width: 0;
+}
+.pyp-title-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+  line-height: 1.25;
+}
+.pyp-title-author {
+  font-size: 12.5px;
+  color: var(--pyp-muted);
+  margin-top: 1px;
+}
+.pyp-title-blurb {
+  font-size: 13px;
+  color: #475569;
+  margin-top: 5px;
+  line-height: 1.4;
+}
+.pyp-title-meta {
+  font-size: 12px;
+  color: var(--pyp-muted);
+  margin-top: 5px;
+}
+.pyp-title-action {
+  flex: 0 0 auto;
+}
+.pyp-read-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 12px;
+  border: none;
+  border-radius: 9px;
+  background: #ecfdf5;
+  color: #16a97a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+/* Cover tile — generated art styled like a physical book: a flatter spine
+   edge (left), rounded page edge (right), a spine-shadow tint, and a stacked
+   "pages peeking out" shadow instead of a plain flat drop shadow. */
+.pyp-cover {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 2px 8px 8px 2px;
+  overflow: hidden;
+  color: #fff;
+  background: #dbe3ea;
+  box-shadow:
+    2px 2px 0 0 #faf7f0,
+    4px 4px 0 0 #e7e2d6,
+    3px 5px 10px rgba(15, 23, 42, 0.25);
+}
+.pyp-cover::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0) 22%);
+}
+.pyp-cover-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.pyp-cover-wm {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  opacity: 0.28;
+  color: #fff;
+}
+.pyp-cover-overlay {
+  position: absolute;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 18px 9px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  background: linear-gradient(to top, rgba(4, 33, 30, 0.8), rgba(4, 33, 30, 0));
+}
+.pyp-cover-kicker {
+  font-size: 8px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.9;
+}
+.pyp-cover-title {
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.15;
+  margin-top: 2px;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.pyp-cover-check {
+  position: absolute;
+  z-index: 3;
+  top: 6px;
+  left: 6px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+}
+
+/* Activities */
+.pyp-actgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+.pyp-actcard {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+  text-align: left;
+  border: 1.5px solid var(--pyp-line);
+  border-radius: 14px;
+  background: #fff;
+  transition: all 0.14s ease;
+}
+.pyp-actcard:hover {
+  border-color: color-mix(in srgb, var(--path-color) 45%, #fff);
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
+}
+.pyp-actcard.is-done {
+  background: #f8fafc;
+}
+.pyp-actcard-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--path-color) 12%, #fff);
+  color: var(--path-color);
+  display: grid;
+  place-items: center;
+}
+.pyp-actcard-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+.pyp-actcard-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+}
+.pyp-actcard-prompt {
+  font-size: 12.5px;
+  color: #475569;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.pyp-actcard.is-done .pyp-actcard-prompt {
+  font-style: italic;
+  color: #334155;
+}
+.pyp-actcard-foot {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--path-color);
+}
+.pyp-actcard-foot.is-done {
+  color: #16a97a;
+}
+
+/* Rewards tab */
+.pyp-rewardgrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+.pyp-reward {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border: 1px solid var(--pyp-line);
+  border-radius: 13px;
+  background: #fff;
+}
+.pyp-reward.is-earned {
+  border-color: color-mix(in srgb, #16a97a 40%, #fff);
+  background: #f0fdf7;
+}
+.pyp-reward-icon {
+  flex: 0 0 auto;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  display: grid;
+  place-items: center;
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+.pyp-reward.is-earned .pyp-reward-icon {
+  background: #dcfce7;
+  color: #16a97a;
+}
+.pyp-reward-text {
+  flex: 1;
+  min-width: 0;
+}
+.pyp-reward-name {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+}
+.pyp-reward-desc {
+  font-size: 12.5px;
+  color: var(--pyp-muted);
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.pyp-reward-status {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--pyp-muted);
+}
+.pyp-reward-status.is-earned {
+  color: #16a97a;
+}
+
+/* Challenge Log tab */
+.pyp-log {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+}
+.pyp-log-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 2px;
+}
+.pyp-log-item + .pyp-log-item {
+  border-top: 1px solid var(--pyp-line);
+}
+.pyp-log-icon {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+}
+.pyp-log-body {
+  flex: 1;
+  min-width: 0;
+}
+.pyp-log-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--pyp-ink);
+}
+.pyp-log-note {
+  font-size: 13px;
+  color: #475569;
+  font-style: italic;
+  margin-top: 2px;
+}
+.pyp-log-empty {
+  font-size: 14px;
+  color: var(--pyp-muted);
+  padding: 8px 0;
+}
+
+/* ─── Common: cover preview row ────────────────────────────────────────── */
+.pyp-coverpreview {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.pyp-coverpreview-item {
+  width: 100%;
+  min-width: 0;
+  cursor: default;
+}
+/* The shared Tooltip wraps its child in a display:inline-flex span. Nested
+   inside a plain block item it fills the width by default, but pin it
+   explicitly (scoped to this usage only) so pyp-cover's own width:100%
+   never resolves against an indeterminate box. */
+.pyp-coverpreview-item .ttp {
+  display: flex;
+  width: 100%;
+}
+
+/* ─── Common: badge disc ──────────────────────────────────────────────── */
+.pyp-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 6px;
+}
+.pyp-badge.is-clickable {
+  cursor: pointer;
+}
+.pyp-badge-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+.pyp-badge-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 6px rgba(15, 23, 42, 0.16));
+  transition: transform 0.14s ease;
+}
+.pyp-badge.is-clickable:hover .pyp-badge-img {
+  transform: translateY(-2px) scale(1.04);
+}
+.pyp-badge.is-locked .pyp-badge-img {
+  filter: grayscale(1) opacity(0.4);
+}
+/* icon-in-ring fallback (no art) */
+.pyp-badge-art--icon {
+  border-radius: 50%;
+  border: 3px solid var(--badge-color);
+  background: color-mix(in srgb, var(--badge-color) 10%, #fff);
+  color: var(--badge-color);
+}
+.pyp-badge.is-locked .pyp-badge-art--icon {
+  border-color: #cbd5e1;
+  border-style: dashed;
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+.pyp-badge-face {
+  display: grid;
+  place-items: center;
+}
+.pyp-badge-status {
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  background: #fff;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  line-height: 0;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+}
+.pyp-badge-status--lock {
+  width: 22px;
+  height: 22px;
+  color: #94a3b8;
+}
+.pyp-badge-name {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+  line-height: 1.2;
+}
+.pyp-badge.is-locked .pyp-badge-name {
+  color: #94a3b8;
+}
+.pyp-badge-sub {
+  font-size: 11px;
+  color: var(--pyp-muted);
+  line-height: 1.2;
+}
+
+/* ─── Activity modal ──────────────────────────────────────────────────── */
+.pyp-activity {
+  position: relative;
+  padding: 24px;
+}
+.pyp-activity-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 50%;
+  background: #f1f5f9;
+  color: #64748b;
+  display: grid;
+  place-items: center;
+}
+.pyp-activity-close:hover {
+  background: #e2e8f0;
+}
+.pyp-activity-head {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 18px;
+}
+.pyp-activity-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: color-mix(in srgb, var(--path-color) 13%, #fff);
+  color: var(--path-color);
+  display: grid;
+  place-items: center;
+}
+.pyp-activity-kicker {
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pyp-muted);
+}
+.pyp-activity-name {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+}
+.pyp-activity-sec-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pyp-muted);
+  margin-bottom: 7px;
+}
+.pyp-activity-prompt {
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #eef2f6;
+  margin-bottom: 16px;
+}
+.pyp-activity-prompt p {
+  font-size: 14px;
+  color: #334155;
+  line-height: 1.55;
+}
+.pyp-activity-req {
+  margin-bottom: 18px;
+}
+.pyp-activity-question {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--pyp-ink);
+  line-height: 1.4;
+  margin-bottom: 10px;
+}
+.pyp-activity-input {
+  width: 100%;
+  border: 1.5px solid var(--pyp-line);
+  border-radius: 11px;
+  padding: 11px 13px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--pyp-ink);
+  resize: vertical;
+}
+.pyp-activity-input:focus {
+  outline: none;
+  border-color: var(--path-color);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--path-color) 18%, transparent);
+}
+.pyp-activity-answer {
+  display: flex;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--path-color) 6%, #fff);
+  border: 1px solid color-mix(in srgb, var(--path-color) 20%, #fff);
+  color: #334155;
+}
+.pyp-activity-answer svg {
+  flex: 0 0 auto;
+  color: var(--path-color);
+  margin-top: 2px;
+}
+.pyp-activity-answer p {
+  font-size: 14px;
+  line-height: 1.5;
+  font-style: italic;
+}
+.pyp-activity-foot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+.pyp-activity-earned {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #16a97a;
+  font-weight: 700;
+  margin-right: auto;
+}
+
+/* ─── Badge celebration ───────────────────────────────────────────────── */
+.pyp-celebrate {
+  position: relative;
+  text-align: center;
+  padding: 28px 24px 22px;
+  overflow: hidden;
+}
+.pyp-confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.pyp-confetti-bit {
+  position: absolute;
+  top: -18px;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: pyp-fall 1.5s ease-in forwards;
+}
+@keyframes pyp-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(380px) rotate(240deg);
+    opacity: 0;
+  }
+}
+.pyp-celebrate-medal {
+  position: relative;
+  width: 138px;
+  height: 138px;
+  margin: 8px auto 14px;
+  display: grid;
+  place-items: center;
+  animation: pyp-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.pyp-celebrate-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 6px 16px rgba(15, 23, 42, 0.22));
+}
+.pyp-celebrate-face {
+  width: 104px;
+  height: 104px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 4px solid var(--badge-color);
+  background: color-mix(in srgb, var(--badge-color) 14%, #fff);
+  color: var(--badge-color);
+}
+@keyframes pyp-pop {
+  0% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.pyp-celebrate-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--badge-color);
+}
+.pyp-celebrate-name {
+  font-size: 23px;
+  font-weight: 800;
+  color: var(--pyp-ink);
+  margin: 4px 0 4px;
+}
+.pyp-celebrate-type {
+  font-size: 13px;
+  color: var(--pyp-muted);
+  margin-bottom: 20px;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────── */
+@media (max-width: 960px) {
+  .pyp-dest-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pyp-pathgrid {
+    grid-template-columns: 1fr;
+  }
+  .pyp-pathoffer-body {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pyp-pathoffer-sec:last-child {
+    grid-column: 1 / -1;
+  }
+}
+@media (max-width: 620px) {
+  .pyp-statstrip {
+    grid-template-columns: 1fr 1fr;
+  }
+  .pyp-actgrid {
+    grid-template-columns: 1fr;
+  }
+  .pyp-dest-grid {
+    grid-template-columns: 1fr;
+  }
+  .pyp-rewardgrid {
+    grid-template-columns: 1fr;
+  }
+  .pyp-pathoffer-body {
+    grid-template-columns: 1fr;
+  }
+  .pyp-devbar {
+    flex-wrap: wrap;
+  }
+}
