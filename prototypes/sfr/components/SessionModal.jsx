@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from 'react'
 import { Modal } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
-import { Table } from '@components/Table/Table'
 import { IconButton } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 import { SAFETY_SEVERITY } from './SessionsTable'
@@ -10,7 +9,6 @@ import '@components/Modal/Modal.css'
 import '@components/Button/Button.css'
 import '@components/Form/Form.css'
 import '@components/Tabs/Tabs.css'
-import '@components/Table/Table.css'
 import '@components/Primitives/Primitives.css'
 import './SessionModal.css'
 
@@ -67,25 +65,6 @@ const POS_FLAG_DESCS = {
     desc: 'Student connected the text to their own life or experiences.',
     icon: 'link',
   },
-}
-
-// Generate deterministic fake reading log entries leading up to the BTWB session
-function fakeReadingLog(session) {
-  const base = new Date(session.date)
-  const hash = session.id.split('').reduce((a, c) => a + c.charCodeAt(0), 0)
-  const count = 3 + (hash % 3)
-  const entries = []
-  for (let i = count - 1; i >= 0; i--) {
-    const daysBack = i === 0 ? 0 : i * 3 + (hash % 4)
-    const d = new Date(base)
-    d.setDate(d.getDate() - daysBack)
-    entries.push({
-      date: d,
-      minutes: 15 + ((hash * (i + 2)) % 38),
-      hasBTWB: i === 0,
-    })
-  }
-  return entries
 }
 
 // Unified review card — shared by the Safety signal, the Engagement rating, and
@@ -252,6 +231,23 @@ const RATING_META = {
     desc: 'Brief or low-effort responses throughout.',
   },
 }
+// Compact type indicator for the sidebar's reader-session list — one icon per
+// row standing in for type/rating/safety, in priority order (most notable wins).
+const SESSION_TYPE_META = {
+  engagement: { icon: 'message-circle', color: '#0DA7BC', bg: '#E0F7FA' },
+  flagged: { icon: 'flag', color: '#DC2626', bg: '#FEF2F2' },
+  both: { icon: 'flag', color: '#7C3AED', bg: '#F5F3FF' },
+}
+function sessionRowMeta(s) {
+  if (s.changeLog?.some((e) => e.kind === 'approved'))
+    return { icon: 'circle-check', color: '#16A97A', bg: '#F0FDF4' }
+  if (s.safety) {
+    const sevMeta = SAFETY_SEVERITY[s.safety.severity]
+    return { icon: sevMeta.icon, color: sevMeta.color, bg: sevMeta.bg }
+  }
+  return SESSION_TYPE_META[s.type] ?? SESSION_TYPE_META.engagement
+}
+
 const CURRENT_USER = 'Mr. Garcia'
 
 function newLogEntry(extra) {
@@ -278,7 +274,6 @@ export function SessionModal({
   reviewer = CURRENT_USER,
 }) {
   const [local, setLocal] = useState(null)
-  const [sidebarTab, setSidebarTab] = useState('details')
   const [editingRating, setEditingRating] = useState(false)
   const [confirmingFlagRemoval, setConfirmingFlagRemoval] = useState(null)
   const [confirmingResolve, setConfirmingResolve] = useState(false)
@@ -293,7 +288,6 @@ export function SessionModal({
   // in-place updates, so an action (escalate/resolve/note) keeps your tab + scroll.
   useEffect(() => {
     if (!session) return
-    setSidebarTab('details')
     setEditingRating(false)
     setConfirmingFlagRemoval(null)
     setConfirmingResolve(false)
@@ -439,34 +433,41 @@ export function SessionModal({
     setNoteDraft('')
   }
 
-  const readingLog = fakeReadingLog(d)
-  const studentBookTalks = allSessions
-    .filter((s) => s.student.id === d.student.id && s.book.title === d.book.title)
+  const readerSessions = allSessions
+    .filter((s) => s.student.id === d.student.id)
     .sort((a, b) => new Date(b.date) - new Date(a.date))
 
-  // Shared sections reused by both the safety (tabbed) and integrity layouts.
+  // Shared section reused by both the safety (tabbed) and integrity layouts —
+  // the book (cover/title/author/Lexile) is folded in here alongside the
+  // date/unit table, since both describe this one session.
   const sessionDetailsSection = (
     <div className="sm2-section">
       <div className="sm2-section-head">
         <span className="sm2-section-title">Session Details</span>
       </div>
-      <Table
-        className="sm2-details-table"
-        columns={[
-          { key: 'dateRead', label: d.source === 'activity' ? 'Date' : 'Date Read' },
-          { key: 'unit', label: d.source === 'activity' ? 'Activity' : 'Unit', align: 'right' },
-        ]}
-        rows={[
-          {
-            id: 'details',
-            dateRead: dateStr,
-            unit:
-              d.source === 'activity'
-                ? d.activityName || 'Book Talk'
-                : `${d.minutesLogged.toLocaleString()} Minutes`,
-          },
-        ]}
-      />
+      <div className="sm2-details-card">
+        <div className="sm2-book-cover" style={{ background: d.book.color }}>
+          <Icon name="book" size={28} color="rgba(255,255,255,0.65)" />
+        </div>
+        <div className="sm2-details-card-body">
+          <div className="sm2-book-title">{d.book.title}</div>
+          <div className="sm2-book-author">{d.book.author}</div>
+          <div className="sm2-detail-rows">
+            <div className="sm2-detail-row">
+              <span>{d.source === 'activity' ? 'Date' : 'Date Read'}</span>
+              <span>{dateStr}</span>
+            </div>
+            <div className="sm2-detail-row">
+              <span>{d.source === 'activity' ? 'Activity' : 'Unit'}</span>
+              <span>
+                {d.source === 'activity'
+                  ? d.activityName || 'Book Talk'
+                  : `${d.minutesLogged.toLocaleString()} Minutes`}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   )
 
@@ -558,15 +559,6 @@ export function SessionModal({
         {/* Top bar */}
         <div className="sm2-topbar">
           <div className="sm2-topbar-left">
-            <span className="sm2-student-name">{d.student.name}</span>
-            {onViewProfile && (
-              <button className="sm2-view-profile" onClick={() => onViewProfile(d.student)}>
-                <Icon name="user" size={13} />
-                View profile
-              </button>
-            )}
-          </div>
-          <div className="sm2-topbar-right">
             {sessionCount > 0 && (
               <div className="sm2-nav">
                 <button
@@ -594,6 +586,8 @@ export function SessionModal({
                 </button>
               </div>
             )}
+          </div>
+          <div className="sm2-topbar-right">
             <IconButton variant="ghost" onClick={onClose} aria-label="Close" className="sm2-close">
               <Icon name="x" size={15} stroke={2.2} />
             </IconButton>
@@ -602,138 +596,63 @@ export function SessionModal({
 
         {/* Two-column body */}
         <div className="sm2-columns">
-          {/* Left: book info + reading log */}
+          {/* Left: reader identity + this reader's other sessions */}
           <div className="sm2-sidebar">
-            <div className="sm2-cover" style={{ background: d.book.color }}>
-              <Icon name="book" size={36} color="rgba(255,255,255,0.65)" />
-            </div>
-            <div className="sm2-cover-title">{d.book.title}</div>
-            <div className="sm2-cover-author">{d.book.author}</div>
-            {d.book.lexile && <div className="sm2-lexile">{d.book.lexile}</div>}
-
-            <div className="sm2-sidebar-tabs">
-              <button
-                className={`sm2-sidebar-tab${sidebarTab === 'details' ? ' sm2-sidebar-tab--active' : ''}`}
-                onClick={() => setSidebarTab('details')}
-              >
-                Details
-              </button>
-              <button
-                className={`sm2-sidebar-tab${sidebarTab === 'sessions' ? ' sm2-sidebar-tab--active' : ''}`}
-                onClick={() => setSidebarTab('sessions')}
-              >
-                Sessions
-                <span className="sm2-sidebar-tab-count">{studentBookTalks.length}</span>
-              </button>
-            </div>
-
-            {sidebarTab === 'details' && (
-              <div className="sm2-meta-rows">
-                {d.book.isbn && (
-                  <div className="sm2-meta-row">
-                    <span>ISBN</span>
-                    <span>{d.book.isbn}</span>
-                  </div>
-                )}
-                {d.book.published && (
-                  <div className="sm2-meta-row">
-                    <span>Published</span>
-                    <span>{d.book.published}</span>
-                  </div>
-                )}
-                {d.book.publisher && (
-                  <div className="sm2-meta-row">
-                    <span>Publisher</span>
-                    <span>{d.book.publisher}</span>
-                  </div>
-                )}
-                {d.book.format && (
-                  <div className="sm2-meta-row">
-                    <span>Format</span>
-                    <span>{d.book.format}</span>
-                  </div>
-                )}
-                {d.book.language && (
-                  <div className="sm2-meta-row">
-                    <span>Language</span>
-                    <span>{d.book.language}</span>
-                  </div>
-                )}
-                {d.book.pageCount && (
-                  <div className="sm2-meta-row">
-                    <span>Page count</span>
-                    <span>{d.book.pageCount}</span>
-                  </div>
-                )}
-              </div>
-            )}
-
-            {sidebarTab === 'sessions' && (
-              <div className="sm2-sessions-tab">
-                <div className="sm2-sessions-subhead">Book Talks</div>
-                <div className="sm2-btwb-list">
-                  {studentBookTalks.map((s) => {
-                    const isCurrent = s.id === d.id
-                    const sDate = new Date(s.date).toLocaleDateString('en-US', {
-                      month: 'short',
-                      day: 'numeric',
-                    })
-                    const types =
-                      s.type === 'both'
-                        ? [
-                            { key: 'engagement', label: 'Engagement' },
-                            { key: 'flagged', label: 'Integrity' },
-                          ]
-                        : s.type === 'engagement'
-                          ? [{ key: 'engagement', label: 'Engagement' }]
-                          : [{ key: 'flagged', label: 'Integrity' }]
-                    return (
-                      <button
-                        key={s.id}
-                        className={`sm2-btwb-row${isCurrent ? ' sm2-btwb-row--current' : ''}`}
-                        onClick={() => {
-                          if (!isCurrent) onSelectSession?.(s)
-                        }}
-                        disabled={isCurrent}
-                      >
-                        <span className="sm2-btwb-date">{sDate}</span>
-                        <div className="sm2-btwb-tags">
-                          {types.map((t) => (
-                            <span key={t.key} className={`sm2-btwb-tag sm2-btwb-tag--${t.key}`}>
-                              {t.label}
-                            </span>
-                          ))}
-                        </div>
-                      </button>
-                    )
-                  })}
+            <div className="sm2-reader-card">
+              <span className="sm2-reader-avatar" style={{ background: d.student.color }}>
+                {studentInitials}
+              </span>
+              <div className="sm2-reader-name">{d.student.name}</div>
+              {(d.student.grade || d.student.class) && (
+                <div className="sm2-reader-meta">
+                  {d.student.grade ? `${d.student.grade} Grade` : null}
+                  {d.student.grade && d.student.class ? ' · ' : null}
+                  {d.student.class}
                 </div>
+              )}
+              {onViewProfile && (
+                <button className="sm2-view-profile" onClick={() => onViewProfile(d.student)}>
+                  <Icon name="user" size={13} />
+                  View profile
+                </button>
+              )}
+            </div>
 
-                {/* Activity-badge book talks aren't tied to a reading log. */}
-                {d.source !== 'activity' && (
-                  <>
-                    <div className="sm2-sessions-subhead sm2-sessions-subhead--logs">
-                      Reading Logs
-                    </div>
-                    <ul className="sm2-readlog-list">
-                      {readingLog
-                        .filter((e) => !e.hasBTWB)
-                        .map((entry, i) => (
-                          <li key={i} className="sm2-readlog-row">
-                            <span className="sm2-readlog-date">
-                              {entry.date.toLocaleDateString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                              })}
-                            </span>
-                            <span className="sm2-readlog-mins">{entry.minutes} min</span>
-                          </li>
-                        ))}
-                    </ul>
-                  </>
-                )}
-              </div>
-            )}
+            <div className="sm2-reader-sessions-head">
+              <span>All Sessions</span>
+              <span className="sm2-sidebar-tab-count">{readerSessions.length}</span>
+            </div>
+
+            <div className="sm2-reader-sessions">
+              {readerSessions.map((s) => {
+                const isCurrent = s.id === d.id
+                const sDate = new Date(s.date).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                })
+                const meta = sessionRowMeta(s)
+                return (
+                  <button
+                    key={s.id}
+                    className={`sm2-reader-row${isCurrent ? ' sm2-reader-row--current' : ''}`}
+                    onClick={() => {
+                      if (!isCurrent) onSelectSession?.(s)
+                    }}
+                    disabled={isCurrent}
+                    title={s.book.title}
+                  >
+                    <span
+                      className="sm2-reader-row-icon"
+                      style={{ color: meta.color, background: meta.bg }}
+                    >
+                      <Icon name={meta.icon} size={13} stroke={2.2} />
+                    </span>
+                    <span className="sm2-reader-row-book">{s.book.title}</span>
+                    <span className="sm2-reader-row-date">{sDate}</span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
           {/* Right: session content */}
