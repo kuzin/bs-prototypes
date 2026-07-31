@@ -171,18 +171,6 @@ export const BOOKS = {
     readable: true,
     partner: 'scholastic',
   },
-  dynamath: {
-    id: 'dynamath',
-    title: 'DynaMath',
-    author: 'Scholastic',
-    cover: ['#F7B23B', '#C2700B'],
-    kind: 'magazine',
-    issue: 'May 2026 · The Math of Sports',
-    cadence: 'Monthly',
-    measure: 'pages',
-    pages: 16,
-    partner: 'scholastic',
-  },
 }
 
 export const RECENTLY_LOGGED = ['scholastic-news', 'she-gets-the-girl', 'rump', 'lucky-cap']
