@@ -47,6 +47,10 @@ function fmtMinutes(min) {
   return `${m} min`
 }
 
+// Cover tiles carry the readable chip as a glyph only — spell it out in the
+// tooltip/accessible name too.
+const coverLabel = (b) => (b.readable ? `${b.title} — readable in the app` : b.title)
+
 const EMOTICONS = ['😍', '😂', '🤩', '😢', '🤔', '👏', '🔥', '💜']
 const REVIEW_OPTIONS = [
   { value: 'no', label: 'No' },
@@ -517,7 +521,7 @@ function SearchStep({
         <>
           {/* Active reading list band */}
           <section className="lf-panel lf-rlband">
-            <div className="lf-rlbanner">
+            <div className={`lf-rlbanner lf-rlbanner--${READING_LIST.art}`}>
               <h2 className="lf-rl-name">{READING_LIST.challenge}</h2>
               <p className="lf-rlbyline">{READING_LIST.byline}</p>
             </div>
@@ -530,7 +534,7 @@ function SearchStep({
                     key={id}
                     className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
                     onClick={() => onPick(BOOKS[id])}
-                    title={BOOKS[id].title}
+                    title={coverLabel(BOOKS[id])}
                   >
                     <BookCover book={BOOKS[id]} size="md" />
                     {logged && (
@@ -538,15 +542,13 @@ function SearchStep({
                         <Icon name="check" size={12} stroke={3} />
                       </span>
                     )}
-                    <span className="lf-rladd">
-                      <Icon name="plus" size={12} stroke={2.6} />
-                      Log
-                    </span>
                   </button>
                 )
               })}
             </div>
-            <button className="lf-link lf-viewall">View all {READING_LIST.total} titles ›</button>
+            <button className="lf-link lf-viewall">
+              View all {READING_LIST.total} {READING_LIST.unit || 'titles'} ›
+            </button>
           </section>
 
           {/* Recently logged */}
@@ -558,7 +560,7 @@ function SearchStep({
                   key={id}
                   className="lf-coverbtn"
                   onClick={() => onPick(BOOKS[id])}
-                  title={BOOKS[id].title}
+                  title={coverLabel(BOOKS[id])}
                 >
                   <BookCover book={BOOKS[id]} size="md" />
                 </button>
