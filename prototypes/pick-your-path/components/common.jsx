@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Tooltip } from '@components/Primitives/Primitives'
-import { badgesForPath } from '../data'
 
 // A row of small cover previews — each reveals its title via tooltip on
 // hover, with no visible caption, so a path can be previewed without adding
-// text clutter to the layout.
-export function CoverPreviewRow({ path, className = '' }) {
+// text clutter to the layout. A path's shelf runs ~10 deep, so only the first
+// `limit` are shown and the remainder collapse into a "+N more" tile.
+export function CoverPreviewRow({ path, limit = 3, className = '' }) {
+  const shown = path.titles.slice(0, limit)
+  const rest = path.titles.length - shown.length
   return (
     <div className={`pyp-coverpreview ${className}`.trim()}>
-      {path.titles.map((t) => (
+      {shown.map((t) => (
         // The grid item is a plain div (stretches to fill its column
         // reliably); Tooltip wraps just the tile inside it, so the shared
         // component's own inline-flex wrapper is never the thing being
@@ -20,6 +22,13 @@ export function CoverPreviewRow({ path, className = '' }) {
           </Tooltip>
         </div>
       ))}
+      {rest > 0 && (
+        <div className="pyp-coverpreview-item">
+          <Tooltip content={`${rest} more titles on this path`}>
+            <span className="pyp-coverpreview-more">+{rest}</span>
+          </Tooltip>
+        </div>
+      )}
     </div>
   )
 }
@@ -109,26 +118,6 @@ export function BadgeDisc({ badge, size = 74, onClick, showLabel = true, showSta
           <div className="pyp-badge-sub">{badge.sub}</div>
         </>
       )}
-    </div>
-  )
-}
-
-// A compact row of badge previews for a path, shown fully earned — this is a
-// preview of the reward a path offers, not a student's actual progress — each
-// reveals its name via tooltip, matching CoverPreviewRow.
-export function BadgePreviewRow({ path, className = '' }) {
-  const allTitleIds = path.titles.map((t) => t.id)
-  const allActivityIds = path.activities.map((a) => a.id)
-  const badges = badgesForPath(path, allTitleIds, allActivityIds)
-  return (
-    <div className={`pyp-badgepreview ${className}`.trim()}>
-      {badges.map((b) => (
-        <div key={b.id} className="pyp-badgepreview-item">
-          <Tooltip content={b.name}>
-            <BadgeDisc badge={b} size={52} showLabel={false} showStatus={false} />
-          </Tooltip>
-        </div>
-      ))}
     </div>
   )
 }
