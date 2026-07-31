@@ -43,7 +43,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 24px;
+  /* extra room at the foot so the prototype strip never covers content */
+  padding: 40px 24px 130px;
 }
 
 /* ─── Sign-in card ────────────────────────────────────────────────────────── */
@@ -503,7 +504,7 @@
 
 .cf-catalog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   justify-items: center;
   gap: 28px 20px;
 }
@@ -512,7 +513,7 @@
   flex-direction: column;
   align-items: center;
   gap: 3px;
-  width: 132px;
+  width: 152px;
   background: none;
   border: 0;
   padding: 0;

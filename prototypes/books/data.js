@@ -131,6 +131,10 @@ const P = {
   },
 }
 
+// The same humans power reviews, friends, and leaderboards — one registry so a
+// reviewer you see on a book is the same person you can open a profile for.
+export const PEOPLE = P
+
 let _rid = 0
 const review = (who, stars, date, body, opts = {}) => ({
   id: `rv-${_rid++}`,
@@ -1901,6 +1905,7 @@ const RAW = [
     id: 'superscience',
     isbn: null,
     title: 'SuperScience',
+    masthead: 'Super Science',
     author: 'Scholastic',
     color: '#2563EB',
     genres: ['Magazine', 'Science'],
@@ -1984,6 +1989,7 @@ const RAW = [
     id: 'scope',
     isbn: null,
     title: 'Scholastic Scope',
+    masthead: 'Scope',
     author: 'Scholastic',
     color: '#0E7490',
     genres: ['Magazine', 'Realistic Fiction'],
@@ -2289,6 +2295,307 @@ export const READING_LOG = {
   ],
 }
 export const getSessions = (id) => READING_LOG[id] || []
+
+// ─── Friends & leaderboards ───────────────────────────────────────────────────
+// Friends are PEOPLE the reader follows. Each carries the social record a
+// profile shows: what they've logged, badges + achievements they've earned, and
+// the counters the leaderboards rank on. `logged` is the single source of truth
+// for "friends who read this" on a book page — no second list to keep in sync.
+
+const badge = (name, date, color, icon = 'award') => ({ name, date, color, icon })
+// `art` picks the illustrated medallion in AchievementArt.jsx.
+const achievement = (name, date, detail, art = 'books') => ({ name, date, detail, art })
+
+// Challenges a friend is taking part in — banner art is a CSS gradient pair.
+export const CHALLENGES = {
+  mindfulness: {
+    id: 'mindfulness',
+    title: 'Mindfulness Challenge',
+    dates: 'May 15, 2026 — Jul 3, 2026',
+    art: ['#A7E8DC', '#D9F2ED'],
+    ink: '#0F5A56',
+  },
+  steam: {
+    id: 'steam',
+    title: 'STEAM at Home',
+    dates: 'Jun 7, 2026 — Jun 30, 2026',
+    art: ['#FDBA74', '#FDE68A'],
+    ink: '#8A4B08',
+  },
+  'summer-reading': {
+    id: 'summer-reading',
+    title: 'Summer Reading',
+    dates: 'Jun 1, 2026 — Aug 31, 2026',
+    art: ['#7DD3FC', '#BAE6FD'],
+    ink: '#0B4A6F',
+  },
+  'graphic-novel': {
+    id: 'graphic-novel',
+    title: 'Graphic Novel Dash',
+    dates: 'Apr 1, 2026 — May 31, 2026',
+    art: ['#C4B5FD', '#E9D5FF'],
+    ink: '#4C1D95',
+  },
+  'magazine-mania': {
+    id: 'magazine-mania',
+    title: 'Read All About It',
+    dates: 'May 1, 2026 — May 31, 2026',
+    art: ['#FCA5A5', '#FED7AA'],
+    ink: '#8C1D18',
+  },
+}
+export const getChallenge = (id) => CHALLENGES[id]
+
+export const FRIENDS = [
+  {
+    id: 'jayden',
+    ...P.jayden,
+    avatar: '/bs-prototypes/avatars/jayden.jpg',
+    streak: 21,
+    booksThisYear: 34,
+    minutesThisWeek: 214,
+    since: 'Friends since Sept 2025',
+    minutesLogged: 1840,
+    challenges: ['steam', 'graphic-novel'],
+    logged: [
+      { book: 'dog-man', date: 'May 9, 2026', minutes: 25 },
+      { book: 'investigators', date: 'May 7, 2026', minutes: 30 },
+      { book: 'lightning-thief', date: 'May 4, 2026', minutes: 45 },
+      { book: 'superscience', date: 'May 2, 2026', minutes: 15 },
+      { book: 'amari', date: 'Apr 28, 2026', minutes: 40 },
+      { book: 'last-kids-earth', date: 'Apr 24, 2026', minutes: 30 },
+      { book: 'harry-potter', date: 'Apr 19, 2026', minutes: 50 },
+      { book: 'dynamath', date: 'Apr 14, 2026', minutes: 15 },
+      { book: 'amulet', date: 'Apr 9, 2026', minutes: 35 },
+      { book: 'ghost', date: 'Apr 2, 2026', minutes: 40 },
+    ],
+    badges: [
+      badge('3-Week Streak', 'May 9, 2026', '#F0A024', 'flame'),
+      badge('Mythology Master', 'May 4, 2026', '#7C3AED', 'award'),
+      badge('Comic Collector', 'Apr 30, 2026', '#0DA7BC', 'book-2'),
+    ],
+    achievements: [
+      achievement('Read 30 books', 'May 6, 2026', 'Grade 5 goal was 25', 'books'),
+      achievement('Logged 100 days', 'Apr 22, 2026', 'Longest run in his class', 'streak'),
+    ],
+  },
+  {
+    id: 'sofia',
+    ...P.sofia,
+    avatar: '/bs-prototypes/avatars/sofia.jpg',
+    streak: 14,
+    booksThisYear: 29,
+    minutesThisWeek: 186,
+    since: 'Friends since Oct 2025',
+    minutesLogged: 1520,
+    challenges: ['mindfulness', 'summer-reading'],
+    logged: [
+      { book: 'wonder', date: 'May 8, 2026', minutes: 40 },
+      { book: 'out-of-my-mind', date: 'May 5, 2026', minutes: 35 },
+      { book: 'storyworks', date: 'May 3, 2026', minutes: 20 },
+      { book: 'fish-in-a-tree', date: 'Apr 29, 2026', minutes: 30 },
+      { book: 'wonder', date: 'Apr 24, 2026', minutes: 35 },
+      { book: 'esperanza', date: 'Apr 18, 2026', minutes: 40 },
+      { book: 'brown-girl', date: 'Apr 11, 2026', minutes: 30 },
+      { book: 'matilda', date: 'Apr 4, 2026', minutes: 45 },
+      { book: 'charlottes-web', date: 'Mar 28, 2026', minutes: 25 },
+    ],
+    badges: [
+      badge('Kindness Reader', 'May 8, 2026', '#DB2777', 'heart'),
+      badge('2-Week Streak', 'May 2, 2026', '#F0A024', 'flame'),
+    ],
+    achievements: [
+      achievement(
+        'Reviewed 15 books',
+        'May 5, 2026',
+        'Most helpful reviewer in Grade 4',
+        'reviews',
+      ),
+      achievement('Finished a series', 'Apr 26, 2026', 'All 3 Wonder companions', 'series'),
+    ],
+  },
+  {
+    id: 'noah',
+    ...P.noah,
+    avatar: '/bs-prototypes/avatars/noah.jpg',
+    streak: 9,
+    booksThisYear: 26,
+    minutesThisWeek: 165,
+    since: 'Friends since Jan 2026',
+    minutesLogged: 1180,
+    challenges: ['graphic-novel'],
+    logged: [
+      { book: 'smile', date: 'May 9, 2026', minutes: 50 },
+      { book: 'el-deafo', date: 'May 6, 2026', minutes: 35 },
+      { book: 'new-kid', date: 'May 1, 2026', minutes: 45 },
+      { book: 'superscience', date: 'Apr 27, 2026', minutes: 15 },
+      { book: 'cat-kid', date: 'Apr 22, 2026', minutes: 30 },
+      { book: 'investigators', date: 'Apr 16, 2026', minutes: 25 },
+      { book: 'dog-man', date: 'Apr 10, 2026', minutes: 25 },
+      { book: 'amulet', date: 'Apr 3, 2026', minutes: 40 },
+      { book: 'holes', date: 'Mar 27, 2026', minutes: 45 },
+    ],
+    badges: [
+      badge('Graphic Novel Fan', 'May 9, 2026', '#0DA7BC', 'book-2'),
+      badge('Volcano Explorer', 'Apr 27, 2026', '#2563EB', 'sparkles'),
+    ],
+    achievements: [
+      achievement('Read 25 books', 'May 1, 2026', 'Beat his own record by 6', 'books'),
+    ],
+  },
+  {
+    id: 'emma',
+    ...P.emma,
+    avatar: '/bs-prototypes/avatars/emma.jpg',
+    streak: 31,
+    booksThisYear: 41,
+    minutesThisWeek: 240,
+    since: 'Friends since Sept 2025',
+    minutesLogged: 2410,
+    challenges: ['mindfulness', 'steam', 'summer-reading'],
+    logged: [
+      { book: 'crossover', date: 'May 9, 2026', minutes: 70 },
+      { book: 'wild-robot', date: 'May 7, 2026', minutes: 35 },
+      { book: 'harry-potter', date: 'May 4, 2026', minutes: 55 },
+      { book: 'wonder', date: 'Apr 30, 2026', minutes: 40 },
+      { book: 'scope', date: 'Apr 25, 2026', minutes: 25 },
+      { book: 'giver', date: 'Apr 20, 2026', minutes: 50 },
+      { book: 'wrinkle', date: 'Apr 14, 2026', minutes: 45 },
+      { book: 'despereaux', date: 'Apr 7, 2026', minutes: 35 },
+      { book: 'pax', date: 'Mar 31, 2026', minutes: 40 },
+      { book: 'winn-dixie', date: 'Mar 24, 2026', minutes: 30 },
+      { book: 'storyworks', date: 'Mar 18, 2026', minutes: 20 },
+    ],
+    badges: [
+      badge('Month-Long Streak', 'May 9, 2026', '#F0A024', 'flame'),
+      badge('Poetry in Motion', 'May 9, 2026', '#16A97A', 'sparkles'),
+      badge('40 Books Club', 'May 5, 2026', '#7C3AED', 'award'),
+    ],
+    achievements: [
+      achievement('Top reader at school', 'May 9, 2026', '240 minutes this week', 'top'),
+      achievement('Read 40 books', 'May 5, 2026', 'First in Grade 4 to get there', 'books'),
+      achievement('31-day streak', 'May 9, 2026', 'Longest active streak at Lincoln', 'streak'),
+    ],
+  },
+  {
+    id: 'diego',
+    ...P.diego,
+    avatar: '/bs-prototypes/avatars/diego.jpg',
+    streak: 6,
+    booksThisYear: 19,
+    minutesThisWeek: 132,
+    since: 'Friends since Feb 2026',
+    minutesLogged: 860,
+    challenges: ['steam', 'magazine-mania'],
+    logged: [
+      { book: 'superscience', date: 'May 3, 2026', minutes: 15 },
+      { book: 'last-kids-earth', date: 'Apr 30, 2026', minutes: 30 },
+      { book: 'dog-man', date: 'Apr 24, 2026', minutes: 25 },
+      { book: 'natgeo-kids', date: 'Apr 18, 2026', minutes: 20 },
+      { book: 'dynamath', date: 'Apr 12, 2026', minutes: 15 },
+      { book: 'investigators', date: 'Apr 5, 2026', minutes: 25 },
+      { book: 'hatchet', date: 'Mar 29, 2026', minutes: 35 },
+    ],
+    badges: [badge('Science Sleuth', 'May 3, 2026', '#2563EB', 'sparkles')],
+    achievements: [
+      achievement('Did 5 experiments', 'May 3, 2026', 'From SuperScience issues', 'science'),
+    ],
+  },
+  {
+    id: 'priya',
+    ...P.priya,
+    avatar: '/bs-prototypes/avatars/priya.jpg',
+    streak: 17,
+    booksThisYear: 31,
+    minutesThisWeek: 198,
+    since: 'Friends since Nov 2025',
+    minutesLogged: 1610,
+    challenges: ['magazine-mania', 'mindfulness'],
+    logged: [
+      { book: 'scholastic-news', date: 'May 9, 2026', minutes: 8 },
+      { book: 'front-desk', date: 'May 6, 2026', minutes: 40 },
+      { book: 'refugee', date: 'May 2, 2026', minutes: 45 },
+      { book: 'wonder', date: 'Apr 27, 2026', minutes: 35 },
+      { book: 'out-of-my-mind', date: 'Apr 21, 2026', minutes: 40 },
+      { book: 'fish-in-a-tree', date: 'Apr 15, 2026', minutes: 35 },
+      { book: 'esperanza', date: 'Apr 8, 2026', minutes: 40 },
+      { book: 'scope', date: 'Apr 1, 2026', minutes: 25 },
+      { book: 'storyworks', date: 'Mar 25, 2026', minutes: 20 },
+    ],
+    badges: [
+      badge('Current Events Pro', 'May 9, 2026', '#E1141C', 'news'),
+      badge('World Traveler', 'May 2, 2026', '#0891B2', 'award'),
+    ],
+    achievements: [
+      achievement('Read every issue', 'May 9, 2026', '32 weeks of Scholastic News', 'magazine'),
+    ],
+  },
+]
+
+// Invites sent but not yet accepted — they show on the grid as a muted card.
+export const PENDING_INVITES = [
+  { id: 'sam', name: 'Sam', initials: 'S', pending: true },
+  { id: 'moira', name: 'Moira', initials: 'M', pending: true },
+]
+
+const FRIEND_BY_ID = Object.fromEntries(FRIENDS.map((f) => [f.id, f]))
+export const getFriend = (id) => FRIEND_BY_ID[id]
+
+// A friend's reviews, read back out of the catalog rather than duplicated here —
+// the reviews on a book page and the ones on a profile are the same records.
+export const friendReviews = (friendId) => {
+  const person = P[friendId]
+  if (!person) return []
+  return BOOKS.flatMap((book) =>
+    book.reviews.filter((r) => r.name === person.name).map((r) => ({ ...r, book })),
+  )
+}
+
+// Their average star rating across those reviews.
+export const friendRatingAverage = (reviews) =>
+  reviews.length ? reviews.reduce((a, r) => a + r.stars, 0) / reviews.length : 0
+
+// Friends who logged a given book, newest first — powers the book-page section.
+export const friendsWhoRead = (bookId) =>
+  FRIENDS.filter((f) => f.logged.some((l) => l.book === bookId)).map((f) => ({
+    ...f,
+    loggedOn: f.logged.find((l) => l.book === bookId).date,
+  }))
+
+// Leaderboards — the reader is included so they can find themselves in the list.
+// Rendered as "Maya C. (You)" in the boards, matching the live leaderboard.
+const ME = { id: 'me', name: P.maya.name, initials: READER.initials, grade: READER.grade, color: READER.color, isMe: true } // prettier-ignore
+
+// Two boards (Minutes / Books) over a selectable period, matching the real
+// Friends → Leaderboards screen.
+export const LEADERBOARD_PERIODS = [
+  { value: 'week', label: 'This week' },
+  { value: 'month', label: 'This month' },
+  { value: 'year', label: 'This year' },
+]
+
+export const LEADERBOARD_BOARDS = [
+  { id: 'minutes', label: 'Minutes', column: 'Minutes logged' },
+  { id: 'books', label: 'Books', column: 'Books read' },
+]
+
+// Period scales the underlying weekly/annual counters into plausible totals.
+const PERIOD_FACTOR = { week: 1, month: 4.3, year: 34 }
+
+export const leaderboardRows = (boardId, period) => {
+  const factor = PERIOD_FACTOR[period] ?? 1
+  const value = (person) =>
+    boardId === 'minutes'
+      ? Math.round(person.minutesThisWeek * factor)
+      : period === 'year'
+        ? person.booksThisYear
+        : Math.max(1, Math.round((person.booksThisYear / 34) * factor))
+
+  return [...FRIENDS, { ...ME, minutesThisWeek: 176, booksThisYear: 27 }]
+    .map((p) => ({ ...p, value: value(p) }))
+    .sort((a, b) => b.value - a.value)
+    .map((row, i) => ({ ...row, rank: i + 1 }))
+}
 
 // ─── Ask Benny — a (simulated) recommendation engine ──────────────────────────
 // Matches a free-text request against the catalog by intent, so the Ask Benny

@@ -1927,6 +1927,8 @@ button {
   letter-spacing: -0.02em;
   margin-top: 7px;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+  /* mastheads are set as wide as the cover allows — wrap, never clip */
+  overflow-wrap: anywhere;
 }
 .bk-cover-mag-issue {
   margin-top: auto;
@@ -1937,12 +1939,28 @@ button {
   line-height: 1.3;
   opacity: 0.96;
 }
+/* lg sits on a ~166px detail-hero cover — 22px keeps the longest masthead
+   ("Storyworks", "Scholastic") on one line with a little room to spare. */
 .bk-cover--lg.bk-cover--mag .bk-cover-mag-name {
-  font-size: 30px;
+  font-size: 22px;
   margin-top: 10px;
 }
 .bk-cover--lg.bk-cover--mag .bk-cover-mag-issue {
   font-size: 13px;
+}
+/* …but the reader stretches that same lg cover to the full sheet. */
+.bk-reader-coverwrap .bk-cover--mag .bk-cover-mag-inner {
+  padding: 26px 24px 28px;
+}
+.bk-reader-coverwrap .bk-cover--mag .bk-cover-mag-kicker {
+  font-size: 12px;
+}
+.bk-reader-coverwrap .bk-cover--mag .bk-cover-mag-name {
+  font-size: 46px;
+  margin-top: 14px;
+}
+.bk-reader-coverwrap .bk-cover--mag .bk-cover-mag-issue {
+  font-size: 18px;
 }
 
 /* ─── Your reading sessions (book detail) ──────────────────────────────────── */
@@ -3108,4 +3126,821 @@ button {
 }
 .bk-audio-finish:hover {
   background: rgba(255, 255, 255, 0.26) !important;
+}
+
+/* ─── Friends & Leaderboards ────────────────────────────────────────────────── */
+
+/* full-bleed chrome band that separates the switcher from the page below */
+.bk-friends-band {
+  display: flex;
+  justify-content: center;
+  padding: 14px 24px;
+  background: #fff;
+  border-bottom: 1px solid var(--bk-line);
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+/* friend tiles — banner + overlapping avatar + name beneath */
+.bk-ftile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 26px 20px;
+}
+.bk-ftile {
+  position: relative;
+}
+/* the entire card is one button — banner, avatar and footer are all inside it */
+.bk-ftile-hit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 0;
+  border: 1px solid var(--bk-line);
+  border-radius: 14px;
+  background: #fff;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease,
+    transform 0.14s ease;
+}
+.bk-ftile-hit:not(:disabled):hover {
+  border-color: #0d9488;
+  box-shadow: 0 10px 24px rgba(13, 148, 136, 0.15);
+  transform: translateY(-3px);
+}
+.bk-ftile-hit:disabled {
+  cursor: default;
+}
+/* a soft tint of the reader's color, so the full-strength avatar disc reads */
+.bk-ftile-banner {
+  display: block;
+  width: 100%;
+  height: 88px;
+  background: color-mix(in srgb, var(--tint, #94a3b8) 20%, #fff);
+}
+.bk-ftile.is-pending .bk-ftile-banner {
+  background: #eef0f3;
+}
+.bk-ftile-kebab {
+  position: absolute;
+  z-index: 2;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.55);
+  color: #1f2933;
+}
+.bk-ftile-kebab:hover {
+  background: #fff;
+}
+.bk-ftile-menu {
+  position: absolute;
+  top: 42px;
+  right: 8px;
+  z-index: 5;
+  min-width: 172px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--bk-line);
+  border-radius: 12px;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
+}
+.bk-ftile-menu button {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--bk-ink);
+}
+.bk-ftile-menu button:hover {
+  background: #e6f7fa;
+  color: #0f766e;
+}
+.bk-ftile-menu-danger:hover {
+  background: #fef2f2 !important;
+  color: #b91c1c !important;
+}
+.bk-ftile-avatar {
+  display: grid;
+  place-items: center;
+  width: 92px;
+  height: 92px;
+  margin-top: -46px;
+  border: 4px solid #fff;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--c-slate-300);
+  color: #fff;
+  font-size: 30px;
+  font-weight: 800;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+}
+.bk-ftile-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bk-ftile.is-pending .bk-ftile-avatar {
+  background: #dfe3e8;
+  color: #98a2b3;
+}
+/* the white card foot */
+.bk-ftile-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 10px 16px;
+  background: #fff;
+  text-align: center;
+}
+.bk-ftile-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--bk-ink);
+}
+.bk-ftile-meta {
+  font-size: 13px;
+  color: var(--bk-muted);
+}
+.bk-ftile-pending {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--bk-muted);
+}
+
+/* leaderboards */
+.bk-lb-head {
+  align-items: center;
+  margin-bottom: 10px;
+}
+.bk-lb-period {
+  min-width: 190px;
+}
+.bk-lb-boardtabs {
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--bk-line);
+}
+.bk-lbtable {
+  background: #fff;
+}
+.bk-lbmedal,
+.bk-lbrank {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  font-size: 13.5px;
+  font-weight: 900;
+  color: #fff;
+}
+.bk-lbrank {
+  color: var(--bk-muted);
+}
+.bk-lbmedal--1 {
+  background: linear-gradient(150deg, #fbbf24, #d97706);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+.bk-lbmedal--2 {
+  background: linear-gradient(150deg, #cbd5e1, #94a3b8);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+.bk-lbmedal--3 {
+  background: linear-gradient(150deg, #d8a373, #b06e3b);
+  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
+}
+.bk-lbreader {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+}
+.bk-lbavatar {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--c-slate-300);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.bk-lbavatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bk-lbname {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--bk-ink);
+}
+/* the local reset only sets font/cursor — bare buttons need the rest */
+.bk-lbname--link {
+  padding: 0;
+  border: 0;
+  background: none;
+  font-weight: 700;
+}
+.bk-lbname--link:hover {
+  color: #0d9488;
+  text-decoration: underline;
+}
+.bk-lbvalue {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--bk-ink);
+}
+
+/* ─── Invite a friend ───────────────────────────────────────────────────────── */
+
+.bk-invite {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding: 40px 34px 34px;
+  text-align: center;
+}
+.bk-invite-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--bk-bg);
+  color: var(--bk-ink);
+}
+.bk-invite-close:hover {
+  background: #e6f7fa;
+}
+.bk-invite h2 {
+  font-size: 25px;
+  font-weight: 900;
+  color: var(--bk-ink);
+}
+.bk-invite p {
+  max-width: 300px;
+  font-size: 15px;
+  color: var(--bk-muted);
+  line-height: 1.45;
+}
+.bk-invite-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  width: 100%;
+  margin-top: 4px;
+  text-align: left;
+}
+.bk-invite-field span {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--bk-ink);
+}
+.bk-invite-field input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid var(--bk-line);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--bk-ink);
+}
+.bk-invite-field input:focus {
+  outline: none;
+  border-color: #0d9488;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
+}
+.bk-invite .btn {
+  margin-top: 6px;
+  min-width: 160px;
+  justify-content: center;
+}
+.bk-invite-sentmark {
+  display: grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border-radius: 999px;
+  background: #16a97a;
+  color: #fff;
+}
+
+/* ─── Friend profile modal ──────────────────────────────────────────────────── */
+
+/* the shared center Modal is 520px — this one is a reader profile */
+.modal--center:has(.bk-fp) {
+  width: min(600px, calc(100vw - 32px));
+}
+
+.bk-fp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 34px);
+  background: #fff;
+}
+.bk-fp-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--bk-ink);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
+}
+.bk-fp-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 30px 26px 22px;
+  text-align: center;
+  background:
+    radial-gradient(
+      120% 90% at 18% 0%,
+      color-mix(in srgb, var(--accent) 26%, #fff),
+      transparent 62%
+    ),
+    color-mix(in srgb, var(--accent) 11%, #fff);
+}
+.bk-fp-avatar {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  margin-bottom: 8px;
+  border: 5px solid #fff;
+  border-radius: 999px;
+  overflow: hidden;
+  background: var(--c-slate-300);
+  color: #fff;
+  font-size: 34px;
+  font-weight: 800;
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.14);
+}
+.bk-fp-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.bk-fp-head h2 {
+  font-size: 25px;
+  font-weight: 900;
+  color: var(--bk-ink);
+  letter-spacing: -0.01em;
+}
+.bk-fp-head p {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--bk-muted);
+}
+/* the stat block sits between the header and the tabs */
+.bk-fp-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--bk-line);
+  border-top: 1px solid var(--bk-line);
+}
+.bk-fp-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 12px 8px;
+  background: #fff;
+  text-align: center;
+}
+.bk-fp-stat strong {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--bk-ink);
+  line-height: 1.2;
+}
+.bk-fp-stat span {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--bk-muted);
+  line-height: 1.25;
+}
+.bk-fp-stat .bp-icon {
+  margin-bottom: 3px;
+}
+
+/* top/side padding only — the underline indicator has to meet the bottom border */
+.bk-fp-tabs {
+  border-top: 1px solid var(--bk-line);
+  border-bottom: 1px solid var(--bk-line);
+  padding: 10px 26px 0;
+  background: var(--bk-bg);
+}
+/* every tab pane shares this gutter — panes must not add their own inset */
+.bk-fp-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 24px;
+}
+.bk-fp-sec + .bk-fp-sec {
+  margin-top: 26px;
+}
+.bk-fp-sec-title {
+  padding-bottom: 9px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid var(--bk-line);
+  font-size: 12.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--bk-ink);
+}
+.bk-fp-empty {
+  padding: 24px 0;
+  text-align: center;
+  font-size: 14.5px;
+  color: var(--bk-muted);
+}
+
+/* overview — earned badges + minutes */
+.bk-fp-badgerow {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
+  gap: 12px;
+  /* the achievements variant is a <ul> — kill the default list indent */
+  padding: 0;
+  list-style: none;
+}
+/* each badge/achievement is its own card */
+.bk-fp-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 16px 12px 14px;
+  border: 1px solid var(--bk-line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  text-align: center;
+}
+.bk-fp-badgedetail {
+  font-size: 12px;
+  color: var(--bk-muted);
+  line-height: 1.35;
+}
+.bk-fp-badgeart {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  margin-bottom: 5px;
+  border-radius: 999px;
+  background: radial-gradient(
+    circle at 32% 26%,
+    color-mix(in srgb, var(--bc) 55%, #fff),
+    var(--bc)
+  );
+  color: #fff;
+  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.32);
+}
+.bk-fp-badgename {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--bk-ink);
+  line-height: 1.25;
+}
+.bk-fp-badgedate {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-slate-400);
+}
+.bk-fp-bigstat {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px 22px;
+  border-radius: 14px;
+  background: var(--bk-bg);
+}
+.bk-fp-bigstat strong {
+  font-size: 25px;
+  font-weight: 900;
+  color: var(--bk-ink);
+}
+
+/* challenges */
+.bk-fp-challenges {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.bk-fp-chcard {
+  border: 1px solid var(--bk-line);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+.bk-fp-chart {
+  display: grid;
+  place-items: center;
+  height: 118px;
+  padding: 16px;
+  text-align: center;
+}
+.bk-fp-chart span {
+  font-size: 22px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+.bk-fp-chmeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 13px 16px 15px;
+}
+.bk-fp-chmeta strong {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--bk-ink);
+}
+.bk-fp-chmeta span {
+  font-size: 13.5px;
+  color: var(--bk-muted);
+}
+
+/* reading log */
+.bk-fp-logged {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0;
+  list-style: none;
+}
+.bk-fp-logrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% + 20px);
+  /* negative margin lets the hover fill bleed while text stays on the gutter */
+  margin: 0 -10px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 12px;
+  background: none;
+  text-align: left;
+  transition: background 0.12s ease;
+}
+.bk-fp-logrow:hover {
+  background: var(--bk-bg);
+}
+.bk-fp-logcover {
+  flex-shrink: 0;
+  width: 38px;
+}
+/* at this size the masthead can't be set legibly — keep the glyph, drop the text
+   (`font-size: 0` hides the kicker's label; the Icon keeps its own px size) */
+.bk-fp-logcover .bk-cover-mag-inner {
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+.bk-fp-logcover .bk-cover-mag-kicker {
+  gap: 0;
+  font-size: 0;
+  opacity: 1;
+}
+.bk-fp-logcover .bk-cover-mag-name,
+.bk-fp-logcover .bk-cover-mag-issue {
+  display: none;
+}
+.bk-fp-logcover .bk-cover-ph-title {
+  font-size: 7px;
+}
+.bk-fp-logcover .bk-cover-ph-inner {
+  gap: 3px;
+  padding: 4px;
+}
+.bk-fp-logmeta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+.bk-fp-logtitle {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--bk-ink);
+  line-height: 1.25;
+}
+.bk-fp-logsub {
+  font-size: 12.5px;
+  color: var(--bk-muted);
+  font-weight: 600;
+}
+.bk-fp-logchev {
+  flex-shrink: 0;
+  color: var(--c-slate-400);
+}
+
+/* ─── Friends who read this (book detail rail) ──────────────────────────────── */
+
+.bk-fwr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.bk-fwr-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 7px 8px;
+  border: 0;
+  border-radius: 11px;
+  background: none;
+  text-align: left;
+  transition: background 0.12s ease;
+}
+.bk-fwr-row:hover {
+  background: var(--bk-bg);
+}
+.bk-fwr-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+  flex: 1;
+}
+.bk-fwr-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--bk-ink);
+}
+.bk-fwr-meta {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--bk-muted);
+}
+.bk-fwr-chev {
+  flex-shrink: 0;
+  color: var(--c-slate-400);
+}
+
+/* ─── Friend profile: achievements, ratings & reviews ───────────────────────── */
+
+/* illustrated achievement medallions (used inside .bk-fp-badge tiles) */
+.bk-ach-art {
+  flex-shrink: 0;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 7px;
+  border-radius: 999px;
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.2),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.28);
+}
+
+/* review list */
+.bk-fp-reviews {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  list-style: none;
+}
+/* one rule owns the row rhythm — no gap + padding stacking */
+.bk-fp-review {
+  padding: 18px 0;
+}
+.bk-fp-review:first-child {
+  padding-top: 0;
+}
+.bk-fp-review:last-child {
+  padding-bottom: 0;
+}
+.bk-fp-review + .bk-fp-review {
+  border-top: 1px solid var(--bk-line);
+}
+.bk-fp-revbook {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+}
+.bk-fp-revbook:hover .bk-fp-logtitle {
+  color: #0d9488;
+  text-decoration: underline;
+}
+.bk-fp-revbookmeta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.bk-fp-revstars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.bk-fp-revbody {
+  margin-top: 9px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--bk-ink);
+}
+.bk-fp-revfoot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 8px;
+}
+.bk-fp-revverified,
+.bk-fp-revhelpful {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--bk-muted);
+}
+.bk-fp-revverified {
+  color: #0f766e;
+}
+
+@media (max-width: 560px) {
+  .bk-fp-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* reading-log pager */
+.bk-fp-pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--bk-line);
+}
+.bk-fp-pagebtn {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--bk-line);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--bk-ink);
+}
+.bk-fp-pagebtn:not(:disabled):hover {
+  border-color: #0d9488;
+  color: #0d9488;
+}
+.bk-fp-pagebtn:disabled {
+  cursor: default;
+  color: var(--c-slate-300);
+}
+.bk-fp-pagecount {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--bk-muted);
 }

@@ -1,4 +1,5 @@
 .bkcov {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -35,6 +36,89 @@
   overflow: hidden;
 }
 
+/* magazine masthead placeholder — name up top, issue at the foot */
+.bkcov--mag {
+  justify-content: flex-start;
+  gap: 5px;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-size: 7px 7px;
+}
+.bkcov-magname {
+  font-weight: 900;
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  padding-bottom: 4px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  /* mastheads are set as wide as the cover allows — break rather than clip */
+  overflow-wrap: anywhere;
+}
+.bkcov-issue {
+  margin-top: auto;
+  font-weight: 800;
+  line-height: 1.15;
+  opacity: 0.95;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bkcov--sm .bkcov-magname {
+  font-size: 7.5px;
+}
+.bkcov--sm .bkcov-issue {
+  font-size: 7px;
+  -webkit-line-clamp: 2;
+}
+.bkcov--md .bkcov-magname {
+  font-size: 11px;
+}
+.bkcov--md .bkcov-issue {
+  font-size: 9px;
+}
+.bkcov--lg .bkcov-magname {
+  font-size: 17px;
+}
+.bkcov--lg .bkcov-issue {
+  font-size: 12px;
+}
+
+/* "there's a digital edition" chip — sits clear of the cover's own text */
+.bkcov-readable {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  z-index: 1; /* stay legible through the logged-state dim overlay */
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  background: #0da7bc;
+  color: #fff;
+  box-shadow:
+    0 1px 3px rgba(15, 23, 42, 0.35),
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.9);
+}
+.bkcov--lg .bkcov-readable {
+  right: 8px;
+  bottom: 8px;
+  width: 28px;
+  height: 28px;
+}
+/* keep the foot line (author / issue) out from under the chip */
+.bkcov--readable .bkcov-author,
+.bkcov--readable .bkcov-issue {
+  padding-right: 20px;
+}
+.bkcov--lg.bkcov--readable .bkcov-author,
+.bkcov--lg.bkcov--readable .bkcov-issue {
+  padding-right: 30px;
+}
+
 /* real cover image */
 .bkcov--img {
   padding: 0;
@@ -48,39 +132,41 @@
 
 /* sizes — book-ish ~2:3 ratio */
 .bkcov--sm {
-  width: 60px;
-  height: 90px;
+  width: 68px;
+  height: 102px;
   border-radius: 5px;
-  padding: 6px;
+  padding: 7px;
 }
 .bkcov--sm .bkcov-title {
-  font-size: 9px;
+  font-size: 10px;
 }
 .bkcov--sm .bkcov-author {
-  font-size: 7px;
+  font-size: 7.5px;
   -webkit-line-clamp: 1;
 }
 
 .bkcov--md {
-  width: 84px;
-  height: 126px;
+  width: 104px;
+  height: 156px;
+  border-radius: 7px;
+  padding: 10px;
 }
 .bkcov--md .bkcov-title {
-  font-size: 11px;
+  font-size: 13px;
 }
 .bkcov--md .bkcov-author {
-  font-size: 8.5px;
+  font-size: 10px;
 }
 
 .bkcov--lg {
-  width: 132px;
-  height: 198px;
+  width: 152px;
+  height: 228px;
   border-radius: 8px;
-  padding: 12px;
+  padding: 13px;
 }
 .bkcov--lg .bkcov-title {
-  font-size: 16px;
+  font-size: 18px;
 }
 .bkcov--lg .bkcov-author {
-  font-size: 11px;
+  font-size: 12px;
 }

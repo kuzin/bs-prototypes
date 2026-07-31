@@ -25,6 +25,10 @@ export const OTHER_READERS = [
 // 'pages' shows How many pages were read? (the two "combined logging" variants).
 // `readable: true` means there's a digital edition you can open in the in-app
 // e-reader — reading it live-counts minutes that carry straight into the log.
+// `kind: 'magazine'` titles are Scholastic classroom magazines — they have no
+// ISBN cover, so BookCover gives them a masthead treatment (`masthead` name +
+// `issue`), and they carry an issue line instead of a page count you'd read
+// cover-to-cover. `masthead` is the short logo name a real cover shows.
 
 // Open Library cover CDN — `?default=false` 404s on a missing cover so
 // BookCover can fall back to the color gradient.
@@ -112,12 +116,17 @@ export const BOOKS = {
     pages: 192,
     partner: 'comicsplus',
   },
+
+  // ── Scholastic classroom magazines (see the `books` prototype's rack) ───────
   'scholastic-news': {
     id: 'scholastic-news',
     title: 'Scholastic News',
     author: 'Scholastic',
-    cover: ['#E1141C', '#9B0F14'],
-    measure: 'minutes',
+    cover: ['#F04B4B', '#B3070E'],
+    kind: 'magazine',
+    issue: 'May 2026 · Save the Bees!',
+    cadence: 'Weekly',
+    measure: 'pages',
     pages: 8,
     partner: 'scholastic',
   },
@@ -125,41 +134,68 @@ export const BOOKS = {
     id: 'storyworks',
     title: 'Storyworks',
     author: 'Scholastic',
-    cover: ['#F2B705', '#E1141C'],
+    cover: ['#9C6BFF', '#5B21B6'],
+    kind: 'magazine',
+    issue: 'May 2026 · The Mystery at Cabin 9',
+    cadence: 'Monthly',
     measure: 'minutes',
     pages: 24,
-    partner: 'scholastic',
-  },
-  scope: {
-    id: 'scope',
-    title: 'Scholastic Scope',
-    author: 'Scholastic',
-    cover: ['#0E7490', '#155E75'],
-    measure: 'minutes',
-    pages: 24,
+    readable: true,
     partner: 'scholastic',
   },
   superscience: {
     id: 'superscience',
     title: 'SuperScience',
     author: 'Scholastic',
-    cover: ['#2563EB', '#1E3A8A'],
+    cover: ['#4D8BF5', '#1E3FA8'],
+    kind: 'magazine',
+    masthead: 'Super Science',
+    issue: 'May 2026 · Inside a Volcano',
+    cadence: 'Monthly',
     measure: 'minutes',
+    pages: 16,
+    readable: true,
+    partner: 'scholastic',
+  },
+  scope: {
+    id: 'scope',
+    title: 'Scholastic Scope',
+    author: 'Scholastic',
+    cover: ['#2AA5B8', '#0B5566'],
+    kind: 'magazine',
+    masthead: 'Scope',
+    issue: 'May 2026 · Survival Stories',
+    cadence: 'Monthly',
+    measure: 'minutes',
+    pages: 24,
+    readable: true,
+    partner: 'scholastic',
+  },
+  dynamath: {
+    id: 'dynamath',
+    title: 'DynaMath',
+    author: 'Scholastic',
+    cover: ['#F7B23B', '#C2700B'],
+    kind: 'magazine',
+    issue: 'May 2026 · The Math of Sports',
+    cadence: 'Monthly',
+    measure: 'pages',
     pages: 16,
     partner: 'scholastic',
   },
 }
 
-export const RECENTLY_LOGGED = ['she-gets-the-girl', 'rump', 'lucky-cap']
+export const RECENTLY_LOGGED = ['scholastic-news', 'she-gets-the-girl', 'rump', 'lucky-cap']
 
-// A shelf of titles pulled from a linked partner's catalog, so it only appears
+// A shelf of issues pulled from a linked partner's catalog, so it only appears
 // once that account is connected.
 export const READING_LIST = {
   partner: 'scholastic',
   title: 'Top Scholastic Picks',
-  total: 12,
-  completed: ['scholastic-news'],
-  titles: ['scholastic-news', 'storyworks', 'scope', 'superscience'],
+  total: 10,
+  unit: 'issues',
+  completed: ['superscience', 'scholastic-news'],
+  titles: ['scope', 'superscience', 'storyworks', 'scholastic-news'],
 }
 
 // ─── Dashboard backdrop (the "Challenges" page the flow opens on top of) ─────

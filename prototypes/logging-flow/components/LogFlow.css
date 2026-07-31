@@ -529,30 +529,6 @@
   border: 2px solid #fff;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
 }
-.lf-rladd {
-  position: absolute;
-  left: 50%;
-  bottom: 6px;
-  transform: translate(-50%, 4px);
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: #1f2933;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 800;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.12s ease,
-    transform 0.12s ease;
-}
-.lf-rltitle:hover .lf-rladd {
-  opacity: 1;
-  transform: translate(-50%, 0);
-}
 .lf-viewall {
   display: block;
   text-align: center;
