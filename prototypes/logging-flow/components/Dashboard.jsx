@@ -4,9 +4,13 @@ import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
-import { IconButton } from '@components/Primitives/Primitives'
+import { Flyout } from '@components/Flyout/Flyout'
 
 import { READER, CHALLENGES, TOP_SCHOOLS, TOP_GRADES } from '../data'
+import { CONNECTION_IDS } from '../connections'
+import { ConnectBanner, PartnerSwitcher, AutoLoggedCard } from './ConnectionBits'
+import { SettingsPage } from './SettingsPage'
+import { ReadingLog } from './ReadingLog'
 
 // Reuse the consumer web-app dashboard styling (the logging flow opens on top
 // of this "Challenges" page — see Figma Option 1, Challenges Page frames).
@@ -15,7 +19,7 @@ import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
 import '@components/Pill/Pill.css'
 import '@components/ProgressBar/ProgressBar.css'
-import '@components/Primitives/Primitives.css'
+import '@components/Flyout/Flyout.css'
 
 function BeanstackLogo() {
   return (
@@ -26,28 +30,61 @@ function BeanstackLogo() {
   )
 }
 
-function TopBar({ onLog }) {
+function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartner, view, onView }) {
   return (
     <header className="wa-topbar">
       <div className="wa-topbar-inner">
-        <BeanstackLogo />
+        <button className="wa-logo-btn" onClick={onHome} aria-label="Beanstack home">
+          <BeanstackLogo />
+        </button>
+        {/* Log Reading always stays put; the secondary actions fold into a
+            flyout once the bar runs out of room. */}
         <div className="wa-topbar-actions">
           <Button variant="primary" size="sm" icon={<Icon name="book" size={16} />} onClick={onLog}>
             Log Reading
           </Button>
-          <Button variant="ghost" size="sm" icon={<Icon name="check" size={15} />}>
-            Complete Activity
-          </Button>
-          <Button variant="ghost" size="sm" icon={<Icon name="writing" size={15} />}>
-            Write Review
-          </Button>
+          <div className="wa-actions-wide">
+            <Button variant="ghost" size="sm" icon={<Icon name="check" size={15} />}>
+              Complete Activity
+            </Button>
+            <Button variant="ghost" size="sm" icon={<Icon name="writing" size={15} />}>
+              Write Review
+            </Button>
+          </div>
+          <div className="wa-actions-narrow">
+            <Flyout
+              placement="bottom-start"
+              trigger={({ toggle }) => (
+                <button className="wa-more-btn" onClick={toggle} aria-label="More actions">
+                  <Icon name="dots" size={18} />
+                </button>
+              )}
+            >
+              {({ close }) => (
+                <div className="wa-more-menu">
+                  <button className="wa-more-item" onClick={close}>
+                    <Icon name="check" size={16} /> Complete Activity
+                  </button>
+                  <button className="wa-more-item" onClick={close}>
+                    <Icon name="writing" size={16} /> Write Review
+                  </button>
+                </div>
+              )}
+            </Flyout>
+          </div>
         </div>
         <div className="wa-topbar-user">
+          {/* "Swap between the two at any time using the logo in the top right." */}
+          <PartnerSwitcher
+            connections={connections}
+            onManage={onManageConnections}
+            onVisit={onVisitPartner}
+          />
           <div className="wa-user-pill">
             <span className="wa-user-avatar">{READER.initials}</span>
             <span className="wa-user-name">{READER.name}</span>
           </div>
-          <button className="wa-icon-btn" aria-label="Settings">
+          <button className="wa-icon-btn" aria-label="Settings" onClick={onManageConnections}>
             <Icon name="settings" size={20} />
           </button>
         </div>
@@ -57,9 +94,9 @@ function TopBar({ onLog }) {
         <Tabs
           variant="underline"
           size="md"
-          active="challenges"
+          active={view === 'log' ? 'log' : 'challenges'}
           accent="#1A6DD5"
-          onChange={() => {}}
+          onChange={onView}
           items={[
             { id: 'challenges', label: 'Challenges' },
             { id: 'friends', label: 'Friends' },
@@ -74,7 +111,7 @@ function TopBar({ onLog }) {
   )
 }
 
-function StreakBanner({ streak, onDismiss, onLog }) {
+function StreakBanner({ streak, onLog }) {
   const has = streak.current > 0
   return (
     <div className="wa-streak">
@@ -96,9 +133,6 @@ function StreakBanner({ streak, onDismiss, onLog }) {
       <Button variant="secondary" size="sm" onClick={onLog}>
         {has ? 'Log Today' : 'View Streaks'}
       </Button>
-      <IconButton variant="ghost" size="sm" onClick={onDismiss} aria-label="Dismiss">
-        <Icon name="x" size={14} />
-      </IconButton>
     </div>
   )
 }
@@ -243,56 +277,99 @@ function Footer() {
   )
 }
 
-export function Dashboard({ streak, dailyGoal, onLog }) {
+export function Dashboard({
+  streak,
+  dailyGoal,
+  onLog,
+  connections,
+  onLinkPartner,
+  onDisconnectPartner,
+  onVisitPartner,
+}) {
   const [scope, setScope] = useState('current')
-  const [streakOpen, setStreakOpen] = useState(true)
+  // 'challenges' | 'settings' | 'log' — the gear (and "Manage connections") opens
+  // the reader's Personalize Reader page, where App Integrations live; the
+  // Reading Log tab opens the log itself.
+  const [view, setView] = useState('challenges')
+  // Banners the reader has waved off this session (each partner separately).
+  const [dismissed, setDismissed] = useState([])
+
+  const toLink = CONNECTION_IDS.filter((id) => !connections[id] && !dismissed.includes(id))
 
   return (
     <div className="wa-shell">
-      <TopBar onLog={onLog} />
+      <TopBar
+        onLog={onLog}
+        connections={connections}
+        onManageConnections={() => setView('settings')}
+        onHome={() => setView('challenges')}
+        onVisitPartner={onVisitPartner}
+        view={view}
+        onView={(id) => setView(id === 'log' ? 'log' : 'challenges')}
+      />
       <main className="wa-main">
         <div className="wa-main-inner">
-          {streakOpen && (
-            <StreakBanner streak={streak} onDismiss={() => setStreakOpen(false)} onLog={onLog} />
+          {view === 'log' ? (
+            <ReadingLog />
+          ) : view === 'settings' ? (
+            <SettingsPage
+              reader={READER}
+              connections={connections}
+              onLink={onLinkPartner}
+              onDisconnect={onDisconnectPartner}
+            />
+          ) : (
+            <>
+              {toLink.map((id) => (
+                <ConnectBanner
+                  key={id}
+                  partnerId={id}
+                  onLink={() => onLinkPartner?.(id)}
+                  onDismiss={() => setDismissed((d) => [...d, id])}
+                />
+              ))}
+              <StreakBanner streak={streak} onLog={onLog} />
+              <div className="wa-layout">
+                <section className="wa-content">
+                  <div className="wa-section-head">
+                    <h2 className="wa-h2">Challenges</h2>
+                    <div className="wa-scope">
+                      {[
+                        { id: 'current', label: 'Current' },
+                        { id: 'past', label: 'Past' },
+                        { id: 'ignored', label: 'Ignored' },
+                      ].map((o) => (
+                        <button
+                          key={o.id}
+                          type="button"
+                          className={`wa-scope-btn${scope === o.id ? ' wa-scope-btn--active' : ''}`}
+                          onClick={() => setScope(o.id)}
+                        >
+                          {o.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="wa-group">
+                    <div className="wa-group-title">{READER.name}&apos;s Challenges</div>
+                    <div className="wa-group-sub">
+                      Challenges that {READER.name} is participating in.
+                    </div>
+                    <div className="wa-chgrid">
+                      {CHALLENGES.map((c) => (
+                        <ChallengeCard key={c.id} challenge={c} />
+                      ))}
+                    </div>
+                  </div>
+                </section>
+                <div className="wa-rail">
+                  <GoalCard dailyGoal={dailyGoal} />
+                  <AutoLoggedCard connections={connections} />
+                  <LeaderboardCard />
+                </div>
+              </div>
+            </>
           )}
-          <div className="wa-layout">
-            <section className="wa-content">
-              <div className="wa-section-head">
-                <h2 className="wa-h2">Challenges</h2>
-                <div className="wa-scope">
-                  {[
-                    { id: 'current', label: 'Current' },
-                    { id: 'past', label: 'Past' },
-                    { id: 'ignored', label: 'Ignored' },
-                  ].map((o) => (
-                    <button
-                      key={o.id}
-                      type="button"
-                      className={`wa-scope-btn${scope === o.id ? ' wa-scope-btn--active' : ''}`}
-                      onClick={() => setScope(o.id)}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="wa-group">
-                <div className="wa-group-title">{READER.name}&apos;s Challenges</div>
-                <div className="wa-group-sub">
-                  Challenges that {READER.name} is participating in.
-                </div>
-                <div className="wa-chgrid">
-                  {CHALLENGES.map((c) => (
-                    <ChallengeCard key={c.id} challenge={c} />
-                  ))}
-                </div>
-              </div>
-            </section>
-            <div className="wa-rail">
-              <GoalCard dailyGoal={dailyGoal} />
-              <LeaderboardCard />
-            </div>
-          </div>
         </div>
       </main>
       <Footer />

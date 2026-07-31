@@ -484,67 +484,20 @@
 .lf-rlband {
   position: relative;
   padding: 18px 18px 16px;
-  overflow: hidden;
 }
-.lf-rlbanner {
-  position: relative;
+.lf-rlhead {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 132px;
-  border-radius: 14px;
-  padding: 20px 24px;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(250, 204, 21, 0.3), transparent 26%),
-    radial-gradient(circle at 82% 24%, rgba(56, 189, 248, 0.28), transparent 28%),
-    linear-gradient(135deg, #35106e 0%, #6421a7 48%, #0f766e 100%);
-  color: #fff;
-  text-align: center;
-  box-shadow: 0 12px 24px rgba(53, 16, 110, 0.22);
-  overflow: hidden;
+  gap: 8px;
+  margin-bottom: 4px;
 }
-.lf-rlbanner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
-    linear-gradient(90deg, transparent 0 12%, rgba(255, 255, 255, 0.08) 12% 13%, transparent 13%);
-  background-size:
-    10px 10px,
-    100% 100%;
-  pointer-events: none;
-}
-.lf-rlbanner::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, #f43f5e, #fb923c, #facc15, #4ade80, #38bdf8, #a78bfa);
-}
-.lf-rl-name {
-  max-width: 360px;
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 1.02;
-  text-transform: uppercase;
-  position: relative;
-}
-.lf-rlbyline {
-  display: block;
-  margin-top: 2px;
-  font-size: 13px;
-  font-weight: 700;
-  opacity: 0.82;
-  line-height: 1.25;
-  position: relative;
+.lf-rlhead-title {
+  margin: 0;
+  text-align: left;
 }
 .lf-coverrow--rl {
-  justify-content: center;
-  margin-top: 18px;
+  justify-content: flex-start;
+  margin-top: 14px;
 }
 
 /* per-title completion state inside the cover row */
@@ -977,4 +930,14 @@
   color: #16a97a;
   border-left: 1px solid #e0e3e6;
   padding-left: 18px;
+}
+
+/* Search-result badge for a partner-catalog title. */
+.lf-resultbadge--partner {
+  background: #f1f5f9;
+  color: #475569;
+}
+.lf-resultbadge--partner.is-linked {
+  background: #e6f7fa;
+  color: #0f7a8a;
 }

@@ -11,6 +11,7 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Toggle } from '@components/Toggle/Toggle'
 import { Field, Input, Select } from '@components/Form/Form'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
+import { PartnerBrand, PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 import { RMI_FACTORS } from '../../ris/data'
 import { Knobs, Variant } from './_shared'
 
@@ -286,6 +287,57 @@ export const domainSections = [
             </div>
           ))}
         </div>
+      </>
+    ),
+  },
+  {
+    group: 'domain',
+    id: 'partner-brand',
+    name: 'Partner Brand',
+    desc: (
+      <>
+        Reading-partner identity. <code>PartnerBrand</code> is the full lockup (sizes{' '}
+        <code>sm/md/lg</code>, plus <code>invert</code> for dark partner chrome);{' '}
+        <code>PartnerMark</code> is the square app mark used in banners, top-bar switchers and
+        alongside covers. Comics Plus renders its real brand assets; the rest are wordmark
+        approximations. <code>PARTNER_BRANDS</code> carries each partner&apos;s name and accent.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="PartnerBrand — lockups">
+          <div
+            style={{
+              display: 'flex',
+              gap: 24,
+              alignItems: 'center',
+              padding: 16,
+              flexWrap: 'wrap',
+            }}
+          >
+            {Object.keys(PARTNER_BRANDS).map((id) => (
+              <PartnerBrand key={id} id={id} />
+            ))}
+          </div>
+        </Variant>
+        <Variant label="sizes + invert (on dark partner chrome)">
+          <div style={{ display: 'flex', gap: 20, alignItems: 'center', padding: 16 }}>
+            <PartnerBrand id="comicsplus" size="sm" />
+            <PartnerBrand id="comicsplus" size="lg" />
+            <span style={{ background: '#1B0C26', padding: '12px 16px', borderRadius: 10 }}>
+              <PartnerBrand id="comicsplus" invert />
+            </span>
+          </div>
+        </Variant>
+        <Variant label="PartnerMark — square app marks">
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center', padding: 16 }}>
+            {Object.keys(PARTNER_BRANDS).map((id) => (
+              <PartnerMark key={id} id={id} size={30} />
+            ))}
+            <PartnerMark id="comicsplus" size={20} />
+            <PartnerMark id="scholastic" size={44} />
+          </div>
+        </Variant>
       </>
     ),
   },

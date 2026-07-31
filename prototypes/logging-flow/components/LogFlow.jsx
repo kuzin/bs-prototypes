@@ -6,9 +6,12 @@ import { SearchInput } from '@components/SearchInput/SearchInput'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Icon } from '@components/Icon/Icon'
 
+import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
+
 import { BookCover } from './BookCover'
 import { EReader } from './EReader'
 import { BOOKS, RECENTLY_LOGGED, READING_LIST, OTHER_READERS, READER } from '../data'
+import { CONNECTIONS } from '../connections'
 import './LogFlow.css'
 
 import '@components/Button/Button.css'
@@ -53,7 +56,7 @@ const REVIEW_OPTIONS = [
   { value: 'yes', label: 'Yes' },
 ]
 
-export function LogFlow({ open, onClose, onLogged }) {
+export function LogFlow({ open, onClose, onLogged, connections = {} }) {
   const [step, setStep] = useState('search') // search | details | timer | review | success | reader
   const [returnStep, setReturnStep] = useState('search')
   const [reader, setReader] = useState(READER)
@@ -263,6 +266,7 @@ export function LogFlow({ open, onClose, onLogged }) {
           {step === 'search' && (
             <SearchStep
               reader={reader}
+              connections={connections}
               query={query}
               setQuery={setQuery}
               scanOpen={scanOpen}
@@ -432,6 +436,7 @@ function ReaderLine({ reader, onChange }) {
 
 function SearchStep({
   reader,
+  connections,
   query,
   setQuery,
   scanOpen,
@@ -501,10 +506,14 @@ function SearchStep({
                   <span className="lf-resulttitle">{b.title}</span>
                   <span className="lf-resultauthor">{b.author}</span>
                 </span>
-                {b.readable && (
-                  <span className="lf-resultbadge">
-                    <Icon name="book-2" size={12} stroke={2.2} /> Readable
-                  </span>
+                {b.partner ? (
+                  <PartnerResultBadge partnerId={b.partner} connections={connections} />
+                ) : (
+                  b.readable && (
+                    <span className="lf-resultbadge">
+                      <Icon name="book-2" size={12} stroke={2.2} /> Readable
+                    </span>
+                  )
                 )}
                 <Icon name="chevron-right" size={18} className="lf-resultchev" />
               </button>
@@ -515,39 +524,42 @@ function SearchStep({
 
       {!q && !scanOpen && (
         <>
-          {/* Active reading list band */}
-          <section className="lf-panel lf-rlband">
-            <div className="lf-rlbanner">
-              <h2 className="lf-rl-name">{READING_LIST.challenge}</h2>
-              <p className="lf-rlbyline">{READING_LIST.byline}</p>
-            </div>
+          {/* Active reading list band. Its titles come out of a partner's
+              catalog, so it only appears once that account is linked. */}
+          {(!READING_LIST.partner || connections[READING_LIST.partner]) && (
+            <section className="lf-panel lf-rlband">
+              <div className="lf-rlhead">
+                <PartnerMark id={READING_LIST.partner} size={20} />
+                <h2 className="lf-panel-title lf-rlhead-title">{READING_LIST.title}</h2>
+              </div>
 
-            <div className="lf-coverrow lf-coverrow--rl">
-              {READING_LIST.titles.map((id) => {
-                const logged = READING_LIST.completed.includes(id)
-                return (
-                  <button
-                    key={id}
-                    className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
-                    onClick={() => onPick(BOOKS[id])}
-                    title={BOOKS[id].title}
-                  >
-                    <BookCover book={BOOKS[id]} size="md" />
-                    {logged && (
-                      <span className="lf-rlcheck" aria-label="Logged">
-                        <Icon name="check" size={12} stroke={3} />
+              <div className="lf-coverrow lf-coverrow--rl">
+                {READING_LIST.titles.map((id) => {
+                  const logged = READING_LIST.completed.includes(id)
+                  return (
+                    <button
+                      key={id}
+                      className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
+                      onClick={() => onPick(BOOKS[id])}
+                      title={BOOKS[id].title}
+                    >
+                      <BookCover book={BOOKS[id]} size="md" />
+                      {logged && (
+                        <span className="lf-rlcheck" aria-label="Logged">
+                          <Icon name="check" size={12} stroke={3} />
+                        </span>
+                      )}
+                      <span className="lf-rladd">
+                        <Icon name="plus" size={12} stroke={2.6} />
+                        Log
                       </span>
-                    )}
-                    <span className="lf-rladd">
-                      <Icon name="plus" size={12} stroke={2.6} />
-                      Log
-                    </span>
-                  </button>
-                )
-              })}
-            </div>
-            <button className="lf-link lf-viewall">View all {READING_LIST.total} titles ›</button>
-          </section>
+                    </button>
+                  )
+                })}
+              </div>
+              <button className="lf-link lf-viewall">View all {READING_LIST.total} titles ›</button>
+            </section>
+          )}
 
           {/* Recently logged */}
           <section className="lf-panel">
@@ -579,6 +591,17 @@ function SearchStep({
         </>
       )}
     </div>
+  )
+}
+
+// Search-result badge for a title that lives in a partner's catalog.
+function PartnerResultBadge({ partnerId, connections = {} }) {
+  const linked = Boolean(connections[partnerId]?.autoLog)
+  return (
+    <span className={`lf-resultbadge lf-resultbadge--partner${linked ? ' is-linked' : ''}`}>
+      <PartnerMark id={partnerId} size={14} />
+      {linked ? 'Logs itself' : CONNECTIONS[partnerId].name}
+    </span>
   )
 }
 
