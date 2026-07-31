@@ -16,10 +16,11 @@ const FALLBACK_ICON = { xs: 16, sm: 20, md: 26, lg: 34 }
 
 // A book cover: the real Open Library image when it loads, otherwise a designed
 // color-gradient placeholder. Magazines get a masthead-style fallback (title +
-// issue) so they read like a magazine rack rather than a missing book.
+// issue) so they read like a magazine rack rather than a missing book. A
+// magazine may set `masthead` for the short logo name its real cover shows.
 export function Cover({ book, size = 'md', square = false, className = '' }) {
   const [err, setErr] = useState(false)
-  const { cover, title, color = '#0DA7BC', formats = [], issue } = book
+  const { cover, title, masthead, color = '#0DA7BC', formats = [], issue } = book
   const showImg = cover && !err
   const isMag = formats.includes('magazine') && !formats.includes('print')
 
@@ -39,7 +40,7 @@ export function Cover({ book, size = 'md', square = false, className = '' }) {
           <span className="bk-cover-mag-kicker">
             <Icon name="news" size={12} /> Magazine
           </span>
-          <span className="bk-cover-mag-name">{title}</span>
+          <span className="bk-cover-mag-name">{masthead || title}</span>
           {issue && <span className="bk-cover-mag-issue">{issue}</span>}
         </div>
       ) : (

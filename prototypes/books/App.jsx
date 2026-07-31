@@ -12,7 +12,9 @@ import { MyShelf } from './components/MyShelf'
 import { SettingsModal } from './components/SettingsModal'
 import { BadgeEarnedModal } from './components/BadgeEarnedModal'
 import { AudioPlayer } from './components/AudioPlayer'
-import { getBook, getSessions, READER, SHELF_SEED } from './data'
+import { Friends } from './components/Friends'
+import { FriendProfile } from './components/FriendProfile'
+import { getBook, getSessions, getFriend, READER, SHELF_SEED } from './data'
 import './index.css'
 
 let _uid = 0
@@ -24,6 +26,7 @@ function TopBar({ active, onNav, shelfCount, onSettings }) {
     { id: 'reviews', label: 'Reviews' },
     { id: 'badges', label: 'Badges' },
     { id: 'discover', label: 'Discover' },
+    { id: 'friends', label: 'Friends' },
     { id: 'shelf', label: 'My Shelf', count: shelfCount || undefined },
   ]
   return (
@@ -108,6 +111,7 @@ export function App() {
   const [badge, setBadge] = useState(null) // { id } of the just-finished book | null
   const [nowPlaying, setNowPlaying] = useState(null) // bookId being listened to | null
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [profileId, setProfileId] = useState(null) // friend id whose profile is open
   const [settings, setSettings] = useState({
     sora: true,
     scholastic: true,
@@ -183,9 +187,14 @@ export function App() {
   const onNav = (id) => {
     if (id === 'shelf') goShelf()
     else if (id === 'discover') setView({ name: 'discover' })
+    else if (id === 'friends') {
+      setView({ name: 'friends' })
+      window.scrollTo({ top: 0 })
+    }
   }
 
-  const active = view.name === 'shelf' ? 'shelf' : 'discover'
+  // Only the built-out tabs light up; the rest of the bar is still scaffolding.
+  const active = ['shelf', 'friends'].includes(view.name) ? view.name : 'discover'
 
   return (
     <div className="bk-app">
@@ -227,6 +236,7 @@ export function App() {
             onBack={() => setView({ name: 'discover' })}
           />
         )}
+        {view.name === 'friends' && <Friends onOpenProfile={setProfileId} />}
         {view.name === 'shelf' && (
           <MyShelf
             shelf={shelf}
@@ -244,6 +254,7 @@ export function App() {
             onFinish={finishBook}
             onPlay={setNowPlaying}
             onOpen={open}
+            onOpenProfile={setProfileId}
             onBack={back}
             backLabel={
               view.from === 'shelf'
@@ -266,6 +277,15 @@ export function App() {
         onClose={() => setSettingsOpen(false)}
         settings={settings}
         onToggle={toggleSetting}
+      />
+      <FriendProfile
+        key={profileId} /* remount per friend so it opens on Overview */
+        friend={profileId ? getFriend(profileId) : null}
+        onClose={() => setProfileId(null)}
+        onOpenBook={(id) => {
+          setProfileId(null)
+          open(id)
+        }}
       />
       <BadgeEarnedModal
         open={!!badge}

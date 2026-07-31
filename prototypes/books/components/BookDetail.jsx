@@ -9,9 +9,13 @@ import { Reviews } from './Reviews'
 import { ReadNow } from './ReadNow'
 import { ExpandableText } from './ExpandableText'
 import { PartnerMark } from './PartnerBits'
-import { GENRES, FORMATS, PARTNERS, getBooks } from '../data'
+import { Avatar } from '@components/Avatar/Avatar'
+import { GENRES, FORMATS, PARTNERS, getBooks, friendsWhoRead } from '../data'
 
 const isMagazine = (book) => book.formats.includes('magazine') && !book.formats.includes('print')
+
+// Partners with an in-app reader — "Read now" opens it, branded for that partner.
+const READABLE_PARTNERS = ['comicsplus', 'scholastic']
 const fmtMins = (m) =>
   m >= 60 ? `${Math.floor(m / 60)}h ${m % 60 ? `${m % 60}m` : ''}`.trim() : `${m}m`
 
@@ -260,6 +264,32 @@ function DetailsTab({ book }) {
   )
 }
 
+// Friends who logged this title — derived from their own reading records, so it
+// always matches what their profile shows.
+function FriendsWhoRead({ book, onOpenProfile }) {
+  const friends = friendsWhoRead(book.id)
+  if (!friends.length) return null
+  return (
+    <div className="bk-rail-card">
+      <h3 className="bk-rail-title">
+        <Icon name="users" size={16} /> Friends who read this
+      </h3>
+      <div className="bk-fwr-list">
+        {friends.map((f) => (
+          <button key={f.id} className="bk-fwr-row" onClick={() => onOpenProfile?.(f.id)}>
+            <Avatar initials={f.initials} color={f.color} size="sm" />
+            <span className="bk-fwr-info">
+              <span className="bk-fwr-name">{f.name}</span>
+              <span className="bk-fwr-meta">Logged {f.loggedOn}</span>
+            </span>
+            <Icon name="chevron-right" size={15} className="bk-fwr-chev" />
+          </button>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function WhereToRead({ availability, onRead }) {
   if (!availability.length) return null
   return (
@@ -271,7 +301,9 @@ function WhereToRead({ availability, onRead }) {
         {availability.map((a, i) => {
           const p = PARTNERS[a.partner]
           const isAudio = a.format === 'audiobook'
-          const readable = a.partner === 'comicsplus'
+          const readable =
+            READABLE_PARTNERS.includes(a.partner) &&
+            (a.format === 'ebook' || a.format === 'magazine')
           return (
             <div key={i} className="bk-where-row" style={{ '--p': p.accent, '--p-soft': p.soft }}>
               <PartnerMark id={a.partner} size={34} />
@@ -282,7 +314,10 @@ function WhereToRead({ availability, onRead }) {
                   {FORMATS[a.format].label}
                 </span>
               </div>
-              <button className="bk-where-cta" onClick={readable ? onRead : undefined}>
+              <button
+                className="bk-where-cta"
+                onClick={readable ? () => onRead(a.partner) : undefined}
+              >
                 {a.action}
               </button>
             </div>
@@ -301,6 +336,7 @@ export function BookDetail({
   onFinish,
   onPlay,
   onOpen,
+  onOpenProfile,
   onBack,
   backLabel = 'Discover',
   userReviews,
@@ -308,7 +344,7 @@ export function BookDetail({
   settings = { sora: true, scholastic: true, audiobooks: true, libby: false },
 }) {
   const [tab, setTab] = useState('overview')
-  const [reader, setReader] = useState(false)
+  const [readerVia, setReaderVia] = useState(null) // partner id the reader is open on
   const status = shelf[book.id] || null
   const wished = !!status
   // Feature flags hide Sora borrowing + audiobooks from availability + formats.
@@ -322,11 +358,11 @@ export function BookDetail({
   const similar = getBooks(book.similar)
   const reviewCount = (userReviews?.length || 0) + book.reviews.length
   // Read now = an ebook/magazine on an in-app reader (Comics Plus / Scholastic).
-  const readNow = availability.some(
+  // Keep the partner, not just a boolean — the reader brands itself with it.
+  const readNowVia = availability.find(
     (a) =>
-      (a.partner === 'comicsplus' || a.partner === 'scholastic') &&
-      (a.format === 'ebook' || a.format === 'magazine'),
-  )
+      READABLE_PARTNERS.includes(a.partner) && (a.format === 'ebook' || a.format === 'magazine'),
+  )?.partner
   // Listen now = an audiobook borrowable from a library app (Sora / Libby).
   const hasAudio = availability.some(
     (a) => a.format === 'audiobook' && (a.partner === 'sora' || a.partner === 'libby'),
@@ -365,10 +401,10 @@ export function BookDetail({
 
             <FormatChips formats={formats} />
 
-            {(readNow || hasAudio) && (
+            {(readNowVia || hasAudio) && (
               <div className="bk-hero-ctas">
-                {readNow && (
-                  <button className="bk-readnow" onClick={() => setReader(true)}>
+                {readNowVia && (
+                  <button className="bk-readnow" onClick={() => setReaderVia(readNowVia)}>
                     <Icon name="device-tablet" size={15} /> Read now
                   </button>
                 )}
@@ -449,12 +485,18 @@ export function BookDetail({
             </Button>
           </div>
           <StatStrip book={book} sessions={sessions} status={status} />
-          <WhereToRead availability={availability} onRead={() => setReader(true)} />
+          <FriendsWhoRead book={book} onOpenProfile={onOpenProfile} />
+          <WhereToRead availability={availability} onRead={setReaderVia} />
         </aside>
       </div>
 
-      {reader && (
-        <ReadNow book={book} onClose={() => setReader(false)} onFinish={() => onFinish(book.id)} />
+      {readerVia && (
+        <ReadNow
+          book={book}
+          partner={readerVia}
+          onClose={() => setReaderVia(null)}
+          onFinish={() => onFinish(book.id)}
+        />
       )}
     </div>
   )
