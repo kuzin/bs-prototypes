@@ -637,7 +637,13 @@ body,
 .pyp-section-sub {
   font-size: 13.5px;
   color: var(--pyp-muted);
+  /* pulls up under a section head, which carries its own 12px bottom margin */
   margin: -4px 0 12px;
+}
+/* …but when it follows a progress bar there's no margin to absorb, so the
+   negative pull would drag the text onto the bar. */
+.pgb + .pyp-section-sub {
+  margin-top: 10px;
 }
 
 /* Title rows */
