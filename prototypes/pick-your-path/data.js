@@ -423,12 +423,18 @@ export const TOP_CLASSES = [
 //     activity can name another activity's id as its `badgeId` to join that
 //     badge instead; the badge is earned once every activity in its group is
 //     done (typically a group of one)
-//   • one destination badge — the capstone, earned when everything is done
+//   • one destination badge — the capstone, earned once the student has read
+//     REQUIRED_READS titles (any of them) and finished every activity
+
+// A path's shelf is ~10 deep but a student only has to read this many of them —
+// the depth is choice, not workload.
+export const REQUIRED_READS = 3
 
 export function badgesForPath(path, readTitleIds, doneActivityIds) {
   const read = new Set(readTitleIds)
   const done = new Set(doneActivityIds)
-  const allRead = path.titles.every((t) => read.has(t.id))
+  const readCount = path.titles.filter((t) => read.has(t.id)).length
+  const enoughRead = readCount >= Math.min(REQUIRED_READS, path.titles.length)
   const allDone = path.activities.every((a) => done.has(a.id))
 
   const reading = path.titles.map((t) => ({
@@ -467,11 +473,11 @@ export function badgesForPath(path, readTitleIds, doneActivityIds) {
     id: `badge-dest-${path.id}`,
     kind: 'destination',
     name: 'Forces & Motion Explorer',
-    sub: 'Read every title + finish every activity',
+    sub: `Read any ${REQUIRED_READS} titles + finish every activity`,
     icon: 'atom',
     art: BADGE_ART.capstone,
     color: DESTINATION.color,
-    earned: allRead && allDone,
+    earned: enoughRead && allDone,
   }
 
   return [...reading, ...activity, capstone]
