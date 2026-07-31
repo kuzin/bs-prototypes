@@ -23,6 +23,8 @@ export const OTHER_READERS = [
 // ─── Books ───────────────────────────────────────────────────────────────────
 // `measure` drives the log-details step: 'minutes' shows Time Spent Reading,
 // 'pages' shows How many pages were read? (the two "combined logging" variants).
+// `readable: true` means there's a digital edition you can open in the in-app
+// e-reader — reading it live-counts minutes that carry straight into the log.
 
 // Open Library cover CDN — `?default=false` 404s on a missing cover so
 // BookCover can fall back to the color gradient.
@@ -37,6 +39,7 @@ export const BOOKS = {
     cover: ['#9DC7F0', '#F4A98B'],
     measure: 'minutes',
     pages: 400,
+    readable: true,
   },
   rump: {
     id: 'rump',
@@ -54,6 +57,7 @@ export const BOOKS = {
     cover: ['#3FA9E0', '#E23B3B'],
     measure: 'minutes',
     pages: 176,
+    readable: true,
   },
   'lesbianas-guide': {
     id: 'lesbianas-guide',
@@ -72,6 +76,7 @@ export const BOOKS = {
     isbn: '9780525555254',
     measure: 'minutes',
     pages: 416,
+    readable: true,
   },
   darius: {
     id: 'darius',
@@ -81,6 +86,7 @@ export const BOOKS = {
     isbn: '9780735231856',
     measure: 'minutes',
     pages: 316,
+    readable: true,
   },
 }
 

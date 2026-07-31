@@ -7,6 +7,7 @@
   background: #ffffff;
   overflow-y: auto;
   animation: lf-fade 0.18s ease;
+  display: flex;
 }
 @keyframes lf-fade {
   from {
@@ -18,8 +19,11 @@
 }
 
 .lf-scroll {
+  width: 100%;
   max-width: 760px;
-  margin: 0 auto;
+  /* auto margins center the panel vertically (and horizontally) within the
+     flex overlay, while still allowing tall steps to scroll without clipping */
+  margin: auto;
   padding: 64px 24px 96px;
 }
 
@@ -257,6 +261,18 @@
   border-color: #cfd4d9;
   background: #fafbfc;
 }
+.lf-resultbadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #e6f7f4;
+  color: #0d9488;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
 .lf-resultmeta {
   flex: 1;
   display: flex;
@@ -274,6 +290,158 @@
 }
 .lf-resultchev {
   color: #adb5bd;
+}
+
+/* ── Read-or-log callout ─────────────────────────────────────────────────── */
+.lf-choice {
+  position: fixed;
+  inset: 0;
+  z-index: 150;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.lf-choice-scrim {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  animation: lf-fade 0.16s ease;
+  cursor: pointer;
+}
+.lf-choice-card {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 20px;
+  padding: 28px 28px 24px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+  animation: lf-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes lf-pop {
+  from {
+    transform: scale(0.94) translateY(6px);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+}
+.lf-choice-x {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: #f1f3f5;
+  color: #495057;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.lf-choice-x:hover {
+  background: #e5e8eb;
+}
+.lf-choice-cover {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.lf-choice-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1f2933;
+  line-height: 1.25;
+}
+.lf-choice-author {
+  font-size: 13px;
+  color: #868e96;
+  margin-top: 2px;
+}
+.lf-choice-q {
+  font-size: 14px;
+  color: #495057;
+  margin: 12px 0 20px;
+  line-height: 1.45;
+}
+.lf-choice-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.lf-choice-opt {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  border: 1.5px solid #e9ecef;
+  border-radius: 14px;
+  background: #fff;
+  padding: 14px 16px;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+.lf-choice-opt:hover {
+  border-color: #cfd4d9;
+  background: #fafbfc;
+}
+.lf-choice-opt-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  background: #f1f3f5;
+  color: #495057;
+}
+.lf-choice-opt-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.lf-choice-opt-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1f2933;
+}
+.lf-choice-opt-sub {
+  font-size: 12.5px;
+  color: #868e96;
+}
+.lf-choice-opt-chev {
+  color: #adb5bd;
+  flex-shrink: 0;
+}
+/* the primary "Read" option gets the teal accent */
+.lf-choice-opt--read {
+  border-color: #99e0d5;
+  background: #f0fbf9;
+}
+.lf-choice-opt--read:hover {
+  border-color: #5cccbc;
+  background: #e6f7f4;
+}
+.lf-choice-opt--read .lf-choice-opt-icon {
+  background: #0d9488;
+  color: #fff;
+}
+.lf-choice-opt--read .lf-choice-opt-chev {
+  color: #0d9488;
 }
 
 /* panels (reading list + recently logged) */

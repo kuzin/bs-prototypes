@@ -7,6 +7,7 @@ import { Avatar } from '@components/Avatar/Avatar'
 import { Icon } from '@components/Icon/Icon'
 
 import { BookCover } from './BookCover'
+import { EReader } from './EReader'
 import { BOOKS, RECENTLY_LOGGED, READING_LIST, OTHER_READERS, READER } from '../data'
 import './LogFlow.css'
 
@@ -60,6 +61,8 @@ export function LogFlow({ open, onClose, onLogged }) {
   const [scanOpen, setScanOpen] = useState(false)
 
   const [book, setBook] = useState(null) // a BOOKS entry, or a synthetic manual/untitled book
+  const [readingBook, setReadingBook] = useState(null) // book open in the in-app e-reader
+  const [choiceBook, setChoiceBook] = useState(null) // readable book awaiting a read/log choice
   const [measure, setMeasure] = useState('minutes')
   const [minutesInput, setMinutesInput] = useState('')
   const [pagesInput, setPagesInput] = useState('')
@@ -85,6 +88,8 @@ export function LogFlow({ open, onClose, onLogged }) {
     setQuery('')
     setScanOpen(false)
     setBook(null)
+    setReadingBook(null)
+    setChoiceBook(null)
     setMeasure('minutes')
     setMinutesInput('')
     setPagesInput('')
@@ -107,13 +112,18 @@ export function LogFlow({ open, onClose, onLogged }) {
     }
   }, [timerRunning])
 
-  // Escape closes the flow.
+  // Escape dismisses the top-most layer first (reader → callout), else the flow.
   useEffect(() => {
     if (!open) return
-    const onKey = (e) => e.key === 'Escape' && onClose?.()
+    const onKey = (e) => {
+      if (e.key !== 'Escape') return
+      if (readingBook) return // the e-reader handles its own Escape
+      if (choiceBook) setChoiceBook(null)
+      else onClose?.()
+    }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
-  }, [open, onClose])
+  }, [open, onClose, readingBook, choiceBook])
 
   if (!open) return null
 
@@ -122,7 +132,19 @@ export function LogFlow({ open, onClose, onLogged }) {
   const hasAmount = measure === 'minutes' ? parsedMinutes > 0 : parseInt(pagesInput || 0, 10) > 0
   const canLog = hasAmount && (!lotsOfMinutes || attested)
 
+  // Picking a title: readable ones surface a read-or-log callout first; anything
+  // else (manual/untitled/non-readable) goes straight to the log details.
   function pickBook(b) {
+    setScanOpen(false)
+    if (b.readable) {
+      setChoiceBook(b)
+      return
+    }
+    logBook(b)
+  }
+
+  // Go to the log-details step for a book.
+  function logBook(b) {
     setBook(b)
     setMeasure(b.measure || 'minutes')
     setReview((r) => ({
@@ -131,6 +153,23 @@ export function LogFlow({ open, onClose, onLogged }) {
       author: b.manual || b.untitled ? r.author : b.author,
     }))
     setScanOpen(false)
+    setStep('details')
+  }
+
+  // Open a book in the in-app e-reader. Sets up the same book/measure/review
+  // state as logBook so that finishing flows straight into the log.
+  function openReader(b) {
+    setBook(b)
+    setMeasure(b.measure || 'minutes')
+    setReview((r) => ({ ...r, title: b.title, author: b.author }))
+    setReadingBook(b)
+  }
+
+  // Done reading — carry the elapsed minutes into the details step (like the timer).
+  function finishReading(minutes) {
+    setMinutesInput(String(minutes))
+    setMeasure('minutes')
+    setReadingBook(null)
     setStep('details')
   }
 
@@ -199,106 +238,174 @@ export function LogFlow({ open, onClose, onLogged }) {
   const bookTitle = book?.untitled ? 'an untitled book' : book?.title || 'this book'
 
   return (
-    <div className="lf-overlay" role="dialog" aria-modal="true" aria-label="Log reading">
-      {/* top-right close (hidden on success — uses its own Done button) */}
-      {step !== 'success' && (
-        <button className="lf-iconbtn lf-close" onClick={onClose} aria-label="Close">
+    <>
+      <div className="lf-overlay" role="dialog" aria-modal="true" aria-label="Log reading">
+        {/* top-right close (hidden on success — uses its own Done button) */}
+        {step !== 'success' && (
+          <button className="lf-iconbtn lf-close" onClick={onClose} aria-label="Close">
+            <Icon name="x" size={16} stroke={2.2} />
+          </button>
+        )}
+        {/* back button on the secondary steps */}
+        {(step === 'details' || step === 'timer' || step === 'reader') && (
+          <button
+            className="lf-iconbtn lf-back"
+            onClick={() =>
+              setStep(step === 'reader' ? returnStep : step === 'timer' ? 'details' : 'search')
+            }
+            aria-label="Back"
+          >
+            <Icon name="chevron-left" size={18} stroke={2.2} />
+          </button>
+        )}
+
+        <div className="lf-scroll">
+          {step === 'search' && (
+            <SearchStep
+              reader={reader}
+              query={query}
+              setQuery={setQuery}
+              scanOpen={scanOpen}
+              setScanOpen={setScanOpen}
+              onPick={pickBook}
+              onManual={startManual}
+              onWithoutTitle={startWithoutTitle}
+              onChangeReader={openReaderPicker}
+            />
+          )}
+
+          {step === 'details' && book && (
+            <DetailsStep
+              reader={reader}
+              book={book}
+              measure={measure}
+              minutesInput={minutesInput}
+              setMinutesInput={setMinutesInput}
+              pagesInput={pagesInput}
+              setPagesInput={setPagesInput}
+              dateLabel={dateLabel}
+              setDateLabel={setDateLabel}
+              dateOpen={dateOpen}
+              setDateOpen={setDateOpen}
+              finished={finished}
+              setFinished={setFinished}
+              reviewChoice={reviewChoice}
+              setReviewChoice={setReviewChoice}
+              attested={attested}
+              setAttested={setAttested}
+              lotsOfMinutes={lotsOfMinutes}
+              canLog={canLog}
+              onChangeReader={openReaderPicker}
+              onStartTimer={() => {
+                setTimerSeconds(0)
+                setTimerRunning(true)
+                setStep('timer')
+              }}
+              onUpdateBook={(patch) => {
+                setBook((b) => ({ ...b, ...patch }))
+                setReview((r) => ({ ...r, ...patch }))
+              }}
+              onSubmit={submitLog}
+            />
+          )}
+
+          {step === 'timer' && (
+            <TimerStep
+              seconds={timerSeconds}
+              running={timerRunning}
+              onToggle={() => setTimerRunning((r) => !r)}
+              onReset={() => {
+                setTimerSeconds(0)
+                setTimerRunning(true)
+              }}
+              onDone={finishTimer}
+            />
+          )}
+
+          {step === 'review' && (
+            <ReviewStep review={review} setReview={setReview} onSave={() => completeLog(review)} />
+          )}
+
+          {step === 'reader' && (
+            <ReaderStep
+              current={reader}
+              onSelect={(r) => {
+                setReader(r)
+                setStep(returnStep)
+              }}
+            />
+          )}
+
+          {step === 'success' && (
+            <SuccessStep result={result} bookTitle={bookTitle} onDone={onClose} />
+          )}
+        </div>
+      </div>
+
+      {choiceBook && (
+        <ReadOrLogCallout
+          book={choiceBook}
+          onRead={() => {
+            openReader(choiceBook)
+            setChoiceBook(null)
+          }}
+          onLog={() => {
+            logBook(choiceBook)
+            setChoiceBook(null)
+          }}
+          onClose={() => setChoiceBook(null)}
+        />
+      )}
+
+      {readingBook && (
+        <EReader book={readingBook} onLog={finishReading} onClose={() => setReadingBook(null)} />
+      )}
+    </>
+  )
+}
+
+// ─── Read-or-log callout (shown when a readable title is picked) ──────────────
+
+function ReadOrLogCallout({ book, onRead, onLog, onClose }) {
+  return (
+    <div className="lf-choice" role="dialog" aria-modal="true" aria-label="Read or log this title">
+      <button className="lf-choice-scrim" onClick={onClose} aria-label="Dismiss" />
+      <div className="lf-choice-card">
+        <button className="lf-choice-x" onClick={onClose} aria-label="Close">
           <Icon name="x" size={16} stroke={2.2} />
         </button>
-      )}
-      {/* back button on the secondary steps */}
-      {(step === 'details' || step === 'timer' || step === 'reader') && (
-        <button
-          className="lf-iconbtn lf-back"
-          onClick={() =>
-            setStep(step === 'reader' ? returnStep : step === 'timer' ? 'details' : 'search')
-          }
-          aria-label="Back"
-        >
-          <Icon name="chevron-left" size={18} stroke={2.2} />
-        </button>
-      )}
+        <div className="lf-choice-cover">
+          <BookCover book={book} size="lg" />
+        </div>
+        <h2 className="lf-choice-title">{book.title}</h2>
+        {book.author && <p className="lf-choice-author">{book.author}</p>}
+        <p className="lf-choice-q">
+          This title is available to read in the app. What would you like to do?
+        </p>
 
-      <div className="lf-scroll">
-        {step === 'search' && (
-          <SearchStep
-            reader={reader}
-            query={query}
-            setQuery={setQuery}
-            scanOpen={scanOpen}
-            setScanOpen={setScanOpen}
-            onPick={pickBook}
-            onManual={startManual}
-            onWithoutTitle={startWithoutTitle}
-            onChangeReader={openReaderPicker}
-          />
-        )}
+        <div className="lf-choice-actions">
+          <button className="lf-choice-opt lf-choice-opt--read" onClick={onRead}>
+            <span className="lf-choice-opt-icon">
+              <Icon name="book-2" size={22} />
+            </span>
+            <span className="lf-choice-opt-main">
+              <span className="lf-choice-opt-title">Read in the app</span>
+              <span className="lf-choice-opt-sub">We&apos;ll count your minutes as you read</span>
+            </span>
+            <Icon name="chevron-right" size={18} className="lf-choice-opt-chev" />
+          </button>
 
-        {step === 'details' && book && (
-          <DetailsStep
-            reader={reader}
-            book={book}
-            measure={measure}
-            minutesInput={minutesInput}
-            setMinutesInput={setMinutesInput}
-            pagesInput={pagesInput}
-            setPagesInput={setPagesInput}
-            dateLabel={dateLabel}
-            setDateLabel={setDateLabel}
-            dateOpen={dateOpen}
-            setDateOpen={setDateOpen}
-            finished={finished}
-            setFinished={setFinished}
-            reviewChoice={reviewChoice}
-            setReviewChoice={setReviewChoice}
-            attested={attested}
-            setAttested={setAttested}
-            lotsOfMinutes={lotsOfMinutes}
-            canLog={canLog}
-            onChangeReader={openReaderPicker}
-            onStartTimer={() => {
-              setTimerSeconds(0)
-              setTimerRunning(true)
-              setStep('timer')
-            }}
-            onUpdateBook={(patch) => {
-              setBook((b) => ({ ...b, ...patch }))
-              setReview((r) => ({ ...r, ...patch }))
-            }}
-            onSubmit={submitLog}
-          />
-        )}
-
-        {step === 'timer' && (
-          <TimerStep
-            seconds={timerSeconds}
-            running={timerRunning}
-            onToggle={() => setTimerRunning((r) => !r)}
-            onReset={() => {
-              setTimerSeconds(0)
-              setTimerRunning(true)
-            }}
-            onDone={finishTimer}
-          />
-        )}
-
-        {step === 'review' && (
-          <ReviewStep review={review} setReview={setReview} onSave={() => completeLog(review)} />
-        )}
-
-        {step === 'reader' && (
-          <ReaderStep
-            current={reader}
-            onSelect={(r) => {
-              setReader(r)
-              setStep(returnStep)
-            }}
-          />
-        )}
-
-        {step === 'success' && (
-          <SuccessStep result={result} bookTitle={bookTitle} onDone={onClose} />
-        )}
+          <button className="lf-choice-opt" onClick={onLog}>
+            <span className="lf-choice-opt-icon">
+              <Icon name="writing" size={22} />
+            </span>
+            <span className="lf-choice-opt-main">
+              <span className="lf-choice-opt-title">Log reading</span>
+              <span className="lf-choice-opt-sub">Enter minutes or pages yourself</span>
+            </span>
+            <Icon name="chevron-right" size={18} className="lf-choice-opt-chev" />
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -394,6 +501,11 @@ function SearchStep({
                   <span className="lf-resulttitle">{b.title}</span>
                   <span className="lf-resultauthor">{b.author}</span>
                 </span>
+                {b.readable && (
+                  <span className="lf-resultbadge">
+                    <Icon name="book-2" size={12} stroke={2.2} /> Readable
+                  </span>
+                )}
                 <Icon name="chevron-right" size={18} className="lf-resultchev" />
               </button>
             ))
