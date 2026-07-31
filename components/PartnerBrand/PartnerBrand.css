@@ -1,0 +1,64 @@
+/* Reading-partner brand identity — lockups and square app marks. */
+
+.pb-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pb-brand-mark {
+  width: 26px;
+  height: 26px;
+}
+.pb-brand-word {
+  height: 15px;
+}
+.pb-brand--sm .pb-brand-mark {
+  width: 20px;
+  height: 20px;
+}
+.pb-brand--sm .pb-brand-word {
+  height: 12px;
+}
+.pb-brand--lg .pb-brand-mark {
+  width: 34px;
+  height: 34px;
+}
+.pb-brand--lg .pb-brand-word {
+  height: 20px;
+}
+
+/* A dark-ink wordmark goes on a white plate on dark chrome. */
+.pb-brand--plate.pb-brand--asset {
+  background: #ffffff;
+  border-radius: 4px;
+  padding: 6px 10px;
+}
+
+.pb-brand-glyph {
+  display: inline-flex;
+  align-items: center;
+}
+.pb-brand-text {
+  font-size: 20px;
+  font-weight: 800;
+  font-style: italic;
+  letter-spacing: -0.02em;
+}
+.pb-brand--sm .pb-brand-text {
+  font-size: 16px;
+}
+.pb-brand--lg .pb-brand-text {
+  font-size: 26px;
+}
+
+.pb-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 28%;
+  flex-shrink: 0;
+}
+.pb-mark--glyph {
+  color: #fff;
+}

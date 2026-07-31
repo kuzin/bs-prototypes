@@ -1,0 +1,235 @@
+/* Beanstack's "Personalize Reader" settings page. */
+
+.st-page {
+  padding: 40px 0 64px;
+}
+
+.st-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--c-text);
+  margin-bottom: 32px;
+}
+
+.st-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .st-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ─── Avatar ──────────────────────────────────────────────────────────────── */
+
+.st-avatar {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+}
+.st-avatar-initials {
+  font-size: 30px;
+  font-weight: 800;
+  color: #b1281f;
+}
+.st-avatar-edit {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  background: #f1f5f9;
+  color: var(--c-text-muted);
+  display: grid;
+  place-items: center;
+}
+
+/* ─── Sections ────────────────────────────────────────────────────────────── */
+
+.st-section {
+  margin-bottom: 48px;
+}
+.st-h2 {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--c-text);
+  margin-bottom: 14px;
+}
+.st-body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--c-text);
+  margin-bottom: 18px;
+}
+.st-hint {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--c-text-muted);
+  margin-bottom: 14px;
+}
+
+.st-linkrow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 18px 20px;
+  border: 0;
+  border-radius: 10px;
+  background: #f1f5f9;
+  color: var(--c-text);
+  font-family: inherit;
+  cursor: pointer;
+}
+.st-linkrow:hover {
+  background: #e8eef5;
+}
+.st-linkrow-label {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.st-rule {
+  border-top: 1px solid var(--c-border);
+  border-bottom: 1px solid var(--c-border);
+  margin-bottom: 20px;
+}
+.st-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+}
+.st-row-label {
+  font-size: 14px;
+  color: var(--c-text);
+}
+
+.st-yesno {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+.st-yesno-btn {
+  height: 38px;
+  min-width: 58px;
+  border: 1px solid var(--c-border-strong);
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  cursor: pointer;
+}
+.st-yesno-btn:first-child {
+  border-radius: 8px 0 0 8px;
+}
+.st-yesno-btn:last-child {
+  border-radius: 0 8px 8px 0;
+  border-left: 0;
+}
+.st-yesno-btn.is-active {
+  border-color: #1a6dd5;
+  color: #1a6dd5;
+  z-index: 1;
+}
+.st-yesno-btn.is-active + .st-yesno-btn {
+  border-left: 0;
+}
+
+/* ─── App Integrations ────────────────────────────────────────────────────── */
+
+.st-integrations {
+  display: flex;
+  flex-direction: column;
+}
+.st-integration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.st-integration:first-child {
+  border-top: 1px solid var(--c-border);
+}
+.st-integration-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.st-integration-acct {
+  font-size: 12.5px;
+  color: var(--c-text-muted);
+}
+
+/* ─── Share / delete ──────────────────────────────────────────────────────── */
+
+.st-field {
+  margin-bottom: 16px;
+}
+.st-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-text);
+  margin-bottom: 7px;
+}
+.st-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--c-text);
+}
+.st-input::placeholder {
+  color: var(--c-text-subtle);
+}
+
+.st-warn {
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: #fdecec;
+  color: #b91c1c;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+.st-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: var(--c-text);
+}
+.st-check input {
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  flex-shrink: 0;
+}
+.st-delete {
+  height: 44px;
+  padding: 0 22px;
+  border: 0;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: var(--c-text-subtle);
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: not-allowed;
+}

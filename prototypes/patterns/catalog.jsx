@@ -25,6 +25,7 @@ import { bookTalksSections } from './sections/book-talks'
 import { studentProfileSections } from './sections/student-profile'
 import { booksSections } from './sections/books'
 import { adminDashboardSections } from './sections/admin-dashboard'
+import { loggingFlowSections } from './sections/logging-flow'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -207,6 +208,14 @@ export const GROUPS = [
     color: '#2563EB',
     icon: <Icon name="layout-dashboard" size={22} />,
   },
+  {
+    id: 'logging-flow',
+    kind: 'prototype',
+    title: 'Logging Flow',
+    desc: 'Components for the Logging Flow prototype — linking a Comics Plus or Scholastic account, the top-bar app switcher, and the reading those accounts log on their own.',
+    color: '#0DA7BC',
+    icon: <Icon name="link" size={22} />,
+  },
 ]
 
 export const SECTIONS = [
@@ -225,4 +234,5 @@ export const SECTIONS = [
   ...studentProfileSections,
   ...booksSections,
   ...adminDashboardSections,
+  ...loggingFlowSections,
 ]
