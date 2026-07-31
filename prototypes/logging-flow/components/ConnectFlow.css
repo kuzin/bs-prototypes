@@ -502,10 +502,12 @@
   font-weight: 800;
 }
 
+/* Fixed-width tracks with auto-fit (which collapses the empty ones) so a short
+   shelf stays centred instead of hugging the left edge. */
 .cf-catalog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-  justify-items: center;
+  grid-template-columns: repeat(auto-fit, 152px);
+  justify-content: center;
   gap: 28px 20px;
 }
 .cf-catalog-item {
