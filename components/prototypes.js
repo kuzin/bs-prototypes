@@ -50,7 +50,7 @@ export const PROTOTYPES = [
   {
     id: 'rostering',
     name: 'Rostering: School',
-    section: 'Prototypes',
+    section: 'Completed',
     href: '/bs-prototypes/rostering/',
     accent: '#7C5CFA',
     description: 'Clever roster sync — preview, filter, manage.',
@@ -58,7 +58,7 @@ export const PROTOTYPES = [
   {
     id: 'rostering-district',
     name: 'Rostering: District',
-    section: 'Prototypes',
+    section: 'Completed',
     href: '/bs-prototypes/rostering-district/',
     accent: '#5B3FC8',
     description: 'District-wide roster sync filters & previews.',

@@ -6,7 +6,7 @@ const PATTERNS = PROTOTYPES.find((p) => p.id === 'patterns')
 const CARDS = PROTOTYPES.filter((p) => p.id !== 'patterns')
 
 // Group cards by their `section` (default "Prototypes"). Preserve first-seen order.
-const SECTION_ORDER = ['Prototypes', 'Experiments']
+const SECTION_ORDER = ['Prototypes', 'Experiments', 'Completed']
 const SECTIONS = (() => {
   const groups = new Map()
   for (const p of CARDS) {
