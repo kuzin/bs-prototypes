@@ -1,9 +1,11 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Cover } from './Cover'
+import { PartnerMark } from './PartnerBits'
 import { PARTNERS } from '../data'
 
-// A simulated in-app reader for the "Read now on Comics Plus" experience.
+// A simulated in-app reader for the "Read now" experience, branded for whichever
+// partner the title is being read on (Comics Plus, Scholastic, …).
 // No real page art — graphic novels render stylized comic panels, everything
 // else renders a clean text page; flip with arrows/keys, and finishing ties
 // back into your shelf.
@@ -93,7 +95,7 @@ function EndPage({ book, onFinish, onClose }) {
   )
 }
 
-export function ReadNow({ book, onClose, onFinish }) {
+export function ReadNow({ book, partner = 'comicsplus', onClose, onFinish }) {
   const pages = useMemo(() => buildPages(book), [book])
   const [page, setPage] = useState(0)
   const last = pages.length - 1
@@ -118,10 +120,15 @@ export function ReadNow({ book, onClose, onFinish }) {
   }, [last, onClose])
 
   const cur = pages[page]
-  const cp = PARTNERS.comicsplus
+  const p = PARTNERS[partner] || PARTNERS.comicsplus
 
   return (
-    <div className="bk-reader" role="dialog" aria-label={`Reading ${book.title}`}>
+    <div
+      className="bk-reader"
+      role="dialog"
+      aria-label={`Reading ${book.title} on ${p.name}`}
+      style={{ '--p': p.accent }}
+    >
       <div className="bk-reader-top">
         <button className="bk-reader-close" onClick={onClose}>
           <Icon name="x" size={16} /> Close
@@ -132,8 +139,8 @@ export function ReadNow({ book, onClose, onFinish }) {
         </div>
         <div className="bk-reader-brand">
           <span>Reading on</span>
-          <img src={cp.mark} alt="" />
-          <strong>Comics Plus</strong>
+          <PartnerMark id={p.id} size={22} />
+          <strong>{p.name}</strong>
         </div>
       </div>
 

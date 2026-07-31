@@ -298,8 +298,61 @@ export const PATHS = [
   },
 ]
 
-// Attach each path's generated theme banner (titles already carry their own
-// real cover art above).
+// Each path's shelf runs ~10 titles deep, but the UI features the first three
+// and folds the rest behind a "+N more". Only the featured three carry verified
+// Open Library cover art; the deeper shelf uses CoverTile's gradient fallback,
+// so no cover is ever attributed to the wrong book.
+const more = (title, author, level, pages) => ({
+  id: `${title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .slice(0, 22)}`,
+  title,
+  author,
+  level,
+  pages,
+})
+
+const MORE_TITLES = {
+  sports: [
+    more('Basketball', 'Matt Doeden', 'Grade 3–6', 32),
+    more('Football', 'Matt Doeden', 'Grade 3–6', 32),
+    more(
+      'The Science of Soccer with Max Axiom, Super Scientist',
+      'Nikole Brooks Bethea',
+      'Grade 3–6',
+      32,
+    ),
+    more('Gymnastics', 'Wendy Hinote Lanier', 'Grade 2–5', 24),
+    more('Swimming', 'Kate Riggs', 'Grade 1–4', 24),
+    more('BMX Racing', 'Ellen Frazel', 'Grade 2–5', 24),
+    more('Track and Field', 'Jim Gigliotti', 'Grade 3–6', 32),
+  ],
+  engineering: [
+    more('Simple Machines', 'Kay Manolis', 'Grade 2–5', 24),
+    more('Levers', 'Chris Oxlade', 'Grade 2–5', 24),
+    more('Pulleys', 'Chris Oxlade', 'Grade 2–5', 24),
+    more('Gravity', 'Anna Claybourne', 'Grade 3–6', 32),
+    more('How Roller Coasters Work', 'Sarah Eason', 'Grade 3–6', 32),
+    more('Bridges', 'Rebecca Pettiford', 'Grade 2–5', 24),
+    more('Wheels and Axles', 'Kay Manolis', 'Grade 2–5', 24),
+  ],
+  animals: [
+    more('Fastest Animals', 'Rebecca Rissman', 'Grade 2–5', 24),
+    more('How Animals Move', 'Anna Claybourne', 'Grade 3–6', 32),
+    more('Predators', 'Kate Riggs', 'Grade 1–4', 24),
+    more('Hummingbirds', 'Kate Riggs', 'Grade 1–4', 24),
+    more('Sailfish', 'Jody Sullivan Rake', 'Grade 1–3', 24),
+    more('Pronghorn', 'Melissa Stewart', 'Grade 2–5', 24),
+    more('Jackrabbits', 'Lee Jacobs', 'Grade 1–4', 24),
+  ],
+}
+
+// Attach the deeper shelf + each path's generated theme banner.
+PATHS.forEach((p) => {
+  p.titles = [...p.titles, ...MORE_TITLES[p.id]]
+})
+
 PATHS.forEach((p) => {
   p.banner = PATH_BANNERS[p.id]
 })
@@ -315,6 +368,54 @@ export const SEED = {
   streak: 5,
 }
 
+// ─── Challenge dashboard ──────────────────────────────────────────────────────
+// The student's Challenges page — the surface a Destination actually lives on.
+// Modelled on the reader prototype's dashboard (see prototypes/logging-flow).
+// The Forces & Motion card is the live one: opening it goes to the path view.
+
+export const DAILY_GOAL = { minutes: 12, goal: 20 }
+
+export const CHALLENGES = [
+  {
+    id: 'forces-and-motion',
+    title: 'Forces & Motion',
+    dates: 'Apr 14 — May 30',
+    badge: 'Destination',
+    kicker: 'Science · Mr. Reyes',
+    // the live one — opens the student's path
+    live: true,
+    art: { image: bannerDestination, ink: '#ECFEFF' },
+  },
+  {
+    id: 'spring',
+    title: 'Spring Into Reading',
+    dates: 'Apr 1 — Apr 30',
+    badge: 'Minutes',
+    kicker: 'Lincoln Elementary',
+    art: { bg: 'linear-gradient(180deg, #BFE3FA 0%, #B6F0C9 100%)', ink: '#23806C' },
+  },
+  {
+    id: 'mystery-month',
+    title: 'Mystery Month',
+    dates: 'Ongoing',
+    badge: 'Books',
+    kicker: 'Room 14 · Grade 4',
+    art: { bg: 'linear-gradient(180deg, #FFE8A8 0%, #C8E6B8 100%)', ink: '#3D2A18' },
+  },
+]
+
+export const TOP_READERS = [
+  { rank: 1, name: 'Diego H.', value: 214, color: '#F59E0B' },
+  { rank: 2, name: 'Maya C.', value: 198, color: '#94A3B8', isMe: true },
+  { rank: 3, name: 'Priya S.', value: 165, color: '#C2884F' },
+]
+
+export const TOP_CLASSES = [
+  { rank: 1, name: 'Room 14 · Grade 4', value: 1840, color: '#F59E0B' },
+  { rank: 2, name: 'Room 9 · Grade 4', value: 1610, color: '#94A3B8' },
+  { rank: 3, name: 'Room 21 · Grade 5', value: 1275, color: '#C2884F' },
+]
+
 // ─── Badge model ──────────────────────────────────────────────────────────────
 // Badges are derived from progress so there's one source of truth. A path shows:
 //   • one reading badge     — per title, earned as soon as that title is read
@@ -322,19 +423,25 @@ export const SEED = {
 //     activity can name another activity's id as its `badgeId` to join that
 //     badge instead; the badge is earned once every activity in its group is
 //     done (typically a group of one)
-//   • one destination badge — the capstone, earned when everything is done
+//   • one destination badge — the capstone, earned once the student has read
+//     REQUIRED_READS titles (any of them) and finished every activity
+
+// A path's shelf is ~10 deep but a student only has to read this many of them —
+// the depth is choice, not workload.
+export const REQUIRED_READS = 3
 
 export function badgesForPath(path, readTitleIds, doneActivityIds) {
   const read = new Set(readTitleIds)
   const done = new Set(doneActivityIds)
-  const allRead = path.titles.every((t) => read.has(t.id))
+  const readCount = path.titles.filter((t) => read.has(t.id)).length
+  const enoughRead = readCount >= Math.min(REQUIRED_READS, path.titles.length)
   const allDone = path.activities.every((a) => done.has(a.id))
 
   const reading = path.titles.map((t) => ({
     id: `badge-read-${t.id}`,
     kind: 'reading',
     name: t.title,
-    sub: 'Nonfiction title',
+    sub: 'Read this title',
     icon: 'book',
     art: BADGE_ART.reading,
     color: path.color,
@@ -354,7 +461,7 @@ export function badgesForPath(path, readTitleIds, doneActivityIds) {
       id: `badge-${badgeId}`,
       kind: 'activity',
       name: lead.name,
-      sub: group.length > 1 ? `Complete ${group.length} activities` : 'Extension activity',
+      sub: group.length > 1 ? `Complete ${group.length} activities` : 'Complete this activity',
       icon: lead.icon,
       art: BADGE_ART[badgeId],
       color: path.color,
@@ -366,11 +473,11 @@ export function badgesForPath(path, readTitleIds, doneActivityIds) {
     id: `badge-dest-${path.id}`,
     kind: 'destination',
     name: 'Forces & Motion Explorer',
-    sub: 'Finish reading + all activities',
+    sub: `Read any ${REQUIRED_READS} titles + finish every activity`,
     icon: 'atom',
     art: BADGE_ART.capstone,
     color: DESTINATION.color,
-    earned: allRead && allDone,
+    earned: enoughRead && allDone,
   }
 
   return [...reading, ...activity, capstone]

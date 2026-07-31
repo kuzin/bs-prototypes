@@ -5,7 +5,10 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { ReaderTopBar } from './ReaderChrome'
 import { CoverTile, BadgeDisc, StatChip } from './common'
-import { badgesForPath } from '../data'
+import { badgesForPath, REQUIRED_READS } from '../data'
+
+// How many of a path's ~10 titles show before the "+N more" fold.
+const FEATURED_TITLES = 3
 
 const TABS = [
   { id: 'overview', label: 'Overview' },
@@ -14,8 +17,9 @@ const TABS = [
   { id: 'log', label: 'Challenge Log' },
 ]
 
-// One reading title row — designed cover + meta + read state.
-function TitleRow({ title, path, read, onToggle }) {
+// One reading title row — designed cover + meta + read state. An unread title
+// offers the two real ways to finish it: read it in the app, or just log it.
+function TitleRow({ title, path, read, onToggle, onReadInApp }) {
   return (
     <div className={`pyp-title${read ? ' is-read' : ''}`}>
       <div className="pyp-title-cover">
@@ -37,9 +41,25 @@ function TitleRow({ title, path, read, onToggle }) {
             <Icon name="circle-check-filled" size={17} color="#16A97A" /> Read
           </button>
         ) : (
-          <Button variant="secondary" size="sm" onClick={onToggle}>
-            Mark as read
-          </Button>
+          <>
+            <Button
+              variant="primary"
+              size="sm"
+              className="pyp-title-read"
+              icon={<Icon name="book-2" size={15} />}
+              onClick={onReadInApp}
+            >
+              Read in app
+            </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<Icon name="reading-log" size={15} />}
+              onClick={onToggle}
+            >
+              Log it
+            </Button>
+          </>
         )}
       </div>
     </div>
@@ -85,13 +105,23 @@ export function Destination({
   responses,
   streak,
   onToggleRead,
+  onReadTitle,
   onOpenActivity,
   onChangePath,
+  onNav,
 }) {
   const [tab, setTab] = useState('overview')
+  // The shelf runs ~10 deep; feature the first three and fold the rest away.
+  const [allTitles, setAllTitles] = useState(false)
   const read = new Set(readIds)
   const done = new Set(doneIds)
   const readCount = path.titles.filter((t) => read.has(t.id)).length
+  // Only REQUIRED_READS of the shelf are required, so progress tracks that —
+  // the other titles are choice, not backlog.
+  const readGoal = Math.min(REQUIRED_READS, path.titles.length)
+  const readToward = Math.min(readCount, readGoal)
+  const shownTitles = allTitles ? path.titles : path.titles.slice(0, FEATURED_TITLES)
+  const hiddenTitles = allTitles ? 0 : path.titles.length - shownTitles.length
   const doneCount = path.activities.filter((a) => done.has(a.id)).length
   const badges = badgesForPath(path, readIds, doneIds)
   const earnedBadges = badges.filter((b) => b.earned).length
@@ -138,7 +168,7 @@ export function Destination({
 
   return (
     <div className="pyp-reader" style={{ '--path-color': path.color }}>
-      <ReaderTopBar />
+      <ReaderTopBar onNav={onNav} />
 
       {/* Destination + chosen path banner */}
       <div
@@ -171,7 +201,7 @@ export function Destination({
             />
             <StatChip
               icon="book"
-              value={`${readCount}/${path.titles.length}`}
+              value={`${readToward}/${readGoal}`}
               label="titles read"
               color={path.color}
               tint={`color-mix(in srgb, ${path.color} 12%, #fff)`}
@@ -211,26 +241,45 @@ export function Destination({
                 <div className="pyp-section-head">
                   <h2 className="pyp-h2">Read your path</h2>
                   <span className="pyp-section-count">
-                    {readCount} of {path.titles.length} read
+                    {readToward} of {readGoal} read
                   </span>
                 </div>
-                <ProgressBar
-                  value={readCount}
-                  max={path.titles.length}
-                  color={path.color}
-                  size="md"
-                />
+                <ProgressBar value={readToward} max={readGoal} color={path.color} size="md" />
+                <p className="pyp-section-sub">
+                  Read any {readGoal} of the {path.titles.length} titles on this path — pick the
+                  ones that look best.
+                </p>
                 <div className="pyp-titles">
-                  {path.titles.map((t) => (
+                  {shownTitles.map((t) => (
                     <TitleRow
                       key={t.id}
                       title={t}
                       path={path}
                       read={read.has(t.id)}
                       onToggle={() => onToggleRead(t.id)}
+                      onReadInApp={() => onReadTitle(t)}
                     />
                   ))}
                 </div>
+                {hiddenTitles > 0 && (
+                  <button
+                    className="pyp-titles-more"
+                    type="button"
+                    onClick={() => setAllTitles(true)}
+                  >
+                    <Icon name="chevron-down" size={15} /> Show {hiddenTitles} more{' '}
+                    {hiddenTitles === 1 ? 'title' : 'titles'}
+                  </button>
+                )}
+                {allTitles && path.titles.length > FEATURED_TITLES && (
+                  <button
+                    className="pyp-titles-more"
+                    type="button"
+                    onClick={() => setAllTitles(false)}
+                  >
+                    <Icon name="chevron-up" size={15} /> Show fewer
+                  </button>
+                )}
               </section>
 
               {/* Activities */}

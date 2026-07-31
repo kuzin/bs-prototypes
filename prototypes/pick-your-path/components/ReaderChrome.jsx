@@ -12,8 +12,9 @@ const NAV_TABS = [
 ]
 
 // Student-facing reader top bar — its own `.pyp-topbar` chrome (mirrors the
-// web-app reader look without importing its stylesheet).
-export function ReaderTopBar() {
+// web-app reader look without importing its stylesheet). Only Challenges is
+// wired up; the rest of the nav is scaffolding, as elsewhere in the prototypes.
+export function ReaderTopBar({ active = 'challenges', onNav }) {
   return (
     <header className="pyp-topbar">
       <div className="pyp-topbar-inner">
@@ -40,7 +41,14 @@ export function ReaderTopBar() {
         </div>
       </div>
       <div className="pyp-tabsbar">
-        <Tabs variant="underline" size="md" active="challenges" accent="#0F766E" items={NAV_TABS} />
+        <Tabs
+          variant="underline"
+          size="md"
+          active={active}
+          accent="#0F766E"
+          onChange={(id) => id === 'challenges' && onNav?.('challenges')}
+          items={NAV_TABS}
+        />
       </div>
     </header>
   )

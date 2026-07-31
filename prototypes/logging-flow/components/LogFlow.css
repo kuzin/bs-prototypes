@@ -525,6 +525,18 @@
   height: 6px;
   background: linear-gradient(90deg, #f43f5e, #fb923c, #facc15, #4ade80, #38bdf8, #a78bfa);
 }
+
+/* newsstand art — a Scholastic-magazines reading list */
+.lf-rlbanner--news {
+  background:
+    radial-gradient(circle at 84% 20%, rgba(250, 204, 21, 0.32), transparent 30%),
+    radial-gradient(circle at 12% 78%, rgba(56, 189, 248, 0.26), transparent 32%),
+    linear-gradient(135deg, #0f2b52 0%, #1a4b8c 46%, #c81620 100%);
+  box-shadow: 0 12px 24px rgba(15, 43, 82, 0.24);
+}
+.lf-rlbanner--news::after {
+  background: linear-gradient(90deg, #e1141c 0 25%, #f0a024 25% 50%, #2563eb 50% 75%, #0e7490 75%);
+}
 .lf-rl-name {
   max-width: 360px;
   font-size: 24px;
@@ -575,30 +587,6 @@
   color: #fff;
   border: 2px solid #fff;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
-}
-.lf-rladd {
-  position: absolute;
-  left: 50%;
-  bottom: 6px;
-  transform: translate(-50%, 4px);
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  padding: 3px 9px;
-  border-radius: 999px;
-  background: #1f2933;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 800;
-  opacity: 0;
-  pointer-events: none;
-  transition:
-    opacity 0.12s ease,
-    transform 0.12s ease;
-}
-.lf-rltitle:hover .lf-rladd {
-  opacity: 1;
-  transform: translate(-50%, 0);
 }
 .lf-viewall {
   display: block;

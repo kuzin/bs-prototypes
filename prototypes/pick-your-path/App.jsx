@@ -11,8 +11,10 @@ import '@components/Hero/Hero.css'
 import '@components/PrototypeNav/PrototypeNav.css'
 
 import { TeacherSetup } from './components/TeacherSetup'
-import { PickPath } from './components/PickPath'
 import { Destination } from './components/Destination'
+import { ChallengeDashboard } from './components/ChallengeDashboard'
+import { PathPickerModal } from './components/PathPickerModal'
+import { TitleReader } from './components/TitleReader'
 import { ActivityModal } from './components/ActivityModal'
 import { BadgeCelebration } from './components/BadgeCelebration'
 import { PATHS, PATH_BY_ID, SEED, badgesForPath } from './data'
@@ -20,14 +22,16 @@ import './index.css'
 
 const VIEWS = [
   { id: 'teacher', label: 'Teacher · Set Destination', icon: 'flag' },
-  { id: 'pick', label: 'Student · Pick a Path', icon: 'route' },
-  { id: 'destination', label: 'Student · My Destination', icon: 'atom' },
+  { id: 'challenges', label: 'Student · Challenges', icon: 'trophy' },
+  { id: 'student', label: 'Student · My Path', icon: 'route' },
 ]
 
 const RANK = { destination: 3, reading: 2, activity: 1 }
 
 export function App() {
   const [view, setView] = useState('teacher')
+  const [pickerOpen, setPickerOpen] = useState(false) // path picker over the dashboard
+  const [readingTitle, setReadingTitle] = useState(null) // title open in the in-app reader
   const [offered, setOffered] = useState(PATHS.map((p) => p.id))
   const [chosenPathId, setChosenPathId] = useState(SEED.chosenPathId)
   const [readIds, setReadIds] = useState(SEED.readTitleIds)
@@ -62,7 +66,17 @@ export function App() {
     setReadIds(p.titles.slice(0, 2).map((t) => t.id)) // land on the proposal's "2 of 3 read"
     setDoneIds([])
     setResponses({})
-    setView('destination')
+    setPickerOpen(false)
+    setView('student')
+  }
+
+  // Finishing in the in-app reader logs the title, same as "Log it".
+  function logFromReader(titleId) {
+    setReadingTitle(null)
+    if (readIds.includes(titleId)) return
+    const next = [...readIds, titleId]
+    setReadIds(next)
+    maybeCelebrate(readIds, doneIds, next, doneIds)
   }
 
   function toggleRead(titleId) {
@@ -90,6 +104,8 @@ export function App() {
     setResponses({})
     setOpenAct(null)
     setCelebration(null)
+    setPickerOpen(false)
+    setReadingTitle(null)
     setView('teacher')
   }
 
@@ -119,8 +135,19 @@ export function App() {
       </div>
 
       {view === 'teacher' && <TeacherSetup offered={offered} onTogglePath={togglePath} />}
-      {view === 'pick' && <PickPath offered={offered} onChoose={choosePath} />}
-      {view === 'destination' && (
+
+      {view === 'challenges' && (
+        <ChallengeDashboard
+          streak={streak}
+          offered={offered}
+          onPick={() => setPickerOpen(true)}
+          onOpen={() => setView('student')}
+          onNav={() => setView('challenges')}
+        />
+      )}
+
+      {/* Picking a path is the modal now — there's no separate picker screen */}
+      {view === 'student' && (
         <Destination
           path={path}
           readIds={readIds}
@@ -128,10 +155,29 @@ export function App() {
           responses={responses}
           streak={streak}
           onToggleRead={toggleRead}
+          onReadTitle={setReadingTitle}
           onOpenActivity={setOpenAct}
-          onChangePath={() => setView('pick')}
+          onChangePath={() => setPickerOpen(true)}
+          onNav={() => setView('challenges')}
         />
       )}
+
+      {readingTitle && (
+        <TitleReader
+          title={readingTitle}
+          path={path}
+          onLog={() => logFromReader(readingTitle.id)}
+          onClose={() => setReadingTitle(null)}
+        />
+      )}
+
+      <PathPickerModal
+        open={pickerOpen}
+        offered={offered}
+        chosenPathId={chosenPathId}
+        onChoose={choosePath}
+        onClose={() => setPickerOpen(false)}
+      />
 
       <ActivityModal
         activity={openAct}

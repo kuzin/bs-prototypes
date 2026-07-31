@@ -3,7 +3,8 @@ import { Toggle } from '@components/Toggle/Toggle'
 import { SectionCard } from '@components/SectionCard/SectionCard'
 import { Stepper } from '@components/Stepper/Stepper'
 import { Tooltip } from '@components/Primitives/Primitives'
-import { CoverPreviewRow, BadgePreviewRow } from './common'
+import { CoverTile, BadgeDisc } from './common'
+import { badgesForPath } from '../data'
 import { DESTINATION, DESTINATION_CATALOG, PATHS } from '../data'
 
 const SETUP_STEPS = [
@@ -11,12 +12,17 @@ const SETUP_STEPS = [
   { id: 'paths', name: 'Paths' },
 ]
 
-// One offerable path — a bold illustrated card. The Offered switch lives in
-// the header, next to the path name. Cover previews hint at the titles (name
-// on hover, not a caption); activities show name + a short description
-// (there's no cover art to carry their identity); badges preview what a
-// student can earn on this path, in their default locked state.
+// One offerable path — a bold illustrated card. The Offered switch lives in the
+// header, next to the path name. The teacher is vetting what they're assigning,
+// so this shows the FULL shelf (every title, captioned) and every badge with its
+// name and requirement — no previews or "+N more" folds.
 function PathOffer({ path, on, disabled, onToggle }) {
+  // Shown fully earned — this is what the path offers, not a student's progress.
+  const badges = badgesForPath(
+    path,
+    path.titles.map((t) => t.id),
+    path.activities.map((a) => a.id),
+  )
   return (
     <div
       className={`pyp-pathoffer${on ? ' is-on' : ' is-off'}`}
@@ -36,29 +42,57 @@ function PathOffer({ path, on, disabled, onToggle }) {
         </Tooltip>
       </div>
       <div className="pyp-pathoffer-body">
-        <div className="pyp-pathoffer-sec">
-          <span className="pyp-pathoffer-seclabel">Books</span>
-          <CoverPreviewRow path={path} className="pyp-pathoffer-covers" />
-        </div>
-        <div className="pyp-pathoffer-sec">
-          <span className="pyp-pathoffer-seclabel">Activities</span>
-          <div className="pyp-pathoffer-activities">
-            {path.activities.map((a) => (
-              <div key={a.id} className="pyp-pathoffer-activity">
-                <span className="pyp-pathoffer-activity-icon">
-                  <Icon name={a.icon} size={14} />
-                </span>
-                <span className="pyp-pathoffer-activity-text">
-                  <span className="pyp-pathoffer-activity-name">{a.name}</span>
-                  <span className="pyp-pathoffer-activity-desc">{a.short}</span>
-                </span>
+        <section className="pyp-pathoffer-sec">
+          <span className="pyp-pathoffer-seclabel">
+            Books <em>{path.titles.length} titles</em>
+          </span>
+          <div className="pyp-pathoffer-books">
+            {path.titles.map((t) => (
+              <div key={t.id} className="pyp-pathoffer-book">
+                <CoverTile cover={t.cover} label={t.title} path={path} />
+                <span className="pyp-pathoffer-book-title">{t.title}</span>
+                <span className="pyp-pathoffer-book-meta">{t.level}</span>
               </div>
             ))}
           </div>
-        </div>
-        <div className="pyp-pathoffer-sec">
-          <span className="pyp-pathoffer-seclabel">Badges</span>
-          <BadgePreviewRow path={path} />
+        </section>
+
+        <div className="pyp-pathoffer-split">
+          <section className="pyp-pathoffer-sec">
+            <span className="pyp-pathoffer-seclabel">
+              Activities <em>{path.activities.length}</em>
+            </span>
+            <div className="pyp-pathoffer-activities">
+              {path.activities.map((a) => (
+                <div key={a.id} className="pyp-pathoffer-activity">
+                  <span className="pyp-pathoffer-activity-icon">
+                    <Icon name={a.icon} size={14} />
+                  </span>
+                  <span className="pyp-pathoffer-activity-text">
+                    <span className="pyp-pathoffer-activity-name">{a.name}</span>
+                    <span className="pyp-pathoffer-activity-desc">{a.short}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="pyp-pathoffer-sec">
+            <span className="pyp-pathoffer-seclabel">
+              Badges <em>{badges.length} earnable</em>
+            </span>
+            <div className="pyp-pathoffer-badges">
+              {badges.map((b) => (
+                <div key={b.id} className="pyp-pathoffer-badge">
+                  <BadgeDisc badge={b} size={40} showLabel={false} showStatus={false} />
+                  <span className="pyp-pathoffer-badge-text">
+                    <span className="pyp-pathoffer-badge-name">{b.name}</span>
+                    <span className="pyp-pathoffer-badge-sub">{b.sub}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          </section>
         </div>
       </div>
     </div>

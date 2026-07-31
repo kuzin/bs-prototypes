@@ -156,6 +156,20 @@
   height: 100%;
   width: 100%;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  padding: 26px;
+}
+/* the cover is stretched to the full sheet here — scale its type to match */
+.lfr-coverwrap .bkcov-title,
+.lfr-coverwrap .bkcov-magname {
+  font-size: 34px;
+}
+.lfr-coverwrap .bkcov-author,
+.lfr-coverwrap .bkcov-issue {
+  font-size: 17px;
+}
+.lfr-coverwrap .bkcov-kicker {
+  font-size: 12px;
+  padding: 3px 10px;
 }
 
 /* text page */

@@ -42,7 +42,7 @@ export const PROTOTYPES = [
   {
     id: 'admin-dashboard',
     name: 'Admin Dashboard v2',
-    section: 'Prototypes',
+    section: 'Completed',
     href: '/bs-prototypes/admin-dashboard/',
     accent: '#1A6DD5',
     description: 'Editable dashboard with drag-and-drop widgets.',
@@ -82,7 +82,7 @@ export const PROTOTYPES = [
   {
     id: 'footers',
     name: 'Unified Joyful Footer',
-    section: 'Experiments',
+    section: 'Completed',
     href: '/bs-prototypes/footers/',
     accent: '#7C5CFA',
     description: 'Joyful footer across Comics Plus, MyDot, Beanstack, RMI.',
@@ -114,16 +114,17 @@ export const PROTOTYPES = [
   },
   {
     id: 'logging-flow',
-    name: 'Logging Flow',
-    section: 'Experiments',
+    name: 'Scholastic Logging Flow',
+    section: 'Prototypes',
     href: '/bs-prototypes/logging-flow/',
     accent: '#1A6DD5',
-    description: 'Beanstack combined reading-log flow — search, log minutes/pages, timer, review.',
+    description:
+      'Beanstack combined reading-log flow, built around a Scholastic magazines reading list — search, log minutes/pages, timer, review.',
   },
   {
     id: 'pick-your-path',
     name: 'Pick Your Path',
-    section: 'Experiments',
+    section: 'Prototypes',
     href: '/bs-prototypes/pick-your-path/',
     accent: '#0F766E',
     description:
