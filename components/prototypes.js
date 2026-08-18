@@ -130,4 +130,13 @@ export const PROTOTYPES = [
     description:
       'Teacher sets a learning Destination; students pick a high-interest Path to build background knowledge and earn badges.',
   },
+  {
+    id: 'btwb',
+    name: 'Book Talks with Benny',
+    section: 'Prototypes',
+    href: '/bs-prototypes/btwb/',
+    accent: '#0E7490',
+    description:
+      'Site-wide BTWB setting — start a book talk on every completed book, on by default.',
+  },
 ]

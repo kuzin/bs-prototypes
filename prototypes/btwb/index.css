@@ -1,0 +1,948 @@
+/* Book Talks with Benny — site-wide completion setting + comprehension talks.
+   The admin chrome comes from @components/AppShell (MainRail + Setup sidebar),
+   the challenge step from the Challenge Creator, and the chat bubbles from the
+   Book Talk Badges prototype. Everything below is namespaced `bw-*`. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--c-slate-100);
+  color: var(--c-slate-800);
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+p {
+  margin: 0;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* The dev toolbar sits above a full-height content area that scrolls itself, so
+   the admin chrome can stay put the way it does in production. Flex rather than a
+   magic toolbar offset — the toolbar wraps to two rows on narrow screens.
+   PrototypeNav is fixed and 48px tall. */
+.bw-root {
+  /* One content width for every view. Panels never size to their contents, so a
+     screen doesn't grow when extra options appear, and the three views stay
+     consistent with each other. */
+  --bw-page-w: 880px;
+
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 48px);
+  overflow: hidden;
+}
+/* Settings renders an AppShell; the other views render a plain page. Both take
+   the remaining height and own their scrolling. */
+.bw-shell.app-shell {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+.bw-shell .app-shell-content {
+  overflow-y: auto;
+}
+/* The scrolling element must be full-width, not the centered column — otherwise
+   the scrollbar lands in the middle of the screen at the column's edge. */
+.bw-root > .bw-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ─── Toolbar ───────────────────────────────────────────────────────────── */
+.bw-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 10px 18px;
+  background: linear-gradient(95deg, #0c3a39 0%, #115e5a 100%);
+  color: #fff;
+  flex: none;
+  z-index: 40;
+}
+.bw-toolbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+  min-width: 0;
+}
+.bw-toolbar-benny {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  padding: 2px;
+  object-fit: contain;
+}
+.bw-toolbar-titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.bw-toolbar-title {
+  font-weight: 800;
+  font-size: 15px;
+  white-space: nowrap;
+}
+.bw-toolbar-site {
+  font-size: 12px;
+  color: #9fd8d3;
+  white-space: nowrap;
+}
+.bw-toolbar-views {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 4px;
+  border-radius: 12px;
+  /* Last resort on very narrow screens: scroll the strip rather than let it push
+     the brand around or spill off the page. */
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.bw-toolbar-views::-webkit-scrollbar {
+  display: none;
+}
+.bw-view-label-short {
+  display: none;
+}
+.bw-toolbar-view {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 0;
+  background: transparent;
+  color: #cdeae7;
+  font-size: 13.5px;
+  font-weight: 700;
+  padding: 7px 13px;
+  border-radius: 9px;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.bw-toolbar-view:hover {
+  color: #fff;
+}
+.bw-toolbar-view.is-active {
+  background: #fff;
+  color: #0c3a39;
+}
+
+/* ─── Page scaffold ─────────────────────────────────────────────────────── */
+.bw-page {
+  width: 100%;
+  max-width: var(--bw-page-w);
+  margin: 0 auto;
+  padding: 36px 24px 40px;
+}
+.bw-page-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+/* Demo affordance in the page header — deliberately quiet so it doesn't read as
+   a real setting. */
+.bw-state-swap {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px dashed var(--c-slate-300, #cbd5e1);
+  background: #fff;
+  color: var(--c-text-subtle);
+  font-size: 12.5px;
+  font-weight: 700;
+  padding: 7px 13px;
+  border-radius: 999px;
+  transition: all 0.14s;
+}
+.bw-state-swap:hover {
+  border-color: #0e7490;
+  color: #0e7490;
+}
+.bw-h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--c-text);
+  letter-spacing: -0.01em;
+}
+.bw-sub {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+  font-size: 14px;
+  color: var(--c-text-subtle);
+}
+
+.bw-panel {
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.bw-panel.is-dimmed {
+  opacity: 0.62;
+}
+/* A panel whose only content is setting rows: .setting-row already carries 13px
+   of its own vertical padding, so trim the panel's to keep the total at 20px
+   instead of stacking the two. */
+.bw-panel--rows {
+  padding-top: 7px;
+  padding-bottom: 7px;
+}
+/* …unless something follows the rows (a banner), which needs real breathing room
+   under it rather than the row's own 13px. */
+.bw-panel--rows:has(.bnr) {
+  padding-bottom: 18px;
+}
+.bw-panel-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-text);
+  margin-bottom: 6px;
+}
+.bw-panel-banner {
+  margin-top: 14px;
+}
+.bw-inline-strong {
+  font-weight: 800;
+  color: var(--c-text);
+}
+/* Read-only right-hand control on the per-challenge row (no toggle). */
+.bw-row-note {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text-subtle);
+  white-space: nowrap;
+}
+.bw-row-label-new {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ─── Conversation-type cards ───────────────────────────────────────────── */
+.bw-subsetting {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--c-border);
+}
+/* Nested inside the setting list, directly under "On book completions": an
+   indented tinted block, so it reads as that row's configuration rather than as
+   a sibling setting. */
+.bw-subsetting--nested {
+  margin: 6px 0 18px;
+  padding: 20px;
+  /* Reads as recessed into the panel rather than stacked on top of it: a fill a
+     shade darker than the white panel, a hairline edge, and an inner shadow at
+     the top. The white option cards inside then sit "above" the recess. */
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+  background: var(--c-slate-50, #f8fafc);
+  box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+.bw-subsetting--nested > .bw-subsetting-title {
+  margin-bottom: 14px;
+}
+.bw-subsetting-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--c-text);
+  margin-bottom: 12px;
+}
+.bw-kind-cards {
+  display: grid;
+  /* Fixed two-up rather than auto-fit: a two-option and a three-option row then
+     have the same card width instead of resizing to fit the count. */
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.bw-kind-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  text-align: left;
+  padding: 14px 15px;
+  border-radius: 13px;
+  border: 1.5px solid var(--c-border);
+  background: #fff;
+  /* Clip the selected-corner triangle to the card's rounded corner. */
+  overflow: hidden;
+  transition: all 0.15s;
+}
+.bw-kind-card:hover {
+  border-color: var(--kind);
+}
+.bw-kind-card.is-active {
+  border-color: var(--kind);
+  background: color-mix(in srgb, var(--kind) 7%, #fff);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--kind) 14%, transparent);
+}
+/* Selected state: a filled triangle in the top-right corner carrying the check,
+   rather than a check floating in the text flow. */
+.bw-kind-card.is-active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  background: var(--kind);
+  clip-path: polygon(100% 0, 100% 100%, 0 0);
+}
+.bw-kind-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 24px;
+  color: var(--kind);
+}
+.bw-kind-label {
+  font-size: 14.5px;
+  font-weight: 800;
+}
+.bw-kind-check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 1;
+  color: #fff;
+}
+.bw-kind-blurb {
+  font-size: 13px;
+  color: var(--c-text-subtle);
+  line-height: 1.5;
+}
+
+/* ─── Conversation Focus ────────────────────────────────────────────────── */
+.bw-focus {
+  display: flex;
+  flex-direction: column;
+}
+.bw-focus-block {
+  margin-top: 18px;
+  padding-top: 18px;
+  border-top: 1px dashed var(--c-border);
+}
+.bw-focus-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.bw-focus-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 15px;
+  border-radius: 999px;
+  border: 1.5px solid var(--c-border);
+  background: #fff;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text-subtle);
+  transition: all 0.14s;
+}
+/* `--chip` lets a chip row carry its own accent (the Talk view's type chips take
+   each talk kind's color); Conversation Focus chips fall back to indigo. */
+.bw-focus-chip {
+  --chip: #4f46e5;
+}
+.bw-focus-chip:hover {
+  border-color: color-mix(in srgb, var(--chip) 45%, #fff);
+  color: var(--c-text);
+}
+.bw-focus-chip.is-active {
+  border-color: var(--chip);
+  background: color-mix(in srgb, var(--chip) 9%, #fff);
+  color: color-mix(in srgb, var(--chip) 80%, #000);
+}
+
+/* A labeled row of chips — "Talk type", "Conversation Focus". */
+.bw-pick {
+  margin-bottom: 16px;
+}
+.bw-pick-label {
+  display: block;
+  margin-bottom: 9px;
+  font-size: 12.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-subtle);
+}
+
+/* "Instead of asking… Benny asks…" — the whole argument for Conversation Focus,
+   so it gets real weight rather than a footnote. */
+.bw-weave {
+  margin-top: 14px;
+  border: 1px solid var(--c-border);
+  border-radius: 13px;
+  overflow: hidden;
+}
+.bw-weave-row {
+  padding: 13px 16px;
+}
+.bw-weave-row--benny {
+  background: #f7f8ff;
+}
+.bw-weave-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--c-text-subtle);
+  margin-bottom: 6px;
+}
+.bw-weave-row--benny .bw-weave-tag {
+  color: #4f46e5;
+}
+.bw-weave-benny {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  object-fit: contain;
+}
+/* Sample questions — quoted and italic so they read as illustrations. */
+.bw-weave-examples {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.bw-weave-examples li {
+  position: relative;
+  padding-left: 15px;
+  font-size: 14px;
+  line-height: 1.55;
+  font-style: italic;
+  color: var(--c-text);
+}
+.bw-weave-examples li::before {
+  content: '“';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  font-style: normal;
+  font-weight: 800;
+  color: #a5b4fc;
+}
+.bw-weave-examples li::after {
+  content: '”';
+  font-style: normal;
+  font-weight: 800;
+  color: #a5b4fc;
+}
+
+/* ─── Upsell (BTWB not on the plan) ───────────────────────────────────── */
+.bw-upsell {
+  background: linear-gradient(160deg, #f2fbfc 0%, #fff 55%);
+  border: 1px solid #b8e4ea;
+  border-radius: 18px;
+  padding: 26px 28px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.bw-upsell-body {
+  min-width: 0;
+}
+.bw-upsell-title {
+  font-size: 23px;
+  font-weight: 800;
+  color: var(--c-text);
+  letter-spacing: -0.01em;
+}
+.bw-upsell-lead {
+  margin-top: 7px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--c-text-subtle);
+  max-width: 62ch;
+}
+.bw-upsell-list {
+  list-style: none;
+  margin: 18px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+.bw-upsell-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 13px;
+  border-left: 3px solid var(--kind);
+}
+.bw-upsell-kind {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--kind);
+}
+.bw-upsell-kind-blurb {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--c-text-subtle);
+}
+.bw-upsell-actions {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+}
+.bw-upsell-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #0e7490;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  padding: 11px 20px;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+.bw-upsell-cta:hover {
+  background: #0c6076;
+}
+.bw-upsell-link {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0e7490;
+  text-decoration: none;
+}
+.bw-upsell-link:hover {
+  text-decoration: underline;
+}
+
+/* ─── Reader log card ──────────────────────────────────────────────────── */
+.bw-log {
+  display: flex;
+  gap: 20px;
+  /* Center the text block against the cover rather than top-aligning it — the
+     text is shorter than the cover, so flex-start leaves it stranded high. */
+  align-items: center;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+.bw-log-cover {
+  width: 104px;
+  height: 156px;
+  object-fit: cover;
+  border-radius: 8px;
+  background: var(--c-slate-100);
+  flex: none;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
+}
+.bw-log-body {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.bw-log-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+.bw-log-author {
+  font-size: 14px;
+  color: var(--c-text-subtle);
+}
+.bw-log-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--c-text-subtle);
+  margin-bottom: 12px;
+}
+.bw-log-state {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ─── The talk modal ──────────────────────────────────────────────────── */
+/* The shared center Modal is 520px wide and clips its content (overflow:
+   hidden), so the panel must NOT set a wider width of its own — widen the modal
+   instead and let the panel fill it. */
+.modal--center:has(.bw-talk) {
+  width: min(560px, calc(100vw - 32px));
+}
+.bw-talk {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: min(640px, calc(100vh - 64px));
+  background: #fff;
+  overflow: hidden;
+}
+.bw-talk-head {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 13px 16px;
+  background: var(--kind);
+  color: #fff;
+  flex: none;
+}
+.bw-talk-benny {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  padding: 2px;
+  object-fit: contain;
+}
+.bw-talk-titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  min-width: 0;
+}
+.bw-talk-title {
+  font-size: 15px;
+  font-weight: 800;
+}
+.bw-talk-sub {
+  font-size: 12.5px;
+  opacity: 0.9;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.bw-talk-close {
+  margin-left: auto;
+  border: 0;
+  background: rgba(255, 255, 255, 0.16);
+  color: #fff;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+.bw-talk-close:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+.bw-talk-book {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 16px;
+  border-bottom: 1px solid var(--c-border);
+  font-size: 12.5px;
+  color: var(--c-text-subtle);
+  flex: none;
+}
+.bw-talk-cover {
+  width: 24px;
+  height: 34px;
+  object-fit: cover;
+  border-radius: 3px;
+  background: var(--c-slate-100);
+}
+.bw-talk-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 18px 16px;
+  background: var(--c-slate-50, #f8fafc);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bw-talk-done {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--kind);
+  flex-wrap: wrap;
+}
+.bw-talk-doneBtn {
+  margin-left: auto;
+  border: 0;
+  background: var(--kind);
+  color: #fff;
+  font-size: 13.5px;
+  font-weight: 800;
+  padding: 8px 18px;
+  border-radius: 9px;
+}
+.bw-talk-doneBtn:hover {
+  filter: brightness(0.92);
+}
+
+/* ─── Talk modal extras (tools + emoji tray) ──────────────────────────── */
+/* The header now carries the voice picker, mute, and progress dots, so the tools
+   cluster right and the titles get to shrink. */
+.bw-talk-tools {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-left: auto;
+  flex: none;
+}
+.bw-talk-tools .bt-chat-voice,
+.bw-talk-tools .bt-tts-toggle {
+  flex: none;
+}
+.bw-talk-emojis {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 8px 2px 10px;
+}
+.bw-talk-emoji {
+  border: 1px solid var(--c-border);
+  background: #fff;
+  border-radius: 9px;
+  font-size: 17px;
+  line-height: 1;
+  padding: 6px 8px;
+  transition: all 0.12s;
+}
+.bw-talk-emoji:hover {
+  border-color: var(--kind, #4f46e5);
+  transform: translateY(-1px);
+}
+/* Mid-talk progress, shown next to the Resume button. */
+.bw-log-resume {
+  font-size: 13px;
+  color: var(--c-text-subtle);
+  font-style: italic;
+}
+
+/* ─── Session modal tweaks (scoped to .bw-sm2, SFR's CSS untouched) ───── */
+/* SFR's .sm2-book-cover is `align-self: stretch`, so it distorts as detail rows
+   are added — pin it to a book's proportions and top-align it instead. */
+.bw-sm2 .sm2-book-cover {
+  align-self: flex-start;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+}
+.bw-sm2-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Benny's summary reuses SFR's tinted prompt block, with his avatar for
+   authorship. */
+.bw-sm2-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.bw-sm2-summary-benny {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #fff;
+  padding: 1px;
+  object-fit: contain;
+  flex: none;
+}
+.bw-sm2-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  color: #16a97a;
+}
+.bw-sm2-status--unfinished {
+  color: #b45309;
+}
+
+/* ─── Session list (educator side) ────────────────────────────────────── */
+.bw-session-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.bw-session-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 14px 18px;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  transition: all 0.14s;
+}
+.bw-session-card:hover {
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+  transform: translateY(-1px);
+}
+.bw-session-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+  flex: 1;
+}
+.bw-session-card-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.bw-session-card-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+.bw-session-card-book {
+  font-size: 13.5px;
+  color: var(--c-text-subtle);
+}
+.bw-session-card-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12.5px;
+  color: var(--c-text-subtle);
+  opacity: 0.85;
+}
+.bw-session-card-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: none;
+}
+.bw-session-card-flags {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #b91c1c;
+  background: #fef2f2;
+  padding: 4px 9px;
+  border-radius: 999px;
+}
+.bw-session-card-flags--pos {
+  color: #16a97a;
+  background: #f0fdf4;
+}
+.bw-session-card-chev {
+  color: var(--c-slate-300, #cbd5e1);
+}
+
+/* ─── Narrow screens ──────────────────────────────────────────────────── */
+
+/* Swap the long view labels for short ones before the strip has to scroll. */
+@media (max-width: 900px) {
+  .bw-view-label {
+    display: none;
+  }
+  .bw-view-label-short {
+    display: inline;
+  }
+}
+
+/* Tablet-ish: the tab strip drops to its own full-width row under the brand. */
+@media (max-width: 760px) {
+  .bw-toolbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+  .bw-toolbar-views {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .bw-toolbar-view {
+    flex: 1 0 auto;
+    justify-content: center;
+  }
+}
+
+/* Phone: shed the strapline and tighten the brand so the row stays one line. */
+@media (max-width: 560px) {
+  .bw-toolbar-site {
+    display: none;
+  }
+  .bw-toolbar-benny {
+    width: 28px;
+    height: 28px;
+  }
+  .bw-toolbar-title {
+    font-size: 14px;
+  }
+  .bw-toolbar-view {
+    font-size: 12.5px;
+    padding: 7px 10px;
+  }
+  /* Wrap rather than scroll — hiding a view off the edge is worse than a
+     slightly taller toolbar. */
+  .bw-toolbar-views {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+  .bw-page {
+    padding: 24px 16px 32px;
+  }
+  .bw-h1 {
+    font-size: 22px;
+  }
+  .bw-log {
+    flex-direction: column;
+  }
+  .bw-kind-cards {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .bw-upsell {
+    padding: 22px 20px;
+  }
+}
