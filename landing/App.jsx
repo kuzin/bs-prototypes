@@ -41,6 +41,7 @@ const ICON_NAMES = {
   books: 'book-2',
   'logging-flow': 'reading-log',
   'pick-your-path': 'route',
+  btwb: 'message-chatbot',
 }
 
 const ICONS = Object.fromEntries(
