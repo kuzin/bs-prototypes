@@ -91,6 +91,10 @@
 }
 
 .tabs--pill .tab {
+  /* flex + gap so a `count` badge doesn't crowd the label (as in .tabs--underline) */
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   border: none;
   background: transparent;
   font: inherit;

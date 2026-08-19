@@ -172,29 +172,45 @@ body,
 
 /* Page head */
 .pyp-page-head {
-  margin-bottom: 18px;
+  margin-bottom: 24px;
 }
 .pyp-page-title {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 800;
+  letter-spacing: -0.015em;
   color: var(--pyp-ink);
-  line-height: 1.2;
+  line-height: 1.15;
 }
 .pyp-page-sub {
-  margin-top: 6px;
-  font-size: 15px;
+  margin-top: 10px;
+  font-size: 15.5px;
+  line-height: 1.55;
   color: var(--pyp-muted);
-  max-width: 60ch;
+  max-width: 62ch;
 }
 
-/* Teacher panels (SectionCard) */
+/* Teacher panels (SectionCard) — one spacing rhythm for every panel:
+   title → 8px → sub-line → 20px → content. The shared card's own head margin is
+   sized for a title with no sub-line under it. */
 .pyp-teacher-body .section-card {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
+}
+.pyp-teacher-body .section-card--plain {
+  padding: 22px 24px 24px;
+}
+.pyp-teacher-body .section-card--plain .section-card-head {
+  margin-bottom: 8px;
+}
+.pyp-teacher-body .section-card-title {
+  font-size: 18px;
+  letter-spacing: -0.012em;
 }
 .pyp-panel-sub {
-  font-size: 13.5px;
+  margin: 0 0 20px;
+  font-size: 14px;
+  line-height: 1.55;
   color: var(--pyp-muted);
-  margin: -6px 0 16px;
+  max-width: 70ch;
 }
 
 /* Destination catalog grid */
@@ -207,12 +223,14 @@ body,
   position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 16px;
+  gap: 13px;
+  padding: 17px 22px 17px 18px;
   border: 1.5px solid var(--pyp-line);
   border-radius: 14px;
   background: #fff;
   text-align: left;
+  /* clips the selected-corner triangle to the card's rounded corner */
+  overflow: hidden;
   transition: all 0.14s ease;
 }
 .pyp-dest-card:not(.is-disabled):hover {
@@ -222,7 +240,26 @@ body,
 .pyp-dest-card.is-selected {
   border-color: #0f766e;
   background: #f0fdfa;
-  box-shadow: 0 4px 14px rgba(15, 118, 110, 0.12);
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.14);
+}
+/* Selected: a filled triangle in the top-right corner carrying the check, rather
+   than a check floating in the card's flow (same as `btwb`'s kind cards). */
+.pyp-dest-card.is-selected::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 34px;
+  height: 34px;
+  background: #0f766e;
+  clip-path: polygon(100% 0, 100% 100%, 0 0);
+}
+.pyp-dest-check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 1;
+  color: #fff;
 }
 .pyp-dest-card.is-disabled {
   opacity: 0.6;
@@ -244,26 +281,21 @@ body,
 .pyp-dest-text {
   display: flex;
   flex-direction: column;
+  gap: 3px;
   min-width: 0;
 }
 .pyp-dest-subject {
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.07em;
   color: var(--pyp-muted);
 }
 .pyp-dest-title {
-  font-size: 15px;
+  font-size: 16.5px;
   font-weight: 800;
   color: var(--pyp-ink);
   line-height: 1.2;
-}
-.pyp-dest-check {
-  position: absolute;
-  top: 50%;
-  right: 10px;
-  transform: translateY(-50%);
 }
 
 /* Path picker (teacher) — bold illustrated cards, grid */
@@ -273,50 +305,158 @@ body,
   gap: 16px;
 }
 .pyp-pathoffer {
+  position: relative;
   background: #fff;
   border: 1px solid var(--pyp-line);
   border-radius: 16px;
-  transition: border-color 0.14s ease;
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.16s ease,
+    background 0.14s ease;
 }
 .pyp-pathoffer.is-on {
-  border-color: color-mix(in srgb, var(--path-color) 45%, var(--pyp-line));
+  border-color: color-mix(in srgb, var(--path-color) 40%, var(--pyp-line));
 }
-.pyp-pathoffer-band {
-  position: relative;
-  min-height: 130px;
-  padding: 16px 20px;
-  border-radius: 16px 16px 0 0;
-  color: #fff;
+/* Not offered reads as a draft: dashed edge, cooler ground */
+.pyp-pathoffer.is-off {
+  border-style: dashed;
+  background: #fbfcfd;
+}
+.pyp-pathoffer.is-open {
+  box-shadow: 0 8px 22px rgba(15, 23, 42, 0.06);
+}
+/* Header row — the path's art shrinks to a thumbnail so its name, tagline, and
+   counts can be dark type on white. The full-bleed illustrated band that used to
+   carry this text read poorly at a glance. */
+.pyp-pathoffer-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  background-size: cover;
-  background-position: center;
-  transition: filter 0.14s ease;
+  gap: 14px;
+  padding: 15px 18px;
+  border-radius: 16px 16px 0 0;
+  transition: background 0.14s ease;
 }
-.pyp-pathoffer.is-off .pyp-pathoffer-band {
-  filter: grayscale(0.35) brightness(0.92);
+.pyp-pathoffer-row:has(.pyp-pathoffer-disclose:hover) {
+  background: color-mix(in srgb, var(--path-color) 4%, transparent);
+}
+/* An open block runs long, so its header sticks under the preview bar — the path
+   you're reading stays named while you scroll its shelf. The shared SectionCard
+   sets `overflow: hidden` (to clip its own corners), which would make it the
+   sticky scroll container and kill this; nothing inside this panel needs clipping,
+   so it opts out. */
+.pyp-teacher .pyp-panel {
+  overflow: visible;
+}
+.pyp-pathoffer.is-open .pyp-pathoffer-row {
+  position: sticky;
+  top: 47px;
+  z-index: 2;
+  background: #fff;
+  border-bottom: 1px solid var(--pyp-line);
+}
+/* the whole left side discloses the body — only the Offered switch doesn't */
+.pyp-pathoffer-disclose {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  text-align: left;
+}
+.pyp-pathoffer-chev {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  color: var(--pyp-muted);
+  transition:
+    transform 0.16s ease,
+    background 0.14s ease,
+    color 0.14s ease;
+}
+.pyp-pathoffer.is-open .pyp-pathoffer-chev {
+  transform: rotate(180deg);
+  background: color-mix(in srgb, var(--path-color) 13%, #fff);
+  color: var(--path-color);
+}
+.pyp-pathoffer-disclose:focus-visible {
+  outline: 2px solid var(--path-color);
+  outline-offset: 4px;
+  border-radius: 12px;
+}
+.pyp-pathoffer-disclose:hover .pyp-pathoffer-chev {
+  background: color-mix(in srgb, var(--path-color) 16%, #fff);
+  color: var(--path-color);
+}
+/* Icon tile in the path's color — same shape language as the destination cards
+   in step 1 */
+.pyp-pathoffer-thumb {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--path-color) 13%, #fff);
+  color: var(--path-color);
+  transition:
+    background 0.14s ease,
+    color 0.14s ease;
+}
+.pyp-pathoffer.is-off .pyp-pathoffer-thumb {
+  background: #f1f5f9;
+  color: var(--pyp-muted);
+}
+.pyp-pathoffer-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
 }
 .pyp-pathoffer-name {
-  flex: 1 1 auto;
-  font-size: 19px;
+  font-size: 17px;
   font-weight: 800;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
-  min-width: 0;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  color: var(--pyp-ink);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-/* Frosted pill so the toggle stays legible over any part of the illustration */
+.pyp-pathoffer-tag {
+  font-size: 13.5px;
+  line-height: 1.4;
+  color: #475569;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .pyp-pathoffer-toggle {
   flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  padding: 5px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+/* label first, switch last */
+.pyp-pathoffer-toggle .tgl {
+  flex-direction: row-reverse;
+}
+.pyp-pathoffer-toggle .tgl-label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--pyp-muted);
+}
+.pyp-pathoffer.is-on .pyp-pathoffer-toggle .tgl-label {
+  color: var(--path-color);
+}
+/* the switch takes the path's color too, so a row reads as one object (the
+   shared Toggle's own on-state is the system blue) */
+.pyp-pathoffer-toggle .tgl-input:checked + .tgl-track,
+.pyp-pathoffer-toggle .tgl:hover .tgl-input:checked + .tgl-track {
+  background: var(--path-color);
 }
 .pyp-pathoffer-body {
   display: flex;
@@ -324,90 +464,11 @@ body,
   gap: 22px;
   padding: 20px 22px 22px;
 }
-.pyp-pathoffer-sec {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 0;
+/* the class's own display would otherwise beat the UA's [hidden] rule, so the
+   collapsed body has to be hidden explicitly */
+.pyp-pathoffer-body[hidden] {
+  display: none;
 }
-.pyp-pathoffer-seclabel {
-  display: flex;
-  align-items: baseline;
-  gap: 7px;
-  margin-bottom: 11px;
-  padding-bottom: 7px;
-  border-bottom: 1px solid var(--pyp-line);
-  font-size: 10.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--pyp-muted);
-}
-.pyp-pathoffer-seclabel em {
-  font-style: normal;
-  letter-spacing: 0;
-  text-transform: none;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--path-color);
-}
-.pyp-pathoffer-covers,
-.pyp-pathoffer-activities,
-.pyp-badgepreview {
-  transition: opacity 0.14s ease;
-}
-.pyp-pathoffer.is-off .pyp-pathoffer-covers,
-.pyp-pathoffer.is-off .pyp-pathoffer-activities,
-.pyp-pathoffer.is-off .pyp-badgepreview {
-  opacity: 0.45;
-}
-.pyp-pathoffer-activities {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.pyp-pathoffer-activity {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-}
-.pyp-pathoffer-activity-icon {
-  flex: 0 0 auto;
-  width: 24px;
-  height: 24px;
-  border-radius: 7px;
-  display: grid;
-  place-items: center;
-  margin-top: 1px;
-  background: color-mix(in srgb, var(--path-color) 12%, #fff);
-  color: var(--path-color);
-}
-.pyp-pathoffer-activity-text {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-}
-.pyp-pathoffer-activity-name {
-  font-size: 12.5px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-}
-.pyp-pathoffer-activity-desc {
-  font-size: 11.5px;
-  color: var(--pyp-muted);
-  line-height: 1.35;
-}
-.pyp-badgepreview {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.pyp-badgepreview-item {
-  cursor: default;
-}
-
-/* Assign bar */
 /* ─── Reader chrome (student) ──────────────────────────────────────────── */
 .pyp-reader {
   min-height: 100%;
@@ -663,8 +724,8 @@ body,
   transition: border-color 0.14s ease;
 }
 .pyp-title.is-read {
-  background: #f8fafc;
-  border-color: #e2e8f0;
+  background: #f2fbf7;
+  border-color: #b3e6d1;
 }
 .pyp-title-cover {
   flex: 0 0 auto;
@@ -703,13 +764,17 @@ body,
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 12px;
+  padding: 8px 13px;
   border: none;
   border-radius: 9px;
-  background: #ecfdf5;
-  color: #16a97a;
+  background: #12a074;
+  color: #fff;
   font-size: 13px;
   font-weight: 800;
+  box-shadow: 0 1px 2px rgba(9, 122, 88, 0.3);
+}
+.pyp-read-toggle:hover {
+  background: #0e8b64;
 }
 
 /* Cover tile — generated art styled like a physical book: a flatter spine
@@ -745,8 +810,11 @@ body,
   margin: auto;
   width: 44%;
   height: auto;
-  opacity: 0.28;
-  color: #fff;
+  opacity: 0.45;
+  color: var(--cover-ink, #fff);
+}
+.pyp-cover.is-placeholder {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--cover-ink) 30%, #fff);
 }
 .pyp-cover-overlay {
   position: absolute;
@@ -774,12 +842,36 @@ body,
   margin-top: 2px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
-.pyp-cover-check {
+/* Read state — a green wash over the art with a banner across its foot, so a
+   finished title is obvious from across the list. */
+.pyp-cover-read {
   position: absolute;
   z-index: 3;
-  top: 6px;
-  left: 6px;
-  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+  inset: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  /* light enough that the cover art still reads through it */
+  background: linear-gradient(
+    to top,
+    rgba(9, 122, 88, 0.45) 0%,
+    rgba(9, 122, 88, 0.12) 42%,
+    rgba(9, 122, 88, 0) 74%
+  );
+}
+.pyp-cover-read-banner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 5px 0 6px;
+  justify-content: center;
+  background: #0f9c72;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
 }
 
 /* Activities */
@@ -2038,81 +2130,328 @@ body,
   background: color-mix(in srgb, var(--path-color) 86%, #04211e) !important;
 }
 
-/* ─── Teacher path card: full shelf + badge details ───────────────────── */
-
-/* the whole shelf, captioned — the teacher is vetting what they assign */
-.pyp-pathoffer-books {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
-  gap: 14px 12px;
-}
-.pyp-pathoffer-book {
+/* ─── Vocabulary chips ─────────────────────────────────────────────────────
+   The cluster's target words, wherever a title, activity, or path shows which
+   of the four it puts to work. Chips inherit the surface's path accent, so the
+   same component reads on white cards and on the illustrated band alike. */
+.pyp-words {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 5px;
-  min-width: 0;
 }
-.pyp-pathoffer-book-title {
+.pyp-word {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--path-color, #0f766e) 26%, #fff);
+  background: color-mix(in srgb, var(--path-color, #0f766e) 9%, #fff);
+  color: color-mix(in srgb, var(--path-color, #0f766e) 78%, #14312e);
   font-size: 11.5px;
-  font-weight: 700;
-  line-height: 1.3;
-  color: var(--pyp-ink);
-  display: -webkit-box;
-  -webkit-line-clamp: 3;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: help;
 }
-.pyp-pathoffer-book-meta {
-  font-size: 10.5px;
-  font-weight: 700;
-  color: var(--pyp-muted);
+.pyp-words--xs {
+  gap: 4px;
 }
-
-/* activities + badges sit side by side under the shelf */
-.pyp-pathoffer-split {
-  display: grid;
-  grid-template-columns: 1fr 1.15fr;
-  gap: 24px;
-  align-items: start;
+.pyp-words--xs .pyp-word {
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 800;
 }
 
-.pyp-pathoffer-badges {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(184px, 1fr));
-  gap: 8px 14px;
+/* The vocabulary cluster's words, on the teacher's destination cards */
+/* ── Panel tables ───────────────────────────────────────────────────────────
+   Books, Vocabulary, Activities and Badges are all the shared `Table` with the
+   same cell language, so switching tabs swaps the data and not the furniture. */
+.pyp-paneltable {
+  font-size: 13px;
 }
-.pyp-pathoffer-badge {
+.pyp-paneltable .tbl-td {
+  vertical-align: middle;
+  line-height: 1.5;
+  color: #475569;
+}
+/* Column widths per panel — the shared Table sizes columns to content, which
+   squeezes a name column next to a paragraph of prompt text. */
+.pyp-paneltable--books .tbl-th:nth-child(2),
+.pyp-paneltable--books .tbl-th:nth-child(3) {
+  width: 130px;
+}
+.pyp-paneltable--vocabulary .tbl-th:nth-child(1) {
+  width: 140px;
+}
+.pyp-paneltable--vocabulary .tbl-th:nth-child(3) {
+  width: 90px;
+}
+.pyp-paneltable--vocabulary .tbl-th:nth-child(4) {
+  width: 26%;
+}
+.pyp-paneltable--activities .tbl-th:nth-child(1) {
+  width: 25%;
+}
+.pyp-paneltable--activities .tbl-th:nth-child(3) {
+  width: 27%;
+}
+.pyp-paneltable--badges .tbl-th:nth-child(2) {
+  width: 38%;
+}
+.pyp-paneltable--badges .tbl-th:nth-child(3) {
+  width: 130px;
+}
+
+/* an art/icon cell paired with its label */
+.pyp-cell-media {
   display: flex;
   align-items: center;
-  gap: 9px;
+  gap: 11px;
   min-width: 0;
 }
-.pyp-pathoffer-badge .pyp-badge {
-  flex-shrink: 0;
+.pyp-cell-cover {
+  flex: 0 0 auto;
+  width: 34px;
 }
-.pyp-pathoffer-badge-text {
+.pyp-cell-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: color-mix(in srgb, var(--path-color) 12%, #fff);
+  color: var(--path-color);
+}
+.pyp-cell-text {
   display: flex;
   flex-direction: column;
+  gap: 3px;
   min-width: 0;
 }
-.pyp-pathoffer-badge-name {
-  font-size: 12px;
+.pyp-cell-name {
+  font-size: 13.5px;
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 1.3;
   color: var(--pyp-ink);
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
 }
-.pyp-pathoffer-badge-sub {
-  font-size: 10.5px;
-  font-weight: 700;
+.pyp-cell-word {
+  font-weight: 900;
+}
+.pyp-cell-sub {
+  font-size: 12px;
   color: var(--pyp-muted);
 }
+.pyp-cell-none {
+  color: var(--pyp-muted);
+  font-style: italic;
+}
+.pyp-cell-kind {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--path-color) 10%, #fff);
+  color: color-mix(in srgb, var(--path-color) 80%, #14312e);
+  font-size: 11.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
 
-@media (max-width: 900px) {
-  .pyp-pathoffer-split {
-    grid-template-columns: 1fr;
-  }
+/* the panel switcher sits just under the (sticky) header row */
+.pyp-pathoffer-tabs {
+  margin-bottom: 6px;
+}
+.pyp-pathoffer-tabs .tab {
+  font-size: 14.5px;
+  font-weight: 700;
+}
+.pyp-pathoffer-tabs .tab-count {
+  font-size: 12.5px;
+}
+
+/* Target words on a title row */
+.pyp-title-words {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 7px;
+}
+.pyp-title-words-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--pyp-muted);
+}
+.pyp-actcard-words,
+.pyp-activity-words {
+  margin-top: 2px;
+}
+.pyp-pickmodal-words {
+  margin-top: 10px;
+}
+
+/* The cluster itself, on the student's path band — sits over artwork, so the
+   chips go translucent-white instead of taking the path accent. */
+.pyp-bandwords {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+  max-width: 62ch;
+}
+.pyp-bandwords-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.85);
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  margin-right: 2px;
+}
+.pyp-bandword {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(2px);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 800;
+  cursor: help;
+}
+
+/* ─── Reader: highlighted words + glossary page ────────────────────────────
+   A text page's "type" is grey bars; the target word is the one thing actually
+   set as type on it, so it reads like a bolded glossary term mid-paragraph. */
+.pyp-tr-wordline {
+  display: flex !important;
+  align-items: center;
+  gap: 7px;
+  height: auto !important;
+  background: none !important;
+  margin-bottom: 9px;
+}
+.pyp-tr-wordline b {
+  flex: 1;
+  height: 9px;
+  border-radius: 3px;
+  background: #e3e0d6;
+}
+.pyp-tr-wordline em {
+  flex: 0 0 auto;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--path-color) 15%, #fffdf7);
+  color: color-mix(in srgb, var(--path-color) 82%, #14312e);
+  font-size: 12.5px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+.pyp-tr-gloss {
+  display: flex;
+  flex-direction: column;
+}
+.pyp-tr-gloss-head {
+  padding-bottom: 14px;
+  border-bottom: 2px solid color-mix(in srgb, var(--path-color) 22%, #fffdf7);
+}
+.pyp-tr-gloss-kicker {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--path-color) 70%, #14312e);
+}
+.pyp-tr-gloss-title {
+  font-size: 24px;
+  font-weight: 900;
+  color: var(--pyp-ink);
+  line-height: 1.1;
+  margin-top: 3px;
+}
+.pyp-tr-gloss-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 24px;
+  padding: 0;
+  list-style: none;
+}
+.pyp-tr-gloss-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 11px;
+}
+.pyp-tr-gloss-mark {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  background: #efece1;
+  color: #8b8778;
+  font-size: 14px;
+  font-weight: 900;
+}
+.pyp-tr-gloss-item.is-featured .pyp-tr-gloss-mark {
+  background: color-mix(in srgb, var(--path-color) 88%, #04211e);
+  color: #fff;
+}
+.pyp-tr-gloss-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.pyp-tr-gloss-word {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 16.5px;
+  font-weight: 900;
+  color: var(--pyp-ink);
+}
+.pyp-tr-gloss-word em {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--path-color) 14%, #fffdf7);
+  color: color-mix(in srgb, var(--path-color) 82%, #14312e);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pyp-tr-gloss-def {
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #5a5648;
+}
+.pyp-tr-gloss-foot {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 14px;
+  font-size: 11.5px;
+  font-weight: 800;
+}
+.pyp-tr-gloss-item.is-featured .pyp-tr-gloss-def {
+  color: #3f3c31;
 }

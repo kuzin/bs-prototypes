@@ -1,13 +1,16 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { CoverTile } from './common'
+import { VOCAB } from '../data'
 
 // A simulated in-app reader for a path's nonfiction titles — the "Read in app"
 // half of the read-or-log choice. No real page art: pages render as clean
-// typeset "text", and finishing logs the title (which earns its reading badge).
+// typeset "text" with the cluster's target words set live in it, the book's
+// back-matter glossary as the last page, and finishing logs the title (which
+// earns its reading badge).
 
 function buildPages() {
-  return [{ type: 'cover' }, ...Array.from({ length: 5 }, (_, i) => ({ type: 'text', seed: i })), { type: 'end' }] // prettier-ignore
+  return [{ type: 'cover' }, ...Array.from({ length: 5 }, (_, i) => ({ type: 'text', seed: i })), { type: 'glossary' }, { type: 'end' }] // prettier-ignore
 }
 
 // The drop cap can't be floated — the "text" is block bars with fixed widths, so
@@ -16,29 +19,98 @@ function buildPages() {
 const DROPCAP_INSET = 66 // px — keep in step with .pyp-tr-dropcap's width
 const DROPCAP_LINES = 3
 
-function TextPage({ seed }) {
+// The one thing set as real type on a text page: the title's two target words,
+// highlighted mid-line the way a nonfiction book bolds a glossary term. Every
+// paragraph but the last on a page surfaces one.
+function wordForLine(words, seed, p) {
+  if (!words?.length) return null
+  return (p + seed) % 3 === 2 ? null : words[(seed + p) % words.length]
+}
+
+function TextPage({ seed, words }) {
   const paras = [4, 5, 3]
   const hasDropcap = seed === 0
   return (
     <div className="pyp-tr-text">
       {hasDropcap && <span className="pyp-tr-dropcap">A</span>}
-      {paras.map((lines, p) => (
-        <div key={p} className="pyp-tr-para">
-          {Array.from({ length: lines }).map((_, l) => {
-            const pct = l === lines - 1 ? 44 + ((seed + p + l) % 5) * 8 : 92 + ((p + l) % 3) * 2
-            const inset = hasDropcap && p === 0 && l < DROPCAP_LINES
-            return (
-              <i
-                key={l}
-                style={{
-                  width: inset ? `calc(${pct}% - ${DROPCAP_INSET}px)` : `${pct}%`,
-                  marginLeft: inset ? DROPCAP_INSET : undefined,
-                }}
-              />
-            )
-          })}
-        </div>
-      ))}
+      {paras.map((lines, p) => {
+        const word = wordForLine(words, seed, p)
+        // the highlighted word sits on the second line, where a dropcap inset
+        // never reaches
+        const wordLine = word ? 1 : -1
+        return (
+          <div key={p} className="pyp-tr-para">
+            {Array.from({ length: lines }).map((_, l) => {
+              const pct = l === lines - 1 ? 44 + ((seed + p + l) % 5) * 8 : 92 + ((p + l) % 3) * 2
+              const inset = hasDropcap && p === 0 && l < DROPCAP_LINES
+              if (l === wordLine) {
+                return (
+                  <i
+                    key={l}
+                    className="pyp-tr-wordline"
+                    style={{
+                      width: inset ? `calc(${pct}% - ${DROPCAP_INSET}px)` : `${pct}%`,
+                      marginLeft: inset ? DROPCAP_INSET : undefined,
+                    }}
+                  >
+                    <b style={{ flex: `0 0 ${18 + ((seed + p) % 3) * 9}%` }} />
+                    <em>{word}</em>
+                    <b />
+                  </i>
+                )
+              }
+              return (
+                <i
+                  key={l}
+                  style={{
+                    width: inset ? `calc(${pct}% - ${DROPCAP_INSET}px)` : `${pct}%`,
+                    marginLeft: inset ? DROPCAP_INSET : undefined,
+                  }}
+                />
+              )
+            })}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
+// The book's back matter: the cluster's four words with kid-facing definitions,
+// the two this title puts to work called out. This is the page that makes the
+// vocabulary the point of the read.
+function GlossaryPage({ words, path }) {
+  const featured = new Set(words ?? [])
+  return (
+    <div className="pyp-tr-text pyp-tr-gloss">
+      <div className="pyp-tr-gloss-head">
+        <span className="pyp-tr-gloss-kicker">Glossary</span>
+        <h4 className="pyp-tr-gloss-title">Words to Know</h4>
+      </div>
+      <ul className="pyp-tr-gloss-list">
+        {VOCAB.map((v) => (
+          <li
+            key={v.word}
+            className={`pyp-tr-gloss-item${featured.has(v.word) ? ' is-featured' : ''}`}
+          >
+            <span className="pyp-tr-gloss-mark">{v.word[0].toUpperCase()}</span>
+            <span className="pyp-tr-gloss-text">
+              <span className="pyp-tr-gloss-word">
+                {v.word}
+                {featured.has(v.word) && (
+                  <em>
+                    <Icon name="check" size={11} stroke={3} /> in this book
+                  </em>
+                )}
+              </span>
+              <span className="pyp-tr-gloss-def">{v.definition}</span>
+            </span>
+          </li>
+        ))}
+      </ul>
+      <span className="pyp-tr-gloss-foot" style={{ color: path.color }}>
+        <Icon name={path.icon} size={14} stroke={1.9} /> {path.name.replace(/^The /, '')}
+      </span>
     </div>
   )
 }
@@ -113,14 +185,18 @@ export function TitleReader({ title, path, onLog, onClose }) {
               <CoverTile cover={title.cover} label={title.title} path={path} showTitle />
             </div>
           )}
-          {cur.type === 'text' && <TextPage seed={cur.seed} />}
+          {cur.type === 'text' && <TextPage seed={cur.seed} words={title.words} />}
+          {cur.type === 'glossary' && <GlossaryPage words={title.words} path={path} />}
           {cur.type === 'end' && (
             <div className="pyp-tr-end">
               <span className="pyp-tr-end-mark">
                 <Icon name="book" size={30} stroke={1.7} />
               </span>
               <h3>You finished {title.title}!</h3>
-              <p>Log it to earn this title&apos;s reading badge and move along your path.</p>
+              <p>
+                You met {title.words?.length ?? 0} of your motion words in this one. Log it to earn
+                this title&apos;s reading badge and move along your path.
+              </p>
               <button className="pyp-tr-logbtn" onClick={onLog} type="button">
                 <Icon name="check" size={17} stroke={2.4} /> Log this reading
               </button>
@@ -144,7 +220,13 @@ export function TitleReader({ title, path, onLog, onClose }) {
 
       <div className="pyp-tr-bottom">
         <span className="pyp-tr-count">
-          {page === 0 ? 'Cover' : page === last ? 'The End' : `Page ${page} of ${contentCount}`}
+          {page === 0
+            ? 'Cover'
+            : page === last
+              ? 'The End'
+              : cur.type === 'glossary'
+                ? 'Words to Know'
+                : `Page ${page} of ${contentCount}`}
         </span>
         <div className="pyp-tr-progress">
           <span style={{ width: `${(page / last) * 100}%` }} />

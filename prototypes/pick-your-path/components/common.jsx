@@ -1,6 +1,24 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Tooltip } from '@components/Primitives/Primitives'
+import { VOCAB_BY_WORD } from '../data'
+
+// The cluster's target words, as small chips. Used everywhere a title, activity,
+// or path needs to show which of the four words it puts to work — each chip
+// carries the kid-facing definition on hover, so the words are teachable
+// wherever they appear. `size="xs"` is the dense variant for grid captions.
+export function WordChips({ words, size = 'sm', className = '' }) {
+  if (!words?.length) return null
+  return (
+    <span className={`pyp-words pyp-words--${size} ${className}`.trim()}>
+      {words.map((w) => (
+        <Tooltip key={w} content={VOCAB_BY_WORD[w]?.definition ?? w}>
+          <span className="pyp-word">{w}</span>
+        </Tooltip>
+      ))}
+    </span>
+  )
+}
 
 // A row of small cover previews — each reveals its title via tooltip on
 // hover, with no visible caption, so a path can be previewed without adding
@@ -34,19 +52,22 @@ export function CoverPreviewRow({ path, limit = 3, className = '' }) {
 }
 
 // A nonfiction cover — the real book's cover art (a live Open Library image),
-// with an optional title overlay and a designed gradient fallback if art is
-// missing or fails to load.
+// with an optional title overlay and a designed fallback if art is missing or
+// fails to load. The fallback is a LIGHT tint of the path color: a shelf where
+// most titles lack CDN art was a wall of saturated blocks that drowned out the
+// captions next to it.
 export function CoverTile({ cover, label, path, read, showTitle = false }) {
   const [errored, setErrored] = useState(false)
   const showImg = !!cover && !errored
   return (
     <div
-      className={`pyp-cover${read ? ' is-read' : ''}`}
+      className={`pyp-cover${read ? ' is-read' : ''}${showImg ? '' : ' is-placeholder'}`}
       style={
         showImg
           ? undefined
           : {
-              background: `linear-gradient(150deg, ${path.color} 0%, color-mix(in srgb, ${path.color} 62%, #0b3b39) 100%)`,
+              '--cover-ink': path.color,
+              background: `linear-gradient(150deg, color-mix(in srgb, ${path.color} 15%, #fff) 0%, color-mix(in srgb, ${path.color} 30%, #fff) 100%)`,
             }
       }
     >
@@ -68,8 +89,12 @@ export function CoverTile({ cover, label, path, read, showTitle = false }) {
         </span>
       )}
       {read && (
-        <span className="pyp-cover-check">
-          <Icon name="circle-check-filled" size={22} color="#16A97A" />
+        // A tinted wash plus a banner across the foot of the cover: a small
+        // floating check was too easy to miss on busy cover art.
+        <span className="pyp-cover-read">
+          <span className="pyp-cover-read-banner">
+            <Icon name="check" size={13} stroke={3} /> Read
+          </span>
         </span>
       )}
     </div>

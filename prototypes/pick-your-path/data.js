@@ -1,11 +1,12 @@
 // ─── Pick Your Path — sample data ────────────────────────────────────────────
-// Models the "Background Knowledge Engine" proposal: a teacher sets an academic
-// Destination (a Tier-1 standard), and students pick a high-interest Path to
-// build the background knowledge for it, then read titles + do offline
-// extension activities to earn badges.
+// Models the vocabulary cut of the proposal: a teacher sets a Destination — a
+// Tier-2 vocabulary cluster (Words of Motion: accelerate, propel, momentum,
+// velocity) — and students pick a high-interest Path to practice those words
+// through, then read titles + do offline extension activities to earn badges.
 //
-// The Forces & Motion destination, the three path taglines, and the three
-// extension activities use the EXACT copy from the proposal's step-by-step flow.
+// The vocabulary cluster, the three path taglines, and each path's lead
+// extension activity use the EXACT copy from the "Vocabulary Focus Shift"
+// demo-examples doc.
 
 import badgeReading from './assets/badges/reading.png'
 import badgeCapstone from './assets/badges/capstone.png'
@@ -47,6 +48,22 @@ const PATH_BANNERS = {
   animals: bannerAnimals,
 }
 
+// The Tier-2 words the cluster teaches. Definitions are kid-facing — they're
+// what shows in each title's glossary page in the in-app reader, on the word
+// chips throughout the student's path, and in the teacher's cluster picker.
+export const VOCAB = [
+  { word: 'accelerate', definition: 'To speed up — to go faster and faster.' },
+  { word: 'propel', definition: 'To push or drive something forward.' },
+  {
+    word: 'momentum',
+    definition: 'The push a moving thing carries — more speed or more weight means more of it.',
+  },
+  { word: 'velocity', definition: 'How fast something is moving in one direction.' },
+]
+
+export const VOCAB_BY_WORD = Object.fromEntries(VOCAB.map((v) => [v.word, v]))
+export const WORD_LIST = VOCAB.map((v) => v.word)
+
 export const SITE = {
   school: 'Lincoln Elementary',
   teacher: { name: 'Mr. Reyes', role: 'Grade 4 Teacher', initials: 'JR' },
@@ -54,64 +71,110 @@ export const SITE = {
   student: { name: 'Maya Chen', firstName: 'Maya', grade: 'Grade 4', initials: 'MC' },
 }
 
-// The academic destination the teacher assigns (a Tier-1 science standard).
+// The vocabulary destination the teacher assigns (a Tier-2 word cluster).
 export const DESTINATION = {
-  id: 'forces-and-motion',
-  subject: 'Science',
-  standard: 'Core Science Standard',
-  title: 'Forces & Motion',
+  id: 'words-of-motion',
+  subject: 'Vocabulary',
+  standard: 'Tier 2 Vocabulary Cluster',
+  title: 'Words of Motion',
   color: '#0F766E',
   banner: bannerDestination,
+  words: WORD_LIST,
   blurb:
-    'Every path below builds the same background knowledge for Forces & Motion — students just get to pick the subject that excites them.',
+    'Every path below practices the same four motion words — students just get to pick the subject that excites them.',
 }
 
-// Other destinations shown in the teacher picker (only Forces & Motion is wired
-// up for this prototype — the rest illustrate the Tier-1 catalog).
+// Other clusters shown in the teacher picker (only Words of Motion is wired up
+// for this prototype — the rest illustrate the Tier-2 catalog).
 export const DESTINATION_CATALOG = [
   {
-    id: 'forces-and-motion',
-    subject: 'Science',
-    title: 'Forces & Motion',
-    icon: 'atom',
+    id: 'words-of-motion',
+    subject: 'Tier 2 · Science',
+    title: 'Words of Motion',
+    words: 'accelerate · propel · momentum · velocity',
+    icon: 'bolt',
     ready: true,
   },
   {
-    id: 'ecosystems',
-    subject: 'Science',
-    title: 'Ecosystems & Habitats',
+    id: 'words-of-life',
+    subject: 'Tier 2 · Science',
+    title: 'Words of Living Things',
+    words: 'adapt · habitat · survive · thrive',
     icon: 'leaf',
     ready: false,
   },
-  { id: 'matter', subject: 'Science', title: 'States of Matter', icon: 'bolt', ready: false },
   {
-    id: 'branches-of-gov',
-    subject: 'Social Studies',
-    title: 'Branches of Government',
+    id: 'words-of-matter',
+    subject: 'Tier 2 · Science',
+    title: 'Words of Matter',
+    words: 'dissolve · expand · particle · solid',
+    icon: 'atom',
+    ready: false,
+  },
+  {
+    id: 'words-of-power',
+    subject: 'Tier 2 · Social Studies',
+    title: 'Words of Power',
+    words: 'govern · represent · debate · citizen',
     icon: 'building',
     ready: false,
   },
-  { id: 'weather', subject: 'Science', title: 'Weather & Climate', icon: 'sun', ready: false },
   {
-    id: 'ancient-civ',
-    subject: 'Social Studies',
-    title: 'Ancient Civilizations',
+    id: 'words-of-weather',
+    subject: 'Tier 2 · Science',
+    title: 'Words of Weather',
+    words: 'predict · pattern · severe · climate',
+    icon: 'sun',
+    ready: false,
+  },
+  {
+    id: 'words-of-the-past',
+    subject: 'Tier 2 · Social Studies',
+    title: 'Words of the Past',
+    words: 'ancient · empire · trade · ruins',
     icon: 'building-community',
+    ready: false,
+  },
+  {
+    id: 'words-of-story',
+    subject: 'Tier 2 · ELA',
+    title: 'Words of Story',
+    words: 'character · setting · conflict · theme',
+    icon: 'book',
+    ready: false,
+  },
+  {
+    id: 'words-of-argument',
+    subject: 'Tier 2 · ELA',
+    title: 'Words of Argument',
+    words: 'claim · evidence · reason · persuade',
+    icon: 'message-circle',
+    ready: false,
+  },
+  {
+    id: 'words-of-measurement',
+    subject: 'Tier 2 · Math',
+    title: 'Words of Measurement',
+    words: 'estimate · compare · precise · unit',
+    icon: 'ruler',
     ready: false,
   },
 ]
 
-// The three interest paths. Taglines are verbatim from the proposal.
+// The three interest paths. Taglines and each path's lead activity are verbatim
+// from the vocabulary demo examples; every title carries the two cluster words it
+// puts to work, which is what the word chips throughout the student's path show.
 export const PATHS = [
   {
     id: 'sports',
     name: 'The Sports Path',
-    tagline: 'The physics of snowboarding and curveballs.',
+    tagline: 'Snowboarders who accelerate down the mountain and propel off the jump.',
     icon: 'run',
     color: '#EA580C',
     titles: [
       {
         id: 's1',
+        words: ['accelerate', 'propel'],
         title: 'Snowboarding',
         author: 'Matt Doeden',
         isbn: '9780736827317',
@@ -123,6 +186,7 @@ export const PATHS = [
       },
       {
         id: 's2',
+        words: ['momentum', 'velocity'],
         title: 'The Science of Baseball with Max Axiom, Super Scientist',
         author: 'David L. Dreier',
         isbn: '9781491460870',
@@ -134,6 +198,7 @@ export const PATHS = [
       },
       {
         id: 's3',
+        words: ['propel', 'momentum'],
         title: 'Skateboarding Vert',
         author: 'Patrick G. Cain',
         isbn: '9781467710855',
@@ -146,49 +211,53 @@ export const PATHS = [
     activities: [
       {
         id: 'a-sports-1',
-        name: 'Equipment Designer',
-        short: 'Design a piece of sports gear that uses physics to help an athlete.',
-        icon: 'pencil',
+        name: 'The Play-by-Play Announcer',
+        short: 'Call a championship race using accelerate and momentum.',
+        icon: 'microphone',
+        words: ['accelerate', 'momentum'],
         prompt:
-          'Choose your favorite sport. Design a piece of gear (like a helmet, a sneaker, or a paddle) that uses physics to make an athlete faster or safer. Draw your design on a piece of paper and label the special features.',
-        requirement: 'Write down the name of your invention and one way it helps an athlete.',
+          'Pretend you are a sports announcer calling a championship race. Write a short, three-sentence script describing the winning moment. You must use the words accelerate and momentum correctly. Read it out loud with your best announcer voice!',
+        requirement: 'Type in the sentences you wrote using the target words.',
         placeholder:
-          'e.g. The GripMax sneaker — the deep treads add friction so sprinters don’t slip on the turn.',
+          'e.g. She accelerates out of the final turn — and her momentum carries her right past the leader!',
       },
       {
         id: 'a-sports-2',
-        name: 'Bounce Lab',
-        short: 'Drop a ball onto three surfaces and compare how high it bounces.',
+        name: 'Highlight Reel',
+        short: 'Spot one real moment of momentum and one of top velocity.',
         icon: 'ball-basketball',
+        words: ['momentum', 'velocity'],
         prompt:
-          'Grab a ball that bounces. Drop it from the same height onto three different surfaces (like tile, carpet, and grass). Watch closely to see how high it bounces back each time.',
-        requirement:
-          'Which surface gave the biggest bounce, and what does that tell you about the force pushing the ball back up?',
-        placeholder: 'e.g. Tile gave the biggest bounce because…',
+          'Watch or play about ten minutes of any sport. Keep your eyes open for one moment where a player or a ball builds momentum, and one where something reaches its top velocity.',
+        requirement: 'Describe the momentum moment and the velocity moment you spotted.',
+        placeholder: 'e.g. Momentum: the runner kept sliding after… Velocity: the ball flew…',
       },
     ],
   },
   {
     id: 'engineering',
     name: 'The Engineering Path',
-    tagline: 'The mechanics of monster trucks and roller coasters.',
+    tagline: 'Monster-truck engines that build enough momentum to fly.',
     icon: 'tools',
     color: '#2563EB',
     titles: [
       {
         id: 'e1',
-        title: 'Forces and Motion Investigations',
-        author: 'Karen Latchana Kenney',
-        isbn: '9781512449570',
-        // No verified cover art on Open Library for this edition — falls back
-        // to CoverTile's designed placeholder.
-        level: 'Grade 4–8',
+        words: ['accelerate', 'momentum'],
+        // Swapped in from the proposal's Kenney title, which Open Library has no
+        // cover for — this is a real book whose title, author, and cover art all
+        // come from one verified Open Library record.
+        title: 'Forces and Motion',
+        author: 'Chris Oxlade',
+        cover: olCover(11633718),
+        level: 'Grade 3–6',
         pages: 32,
         blurb:
-          'Hands-on investigations into how forces make things speed up, slow down, and change direction.',
+          'How forces make things speed up, slow down, and change direction — with experiments to try.',
       },
       {
         id: 'e2',
+        words: ['momentum', 'propel'],
         title: 'Monster Trucks',
         author: 'Kristin L. Nelson',
         isbn: '9780822506911',
@@ -199,6 +268,7 @@ export const PATHS = [
       },
       {
         id: 'e3',
+        words: ['velocity', 'accelerate'],
         title: 'Building a Roller Coaster',
         author: 'Karen Latchana Kenney',
         isbn: '9781681523507',
@@ -211,37 +281,39 @@ export const PATHS = [
     activities: [
       {
         id: 'a-eng-1',
-        name: 'The Friction Test',
-        short: 'Roll a toy across three surfaces to see which stops it fastest.',
-        icon: 'ruler',
+        name: 'The “Propel” Scavenger Hunt',
+        short: 'Hunt down an object that is built to propel something forward.',
+        icon: 'search',
+        words: ['propel'],
         prompt:
-          'Find a small ball or toy car. Roll it across three different surfaces (like a hardwood floor, a carpet, and outside on grass or concrete). Use a tape measure or count your footsteps to see which surface made the toy stop the fastest.',
+          'Look around your home or neighborhood for an object that is designed to propel something forward (like a rubber band, a garden hose, or a fan).',
         requirement:
-          'Enter the surface that had the most friction and explain why you think it slowed the toy down.',
-        placeholder: 'e.g. The carpet had the most friction because…',
+          'Submit the name of the object you found and write one sentence explaining how it propels something.',
+        placeholder: 'e.g. A garden hose — the water pressure propels the spray across the yard.',
       },
       {
         id: 'a-eng-2',
-        name: 'Ramp Racer',
-        short: 'Build a ramp and test how its height changes how far a car rolls.',
+        name: 'Ramp Report',
+        short: 'Roll a car down a ramp, then narrate it with accelerate and velocity.',
         icon: 'gauge',
+        words: ['accelerate', 'velocity'],
         prompt:
-          'Prop up a book or board to build a ramp. Roll a toy car down from a low height, then raise the ramp higher and try again. Mark how far the car travels each time.',
-        requirement:
-          'Which ramp height sent the car the farthest, and why do you think a higher ramp changed the car’s speed?',
-        placeholder: 'e.g. The tall ramp sent it farthest because…',
+          'Prop up a book or board to build a ramp and roll a toy car down it. Run it twice — once from a low start, once from a high one — and watch closely what changes.',
+        requirement: 'Write one sentence about the car using accelerate and one using velocity.',
+        placeholder: 'e.g. The car accelerated faster off the tall ramp… its velocity was highest…',
       },
     ],
   },
   {
     id: 'animals',
     name: 'The Animal Path',
-    tagline: 'How cheetahs and peregrine falcons achieve extreme speeds.',
+    tagline: 'Peregrine falcons that hit extreme velocities in a hunting dive.',
     icon: 'paw',
     color: '#16A34A',
     titles: [
       {
         id: 'n1',
+        words: ['accelerate', 'velocity'],
         title: 'Cheetahs',
         author: 'Jody Sullivan Rake',
         isbn: '9780736813938',
@@ -252,6 +324,7 @@ export const PATHS = [
       },
       {
         id: 'n2',
+        words: ['velocity', 'momentum'],
         title: 'Peregrine Falcon',
         author: 'Josh Plattner',
         isbn: '9781629696720',
@@ -262,6 +335,7 @@ export const PATHS = [
       },
       {
         id: 'n3',
+        words: ['accelerate', 'propel'],
         title: "World's Fastest Animals",
         author: 'Melissa Stewart',
         isbn: '9781454906339',
@@ -274,35 +348,38 @@ export const PATHS = [
     activities: [
       {
         id: 'a-animals-1',
-        name: 'Dash & Freeze',
-        short: 'Sprint to a line, then freeze — and feel your momentum keep pulling you.',
-        icon: 'bolt',
+        name: 'Action Charades',
+        short: 'Act out the difference between velocity and accelerate.',
+        icon: 'run',
+        words: ['accelerate', 'velocity'],
         prompt:
-          'Test your predator agility with a real-life freeze-frame challenge. Pick a finish line about 15 steps away. Sprint as fast as you can toward it, but the exact split-second your foot crosses the line, you must completely freeze like a statue. Notice how your momentum tries to pull you forward.',
+          'Teach a friend or family member the difference between the words velocity and accelerate by acting them out. For example, act out a cheetah accelerating from a standstill versus reaching its top velocity.',
         requirement:
-          'Did you manage to freeze perfectly on the line, or did your momentum make you take a few extra stumble-steps forward?',
-        placeholder: 'e.g. My momentum pulled me two steps past the line because…',
+          'Enter whether it was harder to act out accelerate or velocity, and explain why.',
+        placeholder: 'e.g. Accelerate was harder to act out because…',
       },
       {
         id: 'a-animals-2',
-        name: 'Reaction Race',
-        short: 'Catch a dropped ruler to test how fast your reflexes are.',
-        icon: 'run',
+        name: 'Two-Picture Field Guide',
+        short: 'Draw one animal propelling itself and one at top velocity.',
+        icon: 'pencil',
+        words: ['propel', 'velocity'],
         prompt:
-          'Have a partner hold a ruler straight up and drop it without warning between your open fingers. Catch it as fast as you can and see which number you grabbed. Try it five times.',
+          'Pick a fast animal and draw it twice: once as it propels itself into a sprint, and once as it hits its top velocity. Label each drawing with the word it shows.',
         requirement:
-          'Did your catches get quicker with practice? How do fast animals like cheetahs use quick reactions to catch their prey?',
-        placeholder: 'e.g. I caught it lower each time, which means…',
+          'Describe what you drew differently in the two pictures, using propel and velocity.',
+        placeholder: 'e.g. In the first drawing the cheetah’s back legs propel it forward…',
       },
     ],
   },
 ]
 
-// Each path's shelf runs ~10 titles deep, but the UI features the first three
-// and folds the rest behind a "+N more". Only the featured three carry verified
-// Open Library cover art; the deeper shelf uses CoverTile's gradient fallback,
-// so no cover is ever attributed to the wrong book.
-const more = (title, author, level, pages) => ({
+// Each path's shelf runs ~10 titles deep, and every title on it — featured or
+// not — carries verified Open Library cover art. Each `more()` row's title,
+// author, and cover id all come from the SAME Open Library search result (and the
+// cover was fetched to confirm it exists and is big enough to render), so no cover
+// is ever attributed to the wrong book.
+const more = (title, author, level, pages, coverId) => ({
   id: `${title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, '-')
@@ -311,46 +388,55 @@ const more = (title, author, level, pages) => ({
   author,
   level,
   pages,
+  cover: olCover(coverId),
 })
 
 const MORE_TITLES = {
   sports: [
-    more('Basketball', 'Matt Doeden', 'Grade 3–6', 32),
-    more('Football', 'Matt Doeden', 'Grade 3–6', 32),
-    more(
-      'The Science of Soccer with Max Axiom, Super Scientist',
-      'Nikole Brooks Bethea',
-      'Grade 3–6',
-      32,
-    ),
-    more('Gymnastics', 'Wendy Hinote Lanier', 'Grade 2–5', 24),
-    more('Swimming', 'Kate Riggs', 'Grade 1–4', 24),
-    more('BMX Racing', 'Ellen Frazel', 'Grade 2–5', 24),
-    more('Track and Field', 'Jim Gigliotti', 'Grade 3–6', 32),
+    more('Football', 'Hugh Hornby', 'Grade 3–6', 32, 2594076),
+    more('Gymnastics', 'Lloyd Readhead', 'Grade 3–6', 32, 1929362),
+    more('Swimming', 'Rick Cross', 'Grade 2–5', 24, 9785812),
+    more('BMX Street', 'Patrick G. Cain', 'Grade 2–5', 32, 10337910),
+    more('Basketball', 'Suzanne Slade', 'Grade 3–6', 48, 9826185),
+    more('Soccer', 'Charlotte Guillain', 'Grade 2–5', 24, 10336335),
+    more('Neymar', 'Marty Gitlin', 'Grade 3–6', 48, 11516658),
   ],
   engineering: [
-    more('Simple Machines', 'Kay Manolis', 'Grade 2–5', 24),
-    more('Levers', 'Chris Oxlade', 'Grade 2–5', 24),
-    more('Pulleys', 'Chris Oxlade', 'Grade 2–5', 24),
-    more('Gravity', 'Anna Claybourne', 'Grade 3–6', 32),
-    more('How Roller Coasters Work', 'Sarah Eason', 'Grade 3–6', 32),
-    more('Bridges', 'Rebecca Pettiford', 'Grade 2–5', 24),
-    more('Wheels and Axles', 'Kay Manolis', 'Grade 2–5', 24),
+    more('Simple Machines', 'Rebecca Rissman', 'Grade 2–5', 32, 9046256),
+    more('Levers', 'Mandy Suhr', 'Grade 2–5', 24, 10780681),
+    more('Pulleys', 'Mandy Suhr', 'Grade 2–5', 24, 10393390),
+    more("You Wouldn't Want to Live Without Gravity!", 'Anne Rooney', 'Grade 3–6', 32, 10161279),
+    more('Wheels and Axles', 'Sian Smith', 'Grade 2–5', 24, 10203958),
+    more('Machines on the Road', 'Sian Smith', 'Grade 1–4', 24, 10783697),
+    more('Friction and Resistance', 'Chris Oxlade', 'Grade 3–6', 32, 1742738),
   ],
   animals: [
-    more('Fastest Animals', 'Rebecca Rissman', 'Grade 2–5', 24),
-    more('How Animals Move', 'Anna Claybourne', 'Grade 3–6', 32),
-    more('Predators', 'Kate Riggs', 'Grade 1–4', 24),
-    more('Hummingbirds', 'Kate Riggs', 'Grade 1–4', 24),
-    more('Sailfish', 'Jody Sullivan Rake', 'Grade 1–3', 24),
-    more('Pronghorn', 'Melissa Stewart', 'Grade 2–5', 24),
-    more('Jackrabbits', 'Lee Jacobs', 'Grade 1–4', 24),
+    more('Biggest, Strongest, Fastest', 'Steve Jenkins', 'Grade 1–4', 32, 256442),
+    more('How Animals Move', 'Pamela Hickman', 'Grade 3–6', 32, 1871210),
+    more('Predator Attack!', 'Katharine Kenah', 'Grade 2–5', 32, 14858666),
+    more("It's a Hummingbird's Life", 'Irene Kelly', 'Grade 1–4', 32, 625526),
+    more('Pronghorns', 'Tom Jackson', 'Grade 2–5', 24, 8180808),
+    more('Jackrabbits', 'JoAnn Early Macken', 'Grade 1–4', 24, 13831397),
+    more('Bats', 'Gail Gibbons', 'Grade 1–4', 32, 625416),
   ],
 }
+
+// Every title on a path teaches two of the cluster's words. The featured three
+// name theirs by hand; the deeper shelf takes the next pair off this rotation so
+// no title is ever missing its chips.
+const WORD_PAIRS = [
+  ['accelerate', 'propel'],
+  ['momentum', 'velocity'],
+  ['propel', 'momentum'],
+  ['velocity', 'accelerate'],
+]
 
 // Attach the deeper shelf + each path's generated theme banner.
 PATHS.forEach((p) => {
   p.titles = [...p.titles, ...MORE_TITLES[p.id]]
+  p.titles.forEach((t, i) => {
+    t.words = t.words ?? WORD_PAIRS[i % WORD_PAIRS.length]
+  })
 })
 
 PATHS.forEach((p) => {
@@ -371,17 +457,17 @@ export const SEED = {
 // ─── Challenge dashboard ──────────────────────────────────────────────────────
 // The student's Challenges page — the surface a Destination actually lives on.
 // Modelled on the reader prototype's dashboard (see prototypes/logging-flow).
-// The Forces & Motion card is the live one: opening it goes to the path view.
+// The Words of Motion card is the live one: opening it goes to the path view.
 
 export const DAILY_GOAL = { minutes: 12, goal: 20 }
 
 export const CHALLENGES = [
   {
-    id: 'forces-and-motion',
-    title: 'Forces & Motion',
+    id: 'words-of-motion',
+    title: 'Words of Motion',
     dates: 'Apr 14 — May 30',
     badge: 'Destination',
-    kicker: 'Science · Mr. Reyes',
+    kicker: 'Vocabulary · Mr. Reyes',
     // the live one — opens the student's path
     live: true,
     art: { image: bannerDestination, ink: '#ECFEFF' },
@@ -472,9 +558,9 @@ export function badgesForPath(path, readTitleIds, doneActivityIds) {
   const capstone = {
     id: `badge-dest-${path.id}`,
     kind: 'destination',
-    name: 'Forces & Motion Explorer',
+    name: 'Words of Motion Explorer',
     sub: `Read any ${REQUIRED_READS} titles + finish every activity`,
-    icon: 'atom',
+    icon: 'bolt',
     art: BADGE_ART.capstone,
     color: DESTINATION.color,
     earned: enoughRead && allDone,
