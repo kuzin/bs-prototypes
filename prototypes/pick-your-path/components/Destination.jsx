@@ -3,9 +3,10 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
+import { Tooltip } from '@components/Primitives/Primitives'
 import { ReaderTopBar } from './ReaderChrome'
-import { CoverTile, BadgeDisc, StatChip } from './common'
-import { badgesForPath, REQUIRED_READS } from '../data'
+import { CoverTile, BadgeDisc, StatChip, WordChips } from './common'
+import { badgesForPath, REQUIRED_READS, VOCAB, DESTINATION } from '../data'
 
 // How many of a path's ~10 titles show before the "+N more" fold.
 const FEATURED_TITLES = 3
@@ -34,11 +35,15 @@ function TitleRow({ title, path, read, onToggle, onReadInApp }) {
           <span className="pyp-dot">·</span>
           <span>{title.pages} pages</span>
         </div>
+        <div className="pyp-title-words">
+          <span className="pyp-title-words-label">Words in this book</span>
+          <WordChips words={title.words} />
+        </div>
       </div>
       <div className="pyp-title-action">
         {read ? (
           <button className="pyp-read-toggle is-read" onClick={onToggle} type="button">
-            <Icon name="circle-check-filled" size={17} color="#16A97A" /> Read
+            <Icon name="check" size={16} stroke={3} /> Read
           </button>
         ) : (
           <>
@@ -82,6 +87,7 @@ function ActivityCard({ activity, path, done, response, onOpen }) {
         <span className="pyp-actcard-name">{activity.name}</span>
         <span className="pyp-actcard-prompt">{done ? `“${response}”` : activity.short}</span>
       </span>
+      <WordChips words={activity.words} className="pyp-actcard-words" />
       <span className={`pyp-actcard-foot${done ? ' is-done' : ''}`}>
         {done ? (
           <>
@@ -131,7 +137,7 @@ export function Destination({
   const rewards = [
     {
       id: 'certificate',
-      name: 'Forces & Motion Certificate',
+      name: 'Words of Motion Certificate',
       desc: 'A printable certificate for finishing your whole path.',
       icon: 'certificate',
       earned: pathComplete,
@@ -182,6 +188,16 @@ export function Destination({
         <div className="pyp-dest-band-inner">
           <h1 className="pyp-dest-band-title">{path.name}</h1>
           <p className="pyp-dest-band-tag">{path.tagline}</p>
+          <div className="pyp-bandwords">
+            <span className="pyp-bandwords-label">
+              <Icon name="quote" size={13} stroke={2} /> {DESTINATION.title}
+            </span>
+            {VOCAB.map((v) => (
+              <Tooltip key={v.word} content={v.definition}>
+                <span className="pyp-bandword">{v.word}</span>
+              </Tooltip>
+            ))}
+          </div>
           <button className="pyp-changepath" onClick={onChangePath} type="button">
             <Icon name="switch-horizontal" size={14} /> Change path
           </button>
@@ -247,7 +263,7 @@ export function Destination({
                 <ProgressBar value={readToward} max={readGoal} color={path.color} size="md" />
                 <p className="pyp-section-sub">
                   Read any {readGoal} of the {path.titles.length} titles on this path — pick the
-                  ones that look best.
+                  ones that look best. Each one puts two of your words to work.
                 </p>
                 <div className="pyp-titles">
                   {shownTitles.map((t) => (

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Modal } from '@components/Modal/Modal'
+import { WordChips } from './common'
 
 // The extension-activity flow: read the offline prompt, then enter the short
 // "badge requirement" response to earn the activity badge.
@@ -32,6 +33,7 @@ export function ActivityModal({ activity, path, open, done, response, onClose, o
               {path.name.replace(/^The /, '')} · Extension activity
             </div>
             <h3 className="pyp-activity-name">{activity.name}</h3>
+            <WordChips words={activity.words} className="pyp-activity-words" />
           </div>
         </div>
 

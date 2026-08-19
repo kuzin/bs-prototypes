@@ -1,8 +1,8 @@
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Modal } from '@components/Modal/Modal'
-import { CoverPreviewRow } from './common'
-import { PATHS } from '../data'
+import { CoverPreviewRow, WordChips } from './common'
+import { PATHS, WORD_LIST } from '../data'
 
 // The one place a student picks (or switches) a path — opened from the challenge
 // card's art on the dashboard and from "Change path" on their destination, so
@@ -20,9 +20,10 @@ export function PathPickerModal({ open, offered, chosenPathId, onChoose, onClose
         <header className="pyp-pickmodal-head">
           <h3 className="pyp-pickmodal-title">Pick your path</h3>
           <p className="pyp-pickmodal-sub">
-            All {paths.length} paths build the same background knowledge — choose the one that
-            sounds the most fun.
+            All {paths.length} paths build similar vocabulary — choose the one that sounds the most
+            fun.
           </p>
+          <WordChips words={WORD_LIST} className="pyp-pickmodal-words" />
         </header>
 
         <div className="pyp-pickmodal-list">

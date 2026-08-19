@@ -128,7 +128,7 @@ export const PROTOTYPES = [
     href: '/bs-prototypes/pick-your-path/',
     accent: '#0F766E',
     description:
-      'Teacher sets a learning Destination; students pick a high-interest Path to build background knowledge and earn badges.',
+      'Teacher sets a vocabulary Destination; students pick a high-interest Path to practice the words and earn badges.',
   },
   {
     id: 'btwb',
