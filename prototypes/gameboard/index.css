@@ -1,0 +1,5703 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700&family=Bebas+Neue&family=Fredoka:wght@500;600&family=Lora:wght@600;700&family=Playfair+Display:wght@700&family=Poppins:wght@600;700&display=swap');
+/* ─── Challenge Creator V2 ─────────────────────────────────────────────────── */
+
+.gb-root {
+  --teal: var(--c-brand-teal);
+  --teal-dk: #0b7a89;
+  --ink: var(--c-slate-900);
+  --muted: var(--c-slate-500);
+  --line: var(--c-slate-200);
+  --bg: var(--c-slate-100);
+  --panel: #ffffff;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 48px; /* leave room for the fixed PrototypeNav bar */
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  color: var(--ink);
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+}
+
+/* ── Accessibility: lift shared design-system control text within the creator
+   only. Form fields, selects, buttons, toggles, and the stepper render at the
+   design system's default sizes (13–14px); bump them here so nothing reads
+   below ~13px for low-vision users — scoped to .gb-root so other prototypes
+   are unaffected. ── */
+
+.gb-root .fld-label,
+.gb-root .frm-self-label {
+  font-size: 14px;
+}
+
+.gb-root .fld-error {
+  font-size: 14px;
+}
+
+/* Help + char-counts sit a step below labels (13px = the readability floor) so
+   field labels lead and the form feels less busy. */
+
+.gb-root .fld-help,
+.gb-root .fld-hint {
+  font-size: 13px;
+}
+
+.gb-root .inp--md,
+.gb-root .csel-trigger--sm,
+.gb-root .csel-trigger--md,
+.gb-root .ninp--md .ninp-inp {
+  font-size: 15px;
+}
+
+.gb-root .csel-item {
+  font-size: 14px;
+}
+
+.gb-root .csel-group-label {
+  font-size: 14px;
+}
+
+.gb-root .btn--sm,
+.gb-root .btn--md {
+  font-size: 14px;
+}
+
+.gb-root .tgl {
+  font-size: 14px;
+}
+
+.gb-root .stepper-name {
+  font-size: 14px;
+}
+
+.gb-root .stepper-dot {
+  font-size: 14px;
+}
+
+/* Darken low-contrast helper/hint text to clear AA (slate-400 ≈ 2.6:1 → slate-500 ≈ 4.5:1). */
+
+.gb-root .fld-help,
+.gb-root .fld-hint,
+.gb-root .csel-group-label {
+  color: var(--c-text-muted);
+}
+
+/* ── Top bar ── */
+
+.gb-topbar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+}
+
+/* Dev controls live dead-center regardless of left/right widths. */
+
+/* Instant tooltip (native title is too slow for icon-only controls). */
+
+.gb-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.gb-topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gb-exit {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--c-slate-100);
+  color: var(--c-slate-600);
+  text-decoration: none;
+  font-size: 19px;
+}
+
+.gb-exit:hover {
+  background: var(--c-slate-200);
+}
+
+.gb-title {
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 360px;
+  animation: gb-title-in 0.22s ease;
+}
+
+@keyframes gb-title-in {
+  from {
+    opacity: 0;
+    transform: translateY(-2px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.gb-status {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #92400e;
+  background: #fef3c7;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+/* ── Autosave indicator ── */
+
+.gb-save {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.gb-save--saved {
+  color: #16a34a;
+}
+
+.gb-save-spin {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--c-border-strong);
+  border-top-color: var(--c-slate-500);
+  animation: gb-spin 0.7s linear infinite;
+}
+
+@keyframes gb-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── Dev panel (collapsible, top-right) ── */
+
+.gb-devwrap {
+  position: relative;
+}
+
+.gb-dev-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px dashed var(--c-slate-400);
+  border-radius: 8px;
+  background: repeating-linear-gradient(
+    45deg,
+    #fff,
+    #fff 6px,
+    var(--c-slate-50) 6px,
+    var(--c-slate-50) 12px
+  );
+  color: var(--c-slate-600);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+}
+
+.gb-dev-btn.is-open,
+.gb-dev-btn:hover {
+  border-color: var(--c-slate-500);
+  color: var(--c-slate-800);
+}
+
+.gb-dev-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+}
+
+.gb-dev-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 41;
+  width: 260px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px -10px rgba(15, 23, 42, 0.3);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gb-dev-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gb-dev-lbl {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--c-text-muted);
+}
+
+.gb-dev-select {
+  width: 100%;
+  border: 1px solid var(--c-border-strong);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-slate-700);
+  cursor: pointer;
+  padding: 7px 9px;
+}
+
+/* ── Step nav bar (top dropdown) ── */
+
+.gb-stepbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.gb-stepnav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.gb-stepnav-count {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+}
+
+.gb-stepnav-select {
+  width: 240px;
+}
+
+/* ── Main area: form + preview ── */
+
+.gb-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  /* Anchor for the absolutely-positioned preview side tab; clip the preview
+     pane as it slides out so it doesn't cause horizontal scroll. */
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Form column: content scrolls; Back/Next pinned to a fixed bottom bar ── */
+
+.gb-form {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.gb-form-inner {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  box-sizing: border-box;
+  padding: 28px;
+}
+
+.gb-form-inner > .gb-step {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.gb-form-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 28px;
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+
+.gb-footer-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.gb-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gb-footer-warn {
+  margin-left: auto;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-red-600);
+}
+
+.gb-footer-warn + .gb-footer-right {
+  margin-left: 12px;
+}
+
+/* ── Preview pane ── */
+
+/* Collapsed: pull back its 380px of space and slide off to the right. */
+
+/* Desktop side tab that opens/closes the preview. Hugs the preview's left edge
+   when open; rides the screen's right edge when collapsed. */
+
+/* ── Step shell ── */
+
+/* Wraps the shared <Hero> page header; adds breathing room above + below. */
+
+.gb-step-head {
+  margin: 14px 0 24px;
+}
+
+.gb-step-head .hero {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+/* ── Type picker ── */
+
+.gb-type-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.gb-type-card {
+  --type-accent: var(--teal);
+  text-align: left;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease,
+    transform 0.1s ease;
+}
+
+.gb-type-card:hover {
+  border-color: var(--type-accent);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px -12px var(--type-accent);
+}
+
+.gb-type-card.is-selected {
+  border-color: var(--type-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--type-accent) 22%, transparent);
+}
+
+.gb-type-glyph {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  color: var(--type-accent);
+  background: color-mix(in srgb, var(--type-accent) 12%, #fff);
+  margin-bottom: 4px;
+}
+
+.gb-type-name {
+  font-weight: 700;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gb-type-tag {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--type-accent);
+  background: color-mix(in srgb, var(--type-accent) 14%, #fff);
+  padding: 2px 6px;
+  border-radius: 999px;
+}
+
+.gb-type-tagline {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.gb-type-method {
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+/* ── Panels & fields ── */
+
+.gb-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 14px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.gb-panel-banner {
+  margin: 14px 0;
+}
+
+/* A trailing banner (e.g. the completion "add badges first" notice) shouldn't
+   add space below itself before the panel edge. */
+
+.gb-panel-banner:last-child {
+  margin-bottom: 0;
+}
+
+/* Opt-in panel turned off — only the header shows; center it (no body below). */
+
+.gb-panel--collapsed .gb-panel-head {
+  margin-bottom: 0;
+}
+
+.gb-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Plain text section headers — no number, no accent bar. */
+
+.gb-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.gb-panel-head .gb-panel-title {
+  margin: 0;
+}
+
+.gb-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Separate the on/off toggle from the action buttons next to it. */
+
+.gb-panel-actions .tgl {
+  margin-left: 6px;
+}
+
+/* Vertical rhythm for stacked Form `Field`s in a panel. The design-system
+   `.fld` only spaces label→control (gap:6px); the parent supplies the rhythm
+   between fields — here 18px between each stacked field / field-row. */
+
+.gb-panel > .fld,
+.gb-panel > .gb-date-row {
+  margin-top: 18px;
+}
+
+.gb-panel > .gb-panel-title + .fld,
+.gb-panel > .gb-panel-title + .gb-date-row,
+.gb-panel > .gb-panel-head + .fld,
+.gb-panel > .gb-panel-head + .gb-date-row {
+  margin-top: 0;
+}
+
+.gb-panel--link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.gb-field {
+  display: block;
+  margin-bottom: 14px;
+}
+
+.gb-field:last-child {
+  margin-bottom: 0;
+}
+
+.gb-field-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.gb-field-hint {
+  display: block;
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 5px;
+}
+
+.gb-input {
+  width: 100%;
+  border: 1px solid var(--c-border-strong);
+  border-radius: 9px;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 15px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.gb-input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+
+.gb-textarea {
+  min-height: 76px;
+  resize: vertical;
+}
+
+.gb-input--num {
+  width: 120px;
+}
+
+.gb-date-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.gb-date-row .gb-input {
+  width: auto;
+}
+
+.gb-template-banner {
+  margin-top: 14px;
+}
+
+.gb-link {
+  color: var(--teal-dk);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.gb-link:hover {
+  text-decoration: underline;
+}
+
+.gb-num-narrow {
+  width: 140px;
+}
+
+/* Header-style / segmented tab bars now use the shared <Tabs> (underline variant).
+   Only the layout-specific spacing modifiers remain (.gb-builder-seg,
+   .gb-badgepick-tabs, .gb-ab-tabs, .gb-titlemodal-tabs) — applied via Tabs'
+   className prop. */
+
+/* ── Template gallery ── */
+
+.gb-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.gb-gallery-card {
+  text-align: left;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  border-radius: 12px;
+  padding: 10px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.gb-gallery-card:hover {
+  border-color: var(--c-border-strong);
+}
+
+.gb-gallery-card.is-on {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+
+.gb-gallery-thumb {
+  /* Match the banner art ratio (1840×702) so the whole banner always shows. */
+  aspect-ratio: 1840 / 702;
+  width: 100%;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  margin-bottom: 5px;
+}
+
+.gb-gallery-plus {
+  font-size: 26px;
+  font-weight: 300;
+  color: var(--c-text-muted);
+}
+
+.gb-gallery-name {
+  font-weight: 700;
+  font-size: 15px;
+  padding: 0 2px;
+}
+
+.gb-gallery-blurb {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.4;
+  padding: 0 2px 4px;
+}
+
+/* ── Image / cover swatch pickers ── */
+
+/* ── Banner variation: real banner-ratio thumbnails ── */
+
+.gb-banner-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  max-width: 460px;
+}
+
+.gb-banner-thumb {
+  position: relative;
+  aspect-ratio: 920 / 351;
+  border-radius: 10px;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.12s ease;
+}
+
+.gb-banner-thumb:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 0 0 1px rgba(15, 23, 42, 0.12),
+    0 4px 10px rgba(15, 23, 42, 0.12);
+}
+
+.gb-banner-thumb.is-on {
+  /* Inset ring so the selected state doesn't encroach on the grid gap. */
+  box-shadow: inset 0 0 0 3px var(--teal);
+}
+
+.gb-banner-check {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  background: var(--teal);
+  display: grid;
+  place-items: center;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
+}
+
+/* ── Accent color: theme presets + custom picker ── */
+
+/* Swatches wrap in an even grid; the custom-color input sits on its own line
+   below them (consistent across the accent, color, and recolor pickers). */
+
+.gb-accent-ctrl {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.gb-accent-dots {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gb-accent-dot {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  /* Stronger ring so white / very light chips stay visible. */
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.22);
+  transition:
+    box-shadow 0.12s ease,
+    transform 0.12s ease;
+}
+
+.gb-accent-dot:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.25);
+}
+
+.gb-accent-dot.is-on {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 3.5px var(--teal);
+}
+
+/* Color box stays compact instead of filling the row. */
+
+.gb-accent-ctrl .cinp,
+.gb-colorpick .cinp {
+  width: auto;
+  flex: none;
+}
+
+/* ── Constrain over-wide inputs ── */
+
+.gb-w-md .fld-control {
+  max-width: 380px;
+}
+
+.gb-w-sm .fld-control {
+  max-width: 220px;
+}
+
+/* Cap text-heavy fields (descriptions) so the form reads as a tidy column
+   rather than sprawling the full panel width. Caps the whole field so an
+   inline word-count stays aligned to the field's right edge. */
+
+.gb-w-lg {
+  max-width: 560px;
+}
+
+.gb-restore-btn {
+  margin-top: 10px;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+
+.gb-restore-btn:hover {
+  text-decoration: underline;
+}
+
+/* Opt-in color overrides: availability-style toggle rows + a reveal. */
+
+.gb-color-settings {
+  margin-top: 0;
+}
+
+.gb-color-reveal {
+  padding: 10px 0 14px;
+}
+
+/* Merged accent + title color pickers, stacked; chips sit beside the input. */
+
+.gb-color-merged {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gb-color-field {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gb-color-field-label {
+  min-width: 48px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* The shared color-chip picker: round preset swatches + a custom hex input,
+   wrapping together. Used everywhere a color is picked in challenge creator. */
+
+.gb-colorpick {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Separates the hex input from the preset chips. */
+
+.gb-colorpick-divider {
+  align-self: stretch;
+  width: 1px;
+  min-height: 22px;
+  margin: 0 6px;
+  background: var(--line, var(--c-slate-200));
+}
+
+/* "Look & feel" is a dense form — tighten the gaps between its fields. */
+
+.gb-panel--lookfeel > .fld,
+.gb-panel--lookfeel > .gb-lookfeel-row {
+  margin-top: 16px;
+}
+
+/* Theme + Header font sit side by side rather than alone on their own rows. */
+
+.gb-lookfeel-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 20px;
+}
+
+.gb-lookfeel-row > .fld {
+  flex: 1 1 200px;
+  max-width: 300px;
+}
+
+/* Subheader ribbon reveal: text input + color override stacked. */
+
+.gb-ribbon-reveal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gb-ribbon-reveal .fld {
+  max-width: 360px;
+}
+
+/* ── Confirm (reset) modal ── */
+
+.gb-confirm {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 28px;
+}
+
+.gb-confirm h3 {
+  margin: 0 0 8px;
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.gb-confirm p {
+  margin: 0 0 20px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.gb-confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* ── Header style choice cards ── */
+
+.gb-choice-cards {
+  display: flex;
+  gap: 10px;
+}
+
+.gb-choice-card {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 14px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.gb-choice-card:hover {
+  border-color: var(--c-border-strong);
+}
+
+.gb-choice-card.is-on {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+
+.gb-choice-ic {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+  color: var(--teal-dk);
+}
+
+.gb-choice-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.gb-choice-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.gb-choice-sub {
+  font-size: 14px;
+  line-height: 1.35;
+  color: var(--muted);
+}
+
+/* ── Header font picker (themed challenges) ── */
+
+.gb-fontpick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gb-font-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 33px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 1px solid var(--c-border-strong);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--c-slate-700);
+  font-size: 15px;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.gb-font-chip:hover {
+  border-color: var(--c-slate-500);
+}
+
+.gb-font-chip.is-on {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+
+.gb-font-more {
+  margin-top: 10px;
+}
+
+.gb-font-more .csel-trigger {
+  width: 100%;
+}
+
+/* Word counter — sits top-right, inline with the field label */
+
+.gb-label-wc {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+}
+
+.gb-wordcount {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.gb-wordcount.is-over {
+  color: #be123c;
+}
+
+/* ── Setting rows (label + toggle), grouped in a bordered card ── */
+
+.gb-settings {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 2px 14px;
+}
+
+/* Shared <SettingRow> (class .setting-row) inside the legacy .gb-settings card
+   keeps row dividers — the shared component only draws them inside <SettingList>. */
+
+.gb-settings .setting-row {
+  border-top: 1px solid var(--line);
+}
+
+.gb-settings .setting-row:first-child {
+  border-top: 0;
+}
+
+/* ── Book Talks step ── */
+
+.gb-bt-measure h4 {
+  margin: 0 0 6px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.gb-bt-measure > p {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+/* Benny's sample questions, shown in the shared <BennyBubble>. */
+
+.gb-bt-bubble-lead {
+  margin: 0 0 6px;
+}
+
+.gb-bt-measure .benny-bubble ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.gb-bt-measure .benny-bubble li {
+  margin: 2px 0;
+}
+
+.gb-settings .gb-setting-row:first-child {
+  border-top: 0;
+}
+
+.gb-setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 13px 0;
+  border-top: 1px solid var(--line);
+}
+
+.gb-setting-row.is-disabled .gb-setting-text {
+  opacity: 0.5;
+}
+
+.gb-setting-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.gb-setting-label {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.gb-setting-sub {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Code input revealed when "Require a code to register" is on. */
+
+.gb-code-reveal {
+  padding: 0 0 14px;
+  max-width: 320px;
+}
+
+.gb-code-reveal .inp {
+  text-transform: uppercase;
+}
+
+.gb-code-help {
+  margin: 6px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+.gb-code-help.is-error {
+  color: var(--c-red-600);
+}
+
+/* ── Alternative challenge cards ── */
+
+.gb-alt-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gb-alt-card {
+  position: relative;
+  text-align: left;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.gb-alt-card:hover {
+  border-color: var(--c-border-strong);
+}
+
+.gb-alt-card.is-on {
+  border-color: var(--c-brand-green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-brand-green) 18%, transparent);
+}
+
+.gb-alt-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.gb-alt-blurb {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+/* ── Required registration information ── */
+
+.gb-reg-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.gb-reg-row:first-of-type {
+  border-top: 0;
+}
+
+.gb-reg-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.gb-reg-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gb-reg-state {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* ── Badge cards (Badges step) ── */
+
+.gb-badge-grid {
+  display: grid;
+  /* One badge per row — full-width cards. */
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.gb-badge-card--editable {
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.gb-badge-card--editable:hover {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+
+.gb-badge-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.gb-badge-ic {
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.gb-badge-ic :is(img, svg) {
+  filter: brightness(0) invert(1);
+}
+
+.gb-badge-card .gb-badge-ic--img {
+  background: none;
+}
+
+.gb-badge-card .gb-badge-ic--img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  filter: none;
+}
+
+.gb-badge-name {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.gb-badge-goal {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+/* A logging badge left without a log value — flagged so it gets fixed. */
+
+.gb-badge-goal--missing {
+  font-weight: 700;
+  color: var(--c-red-600);
+  text-transform: none;
+}
+
+/* Step-level validation note for the logging-badges panel. */
+
+.gb-badge-reqnote {
+  margin: 0 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-red-600);
+}
+
+/* Inline remove (×) for badge cards and activity rows. */
+
+.gb-row-remove {
+  flex: none;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: var(--c-text-muted);
+  font-size: 20px;
+  line-height: 1;
+  padding: 0 4px;
+  border-radius: 6px;
+}
+
+.gb-row-remove:hover {
+  color: var(--c-red-600);
+}
+
+/* Edit + remove controls, pinned to the right of the badge card. */
+
+.gb-badge-card-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.gb-badge-edit {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  border-radius: 7px;
+  color: var(--c-text-muted);
+  cursor: pointer;
+}
+
+.gb-badge-edit:hover {
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+  color: var(--teal-dk);
+}
+
+/* Remove (trash) button in a badge card — same icon-button shape as edit, red hover. */
+
+.gb-badge-card-actions .gb-row-remove {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  color: var(--c-text-subtle);
+}
+
+.gb-badge-card-actions .gb-row-remove:hover {
+  background: color-mix(in srgb, var(--c-red-600) 12%, #fff);
+  color: var(--c-red-600);
+}
+
+.gb-activity-row .gb-activity-name {
+  margin-right: auto;
+}
+
+.gb-inline-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 4px;
+}
+
+/* ── Tip ── */
+
+.gb-tip-note {
+  margin-top: 14px;
+}
+
+/* ── Badges step ── */
+
+.gb-method-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.gb-method-note {
+  margin: 0 0 14px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--c-slate-600);
+}
+
+.gb-method-note--sm {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.gb-advanced-toggle {
+  display: block;
+  margin-top: 14px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+
+.gb-advanced-toggle:hover {
+  text-decoration: underline;
+}
+
+.gb-method-toggles--nested {
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+  padding: 14px;
+  background: var(--c-slate-50);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+.gb-muted {
+  color: var(--c-text-muted);
+  font-weight: 500;
+}
+
+.gb-badge-pinned {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+/* Pinned registration / completion badge slots (clickable). */
+
+.gb-badge-pin {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 1.5px dashed var(--c-border-strong);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+/* Match the logging badge cards' hover (teal border + ring). */
+
+.gb-badge-pin:hover {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+
+/* Once a badge is chosen the slot reads as a filled, editable row. */
+
+.gb-badge-pin.is-filled {
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--line);
+}
+
+.gb-badge-pin-edit {
+  margin-left: auto;
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  color: var(--c-text-subtle);
+}
+
+/* Hovering the slot highlights its edit icon like the badge-card edit icon. */
+
+.gb-badge-pin:hover .gb-badge-pin-edit {
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+  color: var(--teal-dk);
+}
+
+.gb-badge-pin-img {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex: none;
+}
+
+.gb-badge-pin-add {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  flex: none;
+  display: grid;
+  place-items: center;
+  background: var(--c-slate-100);
+  color: var(--c-text-muted);
+  font-size: 22px;
+  line-height: 1;
+}
+
+.gb-badge-pin-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gb-badge-pin-label {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-muted);
+}
+
+.gb-badge-pin-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gb-badge-window {
+  padding: 4px 0 0;
+}
+
+/* One shared error state: both date inputs go red, with a single message below. */
+
+.gb-badge-window.has-error .inp-wrap {
+  border-color: var(--c-red-600);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 14%, transparent);
+}
+
+.gb-badge-window-wrap {
+  padding-bottom: 14px;
+}
+
+.gb-badge-window-wrap .gb-badge-reqnote {
+  margin: 8px 0 0;
+}
+
+/* Enabled/Disabled label next to a badge-type toggle. */
+
+.gb-type-state {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* Time-restriction choice card selected check. */
+
+.gb-choice-card {
+  position: relative;
+}
+
+.gb-choice-check {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--teal);
+}
+
+.gb-choice-check::after {
+  content: '✓';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+/* ── Badge editor modal + picker ── */
+
+.gb-badge-editor {
+  width: 100%;
+  max-height: 86vh;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.gb-badge-editor-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+
+.gb-badge-editor-head h3 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+/* "Back to badge details" lives in the header while picking. */
+
+.gb-badge-editor-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 0;
+  background: none;
+  padding: 4px 8px 4px 4px;
+  margin: -4px 0;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+
+.gb-badge-editor-back:hover {
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+}
+
+.gb-badge-editor-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.gb-badge-editor-close {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--c-text-muted);
+  cursor: pointer;
+}
+
+.gb-badge-editor-close:hover {
+  background: var(--c-slate-100);
+  color: var(--ink);
+}
+
+/* Footer holds Cancel / Save (moved out of the header). */
+
+.gb-badge-editor-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 13px 18px;
+  background: #fff;
+  border-top: 1px solid var(--line);
+}
+
+.gb-badge-editor-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 16px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Picker view: the tab bar spans the full modal width and its underline is the
+   only divider, so the body itself carries no padding (the picker pads its own
+   content). The form view keeps the default body padding. */
+
+.gb-badge-editor-body:has(.gb-badgepick) {
+  padding: 0;
+  gap: 0;
+}
+
+.gb-badge-editor-body:has(.gb-badgepick) .gb-badgepick-wrap {
+  gap: 0;
+}
+
+.gb-badge-editor:has(.gb-badgepick) .gb-badge-editor-head {
+  border-bottom-color: transparent;
+}
+
+.gb-badge-editor-body .gb-panel {
+  margin: 0;
+}
+
+.gb-req {
+  color: var(--c-red-600);
+}
+
+/* Badge editor form — badge art on the left, fields on the right, split by a
+   divider. Sits directly on the editor surface (no nested card). */
+
+.gb-badge-form {
+  display: grid;
+  grid-template-columns: 148px 1fr;
+  gap: 0;
+  align-items: stretch;
+  padding: 14px 10px;
+}
+
+.gb-badge-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 28px 8px 8px;
+  border-right: 1px solid var(--line);
+}
+
+.gb-badge-fields {
+  padding-left: 28px;
+}
+
+/* The disc is the picker trigger (no separate button) with an edit icon over it. */
+
+.gb-badge-disc {
+  position: relative;
+  flex: none;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 14px rgba(15, 23, 42, 0.1);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+  transition: box-shadow 0.14s ease;
+}
+
+.gb-badge-disc:hover {
+  box-shadow:
+    0 4px 14px rgba(15, 23, 42, 0.1),
+    0 0 0 3px color-mix(in srgb, var(--teal) 22%, transparent);
+}
+
+.gb-badge-disc img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.gb-badge-disc.is-empty {
+  border: 1.5px dashed var(--c-border-strong);
+  background: var(--c-slate-50);
+  box-shadow: none;
+  color: var(--c-text-muted);
+}
+
+/* Edit affordance overlaid at the badge's lower-right. */
+
+.gb-badge-disc-edit {
+  position: absolute;
+  right: 0;
+  bottom: 2px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.25);
+}
+
+.gb-badge-disc:hover .gb-badge-disc-edit {
+  background: var(--teal-dk);
+}
+
+.gb-badge-fields {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.gb-badge-goal-row {
+  display: grid;
+  grid-template-columns: 132px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.gb-badgepick {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 0 16px 16px;
+}
+
+/* Full-bleed tab bar: negative side margins cancel the picker padding so the
+   underline runs edge to edge, while the labels stay aligned with the content. */
+
+.gb-badgepick-tabs {
+  margin: 0 -16px;
+  padding: 12px 16px 0;
+}
+
+/* Search + color filter — a full-bleed toolbar band under the tabs, divided
+   from the badge grid by a bottom border. */
+
+.gb-badgepick-topbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 -16px;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Badge-picker search now uses the shared <SearchInput> (@components/SearchInput).
+   Only the .gb-actpicker layout override remains (below). */
+
+/* Search result count line. */
+
+.gb-badgepick-count {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+/* Color filter — single-select swatch chips, right of the search. */
+
+.gb-badgepick-colorbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.gb-colorchip {
+  width: 20px;
+  height: 20px;
+  border: 0;
+  padding: 0;
+  border-radius: 50%;
+  background: none;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+
+.gb-colorchip-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--chip);
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
+  transition: transform 0.12s ease;
+}
+
+.gb-colorchip:hover .gb-colorchip-dot {
+  transform: scale(1.14);
+}
+
+/* Selection ring hugs the dot (not the 20px hit-area) so it stays inside the
+   chip and doesn't crowd its neighbors. */
+
+.gb-colorchip.is-on .gb-colorchip-dot {
+  box-shadow:
+    0 0 0 1.5px #fff,
+    0 0 0 3px var(--chip);
+}
+
+.gb-badgepick-cols {
+  display: grid;
+  grid-template-columns: 212px 1fr;
+  gap: 18px;
+  margin-top: 16px;
+  /* Fixed height so the modal doesn't resize when switching groups. */
+  height: 320px;
+}
+
+/* Searching hides the sidebar — results span the full width. */
+
+.gb-badgepick-cols.is-searching {
+  grid-template-columns: 1fr;
+}
+
+.gb-badgepick-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  height: 100%;
+  overflow-y: auto;
+  border-right: 1px solid var(--line);
+  padding-right: 8px;
+}
+
+/* Section labels — small + light so they read as headers, not items, with an
+   even gap above each section. */
+
+.gb-badgepick-grouphead {
+  margin: 15px 0 4px;
+  padding: 0 10px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--c-text-subtle);
+}
+
+.gb-badgepick-grouphead:first-child {
+  margin-top: 2px;
+}
+
+.gb-badgepick-group {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border: 0;
+  background: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-slate-600);
+  cursor: pointer;
+}
+
+.gb-badgepick-group-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gb-badgepick-group-count {
+  flex: 0 0 auto;
+  min-width: 24px;
+  height: 21px;
+  padding: 0 7px;
+  border-radius: 999px;
+  background: #eef2f6;
+  color: var(--c-text-muted);
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gb-badgepick-group:hover {
+  background: var(--c-slate-100);
+}
+
+.gb-badgepick-group.is-on {
+  background: color-mix(in srgb, var(--teal) 14%, #fff);
+  color: var(--teal-dk);
+}
+
+.gb-badgepick-group.is-on .gb-badgepick-group-count {
+  background: color-mix(in srgb, var(--teal) 22%, #fff);
+  color: var(--teal-dk);
+}
+
+.gb-badgepick-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(92px, 1fr));
+  gap: 14px 12px;
+  align-content: start;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+  /* Breathing room so the hover lift + selected ring aren't clipped on any
+     edge, plus a right gutter that keeps cards clear of the scrollbar. */
+  padding: 6px 14px 8px 6px;
+}
+
+.gb-badgepick-empty {
+  grid-column: 1 / -1;
+}
+
+/* Defined scrollbars so the sidebar + grid clearly read as scroll areas. */
+
+.gb-badgepick-groups::-webkit-scrollbar,
+.gb-badgepick-grid::-webkit-scrollbar {
+  width: 9px;
+}
+
+.gb-badgepick-groups::-webkit-scrollbar-track,
+.gb-badgepick-grid::-webkit-scrollbar-track {
+  background: var(--c-slate-100);
+  border-radius: 999px;
+}
+
+.gb-badgepick-groups::-webkit-scrollbar-thumb,
+.gb-badgepick-grid::-webkit-scrollbar-thumb {
+  background: var(--c-slate-300);
+  border-radius: 999px;
+  border: 2px solid var(--c-slate-100);
+}
+
+.gb-badgepick-groups::-webkit-scrollbar-thumb:hover,
+.gb-badgepick-grid::-webkit-scrollbar-thumb:hover {
+  background: var(--c-slate-400);
+}
+
+/* Bigger modal for the badge editor; drop the inner card. */
+
+.modal--center:has(.gb-badge-editor) {
+  width: min(720px, 94vw);
+}
+
+.modal--center:has(.gb-titlemodal) {
+  width: min(880px, 94vw);
+}
+
+.gb-badgepick-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gb-badgepick-back {
+  align-self: flex-start;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+
+.gb-badgepick-back:hover {
+  text-decoration: underline;
+}
+
+/* Upload tab */
+
+/* Upload + Create tab content sits under the full-bleed tab bar — give it the
+   same top breathing room the Gallery's toolbar band provides. */
+
+.gb-badge-upload,
+.gb-badge-uploadedit,
+.gb-badge-builder {
+  margin-top: 16px;
+}
+
+.gb-badge-upload {
+  display: flex;
+  min-height: 360px;
+}
+
+.gb-badge-uploadedit {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 18px;
+  align-items: stretch;
+  min-height: 360px;
+}
+
+/* Preview stage — a framed, tinted panel shared by Upload + Create so the badge
+   art reads as a distinct preview and stays vertically centered. */
+
+.gb-upload-stage,
+.gb-builder-preview {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 14px;
+  background: var(--c-slate-50);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.gb-upload-circle {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12);
+  cursor: grab;
+  touch-action: none;
+}
+
+.gb-upload-circle:active {
+  cursor: grabbing;
+}
+
+.gb-upload-checker {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(45deg, var(--c-slate-200) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--c-slate-200) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--c-slate-200) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--c-slate-200) 75%);
+  background-size: 16px 16px;
+  background-position:
+    0 0,
+    0 8px,
+    8px -8px,
+    -8px 0;
+}
+
+.gb-upload-circle img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transform-origin: center;
+  pointer-events: none;
+}
+
+/* Recolored SVG: the art becomes an alpha mask over a solid tint fill. */
+
+.gb-upload-tint {
+  position: absolute;
+  inset: 0;
+  transform-origin: center;
+  pointer-events: none;
+  -webkit-mask-size: contain;
+  mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+}
+
+/* "Original colors" swatch — a little rainbow to signal "no recolor". */
+
+.gb-tint-orig {
+  background: conic-gradient(#ef4444, #f59e0b, #22c55e, #0ea5e9, #6366f1, #ec4899, #ef4444);
+}
+
+/* Recolor panel: flatten swatches on top, then a per-color editor list. */
+
+.gb-recolor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.gb-recolor-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-subtle);
+}
+
+.gb-recolor-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gb-upload-hint {
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* "Replace image" lives in the preview stage, right under the image it swaps. */
+
+.gb-upload-replace {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  padding: 5px 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+
+.gb-upload-replace:hover {
+  border-color: var(--teal);
+  background: #f1f7f8;
+}
+
+/* Zoom slider sits in the stage, directly under the image it scales — flanked
+   by zoom-out / zoom-in icons and spanning the full stage width. */
+
+.gb-upload-scale {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  margin-top: 2px;
+}
+
+.gb-upload-scale-ic {
+  flex: 0 0 auto;
+  color: var(--c-text-subtle);
+}
+
+.gb-upload-scale .rng {
+  flex: 1;
+  min-width: 0;
+}
+
+.gb-upload-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Full-width "Use this image" CTA pinned to the bottom of the controls. */
+
+.gb-upload-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: auto;
+}
+
+.gb-accent-dot--none {
+  background: linear-gradient(
+      45deg,
+      var(--c-slate-200) 25%,
+      #fff 25%,
+      #fff 75%,
+      var(--c-slate-200) 75%
+    )
+    0 0 / 10px 10px;
+}
+
+.gb-badge-uploadzone {
+  position: relative;
+  flex: 1;
+  width: 100%;
+  display: grid;
+  place-items: center;
+  border: 1.5px dashed var(--c-border-strong);
+  border-radius: 12px;
+  background: var(--c-slate-50);
+  cursor: pointer;
+  transition:
+    border-color 0.15s ease,
+    background 0.15s ease;
+}
+
+.gb-badge-uploadzone:hover {
+  border-color: var(--teal);
+  background: #f1f7f8;
+}
+
+.gb-badge-uploadicon {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 6px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--teal);
+  box-shadow: 0 0 0 1px var(--line);
+}
+
+.gb-badge-uploadzone input[type='file'] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.gb-badge-uploadhint {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.gb-badge-uploadhint strong {
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.gb-badge-uploadzone img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Create tab — same two-column stage + controls layout as Upload. */
+
+.gb-badge-builder {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  gap: 18px;
+  align-items: stretch;
+  min-height: 360px;
+}
+
+.gb-badgeart {
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.gb-badgeart--built {
+  width: 92px;
+  height: 92px;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 255, 255, 0.18),
+    0 2px 8px rgba(15, 23, 42, 0.2);
+}
+
+.gb-builder-num {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.gb-builder-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Confirm button pins to the bottom of the column, like Upload. */
+
+.gb-builder-controls > :last-child {
+  margin-top: auto;
+}
+
+.gb-builder-seg {
+  margin-bottom: 0;
+}
+
+.gb-builder-bgimgs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+/* Number/Letter value sits to the left, font picker fills the rest. */
+
+.gb-builder-valuerow {
+  display: grid;
+  grid-template-columns: 116px 1fr;
+  gap: 14px;
+  align-items: start;
+}
+
+/* Grouped background-image picker (Default + theme) shared by Upload + Create. */
+
+.gb-bggrid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.gb-bglabel {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-subtle);
+}
+
+.gb-bggrid .gb-builder-bgimgs {
+  margin-top: 0;
+}
+
+.gb-builder-bgimg {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.12);
+}
+
+.gb-builder-bgimg.is-on {
+  box-shadow:
+    0 0 0 2px #fff,
+    0 0 0 4px var(--teal);
+}
+
+.gb-builder-icons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gb-builder-iconbtn {
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  background: #fff;
+  cursor: pointer;
+}
+
+.gb-builder-iconbtn:hover {
+  border-color: var(--c-border-strong);
+}
+
+.gb-builder-iconbtn.is-on {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 18%, transparent);
+}
+
+/* Tile = wrapper (card) holding the pick button + a favorite star. */
+
+.gb-badgepick-item {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease,
+    transform 0.14s ease;
+}
+
+.gb-badgepick-item:hover {
+  border-color: var(--teal);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.1);
+  transform: translateY(-2px);
+}
+
+.gb-badgepick-pick {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  background: none;
+  border-radius: 12px;
+  padding: 12px 8px 11px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  color: var(--c-slate-600);
+}
+
+/* Favorite star — always faintly visible (discoverable), bold amber when on. */
+
+.gb-badgepick-fav {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 27px;
+  height: 27px;
+  border: 0;
+  background: none;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--c-text-subtle);
+  cursor: pointer;
+  opacity: 0.55;
+  transition:
+    opacity 0.12s ease,
+    color 0.12s ease,
+    background 0.12s ease,
+    transform 0.12s ease;
+}
+
+.gb-badgepick-item:hover .gb-badgepick-fav,
+.gb-badgepick-fav:focus-visible {
+  opacity: 1;
+}
+
+.gb-badgepick-fav.is-on {
+  opacity: 1;
+  color: #f59e0b;
+  filter: drop-shadow(0 1px 1px rgba(245, 158, 11, 0.35));
+}
+
+.gb-badgepick-fav:hover {
+  color: #f59e0b;
+  background: color-mix(in srgb, #f59e0b 18%, #fff);
+  transform: scale(1.08);
+}
+
+/* Art wrapper holds the badge image + the selected check. */
+
+.gb-badgepick-item-art {
+  position: relative;
+  display: inline-flex;
+  line-height: 0;
+}
+
+.gb-badgepick-item-art img {
+  width: 66px;
+  height: 66px;
+  border-radius: 50%;
+  display: block;
+}
+
+.gb-badgepick-item-name {
+  line-height: 1.25;
+  /* Reserve two lines so every card is the same height regardless of name length. */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.5em;
+}
+
+.gb-badgepick-item-set {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-text-subtle);
+  line-height: 1.2;
+}
+
+/* Selected: teal ring + a check badge over the art. */
+
+.gb-badgepick-item.is-selected {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 7%, #fff);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal) 35%, transparent);
+}
+
+.gb-badgepick-item.is-selected .gb-badgepick-item-name {
+  color: var(--teal-dk);
+}
+
+.gb-badgepick-check {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff;
+  line-height: 0;
+}
+
+/* ── Bingo builder ── */
+
+/* ── Bingo card-size selector (mini-grid option buttons) ── */
+
+.gb-bingo-sizes {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.gb-bingo-size {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  min-width: 76px;
+  transition:
+    border-color 0.12s,
+    background 0.12s,
+    box-shadow 0.12s;
+}
+
+.gb-bingo-size:hover {
+  border-color: var(--c-slate-400);
+}
+
+.gb-bingo-size.is-active {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 7%, #fff);
+  box-shadow: inset 0 0 0 1px var(--teal);
+}
+
+.gb-bingo-size-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--n), 1fr);
+  gap: 2px;
+  width: 36px;
+  height: 36px;
+}
+
+.gb-bingo-size-grid i {
+  border-radius: 2px;
+  background: var(--c-slate-300);
+  transition: background 0.12s;
+}
+
+.gb-bingo-size.is-active .gb-bingo-size-grid i {
+  background: var(--teal);
+}
+
+.gb-bingo-size-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-slate-600);
+}
+
+.gb-bingo-size.is-active .gb-bingo-size-label {
+  color: var(--teal);
+}
+
+/* ── Bingo board (tray + drag-and-drop grid) ── */
+
+/* Full-width drag tray on top, the card grid centered below — same stacked
+   layout as the gameboard. */
+
+.gb-bingo-board {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 16px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+/* The tray stretches to the card grid's height (align-items: stretch on the
+   board). Its content is absolutely positioned so the tray never dictates the
+   row height — only the grid does — and the badge list scrolls inside. */
+
+.gb-tray {
+  border: 1.5px dashed var(--line);
+  border-radius: 14px;
+  background: var(--c-slate-50);
+  transition:
+    border-color 0.12s,
+    background 0.12s;
+}
+
+.gb-tray-inner {
+  display: flex;
+  flex-direction: column;
+  padding: 14px;
+}
+
+.gb-tray.is-over {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 8%, #fff);
+}
+
+.gb-tray-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.gb-tray-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-slate-700);
+}
+
+/* A single round badge ghost used as the drag image in both directions, so the
+   grab is fully round and the same size whichever way you drag. Rendered
+   off-screen; removed right after the browser snapshots it. */
+
+/* No box-shadow here: setDragImage snapshots the element's whole bounding box,
+   so a shadow spreading past the circle bakes a grey rectangle into the drag
+   image. The grab has to read as just the round badge. */
+.gb-drag-ghost {
+  position: fixed;
+  top: 0;
+  left: -9999px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: transparent;
+  pointer-events: none;
+}
+
+.gb-drag-ghost img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Rounded on the image too — rasterizing the drag image doesn't reliably
+     honor the parent's overflow clip, which left square corners on the grab. */
+  border-radius: 50%;
+}
+
+.gb-tray-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 2px 9px;
+  white-space: nowrap;
+}
+
+.gb-tray-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-height: 216px;
+  overflow-y: auto;
+  margin: -2px -4px -2px -2px;
+  padding: 2px 4px 2px 2px;
+}
+
+.gb-chip {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 5px 10px 5px 5px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  cursor: grab;
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s,
+    transform 0.06s;
+}
+
+.gb-chip:hover {
+  border-color: var(--teal);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.gb-chip:active {
+  cursor: grabbing;
+}
+
+.gb-chip.is-used {
+  opacity: 0.4;
+  cursor: default;
+  box-shadow: none;
+  border-color: var(--line);
+}
+
+.gb-chip-art {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #eef2f6;
+  overflow: hidden;
+}
+
+.gb-chip-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 50%;
+}
+
+.gb-bingo-art-fallback {
+  color: var(--c-text-subtle);
+}
+
+.gb-chip-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.gb-chip-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-slate-800);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gb-chip-meta {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  white-space: nowrap;
+}
+
+.gb-bingo-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 4), 1fr);
+  gap: 8px;
+  box-sizing: border-box;
+  width: 100%;
+  align-self: stretch;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--c-slate-50), #e9eef5);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.05);
+}
+
+.gb-bingo-cell {
+  position: relative;
+  aspect-ratio: 1;
+  border: 1.5px dashed var(--c-border-strong);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.55);
+  display: grid;
+  place-items: center;
+  color: #b0bccc;
+  /* visible so a placed badge's hover tooltip isn't clipped by the cell */
+  overflow: visible;
+  transition:
+    border-color 0.12s,
+    background 0.12s,
+    box-shadow 0.12s;
+}
+
+.gb-bingo-cell:hover {
+  z-index: 5;
+}
+
+.gb-bingo-cell.is-filled {
+  border-style: solid;
+  border-color: var(--line);
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06);
+}
+
+.gb-bingo-cell.is-over {
+  border-color: var(--teal);
+  border-style: solid;
+  background: color-mix(in srgb, var(--teal) 10%, #fff);
+  box-shadow: inset 0 0 0 2px var(--teal);
+}
+
+.gb-bingo-cell-plus {
+  pointer-events: none;
+}
+
+.gb-bingo-placed {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  cursor: grab;
+}
+
+.gb-bingo-placed:active {
+  cursor: grabbing;
+}
+
+/* Round badge token, sized well within the cell so it never touches the edges. */
+
+.gb-bingo-placed img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.14);
+  pointer-events: none;
+}
+
+.gb-remove {
+  position: absolute;
+  /* Centered over the badge: a corner chip reads as clipped on a round disc. */
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  flex: none;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--c-slate-900);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.85);
+  transition:
+    opacity 0.12s,
+    background 0.12s,
+    transform 0.12s;
+  box-shadow: 0 1px 5px rgba(15, 23, 42, 0.35);
+}
+
+.gb-remove > svg {
+  display: block;
+}
+
+.gb-bingo-cell:hover .gb-remove,
+.gb-placed:hover .gb-remove,
+.gb-remove:focus-visible {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.gb-remove:hover {
+  background: var(--red, var(--c-red-600));
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+/* ── Hover tooltip on a placed badge (bingo card + gameboard) ── */
+
+.gb-badge-tip {
+  position: absolute;
+  bottom: calc(100% + 9px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  z-index: 30;
+  width: max-content;
+  max-width: 190px;
+  padding: 7px 11px;
+  border-radius: 9px;
+  background: var(--c-slate-900);
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-align: center;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.38);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+}
+
+.gb-badge-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: var(--c-slate-900);
+}
+
+.gb-badge-tip strong {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.gb-badge-tip-kind {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #7dd3fc;
+}
+
+.gb-badge-tip-req {
+  font-size: 12px;
+  color: var(--c-slate-300);
+}
+
+.gb-bingo-placed:hover .gb-badge-tip,
+.gb-placed:hover .gb-badge-tip,
+.gb-badge-tip.is-shown {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Raise the hovered disc/cell so its tooltip sits above neighbors. */
+
+.gb-node:hover,
+.gb-node:has(.gb-badge-tip.is-shown) {
+  z-index: 10;
+}
+/* …and past the curved START / HALFWAY / FINISH label inside its own node. */
+.gb-disc:has(.gb-badge-tip.is-shown) {
+  z-index: 4;
+}
+
+.gb-bingo-cell:has(.gb-badge-tip.is-shown) {
+  z-index: 5;
+}
+
+/* ── Reading list ── */
+
+.gb-rl-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-left: 6px;
+}
+
+.gb-title-list {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gb-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 8px 12px;
+  background: #fff;
+}
+
+.gb-title-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gb-title-info strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.gb-title-info span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Book cover (real Open Library art, with a placeholder fallback). */
+
+.gb-bookcover {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 48px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: #eef2f6;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+}
+
+.gb-bookcover--ph {
+  display: grid;
+  place-items: center;
+  color: var(--c-text-subtle);
+  background: linear-gradient(135deg, var(--c-slate-200), var(--c-slate-300));
+}
+
+.gb-title-cover {
+  width: 36px;
+  height: 50px;
+}
+
+/* ── Reading List "Add a title" modal ── */
+
+.gb-titlemodal {
+  position: relative;
+  width: 100%;
+  height: min(600px, 86vh);
+  display: flex;
+  flex-direction: column;
+}
+
+.gb-titlemodal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.18);
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.gb-titlemodal-grid {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  min-height: 0;
+}
+
+.gb-titlemodal-side {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 22px;
+  border-right: 1px solid var(--line);
+}
+
+.gb-titlemodal-tabs {
+  margin: 0;
+}
+
+.gb-tm-searchby {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.gb-tm-searchby .csel-trigger {
+  flex: 1;
+}
+
+.gb-tm-search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.gb-tm-search-ic {
+  position: absolute;
+  left: 11px;
+  color: var(--muted);
+  display: inline-flex;
+  pointer-events: none;
+}
+
+.gb-tm-search input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 9px 30px 9px 34px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font: inherit;
+  font-size: 14px;
+}
+
+.gb-tm-search input:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+
+.gb-tm-search-clear {
+  position: absolute;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.gb-tm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.gb-titlemodal-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.gb-tm-resultshead {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 20px 22px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.gb-tm-resultshead h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.gb-tm-selcount {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.gb-tm-resultsbody {
+  flex: 1;
+  overflow: auto;
+  padding: 8px 14px;
+}
+
+.gb-tm-resultsbody .emp {
+  height: 100%;
+  justify-content: center;
+}
+
+.gb-tm-results {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.gb-tm-result {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-align: left;
+  padding: 10px 10px;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  border-bottom: 1px solid var(--line);
+}
+
+.gb-tm-result:hover:not(:disabled) {
+  background: var(--c-slate-50);
+}
+
+.gb-tm-result.is-selected {
+  background: color-mix(in srgb, var(--teal) 7%, #fff);
+}
+
+.gb-tm-result:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+.gb-tm-check {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid var(--c-border-strong);
+  position: relative;
+}
+
+.gb-tm-result.is-selected .gb-tm-check {
+  border-color: var(--teal);
+  background: var(--teal);
+}
+
+.gb-tm-result.is-selected .gb-tm-check::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2.5px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+.gb-tm-cover {
+  width: 40px;
+  height: 56px;
+}
+
+.gb-tm-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gb-tm-info strong {
+  display: block;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.gb-tm-info span {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.gb-tm-addedtag {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--teal-dk);
+}
+
+.gb-tm-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 22px;
+  border-top: 1px solid var(--line);
+}
+
+/* ── Activity badges ── */
+
+.gb-ab-list {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gb-ab-listrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.gb-ab-listart {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.gb-ab-listart img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gb-ab-listart-empty {
+  width: 100%;
+  height: 100%;
+  background: #eef2f6;
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.gb-ab-listinfo {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.gb-ab-listinfo strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gb-ab-listmeta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.gb-ab-inactive {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.gb-ab-listactions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gb-ab-move {
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: #fff;
+  color: var(--c-text-muted);
+  font-size: 13px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gb-ab-move:hover:not(:disabled) {
+  border-color: var(--c-slate-400);
+  color: var(--ink);
+}
+
+.gb-ab-move:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.gb-ab-iconbtn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--c-text-muted);
+  cursor: pointer;
+}
+
+.gb-ab-iconbtn:hover {
+  border-color: #fca5a5;
+  color: var(--c-red-600);
+}
+
+/* Edit (pencil) + remove (trash) reuse the logging-badge icon-button look. */
+
+.gb-ab-listactions .gb-row-remove,
+.gb-ab-actactions .gb-row-remove {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  color: var(--c-text-subtle);
+}
+
+.gb-ab-listactions .gb-row-remove:hover,
+.gb-ab-actactions .gb-row-remove:hover {
+  background: color-mix(in srgb, var(--c-red-600) 12%, #fff);
+  color: var(--c-red-600);
+}
+
+/* Inactive activity badges read dimmer in the list. */
+
+.gb-ab-listrow.is-inactive .gb-ab-listart,
+.gb-ab-listrow.is-inactive .gb-ab-listinfo strong {
+  opacity: 0.5;
+}
+
+/* Shared badge row — logging / review / activity badges (consistent props). */
+
+.gb-badge-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gb-badgerow {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 12px;
+  background: #fff;
+  transition:
+    opacity 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.gb-badgerow {
+  position: relative;
+}
+
+/* Source row while dragging — a faint dashed ghost in its original spot. */
+
+.gb-badgerow.is-dragging {
+  opacity: 0.4;
+  border-style: dashed;
+  border-color: var(--teal);
+}
+
+/* Drop target — tint the row and show a rounded insertion bar in the gap. */
+
+.gb-badgerow.is-drop-before,
+.gb-badgerow.is-drop-after {
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
+  border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
+}
+
+.gb-badgerow.is-drop-before::after,
+.gb-badgerow.is-drop-after::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 20%, transparent);
+}
+
+.gb-badgerow.is-drop-before::after {
+  top: -7px;
+}
+
+.gb-badgerow.is-drop-after::after {
+  bottom: -7px;
+}
+
+.gb-badgerow-drag {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  color: var(--c-slate-300);
+  cursor: grab;
+}
+
+.gb-badgerow-drag:active {
+  cursor: grabbing;
+}
+
+.gb-badgerow-art {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.gb-badgerow-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gb-badgerow-art-ic {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #eef2f6;
+  color: var(--c-text-muted);
+}
+
+/* Non-badge art (rewards, ticket prizes, certificates) reads as a rounded square. */
+
+.gb-badgerow-art--square,
+.gb-badgerow-art--square .gb-badgerow-art-ic {
+  border-radius: 10px;
+}
+
+/* Number medallion (used for activity rows in place of badge art). */
+
+.gb-badgerow-num {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--teal) 14%, #fff);
+  color: var(--teal-dk);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.gb-badgerow-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.gb-badgerow-info strong {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gb-badgerow-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.gb-badgerow-meta.is-missing {
+  color: var(--c-red-600);
+  font-weight: 600;
+}
+
+.gb-badgerow-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.gb-badgerow.is-inactive .gb-badgerow-art,
+.gb-badgerow.is-inactive .gb-badgerow-info strong {
+  opacity: 0.45;
+}
+
+/* Eye toggle = active/inactive indicator (green eye on, grey eye-off when hidden). */
+
+.gb-badgerow-eye {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  background: none;
+  border-radius: 7px;
+  color: #16a34a;
+  cursor: pointer;
+}
+
+.gb-badgerow-eye:hover {
+  background: color-mix(in srgb, #16a34a 12%, #fff);
+}
+
+.gb-badgerow-eye.is-off {
+  color: var(--c-text-subtle);
+}
+
+.gb-badgerow-eye.is-off:hover {
+  background: var(--c-slate-100);
+}
+
+.gb-badgerow-actions .gb-row-remove {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 7px;
+  color: var(--c-text-subtle);
+}
+
+.gb-badgerow-actions .gb-row-remove:hover {
+  background: color-mix(in srgb, var(--c-red-600) 12%, #fff);
+  color: var(--c-red-600);
+}
+
+.gb-ab-actrow.is-dragging {
+  opacity: 0.5;
+  border-color: var(--teal);
+}
+
+/* Activity badge editor (reuses .gb-badge-editor head/body/foot + modal width) */
+
+/* Tabs match the badge picker's full-bleed tab bar: body unpadded, tabs span
+   edge-to-edge, header divider hidden, and content panels carry the padding. */
+
+.gb-badge-editor-body:has(.gb-ab-tabs) {
+  padding: 0;
+  gap: 0;
+}
+
+.gb-ab-editor .gb-badge-editor-head {
+  border-bottom-color: transparent;
+}
+
+.gb-ab-tabs {
+  margin: 0;
+  padding: 0 16px;
+}
+
+/* Three add-actions in a panel head (Use existing / Duplicate / + Create). */
+
+.gb-actbadge-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Use/Duplicate picker modal — reuses the .gb-badge-editor chrome. The shared
+   search has flex:1 (to grow in a row); here it's in a flex column, so pin it to
+   its natural height instead of letting it stretch tall. */
+
+.gb-actpicker .search-input {
+  flex: none;
+  margin: 0 0 14px;
+}
+
+.gb-actpicker-empty {
+  min-height: 232px;
+  justify-content: center;
+}
+
+.gb-actpicker-foot {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.gb-actpicker-page-count {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.gb-actpicker-page-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.gb-actpicker-page-btns button {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    opacity 0.12s ease;
+}
+
+.gb-actpicker-page-btns button:hover:not(:disabled) {
+  background: #f1f7f8;
+  border-color: var(--teal);
+}
+
+.gb-actpicker-page-btns button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Quick badge creator */
+
+.gb-actpicker-sub {
+  margin: 0 0 14px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.gb-quick-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* Two labeled rows: "Set your badge increment [N] [unit]" + "How many badges? [N]". */
+
+.gb-quick-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gb-quick-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.gb-quick-row-label {
+  flex: none;
+  width: 200px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink, var(--c-slate-800));
+}
+
+/* Inputs share one height so the two rows line up. */
+
+.gb-quick-row .ninp {
+  flex: 0 0 auto;
+  width: 116px;
+  height: 42px;
+}
+
+.gb-quick-unit-sel {
+  display: inline-flex;
+  width: 132px;
+  height: 42px;
+}
+
+.gb-quick-unit-sel > * {
+  width: 100%;
+  height: 100%;
+}
+
+@media (max-width: 520px) {
+  .gb-quick-row-label {
+    width: auto;
+  }
+}
+
+/* Background — one row of round swatches (images, then colors). */
+
+.gb-quick-bgrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.gb-quick-bglabel {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-slate-700);
+}
+
+.gb-quick-swatches {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.gb-quick-swatch {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  padding: 0;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.12);
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+
+.gb-quick-swatch img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gb-quick-swatch.is-on {
+  border-color: var(--teal, #0b7d8a);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--teal, #0b7d8a) 32%, #fff);
+}
+
+.gb-quick-swatch-sep {
+  width: 1px;
+  align-self: stretch;
+  min-height: 22px;
+  margin: 0 2px;
+  background: var(--line, var(--c-slate-200));
+}
+
+/* Result strip — the badges as they'll be created. */
+
+.gb-quick-result {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 18px 16px;
+  border-radius: 12px;
+  background: var(--c-slate-100);
+}
+
+.gb-quick-strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.gb-quick-badge {
+  width: 50px;
+  height: 50px;
+  flex: none;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.14);
+}
+
+.gb-quick-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gb-quick-badge-ph {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-text-muted);
+}
+
+.gb-quick-result-note {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted, var(--c-slate-500));
+}
+
+.gb-actpicker-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-auto-rows: min-content;
+  gap: 8px;
+  min-height: 232px;
+  align-content: start;
+}
+
+.gb-actpicker-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 9px 12px;
+  background: #fff;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease,
+    background 0.12s ease;
+}
+
+.gb-actpicker-item:hover {
+  border-color: var(--teal);
+  background: #f1f7f8;
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.08);
+}
+
+.gb-actpicker-item .gb-badgerow-art {
+  flex: 0 0 auto;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.gb-actpicker-item .gb-badgerow-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gb-actpicker-item-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.gb-actpicker-item-info strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gb-actpicker-item-info span {
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Pink warning callout (point types, repeatable activities). */
+
+.gb-warn-note {
+  display: flex;
+  gap: 9px;
+  margin: 0 0 14px;
+  padding: 11px 14px;
+  border: 1px solid color-mix(in srgb, #e11d48 30%, transparent);
+  border-radius: 10px;
+  background: color-mix(in srgb, #e11d48 7%, #fff);
+  color: #9f1239;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.gb-warn-note::before {
+  content: '⚠';
+  flex: none;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* In the editor fieldscol the flex gap already spaces it — drop the extra margin. */
+
+.gb-ab-fieldscol .gb-warn-note {
+  margin: 0;
+}
+
+/* Activity-type select + its one-line example, grouped so the hint hugs the
+   select while the outer form keeps a uniform gap between groups. */
+
+.gb-ab-actform-type {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.gb-ab-typehint {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.gb-ab-activities {
+  padding: 14px 16px;
+}
+
+/* Details mirrors the logging badge editor's form exactly (.gb-badge-form):
+   same column width, paddings, centered disc, and divider line. */
+
+.gb-ab-details {
+  display: grid;
+  grid-template-columns: 148px 1fr;
+  gap: 0;
+  align-items: stretch;
+  padding: 16px;
+}
+
+.gb-ab-artcol {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 28px 8px 8px;
+  border-right: 1px solid var(--line);
+}
+
+.gb-ab-fieldscol {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 16px;
+  padding-left: 28px;
+}
+
+.gb-ab-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 9px 11px;
+  font: inherit;
+  font-size: 14px;
+  resize: vertical;
+  background: #fff;
+}
+
+.gb-ab-textarea:focus {
+  outline: none;
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+
+.gb-ab-settings {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.gb-ab-earn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gb-ab-earn .fld,
+.gb-ab-earn .inp-wrap {
+  flex: 0 0 90px;
+  width: 90px;
+}
+
+.gb-ab-earn-suffix {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.gb-ab-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.gb-ab-toggle-row strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.gb-ab-toggle-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.gb-ab-dates {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+/* Activities tab */
+
+.gb-ab-activities {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.gb-ab-actlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gb-ab-actrow {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.gb-ab-actinfo {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.gb-ab-actdesc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.gb-ab-actlink {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--teal-dk);
+}
+
+.gb-ab-acttype {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--c-text-subtle);
+}
+
+.gb-ab-actactions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gb-ab-add {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1.5px dashed var(--c-border-strong);
+  border-radius: 10px;
+  background: #fff;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+
+.gb-ab-add:hover {
+  border-color: var(--teal);
+  background: #f1f7f8;
+}
+
+.gb-ab-add-plus {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.gb-ab-actform {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  background: var(--c-slate-50);
+}
+
+.gb-ab-actform-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.gb-ab-actform-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Activity-code chip input: type a code, Enter to add a removable chip. */
+
+.gb-ab-codes {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 6px 8px;
+  background: #fff;
+}
+
+.gb-ab-codes:focus-within {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 16%, transparent);
+}
+
+.gb-ab-code-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 4px 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--teal) 12%, #fff);
+  color: var(--teal-dk);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.gb-ab-code-chip button {
+  border: 0;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  font-size: 16px;
+  line-height: 1;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+}
+
+.gb-ab-code-chip button:hover {
+  background: color-mix(in srgb, var(--teal) 22%, #fff);
+}
+
+.gb-ab-code-input {
+  flex: 1;
+  min-width: 100px;
+  border: 0;
+  outline: none;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  padding: 4px 2px;
+}
+
+/* ── Gameboard mock ── */
+
+/* ── Gameboard ── */
+
+.gb-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.gb-board {
+  border-radius: 16px;
+  padding: 22px 18px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Sized to the path; holds the SVG road + the absolutely-placed disc nodes. */
+
+.gb-track-wrap {
+  position: relative;
+}
+
+.gb-track {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: visible;
+}
+
+.gb-node {
+  position: absolute;
+  z-index: 1;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+}
+
+/* START / HALFWAY / FINISH labels, curved on an SVG arc around the disc. */
+
+.gb-arc {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.gb-arc-text {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+  fill: var(--ink, #7a5b2e);
+  /* White outline so the label stays legible over the themed background. */
+  paint-order: stroke;
+  stroke: rgba(255, 255, 255, 0.85);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+.gb-disc {
+  position: relative;
+  z-index: 1;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--track, #efe1c2);
+  /* A light "halo" in the track color surrounds each disc so it bulges over the
+     connector road, covering the connector ends for a seamless path. */
+  box-shadow:
+    0 0 0 8px var(--track, #efe1c2),
+    0 3px 8px rgba(15, 23, 42, 0.28);
+}
+
+.gb-disc.is-over {
+  outline: 2px dashed #fff;
+  outline-offset: 2px;
+}
+
+.gb-disc img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Empty board slot: a dashed ring + plus, not a number. */
+
+.gb-plus {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 2px dashed var(--ink, #7a5b2e);
+  color: var(--ink, #7a5b2e);
+  opacity: 0.55;
+  display: grid;
+  place-items: center;
+}
+
+.gb-art-fallback {
+  color: var(--ink, #7a5b2e);
+}
+
+.gb-placed {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1; /* force a square so the badge image crops to a true circle */
+  cursor: grab;
+}
+
+.gb-placed img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center;
+}
+
+.gb-reward {
+  position: absolute;
+  z-index: 2;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  /* Tied to the board theme: the gift sits in the theme's deep "ink" color with
+     a white ring so it lifts off the road. */
+  background: var(--ink, var(--c-slate-600));
+  display: grid;
+  place-items: center;
+  color: #fff;
+  box-shadow:
+    0 0 0 3px rgba(255, 255, 255, 0.95),
+    0 1px 4px rgba(15, 23, 42, 0.3);
+}
+
+/* Gameboard theme picker */
+
+.gb-themes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.gb-theme {
+  position: relative;
+  width: auto;
+  height: 96px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-end;
+  padding: 8px 10px;
+  color: #fff;
+  font: inherit;
+  overflow: hidden;
+  background-color: var(--c-slate-200);
+  background-size: cover;
+  background-position: center;
+}
+
+/* Legibility scrim behind the theme name. */
+
+.gb-theme:not(.gb-theme--custom)::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 50%;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.45), transparent);
+}
+
+.gb-theme .gb-theme-name {
+  position: relative;
+  z-index: 1;
+}
+
+.gb-theme.is-on {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--teal) 25%, transparent);
+}
+
+.gb-theme-name {
+  font-size: 13px;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+
+.gb-theme--custom {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--c-slate-100);
+  border: 2px dashed var(--c-border-strong);
+  color: var(--c-text-muted);
+}
+
+.gb-theme--custom .gb-theme-name {
+  text-shadow: none;
+}
+
+.gb-theme-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--teal);
+  display: grid;
+  place-items: center;
+}
+
+.gb-custom {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gb-tray-activity {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.gb-tray-sublabel {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.gb-chip.is-activity {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Mobile click-to-preview ── */
+
+/* Near-full-width preview modal with a small margin so it doesn't clip. */
+
+/* In the modal the card sits flush — no accent frame/border around it. */
+
+/* ── Challenge preview (reader-page mock) ── */
+
+.gb-pv {
+  width: 100%;
+  max-width: none;
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px -16px rgba(15, 23, 42, 0.45);
+  /* Fill the pane when content is short, but size to content (and let the
+     frame scroll) when it's tall — instead of clipping the overflow. */
+  align-self: flex-start;
+  min-height: 100%;
+}
+
+.gb-pv-banner {
+  position: relative;
+  aspect-ratio: 920 / 351;
+  box-sizing: border-box;
+  min-height: 0;
+  overflow: hidden;
+  /* Query container: the title/ribbon size in cqw so the whole header is one
+     composition that scales uniformly — identical in any container. */
+  container-type: size;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  text-align: center;
+  background: var(--c-slate-200);
+}
+
+.gb-pv-banner.is-image {
+  background: var(--c-slate-300);
+}
+
+.gb-pv-headtext {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Gap scales with the fitted title size, with a bit more separation. */
+  gap: calc(var(--gb-title-cqw, 9.5) * 0.32 * 1cqw);
+}
+
+.gb-pv-ribbon {
+  display: inline-block;
+  /* Ribbon scales relative to the fitted title; padding in em tracks the ribbon. */
+  font-size: calc(var(--gb-title-cqw, 9.5) * 0.42 * 1cqw);
+  padding: 0.3em 1em;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  /* Notched ribbon ends (>< shape) — percentage so it scales with the ribbon */
+  clip-path: polygon(0 0, 100% 0, 96% 50%, 100% 100%, 0 100%, 4% 50%);
+}
+
+.gb-pv-loading {
+  display: grid;
+  place-items: center;
+}
+
+.gb-pv-spinner {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 4px solid var(--c-border-strong);
+  border-top-color: var(--c-slate-500);
+  animation: gb-spin 0.8s linear infinite;
+}
+
+.gb-pv-cover {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 40px;
+  height: 52px;
+  border-radius: 7px;
+  z-index: 2;
+}
+
+.gb-pv-imgicon {
+  color: #fff;
+  opacity: 0.9;
+}
+
+.gb-pv-title-below {
+  margin: 0 0 14px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--ink);
+}
+
+.gb-pv-banner h3 {
+  margin: 0;
+  /* cqw resolves against the banner (a query container), not the shrink-to-fit
+     parent — otherwise max-width clamps the title to 92% of its OWN width and
+     wraps short titles prematurely. Higher value = wider before breaking. */
+  max-width: 94cqw;
+  color: #fff;
+  font-size: 9.5cqw;
+  font-weight: 800;
+  line-height: 1;
+  /* Optical centering: caps sit high in the line box, so nudge down a touch. */
+  transform: translateY(0.06em);
+  text-shadow: 0 0.4cqw 1.2cqw rgba(0, 0, 0, 0.32);
+  text-wrap: balance;
+  overflow-wrap: normal;
+}
+
+.gb-pv-body {
+  padding: 18px 16px;
+}
+
+.gb-pv-title {
+  margin: 0 0 12px;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+.gb-pv-sk {
+  background: var(--c-slate-200);
+  border-radius: 8px;
+}
+
+.gb-pv-sk-block {
+  height: 64px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.gb-pv-sk-line {
+  height: 11px;
+  margin-bottom: 9px;
+}
+
+/* Reader "Badges" section header (replaces the old single-tab bar). */
+
+.gb-pv-section {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 18px 0 14px;
+}
+
+.gb-pv-section-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.gb-pv-section-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 20px;
+  padding: 0 7px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* Preview content selector — a segmented pill control (Reading list / Badges / Rewards). */
+
+.gb-pv-seg {
+  display: flex;
+  gap: 3px;
+  margin: 18px 0 14px;
+  padding: 4px;
+  background: #eef2f6;
+  border-radius: 11px;
+}
+
+.gb-pv-seg-btn {
+  flex: 1;
+  appearance: none;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  cursor: pointer;
+  padding: 7px 8px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition:
+    background 0.14s,
+    color 0.14s,
+    box-shadow 0.14s;
+}
+
+.gb-pv-seg-btn:hover:not(.is-active) {
+  color: var(--c-slate-700);
+}
+
+.gb-pv-seg-btn.is-active {
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.14);
+}
+
+.gb-pv-seg-count {
+  font-size: 11px;
+  font-weight: 800;
+  color: currentColor;
+  background: color-mix(in srgb, currentColor 16%, transparent);
+  border-radius: 999px;
+  min-width: 18px;
+  height: 17px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Theme dropdown option: a small badge-style preview + the theme name. */
+
+.gb-theme-opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.gb-theme-opt-badge {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--c, var(--c-slate-300));
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  box-shadow:
+    inset 0 0 0 1.5px rgba(255, 255, 255, 0.6),
+    0 1px 3px rgba(15, 23, 42, 0.22);
+}
+
+.gb-theme-opt-badge img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Rewards list in the preview */
+
+.gb-pv-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gb-pv-reward {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.gb-pv-reward-art {
+  --c: var(--c-brand-teal);
+  flex: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  color: var(--c);
+  background: color-mix(in srgb, var(--c) 12%, #fff);
+  overflow: hidden;
+}
+
+.gb-pv-reward-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gb-pv-reward-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.gb-pv-reward-info strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gb-pv-reward-info span {
+  font-size: 12.5px;
+  color: var(--c-text-muted);
+}
+
+/* Challenge dates + description in the preview body */
+
+.gb-pv-dates {
+  /* Tuck right under the title. */
+  margin: -6px 0 12px;
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.gb-pv-desc {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--c-slate-600);
+}
+
+.gb-pv-desc :is(p, ul, ol) {
+  margin: 0 0 8px;
+}
+
+.gb-pv-desc :is(p, ul, ol):last-child {
+  margin-bottom: 0;
+}
+
+.gb-pv-desc h2 {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ink);
+  margin: 10px 0 4px;
+}
+
+.gb-pv-desc h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 8px 0 4px;
+}
+
+.gb-pv-desc ul,
+.gb-pv-desc ol {
+  padding-left: 18px;
+}
+
+.gb-pv-desc blockquote {
+  margin: 8px 0;
+  padding: 2px 0 2px 10px;
+  border-left: 3px solid var(--c-border-strong);
+  color: var(--c-text-muted);
+}
+
+.gb-pv-desc pre {
+  margin: 8px 0;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: var(--c-slate-100);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.gb-pv-desc code {
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: var(--c-slate-100);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+/* Collapsible description animates between the clamp and its full height. */
+
+.gb-pv-desc.is-collapsible {
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+/* Clamped state fades the last line so it reads as "more below". */
+
+.gb-pv-desc.is-clamped {
+  -webkit-mask-image: linear-gradient(180deg, #000 60%, transparent);
+  mask-image: linear-gradient(180deg, #000 60%, transparent);
+}
+
+.gb-pv-more {
+  margin-top: 6px;
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.gb-pv-more:hover {
+  text-decoration: underline;
+}
+
+.gb-pv-badges {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* Each badge sits in its own card with consistent padding + gap. */
+
+.gb-pv-badge-cell {
+  display: grid;
+  place-items: center;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+
+.gb-pv-badge-art {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+}
+
+.gb-pv-badge-img {
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.gb-pv-badge {
+  --c: #7c5cfa;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: radial-gradient(
+    circle at 32% 26%,
+    var(--c),
+    color-mix(in srgb, var(--c) 50%, #10184a)
+  );
+  box-shadow:
+    inset 0 0 0 2px rgba(255, 255, 255, 0.12),
+    0 2px 8px rgba(15, 23, 42, 0.22);
+}
+
+.gb-pv-badge :is(img, svg) {
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
+}
+
+/* ── Badge states ── */
+
+/* Earned: full color. In progress: slightly dimmed under the ring. */
+
+.gb-pv-badge-cell.is-progress .gb-pv-badge-art {
+  opacity: 0.82;
+}
+
+/* Not yet earned: greyed out so earned badges stand out. */
+
+.gb-pv-badge-cell.is-default .gb-pv-badge-art {
+  filter: grayscale(1);
+  opacity: 0.4;
+}
+
+/* Circular progress ring drawn over an in-progress badge. */
+
+.gb-pv-badge-ring {
+  position: absolute;
+  inset: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  transform: rotate(-90deg);
+  pointer-events: none;
+}
+
+.gb-pv-ring-track {
+  fill: none;
+  stroke: rgba(15, 23, 42, 0.12);
+  stroke-width: 2.4;
+}
+
+.gb-pv-ring-fill {
+  fill: none;
+  stroke: #16a34a;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.4s ease;
+}
+
+/* Corner status chips (check for earned, lock for locked). */
+
+.gb-pv-badge-tag {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+}
+
+.gb-pv-badge-tag.is-check {
+  background: #16a34a;
+}
+
+.gb-pv-badge-tag.is-lock {
+  background: var(--c-slate-400);
+}
+
+/* Prize ribbon sits top-left so it never collides with the status chip. */
+
+.gb-pv-badge-prize {
+  position: absolute;
+  top: -3px;
+  left: -3px;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: #fff;
+  background: #f59e0b;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
+}
+
+/* ── Preview icon button: phone only ── */
+
+/* Desktop (split pane available): hide the footer preview button — the side
+   tab handles open/close there. */
+
+/* ── Responsive: collapse preview under the form on narrow screens ── */
+
+@media (max-width: 900px) {
+  /* Preview becomes a click-to-open overlay; the split pane + side tab hide. */
+  /* Step dropdown fills the bar on mobile. */
+  .gb-stepbar {
+    padding: 8px 12px;
+  }
+  .gb-stepnav-select {
+    flex: 1;
+    width: auto;
+  }
+  /* Tighten the top bar so it doesn't overflow on small screens. */
+  .gb-topbar {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+  .gb-status,
+  .gb-save,
+  .gb-form-footer .tgl {
+    display: none;
+  }
+  .gb-title {
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+/* ── Mobile (≤640px): tighten chrome + stack dense rows ── */
+
+@media (max-width: 640px) {
+  .gb-form-inner {
+    padding: 16px 14px;
+  }
+  .gb-panel {
+    padding: 14px;
+  }
+  /* Numbered-dot stepper — full step labels overflow on small screens. */
+  .gb-stepbar {
+    overflow-x: auto;
+  }
+  .gb-stepbar .stepper-name {
+    display: none;
+  }
+  /* Drop the secondary center icon group so the title has room. */
+  /* Panel header + its actions wrap instead of clipping off-screen. */
+  .gb-panel-head {
+    flex-wrap: wrap;
+  }
+  .gb-panel-actions {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  /* Ticket-source option cards stack to one column.
+     Scoped under .gb-root to outrank the later base rule. */
+  .gb-root .gb-optcards {
+    grid-template-columns: 1fr;
+  }
+  /* Template + banner galleries go two-up instead of cramped three-up. */
+  .gb-gallery,
+  .gb-banner-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* ── Rewards step ───────────────────────────────────────────────────────── */
+
+.gb-rewards-drawings-note {
+  margin-bottom: 16px;
+}
+
+/* Assigned-badge avatars shown on a reward row (in the BadgeRow meta). */
+
+.gb-badge-avatars {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  vertical-align: middle;
+}
+
+.gb-badge-avatar {
+  flex: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: inline-grid;
+  place-items: center;
+  background: #eef2f6;
+  box-shadow: 0 0 0 1.5px #fff;
+}
+
+.gb-badge-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gb-badge-avatars-label {
+  margin-left: 5px;
+}
+
+/* Saved-item picker art slot (ticket rewards with an image / icon). */
+
+.gb-savedreward-art {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--c-slate-100);
+}
+
+.gb-savedreward-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gb-reward-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.gb-narrow-field .ninp {
+  max-width: 150px;
+}
+
+/* Ticket-earning source */
+
+.gb-ticket-source {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.gb-ticket-source-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Single-select option cards (e.g. how tickets are earned). */
+
+.gb-optcards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* Full-width stacked variant (e.g. completion requirement cards). */
+
+.gb-optcards--stack {
+  grid-template-columns: 1fr;
+}
+
+/* In the big stacked cards, center the icon + radio dot against the text. */
+
+.gb-optcards--stack .gb-optcard {
+  align-items: center;
+}
+
+.gb-optcards--stack .gb-optcard-dot {
+  margin-top: 0;
+}
+
+.gb-optcard {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  text-align: left;
+  padding: 14px;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  cursor: pointer;
+  font: inherit;
+  transition:
+    border-color 0.12s,
+    background 0.12s,
+    box-shadow 0.12s,
+    transform 0.08s;
+}
+
+.gb-optcard:hover {
+  border-color: color-mix(in srgb, var(--teal) 45%, var(--line));
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.07);
+  transform: translateY(-1px);
+}
+
+.gb-optcard.is-on {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
+  box-shadow: 0 3px 14px color-mix(in srgb, var(--teal) 20%, transparent);
+}
+
+.gb-optcard-ic {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: #eef2f6;
+  color: var(--slate, var(--c-slate-500));
+  transition:
+    background 0.12s,
+    color 0.12s,
+    transform 0.12s;
+}
+
+.gb-optcard.is-on .gb-optcard-ic {
+  background: var(--teal);
+  color: #fff;
+  transform: scale(1.04);
+}
+
+.gb-optcard-text {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.gb-optcard-text strong {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.gb-optcard-text span {
+  font-size: 12px;
+  line-height: 1.35;
+  color: var(--slate, var(--c-slate-500));
+}
+
+.gb-optcard-dot {
+  flex: none;
+  margin-top: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--line);
+  background: #fff;
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+
+.gb-optcard.is-on .gb-optcard-dot {
+  border-color: var(--teal);
+  box-shadow: inset 0 0 0 3.5px var(--teal);
+}
+
+/* Stacked badge selector — shared across reward types + ticket earning. */
+
+.gb-badgeselect {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 300px;
+  overflow: auto;
+  padding: 1px;
+}
+
+.gb-bsrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1.5px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  padding-right: 12px;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+
+.gb-bsrow.is-on {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
+}
+
+.gb-bsrow-pick {
+  flex: 1 1 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  padding: 9px 4px 9px 10px;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.gb-bsrow-check {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 6px;
+  border: 1.5px solid var(--line);
+  background: #fff;
+  display: grid;
+  place-items: center;
+  color: #fff;
+}
+
+.gb-bsrow.is-on .gb-bsrow-check {
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.gb-bsrow-check svg {
+  width: 11px;
+  height: 11px;
+}
+
+.gb-bsrow-art {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: #eef2f6;
+}
+
+.gb-bsrow-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gb-bsrow-art-ph {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--c-slate-200), var(--c-slate-300));
+}
+
+.gb-bsrow-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gb-bsrow.is-disabled {
+  opacity: 0.55;
+}
+
+.gb-bsrow.is-disabled .gb-bsrow-pick {
+  cursor: not-allowed;
+}
+
+.gb-bsrow-used {
+  flex: none;
+  padding-right: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.gb-bsrow-val {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.gb-bsrow-val .ninp {
+  width: 106px;
+}
+
+/* "All badges award N tickets" inline control — tinted to read as a
+   continuation of the selected "All badges" option. */
+
+/* An option card whose control reveals INSIDE the card when it's active. */
+
+.gb-optrow {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Only merge into one card when there's actually a control below; an active
+   option with no sub-control keeps its normal rounded card. */
+
+.gb-optrow.is-on:has(.gb-optcard-sub) {
+  border-radius: 14px;
+  box-shadow: 0 3px 14px color-mix(in srgb, var(--teal) 20%, transparent);
+}
+
+.gb-optrow.is-on:has(.gb-optcard-sub) .gb-optcard {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  box-shadow: none;
+}
+
+.gb-optcard-sub {
+  border: 1.5px solid var(--teal);
+  border-top: 0;
+  border-radius: 0 0 14px 14px;
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
+  padding: 12px 14px 14px;
+}
+
+.gb-ticket-allcount {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  background: color-mix(in srgb, var(--teal) 6%, var(--c-slate-50));
+  border: 1px solid color-mix(in srgb, var(--teal) 28%, var(--line));
+  border-radius: 12px;
+  padding: 12px 16px;
+}
+
+/* Inside an option card, the control drops its own card chrome. */
+
+.gb-optcard-sub .gb-ticket-allcount {
+  border: 0;
+  background: none;
+  border-radius: 0;
+  padding: 0;
+}
+
+.gb-ticket-allcount .ninp {
+  width: 106px;
+}
+
+/* Saved-reward picker */
+
+.gb-savedreward-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gb-savedreward {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 11px 13px;
+  background: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+
+.gb-savedreward:hover:not(:disabled) {
+  border-color: var(--c-slate-400);
+}
+
+.gb-savedreward.is-selected {
+  border-color: var(--teal);
+  background: color-mix(in srgb, var(--teal) 6%, #fff);
+}
+
+.gb-savedreward:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.gb-savedreward.is-selected .gb-tm-check {
+  border-color: var(--teal);
+  background: var(--teal);
+}
+
+.gb-savedreward.is-selected .gb-tm-check::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2.5px;
+  width: 5px;
+  height: 9px;
+  border: solid #fff;
+  border-width: 0 2.5px 2.5px 0;
+  transform: rotate(45deg);
+}
+
+.gb-savedreward-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gb-savedreward-info strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.gb-savedreward-info span {
+  font-size: 13px;
+  color: var(--muted);
+}

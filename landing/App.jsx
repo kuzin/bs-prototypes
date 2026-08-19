@@ -42,6 +42,7 @@ const ICON_NAMES = {
   'logging-flow': 'reading-log',
   'pick-your-path': 'route',
   btwb: 'message-chatbot',
+  gameboard: 'dice-5',
 }
 
 const ICONS = Object.fromEntries(

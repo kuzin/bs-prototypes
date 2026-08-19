@@ -136,6 +136,7 @@ import {
   IconZoomOut,
   // ── layout / structure ──
   IconRoute,
+  IconDice5,
   IconLayoutGrid,
   IconLayoutDashboard,
   IconLayout,
@@ -338,6 +339,7 @@ const REGISTRY = {
 
   // layout / structure
   route: IconRoute,
+  'dice-5': IconDice5,
   'layout-grid': IconLayoutGrid,
   'layout-dashboard': IconLayoutDashboard,
   layout: IconLayout,

@@ -26,6 +26,7 @@ import { studentProfileSections } from './sections/student-profile'
 import { booksSections } from './sections/books'
 import { adminDashboardSections } from './sections/admin-dashboard'
 import { loggingFlowSections } from './sections/logging-flow'
+import { gameboardSections } from './sections/gameboard'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -209,6 +210,14 @@ export const GROUPS = [
     icon: <Icon name="layout-dashboard" size={22} />,
   },
   {
+    id: 'gameboard',
+    kind: 'prototype',
+    title: 'Gameboard',
+    desc: 'Components for the Gameboard Challenge prototype — the drag-and-drop board readers travel as they read, and its illustrated theme picker.',
+    color: '#5FA052',
+    icon: <Icon name="dice-5" size={22} />,
+  },
+  {
     id: 'logging-flow',
     kind: 'prototype',
     title: 'Logging Flow',
@@ -235,4 +244,5 @@ export const SECTIONS = [
   ...booksSections,
   ...adminDashboardSections,
   ...loggingFlowSections,
+  ...gameboardSections,
 ]
