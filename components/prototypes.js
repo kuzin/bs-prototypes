@@ -139,4 +139,12 @@ export const PROTOTYPES = [
     description:
       'Site-wide BTWB setting — start a book talk on every completed book, on by default.',
   },
+  {
+    id: 'gameboard',
+    name: 'Gameboard Challenge',
+    section: 'Prototypes',
+    href: '/bs-prototypes/gameboard/',
+    accent: '#5FA052',
+    description: 'Theme a gameboard and place badges along the path readers travel.',
+  },
 ]
