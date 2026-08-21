@@ -12,18 +12,18 @@
 // Only one talk ever runs per logged session, resolved in this order:
 //   1. Reading engagement talk (challenge)
 //   2. Book completion talk (site-wide)   ← new in this ticket
-//   3. Warning-level talk (integrity)
+//   3. Warning-level talk (integrity by default)
 
 export const SITE = {
   name: 'Maplewood Elementary',
 }
 
 // ─── The three types of book talk ────────────────────────────────────────────
-// Integrity talks belong to the warning threshold — that trigger always runs
-// one, and it isn't an option for completions. Completion talks are the other
-// two: the ticket leaves the default open ("we could, by default, make these
-// engagement OR integrity book talks - or we could let the admin choose"), so
-// this models the admin-choice version across Engagement and Comprehension.
+// Every trigger picks its own type. The ticket leaves the default open ("we
+// could, by default, make these engagement OR integrity book talks - or we could
+// let the admin choose"), so this models the admin-choice version — and the
+// warning threshold gets the same choice, defaulting to the integrity talk it
+// runs today.
 export const TALK_KINDS = {
   engagement: {
     id: 'engagement',
@@ -64,80 +64,34 @@ export const TALK_KINDS = {
   },
 }
 
-// The two an admin can pick from for completion talks. Integrity is reserved for
-// the warning threshold, so it isn't offered here.
-export const COMPLETION_KINDS = [TALK_KINDS.engagement, TALK_KINDS.comprehension]
-
-// ─── Conversation Focus (comprehension talks only) ───────────────────────────
-// A comprehension talk needs a focus. Benny *weaves* it into the conversation
-// rather than asking it as a quiz item — `benny` is the question he actually
-// opens with. He also scales the wording and what he expects to the reader's
-// grade, so one focus gets more sophisticated as students mature.
-export const CONVERSATION_FOCUSES = [
-  {
-    id: 'theme',
-    label: 'Theme',
-    benny:
-      'If Benny recommended this book to another student, what is one lesson you hope they’d learn from it? What happened in the story made you think that?',
-    alsoAsks:
-      'If you could tell the author one thing you took away from this book, what would you say?',
-  },
-  {
-    id: 'character',
-    label: 'Character',
-    benny:
-      'If you could trade places with someone in this book for one day, who would you pick? What do you think would surprise you most about being them?',
-    alsoAsks:
-      'Who in this book would you want as a friend, and who would you keep your distance from? What made you decide that?',
-  },
-  {
-    id: 'point-of-view',
-    label: 'Point of View',
-    benny:
-      'Whose eyes are we seeing this story through? If a different character had told it, what do you think they’d want us to know that we never got to hear?',
-    alsoAsks:
-      'Was there a moment where you really wanted to know what someone else was thinking? What do you think was going on for them?',
-  },
-  {
-    id: 'summarizing',
-    label: 'Summarizing',
-    benny:
-      'If a friend asked what happens in this book but you only had a minute before class started, what would you tell them?',
-    alsoAsks:
-      'If this book had a movie trailer, what would it show — and what would you leave out so you didn’t spoil it?',
-  },
-  {
-    id: 'text-evidence',
-    label: 'Text Evidence',
-    benny:
-      'You sound sure about that — what happened in the book that made you think so? Is there another moment that backs it up?',
-    alsoAsks:
-      'If a friend read this and disagreed with you, what moment from the book would you point them to?',
-  },
+// Any trigger can run any of the three, so both pickers offer the same list.
+export const TALK_KIND_OPTIONS = [
+  TALK_KINDS.engagement,
+  TALK_KINDS.comprehension,
+  TALK_KINDS.integrity,
 ]
 
-export const focusById = (id) =>
-  CONVERSATION_FOCUSES.find((f) => f.id === id) ?? CONVERSATION_FOCUSES[0]
+// "an engagement talk" / "a comprehension talk"
+export const article = (word) => (/^[aeiou]/i.test(word) ? 'an' : 'a')
 
 // Composer emoji shortcuts — readers are grade 3+, and a tap beats typing.
 export const EMOJIS = ['😀', '😂', '🥺', '😮', '❤️', '🔥', '👍', '👎', '🤔', '📚', '⭐', '🎉']
 
 // What the ticket proposes as the shipped default: completion talks on with
-// BTWB, engagement flavored. `completionFocus` only applies once the kind is
-// comprehension.
+// BTWB, engagement flavored. The warning threshold keeps the integrity talk it
+// runs today — it's now a choice rather than a fixed behavior.
 export const DEFAULT_SETTINGS = {
   btwbOn: true,
   onCompletion: true,
   completionKind: 'engagement',
-  completionFocus: 'theme',
   onWarning: true,
+  warningKind: 'integrity',
 }
 
 // ─── What the educator gets back ─────────────────────────────────────────────
 // Deliberately not another score. Two things: how confident Benny is that the
 // reader actually knew the book, and a short written read — one strength, one
-// next step. Every talk type produces both; only comprehension talks name a
-// Reading Focus, since that's the only type that has one.
+// next step. Every talk type produces both.
 export const CONFIDENCE_LEVELS = [
   { id: 'high', label: 'High', color: '#0D9488' },
   { id: 'moderate', label: 'Moderate', color: '#B45309' },
@@ -250,9 +204,9 @@ export const CONFIDENCE_BLURB =
   'Benny’s confidence that the student demonstrated authentic knowledge of the book.'
 export const TAKEAWAYS_BLURB = 'Instead of another score, Benny summarizes what it observed.'
 
-// Keyed by talk kind; comprehension is keyed again by Conversation Focus. Only
-// the integrity talk carries a `confidence` — Reading Confidence is about whether
-// the reading was authentic, which is that talk's whole job.
+// Keyed by talk kind. Only the integrity talk carries a `confidence` — Reading
+// Confidence is about whether the reading was authentic, which is that talk's
+// whole job.
 const TAKEAWAYS = {
   engagement: {
     strength: 'The student spoke warmly about the book and wanted to recommend it to a friend.',
@@ -265,35 +219,12 @@ const TAKEAWAYS = {
       'Worth a quick check-in — the answers stayed vague, and one looked like filler rather than recall.',
   },
   comprehension: {
-    theme: {
-      strength: 'The student identified a meaningful lesson from the story.',
-      nextStep:
-        'Encourage the student to support their thinking with multiple events from the text.',
-    },
-    character: {
-      strength:
-        'The student described the main character vividly and noticed how she changed by the end.',
-      nextStep: 'Ask the student what caused that change, not just that it happened.',
-    },
-    'point-of-view': {
-      strength: 'The student recognized the story is told by one character rather than everyone.',
-      nextStep:
-        'Practice imagining the same scene from a second character’s perspective to build the skill.',
-    },
-    summarizing: {
-      strength: 'The student recalled the main events and put them in the right order.',
-      nextStep: 'Work on separating the events that matter most from the smaller details.',
-    },
-    'text-evidence': {
-      strength: 'The student pointed to a specific moment in the book to back up an opinion.',
-      nextStep:
-        'Push for a second piece of evidence, so one moment isn’t carrying the whole claim.',
-    },
+    strength: 'The student identified a meaningful lesson from the story.',
+    nextStep: 'Encourage the student to support their thinking with multiple events from the text.',
   },
 }
 
-export const takeawayFor = (kindId, focusId) =>
-  kindId === 'comprehension' ? TAKEAWAYS.comprehension[focusId] : TAKEAWAYS[kindId]
+export const takeawayFor = (kindId) => TAKEAWAYS[kindId]
 
 // ─── The reader + book the talk demo runs on ─────────────────────────────────
 export const READER = { name: 'Marcus Chen', grade: 4, gradeLabel: '4th grade' }
@@ -306,9 +237,8 @@ export const BOOK = {
 }
 
 // ─── The conversations ───────────────────────────────────────────────────────
-// Scripted per talk kind; comprehension is scripted per Conversation Focus.
-// Benny opens warmly, works the point of the talk in as conversation rather than
-// as a quiz item, follows up on the answer, then closes. `replies` are the
+// Scripted per talk kind. Benny opens warmly, works the point of the talk in as
+// conversation rather than as a quiz item, follows up on the answer, then closes. `replies` are the
 // tappable answers the demo offers; the last turn has none.
 const ENGAGEMENT_SCRIPT = [
   {
@@ -353,135 +283,37 @@ const INTEGRITY_SCRIPT = [
   { benny: 'Thanks for chatting with me about it!', replies: [] },
 ]
 
-const COMPREHENSION_SCRIPTS = {
-  theme: [
-    {
-      benny: 'You finished *The Wild Robot*! Nice work. Did you like how it ended?',
-      replies: ['I loved it', 'It was sad but good', 'It was okay'],
-    },
-    {
-      benny:
-        'If Benny recommended this book to another student, what is one lesson you hope they’d learn from it? What happened in the story made you think that?',
-      replies: [
-        'That you can make a family anywhere',
-        'That being different is okay',
-        'To keep trying even when it’s hard',
-      ],
-    },
-    {
-      benny: 'That’s a big one. What happened in the story that made you think of that?',
-      replies: [
-        'Roz took care of Brightbill even though she wasn’t his real mom',
-        'The animals helped her when she was in trouble',
-        'I’m not sure, it just felt that way',
-      ],
-    },
-    {
-      benny: 'I love that you pulled that from the story. Thanks for talking books with me!',
-      replies: [],
-    },
-  ],
-  character: [
-    {
-      benny: 'You finished *The Wild Robot*! What did you think of Roz?',
-      replies: ['She was awesome', 'She was kind of strange', 'I liked her a lot'],
-    },
-    {
-      benny:
-        'If you could trade places with someone in this book for one day, who would you pick? What do you think would surprise you most about being them?',
-      replies: [
-        'Roz — being a robot in a forest would be weird',
-        'Brightbill, so I could fly',
-        'One of the other animals',
-      ],
-    },
-    {
-      benny: 'Ha! What do you think changed the most about Roz from the start to the end?',
-      replies: [
-        'She started out not caring and then she really loved Brightbill',
-        'She got braver',
-        'She learned how to talk to the animals',
-      ],
-    },
-    { benny: 'That’s a great read on her. Thanks for chatting with me!', replies: [] },
-  ],
-  'point-of-view': [
-    {
-      benny: 'You finished *The Wild Robot*! Who was telling you this story?',
-      replies: ['Roz, mostly', 'A narrator', 'I’m not sure'],
-    },
-    {
-      benny:
-        'Whose eyes are we seeing this story through? If a different character had told it, what do you think they’d want us to know that we never got to hear?',
-      replies: [
-        'Brightbill — how it felt to have a robot for a mom',
-        'The other animals, maybe',
-        'I don’t know',
-      ],
-    },
-    {
-      benny: 'Interesting. What do you think Brightbill worried about that we didn’t get to see?',
-      replies: [
-        'That the other geese would think he was weird',
-        'That Roz would leave',
-        'Not sure',
-      ],
-    },
-    { benny: 'Good thinking. Thanks for talking it through with me!', replies: [] },
-  ],
-  summarizing: [
-    {
-      benny: 'You finished *The Wild Robot*! How was it?',
-      replies: ['Really good', 'Pretty good', 'It was long'],
-    },
-    {
-      benny:
-        'If a friend asked what happens in this book but you only had a minute before class started, what would you tell them?',
-      replies: [
-        'A robot washes up on an island and learns to survive and raise a gosling',
-        'It’s about a robot and some animals',
-        'A robot gets stuck on an island',
-      ],
-    },
-    {
-      benny: 'Nice — and how does it all wrap up at the end?',
-      replies: [
-        'Ships come to take her back and she has to leave the island',
-        'She fights off the robots',
-        'I forget exactly',
-      ],
-    },
-    { benny: 'You had the shape of it. Thanks for the recap!', replies: [] },
-  ],
-  'text-evidence': [
-    {
-      benny: 'You finished *The Wild Robot*! Was Roz a good mom to Brightbill?',
-      replies: ['Definitely', 'She tried her best', 'Not at first'],
-    },
-    {
-      benny:
-        'You sound sure about that — what happened in the book that made you think so? Is there another moment that backs it up?',
-      replies: [
-        'She taught him to swim and fly even though she couldn’t do either',
-        'She protected him from the other animals',
-        'I just think she was nice',
-      ],
-    },
-    {
-      benny: 'That’s a strong example. Can you think of one more moment like that?',
-      replies: [
-        'She built him a nest before winter',
-        'She stayed behind so he could go with the flock',
-        'That’s the only one I remember',
-      ],
-    },
-    { benny: 'Two solid examples — that’s exactly it. Thanks for chatting!', replies: [] },
-  ],
-}
+const COMPREHENSION_SCRIPT = [
+  {
+    benny: 'You finished *The Wild Robot*! Nice work. Did you like how it ended?',
+    replies: ['I loved it', 'It was sad but good', 'It was okay'],
+  },
+  {
+    benny:
+      'If you recommended this book to another student, what is one lesson you hope they’d learn from it?',
+    replies: [
+      'That you can make a family anywhere',
+      'That being different is okay',
+      'To keep trying even when it’s hard',
+    ],
+  },
+  {
+    benny: 'That’s a big one. What happened in the story that made you think of that?',
+    replies: [
+      'Roz took care of Brightbill even though she wasn’t his real mom',
+      'The animals helped her when she was in trouble',
+      'I’m not sure, it just felt that way',
+    ],
+  },
+  {
+    benny: 'I love that you pulled that from the story. Thanks for talking books with me!',
+    replies: [],
+  },
+]
 
-export const scriptFor = (kindId, focusId) =>
+export const scriptFor = (kindId) =>
   kindId === 'comprehension'
-    ? COMPREHENSION_SCRIPTS[focusId]
+    ? COMPREHENSION_SCRIPT
     : kindId === 'integrity'
       ? INTEGRITY_SCRIPT
       : ENGAGEMENT_SCRIPT
@@ -494,8 +326,8 @@ export const scriptFor = (kindId, focusId) =>
 // reader-facing modal uses — `picks` chooses which offered answer the student
 // gave, so the integrity example genuinely earns its flags rather than asserting
 // them.
-function buildTranscript(kindId, focusId, picks, flaggedTurns = [], leftAfter = null) {
-  const script = scriptFor(kindId, focusId)
+function buildTranscript(kindId, picks, flaggedTurns = [], leftAfter = null) {
+  const script = scriptFor(kindId)
   const messages = []
   script.forEach((step, i) => {
     // `leftAfter` = the reader walked away on this question, so Benny's line is
@@ -513,7 +345,6 @@ export const SESSIONS = [
   {
     id: 'se-1',
     kindId: 'engagement',
-    focusId: null,
     student: { name: 'Diego Ramirez', grade: '3rd', initials: 'DR', color: '#0D9488' },
     book: BOOK,
     date: 'Sep 14, 2026',
@@ -539,7 +370,6 @@ export const SESSIONS = [
   {
     id: 'se-2',
     kindId: 'comprehension',
-    focusId: 'theme',
     student: { name: 'Marcus Chen', grade: '4th', initials: 'MC', color: '#4F46E5' },
     book: BOOK,
     date: 'Sep 14, 2026',
@@ -565,7 +395,6 @@ export const SESSIONS = [
   {
     id: 'se-3',
     kindId: 'integrity',
-    focusId: null,
     student: { name: 'Priya Patel', grade: '5th', initials: 'PP', color: '#B45309' },
     book: BOOK,
     date: 'Sep 13, 2026',
@@ -604,7 +433,7 @@ export const SESSIONS = [
   },
 ].map((s) => ({
   ...s,
-  messages: buildTranscript(s.kindId, s.focusId, s.picks, s.flaggedTurns, s.leftAfter ?? null),
+  messages: buildTranscript(s.kindId, s.picks, s.flaggedTurns, s.leftAfter ?? null),
   // SFR's flag shape: each carries its own id so cards can be keyed + removed.
   positiveFlags: s.positiveFlags.map((type, i) => ({ id: `${s.id}-p${i}`, type })),
   flags: s.flags.map((type, i) => ({ id: `${s.id}-f${i}`, type })),

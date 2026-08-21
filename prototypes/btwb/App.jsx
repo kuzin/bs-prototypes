@@ -13,7 +13,7 @@ import './index.css'
 //
 // The site settings live here so the challenge step and the talk demo can both
 // read them: the challenge step explains how it interacts with the site-wide
-// default, and the talk opens on whichever Conversation Focus the site is set to.
+// default, and the talk demo opens on whichever talk type the site is set to.
 //
 // Each view carries a short label too — the toolbar swaps to it before the tab
 // strip would start overflowing on narrow screens.

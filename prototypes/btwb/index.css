@@ -241,6 +241,10 @@ button {
   color: var(--c-text-subtle);
   white-space: nowrap;
 }
+/* A caveat inside a nested subsetting, under the cards it qualifies. */
+.bw-subsetting-banner {
+  margin-top: 14px;
+}
 .bw-row-label-new {
   display: inline-flex;
   align-items: center;
@@ -278,8 +282,7 @@ button {
 }
 .bw-kind-cards {
   display: grid;
-  /* Fixed two-up rather than auto-fit: a two-option and a three-option row then
-     have the same card width instead of resizing to fit the count. */
+  /* Two-up: each card takes half the width, so the third wraps onto its own row. */
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
 }
@@ -337,26 +340,23 @@ button {
 }
 .bw-kind-blurb {
   font-size: 13px;
-  color: var(--c-text-subtle);
+  /* Real body copy the admin has to read to choose, so slate-600 rather than the
+     subtle grey — it still sits clearly under the type's colored label. */
+  color: var(--c-slate-600);
   line-height: 1.5;
 }
 
-/* ─── Conversation Focus ────────────────────────────────────────────────── */
-.bw-focus {
-  display: flex;
-  flex-direction: column;
-}
-.bw-focus-block {
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px dashed var(--c-border);
-}
-.bw-focus-chips {
+/* ─── Chip row (the Talk view's type switcher) ─────────────────────────── */
+.bw-chips {
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
 }
-.bw-focus-chip {
+.bw-chip {
+  /* `--chip` lets a chip carry its own accent — the talk-type chips each take
+     their kind's color. */
+  --chip: #4f46e5;
+
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -369,22 +369,17 @@ button {
   color: var(--c-text-subtle);
   transition: all 0.14s;
 }
-/* `--chip` lets a chip row carry its own accent (the Talk view's type chips take
-   each talk kind's color); Conversation Focus chips fall back to indigo. */
-.bw-focus-chip {
-  --chip: #4f46e5;
-}
-.bw-focus-chip:hover {
+.bw-chip:hover {
   border-color: color-mix(in srgb, var(--chip) 45%, #fff);
   color: var(--c-text);
 }
-.bw-focus-chip.is-active {
+.bw-chip.is-active {
   border-color: var(--chip);
   background: color-mix(in srgb, var(--chip) 9%, #fff);
   color: color-mix(in srgb, var(--chip) 80%, #000);
 }
 
-/* A labeled row of chips — "Talk type", "Conversation Focus". */
+/* A labeled row of chips — "Talk type". */
 .bw-pick {
   margin-bottom: 16px;
 }
@@ -396,74 +391,6 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--c-text-subtle);
-}
-
-/* "Instead of asking… Benny asks…" — the whole argument for Conversation Focus,
-   so it gets real weight rather than a footnote. */
-.bw-weave {
-  margin-top: 14px;
-  border: 1px solid var(--c-border);
-  border-radius: 13px;
-  overflow: hidden;
-}
-.bw-weave-row {
-  padding: 13px 16px;
-}
-.bw-weave-row--benny {
-  background: #f7f8ff;
-}
-.bw-weave-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--c-text-subtle);
-  margin-bottom: 6px;
-}
-.bw-weave-row--benny .bw-weave-tag {
-  color: #4f46e5;
-}
-.bw-weave-benny {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #fff;
-  object-fit: contain;
-}
-/* Sample questions — quoted and italic so they read as illustrations. */
-.bw-weave-examples {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-.bw-weave-examples li {
-  position: relative;
-  padding-left: 15px;
-  font-size: 14px;
-  line-height: 1.55;
-  font-style: italic;
-  color: var(--c-text);
-}
-.bw-weave-examples li::before {
-  content: '“';
-  position: absolute;
-  left: 0;
-  top: 1px;
-  font-style: normal;
-  font-weight: 800;
-  color: #a5b4fc;
-}
-.bw-weave-examples li::after {
-  content: '”';
-  font-style: normal;
-  font-weight: 800;
-  color: #a5b4fc;
 }
 
 /* ─── Upsell (BTWB not on the plan) ───────────────────────────────────── */

@@ -9,23 +9,22 @@ import {
   VOICES,
   hasVoiceKey,
 } from '../../book-talks/voice'
-import { TALK_KINDS, scriptFor, focusById, READER, BOOK, EMOJIS } from '../data'
+import { TALK_KINDS, scriptFor, READER, BOOK, EMOJIS } from '../data'
 
 // A book talk, as the reader sees it — any of the three types.
 //
 // The conversation machinery (text-to-speech with a voice picker, the typed
 // composer, voice-to-text, the badge celebration) is ported from the Book Talk
 // Badges prototype's BennyChat so both surfaces behave identically; what's
-// different here is the script model. Benny follows scriptFor(kind, focus): he
-// opens warmly, works the point of the talk in as a real question rather than a
-// quiz item, follows up, then closes. Integrity talks never grade correctness.
+// different here is the script model. Benny follows scriptFor(kind): he opens
+// warmly, works the point of the talk in as a real question rather than a quiz
+// item, follows up, then closes. Integrity talks never grade correctness.
 //
 // `session` lets a talk be resumed: the parent holds the transcript, so closing
 // mid-conversation and reopening picks up where the reader left off.
-export function BookTalkModal({ open, kindId, focusId, session, onSession, onClose, onFinish }) {
+export function BookTalkModal({ open, kindId, session, onSession, onClose, onFinish }) {
   const kind = TALK_KINDS[kindId]
-  const focus = focusById(focusId)
-  const script = scriptFor(kindId, focusId)
+  const script = scriptFor(kindId)
   // Only challenge-triggered engagement talks carry a badge today.
   const badge = kind.badge
 
@@ -363,8 +362,7 @@ export function BookTalkModal({ open, kindId, focusId, session, onSession, onClo
             <div className="bw-talk-titles">
               <span className="bw-talk-title">Book Talk with Benny</span>
               <span className="bw-talk-sub">
-                {kind.short}
-                {kindId === 'comprehension' && ` · ${focus.label}`} · {READER.gradeLabel}
+                {kind.short} · {READER.gradeLabel}
               </span>
             </div>
 
