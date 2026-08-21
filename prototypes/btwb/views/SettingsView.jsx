@@ -142,25 +142,16 @@ function SettingsBody({ settings, set, off }) {
         )}
       </section>
 
-      {/* ── The three triggers ───────────────────────────────────────────── */}
+      {/* ── The site-wide triggers ───────────────────────────────────────── */}
+      {/* Only the two switches this page actually owns. A challenge can turn
+          Book Talks on for itself, but that's the Challenge Creator's setting —
+          a read-only row for it just read as a broken control, so it's a line in
+          the footer note instead. */}
       <section className={`bw-panel${off ? ' is-dimmed' : ''}`}>
         <h2 className="bw-panel-title">When should Benny start a book talk?</h2>
 
         <SettingList>
-          {/* Priority 1 — lives in the Challenge Creator, shown here read-only
-              so admins can see the full picture from one page. */}
-          <SettingRow
-            label="In specific challenges"
-            sub="Switched on per challenge, in the Challenge Creator’s Book Talks step."
-            disabled
-            control={
-              <span className="bw-row-note">
-                <Icon name="settings" size={14} /> Per challenge
-              </span>
-            }
-          />
-
-          {/* Priority 2 — NEW. The ticket's actual ask. */}
+          {/* NEW — the ticket's actual ask. */}
           <SettingRow
             label={
               <span className="bw-row-label-new">
@@ -188,41 +179,24 @@ function SettingsBody({ settings, set, off }) {
             </div>
           )}
 
-          {/* Priority 3 — today's behavior, part of the Integrity Suite. It ran a
-              fixed integrity talk; now it gets the same choice completions do,
-              defaulted to the integrity talk it runs today. */}
+          {/* Today's behavior, part of the Integrity Suite. No type
+              choice at all: this trigger fires *because* a log looks off, and the
+              integrity talk is the only one that reports a Reading Confidence
+              back. It's a switch, not a configuration. */}
           <SettingRow
             label="Above the warning threshold"
-            sub="Benny checks in when a reader logs more than the site’s warning level allows. Unverified readers only."
+            sub="Benny runs an integrity check-in when a reader logs more than the site’s warning level allows. Unverified readers only."
             state={settings.onWarning ? 'On' : 'Off'}
             checked={settings.onWarning}
             onChange={(v) => set({ onWarning: v })}
             disabled={off}
           />
-
-          {settings.onWarning && !off && (
-            <div className="bw-subsetting bw-subsetting--nested">
-              <TalkKindPicker
-                label="What kind of conversation should a warning-level talk be?"
-                ariaLabel="Warning-level conversation type"
-                value={settings.warningKind}
-                onChange={(id) => set({ warningKind: id })}
-              />
-              {settings.warningKind !== 'integrity' && (
-                <Banner level="warning" className="bw-subsetting-banner">
-                  An integrity talk is the one that reports a{' '}
-                  <span className="bw-inline-strong">Reading Confidence</span> back to you. Pick
-                  another type here and a log over the warning level starts that conversation
-                  instead — friendlier for the reader, but it won’t tell you whether the log looks
-                  authentic.
-                </Banner>
-              )}
-            </div>
-          )}
         </SettingList>
 
         <Banner level="info" className="bw-panel-banner">
-          Every completed talk lands on your{' '}
+          Book Talks can also be switched on for an individual challenge, in the Challenge Creator’s{' '}
+          <span className="bw-inline-strong">Book Talks</span> step — that challenge takes priority
+          over these site-wide triggers. Every completed talk lands on your{' '}
           <span className="bw-inline-strong">Sessions for Review</span> page with Benny’s reading
           confidence and takeaways.
         </Banner>

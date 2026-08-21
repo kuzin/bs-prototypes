@@ -34,7 +34,7 @@ export const PROTOTYPES = [
   {
     id: 'sfr',
     name: 'Sessions for Review',
-    section: 'Prototypes',
+    section: 'Completed',
     href: '/bs-prototypes/sfr/',
     accent: '#16A97A',
     description: 'Review Book Talks for integrity, engagement, and student-safety signals.',
