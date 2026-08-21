@@ -4,8 +4,8 @@ import { Banner } from '@components/Primitives/Primitives'
 import { SettingRow, SettingList } from '@components/SettingRow/SettingRow'
 import { Icon } from '@components/Icon/Icon'
 import { Pill } from '@components/Pill/Pill'
-import { FocusPicker } from '../components/FocusPicker'
-import { TALK_KINDS, COMPLETION_KINDS } from '../data'
+import { TalkKindPicker } from '../components/TalkKindPicker'
+import { TALK_KINDS } from '../data'
 
 import '@components/MainRail/MainRail.css'
 import '@components/Pill/Pill.css'
@@ -177,60 +177,20 @@ function SettingsBody({ settings, set, off }) {
             disabled={off}
           />
 
-          {/* The ticket's open question, made an explicit admin choice. Integrity
-              isn't offered — that type belongs to the warning threshold above. */}
+          {/* The ticket's open question, made an explicit admin choice. */}
           {settings.onCompletion && !off && (
             <div className="bw-subsetting bw-subsetting--nested">
-              <h3 className="bw-subsetting-title">
-                What kind of conversation should a completion talk be?
-              </h3>
-              <div className="bw-kind-cards" role="radiogroup" aria-label="Conversation type">
-                {COMPLETION_KINDS.map((k) => {
-                  const active = settings.completionKind === k.id
-                  return (
-                    <button
-                      key={k.id}
-                      type="button"
-                      role="radio"
-                      aria-checked={active}
-                      className={`bw-kind-card${active ? ' is-active' : ''}`}
-                      style={{ '--kind': k.color }}
-                      onClick={() => set({ completionKind: k.id })}
-                    >
-                      <span className="bw-kind-head">
-                        <span className="bw-kind-label">{k.label}</span>
-                        {k.isNew && (
-                          <Pill color={k.color} variant="filled" size="sm">
-                            New
-                          </Pill>
-                        )}
-                        {active && (
-                          <Icon name="check" size={14} stroke={2.6} className="bw-kind-check" />
-                        )}
-                      </span>
-                      <span className="bw-kind-blurb">{k.blurb}</span>
-                    </button>
-                  )
-                })}
-              </div>
-
-              {/* A comprehension talk needs a focus; an engagement talk doesn't. */}
-              {settings.completionKind === 'comprehension' && (
-                <div className="bw-focus-block">
-                  <h3 className="bw-subsetting-title">
-                    What should Benny focus the conversation on?
-                  </h3>
-                  <FocusPicker
-                    value={settings.completionFocus}
-                    onChange={(id) => set({ completionFocus: id })}
-                  />
-                </div>
-              )}
+              <TalkKindPicker
+                label="What kind of conversation should a completion talk be?"
+                value={settings.completionKind}
+                onChange={(id) => set({ completionKind: id })}
+              />
             </div>
           )}
 
-          {/* Priority 3 — today's behavior, part of the Integrity Suite. This
-              trigger always runs an integrity talk; there's nothing to choose. */}
+          {/* Priority 3 — today's behavior, part of the Integrity Suite. It ran a
+              fixed integrity talk; now it gets the same choice completions do,
+              defaulted to the integrity talk it runs today. */}
           <SettingRow
             label="Above the warning threshold"
             sub="Benny checks in when a reader logs more than the site’s warning level allows. Unverified readers only."
@@ -239,6 +199,26 @@ function SettingsBody({ settings, set, off }) {
             onChange={(v) => set({ onWarning: v })}
             disabled={off}
           />
+
+          {settings.onWarning && !off && (
+            <div className="bw-subsetting bw-subsetting--nested">
+              <TalkKindPicker
+                label="What kind of conversation should a warning-level talk be?"
+                ariaLabel="Warning-level conversation type"
+                value={settings.warningKind}
+                onChange={(id) => set({ warningKind: id })}
+              />
+              {settings.warningKind !== 'integrity' && (
+                <Banner level="warning" className="bw-subsetting-banner">
+                  An integrity talk is the one that reports a{' '}
+                  <span className="bw-inline-strong">Reading Confidence</span> back to you. Pick
+                  another type here and a log over the warning level starts that conversation
+                  instead — friendlier for the reader, but it won’t tell you whether the log looks
+                  authentic.
+                </Banner>
+              )}
+            </div>
+          )}
         </SettingList>
 
         <Banner level="info" className="bw-panel-banner">

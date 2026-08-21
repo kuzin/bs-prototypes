@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Pill } from '@components/Pill/Pill'
 import { SessionModal } from '../components/SessionModal'
-import { SESSIONS, TALK_KINDS, focusById } from '../data'
+import { SESSIONS, TALK_KINDS } from '../data'
 
 import '@components/Modal/Modal.css'
 import '@components/Primitives/Primitives.css'
@@ -30,7 +30,6 @@ export function SessionsView() {
         <ul className="bw-session-list">
           {SESSIONS.map((s) => {
             const kind = TALK_KINDS[s.kindId]
-            const focus = s.focusId ? focusById(s.focusId) : null
             return (
               <li key={s.id}>
                 <button
@@ -43,7 +42,6 @@ export function SessionsView() {
                       <span className="bw-session-card-name">{s.student.name}</span>
                       <Pill color={kind.color} size="sm">
                         {kind.short}
-                        {focus && ` · ${focus.label}`}
                       </Pill>
                     </span>
                     <span className="bw-session-card-book">

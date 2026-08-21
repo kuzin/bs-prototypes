@@ -17,7 +17,6 @@ import {
   POS_FLAG_COLORS,
   scriptFor,
   takeawayFor,
-  focusById,
 } from '../data'
 
 import '@components/Button/Button.css'
@@ -34,8 +33,7 @@ import '../../sfr/components/SessionModal.css'
 // a timeline.
 //
 // What's new is *what* Benny reports: a Reading Confidence and written Takeaways
-// instead of a score. Comprehension talks also name the Reading Focus and show
-// the question Benny worked from; integrity talks are the only type that flags.
+// instead of a score. Integrity talks are the only type that flags.
 export function SessionModal({ session, onSelectSession, onClose }) {
   const [tab, setTab] = useState('conversation')
   const [noteDraft, setNoteDraft] = useState('')
@@ -53,8 +51,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
   if (!session) return null
 
   const kind = TALK_KINDS[session.kindId]
-  const focus = session.focusId ? focusById(session.focusId) : null
-  const t = takeawayFor(session.kindId, session.focusId)
+  const t = takeawayFor(session.kindId)
   // Reading Confidence is an integrity-talk concept, so it renders only when the
   // talk actually produced one.
   const confidence = t.confidence ? CONFIDENCE_META[t.confidence] : null
@@ -66,7 +63,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
   const unfinished = session.status === 'unfinished'
   // Questions Benny asked that expected an answer, and how many the reader gave.
   const answers = session.messages.filter((m) => m.role === 'student').length
-  const questions = scriptFor(session.kindId, session.focusId).length - 1
+  const questions = scriptFor(session.kindId).length - 1
 
   const notes = notesById[session.id] ?? []
   const feed = [...notes, ...(session.changeLog ?? [])]
@@ -204,7 +201,6 @@ export function SessionModal({ session, onSelectSession, onClose }) {
                     <span className="sm2-section-title">Benny’s Summary</span>
                     <Pill color={kind.color} size="sm">
                       {kind.short}
-                      {focus && ` · ${focus.label}`}
                     </Pill>
                   </div>
                   <div className="sm2-prompt bw-sm2-summary">
@@ -253,12 +249,6 @@ export function SessionModal({ session, onSelectSession, onClose }) {
                             {unfinished ? 'Unfinished' : 'Completed'}
                           </span>
                         </div>
-                        {focus && (
-                          <div className="sm2-detail-row">
-                            <span>Reading Focus</span>
-                            <span>{focus.label}</span>
-                          </div>
-                        )}
                       </div>
                     </div>
                   </div>
