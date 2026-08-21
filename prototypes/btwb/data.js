@@ -12,18 +12,20 @@
 // Only one talk ever runs per logged session, resolved in this order:
 //   1. Reading engagement talk (challenge)
 //   2. Book completion talk (site-wide)   ← new in this ticket
-//   3. Warning-level talk (integrity by default)
+//   3. Warning-level talk (always an integrity talk)
 
 export const SITE = {
   name: 'Maplewood Elementary',
 }
 
 // ─── The three types of book talk ────────────────────────────────────────────
-// Every trigger picks its own type. The ticket leaves the default open ("we
-// could, by default, make these engagement OR integrity book talks - or we could
-// let the admin choose"), so this models the admin-choice version — and the
-// warning threshold gets the same choice, defaulting to the integrity talk it
-// runs today.
+// Which types a trigger can run depends on what that trigger is *for*. The
+// ticket leaves the completion default open ("we could, by default, make these
+// engagement OR integrity book talks - or we could let the admin choose"), so
+// completions model the admin-choice version — but only between the two talks
+// that fit a finished book. The warning threshold stays the integrity check-in
+// it runs today: it exists to tell you whether a log looks authentic, which is
+// the one thing the other two types can't report.
 export const TALK_KINDS = {
   engagement: {
     id: 'engagement',
@@ -64,12 +66,17 @@ export const TALK_KINDS = {
   },
 }
 
-// Any trigger can run any of the three, so both pickers offer the same list.
-export const TALK_KIND_OPTIONS = [
-  TALK_KINDS.engagement,
-  TALK_KINDS.comprehension,
-  TALK_KINDS.integrity,
-]
+// What an admin can actually choose, wherever a trigger offers a choice — book
+// completions site-wide and title completions in a challenge. Both fire on a
+// finished book, so both offer the two conversations *about* a book; neither
+// offers an integrity check-in on a reader who did nothing suspicious.
+export const TALK_KIND_OPTIONS = [TALK_KINDS.engagement, TALK_KINDS.comprehension]
+
+// Integrity talks are therefore never picked, here or per challenge — they're a
+// site-wide behavior of one trigger. Over the warning threshold there is no
+// choice to make, and so no picker: that trigger's whole job is to report a
+// Reading Confidence back to the educator, and only TALK_KINDS.integrity does
+// that. It always runs an integrity talk.
 
 // "an engagement talk" / "a comprehension talk"
 export const article = (word) => (/^[aeiou]/i.test(word) ? 'an' : 'a')
@@ -79,13 +86,12 @@ export const EMOJIS = ['😀', '😂', '🥺', '😮', '❤️', '🔥', '👍',
 
 // What the ticket proposes as the shipped default: completion talks on with
 // BTWB, engagement flavored. The warning threshold keeps the integrity talk it
-// runs today — it's now a choice rather than a fixed behavior.
+// runs today — fixed, so it carries no type of its own.
 export const DEFAULT_SETTINGS = {
   btwbOn: true,
   onCompletion: true,
   completionKind: 'engagement',
   onWarning: true,
-  warningKind: 'integrity',
 }
 
 // ─── What the educator gets back ─────────────────────────────────────────────

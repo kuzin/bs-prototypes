@@ -7,10 +7,11 @@ import { TALK_KINDS, article } from '../data'
 // The challenge-level Book Talks step.
 //
 // The Challenge Creator's existing "Book Talks" step, extended with the setting
-// the other two talk types need: which kind of conversation Benny should have.
-// Today the step only offers engagement talks on title completions, which is why
-// the choice needs a home here as well as in Site Settings — a 5th-grade novel
-// study wants a different conversation than the site-wide default.
+// the new talk type needs: which kind of conversation Benny should have. Today
+// the step only offers engagement talks on title completions, which is why the
+// choice needs a home here as well as in Site Settings — a 5th-grade novel study
+// wants a different conversation than the site-wide default. Integrity talks
+// aren't on the menu: they're a site-wide trigger, not a per-challenge setting.
 //
 // Laid out to match Site Settings exactly — same page width, header, panel, and
 // nested-under-the-row treatment — so the two places a book talk is configured
