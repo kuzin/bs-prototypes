@@ -1,0 +1,1012 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap');
+
+@import '@components/Button/Button.css';
+@import '@components/Tabs/Tabs.css';
+@import '@components/Toggle/Toggle.css';
+@import '@components/SearchInput/SearchInput.css';
+@import '@components/Modal/Modal.css';
+@import '@components/PrototypeNav/PrototypeNav.css';
+
+/* Gameboard: Reader View — the reader-facing side of the gameboard challenge.
+   Prefixed `gr-`. The board itself is a percentage-positioned coordinate space
+   (see ReaderBoard.jsx) so it scales without measuring. */
+
+:root {
+  --gr-blue: #1a6dd5;
+  --gr-tan: #d8bd91;
+  --gr-tan-dim: #e6d3b4;
+  --gr-hero: #f3e7de;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--c-text);
+  background: var(--c-surface);
+  -webkit-font-smoothing: antialiased;
+}
+
+.gr-root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.gr-link {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-weight: var(--fw-bold);
+  color: var(--gr-blue);
+  cursor: pointer;
+}
+.gr-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Top bar ─────────────────────────────────────────────────────────────── */
+
+.gr-topbar {
+  border-bottom: 1px solid var(--c-border);
+  background: var(--c-surface);
+}
+
+.gr-topbar-inner {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 10px 24px;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.gr-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  flex-shrink: 0;
+}
+.gr-logo-mark {
+  width: 19px;
+  height: 19px;
+}
+.gr-logo-word {
+  font-size: 19px;
+  font-weight: var(--fw-black);
+  letter-spacing: -0.02em;
+  color: #16283c;
+}
+
+.gr-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gr-topbar-user {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gr-reader-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 3px 12px 3px 3px;
+  border-radius: var(--radius-pill);
+  background: #fdeee7;
+  font-weight: var(--fw-bold);
+  font-size: var(--text-base);
+  color: var(--c-slate-800);
+}
+.gr-reader-pill--sm {
+  font-size: var(--text-sm);
+  padding: 2px 9px 2px 2px;
+  vertical-align: middle;
+}
+
+.gr-reader-avatar {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  color: #7c2d12;
+  font-size: var(--text-xs);
+  font-weight: var(--fw-black);
+  letter-spacing: 0.02em;
+}
+.gr-reader-pill--sm .gr-reader-avatar {
+  width: 21px;
+  height: 21px;
+  font-size: 9px;
+}
+
+.gr-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: none;
+  color: var(--c-slate-500);
+  cursor: pointer;
+}
+.gr-icon-btn:hover {
+  background: var(--c-slate-100);
+  color: var(--c-slate-800);
+}
+
+.gr-tabsbar {
+  display: flex;
+  justify-content: center;
+  border-top: 1px solid var(--c-slate-100);
+}
+.gr-tabsbar .tabs {
+  border-bottom: 0;
+}
+
+/* ── Challenge hero ──────────────────────────────────────────────────────── */
+
+.gr-hero {
+  position: relative;
+  padding: 40px 24px 0;
+  text-align: center;
+  background: var(--gr-hero);
+  /* The soft dune the Figma hero sits on — a wide ellipse of page-white rising
+     into the blush band, so the banner floats above a curved horizon. */
+  background-image: radial-gradient(
+    120% 62% at 50% 128%,
+    var(--c-surface) 0 62%,
+    transparent 62.4%
+  );
+}
+
+.gr-hero-banner {
+  display: block;
+  width: min(480px, 100%);
+  height: 183px;
+  object-fit: cover;
+  margin: 0 auto;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md, 0 6px 18px rgba(15, 23, 42, 0.14));
+}
+
+.gr-hero-title {
+  margin: 22px 0 0;
+  font-size: 27px;
+  font-weight: var(--fw-black);
+  letter-spacing: -0.02em;
+}
+
+.gr-hero-dates {
+  margin: 5px 0 0;
+  font-size: var(--text-md);
+  color: var(--c-text-muted);
+}
+
+.gr-hero-tabs {
+  display: flex;
+  justify-content: center;
+  margin-top: 18px;
+}
+.gr-hero-tabs .tabs {
+  border-bottom: 0;
+}
+
+/* ── Board area ──────────────────────────────────────────────────────────── */
+
+.gr-main {
+  flex: 1;
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 30px 24px 56px;
+}
+
+.gr-board-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+  font-size: var(--text-md);
+  color: var(--c-text-muted);
+}
+.gr-progress strong,
+.gr-next strong {
+  color: var(--c-text);
+  font-weight: var(--fw-extrabold);
+}
+
+.gr-board {
+  position: relative;
+  width: 100%;
+  border-radius: 22px;
+  background-size: cover;
+  background-position: center;
+  overflow: hidden;
+}
+
+.gr-road {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Each space is placed at its Figma coordinate, expressed as a percentage of
+   the board's coordinate space, then centered on that point. */
+.gr-space {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  width: 12.6%;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.gr-space > * {
+  grid-area: 1 / 1;
+}
+
+/* The arc box is sized so its radius lands just outside the disc's white ring,
+   which is what puts START / HALFWAY / FINISH on the disc's shoulder instead of
+   floating off over the space above it. */
+.gr-arc {
+  width: 168%;
+  overflow: visible;
+  pointer-events: none;
+}
+.gr-arc path {
+  fill: none;
+}
+.gr-arc-text {
+  font-family: var(--font-sans);
+  font-size: 9px;
+  font-weight: var(--fw-black);
+  letter-spacing: 0.09em;
+  fill: #8a6a3c;
+}
+
+/* ── Badge discs ─────────────────────────────────────────────────────────── */
+
+.gr-disc {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-full);
+  background: var(--gr-tan);
+  box-shadow:
+    0 0 0 6px rgba(255, 255, 255, 0.55),
+    0 3px 8px rgba(15, 23, 42, 0.2);
+  overflow: hidden;
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+.gr-disc.is-earned {
+  background: var(--badge);
+}
+
+/* The soft horizontal banding the badge art carries. */
+.gr-disc-stripes {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0 9%, transparent 9% 18%);
+}
+
+.gr-disc-num {
+  position: relative;
+  line-height: 1;
+  font-size: 30px;
+  font-weight: var(--fw-black);
+  color: #fff;
+  text-shadow: 0 2px 3px rgba(15, 23, 42, 0.25);
+}
+
+.gr-disc-word {
+  position: absolute;
+  top: 16%;
+  font-size: 7px;
+  font-weight: var(--fw-black);
+  letter-spacing: 0.06em;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.gr-disc-glyph {
+  position: absolute;
+  bottom: 12%;
+  width: 42%;
+}
+
+/* Reward marker — a small white chip clipped to the disc's lower edge. */
+.gr-space-reward {
+  position: absolute;
+  bottom: -2%;
+  left: 50%;
+  translate: -50% 0;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: #fff;
+  color: var(--c-slate-700);
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
+  align-self: end;
+  justify-self: center;
+}
+
+/* The next space to clear — a steady pulse so "you are here" is obvious. */
+.gr-space.is-target .gr-disc {
+  animation: gr-pulse 2s ease-in-out infinite;
+}
+@keyframes gr-pulse {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 6px rgba(255, 255, 255, 0.55),
+      0 3px 8px rgba(15, 23, 42, 0.2);
+  }
+  50% {
+    box-shadow:
+      0 0 0 11px rgba(255, 255, 255, 0.8),
+      0 3px 12px rgba(15, 23, 42, 0.26);
+  }
+}
+
+.gr-space:hover .gr-disc,
+.gr-space:focus-visible .gr-disc {
+  transform: scale(1.07);
+}
+
+/* Landing back on the board after an unlock — the new badge pops once. */
+.gr-space.is-popped .gr-disc {
+  animation: gr-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes gr-pop {
+  0% {
+    transform: scale(0.6) rotate(-12deg);
+  }
+  60% {
+    transform: scale(1.18) rotate(4deg);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ── Space tooltip ───────────────────────────────────────────────────────── */
+
+.gr-tip {
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  translate: -50% -8px;
+  z-index: 5;
+  display: grid;
+  gap: 1px;
+  width: max-content;
+  max-width: 190px;
+  padding: 7px 11px;
+  border-radius: var(--radius-md);
+  background: var(--c-slate-900);
+  color: #fff;
+  text-align: center;
+  font-size: var(--text-xs);
+  line-height: 1.4;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.14s ease;
+  align-self: start;
+  justify-self: center;
+}
+.gr-space.is-tipped .gr-tip {
+  opacity: 1;
+}
+.gr-tip strong {
+  font-size: var(--text-sm);
+  font-weight: var(--fw-extrabold);
+}
+.gr-tip span {
+  color: var(--c-slate-300);
+}
+.gr-tip-reward {
+  color: #fbbf24 !important;
+}
+
+/* ── Below the board ─────────────────────────────────────────────────────── */
+
+.gr-board-foot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  margin-top: 22px;
+}
+
+.gr-placeholder {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 64px 24px;
+  border: 1px dashed var(--c-border-strong);
+  border-radius: var(--radius-2xl);
+  color: var(--c-text-muted);
+  text-align: center;
+}
+.gr-placeholder p {
+  margin: 0;
+  max-width: 40ch;
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+
+.gr-footer {
+  border-top: 1px solid var(--c-border);
+  background: var(--c-surface);
+  font-size: var(--text-sm);
+  color: var(--c-text-muted);
+}
+.gr-footer-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 18px 24px;
+}
+.gr-footer-row--legal {
+  border-top: 1px solid var(--c-slate-100);
+}
+.gr-footer-links {
+  display: flex;
+  gap: 20px;
+}
+.gr-footer a {
+  color: inherit;
+  text-decoration: none;
+}
+.gr-footer a:hover {
+  color: var(--c-text);
+  text-decoration: underline;
+}
+.gr-footer-lang,
+.gr-footer-legal {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Full-screen sheet (log flow + celebration) ──────────────────────────── */
+
+.gr-sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  overflow-y: auto;
+  background: var(--c-surface);
+  animation: gr-sheet-in 0.2s ease-out;
+}
+@keyframes gr-sheet-in {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gr-sheet-btn {
+  position: absolute;
+  top: 18px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--c-slate-100);
+  color: var(--c-slate-700);
+  cursor: pointer;
+  z-index: 2;
+}
+.gr-sheet-btn:hover {
+  background: var(--c-slate-200);
+}
+.gr-sheet-back {
+  left: 18px;
+}
+.gr-sheet-close {
+  right: 18px;
+}
+
+.gr-sheet-inner {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 62px 24px 64px;
+}
+
+.gr-sheet-title {
+  margin: 10px 0 0;
+  font-size: 30px;
+  font-weight: var(--fw-black);
+  letter-spacing: -0.025em;
+  text-align: center;
+}
+
+.gr-logging-for {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  font-size: var(--text-md);
+  color: var(--c-slate-700);
+}
+.gr-logging-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--c-border);
+}
+
+.gr-panel {
+  margin-top: 22px;
+  padding: 18px;
+  border-radius: var(--radius-xl);
+  background: var(--c-slate-50);
+}
+
+.gr-log-methods {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+.gr-method {
+  display: grid;
+  justify-items: center;
+  gap: 7px;
+  padding: 14px 8px;
+  border: 0;
+  border-radius: var(--radius-lg);
+  background: var(--c-slate-100);
+  font-family: inherit;
+  font-size: var(--text-base);
+  font-weight: var(--fw-bold);
+  color: var(--c-slate-800);
+  cursor: pointer;
+}
+.gr-method:hover {
+  background: var(--c-slate-200);
+}
+.gr-method-emoji {
+  font-size: 20px;
+  line-height: 24px;
+}
+.gr-method-epic {
+  font-size: 19px;
+  line-height: 24px;
+  font-weight: var(--fw-black);
+  color: #2fb4e9;
+}
+
+.gr-log-results {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.gr-result {
+  border: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: transform 0.15s ease;
+}
+.gr-result:hover {
+  transform: translateY(-3px);
+}
+.gr-log-none {
+  margin: 0;
+  color: var(--c-text-muted);
+  font-size: var(--text-base);
+}
+
+.gr-log-untitled {
+  display: block;
+  margin: 24px auto 0;
+}
+
+/* ── Covers ──────────────────────────────────────────────────────────────── */
+
+.gr-cover {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  aspect-ratio: 2 / 3;
+  border-radius: var(--radius-xs);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.22);
+  flex-shrink: 0;
+}
+.gr-cover--lg {
+  width: 96px;
+}
+.gr-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.gr-cover-fallback {
+  padding: 6px;
+  font-size: var(--text-2xs);
+  font-weight: var(--fw-extrabold);
+  color: #fff;
+  text-align: center;
+  line-height: 1.25;
+}
+
+/* ── Log details ─────────────────────────────────────────────────────────── */
+
+.gr-sheet-inner.gr-log-details {
+  max-width: 880px;
+}
+
+.gr-log-grid {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 18px;
+  margin-top: 24px;
+  align-items: start;
+}
+
+.gr-log-book {
+  display: flex;
+  gap: 16px;
+  margin-top: 0;
+}
+.gr-log-book-meta {
+  display: grid;
+  gap: 3px;
+  align-content: start;
+  font-size: var(--text-base);
+  color: var(--c-text-muted);
+}
+.gr-log-book-meta strong {
+  font-size: var(--text-lg);
+  font-weight: var(--fw-extrabold);
+  color: var(--c-text);
+}
+
+.gr-log-form {
+  margin-top: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.gr-log-row,
+.gr-log-field {
+  padding: 16px 20px;
+}
+.gr-log-row--date {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.gr-log-label {
+  display: block;
+  font-size: var(--text-base);
+  font-weight: var(--fw-extrabold);
+  color: var(--c-slate-800);
+}
+.gr-log-value {
+  font-size: var(--text-base);
+  color: var(--c-text-muted);
+}
+
+.gr-log-time {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+.gr-input {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  font-family: inherit;
+  font-size: var(--text-md);
+  color: var(--c-text);
+}
+.gr-input:focus {
+  outline: 2px solid var(--gr-blue);
+  outline-offset: -1px;
+  border-color: transparent;
+}
+
+.gr-log-toggles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+.gr-log-toggles .tgl {
+  margin-top: 8px;
+}
+
+.gr-log-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 14px 20px;
+  border-top: 1px solid var(--c-border);
+  background: var(--c-slate-100);
+}
+
+/* ── Celebration ─────────────────────────────────────────────────────────── */
+
+.gr-celebrate {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 6px;
+  min-height: 100vh;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 64px 24px;
+  text-align: center;
+}
+.gr-benny {
+  display: block;
+  animation: gr-bounce 1.6s ease-in-out infinite;
+}
+@keyframes gr-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.gr-celebrate-sub {
+  margin: 4px 0 0;
+  font-size: var(--text-md);
+  color: var(--c-slate-700);
+  line-height: 1.55;
+}
+.gr-celebrate-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+/* ── Confetti ────────────────────────────────────────────────────────────── */
+
+.gr-confetti {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+/* Everything else in a celebration stacks above the burst. */
+.gr-celebrate > *:not(.gr-confetti),
+.gr-unlock-top > *:not(.gr-confetti) {
+  position: relative;
+  z-index: 1;
+}
+/* The full-page celebration wants the burst to reach the edges of the screen
+   while staying anchored to the headline, so it spills sideways out of the
+   (narrow, centered) celebration column rather than filling the whole sheet. */
+.gr-confetti--wide {
+  top: 50%;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  bottom: auto;
+  height: 420px;
+  translate: 0 -54%;
+  overflow: visible;
+}
+.gr-cf {
+  position: absolute;
+  background: var(--cf);
+}
+.gr-cf--dot {
+  width: 11px;
+  height: 11px;
+  border-radius: var(--radius-full);
+}
+.gr-cf--blob {
+  width: 22px;
+  height: 14px;
+  border-radius: 999px 999px 4px 999px;
+}
+.gr-cf--wedge {
+  width: 0;
+  height: 0;
+  background: none;
+  border-left: 11px solid transparent;
+  border-right: 11px solid transparent;
+  border-top: 18px solid var(--cf);
+}
+.gr-cf--star {
+  width: 22px;
+  height: 22px;
+  background: var(--cf);
+  clip-path: polygon(
+    50% 0%,
+    61% 35%,
+    98% 35%,
+    68% 57%,
+    79% 91%,
+    50% 70%,
+    21% 91%,
+    32% 57%,
+    2% 35%,
+    39% 35%
+  );
+}
+.gr-cf--squiggle {
+  width: 26px;
+  height: 26px;
+  background: none;
+  border: 3px solid var(--cf);
+  border-radius: 50%;
+  border-color: var(--cf) var(--cf) transparent transparent;
+}
+
+/* ── Badge Unlocked modal ────────────────────────────────────────────────── */
+
+.gr-unlock {
+  position: relative;
+  text-align: center;
+}
+.gr-unlock-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border: 0;
+  border-radius: var(--radius-full);
+  background: var(--c-slate-100);
+  color: var(--c-slate-700);
+  cursor: pointer;
+}
+.gr-unlock-close:hover {
+  background: var(--c-slate-200);
+}
+
+.gr-unlock-top {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 42px 24px 30px;
+  border-bottom: 1px solid var(--c-border);
+}
+.gr-unlock-top .gr-disc {
+  width: 116px;
+  animation: gr-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.gr-unlock-top .gr-disc-num {
+  font-size: 42px;
+}
+.gr-unlock-top .gr-disc-word {
+  font-size: 9px;
+}
+
+.gr-unlock-title {
+  position: relative;
+  margin: 16px 0 0;
+  font-size: 22px;
+  font-weight: var(--fw-black);
+  letter-spacing: -0.02em;
+}
+.gr-unlock-name {
+  position: relative;
+  margin: 2px 0 0;
+  font-size: var(--text-md);
+  color: var(--c-text-muted);
+}
+.gr-unlock-req {
+  position: relative;
+  margin-top: 12px;
+  padding: 7px 18px;
+  border-radius: var(--radius-pill);
+  background: #d1fae5;
+  color: #047857;
+  font-size: var(--text-base);
+  font-weight: var(--fw-extrabold);
+}
+
+.gr-unlock-bottom {
+  display: grid;
+  justify-items: center;
+  padding: 26px 24px 30px;
+}
+.gr-unlock-progress {
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: var(--fw-extrabold);
+  line-height: 1.4;
+}
+.gr-unlock-strip {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 20px 0 22px;
+}
+.gr-strip-item {
+  display: grid;
+  place-items: center;
+}
+.gr-strip-item .gr-disc {
+  width: 52px;
+}
+.gr-strip-item .gr-disc-num {
+  font-size: 19px;
+}
+.gr-strip-item .gr-disc-word {
+  font-size: 5px;
+}
+.gr-strip-dot {
+  display: block;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-full);
+  background: var(--c-slate-300);
+}
+.gr-strip-dot.is-earned {
+  background: var(--c-brand-green);
+}
+
+/* ── Narrow screens ──────────────────────────────────────────────────────── */
+
+@media (max-width: 860px) {
+  .gr-topbar-inner {
+    flex-wrap: wrap;
+  }
+  .gr-topbar-user {
+    order: -1;
+  }
+  .gr-log-grid {
+    grid-template-columns: 1fr;
+  }
+  .gr-log-toggles {
+    grid-template-columns: 1fr;
+  }
+  .gr-space .gr-disc-num {
+    font-size: 20px;
+  }
+  .gr-space-reward {
+    width: 20px;
+    height: 20px;
+  }
+}
