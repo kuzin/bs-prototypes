@@ -255,25 +255,35 @@ export function GoalTracker({ week, goalMinutes }) {
   return (
     <div className="bp-goal-tracker">
       {week.days.map((d, i) => {
-        const met = d.minutes !== null && d.minutes >= goalMinutes
         const pending = d.minutes === null
+        const logged = !pending && d.minutes > 0
+        const met = !pending && d.minutes >= goalMinutes
         const isToday =
           pending && week.current && i === week.days.findIndex((x) => x.minutes === null)
         const prevMet =
           i > 0 && week.days[i - 1].minutes !== null && week.days[i - 1].minutes >= goalMinutes
 
+        // A day with reading on it never looks like a day without: `--partial`
+        // keeps short-of-goal sessions visible instead of collapsing them into
+        // the same grey as a zero day.
         const circleCls = met
           ? 'bp-goal-circle--met'
           : isToday
             ? 'bp-goal-circle--today'
             : pending
               ? 'bp-goal-circle--future'
-              : 'bp-goal-circle--missed'
+              : logged
+                ? 'bp-goal-circle--partial'
+                : 'bp-goal-circle--missed'
 
         return (
           <div key={i} className="bp-goal-day">
             <div className="bp-goal-mins-area">
-              {met && <span className="bp-goal-mins">{d.minutes}m</span>}
+              {logged && (
+                <span className={`bp-goal-mins${met ? '' : ' bp-goal-mins--partial'}`}>
+                  {d.minutes}m
+                </span>
+              )}
             </div>
             <div className="bp-goal-circle-row">
               {i > 0 && (

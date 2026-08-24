@@ -9,11 +9,14 @@ export const C = {
   skills: { bg: '#F1EBFF', text: '#5B21B6', bar: '#7C3AED', icon: 'ti-book-2' },
 }
 
+// Display names for the four analysis sections. The keys stay as the original
+// concepts (motivation/integrity/habits/skills) — only the wording shown to
+// teachers changed, so data, colors, and routes are untouched.
 export const LABEL = {
-  motivation: 'Motivation',
-  integrity: 'Integrity',
-  habits: 'Habits',
-  skills: 'Skills',
+  motivation: 'Motivation Index',
+  integrity: 'Book Talks',
+  habits: 'Goals',
+  skills: 'Lexile',
 }
 
 // ─── Genre color palette ──────────────────────────────────────────────────────

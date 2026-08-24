@@ -2,7 +2,7 @@ import { useState, cloneElement } from 'react'
 import './BeanstackProfile.css'
 import '../ris/components/SchoolDashboard.css'
 import { C, LABEL, Ic } from '@components/ui'
-import { StatusBadge, Card, SectionHeading, GoalRing, CoverImage } from './components/kit'
+import { Card, SectionHeading, GoalRing, CoverImage } from './components/kit'
 import {
   DonutChart,
   SplitDonutChart,
@@ -33,6 +33,7 @@ import { Hero } from '@components/Hero/Hero'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { ChartLegend } from '@components/charts/charts'
 import { SessionModal } from '../sfr/components/SessionModal'
+import { TALK_KINDS } from '../btwb/data'
 import { SESSIONS as SFR_SESSIONS } from '../sfr/data'
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
@@ -62,25 +63,6 @@ function makeHeatmapData(density, profile = 'consistent') {
     map[key] = n < threshold ? 0 : 10 + (n2 % 45)
   }
   return map
-}
-
-// ─── Score helpers ────────────────────────────────────────────────────────────
-function motivationScore(sec) {
-  const rmi = sec.rmiHistory[0]
-  return Math.round((rmi.motivationAvg / rmi.motivationMax) * 100)
-}
-function sectionScore(key, sec) {
-  return key === 'motivation' ? motivationScore(sec) : sec.score
-}
-const STATUS_ICONS = {
-  ok: (c) => <Icon name="circle-check-filled" size={20} color={c} />,
-  warn: (c) => <Icon name="alert-circle-filled" size={20} color={c} />,
-  bad: (c) => <Icon name="circle-x-filled" size={20} color={c} />,
-}
-function statusIndicator(score) {
-  if (score >= 75) return { render: STATUS_ICONS.ok, color: '#16A97A' }
-  if (score >= 50) return { render: STATUS_ICONS.warn, color: '#D97706' }
-  return { render: STATUS_ICONS.bad, color: '#DC2626' }
 }
 
 // ─── Action footer ────────────────────────────────────────────────────────────
@@ -200,10 +182,10 @@ function StudentHeader({ student, onClose }) {
 // ─── Left nav ─────────────────────────────────────────────────────────────────
 const NAV_ITEMS = [
   { icon: 'ti-user', section: null, label: 'Overview' },
-  { icon: 'ti-flame', section: 'motivation', label: 'Motivation' },
-  { icon: 'ti-shield-check', section: 'integrity', label: 'Integrity' },
-  { icon: 'ti-calendar-stats', section: 'habits', label: 'Habits' },
-  { icon: 'ti-book-2', section: 'skills', label: 'Skills' },
+  { icon: 'ti-flame', section: 'motivation', label: LABEL.motivation },
+  { icon: 'ti-shield-check', section: 'integrity', label: LABEL.integrity },
+  { icon: 'ti-calendar-stats', section: 'habits', label: LABEL.habits },
+  { icon: 'ti-book-2', section: 'skills', label: LABEL.skills },
   { divider: true },
   { icon: 'ti-reading-log', section: 'readinglog', label: 'Reading Log', compact: true },
   { icon: 'ti-trophy', section: 'challenges', label: 'Challenges', compact: true },
@@ -244,116 +226,275 @@ function LeftNav({ activeSection, onNavigate }) {
   }
 
   const overviewItem = NAV_ITEMS[0]
-  const subItems = NAV_ITEMS.slice(1, 5) // Motivation, Integrity, Habits, Skills
+  const subItems = NAV_ITEMS.slice(1, 5) // the four analysis sections
   const restItems = NAV_ITEMS.slice(5)
 
   return (
     <nav className="bp-nav">
-      {renderItem(overviewItem, 0)}
+      {/* Overview stands on its own — it summarises the analysis sections rather
+          than being one of them, so it sits outside the grouped rail below. */}
+      <div className="bp-nav-overview">{renderItem(overviewItem, 0)}</div>
       <div className="bp-nav-subgroup">{subItems.map((item, i) => renderItem(item, i + 1))}</div>
       {restItems.map((item, i) => renderItem(item, i + 5))}
     </nav>
   )
 }
 
+// ─── Title row ────────────────────────────────────────────────────────────────
+// The Lexile page's "Recent titles" list. (The Overview's "Latest titles" is a
+// cover-first grid instead — see `.bp-latest-grid`.)
+function TitleRow({ title: t }) {
+  const href = `https://openlibrary.org/isbn/${t.isbn}`
+  return (
+    <div className="bp-title-row">
+      <a href={href} target="_blank" rel="noreferrer" className="bp-title-cover-link">
+        <CoverImage isbn={t.isbn} title={t.title} />
+      </a>
+      <div className="bp-title-row-main">
+        <div className="bp-title-row-top">
+          <div>
+            <a href={href} target="_blank" rel="noreferrer" className="bp-title-name-link">
+              {t.title}
+            </a>
+            <div className="bp-title-author">{t.author}</div>
+          </div>
+          <span className="bp-title-lexile-pill">{t.lexile}L</span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Overview ─────────────────────────────────────────────────────────────────
+const OVERVIEW_RANGES = [
+  { id: 'year', label: 'This School Year' },
+  { id: 'all', label: 'All Time' },
+]
+
+// Overview tiles are named for the figure they show, which is not the same as the
+// section they open — the rail and page headings keep `LABEL` (Motivation Index,
+// Book Talks, Goals, Lexile).
+const OVERVIEW_TILE_LABEL = {
+  motivation: 'Top Motivation Factors',
+  integrity: 'Recent Flags',
+  habits: 'Daily Goals',
+  skills: 'Average Lexile',
+}
+
+// Tints for the Overview's habit stats. Deliberately outside the four section
+// palettes in `C` so these don't read as belonging to one of the sections:
+// gold for streaks (matching the gold goal stars), teal for the brand's own
+// accent, slate for elapsed time.
+const STAT_TINTS = {
+  current: { bg: '#FEF3C7', text: '#92400E' },
+  longest: { bg: '#DFF4F7', text: '#0B6B78' },
+  minutes: { bg: '#EEF2F7', text: '#334155' },
+}
+
+// One tile shape for everything on the Overview — the four section tiles and the
+// habits stats below them — so the page reads as a single grid, not two systems.
+function OverviewTile({ label, accent, onOpen, children }) {
+  return (
+    <div
+      className="bp-tile"
+      style={{ '--tile-bg': accent.bg, '--tile-text': accent.text }}
+      onClick={onOpen}
+      onKeyDown={(e) => e.key === 'Enter' && onOpen()}
+      role="button"
+      tabIndex={0}
+    >
+      <div className="bp-tile-head">
+        <div className="bp-tile-label">{label}</div>
+        {/* Every tile opens its section — the arrow says so without needing a hover */}
+        <Icon name="arrow-right" size={15} className="bp-tile-go" aria-hidden="true" />
+      </div>
+      <div className="bp-tile-body">{children}</div>
+    </div>
+  )
+}
+
 function Overview({ student, onNavigate }) {
+  const [range, setRange] = useState('year')
+  const ov = student.overview[range]
+  const rangeLabel = range === 'year' ? 'this school year' : 'all time'
+
   return (
     <div className="bp-content">
-      <Hero icon={<Ic name="ti-user" />} title="Overview" accent="#64748B" accentBg="#F1F5F9" />
+      <Hero
+        icon={<Ic name="ti-user" />}
+        title="Overview"
+        accent="#64748B"
+        accentBg="#F1F5F9"
+        action={
+          <Tabs
+            variant="pill"
+            size="sm"
+            ariaLabel="Overview time range"
+            active={range}
+            onChange={setRange}
+            items={OVERVIEW_RANGES}
+          />
+        }
+      />
 
-      {/* Snapshot tiles */}
+      {/* Benny Says — the summary leads the page */}
+      <Card>
+        <SectionHeading>Benny Says...</SectionHeading>
+        <BennyBubble timestamp={student.lastRun}>{student.bennySummary}</BennyBubble>
+      </Card>
+
+      {/* Section tiles — every figure here is scoped to the selected range */}
       <div className="bp-tiles">
-        {Object.entries(student.sections).map(([key, sec]) => {
+        {Object.entries(student.sections).map(([key]) => {
           const c = C[key]
-          const score = sectionScore(key, sec)
-          const indicator = statusIndicator(score)
+          const open = () => onNavigate(key)
 
-          let insightNode
           if (key === 'motivation') {
-            if (sec.motivatorInsight.type === 'clear') {
-              insightNode = (
-                <div className="bp-tile-motivators">
-                  {sec.motivatorInsight.top.map((name) => {
-                    const iconKey = name === 'Social Connection' ? 'social' : name.toLowerCase()
-                    return (
-                      <div key={name} className="bp-tile-motivator-row">
-                        <span className="bp-tile-motivator-icon">
-                          {cloneElement(RMI_ICONS[iconKey], { width: 14, height: 14 })}
-                        </span>
-                        {name}
-                      </div>
-                    )
-                  })}
-                </div>
-              )
-            } else {
-              insightNode = (
-                <div
-                  className="bp-tile-stat"
-                  style={{ fontSize: 13, opacity: 0.75, fontWeight: 500 }}
-                >
-                  ⚠ No clear motivator found
-                </div>
-              )
-            }
-          } else if (key === 'habits') {
-            insightNode =
-              sec.daysRead30 > 0 ? (
-                <div className="bp-tile-stat">
-                  {sec.daysRead30}
-                  <span className="bp-tile-unit"> of last 30 days</span>
-                </div>
-              ) : (
-                <div
-                  className="bp-tile-stat"
-                  style={{ fontSize: 13, opacity: 0.75, fontWeight: 500 }}
-                >
-                  No logging in past 30 days
-                </div>
-              )
-          } else {
-            const stat = sec.tileStat
-            const unit = key === 'integrity' ? (parseInt(stat) === 1 ? 'Flag' : 'Flags') : 'Lexile'
-            insightNode = (
-              <div className="bp-tile-stat">
-                {stat}
-                <span className="bp-tile-unit"> {unit}</span>
-              </div>
+            return (
+              <OverviewTile key={key} label={OVERVIEW_TILE_LABEL[key]} accent={c} onOpen={open}>
+                {ov.motivators ? (
+                  <div className="bp-tile-motivators">
+                    {ov.motivators.map((name) => {
+                      const iconKey = name === 'Social Connection' ? 'social' : name.toLowerCase()
+                      return (
+                        <div key={name} className="bp-tile-motivator-row">
+                          <span className="bp-tile-motivator-icon">
+                            {cloneElement(RMI_ICONS[iconKey], { width: 14, height: 14 })}
+                          </span>
+                          {name}
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <div className="bp-tile-empty">⚠ No clear motivator found</div>
+                )}
+              </OverviewTile>
             )
           }
 
+          if (key === 'integrity') {
+            return (
+              <OverviewTile key={key} label={OVERVIEW_TILE_LABEL[key]} accent={c} onOpen={open}>
+                <div className="bp-tile-stat">
+                  {ov.flags}
+                  <span className="bp-tile-unit"> {ov.flags === 1 ? 'Flag' : 'Flags'}</span>
+                </div>
+              </OverviewTile>
+            )
+          }
+
+          if (key === 'habits') {
+            return (
+              <OverviewTile key={key} label={OVERVIEW_TILE_LABEL[key]} accent={c} onOpen={open}>
+                {ov.daysRead > 0 ? (
+                  <div>
+                    <div className="bp-tile-stat">
+                      {ov.daysRead}
+                      <span className="bp-tile-unit"> of {ov.daysPossible} days</span>
+                    </div>
+                    <div className="bp-tile-sub">
+                      {Math.round((ov.daysRead / ov.daysPossible) * 100)}% of school days
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bp-tile-empty">No reading logged</div>
+                )}
+              </OverviewTile>
+            )
+          }
+
+          const up = ov.lexileDelta >= 0
           return (
-            <div
-              key={key}
-              className="bp-tile"
-              style={{ '--tile-bg': c.bg, '--tile-text': c.text }}
-              onClick={() => onNavigate(key)}
-              onKeyDown={(e) => e.key === 'Enter' && onNavigate(key)}
-              role="button"
-              tabIndex={0}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  marginBottom: 6,
-                }}
-              >
-                <div className="bp-tile-label">{LABEL[key]}</div>
-                {indicator.render(indicator.color)}
+            <OverviewTile key={key} label={OVERVIEW_TILE_LABEL[key]} accent={c} onOpen={open}>
+              <div>
+                <div className="bp-tile-stat">{ov.lexile}L</div>
+                <div className="bp-tile-sub">
+                  {up ? '↑' : '↓'}
+                  {Math.abs(ov.lexileDelta)}L {rangeLabel}
+                </div>
               </div>
-              <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>{insightNode}</div>
-            </div>
+            </OverviewTile>
           )
         })}
       </div>
 
-      {/* Benny Says */}
+      {/* Streaks + minutes — same tile treatment, all of it Goals and Streaks data.
+          Current streak is an as-of-today figure, so only the longest moves with the range. */}
+      <div className="bp-tiles bp-tiles--stats">
+        <OverviewTile
+          label="Current streak"
+          accent={STAT_TINTS.current}
+          onOpen={() => onNavigate('habits')}
+        >
+          <div className="bp-tile-stat">
+            {ov.currentStreak}
+            <span className="bp-tile-unit"> {ov.currentStreak === 1 ? 'day' : 'days'}</span>
+          </div>
+        </OverviewTile>
+        <OverviewTile
+          label="Longest streak"
+          accent={STAT_TINTS.longest}
+          onOpen={() => onNavigate('habits')}
+        >
+          <div>
+            <div className="bp-tile-stat">
+              {ov.longestStreak}
+              <span className="bp-tile-unit"> {ov.longestStreak === 1 ? 'day' : 'days'}</span>
+            </div>
+            <div className="bp-tile-sub">{rangeLabel}</div>
+          </div>
+        </OverviewTile>
+        <OverviewTile
+          label="Total Minutes Read"
+          accent={STAT_TINTS.minutes}
+          onOpen={() => onNavigate('habits')}
+        >
+          <div>
+            <div className="bp-tile-stat">
+              {ov.minutes.toLocaleString()}
+              <span className="bp-tile-unit"> min</span>
+            </div>
+            <div className="bp-tile-sub">{rangeLabel}</div>
+          </div>
+        </OverviewTile>
+      </div>
+
+      {/* Latest titles — covers first, so the shelf reads at a glance */}
       <Card>
-        <SectionHeading>Benny Says...</SectionHeading>
-        <BennyBubble timestamp={student.lastRun}>{student.bennySummary}</BennyBubble>
+        <div className="bp-latest-head">
+          <div>
+            <SectionHeading>Latest titles</SectionHeading>
+            <div className="bp-latest-meta">
+              {ov.booksCompleted} books finished {rangeLabel}
+            </div>
+          </div>
+          <button type="button" className="bp-latest-link" onClick={() => onNavigate('readinglog')}>
+            Reading Log
+            <Icon name="arrow-right" size={14} />
+          </button>
+        </div>
+        <div className="bp-latest-grid">
+          {student.sections.skills.titles
+            .slice()
+            .reverse()
+            .map((t, i) => (
+              <a
+                key={i}
+                className="bp-latest-item"
+                href={`https://openlibrary.org/isbn/${t.isbn}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <div className="bp-latest-cover">
+                  <CoverImage isbn={t.isbn} title={t.title} />
+                  <span className="bp-latest-lexile">{t.lexile}L</span>
+                </div>
+                <div className="bp-latest-title">{t.title}</div>
+                <div className="bp-latest-author">{t.author}</div>
+              </a>
+            ))}
+        </div>
       </Card>
 
       {/* Recommended Actions */}
@@ -364,13 +505,6 @@ function Overview({ student, onNavigate }) {
             <div className="bp-action-body">
               <div className="bp-action-title">{action.title}</div>
               <div className="bp-action-text">{action.body}</div>
-              <Pill
-                color={C[action.section].bar}
-                size="sm"
-                icon={<Ic name={C[action.section].icon} />}
-              >
-                {LABEL[action.section]}
-              </Pill>
             </div>
           </div>
         ))}
@@ -386,20 +520,16 @@ function SectionDetail({ student, sectionKey }) {
   const firstName = student.name.split(' ')[0]
   return (
     <div className="bp-content">
-      <Hero
-        icon={<Ic name={c.icon} />}
-        title={`Reading ${LABEL[sectionKey]}`}
-        accent={c.bar}
-        accentBg={c.bg}
-        action={<StatusBadge label={sec.status} size={13} accent={c.bar} />}
-      />
+      <Hero icon={<Ic name={c.icon} />} title={LABEL[sectionKey]} accent={c.bar} accentBg={c.bg} />
       {sectionKey === 'motivation' && <MotivationDetail sec={sec} c={c} />}
       {sectionKey === 'integrity' && <IntegrityDetail sec={sec} c={c} />}
       {sectionKey === 'habits' && <HabitsDetail sec={sec} c={c} />}
       {sectionKey === 'skills' && <SkillsDetail sec={sec} c={c} firstName={firstName} />}
-      <Card>
-        <ActionFooter actions={sec.actions} />
-      </Card>
+      {sectionKey === 'motivation' && (
+        <Card>
+          <ActionFooter actions={sec.actions} />
+        </Card>
+      )}
     </div>
   )
 }
@@ -488,6 +618,56 @@ function MotivationDetail({ sec, c }) {
   )
 }
 
+// ─── Book talk types ──────────────────────────────────────────────────────────
+// Benny runs three kinds of book talk. `TALK_KINDS` is the canonical definition
+// over in the BTWB prototype (label / color / tint / icon), so the wording and
+// colors here can't drift from it.
+const TALK_ORDER = ['engagement', 'comprehension', 'integrity']
+
+// The one-line read differs per type: engagement measures how it landed,
+// comprehension how well it was understood, integrity whether the log holds up.
+function talkRead(kindId, t) {
+  if (!t.total) return 'No talks yet'
+  if (kindId === 'engagement') {
+    const parts = [
+      t.positive && `${t.positive} positive`,
+      t.mixed && `${t.mixed} mixed`,
+      t.disengaged && `${t.disengaged} disengaged`,
+    ].filter(Boolean)
+    return parts.join(' · ')
+  }
+  if (kindId === 'comprehension') {
+    const parts = [
+      t.strong && `${t.strong} showed strong understanding`,
+      t.developing && `${t.developing} still developing`,
+    ].filter(Boolean)
+    return parts.join(' · ')
+  }
+  return t.concerns === 1 ? '1 raised a concern' : `${t.concerns} raised a concern`
+}
+
+function TalkKindRow({ kind, talk }) {
+  return (
+    <div className="bp-talk-kind" style={{ '--kind-color': kind.color, '--kind-tint': kind.tint }}>
+      <span className="bp-talk-kind-icon">
+        <Icon name={kind.icon} size={17} />
+      </span>
+      <div className="bp-talk-kind-main">
+        <div className="bp-talk-kind-top">
+          <span className="bp-talk-kind-label">{kind.label}</span>
+          {talk.unfinished > 0 && (
+            <Pill color="#B45309" size="sm">
+              {talk.unfinished} unfinished
+            </Pill>
+          )}
+        </div>
+        <div className="bp-talk-kind-read">{talkRead(kind.id, talk)}</div>
+      </div>
+      <div className="bp-talk-kind-count">{talk.total}</div>
+    </div>
+  )
+}
+
 // ─── Integrity detail ─────────────────────────────────────────────────────────
 const SESSION_FLAGS = {
   'book-swap': { icon: 'ti-swap', label: 'Book transfer', color: '#D97706' },
@@ -523,6 +703,15 @@ function IntegrityDetail({ sec }) {
   return (
     <>
       <Card>
+        <SectionHeading>Book talks</SectionHeading>
+        <div className="bp-talk-kinds">
+          {TALK_ORDER.map((id) => (
+            <TalkKindRow key={id} kind={TALK_KINDS[id]} talk={sec.talks[id]} />
+          ))}
+        </div>
+      </Card>
+
+      <Card>
         <SectionHeading>Session integrity</SectionHeading>
         <div className="bp-flagged-summary">
           <span className="bp-flagged-label">Flagged sessions</span>
@@ -541,6 +730,9 @@ function IntegrityDetail({ sec }) {
       </Card>
 
       <Card flush>
+        <div className="bp-titles-header">
+          <span className="bp-titles-header-label">Flagged sessions</span>
+        </div>
         <Table
           flush
           compact
@@ -582,27 +774,38 @@ function HabitsDetail({ sec, c }) {
   const [weekIdx, setWeekIdx] = useState(0)
   const week = sec.weeks[weekIdx]
 
+  const goal = sec.dailyGoalMinutes
+
   // Derive today's minutes from the current week (last non-null day)
   const currentWeek = sec.weeks.find((w) => w.current)
   const todayMins = currentWeek
     ? ([...currentWeek.days].reverse().find((d) => d.minutes !== null)?.minutes ?? 0)
     : 0
 
+  // Per-session and best-day stats are only meaningful once there is reading to
+  // average over — otherwise they show a leftover figure next to "0 of 30 days".
+  const hasRecentReading = sec.daysRead30 > 0
+  const hasMonthReading = sec.daysReadThisMonth > 0
+  const EMPTY = '—'
+
   return (
     <>
-      {/* Daily goal tracker */}
+      {/* Daily goal */}
       <Card>
+        <SectionHeading>Daily goal</SectionHeading>
         <div className="bp-goal-ring-header">
-          <GoalRing minutes={todayMins} goal={sec.dailyGoalMinutes} color={c.bar} />
+          <GoalRing minutes={todayMins} goal={goal} color={c.bar} />
           <div className="bp-goal-ring-info">
-            <div className="bp-goal-title">Daily Reading Goal</div>
+            <div className="bp-goal-title">{goal} minutes a day</div>
             <div className="bp-goal-ring-meta">
-              <span className="bp-goal-ring-num">{sec.dailyGoalMinutes} min</span>
+              <span className="bp-goal-ring-num">{todayMins} min</span>
               <span className="bp-goal-ring-dot">·</span>
-              <span>Today</span>
+              <span>logged today</span>
             </div>
           </div>
-          <Button variant="ghost">Edit Goal</Button>
+          <Button variant="secondary" size="sm" icon={<Icon name="pencil" size={14} />}>
+            Edit Goal
+          </Button>
         </div>
         <div className="bp-goal-week-nav">
           <button
@@ -626,12 +829,13 @@ function HabitsDetail({ sec, c }) {
             <Icon name="chevron-right" size={11} />
           </button>
         </div>
-        <GoalTracker week={week} goalMinutes={sec.dailyGoalMinutes} />
+        <GoalTracker week={week} goalMinutes={goal} />
       </Card>
 
-      {/* Recent activity */}
+      {/* Consistency — days read and both streak figures in one place, so the
+          longest streak isn't restated as a separate "personal best" line. */}
       <Card>
-        <SectionHeading>Recent activity</SectionHeading>
+        <SectionHeading>Consistency</SectionHeading>
         <div className="bp-streak-hero">
           <div className="bp-streak-hero-left">
             <div>
@@ -640,32 +844,22 @@ function HabitsDetail({ sec, c }) {
                 <span className="bp-streak-hero-unit"> of last 30 days</span>
               </div>
               <div className="bp-streak-hero-sublabel">
-                {sec.daysRead30 === 0
-                  ? 'No reading logged'
-                  : `Logged on ${Math.round((sec.daysRead30 / 30) * 100)}% of days`}
+                {hasRecentReading
+                  ? `Logged on ${Math.round((sec.daysRead30 / 30) * 100)}% of days`
+                  : 'No reading logged'}
               </div>
             </div>
           </div>
           <div className="bp-streak-hero-right">
-            {sec.daysRead30 === 0 ? (
+            {hasRecentReading ? (
+              <ProgressBar value={sec.daysRead30} max={30} color={c.bar} size="sm" />
+            ) : (
               <CardNote tone="accent">
                 <Ic name="ti-alert-triangle" size={14} /> Worth checking in
               </CardNote>
-            ) : (
-              <>
-                <ProgressBar value={sec.daysRead30} max={30} color={c.bar} size="sm" />
-                <div className="bp-streak-pb-sub">
-                  Personal best: <strong>{sec.personalBest} days</strong> in a row
-                </div>
-              </>
             )}
           </div>
         </div>
-      </Card>
-
-      {/* Streaks */}
-      <Card>
-        <SectionHeading>Streaks</SectionHeading>
         <div className="bp-streaks-row">
           <StatCard
             value={sec.currentStreak}
@@ -690,8 +884,8 @@ function HabitsDetail({ sec, c }) {
           items={[
             {
               label: 'Avg session length',
-              valueLabel: `${sec.avgSessionMins} min`,
-              subValue: 'per sitting',
+              valueLabel: hasRecentReading ? `${sec.avgSessionMins} min` : EMPTY,
+              subValue: hasRecentReading ? 'per sitting' : 'no sessions logged',
             },
             {
               label: 'Days read this month',
@@ -705,8 +899,8 @@ function HabitsDetail({ sec, c }) {
             },
             {
               label: 'Best reading day',
-              valueLabel: sec.topReadingDay,
-              subValue: 'most consistent',
+              valueLabel: hasMonthReading ? sec.topReadingDay : EMPTY,
+              subValue: hasMonthReading ? 'most consistent' : 'not enough data',
             },
           ]}
         />
@@ -720,9 +914,9 @@ function HabitsDetail({ sec, c }) {
           <div className="bp-heatmap-legend">
             {[
               { bg: '#EAECF0', label: 'No reading' },
-              { bg: '#60A5FA', label: 'Read' },
-              { bg: '#60A5FA', label: 'Goal met', goal: true },
-              { bg: '#60A5FA', label: 'Streak', streak: true },
+              { bg: c.bar, label: 'Read' },
+              { bg: c.bar, label: 'Goal met', goal: true },
+              { bg: c.bar, label: 'Streak', streak: true },
             ].map((item, i) => (
               <div key={i} className="bp-heatmap-legend-item">
                 <div
@@ -735,20 +929,41 @@ function HabitsDetail({ sec, c }) {
           </div>
         }
       >
-        <ReadingHeatmap goalMinutes={sec.dailyGoalMinutes} color="#60A5FA" data={sec.heatmapData} />
+        <ReadingHeatmap goalMinutes={goal} color={c.bar} data={sec.heatmapData} />
       </ChartCard>
     </>
   )
 }
 
+// ─── Lexile axis ──────────────────────────────────────────────────────────────
+// A fixed 400–1000 band wasted most of the plot for a reader who only moves
+// 720→870, so the axis is derived from the series (including the grade-level
+// line) and snapped out to friendly round ticks.
+const NICE_STEPS = [25, 50, 100, 200, 250, 500]
+
+function niceLexileAxis(values, targetTicks = 5) {
+  const lo = Math.min(...values)
+  const hi = Math.max(...values)
+  const span = Math.max(hi - lo, NICE_STEPS[0])
+  const pad = span * 0.15
+  const rawStep = (span + pad * 2) / (targetTicks - 1)
+  const step = NICE_STEPS.find((v) => v >= rawStep) ?? NICE_STEPS[NICE_STEPS.length - 1]
+  const min = Math.max(0, Math.floor((lo - pad) / step) * step)
+  const max = Math.ceil((hi + pad) / step) * step
+  const ticks = []
+  for (let v = min; v <= max; v += step) ticks.push(v)
+  return { domain: [min, max], ticks }
+}
+
 // ─── Skills detail ────────────────────────────────────────────────────────────
 function SkillsDetail({ sec, c }) {
   const deltaUp = sec.monthlyDelta >= 0
+  const lexileAxis = niceLexileAxis([...sec.lexileHistory.map((d) => d.avg), sec.gradeLevel])
   return (
     <>
       <Card>
         <SectionHeading>Lexile Trend</SectionHeading>
-        <div style={{ height: 180 }}>
+        <div className="bp-chart-fit" style={{ '--chart-h': '180px' }}>
           <TrendChart
             type="line"
             data={sec.lexileHistory.map((d) => ({
@@ -757,8 +972,8 @@ function SkillsDetail({ sec, c }) {
               grade: sec.gradeLevel,
             }))}
             xKey="month"
-            yDomain={[400, 1000]}
-            yTicks={[400, 500, 600, 700, 800, 900, 1000]}
+            yDomain={lexileAxis.domain}
+            yTicks={lexileAxis.ticks}
             yUnit="L"
             height="sm"
             series={[
@@ -796,32 +1011,7 @@ function SkillsDetail({ sec, c }) {
           <span className="bp-titles-header-label">Recent titles</span>
         </div>
         {sec.titles.map((t, i) => (
-          <div key={i} className="bp-title-row">
-            <a
-              href={`https://openlibrary.org/isbn/${t.isbn}`}
-              target="_blank"
-              rel="noreferrer"
-              className="bp-title-cover-link"
-            >
-              <CoverImage isbn={t.isbn} title={t.title} />
-            </a>
-            <div className="bp-title-row-main">
-              <div className="bp-title-row-top">
-                <div>
-                  <a
-                    href={`https://openlibrary.org/isbn/${t.isbn}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="bp-title-name-link"
-                  >
-                    {t.title}
-                  </a>
-                  <div className="bp-title-author">{t.author}</div>
-                </div>
-                <span className="bp-title-lexile-pill">{t.lexile}L</span>
-              </div>
-            </div>
-          </div>
+          <TitleRow key={i} title={t} />
         ))}
       </div>
     </>
@@ -838,6 +1028,34 @@ const STUDENTS = {
     name: 'Marcus Chen',
     grade: '7th Grade',
     lastRun: 'May 15 at 9:55am',
+    // Overview stats per range. `daysPossible` counts school days: ~172 so far
+    // this year, ~344 across the two years of logging history.
+    overview: {
+      year: {
+        motivators: ['Enjoyment', 'Curiosity'],
+        flags: 1,
+        daysRead: 148,
+        daysPossible: 172,
+        lexile: 870,
+        lexileDelta: 120,
+        currentStreak: 18,
+        longestStreak: 18,
+        booksCompleted: 24,
+        minutes: 5480,
+      },
+      all: {
+        motivators: ['Enjoyment', 'Challenge'],
+        flags: 3,
+        daysRead: 281,
+        daysPossible: 344,
+        lexile: 870,
+        lexileDelta: 230,
+        currentStreak: 18,
+        longestStreak: 24,
+        booksCompleted: 41,
+        minutes: 10120,
+      },
+    },
     bennySummary:
       "Marcus is an outstanding reader. He's logged reading on 21 of the last 30 days — the highest consistency in the class — and is reading well above grade level at 870L. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with only 1 flagged session all year. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
     sections: {
@@ -945,6 +1163,12 @@ const STUDENTS = {
         flagDelta: -2,
         flagBreakdown: [{ type: 'Time concern', count: 1 }],
         unfinishedConversations: 0,
+        // Talks held, by type. `unfinished` sums to `unfinishedConversations`.
+        talks: {
+          engagement: { total: 11, unfinished: 0, positive: 10, mixed: 1, disengaged: 0 },
+          comprehension: { total: 6, unfinished: 0, strong: 5, developing: 1 },
+          integrity: { total: 1, unfinished: 0, concerns: 1 },
+        },
         tileStat: '1',
         tileSub: 'flag ↓2',
         sessions: [{ date: '03/14/25', title: "Ender's Game", flags: ['time-warning'] }],
@@ -1149,6 +1373,32 @@ const STUDENTS = {
     name: 'Anne Boonchuy',
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
+    overview: {
+      year: {
+        motivators: ['Recognition', 'Social Connection'],
+        flags: 4,
+        daysRead: 74,
+        daysPossible: 172,
+        lexile: 730,
+        lexileDelta: 90,
+        currentStreak: 4,
+        longestStreak: 6,
+        booksCompleted: 11,
+        minutes: 1780,
+      },
+      all: {
+        motivators: ['Recognition', 'Curiosity'],
+        flags: 11,
+        daysRead: 138,
+        daysPossible: 344,
+        lexile: 730,
+        lexileDelta: 180,
+        currentStreak: 4,
+        longestStreak: 9,
+        booksCompleted: 19,
+        minutes: 3170,
+      },
+    },
     bennySummary:
       "Anne is making real progress this month! Her reading habits are building — she's logged reading on 10 of the last 30 days and has already logged 85 minutes this week. Her Lexile average has climbed 50 points since April, and she's consistently choosing harder books. Integrity is improving, with flags down from 7 to 4. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and 2 unfinished BTWB conversations that are worth following up on.",
     sections: {
@@ -1297,6 +1547,16 @@ const STUDENTS = {
           { type: 'Logged above limit', count: 1 },
         ],
         unfinishedConversations: 2,
+        talks: {
+          engagement: { total: 8, unfinished: 1, positive: 5, mixed: 3, disengaged: 0 },
+          comprehension: {
+            total: 3,
+            unfinished: 1,
+            strong: 1,
+            developing: 2,
+          },
+          integrity: { total: 2, unfinished: 0, concerns: 2 },
+        },
         tileStat: '4',
         tileSub: 'flags ↓3',
         sessions: [
@@ -1392,7 +1652,7 @@ const STUDENTS = {
           },
           {
             title: 'Help Anne hit her daily goal more consistently',
-            body: "She's meeting her 20-minute goal on reading days but skipping Wed and Sun regularly. A quick habit check-in could smooth that out.",
+            body: "She's meeting her daily goal on reading days but skipping Wed and Sun regularly. A quick habit check-in could smooth that out.",
           },
         ],
       },
@@ -1514,6 +1774,32 @@ const STUDENTS = {
     name: 'Tyler Voss',
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
+    overview: {
+      year: {
+        motivators: null,
+        flags: 13,
+        daysRead: 26,
+        daysPossible: 172,
+        lexile: 510,
+        lexileDelta: -20,
+        currentStreak: 0,
+        longestStreak: 3,
+        booksCompleted: 3,
+        minutes: 470,
+      },
+      all: {
+        motivators: null,
+        flags: 24,
+        daysRead: 61,
+        daysPossible: 344,
+        lexile: 510,
+        lexileDelta: 40,
+        currentStreak: 0,
+        longestStreak: 5,
+        booksCompleted: 7,
+        minutes: 1040,
+      },
+    },
     bennySummary:
       'Tyler needs immediate attention. He has no logged reading days in the past 30 days — the only student in the class with zero recent activity. His Lexile average has declined 15 points since March, and he has 13 flagged sessions including 6 suspected over-logs, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.',
     sections: {
@@ -1625,6 +1911,16 @@ const STUDENTS = {
           { type: 'Suspicious length', count: 3 },
         ],
         unfinishedConversations: 7,
+        talks: {
+          engagement: { total: 5, unfinished: 3, positive: 1, mixed: 2, disengaged: 2 },
+          comprehension: {
+            total: 2,
+            unfinished: 2,
+            strong: 0,
+            developing: 2,
+          },
+          integrity: { total: 6, unfinished: 2, concerns: 5 },
+        },
         tileStat: '13',
         tileSub: 'flags ↑5',
         sessions: [
@@ -1684,7 +1980,7 @@ const STUDENTS = {
         longestGap: 30,
         topReadingDay: 'Thursdays',
         daysRead30: 0,
-        tileStat: '1',
+        tileStat: '0',
         tileSub: 'day streak',
         dailyGoalMinutes: 15,
         heatmapData: makeHeatmapData(0.18, 'sporadic'),
@@ -1852,11 +2148,12 @@ const STUDENTS = {
 }
 
 // ─── Class table data ─────────────────────────────────────────────────────────
+// `goal` is deliberately absent — it lives in BeanstackProfile's `goals` state so
+// the table and the profile's Habits tab can never disagree about it.
 const CLASS_TABLE = [
   {
     key: 'marcus',
     rank: 1,
-    goal: '30m',
     avg: 98,
     ac: 'blue',
     days: [true, true, true, true, true, null, null],
@@ -1864,7 +2161,6 @@ const CLASS_TABLE = [
   {
     key: 'anne',
     rank: 2,
-    goal: '20m',
     avg: 73,
     ac: 'blue',
     days: [null, true, true, null, true, '24%', null],
@@ -1872,7 +2168,6 @@ const CLASS_TABLE = [
   {
     key: 'tyler',
     rank: 3,
-    goal: '15m',
     avg: 31,
     ac: 'red',
     days: [null, '18%', null, null, null, null, null],
@@ -2195,7 +2490,9 @@ function AdminMockup({ onStudentClick, selectedKey }) {
                     </td>
                     <td className="tbl-td bp-adm-td--goal">
                       <div className="bp-adm-goal-cell">
-                        <span className="bp-adm-goal-val">{s.goal}</span>
+                        <span className="bp-adm-goal-val">
+                          {STUDENTS[s.key].sections.habits.dailyGoalMinutes}m
+                        </span>
                         <IconButton
                           variant="ghost"
                           size="sm"

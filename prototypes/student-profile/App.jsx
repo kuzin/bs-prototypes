@@ -1,6 +1,11 @@
 import BeanstackProfile from './BeanstackProfile'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 
+// The mock is scaled up slightly to fill the frame. Exposed as a CSS variable
+// too, because JS-measured SVGs (nivo) size themselves from the *unzoomed*
+// layout width and then get scaled a second time — see `.bp-chart-fit`.
+const APP_ZOOM = 1.07
+
 export default function App() {
   return (
     <>
@@ -12,7 +17,8 @@ export default function App() {
           right: 0,
           bottom: 48,
           overflow: 'hidden',
-          zoom: 1.07,
+          zoom: APP_ZOOM,
+          '--app-zoom': APP_ZOOM,
         }}
       >
         <BeanstackProfile />

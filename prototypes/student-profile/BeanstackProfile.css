@@ -151,7 +151,18 @@
   display: none;
 }
 
-/* Subgroup container — wraps Motivation/Integrity/Habits/Skills under Overview */
+/* Overview sits apart from the analysis group below it — it summarises those
+   sections rather than being one of them. */
+.bp-nav-overview {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+
+/* Subgroup container — wraps the four analysis sections under Overview */
 .bp-nav-subgroup {
   position: relative;
   width: 100%;
@@ -553,12 +564,62 @@
   opacity: 0.85;
 }
 
+/* Stats tiles (streaks + minutes) — same tile shape and the same 2-across grid
+   as the section tiles above. An odd tile at the end fills its row instead of
+   sitting next to a gap. */
+.bp-tiles--stats {
+  margin-top: -2px;
+}
+
+.bp-tiles--stats .bp-tile:last-child:nth-child(odd) {
+  grid-column: span 2;
+}
+
+.bp-tile-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.bp-tile-empty {
+  font-size: 13px;
+  font-weight: 500;
+  color: #424242;
+  opacity: 0.75;
+}
+
+/* Label row — holds the tile name and its "opens the section" arrow */
+.bp-tile-head {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
 .bp-tile-label {
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--tile-text);
+}
+
+.bp-tile-go {
+  flex-shrink: 0;
+  margin-top: 1px;
+  color: var(--tile-text);
+  opacity: 0.4;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+}
+
+.bp-tile:hover .bp-tile-go,
+.bp-tile:focus-visible .bp-tile-go {
+  opacity: 0.9;
+  transform: translateX(2px);
 }
 
 .bp-tile-stat {
@@ -572,6 +633,14 @@
   font-size: 13px;
   font-weight: 700;
   color: #424242;
+}
+
+.bp-tile-sub {
+  font-size: 12px;
+  font-weight: 700;
+  color: #424242;
+  opacity: 0.6;
+  margin-top: 3px;
 }
 
 .bp-tile-status {
@@ -833,7 +902,6 @@
   color: #424242;
   line-height: 1.55;
   font-weight: 500;
-  margin-bottom: 8px;
 }
 
 /* ─── Section detail ─────────────────────────────────────────────────────── */
@@ -1044,26 +1112,11 @@
 .bp-goal-ring-dot {
   color: #d1d5db;
 }
-.bp-goal-ring-status {
-  font-size: 13px;
-  color: #9ca3af;
-  font-weight: 600;
-  margin-top: 2px;
-}
-.bp-goal-ring-status--met {
-  color: #10b981;
-}
 
 .bp-goal-title {
   font-size: 15px;
   font-weight: 800;
   color: #424242;
-}
-.bp-goal-subtitle {
-  font-size: 13px;
-  color: #707070;
-  font-weight: 600;
-  margin-top: 2px;
 }
 
 .bp-goal-week-nav {
@@ -1077,35 +1130,6 @@
   font-size: 13px;
   font-weight: 800;
   color: #424242;
-}
-
-.bp-goal-nav-btn {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 1.5px solid #dedede;
-  background: #fff;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #424242;
-  font-family: inherit;
-  padding: 0;
-  line-height: 1;
-  transition:
-    background 0.1s,
-    border-color 0.1s;
-}
-
-.bp-goal-nav-btn:hover:not(:disabled) {
-  background: #f5f5f5;
-  border-color: #bfbfbf;
-}
-.bp-goal-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
 }
 
 .bp-goal-tracker {
@@ -1135,6 +1159,12 @@
   color: var(--c-amber-600);
 }
 
+/* Logged but short of goal — still stated, just not celebrated */
+.bp-goal-mins--partial {
+  font-weight: 700;
+  color: #9ca3af;
+}
+
 /* Circle row holds the circle + the connector that extends left to the previous circle */
 .bp-goal-circle-row {
   position: relative;
@@ -1159,7 +1189,7 @@
 }
 
 .bp-goal-conn--lit {
-  background: #f59e0b;
+  background: var(--c-amber-500);
 }
 
 .bp-goal-circle {
@@ -1176,8 +1206,12 @@
 }
 
 .bp-goal-circle--met {
-  background: #f59e0b;
+  background: var(--c-amber-500);
   color: #fff;
+}
+.bp-goal-circle--partial {
+  background: var(--c-amber-100);
+  color: var(--c-amber-600);
 }
 .bp-goal-circle--missed {
   background: var(--c-gray-200);
@@ -1211,6 +1245,13 @@
   gap: 12px;
 }
 
+/* Sits below the days-read hero inside the Consistency card */
+.bp-streak-hero + .bp-streaks-row {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
 /* ── Streak hero ── */
 .bp-streak-hero {
   display: flex;
@@ -1224,11 +1265,6 @@
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-}
-
-.bp-streak-hero-flame {
-  font-size: 36px;
-  line-height: 1;
 }
 
 .bp-streak-hero-num {
@@ -1256,29 +1292,6 @@
 .bp-streak-hero-right {
   flex: 1;
   min-width: 0;
-}
-
-.bp-streak-pb-badge {
-  font-size: 14px;
-  font-weight: 800;
-  color: #b45309;
-}
-
-.bp-streak-pb-label {
-  font-size: 13px;
-  color: #707070;
-  font-weight: 600;
-  margin-bottom: 7px;
-}
-
-.bp-streak-pb-label strong {
-  color: #424242;
-}
-
-.bp-streak-pb-sub {
-  font-size: 13px;
-  font-weight: 600;
-  color: #9ca3af;
 }
 
 /* ── Habit patterns list ── */
@@ -1451,6 +1464,19 @@
   border-bottom: 1px solid #f0f0f0;
   background: #fafafa;
   border-radius: 12px 12px 0 0;
+}
+
+.bp-titles-header--overview {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.bp-titles-header-meta {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
 }
 
 .bp-titles-header-label {
@@ -3492,4 +3518,187 @@
     font-size: 13px;
     white-space: nowrap;
   }
+}
+
+/* ─── Overview · Latest titles shelf ──────────────────────────────────────── */
+.bp-latest-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.bp-latest-meta {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-top: -6px;
+}
+
+.bp-latest-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-blue-700);
+  cursor: pointer;
+}
+
+.bp-latest-link:hover {
+  text-decoration: underline;
+}
+
+.bp-latest-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.bp-latest-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  text-decoration: none;
+  color: inherit;
+}
+
+/* The cover carries the Lexile chip so the grid stays scannable */
+.bp-latest-cover {
+  position: relative;
+  margin-bottom: 7px;
+}
+
+/* Bigger than the list-row cover — this is the visual anchor of the card */
+.bp-latest-cover .bp-title-cover {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+  border-radius: 7px;
+  transition: transform 0.14s ease;
+}
+
+.bp-latest-item:hover .bp-title-cover {
+  transform: translateY(-2px);
+}
+
+.bp-latest-lexile {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  padding: 2px 6px;
+  border-radius: 999px;
+  background: rgba(17, 24, 39, 0.78);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+}
+
+.bp-latest-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1a1a1a;
+  line-height: 1.3;
+}
+
+.bp-latest-item:hover .bp-latest-title {
+  text-decoration: underline;
+}
+
+.bp-latest-author {
+  font-size: 12px;
+  font-weight: 600;
+  color: #9ca3af;
+  line-height: 1.3;
+}
+
+/* ─── Chart fit ───────────────────────────────────────────────────────────── */
+/* Nivo sizes its <svg> from the container's *unzoomed* layout width and writes
+   that into a width attribute — which the app wrapper's `zoom` then scales a
+   second time, so charts render `--app-zoom` too wide and spill past the card.
+   Handing the chart a box shrunk by the same factor lands the rendered SVG back
+   inside its card. Only needed for JS-measured charts; hand-rolled SVGs scale
+   together with their container. */
+.bp-chart-fit {
+  height: var(--chart-h, 180px);
+  /* Shrinking the measured box by the zoom lands the over-scaled SVG back
+     inside the card horizontally... */
+  width: calc(100% / var(--app-zoom, 1));
+  /* ...but vertically the SVG always renders `--app-zoom` taller than this box,
+     so reserve that difference or it spills onto whatever follows (the legend),
+     plus a little air between the axis labels and that legend. Both live in this
+     one margin because a sibling's own margin-top would just collapse into it. */
+  margin-bottom: calc((var(--app-zoom, 1) - 1) * var(--chart-h, 180px) + 8px);
+}
+
+/* ─── Book talk types ─────────────────────────────────────────────────────── */
+.bp-talk-kinds {
+  display: flex;
+  flex-direction: column;
+}
+
+.bp-talk-kind {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 0;
+  border-top: 1px solid #f0f0f0;
+}
+
+.bp-talk-kind:first-child {
+  border-top: none;
+  padding-top: 4px;
+}
+
+.bp-talk-kind-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  flex-shrink: 0;
+  background: var(--kind-tint);
+  color: var(--kind-color);
+}
+
+.bp-talk-kind-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.bp-talk-kind-top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bp-talk-kind-label {
+  font-size: 14px;
+  font-weight: 800;
+  color: #424242;
+}
+
+.bp-talk-kind-read {
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+.bp-talk-kind-count {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--kind-color);
+  flex-shrink: 0;
+  line-height: 1;
 }
