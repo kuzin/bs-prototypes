@@ -34,7 +34,7 @@ const DEMO_WEEK = {
     { day: 'Sun', minutes: 35 },
     { day: 'Mon', minutes: 40 },
     { day: 'Tue', minutes: 0 },
-    { day: 'Wed', minutes: 32 },
+    { day: 'Wed', minutes: 12 },
     { day: 'Thu', minutes: 40 },
     { day: 'Fri', minutes: null },
     { day: 'Sat', minutes: null },
@@ -72,9 +72,10 @@ export const studentProfileSections = [
     name: 'GoalRing',
     desc: (
       <>
-        Daily-minutes progress ring. Fills toward <code>goal</code>; once{' '}
-        <code>minutes ≥ goal</code> it flips to a green check. <code>null</code> minutes renders an
-        empty “–” ring.
+        Daily-minutes progress ring. Fills toward <code>goal</code> and states only what was logged
+        — the goal itself belongs in the caller's label. Once <code>minutes ≥ goal</code> the value
+        takes the accent color and gains a check. <code>null</code> minutes renders an empty “–”
+        ring.
       </>
     ),
     render: () => (
@@ -124,13 +125,15 @@ export const studentProfileSections = [
     name: 'GoalTracker',
     desc: (
       <>
-        One week of daily goals as connected stars. Met days light up and link with a connector;{' '}
-        <code>minutes: 0</code> is a miss and <code>null</code> is a future/today day.
+        One week of daily goals as connected stars. Met days light up gold and link with a
+        connector; a day logged short of goal gets a tinted star with its minutes in grey, so it
+        never reads as a zero. <code>minutes: 0</code> is a miss and <code>null</code> is a
+        future/today day.
       </>
     ),
     render: () => (
       <div className="bp-root">
-        <Variant label="current week (goal 30 min)">
+        <Variant label="current week (goal 30 min) · met · miss · partial · today">
           <div style={{ maxWidth: 360 }}>
             <GoalTracker week={DEMO_WEEK} goalMinutes={30} />
           </div>

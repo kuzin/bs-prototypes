@@ -36,6 +36,8 @@ export function SectionHeading({ children }) {
 }
 
 // ─── Goal ring ────────────────────────────────────────────────────────────────
+// The ring arc carries the progress; the caller states the goal in its own label,
+// so the ring shows only what was logged (no "/ 30 min" denominator to re-read).
 export function GoalRing({ minutes, goal, color }) {
   const R = 34
   const sw = 7
@@ -43,7 +45,6 @@ export function GoalRing({ minutes, goal, color }) {
   const pct = minutes == null ? 0 : Math.min(minutes / goal, 1)
   const dash = pct * circ
   const met = minutes !== null && minutes >= goal
-  const ringColor = met ? '#10B981' : color
 
   return (
     <svg width={88} height={88} viewBox="0 0 88 88" style={{ flexShrink: 0 }}>
@@ -54,7 +55,7 @@ export function GoalRing({ minutes, goal, color }) {
           cy={44}
           r={R}
           fill="none"
-          stroke={ringColor}
+          stroke={color}
           strokeWidth={sw}
           strokeLinecap="round"
           strokeDasharray={`${dash} ${circ}`}
@@ -62,28 +63,28 @@ export function GoalRing({ minutes, goal, color }) {
           style={{ transition: 'stroke-dasharray 0.4s ease' }}
         />
       )}
-      {met ? (
-        <text x={44} y={52} textAnchor="middle" fontSize={24} fill={ringColor} fontFamily="inherit">
-          ✓
-        </text>
-      ) : (
-        <>
-          <text
-            x={44}
-            y={43}
-            textAnchor="middle"
-            fontSize={19}
-            fontWeight={800}
-            fill="#111827"
-            fontFamily="inherit"
-          >
-            {minutes ?? '–'}
-          </text>
-          <text x={44} y={58} textAnchor="middle" fontSize={10} fill="#9CA3AF" fontFamily="inherit">
-            / {goal} min
-          </text>
-        </>
-      )}
+      <text
+        x={44}
+        y={met ? 44 : 45}
+        textAnchor="middle"
+        fontSize={met ? 20 : 21}
+        fontWeight={800}
+        fill={met ? color : '#111827'}
+        fontFamily="inherit"
+      >
+        {minutes ?? '–'}
+      </text>
+      <text
+        x={44}
+        y={met ? 59 : 60}
+        textAnchor="middle"
+        fontSize={10}
+        fontWeight={700}
+        fill={met ? color : '#9CA3AF'}
+        fontFamily="inherit"
+      >
+        {met ? 'min ✓' : 'min'}
+      </text>
     </svg>
   )
 }
