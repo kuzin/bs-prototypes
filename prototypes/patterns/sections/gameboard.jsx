@@ -36,7 +36,6 @@ const POOL = [
   logType: 'books',
   goal,
   reward: !!reward,
-  kind: 'Logging badge',
   meta: `Log ${goal} ${goal === 1 ? 'book' : 'books'}`,
 }))
 
@@ -44,10 +43,9 @@ const ACTIVITY_POOL = [
   {
     id: 'act-0',
     name: 'Library Scavenger Hunt',
-    kind: 'Activity badge',
     meta: 'Complete 3 activities',
   },
-  { id: 'act-1', name: 'Reading Buddy', kind: 'Activity badge', meta: 'Complete 1 activity' },
+  { id: 'act-1', name: 'Reading Buddy', meta: 'Complete 1 activity' },
 ]
 
 const REG_BADGE = { name: 'You’re Registered!', img: benny('registration.webp') }
