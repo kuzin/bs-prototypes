@@ -4,13 +4,33 @@
 // unlocks the next space, and watches the board light up.
 //
 // Modelled on the Figma "Reader Experience" page (file cvp7KATrNgec74yZ7BB3Wi).
+// The board geometry, palette, badge art, trees, and reward marks below are the
+// real exported design — see BOARD and SPACES.
+//
 // The reader, the sample titles, and the avatar color are deliberately the same
 // ones the `logging-flow` prototype uses — both mock the same Beanstack reader.
 
-import banner from '../gameboard/assets/banners/winter-1.webp'
-import boardBg from '../gameboard/assets/gameboard/meadow.webp'
+import banner from './assets/banner.png'
+import heroWave from './assets/hero-wave.svg'
 
-export { banner, boardBg }
+import artStart from './assets/badge-start.png'
+import art1 from './assets/badge-1.png'
+import art2 from './assets/badge-2.png'
+import art3 from './assets/badge-3.png'
+import art4 from './assets/badge-4.png'
+import art5 from './assets/badge-5.png'
+import art6 from './assets/badge-6.png'
+import art7 from './assets/badge-7.png'
+import art8 from './assets/badge-8.png'
+import art9 from './assets/badge-9.png'
+import artFinish from './assets/badge-finish.png'
+
+import treesLarge from './assets/trees.svg'
+import treesSmall from './assets/trees-sm.svg'
+import rewardMark from './assets/reward.svg'
+import rewardMarkFinish from './assets/reward-finish.svg'
+
+export { banner, heroWave, treesLarge, treesSmall, rewardMark, rewardMarkFinish }
 
 // ─── Reader ──────────────────────────────────────────────────────────────────
 
@@ -32,25 +52,48 @@ export const CHALLENGE = {
 }
 
 // ─── The board ───────────────────────────────────────────────────────────────
-// Coordinates are the Figma disc centers, normalized so the top-left disc sits
-// at (0, 0). The board renders them as percentages of BOARD_W × BOARD_H, so the
-// whole thing scales to any width without re-measuring.
+// Every number here is lifted from the Figma board frame (node 173:4460), which
+// is 948 × 586. Spaces carry their pixel center in that space and the renderer
+// converts to percentages, so the board scales to any width untouched.
 
-export const BOARD_W = 602
-export const BOARD_H = 300
+export const BOARD = {
+  w: 948,
+  h: 586,
+  radius: 32,
+  green: '#C1D35D', // board fill
+  cream: '#F6DDB4', // the road, and the ring each badge sits in
+  ink: '#CB9E5B', // START / HALFWAY / FINISH lettering, and the locked-badge tint
+  road: 31, // road stroke width
+  corner: 25, // road corner radius
+  ring: 100, // cream disc behind a plain badge
+  ringLabelled: 140, // …and behind one carrying a curved word
+  art: 80, // the badge art itself
+  reward: 28.887, // the reward mark below a badge
+  rewardDrop: 37.96, // …how far below the badge center it sits
+}
+
+// Three tree clusters, positioned (and clipped) exactly as the Figma places
+// them — each as a percentage box over the board.
+export const TREES = [
+  { art: treesLarge, left: 86.92, top: -21.97, width: 45.52, height: 49.05 },
+  { art: treesSmall, left: -20.68, top: 44.12, width: 31.65, height: 34.13 },
+  { art: treesSmall, left: 71.1, top: 62.97, width: 31.64, height: 34.13 },
+]
 
 // `at` = books finished required to unlock. START is earned by registering,
-// FINISH by clearing the whole board.
+// FINISH by clearing the whole board. `label` gives the space a curved word and
+// the wider cream ring that goes with it.
 export const SPACES = [
   {
     id: 'start',
     kind: 'start',
     label: 'START',
+    labelBelow: true,
     name: 'Registered',
     requirement: 'Join the challenge',
-    color: '#1F2937',
-    x: 2,
-    y: 0,
+    art: artStart,
+    x: 182.1,
+    y: 149.5,
   },
   {
     id: 's1',
@@ -58,9 +101,9 @@ export const SPACES = [
     name: '1 Book',
     requirement: 'Read 1 Book',
     at: 1,
-    color: '#4BA3E3',
-    x: 152,
-    y: 0,
+    art: art1,
+    x: 332.1,
+    y: 149.5,
   },
   {
     id: 's2',
@@ -68,10 +111,10 @@ export const SPACES = [
     name: '2 Books',
     requirement: 'Read 2 Books',
     at: 2,
-    color: '#E8453A',
+    art: art2,
     reward: true,
-    x: 302,
-    y: 0,
+    x: 482.1,
+    y: 149.5,
   },
   {
     id: 's3',
@@ -79,9 +122,9 @@ export const SPACES = [
     name: '3 Books',
     requirement: 'Read 3 Books',
     at: 3,
-    color: '#A855F7',
-    x: 452,
-    y: 0,
+    art: art3,
+    x: 632.1,
+    y: 149.5,
   },
   {
     id: 's4',
@@ -89,9 +132,9 @@ export const SPACES = [
     name: '4 Books',
     requirement: 'Read 4 Books',
     at: 4,
-    color: '#16A97A',
-    x: 602,
-    y: 74,
+    art: art4,
+    x: 782.1,
+    y: 224,
   },
   {
     id: 's5',
@@ -100,10 +143,10 @@ export const SPACES = [
     name: '5 Books',
     requirement: 'Read 5 Books',
     at: 5,
-    color: '#F0A024',
+    art: art5,
     reward: true,
-    x: 452,
-    y: 150,
+    x: 632.1,
+    y: 299.5,
   },
   {
     id: 's6',
@@ -111,9 +154,9 @@ export const SPACES = [
     name: '6 Books',
     requirement: 'Read 6 Books',
     at: 6,
-    color: '#0DA7BC',
-    x: 302,
-    y: 150,
+    art: art6,
+    x: 481.7,
+    y: 299.5,
   },
   {
     id: 's7',
@@ -121,9 +164,9 @@ export const SPACES = [
     name: '7 Books',
     requirement: 'Read 7 Books',
     at: 7,
-    color: '#E8456B',
-    x: 151,
-    y: 150,
+    art: art7,
+    x: 331.3,
+    y: 299.5,
   },
   {
     id: 's8',
@@ -131,9 +174,9 @@ export const SPACES = [
     name: '8 Books',
     requirement: 'Read 8 Books',
     at: 8,
-    color: '#7C5CFA',
-    x: 0,
-    y: 223,
+    art: art8,
+    x: 179.9,
+    y: 372.1,
   },
   {
     id: 's9',
@@ -141,9 +184,9 @@ export const SPACES = [
     name: '9 Books',
     requirement: 'Read 9 Books',
     at: 9,
-    color: '#65A30D',
-    x: 152,
-    y: 300,
+    art: art9,
+    x: 332.1,
+    y: 449.5,
   },
   {
     id: 'finish',
@@ -152,10 +195,10 @@ export const SPACES = [
     name: 'Completed',
     requirement: 'Finish the whole board',
     at: 10,
-    color: '#B45309',
-    reward: true,
-    x: 302,
-    y: 300,
+    art: artFinish,
+    reward: 'finish',
+    x: 482.1,
+    y: 449.5,
   },
 ]
 
@@ -192,8 +235,6 @@ export const BOOKS = [
   },
 ]
 
-export const bookById = (id) => BOOKS.find((b) => b.id === id)
-
 // ─── Board helpers ───────────────────────────────────────────────────────────
 
 // A space is earned once the reader has finished enough books. START is earned
@@ -204,3 +245,47 @@ export const isEarned = (space, booksFinished) =>
 // The space that unlocks next — what the reader is working toward.
 export const nextSpace = (booksFinished) =>
   SPACES.find((s) => s.kind !== 'start' && booksFinished < s.at) || null
+
+/**
+ * The road, as the Figma draws it: an orthogonal run through every space with
+ * rounded corners, not a straight line between centers. Consecutive spaces
+ * share a row or a column except at the two turns, where the path keeps its
+ * current heading to the corner and then breaks — which is what puts spaces 4
+ * and 8 on the vertical legs.
+ */
+export function roadPath(spaces = SPACES, r = BOARD.corner) {
+  const pts = spaces.map((s) => ({ x: s.x, y: s.y }))
+  let d = `M ${pts[0].x} ${pts[0].y}`
+  // Track heading so a diagonal step becomes "carry on, then turn".
+  let horizontal = true
+
+  for (let i = 1; i < pts.length; i++) {
+    const from = pts[i - 1]
+    const to = pts[i]
+    const dx = to.x - from.x
+    const dy = to.y - from.y
+
+    if (Math.abs(dx) < 0.5 || Math.abs(dy) < 0.5) {
+      d += ` L ${to.x} ${to.y}`
+      if (Math.abs(dx) >= 0.5) horizontal = true
+      else if (Math.abs(dy) >= 0.5) horizontal = false
+      continue
+    }
+
+    // A corner: run to the elbow, round it, then run on.
+    const sx = Math.sign(dx)
+    const sy = Math.sign(dy)
+    const elbow = horizontal ? { x: to.x, y: from.y } : { x: from.x, y: to.y }
+    if (horizontal) {
+      d += ` L ${elbow.x - sx * r} ${elbow.y}`
+      d += ` Q ${elbow.x} ${elbow.y} ${elbow.x} ${elbow.y + sy * r}`
+      d += ` L ${to.x} ${to.y}`
+    } else {
+      d += ` L ${elbow.x} ${elbow.y - sy * r}`
+      d += ` Q ${elbow.x} ${elbow.y} ${elbow.x + sx * r} ${elbow.y}`
+      d += ` L ${to.x} ${to.y}`
+    }
+    horizontal = !horizontal
+  }
+  return d
+}

@@ -1,52 +1,69 @@
-import { Icon } from '@components/Icon/Icon'
+import { useId } from 'react'
+import { BOARD } from '../data'
 
 /**
- * One badge on the reader's board.
- *
- * Earned badges wear their color with the soft horizontal banding the Figma
- * badge art uses; locked ones drop to the board's tan so the path still reads
- * as a route but the reward stays hidden. The number is the space, not the
- * badge name — the name lives in the tooltip and the unlock modal.
+ * START / HALFWAY / FINISH, curved around the badge's cream ring in the board's
+ * ink. The arc radius is set just inside the wide ring so the word sits on the
+ * ring rather than floating over the space above it.
  */
-export function BadgeDisc({ space, earned, size = 'md' }) {
-  const { num, kind, name } = space
-  const label = earned ? name : `${name} — locked`
-
+export function CurvedLabel({ text, below }) {
+  const id = useId().replace(/:/g, '')
+  const r = 56
+  const c = 70 // the ring box is 140 wide, so its center
+  const d = below
+    ? `M ${c - r} ${c} A ${r} ${r} 0 0 0 ${c + r} ${c}`
+    : `M ${c - r} ${c} A ${r} ${r} 0 0 1 ${c + r} ${c}`
   return (
-    <span
-      className={`gr-disc gr-disc--${size}${earned ? ' is-earned' : ''}`}
-      style={earned ? { '--badge': space.color } : undefined}
-      role="img"
-      aria-label={label}
+    <svg
+      className={`gr-arc${below ? ' gr-arc--below' : ''}`}
+      viewBox="0 0 140 140"
+      aria-hidden="true"
     >
-      <span className="gr-disc-stripes" aria-hidden="true" />
-      {kind === 'start' && <span className="gr-disc-word">REGISTERED</span>}
-      {kind === 'finish' && <span className="gr-disc-word">COMPLETED</span>}
-      {num != null && <span className="gr-disc-num">{num}</span>}
-      <span className="gr-disc-glyph" aria-hidden="true">
-        {kind === 'finish' ? (
-          <Icon name="trophy" size={16} stroke={2} />
-        ) : (
-          <BookGlyph muted={!earned} />
-        )}
-      </span>
-    </span>
+      <path id={id} d={d} fill="none" />
+      <text className="gr-arc-text" dominantBaseline={below ? 'hanging' : 'auto'}>
+        <textPath href={`#${id}`} startOffset="50%" textAnchor="middle">
+          {text}
+        </textPath>
+      </text>
+    </svg>
   )
 }
 
-// The little stack-of-books mark the Figma badges carry. Drawn rather than
-// pulled from the icon set because it's badge art, not a UI glyph — two colored
-// spines on a shelf, greyed down to the board tan when the badge is locked.
-function BookGlyph({ muted }) {
-  const a = muted ? '#B79A76' : '#7C5CFA'
-  const b = muted ? '#C9AE8C' : '#E8456B'
-  const shelf = muted ? '#EADFCB' : '#FFFFFF'
+/**
+ * One space on the board: the exported badge art sitting in a cream ring.
+ *
+ * The art is the same image whether or not the reader has it — a locked badge
+ * is the Figma's own treatment, half opacity under a `mix-blend-mode: color`
+ * wash in the board's ink, which drains the badge to tan while keeping its
+ * shading. `isolation` keeps that wash on the badge instead of bleeding onto
+ * the ring and the board behind it.
+ */
+export function BadgeDisc({ space, earned, size = 'board', bare = false }) {
+  // `bare` drops the ring and the curved word — the treatment the unlock modal
+  // and its progress strip use, where the badge stands on its own.
+  const wide = !bare && !!space.label
+
   return (
-    <svg viewBox="0 0 24 16" width="100%" height="100%" aria-hidden="true">
-      <rect x="4" y="2" width="4" height="9" rx="1" fill={a} />
-      <rect x="9" y="4" width="4" height="7" rx="1" fill={b} />
-      <rect x="1" y="10" width="22" height="3" rx="1.5" fill={shelf} />
-      <rect x="16" y="5" width="3" height="6" rx="1" fill={shelf} />
-    </svg>
+    <span
+      className={[
+        'gr-disc',
+        `gr-disc--${size}`,
+        wide && 'gr-disc--wide',
+        bare && 'gr-disc--bare',
+        earned && 'is-earned',
+      ]
+        .filter(Boolean)
+        .join(' ')}
+      role="img"
+      aria-label={earned ? space.name : `${space.name} — locked`}
+    >
+      {!bare && <span className="gr-ring" aria-hidden="true" />}
+      {!bare && space.label && <CurvedLabel text={space.label} />}
+      {!bare && space.label && space.labelBelow && <CurvedLabel text={space.label} below />}
+      <span className="gr-art">
+        <img src={space.art} alt="" draggable={false} />
+        {!earned && <span className="gr-art-lock" style={{ background: BOARD.ink }} />}
+      </span>
+    </span>
   )
 }

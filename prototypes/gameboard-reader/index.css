@@ -13,9 +13,11 @@
 
 :root {
   --gr-blue: #1a6dd5;
-  --gr-tan: #d8bd91;
-  --gr-tan-dim: #e6d3b4;
-  --gr-hero: #f3e7de;
+  /* Board palette, straight from the Figma board frame. */
+  --gr-green: #c1d35d;
+  --gr-cream: #f6ddb4;
+  --gr-ink: #cb9e5b;
+  --gr-hero: #f1e4da;
 }
 
 * {
@@ -156,47 +158,65 @@ body {
 
 /* ── Challenge hero ──────────────────────────────────────────────────────── */
 
+/* The Figma hero: a 156px blush band with a scalloped wave under it, the banner
+   floating across the seam, then title, dates and the challenge tabs. */
 .gr-hero {
   position: relative;
-  padding: 40px 24px 0;
+  padding: 56px 24px 0;
   text-align: center;
+  background: #fafafa;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.gr-hero-band {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 156px;
   background: var(--gr-hero);
-  /* The soft dune the Figma hero sits on — a wide ellipse of page-white rising
-     into the blush band, so the banner floats above a curved horizon. */
-  background-image: radial-gradient(
-    120% 62% at 50% 128%,
-    var(--c-surface) 0 62%,
-    transparent 62.4%
-  );
+}
+.gr-hero-wave {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  height: 50px;
 }
 
 .gr-hero-banner {
+  position: relative;
   display: block;
   width: min(480px, 100%);
   height: 183px;
   object-fit: cover;
   margin: 0 auto;
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md, 0 6px 18px rgba(15, 23, 42, 0.14));
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
 .gr-hero-title {
-  margin: 22px 0 0;
-  font-size: 27px;
+  position: relative;
+  margin: 24px 0 0;
+  font-size: 28px;
   font-weight: var(--fw-black);
-  letter-spacing: -0.02em;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: #424242;
 }
 
 .gr-hero-dates {
-  margin: 5px 0 0;
-  font-size: var(--text-md);
-  color: var(--c-text-muted);
+  position: relative;
+  margin: 6px 0 0;
+  font-size: var(--text-lg);
+  font-weight: var(--fw-medium);
+  line-height: 1.25;
+  color: #656565;
 }
 
 .gr-hero-tabs {
+  position: relative;
   display: flex;
   justify-content: center;
-  margin-top: 18px;
+  margin-top: 16px;
 }
 .gr-hero-tabs .tabs {
   border-bottom: 0;
@@ -207,7 +227,7 @@ body {
 .gr-main {
   flex: 1;
   width: 100%;
-  max-width: 1000px;
+  max-width: 996px;
   margin: 0 auto;
   padding: 30px 24px 56px;
 }
@@ -227,13 +247,17 @@ body {
   font-weight: var(--fw-extrabold);
 }
 
+/* The board is the Figma's 948 × 586 frame: fixed aspect, everything inside
+   positioned as a percentage of it, so it scales without being measured. */
 .gr-board {
   position: relative;
   width: 100%;
-  border-radius: 22px;
-  background-size: cover;
-  background-position: center;
   overflow: hidden;
+}
+
+.gr-trees {
+  position: absolute;
+  pointer-events: none;
 }
 
 .gr-road {
@@ -243,12 +267,12 @@ body {
   height: 100%;
 }
 
-/* Each space is placed at its Figma coordinate, expressed as a percentage of
-   the board's coordinate space, then centered on that point. */
+/* A space is the full 140px ring box, centered on its road coordinate; every
+   part of the badge is sized as a fraction of it. */
 .gr-space {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 12.6%;
+  width: 14.768%;
   aspect-ratio: 1;
   display: grid;
   place-items: center;
@@ -262,23 +286,15 @@ body {
   grid-area: 1 / 1;
 }
 
-/* The arc box is sized so its radius lands just outside the disc's white ring,
-   which is what puts START / HALFWAY / FINISH on the disc's shoulder instead of
-   floating off over the space above it. */
-.gr-arc {
-  width: 168%;
-  overflow: visible;
+/* Reward mark — centered 37.96px below the badge center (of a 140px space),
+   so it overlaps the ring's lower edge. */
+.gr-space-reward {
+  position: absolute;
+  left: 50%;
+  top: 77.11%;
+  translate: -50% -50%;
+  width: 20.63%;
   pointer-events: none;
-}
-.gr-arc path {
-  fill: none;
-}
-.gr-arc-text {
-  font-family: var(--font-sans);
-  font-size: 9px;
-  font-weight: var(--fw-black);
-  letter-spacing: 0.09em;
-  fill: #8a6a3c;
 }
 
 /* ── Badge discs ─────────────────────────────────────────────────────────── */
@@ -289,90 +305,97 @@ body {
   place-items: center;
   width: 100%;
   aspect-ratio: 1;
-  border-radius: var(--radius-full);
-  background: var(--gr-tan);
-  box-shadow:
-    0 0 0 6px rgba(255, 255, 255, 0.55),
-    0 3px 8px rgba(15, 23, 42, 0.2);
-  overflow: hidden;
-  transition:
-    transform 0.18s ease,
-    box-shadow 0.18s ease;
-}
-.gr-disc.is-earned {
-  background: var(--badge);
+  transition: transform 0.18s ease;
 }
 
-/* The soft horizontal banding the badge art carries. */
-.gr-disc-stripes {
+.gr-disc > * {
+  grid-area: 1 / 1;
+}
+
+/* The cream disc the badge sits in — the same color as the road, so a badge
+   reads as a bulge in it. Spaces carrying a curved word get the wider ring. */
+.gr-ring {
+  width: 71.43%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-full);
+  background: var(--gr-cream);
+}
+.gr-disc--wide .gr-ring {
+  width: 100%;
+}
+
+/* `isolation` keeps the locked wash blending with the badge art only — without
+   it `mix-blend-mode: color` would reach the ring and the board behind it. */
+.gr-art {
+  position: relative;
+  width: 57.14%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-full);
+  isolation: isolate;
+  overflow: hidden;
+}
+.gr-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.gr-disc:not(.is-earned) .gr-art img {
+  opacity: 0.5;
+}
+.gr-art-lock {
   position: absolute;
   inset: 0;
-  background: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0 9%, transparent 9% 18%);
+  border-radius: var(--radius-full);
+  mix-blend-mode: color;
 }
 
-.gr-disc-num {
-  position: relative;
-  line-height: 1;
-  font-size: 30px;
-  font-weight: var(--fw-black);
-  color: #fff;
-  text-shadow: 0 2px 3px rgba(15, 23, 42, 0.25);
+/* START / HALFWAY / FINISH — the arc box matches the ring's own 140 viewBox, so
+   the lettering lands on the ring at any board size. */
+.gr-arc {
+  width: 100%;
+  overflow: visible;
+  pointer-events: none;
 }
-
-.gr-disc-word {
-  position: absolute;
-  top: 16%;
-  font-size: 7px;
+.gr-arc path {
+  fill: none;
+}
+.gr-arc-text {
+  font-family: var(--font-sans);
+  font-size: 16px;
   font-weight: var(--fw-black);
   letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.85);
+  fill: var(--gr-ink);
 }
 
-.gr-disc-glyph {
-  position: absolute;
-  bottom: 12%;
-  width: 42%;
+/* Sizes outside the board: the unlock modal and its progress strip. Both use
+   the `bare` treatment, where the art fills the disc with no ring around it. */
+.gr-disc--lg {
+  width: 143.5px;
 }
-
-/* Reward marker — a small white chip clipped to the disc's lower edge. */
-.gr-space-reward {
-  position: absolute;
-  bottom: -2%;
-  left: 50%;
-  translate: -50% 0;
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: var(--radius-full);
-  background: #fff;
-  color: var(--c-slate-700);
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
-  align-self: end;
-  justify-self: center;
+.gr-disc--sm {
+  width: 44px;
+}
+.gr-disc--bare .gr-art {
+  width: 100%;
 }
 
 /* The next space to clear — a steady pulse so "you are here" is obvious. */
-.gr-space.is-target .gr-disc {
+.gr-space.is-target .gr-ring {
   animation: gr-pulse 2s ease-in-out infinite;
 }
 @keyframes gr-pulse {
   0%,
   100% {
-    box-shadow:
-      0 0 0 6px rgba(255, 255, 255, 0.55),
-      0 3px 8px rgba(15, 23, 42, 0.2);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
   }
   50% {
-    box-shadow:
-      0 0 0 11px rgba(255, 255, 255, 0.8),
-      0 3px 12px rgba(15, 23, 42, 0.26);
+    box-shadow: 0 0 0 9px rgba(255, 255, 255, 0.5);
   }
 }
 
 .gr-space:hover .gr-disc,
 .gr-space:focus-visible .gr-disc {
-  transform: scale(1.07);
+  transform: scale(1.06);
 }
 
 /* Landing back on the board after an unlock — the new badge pops once. */
@@ -390,7 +413,6 @@ body {
     transform: scale(1);
   }
 }
-
 /* ── Space tooltip ───────────────────────────────────────────────────────── */
 
 .gr-tip {
@@ -763,24 +785,97 @@ body {
   background: var(--c-slate-100);
 }
 
+/* ── Buttons (Figma's own reader button, not the shared Button) ───────────── */
+/* The reader flows use a 56px pill with a 2px border and 16px radius — taller
+   and rounder than @components/Button. Kept local rather than adding a variant
+   nobody else asked for. */
+.gr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  height: 56px;
+  padding: 14px 18px;
+  border: 2px solid #dedede;
+  border-radius: var(--radius-2xl);
+  background: var(--c-surface);
+  font-family: inherit;
+  font-size: 17px;
+  font-weight: var(--fw-bold);
+  color: #424242;
+  cursor: pointer;
+}
+.gr-btn:hover {
+  background: #f7f7f7;
+}
+.gr-btn--primary {
+  border-color: var(--gr-blue);
+  background: var(--gr-blue);
+  color: #fff;
+}
+.gr-btn--primary:hover {
+  border-color: #1760bd;
+  background: #1760bd;
+}
+/* The unlock modal's button is a size down from the celebration's. */
+.gr-btn--sm {
+  height: 44px;
+  padding: 12px 22px;
+  border-radius: var(--radius-lg);
+  font-size: 15px;
+}
+
 /* ── Celebration ─────────────────────────────────────────────────────────── */
 
 .gr-celebrate {
   position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  padding: 64px 24px;
+  overflow: hidden;
+}
+
+.gr-celebrate-inner {
+  position: relative;
   z-index: 1;
   display: grid;
   justify-items: center;
-  align-content: center;
-  gap: 6px;
-  min-height: 100vh;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 64px 24px;
+  width: min(596px, 100%);
   text-align: center;
 }
+
+/* The two confetti bursts, anchored to the edges of the viewport the way the
+   Figma anchors them to the frame. */
+.gr-burst {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+}
+.gr-celebrate .gr-burst {
+  top: 50%;
+  translate: 0 -34%;
+}
+.gr-celebrate .gr-burst--l {
+  left: -35px;
+  width: 281px;
+}
+.gr-celebrate .gr-burst--r {
+  right: -90px;
+  width: 363px;
+}
+
 .gr-benny {
   display: block;
-  animation: gr-bounce 1.6s ease-in-out infinite;
+  animation: gr-bounce 1.7s ease-in-out infinite;
+}
+.gr-benny-fig {
+  position: relative;
+  display: block;
+}
+.gr-benny-fig img {
+  position: absolute;
+  display: block;
 }
 @keyframes gr-bounce {
   0%,
@@ -791,91 +886,26 @@ body {
     transform: translateY(-8px);
   }
 }
+
+.gr-celebrate-title {
+  margin: 16px 0 0;
+  font-size: 32px;
+  font-weight: var(--fw-black);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #2a2a2a;
+}
 .gr-celebrate-sub {
-  margin: 4px 0 0;
-  font-size: var(--text-md);
-  color: var(--c-slate-700);
-  line-height: 1.55;
+  margin: 12px 0 0;
+  font-size: 18px;
+  font-weight: var(--fw-medium);
+  line-height: 1.5;
+  color: #424242;
 }
 .gr-celebrate-actions {
   display: flex;
-  gap: 10px;
-  margin-top: 20px;
-}
-
-/* ── Confetti ────────────────────────────────────────────────────────────── */
-
-.gr-confetti {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-/* Everything else in a celebration stacks above the burst. */
-.gr-celebrate > *:not(.gr-confetti),
-.gr-unlock-top > *:not(.gr-confetti) {
-  position: relative;
-  z-index: 1;
-}
-/* The full-page celebration wants the burst to reach the edges of the screen
-   while staying anchored to the headline, so it spills sideways out of the
-   (narrow, centered) celebration column rather than filling the whole sheet. */
-.gr-confetti--wide {
-  top: 50%;
-  left: calc(50% - 50vw);
-  right: calc(50% - 50vw);
-  bottom: auto;
-  height: 420px;
-  translate: 0 -54%;
-  overflow: visible;
-}
-.gr-cf {
-  position: absolute;
-  background: var(--cf);
-}
-.gr-cf--dot {
-  width: 11px;
-  height: 11px;
-  border-radius: var(--radius-full);
-}
-.gr-cf--blob {
-  width: 22px;
-  height: 14px;
-  border-radius: 999px 999px 4px 999px;
-}
-.gr-cf--wedge {
-  width: 0;
-  height: 0;
-  background: none;
-  border-left: 11px solid transparent;
-  border-right: 11px solid transparent;
-  border-top: 18px solid var(--cf);
-}
-.gr-cf--star {
-  width: 22px;
-  height: 22px;
-  background: var(--cf);
-  clip-path: polygon(
-    50% 0%,
-    61% 35%,
-    98% 35%,
-    68% 57%,
-    79% 91%,
-    50% 70%,
-    21% 91%,
-    32% 57%,
-    2% 35%,
-    39% 35%
-  );
-}
-.gr-cf--squiggle {
-  width: 26px;
-  height: 26px;
-  background: none;
-  border: 3px solid var(--cf);
-  border-radius: 50%;
-  border-color: var(--cf) var(--cf) transparent transparent;
+  gap: 16px;
+  margin-top: 24px;
 }
 
 /* ── Badge Unlocked modal ────────────────────────────────────────────────── */
@@ -884,107 +914,153 @@ body {
   position: relative;
   text-align: center;
 }
+
 .gr-unlock-close {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: -19px;
+  right: -19px;
   z-index: 3;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
+  width: 38px;
+  height: 38px;
   border: 0;
   border-radius: var(--radius-full);
-  background: var(--c-slate-100);
-  color: var(--c-slate-700);
+  background: var(--c-surface);
+  color: #424242;
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.2);
   cursor: pointer;
 }
 .gr-unlock-close:hover {
-  background: var(--c-slate-200);
+  background: #f2f2f2;
 }
 
 .gr-unlock-top {
   position: relative;
   display: grid;
   justify-items: center;
-  gap: 2px;
-  padding: 42px 24px 30px;
-  border-bottom: 1px solid var(--c-border);
+  padding: 32px 56px 23px;
+  overflow: hidden;
 }
-.gr-unlock-top .gr-disc {
-  width: 116px;
-  animation: gr-pop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+.gr-unlock-top > *:not(.gr-burst) {
+  position: relative;
+  z-index: 1;
 }
-.gr-unlock-top .gr-disc-num {
-  font-size: 42px;
+.gr-unlock-top .gr-burst {
+  top: 97.5px;
 }
-.gr-unlock-top .gr-disc-word {
-  font-size: 9px;
+.gr-unlock-top .gr-burst--l {
+  left: -26px;
+  width: 149px;
+}
+.gr-unlock-top .gr-burst--r {
+  right: -81px;
+  width: 210px;
 }
 
 .gr-unlock-title {
-  position: relative;
-  margin: 16px 0 0;
+  margin: 20px 0 0;
   font-size: 22px;
   font-weight: var(--fw-black);
-  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: #2a2a2a;
 }
 .gr-unlock-name {
-  position: relative;
   margin: 2px 0 0;
-  font-size: var(--text-md);
-  color: var(--c-text-muted);
+  font-size: var(--text-lg);
+  font-weight: var(--fw-bold);
+  line-height: 1.6;
+  color: #424242;
 }
-.gr-unlock-req {
-  position: relative;
-  margin-top: 12px;
-  padding: 7px 18px;
-  border-radius: var(--radius-pill);
-  background: #d1fae5;
-  color: #047857;
-  font-size: var(--text-base);
-  font-weight: var(--fw-extrabold);
+.gr-unlock-tag {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  margin-top: 15px;
+  padding: 8px 20px;
+  border-radius: var(--radius-2xl);
+  background: #cbfde5;
+  color: #017841;
+  font-size: var(--text-md);
+  font-weight: var(--fw-black);
 }
 
 .gr-unlock-bottom {
   display: grid;
   justify-items: center;
-  padding: 26px 24px 30px;
+  gap: 19px;
+  padding: 30px 24px 34px;
+  border-top: 1px solid #ebebeb;
 }
 .gr-unlock-progress {
+  max-width: 300px;
   margin: 0;
-  font-size: var(--text-xl);
-  font-weight: var(--fw-extrabold);
-  line-height: 1.4;
+  font-size: 20px;
+  font-weight: var(--fw-bold);
+  line-height: 30px;
+  color: #000;
 }
-.gr-unlock-strip {
+.gr-unlock-progress span {
+  font-weight: var(--fw-medium);
+}
+
+/* The progress strip: the new badge between the space before it and the one
+   still to come, threaded on a single track. */
+.gr-strip {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 14px;
-  margin: 20px 0 22px;
 }
-.gr-strip-item {
-  display: grid;
-  place-items: center;
-}
-.gr-strip-item .gr-disc {
-  width: 52px;
-}
-.gr-strip-item .gr-disc-num {
-  font-size: 19px;
-}
-.gr-strip-item .gr-disc-word {
-  font-size: 5px;
+.gr-strip-line {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  top: 50%;
+  height: 10px;
+  translate: 0 -50%;
+  border-radius: var(--radius-pill);
+  background: #e1e1e1;
 }
 .gr-strip-dot {
-  display: block;
-  width: 26px;
-  height: 26px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 35px;
+  height: 35px;
   border-radius: var(--radius-full);
-  background: var(--c-slate-300);
+  background: #e1e1e1;
 }
-.gr-strip-dot.is-earned {
+.gr-strip-dot::after {
+  content: '';
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-full);
+  background: #9e9e9e;
+}
+.gr-strip-dot.is-earned::after {
   background: var(--c-brand-green);
+}
+.gr-strip-dot.is-empty {
+  visibility: hidden;
+}
+/* The unlock modal is 480 wide in the Figma and its close button hangs off the
+   corner — the shared Modal caps at 520 and clips. Reached via :has() because
+   Modal takes no className. */
+.modal--center:has(.gr-unlock) {
+  width: min(480px, calc(100vw - 32px));
+  border-radius: var(--radius-2xl);
+  overflow: visible;
+}
+
+.gr-strip-current {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 54.5px;
+  height: 54.5px;
+  border-radius: var(--radius-full);
+  background: #e1e1e1;
 }
 
 /* ── Narrow screens ──────────────────────────────────────────────────────── */

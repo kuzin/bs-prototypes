@@ -8,7 +8,7 @@ import { ReaderTopBar, ReaderFooter } from './components/ReaderChrome'
 import { ReaderBoard } from './components/ReaderBoard'
 import { LogReadingFlow } from './components/LogReadingFlow'
 import { YouDidItSheet, BadgeUnlockedModal } from './components/Celebrations'
-import { CHALLENGE, SPACES, banner, isEarned, nextSpace } from './data'
+import { CHALLENGE, SPACES, banner, heroWave, isEarned, nextSpace } from './data'
 import './index.css'
 
 // Gameboard: Reader View — the other half of the `gameboard` creator prototype.
@@ -94,6 +94,9 @@ export function App() {
       <ReaderTopBar onLogReading={() => setLogOpen(true)} />
 
       <div className="gr-hero">
+        <div className="gr-hero-band" aria-hidden="true">
+          <img className="gr-hero-wave" src={heroWave} alt="" />
+        </div>
         <img className="gr-hero-banner" src={banner} alt="" />
         <h1 className="gr-hero-title">{CHALLENGE.name}</h1>
         <p className="gr-hero-dates">{CHALLENGE.dates}</p>
