@@ -141,10 +141,18 @@ export const PROTOTYPES = [
   },
   {
     id: 'gameboard',
-    name: 'Gameboard Challenge',
+    name: 'Gameboard: Admin View',
     section: 'Prototypes',
     href: '/bs-prototypes/gameboard/',
     accent: '#5FA052',
     description: 'Theme a gameboard and place badges along the path readers travel.',
+  },
+  {
+    id: 'gameboard-reader',
+    name: 'Gameboard: Reader View',
+    section: 'Prototypes',
+    href: '/bs-prototypes/gameboard-reader/',
+    accent: '#65A30D',
+    description: 'How a reader travels the gameboard — log, unlock, celebrate.',
   },
 ]

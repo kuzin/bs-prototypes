@@ -27,6 +27,7 @@ import { booksSections } from './sections/books'
 import { adminDashboardSections } from './sections/admin-dashboard'
 import { loggingFlowSections } from './sections/logging-flow'
 import { gameboardSections } from './sections/gameboard'
+import { gameboardReaderSections } from './sections/gameboard-reader'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -213,9 +214,17 @@ export const GROUPS = [
     id: 'gameboard',
     kind: 'prototype',
     title: 'Gameboard',
-    desc: 'Components for the Gameboard Challenge prototype — the drag-and-drop board readers travel as they read, and its illustrated theme picker.',
+    desc: 'Components for the Gameboard: Admin View prototype — the drag-and-drop board readers travel as they read, and its illustrated theme picker.',
     color: '#5FA052',
     icon: <Icon name="dice-5" size={22} />,
+  },
+  {
+    id: 'gameboard-reader',
+    kind: 'prototype',
+    title: 'Gameboard Reader',
+    desc: 'Components for the Gameboard Reader View — the read-only board a reader travels, its earned/locked badge discs, and Benny mid-cheer.',
+    color: '#65A30D',
+    icon: <Icon name="route" size={22} />,
   },
   {
     id: 'logging-flow',
@@ -245,4 +254,5 @@ export const SECTIONS = [
   ...adminDashboardSections,
   ...loggingFlowSections,
   ...gameboardSections,
+  ...gameboardReaderSections,
 ]

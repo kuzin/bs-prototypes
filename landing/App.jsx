@@ -43,6 +43,7 @@ const ICON_NAMES = {
   'pick-your-path': 'route',
   btwb: 'message-chatbot',
   gameboard: 'dice-5',
+  'gameboard-reader': 'route',
 }
 
 const ICONS = Object.fromEntries(

@@ -25,7 +25,7 @@ import { GameboardStep } from './steps/GameboardStep'
 import { CompletionStep } from './steps/CompletionStep'
 import './index.css'
 
-// Gameboard Challenge — the challenge creator narrowed to one type.
+// Gameboard: Admin View — the challenge creator narrowed to one type.
 //
 // Forked from the Challenge Creator V2 prototype so the gameboard can be worked
 // on inside the flow that actually produces it. Four pieces of V2 scaffolding are

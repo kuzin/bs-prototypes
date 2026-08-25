@@ -3,12 +3,12 @@ import { EmptyState } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 import { GAMEBOARD_THEMES } from '../data'
 
-// Hover tooltip on a badge — its type (logging / activity) and how it's earned.
-function BadgeTip({ name, kind, meta, shown }) {
+// Hover tooltip on a badge — its name and how it's earned. No badge type: only
+// logging badges reach the board, so saying so on every space was noise.
+function BadgeTip({ name, meta, shown }) {
   return (
     <span className={`gb-badge-tip${shown ? ' is-shown' : ''}`} role="tooltip">
       <strong>{name}</strong>
-      {kind && <span className="gb-badge-tip-kind">{kind}</span>}
       {meta && <span className="gb-badge-tip-req">{meta}</span>}
     </span>
   )
@@ -227,7 +227,7 @@ export function GameBoard({
               onMouseLeave={() => setTipId((o) => (o === id ? null : o))}
             >
               <Art b={b} />
-              <BadgeTip name={b.name} kind={b.kind} meta={b.meta} shown={tipId === id} />
+              <BadgeTip name={b.name} meta={b.meta} shown={tipId === id} />
               <button
                 type="button"
                 className="gb-remove"

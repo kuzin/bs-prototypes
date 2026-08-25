@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="1440" height="50" viewBox="0 0 1440 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Group 1">
+<g id="Vector">
+<path d="M0 0H1440V50C1172.67 34 932.667 26 720 26C507.333 26 267.333 34 0 50V0Z" fill="#F1E4DA"/>
+<path d="M0 0H1440V50C1172.67 34 932.667 26 720 26C507.333 26 267.333 34 0 50V0Z" fill="black" fill-opacity="0.03"/>
+</g>
+<path id="Rectangle" fill-rule="evenodd" clip-rule="evenodd" d="M1440 0C1160 9.33333 920 14 720 14C520 14 280 9.33333 0 0H1440Z" fill="#F1E4DA"/>
+</g>
+</svg>

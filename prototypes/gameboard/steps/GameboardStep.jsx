@@ -41,7 +41,6 @@ export function GameboardStep({ challenge, update }) {
       img: b.img || badgeImage(b.icon),
       logType: unit,
       goal,
-      kind: 'Logging badge',
       meta: `Log ${goal} ${goal === 1 ? unit.replace(/s$/, '') : unit}`,
       reward: rewardedIds.has(`log-${i}`),
     }
@@ -54,7 +53,6 @@ export function GameboardStep({ challenge, update }) {
       id: `act-${i}`,
       name: b.title || b.name || 'Activity badge',
       img: b.badge?.img,
-      kind: 'Activity badge',
       meta: nA ? `Complete ${nA} ${nA === 1 ? 'activity' : 'activities'}` : 'Complete an activity',
     }
   })
