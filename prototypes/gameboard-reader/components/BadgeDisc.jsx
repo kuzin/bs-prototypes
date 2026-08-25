@@ -1,18 +1,24 @@
 import { useId } from 'react'
 import { BOARD } from '../data'
 
+// The wide ring is 140 across and the badge art 80, so the cream band the word
+// sits in runs from radius 40 to radius 70 — put the arc down its middle and
+// center the glyphs on it, rather than resting them on top of it and letting
+// them grow outward over the ring's edge.
+const RING_R = 70
+const ART_R = 40
+const ARC_R = (RING_R + ART_R) / 2
+
 /**
  * START / HALFWAY / FINISH, curved around the badge's cream ring in the board's
- * ink. The arc radius is set just inside the wide ring so the word sits on the
- * ring rather than floating over the space above it.
+ * ink. `below` mirrors the arc under the badge — START carries the word twice.
  */
 export function CurvedLabel({ text, below }) {
   const id = useId().replace(/:/g, '')
-  const r = 56
-  const c = 70 // the ring box is 140 wide, so its center
+  const c = RING_R // the ring box is 140 wide, so its center
   const d = below
-    ? `M ${c - r} ${c} A ${r} ${r} 0 0 0 ${c + r} ${c}`
-    : `M ${c - r} ${c} A ${r} ${r} 0 0 1 ${c + r} ${c}`
+    ? `M ${c - ARC_R} ${c} A ${ARC_R} ${ARC_R} 0 0 0 ${c + ARC_R} ${c}`
+    : `M ${c - ARC_R} ${c} A ${ARC_R} ${ARC_R} 0 0 1 ${c + ARC_R} ${c}`
   return (
     <svg
       className={`gr-arc${below ? ' gr-arc--below' : ''}`}
@@ -20,7 +26,9 @@ export function CurvedLabel({ text, below }) {
       aria-hidden="true"
     >
       <path id={id} d={d} fill="none" />
-      <text className="gr-arc-text" dominantBaseline={below ? 'hanging' : 'auto'}>
+      {/* `central` centers the em box on the path, which is what keeps the word
+          in the middle of the band whichever way the arc runs. */}
+      <text className="gr-arc-text" dominantBaseline="central">
         <textPath href={`#${id}`} startOffset="50%" textAnchor="middle">
           {text}
         </textPath>
