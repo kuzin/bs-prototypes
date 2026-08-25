@@ -286,14 +286,16 @@ body {
   grid-area: 1 / 1;
 }
 
-/* Reward mark — centered 37.96px below the badge center (of a 140px space),
-   so it overlaps the ring's lower edge. */
+/* Reward mark — centered 37.96px below the badge center (of a 140px space), so
+   it overlaps the ring's lower edge. Drawn a little larger than the Figma's
+   28.887px: at the size the board actually renders, the mark at spec was too
+   small to read as a gift or a certificate. */
 .gr-space-reward {
   position: absolute;
   left: 50%;
   top: 77.11%;
   translate: -50% -50%;
-  width: 20.63%;
+  width: 26%;
   pointer-events: none;
 }
 
