@@ -1041,9 +1041,6 @@ body {
 .gr-strip-dot.is-earned::after {
   background: var(--c-brand-green);
 }
-.gr-strip-dot.is-empty {
-  visibility: hidden;
-}
 /* The unlock modal is 480 wide in the Figma and its close button hangs off the
    corner — the shared Modal caps at 520 and clips. Reached via :has() because
    Modal takes no className. */

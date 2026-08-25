@@ -99,10 +99,11 @@ export function BadgeUnlockedModal({ open, onClose, space, booksFinished }) {
   )
 }
 
-// A neighbouring space on the strip — a plain marker, since only the badge just
-// unlocked gets its art shown.
+// A neighbouring space on the strip — a plain marker, since only the badge in
+// focus gets its art shown. START and FINISH have a neighbour on one side only,
+// so the strip simply comes up a dot short rather than holding an empty slot.
 function StripDot({ space, booksFinished }) {
-  if (!space) return <span className="gr-strip-dot is-empty" />
+  if (!space) return null
   return (
     <span
       className={`gr-strip-dot${isEarned(space, booksFinished) ? ' is-earned' : ''}`}

@@ -36,12 +36,19 @@ export function App() {
   const [result, setResult] = useState(null) // the session just logged
   const [unlocked, setUnlocked] = useState(null) // the space it cleared, if any
   const [unlockOpen, setUnlockOpen] = useState(false) // is the badge modal showing?
+  const [viewing, setViewing] = useState(null) // an earned space the reader tapped
   const [popped, setPopped] = useState(null) // space mid-pop on the board
   const popTimer = useRef(null)
 
   useEffect(() => () => clearTimeout(popTimer.current), [])
 
   const target = nextSpace(booksFinished)
+
+  // The badge modal serves two arrivals: a space the reader just cleared, and
+  // one they tapped to look at again. Same modal either way — only the close
+  // differs, since only a fresh unlock pops the badge on the way out.
+  const badgeSpace = viewing || unlocked
+  const badgeOpen = !!viewing || unlockOpen
 
   // A logged session: finishing a book advances the board, which may clear the
   // next space. Either way the reader lands on "You did it!" first — the badge
@@ -61,11 +68,17 @@ export function App() {
     if (unlocked) setUnlockOpen(true)
   }
 
-  // Closing the badge modal drops the reader back on the board — which is the
-  // moment the new badge should pop, so `popped` outlives the modal just long
-  // enough for the animation to play. (`unlocked` stays put so the modal keeps
-  // its content while it animates out.)
-  const closeUnlock = () => {
+  // Closing after a fresh unlock drops the reader back on the board — which is
+  // the moment the new badge should pop, so `popped` outlives the modal just
+  // long enough for the animation to play. (`unlocked` stays put so the modal
+  // keeps its content while it animates out.)
+  const closeBadge = () => {
+    // Just looking at a badge already earned — nothing to celebrate on the way
+    // out, so no pop.
+    if (viewing) {
+      setViewing(null)
+      return
+    }
     setUnlockOpen(false)
     if (!unlocked) return
     setPopped(unlocked.id)
@@ -77,6 +90,7 @@ export function App() {
     setResult(null)
     setUnlocked(null)
     setUnlockOpen(false)
+    setViewing(null)
     setLogOpen(true)
   }
 
@@ -86,6 +100,7 @@ export function App() {
     setResult(null)
     setUnlocked(null)
     setUnlockOpen(false)
+    setViewing(null)
     setPopped(null)
   }
 
@@ -130,7 +145,7 @@ export function App() {
             <ReaderBoard
               booksFinished={booksFinished}
               justUnlocked={popped}
-              onSpace={(space, earned) => !earned && setLogOpen(true)}
+              onSpace={(space, earned) => (earned ? setViewing(space) : setLogOpen(true))}
             />
 
             <div className="gr-board-foot">
@@ -174,9 +189,9 @@ export function App() {
       />
 
       <BadgeUnlockedModal
-        open={unlockOpen}
-        onClose={closeUnlock}
-        space={unlocked}
+        open={badgeOpen}
+        onClose={closeBadge}
+        space={badgeSpace}
         booksFinished={booksFinished}
       />
 
