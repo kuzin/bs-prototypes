@@ -68,6 +68,7 @@ export function ReaderBoard({ booksFinished, justUnlocked, onSpace }) {
             type="button"
             className={[
               'gr-space',
+              s.label && 'is-wide',
               target?.id === s.id && 'is-target',
               justUnlocked === s.id && 'is-popped',
               tip === s.id && 'is-tipped',

@@ -435,11 +435,22 @@ body {
 }
 /* ── Space tooltip ───────────────────────────────────────────────────────── */
 
+/* A space's box is the full 140px ring slot, but a plain badge's ring only
+   fills 71.43% of it — so anchoring the tooltip to the box left it floating a
+   ring-inset away from the badge. Hang it off the ring's top edge instead;
+   spaces with a curved word have a ring that fills the box, hence no inset. */
+.gr-space {
+  --gr-ring-inset: 14.285%;
+}
+.gr-space.is-wide {
+  --gr-ring-inset: 0%;
+}
+
 .gr-tip {
   position: absolute;
-  bottom: 100%;
+  bottom: calc(100% - var(--gr-ring-inset));
   left: 50%;
-  translate: -50% -8px;
+  translate: -50% -7px;
   z-index: 5;
   display: grid;
   gap: 1px;
@@ -455,11 +466,25 @@ body {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.14s ease;
-  align-self: start;
-  justify-self: center;
 }
+
+/* The chevron pointing back down at the badge. */
+.gr-tip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  translate: -50% 0;
+  border: 6px solid transparent;
+  border-top-color: var(--c-slate-900);
+}
+
 .gr-space.is-tipped .gr-tip {
   opacity: 1;
+}
+/* Lift the hovered space so its tooltip clears the neighbouring badges. */
+.gr-space.is-tipped {
+  z-index: 6;
 }
 .gr-tip strong {
   font-size: var(--text-sm);
