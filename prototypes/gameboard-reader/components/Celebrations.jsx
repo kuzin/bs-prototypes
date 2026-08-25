@@ -53,9 +53,12 @@ export function YouDidItSheet({ open, onClose, onLogAnother, minutes, book }) {
 export function BadgeUnlockedModal({ open, onClose, space, booksFinished }) {
   if (!space) return null
 
+  // Board spaces get their neighbours on the strip. An activity badge isn't on
+  // the board at all, so it stands alone rather than borrowing START as a
+  // "next" — which a bare findIndex miss would otherwise do.
   const i = SPACES.findIndex((s) => s.id === space.id)
-  const before = SPACES[i - 1]
-  const after = SPACES[i + 1]
+  const before = i > 0 ? SPACES[i - 1] : null
+  const after = i >= 0 ? SPACES[i + 1] : null
 
   return (
     <Modal open={open} onClose={onClose} variant="center" ariaLabel="Badge unlocked">

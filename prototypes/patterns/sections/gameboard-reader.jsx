@@ -1,4 +1,7 @@
+import { useState } from 'react'
+
 import { ReaderBoard } from '../../gameboard-reader/components/ReaderBoard'
+import { BadgesTab } from '../../gameboard-reader/components/BadgesTab'
 import { BadgeDisc } from '../../gameboard-reader/components/BadgeDisc'
 import { BennyCheer } from '../../gameboard-reader/components/Benny'
 import { SPACES } from '../../gameboard-reader/data'
@@ -39,6 +42,25 @@ function DiscRow() {
         </div>
       ))}
     </div>
+  )
+}
+
+// Self-contained so the showcase can be ticked through like the real thing.
+function BadgesTabDemo() {
+  const [done, setDone] = useState([])
+  return (
+    <Variant label="segmented — Badges / Activities" full>
+      <div style={{ padding: 20 }}>
+        <BadgesTab
+          booksFinished={3}
+          doneActivities={done}
+          onActivity={(id) =>
+            setDone((d) => (d.includes(id) ? d.filter((x) => x !== id) : [...d, id]))
+          }
+          onBadge={noop}
+        />
+      </div>
+    </Variant>
   )
 }
 
@@ -89,6 +111,24 @@ export const gameboardReaderSections = [
         <DiscRow />
       </Variant>
     ),
+  },
+  {
+    group: 'gameboard-reader',
+    id: 'gr-badges-tab',
+    name: 'Badges Tab',
+    desc: (
+      <>
+        Everything the challenge has to earn, split by a segmented control (
+        <code>Tabs variant=&quot;pill&quot;</code>). <strong>Badges</strong> is one grid of the
+        board&apos;s spaces plus the activity badges — the only place the two appear together, since
+        an activity badge never sits on the board. <strong>Activities</strong> is the same set from
+        the to-do side: each activity badge with the activities that earn it listed underneath,
+        typed from the creator&apos;s own activity list. Completing the last activity earns the
+        badge on the spot. Locked badges desaturate here rather than taking the board&apos;s tan
+        wash, which is tuned to sit in a cream ring and turns pale art to mud on white.
+      </>
+    ),
+    render: () => <BadgesTabDemo />,
   },
   {
     group: 'gameboard-reader',

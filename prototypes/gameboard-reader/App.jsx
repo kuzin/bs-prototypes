@@ -8,7 +8,16 @@ import { ReaderTopBar, ReaderFooter } from './components/ReaderChrome'
 import { ReaderBoard } from './components/ReaderBoard'
 import { LogReadingFlow } from './components/LogReadingFlow'
 import { YouDidItSheet, BadgeUnlockedModal } from './components/Celebrations'
-import { CHALLENGE, SPACES, banner, heroWave, isEarned, nextSpace } from './data'
+import { BadgesTab } from './components/BadgesTab'
+import {
+  CHALLENGE,
+  SPACES,
+  banner,
+  heroWave,
+  isEarned,
+  nextSpace,
+  activityBadgeEarned,
+} from './data'
 import './index.css'
 
 // Gameboard: Reader View — the other half of the `gameboard` creator prototype.
@@ -36,7 +45,8 @@ export function App() {
   const [result, setResult] = useState(null) // the session just logged
   const [unlocked, setUnlocked] = useState(null) // the space it cleared, if any
   const [unlockOpen, setUnlockOpen] = useState(false) // is the badge modal showing?
-  const [viewing, setViewing] = useState(null) // an earned space the reader tapped
+  const [viewing, setViewing] = useState(null) // a badge the reader tapped to look at
+  const [doneActivities, setDoneActivities] = useState([]) // activity ids completed
   const [popped, setPopped] = useState(null) // space mid-pop on the board
   const popTimer = useRef(null)
 
@@ -86,6 +96,17 @@ export function App() {
     popTimer.current = setTimeout(() => setPopped(null), 900)
   }
 
+  // Ticking off an activity can complete its badge — which earns it there and
+  // then, no reading involved, so the badge modal fires straight away.
+  const toggleActivity = (activityId, badge) => {
+    const wasDone = doneActivities.includes(activityId)
+    const next = wasDone
+      ? doneActivities.filter((id) => id !== activityId)
+      : [...doneActivities, activityId]
+    setDoneActivities(next)
+    if (!wasDone && activityBadgeEarned(badge, next)) setViewing(badge)
+  }
+
   const logAnother = () => {
     setResult(null)
     setUnlocked(null)
@@ -102,6 +123,7 @@ export function App() {
     setUnlockOpen(false)
     setViewing(null)
     setPopped(null)
+    setDoneActivities([])
   }
 
   return (
@@ -162,12 +184,19 @@ export function App() {
               </button>
             </div>
           </>
+        ) : tab === 'badges' ? (
+          <BadgesTab
+            booksFinished={booksFinished}
+            doneActivities={doneActivities}
+            onActivity={toggleActivity}
+            onBadge={setViewing}
+          />
         ) : (
           <div className="gr-placeholder">
             <Icon name="route" size={26} />
             <p>
-              This mock covers the <strong>Gameboard</strong> tab — the reader’s trip around the
-              board.
+              This mock covers the <strong>Gameboard</strong> and <strong>Badges</strong> tabs — the
+              reader’s trip around the board, and everything there is to earn.
             </p>
             <Button variant="secondary" size="sm" onClick={() => setTab('gameboard')}>
               Back to the Gameboard

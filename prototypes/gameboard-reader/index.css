@@ -375,6 +375,26 @@ body {
 .gr-disc--sm {
   width: 44px;
 }
+.gr-disc--grid {
+  width: 76px;
+}
+.gr-disc--act {
+  width: 66px;
+}
+
+/* Off the board, a locked badge desaturates rather than taking the board's tan
+   wash. That wash exists so a locked badge still reads as part of the cream
+   ring it sits in; on a white card it just flattens pale art into a brown blob
+   and the numeral with it. */
+.gr-disc--grid:not(.is-earned) .gr-art img,
+.gr-disc--act:not(.is-earned) .gr-art img {
+  opacity: 0.5;
+  filter: grayscale(1);
+}
+.gr-disc--grid:not(.is-earned) .gr-art-lock,
+.gr-disc--act:not(.is-earned) .gr-art-lock {
+  display: none;
+}
 .gr-disc--bare .gr-art {
   width: 100%;
 }
@@ -450,6 +470,231 @@ body {
 }
 .gr-tip-reward {
   color: #fbbf24 !important;
+}
+
+/* ── Badges tab ──────────────────────────────────────────────────────────── */
+
+.gr-badges {
+  display: grid;
+  gap: 32px;
+}
+
+/* The segmented control sits above both views, with the running count of
+   whichever one is showing on the right. */
+.gr-badges-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.gr-badges-switch .tabs {
+  border-bottom: 0;
+}
+
+.gr-badges-h {
+  margin: 0;
+  font-size: 20px;
+  font-weight: var(--fw-black);
+  letter-spacing: -0.01em;
+  color: #2a2a2a;
+}
+.gr-badges-count {
+  font-size: var(--text-md);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-muted);
+}
+.gr-badges-note {
+  margin: 4px 0 18px;
+  font-size: var(--text-md);
+  color: var(--c-text-muted);
+}
+
+/* Reading badges — the board's spaces, read as a plain grid. */
+.gr-badge-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.gr-badge-cell {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+  width: 100%;
+  padding: 18px 10px 14px;
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-2xl);
+  background: var(--c-surface);
+  font: inherit;
+  text-align: center;
+  cursor: default;
+}
+.gr-badge-cell.is-earned {
+  cursor: pointer;
+}
+.gr-badge-cell.is-earned:hover {
+  border-color: var(--c-border-strong);
+  box-shadow: 0 3px 10px rgba(15, 23, 42, 0.07);
+}
+.gr-badge-cell .gr-disc {
+  margin-bottom: 6px;
+}
+.gr-badge-cell-name {
+  font-size: var(--text-md);
+  font-weight: var(--fw-extrabold);
+  color: #2a2a2a;
+}
+.gr-badge-cell-req {
+  font-size: var(--text-sm);
+  color: var(--c-text-muted);
+}
+.gr-badge-cell.is-earned .gr-badge-cell-req {
+  color: #017841;
+  font-weight: var(--fw-bold);
+}
+
+/* Activity badges — each card carries the activities that earn it. */
+.gr-act-list {
+  display: grid;
+  gap: 14px;
+}
+
+.gr-act-card {
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-2xl);
+  background: var(--c-surface);
+  overflow: hidden;
+}
+.gr-act-card.is-earned {
+  border-color: #a7e8c8;
+}
+
+.gr-act-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 20px;
+}
+.gr-act-card.is-earned .gr-act-head {
+  background: #f2fdf7;
+}
+
+.gr-act-art {
+  flex-shrink: 0;
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: default;
+}
+.gr-act-card.is-earned .gr-act-art {
+  cursor: pointer;
+}
+
+.gr-act-headtext {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+.gr-act-headtext h3 {
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: var(--fw-extrabold);
+  color: #2a2a2a;
+}
+.gr-act-progress {
+  margin: 0;
+  font-size: var(--text-base);
+  color: var(--c-text-muted);
+}
+.gr-act-done-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: var(--fw-extrabold);
+  color: #017841;
+}
+
+.gr-act-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--c-slate-100);
+}
+.gr-act-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+}
+.gr-act-item + .gr-act-item {
+  border-top: 1px solid var(--c-slate-100);
+}
+
+.gr-act-icon {
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-full);
+  background: var(--c-slate-100);
+  color: var(--c-slate-600);
+}
+.gr-act-item.is-done .gr-act-icon {
+  background: #d1fae5;
+  color: #017841;
+}
+
+.gr-act-text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: 1px;
+}
+.gr-act-title {
+  font-size: var(--text-md);
+  font-weight: var(--fw-bold);
+  color: var(--c-text);
+}
+.gr-act-item.is-done .gr-act-title {
+  color: var(--c-text-muted);
+  text-decoration: line-through;
+}
+.gr-act-desc {
+  font-size: var(--text-base);
+  color: var(--c-text-muted);
+}
+.gr-act-type {
+  margin-top: 3px;
+  font-size: var(--text-xs);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-text-subtle);
+}
+
+.gr-act-btn {
+  flex-shrink: 0;
+  padding: 8px 14px;
+  border: 1px solid var(--c-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--c-surface);
+  font-family: inherit;
+  font-size: var(--text-base);
+  font-weight: var(--fw-bold);
+  color: var(--gr-blue);
+  cursor: pointer;
+}
+.gr-act-btn:hover {
+  background: var(--c-slate-50);
+}
+.gr-act-item.is-done .gr-act-btn {
+  color: var(--c-text-muted);
 }
 
 /* ── Below the board ─────────────────────────────────────────────────────── */

@@ -25,6 +25,10 @@ import art8 from './assets/badge-8.png'
 import art9 from './assets/badge-9.png'
 import artFinish from './assets/badge-finish.png'
 
+import actArtCocoa from '../gameboard/assets/theme-badges/winter-2.webp'
+import actArtScarf from '../gameboard/assets/theme-badges/winter-5.webp'
+import actArtSnow from '../gameboard/assets/theme-badges/winter-7.webp'
+
 import treesLarge from './assets/trees.svg'
 import treesSmall from './assets/trees-sm.svg'
 import rewardMark from './assets/reward.svg'
@@ -201,6 +205,104 @@ export const SPACES = [
     y: 449.5,
   },
 ]
+
+// ─── Activity badges ─────────────────────────────────────────────────────────
+// The creator (see the `gameboard` prototype) models an activity badge as a
+// title, its art, and one or more activities the reader has to complete to earn
+// it. Activity badges deliberately never sit on the board — the creator's tray
+// says as much — so this is the only place a reader meets them.
+
+// Reader-facing labels + glyphs for the creator's activity types.
+export const ACTIVITY_TYPES = {
+  activity: { label: 'Activity', icon: 'link' },
+  video: { label: 'Watch a video', icon: 'play-filled' },
+  listen: { label: 'Listen', icon: 'headphones' },
+  quiz: { label: 'Take a quiz', icon: 'clipboard-check' },
+  survey: { label: 'Survey', icon: 'clipboard-list' },
+  event: { label: 'Attend an event', icon: 'calendar-event' },
+  social: { label: 'Share on social', icon: 'share' },
+  review: { label: 'Write a review', icon: 'writing' },
+  checkin: { label: 'Check in', icon: 'qrcode' },
+  code: { label: 'Activity code', icon: 'ticket' },
+  photo: { label: 'Photo upload', icon: 'photo' },
+  upload: { label: 'Upload a file', icon: 'upload' },
+  textbox: { label: 'Text box', icon: 'file-text' },
+}
+
+export const activityType = (t) => ACTIVITY_TYPES[t] || ACTIVITY_TYPES.activity
+
+export const ACTIVITY_BADGES = [
+  {
+    id: 'ab-cozy',
+    name: 'Cozy Corner',
+    art: actArtCocoa,
+    requirement: 'Complete 2 activities',
+    activities: [
+      {
+        id: 'ac-checkin',
+        type: 'checkin',
+        title: 'Visit the library',
+        description: 'Scan the QR code at the front desk next time you stop by.',
+      },
+      {
+        id: 'ac-photo',
+        type: 'photo',
+        title: 'Show us your reading nook',
+        description: 'Upload a photo of the spot where you curl up with a book.',
+      },
+    ],
+  },
+  {
+    id: 'ab-storytime',
+    name: 'Winter Story Time',
+    art: actArtScarf,
+    requirement: 'Complete 2 activities',
+    activities: [
+      {
+        id: 'ac-event',
+        type: 'event',
+        title: 'Come to Winter Story Time',
+        description: 'Thursdays at 4pm in the community room.',
+      },
+      {
+        id: 'ac-video',
+        type: 'video',
+        title: 'Watch the booktalk',
+        description: 'Two minutes on why Giants Beware is worth your winter break.',
+      },
+    ],
+  },
+  {
+    id: 'ab-share',
+    name: 'Share the Warmth',
+    art: actArtSnow,
+    requirement: 'Complete 3 activities',
+    activities: [
+      {
+        id: 'ac-review',
+        type: 'review',
+        title: 'Review a book you finished',
+        description: 'A couple of sentences is plenty.',
+      },
+      {
+        id: 'ac-quiz',
+        type: 'quiz',
+        title: 'Take the winter reading quiz',
+        description: 'Ten questions about the titles on this challenge.',
+      },
+      {
+        id: 'ac-social',
+        type: 'social',
+        title: 'Tell a friend',
+        description: 'Share the challenge with #BundleUpWithBooks.',
+      },
+    ],
+  },
+]
+
+// An activity badge is earned once every one of its activities is done.
+export const activityBadgeEarned = (badge, done) =>
+  badge.activities.every((a) => done.includes(a.id))
 
 // ─── Titles for the log-reading flow ─────────────────────────────────────────
 // Open Library cover CDN — `?default=false` 404s on a missing cover so the
