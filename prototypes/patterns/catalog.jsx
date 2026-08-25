@@ -214,7 +214,7 @@ export const GROUPS = [
     id: 'gameboard',
     kind: 'prototype',
     title: 'Gameboard',
-    desc: 'Components for the Gameboard Challenge prototype — the drag-and-drop board readers travel as they read, and its illustrated theme picker.',
+    desc: 'Components for the Gameboard: Admin View prototype — the drag-and-drop board readers travel as they read, and its illustrated theme picker.',
     color: '#5FA052',
     icon: <Icon name="dice-5" size={22} />,
   },

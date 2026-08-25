@@ -141,7 +141,7 @@ export const PROTOTYPES = [
   },
   {
     id: 'gameboard',
-    name: 'Gameboard Challenge',
+    name: 'Gameboard: Admin View',
     section: 'Prototypes',
     href: '/bs-prototypes/gameboard/',
     accent: '#5FA052',
