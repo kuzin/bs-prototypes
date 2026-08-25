@@ -21,83 +21,88 @@ export function ReaderBoard({ booksFinished, justUnlocked, onSpace }) {
   const target = SPACES.find((s) => !isEarned(s, booksFinished))
 
   return (
-    <div
-      className="gr-board"
-      style={{
-        aspectRatio: `${BOARD.w} / ${BOARD.h}`,
-        background: BOARD.green,
-        borderRadius: BOARD.radius,
-      }}
-    >
-      {TREES.map((t, i) => (
-        <img
-          key={i}
-          className="gr-trees"
-          src={t.art}
-          alt=""
-          style={{
-            left: `${t.left}%`,
-            top: `${t.top}%`,
-            width: `${t.width}%`,
-            height: `${t.height}%`,
-          }}
-        />
-      ))}
-
-      <svg
-        className="gr-road"
-        viewBox={`0 0 ${BOARD.w} ${BOARD.h}`}
-        preserveAspectRatio="none"
-        aria-hidden="true"
+    // The board keeps the Figma's proportions at every width, but below a floor
+    // the badges and their curved words shrink past reading — so under that the
+    // wrapper pans instead of the board getting smaller.
+    <div className="gr-board-scroll">
+      <div
+        className="gr-board"
+        style={{
+          aspectRatio: `${BOARD.w} / ${BOARD.h}`,
+          background: BOARD.green,
+          borderRadius: BOARD.radius,
+        }}
       >
-        <path
-          d={roadPath()}
-          fill="none"
-          stroke={BOARD.cream}
-          strokeWidth={BOARD.road}
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
+        {TREES.map((t, i) => (
+          <img
+            key={i}
+            className="gr-trees"
+            src={t.art}
+            alt=""
+            style={{
+              left: `${t.left}%`,
+              top: `${t.top}%`,
+              width: `${t.width}%`,
+              height: `${t.height}%`,
+            }}
+          />
+        ))}
 
-      {SPACES.map((s) => {
-        const earned = isEarned(s, booksFinished)
-        return (
-          <button
-            key={s.id}
-            type="button"
-            className={[
-              'gr-space',
-              s.label && 'is-wide',
-              target?.id === s.id && 'is-target',
-              justUnlocked === s.id && 'is-popped',
-              tip === s.id && 'is-tipped',
-            ]
-              .filter(Boolean)
-              .join(' ')}
-            style={{ left: pctX(s.x), top: pctY(s.y) }}
-            onMouseEnter={() => setTip(s.id)}
-            onMouseLeave={() => setTip((t) => (t === s.id ? null : t))}
-            onFocus={() => setTip(s.id)}
-            onBlur={() => setTip((t) => (t === s.id ? null : t))}
-            onClick={() => onSpace?.(s, earned)}
-          >
-            <BadgeDisc space={s} earned={earned} />
-            {s.reward && (
-              <img
-                className="gr-space-reward"
-                src={s.reward === 'finish' ? rewardMarkFinish : rewardMark}
-                alt=""
-              />
-            )}
-            <span className="gr-tip" role="tooltip">
-              <strong>{s.name}</strong>
-              <span>{earned ? 'Earned' : s.requirement}</span>
-              {s.reward && <span className="gr-tip-reward">Comes with a reward</span>}
-            </span>
-          </button>
-        )
-      })}
+        <svg
+          className="gr-road"
+          viewBox={`0 0 ${BOARD.w} ${BOARD.h}`}
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d={roadPath()}
+            fill="none"
+            stroke={BOARD.cream}
+            strokeWidth={BOARD.road}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+
+        {SPACES.map((s) => {
+          const earned = isEarned(s, booksFinished)
+          return (
+            <button
+              key={s.id}
+              type="button"
+              className={[
+                'gr-space',
+                s.label && 'is-wide',
+                target?.id === s.id && 'is-target',
+                justUnlocked === s.id && 'is-popped',
+                tip === s.id && 'is-tipped',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              style={{ left: pctX(s.x), top: pctY(s.y) }}
+              onMouseEnter={() => setTip(s.id)}
+              onMouseLeave={() => setTip((t) => (t === s.id ? null : t))}
+              onFocus={() => setTip(s.id)}
+              onBlur={() => setTip((t) => (t === s.id ? null : t))}
+              onClick={() => onSpace?.(s, earned)}
+            >
+              <BadgeDisc space={s} earned={earned} />
+              {s.reward && (
+                <img
+                  className="gr-space-reward"
+                  src={s.reward === 'finish' ? rewardMarkFinish : rewardMark}
+                  alt=""
+                />
+              )}
+              <span className="gr-tip" role="tooltip">
+                <strong>{s.name}</strong>
+                <span>{earned ? 'Earned' : s.requirement}</span>
+                {s.reward && <span className="gr-tip-reward">Comes with a reward</span>}
+              </span>
+            </button>
+          )
+        })}
+      </div>
     </div>
   )
 }

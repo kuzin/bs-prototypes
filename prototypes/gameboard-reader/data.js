@@ -69,12 +69,10 @@ export const BOARD = {
   ink: '#CB9E5B', // START / HALFWAY / FINISH lettering, and the locked-badge tint
   road: 31, // road stroke width
   corner: 25, // road corner radius
-  ring: 100, // cream disc behind a plain badge
-  ringLabelled: 140, // …and behind one carrying a curved word
-  art: 80, // the badge art itself
-  reward: 28.887, // the reward mark below a badge
-  rewardDrop: 37.96, // …how far below the badge center it sits
 }
+// The pieces of a space — its ring, its art, its reward mark — are sized in CSS
+// as percentages of the 140px ring slot, so their Figma pixel values live in the
+// comments next to those rules rather than as constants nothing here reads.
 
 // Three tree clusters, positioned (and clipped) exactly as the Figma places
 // them — each as a percentage box over the board.

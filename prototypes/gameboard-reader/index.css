@@ -154,6 +154,7 @@ body {
 }
 .gr-tabsbar .tabs {
   border-bottom: 0;
+  max-width: 100%;
 }
 
 /* ── Challenge hero ──────────────────────────────────────────────────────── */
@@ -220,6 +221,7 @@ body {
 }
 .gr-hero-tabs .tabs {
   border-bottom: 0;
+  max-width: 100%;
 }
 
 /* ── Board area ──────────────────────────────────────────────────────────── */
@@ -245,6 +247,13 @@ body {
 .gr-next strong {
   color: var(--c-text);
   font-weight: var(--fw-extrabold);
+}
+
+/* Below the floor set on .gr-board, this pans rather than letting the board
+   shrink past reading. */
+.gr-board-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
 }
 
 /* The board is the Figma's 948 × 586 frame: fixed aspect, everything inside
@@ -315,7 +324,8 @@ body {
 }
 
 /* The cream disc the badge sits in — the same color as the road, so a badge
-   reads as a bulge in it. Spaces carrying a curved word get the wider ring. */
+   reads as a bulge in it. 100px of the 140px slot; spaces carrying a curved
+   word get the full 140. */
 .gr-ring {
   width: 71.43%;
   aspect-ratio: 1;
@@ -326,8 +336,9 @@ body {
   width: 100%;
 }
 
-/* `isolation` keeps the locked wash blending with the badge art only — without
-   it `mix-blend-mode: color` would reach the ring and the board behind it. */
+/* 80px of the 140px slot. `isolation` keeps the locked wash blending with the
+   badge art only — without it `mix-blend-mode: color` would reach the ring and
+   the board behind it. */
 .gr-art {
   position: relative;
   width: 57.14%;
@@ -1334,24 +1345,127 @@ body {
 
 /* ── Narrow screens ──────────────────────────────────────────────────────── */
 
-@media (max-width: 860px) {
-  .gr-topbar-inner {
-    flex-wrap: wrap;
-  }
-  .gr-topbar-user {
-    order: -1;
-  }
-  .gr-log-grid {
-    grid-template-columns: 1fr;
-  }
+/* Tablet — the log flow's two columns stop fitting side by side. */
+@media (max-width: 900px) {
+  .gr-log-grid,
   .gr-log-toggles {
     grid-template-columns: 1fr;
   }
-  .gr-space .gr-disc-num {
-    font-size: 20px;
+  .gr-sheet-inner {
+    padding: 62px 18px 48px;
   }
-  .gr-space-reward {
-    width: 20px;
-    height: 20px;
+}
+
+@media (max-width: 760px) {
+  /* App bar: logo and reader keep the top row, the three logging actions drop
+     to their own scrollable row beneath. The site tabs already scroll on their
+     own (Tabs handles it, with edge fades). */
+  .gr-topbar-inner {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+  .gr-topbar-actions {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .gr-topbar-actions::-webkit-scrollbar {
+    display: none;
+  }
+  .gr-topbar-actions .btn {
+    flex: 1 0 auto;
+  }
+  .gr-tabsbar {
+    justify-content: flex-start;
+  }
+
+  /* Hero: a shorter band and banner so the fold still shows the board. */
+  .gr-hero {
+    padding: 36px 14px 0;
+  }
+  .gr-hero-band {
+    height: 118px;
+  }
+  .gr-hero-wave {
+    height: 34px;
+  }
+  .gr-hero-banner {
+    height: clamp(110px, 34vw, 183px);
+  }
+  .gr-hero-title {
+    margin-top: 18px;
+    font-size: 22px;
+  }
+  .gr-hero-dates {
+    font-size: var(--text-md);
+  }
+  .gr-hero-tabs {
+    justify-content: flex-start;
+  }
+
+  .gr-main {
+    padding: 20px 14px 40px;
+  }
+
+  /* Board: stop shrinking and start panning. The scroller runs to the screen
+     edges so the board isn't panning inside a 14px-inset window. */
+  .gr-board-scroll {
+    margin: 0 -14px;
+    padding: 0 14px;
+  }
+  .gr-board {
+    min-width: 620px;
+  }
+
+  .gr-board-head {
+    display: grid;
+    gap: 2px;
+  }
+  .gr-board-foot {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  /* Badges tab */
+  .gr-badge-grid {
+    grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  }
+  .gr-act-head {
+    padding: 14px;
+  }
+  .gr-act-item {
+    flex-wrap: wrap;
+    padding: 12px 14px;
+  }
+  .gr-act-text {
+    /* Keep the text on the icon's row; the button drops below it. */
+    flex: 1 1 60%;
+  }
+  .gr-act-btn {
+    margin-left: 44px;
+  }
+
+  /* Celebration + unlock modal */
+  .gr-celebrate-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+  .gr-celebrate-actions .gr-btn {
+    width: 100%;
+  }
+  .gr-unlock-top {
+    padding: 28px 20px 20px;
+  }
+  .gr-unlock-bottom {
+    padding: 24px 20px 28px;
+  }
+
+  .gr-footer-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 14px;
   }
 }
