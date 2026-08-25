@@ -70,6 +70,10 @@ export const BOARD = {
   minCols: 3, // narrow enough and the board is a near-vertical zigzag
   maxCols: 5, // the Figma's own board
   minScale: 0.62, // how far a layout may shrink before dropping a column
+  // Below the full board, the Figma's generous margins are spent on bigger
+  // badges instead — that padding is there to give the trees room, which
+  // matters far less once the whole board is a few hundred pixels wide.
+  padNarrow: 96,
   space: 140, // a space's full ring slot
   green: '#C1D35D', // board fill
   cream: '#F6DDB4', // the road, and the ring each badge sits in
@@ -347,8 +351,13 @@ export const nextSpace = (booksFinished) =>
  * returns, so the board scales to its container from there.
  */
 export function layoutBoard(spaces = SPACES, cols = BOARD.maxCols) {
-  const { cell, padLeft, padRight, padTop, padBottom } = BOARD
+  const { cell, padNarrow } = BOARD
   const n = Math.max(BOARD.minCols, cols)
+  const full = n >= BOARD.maxCols
+  const padLeft = full ? BOARD.padLeft : padNarrow
+  const padRight = full ? BOARD.padRight : padNarrow
+  const padTop = full ? BOARD.padTop : padNarrow
+  const padBottom = full ? BOARD.padBottom : padNarrow
   const colX = (c) => padLeft + c * cell
   const points = []
 

@@ -4,7 +4,10 @@ import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 
+import { ProgressBar } from '@components/ProgressBar/ProgressBar'
+
 import { ReaderTopBar, ReaderFooter } from './components/ReaderChrome'
+import { BadgeDisc } from './components/BadgeDisc'
 import { ReaderBoard } from './components/ReaderBoard'
 import { LogReadingFlow } from './components/LogReadingFlow'
 import { YouDidItSheet, BadgeUnlockedModal } from './components/Celebrations'
@@ -154,13 +157,32 @@ export function App() {
         {tab === 'gameboard' ? (
           <>
             <div className="gr-board-head">
-              <span className="gr-progress">
-                <strong>{booksFinished}</strong> of {SPACES.length - 1} spaces cleared
-              </span>
-              {target && (
-                <span className="gr-next">
-                  Next up: <strong>{target.requirement}</strong>
+              <div className="gr-progress">
+                <span className="gr-progress-line">
+                  <strong>{booksFinished}</strong>
+                  <span> of {SPACES.length - 1} spaces cleared</span>
                 </span>
+                <ProgressBar
+                  value={booksFinished}
+                  max={SPACES.length - 1}
+                  color="#1a6dd5"
+                  size="sm"
+                />
+              </div>
+
+              {target && (
+                <button
+                  type="button"
+                  className="gr-next"
+                  onClick={() => setLogOpen(true)}
+                  title="Log reading to get there"
+                >
+                  <BadgeDisc space={target} earned={false} bare size="next" />
+                  <span className="gr-next-text">
+                    <span className="gr-next-label">Next up</span>
+                    <strong>{target.requirement}</strong>
+                  </span>
+                </button>
               )}
             </div>
 
