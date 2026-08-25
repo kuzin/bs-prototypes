@@ -249,13 +249,6 @@ body {
   font-weight: var(--fw-extrabold);
 }
 
-/* Below the floor set on .gr-board, this pans rather than letting the board
-   shrink past reading. */
-.gr-board-scroll {
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-}
-
 /* The board is the Figma's 948 × 586 frame: fixed aspect, everything inside
    positioned as a percentage of it, so it scales without being measured. */
 .gr-board {
@@ -281,7 +274,7 @@ body {
 .gr-space {
   position: absolute;
   transform: translate(-50%, -50%);
-  width: 14.768%;
+  width: var(--gr-space-w, 14.768%);
   aspect-ratio: 1;
   display: grid;
   place-items: center;
@@ -1407,16 +1400,6 @@ body {
 
   .gr-main {
     padding: 20px 14px 40px;
-  }
-
-  /* Board: stop shrinking and start panning. The scroller runs to the screen
-     edges so the board isn't panning inside a 14px-inset window. */
-  .gr-board-scroll {
-    margin: 0 -14px;
-    padding: 0 14px;
-  }
-  .gr-board {
-    min-width: 620px;
   }
 
   .gr-board-head {

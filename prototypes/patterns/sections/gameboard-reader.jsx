@@ -74,11 +74,15 @@ export const gameboardReaderSections = [
         The read-only counterpart to the creator&apos;s <strong>Gameboard</strong>: same winding
         route, but nothing drags. Spaces are earned or locked, the next one to clear carries a
         steady pulse so &ldquo;you are here&rdquo; is obvious, and hovering a space explains how
-        it&apos;s earned. Geometry, palette, badge art and trees are the exported Figma design, laid
-        out in its own 948 × 586 coordinate space and rendered as percentages — so the board scales
-        to its container without being measured in JS. The road is generated from the spaces
-        themselves: an orthogonal run with rounded corners, which is what puts the two turn spaces
-        on the vertical legs. Pass <code>booksFinished</code> to move the reader along it.
+        it&apos;s earned. Palette, badge art and trees are the exported Figma design.
+        <br />
+        <br />
+        The board <strong>reflows</strong>: it lays out over as many columns as its container can
+        take, and only then scales to fit. Five columns reproduces the Figma almost to the pixel;
+        fewer gives a narrower, taller board rather than the same shape shrunk past reading. It
+        prefers scaling a wider layout down to shedding a column — keeping the five-column shape at
+        74% beats dropping to three and stretching it. The road is generated from the spaces
+        themselves, which is what puts the turn spaces out on the vertical legs.
       </>
     ),
     render: () => (
@@ -88,6 +92,11 @@ export const gameboardReaderSections = [
         </Variant>
         <Variant label="8 of 10 cleared — most of the route earned" full>
           <ReaderBoard booksFinished={8} onSpace={noop} />
+        </Variant>
+        <Variant label="reflowed — the same board in a 360px column" full>
+          <div style={{ width: 360 }}>
+            <ReaderBoard booksFinished={3} onSpace={noop} />
+          </div>
         </Variant>
       </>
     ),

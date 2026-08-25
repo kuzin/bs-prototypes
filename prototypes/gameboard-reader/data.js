@@ -61,9 +61,16 @@ export const CHALLENGE = {
 // converts to percentages, so the board scales to any width untouched.
 
 export const BOARD = {
-  w: 948,
-  h: 586,
   radius: 32,
+  cell: 150, // spacing between spaces, along a row and between rows
+  padLeft: 182.1, // the first column's center, from the board's left edge
+  padRight: 165.9, // …and the gap after the last column
+  padTop: 149.5, // the first row's center, from the top
+  padBottom: 136.5, // …and the gap under the last row
+  minCols: 3, // narrow enough and the board is a near-vertical zigzag
+  maxCols: 5, // the Figma's own board
+  minScale: 0.62, // how far a layout may shrink before dropping a column
+  space: 140, // a space's full ring slot
   green: '#C1D35D', // board fill
   cream: '#F6DDB4', // the road, and the ring each badge sits in
   ink: '#CB9E5B', // START / HALFWAY / FINISH lettering, and the locked-badge tint
@@ -74,12 +81,14 @@ export const BOARD = {
 // as percentages of the 140px ring slot, so their Figma pixel values live in the
 // comments next to those rules rather than as constants nothing here reads.
 
-// Three tree clusters, positioned (and clipped) exactly as the Figma places
-// them — each as a percentage box over the board.
+// Three tree clusters, at the Figma's own sizes and offsets — but anchored to a
+// corner rather than to a fixed percentage, so they stay in the corners
+// whatever shape the board reflows to. `dx`/`dy` are board pixels from that
+// corner; a negative dx on a right anchor pulls the cluster back inside.
 export const TREES = [
-  { art: treesLarge, left: 86.92, top: -21.97, width: 45.52, height: 49.05 },
-  { art: treesSmall, left: -20.68, top: 44.12, width: 31.65, height: 34.13 },
-  { art: treesSmall, left: 71.1, top: 62.97, width: 31.64, height: 34.13 },
+  { art: treesLarge, anchor: 'top-right', dx: -124, dy: -128.7, w: 431.5, h: 287.5 },
+  { art: treesSmall, anchor: 'left', dx: -196, dy: 0.441, w: 300, h: 200 },
+  { art: treesSmall, anchor: 'bottom-right', dx: -274, dy: -217, w: 300, h: 200 },
 ]
 
 // `at` = books finished required to unlock. START is earned by registering,
@@ -94,8 +103,6 @@ export const SPACES = [
     name: 'Registered',
     requirement: 'Join the challenge',
     art: artStart,
-    x: 182.1,
-    y: 149.5,
   },
   {
     id: 's1',
@@ -104,8 +111,6 @@ export const SPACES = [
     requirement: 'Read 1 Book',
     at: 1,
     art: art1,
-    x: 332.1,
-    y: 149.5,
   },
   {
     id: 's2',
@@ -115,8 +120,6 @@ export const SPACES = [
     at: 2,
     art: art2,
     reward: true,
-    x: 482.1,
-    y: 149.5,
   },
   {
     id: 's3',
@@ -125,8 +128,6 @@ export const SPACES = [
     requirement: 'Read 3 Books',
     at: 3,
     art: art3,
-    x: 632.1,
-    y: 149.5,
   },
   {
     id: 's4',
@@ -135,8 +136,6 @@ export const SPACES = [
     requirement: 'Read 4 Books',
     at: 4,
     art: art4,
-    x: 782.1,
-    y: 224,
   },
   {
     id: 's5',
@@ -147,8 +146,6 @@ export const SPACES = [
     at: 5,
     art: art5,
     reward: true,
-    x: 632.1,
-    y: 299.5,
   },
   {
     id: 's6',
@@ -157,8 +154,6 @@ export const SPACES = [
     requirement: 'Read 6 Books',
     at: 6,
     art: art6,
-    x: 481.7,
-    y: 299.5,
   },
   {
     id: 's7',
@@ -167,8 +162,6 @@ export const SPACES = [
     requirement: 'Read 7 Books',
     at: 7,
     art: art7,
-    x: 331.3,
-    y: 299.5,
   },
   {
     id: 's8',
@@ -177,8 +170,6 @@ export const SPACES = [
     requirement: 'Read 8 Books',
     at: 8,
     art: art8,
-    x: 179.9,
-    y: 372.1,
   },
   {
     id: 's9',
@@ -187,8 +178,6 @@ export const SPACES = [
     requirement: 'Read 9 Books',
     at: 9,
     art: art9,
-    x: 332.1,
-    y: 449.5,
   },
   {
     id: 'finish',
@@ -199,8 +188,6 @@ export const SPACES = [
     at: 10,
     art: artFinish,
     reward: 'finish',
-    x: 482.1,
-    y: 449.5,
   },
 ]
 
@@ -347,14 +334,87 @@ export const nextSpace = (booksFinished) =>
   SPACES.find((s) => s.kind !== 'start' && booksFinished < s.at) || null
 
 /**
+ * Lay the spaces out over `cols` columns and report the board they need.
+ *
+ * The route runs the way the Figma draws it: a row of spaces left to right, one
+ * space sitting out on the turn at the edge column half a row down, then the
+ * next row back the other way, and so on. Rows after the first stop one column
+ * short at each end, because those columns belong to the turns.
+ *
+ * At five columns this reproduces the Figma board almost to the pixel; at fewer
+ * it reflows to a narrower, taller board rather than shrinking the same shape
+ * past reading. Everything downstream is expressed against the `w` / `h` this
+ * returns, so the board scales to its container from there.
+ */
+export function layoutBoard(spaces = SPACES, cols = BOARD.maxCols) {
+  const { cell, padLeft, padRight, padTop, padBottom } = BOARD
+  const n = Math.max(BOARD.minCols, cols)
+  const colX = (c) => padLeft + c * cell
+  const points = []
+
+  let i = 0
+  let row = 0
+  let dir = 1 // 1 = this row runs left to right
+  // The first row gets the full width; later ones start beside the turn above.
+  let from = 0
+  let to = n - 2
+
+  while (i < spaces.length) {
+    for (let c = from; dir > 0 ? c <= to : c >= to; c += dir) {
+      if (i >= spaces.length) break
+      points.push({ space: spaces[i++], x: colX(c), y: padTop + row * cell })
+    }
+    if (i >= spaces.length) break
+
+    // The turn: out at the edge column, half a row down.
+    points.push({
+      space: spaces[i++],
+      x: colX(dir > 0 ? n - 1 : 0),
+      y: padTop + row * cell + cell / 2,
+    })
+    if (i >= spaces.length) break
+
+    row += 1
+    dir = -dir
+    from = dir > 0 ? 1 : n - 2
+    to = dir > 0 ? n - 2 : 1
+  }
+
+  return {
+    points,
+    cols: n,
+    w: padLeft + (n - 1) * cell + padRight,
+    h: Math.max(...points.map((p) => p.y)) + padBottom,
+  }
+}
+
+// The board a given column count needs, before any scaling.
+export const boardWidth = (cols) => BOARD.padLeft + (cols - 1) * BOARD.cell + BOARD.padRight
+
+/**
+ * How many columns to lay out in a container of `width`.
+ *
+ * Not "how many fit at full size" — a board is happy to scale down, and keeping
+ * the Figma's five-column shape at 74% beats dropping to three and stretching
+ * it. So this takes the most columns that still clear `minScale`, and only
+ * sheds one when even that would leave the badges too small.
+ */
+export function colsForWidth(width) {
+  if (!width) return BOARD.maxCols
+  for (let c = BOARD.maxCols; c > BOARD.minCols; c--) {
+    if (boardWidth(c) * BOARD.minScale <= width) return c
+  }
+  return BOARD.minCols
+}
+
+/**
  * The road, as the Figma draws it: an orthogonal run through every space with
  * rounded corners, not a straight line between centers. Consecutive spaces
- * share a row or a column except at the two turns, where the path keeps its
- * current heading to the corner and then breaks — which is what puts spaces 4
- * and 8 on the vertical legs.
+ * share a row or a column except at the turns, where the path keeps its current
+ * heading to the corner and then breaks.
  */
-export function roadPath(spaces = SPACES, r = BOARD.corner) {
-  const pts = spaces.map((s) => ({ x: s.x, y: s.y }))
+export function roadPath(points, r = BOARD.corner) {
+  const pts = points.map((p) => ({ x: p.x, y: p.y }))
   let d = `M ${pts[0].x} ${pts[0].y}`
   // Track heading so a diagonal step becomes "carry on, then turn".
   let horizontal = true
