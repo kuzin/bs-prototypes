@@ -714,6 +714,77 @@ button {
   color: #b45309;
 }
 
+/* ── AI reasoning, folded into a reader's answer ──
+   The strip and the panel are full-bleed inside the bubble's padding, so the
+   reasoning reads as part of the answer rather than a control parked under it.
+   Bottom corners are clipped to the bubble's own radius. */
+/* Every turn is the full width of the transcript. Content-width bubbles resized
+   whenever a reasoning panel opened or closed, which made the whole conversation
+   jump; the avatar and initials dot already say who is speaking. Scoped through
+   `.bw-sm2` because SFR's own `.sm2-bubble` loads after this file and would
+   otherwise win on equal specificity. */
+.bw-sm2 .sm2-conversation .sm2-bubble {
+  flex: 1;
+  max-width: none;
+}
+.bw-sm2 .bw-bubble--reasoned {
+  overflow: hidden;
+  padding-bottom: 0;
+}
+.bw-reason-strip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  width: calc(100% + 28px);
+  margin: 9px -14px 0;
+  padding: 6px 12px 6px 14px;
+  border: 0;
+  border-top: 1px solid rgba(30, 58, 95, 0.12);
+  background: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: #64748b;
+  text-align: left;
+  transition: background 0.14s ease;
+}
+.bw-reason-strip:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+.bw-reason-label {
+  white-space: nowrap;
+}
+/* Pushes the caret to the far edge of the bubble, so the strip reads as a row
+   rather than a button-shaped thing. */
+.bw-reason-caret {
+  margin-left: auto;
+  flex: none;
+  transition: transform 0.16s ease;
+}
+.bw-reason-strip[aria-expanded='true'] .bw-reason-caret {
+  transform: rotate(180deg);
+}
+.bw-reason-body {
+  margin: 0 -14px;
+  padding: 9px 14px 11px;
+  border-top: 1px solid rgba(30, 58, 95, 0.12);
+  background: rgba(255, 255, 255, 0.72);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #475569;
+}
+/* A flagged answer's bubble is red-tinted; its strip and panel follow. */
+.sm2-bubble--flagged .bw-reason-strip,
+.sm2-bubble--flagged .bw-reason-body {
+  border-top-color: rgba(127, 29, 29, 0.14);
+}
+.sm2-bubble--flagged .bw-reason-body {
+  color: #7f1d1d;
+}
+
 /* ─── Session list (educator side) ────────────────────────────────────── */
 .bw-session-list {
   list-style: none;

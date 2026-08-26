@@ -11,7 +11,7 @@ import '../../book-talks/index.css'
 
 // The educator's side: one completed book talk session per talk type, so you can
 // compare what each kind of conversation actually hands back. Open one to see the
-// session modal — Reading Confidence, Benny's Takeaways, and the transcript.
+// session modal — Benny's summary, Reading Confidence, and the transcript.
 export function SessionsView() {
   const [active, setActive] = useState(null)
 

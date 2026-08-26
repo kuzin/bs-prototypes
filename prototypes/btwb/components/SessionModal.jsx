@@ -10,13 +10,12 @@ import {
   TALK_KINDS,
   CONFIDENCE_META,
   CONFIDENCE_BLURB,
-  TAKEAWAY_META,
   FLAG_DESCS,
   POS_FLAG_DESCS,
   NEG_FLAG_COLORS,
   POS_FLAG_COLORS,
   scriptFor,
-  takeawayFor,
+  confidenceFor,
 } from '../data'
 
 import '@components/Button/Button.css'
@@ -32,8 +31,8 @@ import '../../sfr/components/SessionModal.css'
 // flags in a review stack, a Conversation tab and an Activity tab with notes and
 // a timeline.
 //
-// What's new is *what* Benny reports: a Reading Confidence and written Takeaways
-// instead of a score. Integrity talks are the only type that flags.
+// What's new is *what* Benny reports: a written summary of the talk, plus a Reading
+// Confidence on comprehension talks. Integrity talks are the only type that flags.
 export function SessionModal({ session, onSelectSession, onClose }) {
   const [tab, setTab] = useState('conversation')
   const [noteDraft, setNoteDraft] = useState('')
@@ -51,10 +50,10 @@ export function SessionModal({ session, onSelectSession, onClose }) {
   if (!session) return null
 
   const kind = TALK_KINDS[session.kindId]
-  const t = takeawayFor(session.kindId)
-  // Reading Confidence is an integrity-talk concept, so it renders only when the
-  // talk actually produced one.
-  const confidence = t.confidence ? CONFIDENCE_META[t.confidence] : null
+  // Reading Confidence is a comprehension-talk concept, so it renders only when
+  // the talk actually produced one.
+  const confidenceKey = confidenceFor(session.kindId)
+  const confidence = confidenceKey ? CONFIDENCE_META[confidenceKey] : null
 
   const idx = SESSIONS.findIndex((s) => s.id === session.id)
   const prev = SESSIONS[idx - 1]
@@ -195,20 +194,6 @@ export function SessionModal({ session, onSelectSession, onClose }) {
 
             {tab === 'conversation' ? (
               <>
-                {/* ── Benny's summary — the first thing worth reading ──────── */}
-                <div className="sm2-section">
-                  <div className="sm2-section-head">
-                    <span className="sm2-section-title">Benny’s Summary</span>
-                    <Pill color={kind.color} size="sm">
-                      {kind.short}
-                    </Pill>
-                  </div>
-                  <div className="sm2-prompt bw-sm2-summary">
-                    <img src="/bs-prototypes/benny.png" alt="" className="bw-sm2-summary-benny" />
-                    <p className="sm2-prompt-text">{session.summary}</p>
-                  </div>
-                </div>
-
                 {/* ── Session details ─────────────────────────────────────── */}
                 <div className="sm2-section">
                   <div className="sm2-section-head">
@@ -254,7 +239,21 @@ export function SessionModal({ session, onSelectSession, onClose }) {
                   </div>
                 </div>
 
-                {/* ── Reading Confidence — integrity talks only ───────────── */}
+                {/* ── Benny's summary of the talk ─────────────────────────── */}
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title">Benny’s Summary</span>
+                    <Pill color={kind.color} size="sm">
+                      {kind.short}
+                    </Pill>
+                  </div>
+                  <div className="sm2-prompt bw-sm2-summary">
+                    <img src="/bs-prototypes/benny.png" alt="" className="bw-sm2-summary-benny" />
+                    <p className="sm2-prompt-text">{session.summary}</p>
+                  </div>
+                </div>
+
+                {/* ── Reading Confidence — comprehension talks only ───────── */}
                 {confidence && (
                   <div className="sm2-section">
                     <div className="sm2-section-head">
@@ -272,18 +271,6 @@ export function SessionModal({ session, onSelectSession, onClose }) {
                     <ReviewCard {...confidence} desc={CONFIDENCE_BLURB} />
                   </div>
                 )}
-
-                {/* ── Benny's Takeaways ──────────────────────────────────── */}
-                <div className="sm2-section">
-                  <div className="sm2-section-head">
-                    <span className="sm2-section-title">Benny’s Takeaways</span>
-                    <span className="sm2-section-aside">Not a score — what Benny observed</span>
-                  </div>
-                  <div className="sm2-review-stack">
-                    <ReviewCard {...TAKEAWAY_META.strength} desc={t.strength} />
-                    <ReviewCard {...TAKEAWAY_META.nextStep} desc={t.nextStep} />
-                  </div>
-                </div>
 
                 {/* ── Flags — positive first, then negative, as SFR orders them ── */}
                 {session.positiveFlags.length > 0 && (
@@ -477,7 +464,8 @@ function renderText(text) {
 }
 
 // Sessions for Review's own transcript bubble — Benny left with his avatar, the
-// reader right with an initials dot.
+// reader right with an initials dot. Reader answers carry the model's rationale
+// for how it read the answer, folded into the bubble itself.
 function SessionBubble({ msg, initials }) {
   const isBenny = msg.role === 'benny'
   return (
@@ -486,9 +474,10 @@ function SessionBubble({ msg, initials }) {
       <div
         className={`sm2-bubble${isBenny ? ' sm2-bubble--benny' : ' sm2-bubble--student'}${
           msg.flagged ? ' sm2-bubble--flagged' : ''
-        }`}
+        }${msg.reasoning ? ' bw-bubble--reasoned' : ''}`}
       >
         <span className="sm2-bubble-text">{renderText(msg.text)}</span>
+        {msg.reasoning && <Reasoning text={msg.reasoning} flags={msg.flags} />}
       </div>
       {!isBenny && (
         <div className="sm2-student-dot" aria-hidden="true">
@@ -496,5 +485,42 @@ function SessionBubble({ msg, initials }) {
         </div>
       )}
     </div>
+  )
+}
+
+// Why the model read an answer the way it did — a strip along the bottom of the
+// answer's own bubble rather than a control parked beneath it, so the transcript
+// reads as a conversation with its reasoning attached. Collapsed, the strip is
+// the verdict: the flags this answer raised, or that it raised none. Open, it's
+// the reasoning behind that verdict.
+function Reasoning({ text, flags = [] }) {
+  const [open, setOpen] = useState(false)
+  const lead = flags[0]
+  const label = lead
+    ? `${lead.label}${flags.length > 1 ? ` +${flags.length - 1}` : ''}`
+    : 'No flags'
+  return (
+    <>
+      <button
+        type="button"
+        className="bw-reason-strip"
+        aria-expanded={open}
+        aria-label={`${label} — AI reasoning`}
+        onClick={() => setOpen((v) => !v)}
+      >
+        {lead ? (
+          /* Every flag's glyph, but only the first one's label — two full labels
+             don't fit the width a bubble leaves. */
+          flags.map((f) => <Icon key={f.type} name={f.icon} size={12} stroke={2} color={f.color} />)
+        ) : (
+          <Icon name="sparkles" size={12} stroke={2} />
+        )}
+        <span className="bw-reason-label" style={lead ? { color: lead.color } : undefined}>
+          {label}
+        </span>
+        <Icon name="chevron-down" size={12} stroke={2.2} className="bw-reason-caret" />
+      </button>
+      {open && <p className="bw-reason-body">{text}</p>}
+    </>
   )
 }
