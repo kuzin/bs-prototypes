@@ -95,9 +95,9 @@ export const DEFAULT_SETTINGS = {
 }
 
 // ─── What the educator gets back ─────────────────────────────────────────────
-// Deliberately not another score. Two things: how confident Benny is that the
-// reader actually knew the book, and a short written read — one strength, one
-// next step. Every talk type produces both.
+// Deliberately not another score: a short written summary of the talk, and — on
+// comprehension talks — how confident Benny is that the reader actually knew the
+// book.
 export const CONFIDENCE_LEVELS = [
   { id: 'high', label: 'High', color: '#0D9488' },
   { id: 'moderate', label: 'Moderate', color: '#B45309' },
@@ -126,24 +126,6 @@ export const CONFIDENCE_META = {
     bg: '#FEF2F2',
     border: '#FECACA',
     icon: 'mood-sad',
-  },
-}
-
-// The two takeaway cards.
-export const TAKEAWAY_META = {
-  strength: {
-    label: 'Strength',
-    color: '#16A97A',
-    bg: '#F0FDF4',
-    border: '#BBF7D0',
-    icon: 'circle-check',
-  },
-  nextStep: {
-    label: 'Next Step',
-    color: '#B45309',
-    bg: '#FFFBEB',
-    border: '#FDE68A',
-    icon: 'arrow-right',
   },
 }
 
@@ -206,31 +188,40 @@ export const POS_FLAG_DESCS = {
   },
 }
 
-export const CONFIDENCE_BLURB =
-  'Benny’s confidence that the student demonstrated authentic knowledge of the book.'
-export const TAKEAWAYS_BLURB = 'Instead of another score, Benny summarizes what it observed.'
-
-// Keyed by talk kind. Only the integrity talk carries a `confidence` — Reading
-// Confidence is about whether the reading was authentic, which is that talk's
-// whole job.
-const TAKEAWAYS = {
-  engagement: {
-    strength: 'The student spoke warmly about the book and wanted to recommend it to a friend.',
-    nextStep: 'Offer a read-alike so the enthusiasm carries into the next book.',
-  },
-  integrity: {
-    confidence: 'low',
-    strength: 'The student stayed in the conversation and answered every time Benny asked.',
-    nextStep:
-      'Worth a quick check-in — the answers stayed vague, and one looked like filler rather than recall.',
-  },
-  comprehension: {
-    strength: 'The student identified a meaningful lesson from the story.',
-    nextStep: 'Encourage the student to support their thinking with multiple events from the text.',
-  },
+// A flag id resolved for display: its label, glyph, polarity and color. Positive
+// and negative flags live in separate catalogs, so this is what lets a caller
+// take a bare id — from a session or from a single answer — and render it.
+export const flagMeta = (type) => {
+  const pos = POS_FLAG_DESCS[type]
+  const meta = pos ?? FLAG_DESCS[type]
+  if (!meta)
+    return {
+      type,
+      label: type,
+      desc: '',
+      icon: 'flag',
+      polarity: 'negative',
+      color: NEG_FLAG_COLORS.color,
+    }
+  return {
+    type,
+    ...meta,
+    polarity: pos ? 'positive' : 'negative',
+    color: pos ? POS_FLAG_COLORS.color : NEG_FLAG_COLORS.color,
+  }
 }
 
-export const takeawayFor = (kindId) => TAKEAWAYS[kindId]
+export const CONFIDENCE_BLURB =
+  'Benny’s confidence that the student demonstrated authentic knowledge of the book.'
+
+// Keyed by talk kind. Only the comprehension talk carries a confidence — it's
+// the talk that actually probes what the reader took from the book, so it's the
+// one that can say how confident Benny is in what they knew.
+const CONFIDENCE_BY_KIND = {
+  comprehension: 'high',
+}
+
+export const confidenceFor = (kindId) => CONFIDENCE_BY_KIND[kindId]
 
 // ─── The reader + book the talk demo runs on ─────────────────────────────────
 export const READER = { name: 'Marcus Chen', grade: 4, gradeLabel: '4th grade' }
@@ -246,10 +237,21 @@ export const BOOK = {
 // Scripted per talk kind. Benny opens warmly, works the point of the talk in as
 // conversation rather than as a quiz item, follows up on the answer, then closes. `replies` are the
 // tappable answers the demo offers; the last turn has none.
+//
+// `reasoning` runs parallel to `replies`: for each answer a reader could give,
+// the model's written rationale for how it read that answer. It's the evidence
+// behind the flags and the confidence — third-person analysis of the response,
+// not Benny talking — and it only ever surfaces on the educator's side, folded
+// away under each answer in the transcript.
 const ENGAGEMENT_SCRIPT = [
   {
     benny: 'You finished *The Wild Robot*! Did you like it?',
     replies: ['I loved it', 'It was pretty good', 'It was just okay'],
+    reasoning: [
+      'The student gives an unqualified positive reaction, and the phrasing reads as genuine enthusiasm rather than a shrug. On its own it carries no detail about what they liked — the follow-up is what will show whether the enthusiasm is grounded in the book.',
+      'A mild positive. The student is engaged enough to answer directly, but the wording is noncommittal and does not yet indicate what held their interest.',
+      'A lukewarm reaction. Not a concern by itself — readers finish books they merely tolerated — but it suggests the book may not have connected, which is worth weighing against what they say stuck with them.',
+    ],
   },
   {
     benny: 'What part stuck with you the most?',
@@ -258,6 +260,11 @@ const ENGAGEMENT_SCRIPT = [
       'When Brightbill learned to fly',
       'The part with the bear',
     ],
+    reasoning: [
+      'The student names the book’s actual ending — Roz is taken from the island after the animals try to defend her — and frames it in emotional terms rather than plot terms. Choosing the climax and attaching feeling to it is a strong engagement signal.',
+      'The student picks a real and specific milestone: Brightbill, the gosling Roz adopts, learning to fly ahead of the migration. Naming a character and an event rather than a general impression shows the story stayed with them.',
+      'The student references the bear encounter, an actual early episode in which Roz is attacked and falls from a cliff. Accurate, but thin — no detail about what happened or why it stuck, so engagement reads as moderate.',
+    ],
   },
   {
     benny: 'Would you recommend it to a friend? Why or why not?',
@@ -265,6 +272,11 @@ const ENGAGEMENT_SCRIPT = [
       'Yes — my friend Jae would love it',
       'Maybe, if they like animals',
       'Probably not, it’s slow at the start',
+    ],
+    reasoning: [
+      'The student recommends the book and pictures a specific person for it. Naming a real friend is a stronger signal than a generic yes — it suggests they thought about who the book is for.',
+      'A conditional recommendation, and a fair read of the book: most of the cast is the island’s animals. Engagement is real but measured — the student is hedging rather than advocating.',
+      'The student declines to recommend it but gives a specific reason — the opening stretch, where Roz activates alone on the island before any of the relationships begin. A critical answer with a reason behind it still demonstrates engagement with the text.',
     ],
   },
   { benny: 'Thanks for talking books with me! I’ll find you another one like it.', replies: [] },
@@ -277,14 +289,29 @@ const INTEGRITY_SCRIPT = [
   {
     benny: 'That’s a lot of reading in one day! What was *The Wild Robot* about?',
     replies: ['It was about a robot', 'Stuff happened, it was good', 'idk'],
+    reasoning: [
+      'Technically accurate — Roz is a ROZZUM unit stranded on a wild island — but this is the level of detail available from the title and the cover alone. It neither demonstrates nor rules out reading.',
+      'The response carries no content. It describes neither plot nor character and could be said about any book, so it offers no evidence of the reading the log claims.',
+      'The student declines to answer a question about the book’s basic subject. Paired with a log above the site’s warning level, that gap is the pattern worth a closer look.',
+    ],
   },
   {
     benny: 'Nice — can you tell me about one thing that happened in it?',
     replies: ['The robot did things on an island', 'asdkfj', 'I don’t remember'],
+    reasoning: [
+      'The setting is right — the story takes place on a remote island — but “did things” names no event. The student is echoing the frame of the question back rather than recalling the plot.',
+      'Not intelligible language. There is no interpretable content in the response, which points to keyboard input rather than an attempt to answer.',
+      'The student cannot recall a single event from the book. For a title logged as finished the same day, the absence of any retrievable plot detail is a meaningful signal.',
+    ],
   },
   {
     benny: 'No problem. Who was your favorite character?',
     replies: ['The robot one', 'I forget the names', 'idk'],
+    reasoning: [
+      'Refers to Roz without naming her, and “the robot” is inferable from the title. The student is identifying a character by category rather than recalling one from the text.',
+      'The student recalls no character names. Roz, Brightbill and Fink are named repeatedly across the book, so this is a notable gap rather than a lapse on a minor detail.',
+      'A third consecutive non-answer on basic recall. Taken together, these turns are the pattern this talk exists to surface.',
+    ],
   },
   { benny: 'Thanks for chatting with me about it!', replies: [] },
 ]
@@ -293,6 +320,11 @@ const COMPREHENSION_SCRIPT = [
   {
     benny: 'You finished *The Wild Robot*! Nice work. Did you like how it ended?',
     replies: ['I loved it', 'It was sad but good', 'It was okay'],
+    reasoning: [
+      'A positive reaction to the ending, but no comprehension content yet — the student has not indicated what actually happens at the end, so this turn establishes sentiment only.',
+      'The student reads the ending as bittersweet, which matches the text: Roz is damaged and carried off the island, away from Brightbill. Holding two feelings at once suggests they followed the ending’s stakes, though they have not cited it directly.',
+      'Noncommittal. The response gives no evidence either way about whether the student understood how the book ends.',
+    ],
   },
   {
     benny:
@@ -302,6 +334,11 @@ const COMPREHENSION_SCRIPT = [
       'That being different is okay',
       'To keep trying even when it’s hard',
     ],
+    reasoning: [
+      'The student states a defensible central theme. A robot raises an orphaned gosling and is taken in by the island’s animals — family in this book is built rather than inherited. This is a thematic inference rather than a plot restatement, which is the harder move.',
+      'A reasonable theme: Roz is the only robot on the island and is feared by the animals before they come to depend on her. Plausible, but broad enough that it could be offered about many books without having read this one.',
+      'A generic moral. Nothing in the text contradicts it — Roz survives a brutal winter and repeated setbacks — but nothing in the phrasing is specific to *The Wild Robot* either.',
+    ],
   },
   {
     benny: 'That’s a big one. What happened in the story that made you think of that?',
@@ -309,6 +346,11 @@ const COMPREHENSION_SCRIPT = [
       'Roz took care of Brightbill even though she wasn’t his real mom',
       'The animals helped her when she was in trouble',
       'I’m not sure, it just felt that way',
+    ],
+    reasoning: [
+      'The student supports the theme with the right supporting event: Roz adopts Brightbill after his nest is destroyed and raises him as her own. Naming both characters and the relationship between them grounds the inference in the text rather than asserting it.',
+      'Accurate — the animals shelter in the lodge Roz builds and defend her when the RECOs come for her. It supports the theme, though the student describes it generally instead of naming a specific scene or character.',
+      'The student cannot connect the theme back to an event in the book. The theme they offered was sound, but without textual support there is no evidence it came from reading rather than from a general impression.',
     ],
   },
   {
@@ -332,7 +374,7 @@ export const scriptFor = (kindId) =>
 // reader-facing modal uses — `picks` chooses which offered answer the student
 // gave, so the integrity example genuinely earns its flags rather than asserting
 // them.
-function buildTranscript(kindId, picks, flaggedTurns = [], leftAfter = null) {
+function buildTranscript(kindId, picks, flagsByTurn = {}, leftAfter = null) {
   const script = scriptFor(kindId)
   const messages = []
   script.forEach((step, i) => {
@@ -341,8 +383,20 @@ function buildTranscript(kindId, picks, flaggedTurns = [], leftAfter = null) {
     if (leftAfter !== null && i > leftAfter) return
     messages.push({ role: 'benny', text: step.benny, emotion: i === 0 ? 'excited' : undefined })
     if (leftAfter !== null && i === leftAfter) return
-    const reply = step.replies?.[picks[i] ?? 0]
-    if (reply) messages.push({ role: 'student', text: reply, flagged: flaggedTurns.includes(i) })
+    const pick = picks[i] ?? 0
+    const reply = step.replies?.[pick]
+    if (reply) {
+      // The flags this specific answer raised — the transcript is where a flag
+      // is traceable to the thing that caused it.
+      const flags = (flagsByTurn[i] ?? []).map(flagMeta)
+      messages.push({
+        role: 'student',
+        text: reply,
+        flags,
+        flagged: flags.some((f) => f.polarity === 'negative'),
+        reasoning: step.reasoning?.[pick],
+      })
+    }
   })
   return messages
 }
@@ -362,6 +416,8 @@ export const SESSIONS = [
     picks: [0, 0, 0],
     positiveFlags: ['positive-sentiment', 'answer-length'],
     flags: [],
+    // Which answer earned which flag, by turn.
+    flagsByTurn: { 0: ['positive-sentiment'], 2: ['answer-length'] },
     changeLog: [
       {
         id: 'e1',
@@ -387,6 +443,7 @@ export const SESSIONS = [
     picks: [0, 0, 0],
     positiveFlags: ['references-details', 'makes-connection'],
     flags: [],
+    flagsByTurn: { 1: ['makes-connection'], 2: ['references-details'] },
     changeLog: [
       {
         id: 'e1',
@@ -415,8 +472,10 @@ export const SESSIONS = [
     leftAfter: 2,
     positiveFlags: [],
     flags: ['unintelligible', 'no-recall', 'minimal', 'quit-early'],
-    // Benny flagged the second and third answers (gibberish, then vague recall).
-    flaggedTurns: [1, 2],
+    // The vague first answer, then gibberish. "Did Not Complete" is deliberately
+    // absent here — no answer caused it, walking away did, so it stays a
+    // session-level flag rather than being pinned on a turn.
+    flagsByTurn: { 0: ['minimal', 'no-recall'], 1: ['unintelligible'] },
     changeLog: [
       {
         id: 'e2',
@@ -439,7 +498,7 @@ export const SESSIONS = [
   },
 ].map((s) => ({
   ...s,
-  messages: buildTranscript(s.kindId, s.picks, s.flaggedTurns, s.leftAfter ?? null),
+  messages: buildTranscript(s.kindId, s.picks, s.flagsByTurn, s.leftAfter ?? null),
   // SFR's flag shape: each carries its own id so cards can be keyed + removed.
   positiveFlags: s.positiveFlags.map((type, i) => ({ id: `${s.id}-p${i}`, type })),
   flags: s.flags.map((type, i) => ({ id: `${s.id}-f${i}`, type })),

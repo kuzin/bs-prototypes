@@ -181,8 +181,8 @@ function SettingsBody({ settings, set, off }) {
 
           {/* Today's behavior, part of the Integrity Suite. No type
               choice at all: this trigger fires *because* a log looks off, and the
-              integrity talk is the only one that reports a Reading Confidence
-              back. It's a switch, not a configuration. */}
+              integrity talk is the only one that flags concerning patterns back.
+              It's a switch, not a configuration. */}
           <SettingRow
             label="Above the warning threshold"
             sub="Benny runs an integrity check-in when a reader logs more than the site’s warning level allows. Unverified readers only."
@@ -197,8 +197,8 @@ function SettingsBody({ settings, set, off }) {
           Book Talks can also be switched on for an individual challenge, in the Challenge Creator’s{' '}
           <span className="bw-inline-strong">Book Talks</span> step — that challenge takes priority
           over these site-wide triggers. Every completed talk lands on your{' '}
-          <span className="bw-inline-strong">Sessions for Review</span> page with Benny’s reading
-          confidence and takeaways.
+          <span className="bw-inline-strong">Sessions for Review</span> page with Benny’s summary of
+          the talk.
         </Banner>
       </section>
     </>
