@@ -162,19 +162,27 @@ export const FLAG_DESCS = {
     label: 'Did Not Complete',
     desc: 'Student exited the conversation before finishing.',
     icon: 'circle-x',
+    // Nothing to explain: the reader closed the chat. See `heuristic` below.
+    heuristic: true,
   },
 }
 
+// `heuristic` marks a flag that fires off a mechanical detector — sentiment,
+// word count, an exit event — rather than off the model reading the answer.
+// Those flags have no rationale to show, which is why some strips in a
+// transcript open and some don't.
 export const POS_FLAG_DESCS = {
   'positive-sentiment': {
     label: 'Positive Sentiment',
     desc: 'Student expressed positive feeling about the text.',
     icon: 'smile',
+    heuristic: true,
   },
   'answer-length': {
     label: 'Long Answer',
     desc: 'Student gave a longer, engaged answer.',
     icon: 'list',
+    heuristic: true,
   },
   'references-details': {
     label: 'References Details',
@@ -191,12 +199,18 @@ export const POS_FLAG_DESCS = {
 // A flag id resolved for display: its label, glyph, polarity and color. Positive
 // and negative flags live in separate catalogs, so this is what lets a caller
 // take a bare id — from a session or from a single answer — and render it.
-export const flagMeta = (type) => {
+//
+// A flag raised on a single answer can also arrive as `{ type, why }`: `why` is
+// the model's rationale for *that* flag on *that* answer. When an answer raises
+// several flags, each one carries its own — one verdict, one piece of evidence.
+export const flagMeta = (flag) => {
+  const { type, why } = typeof flag === 'string' ? { type: flag } : flag
   const pos = POS_FLAG_DESCS[type]
   const meta = pos ?? FLAG_DESCS[type]
   if (!meta)
     return {
       type,
+      why,
       label: type,
       desc: '',
       icon: 'flag',
@@ -205,6 +219,7 @@ export const flagMeta = (type) => {
     }
   return {
     type,
+    why,
     ...meta,
     polarity: pos ? 'positive' : 'negative',
     color: pos ? POS_FLAG_COLORS.color : NEG_FLAG_COLORS.color,
@@ -222,6 +237,10 @@ const CONFIDENCE_BY_KIND = {
 }
 
 export const confidenceFor = (kindId) => CONFIDENCE_BY_KIND[kindId]
+
+// A session can override the default for its kind — a comprehension talk that
+// stalls shouldn't report the same confidence as one that lands.
+export const sessionConfidence = (session) => session.confidence ?? confidenceFor(session.kindId)
 
 // ─── The reader + book the talk demo runs on ─────────────────────────────────
 export const READER = { name: 'Marcus Chen', grade: 4, gradeLabel: '4th grade' }
@@ -389,17 +408,35 @@ function buildTranscript(kindId, picks, flagsByTurn = {}, leftAfter = null) {
       // The flags this specific answer raised — the transcript is where a flag
       // is traceable to the thing that caused it.
       const flags = (flagsByTurn[i] ?? []).map(flagMeta)
+      // Reasoning only ever hangs off a flag: it's the evidence behind a
+      // verdict, so an answer that raised none has nothing to explain and shows
+      // no strip at all. And when the only things that fired are mechanical
+      // detectors — sentiment, word count — there is no prose behind them
+      // either, so those answers get a flag strip with nothing to open.
+      const heuristicOnly = flags.every((f) => f.heuristic)
       messages.push({
         role: 'student',
         text: reply,
         flags,
+        // The bubble carries the verdict: red where a concern was raised, green
+        // where only good signals were, and the plain blue of an answer when
+        // nothing fired at all.
         flagged: flags.some((f) => f.polarity === 'negative'),
-        reasoning: step.reasoning?.[pick],
+        praised: flags.length > 0 && flags.every((f) => f.polarity === 'positive'),
+        reasoning: flags.length && !heuristicOnly ? step.reasoning?.[pick] : undefined,
       })
     }
   })
   return messages
 }
+
+// How many answers in a session raised a given flag. Session-level flags that no
+// single answer caused — "Did Not Complete" is the one — count 0 and render
+// without a multiplier.
+const countTurns = (flagsByTurn = {}, type) =>
+  Object.values(flagsByTurn).filter((turn) =>
+    turn.some((f) => (typeof f === 'string' ? f : f.type) === type),
+  ).length
 
 export const SESSIONS = [
   {
@@ -472,10 +509,39 @@ export const SESSIONS = [
     leftAfter: 2,
     positiveFlags: [],
     flags: ['unintelligible', 'no-recall', 'minimal', 'quit-early'],
-    // The vague first answer, then gibberish. "Did Not Complete" is deliberately
-    // absent here — no answer caused it, walking away did, so it stays a
-    // session-level flag rather than being pinned on a turn.
-    flagsByTurn: { 0: ['minimal', 'no-recall'], 1: ['unintelligible'] },
+    // The vague first answer, then gibberish. Both raise more than one flag, and
+    // each flag carries its own rationale — the strip lists the verdicts, and
+    // opening it shows the evidence behind each one separately.
+    //
+    // "Did Not Complete" is deliberately absent here — no answer caused it,
+    // walking away did, so it stays a session-level flag rather than being
+    // pinned on a turn.
+    flagsByTurn: {
+      0: [
+        {
+          type: 'minimal',
+          why: '“Stuff happened, it was good” is four words of filler and a verdict. Nothing in it is specific to a book.',
+        },
+        {
+          type: 'no-recall',
+          why: 'Asked what the book was about, the student names no character, setting or event — not even the robot in the title.',
+        },
+      ],
+      1: [
+        {
+          type: 'unintelligible',
+          why: '“asdkfj” is not a word in any language the model recognizes; the character run is adjacent keys, which reads as typing rather than answering.',
+        },
+        {
+          type: 'minimal',
+          why: 'Six characters, no content. Whatever the intent, the answer carries no effort to respond to the question.',
+        },
+        {
+          type: 'no-recall',
+          why: 'A second consecutive turn on basic recall with nothing retrieved from the book.',
+        },
+      ],
+    },
     changeLog: [
       {
         id: 'e2',
@@ -496,10 +562,79 @@ export const SESSIONS = [
       },
     ],
   },
+  {
+    id: 'se-4',
+    kindId: 'comprehension',
+    student: { name: 'Aisha Okonkwo', grade: '4th', initials: 'AO', color: '#B45309' },
+    book: BOOK,
+    date: 'Sep 12, 2026',
+    trigger: 'Site-wide setting · book completion',
+    status: 'completed',
+    duration: '2 min 20 sec',
+    // The mixed case: a comprehension talk that goes well and then stalls, so
+    // one transcript carries all three shapes a reasoning strip can take.
+    confidence: 'moderate',
+    summary:
+      'Aisha offered a real theme, but when I asked what in the book made her think it, she couldn’t point to anything. She may have gotten the idea without following the story that carries it.',
+    picks: [1, 1, 2],
+    positiveFlags: ['positive-sentiment', 'makes-connection'],
+    flags: ['no-recall', 'minimal'],
+    flagsByTurn: {
+      // Sentiment only — a mechanical detector, so this answer's strip has
+      // nothing to open.
+      0: ['positive-sentiment'],
+      1: [
+        {
+          type: 'makes-connection',
+          why: 'The student reaches past the plot for an idea about the book: Roz is the only robot on the island and is feared by the animals before they come to depend on her. Broad enough that it could be offered about many books, but framing an answer as a lesson is the move a comprehension talk is looking for.',
+        },
+      ],
+      2: [
+        {
+          type: 'no-recall',
+          why: 'Asked what in the book produced the theme, the student retrieves no scene, character or event. The gap is specifically between the idea and the text it should have come from.',
+        },
+        {
+          type: 'minimal',
+          why: '“It just felt that way” closes the question rather than answering it, and the student does not attempt a second try.',
+        },
+      ],
+    },
+    changeLog: [
+      {
+        id: 'e2',
+        label: 'Flagged for review',
+        icon: 'flag',
+        color: '#DC2626',
+        by: 'Benny',
+        at: 'Sep 12, 10:22 AM',
+        note: 'Theme offered without support from the text.',
+      },
+      {
+        id: 'e1',
+        label: 'Book talk completed',
+        icon: 'circle-check',
+        color: '#16A97A',
+        by: 'Benny',
+        at: 'Sep 12, 10:21 AM',
+      },
+    ],
+  },
 ].map((s) => ({
   ...s,
   messages: buildTranscript(s.kindId, s.picks, s.flagsByTurn, s.leftAfter ?? null),
   // SFR's flag shape: each carries its own id so cards can be keyed + removed.
-  positiveFlags: s.positiveFlags.map((type, i) => ({ id: `${s.id}-p${i}`, type })),
-  flags: s.flags.map((type, i) => ({ id: `${s.id}-f${i}`, type })),
+  // `count` is how many answers raised it — the same flag can fire on several
+  // turns, and the summary card is where that repetition is worth seeing. A
+  // pattern across three answers is a different report than a one-off.
+  positiveFlags: s.positiveFlags.map((type, i) => ({
+    id: `${s.id}-p${i}`,
+    type,
+    count: countTurns(s.flagsByTurn, type),
+  })),
+  flags: s.flags.map((type, i) => ({
+    id: `${s.id}-f${i}`,
+    type,
+    count: countTurns(s.flagsByTurn, type),
+  })),
 }))

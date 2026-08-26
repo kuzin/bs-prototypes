@@ -9,8 +9,10 @@ import '@components/Primitives/Primitives.css'
 // Chat bubbles for the transcript inside the session modal.
 import '../../book-talks/index.css'
 
-// The educator's side: one completed book talk session per talk type, so you can
-// compare what each kind of conversation actually hands back. Open one to see the
+// The educator's side: a completed book talk per talk type, so you can compare
+// what each kind of conversation actually hands back — plus a second
+// comprehension talk, the one that stalls, since a mixed result is where the
+// per-answer flags and their reasoning do the most work. Open one to see the
 // session modal — Benny's summary, Reading Confidence, and the transcript.
 export function SessionsView() {
   const [active, setActive] = useState(null)
@@ -22,7 +24,7 @@ export function SessionsView() {
           <div>
             <h1 className="bw-h1">Book talk sessions</h1>
             <p className="bw-sub">
-              What lands on the educator’s side — one example of each talk type
+              What lands on the educator’s side — each talk type, and what its flags explain
             </p>
           </div>
         </header>

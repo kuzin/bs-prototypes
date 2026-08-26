@@ -714,6 +714,14 @@ button {
   color: #b45309;
 }
 
+/* A flag that fired on more than one answer, counted on its summary card. */
+.bw-flag-count {
+  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  opacity: 0.72;
+}
+
 /* ── AI reasoning, folded into a reader's answer ──
    The strip and the panel are full-bleed inside the bubble's padding, so the
    reasoning reads as part of the answer rather than a control parked under it.
@@ -753,14 +761,34 @@ button {
 .bw-reason-strip:hover {
   background: rgba(255, 255, 255, 0.9);
 }
+/* Heuristic flags have no rationale to open, so the strip drops the caret, the
+   pointer and the hover — it reads as a label on the answer, not a control. */
+.bw-reason-strip--static {
+  cursor: default;
+}
+.bw-reason-strip--static:hover {
+  background: rgba(255, 255, 255, 0.45);
+}
 .bw-reason-label {
   white-space: nowrap;
 }
-/* Pushes the caret to the far edge of the bubble, so the strip reads as a row
+/* The cue and caret sit together at the far edge of the bubble, so the strip
+   reads as a row — verdict on the left, what you can do about it on the right —
    rather than a button-shaped thing. */
-.bw-reason-caret {
+.bw-reason-cue {
   margin-left: auto;
+  padding-left: 10px;
   flex: none;
+  font-weight: 700;
+  color: #94a3b8;
+  white-space: nowrap;
+}
+.bw-reason-strip:hover .bw-reason-cue {
+  color: #64748b;
+}
+.bw-reason-caret {
+  flex: none;
+  color: #94a3b8;
   transition: transform 0.16s ease;
 }
 .bw-reason-strip[aria-expanded='true'] .bw-reason-caret {
@@ -776,6 +804,12 @@ button {
   line-height: 1.6;
   color: #475569;
 }
+/* One flag, one row, one piece of evidence — rows stack, and each opens on its
+   own so an answer that raised three flags can be read a verdict at a time. The
+   strip's own border-top is the divider between them. */
+.bw-reason-row + .bw-reason-row .bw-reason-strip {
+  margin-top: 0;
+}
 /* A flagged answer's bubble is red-tinted; its strip and panel follow. */
 .sm2-bubble--flagged .bw-reason-strip,
 .sm2-bubble--flagged .bw-reason-body {
@@ -783,6 +817,23 @@ button {
 }
 .sm2-bubble--flagged .bw-reason-body {
   color: #7f1d1d;
+}
+
+/* An answer that raised only good signals is tinted the same way, in the
+   positive flag's palette — so the transcript can be skimmed for where a talk
+   went well as easily as for where it went wrong. Blue is left to mean exactly
+   one thing: an answer that raised nothing either way. */
+.bw-sm2 .bw-bubble--praised {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  color: #14532d;
+}
+.bw-bubble--praised .bw-reason-strip,
+.bw-bubble--praised .bw-reason-body {
+  border-top-color: rgba(20, 83, 45, 0.14);
+}
+.bw-bubble--praised .bw-reason-body {
+  color: #14532d;
 }
 
 /* ─── Session list (educator side) ────────────────────────────────────── */

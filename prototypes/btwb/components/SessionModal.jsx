@@ -15,7 +15,7 @@ import {
   NEG_FLAG_COLORS,
   POS_FLAG_COLORS,
   scriptFor,
-  confidenceFor,
+  sessionConfidence,
 } from '../data'
 
 import '@components/Button/Button.css'
@@ -52,7 +52,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
   const kind = TALK_KINDS[session.kindId]
   // Reading Confidence is a comprehension-talk concept, so it renders only when
   // the talk actually produced one.
-  const confidenceKey = confidenceFor(session.kindId)
+  const confidenceKey = sessionConfidence(session)
   const confidence = confidenceKey ? CONFIDENCE_META[confidenceKey] : null
 
   const idx = SESSIONS.findIndex((s) => s.id === session.id)
@@ -404,7 +404,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
 // Sessions for Review's unified review card — a colored icon badge, a colored
 // bold label, a muted description, and an optional trailing action. Mirrored
 // here rather than imported because SFR keeps it private to its own modal.
-function ReviewCard({ icon, color, bg, border, label, desc, action, className = '' }) {
+function ReviewCard({ icon, color, bg, border, label, desc, action, count, className = '' }) {
   return (
     <div
       className={`sm2-review-card${className ? ' ' + className : ''}`}
@@ -417,6 +417,13 @@ function ReviewCard({ icon, color, bg, border, label, desc, action, className = 
         <div className="sm2-review-card-text">
           <div className="sm2-review-card-label" style={{ color }}>
             {label}
+            {/* How many answers raised it — shown only when it's more than one,
+                since a bare "×1" on every card is noise. */}
+            {count > 1 && (
+              <span className="bw-flag-count" style={{ color }}>
+                ×{count}
+              </span>
+            )}
           </div>
           {desc && <div className="sm2-review-card-desc">{desc}</div>}
         </div>
@@ -442,6 +449,7 @@ function FlagCard({ flag, polarity }) {
       {...colors}
       label={meta.label}
       desc={meta.desc}
+      count={flag.count}
       className={isPos ? 'sm2-review-card--pos' : ''}
       action={
         <button className="sm2-review-remove" title="Remove flag">
@@ -474,10 +482,12 @@ function SessionBubble({ msg, initials }) {
       <div
         className={`sm2-bubble${isBenny ? ' sm2-bubble--benny' : ' sm2-bubble--student'}${
           msg.flagged ? ' sm2-bubble--flagged' : ''
-        }${msg.reasoning ? ' bw-bubble--reasoned' : ''}`}
+        }${msg.praised ? ' bw-bubble--praised' : ''}${
+          msg.flags?.length ? ' bw-bubble--reasoned' : ''
+        }`}
       >
         <span className="sm2-bubble-text">{renderText(msg.text)}</span>
-        {msg.reasoning && <Reasoning text={msg.reasoning} flags={msg.flags} />}
+        {msg.flags?.length > 0 && <Reasoning text={msg.reasoning} flags={msg.flags} />}
       </div>
       {!isBenny && (
         <div className="sm2-student-dot" aria-hidden="true">
@@ -490,37 +500,72 @@ function SessionBubble({ msg, initials }) {
 
 // Why the model read an answer the way it did — a strip along the bottom of the
 // answer's own bubble rather than a control parked beneath it, so the transcript
-// reads as a conversation with its reasoning attached. Collapsed, the strip is
-// the verdict: the flags this answer raised, or that it raised none. Open, it's
-// the reasoning behind that verdict.
+// reads as a conversation with its reasoning attached.
+//
+// One row per verdict, always all of them: an answer that raises three flags
+// shows three rows. Hiding the rest behind a "+2" made the count visible but
+// not the flags, which is the thing an educator is scanning for. Only the
+// rationale folds away, and each row folds independently.
+//
+// Reasoning only ever hangs off a flag — it's the evidence behind a verdict, so
+// an unflagged answer carries no strip at all.
+//
+// A row has nothing to open when its flag came from a mechanical detector —
+// sentiment, word count, an exit event. Those verdicts have no prose behind
+// them, so the row is a label rather than a control.
 function Reasoning({ text, flags = [] }) {
-  const [open, setOpen] = useState(false)
-  const lead = flags[0]
-  const label = lead
-    ? `${lead.label}${flags.length > 1 ? ` +${flags.length - 1}` : ''}`
-    : 'No flags'
-  return (
-    <>
-      <button
-        type="button"
-        className="bw-reason-strip"
-        aria-expanded={open}
-        aria-label={`${label} — AI reasoning`}
-        onClick={() => setOpen((v) => !v)}
-      >
-        {lead ? (
-          /* Every flag's glyph, but only the first one's label — two full labels
-             don't fit the width a bubble leaves. */
-          flags.map((f) => <Icon key={f.type} name={f.icon} size={12} stroke={2} color={f.color} />)
-        ) : (
-          <Icon name="sparkles" size={12} stroke={2} />
-        )}
-        <span className="bw-reason-label" style={lead ? { color: lead.color } : undefined}>
-          {label}
+  const [open, setOpen] = useState({})
+  const toggle = (key) => setOpen((o) => ({ ...o, [key]: !o[key] }))
+
+  const rows = flags.map((f) => ({
+    key: f.type,
+    icon: f.icon,
+    color: f.color,
+    label: f.label,
+    // A flag brings its own rationale when an answer raised several and each
+    // needs its own evidence. A lone flag falls back to the model's read of the
+    // whole answer, which is about that flag anyway.
+    body: f.why ?? (flags.length === 1 ? text : undefined),
+  }))
+
+  return rows.map((r) => {
+    const isOpen = Boolean(open[r.key])
+    const face = (
+      <>
+        <Icon name={r.icon} size={12} stroke={2} color={r.color} />
+        <span className="bw-reason-label" style={r.color ? { color: r.color } : undefined}>
+          {r.label}
         </span>
-        <Icon name="chevron-down" size={12} stroke={2.2} className="bw-reason-caret" />
-      </button>
-      {open && <p className="bw-reason-body">{text}</p>}
-    </>
-  )
+        {r.body && (
+          <>
+            {/* Names what opens. The flag is the verdict; this is the offer of
+                the evidence behind it, so a row that can't be opened simply
+                doesn't carry it. */}
+            <span className="bw-reason-cue">{isOpen ? 'Hide' : 'View'} reasoning</span>
+            <Icon name="chevron-down" size={12} stroke={2.2} className="bw-reason-caret" />
+          </>
+        )}
+      </>
+    )
+    return (
+      <div className="bw-reason-row" key={r.key}>
+        {r.body ? (
+          <button
+            type="button"
+            className="bw-reason-strip"
+            aria-expanded={isOpen}
+            aria-label={`${r.label} — AI reasoning`}
+            onClick={() => toggle(r.key)}
+          >
+            {face}
+          </button>
+        ) : (
+          <div className="bw-reason-strip bw-reason-strip--static" title="Detected automatically">
+            {face}
+          </div>
+        )}
+        {isOpen && r.body && <p className="bw-reason-body">{r.body}</p>}
+      </div>
+    )
+  })
 }
