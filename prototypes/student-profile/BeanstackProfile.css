@@ -41,6 +41,18 @@
   }
 }
 
+@keyframes slideOutRight {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes bpFadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
 .bp-profile-wrap {
   position: absolute;
   right: 0;
@@ -51,6 +63,15 @@
   align-items: flex-start;
   z-index: 20;
   animation: slideInRight 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Timing must match `SLIDE_MS` in the JSX, which unmounts after it plays. */
+.bp-profile-wrap--closing {
+  animation: slideOutRight 0.26s cubic-bezier(0.4, 0, 1, 1) forwards;
+}
+
+.bp-shell-overlay--closing {
+  animation: bpFadeOut 0.26s ease forwards;
 }
 
 .bp-profile-wrap--full {
@@ -115,7 +136,7 @@
 
 /* Profile root — fixed width when side panel */
 .bp-root {
-  width: 640px;
+  width: 740px;
   flex-shrink: 0;
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
 }
@@ -126,95 +147,80 @@
 }
 
 /* ─── Root ───────────────────────────────────────────────────────────────── */
+/* Column, so the student header can span the rail as well as the content. */
 .bp-root {
   font-family: var(--font-sans);
   background: #f5f5f5;
   display: flex;
+  flex-direction: column;
   height: 100%;
 }
 
+.bp-root-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+}
+
+/* Mobile-only section switcher — see the `max-width: 699px` block. */
+.bp-mobile-nav {
+  display: none;
+}
+
 /* ─── Left nav ───────────────────────────────────────────────────────────── */
+/* Rows read left-to-right (icon then label) rather than stacking: fourteen
+   stacked items ran to ~1160px, which was a wall. Horizontal rows bring the
+   whole rail under 500px and match the product's own sidebar. */
 .bp-nav {
-  width: 74px;
+  width: 168px;
   background: #fff;
   border-right: 1px solid #eaeaea;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 10px 0;
   flex-shrink: 0;
-  gap: 2px;
+  overflow: hidden;
+}
+
+.bp-nav-items {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 8px 8px 10px;
   overflow-y: auto;
   scrollbar-width: none;
 }
-.bp-nav::-webkit-scrollbar {
+
+.bp-nav-items::-webkit-scrollbar {
   display: none;
 }
-
-/* Overview sits apart from the analysis group below it — it summarises those
-   sections rather than being one of them. */
-.bp-nav-overview {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  padding-bottom: 10px;
-  margin-bottom: 10px;
-  border-bottom: 1px solid #eaeaea;
-}
-
-/* Subgroup container — wraps the four analysis sections under Overview */
-.bp-nav-subgroup {
-  position: relative;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.bp-nav-subgroup::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 2px;
-  background: var(--c-gray-200);
-  border-radius: 0 1px 1px 0;
-  pointer-events: none;
-}
-
-.bp-nav-divider {
-  width: 40px;
-  height: 1px;
-  background: #eaeaea;
-  margin: 6px 0;
-  flex-shrink: 0;
-}
-
 .bp-nav-item {
   width: 100%;
-  min-height: 56px;
+  min-height: 34px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
   cursor: pointer;
   position: relative;
-  gap: 4px;
-  padding: 8px 0;
+  gap: 9px;
+  padding: 6px 9px;
+  border-radius: 8px;
   user-select: none;
 }
 
 .bp-nav-item:hover:not(.bp-nav-item--active) {
-  background: #f9fafb;
+  background: #f4f5f7;
 }
 
 .bp-nav-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  color: #acacac;
-  text-align: center;
+  color: #8a8f98;
   letter-spacing: 0.01em;
-  line-height: 1;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .bp-nav-item--active .bp-nav-label {
@@ -224,17 +230,6 @@
 .bp-nav-item--active {
   background: var(--nav-active-bg, #e6f1ff);
   cursor: default;
-}
-
-.bp-nav-item--active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 10px;
-  bottom: 10px;
-  width: 3px;
-  background: var(--nav-active-color, #1a6dd5);
-  border-radius: 0 2px 2px 0;
 }
 
 /* ─── Panel wrapper (nav sibling, holds header + scrollable content) ────── */
@@ -297,6 +292,9 @@
 .bp-content {
   flex: 1;
   overflow-y: auto;
+  /* Reserve the scrollbar's width even on short tabs, so switching between a
+     long section and a short one doesn't shift the whole page sideways. */
+  scrollbar-gutter: stable;
   padding: 20px;
   display: flex;
   flex-direction: column;
@@ -340,6 +338,12 @@
   font-weight: 800;
   color: #424242;
   margin-bottom: 12px;
+}
+
+.bp-card:not(.bp-card--flush) > .bp-section-heading:first-child {
+  margin: -16px -18px 14px;
+  padding: 15px 18px 13px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
@@ -571,7 +575,7 @@
   margin-top: -2px;
 }
 
-.bp-tiles--stats .bp-tile:last-child:nth-child(odd) {
+.bp-tiles .bp-tile:last-child:nth-child(odd) {
   grid-column: span 2;
 }
 
@@ -832,7 +836,7 @@
   color: #2b7ee5;
 }
 
-/* ─── Benny Says ─────────────────────────────────────────────────────────── */
+/* ─── Benny says ─────────────────────────────────────────────────────────── */
 .bp-benny {
   display: flex;
   gap: 12px;
@@ -870,9 +874,11 @@
 }
 
 /* ─── Recommended Actions ────────────────────────────────────────────────── */
+/* Same title as `.bp-section-heading`, but this card is flush so the padding
+   comes from the title row rather than the card. */
 .bp-actions-title {
-  padding: 14px 18px 10px;
-  font-size: 16px;
+  padding: 15px 18px 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
 }
@@ -992,35 +998,6 @@
   font-size: 13px;
   color: #424242;
   font-weight: 500;
-}
-
-/* ─── Integrity detail ───────────────────────────────────────────────────── */
-.bp-flagged-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f5f5f5;
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin-bottom: 14px;
-}
-
-.bp-flagged-label {
-  font-size: 13px;
-  color: #707070;
-  font-weight: 600;
-}
-
-.bp-flagged-count-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.bp-flagged-count {
-  font-size: 22px;
-  font-weight: 800;
-  color: #424242;
 }
 
 .bp-flag-breakdown {
@@ -1238,61 +1215,6 @@
 }
 
 /* ─── Habits detail ──────────────────────────────────────────────────────── */
-/* ── Streaks panel (two StatCards side-by-side) ── */
-.bp-streaks-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
-/* Sits below the days-read hero inside the Consistency card */
-.bp-streak-hero + .bp-streaks-row {
-  margin-top: 16px;
-  padding-top: 16px;
-  border-top: 1px solid #f0f0f0;
-}
-
-/* ── Streak hero ── */
-.bp-streak-hero {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  margin-top: 4px;
-}
-
-.bp-streak-hero-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.bp-streak-hero-num {
-  font-size: 22px;
-  font-weight: 800;
-  color: #1a1a1a;
-  line-height: 1.1;
-  letter-spacing: -0.3px;
-}
-
-.bp-streak-hero-unit {
-  font-size: 14px;
-  font-weight: 700;
-  color: #acacac;
-  margin-left: 4px;
-}
-
-.bp-streak-hero-sublabel {
-  font-size: 13px;
-  font-weight: 600;
-  color: #acacac;
-  margin-top: 3px;
-}
-
-.bp-streak-hero-right {
-  flex: 1;
-  min-width: 0;
-}
 
 /* ── Habit patterns list ── */
 .bp-habit-patterns {
@@ -1460,9 +1382,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px;
+  padding: 15px 18px 13px;
   border-bottom: 1px solid #f0f0f0;
-  background: #fafafa;
+  background: #fff;
   border-radius: 12px 12px 0 0;
 }
 
@@ -1480,7 +1402,7 @@
 }
 
 .bp-titles-header-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
   display: flex;
@@ -1905,32 +1827,6 @@
   font-weight: 500;
 }
 
-.bp-lexile-summary {
-  background: #f5f5f5;
-  border-radius: 10px;
-  padding: 12px 16px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 12px;
-}
-
-.bp-lexile-summary-label {
-  font-size: 13px;
-  color: #707070;
-  font-weight: 600;
-}
-.bp-lexile-summary-right {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.bp-lexile-avg {
-  font-size: 22px;
-  font-weight: 900;
-  color: #424242;
-}
-
 .bp-coming-soon {
   border: 1.5px dashed #dedede;
   border-radius: 10px;
@@ -1993,33 +1889,6 @@
   font-weight: 700;
   color: var(--c-text-muted);
   text-align: center;
-}
-
-/* ─── RMI Goal row ───────────────────────────────────────────────────────── */
-.bp-rmi-goal-row {
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-}
-
-.bp-rmi-goal-num {
-  font-size: 26px;
-  font-weight: 900;
-  color: var(--c-slate-800);
-  line-height: 1;
-}
-
-.bp-rmi-goal-unit {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-text-muted);
-}
-
-.bp-rmi-goal-desc {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--c-text-subtle);
-  margin-left: 4px;
 }
 
 .bp-rmi-header {
@@ -2311,11 +2180,6 @@
 }
 
 /* ─── Compact nav items (no label, icon only) ────────────────────────────── */
-.bp-nav-item--compact {
-  min-height: 36px;
-  padding: 6px 0;
-}
-
 /* ─── Admin mockup styles ────────────────────────────────────────────────── */
 .bp-adm {
   display: flex;
@@ -2953,19 +2817,6 @@
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.bp-rl-month-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 6px;
-}
-
-.bp-rl-month-label {
-  font-size: 15px;
-  font-weight: 800;
-  color: #1a1a1a;
-}
-
 .bp-rl-month-arrows {
   display: flex;
   gap: 2px;
@@ -2996,23 +2847,51 @@
   flex-direction: column;
 }
 
+/* Table view — title and author stack in one cell */
+.bp-rl-tbl-title {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.bp-rl-tbl-name {
+  font-weight: 800;
+  color: var(--c-blue-700);
+}
+
+.bp-rl-tbl-author {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c-slate-400);
+}
+
+/* Weeks sit inside the card's own padding */
+.bp-rl-body {
+  padding: 2px 18px 14px;
+}
+
+.bp-rl-week:first-child .bp-rl-week-label {
+  border-top: 0;
+}
+
 .bp-rl-week-label {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 10px 0 6px;
+  padding: 12px 0 4px;
   border-top: 1px solid #ebebeb;
 }
 
-/* Day row */
+/* Day row. Days with nothing logged collapse to just their date, so the month
+   scrolls in a fraction of the height. */
 .bp-rl-day {
   display: flex;
   gap: 12px;
-  padding: 6px 0;
+  padding: 4px 0;
   align-items: flex-start;
-  min-height: 36px;
 }
 
 .bp-rl-day--faded .bp-rl-day-num,
@@ -3037,28 +2916,23 @@
 }
 
 .bp-rl-day-name {
-  font-size: 13px;
+  font-size: 12.5px;
   color: #9ca3af;
   font-weight: 600;
-  margin-bottom: 4px;
 }
 
+/* Streak count and flame in one pill */
 .bp-rl-flame {
   display: inline-flex;
   align-items: center;
-  gap: 2px;
-  font-size: 13px;
-  margin-top: 2px;
-}
-
-.bp-rl-flame span {
-  font-size: 13px;
+  gap: 3px;
+  margin-top: 5px;
+  padding: 1px 7px 1px 8px;
+  border-radius: 999px;
+  background: #ffedd5;
+  color: #c2410c;
+  font-size: 12px;
   font-weight: 800;
-  background: #f97316;
-  color: #fff;
-  border-radius: 100px;
-  padding: 0 5px;
-  line-height: 1.5;
 }
 
 /* Entry cards */
@@ -3066,29 +2940,44 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
   min-width: 0;
 }
 
-.bp-rl-empty {
-  font-size: 13px;
-  color: #c4c4c4;
-  font-weight: 500;
-  padding: 6px 2px;
-  font-style: italic;
-}
-
+/* Tinted card with a left accent bar; `--rl-*` swap per state. */
 .bp-rl-entry {
-  background: #fff;
-  border-radius: 8px;
-  padding: 10px 12px;
-  border: 1px solid var(--c-gray-200);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --rl-bg: #e8f1fe;
+  --rl-bar: #2563eb;
+  --rl-title: #1d4ed8;
+
+  background: var(--rl-bg);
+  border-left: 3px solid var(--rl-bar);
+  border-radius: 6px;
+  padding: 8px 10px 9px 11px;
 }
 
 .bp-rl-entry--flagged {
-  background: #fffbeb;
-  border-color: #fcd34d;
+  --rl-bg: #fef6e7;
+  --rl-bar: #d97706;
+  --rl-title: #92400e;
+}
+
+.bp-rl-entry--completed {
+  --rl-bg: #fdeceb;
+  --rl-bar: #dc2626;
+  --rl-title: #b91c1c;
+}
+
+/* The "this book is finished" marker that replaces the amount line */
+.bp-rl-completed {
+  display: inline-block;
+  margin-top: 2px;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: #fbd5d3;
+  color: #991b1b;
+  font-size: 11.5px;
+  font-weight: 800;
 }
 
 .bp-rl-entry-top {
@@ -3096,15 +2985,15 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 6px;
-  margin-bottom: 1px;
 }
 
 .bp-rl-entry-title {
   font-size: 13px;
   font-weight: 800;
-  color: #111827;
+  color: var(--rl-title);
   line-height: 1.3;
   flex: 1;
+  min-width: 0;
 }
 
 .bp-rl-entry-menu {
@@ -3116,30 +3005,34 @@
 }
 
 .bp-rl-flag {
-  color: var(--c-amber-600);
-  font-size: 18px;
-  line-height: 1;
+  display: inline-flex;
+  color: var(--rl-bar);
 }
 
 .bp-rl-dots {
-  font-size: 20px;
+  display: inline-flex;
+  padding: 0;
+  background: none;
+  border: 0;
   color: #9ca3af;
-  letter-spacing: 2px;
   cursor: pointer;
-  line-height: 0.7;
+}
+
+.bp-rl-dots:hover {
+  color: #4b5563;
 }
 
 .bp-rl-entry-author {
-  font-size: 13px;
+  font-size: 12.5px;
   color: #6b7280;
   font-weight: 600;
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .bp-rl-entry-amount {
   font-size: 13px;
   font-weight: 800;
-  color: #374151;
+  color: var(--rl-title);
 }
 
 /* ─── Calendar view ──────────────────────────────────────────────────────── */
@@ -3441,6 +3334,72 @@
     display: flex;
   }
 
+  /* The rail's 168px is most of a phone — swap it for a select + the pager */
+  .bp-nav {
+    display: none;
+  }
+
+  .bp-mobile-nav {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #fff;
+    border-bottom: 1px solid var(--c-gray-200);
+    flex-shrink: 0;
+  }
+
+  .bp-mobile-nav .sel-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* The pager sheds its rail chrome and sits inline beside the select */
+  .bp-mobile-nav .bp-pager {
+    padding: 0;
+    border-top: 0;
+    background: none;
+    gap: 6px;
+  }
+
+  .bp-mobile-nav .bp-pager-btn {
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Tighter page gutters now that the rail is gone */
+  .bp-content {
+    padding: 14px;
+  }
+
+  /* Three medals across is too tight on a phone — names wrapped to three lines */
+  .bp-medal-grid,
+  .bp-latest-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Hero keeps title and action on one line, which collides at phone widths —
+     let the action drop under the title instead. */
+  .bp-content .hero {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .bp-content .hero-action {
+    margin-left: 0;
+    width: 100%;
+  }
+
+  .bp-content .hero-action .tabs {
+    width: 100%;
+  }
+
+  .bp-content .hero-action .tabs .tab {
+    flex: 1;
+    justify-content: center;
+  }
+
   /* ── Admin mockup page: tighten layout for narrow widths ── */
 
   /* Class header: stack identity + buttons vertically */
@@ -3523,17 +3482,16 @@
 /* ─── Overview · Latest titles shelf ──────────────────────────────────────── */
 .bp-latest-head {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+  margin: -16px -18px 14px;
+  padding: 15px 18px 13px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.bp-latest-meta {
-  font-size: 13px;
-  font-weight: 600;
-  color: #9ca3af;
-  margin-top: -6px;
+.bp-latest-head .bp-section-heading {
+  margin-bottom: 0;
 }
 
 .bp-latest-link {
@@ -3638,67 +3596,706 @@
   margin-bottom: calc((var(--app-zoom, 1) - 1) * var(--chart-h, 180px) + 8px);
 }
 
-/* ─── Book talk types ─────────────────────────────────────────────────────── */
-.bp-talk-kinds {
-  display: flex;
-  flex-direction: column;
-}
-
-.bp-talk-kind {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 0;
-  border-top: 1px solid #f0f0f0;
-}
-
 .bp-talk-kind:first-child {
   border-top: none;
   padding-top: 4px;
 }
 
-.bp-talk-kind-icon {
+/* ChartCard writes its own smaller, lighter title — match the rest of the
+   profile's card headings so the tabs don't show two title sizes. */
+.bp-content .rc-card-head {
+  padding: 15px 18px 13px;
+}
+
+.bp-content .rc-card-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: #424242;
+  letter-spacing: 0;
+}
+
+/* ─── Text box challenges ────────────────────────────────────────────────────
+   Prompt + the reader's own answer, one hairline-divided item per response.
+   Same edge-to-edge bleed as the stat rows so the card reads as one list. */
+.bp-tb-item {
+  margin: 0 -18px;
+  padding: 12px 18px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.bp-card > .bp-latest-head + .bp-tb-item {
+  border-top: 0;
+}
+
+.bp-card:not(.bp-card--flush) > .bp-tb-item:last-child {
+  margin-bottom: -16px;
+}
+
+.bp-tb-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bp-tb-prompt {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--c-slate-700);
+  line-height: 1.4;
+}
+
+.bp-tb-date {
+  flex-shrink: 0;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-slate-400);
+  white-space: nowrap;
+}
+
+.bp-tb-answer {
+  margin-top: 5px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--c-slate-600);
+  line-height: 1.55;
+}
+
+/* FilterBar's items have a 200px floor for full-width pages; inside the
+   flyout that stacks two selects onto separate rows. */
+.bp-content .fltr-item {
+  min-width: 140px;
+}
+
+/* SearchInput is built for a horizontal toolbar (`flex: 1`), so dropped into
+   `.bp-content`'s flex *column* it grows to fill the page height. */
+.bp-content > .search-input {
+  flex: 0 0 auto;
+}
+
+/* ─── Achievement & badge medallions ─────────────────────────────────────────
+   Drawn stand-ins for the real illustrated art (so: inline shapes, not glyph
+   icons). Both keep the recognisable disc silhouette and share one grid. */
+.bp-medal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px 12px;
+}
+
+/* Each medal is its own clickable card, matching the real grid. */
+.bp-medal-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 3px;
+  padding: 16px 12px 14px;
+  background: #fff;
+  border: 1px solid var(--c-slate-200);
+  border-radius: 12px;
+  font: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.bp-medal-card:hover {
+  border-color: var(--c-slate-300);
+  box-shadow: 0 1px 6px rgb(15 23 42 / 8%);
+}
+
+.bp-medal-name {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--c-slate-700);
+  line-height: 1.3;
+}
+
+.bp-medal-sub {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c-slate-400);
+  line-height: 1.3;
+}
+
+/* Achievement: a coloured disc with the year on a ribbon across the bottom */
+.bp-medal {
+  position: relative;
+  width: var(--medal-size, 68px);
+  height: var(--medal-size, 68px);
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 9px;
-  flex-shrink: 0;
-  background: var(--kind-tint);
-  color: var(--kind-color);
+  overflow: hidden;
+  background: radial-gradient(
+    circle at 50% 35%,
+    color-mix(in srgb, var(--medal) 22%, white),
+    color-mix(in srgb, var(--medal) 55%, white)
+  );
+  color: var(--medal);
+  border: 2px solid color-mix(in srgb, var(--medal) 65%, white);
 }
 
-.bp-talk-kind-main {
+.bp-medal-glyph {
+  display: flex;
+  margin-bottom: 6px;
+}
+
+/* No year ribbon (activity badges) — the glyph sits centred instead */
+.bp-medal--plain .bp-medal-glyph {
+  margin-bottom: 0;
+}
+
+.bp-medal-year {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 1px 0 2px;
+  background: var(--medal);
+  color: #fff;
+  font-size: calc(var(--medal-size, 68px) * 0.14);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+/* Badge: a stamped seal — value, unit, year. Locked badges go grey. */
+.bp-seal {
+  width: var(--medal-size, 68px);
+  height: var(--medal-size, 68px);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  background: linear-gradient(160deg, #14b8a6, #0d9488);
+  color: #fff;
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 0 2px #0f766e;
+}
+
+.bp-seal--locked {
+  background: linear-gradient(160deg, #b8bfc9, #98a1ad);
+  box-shadow: 0 0 0 2px #8b95a1;
+}
+
+.bp-seal-top {
+  font-size: calc(var(--medal-size, 68px) * 0.22);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.bp-seal-mid {
+  font-size: calc(var(--medal-size, 68px) * 0.118);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  opacity: 0.95;
+}
+
+.bp-seal-year {
+  font-size: calc(var(--medal-size, 68px) * 0.132);
+  font-weight: 800;
+  opacity: 0.85;
+}
+
+/* ─── Profile pager ──────────────────────────────────────────────────────────
+   Fixed footer on the panel: step to the previous/next student on the page. */
+/* Pinned to the foot of the rail: two icon buttons, names on hover. */
+.bp-pager {
+  flex-shrink: 0;
+  display: flex;
+  gap: 6px;
+  padding: 8px;
+  background: #fff;
+  border-top: 1px solid var(--c-slate-200);
+}
+
+.bp-pager-btn {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  background: none;
+  border: 1px solid var(--c-slate-200);
+  border-radius: 8px;
+  color: var(--c-slate-600);
+  cursor: pointer;
+}
+
+.bp-pager-btn:hover:not(:disabled) {
+  background: var(--c-slate-100);
+  color: var(--c-slate-800);
+}
+
+.bp-pager-btn:disabled {
+  color: var(--c-slate-300);
+  border-color: var(--c-slate-100);
+  cursor: default;
+}
+
+/* ─── Activity badges ────────────────────────────────────────────────────────
+   A flush card of badge rows: name + progress, the badge-level checkbox, and
+   the button that opens its activity list. */
+.bp-act-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 18px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.bp-act-row:first-of-type {
+  border-top: 0;
+}
+
+.bp-act-main {
   flex: 1;
   min-width: 0;
 }
 
-.bp-talk-kind-top {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.bp-talk-kind-label {
-  font-size: 14px;
+.bp-act-name {
+  font-size: 13.5px;
   font-weight: 800;
-  color: #424242;
+  color: var(--c-slate-700);
 }
 
-.bp-talk-kind-read {
+.bp-act-count {
+  margin-top: 1px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-slate-400);
+}
+
+/* ── Challenge rows ──────────────────────────────────────────────────────── */
+.bp-chal-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.bp-chal-row:first-of-type {
+  border-top: 0;
+}
+
+.bp-chal-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.bp-chal-dates {
+  margin-top: 1px;
   font-size: 13px;
   font-weight: 600;
-  color: #9ca3af;
-  margin-top: 2px;
-  line-height: 1.4;
+  color: var(--c-slate-600);
 }
 
-.bp-talk-kind-count {
+.bp-chal-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-slate-400);
+}
+
+.bp-chal-row .bp-latest-link {
+  margin-top: 8px;
+}
+
+/* Enrolment is a state, so it reads as a filled tick rather than a checkbox */
+.bp-chal-enrolled {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  margin-top: 2px;
+  border-radius: 5px;
+  background: #16a34a;
+  color: #fff;
+}
+
+/* ── Activity list modal ─────────────────────────────────────────────────── */
+.bp-act-modal-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 12px 12px 18px;
+  border-bottom: 1px solid var(--c-slate-200);
+}
+
+.bp-act-modal-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--c-slate-800);
+}
+
+.bp-act-modal-cols {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 9px 18px;
+  background: #fafafa;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-slate-500);
+}
+
+.bp-act-modal-body {
+  max-height: min(56vh, 420px);
+  overflow-y: auto;
+}
+
+.bp-act-modal-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  padding: 14px 18px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.bp-act-modal-row:first-child {
+  border-top: 0;
+}
+
+.bp-act-modal-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--c-slate-600);
+  line-height: 1.55;
+}
+
+/* ── Medal detail modal ──────────────────────────────────────────────────── */
+.bp-medal-modal {
+  position: relative;
+  text-align: center;
+  padding: 26px 24px 0;
+}
+
+.bp-medal-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: var(--c-slate-500);
+}
+
+.bp-medal-modal-art {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.bp-medal-modal-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-slate-500);
+}
+
+.bp-medal-modal-headline {
+  margin-top: 3px;
   font-size: 20px;
   font-weight: 900;
-  color: var(--kind-color);
+  color: var(--c-slate-800);
+  letter-spacing: -0.01em;
+}
+
+.bp-medal-modal-note {
+  margin-top: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #15803d;
+  line-height: 1.45;
+}
+
+.bp-medal-modal-foot {
+  margin-top: 22px;
+  padding: 18px 0 22px;
+  border-top: 1px solid var(--c-slate-200);
+}
+
+.bp-medal-modal-btn {
+  width: 100%;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+}
+
+.bp-medal-modal-btn--danger {
+  background: #c0392b;
+}
+
+.bp-medal-modal-btn--danger:hover {
+  background: #a93226;
+}
+
+.bp-medal-modal-btn--primary {
+  background: #2563eb;
+}
+
+.bp-medal-modal-btn--primary:hover {
+  background: #1d4ed8;
+}
+
+/* The product's amber "this won't change the log" caveat */
+.bp-medal-modal-caution {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: #fde9b4;
+  color: #4b3a10;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  text-align: left;
+}
+
+/* ─── Book reviews ───────────────────────────────────────────────────────────
+   One review per card: cover on the left, the reader's words beside it. */
+.bp-review-item {
+  display: flex;
+  gap: 14px;
+}
+
+.bp-review-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.bp-review-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bp-review-title {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--c-slate-700);
+  line-height: 1.3;
+}
+
+.bp-review-text {
+  margin-top: 7px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--c-slate-600);
+  line-height: 1.55;
+}
+
+/* Manage / edit / delete are a card footer: full card width above the bottom
+   edge, behind a hairline, and only colouring up on hover so they don't compete
+   with the reader's words. */
+.bp-review-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 2px;
+  margin: 14px -18px -16px;
+  padding: 8px 12px;
+  border-top: 1px solid #f0f0f0;
+  color: var(--c-slate-400);
+}
+
+.bp-review-actions .icnb:hover {
+  color: var(--c-slate-700);
+}
+
+/* Em dash for a book talk with no flags */
+.bp-talk-noflag {
+  color: var(--c-slate-300);
+  font-weight: 700;
+}
+
+/* ─── Section hero ───────────────────────────────────────────────────────────
+   Scoped to this prototype, not the shared Hero: inside the flyout the rule
+   under the title read as a second panel divider, and the stock 34px gap left
+   the heading floating away from its first card. */
+.bp-content .hero {
+  padding-bottom: 0;
+  margin-bottom: 0;
+  border-bottom: 0;
+}
+
+/* ─── Overview stats ─────────────────────────────────────────────────────────
+   One hairline-divided list carries all seven Overview figures. */
+
+/* Motivator names — the one figure that isn't a number */
+.bp-mv-name {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-slate-700);
+  white-space: nowrap;
+}
+
+.bp-mv-icon {
+  display: inline-flex;
+  align-items: center;
   flex-shrink: 0;
-  line-height: 1;
+  /* motivation accent from the `C` palette — the names are always RMI factors */
+  color: #993c1d;
+}
+
+.bp-statlist {
+  flex-shrink: 0;
+  padding: 14px 0 4px;
+}
+
+/* The heading sits at the card's padding edge; the rows keep their own. */
+.bp-statlist-head {
+  padding: 0 16px 13px;
+  margin-bottom: 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.bp-statlist-head .bp-section-heading {
+  margin-bottom: 0;
+}
+
+.bp-statlist-head + .bp-statrow {
+  border-top: 0;
+}
+
+.bp-statrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 11px 16px;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--c-slate-100);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bp-statrow:first-child {
+  border-top: 0;
+}
+
+/* Standalone summary rows inside another card. They bleed out to the card's
+   edges so their dividers span the full width, exactly like the Overview list,
+   and they don't take the list's hover. */
+.bp-statrow--static {
+  cursor: default;
+}
+
+.bp-statrow--static:hover {
+  background: none;
+}
+
+.bp-card:not(.bp-card--flush) > .bp-statrow--static {
+  /* `width: 100%` is the card's *content* width, so it has to go — otherwise
+     the negative margins slide the row left instead of widening it. */
+  width: auto;
+  margin-left: -18px;
+  margin-right: -18px;
+}
+
+/* The last row sits on the card's bottom edge — no trailing card padding. */
+.bp-card:not(.bp-card--flush) > .bp-statrow--static:last-child {
+  margin-bottom: -16px;
+}
+
+/* The title rule is the first row's divider, so the row drops its own and the
+   heading drops the gap it would leave above the list. */
+.bp-card > .bp-section-heading + .bp-statrow--static {
+  border-top: 0;
+}
+
+.bp-card:has(> .bp-statrow--static) > .bp-section-heading:first-child {
+  margin-bottom: 0;
+}
+
+.bp-card:has(> .bp-tb-item) > .bp-latest-head {
+  margin-bottom: 0;
+}
+
+.bp-medal-grid {
+  margin-top: 2px;
+}
+
+.bp-statrow:hover {
+  background: var(--c-slate-50);
+}
+
+.bp-statrow-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+}
+
+.bp-statrow-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-slate-700);
+}
+
+.bp-statrow-value {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--c-slate-800);
+  line-height: 1.1;
+  white-space: nowrap;
+}
+
+.bp-statrow-unit {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-slate-400);
+}
+
+.bp-statrow-empty {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c-slate-400);
+}
+
+.bp-statrow-motivators {
+  display: flex;
+  gap: 12px;
+}
+
+.bp-statrow-go {
+  flex-shrink: 0;
+  color: var(--c-slate-300);
+  transition: transform 0.12s ease;
+}
+
+.bp-statrow:hover .bp-statrow-go {
+  color: var(--c-slate-500);
+  transform: translateX(2px);
 }

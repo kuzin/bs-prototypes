@@ -13,7 +13,7 @@ export const C = {
 // concepts (motivation/integrity/habits/skills) — only the wording shown to
 // teachers changed, so data, colors, and routes are untouched.
 export const LABEL = {
-  motivation: 'Motivation Index',
+  motivation: 'Motivation',
   integrity: 'Book Talks',
   habits: 'Goals',
   skills: 'Lexile',
