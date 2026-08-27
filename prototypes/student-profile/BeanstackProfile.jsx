@@ -11,15 +11,14 @@ import {
   EXTRINSIC_COLOR,
 } from './components/widgets'
 import { Button } from '@components/Button/Button'
-import { Select } from '@components/Form/Form'
+import { Select, Checkbox } from '@components/Form/Form'
 import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import '@components/Form/Form.css'
 import { Avatar } from '@components/Avatar/Avatar'
-import { IconButton, EmptyState, Divider } from '@components/Primitives/Primitives'
+import { IconButton, EmptyState } from '@components/Primitives/Primitives'
 import { Pill } from '@components/Pill/Pill'
-import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { BarList } from '@components/BarList/BarList'
-import { StatCard, CardNote, ChartCard } from '@components/Cards/Cards'
+import { ChartCard } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
 import '@components/Table/Table.css'
 import { BackBar } from '@components/BackBar/BackBar'
@@ -28,7 +27,9 @@ import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { Icon } from '@components/Icon/Icon'
 import { Flyout } from '@components/Flyout/Flyout'
+import { Modal } from '@components/Modal/Modal'
 import { Tabs } from '@components/Tabs/Tabs'
+import { SearchInput } from '@components/SearchInput/SearchInput'
 import { Hero } from '@components/Hero/Hero'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { ChartLegend } from '@components/charts/charts'
@@ -105,27 +106,39 @@ function DropdownMenu({ items, onClose }) {
 }
 
 // ─── Reusable student action buttons (3-dots + Log + Close) ──────────────────
-function StudentActions({ onClose }) {
-  const dotsItems = [
-    { label: 'Add a Review' },
-    { label: 'Add Notes' },
-    { divider: true },
-    { label: 'Verify Student', icon: '✅', color: '#1D4ED8' },
-    { label: 'Suspend Student', icon: '🚫', danger: true },
-  ]
-  const logItems = [{ label: 'Log Reading' }, { label: 'Log Activities' }]
+// The product's header carries an Actions menu plus three log buttons. The
+// flyout is far narrower than a full page, so the two secondary log actions
+// fold into the primary button's own menu rather than sitting beside it.
+const ACTIONS_ITEMS = [
+  { label: 'Add a Review' },
+  { label: 'Edit Information' },
+  { label: 'Add Notes' },
+  { label: 'Advisory Settings' },
+  { label: 'Recalculate Streaks' },
+  { label: 'Transfer Reader' },
+  { divider: true },
+  { label: 'Delete Reader', danger: true },
+]
+const LOG_ITEMS = [{ label: 'Log Reading' }, { label: 'Log Activities' }]
 
+function StudentActions({ onClose }) {
   return (
     <div className="bp-student-actions">
       <Flyout
         placement="bottom-end"
         trigger={({ toggle }) => (
-          <IconButton variant="ghost" size="md" aria-label="More options" onClick={toggle}>
-            <Icon name="dots-vertical" size={16} aria-hidden="true" />
-          </IconButton>
+          <Button
+            variant="secondary"
+            iconRight={
+              <Icon name="chevron-down" size={11} stroke={2.5} style={{ flexShrink: 0 }} />
+            }
+            onClick={toggle}
+          >
+            Actions
+          </Button>
         )}
       >
-        {({ close }) => <DropdownMenu items={dotsItems} onClose={close} />}
+        {({ close }) => <DropdownMenu items={ACTIONS_ITEMS} onClose={close} />}
       </Flyout>
       <Flyout
         placement="bottom-end"
@@ -141,11 +154,11 @@ function StudentActions({ onClose }) {
           </Button>
         )}
       >
-        {({ close }) => <DropdownMenu items={logItems} onClose={close} />}
+        {({ close }) => <DropdownMenu items={LOG_ITEMS} onClose={close} />}
       </Flyout>
       {onClose && (
         <button className="bp-header-close" onClick={onClose} aria-label="Close profile">
-          <Icon name="x" size={13} />
+          <Icon name="arrow-right" size={15} />
         </button>
       )}
     </div>
@@ -180,63 +193,101 @@ function StudentHeader({ student, onClose }) {
 }
 
 // ─── Left nav ─────────────────────────────────────────────────────────────────
+// One accent per destination, used by BOTH the nav's active state and that
+// page's Hero — they were drifting apart when each page hardcoded its own.
+// The four analysis sections keep the shared `C` palette.
+const SECTION_ACCENT = {
+  overview: { bg: '#F1F5F9', text: '#64748B' },
+  motivation: C.motivation,
+  integrity: C.integrity,
+  habits: C.habits,
+  skills: C.skills,
+  readinglog: { bg: '#E0F2FE', text: '#0284C7' },
+  challenges: { bg: '#FEF3C7', text: '#B45309' },
+  rewards: { bg: '#FCE7F3', text: '#9D174D' },
+  drawings: { bg: '#EEF2FF', text: '#4F46E5' },
+  activities: { bg: '#F1EBFF', text: '#7C3AED' },
+  badges: { bg: '#EFFBF9', text: '#0D9488' },
+  achievements: { bg: '#FFEDD5', text: '#C2410C' },
+  reviews: { bg: '#FFE4E6', text: '#BE123C' },
+  textchallenges: { bg: '#E6F1FF', text: '#1A6DD5' },
+}
+const accentFor = (section) => SECTION_ACCENT[section ?? 'overview'] ?? SECTION_ACCENT.overview
+
+// One flat rail — every destination is labelled and styled the same. The old
+// split (Overview apart, the four analysis sections in a bracketed subgroup,
+// the rest icon-only) made the lower nine look like second-class items you had
+// to hover to identify.
 const NAV_ITEMS = [
   { icon: 'ti-user', section: null, label: 'Overview' },
+  // What the reader actually did comes before the analysis derived from it.
+  { icon: 'ti-reading-log', section: 'readinglog', label: 'Reading Log' },
+  { icon: 'ti-trophy', section: 'challenges', label: 'Challenges' },
   { icon: 'ti-flame', section: 'motivation', label: LABEL.motivation },
   { icon: 'ti-shield-check', section: 'integrity', label: LABEL.integrity },
   { icon: 'ti-calendar-stats', section: 'habits', label: LABEL.habits },
   { icon: 'ti-book-2', section: 'skills', label: LABEL.skills },
-  { divider: true },
-  { icon: 'ti-reading-log', section: 'readinglog', label: 'Reading Log', compact: true },
-  { icon: 'ti-trophy', section: 'challenges', label: 'Challenges', compact: true },
-  { icon: 'ti-gift', section: 'rewards', label: 'Rewards', compact: true },
-  { icon: 'ti-pencil', section: 'drawings', label: 'Drawings', compact: true },
-  { icon: 'ti-puzzle', section: 'activities', label: 'Activities', compact: true },
-  { icon: 'ti-badge', section: 'badges', label: 'Badges', compact: true },
-  { icon: 'ti-certificate', section: 'achievements', label: 'Achievements', compact: true },
-  { icon: 'ti-rating', section: 'reviews', label: 'Reviews', compact: true },
-  { icon: 'ti-paragraph', section: 'textchallenges', label: 'Text Box', compact: true },
+  { icon: 'ti-gift', section: 'rewards', label: 'Rewards' },
+  { icon: 'ti-pencil', section: 'drawings', label: 'Drawings' },
+  { icon: 'ti-puzzle', section: 'activities', label: 'Activities' },
+  { icon: 'ti-badge', section: 'badges', label: 'Badges' },
+  { icon: 'ti-certificate', section: 'achievements', label: 'Achievements' },
+  { icon: 'ti-rating', section: 'reviews', label: 'Reviews' },
+  { icon: 'ti-paragraph', section: 'textchallenges', label: 'Text Box' },
 ]
 const ANALYSIS_SECTIONS = new Set(['motivation', 'integrity', 'habits', 'skills'])
 
-function LeftNav({ activeSection, onNavigate }) {
-  function renderItem(item, idx) {
-    if (item.divider) return <Divider key={`divider-${idx}`} />
-    const { icon, section, label, compact } = item
-    const active = activeSection === section
-    const pal = section ? C[section] : null
-    const activeBg = pal ? pal.bg : '#E6F1FF'
-    const activeColor = pal ? pal.text : '#1A6DD5'
-    return (
-      <div
-        key={label}
-        className={`bp-nav-item${active ? ' bp-nav-item--active' : ''}${compact ? ' bp-nav-item--compact' : ''}`}
-        style={active ? { '--nav-active-bg': activeBg, '--nav-active-color': activeColor } : {}}
-        onClick={() => onNavigate(section)}
-        onKeyDown={(e) => e.key === 'Enter' && onNavigate(section)}
-        role="button"
-        tabIndex={0}
-        title={label}
-        aria-label={label}
-      >
-        <Ic name={icon} size={compact ? 18 : 20} style={{ opacity: active ? 1 : 0.4 }} />
-        {!compact && <span className="bp-nav-label">{label}</span>}
-      </div>
-    )
-  }
-
-  const overviewItem = NAV_ITEMS[0]
-  const subItems = NAV_ITEMS.slice(1, 5) // the four analysis sections
-  const restItems = NAV_ITEMS.slice(5)
-
+function LeftNav({ activeSection, onNavigate, pager }) {
   return (
     <nav className="bp-nav">
-      {/* Overview stands on its own — it summarises the analysis sections rather
-          than being one of them, so it sits outside the grouped rail below. */}
-      <div className="bp-nav-overview">{renderItem(overviewItem, 0)}</div>
-      <div className="bp-nav-subgroup">{subItems.map((item, i) => renderItem(item, i + 1))}</div>
-      {restItems.map((item, i) => renderItem(item, i + 5))}
+      <div className="bp-nav-items">
+        {NAV_ITEMS.map(({ icon, section, label }) => {
+          const active = activeSection === section
+          const pal = accentFor(section)
+          return (
+            <div
+              key={label}
+              className={`bp-nav-item${active ? ' bp-nav-item--active' : ''}`}
+              style={active ? { '--nav-active-bg': pal.bg, '--nav-active-color': pal.text } : {}}
+              onClick={() => onNavigate(section)}
+              onKeyDown={(e) => e.key === 'Enter' && onNavigate(section)}
+              role="button"
+              tabIndex={0}
+              title={label}
+              aria-label={label}
+            >
+              <Ic name={icon} size={18} style={{ opacity: active ? 1 : 0.4 }} />
+              <span className="bp-nav-label">{label}</span>
+            </div>
+          )
+        })}
+      </div>
+      {pager}
     </nav>
+  )
+}
+
+// ─── Mobile section nav ───────────────────────────────────────────────────────
+// Under 700px the 168px rail costs too much of the screen, so it's hidden and
+// this bar takes over: the same fourteen destinations as a select, plus the
+// student pager that normally lives at the foot of the rail.
+function MobileSectionNav({ activeSection, onNavigate, pager }) {
+  return (
+    <div className="bp-mobile-nav">
+      <Select
+        size="sm"
+        aria-label="Profile section"
+        value={activeSection ?? 'overview'}
+        onChange={(e) => onNavigate(e.target.value === 'overview' ? null : e.target.value)}
+      >
+        {NAV_ITEMS.map(({ section, label }) => (
+          <option key={label} value={section ?? 'overview'}>
+            {label}
+          </option>
+        ))}
+      </Select>
+      {pager}
+    </div>
   )
 }
 
@@ -271,44 +322,161 @@ const OVERVIEW_RANGES = [
   { id: 'all', label: 'All Time' },
 ]
 
-// Overview tiles are named for the figure they show, which is not the same as the
-// section they open — the rail and page headings keep `LABEL` (Motivation Index,
-// Book Talks, Goals, Lexile).
-const OVERVIEW_TILE_LABEL = {
-  motivation: 'Top Motivation Factors',
-  integrity: 'Recent Flags',
-  habits: 'Daily Goals',
-  skills: 'Average Lexile',
-}
-
 // Tints for the Overview's habit stats. Deliberately outside the four section
 // palettes in `C` so these don't read as belonging to one of the sections:
 // gold for streaks (matching the gold goal stars), teal for the brand's own
 // accent, slate for elapsed time.
 const STAT_TINTS = {
-  current: { bg: '#FEF3C7', text: '#92400E' },
-  longest: { bg: '#DFF4F7', text: '#0B6B78' },
-  minutes: { bg: '#EEF2F7', text: '#334155' },
+  current: { bg: '#FEF3C7', text: '#92400E', bar: '#D97706' },
+  longest: { bg: '#DFF4F7', text: '#0B6B78', bar: '#0E9AAB' },
+  minutes: { bg: '#EEF2F7', text: '#334155', bar: '#64748B' },
 }
 
-// One tile shape for everything on the Overview — the four section tiles and the
-// habits stats below them — so the page reads as a single grid, not two systems.
-function OverviewTile({ label, accent, onOpen, children }) {
+// ─── Overview stats ───────────────────────────────────────────────────────────
+// The Overview's seven figures are described once here, then rendered as a
+// single hairline-divided list — labels in one column, figures in another, so
+// the whole snapshot scans top to bottom.
+function overviewMetrics(ov) {
+  const days = (n) => (n === 1 ? 'day' : 'days')
+  return [
+    {
+      key: 'motivation',
+      section: 'motivation',
+      icon: 'flame',
+      accent: C.motivation,
+      label: 'Top motivation factor',
+      motivators: ov.motivators?.slice(0, 1),
+      empty: 'No clear motivator found',
+    },
+    {
+      key: 'integrity',
+      section: 'integrity',
+      icon: 'shield-check',
+      accent: C.integrity,
+      label: 'Recent flags',
+      value: ov.flags,
+      unit: ov.flags === 1 ? 'flag' : 'flags',
+    },
+    {
+      key: 'habits',
+      section: 'habits',
+      icon: 'calendar-stats',
+      accent: C.habits,
+      label: 'Daily goals met',
+      value: ov.daysRead > 0 ? ov.daysRead : null,
+      unit: `of ${ov.daysPossible} days`,
+      empty: 'No reading logged',
+    },
+    {
+      key: 'skills',
+      section: 'skills',
+      icon: 'book-2',
+      accent: C.skills,
+      label: 'Average Lexile',
+      value: `${ov.lexile}L`,
+    },
+    {
+      key: 'current',
+      section: 'habits',
+      icon: 'flame',
+      accent: STAT_TINTS.current,
+      label: 'Current streak',
+      value: ov.currentStreak,
+      unit: days(ov.currentStreak),
+    },
+    {
+      key: 'longest',
+      section: 'habits',
+      icon: 'trophy',
+      accent: STAT_TINTS.longest,
+      label: 'Longest streak',
+      value: ov.longestStreak,
+      unit: days(ov.longestStreak),
+    },
+    {
+      key: 'minutes',
+      section: 'habits',
+      icon: 'clock',
+      accent: STAT_TINTS.minutes,
+      label: 'Total minutes read',
+      value: ov.minutes.toLocaleString(),
+      unit: 'min',
+    },
+  ]
+}
+
+// One row shape for every label-and-figure pair in the profile: tinted icon
+// chip, label, then whatever figure the caller passes. With `onOpen` it's a
+// button that opens a section (the Overview list); without it the row is a
+// static summary sitting inside another card.
+function StatRow({ icon, accent, label, children, onOpen }) {
+  const Tag = onOpen ? 'button' : 'div'
   return (
-    <div
-      className="bp-tile"
-      style={{ '--tile-bg': accent.bg, '--tile-text': accent.text }}
-      onClick={onOpen}
-      onKeyDown={(e) => e.key === 'Enter' && onOpen()}
-      role="button"
-      tabIndex={0}
+    <Tag
+      className={`bp-statrow${onOpen ? '' : ' bp-statrow--static'}`}
+      {...(onOpen ? { type: 'button', onClick: onOpen } : {})}
     >
-      <div className="bp-tile-head">
-        <div className="bp-tile-label">{label}</div>
-        {/* Every tile opens its section — the arrow says so without needing a hover */}
-        <Icon name="arrow-right" size={15} className="bp-tile-go" aria-hidden="true" />
+      <span
+        className="bp-statrow-icon"
+        style={{ background: accent.bg, color: accent.bar || accent.text }}
+      >
+        <Icon name={icon} size={16} />
+      </span>
+      <span className="bp-statrow-label">{label}</span>
+      {children}
+      {onOpen && (
+        <Icon name="chevron-right" size={16} className="bp-statrow-go" aria-hidden="true" />
+      )}
+    </Tag>
+  )
+}
+
+// Motivator names carry their own RMI glyph; the key differs from the label for
+// the one two-word factor.
+function MotivatorNames({ names, className }) {
+  return (
+    <div className={className}>
+      {names.map((name) => {
+        const iconKey = name === 'Social Connection' ? 'social' : name.toLowerCase()
+        return (
+          <span key={name} className="bp-mv-name">
+            <span className="bp-mv-icon">
+              {cloneElement(RMI_ICONS[iconKey], { width: 13, height: 13 })}
+            </span>
+            {name}
+          </span>
+        )
+      })}
+    </div>
+  )
+}
+
+function OverviewStats({ metrics, onOpen }) {
+  return (
+    <div className="bp-card bp-statlist">
+      <div className="bp-statlist-head">
+        <SectionHeading>At a glance</SectionHeading>
       </div>
-      <div className="bp-tile-body">{children}</div>
+      {metrics.map((m) => (
+        <StatRow
+          key={m.key}
+          icon={m.icon}
+          accent={m.accent}
+          label={m.label}
+          onOpen={() => onOpen(m.section)}
+        >
+          {m.motivators ? (
+            <MotivatorNames names={m.motivators} className="bp-statrow-motivators" />
+          ) : m.value == null ? (
+            <span className="bp-statrow-empty">{m.empty}</span>
+          ) : (
+            <span className="bp-statrow-value">
+              {m.value}
+              {m.unit && <span className="bp-statrow-unit"> {m.unit}</span>}
+            </span>
+          )}
+        </StatRow>
+      ))}
     </div>
   )
 }
@@ -316,15 +484,15 @@ function OverviewTile({ label, accent, onOpen, children }) {
 function Overview({ student, onNavigate }) {
   const [range, setRange] = useState('year')
   const ov = student.overview[range]
-  const rangeLabel = range === 'year' ? 'this school year' : 'all time'
+  const metrics = overviewMetrics(ov)
 
   return (
     <div className="bp-content">
       <Hero
         icon={<Ic name="ti-user" />}
         title="Overview"
-        accent="#64748B"
-        accentBg="#F1F5F9"
+        accent={SECTION_ACCENT.overview.text}
+        accentBg={SECTION_ACCENT.overview.bg}
         action={
           <Tabs
             variant="pill"
@@ -337,138 +505,19 @@ function Overview({ student, onNavigate }) {
         }
       />
 
-      {/* Benny Says — the summary leads the page */}
+      {/* Benny says — the summary leads the page */}
       <Card>
-        <SectionHeading>Benny Says...</SectionHeading>
+        <SectionHeading>Benny says...</SectionHeading>
         <BennyBubble timestamp={student.lastRun}>{student.bennySummary}</BennyBubble>
       </Card>
 
-      {/* Section tiles — every figure here is scoped to the selected range */}
-      <div className="bp-tiles">
-        {Object.entries(student.sections).map(([key]) => {
-          const c = C[key]
-          const open = () => onNavigate(key)
-
-          if (key === 'motivation') {
-            return (
-              <OverviewTile key={key} label={OVERVIEW_TILE_LABEL[key]} accent={c} onOpen={open}>
-                {ov.motivators ? (
-                  <div className="bp-tile-motivators">
-                    {ov.motivators.map((name) => {
-                      const iconKey = name === 'Social Connection' ? 'social' : name.toLowerCase()
-                      return (
-                        <div key={name} className="bp-tile-motivator-row">
-                          <span className="bp-tile-motivator-icon">
-                            {cloneElement(RMI_ICONS[iconKey], { width: 14, height: 14 })}
-                          </span>
-                          {name}
-                        </div>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <div className="bp-tile-empty">⚠ No clear motivator found</div>
-                )}
-              </OverviewTile>
-            )
-          }
-
-          if (key === 'integrity') {
-            return (
-              <OverviewTile key={key} label={OVERVIEW_TILE_LABEL[key]} accent={c} onOpen={open}>
-                <div className="bp-tile-stat">
-                  {ov.flags}
-                  <span className="bp-tile-unit"> {ov.flags === 1 ? 'Flag' : 'Flags'}</span>
-                </div>
-              </OverviewTile>
-            )
-          }
-
-          if (key === 'habits') {
-            return (
-              <OverviewTile key={key} label={OVERVIEW_TILE_LABEL[key]} accent={c} onOpen={open}>
-                {ov.daysRead > 0 ? (
-                  <div>
-                    <div className="bp-tile-stat">
-                      {ov.daysRead}
-                      <span className="bp-tile-unit"> of {ov.daysPossible} days</span>
-                    </div>
-                    <div className="bp-tile-sub">
-                      {Math.round((ov.daysRead / ov.daysPossible) * 100)}% of school days
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bp-tile-empty">No reading logged</div>
-                )}
-              </OverviewTile>
-            )
-          }
-
-          const up = ov.lexileDelta >= 0
-          return (
-            <OverviewTile key={key} label={OVERVIEW_TILE_LABEL[key]} accent={c} onOpen={open}>
-              <div>
-                <div className="bp-tile-stat">{ov.lexile}L</div>
-                <div className="bp-tile-sub">
-                  {up ? '↑' : '↓'}
-                  {Math.abs(ov.lexileDelta)}L {rangeLabel}
-                </div>
-              </div>
-            </OverviewTile>
-          )
-        })}
-      </div>
-
-      {/* Streaks + minutes — same tile treatment, all of it Goals and Streaks data.
-          Current streak is an as-of-today figure, so only the longest moves with the range. */}
-      <div className="bp-tiles bp-tiles--stats">
-        <OverviewTile
-          label="Current streak"
-          accent={STAT_TINTS.current}
-          onOpen={() => onNavigate('habits')}
-        >
-          <div className="bp-tile-stat">
-            {ov.currentStreak}
-            <span className="bp-tile-unit"> {ov.currentStreak === 1 ? 'day' : 'days'}</span>
-          </div>
-        </OverviewTile>
-        <OverviewTile
-          label="Longest streak"
-          accent={STAT_TINTS.longest}
-          onOpen={() => onNavigate('habits')}
-        >
-          <div>
-            <div className="bp-tile-stat">
-              {ov.longestStreak}
-              <span className="bp-tile-unit"> {ov.longestStreak === 1 ? 'day' : 'days'}</span>
-            </div>
-            <div className="bp-tile-sub">{rangeLabel}</div>
-          </div>
-        </OverviewTile>
-        <OverviewTile
-          label="Total Minutes Read"
-          accent={STAT_TINTS.minutes}
-          onOpen={() => onNavigate('habits')}
-        >
-          <div>
-            <div className="bp-tile-stat">
-              {ov.minutes.toLocaleString()}
-              <span className="bp-tile-unit"> min</span>
-            </div>
-            <div className="bp-tile-sub">{rangeLabel}</div>
-          </div>
-        </OverviewTile>
-      </div>
+      {/* Overview figures — every one is scoped to the selected range */}
+      <OverviewStats metrics={metrics} onOpen={onNavigate} />
 
       {/* Latest titles — covers first, so the shelf reads at a glance */}
       <Card>
         <div className="bp-latest-head">
-          <div>
-            <SectionHeading>Latest titles</SectionHeading>
-            <div className="bp-latest-meta">
-              {ov.booksCompleted} books finished {rangeLabel}
-            </div>
-          </div>
+          <SectionHeading>Latest titles</SectionHeading>
           <button type="button" className="bp-latest-link" onClick={() => onNavigate('readinglog')}>
             Reading Log
             <Icon name="arrow-right" size={14} />
@@ -499,7 +548,7 @@ function Overview({ student, onNavigate }) {
 
       {/* Recommended Actions */}
       <Card flush>
-        <div className="bp-actions-title">Recommended Actions</div>
+        <div className="bp-actions-title">Recommended actions</div>
         {student.recommendedActions.map((action, i) => (
           <div key={i} className="bp-action-item">
             <div className="bp-action-body">
@@ -520,7 +569,9 @@ function SectionDetail({ student, sectionKey }) {
   const firstName = student.name.split(' ')[0]
   return (
     <div className="bp-content">
-      <Hero icon={<Ic name={c.icon} />} title={LABEL[sectionKey]} accent={c.bar} accentBg={c.bg} />
+      {/* `.text` is the palette's on-tint tone (what the nav and every other
+          page's Hero use); `.bar` is the chart-stroke tone, too light here. */}
+      <Hero icon={<Ic name={c.icon} />} title={LABEL[sectionKey]} accent={c.text} accentBg={c.bg} />
       {sectionKey === 'motivation' && <MotivationDetail sec={sec} c={c} />}
       {sectionKey === 'integrity' && <IntegrityDetail sec={sec} c={c} />}
       {sectionKey === 'habits' && <HabitsDetail sec={sec} c={c} />}
@@ -578,20 +629,19 @@ function MotivationDetail({ sec, c }) {
       </Card>
 
       <Card>
-        <SectionHeading>Benny Says...</SectionHeading>
+        <SectionHeading>Benny says...</SectionHeading>
         <BennyBubble>{rmi.bennySummary}</BennyBubble>
       </Card>
 
       <Card>
-        <SectionHeading>Recommended Reading Goal</SectionHeading>
-        <div className="bp-rmi-goal-row">
-          <span className="bp-rmi-goal-num">{rmi.readingGoalMinutes}</span>
-          <span className="bp-rmi-goal-unit"> min/day</span>
-        </div>
+        <SectionHeading>Recommended reading goal</SectionHeading>
+        <StatRow icon="target" accent={c} label="Minutes per day">
+          <span className="bp-statrow-value">{rmi.readingGoalMinutes}</span>
+        </StatRow>
       </Card>
 
       <Card>
-        <SectionHeading>Motivator Rankings</SectionHeading>
+        <SectionHeading>Motivator rankings</SectionHeading>
         <BarList
           items={rmi.rankings.map((m) => {
             const iconKey = m.name === 'Social Connection' ? 'social' : m.name.toLowerCase()
@@ -621,60 +671,17 @@ function MotivationDetail({ sec, c }) {
 // ─── Book talk types ──────────────────────────────────────────────────────────
 // Benny runs three kinds of book talk. `TALK_KINDS` is the canonical definition
 // over in the BTWB prototype (label / color / tint / icon), so the wording and
-// colors here can't drift from it.
+// colors here can't drift from it. The order drives both the talk-type filter
+// and the `Type` pill in the talk list.
 const TALK_ORDER = ['engagement', 'comprehension', 'integrity']
-
-// The one-line read differs per type: engagement measures how it landed,
-// comprehension how well it was understood, integrity whether the log holds up.
-function talkRead(kindId, t) {
-  if (!t.total) return 'No talks yet'
-  if (kindId === 'engagement') {
-    const parts = [
-      t.positive && `${t.positive} positive`,
-      t.mixed && `${t.mixed} mixed`,
-      t.disengaged && `${t.disengaged} disengaged`,
-    ].filter(Boolean)
-    return parts.join(' · ')
-  }
-  if (kindId === 'comprehension') {
-    const parts = [
-      t.strong && `${t.strong} showed strong understanding`,
-      t.developing && `${t.developing} still developing`,
-    ].filter(Boolean)
-    return parts.join(' · ')
-  }
-  return t.concerns === 1 ? '1 raised a concern' : `${t.concerns} raised a concern`
-}
-
-function TalkKindRow({ kind, talk }) {
-  return (
-    <div className="bp-talk-kind" style={{ '--kind-color': kind.color, '--kind-tint': kind.tint }}>
-      <span className="bp-talk-kind-icon">
-        <Icon name={kind.icon} size={17} />
-      </span>
-      <div className="bp-talk-kind-main">
-        <div className="bp-talk-kind-top">
-          <span className="bp-talk-kind-label">{kind.label}</span>
-          {talk.unfinished > 0 && (
-            <Pill color="#B45309" size="sm">
-              {talk.unfinished} unfinished
-            </Pill>
-          )}
-        </div>
-        <div className="bp-talk-kind-read">{talkRead(kind.id, talk)}</div>
-      </div>
-      <div className="bp-talk-kind-count">{talk.total}</div>
-    </div>
-  )
-}
 
 // ─── Integrity detail ─────────────────────────────────────────────────────────
 const SESSION_FLAGS = {
-  'book-swap': { icon: 'ti-swap', label: 'Book transfer', color: '#D97706' },
-  'time-warning': { icon: 'ti-clock', label: 'Time concern', color: '#6B7280' },
-  'btwb-incomplete': { icon: 'ti-signature', label: 'BTWB not completed', color: '#059669' },
-  'missing-details': { icon: 'ti-list', label: 'Missing details', color: '#DC2626' },
-  'over-limit': { icon: 'ti-alert-triangle', label: 'Logged over limit', color: '#D97706' },
+  'book-swap': { icon: 'swap', label: 'Book transfer', color: '#D97706' },
+  'time-warning': { icon: 'clock', label: 'Time concern', color: '#6B7280' },
+  'btwb-incomplete': { icon: 'signature', label: 'BTWB incomplete', color: '#059669' },
+  'missing-details': { icon: 'list', label: 'Missing details', color: '#DC2626' },
+  'over-limit': { icon: 'alert-triangle', label: 'Logged over limit', color: '#D97706' },
 }
 
 function SessionFlag({ type }) {
@@ -682,15 +689,44 @@ function SessionFlag({ type }) {
   if (!cfg) return null
   return (
     <span className="bp-session-flag" title={cfg.label} style={{ '--flag-color': cfg.color }}>
-      <Ic name={cfg.icon} size={15} />
+      <Icon name={cfg.icon} size={15} />
     </span>
   )
+}
+
+// Flag filter values that aren't a single flag type.
+const FLAG_FILTER_ANY = 'any'
+const FLAG_FILTER_NONE = 'none'
+
+// Which flags this student actually drew, most frequent first. Derived from the
+// talk rows rather than an authored breakdown, so the ranking always agrees
+// with the list underneath it.
+function topFlags(talks) {
+  const counts = {}
+  for (const t of talks) for (const f of t.flags) counts[f] = (counts[f] ?? 0) + 1
+  return Object.entries(counts)
+    .map(([type, count]) => ({ type, count, ...SESSION_FLAGS[type] }))
+    .sort((a, b) => b.count - a.count)
 }
 
 function IntegrityDetail({ sec }) {
   const [openSession, setOpenSession] = useState(null)
   const [sessions, setSessions] = useState(SFR_SESSIONS)
+  const [kindFilter, setKindFilter] = useState('all')
+  const [flagFilter, setFlagFilter] = useState(FLAG_FILTER_ANY)
 
+  const talks = sec.bookTalks
+  const flags = topFlags(talks)
+
+  const shown = talks.filter((t) => {
+    if (kindFilter !== 'all' && t.kind !== kindFilter) return false
+    if (flagFilter === FLAG_FILTER_NONE) return t.flags.length === 0
+    if (flagFilter !== FLAG_FILTER_ANY) return t.flags.includes(flagFilter)
+    return true
+  })
+
+  // The modal is fed by the SFR session fixtures, not by these rows — the row
+  // index just picks one, the same stand-in behaviour as before.
   function openRow(rowIdx) {
     setOpenSession(sessions[rowIdx % sessions.length])
   }
@@ -703,58 +739,86 @@ function IntegrityDetail({ sec }) {
   return (
     <>
       <Card>
-        <SectionHeading>Book talks</SectionHeading>
-        <div className="bp-talk-kinds">
-          {TALK_ORDER.map((id) => (
-            <TalkKindRow key={id} kind={TALK_KINDS[id]} talk={sec.talks[id]} />
-          ))}
-        </div>
-      </Card>
-
-      <Card>
-        <SectionHeading>Session integrity</SectionHeading>
-        <div className="bp-flagged-summary">
-          <span className="bp-flagged-label">Flagged sessions</span>
-          <div className="bp-flagged-count-group">
-            <span className="bp-flagged-count">{sec.flaggedSessions}</span>
-          </div>
-        </div>
-        {sec.unfinishedConversations > 0 && (
-          <div className="bp-flagged-summary">
-            <span className="bp-flagged-label">Unfinished book talks</span>
-            <div className="bp-flagged-count-group">
-              <span className="bp-flagged-count">{sec.unfinishedConversations}</span>
-            </div>
-          </div>
+        <SectionHeading>Top flags</SectionHeading>
+        {flags.length > 0 ? (
+          flags.map((f) => (
+            <StatRow
+              key={f.type}
+              icon={f.icon}
+              accent={{ bg: `color-mix(in srgb, ${f.color} 12%, white)`, text: f.color }}
+              label={f.label}
+            >
+              <span className="bp-statrow-value">{f.count}</span>
+            </StatRow>
+          ))
+        ) : (
+          <EmptyState title="No flags raised" />
         )}
       </Card>
 
+      <FilterBar>
+        <FilterItem label="Talk type">
+          <Select size="sm" value={kindFilter} onChange={(e) => setKindFilter(e.target.value)}>
+            <option value="all">All types</option>
+            {TALK_ORDER.map((id) => (
+              <option key={id} value={id}>
+                {TALK_KINDS[id].short}
+              </option>
+            ))}
+          </Select>
+        </FilterItem>
+        <FilterItem label="Flags">
+          <Select size="sm" value={flagFilter} onChange={(e) => setFlagFilter(e.target.value)}>
+            <option value={FLAG_FILTER_ANY}>Any</option>
+            <option value={FLAG_FILTER_NONE}>No flags</option>
+            {flags.map((f) => (
+              <option key={f.type} value={f.type}>
+                {f.label}
+              </option>
+            ))}
+          </Select>
+        </FilterItem>
+      </FilterBar>
+
       <Card flush>
-        <div className="bp-titles-header">
-          <span className="bp-titles-header-label">Flagged sessions</span>
-        </div>
         <Table
           flush
           compact
+          scrollX
           columns={[
-            { key: 'date', label: 'Date', width: 96 },
+            { key: 'date', label: 'Date', width: 84 },
             { key: 'title', label: 'Title' },
+            {
+              key: 'kind',
+              label: 'Type',
+              width: 116,
+              render: (kind) => (
+                <Pill color={TALK_KINDS[kind].color} size="sm">
+                  {TALK_KINDS[kind].short}
+                </Pill>
+              ),
+            },
             {
               key: 'flags',
               label: 'Flags',
               align: 'right',
-              render: (flags) => (
-                <span className="bp-session-flags">
-                  {flags.map((f) => (
-                    <SessionFlag key={f} type={f} />
-                  ))}
-                </span>
-              ),
+              width: 78,
+              render: (rowFlags) =>
+                rowFlags.length ? (
+                  <span className="bp-session-flags">
+                    {rowFlags.map((f) => (
+                      <SessionFlag key={f} type={f} />
+                    ))}
+                  </span>
+                ) : (
+                  <span className="bp-talk-noflag">—</span>
+                ),
             },
           ]}
-          rows={sec.sessions}
+          rows={shown}
           getRowKey={(r, i) => i}
-          onRowClick={(row) => openRow(sec.sessions.indexOf(row))}
+          onRowClick={(row) => openRow(talks.indexOf(row))}
+          empty="No talks match these filters"
         />
       </Card>
 
@@ -836,74 +900,24 @@ function HabitsDetail({ sec, c }) {
           longest streak isn't restated as a separate "personal best" line. */}
       <Card>
         <SectionHeading>Consistency</SectionHeading>
-        <div className="bp-streak-hero">
-          <div className="bp-streak-hero-left">
-            <div>
-              <div className="bp-streak-hero-num">
-                {sec.daysRead30}
-                <span className="bp-streak-hero-unit"> of last 30 days</span>
-              </div>
-              <div className="bp-streak-hero-sublabel">
-                {hasRecentReading
-                  ? `Logged on ${Math.round((sec.daysRead30 / 30) * 100)}% of days`
-                  : 'No reading logged'}
-              </div>
-            </div>
-          </div>
-          <div className="bp-streak-hero-right">
-            {hasRecentReading ? (
-              <ProgressBar value={sec.daysRead30} max={30} color={c.bar} size="sm" />
-            ) : (
-              <CardNote tone="accent">
-                <Ic name="ti-alert-triangle" size={14} /> Worth checking in
-              </CardNote>
-            )}
-          </div>
-        </div>
-        <div className="bp-streaks-row">
-          <StatCard
-            value={sec.currentStreak}
-            unit={sec.currentStreak === 1 ? 'day' : 'days'}
-            label="Current streak"
-            color={c.bar}
-          />
-          <StatCard
-            value={sec.personalBest}
-            unit={sec.personalBest === 1 ? 'day' : 'days'}
-            label="Longest streak"
-            color={c.bar}
-          />
-        </div>
-      </Card>
-
-      {/* Habit patterns */}
-      <Card>
-        <SectionHeading>Reading patterns</SectionHeading>
-        <BarList
-          showBar={false}
-          items={[
-            {
-              label: 'Avg session length',
-              valueLabel: hasRecentReading ? `${sec.avgSessionMins} min` : EMPTY,
-              subValue: hasRecentReading ? 'per sitting' : 'no sessions logged',
-            },
-            {
-              label: 'Days read this month',
-              valueLabel: `${sec.daysReadThisMonth} of ${sec.daysInMonth}`,
-              subValue: `${Math.round((sec.daysReadThisMonth / sec.daysInMonth) * 100)}% consistency`,
-            },
-            {
-              label: 'Longest gap',
-              valueLabel: `${sec.longestGap} ${sec.longestGap === 1 ? 'day' : 'days'}`,
-              subValue: 'without reading',
-            },
-            {
-              label: 'Best reading day',
-              valueLabel: hasMonthReading ? sec.topReadingDay : EMPTY,
-              subValue: hasMonthReading ? 'most consistent' : 'not enough data',
-            },
-          ]}
-        />
+        <StatRow icon="calendar-stats" accent={c} label="Days read">
+          <span className="bp-statrow-value">
+            {sec.daysRead30}
+            <span className="bp-statrow-unit"> of last 30</span>
+          </span>
+        </StatRow>
+        <StatRow icon="flame" accent={c} label="Current streak">
+          <span className="bp-statrow-value">
+            {sec.currentStreak}
+            <span className="bp-statrow-unit"> {sec.currentStreak === 1 ? 'day' : 'days'}</span>
+          </span>
+        </StatRow>
+        <StatRow icon="trophy" accent={c} label="Longest streak">
+          <span className="bp-statrow-value">
+            {sec.personalBest}
+            <span className="bp-statrow-unit"> {sec.personalBest === 1 ? 'day' : 'days'}</span>
+          </span>
+        </StatRow>
       </Card>
 
       {/* Heatmap */}
@@ -931,6 +945,32 @@ function HabitsDetail({ sec, c }) {
       >
         <ReadingHeatmap goalMinutes={goal} color={c.bar} data={sec.heatmapData} />
       </ChartCard>
+
+      {/* Habit patterns */}
+      <Card>
+        <SectionHeading>Reading patterns</SectionHeading>
+        <StatRow icon="clock" accent={c} label="Avg session length">
+          <span className="bp-statrow-value">
+            {hasRecentReading ? sec.avgSessionMins : EMPTY}
+            {hasRecentReading && <span className="bp-statrow-unit"> min</span>}
+          </span>
+        </StatRow>
+        <StatRow icon="calendar-event" accent={c} label="Days read this month">
+          <span className="bp-statrow-value">
+            {sec.daysReadThisMonth}
+            <span className="bp-statrow-unit"> of {sec.daysInMonth}</span>
+          </span>
+        </StatRow>
+        <StatRow icon="history" accent={c} label="Longest gap">
+          <span className="bp-statrow-value">
+            {sec.longestGap}
+            <span className="bp-statrow-unit"> {sec.longestGap === 1 ? 'day' : 'days'}</span>
+          </span>
+        </StatRow>
+        <StatRow icon="star-filled" accent={c} label="Best reading day">
+          <span className="bp-statrow-value">{hasMonthReading ? sec.topReadingDay : EMPTY}</span>
+        </StatRow>
+      </Card>
     </>
   )
 }
@@ -956,13 +996,59 @@ function niceLexileAxis(values, targetTicks = 5) {
 }
 
 // ─── Skills detail ────────────────────────────────────────────────────────────
+// A signed Lexile delta, coloured the way it reads: up is good, down isn't.
+function LexileDelta({ value, suffix }) {
+  const up = value >= 0
+  return (
+    <Pill color={up ? '#16A34A' : '#DC2626'} size="sm">
+      {up ? '↑' : '↓'}
+      {Math.abs(value)}L{suffix ? ` ${suffix}` : ''}
+    </Pill>
+  )
+}
+
 function SkillsDetail({ sec, c }) {
-  const deltaUp = sec.monthlyDelta >= 0
   const lexileAxis = niceLexileAxis([...sec.lexileHistory.map((d) => d.avg), sec.gradeLevel])
+
+  // Every figure below is derived from the titles and the history already on
+  // the page — nothing authored separately that could drift from the chart.
+  const topTitle = sec.titles.reduce((a, b) => (b.lexile > a.lexile ? b : a))
+  const vsGrade = sec.monthlyAvg - sec.gradeLevel
+  const history = sec.lexileHistory
+  const growth = history[history.length - 1].avg - history[0].avg
+  const firstMonth = history[0].month
+
   return (
     <>
       <Card>
-        <SectionHeading>Lexile Trend</SectionHeading>
+        <SectionHeading>Lexile summary</SectionHeading>
+        <StatRow icon="book-2" accent={c} label="Monthly average">
+          <span className="bp-statrow-value">{sec.monthlyAvg}L</span>
+          <LexileDelta value={sec.monthlyDelta} suffix="vs Apr" />
+        </StatRow>
+        <StatRow icon="arrow-up" accent={c} label="Highest logged recently">
+          <span className="bp-statrow-value">{topTitle.lexile}L</span>
+          <Pill color="#64748B" size="sm">
+            {topTitle.title}
+          </Pill>
+        </StatRow>
+        <StatRow icon="target" accent={c} label={`Vs. ${sec.gradeLevelLabel || 'grade level'}`}>
+          <span className="bp-statrow-value">{sec.gradeLevel}L</span>
+          <LexileDelta value={vsGrade} />
+        </StatRow>
+        <StatRow icon="trending-up" accent={c} label="Growth this year">
+          <span className="bp-statrow-value">
+            {growth >= 0 ? '+' : '−'}
+            {Math.abs(growth)}L
+          </span>
+          <Pill color="#64748B" size="sm">
+            since {firstMonth}
+          </Pill>
+        </StatRow>
+      </Card>
+
+      <Card>
+        <SectionHeading>Lexile trend</SectionHeading>
         <div className="bp-chart-fit" style={{ '--chart-h': '180px' }}>
           <TrendChart
             type="line"
@@ -994,16 +1080,6 @@ function SkillsDetail({ sec, c }) {
             { color: '#9CA3AF', label: sec.gradeLevelLabel || 'Grade level', dashed: true },
           ]}
         />
-        <div className="bp-lexile-summary">
-          <span className="bp-lexile-summary-label">Monthly Lexile average</span>
-          <div className="bp-lexile-summary-right">
-            <span className="bp-lexile-avg">{sec.monthlyAvg}L</span>
-            <Pill color={deltaUp ? '#16A34A' : '#DC2626'} size="sm">
-              {deltaUp ? '↑' : '↓'}
-              {Math.abs(sec.monthlyDelta)}L vs Apr
-            </Pill>
-          </div>
-        </div>
       </Card>
 
       <div className="bp-titles-section">
@@ -1028,6 +1104,319 @@ const STUDENTS = {
     name: 'Marcus Chen',
     grade: '7th Grade',
     lastRun: 'May 15 at 9:55am',
+    rewards: [
+      { name: 'Free Book Coupon', claimed: true },
+      { name: 'Beanstack Bookmark', claimed: true },
+      { name: 'Front-of-Lunch-Line Pass', claimed: true },
+      { name: 'Library Tote Bag', claimed: false },
+    ],
+    drawings: [
+      { name: 'Logging Week 2', claimed: true },
+      { name: 'Spring Reading -- April', claimed: true },
+      { name: 'Shout Out', claimed: false },
+    ],
+    challenges: [
+      {
+        name: 'Spring Reading Challenge 2025',
+        dates: 'Mar 1, 2025 - May 31, 2025',
+        startedOn: 'March 3, 2025',
+        minutes: 2140,
+        status: 'current',
+      },
+      {
+        name: 'Read Across America',
+        dates: 'Ongoing',
+        startedOn: 'March 2, 2025',
+        minutes: 480,
+        status: 'current',
+      },
+      {
+        name: 'Winter Reading Bingo',
+        dates: 'Jan 6, 2025 - Feb 28, 2025',
+        startedOn: 'January 8, 2025',
+        minutes: 1620,
+        status: 'ended',
+      },
+      {
+        name: 'Summer Reading 2024',
+        dates: 'Jun 1, 2024 - Aug 31, 2024',
+        startedOn: 'June 4, 2024',
+        minutes: 3010,
+        status: 'past',
+      },
+    ],
+    // Activity badges from the site's exploration challenge: each badge is a set
+    // of activities the reader checks off.
+    activityBadges: [
+      {
+        name: 'Space',
+        icon: 'rocket',
+        color: '#4F46E5',
+        activities: [
+          {
+            text: 'Watch a live feed from the International Space Station and write down one thing you saw that surprised you.',
+            done: true,
+          },
+          {
+            text: "Read a book or article about a planet you couldn't point to on a map. What is one fact you didn't know?",
+            done: true,
+          },
+          {
+            text: 'Find out what time the ISS passes over your town tonight, then go outside and look for it.',
+            done: false,
+          },
+        ],
+      },
+      {
+        name: 'American Landmark',
+        icon: 'building-monument',
+        color: '#B45309',
+        activities: [
+          {
+            text: 'Pick an American landmark and find out who built it and why. Was it built for the reason you expected?',
+            done: true,
+          },
+          {
+            text: 'Take a virtual tour of a national monument and describe the view from the top.',
+            done: false,
+          },
+        ],
+      },
+      {
+        name: 'Museums',
+        icon: 'building-arch',
+        color: '#7C3AED',
+        activities: [
+          {
+            text: 'Browse a museum collection online and pick the one object you would most want to see in person. Why that one?',
+            done: true,
+          },
+          {
+            text: 'Find a museum within an hour of where you live that you have never visited. What is it known for?',
+            done: true,
+          },
+        ],
+      },
+      {
+        name: 'Aquarium',
+        icon: 'fish',
+        color: '#0891B2',
+        activities: [
+          {
+            text: 'Come see the fish, sea jellies, turtles, and more at the magnificent Monterey Bay Aquarium. Watch the animals swim, glide, and soar, and even take a peek outside the aquarium to see wildlife in its natural habitat. Which animal did you most enjoy visiting?',
+            done: false,
+          },
+          {
+            text: 'Climb, click, and spin your way through the National Aquarium in Baltimore. Each level offers a variety of sea life, as well as a rainforest exhibit. Spot fish, sharks, and jellies through their live cams.',
+            done: false,
+          },
+        ],
+      },
+      {
+        name: 'National Parks',
+        icon: 'trees',
+        color: '#15803D',
+        activities: [
+          {
+            text: 'Pick a national park and find out which animals live there that live nowhere else.',
+            done: false,
+          },
+          {
+            text: 'Read a park ranger interview or blog post. What is the strangest part of the job?',
+            done: false,
+          },
+          {
+            text: 'Plan a one-day visit to a national park you could actually get to. What would you do first?',
+            done: false,
+          },
+        ],
+      },
+      {
+        name: 'Zoo',
+        icon: 'paw',
+        color: '#16A34A',
+        activities: [
+          {
+            text: 'Watch a zoo live cam for ten minutes and describe what the animals actually did — not what you expected them to do.',
+            done: false,
+          },
+          { text: 'Find out what one zoo animal eats in a day. Were you close?', done: false },
+        ],
+      },
+    ],
+    // Site-wide seasonal achievements the reader earned, newest first.
+    achievements: [
+      {
+        name: 'Book Publishers Day 2026',
+        date: 'Jan 16, 2026',
+        icon: 'building',
+        color: '#2563EB',
+      },
+      {
+        name: "Author Louisa May Alcott's Birthday 2025",
+        date: 'Nov 29, 2025',
+        icon: 'writing',
+        color: '#7C3AED',
+      },
+      {
+        name: 'National Cookbook Month 2025',
+        date: 'Oct 1, 2025',
+        icon: 'apple',
+        color: '#D97706',
+      },
+      { name: 'Dear Diary Day 2025', date: 'Sep 22, 2025', icon: 'notebook', color: '#DB2777' },
+      {
+        name: 'National Read a Book Day 2025',
+        date: 'Sep 7, 2025',
+        icon: 'book',
+        color: '#0D9488',
+      },
+      {
+        name: 'Library Card Sign-Up Month 2025',
+        date: 'Sep 1, 2025',
+        icon: 'barcode',
+        color: '#DC2626',
+      },
+    ],
+    // Logging milestones and challenge badges. `earned` splits the two tabs;
+    // `kind` drives the category filter.
+    badges: [
+      {
+        name: '100 Books | 2025',
+        detail: 'Read 100 books',
+        kind: 'logging',
+        earned: true,
+        top: '100',
+        mid: 'BOOKS',
+        earnedNote: 'Earned for reading 100 books in the 2025 school year',
+        year: '2025',
+      },
+      {
+        name: '10,000 Minutes | 2025',
+        detail: 'Read 10,000 minutes',
+        kind: 'logging',
+        earned: true,
+        top: '10,000',
+        mid: 'MINUTES',
+        earnedNote: 'Earned for logging 10,000 minutes in the 2025 school year',
+        year: '2025',
+      },
+      {
+        name: '180 Days | 2025',
+        detail: 'Log 180 days',
+        kind: 'logging',
+        earned: true,
+        top: '180',
+        mid: 'DAYS',
+        earnedNote: 'Earned for logging on 180 days in the 2025 school year',
+        year: '2025',
+      },
+      {
+        name: 'Book Chatter | 2025',
+        detail: 'Finish 10 book talks',
+        kind: 'challenge',
+        earned: true,
+        top: '10',
+        mid: 'TALKS',
+        earnedNote: 'Earned for finishing 10 book talks in Spring Reading Challenge 2025',
+        year: '2025',
+      },
+      {
+        name: '365 Days | 2025',
+        detail: 'Log 365 days',
+        kind: 'logging',
+        earned: false,
+        top: '365',
+        mid: 'DAYS',
+        year: '2025',
+      },
+      {
+        name: '15,000 Minutes | 2025',
+        detail: 'Read 15,000 minutes',
+        kind: 'logging',
+        earned: false,
+        top: '15,000',
+        mid: 'MINUTES',
+        year: '2025',
+      },
+      {
+        name: 'Genre Explorer | 2025',
+        detail: 'Finish a book in 8 genres',
+        kind: 'challenge',
+        earned: false,
+        top: '8',
+        mid: 'GENRES',
+        year: '2025',
+      },
+    ],
+    // Book reviews the reader wrote and published to the site.
+    reviews: [
+      {
+        isbn: '9781451673319',
+        title: 'Fahrenheit 451',
+        author: 'Ray Bradbury',
+        date: '05/06/25',
+        text: "Read this for the spring challenge and it's stuck with me more than anything else I've read this year. The part that got me wasn't the book burning, it was that nobody made them do it — everyone just stopped wanting to read on their own. Montag's wife with the earbuds in all day felt way too close to home. The ending is kind of confusing but I think that's on purpose.",
+      },
+      {
+        isbn: '9780451526342',
+        title: 'Animal Farm',
+        author: 'George Orwell',
+        date: '03/30/25',
+        text: 'Short but it does a lot. I did not see the ending coming even though looking back it was obvious the whole time. Would recommend if you like books where the animals are actually about something else.',
+      },
+      {
+        isbn: '9780399501487',
+        title: 'Lord of the Flies',
+        author: 'William Golding',
+        date: '01/19/25',
+        text: 'Everyone in my class hated this book but I thought it was good. Piggy deserved better.',
+      },
+    ],
+    // Text box challenge responses, newest challenge first. Prompts are authored
+    // by the site; answers are what the reader typed, so they read like a
+    // 7th-grader who is genuinely into the books.
+    textChallenges: [
+      {
+        challenge: 'Spring Reading Challenge 2025',
+        responses: [
+          {
+            date: '05/09/25',
+            prompt:
+              'Look back at everything you read for this challenge. What was the weirdest or most unexpected thing you learned?',
+            answer:
+              'That Bradbury wrote Fahrenheit 451 in a library basement on a typewriter you had to pay a dime to use. The whole book cost him like $9.80.',
+          },
+          {
+            date: '04/21/25',
+            prompt: 'Finally read a book from your TBR pile! Which did you choose?',
+            answer: "A Wrinkle in Time. It's been on my shelf since 5th grade.",
+          },
+          {
+            date: '04/02/25',
+            prompt: 'Did the critics get it right?',
+            answer:
+              "Mostly. Everyone says Ender's Game is about war but I think it's really about adults lying to kids to get them to do things.",
+          },
+        ],
+      },
+      {
+        challenge: 'Winter Reading Bingo',
+        responses: [
+          {
+            date: '02/14/25',
+            prompt: 'What did you read?',
+            answer: 'The Hobbit, chapters 1-6. Got to the trolls.',
+          },
+          {
+            date: '01/28/25',
+            prompt: 'Recommend a book to someone in your class. Who and why?',
+            answer:
+              "I'd give Ender's Game to Tyler because it moves fast and there's a lot of fighting in it.",
+          },
+        ],
+      },
+    ],
     // Overview stats per range. `daysPossible` counts school days: ~172 so far
     // this year, ~344 across the two years of logging history.
     overview: {
@@ -1161,7 +1550,6 @@ const STUDENTS = {
         status: 'Strong',
         flaggedSessions: 1,
         flagDelta: -2,
-        flagBreakdown: [{ type: 'Time concern', count: 1 }],
         unfinishedConversations: 0,
         // Talks held, by type. `unfinished` sums to `unfinishedConversations`.
         talks: {
@@ -1171,7 +1559,18 @@ const STUDENTS = {
         },
         tileStat: '1',
         tileSub: 'flag ↓2',
-        sessions: [{ date: '03/14/25', title: "Ender's Game", flags: ['time-warning'] }],
+        // The 8 most recent of the 18 talks held. `flags` is what the Reading
+        // Integrity check raised on the session behind the talk — most are clean.
+        bookTalks: [
+          { date: '05/12/25', title: 'The Hobbit', kind: 'engagement', flags: [] },
+          { date: '05/06/25', title: 'The Hobbit', kind: 'comprehension', flags: [] },
+          { date: '04/28/25', title: 'A Wrinkle in Time', kind: 'engagement', flags: [] },
+          { date: '04/19/25', title: 'A Wrinkle in Time', kind: 'comprehension', flags: [] },
+          { date: '04/08/25', title: "Ender's Game", kind: 'engagement', flags: [] },
+          { date: '03/26/25', title: "Ender's Game", kind: 'comprehension', flags: [] },
+          { date: '03/14/25', title: "Ender's Game", kind: 'integrity', flags: ['time-warning'] },
+          { date: '03/02/25', title: 'Fahrenheit 451', kind: 'engagement', flags: [] },
+        ],
         actions: [
           {
             title: "Marcus's integrity is exemplary — acknowledge it",
@@ -1373,6 +1772,256 @@ const STUDENTS = {
     name: 'Anne Boonchuy',
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
+    rewards: [
+      { name: 'Beanstack Bookmark', claimed: true },
+      { name: 'Free Book Coupon', claimed: false },
+    ],
+    drawings: [
+      { name: 'Logging Week 2', claimed: true },
+      { name: 'Shout Out', claimed: false },
+    ],
+    challenges: [
+      {
+        name: 'Spring Reading Challenge 2025',
+        dates: 'Mar 1, 2025 - May 31, 2025',
+        startedOn: 'March 11, 2025',
+        minutes: 760,
+        status: 'current',
+      },
+      {
+        name: 'Winter Reading Bingo',
+        dates: 'Jan 6, 2025 - Feb 28, 2025',
+        startedOn: 'January 21, 2025',
+        minutes: 540,
+        status: 'ended',
+      },
+      {
+        name: 'Summer Reading 2024',
+        dates: 'Jun 1, 2024 - Aug 31, 2024',
+        startedOn: 'July 2, 2024',
+        minutes: 610,
+        status: 'past',
+      },
+    ],
+    activityBadges: [
+      {
+        name: 'Aquarium',
+        icon: 'fish',
+        color: '#0891B2',
+        activities: [
+          {
+            text: 'Come see the fish, sea jellies, turtles, and more at the magnificent Monterey Bay Aquarium. Watch the animals swim, glide, and soar, and even take a peek outside the aquarium to see wildlife in its natural habitat. Which animal did you most enjoy visiting?',
+            done: true,
+          },
+          {
+            text: 'Climb, click, and spin your way through the National Aquarium in Baltimore. Each level offers a variety of sea life, as well as a rainforest exhibit. Spot fish, sharks, and jellies through their live cams.',
+            done: true,
+          },
+        ],
+      },
+      {
+        name: 'National Parks',
+        icon: 'trees',
+        color: '#15803D',
+        activities: [
+          {
+            text: 'Pick a national park and find out which animals live there that live nowhere else.',
+            done: true,
+          },
+          {
+            text: 'Read a park ranger interview or blog post. What is the strangest part of the job?',
+            done: false,
+          },
+          {
+            text: 'Plan a one-day visit to a national park you could actually get to. What would you do first?',
+            done: false,
+          },
+        ],
+      },
+      {
+        name: 'Zoo',
+        icon: 'paw',
+        color: '#16A34A',
+        activities: [
+          {
+            text: 'Watch a zoo live cam for ten minutes and describe what the animals actually did — not what you expected them to do.',
+            done: true,
+          },
+          { text: 'Find out what one zoo animal eats in a day. Were you close?', done: false },
+        ],
+      },
+      {
+        name: 'Museums',
+        icon: 'building-arch',
+        color: '#7C3AED',
+        activities: [
+          {
+            text: 'Browse a museum collection online and pick the one object you would most want to see in person. Why that one?',
+            done: false,
+          },
+          {
+            text: 'Find a museum within an hour of where you live that you have never visited. What is it known for?',
+            done: false,
+          },
+        ],
+      },
+      {
+        name: 'Space',
+        icon: 'rocket',
+        color: '#4F46E5',
+        activities: [
+          {
+            text: 'Watch a live feed from the International Space Station and write down one thing you saw that surprised you.',
+            done: false,
+          },
+          {
+            text: "Read a book or article about a planet you couldn't point to on a map. What is one fact you didn't know?",
+            done: false,
+          },
+          {
+            text: 'Find out what time the ISS passes over your town tonight, then go outside and look for it.',
+            done: false,
+          },
+        ],
+      },
+    ],
+    achievements: [
+      { name: 'Dear Diary Day 2025', date: 'Sep 22, 2025', icon: 'notebook', color: '#DB2777' },
+      {
+        name: 'National Read a Book Day 2025',
+        date: 'Sep 7, 2025',
+        icon: 'book',
+        color: '#0D9488',
+      },
+      {
+        name: 'Library Card Sign-Up Month 2025',
+        date: 'Sep 1, 2025',
+        icon: 'barcode',
+        color: '#DC2626',
+      },
+    ],
+    badges: [
+      {
+        name: '25 Books | 2025',
+        detail: 'Read 25 books',
+        kind: 'logging',
+        earned: true,
+        top: '25',
+        mid: 'BOOKS',
+        earnedNote: 'Earned for reading 25 books in the 2025 school year',
+        year: '2025',
+      },
+      {
+        name: '2,500 Minutes | 2025',
+        detail: 'Read 2,500 minutes',
+        kind: 'logging',
+        earned: true,
+        top: '2,500',
+        mid: 'MINUTES',
+        earnedNote: 'Earned for logging 2,500 minutes in the 2025 school year',
+        year: '2025',
+      },
+      {
+        name: '60 Days | 2025',
+        detail: 'Log 60 days',
+        kind: 'logging',
+        earned: true,
+        top: '60',
+        mid: 'DAYS',
+        earnedNote: 'Earned for logging on 60 days in the 2025 school year',
+        year: '2025',
+      },
+      {
+        name: '50 Books | 2025',
+        detail: 'Read 50 books',
+        kind: 'logging',
+        earned: false,
+        top: '50',
+        mid: 'BOOKS',
+        year: '2025',
+      },
+      {
+        name: '5,000 Minutes | 2025',
+        detail: 'Read 5,000 minutes',
+        kind: 'logging',
+        earned: false,
+        top: '5,000',
+        mid: 'MINUTES',
+        year: '2025',
+      },
+      {
+        name: 'Book Chatter | 2025',
+        detail: 'Finish 10 book talks',
+        kind: 'challenge',
+        earned: false,
+        top: '10',
+        mid: 'TALKS',
+        year: '2025',
+      },
+    ],
+    reviews: [
+      {
+        isbn: '9780689840920',
+        title: 'Hatchet',
+        author: 'Gary Paulsen',
+        date: '05/04/25',
+        text: 'I liked this book a lot. Brian has to figure out everything by himself which made me think about what I would do, and honestly I would not have made it past the first week. The part with the porcupine was gross. My favorite part was when he finally got the fire started because you could tell how much it mattered to him.',
+      },
+      {
+        isbn: '9780618662369',
+        title: 'The Giver',
+        author: 'Lois Lowry',
+        date: '02/25/25',
+        text: 'This book was confusing at the start because you dont know whats going on but then it all makes sense. I still dont totally get the ending though. My sister says nobody does.',
+      },
+      {
+        isbn: '9780140348101',
+        title: 'My Side of the Mountain',
+        author: 'Jean Craighead George',
+        date: '11/12/24',
+        text: 'If you liked Hatchet you will like this one too. There is a falcon!!',
+      },
+    ],
+    textChallenges: [
+      {
+        challenge: 'Spring Reading Challenge 2025',
+        responses: [
+          {
+            date: '05/11/25',
+            prompt:
+              'Look back at everything you read for this challenge. What was the weirdest or most unexpected thing you learned?',
+            answer:
+              "That Karana's island is real!! It's called San Nicolas Island and there really was a woman who lived there by herself for 18 years.",
+          },
+          {
+            date: '05/01/25',
+            prompt: 'Did the critics get it right?',
+            answer: 'Kind of? Everyone said Hatchet was scary but I thought it was more sad.',
+          },
+          {
+            date: '04/12/25',
+            prompt: 'What did you end up reading about?',
+            answer: 'survival',
+          },
+        ],
+      },
+      {
+        challenge: 'Winter Reading Bingo',
+        responses: [
+          {
+            date: '02/20/25',
+            prompt: 'Finally read a book from your TBR pile! Which did you choose?',
+            answer: 'The Giver',
+          },
+          {
+            date: '01/30/25',
+            prompt: 'How did you find it and why did you pick it?',
+            answer:
+              'My sister had it from her class last year and the cover looked kind of creepy so I wanted to see what it was about.',
+          },
+        ],
+      },
+    ],
     overview: {
       year: {
         motivators: ['Recognition', 'Social Connection'],
@@ -1542,10 +2191,6 @@ const STUDENTS = {
         status: 'Improving',
         flaggedSessions: 4,
         flagDelta: -3,
-        flagBreakdown: [
-          { type: "Didn't cite details", count: 3 },
-          { type: 'Logged above limit', count: 1 },
-        ],
         unfinishedConversations: 2,
         talks: {
           engagement: { total: 8, unfinished: 1, positive: 5, mixed: 3, disengaged: 0 },
@@ -1559,19 +2204,38 @@ const STUDENTS = {
         },
         tileStat: '4',
         tileSub: 'flags ↓3',
-        sessions: [
-          { date: '05/13/25', title: 'Island of the Blue Dolphins', flags: ['time-warning'] },
-          { date: '05/10/25', title: 'Island of the Blue Dolphins', flags: ['btwb-incomplete'] },
+        // 10 most recent of 13 talks; 4 carry flags, matching `flaggedSessions`.
+        bookTalks: [
+          { date: '05/13/25', title: 'Island of the Blue Dolphins', kind: 'engagement', flags: [] },
+          {
+            date: '05/10/25',
+            title: 'Island of the Blue Dolphins',
+            kind: 'comprehension',
+            flags: ['btwb-incomplete'],
+          },
           {
             date: '05/07/25',
             title: 'Hatchet',
-            flags: ['time-warning', 'missing-details', 'btwb-incomplete'],
+            kind: 'integrity',
+            flags: ['time-warning', 'missing-details'],
           },
-          { date: '05/02/25', title: 'Hatchet', flags: ['btwb-incomplete'] },
-          { date: '04/28/25', title: 'The Giver', flags: ['book-swap', 'time-warning'] },
-          { date: '04/22/25', title: 'The Giver', flags: ['book-swap'] },
-          { date: '04/15/25', title: 'Hatchet', flags: ['time-warning', 'missing-details'] },
-          { date: '04/10/25', title: 'Hatchet', flags: ['time-warning'] },
+          { date: '05/02/25', title: 'Hatchet', kind: 'engagement', flags: [] },
+          {
+            date: '04/28/25',
+            title: 'The Giver',
+            kind: 'integrity',
+            flags: ['book-swap', 'time-warning'],
+          },
+          { date: '04/22/25', title: 'The Giver', kind: 'engagement', flags: [] },
+          {
+            date: '04/15/25',
+            title: 'Hatchet',
+            kind: 'comprehension',
+            flags: ['missing-details'],
+          },
+          { date: '04/10/25', title: 'Hatchet', kind: 'engagement', flags: [] },
+          { date: '04/03/25', title: 'Because of Winn-Dixie', kind: 'engagement', flags: [] },
+          { date: '03/27/25', title: 'Because of Winn-Dixie', kind: 'comprehension', flags: [] },
         ],
         actions: [
           {
@@ -1774,6 +2438,186 @@ const STUDENTS = {
     name: 'Tyler Voss',
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
+    rewards: [{ name: 'Beanstack Bookmark', claimed: false }],
+    drawings: [{ name: 'Logging Week 2', claimed: false }],
+    challenges: [
+      {
+        name: 'Spring Reading Challenge 2025',
+        dates: 'Mar 1, 2025 - May 31, 2025',
+        startedOn: 'April 9, 2025',
+        minutes: 120,
+        status: 'current',
+      },
+      {
+        name: 'Winter Reading Bingo',
+        dates: 'Jan 6, 2025 - Feb 28, 2025',
+        startedOn: 'February 14, 2025',
+        minutes: 95,
+        status: 'ended',
+      },
+    ],
+    activityBadges: [
+      {
+        name: 'Zoo',
+        icon: 'paw',
+        color: '#16A34A',
+        activities: [
+          {
+            text: 'Watch a zoo live cam for ten minutes and describe what the animals actually did — not what you expected them to do.',
+            done: true,
+          },
+          { text: 'Find out what one zoo animal eats in a day. Were you close?', done: false },
+        ],
+      },
+      {
+        name: 'Aquarium',
+        icon: 'fish',
+        color: '#0891B2',
+        activities: [
+          {
+            text: 'Come see the fish, sea jellies, turtles, and more at the magnificent Monterey Bay Aquarium. Watch the animals swim, glide, and soar, and even take a peek outside the aquarium to see wildlife in its natural habitat. Which animal did you most enjoy visiting?',
+            done: false,
+          },
+          {
+            text: 'Climb, click, and spin your way through the National Aquarium in Baltimore. Each level offers a variety of sea life, as well as a rainforest exhibit. Spot fish, sharks, and jellies through their live cams.',
+            done: false,
+          },
+        ],
+      },
+      {
+        name: 'Museums',
+        icon: 'building-arch',
+        color: '#7C3AED',
+        activities: [
+          {
+            text: 'Browse a museum collection online and pick the one object you would most want to see in person. Why that one?',
+            done: false,
+          },
+          {
+            text: 'Find a museum within an hour of where you live that you have never visited. What is it known for?',
+            done: false,
+          },
+        ],
+      },
+      {
+        name: 'Space',
+        icon: 'rocket',
+        color: '#4F46E5',
+        activities: [
+          {
+            text: 'Watch a live feed from the International Space Station and write down one thing you saw that surprised you.',
+            done: false,
+          },
+          {
+            text: "Read a book or article about a planet you couldn't point to on a map. What is one fact you didn't know?",
+            done: false,
+          },
+          {
+            text: 'Find out what time the ISS passes over your town tonight, then go outside and look for it.',
+            done: false,
+          },
+        ],
+      },
+    ],
+    achievements: [
+      {
+        name: 'Library Card Sign-Up Month 2025',
+        date: 'Sep 1, 2025',
+        icon: 'barcode',
+        color: '#DC2626',
+      },
+    ],
+    badges: [
+      {
+        name: '5 Books | 2025',
+        detail: 'Read 5 books',
+        kind: 'logging',
+        earned: true,
+        top: '5',
+        mid: 'BOOKS',
+        earnedNote: 'Earned for reading 5 books in the 2025 school year',
+        year: '2025',
+      },
+      {
+        name: '10 Books | 2025',
+        detail: 'Read 10 books',
+        kind: 'logging',
+        earned: false,
+        top: '10',
+        mid: 'BOOKS',
+        year: '2025',
+      },
+      {
+        name: '500 Minutes | 2025',
+        detail: 'Read 500 minutes',
+        kind: 'logging',
+        earned: false,
+        top: '500',
+        mid: 'MINUTES',
+        year: '2025',
+      },
+      {
+        name: '30 Days | 2025',
+        detail: 'Log 30 days',
+        kind: 'logging',
+        earned: false,
+        top: '30',
+        mid: 'DAYS',
+        year: '2025',
+      },
+      {
+        name: 'Book Chatter | 2025',
+        detail: 'Finish 10 book talks',
+        kind: 'challenge',
+        earned: false,
+        top: '10',
+        mid: 'TALKS',
+        year: '2025',
+      },
+    ],
+    reviews: [
+      {
+        isbn: '9780374332662',
+        title: 'Holes',
+        author: 'Louis Sachar',
+        date: '05/09/25',
+        text: 'it was good',
+      },
+      {
+        isbn: '9780545581608',
+        title: 'Dog Man',
+        author: 'Dav Pilkey',
+        date: '03/06/25',
+        text: 'funny. I read all of them already but this one is the best one',
+      },
+    ],
+    // Tyler answers the prompts, but barely — the same low-effort pattern as his
+    // unfinished book talks.
+    textChallenges: [
+      {
+        challenge: 'Spring Reading Challenge 2025',
+        responses: [
+          {
+            date: '05/12/25',
+            prompt:
+              'Look back at everything you read for this challenge. What was the weirdest or most unexpected thing you learned?',
+            answer: 'idk',
+          },
+          { date: '05/03/25', prompt: 'What did you read?', answer: 'Holes' },
+          { date: '04/24/25', prompt: 'Did the critics get it right?', answer: 'yes' },
+        ],
+      },
+      {
+        challenge: 'Winter Reading Bingo',
+        responses: [
+          {
+            date: '02/18/25',
+            prompt: 'Finally read a book from your TBR pile! Which did you choose?',
+            answer: 'the one and only ivan. my teacher picked it',
+          },
+        ],
+      },
+    ],
     overview: {
       year: {
         motivators: null,
@@ -1905,11 +2749,6 @@ const STUDENTS = {
         status: 'Watch',
         flaggedSessions: 13,
         flagDelta: 5,
-        flagBreakdown: [
-          { type: 'Logged above limit', count: 6 },
-          { type: "Didn't cite details", count: 4 },
-          { type: 'Suspicious length', count: 3 },
-        ],
         unfinishedConversations: 7,
         talks: {
           engagement: { total: 5, unfinished: 3, positive: 1, mixed: 2, disengaged: 2 },
@@ -1923,33 +2762,56 @@ const STUDENTS = {
         },
         tileStat: '13',
         tileSub: 'flags ↑5',
-        sessions: [
-          { date: '05/13/25', title: 'Holes', flags: ['over-limit', 'missing-details'] },
-          { date: '05/10/25', title: 'Holes', flags: ['over-limit', 'btwb-incomplete'] },
+        // Tyler's talks skew to integrity triggers and almost all carry flags —
+        // the one clean row keeps the "No flags" filter honest for him too.
+        bookTalks: [
+          {
+            date: '05/13/25',
+            title: 'Holes',
+            kind: 'integrity',
+            flags: ['over-limit', 'missing-details'],
+          },
+          {
+            date: '05/10/25',
+            title: 'Holes',
+            kind: 'engagement',
+            flags: ['over-limit', 'btwb-incomplete'],
+          },
           {
             date: '05/08/25',
             title: 'Holes',
+            kind: 'integrity',
             flags: ['over-limit', 'time-warning', 'btwb-incomplete'],
           },
           {
             date: '04/30/25',
             title: 'The One and Only Bob',
+            kind: 'comprehension',
             flags: ['missing-details', 'btwb-incomplete'],
           },
-          { date: '04/25/25', title: 'The One and Only Bob', flags: ['over-limit'] },
+          {
+            date: '04/25/25',
+            title: 'The One and Only Bob',
+            kind: 'integrity',
+            flags: ['over-limit'],
+          },
+          { date: '04/22/25', title: 'The One and Only Bob', kind: 'engagement', flags: [] },
           {
             date: '04/18/25',
             title: 'The One and Only Ivan',
+            kind: 'integrity',
             flags: ['time-warning', 'btwb-incomplete'],
           },
           {
             date: '04/10/25',
             title: 'The One and Only Ivan',
+            kind: 'comprehension',
             flags: ['missing-details', 'btwb-incomplete'],
           },
           {
             date: '04/02/25',
             title: 'The One and Only Ivan',
+            kind: 'integrity',
             flags: ['over-limit', 'time-warning'],
           },
         ],
@@ -2189,13 +3051,16 @@ const RL_DATA = [
             author: 'Jonny Garza Villa',
             amount: '1,000 Minutes',
             flagged: true,
+            lexile: 'HL610L',
           },
           {
             title: 'Found',
             author: 'Margaret Peterson Haddix',
             amount: '23 Minutes',
             flagged: false,
+            lexile: '700L',
           },
+          { title: 'Found', author: 'Margaret Peterson Haddix', completed: true, lexile: '700L' },
         ],
       },
       { date: 15, day: 'Monday', entries: [] },
@@ -2212,7 +3077,14 @@ const RL_DATA = [
         day: 'Thursday',
         streak: 2,
         entries: [
-          { title: 'Snapdragon', author: 'Kat Leyh', amount: '512 Minutes', flagged: true },
+          {
+            title: 'Snapdragon',
+            author: 'Kat Leyh',
+            amount: '512 Minutes',
+            flagged: true,
+            lexile: 'GN390L',
+          },
+          { title: 'Snapdragon', author: 'Kat Leyh', completed: true, lexile: 'GN390L' },
         ],
       },
       {
@@ -2225,6 +3097,7 @@ const RL_DATA = [
             author: 'Margaret Peterson Haddix',
             amount: '18 Minutes',
             flagged: false,
+            lexile: '700L',
           },
         ],
       },
@@ -2246,6 +3119,7 @@ const RL_DATA = [
             author: 'Jonny Garza Villa',
             amount: '921 Minutes',
             flagged: true,
+            lexile: 'HL610L',
           },
         ],
       },
@@ -2285,76 +3159,859 @@ const RL_DATA = [
 ]
 
 // ─── Reading Log page ─────────────────────────────────────────────────────────
+// Entry state drives the card's colour: finished books read red with a
+// Completed pill, integrity-flagged sessions amber, everything else blue.
 function RLEntryCard({ entry }) {
+  const tone = entry.completed
+    ? ' bp-rl-entry--completed'
+    : entry.flagged
+      ? ' bp-rl-entry--flagged'
+      : ''
   return (
-    <div className={`bp-rl-entry${entry.flagged ? ' bp-rl-entry--flagged' : ''}`}>
+    <div className={`bp-rl-entry${tone}`}>
       <div className="bp-rl-entry-top">
         <div className="bp-rl-entry-title">{entry.title}</div>
         <div className="bp-rl-entry-menu">
-          {entry.flagged && <span className="bp-rl-flag">⚑</span>}
-          <span className="bp-rl-dots">···</span>
+          {entry.flagged && (
+            <span className="bp-rl-flag" title="Flagged">
+              <Icon name="flag" size={14} />
+            </span>
+          )}
+          <button type="button" className="bp-rl-dots" aria-label="Entry actions">
+            <Icon name="dots" size={16} />
+          </button>
         </div>
       </div>
       <div className="bp-rl-entry-author">{entry.author}</div>
-      <div className="bp-rl-entry-amount">{entry.amount}</div>
+      {entry.completed ? (
+        <span className="bp-rl-completed">Completed</span>
+      ) : (
+        <div className="bp-rl-entry-amount">{entry.amount}</div>
+      )}
     </div>
   )
 }
 
+// The product offers the same month two ways: grouped by day, or as a flat
+// table of every logged unit. `RL_ROWS` is the second one — one row per unit,
+// which is how Beanstack stores them (5 minutes / 1 day / 1 book are separate
+// entries against the same sitting). Sorted newest first: the week grouping
+// hid that `RL_DATA`'s day order isn't strictly descending, but a flat list
+// shows it.
+const RL_MONTH = { label: 'July 2024', mm: '07', yyyy: '2024' }
+
+const RL_ROWS = RL_DATA.flatMap((week) =>
+  week.days.flatMap((day) =>
+    day.entries.map((e) => ({
+      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yyyy}`,
+      title: e.title,
+      author: e.author,
+      unit: e.completed ? '1 book' : e.amount.toLowerCase(),
+      lexile: e.lexile ?? null,
+      flagged: !!e.flagged,
+    })),
+  ),
+).sort((a, b) => b.date.localeCompare(a.date))
+
+const RL_VIEWS = [
+  { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
+  { id: 'table', label: 'Table', icon: <Icon name="layout-grid" size={15} /> },
+]
+
+function ReadingLogTable() {
+  return (
+    <Table
+      flush
+      compact
+      scrollX
+      columns={[
+        { key: 'date', label: 'Date', width: 96 },
+        {
+          key: 'title',
+          label: 'Title',
+          render: (title, row) => (
+            <div className="bp-rl-tbl-title">
+              <span className="bp-rl-tbl-name">{title}</span>
+              <span className="bp-rl-tbl-author">{row.author}</span>
+            </div>
+          ),
+        },
+        { key: 'unit', label: 'Unit', width: 96 },
+        {
+          key: 'lexile',
+          label: 'Lexile',
+          width: 76,
+          render: (lex) => lex ?? <span className="bp-talk-noflag">–</span>,
+        },
+        {
+          key: 'flagged',
+          label: '',
+          width: 40,
+          align: 'right',
+          render: () => (
+            <button type="button" className="bp-rl-dots" aria-label="Entry actions">
+              <Icon name="dots" size={16} />
+            </button>
+          ),
+        },
+      ]}
+      rows={RL_ROWS}
+      getRowKey={(r, i) => i}
+    />
+  )
+}
+
 function ReadingLogPage() {
-  const [month] = useState('July 2024')
+  const [view, setView] = useState('list')
+  const month = RL_MONTH.label
   return (
     <div className="bp-content">
       <Hero
         icon={<Ic name="ti-reading-log" />}
         title="Reading Log"
-        accent="#0284C7"
-        accentBg="#E0F2FE"
+        accent={SECTION_ACCENT.readinglog.text}
+        accentBg={SECTION_ACCENT.readinglog.bg}
         action={
-          <Button variant="ghost" size="sm">
-            Print log
-          </Button>
+          <>
+            <Button variant="secondary" size="sm">
+              Print log
+            </Button>
+            <Tabs
+              variant="pill"
+              size="sm"
+              ariaLabel="Reading log view"
+              active={view}
+              onChange={setView}
+              items={RL_VIEWS}
+            />
+          </>
         }
       />
-      <div className="bp-rl-month-nav">
-        <div className="bp-rl-month-label">{month}</div>
-        <div className="bp-rl-month-arrows">
-          <button className="bp-heatmap-nav-btn" aria-label="Previous month">
-            <Icon name="chevron-left" size={11} />
-          </button>
-          <button className="bp-heatmap-nav-btn" aria-label="Next month">
-            <Icon name="chevron-right" size={11} />
-          </button>
+      <Card flush>
+        {/* The month and its arrows are this card's header */}
+        <div className="bp-titles-header">
+          <span className="bp-titles-header-label">{month}</span>
+          <div className="bp-rl-month-arrows">
+            <button className="bp-heatmap-nav-btn" aria-label="Previous month">
+              <Icon name="chevron-left" size={11} />
+            </button>
+            <button className="bp-heatmap-nav-btn" aria-label="Next month">
+              <Icon name="chevron-right" size={11} />
+            </button>
+          </div>
         </div>
-      </div>
-      {RL_DATA.map((week, wi) => (
-        <div key={wi} className="bp-rl-week">
-          <div className="bp-rl-week-label">{week.weekLabel}</div>
-          {week.days.map((day, di) => (
-            <div key={di} className={`bp-rl-day${day.faded ? ' bp-rl-day--faded' : ''}`}>
-              <div className="bp-rl-day-col">
-                <div className="bp-rl-day-num">{day.date}</div>
-                <div className="bp-rl-day-name">{day.day}</div>
-                {day.streak > 0 && (
-                  <div className="bp-rl-flame">
-                    🔥<span>{day.streak}</span>
+        {view === 'table' ? (
+          <ReadingLogTable />
+        ) : (
+          <div className="bp-rl-body">
+            {RL_DATA.map((week, wi) => (
+              <div key={wi} className="bp-rl-week">
+                <div className="bp-rl-week-label">{week.weekLabel}</div>
+                {week.days.map((day, di) => (
+                  <div key={di} className={`bp-rl-day${day.faded ? ' bp-rl-day--faded' : ''}`}>
+                    <div className="bp-rl-day-col">
+                      <div className="bp-rl-day-num">{day.date}</div>
+                      <div className="bp-rl-day-name">{day.day}</div>
+                      {day.streak > 0 && (
+                        <span className="bp-rl-flame">
+                          {day.streak}
+                          <Icon name="flame-filled" size={13} />
+                        </span>
+                      )}
+                    </div>
+                    {/* A day with nothing logged shows only its date — no filler row. */}
+                    {day.entries.length > 0 && (
+                      <div className="bp-rl-entries">
+                        {day.entries.map((e, ei) => (
+                          <RLEntryCard key={ei} entry={e} />
+                        ))}
+                      </div>
+                    )}
                   </div>
-                )}
+                ))}
               </div>
-              <div className="bp-rl-entries">
-                {day.entries.length > 0
-                  ? day.entries.map((e, ei) => <RLEntryCard key={ei} entry={e} />)
-                  : !day.faded && <EmptyState title="No reading logged" />}
-              </div>
-            </div>
-          ))}
-        </div>
-      ))}
+            ))}
+          </div>
+        )}
+      </Card>
     </div>
   )
 }
 
 // ─── Placeholder page ─────────────────────────────────────────────────────────
+// ─── Text box challenges ──────────────────────────────────────────────────────
+// A "text box challenge" is a site-authored prompt the reader answers in a free
+// text box (see the Challenge Creator's activity types). This page is the
+// reader's own words, grouped by the challenge that asked for them.
+function TextChallengesPage({ student }) {
+  const [challengeFilter, setChallengeFilter] = useState('all')
+  const challenges = student.textChallenges ?? []
+  const shown =
+    challengeFilter === 'all'
+      ? challenges
+      : challenges.filter((ch) => ch.challenge === challengeFilter)
+
+  return (
+    <div className="bp-content">
+      <Hero
+        icon={<Ic name="ti-paragraph" />}
+        title="Text Box"
+        accent={SECTION_ACCENT.textchallenges.text}
+        accentBg={SECTION_ACCENT.textchallenges.bg}
+      />
+      {challenges.length > 1 && (
+        <FilterBar>
+          <FilterItem label="Challenge">
+            <Select
+              size="sm"
+              value={challengeFilter}
+              onChange={(e) => setChallengeFilter(e.target.value)}
+            >
+              <option value="all">All challenges</option>
+              {challenges.map((ch) => (
+                <option key={ch.challenge} value={ch.challenge}>
+                  {ch.challenge}
+                </option>
+              ))}
+            </Select>
+          </FilterItem>
+        </FilterBar>
+      )}
+      {challenges.length === 0 ? (
+        <EmptyState
+          title="No responses yet"
+          description="Answers to text box challenges will show up here."
+        />
+      ) : (
+        shown.map((ch) => (
+          <Card key={ch.challenge}>
+            <div className="bp-latest-head">
+              <SectionHeading>{ch.challenge}</SectionHeading>
+              <span className="bp-titles-header-meta">
+                {ch.responses.length} {ch.responses.length === 1 ? 'response' : 'responses'}
+              </span>
+            </div>
+            {ch.responses.map((r) => (
+              <div key={r.prompt + r.date} className="bp-tb-item">
+                <div className="bp-tb-head">
+                  <span className="bp-tb-prompt">{r.prompt}</span>
+                  <span className="bp-tb-date">{r.date}</span>
+                </div>
+                <div className="bp-tb-answer">{r.answer}</div>
+              </div>
+            ))}
+          </Card>
+        ))
+      )}
+    </div>
+  )
+}
+
+// ─── Book reviews ─────────────────────────────────────────────────────────────
+const REVIEW_ACTIONS = [
+  { label: 'Manage', icon: 'tools' },
+  { label: 'Edit', icon: 'pencil' },
+  { label: 'Delete', icon: 'trash' },
+]
+
+// Reviews the reader wrote and published to the site: the book, the date, and
+// their own words. Cover + title come from the same Open Library lookup the
+// Lexile page's title rows use.
+function ReviewsPage({ student }) {
+  const reviews = student.reviews ?? []
+  return (
+    <div className="bp-content">
+      <Hero
+        icon={<Ic name="ti-rating" />}
+        title="Reviews"
+        accent={SECTION_ACCENT.reviews.text}
+        accentBg={SECTION_ACCENT.reviews.bg}
+      />
+      {reviews.length === 0 ? (
+        <EmptyState
+          title="No reviews yet"
+          description="Reviews this reader publishes will show up here."
+        />
+      ) : (
+        reviews.map((r) => (
+          <Card key={r.isbn}>
+            <div className="bp-review-item">
+              <a
+                href={`https://openlibrary.org/isbn/${r.isbn}`}
+                target="_blank"
+                rel="noreferrer"
+                className="bp-title-cover-link"
+              >
+                <CoverImage isbn={r.isbn} title={r.title} />
+              </a>
+              <div className="bp-review-main">
+                <div className="bp-review-head">
+                  <div>
+                    <div className="bp-review-title">{r.title}</div>
+                    <div className="bp-title-author">{r.author}</div>
+                  </div>
+                  <span className="bp-tb-date">{r.date}</span>
+                </div>
+                <div className="bp-review-text">{r.text}</div>
+              </div>
+            </div>
+            {/* Card footer, full width past the cover column. Inert, like the Log
+                and Edit Goal buttons — the demo wants the affordances to look
+                right, not to wire up CRUD. */}
+            <div className="bp-review-actions">
+              {REVIEW_ACTIONS.map((a) => (
+                <IconButton key={a.label} variant="ghost" size="sm" aria-label={a.label}>
+                  <Icon name={a.icon} size={16} />
+                </IconButton>
+              ))}
+            </div>
+          </Card>
+        ))
+      )}
+    </div>
+  )
+}
+
+// ─── Achievements & badges ────────────────────────────────────────────────────
+// The real medallions are commissioned illustrations. These are drawn stand-ins
+// that keep the *shape* readers recognise — a coloured disc with a year ribbon
+// for achievements, a stamped seal for logging badges — so the pages read right
+// without pretending to be the real art.
+function MedalDisc({ icon, color, year, size = 68 }) {
+  return (
+    <div
+      className={`bp-medal${year ? '' : ' bp-medal--plain'}`}
+      style={{ '--medal': color, '--medal-size': `${size}px` }}
+    >
+      <span className="bp-medal-glyph">
+        <Icon name={icon} size={Math.round(size * 0.44)} />
+      </span>
+      {year && <span className="bp-medal-year">{year}</span>}
+    </div>
+  )
+}
+
+function AchievementMedal({ item, size = 68 }) {
+  return <MedalDisc icon={item.icon} color={item.color} year={item.date.slice(-4)} size={size} />
+}
+
+function BadgeSeal({ badge, size = 68 }) {
+  return (
+    <div
+      className={`bp-seal${badge.earned ? '' : ' bp-seal--locked'}`}
+      style={{ '--medal-size': `${size}px` }}
+    >
+      <span className="bp-seal-top">{badge.top}</span>
+      <span className="bp-seal-mid">{badge.mid}</span>
+      <span className="bp-seal-year">{badge.year}</span>
+    </div>
+  )
+}
+
+// Show/hide search matches the real pages, which start with the field hidden
+// behind a toggle rather than spending a row on it by default.
+function SearchToggle({ open, onToggle }) {
+  return (
+    <Button variant="secondary" size="sm" onClick={onToggle}>
+      {open ? 'Hide search' : 'Show search'}
+    </Button>
+  )
+}
+
+// One modal shape for both pages: the artwork, a small label line, the bold
+// line, an optional green earned note, then the action footer. The action is
+// deliberately inert — it closes the modal without touching the data, the same
+// stance as the Log and Edit Goal buttons.
+function MedalModal({ open, onClose, art, label, headline, note, action }) {
+  return (
+    <Modal open={open} onClose={onClose} variant="center" ariaLabel={headline}>
+      {({ close }) => (
+        <div className="bp-medal-modal">
+          <IconButton
+            variant="ghost"
+            size="sm"
+            className="bp-medal-modal-close"
+            aria-label="Close"
+            onClick={close}
+          >
+            <Icon name="x" size={18} stroke={2.2} />
+          </IconButton>
+          <div className="bp-medal-modal-art">{art}</div>
+          <div className="bp-medal-modal-label">{label}</div>
+          <div className="bp-medal-modal-headline">{headline}</div>
+          {note && <div className="bp-medal-modal-note">{note}</div>}
+          <div className="bp-medal-modal-foot">
+            <button
+              type="button"
+              className={`bp-medal-modal-btn bp-medal-modal-btn--${action.tone}`}
+              onClick={close}
+            >
+              {action.label}
+            </button>
+            {action.caution && (
+              <div className="bp-medal-modal-caution">
+                <Icon name="bell-ringing" size={16} />
+                <span>{action.caution}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </Modal>
+  )
+}
+
+function AchievementsPage({ student }) {
+  const [q, setQ] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [openItem, setOpenItem] = useState(null)
+  const all = student.achievements ?? []
+  const shown = searchOpen
+    ? all.filter((a) => a.name.toLowerCase().includes(q.trim().toLowerCase()))
+    : all
+
+  return (
+    <div className="bp-content">
+      <Hero
+        icon={<Ic name="ti-certificate" />}
+        title="Achievements"
+        accent={SECTION_ACCENT.achievements.text}
+        accentBg={SECTION_ACCENT.achievements.bg}
+        action={
+          all.length > 0 && (
+            <SearchToggle
+              open={searchOpen}
+              onToggle={() => {
+                setSearchOpen((v) => !v)
+                setQ('')
+              }}
+            />
+          )
+        }
+      />
+      {searchOpen && (
+        <SearchInput
+          value={q}
+          onChange={setQ}
+          placeholder="Search for achievement name…"
+          ariaLabel="Search achievements"
+        />
+      )}
+      {shown.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title={all.length === 0 ? 'No achievements yet' : 'No matches'}
+          description={
+            all.length === 0
+              ? 'Seasonal achievements this reader earns will show up here.'
+              : 'Try a different achievement name.'
+          }
+        />
+      ) : (
+        <div className="bp-medal-grid">
+          {shown.map((a) => (
+            <button
+              key={a.name}
+              type="button"
+              className="bp-medal-card"
+              onClick={() => setOpenItem(a)}
+            >
+              <AchievementMedal item={a} />
+              <span className="bp-medal-name">{a.name}</span>
+              <span className="bp-medal-sub">Earned on {a.date}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <MedalModal
+        open={openItem != null}
+        onClose={() => setOpenItem(null)}
+        art={openItem && <AchievementMedal item={openItem} size={112} />}
+        label="Achievement"
+        headline={openItem?.name}
+        note={openItem && `Earned on ${openItem.date}`}
+        action={{ tone: 'danger', label: 'Remove Achievement' }}
+      />
+    </div>
+  )
+}
+
+const BADGE_TABS = [
+  { id: 'earned', label: 'Earned' },
+  { id: 'unearned', label: 'Unearned' },
+]
+const BADGE_KINDS = [
+  { id: 'all', label: 'All badges' },
+  { id: 'logging', label: 'Logging badges' },
+  { id: 'challenge', label: 'Challenge badges' },
+]
+
+function BadgesPage({ student }) {
+  const [tab, setTab] = useState('earned')
+  const [kind, setKind] = useState('all')
+  const [q, setQ] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [openItem, setOpenItem] = useState(null)
+  const all = student.badges ?? []
+
+  const shown = all.filter(
+    (b) =>
+      b.earned === (tab === 'earned') &&
+      (kind === 'all' || b.kind === kind) &&
+      (!searchOpen || b.name.toLowerCase().includes(q.trim().toLowerCase())),
+  )
+
+  return (
+    <div className="bp-content">
+      <Hero
+        icon={<Ic name="ti-badge" />}
+        title="Badges"
+        accent={SECTION_ACCENT.badges.text}
+        accentBg={SECTION_ACCENT.badges.bg}
+        action={
+          <SearchToggle
+            open={searchOpen}
+            onToggle={() => {
+              setSearchOpen((v) => !v)
+              setQ('')
+            }}
+          />
+        }
+      />
+      <Tabs
+        variant="pill"
+        size="sm"
+        block
+        ariaLabel="Badge status"
+        active={tab}
+        onChange={setTab}
+        items={BADGE_TABS}
+      />
+      {searchOpen && (
+        <SearchInput
+          value={q}
+          onChange={setQ}
+          placeholder="Search for badge name…"
+          ariaLabel="Search badges"
+        />
+      )}
+      <FilterBar>
+        <FilterItem label="Badge type">
+          <Select size="sm" value={kind} onChange={(e) => setKind(e.target.value)}>
+            {BADGE_KINDS.map((k) => (
+              <option key={k.id} value={k.id}>
+                {k.label}
+              </option>
+            ))}
+          </Select>
+        </FilterItem>
+      </FilterBar>
+      {shown.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title={`No ${tab} badges`}
+          description={
+            q || kind !== 'all'
+              ? 'Try a different search or badge type.'
+              : `Badges this reader has ${tab === 'earned' ? 'earned' : 'still to earn'} will show up here.`
+          }
+        />
+      ) : (
+        <div className="bp-medal-grid">
+          {shown.map((b) => (
+            <button
+              key={b.name}
+              type="button"
+              className="bp-medal-card"
+              onClick={() => setOpenItem(b)}
+            >
+              <BadgeSeal badge={b} />
+              <span className="bp-medal-name">{b.name}</span>
+              <span className="bp-medal-sub">{b.detail}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      <MedalModal
+        open={openItem != null}
+        onClose={() => setOpenItem(null)}
+        art={openItem && <BadgeSeal badge={openItem} size={112} />}
+        label={openItem?.name}
+        headline={openItem?.detail}
+        note={openItem?.earnedNote}
+        action={
+          openItem?.earned
+            ? {
+                tone: 'danger',
+                label: 'Remove Badge',
+                caution: "Removing this badge will not change a reader's log.",
+              }
+            : {
+                tone: 'primary',
+                label: 'Award Badge',
+                caution: "Awarding this badge will not add reading to the reader's log.",
+              }
+        }
+      />
+    </div>
+  )
+}
+
+// ─── Activity badges ──────────────────────────────────────────────────────────
+// A challenge's activity badge is a set of activities the reader checks off;
+// the badge lands once they're all done. The checkboxes are live so the demo
+// can show a badge completing, but nothing is persisted.
+function ActivitiesPage({ student }) {
+  const [badges, setBadges] = useState(student.activityBadges ?? [])
+  const [openIdx, setOpenIdx] = useState(null)
+
+  function toggleActivity(badgeIdx, actIdx, done) {
+    setBadges((prev) =>
+      prev.map((b, i) =>
+        i !== badgeIdx
+          ? b
+          : {
+              ...b,
+              activities: b.activities.map((a, j) => (j === actIdx ? { ...a, done } : a)),
+            },
+      ),
+    )
+  }
+
+  // Ticking the badge-level box marks every activity under it, matching the
+  // product's "mark the whole badge complete" affordance.
+  function toggleBadge(badgeIdx, done) {
+    setBadges((prev) =>
+      prev.map((b, i) =>
+        i !== badgeIdx ? b : { ...b, activities: b.activities.map((a) => ({ ...a, done })) },
+      ),
+    )
+  }
+
+  const openBadge = openIdx == null ? null : badges[openIdx]
+  const doneCount = (b) => b.activities.filter((a) => a.done).length
+
+  return (
+    <div className="bp-content">
+      <Hero
+        icon={<Ic name="ti-puzzle" />}
+        title="Activities"
+        accent={SECTION_ACCENT.activities.text}
+        accentBg={SECTION_ACCENT.activities.bg}
+      />
+      <FilterBar action={<Button size="sm">Update activity badges</Button>}>
+        <FilterItem label="Challenge">
+          <Select size="sm" defaultValue="all">
+            <option value="all">All challenges</option>
+            <option value="spring">Spring Reading Challenge 2025</option>
+            <option value="winter">Winter Reading Bingo</option>
+          </Select>
+        </FilterItem>
+      </FilterBar>
+      <Card flush>
+        <div className="bp-titles-header">
+          <span className="bp-titles-header-label">Activity badges</span>
+          <span className="bp-titles-header-meta">Completed?</span>
+        </div>
+        {badges.length === 0 ? (
+          <EmptyState title="No activity badges" description="This reader has none assigned yet." />
+        ) : (
+          badges.map((b, i) => {
+            const done = doneCount(b)
+            const all = b.activities.length
+            return (
+              <div key={b.name} className="bp-act-row">
+                <MedalDisc icon={b.icon} color={b.color} size={42} />
+                <div className="bp-act-main">
+                  <div className="bp-act-name">{b.name}</div>
+                  <div className="bp-act-count">
+                    {done} of {all} activities completed
+                  </div>
+                </div>
+                <Checkbox checked={done === all} onChange={(v) => toggleBadge(i, v)} />
+                <Button variant="secondary" size="sm" onClick={() => setOpenIdx(i)}>
+                  View activity
+                </Button>
+              </div>
+            )
+          })
+        )}
+      </Card>
+
+      <Modal
+        open={openIdx != null}
+        onClose={() => setOpenIdx(null)}
+        variant="center"
+        ariaLabel={openBadge?.name}
+      >
+        {({ close }) => (
+          <div className="bp-act-modal">
+            <div className="bp-act-modal-head">
+              {openBadge && <MedalDisc icon={openBadge.icon} color={openBadge.color} size={34} />}
+              <span className="bp-act-modal-title">{openBadge?.name}</span>
+              <IconButton variant="ghost" size="sm" aria-label="Close" onClick={close}>
+                <Icon name="x" size={18} stroke={2.2} />
+              </IconButton>
+            </div>
+            <div className="bp-act-modal-cols">
+              <span>Activity</span>
+              <span>Completed?</span>
+            </div>
+            <div className="bp-act-modal-body">
+              {openBadge?.activities.map((a, j) => (
+                <div key={a.text} className="bp-act-modal-row">
+                  <span className="bp-act-modal-text">{a.text}</span>
+                  <Checkbox checked={a.done} onChange={(v) => toggleActivity(openIdx, j, v)} />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+      </Modal>
+    </div>
+  )
+}
+
+// ─── Drawings & rewards ───────────────────────────────────────────────────────
+// Same page twice: a list of things the reader has won, with "Claimed?" as the
+// only column that moves — and it's the librarian's to tick.
+function ClaimListPage({ items: initial, icon, title, accent, accentBg, nameLabel, empty }) {
+  const [items, setItems] = useState(initial ?? [])
+
+  return (
+    <div className="bp-content">
+      <Hero icon={<Ic name={icon} />} title={title} accent={accent} accentBg={accentBg} />
+      <Card flush>
+        <div className="bp-titles-header">
+          <span className="bp-titles-header-label">{nameLabel}</span>
+          <span className="bp-titles-header-meta">Claimed?</span>
+        </div>
+        {items.length === 0 ? (
+          <EmptyState title={empty.title} description={empty.description} />
+        ) : (
+          items.map((item, i) => (
+            <div key={item.name} className="bp-act-row">
+              <div className="bp-act-main">
+                <div className="bp-act-name">{item.name}</div>
+              </div>
+              <Checkbox
+                checked={item.claimed}
+                onChange={(v) =>
+                  setItems((prev) => prev.map((x, j) => (j === i ? { ...x, claimed: v } : x)))
+                }
+              />
+            </div>
+          ))
+        )}
+      </Card>
+    </div>
+  )
+}
+
+// `key` on the student remounts the list so the checkbox state doesn't carry
+// across readers when the pager steps.
+function DrawingsPage({ student }) {
+  return (
+    <ClaimListPage
+      key={student.name}
+      items={student.drawings}
+      icon="ti-pencil"
+      title="Drawings"
+      accent={SECTION_ACCENT.drawings.text}
+      accentBg={SECTION_ACCENT.drawings.bg}
+      nameLabel="Drawing name"
+      empty={{ title: 'No drawings', description: 'Drawings this reader enters will show here.' }}
+    />
+  )
+}
+
+function RewardsPage({ student }) {
+  return (
+    <ClaimListPage
+      key={student.name}
+      items={student.rewards}
+      icon="ti-gift"
+      title="Rewards"
+      accent={SECTION_ACCENT.rewards.text}
+      accentBg={SECTION_ACCENT.rewards.bg}
+      nameLabel="Reward name"
+      empty={{ title: 'No rewards', description: 'Rewards this reader earns will show here.' }}
+    />
+  )
+}
+
+// ─── Challenges ───────────────────────────────────────────────────────────────
+const CHALLENGE_TABS = [
+  { id: 'current', label: 'Current' },
+  { id: 'ended', label: 'Recently ended' },
+  { id: 'past', label: 'Past' },
+]
+
+function ChallengesPage({ student, onNavigate }) {
+  const [tab, setTab] = useState('current')
+  const all = student.challenges ?? []
+  const shown = all.filter((c) => c.status === tab)
+
+  return (
+    <div className="bp-content">
+      <Hero
+        icon={<Ic name="ti-trophy" />}
+        title="Challenges"
+        accent={SECTION_ACCENT.challenges.text}
+        accentBg={SECTION_ACCENT.challenges.bg}
+      />
+      <Tabs
+        variant="pill"
+        size="sm"
+        block
+        ariaLabel="Challenge status"
+        active={tab}
+        onChange={setTab}
+        items={CHALLENGE_TABS}
+      />
+      <Card flush>
+        <div className="bp-titles-header">
+          <span className="bp-titles-header-label">Challenge</span>
+          <span className="bp-titles-header-meta">Enrolled?</span>
+        </div>
+        {shown.length === 0 ? (
+          <EmptyState
+            title={`No ${tab === 'ended' ? 'recently ended' : tab} challenges`}
+            description="Nothing to show for this reader here."
+          />
+        ) : (
+          shown.map((c) => (
+            <div key={c.name} className="bp-chal-row">
+              <div className="bp-chal-main">
+                <div className="bp-act-name">{c.name}</div>
+                <div className="bp-chal-dates">{c.dates}</div>
+                <div className="bp-chal-meta">
+                  <span>Started on: {c.startedOn}</span>
+                  {c.minutes != null && <span>Minutes reading: {c.minutes.toLocaleString()}</span>}
+                </div>
+                <button
+                  type="button"
+                  className="bp-latest-link"
+                  onClick={() => onNavigate('readinglog')}
+                >
+                  View challenge log
+                  <Icon name="arrow-right" size={14} />
+                </button>
+              </div>
+              {/* Enrolment is a state, not a control — a green tick, not a checkbox */}
+              <span className="bp-chal-enrolled" aria-label="Enrolled">
+                <Icon name="check" size={15} stroke={2.6} />
+              </span>
+            </div>
+          ))
+        )}
+      </Card>
+    </div>
+  )
+}
+
 function PlaceholderPage({ pageKey }) {
   const item = NAV_ITEMS.find((n) => !n.divider && n.section === pageKey)
   return (
@@ -2362,8 +4019,8 @@ function PlaceholderPage({ pageKey }) {
       <Hero
         icon={<Ic name={item?.icon || 'ti-user'} />}
         title={item?.label || pageKey}
-        accent="#94A3B8"
-        accentBg="#F1F5F9"
+        accent={accentFor(pageKey).text}
+        accentBg={accentFor(pageKey).bg}
       />
       <EmptyState title="Coming soon" description="This section is coming soon." />
     </div>
@@ -2551,6 +4208,42 @@ function AdminMockup({ onStudentClick, selectedKey }) {
   )
 }
 
+// ─── Profile pager ────────────────────────────────────────────────────────────
+// Step between the students on the page without closing the panel. The section
+// stays put, so you can compare the same tab across readers.
+const STUDENT_ORDER = ['marcus', 'anne', 'tyler']
+
+function ProfilePager({ currentKey, onSelect }) {
+  const idx = STUDENT_ORDER.indexOf(currentKey)
+  const prev = idx > 0 ? STUDENT_ORDER[idx - 1] : null
+  const next = idx < STUDENT_ORDER.length - 1 ? STUDENT_ORDER[idx + 1] : null
+
+  return (
+    <div className="bp-pager">
+      <button
+        type="button"
+        className="bp-pager-btn"
+        disabled={!prev}
+        onClick={() => prev && onSelect(prev)}
+        title={prev ? `Previous — ${STUDENTS[prev].name}` : 'No previous student'}
+        aria-label={prev ? `Previous student, ${STUDENTS[prev].name}` : 'No previous student'}
+      >
+        <Icon name="chevron-left" size={17} stroke={2.2} />
+      </button>
+      <button
+        type="button"
+        className="bp-pager-btn"
+        disabled={!next}
+        onClick={() => next && onSelect(next)}
+        title={next ? `Next — ${STUDENTS[next].name}` : 'No next student'}
+        aria-label={next ? `Next student, ${STUDENTS[next].name}` : 'No next student'}
+      >
+        <Icon name="chevron-right" size={17} stroke={2.2} />
+      </button>
+    </div>
+  )
+}
+
 // ─── Embeddable profile panel (used by RIS StudentPanel slide-in) ─────────────
 export function StudentProfileView({ studentKey, onClose }) {
   const [activeSection, setActiveSection] = useState(null)
@@ -2558,19 +4251,38 @@ export function StudentProfileView({ studentKey, onClose }) {
 
   return (
     <div className="bp-root" style={{ width: '100%', flex: 1, minHeight: 0, boxShadow: 'none' }}>
-      <LeftNav activeSection={activeSection} onNavigate={setActiveSection} />
-      <div className="bp-panel">
-        <StudentHeader student={student} onClose={onClose} />
-        <div key={`${studentKey}-${activeSection ?? 'overview'}`} className="bp-page-fade">
-          {activeSection === null ? (
-            <Overview student={student} onNavigate={setActiveSection} />
-          ) : ANALYSIS_SECTIONS.has(activeSection) ? (
-            <SectionDetail student={student} sectionKey={activeSection} />
-          ) : activeSection === 'readinglog' ? (
-            <ReadingLogPage />
-          ) : (
-            <PlaceholderPage pageKey={activeSection} />
-          )}
+      <StudentHeader student={student} onClose={onClose} />
+      <div className="bp-root-body">
+        <LeftNav activeSection={activeSection} onNavigate={setActiveSection} />
+        <div className="bp-panel">
+          <MobileSectionNav activeSection={activeSection} onNavigate={setActiveSection} />
+          <div key={`${studentKey}-${activeSection ?? 'overview'}`} className="bp-page-fade">
+            {activeSection === null ? (
+              <Overview student={student} onNavigate={setActiveSection} />
+            ) : ANALYSIS_SECTIONS.has(activeSection) ? (
+              <SectionDetail student={student} sectionKey={activeSection} />
+            ) : activeSection === 'readinglog' ? (
+              <ReadingLogPage />
+            ) : activeSection === 'textchallenges' ? (
+              <TextChallengesPage student={student} />
+            ) : activeSection === 'reviews' ? (
+              <ReviewsPage student={student} />
+            ) : activeSection === 'achievements' ? (
+              <AchievementsPage student={student} />
+            ) : activeSection === 'badges' ? (
+              <BadgesPage student={student} />
+            ) : activeSection === 'activities' ? (
+              <ActivitiesPage student={student} />
+            ) : activeSection === 'drawings' ? (
+              <DrawingsPage student={student} />
+            ) : activeSection === 'rewards' ? (
+              <RewardsPage student={student} />
+            ) : activeSection === 'challenges' ? (
+              <ChallengesPage student={student} onNavigate={setActiveSection} />
+            ) : (
+              <PlaceholderPage pageKey={activeSection} />
+            )}
+          </div>
         </div>
       </div>
     </div>
@@ -2578,20 +4290,34 @@ export function StudentProfileView({ studentKey, onClose }) {
 }
 
 // ─── Root ─────────────────────────────────────────────────────────────────────
+// Kept in step with the `slideInRight` / `slideOutRight` timing in the CSS.
+const SLIDE_MS = 260
+
 export default function BeanstackProfile() {
   const [activeSection, setActiveSection] = useState(null)
   const [profileMode, setProfileMode] = useState('closed')
   const [selectedStudentKey, setSelectedStudentKey] = useState(null)
+  const [closing, setClosing] = useState(false)
 
   const student = selectedStudentKey ? STUDENTS[selectedStudentKey] : null
 
   const handleStudentClick = (key) => {
     setSelectedStudentKey(key)
     setActiveSection(null)
+    setClosing(false)
     setProfileMode('side')
   }
 
-  const closeProfile = () => setProfileMode('closed')
+  // Slide out the way it slid in, then unmount — the panel used to vanish on
+  // the same frame as the click.
+  const closeProfile = () => {
+    if (closing) return
+    setClosing(true)
+    setTimeout(() => {
+      setProfileMode('closed')
+      setClosing(false)
+    }, SLIDE_MS)
+  }
 
   return (
     <div className="bp-shell">
@@ -2603,7 +4329,7 @@ export default function BeanstackProfile() {
       {/* Dim overlay */}
       {profileMode === 'side' && (
         <div
-          className="bp-shell-overlay"
+          className={`bp-shell-overlay${closing ? ' bp-shell-overlay--closing' : ''}`}
           onClick={closeProfile}
           style={{ pointerEvents: 'auto', cursor: 'pointer' }}
         />
@@ -2611,7 +4337,9 @@ export default function BeanstackProfile() {
 
       {/* Profile panel */}
       {profileMode !== 'closed' && student && (
-        <div className={`bp-profile-wrap${profileMode === 'full' ? ' bp-profile-wrap--full' : ''}`}>
+        <div
+          className={`bp-profile-wrap${profileMode === 'full' ? ' bp-profile-wrap--full' : ''}${closing ? ' bp-profile-wrap--closing' : ''}`}
+        >
           {/* Mobile-only top bar — hidden on desktop via CSS */}
           <div className="bp-profile-topbar">
             <div className="bp-profile-topbar-title">
@@ -2622,22 +4350,58 @@ export default function BeanstackProfile() {
           </div>
 
           <div className="bp-root">
-            <LeftNav activeSection={activeSection} onNavigate={setActiveSection} />
-            <div className="bp-panel">
-              <StudentHeader student={student} onClose={closeProfile} />
-              <div
-                key={`${selectedStudentKey}-${activeSection ?? 'overview'}`}
-                className="bp-page-fade"
-              >
-                {activeSection === null ? (
-                  <Overview student={student} onNavigate={setActiveSection} />
-                ) : ANALYSIS_SECTIONS.has(activeSection) ? (
-                  <SectionDetail student={student} sectionKey={activeSection} />
-                ) : activeSection === 'readinglog' ? (
-                  <ReadingLogPage />
-                ) : (
-                  <PlaceholderPage pageKey={activeSection} />
-                )}
+            {/* The header spans the rail as well as the content — it identifies the
+    whole panel, not just the page inside it. */}
+            <StudentHeader student={student} onClose={closeProfile} />
+            <div className="bp-root-body">
+              <LeftNav
+                activeSection={activeSection}
+                onNavigate={setActiveSection}
+                pager={
+                  <ProfilePager currentKey={selectedStudentKey} onSelect={setSelectedStudentKey} />
+                }
+              />
+              <div className="bp-panel">
+                <MobileSectionNav
+                  activeSection={activeSection}
+                  onNavigate={setActiveSection}
+                  pager={
+                    <ProfilePager
+                      currentKey={selectedStudentKey}
+                      onSelect={setSelectedStudentKey}
+                    />
+                  }
+                />
+                <div
+                  key={`${selectedStudentKey}-${activeSection ?? 'overview'}`}
+                  className="bp-page-fade"
+                >
+                  {activeSection === null ? (
+                    <Overview student={student} onNavigate={setActiveSection} />
+                  ) : ANALYSIS_SECTIONS.has(activeSection) ? (
+                    <SectionDetail student={student} sectionKey={activeSection} />
+                  ) : activeSection === 'readinglog' ? (
+                    <ReadingLogPage />
+                  ) : activeSection === 'textchallenges' ? (
+                    <TextChallengesPage student={student} />
+                  ) : activeSection === 'reviews' ? (
+                    <ReviewsPage student={student} />
+                  ) : activeSection === 'achievements' ? (
+                    <AchievementsPage student={student} />
+                  ) : activeSection === 'badges' ? (
+                    <BadgesPage student={student} />
+                  ) : activeSection === 'activities' ? (
+                    <ActivitiesPage student={student} />
+                  ) : activeSection === 'drawings' ? (
+                    <DrawingsPage student={student} />
+                  ) : activeSection === 'rewards' ? (
+                    <RewardsPage student={student} />
+                  ) : activeSection === 'challenges' ? (
+                    <ChallengesPage student={student} onNavigate={setActiveSection} />
+                  ) : (
+                    <PlaceholderPage pageKey={activeSection} />
+                  )}
+                </div>
               </div>
             </div>
           </div>

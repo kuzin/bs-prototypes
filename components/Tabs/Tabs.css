@@ -82,11 +82,16 @@
 }
 
 /* ── Pill variant ────────────────────────────────────────────────────────── */
+/* The track needs to read as a control on a gray page background, not just on
+   white — slate-100 is within a couple of values of the usual page gray, so the
+   whole segmented control disappeared. A slightly deeper track plus a hairline
+   gives it an edge on either surface, and makes the white active pill pop. */
 .tabs--pill {
   gap: 4px;
-  background: var(--c-slate-100);
+  background: var(--c-slate-200);
+  border: 1px solid var(--c-slate-300);
   border-radius: 10px;
-  padding: 4px;
+  padding: 3px;
   display: inline-flex;
 }
 
