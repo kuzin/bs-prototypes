@@ -518,6 +518,12 @@
   box-sizing: border-box;
 }
 
+/* The Actions button carries both a label and a dots icon; each breakpoint
+   shows one of them. Desktop: "Actions ⌄". Mobile: just the dots. */
+.bp-student-actions .btn-icon {
+  display: none;
+}
+
 .bp-header-right {
   display: flex;
   align-items: center;
@@ -3225,77 +3231,6 @@
   }
 }
 
-/* Mobile top bar for the profile panel (hidden on desktop) */
-.bp-profile-topbar {
-  display: none;
-  align-items: center;
-  gap: 12px;
-  height: 56px;
-  padding: 0 12px;
-  background: #fff;
-  border-bottom: 1px solid var(--c-gray-200);
-  flex-shrink: 0;
-  width: 100%;
-  box-sizing: border-box;
-}
-
-.bp-profile-topbar-title {
-  flex: 1;
-}
-
-.bp-profile-topbar .bp-student-actions {
-  flex-shrink: 0;
-  gap: 6px;
-}
-
-.bp-profile-topbar .bp-btn-ghost,
-.bp-profile-topbar .bp-btn-primary {
-  /* Compact mobile-sized buttons */
-  padding: 6px 10px;
-  font-size: 13px;
-}
-
-.bp-profile-topbar-close {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  background: var(--c-slate-100);
-  border: 1px solid var(--c-border);
-  color: var(--c-slate-600);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.bp-profile-topbar-close:hover {
-  background: var(--c-slate-200);
-  color: var(--c-slate-800);
-}
-
-.bp-profile-topbar-title {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-  min-width: 0;
-}
-
-.bp-profile-topbar-name {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--c-slate-800);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.bp-profile-topbar-grade {
-  font-size: 13px;
-  color: var(--c-text-subtle);
-  font-weight: 600;
-  margin-top: 1px;
-}
-
 /* ── Mobile: hide People sidebar; profile becomes full-width overlay ── */
 @media (max-width: 699px) {
   .bp-adm-people {
@@ -3324,14 +3259,39 @@
     display: none;
   }
 
-  /* Hide the redundant in-panel header (topbar replaces it on mobile) */
+  /* One header on mobile too — it spans the full width and already carries the
+     avatar, so the separate topbar is gone. Actions collapses to its icon and
+     both buttons drop their carets. */
   .bp-panel-header {
+    padding: 10px 12px;
+    gap: 8px;
+  }
+
+  .bp-panel-header .avatar {
+    width: 38px;
+    height: 38px;
+    font-size: 13px;
+  }
+
+  .bp-panel-name {
+    font-size: 15px;
+  }
+
+  .bp-student-actions {
+    gap: 6px;
+  }
+
+  .bp-student-actions .bp-btn-label,
+  .bp-student-actions .bp-btn-caret {
     display: none;
   }
 
-  /* Show the in-flow top bar with close + student name + actions */
-  .bp-profile-topbar {
-    display: flex;
+  .bp-student-actions .btn-icon {
+    display: inline-flex;
+  }
+
+  .bp-student-actions .btn {
+    padding: 0 10px;
   }
 
   /* The rail's 168px is most of a phone — swap it for a select + the pager */
@@ -3923,6 +3883,52 @@
   border-radius: 5px;
   background: #16a34a;
   color: #fff;
+}
+
+/* ── Action form modals ──────────────────────────────────────────────────── */
+.bp-form-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 18px 18px;
+  max-height: min(62vh, 520px);
+  overflow-y: auto;
+}
+
+/* Section headings inside a form body are plain labels, not card titles, so
+   they skip the bleeding rule `.bp-card > .bp-section-heading` adds. */
+.bp-form-body .bp-section-heading {
+  margin: 4px 0 -4px;
+}
+
+.bp-form-body .bp-section-heading:first-child {
+  margin-top: 0;
+}
+
+/* A Yes/No pill group is a control, not a full-width strip — `.tabs`'s
+   `display: flex` makes it fill the field otherwise. */
+.bp-form-body .tabs--pill {
+  align-self: flex-start;
+  width: auto;
+}
+
+/* First name / last name side by side */
+.bp-form-row {
+  display: flex;
+  gap: 10px;
+}
+
+.bp-form-row > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.bp-form-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--c-slate-200);
 }
 
 /* ── Activity list modal ─────────────────────────────────────────────────── */
