@@ -11,11 +11,11 @@ import {
   EXTRINSIC_COLOR,
 } from './components/widgets'
 import { Button } from '@components/Button/Button'
-import { Select, Checkbox } from '@components/Form/Form'
+import { Select, Checkbox, Field, Input, Textarea, DateInput } from '@components/Form/Form'
 import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import '@components/Form/Form.css'
 import { Avatar } from '@components/Avatar/Avatar'
-import { IconButton, EmptyState } from '@components/Primitives/Primitives'
+import { IconButton, EmptyState, Banner } from '@components/Primitives/Primitives'
 import { Pill } from '@components/Pill/Pill'
 import { BarList } from '@components/BarList/BarList'
 import { ChartCard } from '@components/Cards/Cards'
@@ -29,6 +29,7 @@ import { Icon } from '@components/Icon/Icon'
 import { Flyout } from '@components/Flyout/Flyout'
 import { Modal } from '@components/Modal/Modal'
 import { Tabs } from '@components/Tabs/Tabs'
+import { Toggle } from '@components/Toggle/Toggle'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { Hero } from '@components/Hero/Hero'
 import { TrendChart } from '@components/TrendChart/TrendChart'
@@ -93,7 +94,10 @@ function DropdownMenu({ items, onClose }) {
             key={i}
             type="button"
             className={`flyout-menu-item${item.danger ? ' flyout-menu-item--danger' : ''}`}
-            onClick={onClose}
+            onClick={() => {
+              item.onSelect?.()
+              onClose()
+            }}
             style={item.color && !item.danger ? { color: item.color } : undefined}
           >
             {item.icon && <span className="flyout-menu-icon">{item.icon}</span>}
@@ -110,18 +114,189 @@ function DropdownMenu({ items, onClose }) {
 // flyout is far narrower than a full page, so the two secondary log actions
 // fold into the primary button's own menu rather than sitting beside it.
 const ACTIONS_ITEMS = [
-  { label: 'Add a Review' },
-  { label: 'Edit Information' },
-  { label: 'Add Notes' },
-  { label: 'Advisory Settings' },
+  { label: 'Add a Review', action: 'review' },
+  { label: 'Edit Information', action: 'edit' },
+  { label: 'Add Notes', action: 'notes' },
+  { label: 'Advisory Settings', action: 'advisory' },
   { label: 'Recalculate Streaks' },
-  { label: 'Transfer Reader' },
+  { label: 'Transfer Reader', action: 'transfer' },
   { divider: true },
   { label: 'Delete Reader', danger: true },
 ]
 const LOG_ITEMS = [{ label: 'Log Reading' }, { label: 'Log Activities' }]
 
-function StudentActions({ onClose }) {
+// ─── Action modals ────────────────────────────────────────────────────────────
+// The five Actions entries that have a real screen behind them. Each is a form
+// the demo can open and fill; Save just closes — nothing is persisted, the same
+// stance as the rest of the prototype's affordances.
+const YES_NO = [
+  { id: 'yes', label: 'Yes' },
+  { id: 'no', label: 'No' },
+]
+
+function ActionModal({ open, onClose, title, children, save = 'Save', saveDisabled, secondary }) {
+  return (
+    <Modal open={open} onClose={onClose} variant="center" ariaLabel={title}>
+      {({ close }) => (
+        <div className="bp-act-modal">
+          <div className="bp-act-modal-head">
+            <span className="bp-act-modal-title">{title}</span>
+            <IconButton variant="ghost" size="sm" aria-label="Close" onClick={close}>
+              <Icon name="x" size={18} stroke={2.2} />
+            </IconButton>
+          </div>
+          <div className="bp-form-body">{children}</div>
+          <div className="bp-form-foot">
+            {secondary && (
+              <Button variant="secondary" onClick={close}>
+                {secondary}
+              </Button>
+            )}
+            <Button onClick={close} disabled={saveDisabled}>
+              {save}
+            </Button>
+          </div>
+        </div>
+      )}
+    </Modal>
+  )
+}
+
+function AddReviewModal({ open, onClose }) {
+  const [form, setForm] = useState({ title: '', author: '', date: '', text: '' })
+  const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }))
+  return (
+    <ActionModal
+      open={open}
+      onClose={onClose}
+      title="Add a Review"
+      saveDisabled={!form.title.trim() || !form.date || !form.text.trim()}
+    >
+      <SectionHeading>Review details</SectionHeading>
+      <Field label="Book title" required>
+        <Input value={form.title} onChange={set('title')} />
+      </Field>
+      <Field label="Book author">
+        <Input value={form.author} onChange={set('author')} />
+      </Field>
+      <Field label="Date" required>
+        <DateInput value={form.date} onChange={set('date')} />
+      </Field>
+      <SectionHeading>Review</SectionHeading>
+      <Field label="Written review" required>
+        <Textarea rows={7} value={form.text} onChange={set('text')} />
+      </Field>
+    </ActionModal>
+  )
+}
+
+function EditInfoModal({ open, onClose, student }) {
+  const [first, last] = student.name.split(' ')
+  const [form, setForm] = useState({ first, last, grade: student.grade, emails: true })
+  return (
+    <ActionModal
+      open={open}
+      onClose={onClose}
+      title={`Edit ${first}`}
+      secondary="Remind me later"
+      saveDisabled={!form.first.trim()}
+    >
+      <Banner level="warning">
+        This reader&apos;s information was last updated on 01/04/2026 and may be out of date. You
+        should update their information before proceeding.
+      </Banner>
+      <Field label="Name" required>
+        <div className="bp-form-row">
+          <Input
+            value={form.first}
+            aria-label="First name"
+            onChange={(e) => setForm((f) => ({ ...f, first: e.target.value }))}
+          />
+          <Input
+            value={form.last}
+            aria-label="Last name"
+            onChange={(e) => setForm((f) => ({ ...f, last: e.target.value }))}
+          />
+        </div>
+      </Field>
+      <Field label="Grade">
+        <Select
+          value={form.grade}
+          onChange={(e) => setForm((f) => ({ ...f, grade: e.target.value }))}
+        >
+          {['4th Grade', '5th Grade', '6th Grade', '7th Grade', '8th Grade'].map((g) => (
+            <option key={g}>{g}</option>
+          ))}
+        </Select>
+      </Field>
+      <Field
+        label="Does this reader want to receive email notifications?"
+        help="If you disable email notifications, the account creator will not receive email notifications about rewards for this reader."
+      >
+        <Toggle checked={form.emails} onChange={(v) => setForm((f) => ({ ...f, emails: v }))}>
+          {form.emails ? 'Enabled' : 'Disabled'}
+        </Toggle>
+      </Field>
+    </ActionModal>
+  )
+}
+
+function AddNotesModal({ open, onClose }) {
+  const [notes, setNotes] = useState('')
+  return (
+    <ActionModal open={open} onClose={onClose} title="Add Notes" saveDisabled={!notes.trim()}>
+      <Field label="Notes" required>
+        <Textarea
+          rows={6}
+          placeholder="Notes"
+          value={notes}
+          onChange={(e) => setNotes(e.target.value)}
+        />
+      </Field>
+    </ActionModal>
+  )
+}
+
+function AdvisoryModal({ open, onClose }) {
+  const [recs, setRecs] = useState('no')
+  const [emails, setEmails] = useState('yes')
+  return (
+    <ActionModal open={open} onClose={onClose} title="Advisory Settings">
+      <Field label="Does this reader want to receive personalized recommendations?">
+        <Tabs variant="pill" size="sm" active={recs} onChange={setRecs} items={YES_NO} />
+      </Field>
+      <Field
+        label="Does this reader want to receive email notifications?"
+        help="If you disable email notifications, the account creator will not receive email notifications about rewards for this reader."
+      >
+        <Tabs variant="pill" size="sm" active={emails} onChange={setEmails} items={YES_NO} />
+      </Field>
+    </ActionModal>
+  )
+}
+
+function TransferModal({ open, onClose }) {
+  const [to, setTo] = useState('')
+  return (
+    <ActionModal open={open} onClose={onClose} title="Transfer Reader" saveDisabled={!to.trim()}>
+      <Field label="Who would you like to transfer this reader to?">
+        <Input
+          placeholder="Enter email or phone #…"
+          value={to}
+          onChange={(e) => setTo(e.target.value)}
+        />
+      </Field>
+    </ActionModal>
+  )
+}
+
+function StudentActions({ onClose, student }) {
+  const [action, setAction] = useState(null)
+  const close = () => setAction(null)
+  const items = ACTIONS_ITEMS.map((it) =>
+    it.action ? { ...it, onSelect: () => setAction(it.action) } : it,
+  )
+
   return (
     <div className="bp-student-actions">
       <Flyout
@@ -129,16 +304,24 @@ function StudentActions({ onClose }) {
         trigger={({ toggle }) => (
           <Button
             variant="secondary"
+            icon={<Icon name="dots" size={16} />}
             iconRight={
-              <Icon name="chevron-down" size={11} stroke={2.5} style={{ flexShrink: 0 }} />
+              <Icon
+                name="chevron-down"
+                size={11}
+                stroke={2.5}
+                className="bp-btn-caret"
+                style={{ flexShrink: 0 }}
+              />
             }
             onClick={toggle}
+            aria-label="Actions"
           >
-            Actions
+            <span className="bp-btn-label">Actions</span>
           </Button>
         )}
       >
-        {({ close }) => <DropdownMenu items={ACTIONS_ITEMS} onClose={close} />}
+        {({ close }) => <DropdownMenu items={items} onClose={close} />}
       </Flyout>
       <Flyout
         placement="bottom-end"
@@ -146,7 +329,13 @@ function StudentActions({ onClose }) {
           <Button
             variant="primary"
             iconRight={
-              <Icon name="chevron-down" size={11} stroke={2.5} style={{ flexShrink: 0 }} />
+              <Icon
+                name="chevron-down"
+                size={11}
+                stroke={2.5}
+                className="bp-btn-caret"
+                style={{ flexShrink: 0 }}
+              />
             }
             onClick={toggle}
           >
@@ -161,6 +350,12 @@ function StudentActions({ onClose }) {
           <Icon name="arrow-right" size={15} />
         </button>
       )}
+
+      <AddReviewModal open={action === 'review'} onClose={close} />
+      {student && <EditInfoModal open={action === 'edit'} onClose={close} student={student} />}
+      <AddNotesModal open={action === 'notes'} onClose={close} />
+      <AdvisoryModal open={action === 'advisory'} onClose={close} />
+      <TransferModal open={action === 'transfer'} onClose={close} />
     </div>
   )
 }
@@ -186,7 +381,7 @@ function StudentHeader({ student, onClose }) {
         </div>
       </div>
       <div className="bp-header-right">
-        <StudentActions onClose={onClose} />
+        <StudentActions onClose={onClose} student={student} />
       </div>
     </div>
   )
@@ -4340,15 +4535,6 @@ export default function BeanstackProfile() {
         <div
           className={`bp-profile-wrap${profileMode === 'full' ? ' bp-profile-wrap--full' : ''}${closing ? ' bp-profile-wrap--closing' : ''}`}
         >
-          {/* Mobile-only top bar — hidden on desktop via CSS */}
-          <div className="bp-profile-topbar">
-            <div className="bp-profile-topbar-title">
-              <span className="bp-profile-topbar-name">{student.name}</span>
-              <span className="bp-profile-topbar-grade">{student.grade}</span>
-            </div>
-            <StudentActions onClose={closeProfile} />
-          </div>
-
           <div className="bp-root">
             {/* The header spans the rail as well as the content — it identifies the
     whole panel, not just the page inside it. */}
