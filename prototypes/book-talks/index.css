@@ -130,12 +130,10 @@ button {
 }
 
 /* ─── Create view ───────────────────────────────────────────────────────── */
-/* The badge editor + row reuse Challenge Creator classes (.cc-panel,
-   .cc-badge-editor, .cc-badgepick…) whose tokens are normally scoped to
-   .cc-root. Re-declare them on the book-talks surfaces — the page column and
-   the portaled editor modal — so borders, dividers, and the badge-disc edit
-   pencil all render. */
-.bt-create,
+/* The page IS the Challenge Creator's Book Talks step, in the creator's own
+   chrome (`.cc-root` wraps it, so CC's design tokens apply). The badge editor
+   is portaled to <body> and lands OUTSIDE `.cc-root`, so it still needs the
+   tokens re-declared or its borders and edit pencil render blank. */
 .cc-badge-editor {
   --teal: #14b8a6;
   --teal-dk: #0d8a82;
@@ -145,48 +143,22 @@ button {
   --bg: var(--c-slate-100);
   --panel: #ffffff;
 }
-/* Full-bleed page (its own top bar + centered body) — matches the other tabs. */
-.bt-create {
-  background: var(--c-slate-100);
-  min-height: calc(100vh - 48px);
+/* `.cc-root` is `position: fixed; inset: 0 0 48px` in the creator, where it IS
+   the whole viewport. Here it has to sit below the demo toolbar — whose height
+   depends on its own content, so don't guess at an offset. Instead the root
+   becomes a viewport-height flex column for this view only and the creator
+   fills whatever the toolbar leaves, with room kept for the prototype nav. */
+.bt-root:has(> .bt-create) {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding-bottom: 48px;
+  overflow: hidden;
 }
-/* Centered single-column content under the wizard bar. */
-.bt-create-body {
-  max-width: 808px;
-  margin: 0 auto;
-  padding: 4px 24px 80px;
-}
-/* Header spacing — the shared .hero already carries its own padding-bottom +
-   divider + margin-bottom, so the step-head only needs top room (no extra
-   bottom padding stacking under the subhead). */
-.bt-create-body > .cc-step-head {
-  padding: 14px 0 0;
-}
-.bt-create-body > .cc-step-head .hero {
-  padding-bottom: 12px;
-  margin-bottom: 14px;
-}
-/* Faux Challenge Creator wizard rail — a full-width bar at the top of the
-   create view, like the nav/tab bars on the other tabs. */
-.bt-wizard-bar {
-  background: #fff;
-  border-bottom: 1px solid var(--c-gray-200);
-  padding: 14px max(24px, calc((100% - 1240px) / 2));
-}
-/* The shared Stepper stretches its connector lines to fill equal-flex items,
-   giving uneven gaps for different label widths — so size each step to its
-   content and use fixed-width connectors for an even, centered rhythm. */
-.bt-wizard-bar .stepper-list {
-  justify-content: center;
-}
-.bt-wizard-bar .stepper-item {
-  flex: 0 0 auto;
-}
-.bt-wizard-bar .stepper-line {
-  flex: 0 0 auto;
-  width: 20px;
-  min-width: 20px;
-  margin: 0 6px;
+.bt-create.cc-root {
+  position: static;
+  flex: 1 1 auto;
+  min-height: 0;
 }
 /* Panel head carries a title + sub line, so top-align it. */
 .bt-create .cc-panel-head {
@@ -209,66 +181,8 @@ button {
 }
 
 /* ─── Example-prompt chips (in the badge editor) ────────────────────────── */
-.bt-prompt-examples {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 7px;
-  margin-bottom: 9px;
-}
-.bt-prompt-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  border: 1.5px solid var(--c-border);
-  background: #fff;
-  color: var(--c-slate-600);
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 5px 11px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.12s;
-}
-.bt-prompt-chip svg {
-  color: #f59e0b;
-}
-.bt-prompt-chip:hover {
-  border-color: #94d5cf;
-  background: #fafdfd;
-}
-.bt-prompt-chip.is-on {
-  border-color: #14b8a6;
-  background: #f0fdfa;
-  color: #0c6b65;
-}
 
 /* The chosen prompt, shown read-only (Benny reads from it — teachers pick, not type). */
-.bt-prompt-selected {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-top: 11px;
-  padding: 12px 14px;
-  background: var(--c-slate-50);
-  border: 1px solid #e9eef3;
-  border-radius: 12px;
-}
-.bt-prompt-selected-benny {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: #fff;
-  border: 1.5px solid var(--c-border);
-  padding: 2px;
-  object-fit: contain;
-  flex-shrink: 0;
-}
-.bt-prompt-selected p {
-  margin: 0;
-  font-size: 13.5px;
-  color: var(--c-slate-700);
-  line-height: 1.5;
-}
 
 .bt-exchanges-field {
   display: flex;
@@ -574,8 +488,8 @@ button {
   padding: 28px max(24px, calc((100% - 1440px) / 2)) 80px;
 }
 
-/* Only Activity Badges is interactive here; the other tabs are shown for
-   context. Keep them clearly present (not heavily greyed) but inert. */
+/* Only Self-Started Sessions and All Book Talks are interactive here; the other
+   tabs are shown for context. Keep them clearly present (not greyed) but inert. */
 .bt-reviewx .sfr-tabs-bar .tab--disabled {
   opacity: 0.7;
   cursor: default !important;
@@ -928,37 +842,6 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-}
-/* The progress-dot tooltip lives inside the overflow-hidden modal — open it
-   downward + right-aligned so it stays within the modal, and let it wrap. */
-.bt-chat .ttp-bubble {
-  white-space: normal;
-  width: 220px;
-  text-align: left;
-  line-height: 1.4;
-}
-.bt-chat .ttp--bottom .ttp-bubble {
-  left: auto;
-  right: 0;
-  transform: translateY(-2px);
-}
-.bt-chat .ttp--bottom:hover .ttp-bubble,
-.bt-chat .ttp--bottom:focus-within .ttp-bubble {
-  transform: translateY(0);
-}
-.bt-chat-progress {
-  display: flex;
-  gap: 5px;
-}
-.bt-chat-progress-dot {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
-  transition: background 0.2s;
-}
-.bt-chat-progress-dot.is-done {
-  background: #fcd34d;
 }
 .bt-chat-close {
   border: 0;
@@ -1507,4 +1390,251 @@ button {
   .bt-stats {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+/* ─── Trigger 3: the self-started Book Talk ──────────────────────────────────
+   The reader starts the conversation. Benny therefore has to be findable — in
+   the app chrome, on the badges page, on a badge's requirement, and after a
+   reading log. */
+
+/* Entry point 1 — Benny floating on every page. */
+.bt-benny-fab {
+  position: fixed;
+  right: 24px;
+  /* Clears the prototype nav bar pinned along the bottom. */
+  bottom: 74px;
+  z-index: 40;
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 8px 16px 8px 8px;
+  border: 0;
+  border-radius: 999px;
+  background: #0d8a82;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgba(13, 138, 130, 0.34);
+  transition:
+    transform 0.14s ease,
+    box-shadow 0.14s ease;
+}
+.bt-benny-fab img {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+}
+.bt-benny-fab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 32px rgba(13, 138, 130, 0.42);
+}
+.bt-benny-fab-label {
+  white-space: nowrap;
+}
+
+/* Entry point 2 — the invitation above the badge grid. */
+.bt-selfstart {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  border: 1.5px solid #cdeae7;
+  background: linear-gradient(120deg, #f0fdfa 0%, #ecfdf5 100%);
+}
+.bt-selfstart-face {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+}
+.bt-selfstart-copy {
+  flex: 1;
+  min-width: 0;
+}
+.bt-selfstart-title {
+  font-size: 16.5px;
+  font-weight: 800;
+  color: #0b5d58;
+}
+.bt-selfstart-sub {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #0c6b65;
+  margin-top: 3px;
+  max-width: 62ch;
+}
+
+/* Entry point 3 — the requirement, stated on the badge itself. */
+.bt-rcard-req {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 9px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--c-slate-100);
+  color: var(--c-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+.bt-rcard-ring.is-done ~ .bt-rcard-req,
+.bt-rcard-foot.is-done {
+  color: #16a34a;
+}
+
+/* Entry point 4 — logging reading, then Benny asking to hear about it. */
+.bt-log {
+  position: relative;
+  width: 100%;
+  background: #fff;
+  padding: 30px 28px 26px;
+  text-align: center;
+}
+.bt-log-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(15, 23, 42, 0.06);
+  color: var(--c-slate-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.bt-log-close:hover {
+  background: rgba(15, 23, 42, 0.12);
+}
+.bt-log-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--c-slate-800);
+}
+.bt-log-fields {
+  display: grid;
+  gap: 14px;
+  text-align: left;
+  margin: 18px 0 20px;
+}
+.bt-log-benny-face {
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: block;
+}
+.bt-log-benny-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 11px;
+  margin-bottom: 12px;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #15803d;
+  font-size: 12.5px;
+  font-weight: 800;
+}
+.bt-log-sub {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--c-text-muted);
+  margin: 8px 0 20px;
+}
+.bt-log .btn {
+  width: 100%;
+  justify-content: center;
+}
+.bt-log-skip {
+  display: block;
+  margin: 12px auto 0;
+  border: 0;
+  background: none;
+  color: var(--c-text-subtle);
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.bt-log-skip:hover {
+  color: var(--c-slate-600);
+  text-decoration: underline;
+}
+
+/* In-chat: the topic picker chip + the reader's own way out. */
+.bt-chip--surprise {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff;
+  border-style: dashed;
+}
+.bt-chat-wrap {
+  display: block;
+  margin: 10px auto 0;
+  border: 0;
+  background: none;
+  color: var(--c-text-subtle);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.bt-chat-wrap:hover:not(:disabled) {
+  color: #0d8a82;
+  text-decoration: underline;
+}
+.bt-chat-wrap:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Celebration — a self-started talk can hand over more than one badge. */
+.bt-award-pops {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+.bt-award-pops .bt-award-pop {
+  margin: 0;
+}
+.bt-award-modal.is-multi .bt-award-pop {
+  width: 74px;
+  height: 74px;
+  margin: 0;
+}
+
+/* Where the reader stands when a talk counted but no badge tipped over yet. */
+.bt-award-note {
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #0c6b65;
+}
+
+/* ─── Site settings (the reused BTWB page) ───────────────────────────────── */
+/* Stands in for `.bw-root`: one content width for the page, and the
+   flex/height chain the AppShell sidebar needs to run full height. */
+.bt-settings {
+  --bw-page-w: 880px;
+
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 48px);
+  overflow: hidden;
+}
+
+/* The badge-type rows are plain text labels; the "New" pill on the Book Talk
+   row needs the label to lay out inline with a gap. */
+.bt-create .cc-setting-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
 }

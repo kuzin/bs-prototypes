@@ -60,7 +60,10 @@ const REVIEW_OPTIONS = [
   { value: 'yes', label: 'Yes' },
 ]
 
-export function LogFlow({ open, onClose, onLogged, connections = {} }) {
+// `onTalkToBenny` is optional and additive: pass it and the success step offers
+// a Book Talk about what was just logged (the self-started trigger reaching the
+// reader right after a log). Left off, the flow is exactly as it was.
+export function LogFlow({ open, onClose, onLogged, connections = {}, onTalkToBenny }) {
   const [step, setStep] = useState('search') // search | details | timer | review | success | reader
   const [returnStep, setReturnStep] = useState('search')
   const [reader, setReader] = useState(READER)
@@ -345,7 +348,12 @@ export function LogFlow({ open, onClose, onLogged, connections = {} }) {
           )}
 
           {step === 'success' && (
-            <SuccessStep result={result} bookTitle={bookTitle} onDone={onClose} />
+            <SuccessStep
+              result={result}
+              bookTitle={bookTitle}
+              onDone={onClose}
+              onTalkToBenny={onTalkToBenny}
+            />
           )}
         </div>
       </div>
@@ -920,7 +928,7 @@ function ReaderStep({ current, onSelect }) {
 
 // ─── Success / badge earned ───────────────────────────────────────────────────
 
-function SuccessStep({ result, bookTitle, onDone }) {
+function SuccessStep({ result, bookTitle, onDone, onTalkToBenny }) {
   const amount = result.measure === 'minutes' ? fmtMinutes(result.minutes) : `${result.pages} pages`
   return (
     <div className="lf-success">
@@ -954,9 +962,36 @@ function SuccessStep({ result, bookTitle, onDone }) {
         )}
       </div>
 
-      <Button variant="primary" size="lg" onClick={onDone}>
-        Done
-      </Button>
+      {/* Benny catches the reader here, while the book is still in mind. */}
+      {onTalkToBenny ? (
+        <>
+          <div className="lf-benny">
+            <img src="/bs-prototypes/benny-excited.svg" alt="" className="lf-benny-face" />
+            <div className="lf-benny-copy">
+              <div className="lf-benny-title">Want to tell me about it?</div>
+              <p className="lf-benny-sub">
+                A quick chat about what you just read — I’ll hand you any Book Talk badge you earn
+                along the way.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="primary"
+            size="lg"
+            icon={<Icon name="message-chatbot" size={18} />}
+            onClick={() => onTalkToBenny(result)}
+          >
+            Talk to Benny
+          </Button>
+          <button className="lf-benny-skip" onClick={onDone}>
+            Not right now
+          </button>
+        </>
+      ) : (
+        <Button variant="primary" size="lg" onClick={onDone}>
+          Done
+        </Button>
+      )}
     </div>
   )
 }

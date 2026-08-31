@@ -92,6 +92,10 @@ export const DEFAULT_SETTINGS = {
   onCompletion: true,
   completionKind: 'engagement',
   onWarning: true,
+  // Readers starting a talk on their own — site-wide, since it fires from
+  // outside any challenge, completion, or flagged log.
+  selfStart: true,
+  selfStartLimit: 3,
 }
 
 // ─── What the educator gets back ─────────────────────────────────────────────
