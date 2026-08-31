@@ -75,7 +75,7 @@
   flex-shrink: 0;
 }
 
-/* Source of the Benny conversation — "Activity Badge" book talks (a self-
+/* Source of the Benny conversation — "Self-Started" book talks (a reader-
    contained AI chat) vs the default post-logging check-in. */
 .sess-source-tag {
   display: inline-flex;

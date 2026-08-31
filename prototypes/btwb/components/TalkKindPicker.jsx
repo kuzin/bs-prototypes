@@ -9,7 +9,15 @@ import { TALK_KIND_OPTIONS } from '../data'
 // per surface. Each card is the type's name plus what that conversation actually
 // is; the blurbs come from TALK_KINDS so the picker, the upsell panel and the
 // talk itself all describe a type the same way.
-export function TalkKindPicker({ value, onChange, label, ariaLabel = 'Conversation type' }) {
+// `showNew` lets a consumer suppress the "New" tag on the newer talk type — a
+// prototype about a different feature shouldn't flag this one as its own news.
+export function TalkKindPicker({
+  value,
+  onChange,
+  label,
+  ariaLabel = 'Conversation type',
+  showNew = true,
+}) {
   return (
     <>
       {label && <h3 className="bw-subsetting-title">{label}</h3>}
@@ -29,7 +37,7 @@ export function TalkKindPicker({ value, onChange, label, ariaLabel = 'Conversati
               <span className="bw-kind-head">
                 <Icon name={k.icon} size={16} />
                 <span className="bw-kind-label">{k.label}</span>
-                {k.isNew && (
+                {k.isNew && showNew && (
                   <Pill color={k.color} variant="filled" size="sm">
                     New
                   </Pill>

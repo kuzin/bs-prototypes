@@ -985,3 +985,18 @@ button {
     padding: 22px 20px;
   }
 }
+
+/* A sub-setting that's just one small control: label left, dial right, one row. */
+.bw-subsetting--inline {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.bw-subsetting--inline > .bw-subsetting-title {
+  margin: 0;
+}
+.bw-subsetting .ninp {
+  width: 140px;
+  flex: 0 0 auto;
+}

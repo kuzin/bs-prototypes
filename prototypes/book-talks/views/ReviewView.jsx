@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
 import { BackBar } from '@components/BackBar/BackBar'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
@@ -19,19 +18,19 @@ const TABS = [
   { id: 'overview', label: 'Overview' },
   { id: 'flagged', label: 'Flagged Sessions' },
   { id: 'engagement', label: 'Engagement Sessions' },
-  { id: 'activity', label: 'Activity Badges' },
+  { id: 'self', label: 'Self-Started Sessions' },
   { id: 'all', label: 'All Book Talks' },
 ]
 
 // Teacher review — the Sessions for Review surface, mirrored (full-bleed header
-// bar, By Session/Reader toggle, tabbed views). Book Talk activity conversations
-// are a new Benny-conversation type, tagged "Activity Badge" in the reused SFR
-// table + detail modal.
+// bar, By Session/Reader toggle, tabbed views). Talks a reader started for
+// themselves are a new Benny-conversation type, tagged "Self-Started" in the
+// reused SFR table + detail modal.
 export function ReviewView({ badge }) {
   const [active, setActive] = useState(null)
-  // Land on Activity Badges — the focus of this prototype. The other Sessions-
-  // for-Review tabs are shown for context but left non-interactive.
-  const [tab, setTab] = useState('activity')
+  // Land on Self-Started Sessions — the focus of this prototype. The other
+  // Sessions-for-Review tabs are shown for context but left non-interactive.
+  const [tab, setTab] = useState('self')
   const [groupBy, setGroupBy] = useState('session')
   const [sessions, setSessions] = useState(() => buildReviewSessions(badge))
 
@@ -44,22 +43,22 @@ export function ReviewView({ badge }) {
   const red = sessions.filter((s) => s.engagementRating === 'red')
   const unfinished = sessions.filter((s) => s.status === 'unfinished')
   const completed = sessions.filter((s) => s.status === 'completed').length
-  // The Activity Badges tab is locked to activity-badge Book Talks (no source
+  // The Self-Started tab is locked to reader-initiated Book Talks (no source
   // switching). All Book Talks holds the full set, where source IS switchable.
-  const activitySessions = sessions.filter((s) => s.source === 'activity')
-  const activityCount = activitySessions.length
+  const selfSessions = sessions.filter((s) => s.source === 'self')
+  const selfCount = selfSessions.length
 
   const tabItems = TABS.map((t) => ({
     ...t,
-    // Activity Badges + All Book Talks are interactive; the rest are context.
-    disabled: t.id !== 'activity' && t.id !== 'all',
+    // Self-Started + All Book Talks are interactive; the rest are context.
+    disabled: t.id !== 'self' && t.id !== 'all',
     count:
       t.id === 'flagged'
         ? flagged.length
         : t.id === 'engagement'
           ? engagement.length
-          : t.id === 'activity'
-            ? activityCount
+          : t.id === 'self'
+            ? selfCount
             : t.id === 'all'
               ? sessions.length
               : undefined,
@@ -98,10 +97,6 @@ export function ReviewView({ badge }) {
               { id: 'reader', label: 'By Reader' },
             ]}
           />
-          <button className="sfr-settings-btn" title="Reading Integrity Settings">
-            <Icon name="settings" size={16} />
-            Settings
-          </button>
         </div>
       </div>
 
@@ -122,11 +117,10 @@ export function ReviewView({ badge }) {
             <div className="ov-summary">
               <BennyBubble>
                 Students had <strong>{sessions.length}</strong> Book Talks with me —{' '}
-                <strong>{activityCount}</strong> from the new Book Talk activity badge and the rest
-                after finishing a title — and completed <strong>{completed}</strong> so far. Most
-                were positively engaged in their reading; I flagged{' '}
-                <strong>{flagged.length}</strong> conversation{flagged.length === 1 ? '' : 's'} for
-                you to take a closer look at.
+                <strong>{selfCount}</strong> that readers started themselves and the rest after
+                finishing a title — and completed <strong>{completed}</strong> so far. Most were
+                positively engaged in their reading; I flagged <strong>{flagged.length}</strong>{' '}
+                conversation{flagged.length === 1 ? '' : 's'} for you to take a closer look at.
               </BennyBubble>
             </div>
             <div className="ov-grid">
@@ -180,7 +174,7 @@ export function ReviewView({ badge }) {
         ) : (
           <AllBTWBView
             key={tab}
-            sessions={tab === 'activity' ? activitySessions : sessions}
+            sessions={tab === 'self' ? selfSessions : sessions}
             groupBy={groupBy}
             defaultFilters={tabDefaultFilters}
             allowSourceFilter={tab === 'all'}

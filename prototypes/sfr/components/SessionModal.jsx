@@ -454,13 +454,13 @@ export function SessionModal({
           <div className="sm2-book-author">{d.book.author}</div>
           <div className="sm2-detail-rows">
             <div className="sm2-detail-row">
-              <span>{d.source === 'activity' ? 'Date' : 'Date Read'}</span>
+              <span>{d.source === 'self' ? 'Date' : 'Date Read'}</span>
               <span>{dateStr}</span>
             </div>
             <div className="sm2-detail-row">
-              <span>{d.source === 'activity' ? 'Activity' : 'Unit'}</span>
+              <span>{d.source === 'self' ? 'Activity' : 'Unit'}</span>
               <span>
-                {d.source === 'activity'
+                {d.source === 'self'
                   ? d.activityName || 'Book Talk'
                   : `${d.minutesLogged.toLocaleString()} Minutes`}
               </span>
@@ -724,9 +724,9 @@ export function SessionModal({
                   </div>
                 )}
 
-                {/* Activity-badge Book Talks run from a teacher-chosen prompt — show
-                it so the teacher knows what Benny was working from. */}
-                {d.source === 'activity' && d.promptText && (
+                {/* A self-started Book Talk runs from one of the conversation
+                starters — show it so the teacher knows what Benny worked from. */}
+                {d.source === 'self' && d.promptText && (
                   <div className="sm2-section">
                     <div className="sm2-section-head">
                       <span className="sm2-section-title">Conversation Prompt</span>
@@ -859,7 +859,7 @@ export function SessionModal({
         {/* Footer — session actions (Edit / Delete / Approve). Safety signal
             actions live in their own section above. Activity-badge Book Talks
             have no footer. */}
-        {d.source !== 'activity' ? (
+        {d.source !== 'self' ? (
           <div className="sm2-footer">
             <Button variant="secondary">Edit Session</Button>
             <div className="sm2-footer-actions">

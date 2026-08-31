@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { AppShell } from '@components/AppShell/AppShell'
 import { Banner } from '@components/Primitives/Primitives'
 import { SettingRow, SettingList } from '@components/SettingRow/SettingRow'
+import { NumberInput } from '@components/Form/Form'
 import { Icon } from '@components/Icon/Icon'
 import { Pill } from '@components/Pill/Pill'
 import { TalkKindPicker } from '../components/TalkKindPicker'
@@ -12,6 +13,7 @@ import '@components/Pill/Pill.css'
 import '@components/Primitives/Primitives.css'
 import '@components/BennyBubble/BennyBubble.css'
 import '@components/SettingRow/SettingRow.css'
+import '@components/Form/Form.css'
 
 // Sidebar = the production "Setup" section, the same nav the Roster Sync
 // Settings prototype renders. Book Talks with Benny gets its own item here
@@ -35,7 +37,18 @@ const SETUP_NAV = [
 // default whenever BTWB is on, so flipping the master toggle on here switches it
 // on too (see App.jsx's setSettings handler) — that's the "take the friction out
 // of the equation" behavior from Don's note, modeled as opt-out, not opt-in.
-export function SettingsView({ settings, onChange }) {
+// `newTags` names which rows wear a "New" pill. Each prototype flags what's new
+// to IT — book-talks is about the self-started trigger, so it passes just that
+// one rather than re-announcing this page's earlier additions.
+// `planPreview` shows the demo swap between a site that has BTWB and one that
+// doesn't. That's this prototype's own story; a consumer borrowing the page for
+// a different feature hides it.
+export function SettingsView({
+  settings,
+  onChange,
+  newTags = ['completion', 'kind', 'selfStart'],
+  planPreview = true,
+}) {
   const set = (patch) => onChange({ ...settings, ...patch })
   const off = !settings.btwbOn
   // Whether BTWB is on this site's plan at all. Swappable from the page header so
@@ -61,19 +74,25 @@ export function SettingsView({ settings, onChange }) {
           <h1 className="bw-h1">Book Talks with Benny</h1>
           {/* Demo affordance, not a real control — swaps between a site that has
             BTWB and one that doesn't. */}
-          <button
-            type="button"
-            className="bw-state-swap"
-            onClick={() => setEntitled((e) => !e)}
-            aria-pressed={!entitled}
-          >
-            <Icon name={entitled ? 'lock' : 'settings'} size={14} />
-            {entitled ? 'Preview: not on plan' : 'Preview: enabled site'}
-          </button>
+          {planPreview && (
+            <button
+              type="button"
+              className="bw-state-swap"
+              onClick={() => setEntitled((e) => !e)}
+              aria-pressed={!entitled}
+            >
+              <Icon name={entitled ? 'lock' : 'settings'} size={14} />
+              {entitled ? 'Preview: not on plan' : 'Preview: enabled site'}
+            </button>
+          )}
         </header>
 
         {/* A site without BTWB gets the pitch instead of the switches. */}
-        {!entitled ? <UpsellPanel /> : <SettingsBody settings={settings} set={set} off={off} />}
+        {!entitled ? (
+          <UpsellPanel />
+        ) : (
+          <SettingsBody settings={settings} set={set} off={off} newTags={newTags} />
+        )}
       </div>
     </AppShell>
   )
@@ -119,7 +138,8 @@ function UpsellPanel() {
 }
 
 // The configurable state — the settings this ticket is actually about.
-function SettingsBody({ settings, set, off }) {
+function SettingsBody({ settings, set, off, newTags }) {
+  const isNew = (key) => newTags.includes(key)
   return (
     <>
       {/* ── Master switch ─────────────────────────────────────────────────── */}
@@ -156,9 +176,11 @@ function SettingsBody({ settings, set, off }) {
             label={
               <span className="bw-row-label-new">
                 On book completions
-                <Pill color="#0E7490" variant="filled" size="sm">
-                  New
-                </Pill>
+                {isNew('completion') && (
+                  <Pill color="#0E7490" variant="filled" size="sm">
+                    New
+                  </Pill>
+                )}
               </span>
             }
             sub="Benny starts a talk every time a reader logs a book as complete, anywhere on the site — challenge or not."
@@ -172,9 +194,46 @@ function SettingsBody({ settings, set, off }) {
           {settings.onCompletion && !off && (
             <div className="bw-subsetting bw-subsetting--nested">
               <TalkKindPicker
+                showNew={isNew('kind')}
                 label="What kind of conversation should a completion talk be?"
                 value={settings.completionKind}
                 onChange={(id) => set({ completionKind: id })}
+              />
+            </div>
+          )}
+
+          {/* NEW — the reader-initiated trigger. The other two are scoped to the
+              thing that fires them (a completion, a suspicious log, a challenge);
+              a reader starting a talk on their own isn't inside any of those, so
+              Benny has to be reachable site-wide. It's also the master switch for
+              Book Talk badges: a challenge can only offer them when this is on. */}
+          <SettingRow
+            label={
+              <span className="bw-row-label-new">
+                Whenever a student wants
+                {isNew('selfStart') && (
+                  <Pill color="#0E7490" variant="filled" size="sm">
+                    New
+                  </Pill>
+                )}
+              </span>
+            }
+            sub="Readers can start a book talk with Benny on their own, any time — they don’t have to log a book first. Turning this on also enables Book Talk badges in challenges, which Benny awards for the conversations a reader has."
+            state={settings.selfStart ? 'On' : 'Off'}
+            checked={settings.selfStart}
+            onChange={(v) => set({ selfStart: v })}
+            disabled={off}
+          />
+
+          {/* A talk readers can start at will needs a bound. */}
+          {settings.selfStart && !off && (
+            <div className="bw-subsetting bw-subsetting--nested bw-subsetting--inline">
+              <div className="bw-subsetting-title">How many can a reader start in a day?</div>
+              <NumberInput
+                min={1}
+                max={10}
+                value={settings.selfStartLimit ?? 3}
+                onChange={(v) => set({ selfStartLimit: v })}
               />
             </div>
           )}

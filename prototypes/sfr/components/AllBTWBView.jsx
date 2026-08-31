@@ -72,7 +72,7 @@ export function AllBTWBView({
   const TYPE_LABELS = { flagged: 'Flagged', engagement: 'Engagement', approved: 'Approved' }
   const RATING_LABELS = { green: 'Positive', yellow: 'Mixed', red: 'Disengaged' }
   const STATUS_LABELS = { completed: 'Completed', unfinished: 'Unfinished' }
-  const SOURCE_LABELS = { activity: 'Activity Badge', title: 'Title Completion' }
+  const SOURCE_LABELS = { self: 'Self-Started', title: 'Title Completion' }
   const activeFilters = [
     ...(search ? [{ key: 'search', label: `"${search}"`, onClear: () => setSearch('') }] : []),
     ...(type !== 'all'
@@ -167,7 +167,7 @@ export function AllBTWBView({
             <FilterItem label="Source">
               <Select value={source} onChange={(e) => setSource(e.target.value)}>
                 <option value="all">All sources</option>
-                <option value="activity">Activity Badge</option>
+                <option value="self">Self-Started</option>
                 <option value="title">Title Completion</option>
               </Select>
             </FilterItem>

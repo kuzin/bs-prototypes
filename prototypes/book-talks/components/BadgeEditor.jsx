@@ -11,20 +11,24 @@ import '@components/SettingRow/SettingRow.css'
 
 // Blank draft for the create flow — mirrors the Challenge Creator editors,
 // which open empty (no art, no name) rather than pre-filled.
+// Not on the form any more: readers choose what to talk about at the start of a
+// Book Talk, and how much Benny needs before a talk counts is a system default
+// rather than a per-badge dial. Both stay on the model so the chat and the
+// teacher's review still have something to work from.
 const BLANK = {
   img: null,
   name: '',
   color: '#14B8A6',
-  promptId: '',
-  prompt: '',
+  promptId: EXAMPLE_PROMPTS[0].id,
+  prompt: EXAMPLE_PROMPTS[0].text,
+  talks: 1,
   minExchanges: 3,
   requireEngagement: true,
 }
 
-// The full "AI Chat Activity" badge editor, in a modal — the Book Talks twin of
-// the Challenge Creator's badge editor (same chrome, same disc-opens-gallery
-// flow). Everything that defines the badge lives here: art, name, Benny's
-// conversation prompt, and the completion bar. No book — students talk about
+// The Book Talk badge editor, in a modal — the twin of the Challenge Creator's
+// badge editor (same chrome, same disc-opens-gallery flow). What defines the
+// badge: art, name, and how many Book Talks with Benny earn it. No book — students talk about
 // whatever they've been reading (specific titles belong to Reading List
 // challenges).
 export function BadgeEditor({ open, initial, onSave, onCancel }) {
@@ -43,7 +47,7 @@ export function BadgeEditor({ open, initial, onSave, onCancel }) {
     }
   }
 
-  const valid = !!(draft.img && draft.name.trim() && draft.promptId)
+  const valid = !!(draft.img && draft.name.trim())
 
   return (
     <Modal open={open} onClose={onCancel} variant="center" ariaLabel="Book Talk badge editor">
@@ -117,51 +121,18 @@ export function BadgeEditor({ open, initial, onSave, onCancel }) {
                     onChange={(e) => set({ name: e.target.value })}
                   />
                 </Field>
-                <Field
-                  label={
-                    <>
-                      What should Benny talk about? <span className="cc-req">*</span>
-                    </>
-                  }
-                >
-                  <div
-                    className="bt-prompt-examples"
-                    role="group"
-                    aria-label="Conversation starters"
-                  >
-                    {EXAMPLE_PROMPTS.map((p) => (
-                      <button
-                        key={p.id}
-                        type="button"
-                        className={`bt-prompt-chip${draft.promptId === p.id ? ' is-on' : ''}`}
-                        onClick={() => set({ promptId: p.id, prompt: p.text })}
-                        title={p.text}
-                      >
-                        <Icon name="sparkles" size={12} />
-                        {p.label}
-                      </button>
-                    ))}
-                  </div>
-                  {draft.prompt && (
-                    <div className="bt-prompt-selected">
-                      <img
-                        src="/bs-prototypes/benny.png"
-                        alt=""
-                        className="bt-prompt-selected-benny"
-                      />
-                      <p>{draft.prompt}</p>
-                    </div>
-                  )}
-                </Field>
-                <Field label="Completed after">
+                {/* The badge is measured in conversations. */}
+                <Field label="Earned after">
                   <div className="bt-exchanges-field">
                     <NumberInput
-                      value={draft.minExchanges}
-                      min={2}
-                      max={8}
-                      onChange={(v) => set({ minExchanges: v })}
+                      value={draft.talks}
+                      min={1}
+                      max={10}
+                      onChange={(v) => set({ talks: v })}
                     />
-                    <span className="bt-exchanges-hint">exchanges</span>
+                    <span className="bt-exchanges-hint">
+                      Book {draft.talks === 1 ? 'Talk' : 'Talks'} with Benny
+                    </span>
                   </div>
                 </Field>
                 <SettingList>

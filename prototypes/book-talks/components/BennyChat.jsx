@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Modal } from '@components/Modal/Modal'
 import { Icon } from '@components/Icon/Icon'
-import { Tooltip } from '@components/Primitives/Primitives'
 import { ChatBubble, TypingBubble } from './ChatBubble'
 import {
   BENNY_OPENER,
@@ -15,6 +14,12 @@ import {
   isWeakAnswer,
   deriveScript,
   faceFor,
+  BENNY_SELF_OPENER,
+  BENNY_SELF_ACK,
+  BENNY_SELF_CLOSER,
+  SELF_TOPICS,
+  SURPRISE_TOPIC,
+  randomTopicId,
 } from '../data'
 
 import { synthesizeVoice, stripForSpeech, DEFAULT_VOICE_ID, VOICES, hasVoiceKey } from '../voice'
@@ -31,7 +36,15 @@ import '@components/Primitives/Primitives.css'
 // he gives an encouraging heads-up, and if the chat really isn't getting there
 // he kindly ends it and offers a "Try again". (Flags are recorded for the
 // teacher's review elsewhere, not shown here.)
-export function BennyChat({ badge, open, onClose, onComplete }) {
+//
+// `selfStart` flips this into a reader-initiated talk: nothing assigned it, so
+// Benny opens by asking what they want to talk about.
+//
+// Badges are measured in CONVERSATIONS, not answers — so a finished talk is one
+// unit of credit either way. `onComplete()` runs when the talk counts and
+// returns `{ badges, note }`: whichever badges that conversation just earned,
+// and where the reader stands on the next one. The celebration renders that.
+export function BennyChat({ badge, open, onClose, onComplete, selfStart = false }) {
   const [messages, setMessages] = useState([])
   const [typing, setTyping] = useState(false)
   const [good, setGood] = useState(0) // solid answers — advance + count toward the badge
@@ -41,7 +54,11 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
   const [done, setDone] = useState(false)
   const [draft, setDraft] = useState('')
   const [awarded, setAwarded] = useState(false)
-  const [voiceOn, setVoiceOn] = useState(true) // Benny reads his messages aloud (TTS)
+  const [topicId, setTopicId] = useState(null) // self-started: the topic the reader picked
+  const [result, setResult] = useState(null) // { badges, note } — what this talk earned
+  // Read-aloud is off until the reader asks for it — no audio starts on its own
+  // when the chat opens. Switching it on reads Benny's current line.
+  const [voiceOn, setVoiceOn] = useState(false)
   const [voiceId, setVoiceId] = useState(DEFAULT_VOICE_ID) // which ElevenLabs voice
   const [speakingIdx, setSpeakingIdx] = useState(null) // which message is "playing"
   const [listening, setListening] = useState(false) // voice-to-text capture
@@ -58,8 +75,13 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
   const voiceRef = useRef(voiceId) // latest selected voice (for queued lines)
   const spokenRef = useRef(-1) // last message index auto-read (guards re-reads)
 
+  // How many solid answers make this conversation count — the same bar whether
+  // the reader was sent here by a badge or came looking for Benny themselves.
   const need = badge.minExchanges
-  const script = useMemo(() => deriveScript(badge.promptId), [badge.promptId])
+  const script = useMemo(
+    () => deriveScript(selfStart ? topicId : badge.promptId),
+    [selfStart, topicId, badge.promptId],
+  )
 
   const after = useCallback((ms, fn) => {
     const t = setTimeout(fn, ms)
@@ -216,6 +238,25 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
     [after],
   )
 
+  // Two Benny messages back to back (a greeting then a question, a badge
+  // callout then the next question). Typing stays up until the last line lands,
+  // so the composer can't open in the gap and let the student answer a message
+  // Benny hasn't sent yet.
+  const sayBennySeq = useCallback(
+    (lines) => {
+      setTyping(true)
+      let at = 0
+      lines.forEach((l, i) => {
+        at += l.delay
+        after(at, () => {
+          if (i === lines.length - 1) setTyping(false)
+          setMessages((m) => [...m, { role: 'benny', text: l.text, emotion: l.emotion || 'happy' }])
+        })
+      })
+    },
+    [after],
+  )
+
   // Reset and (re)start the conversation — used on open and on "Try again".
   const start = useCallback(() => {
     timers.current.forEach(clearTimeout)
@@ -236,11 +277,19 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
     setAwarded(false)
     setSpeakingIdx(null)
     setListening(false)
-    sayBenny(BENNY_OPENER(), 500, 'excited')
-    after(1700, () =>
-      setMessages((m) => [...m, { role: 'benny', text: script[0].q, emotion: 'happy' }]),
-    )
-  }, [after, sayBenny, script, stopAudio])
+    setTopicId(null)
+    setResult(null)
+    // Self-started: Benny has no assigned prompt, so he asks what they'd like
+    // to talk about and waits for the reader to steer.
+    if (selfStart) {
+      sayBenny(BENNY_SELF_OPENER, 500, 'excited')
+      return
+    }
+    sayBennySeq([
+      { text: BENNY_OPENER(), delay: 500, emotion: 'excited' },
+      { text: script[0].q, delay: 1300 },
+    ])
+  }, [sayBenny, sayBennySeq, script, stopAudio, selfStart])
 
   // Close the whole experience — dismiss the award modal and the chat together.
   const finish = useCallback(() => {
@@ -279,6 +328,30 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
     speak(idx, messages[idx].text, { interrupt: false })
   }, [messages, voiceOn, speak])
 
+  // Self-started talks have no assigned prompt — the reader picks the starter
+  // (or types their own opening line) and Benny runs that question script.
+  function pickTopic(label, id) {
+    const topic = id ?? randomTopicId()
+    const s = deriveScript(topic)
+    const chosen = SELF_TOPICS.find((t) => t.id === topic)?.label || label
+    setTopicId(topic)
+    setMessages((m) => [...m, { role: 'student', text: label }])
+    sayBennySeq([
+      { text: BENNY_SELF_ACK(chosen), delay: 900, emotion: 'excited' },
+      { text: s[0].q, delay: 1400 },
+    ])
+  }
+
+  // A self-started talk is the reader's, so they can step out of it early —
+  // before Benny has enough for the conversation to count.
+  function wrapUp() {
+    if (done || typing) return
+    stopAudio()
+    setDone(true)
+    sayBenny(BENNY_SELF_CLOSER, 1000, 'laughing')
+    after(2700, () => onClose?.())
+  }
+
   function send(text) {
     const value = (text ?? draft).trim()
     if (!value || done || failed || typing) return
@@ -286,6 +359,11 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
     // speaks cleanly (turn-taking) rather than queueing behind stale audio.
     stopAudio()
     setDraft('')
+    // The first thing a reader says in a self-started talk is the topic.
+    if (selfStart && !topicId) {
+      pickTopic(value, null)
+      return
+    }
     const weakAnswer = isWeakAnswer(value)
     setMessages((m) => [...m, { role: 'student', text: value }])
 
@@ -308,19 +386,21 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
 
     const nextGood = good + 1
     setGood(nextGood)
+    const nextQ = () => script[Math.min(nextGood, script.length - 1)].q
+
     if (nextGood >= need) {
-      // Bar met → close out the chat, then pop the "Badge earned!" modal once
-      // Benny's closing message has had a beat to land.
+      // The conversation counts → close it out, then pop the celebration once
+      // Benny's closing message has had a beat to land. The parent decides what
+      // this one talk earned and hands it back.
       setDone(true)
-      sayBenny(BENNY_CLOSER, 1100, 'laughing')
+      sayBenny(selfStart ? BENNY_SELF_CLOSER : BENNY_CLOSER, 1100, 'laughing')
       after(2600, () => {
+        setResult(onComplete?.() ?? { badges: [] })
         setAwarded(true)
-        onComplete?.()
       })
     } else {
       // Ask the next derived question (fall back to the last one if we run out).
-      const q = script[Math.min(nextGood, script.length - 1)].q
-      sayBenny(q, 1100, 'happy')
+      sayBenny(nextQ(), 1100, 'happy')
     }
   }
 
@@ -330,6 +410,12 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
   const lowChip = LOW_EFFORT_SUGGESTIONS[(good + weak) % LOW_EFFORT_SUGGESTIONS.length]
   const showSuggestions =
     !typing && !done && !failed && !listening && messages.at(-1)?.role === 'benny'
+  // Self-started: before a topic is chosen the chips ARE the topic picker.
+  const pickingTopic = selfStart && !topicId
+  // What the finished conversation earned (empty = it counted, but no badge
+  // tipped over yet — the note says where the reader stands instead).
+  const prizes = result?.badges ?? []
+  const accent = prizes[0]?.color || badge.color
 
   // The header avatar mirrors Benny's live mood: thinking while he composes,
   // otherwise the expression of his most recent message.
@@ -419,7 +505,9 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
           <div className="bt-chat-head">
             <div className="bt-chat-head-benny">
               <img src={faceFor(headMood)} alt="" className="bt-chat-head-avatar" />
-              <div className="bt-chat-head-title">Book Talk with Benny</div>
+              <div className="bt-chat-head-title">
+                {selfStart ? 'Talking with Benny' : 'Book Talk with Benny'}
+              </div>
             </div>
             <div className="bt-chat-head-right">
               {hasVoiceKey() && (
@@ -449,16 +537,6 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
               >
                 <Icon name={voiceOn ? 'volume' : 'volume-off'} size={15} />
               </button>
-              <Tooltip
-                placement="bottom"
-                content={`Your progress — keep chatting with Benny to earn the badge (${Math.min(good, need)} of ${need} so far).`}
-              >
-                <div className="bt-chat-progress">
-                  {Array.from({ length: need }).map((_, i) => (
-                    <span key={i} className={`bt-chat-progress-dot${i < good ? ' is-done' : ''}`} />
-                  ))}
-                </div>
-              </Tooltip>
               <button className="bt-chat-close" onClick={onClose} aria-label="Close">
                 <Icon name="x" size={16} stroke={2.2} />
               </button>
@@ -483,14 +561,37 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
             <div className="bt-chat-foot">
               {showSuggestions && (
                 <div className="bt-chat-suggestions">
-                  {activeStep.suggestions.map((s) => (
-                    <button key={s} className="bt-chip" onClick={() => send(s)}>
-                      {s}
-                    </button>
-                  ))}
-                  <button className="bt-chip bt-chip--weak" onClick={() => send(lowChip)}>
-                    {lowChip}
-                  </button>
+                  {pickingTopic ? (
+                    <>
+                      {SELF_TOPICS.map((t) => (
+                        <button
+                          key={t.id}
+                          className="bt-chip"
+                          onClick={() => pickTopic(t.label, t.id)}
+                        >
+                          {t.label}
+                        </button>
+                      ))}
+                      <button
+                        className="bt-chip bt-chip--surprise"
+                        onClick={() => pickTopic(SURPRISE_TOPIC, null)}
+                      >
+                        <Icon name="sparkles" size={13} />
+                        {SURPRISE_TOPIC}
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      {activeStep.suggestions.map((s) => (
+                        <button key={s} className="bt-chip" onClick={() => send(s)}>
+                          {s}
+                        </button>
+                      ))}
+                      <button className="bt-chip bt-chip--weak" onClick={() => send(lowChip)}>
+                        {lowChip}
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
               {failed ? (
@@ -536,6 +637,12 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
                   </button>
                 </form>
               )}
+              {/* Nobody assigned this talk, so the reader decides when it ends. */}
+              {selfStart && !!topicId && !failed && (
+                <button className="bt-chat-wrap" onClick={wrapUp} disabled={typing}>
+                  That’s all for now
+                </button>
+              )}
             </div>
           )}
         </div>
@@ -543,30 +650,43 @@ export function BennyChat({ badge, open, onClose, onComplete }) {
 
       {/* Celebration — pops over the finished chat. */}
       <Modal open={awarded} onClose={finish} variant="center" ariaLabel="Badge earned">
-        <div className="bt-award-modal">
+        <div className={`bt-award-modal${prizes.length > 1 ? ' is-multi' : ''}`}>
           <button className="bt-award-modal-close" onClick={finish} aria-label="Close">
             <Icon name="x" size={16} stroke={2.2} />
           </button>
-          <div className="bt-award-pop" style={badge.img ? undefined : { background: badge.color }}>
-            {badge.img ? (
-              <img src={badge.img} alt="" />
-            ) : (
-              <Icon name="award" size={36} color="#fff" />
-            )}
-            <span className="bt-award-spark bt-award-spark--1">
-              <Icon name="sparkles" size={16} color={badge.color} />
-            </span>
-            <span className="bt-award-spark bt-award-spark--2">
-              <Icon name="star-filled" size={12} color="#F59E0B" />
-            </span>
+          <div className="bt-award-pops">
+            {(prizes.length ? prizes : [{ img: faceFor('laughing') }]).map((p, i) => (
+              <div
+                key={i}
+                className="bt-award-pop"
+                style={p.img ? undefined : { background: p.color || accent }}
+              >
+                {p.img ? <img src={p.img} alt="" /> : <Icon name="award" size={36} color="#fff" />}
+                {i === 0 && (
+                  <>
+                    <span className="bt-award-spark bt-award-spark--1">
+                      <Icon name="sparkles" size={16} color={accent} />
+                    </span>
+                    <span className="bt-award-spark bt-award-spark--2">
+                      <Icon name="star-filled" size={12} color="#F59E0B" />
+                    </span>
+                  </>
+                )}
+              </div>
+            ))}
           </div>
-          <div className="bt-award-title">Badge earned!</div>
-          <div className="bt-award-name">{badge.name}</div>
-          <button
-            className="bt-award-modal-btn"
-            onClick={finish}
-            style={{ background: badge.color }}
-          >
+          <div className="bt-award-title">
+            {prizes.length > 1
+              ? `${prizes.length} badges earned!`
+              : prizes.length
+                ? 'Badge earned!'
+                : 'Book Talk complete!'}
+          </div>
+          {!!prizes.length && (
+            <div className="bt-award-name">{prizes.map((p) => p.name).join(' · ')}</div>
+          )}
+          {!!result?.note && <div className="bt-award-note">{result.note}</div>}
+          <button className="bt-award-modal-btn" onClick={finish} style={{ background: accent }}>
             Awesome!
           </button>
         </div>

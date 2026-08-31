@@ -155,6 +155,9 @@ export const DEFAULT_BADGE = {
   color: '#14B8A6',
   promptId: EXAMPLE_PROMPTS[0].id,
   prompt: EXAMPLE_PROMPTS[0].text,
+  // The requirement is a number of CONVERSATIONS. `minExchanges` is the smaller
+  // dial underneath: how much Benny needs before one of them counts.
+  talks: 1,
   minExchanges: 3,
   requireEngagement: true,
 }
@@ -522,8 +525,8 @@ export const STATUS_LABELS = {
 // ─── Sessions for Review integration ─────────────────────────────────────────
 // Reshape the Book Talk students into the Sessions-for-Review session shape so
 // the teacher review reuses the SFR table + modal. These carry `source:
-// 'activity'` — a NEW Benny-conversation type (the self-contained Book Talk
-// badge) alongside SFR's default post-logging check-ins.
+// 'self'` — a NEW Benny-conversation type (a talk the reader started
+// themselves) alongside SFR's default post-logging check-ins.
 
 const SESSION_GRADES = { s1: '5th', s2: '4th', s3: '3rd', s4: '5th', s5: '4th', s6: '3rd' }
 const SESSION_DATES = {
@@ -534,15 +537,15 @@ const SESSION_DATES = {
   s5: '2026-06-13',
   s6: '2026-06-10',
 }
-// Where each Benny conversation came from: the new self-contained Book Talk
-// "activity" badge, or a post-logging "title" completion (the existing trigger).
+// Where each Benny conversation came from: the new reader-initiated "self"
+// talk, or a post-logging "title" completion (the existing trigger).
 const SESSION_SOURCE = {
   s1: 'title',
-  s2: 'activity',
-  s3: 'activity',
+  s2: 'self',
+  s3: 'self',
   s4: 'title',
-  s5: 'activity',
-  s6: 'activity',
+  s5: 'self',
+  s6: 'self',
 }
 
 // SFR session.type = engagement | flagged | both (engagement/integrity lens).
@@ -562,13 +565,13 @@ export const buildReviewSessions = (badge = DEFAULT_BADGE) => {
   const preset = EXAMPLE_PROMPTS.find((p) => p.id === badge.promptId)
   const promptText = badge.prompt || preset?.text
   return STUDENTS.filter((s) => s.conversation.length > 0).map((s) => {
-    const source = SESSION_SOURCE[s.id] || 'activity'
+    const source = SESSION_SOURCE[s.id] || 'self'
     return {
       id: s.id,
       source,
       activityName,
-      // Only the self-contained activity badge runs from a Benny prompt.
-      promptText: source === 'activity' ? promptText : undefined,
+      // Only a self-started talk runs from a Benny conversation prompt.
+      promptText: source === 'self' ? promptText : undefined,
       student: {
         id: s.id,
         name: s.name,
@@ -593,3 +596,31 @@ export const buildReviewSessions = (badge = DEFAULT_BADGE) => {
     }
   })
 }
+
+// ─── Trigger 3: the self-started Book Talk ───────────────────────────────────
+// The reader starts the conversation themselves — from the app chrome, from the
+// badges page, from a badge's requirement, or off the back of a reading log.
+// Nothing assigned it, so Benny opens by asking what they feel like talking
+// about, then auto-credits every Book Talk badge the conversation earns.
+
+export const BENNY_SELF_OPENER =
+  "Hey — you came to find me! I love that. 🌱 I'm always up for talking books. What do you feel like chatting about?"
+
+// The topics a reader can choose from are the same conversation starters
+// teachers pick from — the reader just gets to pick for themselves.
+export const SELF_TOPICS = EXAMPLE_PROMPTS.map((p) => ({ id: p.id, label: p.label }))
+export const SURPRISE_TOPIC = 'Surprise me!'
+export const randomTopicId = () =>
+  EXAMPLE_PROMPTS[Math.floor(Math.random() * EXAMPLE_PROMPTS.length)].id
+
+export const BENNY_SELF_ACK = (label) => `${label} — great pick. Let's get into it! 😊`
+
+// Benny names a badge the moment the conversation earns it, and points at the
+// next one still in reach.
+export const BENNY_GOAL_HIT = (name, next) =>
+  next
+    ? `Ooh — that's enough to earn your “${name}” badge! 🎉 And if you keep going a bit longer, “${next}” is in reach too.`
+    : `And that does it — “${name}” is yours! 🎉 What a great talk.`
+
+export const BENNY_SELF_CLOSER =
+  'Thanks for coming to find me — I loved hearing all that. 🎉 Come back anytime!'

@@ -824,6 +824,12 @@ export function getSteps({ mode, role, type }) {
     { id: 'details', name: BASE_STEP_NAMES.details },
   ]
   if (type?.setup && isReadingList) steps.push(setupStep)
+  // Book Talks (AI reading conversations) — logging-style challenges at schools
+  // only. It sits BEFORE badges: a Book Talk can be a badge's requirement, so
+  // you decide whether Benny is involved before you build the badges.
+  if (type?.primaryMethod === 'log' && role?.site === 'school') {
+    steps.push({ id: 'bookTalks', name: 'Book Talks' })
+  }
   steps.push({ id: 'badges', name: BASE_STEP_NAMES.badges })
   // Rewards/tickets/certificates: full creators only (MS+, public librarian).
   // Teacher/MS (simple) can't access rewards in the creator, per Beanstack's
@@ -831,10 +837,6 @@ export function getSteps({ mode, role, type }) {
   const showRewards = mode === 'challenge' && role?.tier === 'full'
   if (showRewards) steps.push({ id: 'rewards', name: BASE_STEP_NAMES.rewards })
   if (type?.setup && !isReadingList) steps.push(setupStep)
-  // Book Talks (AI reading conversations) — logging-style challenges at schools only.
-  if (type?.primaryMethod === 'log' && role?.site === 'school') {
-    steps.push({ id: 'bookTalks', name: 'Book Talks' })
-  }
   // Completion, unless it's implicit (bingo).
   if (!type?.autoComplete) steps.push({ id: 'completion', name: BASE_STEP_NAMES.completion })
   return steps

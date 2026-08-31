@@ -398,7 +398,7 @@ export function SessionsTable({
   hideStudentColumns = false,
   onClearFilters,
 }) {
-  // Show a Source column when sessions carry an origin (Activity Badge book
+  // Show a Source column when sessions carry an origin (self-started book
   // talks vs. post-logging title completions). Off for plain BTWB lists.
   const showSource = sessions.some((s) => s.source)
   // Show a Safety column when any session carries a safety signal (Safety
@@ -492,10 +492,10 @@ export function SessionsTable({
             key: 'source',
             label: 'Source',
             render: (_, row) => {
-              const activity = row.source === 'activity'
+              const selfStarted = row.source === 'self'
               return (
-                <span className={`sess-source-tag${activity ? '' : ' sess-source-tag--title'}`}>
-                  {activity ? 'Activity Badge' : 'Title Completion'}
+                <span className={`sess-source-tag${selfStarted ? '' : ' sess-source-tag--title'}`}>
+                  {selfStarted ? 'Self-Started' : 'Title Completion'}
                 </span>
               )
             },
