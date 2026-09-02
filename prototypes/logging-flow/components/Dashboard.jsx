@@ -6,10 +6,15 @@ import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { Flyout } from '@components/Flyout/Flyout'
 
-import { READER, CHALLENGES, TOP_SCHOOLS, TOP_GRADES } from '../data'
-import { CONNECTION_IDS } from '../connections'
-import { ConnectBanner, PartnerSwitcher, AutoLoggedCard } from './ConnectionBits'
-import { SettingsPage } from './SettingsPage'
+import {
+  ConnectBanner,
+  PartnerSwitcher,
+  AutoLoggedCard,
+} from '@components/PartnerConnect/PartnerConnect'
+import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+
+import { READER, CHALLENGES, TOP_SCHOOLS, TOP_GRADES, BOOKS } from '../data'
+import { CONNECTION_LIST, autoLoggedRows } from '../connections'
 import { ReadingLog } from './ReadingLog'
 
 // Reuse the consumer web-app dashboard styling (the logging flow opens on top
@@ -76,6 +81,7 @@ function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartne
         <div className="wa-topbar-user">
           {/* "Swap between the two at any time using the logo in the top right." */}
           <PartnerSwitcher
+            partners={CONNECTION_LIST}
             connections={connections}
             onManage={onManageConnections}
             onVisit={onVisitPartner}
@@ -291,10 +297,11 @@ export function Dashboard({
   // the reader's Personalize Reader page, where App Integrations live; the
   // Reading Log tab opens the log itself.
   const [view, setView] = useState('challenges')
-  // Banners the reader has waved off this session (each partner separately).
-  const [dismissed, setDismissed] = useState([])
+  // One banner covers every partner still to link, so waving it off is one
+  // decision rather than one per app.
+  const [dismissed, setDismissed] = useState(false)
 
-  const toLink = CONNECTION_IDS.filter((id) => !connections[id] && !dismissed.includes(id))
+  const toLink = dismissed ? [] : CONNECTION_LIST.filter((p) => !connections[p.id])
 
   return (
     <div className="wa-shell">
@@ -312,22 +319,20 @@ export function Dashboard({
           {view === 'log' ? (
             <ReadingLog />
           ) : view === 'settings' ? (
-            <SettingsPage
+            <PersonalizeReader
               reader={READER}
+              partners={CONNECTION_LIST}
               connections={connections}
               onLink={onLinkPartner}
               onDisconnect={onDisconnectPartner}
             />
           ) : (
             <>
-              {toLink.map((id) => (
-                <ConnectBanner
-                  key={id}
-                  partnerId={id}
-                  onLink={() => onLinkPartner?.(id)}
-                  onDismiss={() => setDismissed((d) => [...d, id])}
-                />
-              ))}
+              <ConnectBanner
+                partners={toLink}
+                onLink={onLinkPartner}
+                onDismiss={() => setDismissed(true)}
+              />
               <StreakBanner streak={streak} onLog={onLog} />
               <div className="wa-layout">
                 <section className="wa-content">
@@ -364,7 +369,7 @@ export function Dashboard({
                 </section>
                 <div className="wa-rail">
                   <GoalCard dailyGoal={dailyGoal} />
-                  <AutoLoggedCard connections={connections} />
+                  <AutoLoggedCard className="wa-card" rows={autoLoggedRows(connections, BOOKS)} />
                   <LeaderboardCard />
                 </div>
               </div>

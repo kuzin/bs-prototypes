@@ -3,10 +3,10 @@ import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 
 import { Dashboard } from './components/Dashboard'
 import { LogFlow } from './components/LogFlow'
-import { ConnectFlow } from './components/ConnectFlow'
-import { PartnerCatalog } from './components/PartnerSite'
-import { STREAK, DAILY_GOAL, READER } from './data'
-import { partnerMinutes } from './connections'
+import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
+import { BookCover } from './components/BookCover'
+import { STREAK, DAILY_GOAL, READER, BOOKS } from './data'
+import { CONNECTIONS, TAKEN_USERNAMES, partnerMinutes } from './connections'
 import './index.css'
 
 export function App() {
@@ -69,15 +69,18 @@ export function App() {
       />
       {visiting && connections[visiting] && (
         <PartnerCatalog
-          partnerId={visiting}
+          partner={CONNECTIONS[visiting]}
           account={connections[visiting].account}
+          titles={Object.values(BOOKS).filter((b) => b.partner === visiting)}
+          renderCover={(b) => <BookCover book={b} size="lg" />}
           onBack={() => setVisiting(null)}
         />
       )}
       {linking && (
         <ConnectFlow
-          partnerId={linking}
+          partner={CONNECTIONS[linking]}
           reader={READER}
+          takenUsernames={TAKEN_USERNAMES}
           onCancel={() => setLinking(null)}
           onLinked={handleLinked}
         />

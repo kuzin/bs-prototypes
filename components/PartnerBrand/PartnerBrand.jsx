@@ -8,9 +8,9 @@ import '@components/PartnerBrand/PartnerBrand.css'
  *   <PartnerBrand id="comicsplus" />          // full lockup (mark + wordmark)
  *   <PartnerMark id="comicsplus" size={26} /> // square app mark
  *
- * Comics Plus renders its real brand assets from `/public/comicsplus`; the
- * others are tasteful wordmark approximations (partner logos are often
- * delivered inline, so approximating keeps the prototype self-contained).
+ * Comics Plus, Scholastic, and Beeverso render their real brand assets from
+ * `/public/<partner>`; the rest are tasteful wordmark approximations (partner
+ * logos are often delivered inline, so approximating keeps this self-contained).
  */
 export const PARTNER_BRANDS = {
   comicsplus: {
@@ -32,6 +32,22 @@ export const PARTNER_BRANDS = {
     // The wordmark is white-on-red, so it needs no plate on dark chrome.
     solidWordmark: true,
   },
+  beeverso: {
+    id: 'beeverso',
+    name: 'Beeverso',
+    accent: '#662D91',
+    soft: '#F4EDFA',
+    // Real lockup from beeverso.org. The shipped asset sets "verso" in white for
+    // their purple chrome, so `Wordmark.png` is the same file with those letters
+    // recolored to ink for light backgrounds, and `Mark.png` is the "bee" script.
+    mark: '/bs-prototypes/beeverso/Mark.png',
+    wordmark: '/bs-prototypes/beeverso/Wordmark.png',
+    wordmarkInvert: '/bs-prototypes/beeverso/Wordmark-white.png',
+    lockupWordmark: true,
+    // The mark is transparent script, not a solid tile — it needs a plate to
+    // stay legible on avatars and colored chrome.
+    markPlate: true,
+  },
   sora: {
     id: 'sora',
     name: 'Sora',
@@ -51,18 +67,25 @@ export function PartnerBrand({ id, size = 'md', invert = false, wordmarkOnly = f
   if (!p) return null
 
   // A wordmark that carries its own solid plate (Scholastic's white-on-red bar)
-  // needs neither a separate mark nor a backing plate on dark chrome. A dark-ink
-  // wordmark (Comics Plus) gets a white plate instead of being recolored — which
-  // is how Comics Plus present it themselves.
-  const plate = invert && !p.solidWordmark
-  const showMark = Boolean(p.mark) && !wordmarkOnly && !p.solidWordmark && !invert
-  const cls = `pb-brand pb-brand--${size}${plate ? ' pb-brand--plate' : ''}`
+  // needs no backing plate on dark chrome, and neither does one that ships a
+  // purpose-made light-on-dark asset (Beeverso's `wordmarkInvert`). A dark-ink
+  // wordmark with no inverse (Comics Plus) gets a white plate instead of being
+  // recolored — which is how Comics Plus present it themselves.
+  const word = (invert && p.wordmarkInvert) || p.wordmark
+  const plate = invert && !p.solidWordmark && !p.wordmarkInvert
+  // `lockupWordmark` means the wordmark asset already draws the mark (Beeverso's
+  // "bee" is the b in "beeverso"), so pairing it with one would double it up.
+  const showMark =
+    Boolean(p.mark) && !wordmarkOnly && !p.solidWordmark && !p.lockupWordmark && !invert
+  const cls = `pb-brand pb-brand--${size}${plate ? ' pb-brand--plate' : ''}${
+    p.lockupWordmark ? ' pb-brand--lockup' : ''
+  }`
 
-  if (p.wordmark) {
+  if (word) {
     return (
       <span className={`${cls} pb-brand--asset`} aria-label={p.name}>
         {showMark && <img src={p.mark} alt="" className="pb-brand-mark" />}
-        <img src={p.wordmark} alt={p.name} className="pb-brand-word" />
+        <img src={word} alt={p.name} className="pb-brand-word" />
       </span>
     )
   }
@@ -84,7 +107,14 @@ export function PartnerMark({ id, size = 22 }) {
   if (!p) return null
   if (p.mark) {
     return (
-      <img src={p.mark} alt={p.name} className="pb-mark" style={{ width: size, height: size }} />
+      <img
+        src={p.mark}
+        alt={p.name}
+        className={`pb-mark${p.markPlate ? ' pb-mark--plate' : ''}`}
+        // The plate's inset has to be computed here: a percentage padding would
+        // resolve against the *container's* width, not the mark's.
+        style={{ width: size, height: size, padding: p.markPlate ? Math.round(size * 0.1) : 0 }}
+      />
     )
   }
   return (

@@ -44,6 +44,7 @@ const ICON_NAMES = {
   btwb: 'message-chatbot',
   gameboard: 'dice-5',
   'gameboard-reader': 'route',
+  beeverso: 'plug-connected', // an account plugged into Beanstack
 }
 
 const ICONS = Object.fromEntries(
