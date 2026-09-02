@@ -163,4 +163,13 @@ export const PROTOTYPES = [
     accent: '#662D91',
     description: 'Link a Beeverso account — Spanish reading logs itself in Beanstack.',
   },
+  {
+    id: 'words-with-benny',
+    name: 'Words with Benny',
+    section: 'Experiments',
+    href: '/bs-prototypes/words-with-benny/',
+    accent: '#7C3AED',
+    description:
+      'Vocabulary words unlocked by logging reading — collect them, and let educators see the growth',
+  },
 ]

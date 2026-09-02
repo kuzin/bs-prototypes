@@ -1,0 +1,421 @@
+/* The post-log word unlock — a full-bleed moment, same footprint as the log
+   flow's own overlay so it reads as the next beat of the same interaction. */
+
+.wb-unlock {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  background:
+    radial-gradient(900px 520px at 50% -8%, rgba(124, 58, 237, 0.5), transparent 70%),
+    linear-gradient(180deg, #1b1436 0%, #120e26 100%);
+}
+
+.wb-unlock-close {
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 0;
+  border-radius: 999px;
+}
+.wb-unlock-close:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+.wb-unlock-inner {
+  /* `margin: auto` (not align-items alone) so content taller than the
+     viewport still scrolls from the top instead of clipping. */
+  width: 100%;
+  max-width: 560px;
+  margin: auto;
+  padding: 40px 20px 48px;
+  text-align: center;
+  color: #fff;
+}
+
+/* ─── Beat 1: the knock ─────────────────────────────────────────────────── */
+
+.wb-knock-benny {
+  width: 88px;
+  height: 88px;
+  animation: wb-bob 2.6s ease-in-out infinite;
+}
+@keyframes wb-bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+.wb-knock-kicker {
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #d8b4fe;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.wb-knock-h1 {
+  margin-top: 8px;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+.wb-knock-h1 em {
+  font-style: normal;
+  color: #fcd34d;
+}
+.wb-knock-sub {
+  margin-top: 10px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+/* The sealed card. It's the only target on the screen, so it's big. */
+.wb-envelope {
+  position: relative;
+  display: block;
+  width: 208px;
+  margin: 30px auto 0;
+  padding: 0;
+  background: none;
+  border: 0;
+}
+.wb-envelope-glow {
+  position: absolute;
+  inset: -22px;
+  background: radial-gradient(closest-side, rgba(252, 211, 77, 0.42), transparent 72%);
+  animation: wb-pulse 2.2s ease-in-out infinite;
+}
+@keyframes wb-pulse {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.94);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+.wb-envelope-face {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  aspect-ratio: 3 / 2;
+  color: #4c1d95;
+  background: linear-gradient(160deg, #fef3c7 0%, #fde68a 55%, #fbbf24 100%);
+  border-radius: 16px;
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.34),
+    inset 0 0 0 3px rgba(255, 255, 255, 0.5);
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
+}
+.wb-envelope:hover .wb-envelope-face {
+  transform: translateY(-4px) rotate(-1.2deg);
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.4);
+}
+.wb-envelope:active .wb-envelope-face {
+  transform: translateY(-1px) scale(0.985);
+}
+.wb-envelope:focus-visible .wb-envelope-face {
+  outline: 3px solid #fff;
+  outline-offset: 3px;
+}
+.wb-envelope-hint {
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* ─── Beat 2: the word card ─────────────────────────────────────────────── */
+
+.wb-card {
+  padding: 26px 22px 24px;
+  color: #1e293b;
+  text-align: left;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34);
+  animation: wb-in 260ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+@keyframes wb-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+
+.wb-card-head {
+  text-align: center;
+}
+.wb-card-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #6d28d9;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #f3e8ff;
+  border-radius: 999px;
+}
+.wb-word {
+  margin-top: 12px;
+  font-size: 38px;
+  font-weight: 900;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  color: #0f172a;
+}
+.wb-word-say {
+  margin-top: 5px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #7c3aed;
+}
+.wb-word-part {
+  font-weight: 600;
+  color: #94a3b8;
+}
+.wb-word-meaning {
+  margin-top: 10px;
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #334155;
+}
+
+/* Benny's line tying the word back to the book — the whole premise of the
+   feature, so it gets its own tinted band rather than being body copy. */
+.wb-why {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin-top: 16px;
+  padding: 12px 13px;
+  background: #f8fafc;
+  border: 1px solid #e8eef5;
+  border-radius: 13px;
+}
+.wb-why-benny {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+}
+.wb-why-text {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.wb-check {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 1px solid #eef2f7;
+}
+.wb-check-prompt {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.wb-check-prompt strong {
+  color: #7c3aed;
+}
+.wb-check-options {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 12px;
+}
+
+.wb-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px 13px;
+  font-size: 14.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #334155;
+  text-align: left;
+  background: #fff;
+  border: 1.5px solid #dbe4ee;
+  border-radius: 12px;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+.wb-option:hover:not(:disabled) {
+  background: #faf7ff;
+  border-color: #c4b5fd;
+}
+.wb-option:disabled {
+  cursor: default;
+}
+.wb-option.is-right {
+  color: #065f46;
+  background: #ecfdf5;
+  border-color: #34d399;
+}
+.wb-option.is-wrong {
+  color: #7f1d1d;
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.wb-option-mark {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  border: 1.5px solid #cbd5e1;
+  border-radius: 999px;
+}
+.wb-option.is-right .wb-option-mark {
+  color: #fff;
+  background: #10b981;
+  border-color: #10b981;
+}
+.wb-option.is-wrong .wb-option-mark {
+  color: #fff;
+  background: #ef4444;
+  border-color: #ef4444;
+}
+
+.wb-nudge {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #92400e;
+}
+.wb-nudge-benny {
+  width: 26px;
+  height: 26px;
+}
+
+/* ─── Beat 3: collected ─────────────────────────────────────────────────── */
+
+.wb-done {
+  animation: wb-in 260ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.wb-done-burst {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 132px;
+  height: 132px;
+  margin: 0 auto;
+}
+.wb-done-burst::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  background: radial-gradient(closest-side, rgba(252, 211, 77, 0.5), transparent 70%);
+}
+.wb-done-benny {
+  position: relative;
+  width: 104px;
+  height: 104px;
+}
+.wb-done-h1 {
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+}
+.wb-done-h1 em {
+  font-style: normal;
+  color: #fcd34d;
+}
+.wb-done-sub {
+  margin-top: 8px;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.76);
+}
+.wb-done-sub strong {
+  color: #fff;
+}
+
+.wb-done-card {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin: 22px auto 24px;
+  padding: 16px 18px;
+  color: #1e293b;
+  text-align: left;
+  background: #fff;
+  border-radius: 15px;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
+}
+.wb-done-word {
+  font-size: 21px;
+  font-weight: 900;
+  color: #6d28d9;
+}
+.wb-done-meaning {
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+}
+.wb-done-from {
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.wb-done-skip {
+  display: block;
+  margin: 14px auto 0;
+  padding: 6px 10px;
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.72);
+  background: none;
+  border: 0;
+}
+.wb-done-skip:hover {
+  color: #fff;
+}
+
+@media (max-width: 560px) {
+  .wb-unlock-inner {
+    padding: 40px 14px 60px;
+  }
+  .wb-knock-h1 {
+    font-size: 25px;
+  }
+  .wb-word {
+    font-size: 32px;
+  }
+}

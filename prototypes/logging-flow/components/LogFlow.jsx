@@ -60,10 +60,11 @@ const REVIEW_OPTIONS = [
   { value: 'yes', label: 'Yes' },
 ]
 
-// `onTalkToBenny` is optional and additive: pass it and the success step offers
-// a Book Talk about what was just logged (the self-started trigger reaching the
-// reader right after a log). Left off, the flow is exactly as it was.
-export function LogFlow({ open, onClose, onLogged, connections = {}, onTalkToBenny }) {
+// `onTalkToBenny` and `onOpenWord` are optional and additive: pass either and
+// the success step offers a next beat on what was just logged — a Book Talk
+// about it, or the vocabulary word it unlocked (Words with Benny). Left off,
+// the flow is exactly as it was.
+export function LogFlow({ open, onClose, onLogged, connections = {}, onTalkToBenny, onOpenWord }) {
   const [step, setStep] = useState('search') // search | details | timer | review | success | reader
   const [returnStep, setReturnStep] = useState('search')
   const [reader, setReader] = useState(READER)
@@ -353,6 +354,7 @@ export function LogFlow({ open, onClose, onLogged, connections = {}, onTalkToBen
               bookTitle={bookTitle}
               onDone={onClose}
               onTalkToBenny={onTalkToBenny}
+              onOpenWord={onOpenWord}
             />
           )}
         </div>
@@ -928,7 +930,7 @@ function ReaderStep({ current, onSelect }) {
 
 // ─── Success / badge earned ───────────────────────────────────────────────────
 
-function SuccessStep({ result, bookTitle, onDone, onTalkToBenny }) {
+function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
   const amount = result.measure === 'minutes' ? fmtMinutes(result.minutes) : `${result.pages} pages`
   return (
     <div className="lf-success">
@@ -982,6 +984,30 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny }) {
             onClick={() => onTalkToBenny(result)}
           >
             Talk to Benny
+          </Button>
+          <button className="lf-benny-skip" onClick={onDone}>
+            Not right now
+          </button>
+        </>
+      ) : onOpenWord ? (
+        <>
+          {/* Same catch-them-here moment, spent on a word from the book. */}
+          <div className="lf-benny">
+            <img src="/bs-prototypes/benny-excited.svg" alt="" className="lf-benny-face" />
+            <div className="lf-benny-copy">
+              <div className="lf-benny-title">I found a word in there</div>
+              <p className="lf-benny-sub">
+                One word from {bookTitle}, about ten seconds of your time, and it’s yours to keep.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="primary"
+            size="lg"
+            icon={<Icon name="vocabulary" size={18} />}
+            onClick={() => onOpenWord(result)}
+          >
+            Unlock My Word
           </Button>
           <button className="lf-benny-skip" onClick={onDone}>
             Not right now

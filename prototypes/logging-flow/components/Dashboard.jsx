@@ -35,7 +35,16 @@ function BeanstackLogo() {
   )
 }
 
-function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartner, view, onView }) {
+function TopBar({
+  onLog,
+  connections,
+  onManageConnections,
+  onHome,
+  onVisitPartner,
+  view,
+  onView,
+  extraTabs = [],
+}) {
   return (
     <header className="wa-topbar">
       <div className="wa-topbar-inner">
@@ -100,7 +109,7 @@ function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartne
         <Tabs
           variant="underline"
           size="md"
-          active={view === 'log' ? 'log' : 'challenges'}
+          active={view === 'challenges' || view === 'settings' ? 'challenges' : view}
           accent="#1A6DD5"
           onChange={onView}
           items={[
@@ -110,6 +119,7 @@ function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartne
             { id: 'reviews', label: 'Reviews' },
             { id: 'badges', label: 'All Badges' },
             { id: 'log', label: 'Reading Log' },
+            ...extraTabs,
           ]}
         />
       </div>
@@ -283,6 +293,12 @@ function Footer() {
   )
 }
 
+/**
+ * `extraTabs`, `renderExtra`, `railTop` and `view`/`onView` are optional and
+ * additive — they let another prototype hang its own tab (and rail card) off
+ * this real dashboard instead of cloning it. Words with Benny uses them to put
+ * "My Words" next to the Reading Log. Left off, the page is exactly as it was.
+ */
 export function Dashboard({
   streak,
   dailyGoal,
@@ -291,12 +307,21 @@ export function Dashboard({
   onLinkPartner,
   onDisconnectPartner,
   onVisitPartner,
+  extraTabs = [],
+  renderExtra,
+  railTop,
+  view: viewProp,
+  onView: onViewProp,
 }) {
   const [scope, setScope] = useState('current')
-  // 'challenges' | 'settings' | 'log' — the gear (and "Manage connections") opens
-  // the reader's Personalize Reader page, where App Integrations live; the
-  // Reading Log tab opens the log itself.
-  const [view, setView] = useState('challenges')
+  // 'challenges' | 'settings' | 'log' | any `extraTabs` id — the gear (and
+  // "Manage connections") opens the reader's Personalize Reader page, where App
+  // Integrations live; the Reading Log tab opens the log itself. A parent can
+  // drive the view instead, to deep-link straight to one of its extra tabs.
+  const [viewState, setViewState] = useState('challenges')
+  const view = viewProp ?? viewState
+  const setView = onViewProp ?? setViewState
+  const extraIds = extraTabs.map((t) => t.id)
   // One banner covers every partner still to link, so waving it off is one
   // decision rather than one per app.
   const [dismissed, setDismissed] = useState(false)
@@ -312,11 +337,14 @@ export function Dashboard({
         onHome={() => setView('challenges')}
         onVisitPartner={onVisitPartner}
         view={view}
-        onView={(id) => setView(id === 'log' ? 'log' : 'challenges')}
+        onView={(id) => setView(id === 'log' || extraIds.includes(id) ? id : 'challenges')}
+        extraTabs={extraTabs}
       />
       <main className="wa-main">
         <div className="wa-main-inner">
-          {view === 'log' ? (
+          {extraIds.includes(view) ? (
+            renderExtra?.(view)
+          ) : view === 'log' ? (
             <ReadingLog />
           ) : view === 'settings' ? (
             <PersonalizeReader
@@ -368,6 +396,7 @@ export function Dashboard({
                   </div>
                 </section>
                 <div className="wa-rail">
+                  {railTop}
                   <GoalCard dailyGoal={dailyGoal} />
                   <AutoLoggedCard className="wa-card" rows={autoLoggedRows(connections, BOOKS)} />
                   <LeaderboardCard />

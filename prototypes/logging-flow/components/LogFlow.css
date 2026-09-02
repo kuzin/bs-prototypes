@@ -918,9 +918,9 @@
   color: #0f7a8a;
 }
 
-/* ─── Optional Benny hand-off (only when `onTalkToBenny` is passed) ──────────
-   The self-started Book Talk trigger reaching the reader right after a log,
-   while the book is still fresh. */
+/* ─── Optional Benny hand-off (`onTalkToBenny` / `onOpenWord`) ──────────────
+   Benny catching the reader right after a log, while the book is still fresh —
+   a self-started Book Talk, or the vocabulary word the log just unlocked. */
 .lf-benny {
   display: flex;
   align-items: center;

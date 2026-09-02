@@ -1,0 +1,141 @@
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family:
+    'Nunito',
+    'Trebuchet MS',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background: #f3f4f6;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+p {
+  margin: 0;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.wb-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* ─── Dev/preview toolbar ──────────────────────────────────────────────────
+   Walks the whole loop in one screen: log → unlock → collect → report. Same
+   slim dark bar the other multi-persona prototypes use. */
+
+.wb-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 7px 14px;
+  color: #e2e8f0;
+  background: #14102a;
+  border-bottom: 1px solid #2a2350;
+}
+.wb-toolbar-brand {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
+  align-items: center;
+}
+.wb-toolbar-benny {
+  width: 22px;
+  height: 22px;
+}
+.wb-toolbar-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -0.01em;
+}
+
+.wb-toolbar-views {
+  display: flex;
+  flex: 1 1 auto;
+  gap: 4px;
+  overflow-x: auto;
+}
+.wb-toolbar-view {
+  display: inline-flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  align-items: center;
+  padding: 6px 11px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #a5b0c8;
+  white-space: nowrap;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+}
+.wb-toolbar-view:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+.wb-toolbar-view.is-active {
+  color: #fff;
+  background: #7c3aed;
+}
+.wb-toolbar-hint {
+  flex: 0 0 auto;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #6f7a95;
+}
+
+.wb-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ─── Educator shell ──────────────────────────────────────────────────────
+   AppShell is `height: 100%; overflow: hidden` and expects its content column
+   to do the scrolling. Pin the shell between the preview toolbar and
+   PrototypeNav and let .ew-content scroll, or the whole document scrolls and
+   drags the sidebar off screen (same fix insights makes). */
+.wb-edu-shell {
+  position: fixed;
+  top: 39px;
+  right: 0;
+  bottom: 48px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+}
+.wb-edu-shell > .app-shell {
+  flex: 1;
+  min-height: 0;
+}
+/* Qualified so it beats .app-shell-content { overflow: hidden } whatever the
+   CSS bundle order turns out to be. */
+.wb-edu-shell .ew-content {
+  overflow-y: auto;
+}

@@ -1,0 +1,214 @@
+import { useState } from 'react'
+
+import { Button } from '@components/Button/Button'
+
+import { WordUnlock } from '../../words-with-benny/components/WordUnlock'
+import { MyWords, WordTile } from '../../words-with-benny/components/MyWords'
+import { WordsRailCard } from '../../words-with-benny/components/WordsRailCard'
+import { EducatorWords } from '../../words-with-benny/components/EducatorWords'
+import { StudentWords } from '../../words-with-benny/components/StudentWords'
+import { READER, SEED_COLLECTION, WORDS_BY_BOOK } from '../../words-with-benny/data'
+import { Variant } from './_shared'
+
+// The rail card borrows `.wa-card` from the consumer dashboard it's injected
+// into, so pull that page's stylesheet in the way the other groups do.
+import '../../web-app/index.css'
+
+const noop = () => {}
+
+// Beat 1 → 2 → 3 of the unlock, driven for real rather than mocked per stage.
+function WordUnlockDemo() {
+  const [open, setOpen] = useState(false)
+  const [count, setCount] = useState(SEED_COLLECTION.length)
+  return (
+    <div style={{ padding: 20 }}>
+      <Button variant="primary" size="sm" onClick={() => setOpen(true)}>
+        Open the unlock moment →
+      </Button>
+      <WordUnlock
+        open={open}
+        word={WORDS_BY_BOOK.rump[2]}
+        bookId="rump"
+        collectedCount={count}
+        onCollect={() => setCount((n) => n + 1)}
+        onClose={() => setOpen(false)}
+        onSeeAll={() => setOpen(false)}
+      />
+    </div>
+  )
+}
+
+function StudentWordsDemo() {
+  const [id, setId] = useState(null)
+  return (
+    <div style={{ padding: 20, display: 'flex', gap: 10 }}>
+      <Button variant="primary" size="sm" onClick={() => setId('zoe')}>
+        Open a strong collector →
+      </Button>
+      <Button variant="secondary" size="sm" onClick={() => setId('devon')}>
+        Open a student barely started →
+      </Button>
+      <StudentWords studentId={id} onClose={() => setId(null)} />
+    </div>
+  )
+}
+
+function RailCardDemo() {
+  return (
+    <div style={{ padding: 20, background: '#f3f4f6' }}>
+      <div style={{ width: 300 }}>
+        <WordsRailCard collection={SEED_COLLECTION} logsSinceWord={1} onOpen={noop} />
+      </div>
+    </div>
+  )
+}
+
+// Newest (rung as new) · a plain collected word · one from a magazine issue.
+const TILE_CASES = [
+  { entry: SEED_COLLECTION[SEED_COLLECTION.length - 1], isNew: true },
+  { entry: SEED_COLLECTION[10], isNew: false },
+  { entry: SEED_COLLECTION[3], isNew: false },
+]
+
+export const wordsWithBennySections = [
+  {
+    group: 'words-with-benny',
+    id: 'wb-unlock',
+    name: 'WordUnlock',
+    desc: (
+      <>
+        The post-log moment, in three beats. <strong>knock</strong> — Benny turns up with a sealed
+        card naming the book that was just logged, and the card is the only target on the screen.{' '}
+        <strong>card</strong> — the word, how to say it, what it means, and the line tying it back
+        to the book, then one check: which of three sentences uses it correctly. A wrong pick is
+        marked and nudged rather than penalised, and the reader stays on the card until they get it.{' '}
+        <strong>done</strong> — banked, with the running count. Whether it took one try is the
+        signal the educator roll-up reports as first-try accuracy.
+        <br />
+        <br />
+        Props: <code>open</code>, <code>word</code>, <code>bookId</code>,{' '}
+        <code>collectedCount</code>, <code>onCollect</code>, <code>onClose</code>,{' '}
+        <code>onSeeAll</code>. With no <code>bookId</code> (a manual or untitled log) the copy falls
+        back to &ldquo;what you just read&rdquo;.
+      </>
+    ),
+    render: () => (
+      <Variant label="knock → card → collected" bare>
+        <WordUnlockDemo />
+      </Variant>
+    ),
+  },
+  {
+    group: 'words-with-benny',
+    id: 'wb-word-tile',
+    name: 'WordTile',
+    desc: (
+      <>
+        One collected word in the reader&apos;s collection — the word, its pronunciation and part of
+        speech, the kid-facing meaning, and the book it came from. The book title ellipsizes rather
+        than wrapping, so tiles stay the same height in a grid. <code>isNew</code> rings the word
+        banked seconds ago, which is what returning from the unlock lands on.
+      </>
+    ),
+    render: () => (
+      <Variant label="new · collected · from a magazine" full>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
+            gap: 12,
+            padding: 20,
+            background: '#f3f4f6',
+          }}
+        >
+          {TILE_CASES.map((c) => (
+            <WordTile key={c.entry.word} entry={c.entry} isNew={c.isNew} />
+          ))}
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'words-with-benny',
+    id: 'wb-rail-card',
+    name: 'WordsRailCard',
+    desc: (
+      <>
+        The collection&apos;s front door on the challenges page, injected into logging-flow&apos;s
+        dashboard rail through its <code>railTop</code> slot — so it borrows that page&apos;s{' '}
+        <code>.wa-card</code> shell and styles only its own internals. Carries the three most recent
+        words and how many logs stand between the reader and the next one, which is what makes the
+        &ldquo;every couple of logs&rdquo; cadence legible before it fires.
+      </>
+    ),
+    render: () => (
+      <Variant label="16 collected, a word due on the next log" bare>
+        <RailCardDemo />
+      </Variant>
+    ),
+  },
+  {
+    group: 'words-with-benny',
+    id: 'wb-my-words',
+    name: 'MyWords',
+    desc: (
+      <>
+        The personal vocabulary collection — the brief&apos;s &ldquo;growing personal record,
+        analogous to a reading log&rdquo;, which is why it lives as a tab beside the Reading Log
+        rather than on a page of its own. A stat strip over a tile grid, groupable{' '}
+        <strong>by book</strong> and searchable across word, meaning and title. Owns no page chrome:
+        it renders inside the dashboard&apos;s content column exactly as <code>ReadingLog</code>
+        does.
+      </>
+    ),
+    render: () => (
+      <Variant label="all words — inside the dashboard content column" full>
+        <div style={{ padding: '0 20px 20px', background: '#f3f4f6' }}>
+          <MyWords collection={SEED_COLLECTION} reader={READER} newestWord="suspicion" />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'words-with-benny',
+    id: 'wb-student-words',
+    name: 'StudentWords',
+    desc: (
+      <>
+        The per-student half of the educator view: the same collection the student sees, plus the
+        numbers a teacher actually asks about — words, this week, first-try accuracy, and where they
+        sit against the class median. Words that took more than one try are tagged{' '}
+        <code>retried</code>. Opens over the roster in a side <code>Modal</code> rather than
+        navigating away, so comparing two students stays cheap. Props: <code>studentId</code>,{' '}
+        <code>onClose</code>.
+      </>
+    ),
+    render: () => (
+      <Variant label="a strong collector · a student barely started" bare>
+        <StudentWordsDemo />
+      </Variant>
+    ),
+  },
+  {
+    group: 'words-with-benny',
+    id: 'wb-educator-words',
+    name: 'EducatorWords',
+    desc: (
+      <>
+        The classroom roll-up. Built almost entirely from shared parts — <code>StatCard</code>/
+        <code>ChartCard</code>, <code>BarList</code>, <code>TrendChart</code>, <code>Table</code>,
+        pill <code>Tabs</code> — so the only new thing here is what it chooses to say. It leads with
+        the promise (<em>nothing here was assigned</em>) because the problem the feature exists to
+        solve is educator effort, then plots words collected against reading logs to show the two
+        moving together. <strong>Classroom</strong> is the at-a-glance half;{' '}
+        <strong>Students</strong> is the sortable roster that drills into <code>StudentWords</code>.
+        Props: <code>onOpenStudent</code>.
+      </>
+    ),
+    render: () => (
+      <Variant label="classroom roll-up + roster" full>
+        <EducatorWords onOpenStudent={noop} />
+      </Variant>
+    ),
+  },
+]
