@@ -8,7 +8,7 @@ import { Collections } from '../../words-with-benny/components/Collections'
 import { WordsRailCard } from '../../words-with-benny/components/WordsRailCard'
 import { EducatorWords } from '../../words-with-benny/components/EducatorWords'
 import { StudentWords } from '../../words-with-benny/components/StudentWords'
-import { READER, SEED_COLLECTION, WORDS_BY_BOOK } from '../../words-with-benny/data'
+import { SEED_COLLECTION, WORDS_BY_BOOK } from '../../words-with-benny/data'
 import { Variant } from './_shared'
 
 // The rail card borrows `.wa-card` from the consumer dashboard it's injected
@@ -168,7 +168,7 @@ export const wordsWithBennySections = [
     render: () => (
       <Variant label="words · badges · achievements" full>
         <div style={{ padding: '0 20px 20px', background: '#f3f4f6' }}>
-          <Collections collection={SEED_COLLECTION} reader={READER} newestWord="suspicion" />
+          <Collections collection={SEED_COLLECTION} newestWord="suspicion" />
         </div>
       </Variant>
     ),

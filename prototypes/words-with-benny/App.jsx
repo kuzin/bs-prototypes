@@ -17,7 +17,6 @@ import { StudentWords } from './components/StudentWords'
 import { WordsRailCard } from './components/WordsRailCard'
 import {
   BOOKS,
-  READER,
   RECENTLY_LOGGED,
   SEED_COLLECTION,
   STREAK,
@@ -48,7 +47,7 @@ const OWN_BOOKS = { books: BOOKS, recentlyLogged: RECENTLY_LOGGED }
 // `short` is what the preview bar's strip swaps to before it would overflow.
 const VIEWS = [
   { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
-  { id: 'words', label: 'Reader · Collections', short: 'Collections', icon: 'vocabulary' },
+  { id: 'words', label: 'Reader · My Collections', short: 'Collections', icon: 'vocabulary' },
   { id: 'educator', label: 'Educator · Vocabulary', short: 'Educator', icon: 'chart-bar' },
 ]
 
@@ -176,11 +175,9 @@ export function App() {
             }}
             // Collections supersedes the built-in "All Badges" tab — words,
             // badges and achievements are one destination, not three.
-            extraTabs={[{ id: 'collections', label: 'Collections' }]}
+            extraTabs={[{ id: 'collections', label: 'My Collections' }]}
             hideTabs={['badges']}
-            renderExtra={() => (
-              <Collections collection={collection} reader={READER} newestWord={newestWord} />
-            )}
+            renderExtra={() => <Collections collection={collection} newestWord={newestWord} />}
             railTop={
               <WordsRailCard
                 collection={collection}

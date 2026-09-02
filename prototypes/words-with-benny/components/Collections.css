@@ -17,14 +17,6 @@
   font-weight: 800;
   color: var(--c-text);
 }
-.co-sub {
-  max-width: 62ch;
-  margin-top: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.45;
-  color: var(--c-text-muted);
-}
 
 /* Benny's coach line — a light note, the same register as the log's
    `.rl-importnote`, rather than a panel floating on a gradient. */

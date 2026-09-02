@@ -46,7 +46,7 @@ function AchievementCard({ item }) {
   )
 }
 
-export function Collections({ collection, reader, newestWord }) {
+export function Collections({ collection, newestWord }) {
   const [pane, setPane] = useState('words')
   const earned = BADGES.filter((b) => !b.locked).length
 
@@ -56,11 +56,7 @@ export function Collections({ collection, reader, newestWord }) {
           row, no coloured banner. */}
       <header className="co-head">
         <div className="co-head-copy">
-          <h1 className="co-title">{reader.name}’s Collections</h1>
-          <p className="co-sub">
-            Everything you’ve picked up by reading — words, badges and milestones. Nobody assigned
-            any of it.
-          </p>
+          <h1 className="co-title">My Collections</h1>
         </div>
         <div className="co-benny">
           <img src="/bs-prototypes/benny-happy.svg" alt="" className="co-benny-face" />
