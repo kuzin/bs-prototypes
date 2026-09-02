@@ -520,14 +520,16 @@ function SinglePartnerBanner({ partner: p, onLink, onDismiss }) {
         <strong>{p.bannerText}</strong>
         <span className="cn-banner-pitch">{p.pitch}</span>
       </div>
-      <button
-        className="cn-banner-cta"
-        style={{ color: brand.accent, borderColor: brand.accent }}
-        onClick={() => onLink?.(p.id)}
-      >
-        Link Accounts
-      </button>
-      <BannerDismiss onDismiss={onDismiss} />
+      <div className="cn-banner-actions">
+        <button
+          className="cn-banner-cta"
+          style={{ color: brand.accent, borderColor: brand.accent }}
+          onClick={() => onLink?.(p.id)}
+        >
+          Link Accounts
+        </button>
+        <BannerDismiss onDismiss={onDismiss} />
+      </div>
     </div>
   )
 }
@@ -554,22 +556,24 @@ function MultiPartnerBanner({ partners, onLink, onDismiss }) {
           Link {listed}, and Beanstack logs what you read there automatically.
         </span>
       </div>
-      <div className="cn-banner-ctas">
-        {partners.map((p) => {
-          const brand = PARTNER_BRANDS[p.id]
-          return (
-            <button
-              key={p.id}
-              className="cn-banner-cta"
-              style={{ color: brand.accent, borderColor: brand.accent }}
-              onClick={() => onLink?.(p.id)}
-            >
-              Link {p.name}
-            </button>
-          )
-        })}
+      <div className="cn-banner-actions">
+        <div className="cn-banner-ctas">
+          {partners.map((p) => {
+            const brand = PARTNER_BRANDS[p.id]
+            return (
+              <button
+                key={p.id}
+                className="cn-banner-cta"
+                style={{ color: brand.accent, borderColor: brand.accent }}
+                onClick={() => onLink?.(p.id)}
+              >
+                Link {p.name}
+              </button>
+            )
+          })}
+        </div>
+        <BannerDismiss onDismiss={onDismiss} />
       </div>
-      <BannerDismiss onDismiss={onDismiss} />
     </div>
   )
 }

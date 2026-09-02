@@ -78,8 +78,8 @@
   color: #fff;
 }
 /* Marks drawn as transparent line art (Beeverso's script "bee") need a plate to
-   read on avatars, colored banners, and dark partner chrome. */
+   read on avatars, colored banners, and dark partner chrome. The plate color is
+   the partner's own `soft` tint, set inline by PartnerMark. */
 .pb-mark--plate {
-  background: #ffffff;
   box-shadow: 0 0 0 1px rgb(15 23 42 / 8%);
 }

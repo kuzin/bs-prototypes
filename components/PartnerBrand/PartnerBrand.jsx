@@ -45,7 +45,7 @@ export const PARTNER_BRANDS = {
     wordmarkInvert: '/bs-prototypes/beeverso/Wordmark-white.png',
     lockupWordmark: true,
     // The mark is transparent script, not a solid tile — it needs a plate to
-    // stay legible on avatars and colored chrome.
+    // stay legible on avatars and colored chrome. The plate takes `soft`.
     markPlate: true,
   },
   sora: {
@@ -111,9 +111,16 @@ export function PartnerMark({ id, size = 22 }) {
         src={p.mark}
         alt={p.name}
         className={`pb-mark${p.markPlate ? ' pb-mark--plate' : ''}`}
-        // The plate's inset has to be computed here: a percentage padding would
-        // resolve against the *container's* width, not the mark's.
-        style={{ width: size, height: size, padding: p.markPlate ? Math.round(size * 0.1) : 0 }}
+        style={{
+          width: size,
+          height: size,
+          // The plate's inset has to be computed here: a percentage padding
+          // would resolve against the *container's* width, not the mark's.
+          padding: p.markPlate ? Math.round(size * 0.1) : 0,
+          // Tinted with the partner's own soft color rather than white — a white
+          // tile disappears into light UI and reads as a hole, not a logo.
+          background: p.markPlate ? p.soft : undefined,
+        }}
       />
     )
   }

@@ -606,21 +606,33 @@
 .cn-banner-marks > *:last-child {
   margin-right: 0;
 }
-.cn-banner-ctas {
+/* Buttons and the dismiss travel as one row, so however narrow the banner gets
+   the X stays to the right of the buttons instead of dropping below them. */
+.cn-banner-actions {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+.cn-banner-ctas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
 }
 
+/* Too tight for message-beside-actions: the actions drop to their own full-width
+   row under the message, buttons left and the X held at the right edge. */
 @media (max-width: 720px) {
-  .cn-banner--multi {
+  .cn-banner {
     flex-wrap: wrap;
   }
-  .cn-banner-ctas {
+  .cn-banner-actions {
     width: 100%;
+  }
+  .cn-banner-ctas {
+    flex: 1;
     justify-content: flex-start;
   }
 }
