@@ -166,10 +166,10 @@ export const PROTOTYPES = [
   {
     id: 'words-with-benny',
     name: 'Words with Benny',
-    section: 'Experiments',
+    section: 'Prototypes',
     href: '/bs-prototypes/words-with-benny/',
     accent: '#7C3AED',
     description:
-      'Vocabulary words unlocked by logging reading — collect them, and let educators see the growth',
+      'Log reading, unlock a word from the book — collect them, and educators see the growth.',
   },
 ]
