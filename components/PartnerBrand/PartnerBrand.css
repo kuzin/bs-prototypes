@@ -28,6 +28,18 @@
   height: 20px;
 }
 
+/* A lockup wordmark draws its own mark, so its box has to be as tall as a mark
+   would have been — a wordmark-height box would shrink the letters to nothing. */
+.pb-brand--lockup .pb-brand-word {
+  height: 30px;
+}
+.pb-brand--sm.pb-brand--lockup .pb-brand-word {
+  height: 24px;
+}
+.pb-brand--lg.pb-brand--lockup .pb-brand-word {
+  height: 38px;
+}
+
 /* A dark-ink wordmark goes on a white plate on dark chrome. */
 .pb-brand--plate.pb-brand--asset {
   background: #ffffff;
@@ -58,7 +70,16 @@
   justify-content: center;
   border-radius: 28%;
   flex-shrink: 0;
+  /* Marks are squared off, but the source art isn't always exactly 1:1 —
+     contain rather than stretch. */
+  object-fit: contain;
 }
 .pb-mark--glyph {
   color: #fff;
+}
+/* Marks drawn as transparent line art (Beeverso's script "bee") need a plate to
+   read on avatars, colored banners, and dark partner chrome. */
+.pb-mark--plate {
+  background: #ffffff;
+  box-shadow: 0 0 0 1px rgb(15 23 42 / 8%);
 }

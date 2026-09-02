@@ -155,4 +155,12 @@ export const PROTOTYPES = [
     accent: '#65A30D',
     description: 'How a reader travels the gameboard — log, unlock, celebrate.',
   },
+  {
+    id: 'beeverso',
+    name: 'Beeverso Integration',
+    section: 'Prototypes',
+    href: '/bs-prototypes/beeverso/',
+    accent: '#662D91',
+    description: 'Link a Beeverso account — Spanish reading logs itself in Beanstack.',
+  },
 ]

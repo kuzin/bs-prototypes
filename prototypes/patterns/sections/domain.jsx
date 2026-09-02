@@ -12,8 +12,21 @@ import { Toggle } from '@components/Toggle/Toggle'
 import { Field, Input, Select } from '@components/Form/Form'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { PartnerBrand, PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
+import {
+  ConnectBanner,
+  ConnectFlow,
+  PartnerSwitcher,
+  AutoLoggedCard,
+} from '@components/PartnerConnect/PartnerConnect'
+import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
 import { RMI_FACTORS } from '../../ris/data'
+import { CONNECTIONS, CONNECTION_LIST, TAKEN_USERNAMES } from '../../logging-flow/connections'
+import { READER as PARTNER_READER } from '../../logging-flow/data'
+import { BEEVERSO } from '../../beeverso/connections'
 import { Knobs, Variant } from './_shared'
+
+// The auto-logged rail card borrows the consumer dashboard's card chrome.
+import '../../web-app/index.css'
 
 const SAMPLE_HEALTH = {
   motivation: 71,
@@ -163,6 +176,78 @@ function ReadingHealthKnobs() {
   )
 }
 
+const noop = () => {}
+
+const PARTNER_LINKED = {
+  comicsplus: { account: 'olivia.m', org: 'LibraryPass - Full Collection Demo' },
+  scholastic: { account: 'olivia.mcgrane', org: 'Magnolia Middle School' },
+}
+
+const AUTO_LOGGED_ROWS = [
+  {
+    id: 'a1',
+    partnerId: 'comicsplus',
+    title: 'Dog Man',
+    meta: 'Comics Plus \u00b7 Today \u00b7 Finished',
+    minutes: 24,
+  },
+  {
+    id: 'a2',
+    partnerId: 'beeverso',
+    title: 'Platero y yo',
+    meta: 'Beeverso \u00b7 Today',
+    minutes: 22,
+  },
+  {
+    id: 'a3',
+    partnerId: 'scholastic',
+    title: 'Scholastic News',
+    meta: 'Scholastic \u00b7 Today',
+    minutes: 12,
+  },
+]
+
+function ConnectFlowDemo() {
+  const [partner, setPartner] = useState(null)
+  return (
+    <div style={{ display: 'flex', gap: 10, padding: 16, flexWrap: 'wrap' }}>
+      {[CONNECTIONS.comicsplus, CONNECTIONS.scholastic, BEEVERSO].map((p) => (
+        <Button key={p.id} variant="secondary" size="sm" onClick={() => setPartner(p)}>
+          Link {p.name}
+        </Button>
+      ))}
+      {partner && (
+        <ConnectFlow
+          partner={partner}
+          reader={PARTNER_READER}
+          takenUsernames={TAKEN_USERNAMES}
+          onCancel={() => setPartner(null)}
+          onLinked={() => setPartner(null)}
+        />
+      )}
+    </div>
+  )
+}
+
+function PersonalizeReaderDemo() {
+  const [connections, setConnections] = useState({ comicsplus: PARTNER_LINKED.comicsplus })
+  return (
+    <PersonalizeReader
+      reader={PARTNER_READER}
+      partners={CONNECTION_LIST}
+      connections={connections}
+      onLink={(id) => setConnections((c) => ({ ...c, [id]: { ...PARTNER_LINKED[id] } }))}
+      onDisconnect={(id) =>
+        setConnections((c) => {
+          const next = { ...c }
+          delete next[id]
+          return next
+        })
+      }
+    />
+  )
+}
+
 export const domainSections = [
   {
     group: 'domain',
@@ -300,7 +385,9 @@ export const domainSections = [
         <code>sm/md/lg</code>, plus <code>invert</code> for dark partner chrome);{' '}
         <code>PartnerMark</code> is the square app mark used in banners, top-bar switchers and
         alongside covers. Comics Plus renders its real brand assets; the rest are wordmark
-        approximations. <code>PARTNER_BRANDS</code> carries each partner&apos;s name and accent.
+        approximations. <code>PARTNER_BRANDS</code> carries each partner&apos;s name and accent, and
+        Beeverso adds <code>wordmarkInvert</code> — a purpose-made light-on-dark lockup used instead
+        of a white plate.
       </>
     ),
     render: () => (
@@ -327,6 +414,10 @@ export const domainSections = [
             <span style={{ background: '#1B0C26', padding: '12px 16px', borderRadius: 10 }}>
               <PartnerBrand id="comicsplus" invert />
             </span>
+            {/* Beeverso ships its own light-on-dark lockup, so no plate. */}
+            <span style={{ background: '#3C0458', padding: '12px 16px', borderRadius: 10 }}>
+              <PartnerBrand id="beeverso" invert />
+            </span>
           </div>
         </Variant>
         <Variant label="PartnerMark — square app marks">
@@ -339,6 +430,139 @@ export const domainSections = [
           </div>
         </Variant>
       </>
+    ),
+  },
+  {
+    group: 'domain',
+    id: 'partner-connect-banner',
+    name: 'Connect Banner',
+    desc: (
+      <>
+        The dashboard prompt to link reading apps. Takes <strong>every</strong> partner that
+        isn&apos;t connected yet, not one at a time — a reader with two apps left to link sees one
+        banner, not a stack. With a single partner it wears that partner&apos;s brand and speaks in
+        their voice; with more than one it goes neutral and offers a button each. Renders nothing
+        when everything is linked.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="one partner left — the partner's own brand" full>
+          <div style={{ padding: 16 }}>
+            <ConnectBanner partners={[CONNECTIONS.comicsplus]} onLink={noop} onDismiss={noop} />
+            <ConnectBanner partners={[BEEVERSO]} onLink={noop} onDismiss={noop} />
+          </div>
+        </Variant>
+        <Variant label="two or three left — neutral, a button each" full>
+          <div style={{ padding: 16 }}>
+            <ConnectBanner
+              partners={[BEEVERSO, CONNECTIONS.comicsplus]}
+              onLink={noop}
+              onDismiss={noop}
+            />
+            <ConnectBanner
+              partners={[BEEVERSO, CONNECTIONS.comicsplus, CONNECTIONS.scholastic]}
+              onLink={noop}
+              onDismiss={noop}
+            />
+          </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'domain',
+    id: 'partner-connect-flow',
+    name: 'Connect Flow',
+    desc: (
+      <>
+        The full account handoff, rendered in the partner&apos;s own chrome: pick your school → sign
+        in → confirm both accounts belong to you → linked. A partner with no <code>orgs</code> skips
+        straight to sign-in, and <code>ssoOptions</code> adds the district SSO buttons under the
+        form. Signing in as <code>taken</code> lands on the &ldquo;already connected&rdquo; error
+        instead. Escape or &ldquo;Back to Beanstack&rdquo; backs out.
+      </>
+    ),
+    render: () => (
+      <Variant label="launch the handoff (full-screen overlay)" full>
+        <ConnectFlowDemo />
+      </Variant>
+    ),
+  },
+  {
+    group: 'domain',
+    id: 'partner-switcher',
+    name: 'Partner Switcher',
+    desc: (
+      <>
+        The top-bar affordance the linked-accounts modal promises — &ldquo;swap between the two at
+        any time using the logo in the top right.&rdquo; Shows a mark per linked app and opens a
+        menu to jump over to that app&apos;s catalog or manage the connections. Renders nothing when
+        nothing is linked.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="both linked">
+          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 16 }}>
+            <PartnerSwitcher
+              partners={CONNECTION_LIST}
+              connections={PARTNER_LINKED}
+              onManage={noop}
+              onVisit={noop}
+            />
+          </div>
+        </Variant>
+        <Variant label="one linked">
+          <div style={{ display: 'flex', justifyContent: 'flex-end', padding: 16 }}>
+            <PartnerSwitcher
+              partners={[BEEVERSO]}
+              connections={{ beeverso: { account: 'carlamos', org: 'Arlington ISD' } }}
+              onManage={noop}
+              onVisit={noop}
+            />
+          </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'domain',
+    id: 'partner-auto-logged',
+    name: 'Auto-Logged Card',
+    desc: (
+      <>
+        The payoff of a linked account: reading that arrived from a partner without the reader
+        logging anything. Takes display-ready <code>rows</code>, since only the consuming prototype
+        knows how to name its own titles.
+      </>
+    ),
+    render: () => (
+      <Variant label="three partners contributing">
+        <div style={{ maxWidth: 320, padding: 16 }}>
+          <AutoLoggedCard className="wa-card" rows={AUTO_LOGGED_ROWS} />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'domain',
+    id: 'personalize-reader',
+    name: 'Personalize Reader',
+    desc: (
+      <>
+        The reader&apos;s settings page, and the home of <strong>App Integrations</strong> — where a
+        partner account is actually connected or disconnected. Each partner in <code>partners</code>{' '}
+        is its own row, so linking one never touches the other. The dashboard banner and the top-bar
+        switcher are shortcuts into this section.
+      </>
+    ),
+    render: () => (
+      <Variant label="Comics Plus connected, Scholastic not" full>
+        <div style={{ padding: '0 24px' }}>
+          <PersonalizeReaderDemo />
+        </div>
+      </Variant>
     ),
   },
 ]

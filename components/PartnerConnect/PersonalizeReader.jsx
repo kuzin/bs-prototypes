@@ -3,19 +3,27 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { PartnerBrand } from '@components/PartnerBrand/PartnerBrand'
 
-import { CONNECTION_IDS } from '../connections'
-import './SettingsPage.css'
+import '@components/PartnerConnect/PersonalizeReader.css'
 
 import '@components/Button/Button.css'
 
-// Beanstack's "Personalize Reader" page — where a reader's App Integrations
-// live. Connecting or disconnecting a reading partner happens here; the
-// dashboard banner and the top-bar switcher are just shortcuts into it.
-//
-// Everything outside App Integrations is a faithful but inert replica of the
-// real page, so the integration section reads in its actual context.
-
-export function SettingsPage({ reader, connections, onLink, onDisconnect }) {
+/**
+ * Beanstack's "Personalize Reader" page — where a reader's App Integrations
+ * live. Connecting or disconnecting a reading partner happens here; the
+ * dashboard banner and the top-bar switcher are just shortcuts into it.
+ *
+ * Everything outside App Integrations is a faithful but inert replica of the
+ * real page, so the integration section reads in its actual context.
+ *
+ * `partners` is the prototype's own list of partner configs (see PartnerConnect).
+ */
+export function PersonalizeReader({
+  reader,
+  partners = [],
+  connections = {},
+  onLink,
+  onDisconnect,
+}) {
   const [emails, setEmails] = useState('yes')
 
   return (
@@ -75,7 +83,7 @@ export function SettingsPage({ reader, connections, onLink, onDisconnect }) {
               automatically. Each app connects separately.
             </p>
             <div className="st-integrations">
-              {CONNECTION_IDS.map((id) => {
+              {partners.map(({ id }) => {
                 const conn = connections[id]
                 return (
                   <div key={id} className="st-integration">

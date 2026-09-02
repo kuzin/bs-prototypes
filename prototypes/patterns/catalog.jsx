@@ -25,7 +25,6 @@ import { bookTalksSections } from './sections/book-talks'
 import { studentProfileSections } from './sections/student-profile'
 import { booksSections } from './sections/books'
 import { adminDashboardSections } from './sections/admin-dashboard'
-import { loggingFlowSections } from './sections/logging-flow'
 import { gameboardSections } from './sections/gameboard'
 import { gameboardReaderSections } from './sections/gameboard-reader'
 
@@ -226,14 +225,6 @@ export const GROUPS = [
     color: '#65A30D',
     icon: <Icon name="route" size={22} />,
   },
-  {
-    id: 'logging-flow',
-    kind: 'prototype',
-    title: 'Logging Flow',
-    desc: 'Components for the Logging Flow prototype — linking a Comics Plus or Scholastic account, the top-bar app switcher, and the reading those accounts log on their own.',
-    color: '#0DA7BC',
-    icon: <Icon name="link" size={22} />,
-  },
 ]
 
 export const SECTIONS = [
@@ -252,7 +243,6 @@ export const SECTIONS = [
   ...studentProfileSections,
   ...booksSections,
   ...adminDashboardSections,
-  ...loggingFlowSections,
   ...gameboardSections,
   ...gameboardReaderSections,
 ]

@@ -541,3 +541,399 @@
   font-size: 12.5px;
   opacity: 0.65;
 }
+/* Partner-connection surfaces that live on the Beanstack dashboard. */
+
+/* ─── Link-your-account banner ─────────────────────────────────────────────── */
+
+.cn-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 16px;
+  border-radius: 12px;
+  border: 1px solid;
+  margin-bottom: 12px;
+}
+.cn-banner-msg {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  font-size: 14px;
+  color: var(--c-text);
+}
+.cn-banner-msg strong {
+  font-weight: 800;
+}
+.cn-banner-pitch {
+  font-size: 12.5px;
+  color: var(--c-text-muted);
+}
+.cn-banner-cta {
+  flex-shrink: 0;
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid;
+  border-radius: 8px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.cn-banner-cta:hover {
+  filter: brightness(0.97);
+}
+
+/* More than one app left to link: no partner owns the tint, so the banner goes
+   neutral and each app gets its own button. */
+.cn-banner--multi {
+  background: var(--c-slate-50, #f8fafc);
+  border-color: var(--c-border);
+}
+.cn-banner-marks {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+/* Overlap the marks into a stack — it reads as "your apps", not as a row of
+   unrelated logos. Each sits on a ring of the banner's own background. */
+.cn-banner-marks > * {
+  margin-right: -9px;
+  box-shadow: 0 0 0 2px var(--c-slate-50, #f8fafc);
+}
+.cn-banner-marks > *:last-child {
+  margin-right: 0;
+}
+.cn-banner-ctas {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+@media (max-width: 720px) {
+  .cn-banner--multi {
+    flex-wrap: wrap;
+  }
+  .cn-banner-ctas {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
+.cn-banner-x {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  border: 0;
+  background: rgba(255, 255, 255, 0.75);
+  color: var(--c-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.cn-banner-x:hover {
+  background: #ffffff;
+}
+
+/* ─── Top-bar switcher ─────────────────────────────────────────────────────── */
+
+.cn-switch {
+  position: relative;
+}
+.cn-switch-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 36px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  cursor: pointer;
+}
+.cn-switch-btn:hover {
+  background: var(--c-slate-100);
+}
+
+.cn-switch-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 40;
+  width: 268px;
+  padding: 6px;
+  background: #ffffff;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.16);
+}
+.cn-switch-head {
+  padding: 7px 10px 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--c-text-subtle);
+}
+.cn-switch-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  text-align: left;
+  font-family: inherit;
+  cursor: pointer;
+}
+.cn-switch-item:hover {
+  background: var(--c-slate-100);
+}
+.cn-switch-item-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cn-switch-item-name {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+.cn-switch-item-acct {
+  font-size: 12px;
+  color: var(--c-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cn-switch-item-go {
+  color: var(--c-text-subtle);
+  flex-shrink: 0;
+}
+.cn-switch-manage {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  margin-top: 4px;
+  padding: 9px 10px;
+  border: 0;
+  border-top: 1px solid var(--c-slate-100);
+  border-radius: 0 0 8px 8px;
+  background: none;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a6dd5;
+  cursor: pointer;
+}
+.cn-switch-manage:hover {
+  background: var(--c-slate-100);
+}
+
+/* ─── Connections modal ───────────────────────────────────────────────────── */
+
+.cn-modal {
+  padding: 20px 22px 22px;
+}
+.cn-modal-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.cn-modal-title {
+  flex: 1;
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+.cn-modal-x {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--c-slate-100);
+  color: var(--c-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.cn-modal-sub {
+  margin: 6px 0 16px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--c-text-muted);
+}
+
+.cn-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.cn-row {
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+  padding: 14px 16px;
+}
+.cn-row-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.cn-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--c-slate-100);
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--c-text-muted);
+}
+.cn-chip--on {
+  background: #e6f8ef;
+  color: #0f7a55;
+}
+.cn-row-acct {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--c-text-muted);
+}
+.cn-row-acct strong {
+  font-weight: 800;
+  color: var(--c-text);
+}
+.cn-row-controls {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.cn-auto {
+  font-size: 13px;
+}
+
+/* ─── "Logged for you" rail card ──────────────────────────────────────────── */
+
+.cn-auto-card {
+  padding: 16px;
+}
+.cn-auto-head {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+.cn-auto-bolt {
+  color: #f59e0b;
+}
+.cn-auto-title {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+.cn-auto-total {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-text-muted);
+}
+.cn-auto-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.cn-auto-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cn-auto-row-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+.cn-auto-row-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.cn-auto-row-meta {
+  font-size: 11.5px;
+  color: var(--c-text-muted);
+}
+.cn-auto-row-min {
+  font-size: 13px;
+  font-weight: 800;
+  color: #1a6dd5;
+}
+.cn-auto-foot {
+  margin: 12px 0 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: var(--c-text-subtle);
+}
+
+/* ─── District SSO, below the sign-in form ─────────────────────────────────── */
+
+.cf-or {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0 2px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+.cf-or::before,
+.cf-or::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--cf-rule, #d8d8d8);
+}
+.cf-sso {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.cf-sso-btn {
+  height: 42px;
+  border: 1px solid #d8d8d8;
+  border-radius: 10px;
+  background: #ffffff;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3c3c3c;
+  cursor: pointer;
+  transition:
+    background 0.12s ease,
+    box-shadow 0.12s ease;
+}
+.cf-sso-btn:hover {
+  background: #f6f6f8;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 12%);
+}
