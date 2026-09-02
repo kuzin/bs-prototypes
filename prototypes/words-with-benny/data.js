@@ -19,16 +19,37 @@ import { BOOKS as LF_BOOKS } from '../logging-flow/data'
 // beside the point here, so those are dropped and the shelf is filled out with
 // six more normal library books instead.
 //
-// No ISBNs on the additions — logging-flow's BookCover falls back to the
-// `cover` gradient without one, which beats inventing identifiers.
+// Covers are real: `coverId` is Open Library's own numeric cover id, looked up
+// per title through their search API and eyeballed one by one rather than
+// guessed. A cover id beats an ISBN here — an arbitrary ISBN off a title's list
+// can resolve to a foreign or coverless edition. Each still falls back to the
+// `cover` gradient if the CDN misses.
+
+// The inherited titles that don't resolve to a cover on their own — two carry
+// no ISBN at all, and Lesbiana's Guide has one Open Library holds no image for.
+// Patched in here so this prototype's shelf is real covers throughout, without
+// restating the books or changing how they look in logging-flow.
+const INHERITED_COVER_IDS = {
+  'she-gets-the-girl': 13195498,
+  'lucky-cap': 10783462,
+  'lesbianas-guide': 12791802,
+}
 
 // Anything with a `partner` lives in a linked app's catalog — drop those.
-const PLAIN_BOOKS = Object.fromEntries(Object.entries(LF_BOOKS).filter(([, b]) => !b.partner))
+const PLAIN_BOOKS = Object.fromEntries(
+  Object.entries(LF_BOOKS)
+    .filter(([, b]) => !b.partner)
+    .map(([id, b]) => [
+      id,
+      INHERITED_COVER_IDS[id] ? { ...b, coverId: INHERITED_COVER_IDS[id] } : b,
+    ]),
+)
 
 export const BOOKS = {
   ...PLAIN_BOOKS,
   matilda: {
     id: 'matilda',
+    coverId: 12889769,
     title: 'Matilda',
     author: 'Roald Dahl',
     cover: ['#1E3A8A', '#DC2626'],
@@ -37,6 +58,7 @@ export const BOOKS = {
   },
   wonder: {
     id: 'wonder',
+    coverId: 8223160,
     title: 'Wonder',
     author: 'R. J. Palacio',
     cover: ['#3B82F6', '#93C5FD'],
@@ -46,6 +68,7 @@ export const BOOKS = {
   },
   holes: {
     id: 'holes',
+    coverId: 19797,
     title: 'Holes',
     author: 'Louis Sachar',
     cover: ['#B45309', '#FBBF24'],
@@ -54,6 +77,7 @@ export const BOOKS = {
   },
   crossover: {
     id: 'crossover',
+    coverId: 7336870,
     title: 'The Crossover',
     author: 'Kwame Alexander',
     cover: ['#C2410C', '#7C2D12'],
@@ -63,6 +87,7 @@ export const BOOKS = {
   },
   terabithia: {
     id: 'terabithia',
+    coverId: 12627341,
     title: 'Bridge to Terabithia',
     author: 'Katherine Paterson',
     cover: ['#15803D', '#65A30D'],
@@ -71,6 +96,7 @@ export const BOOKS = {
   },
   hatchet: {
     id: 'hatchet',
+    coverId: 11240448,
     title: 'Hatchet',
     author: 'Gary Paulsen',
     cover: ['#166534', '#0F766E'],

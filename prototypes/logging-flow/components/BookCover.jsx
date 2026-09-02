@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { coverUrl } from '../data'
+import { coverIdUrl, coverUrl } from '../data'
 import './BookCover.css'
 
 /**
  * Book cover: real Open Library image when available, gradient placeholder
- * otherwise. Sizes: sm | md | lg. Magazines (`kind: 'magazine'`) get a
+ * otherwise. Either `coverId` (Open Library's numeric cover id — exact) or
+ * `isbn` supplies the image; `coverId` wins when both are set. Sizes: sm | md | lg. Magazines (`kind: 'magazine'`) get a
  * masthead-style placeholder — name + issue — so they read like a magazine
  * rack rather than a book with a missing cover.
  *
@@ -15,7 +16,7 @@ import './BookCover.css'
 export function BookCover({ book, size = 'md', className = '' }) {
   const [err, setErr] = useState(false)
   const [from, to] = book.cover || ['#94A3B8', '#475569']
-  const src = coverUrl(book.isbn)
+  const src = coverIdUrl(book.coverId) ?? coverUrl(book.isbn)
   const showImg = src && !err
   const isMag = !showImg && book.kind === 'magazine'
   const showReadable = book.readable && size !== 'sm'
