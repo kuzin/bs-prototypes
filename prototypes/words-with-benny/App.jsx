@@ -15,7 +15,16 @@ import { MyWords } from './components/MyWords'
 import { EducatorWords } from './components/EducatorWords'
 import { StudentWords } from './components/StudentWords'
 import { WordsRailCard } from './components/WordsRailCard'
-import { READER, SEED_COLLECTION, STREAK, DAILY_GOAL, UNLOCK_EVERY, pickWord } from './data'
+import {
+  BOOKS,
+  READER,
+  RECENTLY_LOGGED,
+  SEED_COLLECTION,
+  STREAK,
+  DAILY_GOAL,
+  UNLOCK_EVERY,
+  pickWord,
+} from './data'
 
 import './index.css'
 
@@ -31,6 +40,10 @@ const NO_PARTNERS = {
   onDisconnectPartner: () => {},
   onVisitPartner: () => {},
 }
+
+// …and its own catalog, so the shelf is ordinary library books rather than
+// logging-flow's Comics Plus titles and Scholastic magazine issues.
+const OWN_BOOKS = { books: BOOKS, recentlyLogged: RECENTLY_LOGGED }
 
 // `short` is what the preview bar's strip swaps to before it would overflow.
 const VIEWS = [
@@ -185,6 +198,7 @@ export function App() {
         onLogged={handleLogged}
         onOpenWord={pending ? openWord : undefined}
         {...NO_PARTNERS}
+        {...OWN_BOOKS}
       />
 
       <WordUnlock
