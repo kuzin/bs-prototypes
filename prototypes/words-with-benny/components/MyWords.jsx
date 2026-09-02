@@ -11,8 +11,9 @@ import { BOOKS, wordByName } from '../data'
 import './MyWords.css'
 
 // The personal vocabulary collection — the brief's "growing personal record of
-// unlocked words, analogous to a reading log". It lives as a tab beside the
-// Reading Log for exactly that reason.
+// unlocked words, analogous to a reading log". It's the Words pane of the
+// Collections tab, so it owns no page header: <Collections> supplies the title
+// and the sub-tab strip.
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -92,7 +93,7 @@ function ByBook({ entries, newestWord }) {
   )
 }
 
-export function MyWords({ collection, reader, newestWord }) {
+export function MyWords({ collection, newestWord }) {
   const [tab, setTab] = useState('all')
   const [query, setQuery] = useState('')
 
@@ -121,27 +122,6 @@ export function MyWords({ collection, reader, newestWord }) {
 
   return (
     <div className="mw">
-      <header className="mw-hero">
-        <div className="mw-hero-copy">
-          <h1 className="mw-h1">
-            <Icon name="vocabulary" size={26} stroke={1.9} />
-            {reader.name}’s Words
-          </h1>
-          <p className="mw-hero-sub">
-            Every word you’ve collected from the books you logged. Nobody assigned these — you read
-            your way into all of them.
-          </p>
-        </div>
-        <div className="mw-benny">
-          <img src="/bs-prototypes/benny-happy.svg" alt="" className="mw-benny-face" />
-          <p className="mw-benny-line">
-            {collection.length >= 12
-              ? `${collection.length} words! Keep logging and I’ll keep finding them.`
-              : 'Log some reading and I’ll dig up a word for you.'}
-          </p>
-        </div>
-      </header>
-
       <div className="mw-stats">
         {[
           { label: 'Words collected', value: collection.length, icon: 'vocabulary' },

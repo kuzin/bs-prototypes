@@ -230,7 +230,7 @@ export const GROUPS = [
     id: 'words-with-benny',
     kind: 'prototype',
     title: 'Words with Benny',
-    desc: 'Components for the Words with Benny prototype — the post-log word unlock, the reader\u2019s word collection and its rail card, and the educator roll-up with its per-student drill-down.',
+    desc: 'Components for the Words with Benny prototype — the post-log word unlock, the reader\u2019s Collections tab (words, badges, achievements) and its rail card, and the educator roll-up with its per-student drill-down.',
     color: '#7C3AED',
     icon: <Icon name="vocabulary" size={22} />,
   },

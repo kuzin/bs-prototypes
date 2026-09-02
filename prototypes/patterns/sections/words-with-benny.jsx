@@ -4,6 +4,7 @@ import { Button } from '@components/Button/Button'
 
 import { WordUnlock } from '../../words-with-benny/components/WordUnlock'
 import { MyWords, WordTile } from '../../words-with-benny/components/MyWords'
+import { Collections } from '../../words-with-benny/components/Collections'
 import { WordsRailCard } from '../../words-with-benny/components/WordsRailCard'
 import { EducatorWords } from '../../words-with-benny/components/EducatorWords'
 import { StudentWords } from '../../words-with-benny/components/StudentWords'
@@ -138,7 +139,8 @@ export const wordsWithBennySections = [
         dashboard rail through its <code>railTop</code> slot — so it borrows that page&apos;s{' '}
         <code>.wa-card</code> shell and styles only its own internals. Carries the three most recent
         words and how many logs stand between the reader and the next one, which is what makes the
-        &ldquo;every couple of logs&rdquo; cadence legible before it fires.
+        &ldquo;every couple of logs&rdquo; cadence legible before it fires. Leads into the{' '}
+        <code>Collections</code> tab.
       </>
     ),
     render: () => (
@@ -149,22 +151,45 @@ export const wordsWithBennySections = [
   },
   {
     group: 'words-with-benny',
+    id: 'wb-collections',
+    name: 'Collections',
+    desc: (
+      <>
+        Everything the reader has accumulated, in one tab: the words Benny handed over, the badges
+        they earned, and their milestone achievements. It <strong>replaces</strong> the reader
+        dashboard&apos;s built-in &ldquo;All Badges&rdquo; tab (via <code>Dashboard</code>&apos;s{' '}
+        <code>hideTabs</code>) — three shelves of the same kind of thing shouldn&apos;t be three
+        top-level destinations. Owns the page header and a pill sub-tab strip, the same shape{' '}
+        <code>ReadingLog</code> uses for its own sub-tabs; each pane is a plain grid on the page
+        ground. The achievement medallions are Book Discovery&apos;s <code>AchievementArt</code>,
+        not a second set.
+      </>
+    ),
+    render: () => (
+      <Variant label="words · badges · achievements" full>
+        <div style={{ padding: '0 20px 20px', background: '#f3f4f6' }}>
+          <Collections collection={SEED_COLLECTION} reader={READER} newestWord="suspicion" />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'words-with-benny',
     id: 'wb-my-words',
     name: 'MyWords',
     desc: (
       <>
-        The personal vocabulary collection — the brief&apos;s &ldquo;growing personal record,
-        analogous to a reading log&rdquo;, which is why it lives as a tab beside the Reading Log
-        rather than on a page of its own. A stat strip over a tile grid, groupable{' '}
-        <strong>by book</strong> and searchable across word, meaning and title. Owns no page chrome:
-        it renders inside the dashboard&apos;s content column exactly as <code>ReadingLog</code>
-        does.
+        The vocabulary collection itself — the brief&apos;s &ldquo;growing personal record,
+        analogous to a reading log&rdquo;. A stat strip over a tile grid, groupable{' '}
+        <strong>by book</strong> and searchable across word, meaning and title. It&apos;s the Words
+        pane of <code>Collections</code>, so it owns no header of its own and starts at the stat
+        strip.
       </>
     ),
     render: () => (
-      <Variant label="all words — inside the dashboard content column" full>
+      <Variant label="the Words pane on its own" full>
         <div style={{ padding: '0 20px 20px', background: '#f3f4f6' }}>
-          <MyWords collection={SEED_COLLECTION} reader={READER} newestWord="suspicion" />
+          <MyWords collection={SEED_COLLECTION} newestWord="suspicion" />
         </div>
       </Variant>
     ),

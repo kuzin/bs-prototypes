@@ -1,0 +1,174 @@
+/* ─── Header ─────────────────────────────────────────────────────────────
+   Matches the Reading Log's own `.rl-head` next door: a plain title row on the
+   page ground, no coloured banner. */
+
+.co-head {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 26px 0 22px;
+}
+.co-head-copy {
+  min-width: 0;
+}
+.co-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+.co-sub {
+  max-width: 62ch;
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--c-text-muted);
+}
+
+/* Benny's coach line — a light note, the same register as the log's
+   `.rl-importnote`, rather than a panel floating on a gradient. */
+.co-benny {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 9px;
+  align-items: center;
+  max-width: 300px;
+  padding: 10px 13px;
+  background: #faf7ff;
+  border: 1px solid #e9d5ff;
+  border-radius: 11px;
+}
+.co-benny-face {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+}
+.co-benny-line {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #5b21b6;
+}
+
+.co {
+  padding: 0 0 48px;
+}
+
+.co-panes {
+  margin: 0 0 18px;
+}
+
+/* ─── Badges ─────────────────────────────────────────────────────────────── */
+
+.co-badgegrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+  gap: 12px;
+}
+
+.co-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px 16px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #e6ecf3;
+  border-radius: 13px;
+}
+.co-badge-disc {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  color: #fff;
+  background: var(--badge-color);
+  border-radius: 999px;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--badge-color) 16%, #fff);
+}
+.co-badge-name {
+  margin-top: 13px;
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.co-badge-meta {
+  margin-top: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+/* A badge still to earn: the disc drains to grey and the row states the
+   requirement instead of a date. */
+.co-badge.is-locked {
+  background: #fbfcfd;
+  border-style: dashed;
+}
+.co-badge.is-locked .co-badge-disc {
+  color: #94a3b8;
+  background: #eef2f7;
+  box-shadow: none;
+}
+.co-badge.is-locked .co-badge-name {
+  color: #64748b;
+}
+
+/* ─── Achievements ───────────────────────────────────────────────────────── */
+
+.co-achgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 12px;
+}
+
+.co-ach {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 15px 16px;
+  background: #fff;
+  border: 1px solid #e6ecf3;
+  border-radius: 13px;
+}
+.co-ach-art {
+  flex: 0 0 auto;
+  width: 62px;
+  height: 62px;
+}
+.co-ach-art svg {
+  width: 100%;
+  height: 100%;
+}
+.co-ach-text {
+  min-width: 0;
+}
+.co-ach-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.co-ach-detail {
+  margin-top: 3px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #475569;
+}
+.co-ach-date {
+  margin-top: 5px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+@media (max-width: 860px) {
+  .co-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .co-benny {
+    max-width: none;
+  }
+}

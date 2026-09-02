@@ -46,6 +46,7 @@ function TopBar({
   view,
   onView,
   extraTabs = [],
+  hideTabs = [],
   partners = [],
 }) {
   return (
@@ -123,7 +124,7 @@ function TopBar({
             { id: 'badges', label: 'All Badges' },
             { id: 'log', label: 'Reading Log' },
             ...extraTabs,
-          ]}
+          ].filter((t) => !hideTabs.includes(t.id))}
         />
       </div>
     </header>
@@ -302,6 +303,9 @@ function Footer() {
  * this real dashboard instead of cloning it. Words with Benny uses them to put
  * "My Words" next to the Reading Log. Left off, the page is exactly as it was.
  *
+ * `hideTabs` drops built-in tabs by id, for when an extra tab supersedes one
+ * (Words with Benny folds "All Badges" into its own Collections tab).
+ *
  * `partners` is the list of reading apps this prototype offers to link. It
  * defaults to logging-flow's own CONNECTION_LIST; pass `[]` and the entire
  * integration surface drops out — the connect banner, the topbar switcher, the
@@ -320,6 +324,7 @@ export function Dashboard({
   railTop,
   view: viewProp,
   onView: onViewProp,
+  hideTabs = [],
   partners = CONNECTION_LIST,
 }) {
   const [scope, setScope] = useState('current')
@@ -349,6 +354,7 @@ export function Dashboard({
         view={view}
         onView={(id) => setView(id === 'log' || extraIds.includes(id) ? id : 'challenges')}
         extraTabs={extraTabs}
+        hideTabs={hideTabs}
       />
       <main className="wa-main">
         <div className="wa-main-inner">

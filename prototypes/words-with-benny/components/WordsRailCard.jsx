@@ -5,7 +5,7 @@ import './WordsRailCard.css'
 
 /**
  * The collection's front door on the challenges page — recent words, how far
- * off the next one is, and a way in. Injected into logging-flow's dashboard
+ * off the next one is, and a way into the Collections tab. Injected into logging-flow's dashboard
  * rail via its `railTop` slot, so it borrows that page's `.wa-card` shell and
  * only styles its own internals.
  */
@@ -37,7 +37,7 @@ export function WordsRailCard({ collection, logsSinceWord, onOpen }) {
           : `${toGo} more logs and I’ll have another word.`}
       </p>
       <button className="wb-rail-more" onClick={onOpen}>
-        See all my words
+        See my collections
       </button>
     </aside>
   )

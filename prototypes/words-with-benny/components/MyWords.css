@@ -1,65 +1,9 @@
-/* My Words — the reader's personal vocabulary collection. Sits inside the
-   consumer dashboard's content column (.wa-main-inner), so it owns no page
-   chrome of its own, exactly like ReadingLog. */
+/* My Words — the reader's vocabulary collection, and the Words pane of the
+   Collections tab. <Collections> owns the page header and the sub-tab strip, so
+   this starts at the stat strip. */
 
 .mw {
-  padding: 22px 0 40px;
-}
-
-/* ─── Hero ──────────────────────────────────────────────────────────────── */
-
-.mw-hero {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 22px 24px;
-  color: #fff;
-  background:
-    radial-gradient(520px 220px at 92% 0%, rgba(252, 211, 77, 0.28), transparent 70%),
-    linear-gradient(135deg, #6d28d9 0%, #4c1d95 100%);
-  border-radius: 14px;
-}
-.mw-hero-copy {
-  min-width: 0;
-}
-.mw-h1 {
-  display: flex;
-  gap: 9px;
-  align-items: center;
-  font-size: 25px;
-  font-weight: 900;
-  letter-spacing: -0.01em;
-}
-.mw-hero-sub {
-  max-width: 52ch;
-  margin-top: 7px;
-  font-size: 14.5px;
-  font-weight: 600;
-  line-height: 1.45;
-  color: rgba(255, 255, 255, 0.78);
-}
-
-.mw-benny {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 10px;
-  align-items: center;
-  max-width: 300px;
-  padding: 11px 14px;
-  background: rgba(255, 255, 255, 0.14);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 13px;
-}
-.mw-benny-face {
-  flex: 0 0 auto;
-  width: 38px;
-  height: 38px;
-}
-.mw-benny-line {
-  font-size: 13.5px;
-  font-weight: 700;
-  line-height: 1.4;
+  padding: 0;
 }
 
 /* ─── Stat strip ────────────────────────────────────────────────────────── */
@@ -68,7 +12,6 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
-  margin-top: 14px;
 }
 .mw-stat {
   display: flex;
@@ -266,13 +209,6 @@
 }
 
 @media (max-width: 860px) {
-  .mw-hero {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .mw-benny {
-    max-width: none;
-  }
   .mw-stats {
     grid-template-columns: repeat(2, 1fr);
   }

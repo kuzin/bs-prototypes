@@ -546,6 +546,33 @@ export const SEED_COLLECTION = [
   collected('suspicion', 'telegraph-club', '2026-06-26'),
 ]
 
+// ─── Olivia's other collections ──────────────────────────────────────────────
+// Badges and achievements share the Collections tab with her words, so they use
+// the same shapes the `books` prototype already established (its `badge` /
+// `achievement` helpers and illustrated AchievementArt medallions).
+
+const badge = (name, date, color, icon = 'award') => ({ name, date, color, icon })
+const locked = (name, hint, color, icon = 'award') => ({ name, hint, color, icon, locked: true })
+// `art` picks the illustrated medallion in books/AchievementArt.jsx.
+const achievement = (name, date, detail, art = 'books') => ({ name, date, detail, art })
+
+export const BADGES = [
+  badge('Word Collector', 'Jun 26, 2026', '#7C3AED', 'vocabulary'),
+  badge('2-Week Streak', 'Jun 24, 2026', '#F0A024', 'flame'),
+  badge('Spring Into Reading', 'Apr 30, 2026', '#0DA7BC', 'trophy'),
+  badge('First Review', 'Apr 18, 2026', '#16A97A', 'writing'),
+  badge('Ten Titles', 'Apr 6, 2026', '#2563EB', 'book-2'),
+  locked('Word Hoarder', 'Collect 25 words — 19 so far', '#8B5CF6', 'vocabulary'),
+  locked('Month-Long Streak', 'Log 30 days in a row', '#F59E0B', 'flame'),
+]
+
+export const ACHIEVEMENTS = [
+  achievement('Read 12 books', 'Jun 22, 2026', 'Grade 6 goal was 10', 'books'),
+  achievement('Logged 40 sessions', 'Jun 18, 2026', 'Most in Room 14 this term', 'streak'),
+  achievement('Collected 19 words', 'Jun 26, 2026', 'From 12 different books', 'series'),
+  achievement('Wrote 4 reviews', 'May 30, 2026', 'Two of them on nonfiction', 'reviews'),
+]
+
 // ─── The educator side ───────────────────────────────────────────────────────
 // One teacher, one class. The brief asks for "student and classroom level", so
 // the roster carries the per-student numbers the roll-up aggregates.

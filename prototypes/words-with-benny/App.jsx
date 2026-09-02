@@ -11,7 +11,7 @@ import { Dashboard } from '../logging-flow/components/Dashboard'
 import { LogFlow } from '../logging-flow/components/LogFlow'
 
 import { WordUnlock } from './components/WordUnlock'
-import { MyWords } from './components/MyWords'
+import { Collections } from './components/Collections'
 import { EducatorWords } from './components/EducatorWords'
 import { StudentWords } from './components/StudentWords'
 import { WordsRailCard } from './components/WordsRailCard'
@@ -48,7 +48,7 @@ const OWN_BOOKS = { books: BOOKS, recentlyLogged: RECENTLY_LOGGED }
 // `short` is what the preview bar's strip swaps to before it would overflow.
 const VIEWS = [
   { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
-  { id: 'words', label: 'Reader · My Words', short: 'My Words', icon: 'vocabulary' },
+  { id: 'words', label: 'Reader · Collections', short: 'Collections', icon: 'vocabulary' },
   { id: 'educator', label: 'Educator · Vocabulary', short: 'Educator', icon: 'chart-bar' },
 ]
 
@@ -76,7 +76,7 @@ export function App() {
   const [unlockOpen, setUnlockOpen] = useState(false)
 
   // Which dashboard tab the reader is on. Driven from here so the toolbar can
-  // deep-link to My Words, and so the unlock can hand off to it.
+  // deep-link to Collections, and so the unlock can hand off to it.
   const [readerTab, setReaderTab] = useState('challenges')
 
   const [openStudent, setOpenStudent] = useState(null)
@@ -125,12 +125,12 @@ export function App() {
 
   function seeAllWords() {
     closeUnlock()
-    setReaderTab('words')
+    setReaderTab('collections')
     setView('words')
   }
 
   // The two reader views are the same page — just a different tab on it.
-  const readerView = view === 'words' ? 'words' : readerTab
+  const readerView = view === 'words' ? 'collections' : readerTab
 
   return (
     <div className="wb-root">
@@ -142,7 +142,7 @@ export function App() {
         onChange={(id) => {
           setView(id)
           if (id === 'log') setReaderTab('challenges')
-          if (id === 'words') setReaderTab('words')
+          if (id === 'words') setReaderTab('collections')
         }}
       />
 
@@ -172,18 +172,21 @@ export function App() {
             view={readerView}
             onView={(id) => {
               setReaderTab(id)
-              setView(id === 'words' ? 'words' : 'log')
+              setView(id === 'collections' ? 'words' : 'log')
             }}
-            extraTabs={[{ id: 'words', label: 'My Words', count: collection.length }]}
+            // Collections supersedes the built-in "All Badges" tab — words,
+            // badges and achievements are one destination, not three.
+            extraTabs={[{ id: 'collections', label: 'Collections' }]}
+            hideTabs={['badges']}
             renderExtra={() => (
-              <MyWords collection={collection} reader={READER} newestWord={newestWord} />
+              <Collections collection={collection} reader={READER} newestWord={newestWord} />
             )}
             railTop={
               <WordsRailCard
                 collection={collection}
                 logsSinceWord={logsSinceWord}
                 onOpen={() => {
-                  setReaderTab('words')
+                  setReaderTab('collections')
                   setView('words')
                 }}
               />
