@@ -40,7 +40,7 @@ export function App() {
   return (
     <div className="bt-root">
       {/* Dev/preview bar — walk the full loop: create → earn → review */}
-      <PreviewBar title="Book Talk Badges" views={VIEWS} active={view} onChange={setView} />
+      <PreviewBar title="Book Talks: Badges" views={VIEWS} active={view} onChange={setView} />
 
       {/* Every view is full-bleed with its own chrome (a top bar + body). */}
       {view === 'settings' && (

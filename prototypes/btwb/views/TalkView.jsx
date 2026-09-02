@@ -7,7 +7,7 @@ import { TALK_KINDS, READER, BOOK, article } from '../data'
 import '@components/Button/Button.css'
 import '@components/Modal/Modal.css'
 import '@components/Primitives/Primitives.css'
-// Chat bubbles + the composer/award styling come from the Book Talk Badges
+// Chat bubbles + the composer/award styling come from the Book Talks: Badges
 // prototype, so the two chat surfaces look and behave the same.
 import '../../book-talks/index.css'
 

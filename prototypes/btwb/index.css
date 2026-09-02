@@ -1,7 +1,7 @@
 /* Book Talks with Benny — site-wide completion setting + comprehension talks.
    The admin chrome comes from @components/AppShell (MainRail + Setup sidebar),
    the challenge step from the Challenge Creator, and the chat bubbles from the
-   Book Talk Badges prototype. Everything below is namespaced `bw-*`. */
+   Book Talks: Badges prototype. Everything below is namespaced `bw-*`. */
 
 *,
 *::before,

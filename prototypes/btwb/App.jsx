@@ -42,7 +42,7 @@ export function App() {
           conversation that results. Not sticky: the root is a flex column whose
           view below owns its own scrolling. */}
       <PreviewBar
-        title="Book Talks with Benny"
+        title="Book Talks: Comprehension"
         subtitle="Site-wide completion setting"
         views={VIEWS}
         active={view}

@@ -23,7 +23,7 @@ function PreviewBarShowcase() {
   const [active, setActive] = useState('admin')
   return (
     <PreviewBar
-      title="Book Talk Badges"
+      title="Book Talks: Badges"
       views={PREVIEW_VIEWS}
       active={active}
       onChange={setActive}
@@ -430,7 +430,7 @@ export const layoutSections = [
         </Variant>
         <Variant label="a subtitle + a right-side action" bare>
           <PreviewBar
-            title="Book Talks with Benny"
+            title="Book Talks: Comprehension"
             subtitle="Site-wide completion setting"
             views={PREVIEW_VIEWS}
             active="reader"
