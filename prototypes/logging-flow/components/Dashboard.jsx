@@ -46,6 +46,7 @@ function TopBar({
   view,
   onView,
   extraTabs = [],
+  partners = [],
 }) {
   return (
     <header className="wa-topbar">
@@ -92,7 +93,7 @@ function TopBar({
         <div className="wa-topbar-user">
           {/* "Swap between the two at any time using the logo in the top right." */}
           <PartnerSwitcher
-            partners={CONNECTION_LIST}
+            partners={partners}
             connections={connections}
             onManage={onManageConnections}
             onVisit={onVisitPartner}
@@ -300,6 +301,11 @@ function Footer() {
  * additive — they let another prototype hang its own tab (and rail card) off
  * this real dashboard instead of cloning it. Words with Benny uses them to put
  * "My Words" next to the Reading Log. Left off, the page is exactly as it was.
+ *
+ * `partners` is the list of reading apps this prototype offers to link. It
+ * defaults to logging-flow's own CONNECTION_LIST; pass `[]` and the entire
+ * integration surface drops out — the connect banner, the topbar switcher, the
+ * "logged for you" rail card, and the App Integrations settings section.
  */
 export function Dashboard({
   streak,
@@ -314,6 +320,7 @@ export function Dashboard({
   railTop,
   view: viewProp,
   onView: onViewProp,
+  partners = CONNECTION_LIST,
 }) {
   const [scope, setScope] = useState('current')
   // 'challenges' | 'settings' | 'log' | any `extraTabs` id — the gear (and
@@ -328,7 +335,7 @@ export function Dashboard({
   // decision rather than one per app.
   const [dismissed, setDismissed] = useState(false)
 
-  const toLink = dismissed ? [] : CONNECTION_LIST.filter((p) => !connections[p.id])
+  const toLink = dismissed ? [] : partners.filter((p) => !connections[p.id])
 
   return (
     <div className="wa-shell">
@@ -338,6 +345,7 @@ export function Dashboard({
         onManageConnections={() => setView('settings')}
         onHome={() => setView('challenges')}
         onVisitPartner={onVisitPartner}
+        partners={partners}
         view={view}
         onView={(id) => setView(id === 'log' || extraIds.includes(id) ? id : 'challenges')}
         extraTabs={extraTabs}
@@ -351,7 +359,7 @@ export function Dashboard({
           ) : view === 'settings' ? (
             <PersonalizeReader
               reader={READER}
-              partners={CONNECTION_LIST}
+              partners={partners}
               connections={connections}
               onLink={onLinkPartner}
               onDisconnect={onDisconnectPartner}
@@ -400,7 +408,10 @@ export function Dashboard({
                 <div className="wa-rail">
                   {railTop}
                   <GoalCard dailyGoal={dailyGoal} />
-                  <AutoLoggedCard className="wa-card" rows={autoLoggedRows(connections, BOOKS)} />
+                  <AutoLoggedCard
+                    className="wa-card"
+                    rows={partners.length ? autoLoggedRows(connections, BOOKS) : []}
+                  />
                   <LeaderboardCard />
                 </div>
               </div>

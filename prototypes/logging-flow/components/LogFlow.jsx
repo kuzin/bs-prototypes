@@ -11,7 +11,7 @@ import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 import { BookCover } from './BookCover'
 import { EReader } from './EReader'
 import { BOOKS, RECENTLY_LOGGED, READING_LIST, OTHER_READERS, READER } from '../data'
-import { CONNECTIONS } from '../connections'
+import { CONNECTIONS, CONNECTION_LIST } from '../connections'
 import './LogFlow.css'
 
 import '@components/Button/Button.css'
@@ -64,7 +64,19 @@ const REVIEW_OPTIONS = [
 // the success step offers a next beat on what was just logged — a Book Talk
 // about it, or the vocabulary word it unlocked (Words with Benny). Left off,
 // the flow is exactly as it was.
-export function LogFlow({ open, onClose, onLogged, connections = {}, onTalkToBenny, onOpenWord }) {
+//
+// `partners` is the list of reading apps this prototype offers to link; pass
+// `[]` and a partner-catalog title stops advertising which app it came from
+// (it's then just a book you can log).
+export function LogFlow({
+  open,
+  onClose,
+  onLogged,
+  connections = {},
+  onTalkToBenny,
+  onOpenWord,
+  partners = CONNECTION_LIST,
+}) {
   const [step, setStep] = useState('search') // search | details | timer | review | success | reader
   const [returnStep, setReturnStep] = useState('search')
   const [reader, setReader] = useState(READER)
@@ -275,6 +287,7 @@ export function LogFlow({ open, onClose, onLogged, connections = {}, onTalkToBen
             <SearchStep
               reader={reader}
               connections={connections}
+              partners={partners}
               query={query}
               setQuery={setQuery}
               scanOpen={scanOpen}
@@ -451,6 +464,7 @@ function ReaderLine({ reader, onChange }) {
 function SearchStep({
   reader,
   connections,
+  partners,
   query,
   setQuery,
   scanOpen,
@@ -520,7 +534,7 @@ function SearchStep({
                   <span className="lf-resulttitle">{b.title}</span>
                   <span className="lf-resultauthor">{b.author}</span>
                 </span>
-                {b.partner ? (
+                {b.partner && partners.some((p) => p.id === b.partner) ? (
                   <PartnerResultBadge partnerId={b.partner} connections={connections} />
                 ) : (
                   b.readable && (

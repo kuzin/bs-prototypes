@@ -75,38 +75,42 @@ export function PersonalizeReader({
             </Button>
           </section>
 
-          {/* ── The integration surface ─────────────────────────────────── */}
-          <section className="st-section" id="app-integrations">
-            <h2 className="st-h2">App Integrations</h2>
-            <p className="st-hint">
-              Link a reading app and Beanstack logs what {reader.name.split(' ')[0]} reads there
-              automatically. Each app connects separately.
-            </p>
-            <div className="st-integrations">
-              {partners.map(({ id }) => {
-                const conn = connections[id]
-                return (
-                  <div key={id} className="st-integration">
-                    <div className="st-integration-brand">
-                      <PartnerBrand id={id} size="md" wordmarkOnly />
-                      {conn && (
-                        <span className="st-integration-acct">
-                          {conn.account} · {conn.org}
-                        </span>
-                      )}
+          {/* ── The integration surface ───────────────────────────────────
+              Skipped entirely when there are no partners to offer — an empty
+              heading + hint is worse than no section. */}
+          {partners.length > 0 && (
+            <section className="st-section" id="app-integrations">
+              <h2 className="st-h2">App Integrations</h2>
+              <p className="st-hint">
+                Link a reading app and Beanstack logs what {reader.name.split(' ')[0]} reads there
+                automatically. Each app connects separately.
+              </p>
+              <div className="st-integrations">
+                {partners.map(({ id }) => {
+                  const conn = connections[id]
+                  return (
+                    <div key={id} className="st-integration">
+                      <div className="st-integration-brand">
+                        <PartnerBrand id={id} size="md" wordmarkOnly />
+                        {conn && (
+                          <span className="st-integration-acct">
+                            {conn.account} · {conn.org}
+                          </span>
+                        )}
+                      </div>
+                      <Button
+                        variant="secondary"
+                        size="md"
+                        onClick={() => (conn ? onDisconnect?.(id) : onLink?.(id))}
+                      >
+                        {conn ? 'Disconnect' : 'Connect Account'}
+                      </Button>
                     </div>
-                    <Button
-                      variant="secondary"
-                      size="md"
-                      onClick={() => (conn ? onDisconnect?.(id) : onLink?.(id))}
-                    >
-                      {conn ? 'Disconnect' : 'Connect Account'}
-                    </Button>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
+                  )
+                })}
+              </div>
+            </section>
+          )}
 
           <section className="st-section">
             <h2 className="st-h2">Share This Reader</h2>

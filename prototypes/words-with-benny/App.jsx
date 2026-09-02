@@ -19,6 +19,19 @@ import { READER, SEED_COLLECTION, STREAK, DAILY_GOAL, UNLOCK_EVERY, pickWord } f
 
 import './index.css'
 
+// This prototype is about words, not account linking, so it opts out of
+// logging-flow's partner-integration surface entirely: no connect banner, no
+// topbar app switcher, no "logged for you" card, no App Integrations settings,
+// and no partner badge on a search result. The partner-catalog titles stay —
+// they're just books you can log, and several of them carry words.
+const NO_PARTNERS = {
+  partners: [],
+  connections: {},
+  onLinkPartner: () => {},
+  onDisconnectPartner: () => {},
+  onVisitPartner: () => {},
+}
+
 // `short` is what the preview bar's strip swaps to before it would overflow.
 const VIEWS = [
   { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
@@ -142,10 +155,7 @@ export function App() {
             streak={streak}
             dailyGoal={dailyGoal}
             onLog={() => setFlowOpen(true)}
-            connections={{}}
-            onLinkPartner={() => {}}
-            onDisconnectPartner={() => {}}
-            onVisitPartner={() => {}}
+            {...NO_PARTNERS}
             view={readerView}
             onView={(id) => {
               setReaderTab(id)
@@ -173,8 +183,8 @@ export function App() {
         open={flowOpen}
         onClose={() => setFlowOpen(false)}
         onLogged={handleLogged}
-        connections={{}}
         onOpenWord={pending ? openWord : undefined}
+        {...NO_PARTNERS}
       />
 
       <WordUnlock
