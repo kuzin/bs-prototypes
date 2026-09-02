@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
-import { Icon } from '@components/Icon/Icon'
+import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 import { SettingsView } from './views/SettingsView'
 import { ChallengeView } from './views/ChallengeView'
 import { TalkView } from './views/TalkView'
@@ -38,33 +38,17 @@ export function App() {
 
   return (
     <div className="bw-root">
-      {/* Dev/preview toolbar — the two places a book talk is configured, and the
-          conversation that results. */}
-      <div className="bw-toolbar">
-        <div className="bw-toolbar-brand">
-          <img src="/bs-prototypes/benny.png" alt="" className="bw-toolbar-benny" />
-          <div className="bw-toolbar-titles">
-            <span className="bw-toolbar-title">Book Talks with Benny</span>
-            <span className="bw-toolbar-site">Site-wide completion setting</span>
-          </div>
-        </div>
-        <div className="bw-toolbar-views" role="tablist" aria-label="Demo view">
-          {VIEWS.map((v) => (
-            <button
-              key={v.id}
-              role="tab"
-              aria-selected={view === v.id}
-              className={`bw-toolbar-view${view === v.id ? ' is-active' : ''}`}
-              onClick={() => setView(v.id)}
-              title={v.label}
-            >
-              <Icon name={v.icon} size={15} />
-              <span className="bw-view-label">{v.label}</span>
-              <span className="bw-view-label-short">{v.short}</span>
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Dev/preview bar — the two places a book talk is configured, and the
+          conversation that results. Not sticky: the root is a flex column whose
+          view below owns its own scrolling. */}
+      <PreviewBar
+        title="Book Talks with Benny"
+        subtitle="Site-wide completion setting"
+        views={VIEWS}
+        active={view}
+        onChange={setView}
+        sticky={false}
+      />
 
       {view === 'settings' && <SettingsView settings={settings} onChange={updateSettings} />}
       {view === 'challenge' && <ChallengeView siteSettings={settings} />}

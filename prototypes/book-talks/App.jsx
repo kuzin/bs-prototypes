@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
-import { Icon } from '@components/Icon/Icon'
+import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 // The self-started trigger is a site setting, so it lives on the real Book
 // Talks site-settings page — reused wholesale from the BTWB prototype.
 import { SettingsView } from '../btwb/views/SettingsView'
@@ -14,11 +14,12 @@ import { DEFAULT_BADGE } from './data'
 import '../btwb/index.css'
 import './index.css'
 
+// `short` is what the preview bar's strip swaps to before it would overflow.
 const VIEWS = [
-  { id: 'settings', label: 'Admin · Site Settings', icon: 'settings' },
-  { id: 'create', label: 'Teacher · Create', icon: 'sparkles' },
-  { id: 'student', label: 'Student · Earn', icon: 'message-chatbot' },
-  { id: 'review', label: 'Teacher · Review', icon: 'clipboard-check' },
+  { id: 'settings', label: 'Admin · Site Settings', short: 'Site', icon: 'settings' },
+  { id: 'create', label: 'Teacher · Create', short: 'Create', icon: 'sparkles' },
+  { id: 'student', label: 'Student · Earn', short: 'Earn', icon: 'message-chatbot' },
+  { id: 'review', label: 'Teacher · Review', short: 'Review', icon: 'clipboard-check' },
 ]
 
 export function App() {
@@ -38,29 +39,8 @@ export function App() {
 
   return (
     <div className="bt-root">
-      {/* Dev/preview toolbar — walk the full loop: create → earn → review */}
-      <div className="bt-toolbar">
-        <div className="bt-toolbar-brand">
-          <img src="/bs-prototypes/benny.png" alt="" className="bt-toolbar-benny" />
-          <div className="bt-toolbar-titles">
-            <span className="bt-toolbar-title">Book Talk Badges</span>
-          </div>
-        </div>
-        <div className="bt-toolbar-views" role="tablist" aria-label="Demo view">
-          {VIEWS.map((v) => (
-            <button
-              key={v.id}
-              role="tab"
-              aria-selected={view === v.id}
-              className={`bt-toolbar-view${view === v.id ? ' is-active' : ''}`}
-              onClick={() => setView(v.id)}
-            >
-              <Icon name={v.icon} size={15} />
-              {v.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Dev/preview bar — walk the full loop: create → earn → review */}
+      <PreviewBar title="Book Talk Badges" views={VIEWS} active={view} onChange={setView} />
 
       {/* Every view is full-bleed with its own chrome (a top bar + body). */}
       {view === 'settings' && (

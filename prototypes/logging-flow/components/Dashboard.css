@@ -1,0 +1,70 @@
+/* Chrome for the Dashboard's top bar. These rules used to live in the
+   prototype's index.css, which meant any prototype REUSING <Dashboard> (Words
+   with Benny) lost them — the logo kept its default button border and both
+   action groups rendered at once. Co-located and self-imported instead, the
+   way beeverso's Dashboard.css already does it. */
+
+/* The topbar logo doubles as "back to Challenges" once the reader can navigate
+   to their settings page. */
+.wa-logo-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  display: inline-flex;
+}
+
+/* Secondary top-bar actions fold into a flyout when the bar gets tight. */
+.wa-actions-wide {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.wa-actions-narrow {
+  display: none;
+}
+@media (max-width: 1120px) {
+  .wa-actions-wide {
+    display: none;
+  }
+  .wa-actions-narrow {
+    display: block;
+  }
+}
+
+.wa-more-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--c-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.wa-more-btn:hover {
+  background: var(--c-slate-100);
+}
+
+.wa-more-menu {
+  min-width: 200px;
+  padding: 6px;
+}
+.wa-more-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text);
+  text-align: left;
+}
+.wa-more-item:hover {
+  background: var(--c-slate-100);
+}

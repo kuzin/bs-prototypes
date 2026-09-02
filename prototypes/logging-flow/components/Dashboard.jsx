@@ -17,6 +17,8 @@ import { READER, CHALLENGES, TOP_SCHOOLS, TOP_GRADES, BOOKS } from '../data'
 import { CONNECTION_LIST, autoLoggedRows } from '../connections'
 import { ReadingLog } from './ReadingLog'
 
+import './Dashboard.css'
+
 // Reuse the consumer web-app dashboard styling (the logging flow opens on top
 // of this "Challenges" page — see Figma Option 1, Challenges Page frames).
 import '../../web-app/index.css'

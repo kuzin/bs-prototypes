@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { AppShell } from '@components/AppShell/AppShell'
-import { Icon } from '@components/Icon/Icon'
+import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 
 // The reader half runs on the real logging surfaces — logging-flow's dashboard
 // and its combined-logging flow — rather than a lookalike, so the unlock lands
@@ -19,10 +19,11 @@ import { READER, SEED_COLLECTION, STREAK, DAILY_GOAL, UNLOCK_EVERY, pickWord } f
 
 import './index.css'
 
+// `short` is what the preview bar's strip swaps to before it would overflow.
 const VIEWS = [
-  { id: 'log', label: 'Reader · Log Reading', icon: 'book' },
-  { id: 'words', label: 'Reader · My Words', icon: 'vocabulary' },
-  { id: 'educator', label: 'Educator · Vocabulary', icon: 'chart-bar' },
+  { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
+  { id: 'words', label: 'Reader · My Words', short: 'My Words', icon: 'vocabulary' },
+  { id: 'educator', label: 'Educator · Vocabulary', short: 'Educator', icon: 'chart-bar' },
 ]
 
 const EDU_NAV = [
@@ -107,36 +108,17 @@ export function App() {
 
   return (
     <div className="wb-root">
-      {/* Dev/preview toolbar — walk the loop: log → unlock → collect → report */}
-      <div className="wb-toolbar">
-        <div className="wb-toolbar-brand">
-          <img src="/bs-prototypes/benny.png" alt="" className="wb-toolbar-benny" />
-          <span className="wb-toolbar-title">Words with Benny</span>
-        </div>
-        <div className="wb-toolbar-views" role="tablist" aria-label="Demo view">
-          {VIEWS.map((v) => (
-            <button
-              key={v.id}
-              role="tab"
-              aria-selected={view === v.id}
-              className={`wb-toolbar-view${view === v.id ? ' is-active' : ''}`}
-              onClick={() => {
-                setView(v.id)
-                if (v.id === 'log') setReaderTab('challenges')
-                if (v.id === 'words') setReaderTab('words')
-              }}
-            >
-              <Icon name={v.icon} size={15} />
-              {v.label}
-            </button>
-          ))}
-        </div>
-        <span className="wb-toolbar-hint">
-          {view === 'educator'
-            ? 'Pick a student row to drill in'
-            : `Log Reading → a word every ${UNLOCK_EVERY} logs`}
-        </span>
-      </div>
+      {/* Dev/preview bar — walk the loop: log → unlock → collect → report */}
+      <PreviewBar
+        title="Words with Benny"
+        views={VIEWS}
+        active={view}
+        onChange={(id) => {
+          setView(id)
+          if (id === 'log') setReaderTab('challenges')
+          if (id === 'words') setReaderTab('words')
+        }}
+      />
 
       <div className="wb-stage">
         {view === 'educator' ? (

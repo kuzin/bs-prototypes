@@ -1,0 +1,197 @@
+/* The shared dev/preview bar. One look across every multi-persona prototype —
+   the teal-gradient ground book-talks and btwb converged on, with btwb's
+   responsive behaviour (short labels, then a wrapped full-width strip). */
+
+:root {
+  /* The bar's height is derived, not eyeballed, so the views tray and anything
+     sitting beside it can be kept provably in step: one pill height feeds the
+     tray, and the tray feeds the bar.
+     --preview-bar-h is published so a prototype can size a full-height shell
+     below the bar (`height: calc(100vh - var(--preview-bar-h) - …)`) or stick a
+     header under it, instead of hard-coding a pixel guess. */
+  --pvb-pill-h: 33px;
+  --pvb-tray-h: calc(var(--pvb-pill-h) + 8px); /* + the tray's 4px padding */
+  --preview-bar-h: calc(var(--pvb-tray-h) + 20px); /* + the bar's 10px padding */
+}
+
+.pvb {
+  z-index: 40;
+  display: flex;
+  flex: none;
+  gap: 18px;
+  align-items: center;
+  min-height: var(--preview-bar-h);
+  padding: 10px 18px;
+  color: #fff;
+  background: linear-gradient(95deg, #0c3a39 0%, #115e5a 100%);
+}
+/* Opt out inside a flex-column shell that owns its own scrolling. */
+.pvb--sticky {
+  position: sticky;
+  top: 0;
+}
+
+.pvb-brand {
+  display: flex;
+  flex: none;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+.pvb-benny {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  padding: 2px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 50%;
+}
+.pvb-titles {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.pvb-title {
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.pvb-subtitle {
+  font-size: 12px;
+  color: #9fd8d3;
+  white-space: nowrap;
+}
+
+.pvb-views {
+  display: flex;
+  gap: 4px;
+  height: var(--pvb-tray-h);
+  padding: 4px;
+  margin-left: auto;
+  background: rgb(255 255 255 / 10%);
+  border-radius: 12px;
+  /* Last resort on very narrow screens: scroll the strip rather than let it
+     push the brand around or spill off the page. */
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.pvb-views::-webkit-scrollbar {
+  display: none;
+}
+
+.pvb-view {
+  display: flex;
+  flex: none;
+  gap: 7px;
+  align-items: center;
+  height: var(--pvb-pill-h);
+  padding: 0 13px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #cdeae7;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  border-radius: 9px;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+.pvb-view:hover {
+  color: #fff;
+}
+.pvb-view.is-active {
+  color: #0c3a39;
+  background: #fff;
+}
+.pvb-view:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 1px;
+}
+.pvb-view-label-short {
+  display: none;
+}
+
+/* Controls pinned to the far right. With the views strip taking
+   `margin-left: auto`, these just follow it. */
+.pvb-actions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  align-items: center;
+}
+
+/* Where the bar's own controls are styled, so a prototype passing `actions`
+   doesn't have to restyle them. */
+.pvb-actions button {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  height: var(--pvb-tray-h);
+  padding: 0 12px;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #cdeae7;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 8px;
+}
+.pvb-actions button:hover {
+  color: #fff;
+  border-color: rgb(255 255 255 / 55%);
+}
+
+/* Swap to the short labels before the strip starts overflowing. */
+@media (max-width: 1000px) {
+  .pvb-view-label {
+    display: none;
+  }
+  .pvb-view-label-short {
+    display: inline;
+  }
+}
+
+/* Tablet-ish: the strip drops to its own full-width row under the brand. */
+@media (max-width: 760px) {
+  .pvb {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+  .pvb-views {
+    justify-content: flex-start;
+    width: 100%;
+    margin-left: 0;
+  }
+  .pvb-view {
+    flex: 1 0 auto;
+    justify-content: center;
+  }
+}
+
+/* Phone: shed the strapline and tighten the brand so the row stays one line. */
+@media (max-width: 560px) {
+  .pvb-subtitle {
+    display: none;
+  }
+  .pvb-benny {
+    width: 28px;
+    height: 28px;
+  }
+  .pvb-title {
+    font-size: 14px;
+  }
+  .pvb-view {
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+  /* Wrap rather than scroll — hiding a view off the edge is worse than a
+     slightly taller bar. */
+  .pvb-views {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
+}
