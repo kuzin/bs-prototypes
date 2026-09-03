@@ -18,8 +18,8 @@ import '@components/Cards/Cards.css'
 import { ALL_WORDS, CLASS, CLASS_TOP_WORDS, CLASS_TREND, ROSTER } from '../data'
 import './EducatorWords.css'
 
-// The educator view: "at-a-glance reporting showing progress in word collection
-// at the student and classroom level".
+// The Vocabulary tab of a classroom page: "at-a-glance reporting showing
+// progress in word collection at the student and classroom level".
 //
 // The framing matters as much as the numbers. The brief's problem is that
 // educators need a reason to keep pushing logging *without* taking on
@@ -117,16 +117,10 @@ export function EducatorWords({ onOpenStudent }) {
 
   return (
     <div className="ew">
+      {/* The classroom page above already names the class and the tab, so this
+          keeps only the actions that belong to Vocabulary itself. */}
       <header className="ew-head">
-        <div className="ew-head-copy">
-          <p className="ew-kicker">
-            <Icon name="vocabulary" size={14} /> Words with Benny
-          </p>
-          <h1 className="ew-h1">Vocabulary</h1>
-          <p className="ew-sub">
-            {CLASS.name} · {CLASS.term}
-          </p>
-        </div>
+        <p className="ew-term">{CLASS.term}</p>
         <div className="ew-head-actions">
           <Button variant="ghost" size="sm" icon={<Icon name="download" size={15} />}>
             Export
@@ -155,8 +149,8 @@ export function EducatorWords({ onOpenStudent }) {
         accent={ACCENT}
         ariaLabel="Vocabulary reporting level"
         items={[
-          { id: 'class', label: 'Classroom' },
-          { id: 'students', label: 'Students', count: ROSTER.length },
+          { id: 'class', label: 'Class summary' },
+          { id: 'students', label: 'By student', count: ROSTER.length },
         ]}
         className="ew-tabs"
       />

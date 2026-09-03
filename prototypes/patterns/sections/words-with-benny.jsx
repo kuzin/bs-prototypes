@@ -225,13 +225,14 @@ export const wordsWithBennySections = [
         pill <code>Tabs</code> — so the only new thing here is what it chooses to say. It leads with
         the promise (<em>nothing here was assigned</em>) because the problem the feature exists to
         solve is educator effort, then plots words collected against reading logs to show the two
-        moving together. <strong>Classroom</strong> is the at-a-glance half;{' '}
-        <strong>Students</strong> is the sortable roster that drills into <code>StudentWords</code>.
-        Props: <code>onOpenStudent</code>.
+        moving together. <strong>Class summary</strong> is the at-a-glance half;{' '}
+        <strong>By student</strong> is the sortable roster that drills into{' '}
+        <code>StudentWords</code> — named that way because the classroom page above already has its
+        own Readers tab. Props: <code>onOpenStudent</code>.
       </>
     ),
     render: () => (
-      <Variant label="classroom roll-up + roster" full>
+      <Variant label="the tab's content on its own" full>
         <EducatorWords onOpenStudent={noop} />
       </Variant>
     ),

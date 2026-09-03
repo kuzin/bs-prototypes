@@ -1,0 +1,24 @@
+/* One classroom's page. The identity block and its chrome come from AppShell
+   (`.app-shell-header*`); this only adds the class avatar and the tab bar,
+   the same way sfr's pages do. */
+
+.cp-avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 46px;
+  height: 46px;
+  font-size: 17px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+  background: linear-gradient(150deg, #8b5cf6, #6d28d9);
+  border-radius: 12px;
+}
+
+.cp-tabsbar {
+  flex-shrink: 0;
+  padding: 0 max(24px, calc((100% - 1440px) / 2));
+  background: #fff;
+  border-bottom: 1px solid var(--c-border);
+}

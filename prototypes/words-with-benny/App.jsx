@@ -12,7 +12,7 @@ import { LogFlow } from '../logging-flow/components/LogFlow'
 
 import { WordUnlock } from './components/WordUnlock'
 import { Collections } from './components/Collections'
-import { EducatorWords } from './components/EducatorWords'
+import { ClassroomPage } from './components/ClassroomPage'
 import { StudentWords } from './components/StudentWords'
 import { WordsRailCard } from './components/WordsRailCard'
 import {
@@ -48,14 +48,16 @@ const OWN_BOOKS = { books: BOOKS, recentlyLogged: RECENTLY_LOGGED }
 const VIEWS = [
   { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
   { id: 'words', label: 'Reader · My Collections', short: 'Collections', icon: 'vocabulary' },
-  { id: 'educator', label: 'Educator · Vocabulary', short: 'Educator', icon: 'chart-bar' },
+  { id: 'educator', label: 'Educator · Classroom', short: 'Educator', icon: 'chart-bar' },
 ]
 
+// The admin section a classroom actually lives in — same nav shape the SfR
+// prototype uses for "Classes and Readers".
 const EDU_NAV = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'overview' },
-  { id: 'vocabulary', label: 'Vocabulary', icon: 'book' },
-  { id: 'habits', label: 'Reading Habits', icon: 'habits' },
+  { id: 'classes', label: 'Classes', icon: 'demographics' },
   { id: 'students', label: 'Students', icon: 'person' },
+  { id: 'staff', label: 'Staff', icon: 'person' },
+  { id: 'groups', label: 'Groups', icon: 'overview' },
 ]
 
 export function App() {
@@ -150,16 +152,17 @@ export function App() {
           <div className="wb-edu-shell">
             <AppShell
               sidebar={{
-                title: 'Insights',
-                subtitle: 'Lincoln Middle School',
+                title: 'Classes and Readers',
+                subtitle: 'Find and log for students and classes.',
                 nav: EDU_NAV,
-                active: 'vocabulary',
+                active: 'classes',
                 onNavigate: () => {},
-                mainRailIndex: 1,
+                mainRailIndex: 3,
               }}
+              backBar={{ label: 'Classes', onClick: () => {} }}
               contentClassName="ew-content"
             >
-              <EducatorWords onOpenStudent={setOpenStudent} />
+              <ClassroomPage onOpenStudent={setOpenStudent} />
             </AppShell>
           </div>
         ) : (
