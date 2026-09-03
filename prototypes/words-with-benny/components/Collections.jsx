@@ -72,6 +72,7 @@ export function Collections({ collection, newestWord }) {
       <div className="co-subtabs">
         <Tabs
           variant="pill"
+          plain
           size="md"
           active={pane}
           onChange={setPane}

@@ -395,7 +395,7 @@ export function Dashboard({
           {extraIds.includes(view) ? (
             renderExtra?.(view)
           ) : view === 'log' ? (
-            <ReadingLog />
+            <ReadingLog partners={partners} />
           ) : view === 'settings' ? (
             <PersonalizeReader
               reader={READER}

@@ -1,3 +1,17 @@
+/* ─── Sub-tab band ───────────────────────────────────────────────────────
+   The pane switcher sits on a tinted band flush under the main nav. It bleeds
+   to the container edges, cancelling .wa-main's top padding and
+   .wa-main-inner's side padding — same trick as ReadingLog's `.rl-subtabs`. */
+
+.co-subtabs {
+  display: flex;
+  justify-content: center;
+  padding: 16px 24px;
+  margin: -24px -24px 8px;
+  background: #f7f8fa;
+  border-bottom: 1px solid var(--c-border);
+}
+
 /* ─── Benny's line ───────────────────────────────────────────────────────
    Sits on the right of whichever shelf head is showing, in the register of the
    Reading Log's `.rl-importnote` rather than as a panel on a banner. */

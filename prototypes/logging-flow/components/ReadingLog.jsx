@@ -6,7 +6,7 @@ import { Pill } from '@components/Pill/Pill'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 
 import { READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
-import { CONNECTIONS } from '../connections'
+import { CONNECTIONS, CONNECTION_LIST } from '../connections'
 import './ReadingLog.css'
 
 import '@components/Button/Button.css'
@@ -80,7 +80,7 @@ function ImportedTag({ entry }) {
   )
 }
 
-function EntryChip({ entry, dense }) {
+function EntryChip({ entry, dense, showImported = true }) {
   const amounts = amount(entry)
   return (
     <div className={`rl-entry rl-entry--${entry.tone}${dense ? ' rl-entry--dense' : ''}`}>
@@ -102,12 +102,12 @@ function EntryChip({ entry, dense }) {
           </span>
         )}
       </div>
-      {entry.source && <ImportedTag entry={entry} />}
+      {showImported && entry.source && <ImportedTag entry={entry} />}
     </div>
   )
 }
 
-function CalendarView() {
+function CalendarView({ showImported }) {
   const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
   return (
     <div className="rl-cal">
@@ -136,7 +136,7 @@ function CalendarView() {
                     </div>
                   )}
                   {rows.map((e) => (
-                    <EntryChip key={e.id} entry={e} dense />
+                    <EntryChip key={e.id} entry={e} dense showImported={showImported} />
                   ))}
                 </div>
               )
@@ -148,7 +148,7 @@ function CalendarView() {
   )
 }
 
-function ListView() {
+function ListView({ showImported }) {
   const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
   return (
     <div className="rl-list">
@@ -181,7 +181,7 @@ function ListView() {
                   </div>
                   <div className="rl-day-rows">
                     {rows.map((e) => (
-                      <EntryChip key={e.id} entry={e} />
+                      <EntryChip key={e.id} entry={e} showImported={showImported} />
                     ))}
                   </div>
                 </div>
@@ -257,17 +257,22 @@ function TitlesView() {
   )
 }
 
-export function ReadingLog() {
+// `partners` is the list of reading apps this prototype offers to link; pass
+// `[]` and the log drops everything about imported sessions — the note and the
+// per-entry partner marks — since with nothing linked there's nothing to
+// explain. Defaults to logging-flow's own list, so that prototype is unchanged.
+export function ReadingLog({ partners = CONNECTION_LIST }) {
   const [tab, setTab] = useState('log')
   const [view, setView] = useState('calendar')
 
-  const imported = READING_LOG.filter((e) => e.source).length
+  const imported = partners.length ? READING_LOG.filter((e) => e.source).length : 0
 
   return (
     <div className="rl-page">
       <div className="rl-subtabs">
         <Tabs
           variant="pill"
+          plain
           size="md"
           active={tab}
           onChange={setTab}
@@ -343,7 +348,11 @@ export function ReadingLog() {
               </button>
             </div>
           </div>
-          {view === 'calendar' ? <CalendarView /> : <ListView />}
+          {view === 'calendar' ? (
+            <CalendarView showImported={imported > 0} />
+          ) : (
+            <ListView showImported={imported > 0} />
+          )}
         </>
       ) : (
         <TitlesView />
