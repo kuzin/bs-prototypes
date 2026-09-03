@@ -607,8 +607,10 @@ export const TEACHER = { name: 'Mr. Reyes', initials: 'JR', school: 'Lincoln Mid
 
 export const CLASS = {
   id: 'room-14',
-  name: 'Room 14 · 6th Grade ELA',
-  students: 24,
+  name: 'Room 14',
+  initials: 'R14',
+  grade: '6th Grade ELA',
+  year: '2025–26 School Year',
   term: 'This school year',
 }
 

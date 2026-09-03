@@ -159,7 +159,7 @@ export function App() {
                 onNavigate: () => {},
                 mainRailIndex: 3,
               }}
-              backBar={{ label: 'Classes', onClick: () => {} }}
+              backBar={{ label: 'Back to Classes', onClick: () => {} }}
               contentClassName="ew-content"
             >
               <ClassroomPage onOpenStudent={setOpenStudent} />
