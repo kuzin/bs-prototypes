@@ -34,10 +34,10 @@ function CollectionCard({ art, name, blurb, date }) {
 
 /**
  * Every pane gets the same head: what it holds and how much of it, over a
- * hairline, with Benny's line on the right. There's no separate page title —
- * the tab strip above already says you're in Collections.
+ * hairline. There's no separate page title — the tab strip above already says
+ * you're in Collections.
  */
-function ShelfHead({ title, count, noun, action }) {
+function ShelfHead({ title, count, noun }) {
   return (
     <header className="co-shelf-head">
       <div className="co-shelf-copy">
@@ -46,24 +46,12 @@ function ShelfHead({ title, count, noun, action }) {
           {count} {noun}
         </p>
       </div>
-      {action}
     </header>
   )
 }
 
 export function Collections({ collection, newestWord }) {
   const [pane, setPane] = useState('words')
-
-  const benny = (
-    <div className="co-benny">
-      <img src="/bs-prototypes/benny-happy.svg" alt="" className="co-benny-face" />
-      <p className="co-benny-line">
-        {collection.length >= 12
-          ? `${collection.length} words and ${BADGES.length} badges! Keep logging.`
-          : 'Log some reading and I’ll dig up a word for you.'}
-      </p>
-    </div>
-  )
 
   return (
     <div className="co">
@@ -89,14 +77,14 @@ export function Collections({ collection, newestWord }) {
 
       {pane === 'words' && (
         <>
-          <ShelfHead title="Vocabulary" count={collection.length} noun="Words" action={benny} />
+          <ShelfHead title="Vocabulary" count={collection.length} noun="Words" />
           <MyWords collection={collection} newestWord={newestWord} />
         </>
       )}
 
       {pane === 'badges' && (
         <>
-          <ShelfHead title="Earned Badges" count={BADGES.length} noun="Badges" action={benny} />
+          <ShelfHead title="Earned Badges" count={BADGES.length} noun="Badges" />
           <div className="co-grid">
             {BADGES.map((b) => (
               <CollectionCard
@@ -117,12 +105,7 @@ export function Collections({ collection, newestWord }) {
 
       {pane === 'achievements' && (
         <>
-          <ShelfHead
-            title="Achievements"
-            count={ACHIEVEMENTS.length}
-            noun="Achievements"
-            action={benny}
-          />
+          <ShelfHead title="Achievements" count={ACHIEVEMENTS.length} noun="Achievements" />
           <div className="co-grid">
             {ACHIEVEMENTS.map((a) => (
               <CollectionCard

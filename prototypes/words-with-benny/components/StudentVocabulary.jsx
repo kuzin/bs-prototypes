@@ -67,8 +67,12 @@ export function StudentVocabulary({ studentId }) {
         ))}
       </div>
 
-      <SectionHeading>Against the class median</SectionHeading>
+      {/* The profile's own convention: a section heading lives inside the card
+          it titles, where it picks up the card's header rule. A heading loose
+          between two cards sits in `.bp-content`'s flex gap and reads as
+          belonging to the card above it. */}
       <Card>
+        <SectionHeading>Against the class median</SectionHeading>
         <div className="svo-compare">
           <div className="svo-compare-head">
             <span className="svo-compare-lbl">{person.words} words collected</span>
@@ -88,7 +92,11 @@ export function StudentVocabulary({ studentId }) {
         </div>
       </Card>
 
-      <SectionHeading>Words collected</SectionHeading>
+      {/* This one titles a grid of cards rather than a single card, so it stays
+          loose — but the spacing has to say so: more air above than below. */}
+      <div className="svo-listhead">
+        <SectionHeading>Words collected</SectionHeading>
+      </div>
       <div className="svo-list">
         {collection.map((e) => {
           const word = wordByName(e.word)

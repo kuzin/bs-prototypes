@@ -17,6 +17,7 @@ import { Table } from '@components/Table/Table'
 import { BarList } from '@components/BarList/BarList'
 import { Funnel } from '@components/Funnel/Funnel'
 import { TrendChart } from '@components/TrendChart/TrendChart'
+import { WordCloud } from '@components/WordCloud/WordCloud'
 import { Toggle } from '@components/Toggle/Toggle'
 import { Field, Input, RangeSlider, Select } from '@components/Form/Form'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
@@ -1186,6 +1187,116 @@ function CardNoteKnobs() {
   )
 }
 
+// A real vocabulary sample, so the cloud is judged at the density it ships at.
+const WC_WORDS = [
+  ['mischievous', 24],
+  ['empathy', 23],
+  ['grief', 22],
+  ['precept', 20],
+  ['desolate', 19],
+  ['resilient', 19],
+  ['resourceful', 18],
+  ['destiny', 18],
+  ['legacy', 17],
+  ['instinct', 17],
+  ['rivalry', 16],
+  ['melancholy', 15],
+  ['prodigy', 15],
+  ['solace', 15],
+  ['awkward', 14],
+  ['tyrant', 14],
+  ['imaginary', 14],
+  ['defiance', 13],
+  ['momentum', 13],
+  ['peculiar', 12],
+  ['futile', 12],
+  ['suspicion', 12],
+  ['clandestine', 11],
+  ['ancestor', 11],
+  ['conspicuous', 11],
+  ['reluctant', 10],
+  ['heritage', 10],
+  ['earnest', 10],
+  ['bargain', 9],
+  ['conform', 9],
+  ['coincidence', 8],
+  ['superstition', 8],
+  ['vivid', 7],
+  ['infatuated', 7],
+  ['narrator', 6],
+  ['provisions', 6],
+  ['motive', 5],
+].map(([text, value]) => ({ text, value }))
+
+function WordCloudKnobs() {
+  const [accent, setAccent] = useState('#7C3AED')
+  const [height, setHeight] = useState('lg')
+  const [maxSize, setMaxSize] = useState(48)
+  const [count, setCount] = useState(WC_WORDS.length)
+  const [rotate, setRotate] = useState(false)
+  const [clickable, setClickable] = useState(true)
+  const [picked, setPicked] = useState(null)
+
+  const words = WC_WORDS.slice(0, count)
+
+  return (
+    <>
+      <Knobs>
+        <Field label="Accent">
+          <Select value={accent} onChange={(e) => setAccent(e.target.value)}>
+            <option value="#7C3AED">Violet</option>
+            <option value="#0DA7BC">Turquoise</option>
+            <option value="#16A97A">Green</option>
+            <option value="#1D4ED8">Blue</option>
+          </Select>
+        </Field>
+        <Field label="Height">
+          <Select value={height} onChange={(e) => setHeight(e.target.value)}>
+            <option value="sm">sm</option>
+            <option value="md">md</option>
+            <option value="lg">lg</option>
+            <option value="xl">xl</option>
+          </Select>
+        </Field>
+        <Field label={`Largest word — ${maxSize}px`}>
+          <RangeSlider min={24} max={72} value={maxSize} onChange={setMaxSize} />
+        </Field>
+        <Field label={`Words — ${count}`}>
+          <RangeSlider min={4} max={WC_WORDS.length} value={count} onChange={setCount} />
+        </Field>
+        <Field label="Turn some words 90°">
+          <Toggle checked={rotate} onChange={setRotate} />
+        </Field>
+        <Field label="Clickable">
+          <Toggle checked={clickable} onChange={setClickable} />
+        </Field>
+      </Knobs>
+
+      <Variant label={picked ? `Selected: ${picked}` : 'Class word wall'}>
+        <ChartCard
+          title="The class word wall"
+          subtitle="Every word the class has collected — the bigger the word, the more students have it"
+          accent={accent}
+          bodyPad="padded"
+        >
+          <WordCloud
+            words={words}
+            accent={accent}
+            height={height}
+            maxSize={maxSize}
+            rotate={rotate ? 0.25 : 0}
+            selected={picked}
+            valueLabel={(w) => `${w.value} of 24 students`}
+            onWordClick={
+              clickable ? (w) => setPicked(w.text === picked ? null : w.text) : undefined
+            }
+          />
+        </ChartCard>
+      </Variant>
+    </>
+  )
+}
+
 export const chartsSections = [
   {
     group: 'charts',
@@ -1403,6 +1514,31 @@ export const chartsSections = [
     render: () => (
       <>
         <BarListKnobs />
+      </>
+    ),
+  },
+  {
+    group: 'charts',
+    id: 'word-cloud',
+    name: 'WordCloud',
+    desc: (
+      <>
+        A real weighted word cloud — words are measured in the font they render in, then packed
+        heaviest-first along a spiral, and drawn as SVG fitted to whatever box the card gives it.
+        The packing is deterministic, so the same list always lays out the same way. Pass{' '}
+        <code>words</code> as <code>{'[{ text, value, color?, title? }]'}</code>, plus{' '}
+        <code>accent</code> (size and weight drive a ramp from slate up to the accent),{' '}
+        <code>height</code> (<code>'sm' | 'md' | 'lg' | 'xl'</code> or a number),{' '}
+        <code>minSize</code>/<code>maxSize</code>, and <code>rotate</code> (0–1: roughly what share
+        of words turn 90°). Pass <code>onWordClick</code> + <code>selected</code> to make it a
+        filter — hovering then quiets the rest of the cloud. Reach for it when the shape of a whole
+        vocabulary is the point; for a ranking anyone has to read values off, use{' '}
+        <code>BarList</code>.
+      </>
+    ),
+    render: () => (
+      <>
+        <WordCloudKnobs />
       </>
     ),
   },

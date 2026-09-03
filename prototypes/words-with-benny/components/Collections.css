@@ -12,33 +12,6 @@
   border-bottom: 1px solid var(--c-border);
 }
 
-/* ─── Benny's line ───────────────────────────────────────────────────────
-   Sits on the right of whichever shelf head is showing, in the register of the
-   Reading Log's `.rl-importnote` rather than as a panel on a banner. */
-
-.co-benny {
-  display: flex;
-  flex: 0 0 auto;
-  gap: 9px;
-  align-items: center;
-  max-width: 300px;
-  padding: 10px 13px;
-  background: #faf7ff;
-  border: 1px solid #e9d5ff;
-  border-radius: 11px;
-}
-.co-benny-face {
-  flex: 0 0 auto;
-  width: 30px;
-  height: 30px;
-}
-.co-benny-line {
-  font-size: 13px;
-  font-weight: 700;
-  line-height: 1.4;
-  color: #5b21b6;
-}
-
 /* ─── Badge + achievement shelves ────────────────────────────────────────
    Both use the product's one card: circular art over a bold name and a line of
    copy, with the earned date on its own footer strip in green. */
@@ -136,14 +109,4 @@
   font-weight: 700;
   color: #0f7a55;
   border-top: 1px solid var(--c-border);
-}
-
-@media (max-width: 860px) {
-  .co-shelf-head {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .co-benny {
-    max-width: none;
-  }
 }

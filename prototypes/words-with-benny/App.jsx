@@ -16,7 +16,6 @@ import { ClassroomView } from '../student-profile/BeanstackProfile'
 import '../student-profile/BeanstackProfile.css'
 import { EducatorWords } from './components/EducatorWords'
 import { StudentProfilePanel } from './components/StudentProfilePanel'
-import { WordsRailCard } from './components/WordsRailCard'
 import {
   BOOKS,
   RECENTLY_LOGGED,
@@ -167,17 +166,10 @@ export function App() {
             // badges and achievements are one destination, not three.
             extraTabs={[{ id: 'collections', label: 'My Collections' }]}
             hideTabs={['badges']}
+            // The Reading Log's "All Titles" tab is part of the real page, so
+            // it stays on screen — it just doesn't lead anywhere here.
+            titlesView={false}
             renderExtra={() => <Collections collection={collection} newestWord={newestWord} />}
-            railTop={
-              <WordsRailCard
-                collection={collection}
-                logsSinceWord={logsSinceWord}
-                onOpen={() => {
-                  setReaderTab('collections')
-                  setView('words')
-                }}
-              />
-            }
           />
         )}
       </div>

@@ -9,16 +9,15 @@
 
 /* ─── Header ────────────────────────────────────────────────────────────── */
 
+/* The reporting-level tabs sit in the header row, opposite the actions —
+   which level you're reading the page at is a property of the page, not a
+   control floating between the intro and the numbers. */
 .ew-head {
   display: flex;
-  gap: 18px;
+  flex-wrap: wrap;
+  gap: 12px 18px;
   align-items: center;
   justify-content: space-between;
-}
-.ew-term {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--c-text-muted);
 }
 .ew-head-actions {
   display: flex;
@@ -26,40 +25,15 @@
   gap: 8px;
 }
 
-/* The "no instructional burden" promise, up front. */
-.ew-note {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  margin-top: 18px;
-  padding: 13px 16px;
-  background: linear-gradient(120deg, #faf5ff 0%, #f5f3ff 100%);
-  border: 1px solid #e9d5ff;
-  border-radius: 13px;
-}
-.ew-note-benny {
-  flex: 0 0 auto;
-  width: 40px;
-  height: 40px;
-}
-.ew-note-text {
-  font-size: 13.5px;
-  font-weight: 600;
-  line-height: 1.5;
-  color: #4c1d95;
-}
-.ew-note-text strong {
-  font-weight: 800;
-}
-
 .ew-tabs {
-  margin: 20px 0 18px;
+  flex: 0 0 auto;
 }
 
 /* ─── Stats + cards ────────────────────────────────────────────────────── */
 
 .ew-stats {
   display: grid;
+  margin-top: 18px;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px;
 }
@@ -97,7 +71,7 @@
 /* ─── Roster table ─────────────────────────────────────────────────────── */
 
 .ew-tablewrap {
-  margin-top: 2px;
+  margin-top: 18px;
 }
 .ew-student {
   display: flex;
