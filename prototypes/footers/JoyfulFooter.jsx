@@ -56,7 +56,10 @@ export const APPS = [
 
 export function JoyfulFooter({ app, mode = 'light' }) {
   return (
-    <footer className="jf-footer" data-theme={mode}>
+    // `--accent` carries the brand colour the logo mark is drawn in. The
+    // showcase used to set it on its own wrapper, which meant the mark lost its
+    // colour anywhere else — so the footer sets it itself.
+    <footer className="jf-footer" data-theme={mode} style={{ '--accent': app.accent }}>
       <div className="jf-footer-top">
         <div className="jf-footer-identity">
           <div className="jf-footer-logo">{app.logo}</div>

@@ -302,7 +302,7 @@
 
 .bs-logo-mark {
   display: inline-flex;
-  color: var(--accent);
+  color: var(--accent, #0da7bc);
 }
 
 .bs-logo-text {

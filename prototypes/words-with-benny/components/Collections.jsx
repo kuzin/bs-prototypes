@@ -49,6 +49,25 @@ export function Collections({ collection, newestWord }) {
 
   return (
     <div className="co">
+      {/* The pane switcher is a full-bleed band above the title, flush under
+          the main nav — the same shape the Reading Log's sub-tabs use. */}
+      <div className="co-subtabs">
+        <Tabs
+          variant="pill"
+          size="md"
+          active={pane}
+          onChange={setPane}
+          accent="#7C3AED"
+          ariaLabel="Which collection"
+          className="co-panes"
+          items={[
+            { id: 'words', label: 'Words', count: collection.length },
+            { id: 'badges', label: 'Badges', count: BADGES.length },
+            { id: 'achievements', label: 'Achievements', count: ACHIEVEMENTS.length },
+          ]}
+        />
+      </div>
+
       {/* Same shape as the Reading Log's own header next door — a plain title
           row, no coloured banner. */}
       <header className="co-head">
@@ -64,21 +83,6 @@ export function Collections({ collection, newestWord }) {
           </p>
         </div>
       </header>
-
-      <Tabs
-        variant="pill"
-        size="md"
-        active={pane}
-        onChange={setPane}
-        accent="#7C3AED"
-        ariaLabel="Which collection"
-        className="co-panes"
-        items={[
-          { id: 'words', label: 'Words', count: collection.length },
-          { id: 'badges', label: 'Badges', count: BADGES.length },
-          { id: 'achievements', label: 'Achievements', count: ACHIEVEMENTS.length },
-        ]}
-      />
 
       {pane === 'words' && <MyWords collection={collection} newestWord={newestWord} />}
 

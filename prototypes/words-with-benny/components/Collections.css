@@ -47,8 +47,15 @@
   padding: 0 0 48px;
 }
 
-.co-panes {
-  margin: 0 0 18px;
+/* The band bleeds to the container edges, cancelling .wa-main's top padding and
+   .wa-main-inner's side padding — same trick as ReadingLog's `.rl-subtabs`. */
+.co-subtabs {
+  display: flex;
+  justify-content: center;
+  padding: 16px 24px;
+  margin: -24px -24px 8px;
+  background: #f7f8fa;
+  border-bottom: 1px solid var(--c-border);
 }
 
 /* ─── Badge + achievement shelves ────────────────────────────────────────
