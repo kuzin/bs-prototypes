@@ -1932,11 +1932,15 @@ const RL_SESSIONS = {
   'Fifteen Hundred Miles from the Sun': {
     id: 'rls-1',
     isbn: '9781510763128',
-    trigger: 'Summer Reading 2026 challenge',
+    trigger: 'Completed Book',
+    unit: '1,000 minutes',
+    dateRead: '07/16/24',
     flags: [
       {
-        label: 'Unusual session length',
-        desc: '1,000 minutes in a single entry is far above this reader’s usual 20–40, and above what the book’s length supports.',
+        label: 'Exceeded Warning',
+        icon: 'book',
+        color: '#DC2626',
+        desc: "The number of minutes logged exceeded your site's logging warning.",
       },
     ],
     changeLog: [
@@ -1953,11 +1957,21 @@ const RL_SESSIONS = {
   Snapdragon: {
     id: 'rls-2',
     isbn: '9781250312846',
-    trigger: 'Summer Reading 2026 challenge',
+    trigger: 'Completed Book',
+    unit: '512 minutes',
+    dateRead: '07/11/24',
     flags: [
       {
-        label: 'Unusual session length',
-        desc: '512 minutes logged in one sitting — worth a friendly check at the desk.',
+        label: 'Exceeded Warning',
+        icon: 'book',
+        color: '#DC2626',
+        desc: '512 minutes in one sitting is above this site’s logging warning.',
+      },
+      {
+        label: 'Took a While to Respond',
+        icon: 'hourglass',
+        color: '#B45309',
+        desc: 'Took over one minute to respond.',
       },
     ],
     changeLog: [
@@ -1974,26 +1988,72 @@ const RL_SESSIONS = {
   Found: {
     id: 'rls-3',
     isbn: '9781416954170',
-    trigger: 'Summer Reading 2026 challenge',
+    trigger: 'Completed Book',
+    unit: '23 minutes',
+    dateRead: '07/16/24',
     positiveFlags: [
-      { label: 'Positive sentiment', desc: 'Talked about the book with real enthusiasm.' },
-      { label: 'Answer length', desc: 'Answers went well beyond a word or two.' },
+      {
+        label: 'Accurate Key Idea',
+        icon: 'key',
+        color: '#D97706',
+        desc: 'Named a real idea from the book rather than a plot summary.',
+      },
+      {
+        label: 'Draws Connections',
+        icon: 'share',
+        color: '#2563EB',
+        desc: 'Connected the book to something outside it.',
+      },
     ],
     talk: {
       kind: 'engagement',
       duration: '3 min 10 sec',
+      date: '07/16/24',
       summary:
         'They were genuinely into this one — named the ending as the part that stuck, and said they would hand it to a friend without hesitating.',
       messages: [
-        { from: 'benny', text: 'You finished Found! What part stuck with you the most?' },
+        {
+          from: 'benny',
+          lead: 'Hi!',
+          text: "I'm Benny, your library's reading assistant. It looks like you're reading Found. How far in are you?",
+        },
+        { from: 'reader', text: "I'm about halfway" },
+        {
+          from: 'benny',
+          lead: 'Great!',
+          text: 'What did you like about the book so far?',
+        },
         {
           from: 'reader',
           text: 'the ending!! i did NOT see it coming. i had to go back and read the last chapter twice',
+          flags: [
+            {
+              label: 'Accurate Key Idea',
+              positive: true,
+              reasoning:
+                'The reader points to a specific structural feature of the book — the reveal in the final chapter — rather than restating the plot, and describes rereading it to check their understanding.',
+            },
+            {
+              label: 'Draws Connections',
+              positive: true,
+              reasoning:
+                'They tie the ending back to their expectations while reading, which is a connection between the text and their own experience of it.',
+            },
+          ],
         },
-        { from: 'benny', text: 'Would you recommend it to a friend?' },
+        {
+          from: 'benny',
+          lead: 'Nice.',
+          text: 'Would you recommend it to a friend?',
+        },
         {
           from: 'reader',
           text: 'yes definitely. my friend likes mysteries and this is kind of a mystery but with a twist',
+        },
+        {
+          from: 'benny',
+          lead: 'Wonderful! Thank you for sharing!',
+          text: 'Your thoughts about Found were very interesting. Have a great day!',
         },
       ],
     },
@@ -2309,8 +2369,8 @@ function ReadingLogPage({ reader }) {
       id: `${entry.title}-${entry.amount ?? 'completed'}`,
       ...entry,
       ...(RL_SESSIONS[entry.title] || {}),
-      date: RL_MONTH.label,
-      amount: entry.amount ?? 'Book completed',
+      dateRead: RL_SESSIONS[entry.title]?.dateRead ?? RL_MONTH.label,
+      unit: RL_SESSIONS[entry.title]?.unit ?? entry.amount ?? 'Book completed',
       trigger: RL_SESSIONS[entry.title]?.trigger ?? 'Logged by the reader',
     })
 
