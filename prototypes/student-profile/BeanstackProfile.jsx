@@ -436,7 +436,6 @@ function StudentActions({ onClose, student, status = [], onToggleStatus }) {
 const STATUS_FLAGS = {
   comicsplus: {
     label: 'Comics Plus',
-    partner: 'comicsplus',
     tone: 'partner',
     tip: 'Connected to Comics Plus — reading done in the app imports on its own',
   },
@@ -472,19 +471,8 @@ function StatusFlags({ flags = [], tandemWith }) {
         if (!f) return null
         return (
           <Tooltip key={key} content={f.tip.replace('%s', tandemWith)}>
-            <span
-              className={`bp-status bp-status--${f.tone}`}
-              /* The Comics Plus mark is a brand-colour blob with a white glyph
-                 inside it, so on a pale chip only the white read and the mark
-                 looked empty. Sitting it on the partner's own accent puts the
-                 white back on colour — the app icon, as it looks in the app. */
-              style={f.partner ? { '--bp-mark-bg': PARTNER_BRANDS[f.partner].accent } : undefined}
-            >
-              {f.partner ? (
-                <PartnerMark id={f.partner} size={16} />
-              ) : (
-                <Icon name={f.icon} size={13} stroke={2.1} />
-              )}
+            <span className={`bp-status bp-status--${f.tone}`}>
+              {f.icon && <Icon name={f.icon} size={13} stroke={2.1} />}
               {f.label}
             </span>
           </Tooltip>
