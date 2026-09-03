@@ -5040,13 +5040,176 @@ const CHALLENGE_TABS = [
   { id: 'past', label: 'Past' },
 ]
 
-function ChallengesPage({ student, onNavigate }) {
+// ─── Challenge log sheet ──────────────────────────────────────────────────────
+// The printable log a teacher hands in or files: everything a reader logged
+// toward one challenge, on one sheet, with somewhere to sign. It's a full-page
+// overlay rather than a panel because it's a document — and it really prints:
+// `@media print` drops the app around it and leaves the sheet on the page.
+//
+// The rows are the reader's own log entries; the totals are derived from them
+// rather than authored, so the sheet can't disagree with the log it came from.
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
+function challengeLogRows(startedOn) {
+  const m = /^(\w+)\s+\d+,\s*(\d{4})$/.exec(startedOn ?? '')
+  const mm = m ? String(MONTHS.indexOf(m[1]) + 1).padStart(2, '0') : RL_MONTH.mm
+  const yy = m ? m[2].slice(2) : RL_MONTH.yy
+
+  return RL_DATA.flatMap((week) =>
+    week.days.flatMap((day) =>
+      day.entries.map((e) => ({
+        date: `${mm}/${String(day.date).padStart(2, '0')}/${yy}`,
+        title: e.title,
+        author: e.author,
+        minutes: e.completed ? null : parseInt(e.amount.replace(/,/g, ''), 10) || 0,
+        completed: !!e.completed,
+        source: e.source,
+      })),
+    ),
+  ).sort((a, b) => a.date.localeCompare(b.date))
+}
+
+function ChallengeLogSheet({ open, onClose, student, challenge }) {
+  const rows = challengeLogRows(challenge.startedOn)
+  const minutes = rows.reduce((n, r) => n + (r.minutes ?? 0), 0)
+  const books = rows.filter((r) => r.completed).length
+  const days = new Set(rows.map((r) => r.date)).size
+
+  return (
+    <Modal open={open} onClose={onClose} variant="center" ariaLabel="Challenge log">
+      <div className="bp-clog">
+        {/* Screen-only chrome: it must not print. */}
+        <div className="bp-clog-bar">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Icon name="chevron-left" size={14} />}
+            onClick={onClose}
+          >
+            Back
+          </Button>
+          <span className="bp-clog-bar-title">Challenge log</span>
+          <Button size="sm" icon={<Icon name="printer" size={15} />} onClick={() => window.print()}>
+            Print
+          </Button>
+        </div>
+
+        <div className="bp-clog-sheet">
+          <div className="bp-clog-head">
+            <div>
+              <div className="bp-clog-site">Lincoln Middle School</div>
+              <h1 className="bp-clog-title">{challenge.name}</h1>
+              <div className="bp-clog-dates">{challenge.dates}</div>
+            </div>
+            <div className="bp-clog-benny">
+              <img src="/bs-prototypes/benny.png" alt="" width={40} height={40} />
+              <span>Beanstack</span>
+            </div>
+          </div>
+
+          <div className="bp-clog-reader">
+            {[
+              ['Reader', student.name],
+              ['Grade', student.grade],
+              ['Started', challenge.startedOn],
+              ['Enrolled', 'Yes'],
+            ].map(([label, value]) => (
+              <div key={label} className="bp-clog-field">
+                <span className="bp-clog-field-label">{label}</span>
+                <span className="bp-clog-field-value">{value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="bp-clog-totals">
+            {[
+              ['Minutes read', minutes.toLocaleString()],
+              ['Books finished', books],
+              ['Days logged', days],
+              ['Sessions', rows.length],
+            ].map(([label, value]) => (
+              <div key={label} className="bp-clog-total">
+                <span className="bp-clog-total-num">{value}</span>
+                <span className="bp-clog-total-label">{label}</span>
+              </div>
+            ))}
+          </div>
+
+          <table className="bp-clog-table">
+            <thead>
+              <tr>
+                <th className="bp-clog-th bp-clog-th--date">Date</th>
+                <th className="bp-clog-th">Title</th>
+                <th className="bp-clog-th bp-clog-th--num">Logged</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, i) => (
+                <tr key={i}>
+                  <td className="bp-clog-td bp-clog-td--date">{r.date}</td>
+                  <td className="bp-clog-td">
+                    <span className="bp-clog-book">{r.title}</span>
+                    <span className="bp-clog-by">
+                      {r.author}
+                      {/* Named, not marked: a printed sheet has no tooltips. */}
+                      {r.source && PARTNER_BRANDS[r.source]
+                        ? ` · via ${PARTNER_BRANDS[r.source].name}`
+                        : ''}
+                    </span>
+                  </td>
+                  <td className="bp-clog-td bp-clog-td--num">
+                    {r.completed ? 'Finished' : `${r.minutes} min`}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="bp-clog-foot">
+            <div className="bp-clog-sign">
+              <span className="bp-clog-sign-line" />
+              <span className="bp-clog-field-label">Parent or guardian signature</span>
+            </div>
+            <div className="bp-clog-sign">
+              <span className="bp-clog-sign-line" />
+              <span className="bp-clog-field-label">Date</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+function ChallengesPage({ student }) {
   const [tab, setTab] = useState('current')
+  const [logFor, setLogFor] = useState(null)
   const all = student.challenges ?? []
   const shown = all.filter((c) => c.status === tab)
 
   return (
     <div className="bp-content">
+      {logFor && (
+        <ChallengeLogSheet
+          open={!!logFor}
+          onClose={() => setLogFor(null)}
+          student={student}
+          challenge={logFor}
+        />
+      )}
       <Hero
         icon={<Ic name="ti-trophy" />}
         title="Challenges"
@@ -5082,11 +5245,8 @@ function ChallengesPage({ student, onNavigate }) {
                   <span>Started on: {c.startedOn}</span>
                   {c.minutes != null && <span>Minutes reading: {c.minutes.toLocaleString()}</span>}
                 </div>
-                <button
-                  type="button"
-                  className="bp-latest-link"
-                  onClick={() => onNavigate('readinglog')}
-                >
+                {/* The printable sheet, not a detour to the reading log. */}
+                <button type="button" className="bp-latest-link" onClick={() => setLogFor(c)}>
                   View challenge log
                   <Icon name="arrow-right" size={14} />
                 </button>
@@ -5556,7 +5716,7 @@ function ProfileBody({
               ) : activeSection === 'rewards' ? (
                 <RewardsPage student={student} />
               ) : activeSection === 'challenges' ? (
-                <ChallengesPage student={student} onNavigate={onNavigate} />
+                <ChallengesPage student={student} />
               ) : (
                 <PlaceholderPage pageKey={activeSection} />
               )}

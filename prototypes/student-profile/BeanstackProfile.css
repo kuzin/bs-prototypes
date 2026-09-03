@@ -4756,3 +4756,255 @@
   background: color-mix(in srgb, var(--c-blue-700) 9%, #fff);
   color: var(--c-blue-700);
 }
+
+/* ─── Challenge log sheet ─────────────────────────────────────────────────────
+   A document, not a panel: the overlay goes nearly full-bleed and the sheet
+   inside it keeps a page's measure. `.modal--center` caps itself at 520px, so
+   the sheet's own width is set here. */
+.modal--center:has(.bp-clog) {
+  width: min(880px, calc(100vw - 48px));
+  max-height: calc(100vh - 48px);
+}
+
+.bp-clog {
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 48px);
+  background: var(--c-slate-100);
+}
+
+/* Screen-only chrome. */
+.bp-clog-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 14px;
+  background: #fff;
+  border-bottom: 1px solid var(--c-slate-200);
+}
+
+.bp-clog-bar-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-slate-500);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.bp-clog-sheet {
+  overflow-y: auto;
+  padding: 30px 34px 34px;
+  background: #fff;
+}
+
+.bp-clog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--c-slate-800);
+}
+
+.bp-clog-site {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-slate-500);
+}
+
+.bp-clog-title {
+  margin: 3px 0 2px;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--c-slate-800);
+}
+
+.bp-clog-dates {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-slate-500);
+}
+
+.bp-clog-benny {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-slate-500);
+  flex-shrink: 0;
+}
+
+/* The identity block and the totals: the two things someone filing this sheet
+   reads before the rows. */
+.bp-clog-reader {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px 20px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--c-slate-200);
+}
+
+.bp-clog-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.bp-clog-field-label {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-slate-400);
+}
+
+.bp-clog-field-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-slate-800);
+}
+
+.bp-clog-totals {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+  gap: 12px;
+  padding: 18px 0;
+}
+
+.bp-clog-total {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 12px 14px;
+  border: 1px solid var(--c-slate-200);
+  border-radius: 10px;
+}
+
+.bp-clog-total-num {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--c-slate-800);
+  font-variant-numeric: tabular-nums;
+}
+
+.bp-clog-total-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-slate-500);
+}
+
+.bp-clog-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bp-clog-th {
+  padding: 8px 10px;
+  border-bottom: 1.5px solid var(--c-slate-300);
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-slate-500);
+  text-align: left;
+}
+
+.bp-clog-th--date {
+  width: 84px;
+}
+
+.bp-clog-th--num,
+.bp-clog-td--num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.bp-clog-td {
+  padding: 9px 10px;
+  border-bottom: 1px solid var(--c-slate-100);
+  font-size: 13px;
+  color: var(--c-slate-700);
+  vertical-align: top;
+}
+
+.bp-clog-td--date,
+.bp-clog-td--num {
+  font-variant-numeric: tabular-nums;
+}
+
+.bp-clog-book {
+  display: block;
+  font-weight: 700;
+  color: var(--c-slate-800);
+}
+
+.bp-clog-by {
+  display: block;
+  font-size: 12px;
+  color: var(--c-slate-400);
+}
+
+/* Somewhere to sign — the reason a log gets printed at all. */
+.bp-clog-foot {
+  display: flex;
+  gap: 28px;
+  padding-top: 34px;
+}
+
+.bp-clog-sign {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+}
+
+.bp-clog-sign:last-child {
+  flex: 0 0 150px;
+}
+
+.bp-clog-sign-line {
+  height: 1px;
+  background: var(--c-slate-400);
+}
+
+/* It really prints. Everything on the page is hidden by visibility rather than
+   display, so the sheet's own ancestors can stay laid out while it prints — a
+   `display: none` on them would take the sheet down with them. */
+@media print {
+  body:has(.bp-clog) * {
+    visibility: hidden;
+  }
+
+  body:has(.bp-clog) .bp-clog,
+  body:has(.bp-clog) .bp-clog * {
+    visibility: visible;
+  }
+
+  body:has(.bp-clog) .bp-clog {
+    position: absolute;
+    inset: 0;
+    max-height: none;
+    background: #fff;
+  }
+
+  .bp-clog-bar {
+    display: none;
+  }
+
+  .bp-clog-sheet {
+    overflow: visible;
+    max-height: none;
+    padding: 0;
+  }
+
+  .bp-clog-td,
+  .bp-clog-th {
+    /* Don't split a session across two pages. */
+    break-inside: avoid;
+  }
+}
