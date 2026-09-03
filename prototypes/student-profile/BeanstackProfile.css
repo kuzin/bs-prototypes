@@ -4762,14 +4762,15 @@
    inside it keeps a page's measure. `.modal--center` caps itself at 520px, so
    the sheet's own width is set here. */
 .modal--center:has(.bp-clog) {
-  width: min(880px, calc(100vw - 48px));
-  max-height: calc(100vh - 48px);
+  --clog-h: calc((100vh - 72px) / var(--app-zoom, 1));
+  width: min(880px, calc((100vw - 96px) / var(--app-zoom, 1)));
+  max-height: var(--clog-h);
 }
 
 .bp-clog {
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 48px);
+  max-height: var(--clog-h);
   background: var(--c-slate-100);
 }
 
@@ -4990,6 +4991,11 @@
     inset: 0;
     max-height: none;
     background: #fff;
+  }
+
+  /* On paper the gutter is the printer's margin, not ours. */
+  .modal--center:has(.bp-clog) {
+    --clog-h: none;
   }
 
   .bp-clog-bar {
