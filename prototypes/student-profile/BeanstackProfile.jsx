@@ -36,7 +36,6 @@ import { TrendChart } from '@components/TrendChart/TrendChart'
 import { ChartLegend } from '@components/charts/charts'
 import { SessionModal } from '../sfr/components/SessionModal'
 import { TALK_KINDS } from '../btwb/data'
-import { SESSIONS as SFR_SESSIONS } from '../sfr/data'
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
 // Monthly density modifiers per student profile (index 0 = Jan, 11 = Dec)
@@ -845,7 +844,7 @@ function SectionDetail({ student, sectionKey }) {
           page's Hero use); `.bar` is the chart-stroke tone, too light here. */}
       <Hero icon={<Ic name={c.icon} />} title={LABEL[sectionKey]} accent={c.text} accentBg={c.bg} />
       {sectionKey === 'motivation' && <MotivationDetail sec={sec} c={c} />}
-      {sectionKey === 'integrity' && <IntegrityDetail sec={sec} c={c} />}
+      {sectionKey === 'integrity' && <IntegrityDetail sec={sec} c={c} student={student} />}
       {sectionKey === 'habits' && <HabitsDetail sec={sec} c={c} />}
       {sectionKey === 'skills' && <SkillsDetail sec={sec} c={c} firstName={firstName} />}
       {sectionKey === 'motivation' && (
@@ -983,9 +982,12 @@ function topFlags(talks) {
     .sort((a, b) => b.count - a.count)
 }
 
-function IntegrityDetail({ sec }) {
+function IntegrityDetail({ sec, student }) {
   const [openSession, setOpenSession] = useState(null)
-  const [sessions, setSessions] = useState(SFR_SESSIONS)
+  // Real sessions built from this student's own talks — not SFR's fixtures.
+  const [sessions, setSessions] = useState(() =>
+    sec.bookTalks.map((talk, i) => talkSession(talk, student, i)),
+  )
   const [kindFilter, setKindFilter] = useState('all')
   const [flagFilter, setFlagFilter] = useState(FLAG_FILTER_ANY)
 
@@ -999,10 +1001,11 @@ function IntegrityDetail({ sec }) {
     return true
   })
 
-  // The modal is fed by the SFR session fixtures, not by these rows — the row
-  // index just picks one, the same stand-in behaviour as before.
+  // The row you clicked opens *its* session.
   function openRow(rowIdx) {
-    setOpenSession(sessions[rowIdx % sessions.length])
+    const talk = shown[rowIdx]
+    const idx = sec.bookTalks.indexOf(talk)
+    setOpenSession(sessions[idx] ?? null)
   }
 
   function handleUpdateSession(updated) {
@@ -3348,6 +3351,99 @@ const CLASS_TABLE = [
 // session may carry flags, a book talk (`conversation`), both, or neither.
 // Sessions with a book talk are the ones that surface on the Book Talks tab.
 // A log entry with no key here still opens; it just has details and nothing else.
+// A book talk row *is* a session. Building it here rather than picking an
+// unrelated SFR fixture by row index is what makes the Book Talks tab and the
+// reading log agree: both open the same object, and a flag removed in one is
+// gone in the other.
+function talkSession(talk, student, i) {
+  const kindRating = { engagement: 'green', comprehension: 'green', integrity: null }
+  return {
+    id: `talk-${student.key ?? 'x'}-${i}`,
+    date: `20${talk.date.slice(6)}-${talk.date.slice(0, 2)}-${talk.date.slice(3, 5)}`,
+    dateLabel: talk.date,
+    type: talk.kind === 'integrity' ? 'flagged' : 'engagement',
+    kind: talk.kind,
+    status: 'completed',
+    challenge: 'Spring Reading Challenge 2025',
+    minutesLogged: 20 + ((i * 7) % 25),
+    engagementRating: kindRating[talk.kind] ?? null,
+    book: { title: talk.title, author: BOOK_AUTHORS[talk.title] ?? '', color: '#0D9488' },
+    flags: talk.flags.map((f, fi) => ({
+      id: `tf-${i}-${fi}`,
+      type: f,
+      label: SESSION_FLAGS[f]?.label ?? f,
+      description: SESSION_FLAG_DESCS[f] ?? '',
+    })),
+    positiveFlags: [],
+    conversation: TALK_CONVERSATION(talk, student),
+    changeLog: [
+      {
+        id: `tc-${i}`,
+        label: 'Book talk completed',
+        icon: 'circle-check',
+        color: '#16A97A',
+        by: 'Benny',
+        at: talk.date,
+      },
+    ],
+    student,
+  }
+}
+
+const BOOK_AUTHORS = {
+  'The Hobbit': 'J.R.R. Tolkien',
+  'A Wrinkle in Time': "Madeleine L'Engle",
+  "Ender's Game": 'Orson Scott Card',
+  'Fahrenheit 451': 'Ray Bradbury',
+  'Island of the Blue Dolphins': "Scott O'Dell",
+  Holes: 'Louis Sachar',
+  Hatchet: 'Gary Paulsen',
+  'The Giver': 'Lois Lowry',
+  Wonder: 'R.J. Palacio',
+  "Charlotte's Web": 'E.B. White',
+}
+
+const SESSION_FLAG_DESCS = {
+  'time-warning': 'The conversation took much longer than this reader usually takes.',
+  'book-swap': 'The book on this session changed after logging.',
+  'btwb-incomplete': 'The reader left the conversation before finishing it.',
+  'missing-details': "The reader couldn't recall specific events or characters.",
+  'over-limit': "The minutes logged exceeded your site's logging warning.",
+}
+
+// A short talk in the reader's own register — enough to read as a real
+// conversation without authoring eight transcripts by hand.
+const TALK_CONVERSATION = (talk, student) => {
+  const first = student.name.split(' ')[0]
+  const opener = {
+    engagement: `Hi ${first}! What did you think of ${talk.title}?`,
+    comprehension: `Hi ${first}! What was ${talk.title} really about, in your own words?`,
+    integrity: `Hi ${first}! Tell me about your reading session for ${talk.title}.`,
+  }[talk.kind]
+  return [
+    { role: 'benny', text: opener },
+    { role: 'student', text: TALK_ANSWERS[talk.kind]?.[0] ?? 'It was good.' },
+    { role: 'benny', text: 'What made you say that?' },
+    {
+      role: 'student',
+      text: TALK_ANSWERS[talk.kind]?.[1] ?? 'I liked it.',
+      flagged: talk.flags.length > 0,
+    },
+  ]
+}
+
+const TALK_ANSWERS = {
+  engagement: [
+    'i really liked it, especially the middle part where everything goes wrong',
+    'because you think you know what happens next and then it doesnt go that way at all',
+  ],
+  comprehension: [
+    "it's about someone figuring out where they belong",
+    'the main character keeps trying to fit in and then realises they dont have to',
+  ],
+  integrity: ['idk it was fine', 'i read it'],
+}
+
 const RL_SESSIONS = {
   'Fifteen Hundred Miles from the Sun': {
     id: 'rl-sess-1',
@@ -3492,6 +3588,15 @@ const RL_DATA = [
         day: 'Tuesday',
         streak: 1,
         entries: [
+          // Also a book talk — opening this row and opening its row on the Book
+          // Talks tab land on the same session.
+          {
+            title: 'The Hobbit',
+            author: 'J.R.R. Tolkien',
+            amount: '20 Minutes',
+            flagged: false,
+            lexile: '1000L',
+          },
           {
             title: 'Fifteen Hundred Miles from the Sun',
             author: 'Jonny Garza Villa',
@@ -3607,7 +3712,7 @@ const RL_DATA = [
 // ─── Reading Log page ─────────────────────────────────────────────────────────
 // Entry state drives the card's colour: finished books read red with a
 // Completed pill, integrity-flagged sessions amber, everything else blue.
-function RLEntryCard({ entry, onOpen }) {
+function RLEntryCard({ entry, onOpen, talkFor }) {
   const tone = entry.completed
     ? ' bp-rl-entry--completed'
     : entry.flagged
@@ -3616,7 +3721,7 @@ function RLEntryCard({ entry, onOpen }) {
   // The row advertises what opening it will show: a flag either way, and a
   // Benny mark when the session carried a book talk — otherwise there's no way
   // to tell a plain minutes log from one worth reading.
-  const session = RL_SESSIONS[entry.title]
+  const session = RL_SESSIONS[entry.title] ?? talkFor?.(entry.title)
   const marks = [
     session?.flags?.length && {
       key: 'flag',
@@ -3775,9 +3880,25 @@ function ReadingLogPage({ reader }) {
 
   // An entry with no authored session still opens — you get the details, which
   // is all a plain minutes log has.
+  // Lets a log row know whether its book has a talk behind it.
+  const talkFor = (title) => {
+    const talks = reader?.sections?.integrity?.bookTalks ?? []
+    const i = talks.findIndex((talk) => talk.title === title)
+    return i > -1 ? talkSession(talks[i], reader, i) : undefined
+  }
+
   // Shaped for the shared session modal. An entry with no authored session is
   // still a session — it just has no flags and no book talk.
   const openEntry = (entry) => {
+    // A log entry whose book was talked about opens that talk's session — the
+    // Book Talks tab and the log are the same sessions seen two ways.
+    const talkIdx = reader?.sections?.integrity?.bookTalks?.findIndex(
+      (talk) => talk.title === entry.title,
+    )
+    if (talkIdx != null && talkIdx > -1) {
+      setOpenSession(talkSession(reader.sections.integrity.bookTalks[talkIdx], reader, talkIdx))
+      return
+    }
     const authored = RL_SESSIONS[entry.title]
     setOpenSession({
       id: authored?.id ?? `rl-${entry.title}-${entry.amount ?? 'completed'}`,
@@ -3854,7 +3975,7 @@ function ReadingLogPage({ reader }) {
                     {day.entries.length > 0 && (
                       <div className="bp-rl-entries">
                         {day.entries.map((e, ei) => (
-                          <RLEntryCard key={ei} entry={e} onOpen={openEntry} />
+                          <RLEntryCard key={ei} entry={e} onOpen={openEntry} talkFor={talkFor} />
                         ))}
                       </div>
                     )}
@@ -4705,10 +4826,10 @@ export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], ren
                             <button
                               type="button"
                               className="bp-adm-student-name"
-                              title={`Open ${STUDENTS[s.key].name}'s full profile`}
+                              title={`Open ${STUDENTS[s.key].name}'s profile`}
                               onClick={(e) => {
                                 e.stopPropagation()
-                                onStudentClick?.(s.key, 'full')
+                                onStudentClick?.(s.key)
                               }}
                             >
                               {STUDENTS[s.key].name}

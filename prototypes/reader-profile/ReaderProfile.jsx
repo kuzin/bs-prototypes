@@ -1115,13 +1115,13 @@ const READERS = {
         year: '2025',
       },
       {
-        name: 'Book Chatter | 2025',
-        detail: 'Finish 10 book talks',
+        name: 'Review Writer | 2025',
+        detail: 'Write 10 book reviews',
         kind: 'challenge',
         earned: true,
         top: '10',
-        mid: 'TALKS',
-        earnedNote: 'Earned for finishing 10 book talks in Spring Reading Challenge 2025',
+        mid: 'REVIEWS',
+        earnedNote: 'Earned for writing 10 reviews in Summer Reading 2026',
         year: '2025',
       },
       {
@@ -1247,7 +1247,7 @@ const READERS = {
       // move — a zero delta renders no chip at all.
     },
     bennySummary:
-      "Mateo is one of the library's strongest readers. They've logged reading on **21 of the last 30 days** — the most consistent logger on this account — and have finished **24 books this year**, well ahead of the summer programme's pace. Their intrinsic motivation is the highest on record. They're ready for longer and harder books, and would do well with a leadership role like a teen book talk or a reading buddy pairing at a branch programme.",
+      "Mateo is one of the library's strongest readers. They've logged reading on **21 of the last 30 days** — the most consistent logger on this account — and have finished **24 books this year**, well ahead of the summer programme's pace. Their intrinsic motivation is the highest on record. They're ready for longer and harder books, and would do well with a leadership role like a teen reading-buddy pairing at a branch programme.",
     recommendedActions: [
       {
         title: 'Nominate Mateo for a reading recognition award',
@@ -1512,12 +1512,12 @@ const READERS = {
         year: '2025',
       },
       {
-        name: 'Book Chatter | 2025',
-        detail: 'Finish 10 book talks',
+        name: 'Review Writer | 2025',
+        detail: 'Write 10 book reviews',
         kind: 'challenge',
         earned: false,
         top: '10',
-        mid: 'TALKS',
+        mid: 'REVIEWS',
         year: '2025',
       },
     ],
@@ -1615,7 +1615,7 @@ const READERS = {
         section: 'motivation',
       },
       {
-        title: "Follow up on Sofía's 2 unfinished BTWB conversations",
+        title: 'Check in with Sofía about her Storytime Club streak',
         body: "They hasn't completed 2 open reflections. A quick prompt before their next log could help.",
         section: 'integrity',
       },
@@ -1822,12 +1822,12 @@ const READERS = {
         year: '2025',
       },
       {
-        name: 'Book Chatter | 2025',
-        detail: 'Finish 10 book talks',
+        name: 'Review Writer | 2025',
+        detail: 'Write 10 book reviews',
         kind: 'challenge',
         earned: false,
         top: '10',
-        mid: 'TALKS',
+        mid: 'REVIEWS',
         year: '2025',
       },
     ],
@@ -1847,8 +1847,8 @@ const READERS = {
         text: 'funny. I read all of them already but this one is the best one',
       },
     ],
-    // Elena answers the prompts, but barely — the same low-effort pattern as their
-    // unfinished book talks.
+    // Elena answers the prompts, but barely — the same low-effort pattern as the
+    // rest of their logging.
     textChallenges: [
       {
         challenge: 'Spring Reading Challenge 2025',
@@ -1924,15 +1924,15 @@ const READERS = {
 }
 
 // ─── Reading Log ──────────────────────────────────────────────────────────────
-// What opening a log entry shows. Keyed by title so the same book carries the
-// same session wherever it appears in the log; an entry with no key here opens
-// with details only, which is the common case — most logs are just a number of
-// minutes, with no talk and nothing flagged.
-// Sessions the reading log can open. There is **one** session modal in this
-// repo — Sessions for Review's — so these are shaped the way it expects: a
-// session may carry flags, a book talk (`conversation`), both, or neither.
-// Sessions with a book talk are the ones that surface on the Book Talks tab.
-// A log entry with no key here still opens; it just has details and nothing else.
+// Sessions the reading log can open, keyed by title and shaped for the shared
+// session modal.
+//
+// **No book talks here.** Book talks are a school feature — libraries don't run
+// them — so a library session is a log entry and its flags, nothing more. That
+// means no conversation, no engagement rating, and none of the positive flags
+// that a talk produces; what a library *does* have is logging integrity, which
+// is where these flags come from. A log entry with no key here still opens; it
+// just has details and no flags.
 const RL_SESSIONS = {
   'Fifteen Hundred Miles from the Sun': {
     id: 'rl-sess-1',
@@ -1988,8 +1988,8 @@ const RL_SESSIONS = {
       {
         id: 'rf3',
         type: 'slow-response',
-        label: 'Took a While to Respond',
-        description: 'Took over one minute to respond.',
+        label: 'Logged in one sitting',
+        description: 'A single entry covering more than eight hours of reading.',
       },
     ],
     positiveFlags: [],
@@ -2002,67 +2002,6 @@ const RL_SESSIONS = {
         color: '#DC2626',
         by: 'Benny',
         at: 'Jul 11, 7:41 PM',
-      },
-    ],
-  },
-  Found: {
-    id: 'rl-sess-3',
-    date: '2024-07-16',
-    type: 'engagement',
-    status: 'completed',
-    challenge: 'Summer Reading 2026',
-    minutesLogged: 23,
-    engagementRating: 'green',
-    book: {
-      title: 'Found',
-      author: 'Margaret Peterson Haddix',
-      color: '#0D9488',
-      isbn: '9781416954170',
-    },
-    flags: [],
-    positiveFlags: [
-      {
-        id: 'rp1',
-        type: 'key-idea',
-        label: 'Accurate Key Idea',
-        description: 'Named a real idea from the book rather than a plot summary.',
-      },
-      {
-        id: 'rp2',
-        type: 'connection',
-        label: 'Draws Connections',
-        description: 'Connected the book to something outside it.',
-      },
-    ],
-    conversation: [
-      {
-        role: 'benny',
-        text: "Hi! It looks like you're reading Found. How far in are you?",
-      },
-      { role: 'student', text: "I'm about halfway" },
-      { role: 'benny', text: 'What did you like about the book so far?' },
-      {
-        role: 'student',
-        text: 'the ending!! i did NOT see it coming. i had to go back and read the last chapter twice',
-      },
-      { role: 'benny', text: 'Would you recommend it to a friend?' },
-      {
-        role: 'student',
-        text: 'yes definitely. my friend likes mysteries and this is kind of a mystery but with a twist',
-      },
-      {
-        role: 'benny',
-        text: 'Wonderful! Thank you for sharing. Your thoughts about Found were very interesting.',
-      },
-    ],
-    changeLog: [
-      {
-        id: 'rc3',
-        label: 'Book talk completed',
-        icon: 'circle-check',
-        color: '#16A97A',
-        by: 'Benny',
-        at: 'Jul 16, 5:20 PM',
       },
     ],
   },
@@ -2198,9 +2137,8 @@ function RLEntryCard({ entry, onOpen }) {
     : entry.flagged
       ? ' rp-rl-entry--flagged'
       : ''
-  // The row advertises what opening it will show: a flag either way, and a
-  // Benny mark when the session carried a book talk — otherwise there's no way
-  // to tell a plain minutes log from one worth reading.
+  // The row advertises what opening it will show. Flags only — libraries don't
+  // run book talks, so there's no conversation to advertise.
   const session = RL_SESSIONS[entry.title]
   const marks = [
     session?.flags?.length && {
@@ -2218,19 +2156,13 @@ function RLEntryCard({ entry, onOpen }) {
           ? session.positiveFlags[0].label
           : `${session.positiveFlags.length} positive flags`,
     },
-    session?.conversation?.length && {
-      key: 'talk',
-      icon: 'message-chatbot',
-      className: 'rp-rl-mark rp-rl-mark--talk',
-      label: 'Book talk with Benny',
-    },
   ].filter(Boolean)
 
   return (
     <div className={`rp-rl-entry${tone}`}>
       <div className="rp-rl-entry-top">
-        {/* The title opens the session — flags and any book talk live there, not
-            squeezed into the log row. */}
+        {/* The title opens the session — its flags live there, not squeezed
+            into the log row. */}
         <button type="button" className="rp-rl-entry-title" onClick={() => onOpen?.(entry)}>
           {entry.title}
         </button>
@@ -3607,7 +3539,7 @@ function FindAPerson({ onReaderClick, onOpenAccount, selectedKey }) {
                                   title={`Open ${r.name}'s profile`}
                                   onClick={(ev) => {
                                     ev.stopPropagation()
-                                    onReaderClick?.(key, 'full')
+                                    onReaderClick?.(key)
                                   }}
                                 >
                                   {r.name}

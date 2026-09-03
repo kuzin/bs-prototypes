@@ -431,6 +431,15 @@
   flex: 1;
   overflow-y: auto;
   padding: 0 24px 32px;
+  /* The tab bar supplies the top gap when it's there; without it the first
+     section sits flush against the top bar. */
+}
+
+.sm2-main:not(:has(.sm2-maintabs)) {
+  padding-top: 22px;
+}
+
+.sm2-main {
   display: flex;
   flex-direction: column;
   gap: 36px;

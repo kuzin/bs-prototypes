@@ -483,7 +483,9 @@ export function SessionModal({
     .slice(0, 2)
     .toUpperCase()
 
-  const conversationSection = (
+  // A logged session doesn't have to carry a book talk — most don't — so the
+  // transcript section is only rendered when there is one.
+  const conversationSection = !d.conversation?.length ? null : (
     <div className="sm2-section">
       <div className="sm2-section-head">
         <span className="sm2-section-title">Conversation</span>
