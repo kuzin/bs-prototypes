@@ -5181,11 +5181,6 @@
 .rp-rl-source {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding-left: 7px;
-  border-left: 1px solid var(--c-slate-300);
-  color: var(--c-slate-500);
-  font-weight: 700;
   cursor: default;
 }
 

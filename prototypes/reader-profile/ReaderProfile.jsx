@@ -2194,7 +2194,6 @@ function RLEntryCard({ entry, onOpen }) {
               style={{ '--rp-mark-bg': PARTNER_BRANDS[entry.source].accent }}
             >
               <PartnerMark id={entry.source} size={16} />
-              {PARTNER_BRANDS[entry.source].name}
             </span>
           </Tooltip>
         )}
