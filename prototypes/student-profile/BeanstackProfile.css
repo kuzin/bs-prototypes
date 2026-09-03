@@ -1137,19 +1137,58 @@
 }
 
 /* Ring-based goal header */
-.bp-goal-ring-header {
+.bp-goal-hero {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid #f0f0f0;
-  margin-bottom: 14px;
+  gap: 18px;
 }
-.bp-goal-ring-info {
+
+.bp-goal-hero-main {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
   flex: 1;
+  min-width: 0;
+}
+
+/* What's left of today — the one thing the ring can't say on its own. */
+.bp-goal-hero-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-slate-500);
+}
+
+.bp-goal-hero-status--met {
+  color: var(--goal-c);
+}
+
+/* Whether today is typical. Same cells as the activity heatmap below, at the
+   size its legend uses. */
+.bp-goal-hero-week {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-top: 9px;
+}
+
+.bp-goal-hero-cells {
+  display: flex;
+  gap: 4px;
+}
+
+.bp-goal-hero-cells .bp-heatmap-cell {
+  width: 15px;
+  height: 15px;
+  aspect-ratio: unset;
+}
+
+.bp-goal-hero-week-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-slate-400);
 }
 .bp-goal-ring-meta {
   display: flex;

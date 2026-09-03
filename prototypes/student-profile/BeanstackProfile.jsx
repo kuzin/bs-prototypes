@@ -1487,6 +1487,17 @@ function HabitsDetail({ sec, c, goal }) {
     ? ([...currentWeek.days].reverse().find((d) => d.minutes !== null)?.minutes ?? 0)
     : 0
 
+  // The card used to print today's minutes twice — once in the ring and once
+  // beside it — and said nothing else. The ring keeps the figure; the text
+  // beside it answers the two questions it left open: what the goal is, and
+  // how much of today is left to make it. The week strip underneath says
+  // whether today is typical, which is the thing a single day can't tell you.
+  const met = todayMins >= goal
+  const remaining = Math.max(goal - todayMins, 0)
+  const weekDays = (currentWeek ?? sec.weeks[0]).days
+  const logged = weekDays.filter((d) => d.minutes !== null)
+  const metDays = logged.filter((d) => d.minutes >= goal).length
+
   // Per-session and best-day stats are only meaningful once there is reading to
   // average over — otherwise they show a leftover figure next to "0 of 30 days".
   const hasRecentReading = sec.daysRead30 > 0
@@ -1498,14 +1509,50 @@ function HabitsDetail({ sec, c, goal }) {
       {/* Daily goal */}
       <Card>
         <SectionHeading>Daily goal</SectionHeading>
-        <div className="bp-goal-ring-header">
+        <div className="bp-goal-hero">
           <GoalRing minutes={todayMins} goal={goal} color={c.bar} />
-          <div className="bp-goal-ring-info">
+          <div className="bp-goal-hero-main">
             <div className="bp-goal-title">{goal} minutes a day</div>
-            <div className="bp-goal-ring-meta">
-              <span className="bp-goal-ring-num">{todayMins} min</span>
-              <span className="bp-goal-ring-dot">·</span>
-              <span>logged today</span>
+            <div
+              className={`bp-goal-hero-status${met ? ' bp-goal-hero-status--met' : ''}`}
+              style={met ? { '--goal-c': c.bar } : undefined}
+            >
+              {met ? (
+                <>
+                  <Icon name="check" size={14} stroke={2.6} />
+                  Goal met today
+                </>
+              ) : (
+                `${remaining} min to go today`
+              )}
+            </div>
+            {/* The same cells as the activity heatmap below, so the legend
+                under it explains this strip too. */}
+            <div className="bp-goal-hero-week">
+              <div className="bp-goal-hero-cells">
+                {weekDays.map((d, i) => (
+                  <Tooltip
+                    key={i}
+                    content={
+                      d.minutes === null
+                        ? `${d.day} — not yet`
+                        : `${d.day} — ${d.minutes} min${d.minutes >= goal ? ' · goal met' : ''}`
+                    }
+                  >
+                    <div
+                      className={`bp-heatmap-cell${d.minutes !== null && d.minutes >= goal ? ' bp-heatmap-cell--goal' : ''}`}
+                      style={{
+                        '--cell-bg': d.minutes ? c.bar : '#EAECF0',
+                        opacity: d.minutes === null ? 0.45 : 1,
+                      }}
+                    />
+                  </Tooltip>
+                ))}
+              </div>
+              <span className="bp-goal-hero-week-label">
+                Met on {metDays} of {logged.length} {logged.length === 1 ? 'day' : 'days'} so far
+                this week
+              </span>
             </div>
           </div>
         </div>
