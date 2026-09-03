@@ -125,6 +125,7 @@ export function Sidebar({
           type="button"
           className="sb-sidebar-expand"
           onClick={expand}
+          title="Expand navigation"
           aria-label="Expand navigation"
         >
           <Icon name="menu" size={18} stroke={2} />
@@ -139,6 +140,7 @@ export function Sidebar({
             type="button"
             className="sb-sidebar-collapse"
             onClick={collapse}
+            title="Collapse navigation"
             aria-label="Collapse navigation"
           >
             <Icon name="chevron-left" size={16} stroke={2} />
@@ -209,6 +211,7 @@ export function Sidebar({
           type="button"
           className="sb-topbar-toggle"
           onClick={expand}
+          title="Open navigation"
           aria-label="Open navigation"
         >
           <Icon name="menu" size={18} stroke={2} />

@@ -19,7 +19,21 @@ const SECTIONS = (() => {
     const bi = SECTION_ORDER.indexOf(b)
     return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi)
   })
-  return sorted.map(([title, items]) => ({ title, items }))
+  // Within a tab, cards are grouped again by `category` — "Prototypes" alone
+  // was a flat list of thirteen unrelated things. Registry order decides both
+  // the category order and the order inside each one, so reordering the list
+  // is still the only place you arrange anything.
+  const byCategory = (items) => {
+    const cats = new Map()
+    for (const p of items) {
+      const key = p.category || 'Other'
+      if (!cats.has(key)) cats.set(key, [])
+      cats.get(key).push(p)
+    }
+    return [...cats.entries()].map(([title, list]) => ({ title, items: list }))
+  }
+
+  return sorted.map(([title, items]) => ({ title, items, categories: byCategory(items) }))
 })()
 
 // Per-prototype card glyphs, rendered via the shared <Icon> (Tabler). Color is
@@ -46,6 +60,7 @@ const ICON_NAMES = {
   'gameboard-reader': 'route',
   beeverso: 'plug-connected', // an account plugged into Beanstack
   'words-with-benny': 'vocabulary',
+  'reader-profile': 'users',
 }
 
 const ICONS = Object.fromEntries(
@@ -103,11 +118,19 @@ export default function App() {
       </nav>
 
       <main>
-        <div className="list">
-          {active.items.map((p) => (
-            <ProtoCard key={p.href} {...p} />
-          ))}
-        </div>
+        {active.categories.map((cat) => (
+          <section key={cat.title} className="cat">
+            <h2 className="cat-title">
+              {cat.title}
+              <span className="cat-count">{cat.items.length}</span>
+            </h2>
+            <div className="list">
+              {cat.items.map((p) => (
+                <ProtoCard key={p.href} {...p} />
+              ))}
+            </div>
+          </section>
+        ))}
       </main>
     </div>
   )
