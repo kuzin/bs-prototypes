@@ -1,0 +1,347 @@
+/* The Joyful footer — the current unified footer across Beanstack, Comics Plus,
+   MyDot and RMI. Self-imported by JoyfulFooter.jsx so a prototype can render it
+   without pulling in the footers prototype's own page reset and body styles.
+
+   The `--jf-*` tokens live here (rather than on the showcase's `.ft-shell`) for
+   the same reason: a consumer gets the footer's colours by importing it. Dark
+   mode still comes from `data-theme="dark"` on the footer element. */
+
+.jf-footer {
+  /* White, matching the live footer — the off-white it used to be read as grey
+     against the app above it. */
+  --jf-bg: #fff;
+  --jf-ink: #1a1a1a;
+  --jf-ink-2: #5f5e59;
+  --jf-rule: rgb(0 0 0 / 8%);
+  --jf-control-bg: rgb(0 0 0 / 4%);
+  --jf-control-bg-hover: rgb(0 0 0 / 7%);
+}
+.jf-footer[data-theme='dark'] {
+  --jf-bg: #14161a;
+  --jf-ink: #ecebe5;
+  --jf-ink-2: #908e86;
+  --jf-rule: rgb(255 255 255 / 8%);
+  --jf-control-bg: rgb(255 255 255 / 5%);
+  --jf-control-bg-hover: rgb(255 255 255 / 9%);
+}
+
+/* ── Joyful footer (the actual unified design) ─────────────────────────── */
+
+.jf-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: var(--jf-bg);
+  color: var(--jf-ink);
+  padding: 14px 24px 12px;
+  border-top: 1px solid var(--jf-rule);
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+
+.jf-footer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+.jf-footer-identity {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+}
+
+.jf-footer-logo {
+  display: inline-flex;
+}
+
+.jf-footer-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.jf-footer-links {
+  list-style: none;
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.jf-footer-links a {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--jf-ink);
+  text-decoration: none;
+  transition: color 0.12s;
+}
+
+.jf-footer-links a:hover {
+  color: var(--accent);
+}
+
+.jf-more {
+  position: relative;
+  display: inline-flex;
+}
+
+.jf-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--jf-ink);
+  cursor: pointer;
+  transition: color 0.12s;
+}
+
+.jf-more-btn:hover {
+  color: var(--accent);
+}
+
+.jf-more-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+}
+
+.jf-more-menu {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  z-index: 50;
+  min-width: 180px;
+  padding: 6px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-rule);
+  border-radius: 10px;
+  box-shadow: 0 12px 32px rgba(15, 23, 42, 0.18);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.jf-more-menu a {
+  display: block;
+  padding: 7px 10px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--jf-ink);
+  text-decoration: none;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+
+.jf-more-menu a:hover {
+  background: var(--jf-control-bg-hover);
+  color: var(--accent);
+}
+
+.jf-footer-stores {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.jf-footer-store-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: var(--jf-control-bg);
+  border: 1px solid var(--jf-rule);
+  color: var(--jf-ink);
+  text-decoration: none;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
+}
+
+.jf-footer-store-btn:hover {
+  background: var(--jf-control-bg-hover);
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--jf-rule));
+  color: var(--accent);
+}
+
+.jf-footer-divider {
+  height: 1px;
+  background: var(--jf-rule);
+  margin: 0;
+}
+
+.jf-footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.jf-footer-attribution {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--jf-ink);
+  text-decoration: none;
+  font-size: 12px;
+  transition: color 0.12s;
+}
+
+.jf-footer-attribution:hover {
+  color: var(--accent);
+}
+
+.jf-footer-attribution-made {
+  color: var(--jf-ink-2);
+}
+
+.jf-footer-attribution strong {
+  font-weight: 800;
+}
+
+.jf-footer-attribution-year {
+  color: var(--jf-ink-2);
+  font-weight: 500;
+}
+
+.jf-mark {
+  display: inline-flex;
+  color: var(--c-brand-teal);
+}
+
+.jf-footer-bottom-right {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--jf-ink-2);
+}
+
+.jf-footer-bottom-right a {
+  color: var(--jf-ink-2);
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.12s;
+}
+
+.jf-footer-bottom-right a:hover {
+  color: var(--accent);
+}
+
+.jf-footer-bottom-sep {
+  opacity: 0.5;
+}
+
+.jf-footer-copy {
+  white-space: nowrap;
+}
+
+.jf-footer-lang {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 99px;
+  background: var(--jf-control-bg);
+  color: var(--jf-ink);
+  border: 1px solid var(--jf-rule);
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.12s;
+}
+
+.jf-footer-lang:hover {
+  background: var(--jf-control-bg-hover);
+}
+
+/* ── Logos ─────────────────────────────────────────────────────────────── */
+
+.cp-logo,
+.bs-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--jf-ink, var(--page-ink));
+}
+
+.cp-logo-mark,
+.cp-logo-wordmark {
+  display: inline-flex;
+  line-height: 0;
+}
+
+.cp-logo-wordmark svg {
+  height: 12px;
+  width: auto;
+  display: block;
+}
+
+.ft-chrome .cp-logo-wordmark svg {
+  height: 11px;
+}
+
+.bs-logo-mark {
+  display: inline-flex;
+  color: var(--accent, #0da7bc);
+}
+
+.bs-logo-text {
+  font-size: 16px;
+  font-weight: 900;
+  letter-spacing: -0.015em;
+  color: var(--jf-ink, var(--page-ink));
+}
+
+.ft-chrome .bs-logo-text {
+  color: inherit;
+}
+
+/* ── Mobile ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 640px) {
+  .jf-footer {
+    padding: 14px 18px 12px;
+    gap: 12px;
+  }
+  .jf-footer-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .jf-footer-links {
+    gap: 8px 14px;
+    row-gap: 6px;
+  }
+  .jf-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .jf-footer-bottom-right {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .jf-footer-bottom-right .jf-footer-bottom-sep {
+    display: none;
+  }
+}

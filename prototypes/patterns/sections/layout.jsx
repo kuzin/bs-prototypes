@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { SECTIONS as HEALTH_SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 import { Hero } from '@components/Hero/Hero'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
+import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 import { SchoolPicker, Sidebar } from '@components/Sidebar/Sidebar'
 import { Button } from '@components/Button/Button'
 import { BackBar } from '@components/BackBar/BackBar'
@@ -9,7 +10,27 @@ import { Toggle } from '@components/Toggle/Toggle'
 import { SectionCard } from '@components/SectionCard/SectionCard'
 import { Field, Input, Select } from '@components/Form/Form'
 import { SCHOOLS } from '../../ris/data'
+import { Icon } from '@components/Icon/Icon'
 import { Knobs, Variant } from './_shared'
+
+const PREVIEW_VIEWS = [
+  { id: 'admin', label: 'Admin · Site Settings', short: 'Site', icon: 'settings' },
+  { id: 'reader', label: 'Reader · Book talks', short: 'Talks', icon: 'message-chatbot' },
+  { id: 'teacher', label: 'Teacher · Sessions', short: 'Sessions', icon: 'clipboard-check' },
+]
+
+function PreviewBarShowcase() {
+  const [active, setActive] = useState('admin')
+  return (
+    <PreviewBar
+      title="Book Talks: Badges"
+      views={PREVIEW_VIEWS}
+      active={active}
+      onChange={setActive}
+      sticky={false}
+    />
+  )
+}
 
 const SIDEBAR_NAV_SETS = {
   ris: {
@@ -374,6 +395,54 @@ export const layoutSections = [
           picks up the current prototype from <code>currentHref</code> and shows prev/next arrows
           for the other prototypes.
         </div>
+      </>
+    ),
+  },
+  {
+    group: 'layout',
+    id: 'preview-bar',
+    name: 'PreviewBar',
+    desc: (
+      <>
+        The dev/preview bar above a multi-persona prototype, switching between its views. Every
+        prototype with one uses this, so the bars read the same everywhere — Benny, the
+        prototype&apos;s name, and a segmented strip of views on the right. Replaces four
+        hand-rolled bars (<code>bt-toolbar</code>, <code>bw-toolbar</code>, <code>pyp-devbar</code>,{' '}
+        <code>wb-toolbar</code>) that had drifted onto three different grounds and two different
+        active states.
+        <br />
+        <br />
+        Props: <code>title</code>, optional <code>subtitle</code>, <code>views</code> (
+        <code>{'{ id, label, short?, icon }'}</code>), <code>active</code>, <code>onChange</code>,
+        optional <code>actions</code> (right-side controls, styled by the bar), and{' '}
+        <code>sticky</code> — default true; pass <code>false</code> inside a flex-column shell that
+        owns its own scrolling. <code>short</code> is the label the strip swaps to before it would
+        overflow. Deliberately <strong>no accent prop</strong>: the active pill is white everywhere,
+        which is what keeps the bars consistent. The bar publishes its height as{' '}
+        <code>--preview-bar-h</code>, so a prototype can size a full-height shell or a sticky header
+        beneath it without guessing pixels.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="three views — the common case" bare>
+          <PreviewBarShowcase />
+        </Variant>
+        <Variant label="a subtitle + a right-side action" bare>
+          <PreviewBar
+            title="Book Talks: Comprehension"
+            subtitle="Site-wide completion setting"
+            views={PREVIEW_VIEWS}
+            active="reader"
+            onChange={() => {}}
+            sticky={false}
+            actions={
+              <button type="button">
+                <Icon name="refresh" size={13} /> Reset
+              </button>
+            }
+          />
+        </Variant>
       </>
     ),
   },

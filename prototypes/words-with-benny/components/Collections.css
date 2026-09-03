@@ -1,0 +1,149 @@
+/* ─── Sub-tab band ───────────────────────────────────────────────────────
+   The pane switcher sits on a tinted band flush under the main nav. It bleeds
+   to the container edges, cancelling .wa-main's top padding and
+   .wa-main-inner's side padding — same trick as ReadingLog's `.rl-subtabs`. */
+
+.co-subtabs {
+  display: flex;
+  justify-content: center;
+  padding: 16px 24px;
+  margin: -24px -24px 8px;
+  background: #f7f8fa;
+  border-bottom: 1px solid var(--c-border);
+}
+
+/* ─── Benny's line ───────────────────────────────────────────────────────
+   Sits on the right of whichever shelf head is showing, in the register of the
+   Reading Log's `.rl-importnote` rather than as a panel on a banner. */
+
+.co-benny {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 9px;
+  align-items: center;
+  max-width: 300px;
+  padding: 10px 13px;
+  background: #faf7ff;
+  border: 1px solid #e9d5ff;
+  border-radius: 11px;
+}
+.co-benny-face {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+}
+.co-benny-line {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #5b21b6;
+}
+
+/* ─── Badge + achievement shelves ────────────────────────────────────────
+   Both use the product's one card: circular art over a bold name and a line of
+   copy, with the earned date on its own footer strip in green. */
+
+/* Same breathing room the Reading Log gives its own header under the band. */
+.co-shelf-head {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 14px;
+  margin: 26px 0 20px;
+  border-bottom: 1px solid var(--c-border);
+}
+.co-shelf-copy {
+  min-width: 0;
+}
+.co-shelf-title {
+  font-size: 21px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--c-text);
+}
+.co-shelf-count {
+  margin-top: 3px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.co-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 20px;
+}
+
+/* No horizontal padding on the card itself — the footer's rule has to run the
+   full width, so the inset lives on the text instead. */
+.co-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 26px 0 0;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+/* The medallions are square SVGs; the product shows them as circles. */
+.co-card-art {
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  overflow: hidden;
+  border-radius: 999px;
+}
+.co-card-art svg {
+  width: 100%;
+  height: 100%;
+}
+/* No illustrated badge art in the repo, so a badge keeps its glyph — but in
+   the same circular slot the medallions sit in. */
+.co-card-disc {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  background: var(--badge-color);
+  border-radius: 999px;
+}
+.co-card-name {
+  padding: 0 22px;
+  margin-top: 16px;
+  font-size: 16.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text);
+}
+.co-card-blurb {
+  flex: 1 1 auto;
+  padding: 0 22px;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--c-text-muted);
+}
+.co-card-foot {
+  width: 100%;
+  padding: 15px 0;
+  margin-top: 22px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f7a55;
+  border-top: 1px solid var(--c-border);
+}
+
+@media (max-width: 860px) {
+  .co-shelf-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .co-benny {
+    max-width: none;
+  }
+}

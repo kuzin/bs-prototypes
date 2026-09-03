@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react'
 import '@components/Tabs/Tabs.css'
 
 /**
+ * `plain` drops the pill variant's track, for a sub-tab bar that already sits on
+ * a band of its own (the reader's Reading Log and Collections bars).
+ *
  * <Tabs
  *   active="daily"
  *   onChange={k => setTab(k)}
@@ -20,6 +23,7 @@ export function Tabs({
   variant = 'underline',
   size = 'md',
   block = false,
+  plain = false,
   accent,
   ariaLabel,
   className = '',
@@ -58,7 +62,7 @@ export function Tabs({
     <div
       ref={scrollRef}
       onScroll={updateScrollFade}
-      className={`tabs tabs--${variant} tabs--${size}${block ? ' tabs--block' : ''}${canScrollLeft ? ' tabs--scroll-left' : ''}${canScrollRight ? ' tabs--scroll-right' : ''} ${className}`.trim()}
+      className={`tabs tabs--${variant} tabs--${size}${plain ? ' tabs--plain' : ''}${block ? ' tabs--block' : ''}${canScrollLeft ? ' tabs--scroll-left' : ''}${canScrollRight ? ' tabs--scroll-right' : ''} ${className}`.trim()}
       role="tablist"
       aria-label={ariaLabel}
       style={style}

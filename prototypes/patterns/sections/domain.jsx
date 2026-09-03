@@ -554,7 +554,9 @@ export const domainSections = [
         The reader&apos;s settings page, and the home of <strong>App Integrations</strong> — where a
         partner account is actually connected or disconnected. Each partner in <code>partners</code>{' '}
         is its own row, so linking one never touches the other. The dashboard banner and the top-bar
-        switcher are shortcuts into this section.
+        switcher are shortcuts into this section. An empty <code>partners</code> drops the App
+        Integrations section entirely rather than leaving a bare heading — that's how a prototype
+        with no reading-app linking (Words with Benny) reuses this page.
       </>
     ),
     render: () => (

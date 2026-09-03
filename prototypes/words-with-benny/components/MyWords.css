@@ -1,0 +1,227 @@
+/* My Words — the reader's vocabulary collection, and the Words pane of the
+   Collections tab. <Collections> owns the page header and the sub-tab strip, so
+   this starts at the stat strip. */
+
+.mw {
+  padding: 0;
+}
+
+/* ─── Stat strip ─────────────────────────────────────────────────────────
+   Mirrors the Reading Log's `.rl-streaks` blocks in the tab next door: a flat
+   tinted panel per stat, icon beside a figure-over-label column, one soft tone
+   each. Not a bordered white card — nothing else on this page is one. */
+
+.mw-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 4px;
+}
+.mw-stat {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 18px 22px;
+  border-radius: 12px;
+}
+.mw-stat svg {
+  flex: 0 0 auto;
+}
+.mw-stat--words {
+  color: #5b21b6;
+  background: #ede4ff;
+}
+.mw-stat--week {
+  color: #0b6b78;
+  background: #dff4f7;
+}
+.mw-stat--books {
+  color: #075985;
+  background: #e0f2fe;
+}
+.mw-stat--first {
+  color: #166534;
+  background: #dcfce7;
+}
+.mw-stat-num {
+  font-size: 17px;
+  font-weight: 800;
+}
+.mw-stat-lbl {
+  font-size: 13px;
+  opacity: 0.85;
+}
+
+/* ─── Toolbar ───────────────────────────────────────────────────────────── */
+
+.mw-toolbar {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 22px 0 14px;
+}
+.mw-search {
+  flex: 0 1 280px;
+}
+
+/* ─── Word tiles ────────────────────────────────────────────────────────── */
+
+.mw-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
+  gap: 12px;
+}
+
+.mw-tile {
+  display: flex;
+  flex-direction: column;
+  padding: 15px 16px 13px;
+  background: #fff;
+  border: 1px solid #e6ecf3;
+  border-radius: 13px;
+  transition:
+    border-color 130ms ease,
+    box-shadow 130ms ease;
+}
+.mw-tile:hover {
+  border-color: #c4b5fd;
+  box-shadow: 0 6px 18px rgba(76, 29, 149, 0.08);
+}
+/* The word banked seconds ago, so returning from the unlock lands on it. */
+.mw-tile.is-new {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.22);
+}
+
+.mw-tile-head {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.mw-tile-word {
+  font-size: 19px;
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  color: #4c1d95;
+}
+.mw-tile-new {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  font-size: 10.5px;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #7c3aed;
+  border-radius: 999px;
+}
+.mw-tile-say {
+  margin-top: 2px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #8b5cf6;
+}
+.mw-tile-part {
+  font-weight: 600;
+  color: #a0aec0;
+}
+.mw-tile-meaning {
+  flex: 1 1 auto;
+  margin-top: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #475569;
+}
+
+.mw-tile-foot {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid #f1f5f9;
+}
+.mw-tile-from {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12px;
+  font-weight: 700;
+  color: #64748b;
+  white-space: nowrap;
+}
+.mw-tile-from svg {
+  flex: 0 0 auto;
+}
+/* The title is the flex item that must shrink and ellipsize, not the row. */
+.mw-tile-from-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mw-tile-date {
+  flex: 0 0 auto;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+/* ─── Grouped by book ───────────────────────────────────────────────────── */
+
+.mw-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+.mw-group-head {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 11px;
+}
+.mw-group-cover {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 46px;
+  border-radius: 5px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+.mw-group-titles {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.mw-group-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0f172a;
+}
+.mw-group-author {
+  margin-top: 1px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #64748b;
+}
+.mw-group-count {
+  flex: 0 0 auto;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #6d28d9;
+  background: #f3e8ff;
+  border-radius: 999px;
+}
+
+@media (max-width: 860px) {
+  .mw-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .mw-search {
+    flex: 1 1 auto;
+  }
+}

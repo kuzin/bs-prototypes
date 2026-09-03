@@ -5,6 +5,13 @@ export const USER = {
   firstName: 'Olivia',
 }
 
+// The readers this account can switch between, for the topbar's reader menu.
+export const OTHER_READERS = [
+  { id: 'noah', name: 'Noah Martinez', initials: 'NM', color: '#7C5CFA' },
+  { id: 'mia', name: 'Mia Chen', initials: 'MC', color: '#0DA7BC' },
+  { id: 'liam', name: 'Liam Park', initials: 'LP', color: '#16A97A' },
+]
+
 export const STREAK = {
   current: 0,
   longest: 12,

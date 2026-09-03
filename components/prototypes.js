@@ -66,7 +66,7 @@ export const PROTOTYPES = [
   {
     id: 'insights',
     name: 'Insights · Load Concepts',
-    section: 'Prototypes',
+    section: 'Experiments',
     href: '/bs-prototypes/insights/',
     accent: '#6366F1',
     description: 'Lighter Insights load — snapshot, drill-down, progressive.',
@@ -97,7 +97,7 @@ export const PROTOTYPES = [
   },
   {
     id: 'book-talks',
-    name: 'Book Talk Badges',
+    name: 'Book Talks: Badges',
     section: 'Prototypes',
     href: '/bs-prototypes/book-talks/',
     accent: '#14B8A6',
@@ -132,7 +132,7 @@ export const PROTOTYPES = [
   },
   {
     id: 'btwb',
-    name: 'Book Talks with Benny',
+    name: 'Book Talks: Comprehension',
     section: 'Prototypes',
     href: '/bs-prototypes/btwb/',
     accent: '#0E7490',
@@ -162,5 +162,14 @@ export const PROTOTYPES = [
     href: '/bs-prototypes/beeverso/',
     accent: '#662D91',
     description: 'Link a Beeverso account — Spanish reading logs itself in Beanstack.',
+  },
+  {
+    id: 'words-with-benny',
+    name: 'Words with Benny',
+    section: 'Prototypes',
+    href: '/bs-prototypes/words-with-benny/',
+    accent: '#7C3AED',
+    description:
+      'Log reading, unlock a word from the book — collect them, and educators see the growth.',
   },
 ]

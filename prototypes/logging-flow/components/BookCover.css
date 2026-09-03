@@ -119,8 +119,11 @@
   padding-right: 30px;
 }
 
-/* real cover image */
-.bkcov--img {
+/* Real cover image — the padding the size classes set is an inset for the
+   placeholder's title/author text, so a real cover has to clear it. Doubled
+   selector because the size rules below are equal-specificity and come later,
+   which is what was cropping every cover by the inset. */
+.bkcov.bkcov--img {
   padding: 0;
 }
 .bkcov--img img {

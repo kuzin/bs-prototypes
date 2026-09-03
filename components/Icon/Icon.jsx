@@ -46,6 +46,8 @@ import {
   // ── reading / domain ──
   IconBook,
   IconBook2,
+  IconVocabulary,
+  IconBlockquote,
   IconBarcode,
   IconNotebook,
   IconFlame,
@@ -93,6 +95,7 @@ import {
   IconSearch,
   IconFilter,
   IconDownload,
+  IconPrinter,
   IconUpload,
   IconPin,
   IconPinFilled,
@@ -246,6 +249,8 @@ const REGISTRY = {
   // reading / domain
   book: IconBook,
   'book-2': IconBook2,
+  vocabulary: IconVocabulary,
+  blockquote: IconBlockquote,
   barcode: IconBarcode,
   notebook: IconNotebook,
   'reading-log': IconNotebook,
@@ -299,6 +304,7 @@ const REGISTRY = {
   search: IconSearch,
   filter: IconFilter,
   download: IconDownload,
+  printer: IconPrinter,
   upload: IconUpload,
   pin: IconPin,
   'pin-filled': IconPinFilled,

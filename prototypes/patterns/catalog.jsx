@@ -27,6 +27,7 @@ import { booksSections } from './sections/books'
 import { adminDashboardSections } from './sections/admin-dashboard'
 import { gameboardSections } from './sections/gameboard'
 import { gameboardReaderSections } from './sections/gameboard-reader'
+import { wordsWithBennySections } from './sections/words-with-benny'
 
 // Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -225,6 +226,14 @@ export const GROUPS = [
     color: '#65A30D',
     icon: <Icon name="route" size={22} />,
   },
+  {
+    id: 'words-with-benny',
+    kind: 'prototype',
+    title: 'Words with Benny',
+    desc: 'Components for the Words with Benny prototype — the post-log word unlock, the reader\u2019s Collections tab (words, badges, achievements) and its rail card, and the educator roll-up with its per-student drill-down.',
+    color: '#7C3AED',
+    icon: <Icon name="vocabulary" size={22} />,
+  },
 ]
 
 export const SECTIONS = [
@@ -245,4 +254,5 @@ export const SECTIONS = [
   ...adminDashboardSections,
   ...gameboardSections,
   ...gameboardReaderSections,
+  ...wordsWithBennySections,
 ]

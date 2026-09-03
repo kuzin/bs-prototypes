@@ -45,6 +45,7 @@ const ICON_NAMES = {
   gameboard: 'dice-5',
   'gameboard-reader': 'route',
   beeverso: 'plug-connected', // an account plugged into Beanstack
+  'words-with-benny': 'vocabulary',
 }
 
 const ICONS = Object.fromEntries(

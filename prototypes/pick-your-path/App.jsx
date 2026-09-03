@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
+import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 
 import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
@@ -20,10 +21,11 @@ import { BadgeCelebration } from './components/BadgeCelebration'
 import { PATHS, PATH_BY_ID, SEED, badgesForPath } from './data'
 import './index.css'
 
+// `short` is what the preview bar's strip swaps to before it would overflow.
 const VIEWS = [
-  { id: 'teacher', label: 'Teacher · Set Destination', icon: 'flag' },
-  { id: 'challenges', label: 'Student · Challenges', icon: 'trophy' },
-  { id: 'student', label: 'Student · My Path', icon: 'route' },
+  { id: 'teacher', label: 'Teacher · Set Destination', short: 'Teacher', icon: 'flag' },
+  { id: 'challenges', label: 'Student · Challenges', short: 'Challenges', icon: 'trophy' },
+  { id: 'student', label: 'Student · My Path', short: 'My Path', icon: 'route' },
 ]
 
 const RANK = { destination: 3, reading: 2, activity: 1 }
@@ -111,28 +113,18 @@ export function App() {
 
   return (
     <div className="pyp-app">
-      {/* Dev / preview toolbar — switch between the three screens */}
-      <div className="pyp-devbar">
-        <span className="pyp-devbar-label">
-          <Icon name="eye" size={14} /> Preview
-        </span>
-        <div className="pyp-devbar-views">
-          {VIEWS.map((v) => (
-            <button
-              key={v.id}
-              type="button"
-              className={`pyp-devbar-btn${view === v.id ? ' is-active' : ''}`}
-              onClick={() => setView(v.id)}
-            >
-              <Icon name={v.icon} size={14} />
-              {v.label}
-            </button>
-          ))}
-        </div>
-        <button className="pyp-devbar-reset" type="button" onClick={reset}>
-          <Icon name="refresh" size={13} /> Reset
-        </button>
-      </div>
+      {/* Dev / preview bar — switch between the three screens */}
+      <PreviewBar
+        title="Pick Your Path"
+        views={VIEWS}
+        active={view}
+        onChange={setView}
+        actions={
+          <button type="button" onClick={reset}>
+            <Icon name="refresh" size={13} /> Reset
+          </button>
+        }
+      />
 
       {view === 'teacher' && <TeacherSetup offered={offered} onTogglePath={togglePath} />}
 

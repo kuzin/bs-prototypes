@@ -60,6 +60,29 @@ function TabsShowcase() {
           ]}
         />
       </Variant>
+      <Variant label="pill + plain — a sub-tab bar on its own band">
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            padding: 16,
+            background: '#f7f8fa',
+            borderBottom: '1px solid var(--c-border)',
+          }}
+        >
+          <Tabs
+            variant="pill"
+            plain
+            ariaLabel="Reading log view"
+            active={b}
+            onChange={setB}
+            items={[
+              { id: 'overview', label: 'Reading Log' },
+              { id: 'detail', label: 'All Titles' },
+            ]}
+          />
+        </div>
+      </Variant>
       <Variant label="pill + block (full-width segmented control)">
         <Tabs
           variant="pill"
@@ -1056,6 +1079,12 @@ export const moleculesSections = [
         Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>.
         Two variants: <code>underline</code> (default) and <code>pill</code>. The underline variant
         also doubles as a full-bleed header tab bar inside a modal (see the in-modal example below).
+        <br />
+        <br />
+        <code>plain</code> drops the pill variant&apos;s track and gives the active pill a grey fill
+        instead of white — for a sub-tab bar that already sits on a tinted band of its own, where a
+        white-on-grey pill would vanish. That&apos;s the reader&apos;s Reading Log and Collections
+        bars.
       </>
     ),
     render: () => (

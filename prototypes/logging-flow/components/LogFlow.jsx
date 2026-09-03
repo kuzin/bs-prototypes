@@ -11,7 +11,7 @@ import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 import { BookCover } from './BookCover'
 import { EReader } from './EReader'
 import { BOOKS, RECENTLY_LOGGED, READING_LIST, OTHER_READERS, READER } from '../data'
-import { CONNECTIONS } from '../connections'
+import { CONNECTIONS, CONNECTION_LIST } from '../connections'
 import './LogFlow.css'
 
 import '@components/Button/Button.css'
@@ -60,10 +60,29 @@ const REVIEW_OPTIONS = [
   { value: 'yes', label: 'Yes' },
 ]
 
-// `onTalkToBenny` is optional and additive: pass it and the success step offers
-// a Book Talk about what was just logged (the self-started trigger reaching the
-// reader right after a log). Left off, the flow is exactly as it was.
-export function LogFlow({ open, onClose, onLogged, connections = {}, onTalkToBenny }) {
+// `onTalkToBenny` and `onOpenWord` are optional and additive: pass either and
+// the success step offers a next beat on what was just logged — a Book Talk
+// about it, or the vocabulary word it unlocked (Words with Benny). Left off,
+// the flow is exactly as it was.
+//
+// `partners` is the list of reading apps this prototype offers to link; pass
+// `[]` and a partner-catalog title stops advertising which app it came from
+// (it's then just a book you can log).
+//
+// `books` / `recentlyLogged` let a reusing prototype bring its own catalog —
+// Words with Benny swaps in a shelf of ordinary books, since partner titles are
+// beside its point.
+export function LogFlow({
+  open,
+  onClose,
+  onLogged,
+  connections = {},
+  onTalkToBenny,
+  onOpenWord,
+  partners = CONNECTION_LIST,
+  books = BOOKS,
+  recentlyLogged = RECENTLY_LOGGED,
+}) {
   const [step, setStep] = useState('search') // search | details | timer | review | success | reader
   const [returnStep, setReturnStep] = useState('search')
   const [reader, setReader] = useState(READER)
@@ -274,6 +293,9 @@ export function LogFlow({ open, onClose, onLogged, connections = {}, onTalkToBen
             <SearchStep
               reader={reader}
               connections={connections}
+              partners={partners}
+              books={books}
+              recentlyLogged={recentlyLogged}
               query={query}
               setQuery={setQuery}
               scanOpen={scanOpen}
@@ -353,6 +375,7 @@ export function LogFlow({ open, onClose, onLogged, connections = {}, onTalkToBen
               bookTitle={bookTitle}
               onDone={onClose}
               onTalkToBenny={onTalkToBenny}
+              onOpenWord={onOpenWord}
             />
           )}
         </div>
@@ -449,6 +472,9 @@ function ReaderLine({ reader, onChange }) {
 function SearchStep({
   reader,
   connections,
+  partners,
+  books,
+  recentlyLogged,
   query,
   setQuery,
   scanOpen,
@@ -460,10 +486,12 @@ function SearchStep({
 }) {
   const q = query.trim().toLowerCase()
   const results = q
-    ? Object.values(BOOKS).filter(
+    ? Object.values(books).filter(
         (b) => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q),
       )
     : []
+  // The barcode demo picks a real title out of whatever catalog is in play.
+  const scanTarget = books['lucky-cap'] ?? Object.values(books)[0]
 
   return (
     <div className="lf-search">
@@ -491,7 +519,7 @@ function SearchStep({
           </div>
           <p className="lf-scanner-hint">Point your camera at the book's barcode.</p>
           <div className="lf-scanner-actions">
-            <Button variant="primary" size="sm" onClick={() => onPick(BOOKS['lucky-cap'])}>
+            <Button variant="primary" size="sm" onClick={() => onPick(scanTarget)}>
               Simulate scan
             </Button>
             <Button variant="ghost" size="sm" onClick={() => setScanOpen(false)}>
@@ -518,7 +546,7 @@ function SearchStep({
                   <span className="lf-resulttitle">{b.title}</span>
                   <span className="lf-resultauthor">{b.author}</span>
                 </span>
-                {b.partner ? (
+                {b.partner && partners.some((p) => p.id === b.partner) ? (
                   <PartnerResultBadge partnerId={b.partner} connections={connections} />
                 ) : (
                   b.readable && (
@@ -546,24 +574,26 @@ function SearchStep({
               </div>
 
               <div className="lf-coverrow lf-coverrow--rl">
-                {READING_LIST.titles.map((id) => {
-                  const logged = READING_LIST.completed.includes(id)
-                  return (
-                    <button
-                      key={id}
-                      className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
-                      onClick={() => onPick(BOOKS[id])}
-                      title={coverLabel(BOOKS[id])}
-                    >
-                      <BookCover book={BOOKS[id]} size="md" />
-                      {logged && (
-                        <span className="lf-rlcheck" aria-label="Logged">
-                          <Icon name="check" size={12} stroke={3} />
-                        </span>
-                      )}
-                    </button>
-                  )
-                })}
+                {READING_LIST.titles
+                  .filter((id) => books[id])
+                  .map((id) => {
+                    const logged = READING_LIST.completed.includes(id)
+                    return (
+                      <button
+                        key={id}
+                        className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
+                        onClick={() => onPick(books[id])}
+                        title={coverLabel(books[id])}
+                      >
+                        <BookCover book={books[id]} size="md" />
+                        {logged && (
+                          <span className="lf-rlcheck" aria-label="Logged">
+                            <Icon name="check" size={12} stroke={3} />
+                          </span>
+                        )}
+                      </button>
+                    )
+                  })}
               </div>
               <button className="lf-link lf-viewall">
                 View all {READING_LIST.total} {READING_LIST.unit || 'titles'} ›
@@ -575,16 +605,18 @@ function SearchStep({
           <section className="lf-panel">
             <h2 className="lf-panel-title">Recently Logged Titles</h2>
             <div className="lf-coverrow lf-coverrow--center">
-              {RECENTLY_LOGGED.map((id) => (
-                <button
-                  key={id}
-                  className="lf-coverbtn"
-                  onClick={() => onPick(BOOKS[id])}
-                  title={coverLabel(BOOKS[id])}
-                >
-                  <BookCover book={BOOKS[id]} size="md" />
-                </button>
-              ))}
+              {recentlyLogged
+                .filter((id) => books[id])
+                .map((id) => (
+                  <button
+                    key={id}
+                    className="lf-coverbtn"
+                    onClick={() => onPick(books[id])}
+                    title={coverLabel(books[id])}
+                  >
+                    <BookCover book={books[id]} size="md" />
+                  </button>
+                ))}
             </div>
           </section>
 
@@ -928,7 +960,7 @@ function ReaderStep({ current, onSelect }) {
 
 // ─── Success / badge earned ───────────────────────────────────────────────────
 
-function SuccessStep({ result, bookTitle, onDone, onTalkToBenny }) {
+function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
   const amount = result.measure === 'minutes' ? fmtMinutes(result.minutes) : `${result.pages} pages`
   return (
     <div className="lf-success">
@@ -982,6 +1014,30 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny }) {
             onClick={() => onTalkToBenny(result)}
           >
             Talk to Benny
+          </Button>
+          <button className="lf-benny-skip" onClick={onDone}>
+            Not right now
+          </button>
+        </>
+      ) : onOpenWord ? (
+        <>
+          {/* Same catch-them-here moment, spent on a word from the book. */}
+          <div className="lf-benny">
+            <img src="/bs-prototypes/benny-excited.svg" alt="" className="lf-benny-face" />
+            <div className="lf-benny-copy">
+              <div className="lf-benny-title">I found a word in there</div>
+              <p className="lf-benny-sub">
+                One word from {bookTitle}, about ten seconds of your time, and it’s yours to keep.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="primary"
+            size="lg"
+            icon={<Icon name="vocabulary" size={18} />}
+            onClick={() => onOpenWord(result)}
+          >
+            Unlock My Word
           </Button>
           <button className="lf-benny-skip" onClick={onDone}>
             Not right now

@@ -13,9 +13,12 @@ import {
 } from '@components/PartnerConnect/PartnerConnect'
 import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
 
-import { READER, CHALLENGES, TOP_SCHOOLS, TOP_GRADES, BOOKS } from '../data'
+import { READER, OTHER_READERS, CHALLENGES, TOP_SCHOOLS, TOP_GRADES, BOOKS } from '../data'
 import { CONNECTION_LIST, autoLoggedRows } from '../connections'
 import { ReadingLog } from './ReadingLog'
+import { JoyfulFooter, APPS } from '../../footers/JoyfulFooter'
+
+import './Dashboard.css'
 
 // Reuse the consumer web-app dashboard styling (the logging flow opens on top
 // of this "Challenges" page — see Figma Option 1, Challenges Page frames).
@@ -35,7 +38,18 @@ function BeanstackLogo() {
   )
 }
 
-function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartner, view, onView }) {
+function TopBar({
+  onLog,
+  connections,
+  onManageConnections,
+  onHome,
+  onVisitPartner,
+  view,
+  onView,
+  extraTabs = [],
+  hideTabs = [],
+  partners = [],
+}) {
   return (
     <header className="wa-topbar">
       <div className="wa-topbar-inner">
@@ -45,15 +59,15 @@ function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartne
         {/* Log Reading always stays put; the secondary actions fold into a
             flyout once the bar runs out of room. */}
         <div className="wa-topbar-actions">
-          <Button variant="primary" size="sm" icon={<Icon name="book" size={16} />} onClick={onLog}>
+          <Button variant="primary" size="md" icon={<Icon name="book" size={16} />} onClick={onLog}>
             Log Reading
           </Button>
           <div className="wa-actions-wide">
-            <Button variant="ghost" size="sm" icon={<Icon name="check" size={15} />}>
+            <Button variant="ghost" size="md" icon={<Icon name="check" size={16} />}>
               Complete Activity
             </Button>
-            <Button variant="ghost" size="sm" icon={<Icon name="writing" size={15} />}>
-              Write Review
+            <Button variant="ghost" size="md" icon={<Icon name="writing" size={16} />}>
+              Write a Review
             </Button>
           </div>
           <div className="wa-actions-narrow">
@@ -81,18 +95,72 @@ function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartne
         <div className="wa-topbar-user">
           {/* "Swap between the two at any time using the logo in the top right." */}
           <PartnerSwitcher
-            partners={CONNECTION_LIST}
+            partners={partners}
             connections={connections}
             onManage={onManageConnections}
             onVisit={onVisitPartner}
           />
-          <div className="wa-user-pill">
-            <span className="wa-user-avatar">{READER.initials}</span>
-            <span className="wa-user-name">{READER.name}</span>
-          </div>
-          <button className="wa-icon-btn" aria-label="Settings" onClick={onManageConnections}>
-            <Icon name="settings" size={20} />
-          </button>
+          {/* The reader pill switches reader; the gear is the account menu.
+              Both were inert before. */}
+          <Flyout
+            placement="bottom-end"
+            trigger={({ toggle }) => (
+              <button className="wa-user-pill" onClick={toggle} aria-label="Switch reader">
+                <span className="wa-user-avatar">{READER.initials}</span>
+                <span className="wa-user-name">{READER.name}</span>
+              </button>
+            )}
+          >
+            {({ close }) => (
+              <div className="wa-readers">
+                <div className="wa-readers-me">
+                  <span className="wa-user-avatar wa-user-avatar--lg">{READER.initials}</span>
+                  <span className="wa-readers-name">{READER.name}</span>
+                  <button className="wa-readers-edit" onClick={close}>
+                    Edit
+                  </button>
+                </div>
+                <div className="wa-readers-others">
+                  {OTHER_READERS.filter((r) => r.id !== READER.id).map((r) => (
+                    <button key={r.id} className="wa-readers-row" onClick={close}>
+                      <span className="wa-user-avatar" style={{ background: r.color }}>
+                        {r.initials}
+                      </span>
+                      {r.name}
+                    </button>
+                  ))}
+                </div>
+                <button className="wa-readers-add" onClick={close}>
+                  Add a Reader
+                </button>
+              </div>
+            )}
+          </Flyout>
+          <Flyout
+            placement="bottom-end"
+            trigger={({ toggle }) => (
+              <button className="wa-icon-btn" onClick={toggle} aria-label="Account settings">
+                <Icon name="settings" size={20} />
+              </button>
+            )}
+          >
+            {({ close }) => (
+              <div className="wa-acct">
+                <button
+                  className="wa-acct-item"
+                  onClick={() => {
+                    close()
+                    onManageConnections()
+                  }}
+                >
+                  Edit Account
+                </button>
+                <button className="wa-acct-item" onClick={close}>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </Flyout>
         </div>
       </div>
 
@@ -100,7 +168,7 @@ function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartne
         <Tabs
           variant="underline"
           size="md"
-          active={view === 'log' ? 'log' : 'challenges'}
+          active={view === 'challenges' || view === 'settings' ? 'challenges' : view}
           accent="#1A6DD5"
           onChange={onView}
           items={[
@@ -110,7 +178,8 @@ function TopBar({ onLog, connections, onManageConnections, onHome, onVisitPartne
             { id: 'reviews', label: 'Reviews' },
             { id: 'badges', label: 'All Badges' },
             { id: 'log', label: 'Reading Log' },
-          ]}
+            ...extraTabs,
+          ].filter((t) => !hideTabs.includes(t.id))}
         />
       </div>
     </header>
@@ -255,34 +324,27 @@ function LeaderboardCard() {
   )
 }
 
+// The current Beanstack footer lives in the `footers` prototype — logo + app
+// stores over a Joyful Reading Co. attribution row, language picker and legal
+// links. Rendered from there rather than kept as a second, stale copy here.
 function Footer() {
-  return (
-    <>
-      <div className="wa-footer-thin">
-        <div className="wa-footer-thin-inner">
-          <div className="wa-footer-links">
-            <a href="#">FAQ</a>
-            <a href="#">Contact Us</a>
-            <a href="#">Share Code</a>
-          </div>
-          <button className="wa-footer-lang" type="button">
-            <span className="wa-footer-lang-g">G</span>Select Language
-          </button>
-        </div>
-      </div>
-      <footer className="wa-footer">
-        <div className="wa-footer-inner">
-          <BeanstackLogo />
-          <div className="wa-footer-copy">
-            © 2024 Zoobean, Inc. <span>•</span> <a href="#">Terms</a> <span>•</span>{' '}
-            <a href="#">Privacy</a>
-          </div>
-        </div>
-      </footer>
-    </>
-  )
+  return <JoyfulFooter app={APPS.find((a) => a.id === 'beanstack')} />
 }
 
+/**
+ * `extraTabs`, `renderExtra`, `railTop` and `view`/`onView` are optional and
+ * additive — they let another prototype hang its own tab (and rail card) off
+ * this real dashboard instead of cloning it. Words with Benny uses them to put
+ * "My Words" next to the Reading Log. Left off, the page is exactly as it was.
+ *
+ * `hideTabs` drops built-in tabs by id, for when an extra tab supersedes one
+ * (Words with Benny folds "All Badges" into its own Collections tab).
+ *
+ * `partners` is the list of reading apps this prototype offers to link. It
+ * defaults to logging-flow's own CONNECTION_LIST; pass `[]` and the entire
+ * integration surface drops out — the connect banner, the topbar switcher, the
+ * "logged for you" rail card, and the App Integrations settings section.
+ */
 export function Dashboard({
   streak,
   dailyGoal,
@@ -291,17 +353,28 @@ export function Dashboard({
   onLinkPartner,
   onDisconnectPartner,
   onVisitPartner,
+  extraTabs = [],
+  renderExtra,
+  railTop,
+  view: viewProp,
+  onView: onViewProp,
+  hideTabs = [],
+  partners = CONNECTION_LIST,
 }) {
   const [scope, setScope] = useState('current')
-  // 'challenges' | 'settings' | 'log' — the gear (and "Manage connections") opens
-  // the reader's Personalize Reader page, where App Integrations live; the
-  // Reading Log tab opens the log itself.
-  const [view, setView] = useState('challenges')
+  // 'challenges' | 'settings' | 'log' | any `extraTabs` id — the gear (and
+  // "Manage connections") opens the reader's Personalize Reader page, where App
+  // Integrations live; the Reading Log tab opens the log itself. A parent can
+  // drive the view instead, to deep-link straight to one of its extra tabs.
+  const [viewState, setViewState] = useState('challenges')
+  const view = viewProp ?? viewState
+  const setView = onViewProp ?? setViewState
+  const extraIds = extraTabs.map((t) => t.id)
   // One banner covers every partner still to link, so waving it off is one
   // decision rather than one per app.
   const [dismissed, setDismissed] = useState(false)
 
-  const toLink = dismissed ? [] : CONNECTION_LIST.filter((p) => !connections[p.id])
+  const toLink = dismissed ? [] : partners.filter((p) => !connections[p.id])
 
   return (
     <div className="wa-shell">
@@ -311,17 +384,22 @@ export function Dashboard({
         onManageConnections={() => setView('settings')}
         onHome={() => setView('challenges')}
         onVisitPartner={onVisitPartner}
+        partners={partners}
         view={view}
-        onView={(id) => setView(id === 'log' ? 'log' : 'challenges')}
+        onView={(id) => setView(id === 'log' || extraIds.includes(id) ? id : 'challenges')}
+        extraTabs={extraTabs}
+        hideTabs={hideTabs}
       />
       <main className="wa-main">
         <div className="wa-main-inner">
-          {view === 'log' ? (
-            <ReadingLog />
+          {extraIds.includes(view) ? (
+            renderExtra?.(view)
+          ) : view === 'log' ? (
+            <ReadingLog partners={partners} />
           ) : view === 'settings' ? (
             <PersonalizeReader
               reader={READER}
-              partners={CONNECTION_LIST}
+              partners={partners}
               connections={connections}
               onLink={onLinkPartner}
               onDisconnect={onDisconnectPartner}
@@ -368,8 +446,12 @@ export function Dashboard({
                   </div>
                 </section>
                 <div className="wa-rail">
+                  {railTop}
                   <GoalCard dailyGoal={dailyGoal} />
-                  <AutoLoggedCard className="wa-card" rows={autoLoggedRows(connections, BOOKS)} />
+                  <AutoLoggedCard
+                    className="wa-card"
+                    rows={partners.length ? autoLoggedRows(connections, BOOKS) : []}
+                  />
                   <LeaderboardCard />
                 </div>
               </div>

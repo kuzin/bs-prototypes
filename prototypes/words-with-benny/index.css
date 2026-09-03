@@ -1,0 +1,71 @@
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family:
+    'Nunito',
+    'Trebuchet MS',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background: #f3f4f6;
+  color: #1e293b;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+}
+p {
+  margin: 0;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.wb-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.wb-stage {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* ─── Educator shell ──────────────────────────────────────────────────────
+   AppShell is `height: 100%; overflow: hidden` and expects its content column
+   to do the scrolling, so it needs a bounded height — otherwise the whole
+   document scrolls and drags the sidebar off screen (same fix insights makes).
+   Sized in normal flow rather than pinned with `position: fixed`: the bar
+   already occupies its own space above, so if --preview-bar-h drifts the shell
+   just ends a little shy of PrototypeNav instead of sliding under the bar. */
+.wb-edu-shell {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--preview-bar-h) - 48px);
+}
+.wb-edu-shell > .app-shell {
+  flex: 1;
+  min-height: 0;
+}
+/* Qualified so it beats .app-shell-content { overflow: hidden } whatever the
+   CSS bundle order turns out to be. */
+.wb-edu-shell .ew-content {
+  overflow-y: auto;
+}
