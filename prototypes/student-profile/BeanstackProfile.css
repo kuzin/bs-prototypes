@@ -3072,13 +3072,56 @@
   gap: 6px;
 }
 
+/* A button now — it opens the session — but still the entry's heading, so the
+   control chrome is stripped and the type kept. */
 .bp-rl-entry-title {
+  font-family: inherit;
   font-size: 13px;
   font-weight: 800;
   color: var(--rl-title);
   line-height: 1.3;
   flex: 1;
   min-width: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bp-rl-entry-title:hover {
+  text-decoration: underline;
+}
+
+/* Markers on a log row: what the session holds, before you open it. */
+.bp-rl-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.bp-rl-mark:hover {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.bp-rl-mark--neg {
+  color: #dc2626;
+}
+
+.bp-rl-mark--pos {
+  color: #16a97a;
+}
+
+.bp-rl-mark--talk {
+  color: var(--rl-title);
 }
 
 .bp-rl-entry-menu {
@@ -3087,11 +3130,6 @@
   gap: 8px;
   flex-shrink: 0;
   padding-top: 1px;
-}
-
-.bp-rl-flag {
-  display: inline-flex;
-  color: var(--rl-bar);
 }
 
 .bp-rl-dots {
@@ -4483,4 +4521,10 @@
 .bp-statrow:hover .bp-statrow-go {
   color: var(--c-slate-500);
   transform: translateX(2px);
+}
+
+/* With the reader list hidden, the main panel takes the modal's own padding on
+   both sides rather than only the side the sidebar wasn't on. */
+.bp-content .sm2-columns:not(:has(.sm2-sidebar)) .sm2-main {
+  padding: 0 24px 32px;
 }

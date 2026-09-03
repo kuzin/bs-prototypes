@@ -24,6 +24,7 @@ import '@components/Primitives/Primitives.css'
 // The real Sessions for Review modal chrome: two-column shell, reader sidebar,
 // main tabs, section headers, review cards, conversation bubbles and footer.
 import '../../sfr/components/SessionModal.css'
+import '../../sfr/components/SessionModal.talk.css'
 
 // One completed book talk, reviewed — built on Sessions for Review's own modal
 // (`sm2-*`) so it reads as the production surface rather than a lookalike. The

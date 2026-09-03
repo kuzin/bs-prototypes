@@ -15,7 +15,7 @@ import { Select, Checkbox, Field, Input, Textarea, DateInput } from '@components
 import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import '@components/Form/Form.css'
 import { Avatar } from '@components/Avatar/Avatar'
-import { IconButton, EmptyState, Banner } from '@components/Primitives/Primitives'
+import { IconButton, EmptyState, Banner, Tooltip } from '@components/Primitives/Primitives'
 import { Pill } from '@components/Pill/Pill'
 import { BarList } from '@components/BarList/BarList'
 import { ChartCard } from '@components/Cards/Cards'
@@ -1096,12 +1096,15 @@ function IntegrityDetail({ sec }) {
         />
       </Card>
 
+      {/* No reader list: you're already inside this reader's profile, so the
+          sidebar's "their other sessions" is the page you came from. */}
       <SessionModal
         session={openSession}
         allSessions={sessions}
         onClose={() => setOpenSession(null)}
         onUpdateSession={handleUpdateSession}
         onSelectSession={setOpenSession}
+        showReaderList={false}
       />
     </>
   )
@@ -3340,6 +3343,146 @@ const CLASS_TABLE = [
 ]
 
 // ─── Reading Log ──────────────────────────────────────────────────────────────
+// Sessions the reading log can open. There is **one** session modal in this
+// repo — Sessions for Review's — so these are shaped the way it expects: a
+// session may carry flags, a book talk (`conversation`), both, or neither.
+// Sessions with a book talk are the ones that surface on the Book Talks tab.
+// A log entry with no key here still opens; it just has details and nothing else.
+const RL_SESSIONS = {
+  'Fifteen Hundred Miles from the Sun': {
+    id: 'rl-sess-1',
+    date: '2024-07-16',
+    type: 'flagged',
+    status: 'completed',
+    challenge: 'Summer Reading 2026',
+    minutesLogged: 1000,
+    engagementRating: null,
+    book: {
+      title: 'Fifteen Hundred Miles from the Sun',
+      author: 'Jonny Garza Villa',
+      color: '#B45309',
+      isbn: '9781510763128',
+    },
+    flags: [
+      {
+        id: 'rf1',
+        type: 'exceeded-warning',
+        label: 'Exceeded Warning',
+        description: "The number of minutes logged exceeded your site's logging warning.",
+      },
+    ],
+    positiveFlags: [],
+    conversation: [],
+    changeLog: [
+      {
+        id: 'rc1',
+        label: 'Session flagged',
+        icon: 'flag',
+        color: '#DC2626',
+        by: 'Benny',
+        at: 'Jul 16, 8:02 PM',
+      },
+    ],
+  },
+  Snapdragon: {
+    id: 'rl-sess-2',
+    date: '2024-07-11',
+    type: 'flagged',
+    status: 'completed',
+    challenge: 'Summer Reading 2026',
+    minutesLogged: 512,
+    engagementRating: null,
+    book: { title: 'Snapdragon', author: 'Kat Leyh', color: '#7C3AED', isbn: '9781250312846' },
+    flags: [
+      {
+        id: 'rf2',
+        type: 'exceeded-warning',
+        label: 'Exceeded Warning',
+        description: "512 minutes in one sitting is above this site's logging warning.",
+      },
+      {
+        id: 'rf3',
+        type: 'slow-response',
+        label: 'Took a While to Respond',
+        description: 'Took over one minute to respond.',
+      },
+    ],
+    positiveFlags: [],
+    conversation: [],
+    changeLog: [
+      {
+        id: 'rc2',
+        label: 'Session flagged',
+        icon: 'flag',
+        color: '#DC2626',
+        by: 'Benny',
+        at: 'Jul 11, 7:41 PM',
+      },
+    ],
+  },
+  Found: {
+    id: 'rl-sess-3',
+    date: '2024-07-16',
+    type: 'engagement',
+    status: 'completed',
+    challenge: 'Summer Reading 2026',
+    minutesLogged: 23,
+    engagementRating: 'green',
+    book: {
+      title: 'Found',
+      author: 'Margaret Peterson Haddix',
+      color: '#0D9488',
+      isbn: '9781416954170',
+    },
+    flags: [],
+    positiveFlags: [
+      {
+        id: 'rp1',
+        type: 'key-idea',
+        label: 'Accurate Key Idea',
+        description: 'Named a real idea from the book rather than a plot summary.',
+      },
+      {
+        id: 'rp2',
+        type: 'connection',
+        label: 'Draws Connections',
+        description: 'Connected the book to something outside it.',
+      },
+    ],
+    conversation: [
+      {
+        role: 'benny',
+        text: "Hi! It looks like you're reading Found. How far in are you?",
+      },
+      { role: 'student', text: "I'm about halfway" },
+      { role: 'benny', text: 'What did you like about the book so far?' },
+      {
+        role: 'student',
+        text: 'the ending!! i did NOT see it coming. i had to go back and read the last chapter twice',
+      },
+      { role: 'benny', text: 'Would you recommend it to a friend?' },
+      {
+        role: 'student',
+        text: 'yes definitely. my friend likes mysteries and this is kind of a mystery but with a twist',
+      },
+      {
+        role: 'benny',
+        text: 'Wonderful! Thank you for sharing. Your thoughts about Found were very interesting.',
+      },
+    ],
+    changeLog: [
+      {
+        id: 'rc3',
+        label: 'Book talk completed',
+        icon: 'circle-check',
+        color: '#16A97A',
+        by: 'Benny',
+        at: 'Jul 16, 5:20 PM',
+      },
+    ],
+  },
+}
+
 const RL_DATA = [
   {
     weekLabel: 'July 14–20',
@@ -3464,25 +3607,86 @@ const RL_DATA = [
 // ─── Reading Log page ─────────────────────────────────────────────────────────
 // Entry state drives the card's colour: finished books read red with a
 // Completed pill, integrity-flagged sessions amber, everything else blue.
-function RLEntryCard({ entry }) {
+function RLEntryCard({ entry, onOpen }) {
   const tone = entry.completed
     ? ' bp-rl-entry--completed'
     : entry.flagged
       ? ' bp-rl-entry--flagged'
       : ''
+  // The row advertises what opening it will show: a flag either way, and a
+  // Benny mark when the session carried a book talk — otherwise there's no way
+  // to tell a plain minutes log from one worth reading.
+  const session = RL_SESSIONS[entry.title]
+  const marks = [
+    session?.flags?.length && {
+      key: 'flag',
+      icon: 'flag',
+      className: 'bp-rl-mark bp-rl-mark--neg',
+      label: session.flags.length === 1 ? session.flags[0].label : `${session.flags.length} flags`,
+    },
+    session?.positiveFlags?.length && {
+      key: 'pos',
+      icon: 'flag',
+      className: 'bp-rl-mark bp-rl-mark--pos',
+      label:
+        session.positiveFlags.length === 1
+          ? session.positiveFlags[0].label
+          : `${session.positiveFlags.length} positive flags`,
+    },
+    session?.conversation?.length && {
+      key: 'talk',
+      icon: 'message-chatbot',
+      className: 'bp-rl-mark bp-rl-mark--talk',
+      label: 'Book talk with Benny',
+    },
+  ].filter(Boolean)
+
   return (
     <div className={`bp-rl-entry${tone}`}>
       <div className="bp-rl-entry-top">
-        <div className="bp-rl-entry-title">{entry.title}</div>
+        {/* The title opens the session — flags and any book talk live there, not
+            squeezed into the log row. */}
+        <button type="button" className="bp-rl-entry-title" onClick={() => onOpen?.(entry)}>
+          {entry.title}
+        </button>
         <div className="bp-rl-entry-menu">
-          {entry.flagged && (
-            <span className="bp-rl-flag" title="Flagged">
-              <Icon name="flag" size={14} />
-            </span>
-          )}
-          <button type="button" className="bp-rl-dots" aria-label="Entry actions">
-            <Icon name="dots" size={16} />
-          </button>
+          {marks.map((m) => (
+            <Tooltip key={m.key} content={m.label}>
+              <button
+                type="button"
+                className={m.className}
+                onClick={() => onOpen?.(entry)}
+                aria-label={m.label}
+              >
+                <Icon name={m.icon} size={14} />
+              </button>
+            </Tooltip>
+          ))}
+          <Flyout
+            placement="bottom-end"
+            trigger={({ toggle }) => (
+              <Tooltip content="Entry actions">
+                <button
+                  type="button"
+                  className="bp-rl-dots"
+                  onClick={toggle}
+                  aria-label="Entry actions"
+                >
+                  <Icon name="dots" size={16} />
+                </button>
+              </Tooltip>
+            )}
+          >
+            {({ close }) => (
+              <DropdownMenu
+                items={[
+                  { label: 'Edit', icon: <Icon name="pencil" size={15} /> },
+                  { label: 'Remove', icon: <Icon name="trash" size={15} />, danger: true },
+                ]}
+                onClose={close}
+              />
+            )}
+          </Flyout>
         </div>
       </div>
       <div className="bp-rl-entry-author">{entry.author}</div>
@@ -3564,9 +3768,34 @@ function ReadingLogTable() {
   )
 }
 
-function ReadingLogPage() {
+function ReadingLogPage({ reader }) {
   const [view, setView] = useState('list')
+  const [openSession, setOpenSession] = useState(null)
   const month = RL_MONTH.label
+
+  // An entry with no authored session still opens — you get the details, which
+  // is all a plain minutes log has.
+  // Shaped for the shared session modal. An entry with no authored session is
+  // still a session — it just has no flags and no book talk.
+  const openEntry = (entry) => {
+    const authored = RL_SESSIONS[entry.title]
+    setOpenSession({
+      id: authored?.id ?? `rl-${entry.title}-${entry.amount ?? 'completed'}`,
+      date: authored?.date ?? '2024-07-16',
+      type: authored?.type ?? 'engagement',
+      status: 'completed',
+      challenge: authored?.challenge ?? 'Summer Reading 2026',
+      minutesLogged: authored?.minutesLogged ?? (parseInt(entry.amount, 10) || 0),
+      engagementRating: authored?.engagementRating ?? null,
+      book: authored?.book ?? { title: entry.title, author: entry.author, color: '#0284C7' },
+      flags: authored?.flags ?? [],
+      positiveFlags: authored?.positiveFlags ?? [],
+      conversation: authored?.conversation ?? [],
+      changeLog: authored?.changeLog ?? [],
+      student: reader,
+    })
+  }
+
   return (
     <div className="bp-content">
       <Hero
@@ -3625,7 +3854,7 @@ function ReadingLogPage() {
                     {day.entries.length > 0 && (
                       <div className="bp-rl-entries">
                         {day.entries.map((e, ei) => (
-                          <RLEntryCard key={ei} entry={e} />
+                          <RLEntryCard key={ei} entry={e} onOpen={openEntry} />
                         ))}
                       </div>
                     )}
@@ -3636,6 +3865,14 @@ function ReadingLogPage() {
           </div>
         )}
       </Card>
+
+      {/* The one session modal. No reader list: you're inside this reader's
+          own profile, so "their other sessions" is the page you came from. */}
+      <SessionModal
+        session={openSession}
+        onClose={() => setOpenSession(null)}
+        showReaderList={false}
+      />
     </div>
   )
 }
@@ -4732,7 +4969,7 @@ function ProfileBody({
               ) : ANALYSIS_SECTIONS.has(activeSection) ? (
                 <SectionDetail student={student} sectionKey={activeSection} />
               ) : activeSection === 'readinglog' ? (
-                <ReadingLogPage />
+                <ReadingLogPage reader={student} />
               ) : activeSection === 'textchallenges' ? (
                 <TextChallengesPage student={student} />
               ) : activeSection === 'reviews' ? (

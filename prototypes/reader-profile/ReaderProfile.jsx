@@ -3,7 +3,6 @@ import './ReaderProfile.css'
 import '../ris/components/SchoolDashboard.css'
 import { C, LABEL, Ic } from '@components/ui'
 import { Card, SectionHeading, GoalRing, CoverImage } from './components/kit'
-import { SessionModal } from './components/SessionModal'
 import {
   DonutChart,
   SplitDonutChart,
@@ -33,6 +32,7 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Toggle } from '@components/Toggle/Toggle'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { Hero } from '@components/Hero/Hero'
+import { SessionModal } from '../sfr/components/SessionModal'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { ChartLegend } from '@components/charts/charts'
 
@@ -1928,24 +1928,39 @@ const READERS = {
 // same session wherever it appears in the log; an entry with no key here opens
 // with details only, which is the common case — most logs are just a number of
 // minutes, with no talk and nothing flagged.
+// Sessions the reading log can open. There is **one** session modal in this
+// repo — Sessions for Review's — so these are shaped the way it expects: a
+// session may carry flags, a book talk (`conversation`), both, or neither.
+// Sessions with a book talk are the ones that surface on the Book Talks tab.
+// A log entry with no key here still opens; it just has details and nothing else.
 const RL_SESSIONS = {
   'Fifteen Hundred Miles from the Sun': {
-    id: 'rls-1',
-    isbn: '9781510763128',
-    trigger: 'Completed Book',
-    unit: '1,000 minutes',
-    dateRead: '07/16/24',
+    id: 'rl-sess-1',
+    date: '2024-07-16',
+    type: 'flagged',
+    status: 'completed',
+    challenge: 'Summer Reading 2026',
+    minutesLogged: 1000,
+    engagementRating: null,
+    book: {
+      title: 'Fifteen Hundred Miles from the Sun',
+      author: 'Jonny Garza Villa',
+      color: '#B45309',
+      isbn: '9781510763128',
+    },
     flags: [
       {
+        id: 'rf1',
+        type: 'exceeded-warning',
         label: 'Exceeded Warning',
-        icon: 'book',
-        color: '#DC2626',
-        desc: "The number of minutes logged exceeded your site's logging warning.",
+        description: "The number of minutes logged exceeded your site's logging warning.",
       },
     ],
+    positiveFlags: [],
+    conversation: [],
     changeLog: [
       {
-        id: 'c1',
+        id: 'rc1',
         label: 'Session flagged',
         icon: 'flag',
         color: '#DC2626',
@@ -1955,28 +1970,33 @@ const RL_SESSIONS = {
     ],
   },
   Snapdragon: {
-    id: 'rls-2',
-    isbn: '9781250312846',
-    trigger: 'Completed Book',
-    unit: '512 minutes',
-    dateRead: '07/11/24',
+    id: 'rl-sess-2',
+    date: '2024-07-11',
+    type: 'flagged',
+    status: 'completed',
+    challenge: 'Summer Reading 2026',
+    minutesLogged: 512,
+    engagementRating: null,
+    book: { title: 'Snapdragon', author: 'Kat Leyh', color: '#7C3AED', isbn: '9781250312846' },
     flags: [
       {
+        id: 'rf2',
+        type: 'exceeded-warning',
         label: 'Exceeded Warning',
-        icon: 'book',
-        color: '#DC2626',
-        desc: '512 minutes in one sitting is above this site’s logging warning.',
+        description: "512 minutes in one sitting is above this site's logging warning.",
       },
       {
+        id: 'rf3',
+        type: 'slow-response',
         label: 'Took a While to Respond',
-        icon: 'hourglass',
-        color: '#B45309',
-        desc: 'Took over one minute to respond.',
+        description: 'Took over one minute to respond.',
       },
     ],
+    positiveFlags: [],
+    conversation: [],
     changeLog: [
       {
-        id: 'c1',
+        id: 'rc2',
         label: 'Session flagged',
         icon: 'flag',
         color: '#DC2626',
@@ -1986,80 +2006,58 @@ const RL_SESSIONS = {
     ],
   },
   Found: {
-    id: 'rls-3',
-    isbn: '9781416954170',
-    trigger: 'Completed Book',
-    unit: '23 minutes',
-    dateRead: '07/16/24',
+    id: 'rl-sess-3',
+    date: '2024-07-16',
+    type: 'engagement',
+    status: 'completed',
+    challenge: 'Summer Reading 2026',
+    minutesLogged: 23,
+    engagementRating: 'green',
+    book: {
+      title: 'Found',
+      author: 'Margaret Peterson Haddix',
+      color: '#0D9488',
+      isbn: '9781416954170',
+    },
+    flags: [],
     positiveFlags: [
       {
+        id: 'rp1',
+        type: 'key-idea',
         label: 'Accurate Key Idea',
-        icon: 'key',
-        color: '#D97706',
-        desc: 'Named a real idea from the book rather than a plot summary.',
+        description: 'Named a real idea from the book rather than a plot summary.',
       },
       {
+        id: 'rp2',
+        type: 'connection',
         label: 'Draws Connections',
-        icon: 'share',
-        color: '#2563EB',
-        desc: 'Connected the book to something outside it.',
+        description: 'Connected the book to something outside it.',
       },
     ],
-    talk: {
-      kind: 'engagement',
-      duration: '3 min 10 sec',
-      date: '07/16/24',
-      summary:
-        'They were genuinely into this one — named the ending as the part that stuck, and said they would hand it to a friend without hesitating.',
-      messages: [
-        {
-          from: 'benny',
-          lead: 'Hi!',
-          text: "I'm Benny, your library's reading assistant. It looks like you're reading Found. How far in are you?",
-        },
-        { from: 'reader', text: "I'm about halfway" },
-        {
-          from: 'benny',
-          lead: 'Great!',
-          text: 'What did you like about the book so far?',
-        },
-        {
-          from: 'reader',
-          text: 'the ending!! i did NOT see it coming. i had to go back and read the last chapter twice',
-          flags: [
-            {
-              label: 'Accurate Key Idea',
-              positive: true,
-              reasoning:
-                'The reader points to a specific structural feature of the book — the reveal in the final chapter — rather than restating the plot, and describes rereading it to check their understanding.',
-            },
-            {
-              label: 'Draws Connections',
-              positive: true,
-              reasoning:
-                'They tie the ending back to their expectations while reading, which is a connection between the text and their own experience of it.',
-            },
-          ],
-        },
-        {
-          from: 'benny',
-          lead: 'Nice.',
-          text: 'Would you recommend it to a friend?',
-        },
-        {
-          from: 'reader',
-          text: 'yes definitely. my friend likes mysteries and this is kind of a mystery but with a twist',
-        },
-        {
-          from: 'benny',
-          lead: 'Wonderful! Thank you for sharing!',
-          text: 'Your thoughts about Found were very interesting. Have a great day!',
-        },
-      ],
-    },
+    conversation: [
+      {
+        role: 'benny',
+        text: "Hi! It looks like you're reading Found. How far in are you?",
+      },
+      { role: 'student', text: "I'm about halfway" },
+      { role: 'benny', text: 'What did you like about the book so far?' },
+      {
+        role: 'student',
+        text: 'the ending!! i did NOT see it coming. i had to go back and read the last chapter twice',
+      },
+      { role: 'benny', text: 'Would you recommend it to a friend?' },
+      {
+        role: 'student',
+        text: 'yes definitely. my friend likes mysteries and this is kind of a mystery but with a twist',
+      },
+      {
+        role: 'benny',
+        text: 'Wonderful! Thank you for sharing. Your thoughts about Found were very interesting.',
+      },
+    ],
     changeLog: [
       {
-        id: 'c1',
+        id: 'rc3',
         label: 'Book talk completed',
         icon: 'circle-check',
         color: '#16A97A',
@@ -2220,7 +2218,7 @@ function RLEntryCard({ entry, onOpen }) {
           ? session.positiveFlags[0].label
           : `${session.positiveFlags.length} positive flags`,
     },
-    session?.talk && {
+    session?.conversation?.length && {
       key: 'talk',
       icon: 'message-chatbot',
       className: 'rp-rl-mark rp-rl-mark--talk',
@@ -2364,15 +2362,26 @@ function ReadingLogPage({ reader }) {
 
   // An entry with no authored session still opens — you get the details, which
   // is all a plain minutes log has.
-  const openEntry = (entry) =>
+  // Shaped for the shared session modal. An entry with no authored session is
+  // still a session — it just has no flags and no book talk.
+  const openEntry = (entry) => {
+    const authored = RL_SESSIONS[entry.title]
     setOpenSession({
-      id: `${entry.title}-${entry.amount ?? 'completed'}`,
-      ...entry,
-      ...(RL_SESSIONS[entry.title] || {}),
-      dateRead: RL_SESSIONS[entry.title]?.dateRead ?? RL_MONTH.label,
-      unit: RL_SESSIONS[entry.title]?.unit ?? entry.amount ?? 'Book completed',
-      trigger: RL_SESSIONS[entry.title]?.trigger ?? 'Logged by the reader',
+      id: authored?.id ?? `rl-${entry.title}-${entry.amount ?? 'completed'}`,
+      date: authored?.date ?? '2024-07-16',
+      type: authored?.type ?? 'engagement',
+      status: 'completed',
+      challenge: authored?.challenge ?? 'Summer Reading 2026',
+      minutesLogged: authored?.minutesLogged ?? (parseInt(entry.amount, 10) || 0),
+      engagementRating: authored?.engagementRating ?? null,
+      book: authored?.book ?? { title: entry.title, author: entry.author, color: '#0284C7' },
+      flags: authored?.flags ?? [],
+      positiveFlags: authored?.positiveFlags ?? [],
+      conversation: authored?.conversation ?? [],
+      changeLog: authored?.changeLog ?? [],
+      student: reader,
     })
+  }
 
   return (
     <div className="rp-content">
@@ -2448,7 +2457,13 @@ function ReadingLogPage({ reader }) {
         )}
       </Card>
 
-      <SessionModal session={openSession} reader={reader} onClose={() => setOpenSession(null)} />
+      {/* The one session modal. No reader list: you're inside this reader's own
+          profile, so "their other sessions" is the page you came from. */}
+      <SessionModal
+        session={openSession}
+        onClose={() => setOpenSession(null)}
+        showReaderList={false}
+      />
     </div>
   )
 }
