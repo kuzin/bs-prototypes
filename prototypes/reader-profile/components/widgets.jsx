@@ -1,6 +1,6 @@
 // Student-Profile chart widgets — bespoke visualizations used only by this
 // prototype: the intrinsic/extrinsic donut rings, the reading-activity heatmap,
-// and the weekly goal tracker. Styles live in ../BeanstackProfile.css (imported
+// and the weekly goal tracker. Styles live in ../ReaderProfile.css (imported
 // by the prototype root + the Pattern Library catalog). Catalogued in the
 // Pattern Library under the "Student Profile" group.
 import { useState } from 'react'
@@ -10,15 +10,15 @@ import { Icon } from '@components/Icon/Icon'
 // rankings so intrinsic vs. extrinsic reads consistently.
 export const EXTRINSIC_COLOR = '#94A3B8'
 
-export function DonutChart({ value, max, label, color, size = 84, trend }) {
+export function DonutChart({ value, max, label, color, size = 84 }) {
   const sw = 9
   const r = (size - sw) / 2
   const circ = 2 * Math.PI * r
   const dash = circ * Math.max(0, Math.min(1, value / max))
   const mid = size / 2
   return (
-    <div className="bp-donut-wrap">
-      <div className="bp-donut-chart" style={{ width: size, height: size }}>
+    <div className="rp-donut-wrap">
+      <div className="rp-donut-chart" style={{ width: size, height: size }}>
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
           <circle cx={mid} cy={mid} r={r} fill="none" stroke="#E5E7EB" strokeWidth={sw} />
           <circle
@@ -33,13 +33,12 @@ export function DonutChart({ value, max, label, color, size = 84, trend }) {
             transform={`rotate(-90 ${mid} ${mid})`}
           />
         </svg>
-        <div className="bp-donut-center">
-          <span className="bp-donut-val">{value}</span>
-          <span className="bp-donut-max">/{max}</span>
+        <div className="rp-donut-center">
+          <span className="rp-donut-val">{value}</span>
+          <span className="rp-donut-max">/{max}</span>
         </div>
       </div>
-      <div className="bp-donut-label">{label}</div>
-      {trend}
+      <div className="rp-donut-label">{label}</div>
     </div>
   )
 }
@@ -51,7 +50,6 @@ export function SplitDonutChart({
   label,
   intrinsicColor,
   size = 84,
-  trend,
 }) {
   const sw = 9
   const r = (size - sw) / 2
@@ -62,8 +60,8 @@ export function SplitDonutChart({
   const angle1 = (intrinsicVal / max) * 360
   const total = Math.round((intrinsicVal + extrinsicVal) * 10) / 10
   return (
-    <div className="bp-donut-wrap">
-      <div className="bp-donut-chart" style={{ width: size, height: size }}>
+    <div className="rp-donut-wrap">
+      <div className="rp-donut-chart" style={{ width: size, height: size }}>
         <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
           <circle cx={mid} cy={mid} r={r} fill="none" stroke="#E5E7EB" strokeWidth={sw} />
           <circle
@@ -89,13 +87,12 @@ export function SplitDonutChart({
             transform={`rotate(${-90 + angle1} ${mid} ${mid})`}
           />
         </svg>
-        <div className="bp-donut-center">
-          <span className="bp-donut-val">{total}</span>
-          <span className="bp-donut-max">/{max}</span>
+        <div className="rp-donut-center">
+          <span className="rp-donut-val">{total}</span>
+          <span className="rp-donut-max">/{max}</span>
         </div>
       </div>
-      <div className="bp-donut-label">{label}</div>
-      {trend}
+      <div className="rp-donut-label">{label}</div>
     </div>
   )
 }
@@ -174,19 +171,19 @@ export function ReadingHeatmap({ goalMinutes, color, data }) {
   const DAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', '']
 
   return (
-    <div className="bp-heatmap">
-      <div className="bp-heatmap-nav">
+    <div className="rp-heatmap">
+      <div className="rp-heatmap-nav">
         <button
-          className="bp-heatmap-nav-btn"
+          className="rp-heatmap-nav-btn"
           onClick={() => setMonthOffset((o) => Math.min(o + 1, MAX_OFFSET))}
           disabled={monthOffset >= MAX_OFFSET}
           aria-label="Previous 4 months"
         >
           <Icon name="chevron-left" size={11} />
         </button>
-        <span className="bp-heatmap-nav-label">{navLabel}</span>
+        <span className="rp-heatmap-nav-label">{navLabel}</span>
         <button
-          className="bp-heatmap-nav-btn"
+          className="rp-heatmap-nav-btn"
           onClick={() => setMonthOffset((o) => Math.max(o - 1, 0))}
           disabled={monthOffset === 0}
           aria-label="Next 4 months"
@@ -194,23 +191,23 @@ export function ReadingHeatmap({ goalMinutes, color, data }) {
           <Icon name="chevron-right" size={11} />
         </button>
       </div>
-      <div className="bp-heatmap-body">
-        <div className="bp-heatmap-day-labels">
+      <div className="rp-heatmap-body">
+        <div className="rp-heatmap-day-labels">
           {DAY_LABELS.map((d, i) => (
-            <span key={i} className="bp-heatmap-day-label">
+            <span key={i} className="rp-heatmap-day-label">
               {d}
             </span>
           ))}
         </div>
-        <div className="bp-heatmap-grid">
+        <div className="rp-heatmap-grid">
           {weeks.map((week, wi) => (
-            <div key={wi} className="bp-heatmap-col">
+            <div key={wi} className="rp-heatmap-col">
               {week.map((day, di) => {
                 const goalMet = day.inRange && day.mins >= goalMinutes
                 const inStreak = day.inRange && streakMap[day.key] >= 2
-                let cls = 'bp-heatmap-cell'
-                if (goalMet) cls += ' bp-heatmap-cell--goal'
-                if (inStreak) cls += ' bp-heatmap-cell--streak'
+                let cls = 'rp-heatmap-cell'
+                if (goalMet) cls += ' rp-heatmap-cell--goal'
+                if (inStreak) cls += ' rp-heatmap-cell--streak'
                 let tip = null
                 if (day.inRange) {
                   const label = day.dateObj.toLocaleString('en-US', {
@@ -239,12 +236,12 @@ export function ReadingHeatmap({ goalMinutes, color, data }) {
           ))}
         </div>
       </div>
-      <div className="bp-heatmap-months">
-        <div className="bp-heatmap-month-spacer" />
+      <div className="rp-heatmap-months">
+        <div className="rp-heatmap-month-spacer" />
         {monthLabels.map((m, i) => {
           const span = (monthLabels[i + 1]?.wi ?? weeks.length) - m.wi
           return (
-            <div key={i} className="bp-heatmap-month-label" style={{ flex: span }}>
+            <div key={i} className="rp-heatmap-month-label" style={{ flex: span }}>
               {m.label}
             </div>
           )
@@ -256,7 +253,7 @@ export function ReadingHeatmap({ goalMinutes, color, data }) {
 
 export function GoalTracker({ week, goalMinutes }) {
   return (
-    <div className="bp-goal-tracker">
+    <div className="rp-goal-tracker">
       {week.days.map((d, i) => {
         const pending = d.minutes === null
         const logged = !pending && d.minutes > 0
@@ -270,31 +267,31 @@ export function GoalTracker({ week, goalMinutes }) {
         // keeps short-of-goal sessions visible instead of collapsing them into
         // the same grey as a zero day.
         const circleCls = met
-          ? 'bp-goal-circle--met'
+          ? 'rp-goal-circle--met'
           : isToday
-            ? 'bp-goal-circle--today'
+            ? 'rp-goal-circle--today'
             : pending
-              ? 'bp-goal-circle--future'
+              ? 'rp-goal-circle--future'
               : logged
-                ? 'bp-goal-circle--partial'
-                : 'bp-goal-circle--missed'
+                ? 'rp-goal-circle--partial'
+                : 'rp-goal-circle--missed'
 
         return (
-          <div key={i} className="bp-goal-day">
-            <div className="bp-goal-mins-area">
+          <div key={i} className="rp-goal-day">
+            <div className="rp-goal-mins-area">
               {logged && (
-                <span className={`bp-goal-mins${met ? '' : ' bp-goal-mins--partial'}`}>
+                <span className={`rp-goal-mins${met ? '' : ' rp-goal-mins--partial'}`}>
                   {d.minutes}m
                 </span>
               )}
             </div>
-            <div className="bp-goal-circle-row">
+            <div className="rp-goal-circle-row">
               {i > 0 && (
-                <div className={`bp-goal-conn${met && prevMet ? ' bp-goal-conn--lit' : ''}`} />
+                <div className={`rp-goal-conn${met && prevMet ? ' rp-goal-conn--lit' : ''}`} />
               )}
-              <div className={`bp-goal-circle ${circleCls}`}>★</div>
+              <div className={`rp-goal-circle ${circleCls}`}>★</div>
             </div>
-            <span className={`bp-goal-day-label${isToday ? ' bp-goal-day-label--today' : ''}`}>
+            <span className={`rp-goal-day-label${isToday ? ' rp-goal-day-label--today' : ''}`}>
               {d.day}
             </span>
           </div>

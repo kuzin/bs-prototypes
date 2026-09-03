@@ -272,6 +272,11 @@ export function SessionModal({
   sessionIdx,
   sessionCount,
   reviewer = CURRENT_USER,
+  // One flag for "am I on a page about many readers?". It gates the sidebar
+  // (this reader's other sessions), the prev/next queue nav, and the Activity
+  // tab — all review-queue chrome, none of it meaningful inside one reader's
+  // own profile, where this modal is just the log entry you clicked.
+  showReaderList = true,
 }) {
   const [local, setLocal] = useState(null)
   const [editingRating, setEditingRating] = useState(false)
@@ -478,7 +483,9 @@ export function SessionModal({
     .slice(0, 2)
     .toUpperCase()
 
-  const conversationSection = (
+  // A logged session doesn't have to carry a book talk — most don't — so the
+  // transcript section is only rendered when there is one.
+  const conversationSection = !d.conversation?.length ? null : (
     <div className="sm2-section">
       <div className="sm2-section-head">
         <span className="sm2-section-title">Conversation</span>
@@ -559,7 +566,8 @@ export function SessionModal({
         {/* Top bar */}
         <div className="sm2-topbar">
           <div className="sm2-topbar-left">
-            {sessionCount > 0 && (
+            {!showReaderList && <span className="sm2-section-title">Reading session</span>}
+            {showReaderList && sessionCount > 0 && (
               <div className="sm2-nav">
                 <button
                   className="sm2-nav-btn"
@@ -596,80 +604,86 @@ export function SessionModal({
 
         {/* Two-column body */}
         <div className="sm2-columns">
-          {/* Left: reader identity + this reader's other sessions */}
-          <div className="sm2-sidebar">
-            <div className="sm2-reader-card">
-              <span className="sm2-reader-avatar" style={{ background: d.student.color }}>
-                {studentInitials}
-              </span>
-              <div className="sm2-reader-name">{d.student.name}</div>
-              {(d.student.grade || d.student.class) && (
-                <div className="sm2-reader-meta">
-                  {d.student.grade ? `${d.student.grade} Grade` : null}
-                  {d.student.grade && d.student.class ? ' · ' : null}
-                  {d.student.class}
+          {showReaderList && (
+            <>
+              {/* Left: reader identity + this reader's other sessions */}
+              <div className="sm2-sidebar">
+                <div className="sm2-reader-card">
+                  <span className="sm2-reader-avatar" style={{ background: d.student.color }}>
+                    {studentInitials}
+                  </span>
+                  <div className="sm2-reader-name">{d.student.name}</div>
+                  {(d.student.grade || d.student.class) && (
+                    <div className="sm2-reader-meta">
+                      {d.student.grade ? `${d.student.grade} Grade` : null}
+                      {d.student.grade && d.student.class ? ' · ' : null}
+                      {d.student.class}
+                    </div>
+                  )}
+                  {onViewProfile && (
+                    <button className="sm2-view-profile" onClick={() => onViewProfile(d.student)}>
+                      <Icon name="user" size={13} />
+                      View profile
+                    </button>
+                  )}
                 </div>
-              )}
-              {onViewProfile && (
-                <button className="sm2-view-profile" onClick={() => onViewProfile(d.student)}>
-                  <Icon name="user" size={13} />
-                  View profile
-                </button>
-              )}
-            </div>
 
-            <div className="sm2-reader-sessions-head">
-              <span>All Sessions</span>
-              <span className="sm2-sidebar-tab-count">{readerSessions.length}</span>
-            </div>
+                <div className="sm2-reader-sessions-head">
+                  <span>All Sessions</span>
+                  <span className="sm2-sidebar-tab-count">{readerSessions.length}</span>
+                </div>
 
-            <div className="sm2-reader-sessions">
-              {readerSessions.map((s) => {
-                const isCurrent = s.id === d.id
-                const sDate = new Date(s.date).toLocaleDateString('en-US', {
-                  month: 'short',
-                  day: 'numeric',
-                })
-                const meta = sessionRowMeta(s)
-                return (
-                  <button
-                    key={s.id}
-                    className={`sm2-reader-row${isCurrent ? ' sm2-reader-row--current' : ''}`}
-                    onClick={() => {
-                      if (!isCurrent) onSelectSession?.(s)
-                    }}
-                    disabled={isCurrent}
-                    title={s.book.title}
-                  >
-                    <span
-                      className="sm2-reader-row-icon"
-                      style={{ color: meta.color, background: meta.bg }}
-                    >
-                      <Icon name={meta.icon} size={13} stroke={2.2} />
-                    </span>
-                    <span className="sm2-reader-row-book">{s.book.title}</span>
-                    <span className="sm2-reader-row-date">{sDate}</span>
-                  </button>
-                )
-              })}
-            </div>
-          </div>
+                <div className="sm2-reader-sessions">
+                  {readerSessions.map((s) => {
+                    const isCurrent = s.id === d.id
+                    const sDate = new Date(s.date).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                    const meta = sessionRowMeta(s)
+                    return (
+                      <button
+                        key={s.id}
+                        className={`sm2-reader-row${isCurrent ? ' sm2-reader-row--current' : ''}`}
+                        onClick={() => {
+                          if (!isCurrent) onSelectSession?.(s)
+                        }}
+                        disabled={isCurrent}
+                        title={s.book.title}
+                      >
+                        <span
+                          className="sm2-reader-row-icon"
+                          style={{ color: meta.color, background: meta.bg }}
+                        >
+                          <Icon name={meta.icon} size={13} stroke={2.2} />
+                        </span>
+                        <span className="sm2-reader-row-book">{s.book.title}</span>
+                        <span className="sm2-reader-row-date">{sDate}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Right: session content */}
           <div className="sm2-main" ref={mainRef}>
-            <div className="sm2-maintabs">
-              <Tabs
-                items={[
-                  { id: 'conversation', label: 'Conversation' },
-                  { id: 'activity', label: 'Activity', count: d.changeLog?.length || undefined },
-                ]}
-                active={mainTab}
-                onChange={setMainTab}
-                accent={safety ? sev.color : '#0DA7BC'}
-              />
-            </div>
+            {showReaderList && (
+              <div className="sm2-maintabs">
+                <Tabs
+                  items={[
+                    { id: 'conversation', label: 'Logged Session' },
+                    { id: 'activity', label: 'Activity', count: d.changeLog?.length || undefined },
+                  ]}
+                  active={mainTab}
+                  onChange={setMainTab}
+                  accent={safety ? sev.color : '#0DA7BC'}
+                />
+              </div>
+            )}
 
-            {mainTab === 'conversation' && (
+            {(mainTab === 'conversation' || !showReaderList) && (
               <>
                 {sessionDetailsSection}
 
@@ -833,7 +847,7 @@ export function SessionModal({
               </>
             )}
 
-            {mainTab === 'activity' && (
+            {showReaderList && mainTab === 'activity' && (
               <div className="sm2-notes">
                 <div className="sm2-note-row">
                   <textarea

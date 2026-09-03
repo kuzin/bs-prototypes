@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import './PrototypeNav.css'
 import { PROTOTYPES } from '@components/prototypes'
 import { ComponentUsage } from '@components/ComponentUsage/ComponentUsage'
@@ -30,13 +30,28 @@ export function PrototypeNav({ currentHref }) {
   const currentIdx = NAV_PROTOTYPES.findIndex((p) => p.href === currentHref)
   const current = currentIdx >= 0 ? NAV_PROTOTYPES[currentIdx] : null
 
+  // Closing on an outside click is a document listener rather than a backdrop
+  // element: `.proto-nav` sets `backdrop-filter`, which makes it the containing
+  // block for `position: fixed`, so a "full-screen" backdrop was only ever as
+  // tall as the 48px bar and never received the click.
+  const wrapRef = useRef(null)
+
   useEffect(() => {
-    if (!open) return
+    if (!open) return undefined
     function onKey(e) {
       if (e.key === 'Escape') setOpen(false)
     }
+    function onPointerDown(e) {
+      if (!wrapRef.current?.contains(e.target)) setOpen(false)
+    }
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    // Capture phase, so it still fires if something inside the page stops
+    // propagation on its own pointer handlers.
+    document.addEventListener('pointerdown', onPointerDown, true)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.removeEventListener('pointerdown', onPointerDown, true)
+    }
   }, [open])
 
   return (
@@ -72,7 +87,7 @@ export function PrototypeNav({ currentHref }) {
       {usageOpen && <ComponentUsage onClose={() => setUsageOpen(false)} />}
 
       <div className="proto-nav-switcher">
-        <div className="proto-nav-select-wrap">
+        <div className="proto-nav-select-wrap" ref={wrapRef}>
           <button
             type="button"
             className={`proto-nav-select${!current ? ' proto-nav-select--empty' : ''}`}
@@ -88,38 +103,35 @@ export function PrototypeNav({ currentHref }) {
           </button>
 
           {open && (
-            <>
-              <div className="proto-nav-backdrop" onClick={() => setOpen(false)} />
-              <div className="proto-nav-dropdown" role="listbox">
-                {NAV_SECTIONS.map((section) => (
-                  <div
-                    key={section.title}
-                    className="proto-nav-group"
-                    role="group"
-                    aria-label={section.title}
-                  >
-                    <div className="proto-nav-group-label">{section.title}</div>
-                    {section.items.map((p) => {
-                      const isCurrent = p.href === currentHref
-                      return (
-                        <a
-                          key={p.href}
-                          href={isCurrent ? undefined : p.href}
-                          className={`proto-nav-option${isCurrent ? ' proto-nav-option--active' : ''}`}
-                          style={{ '--accent': p.accent }}
-                          role="option"
-                          aria-current={isCurrent ? 'page' : undefined}
-                          onClick={isCurrent ? (e) => e.preventDefault() : undefined}
-                        >
-                          <span className="proto-nav-option-name">{p.name}</span>
-                          {isCurrent && <Icon name="check" size={12} stroke={2.5} />}
-                        </a>
-                      )
-                    })}
-                  </div>
-                ))}
-              </div>
-            </>
+            <div className="proto-nav-dropdown" role="listbox">
+              {NAV_SECTIONS.map((section) => (
+                <div
+                  key={section.title}
+                  className="proto-nav-group"
+                  role="group"
+                  aria-label={section.title}
+                >
+                  <div className="proto-nav-group-label">{section.title}</div>
+                  {section.items.map((p) => {
+                    const isCurrent = p.href === currentHref
+                    return (
+                      <a
+                        key={p.href}
+                        href={isCurrent ? undefined : p.href}
+                        className={`proto-nav-option${isCurrent ? ' proto-nav-option--active' : ''}`}
+                        style={{ '--accent': p.accent }}
+                        role="option"
+                        aria-current={isCurrent ? 'page' : undefined}
+                        onClick={isCurrent ? (e) => e.preventDefault() : undefined}
+                      >
+                        <span className="proto-nav-option-name">{p.name}</span>
+                        {isCurrent && <Icon name="check" size={12} stroke={2.5} />}
+                      </a>
+                    )
+                  })}
+                </div>
+              ))}
+            </div>
           )}
         </div>
       </div>

@@ -191,12 +191,6 @@
 }
 
 /* Backdrop closes the menu on outside click */
-.proto-nav-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 99;
-}
-
 /* Dropdown opens upward */
 .proto-nav-dropdown {
   position: absolute;
@@ -214,6 +208,12 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
+  /* The list grows with every new prototype, and it opens upward from a bar
+     pinned to the bottom — past ~20 entries it ran off the top of the screen.
+     Cap it against the viewport and scroll inside instead. */
+  max-height: calc(100vh - 84px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .proto-nav-option {
@@ -262,7 +262,15 @@
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--c-text-subtle);
-  padding: 4px 10px 2px;
+  /* Stays put while the list scrolls under it. The negative margins bleed the
+     label out to the dropdown's edges and `top` cancels its 6px padding —
+     otherwise rows show through the gutters beside and above the label. */
+  position: sticky;
+  top: -6px;
+  z-index: 1;
+  background: #fff;
+  margin: 0 -6px;
+  padding: 10px 16px 4px;
 }
 
 .proto-nav-option-name {

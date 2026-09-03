@@ -1,5 +1,5 @@
 /* ─── Shell ─────────────────────────────────────────────────────────────── */
-.bp-shell {
+.rp-shell {
   position: relative;
   width: 100%;
   height: 100%;
@@ -8,20 +8,20 @@
 }
 
 /* Admin fills the full background */
-.bp-shell-admin {
+.rp-shell-admin {
   position: absolute;
   inset: 0;
   display: flex;
   overflow: hidden;
   transition: opacity 0.3s;
 }
-.bp-shell-admin--hidden {
+.rp-shell-admin--hidden {
   opacity: 0;
   pointer-events: none;
 }
 
 /* Semi-transparent overlay that dims the admin when profile is open */
-.bp-shell-overlay {
+.rp-shell-overlay {
   position: absolute;
   inset: 0;
   background: rgba(15, 23, 42, 0.6);
@@ -56,7 +56,7 @@
 /* The wrap spans the whole shell in both modes so the panel can grow from
    740px to full width without its containing block changing under it. Only the
    panel itself takes clicks — the gap beside it belongs to the dim overlay. */
-.bp-profile-wrap {
+.rp-profile-wrap {
   position: absolute;
   inset: 0;
   display: flex;
@@ -66,12 +66,12 @@
   pointer-events: none;
 }
 
-/* The control rail and the panel slide as one unit, so `.bp-profile-slider` is
+/* The control rail and the panel slide as one unit, so `.rp-profile-slider` is
    what animates — not the wrap (whose `translateX(100%)` would be the whole
-   shell's width) and not `.bp-root` (which would leave the rail standing
+   shell's width) and not `.rp-root` (which would leave the rail standing
    still while the panel left under it). It also owns the side↔full width, so
    the rail stays glued to the panel's edge the whole way. */
-.bp-profile-slider {
+.rp-profile-slider {
   width: 782px;
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
   margin-left: auto;
@@ -83,17 +83,17 @@
   transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.bp-profile-wrap--full .bp-profile-slider {
+.rp-profile-wrap--full .rp-profile-slider {
   width: 100%;
   box-shadow: none;
 }
 
 /* Timing must match `SLIDE_MS` in the JSX, which unmounts after it plays. */
-.bp-profile-wrap--closing .bp-profile-slider {
+.rp-profile-wrap--closing .rp-profile-slider {
   animation: slideOutRight 0.26s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
-.bp-shell-overlay--closing {
+.rp-shell-overlay--closing {
   animation: bpFadeOut 0.26s ease forwards;
 }
 
@@ -102,9 +102,9 @@
    panel. It's a full-height strip in both modes — the buttons need something to
    sit on, and against the panel's own white nav rail (full screen) or the dim
    overlay (side panel) they'd otherwise float loose. Tinted from the reader's
-   `--bp-profile` (see `profileVars`), with a neutral fallback for any surface
+   `--rp-profile` (see `profileVars`), with a neutral fallback for any surface
    that doesn't set it. */
-.bp-profile-ctrls {
+.rp-profile-ctrls {
   width: 42px;
   flex-shrink: 0;
   display: flex;
@@ -113,11 +113,11 @@
   gap: 10px;
   padding: 10px 0;
   align-self: stretch;
-  background: color-mix(in srgb, var(--bp-profile, #64748b) 14%, #fff);
-  border-right: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 28%, #fff);
+  background: color-mix(in srgb, var(--rp-profile, #64748b) 14%, #fff);
+  border-right: 1px solid color-mix(in srgb, var(--rp-profile, #64748b) 28%, #fff);
 }
 
-.bp-ctrl-group {
+.rp-ctrl-group {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -125,13 +125,13 @@
 
 /* Flat: a hairline instead of a lift. The panel's own shadow is on the slider,
    not the panel, so it falls outside the strip rather than gradienting over it. */
-.bp-ctrl-btn {
+.rp-ctrl-btn {
   width: 30px;
   height: 30px;
   border-radius: 50%;
   background: #fff;
-  border: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 32%, #fff);
-  color: var(--bp-profile, var(--c-slate-600));
+  border: 1px solid color-mix(in srgb, var(--rp-profile, #64748b) 32%, #fff);
+  color: var(--rp-profile, var(--c-slate-600));
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -142,28 +142,28 @@
     border-color 0.15s;
 }
 
-.bp-ctrl-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--bp-profile, #64748b) 10%, #fff);
-  border-color: var(--bp-profile, var(--c-slate-600));
+.rp-ctrl-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--rp-profile, #64748b) 10%, #fff);
+  border-color: var(--rp-profile, var(--c-slate-600));
 }
 
 /* Copy-link confirmation — green while the "Copied" state holds. */
-.bp-ctrl-btn--done,
-.bp-ctrl-btn--done:hover:not(:disabled) {
+.rp-ctrl-btn--done,
+.rp-ctrl-btn--done:hover:not(:disabled) {
   background: #ecfdf5;
   border-color: #16a34a;
   color: #16a34a;
 }
 
-.bp-ctrl-btn:disabled {
+.rp-ctrl-btn:disabled {
   opacity: 0.4;
   cursor: default;
 }
 
 /* Profile root — takes whatever its container has left after the rail. The
-   embed (`.bp-embed`) is the same arrangement inside a host's side Modal. */
-.bp-profile-wrap .bp-root,
-.bp-embed .bp-root {
+   embed (`.rp-embed`) is the same arrangement inside a host's side Modal. */
+.rp-profile-wrap .rp-root,
+.rp-embed .rp-root {
   flex: 1;
   min-width: 0;
   box-shadow: none;
@@ -171,7 +171,7 @@
 
 /* Embedded panel — rail beside the profile, exactly as in the standalone. The
    host sizes the surrounding Modal; this just lays the two out. */
-.bp-embed {
+.rp-embed {
   display: flex;
   flex-direction: row;
   flex: 1;
@@ -186,33 +186,33 @@
    way from its label. Padding the scroll container (rather than capping its
    width) keeps the scrollbar at the window edge. The header stays flush left —
    its avatar sits above the rail, not above the content column. */
-.bp-profile-wrap--full .bp-nav,
-.bp-embed--full .bp-nav {
+.rp-profile-wrap--full .rp-nav,
+.rp-embed--full .rp-nav {
   width: 208px;
 }
-.bp-profile-wrap--full .bp-content,
-.bp-embed--full .bp-content {
+.rp-profile-wrap--full .rp-content,
+.rp-embed--full .rp-content {
   padding-inline: max(20px, calc((100% - 1040px) / 2));
 }
 
 /* A lone Select doesn't need to be 1000px wide. (Block tabs deliberately do
    still fill the page — `block` means block at every width.) */
-.bp-profile-wrap--full .bp-content .fltr-item,
-.bp-embed--full .bp-content .fltr-item {
+.rp-profile-wrap--full .rp-content .fltr-item,
+.rp-embed--full .rp-content .fltr-item {
   max-width: 320px;
 }
-.bp-profile-wrap--full .bp-nav-item,
-.bp-embed--full .bp-nav-item {
+.rp-profile-wrap--full .rp-nav-item,
+.rp-embed--full .rp-nav-item {
   min-height: 38px;
 }
-.bp-profile-wrap--full .bp-nav-label,
-.bp-embed--full .bp-nav-label {
+.rp-profile-wrap--full .rp-nav-label,
+.rp-embed--full .rp-nav-label {
   font-size: 13px;
 }
 
 /* ─── Root ───────────────────────────────────────────────────────────────── */
 /* Column, so the student header can span the rail as well as the content. */
-.bp-root {
+.rp-root {
   font-family: var(--font-sans);
   background: #f5f5f5;
   display: flex;
@@ -220,14 +220,14 @@
   height: 100%;
 }
 
-.bp-root-body {
+.rp-root-body {
   flex: 1;
   min-height: 0;
   display: flex;
 }
 
 /* Mobile-only section switcher — see the `max-width: 699px` block. */
-.bp-mobile-nav {
+.rp-mobile-nav {
   display: none;
 }
 
@@ -235,7 +235,7 @@
 /* Rows read left-to-right (icon then label) rather than stacking: fourteen
    stacked items ran to ~1160px, which was a wall. Horizontal rows bring the
    whole rail under 500px and match the product's own sidebar. */
-.bp-nav {
+.rp-nav {
   width: 168px;
   background: #fff;
   border-right: 1px solid #eaeaea;
@@ -245,7 +245,7 @@
   overflow: hidden;
 }
 
-.bp-nav-items {
+.rp-nav-items {
   flex: 1;
   min-height: 0;
   display: flex;
@@ -256,10 +256,10 @@
   scrollbar-width: none;
 }
 
-.bp-nav-items::-webkit-scrollbar {
+.rp-nav-items::-webkit-scrollbar {
   display: none;
 }
-.bp-nav-item {
+.rp-nav-item {
   width: 100%;
   min-height: 34px;
   display: flex;
@@ -272,11 +272,11 @@
   user-select: none;
 }
 
-.bp-nav-item:hover:not(.bp-nav-item--active) {
+.rp-nav-item:hover:not(.rp-nav-item--active) {
   background: #f4f5f7;
 }
 
-.bp-nav-label {
+.rp-nav-label {
   font-size: 12px;
   font-weight: 700;
   color: #8a8f98;
@@ -289,18 +289,18 @@
 
 /* The active row wears the reader's colour rather than the section's. Section
    colour still identifies the page — it's on the Hero's icon chip. */
-.bp-nav-item--active .bp-nav-label,
-.bp-nav-item--active .icon {
-  color: var(--bp-profile, #1a6dd5);
+.rp-nav-item--active .rp-nav-label,
+.rp-nav-item--active .icon {
+  color: var(--rp-profile, #1a6dd5);
 }
 
-.bp-nav-item--active {
-  background: color-mix(in srgb, var(--bp-profile, #1a6dd5) 12%, #fff);
+.rp-nav-item--active {
+  background: color-mix(in srgb, var(--rp-profile, #1a6dd5) 12%, #fff);
   cursor: default;
 }
 
 /* ─── Panel wrapper (nav sibling, holds header + scrollable content) ────── */
-.bp-panel {
+.rp-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -308,7 +308,7 @@
   overflow: hidden;
 }
 
-.bp-panel-header {
+.rp-panel-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -319,21 +319,21 @@
   gap: 12px;
 }
 
-.bp-panel-identity {
+.rp-panel-identity {
   display: flex;
   align-items: center;
   gap: 10px;
   min-width: 0;
 }
 
-.bp-panel-name {
+.rp-panel-name {
   font-size: 16px;
   font-weight: 800;
   color: #424242;
   line-height: 1.2;
 }
 
-.bp-panel-meta {
+.rp-panel-meta {
   font-size: 13px;
   font-weight: 600;
   color: #9ca3af;
@@ -341,7 +341,7 @@
 }
 
 /* ─── Scrollable content pane ────────────────────────────────────────────── */
-.bp-content {
+.rp-content {
   flex: 1;
   overflow-y: auto;
   /* Reserve the scrollbar's width even on short tabs, so switching between a
@@ -355,15 +355,15 @@
 }
 
 /* Tab fade-in transition */
-.bp-page-fade {
+.rp-page-fade {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  animation: bp-fadein 0.2s ease;
+  animation: rp-fadein 0.2s ease;
 }
-@keyframes bp-fadein {
+@keyframes rp-fadein {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -375,31 +375,31 @@
 }
 
 /* ─── Card ───────────────────────────────────────────────────────────────── */
-.bp-card {
+.rp-card {
   background: #fff;
   border-radius: 12px;
   padding: 16px 18px;
 }
 
-.bp-card--flush {
+.rp-card--flush {
   padding: 0;
 }
 
-.bp-section-heading {
+.rp-section-heading {
   font-size: 15px;
   font-weight: 800;
   color: #424242;
   margin-bottom: 12px;
 }
 
-.bp-card:not(.bp-card--flush) > .bp-section-heading:first-child {
+.rp-card:not(.rp-card--flush) > .rp-section-heading:first-child {
   margin: -16px -18px 14px;
   padding: 15px 18px 13px;
   border-bottom: 1px solid #f0f0f0;
 }
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
-.bp-btn-primary {
+.rp-btn-primary {
   height: 34px;
   padding: 0 14px;
   background: #1a6dd5;
@@ -415,7 +415,7 @@
   gap: 5px;
 }
 
-.bp-btn-ghost {
+.rp-btn-ghost {
   height: 34px;
   padding: 0 13px;
   background: #fff;
@@ -432,7 +432,7 @@
   gap: 6px;
 }
 
-.bp-btn-link {
+.rp-btn-link {
   background: none;
   border: none;
   cursor: pointer;
@@ -448,13 +448,13 @@
 }
 
 /* ─── Bar ────────────────────────────────────────────────────────────────── */
-.bp-bar {
+.rp-bar {
   background: #ebebeb;
   border-radius: 100px;
   overflow: hidden;
 }
 
-.bp-bar-fill {
+.rp-bar-fill {
   height: 100%;
   width: var(--bar-width, 0%);
   background: var(--bar-color, #1a6dd5);
@@ -463,7 +463,7 @@
 }
 
 /* ─── Generic pill (delta / count badges) ────────────────────────────────── */
-.bp-pill {
+.rp-pill {
   background: var(--pill-bg);
   color: var(--pill-color);
   font-weight: 800;
@@ -473,13 +473,13 @@
   padding: 4px 12px;
 }
 
-.bp-pill--sm {
+.rp-pill--sm {
   font-size: 13px;
   padding: 2px 9px;
 }
 
 /* ─── Status badge ───────────────────────────────────────────────────────── */
-.bp-status {
+.rp-status {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -493,47 +493,47 @@
 }
 
 /* Filter icons to white on solid backgrounds */
-.bp-status img {
+.rp-status img {
   filter: brightness(0) invert(1);
 }
 
-.bp-status--watch {
+.rp-status--watch {
   background: #e5493a;
 }
 
-.bp-status--improving {
+.rp-status--improving {
   background: #2563eb;
 }
 
-.bp-status--strong {
+.rp-status--strong {
   background: #059669;
 }
 
-.bp-status--trending {
+.rp-status--trending {
   background: #059669;
 }
 
 /* ─── Action footer (suggested action at bottom of detail cards) ──────────── */
-.bp-action-footer-item {
+.rp-action-footer-item {
   padding-top: 10px;
   border-top: 1px solid #f0f0f0;
   margin-top: 2px;
 }
 
-.bp-action-footer-item:first-child {
+.rp-action-footer-item:first-child {
   padding-top: 0;
   border-top: none;
   margin-top: 0;
 }
 
-.bp-action-footer-title {
+.rp-action-footer-title {
   font-size: 14px;
   font-weight: 800;
   color: #1a1a1a;
   margin-bottom: 5px;
 }
 
-.bp-action-footer-body {
+.rp-action-footer-body {
   font-size: 13px;
   color: #555;
   line-height: 1.6;
@@ -541,7 +541,7 @@
 }
 
 /* ─── Page header row (Overview label + Regenerate) ─────────────────────── */
-.bp-page-header {
+.rp-page-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -549,46 +549,46 @@
   border-bottom: 1.5px solid #bfbfbf;
 }
 
-.bp-page-title {
+.rp-page-title {
   font-size: 18px;
   font-weight: 900;
   color: #000;
 }
 
 /* ─── Student actions (shared between panel header and wherever else) ─────── */
-.bp-student-actions {
+.rp-student-actions {
   display: flex;
   gap: 8px;
   flex-shrink: 0;
   align-items: center;
 }
 
-.bp-student-actions .btn,
-.bp-student-actions .icnb,
-.bp-student-actions .bp-header-close {
+.rp-student-actions .btn,
+.rp-student-actions .icnb,
+.rp-student-actions .rp-header-close {
   height: 36px;
   box-sizing: border-box;
 }
 
 /* The Actions button carries both a label and a dots icon; each breakpoint
    shows one of them. Desktop: "Actions ⌄". Mobile: just the dots. */
-.bp-student-actions .btn-icon {
+.rp-student-actions .btn-icon {
   display: none;
 }
 
 /* Log is the panel's primary action, so it carries the reader's colour like
    the rest of the chrome. Actions stays a neutral outline button. */
-.bp-panel-header .btn--primary {
-  background: var(--bp-profile, var(--c-blue-700));
-  border-color: var(--bp-profile, var(--c-blue-700));
+.rp-panel-header .btn--primary {
+  background: var(--rp-profile, var(--c-blue-700));
+  border-color: var(--rp-profile, var(--c-blue-700));
 }
 
-.bp-panel-header .btn--primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
-  border-color: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
+.rp-panel-header .btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--rp-profile, var(--c-blue-700)) 84%, #000);
+  border-color: color-mix(in srgb, var(--rp-profile, var(--c-blue-700)) 84%, #000);
 }
 
-.bp-header-right {
+.rp-header-right {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -597,12 +597,12 @@
 
 /* Every surface closes from the floating rail; the header's copy is kept only
    for the phone breakpoint, where the rail is hidden. */
-.bp-profile-wrap .bp-header-close,
-.bp-embed .bp-header-close {
+.rp-profile-wrap .rp-header-close,
+.rp-embed .rp-header-close {
   display: none;
 }
 
-.bp-header-close {
+.rp-header-close {
   width: 34px;
   height: 34px;
   border-radius: 8px;
@@ -619,19 +619,19 @@
   flex-shrink: 0;
 }
 
-.bp-header-close:hover {
+.rp-header-close:hover {
   background: var(--c-slate-100);
   color: var(--c-slate-800);
 }
 
 /* ─── Snapshot tiles ─────────────────────────────────────────────────────── */
-.bp-tiles {
+.rp-tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
 }
 
-.bp-tile {
+.rp-tile {
   background: var(--tile-bg);
   border-radius: 14px;
   padding: 14px 16px;
@@ -641,28 +641,28 @@
   flex-direction: column;
 }
 
-.bp-tile:hover {
+.rp-tile:hover {
   opacity: 0.85;
 }
 
 /* Stats tiles (streaks + minutes) — same tile shape and the same 2-across grid
    as the section tiles above. An odd tile at the end fills its row instead of
    sitting next to a gap. */
-.bp-tiles--stats {
+.rp-tiles--stats {
   margin-top: -2px;
 }
 
-.bp-tiles .bp-tile:last-child:nth-child(odd) {
+.rp-tiles .rp-tile:last-child:nth-child(odd) {
   grid-column: span 2;
 }
 
-.bp-tile-body {
+.rp-tile-body {
   flex: 1;
   display: flex;
   align-items: center;
 }
 
-.bp-tile-empty {
+.rp-tile-empty {
   font-size: 13px;
   font-weight: 500;
   color: #424242;
@@ -670,7 +670,7 @@
 }
 
 /* Label row — holds the tile name and its "opens the section" arrow */
-.bp-tile-head {
+.rp-tile-head {
   display: flex;
   flex-wrap: nowrap;
   align-items: flex-start;
@@ -679,7 +679,7 @@
   margin-bottom: 6px;
 }
 
-.bp-tile-label {
+.rp-tile-label {
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -687,7 +687,7 @@
   color: var(--tile-text);
 }
 
-.bp-tile-go {
+.rp-tile-go {
   flex-shrink: 0;
   margin-top: 1px;
   color: var(--tile-text);
@@ -697,26 +697,26 @@
     transform 0.12s ease;
 }
 
-.bp-tile:hover .bp-tile-go,
-.bp-tile:focus-visible .bp-tile-go {
+.rp-tile:hover .rp-tile-go,
+.rp-tile:focus-visible .rp-tile-go {
   opacity: 0.9;
   transform: translateX(2px);
 }
 
-.bp-tile-stat {
+.rp-tile-stat {
   font-size: 22px;
   font-weight: 900;
   color: #424242;
   line-height: 1.1;
 }
 
-.bp-tile-unit {
+.rp-tile-unit {
   font-size: 13px;
   font-weight: 700;
   color: #424242;
 }
 
-.bp-tile-sub {
+.rp-tile-sub {
   font-size: 12px;
   font-weight: 700;
   color: #424242;
@@ -724,18 +724,18 @@
   margin-top: 3px;
 }
 
-.bp-tile-status {
+.rp-tile-status {
   margin-top: 9px;
 }
 
-.bp-tile-motivators {
+.rp-tile-motivators {
   display: flex;
   flex-direction: column;
   gap: 5px;
   margin-top: 2px;
 }
 
-.bp-tile-motivator-row {
+.rp-tile-motivator-row {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -744,7 +744,7 @@
   color: #424242;
 }
 
-.bp-tile-motivator-icon {
+.rp-tile-motivator-icon {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
@@ -752,38 +752,38 @@
 }
 
 /* ─── Reading Health card ────────────────────────────────────────────────── */
-.bp-health-header {
+.rp-health-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
 }
 
-.bp-health-title {
+.rp-health-title {
   font-size: 16px;
   font-weight: 800;
   color: #424242;
 }
 
 /* ── Reading Health verdict block ── */
-.bp-health-verdict {
+.rp-health-verdict {
   margin-bottom: 16px;
 }
 
-.bp-health-verdict-row {
+.rp-health-verdict-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 10px;
 }
 
-.bp-health-verdict-score {
+.rp-health-verdict-score {
   display: flex;
   align-items: baseline;
   gap: 3px;
 }
 
-.bp-health-verdict-num {
+.rp-health-verdict-num {
   font-size: 40px;
   font-weight: 900;
   color: var(--ht-text);
@@ -791,7 +791,7 @@
   letter-spacing: -1.5px;
 }
 
-.bp-health-verdict-outof {
+.rp-health-verdict-outof {
   font-size: 15px;
   font-weight: 700;
   color: var(--ht-text);
@@ -799,7 +799,7 @@
   padding-bottom: 3px;
 }
 
-.bp-health-verdict-pill {
+.rp-health-verdict-pill {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -813,32 +813,32 @@
   white-space: nowrap;
 }
 
-.bp-health-verdict-track {
+.rp-health-verdict-track {
   /* bar sits flush, full width */
 }
 
 /* bar rounded ends */
-.bp-health-verdict-track .bp-bar {
+.rp-health-verdict-track .rp-bar {
   border-radius: 100px;
   overflow: hidden;
 }
-.bp-health-verdict-track .bp-bar-fill {
+.rp-health-verdict-track .rp-bar-fill {
   border-radius: 100px;
 }
 
 /* Legacy */
-.bp-health-on-track {
+.rp-health-on-track {
   display: none;
 }
-.bp-health-score-bar {
+.rp-health-score-bar {
   margin-bottom: 16px;
 }
 
-.bp-health-list {
+.rp-health-list {
   margin-top: 4px;
 }
 
-.bp-health-row {
+.rp-health-row {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -847,11 +847,11 @@
   border-top: 1px solid #f0f0f0;
   transition: opacity 0.12s;
 }
-.bp-health-row:hover {
+.rp-health-row:hover {
   opacity: 0.75;
 }
 
-.bp-health-icon {
+.rp-health-icon {
   width: 32px;
   height: 32px;
   background: var(--section-bg);
@@ -862,12 +862,12 @@
   flex-shrink: 0;
 }
 
-.bp-health-row-body {
+.rp-health-row-body {
   flex: 1;
   min-width: 0;
 }
 
-.bp-health-row-top {
+.rp-health-row-top {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -875,52 +875,52 @@
 }
 
 /* Inline text-only status in health list — no pill */
-.bp-health-row-top .bp-status {
+.rp-health-row-top .rp-status {
   background: none;
   padding: 0;
   font-size: 13px;
 }
-.bp-health-row-top .bp-status img {
+.rp-health-row-top .rp-status img {
   filter: none;
 }
-.bp-health-row-top .bp-status--watch {
+.rp-health-row-top .rp-status--watch {
   color: #e5493a;
 }
-.bp-health-row-top .bp-status--improving {
+.rp-health-row-top .rp-status--improving {
   color: #2563eb;
 }
-.bp-health-row-top .bp-status--strong {
+.rp-health-row-top .rp-status--strong {
   color: #059669;
 }
-.bp-health-row-top .bp-status--trending {
+.rp-health-row-top .rp-status--trending {
   color: #059669;
 }
 
-.bp-health-row-name {
+.rp-health-row-name {
   font-size: 13px;
   font-weight: 800;
   color: #424242;
 }
 
-.bp-health-row-link {
+.rp-health-row-link {
   color: #c4c4c4;
   flex-shrink: 0;
   display: flex;
   align-items: center;
 }
 
-.bp-health-row:hover .bp-health-row-link {
+.rp-health-row:hover .rp-health-row-link {
   color: #2b7ee5;
 }
 
 /* ─── Benny says ─────────────────────────────────────────────────────────── */
-.bp-benny {
+.rp-benny {
   display: flex;
   gap: 12px;
   align-items: flex-start;
 }
 
-.bp-benny-avatar {
+.rp-benny-avatar {
   width: 52px;
   height: 52px;
   border-radius: 50%;
@@ -929,12 +929,12 @@
   display: block;
 }
 
-.bp-benny-body {
+.rp-benny-body {
   flex: 1;
   min-width: 0;
 }
 
-.bp-benny-bubble {
+.rp-benny-bubble {
   background: #f2f2f2;
   border-radius: 12px;
   padding: 13px 15px;
@@ -944,23 +944,23 @@
   font-weight: 500;
 }
 
-.bp-benny-timestamp {
+.rp-benny-timestamp {
   font-size: 13px;
   color: #707070;
   margin-top: 7px;
 }
 
 /* ─── Recommended Actions ────────────────────────────────────────────────── */
-/* Same title as `.bp-section-heading`, but this card is flush so the padding
+/* Same title as `.rp-section-heading`, but this card is flush so the padding
    comes from the title row rather than the card. */
-.bp-actions-title {
+.rp-actions-title {
   padding: 15px 18px 13px;
   font-size: 15px;
   font-weight: 800;
   color: #424242;
 }
 
-.bp-action-item {
+.rp-action-item {
   border-top: 1px solid #eaeaea;
   padding: 14px 18px;
   display: flex;
@@ -968,19 +968,19 @@
   align-items: flex-start;
 }
 
-.bp-action-body {
+.rp-action-body {
   flex: 1;
   min-width: 0;
 }
 
-.bp-action-title {
+.rp-action-title {
   font-size: 14px;
   font-weight: 900;
   color: #000;
   margin-bottom: 4px;
 }
 
-.bp-action-text {
+.rp-action-text {
   font-size: 13px;
   color: #424242;
   line-height: 1.55;
@@ -988,7 +988,7 @@
 }
 
 /* ─── Section detail ─────────────────────────────────────────────────────── */
-.bp-back-btn {
+.rp-back-btn {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1004,42 +1004,42 @@
 }
 
 /* ─── Motivation detail ──────────────────────────────────────────────────── */
-.bp-score-row {
+.rp-score-row {
   margin-bottom: 14px;
 }
 
-.bp-score-row-header {
+.rp-score-row-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 6px;
 }
 
-.bp-score-label {
+.rp-score-label {
   font-size: 13px;
   font-weight: 700;
   color: #424242;
 }
 
-.bp-score-value {
+.rp-score-value {
   display: flex;
   align-items: center;
   gap: 7px;
 }
 
-.bp-score-num {
+.rp-score-num {
   font-size: 20px;
   font-weight: 900;
   color: #424242;
 }
 
-.bp-motivators {
+.rp-motivators {
   margin-top: 6px;
   padding-top: 14px;
   border-top: 1px solid #f5f5f5;
 }
 
-.bp-motivators-label {
+.rp-motivators-label {
   font-size: 13px;
   font-weight: 700;
   color: #acacac;
@@ -1048,13 +1048,13 @@
   margin-bottom: 9px;
 }
 
-.bp-motivator-list {
+.rp-motivator-list {
   display: flex;
   gap: 7px;
   flex-wrap: wrap;
 }
 
-.bp-motivator-tag {
+.rp-motivator-tag {
   font-size: 13px;
   font-weight: 600;
   padding: 5px 13px;
@@ -1063,7 +1063,7 @@
   color: #424242;
 }
 
-.bp-warning-banner {
+.rp-warning-banner {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -1077,11 +1077,11 @@
   font-weight: 500;
 }
 
-.bp-flag-breakdown {
+.rp-flag-breakdown {
   margin-bottom: 14px;
 }
 
-.bp-flag-breakdown-label {
+.rp-flag-breakdown-label {
   font-size: 13px;
   font-weight: 700;
   color: #acacac;
@@ -1090,13 +1090,13 @@
   margin-bottom: 9px;
 }
 
-.bp-flag-list {
+.rp-flag-list {
   border: 1.5px solid #eaeaea;
   border-radius: 10px;
   overflow: hidden;
 }
 
-.bp-flag-item {
+.rp-flag-item {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1104,16 +1104,16 @@
   font-size: 13px;
 }
 
-.bp-flag-item:not(:last-child) {
+.rp-flag-item:not(:last-child) {
   border-bottom: 1px solid #f5f5f5;
 }
 
-.bp-flag-type {
+.rp-flag-type {
   color: #424242;
   font-weight: 500;
 }
 
-.bp-unfinished-banner {
+.rp-unfinished-banner {
   display: flex;
   align-items: center;
   gap: 9px;
@@ -1127,7 +1127,7 @@
 }
 
 /* ─── Goal tracker ───────────────────────────────────────────────────────── */
-.bp-goal-header {
+.rp-goal-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1137,60 +1137,21 @@
 }
 
 /* Ring-based goal header */
-.bp-goal-hero {
+.rp-goal-ring-header {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+  margin-bottom: 14px;
 }
-
-.bp-goal-hero-main {
+.rp-goal-ring-info {
   display: flex;
   flex-direction: column;
-  gap: 3px;
-  flex: 1;
-  min-width: 0;
-}
-
-/* What's left of today — the one thing the ring can't say on its own. */
-.bp-goal-hero-status {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-slate-500);
-}
-
-.bp-goal-hero-status--met {
-  color: var(--goal-c);
-}
-
-/* Whether today is typical. Same cells as the activity heatmap below, at the
-   size its legend uses. */
-.bp-goal-hero-week {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-top: 9px;
-}
-
-.bp-goal-hero-cells {
-  display: flex;
   gap: 4px;
+  flex: 1;
 }
-
-.bp-goal-hero-cells .bp-heatmap-cell {
-  width: 15px;
-  height: 15px;
-  aspect-ratio: unset;
-}
-
-.bp-goal-hero-week-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--c-slate-400);
-}
-.bp-goal-ring-meta {
+.rp-goal-ring-meta {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -1198,39 +1159,39 @@
   color: #9ca3af;
   font-weight: 500;
 }
-.bp-goal-ring-num {
+.rp-goal-ring-num {
   font-weight: 700;
   color: #424242;
 }
-.bp-goal-ring-dot {
+.rp-goal-ring-dot {
   color: #d1d5db;
 }
 
-.bp-goal-title {
+.rp-goal-title {
   font-size: 15px;
   font-weight: 800;
   color: #424242;
 }
 
-.bp-goal-week-nav {
+.rp-goal-week-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
 }
 
-.bp-goal-week-label {
+.rp-goal-week-label {
   font-size: 13px;
   font-weight: 800;
   color: #424242;
 }
 
-.bp-goal-tracker {
+.rp-goal-tracker {
   display: flex;
   padding: 0 0 4px;
 }
 
-.bp-goal-day {
+.rp-goal-day {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -1239,27 +1200,27 @@
 }
 
 /* Minutes badge sits in a fixed-height area above each circle */
-.bp-goal-mins-area {
+.rp-goal-mins-area {
   height: 18px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
 }
 
-.bp-goal-mins {
+.rp-goal-mins {
   font-size: 13px;
   font-weight: 800;
   color: var(--c-amber-600);
 }
 
 /* Logged but short of goal — still stated, just not celebrated */
-.bp-goal-mins--partial {
+.rp-goal-mins--partial {
   font-weight: 700;
   color: #9ca3af;
 }
 
 /* Circle row holds the circle + the connector that extends left to the previous circle */
-.bp-goal-circle-row {
+.rp-goal-circle-row {
   position: relative;
   width: 100%;
   height: 40px;
@@ -1269,7 +1230,7 @@
 }
 
 /* Connector spans from previous circle's center to this circle's center */
-.bp-goal-conn {
+.rp-goal-conn {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
@@ -1281,11 +1242,11 @@
   z-index: 0;
 }
 
-.bp-goal-conn--lit {
+.rp-goal-conn--lit {
   background: var(--c-amber-500);
 }
 
-.bp-goal-circle {
+.rp-goal-circle {
   width: 40px;
   height: 40px;
   border-radius: 50%;
@@ -1298,34 +1259,34 @@
   z-index: 1;
 }
 
-.bp-goal-circle--met {
+.rp-goal-circle--met {
   background: var(--c-amber-500);
   color: #fff;
 }
-.bp-goal-circle--partial {
+.rp-goal-circle--partial {
   background: var(--c-amber-100);
   color: var(--c-amber-600);
 }
-.bp-goal-circle--missed {
+.rp-goal-circle--missed {
   background: var(--c-gray-200);
   color: #c4c4c4;
 }
-.bp-goal-circle--today {
+.rp-goal-circle--today {
   background: #dbeafe;
   color: #93c5fd;
   border: 2px dashed #93c5fd;
 }
-.bp-goal-circle--future {
+.rp-goal-circle--future {
   background: #f3f4f6;
   color: #e0e0e0;
 }
 
-.bp-goal-day-label {
+.rp-goal-day-label {
   font-size: 13px;
   font-weight: 600;
   color: #9ca3af;
 }
-.bp-goal-day-label--today {
+.rp-goal-day-label--today {
   color: var(--c-blue-700);
   font-weight: 800;
 }
@@ -1333,11 +1294,11 @@
 /* ─── Habits detail ──────────────────────────────────────────────────────── */
 
 /* ── Habit patterns list ── */
-.bp-habit-patterns {
+.rp-habit-patterns {
   margin-top: 4px;
 }
 
-.bp-habit-row {
+.rp-habit-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1346,53 +1307,53 @@
   gap: 12px;
 }
 
-.bp-habit-row:first-child {
+.rp-habit-row:first-child {
   border-top: none;
   padding-top: 4px;
 }
 
-.bp-habit-row-label {
+.rp-habit-row-label {
   font-size: 13px;
   font-weight: 600;
   color: #555;
 }
 
-.bp-habit-row-right {
+.rp-habit-row-right {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: 2px;
 }
 
-.bp-habit-row-value {
+.rp-habit-row-value {
   font-size: 14px;
   font-weight: 800;
   color: #1a1a1a;
 }
 
-.bp-habit-row-value--good {
+.rp-habit-row-value--good {
   color: #0a5e42;
 }
-.bp-habit-row-value--bad {
+.rp-habit-row-value--bad {
   color: #991b1b;
 }
-.bp-habit-row-value--neutral {
+.rp-habit-row-value--neutral {
   color: #854d0e;
 }
 
-.bp-habit-row-note {
+.rp-habit-row-note {
   font-size: 13px;
   font-weight: 600;
   color: #acacac;
 }
 
-.bp-week-section {
+.rp-week-section {
   margin-bottom: 16px;
 }
 
-/* .bp-minutes-grid removed — absorbed into bp-streak-grid (4-col) */
+/* .rp-minutes-grid removed — absorbed into rp-streak-grid (4-col) */
 
-.bp-week-label {
+.rp-week-label {
   font-size: 13px;
   font-weight: 700;
   color: #acacac;
@@ -1401,17 +1362,17 @@
   margin-bottom: 10px;
 }
 
-.bp-week-grid {
+.rp-week-grid {
   display: flex;
   gap: 7px;
 }
 
-.bp-week-day {
+.rp-week-day {
   flex: 1;
   text-align: center;
 }
 
-.bp-week-cell {
+.rp-week-cell {
   height: 40px;
   border-radius: 9px;
   display: flex;
@@ -1420,29 +1381,29 @@
   margin-bottom: 5px;
 }
 
-.bp-week-cell--logged {
+.rp-week-cell--logged {
   background: #cbfde5;
 }
-.bp-week-cell--today {
+.rp-week-cell--today {
   background: #d0e3ff;
   border: 1.5px solid #8cbefa;
 }
-.bp-week-cell--missed {
+.rp-week-cell--missed {
   background: #f5f5f5;
   border: 1.5px dashed #dedede;
 }
 
-.bp-week-day-label {
+.rp-week-day-label {
   font-size: 13px;
   font-weight: 500;
   color: #acacac;
 }
-.bp-week-day-label--today {
+.rp-week-day-label--today {
   font-weight: 700;
   color: #185fa5;
 }
 
-.bp-minutes-grid {
+.rp-minutes-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -1450,39 +1411,39 @@
   border-top: 1px solid #f5f5f5;
 }
 
-.bp-minutes-label {
+.rp-minutes-label {
   font-size: 13px;
   color: #707070;
   font-weight: 600;
   margin-bottom: 3px;
 }
 
-.bp-minutes-value {
+.rp-minutes-value {
   display: flex;
   align-items: baseline;
   gap: 7px;
 }
 
-.bp-minutes-num {
+.rp-minutes-num {
   font-size: 24px;
   font-weight: 900;
   color: #424242;
 }
 
-.bp-minutes-delta {
+.rp-minutes-delta {
   font-size: 13px;
   font-weight: 700;
 }
-.bp-minutes-delta--up {
+.rp-minutes-delta--up {
   color: #0f6e56;
 }
-.bp-minutes-delta--neutral {
+.rp-minutes-delta--neutral {
   color: #707070;
   font-weight: 600;
 }
 
 /* ─── Skills detail ──────────────────────────────────────────────────────── */
-.bp-book-current-badge {
+.rp-book-current-badge {
   font-size: 13px;
   font-weight: 700;
   color: #185fa5;
@@ -1494,7 +1455,7 @@
 }
 
 /* Title table header */
-.bp-titles-header {
+.rp-titles-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1504,20 +1465,20 @@
   border-radius: 12px 12px 0 0;
 }
 
-.bp-titles-header--overview {
+.rp-titles-header--overview {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 10px;
 }
 
-.bp-titles-header-meta {
+.rp-titles-header-meta {
   font-size: 13px;
   font-weight: 600;
   color: #9ca3af;
 }
 
-.bp-titles-header-label {
+.rp-titles-header-label {
   font-size: 15px;
   font-weight: 800;
   color: #424242;
@@ -1526,7 +1487,7 @@
   gap: 8px;
 }
 
-.bp-titles-range-chip {
+.rp-titles-range-chip {
   font-size: 13px;
   font-weight: 700;
   color: #185fa5;
@@ -1536,23 +1497,23 @@
 }
 
 /* ─── Reading heatmap ─────────────────────────────────────────────────────── */
-.bp-heatmap {
+.rp-heatmap {
   display: flex;
   flex-direction: column;
   gap: 5px;
 }
 
-.bp-heatmap-heading-row {
+.rp-heatmap-heading-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 8px;
 }
-.bp-heatmap-heading-row .bp-section-heading {
+.rp-heatmap-heading-row .rp-section-heading {
   margin-bottom: 0;
 }
 
-.bp-heatmap-nav {
+.rp-heatmap-nav {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1560,7 +1521,7 @@
   margin-bottom: 6px;
 }
 
-.bp-heatmap-nav-label {
+.rp-heatmap-nav-label {
   flex: 1;
   text-align: center;
   font-size: 13px;
@@ -1568,7 +1529,7 @@
   color: #111827;
 }
 
-.bp-heatmap-nav-btn {
+.rp-heatmap-nav-btn {
   background: none;
   border: 1px solid var(--c-gray-200);
   border-radius: 6px;
@@ -1586,16 +1547,16 @@
     color 0.12s;
   padding: 0;
 }
-.bp-heatmap-nav-btn:hover:not(:disabled) {
+.rp-heatmap-nav-btn:hover:not(:disabled) {
   background: #f3f4f6;
   color: #111827;
 }
-.bp-heatmap-nav-btn:disabled {
+.rp-heatmap-nav-btn:disabled {
   opacity: 0.3;
   cursor: default;
 }
 
-.bp-heatmap-months {
+.rp-heatmap-months {
   font-size: 11px;
   font-weight: 600;
   color: var(--c-text-subtle);
@@ -1604,23 +1565,23 @@
   gap: 0;
 }
 
-.bp-heatmap-month-spacer {
+.rp-heatmap-month-spacer {
   width: 32px; /* day-labels col (26px) + body gap (6px) */
   flex-shrink: 0;
 }
 
-.bp-heatmap-month-label {
+.rp-heatmap-month-label {
   min-width: 0;
   overflow: hidden;
   padding-left: 2px;
 }
 
-.bp-heatmap-body {
+.rp-heatmap-body {
   display: flex;
   gap: 6px;
 }
 
-.bp-heatmap-day-labels {
+.rp-heatmap-day-labels {
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -1628,7 +1589,7 @@
   flex-shrink: 0;
 }
 
-.bp-heatmap-day-label {
+.rp-heatmap-day-label {
   flex: 1;
   font-size: 11px;
   font-weight: 600;
@@ -1640,14 +1601,14 @@
 }
 
 /* Full-width grid — columns scale to fill available space */
-.bp-heatmap-grid {
+.rp-heatmap-grid {
   display: flex;
   gap: 3px;
   flex: 1;
   min-width: 0;
 }
 
-.bp-heatmap-col {
+.rp-heatmap-col {
   display: flex;
   flex-direction: column;
   gap: 3px;
@@ -1655,7 +1616,7 @@
   min-width: 0;
 }
 
-.bp-heatmap-cell {
+.rp-heatmap-cell {
   background: var(--cell-bg, transparent);
   aspect-ratio: 1;
   width: 100%;
@@ -1665,10 +1626,10 @@
 }
 
 /* CSS tooltip */
-.bp-heatmap-cell[data-tooltip] {
+.rp-heatmap-cell[data-tooltip] {
   cursor: default;
 }
-.bp-heatmap-cell[data-tooltip]:hover::after {
+.rp-heatmap-cell[data-tooltip]:hover::after {
   content: attr(data-tooltip);
   position: absolute;
   bottom: calc(100% + 6px);
@@ -1688,7 +1649,7 @@
 }
 
 /* Goal met — small white dot centered on cell */
-.bp-heatmap-cell--goal::before {
+.rp-heatmap-cell--goal::before {
   content: '';
   position: absolute;
   inset: 0;
@@ -1702,12 +1663,12 @@
 }
 
 /* Streak — amber outer outline */
-.bp-heatmap-cell--streak {
+.rp-heatmap-cell--streak {
   outline: 2px solid rgba(245, 158, 11, 0.75);
   outline-offset: -1px;
 }
 
-.bp-heatmap-legend {
+.rp-heatmap-legend {
   display: flex;
   gap: 10px;
   align-items: center;
@@ -1715,7 +1676,7 @@
   flex-shrink: 0;
 }
 
-.bp-heatmap-legend-item {
+.rp-heatmap-legend-item {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -1725,7 +1686,7 @@
   white-space: nowrap;
 }
 
-.bp-heatmap-legend-item .bp-heatmap-cell {
+.rp-heatmap-legend-item .rp-heatmap-cell {
   width: 11px;
   height: 11px;
   aspect-ratio: unset;
@@ -1735,28 +1696,28 @@
 }
 
 /* Genre cloud */
-.bp-genre-header {
+.rp-genre-header {
   margin-bottom: 12px;
 }
-.bp-genre-header .bp-section-heading {
+.rp-genre-header .rp-section-heading {
   margin-bottom: 4px;
 }
 
-.bp-genre-subhead {
+.rp-genre-subhead {
   font-size: 13px;
   color: #707070;
   font-weight: 500;
   line-height: 1.4;
 }
 
-.bp-genre-cloud {
+.rp-genre-cloud {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 10px;
   align-items: center;
 }
 
-.bp-genre-chip {
+.rp-genre-chip {
   background: var(--chip-bg);
   color: var(--chip-color);
   border: 1.5px solid var(--chip-border);
@@ -1770,11 +1731,11 @@
   line-height: 1;
 }
 
-.bp-genre-chip:hover {
+.rp-genre-chip:hover {
   filter: brightness(0.96);
 }
 
-.bp-genre-chip-count {
+.rp-genre-chip-count {
   font-size: 13px;
   font-weight: 700;
   opacity: 0.6;
@@ -1786,13 +1747,13 @@
 }
 
 /* Book cover thumbnail */
-.bp-title-cover-link {
+.rp-title-cover-link {
   display: block;
   flex-shrink: 0;
   align-self: flex-start;
 }
 
-.bp-title-cover {
+.rp-title-cover {
   width: 38px;
   height: 54px;
   object-fit: cover;
@@ -1802,7 +1763,7 @@
 }
 
 /* Title name as a link */
-.bp-title-name-link {
+.rp-title-name-link {
   font-size: 13px;
   font-weight: 700;
   color: #424242;
@@ -1814,38 +1775,38 @@
   gap: 6px;
 }
 
-.bp-title-name-link:hover {
+.rp-title-name-link:hover {
   color: #1a6dd5;
   text-decoration: underline;
 }
 
 /* Title rows */
-.bp-title-row {
+.rp-title-row {
   padding: 12px 16px;
   border-bottom: 1px solid #f2f2f2;
   display: flex;
   gap: 12px;
   align-items: center;
 }
-.bp-title-row:last-child {
+.rp-title-row:last-child {
   border-bottom: none;
   border-radius: 0 0 12px 12px;
 }
-.bp-titles-section {
+.rp-titles-section {
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
   flex-shrink: 0;
 }
 
-.bp-title-cover--placeholder {
+.rp-title-cover--placeholder {
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
 }
 
-.bp-title-row-main {
+.rp-title-row-main {
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -1853,14 +1814,14 @@
   min-width: 0;
 }
 
-.bp-title-row-top {
+.rp-title-row-top {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
 }
 
-.bp-title-name {
+.rp-title-name {
   font-size: 13px;
   font-weight: 700;
   color: #424242;
@@ -1868,7 +1829,7 @@
   min-width: 0;
 }
 
-.bp-title-lexile-pill {
+.rp-title-lexile-pill {
   font-size: 13px;
   font-weight: 700;
   color: #6b7280;
@@ -1881,14 +1842,14 @@
   align-self: center;
 }
 
-.bp-title-author {
+.rp-title-author {
   font-size: 13px;
   color: #9ca3af;
   font-weight: 500;
   margin-top: 3px;
 }
 
-.bp-title-btwb {
+.rp-title-btwb {
   width: 58px;
   display: flex;
   align-items: center;
@@ -1896,7 +1857,7 @@
   gap: 5px;
 }
 
-.bp-title-btwb-bar {
+.rp-title-btwb-bar {
   width: 28px;
   height: 4px;
   border-radius: 100px;
@@ -1905,7 +1866,7 @@
   display: inline-block;
 }
 
-.bp-title-btwb-bar::after {
+.rp-title-btwb-bar::after {
   content: '';
   position: absolute;
   left: 0;
@@ -1916,19 +1877,19 @@
   border-radius: 100px;
 }
 
-.bp-title-btwb-label {
+.rp-title-btwb-label {
   font-size: 13px;
   font-weight: 700;
   color: #707070;
 }
 
-.bp-title-row-meta {
+.rp-title-row-meta {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-.bp-title-genre-tag {
+.rp-title-genre-tag {
   font-size: 13px;
   font-weight: 700;
   color: #707070;
@@ -1937,13 +1898,13 @@
   padding: 2px 8px;
 }
 
-.bp-title-date {
+.rp-title-date {
   font-size: 13px;
   color: #acacac;
   font-weight: 500;
 }
 
-.bp-coming-soon {
+.rp-coming-soon {
   border: 1.5px dashed #dedede;
   border-radius: 10px;
   padding: 10px 14px;
@@ -1957,34 +1918,26 @@
 
 /* ─── RMI summary (Motivation detail) ───────────────────────────────────────── */
 /* ─── RMI Donut charts ───────────────────────────────────────────────────── */
-.bp-rmi-donuts {
+.rp-rmi-donuts {
   display: flex;
   justify-content: space-around;
-  padding: 28px 0 6px;
+  padding: 28px 0 16px;
   gap: 8px;
 }
 
-/* Said once under the row rather than on each of the three chips. */
-.bp-rmi-donuts-note {
-  text-align: center;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--c-slate-400);
-}
-
-.bp-donut-wrap {
+.rp-donut-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 7px;
 }
 
-.bp-donut-chart {
+.rp-donut-chart {
   position: relative;
   flex-shrink: 0;
 }
 
-.bp-donut-center {
+.rp-donut-center {
   position: absolute;
   inset: 0;
   display: flex;
@@ -1994,28 +1947,28 @@
   gap: 1px;
 }
 
-.bp-donut-val {
+.rp-donut-val {
   font-size: 18px;
   font-weight: 900;
   color: var(--c-slate-800);
   line-height: 1;
 }
 
-.bp-donut-max {
+.rp-donut-max {
   font-size: 11px;
   font-weight: 600;
   color: var(--c-text-subtle);
   line-height: 1;
 }
 
-.bp-donut-label {
+.rp-donut-label {
   font-size: 12px;
   font-weight: 700;
   color: var(--c-text-muted);
   text-align: center;
 }
 
-.bp-rmi-header {
+.rp-rmi-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2023,11 +1976,11 @@
   margin-bottom: 12px;
 }
 
-.bp-rmi-header .bp-section-heading {
+.rp-rmi-header .rp-section-heading {
   margin-bottom: 0;
 }
 
-.bp-rmi-period-select {
+.rp-rmi-period-select {
   font-size: 13px;
   font-weight: 600;
   color: #424242;
@@ -2041,75 +1994,75 @@
   flex-shrink: 0;
 }
 
-.bp-rmi-period-select:focus {
+.rp-rmi-period-select:focus {
   border-color: #1a6dd5;
 }
 
-.bp-rmi-metrics {
+.rp-rmi-metrics {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
   margin-bottom: 18px;
 }
 
-.bp-rmi-metric {
+.rp-rmi-metric {
   background: #f8f8f8;
   border: 1.5px solid #eaeaea;
   border-radius: 10px;
   padding: 12px 14px;
 }
 
-.bp-rmi-score-row {
+.rp-rmi-score-row {
   display: flex;
   align-items: baseline;
   gap: 3px;
   margin-bottom: 4px;
 }
 
-.bp-rmi-score {
+.rp-rmi-score {
   font-size: 22px;
   font-weight: 900;
   color: #424242;
 }
 
-.bp-rmi-max {
+.rp-rmi-max {
   font-size: 13px;
   font-weight: 700;
   color: #acacac;
 }
 
-.bp-rmi-delta {
+.rp-rmi-delta {
   font-size: 13px;
   font-weight: 700;
   margin-left: 4px;
 }
 
-.bp-rmi-delta--up {
+.rp-rmi-delta--up {
   color: #059669;
 }
-.bp-rmi-delta--down {
+.rp-rmi-delta--down {
   color: var(--c-red-600);
 }
 
-.bp-rmi-label {
+.rp-rmi-label {
   font-size: 13px;
   color: #707070;
   font-weight: 600;
   line-height: 1.3;
 }
 
-.bp-rmi-bars {
+.rp-rmi-bars {
   margin-top: 4px;
 }
 
 /* ─── RMI recommendations ────────────────────────────────────────────────────── */
-.bp-rmi-recs {
+.rp-rmi-recs {
   display: grid;
   grid-template-columns: 1fr 2fr;
   gap: 12px;
 }
 
-.bp-rmi-rec-goal {
+.rp-rmi-rec-goal {
   background: #f5f5f5;
   border-radius: 10px;
   padding: 16px 14px;
@@ -2121,7 +2074,7 @@
   gap: 2px;
 }
 
-.bp-rmi-rec-goal-label {
+.rp-rmi-rec-goal-label {
   font-size: 13px;
   font-weight: 700;
   color: #707070;
@@ -2129,21 +2082,21 @@
   line-height: 1.3;
 }
 
-.bp-rmi-rec-goal-value {
+.rp-rmi-rec-goal-value {
   font-size: 42px;
   font-weight: 900;
   color: #424242;
   line-height: 1;
 }
 
-.bp-rmi-rec-goal-unit {
+.rp-rmi-rec-goal-unit {
   font-size: 13px;
   font-weight: 700;
   color: #707070;
   margin-top: 4px;
 }
 
-.bp-rmi-rec-actions {
+.rp-rmi-rec-actions {
   background: #f5f5f5;
   border-radius: 10px;
   padding: 14px;
@@ -2152,7 +2105,7 @@
   gap: 10px;
 }
 
-.bp-rmi-rec-actions-label {
+.rp-rmi-rec-actions-label {
   font-size: 13px;
   font-weight: 700;
   color: #707070;
@@ -2160,13 +2113,13 @@
   letter-spacing: 0.05em;
 }
 
-.bp-rmi-rec-action {
+.rp-rmi-rec-action {
   display: flex;
   align-items: flex-start;
   gap: 8px;
 }
 
-.bp-rmi-rec-action-text {
+.rp-rmi-rec-action-text {
   font-size: 13px;
   color: #424242;
   line-height: 1.5;
@@ -2174,19 +2127,19 @@
   font-weight: 500;
 }
 
-.bp-rmi-rec-action-text strong {
+.rp-rmi-rec-action-text strong {
   font-weight: 800;
   color: #000;
 }
 
 /* ─── Motivator rankings ─────────────────────────────────────────────────────── */
-.bp-motivator-rankings {
+.rp-motivator-rankings {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
-.bp-motivator-row {
+.rp-motivator-row {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2194,11 +2147,11 @@
   border-bottom: 1px solid #f2f2f2;
 }
 
-.bp-motivator-row:last-child {
+.rp-motivator-row:last-child {
   border-bottom: none;
 }
 
-.bp-motivator-rank {
+.rp-motivator-rank {
   font-size: 13px;
   font-weight: 700;
   color: #acacac;
@@ -2207,7 +2160,7 @@
   text-align: right;
 }
 
-.bp-motivator-name {
+.rp-motivator-name {
   font-size: 13px;
   font-weight: 700;
   color: #424242;
@@ -2215,12 +2168,12 @@
   flex-shrink: 0;
 }
 
-.bp-motivator-bar-wrap {
+.rp-motivator-bar-wrap {
   flex: 1;
   min-width: 0;
 }
 
-.bp-motivator-score {
+.rp-motivator-score {
   font-size: 13px;
   font-weight: 800;
   color: #424242;
@@ -2229,7 +2182,7 @@
   flex-shrink: 0;
 }
 
-.bp-motivator-delta {
+.rp-motivator-delta {
   font-size: 13px;
   font-weight: 700;
   width: 38px;
@@ -2237,15 +2190,15 @@
   flex-shrink: 0;
 }
 
-.bp-motivator-delta--up {
+.rp-motivator-delta--up {
   color: #059669;
 }
-.bp-motivator-delta--down {
+.rp-motivator-delta--down {
   color: var(--c-red-600);
 }
 
 /* ─── Session flag chips (Integrity detail) ──────────────────────────────────── */
-.bp-session-flags {
+.rp-session-flags {
   display: flex;
   gap: 5px;
   align-items: center;
@@ -2254,7 +2207,7 @@
   flex-shrink: 0;
 }
 
-.bp-session-flag {
+.rp-session-flag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2266,13 +2219,13 @@
 }
 
 /* ─── Placeholder page ───────────────────────────────────────────────────── */
-.bp-placeholder-page {
+.rp-placeholder-page {
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.bp-placeholder-inner {
+.rp-placeholder-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -2281,7 +2234,7 @@
   text-align: center;
 }
 
-.bp-placeholder-icon {
+.rp-placeholder-icon {
   width: 80px;
   height: 80px;
   border-radius: 20px;
@@ -2291,30 +2244,32 @@
   justify-content: center;
 }
 
-.bp-placeholder-title {
+.rp-placeholder-title {
   font-size: 20px;
   font-weight: 800;
   color: #2d2d2d;
   letter-spacing: -0.3px;
 }
 
-.bp-placeholder-text {
+.rp-placeholder-text {
   font-size: 13px;
   color: #9e9e9e;
 }
 
 /* ─── Compact nav items (no label, icon only) ────────────────────────────── */
 /* ─── Admin mockup styles ────────────────────────────────────────────────── */
-.bp-adm {
+.rp-adm {
   display: flex;
   height: 100%;
   width: 100%;
   overflow: hidden;
-  background: #f3f4f6;
+  /* Grey ground, white cards — at #f3f4f6 the page and the cards were close
+     enough that the whole screen read as white. */
+  background: #e9ecf1;
 }
 
 /* Icon rail */
-.bp-adm-rail {
+.rp-adm-rail {
   width: 52px;
   background: #1e3a8a;
   display: flex;
@@ -2325,14 +2280,14 @@
   flex-shrink: 0;
 }
 
-.bp-adm-rail-logo {
+.rp-adm-rail-logo {
   width: 32px;
   height: 32px;
   margin-bottom: 12px;
   display: block;
 }
 
-.bp-adm-rail-btn {
+.rp-adm-rail-btn {
   width: 34px;
   height: 34px;
   border-radius: 8px;
@@ -2342,21 +2297,21 @@
   cursor: pointer;
 }
 
-.bp-adm-rail-btn--active {
+.rp-adm-rail-btn--active {
   background: rgba(255, 255, 255, 0.2);
 }
-.bp-adm-rail-btn:hover:not(.bp-adm-rail-btn--active) {
+.rp-adm-rail-btn:hover:not(.rp-adm-rail-btn--active) {
   background: rgba(255, 255, 255, 0.08);
 }
 
-.bp-adm-rail-icon {
+.rp-adm-rail-icon {
   width: 18px;
   height: 18px;
   border-radius: 3px;
   background: rgba(255, 255, 255, 0.55);
 }
 
-.bp-adm-avatar-chip {
+.rp-adm-avatar-chip {
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -2372,7 +2327,7 @@
 
 /* People panel */
 /* People sidebar — matches the RIS prototype sidebar pattern */
-.bp-adm-people {
+.rp-adm-people {
   width: 240px;
   background: linear-gradient(160deg, #1e40af 0%, var(--c-blue-700) 60%, #2563eb 100%);
   color: rgba(255, 255, 255, 0.92);
@@ -2382,13 +2337,13 @@
   overflow: hidden;
 }
 
-.bp-adm-people-top {
+.rp-adm-people-top {
   padding: 20px 20px 18px;
   position: relative;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.bp-adm-people-title {
+.rp-adm-people-title {
   font-size: 18px;
   font-weight: 900;
   color: #fff;
@@ -2396,11 +2351,11 @@
   margin-bottom: 4px;
 }
 
-.bp-adm-people-sub {
+.rp-adm-people-sub {
   display: none;
 }
 
-.bp-adm-people-collapse {
+.rp-adm-people-collapse {
   position: absolute;
   right: 12px;
   top: 20px;
@@ -2416,18 +2371,18 @@
   transition: background 0.12s;
 }
 
-.bp-adm-people-collapse:hover {
+.rp-adm-people-collapse:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.bp-adm-nav {
+.rp-adm-nav {
   display: flex;
   flex-direction: column;
   padding: 10px;
   gap: 1px;
 }
 
-.bp-adm-nav-item {
+.rp-adm-nav-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -2442,16 +2397,16 @@
     color 0.12s;
 }
 
-.bp-adm-nav-item:hover {
+.rp-adm-nav-item:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
 }
 
-.bp-adm-nav-item--open {
+.rp-adm-nav-item--open {
   color: #fff;
 }
 
-.bp-adm-nav-subgroup {
+.rp-adm-nav-subgroup {
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -2460,7 +2415,7 @@
   position: relative;
 }
 
-.bp-adm-nav-subgroup::before {
+.rp-adm-nav-subgroup::before {
   content: '';
   position: absolute;
   left: 0;
@@ -2471,7 +2426,7 @@
   border-radius: 1px;
 }
 
-.bp-adm-nav-child {
+.rp-adm-nav-child {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -2486,12 +2441,12 @@
     color 0.12s;
 }
 
-.bp-adm-nav-child:hover:not(.bp-adm-nav-child--active) {
+.rp-adm-nav-child:hover:not(.rp-adm-nav-child--active) {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
 }
 
-.bp-adm-nav-child--active {
+.rp-adm-nav-child--active {
   background: rgba(255, 255, 255, 0.16);
   color: #fff;
   font-weight: 600;
@@ -2499,12 +2454,12 @@
 
 /* Main content */
 @media (max-width: 699px) {
-  .bp-adm {
+  .rp-adm {
     flex-direction: column;
   }
 }
 
-.bp-adm-main {
+.rp-adm-main {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -2512,17 +2467,23 @@
   overflow: hidden;
 }
 
-.bp-adm-main-body {
+.rp-adm-main-body {
   flex: 1;
   display: flex;
   flex-direction: column;
   padding: 20px max(24px, calc((100% - 1280px) / 2));
   overflow-y: auto;
-  align-items: flex-start;
+  align-items: stretch;
   gap: 0;
 }
 
-.bp-adm-breadcrumb {
+/* Direct children of the scrolling column must not shrink — same flex trap as
+   `.rp-content`. */
+.rp-adm-main-body > * {
+  flex-shrink: 0;
+}
+
+.rp-adm-breadcrumb {
   font-size: 13px;
   color: #ef4444;
   font-weight: 700;
@@ -2530,7 +2491,7 @@
   cursor: pointer;
 }
 
-.bp-adm-class-header {
+.rp-adm-class-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -2541,13 +2502,13 @@
   width: 100%;
 }
 
-.bp-adm-class-identity {
+.rp-adm-class-identity {
   display: flex;
   align-items: center;
   gap: 14px;
 }
 
-.bp-adm-class-avatar {
+.rp-adm-class-avatar {
   width: 48px;
   height: 48px;
   border-radius: 12px;
@@ -2562,25 +2523,25 @@
   letter-spacing: -0.03em;
 }
 
-.bp-adm-class-title {
+.rp-adm-class-title {
   font-size: 22px;
   font-weight: 800;
   color: var(--c-slate-800);
   letter-spacing: -0.02em;
 }
 
-.bp-adm-class-meta {
+.rp-adm-class-meta {
   font-size: 12.5px;
   color: var(--c-text-muted);
   margin-top: 2px;
 }
 
-.bp-adm-class-btns {
+.rp-adm-class-btns {
   display: flex;
   gap: 10px;
 }
 
-.bp-adm-btn-ghost {
+.rp-adm-btn-ghost {
   height: 36px;
   padding: 0 16px;
   background: #fff;
@@ -2593,7 +2554,7 @@
   cursor: pointer;
 }
 
-.bp-adm-btn-primary {
+.rp-adm-btn-primary {
   height: 36px;
   padding: 0 16px;
   background: var(--c-blue-700);
@@ -2606,16 +2567,16 @@
   cursor: pointer;
 }
 
-.bp-adm-tabs-wrap {
+.rp-adm-tabs-wrap {
   margin-bottom: 16px;
 }
 
-.bp-adm-filter-wrap {
+.rp-adm-filter-wrap {
   align-self: stretch;
   margin-bottom: 12px;
 }
 
-.bp-adm-filters {
+.rp-adm-filters {
   display: flex;
   gap: 12px;
   align-items: flex-end;
@@ -2626,18 +2587,18 @@
   width: 100%;
 }
 
-.bp-adm-filter {
+.rp-adm-filter {
   flex: 1;
 }
 
-.bp-adm-filter-lbl {
+.rp-adm-filter-lbl {
   font-size: 13px;
   font-weight: 700;
   color: #6b7280;
   margin-bottom: 5px;
 }
 
-.bp-adm-filter-sel {
+.rp-adm-filter-sel {
   height: 36px;
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
@@ -2650,7 +2611,7 @@
   background: #fff;
 }
 
-.bp-adm-save-btn {
+.rp-adm-save-btn {
   height: 36px;
   padding: 0 14px;
   background: #f3f4f6;
@@ -2664,14 +2625,14 @@
   white-space: nowrap;
 }
 
-.bp-adm-card {
+.rp-adm-card {
   background: #fff;
   border-radius: 12px;
   overflow: hidden;
   width: 100%;
 }
 
-.bp-adm-week-nav {
+.rp-adm-week-nav {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -2679,7 +2640,7 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.bp-adm-week-btn {
+.rp-adm-week-btn {
   width: 30px;
   height: 30px;
   border-radius: 50%;
@@ -2694,7 +2655,7 @@
   color: #374151;
 }
 
-.bp-adm-week-label {
+.rp-adm-week-label {
   flex: 1;
   text-align: center;
   font-size: 15px;
@@ -2703,33 +2664,33 @@
 }
 
 /* ── Goal column highlight ────────────────────────────────────────────────── */
-.bp-adm-th--goal {
+.rp-adm-th--goal {
   background: #eff6ff !important;
   text-align: center !important;
 }
 
-.bp-adm-td--goal {
+.rp-adm-td--goal {
   background: #f5f9ff;
 }
 
-.tbl-row--clickable:hover .tbl-td.bp-adm-td--goal {
+.tbl-row--clickable:hover .tbl-td.rp-adm-td--goal {
   background: #ebf3ff;
 }
-.bp-adm-row--selected .tbl-td {
+.rp-adm-row--selected .tbl-td {
   background: #f0f6ff;
 }
-.bp-adm-row--selected .tbl-td.bp-adm-td--goal {
+.rp-adm-row--selected .tbl-td.rp-adm-td--goal {
   background: #dbeafe;
 }
 
-.bp-adm-student-cell {
+.rp-adm-student-cell {
   display: flex;
   align-items: center;
   gap: 8px;
   padding-left: 4px;
 }
 
-.bp-adm-rank {
+.rp-adm-rank {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -2741,22 +2702,22 @@
   flex-shrink: 0;
 }
 
-.bp-adm-rank--gold {
+.rp-adm-rank--gold {
   background: #fcd34d;
   color: #92400e;
 }
-.bp-adm-rank--silver {
+.rp-adm-rank--silver {
   background: var(--c-gray-200);
   color: #374151;
 }
-.bp-adm-rank--bronze {
+.rp-adm-rank--bronze {
   background: var(--c-amber-600);
   color: #fff;
 }
 
 /* A real link, not just row-click styling: it opens the full-screen profile
    while the row opens the slide-in quick look. */
-.bp-adm-student-name {
+.rp-adm-student-name {
   font-family: inherit;
   font-size: inherit;
   font-weight: 700;
@@ -2770,12 +2731,12 @@
   transition: color 0.1s;
 }
 
-.bp-adm-student-name:hover {
+.rp-adm-student-name:hover {
   color: #1e40af;
   text-decoration: underline;
 }
 
-.bp-adm-goal-cell {
+.rp-adm-goal-cell {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2783,13 +2744,13 @@
   font-weight: 700;
 }
 
-.bp-adm-goal-val {
+.rp-adm-goal-val {
   font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-800);
 }
 
-.bp-adm-goal-edit-btn {
+.rp-adm-goal-edit-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2808,13 +2769,13 @@
   flex-shrink: 0;
 }
 
-.bp-adm-goal-edit-btn:hover {
+.rp-adm-goal-edit-btn:hover {
   background: #eff6ff;
   border-color: #bfdbfe;
   color: var(--c-blue-700);
 }
 
-.bp-adm-pct {
+.rp-adm-pct {
   display: inline-block;
   padding: 3px 9px;
   border-radius: 6px;
@@ -2822,20 +2783,20 @@
   font-weight: 800;
 }
 
-.bp-adm-pct--blue {
+.rp-adm-pct--blue {
   background: #dbeafe;
   color: var(--c-blue-700);
 }
-.bp-adm-pct--orange {
+.rp-adm-pct--orange {
   background: #fef3c7;
   color: var(--c-amber-600);
 }
-.bp-adm-pct--red {
+.rp-adm-pct--red {
   background: #fee2e2;
   color: var(--c-red-600);
 }
 
-.bp-adm-check-circle {
+.rp-adm-check-circle {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2847,12 +2808,12 @@
   flex-shrink: 0;
 }
 
-.bp-adm-dash {
+.rp-adm-dash {
   color: #d1d5db;
   font-size: 15px;
 }
 
-.bp-adm-avg-row .tbl-td {
+.rp-adm-avg-row .tbl-td {
   font-size: 13px;
   font-weight: 700;
   color: #374151;
@@ -2860,7 +2821,7 @@
   border-bottom: none;
 }
 
-.bp-adm-legend {
+.rp-adm-legend {
   display: flex;
   gap: 16px;
   justify-content: flex-end;
@@ -2871,7 +2832,7 @@
 }
 
 /* ─── Placeholder empty state (below consistent PageHeader) ─────────────── */
-.bp-placeholder-empty {
+.rp-placeholder-empty {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -2881,40 +2842,40 @@
   padding: 60px 24px;
 }
 
-.bp-placeholder-text {
+.rp-placeholder-text {
   font-size: 13px;
   color: #acacac;
   font-weight: 600;
 }
 
 /* ─── Reading Log ──────────────────────────────────────────────────────────── */
-.bp-rl-topbar {
+.rp-rl-topbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   margin-bottom: 4px;
 }
 
-.bp-rl-topbar-title {
+.rp-rl-topbar-title {
   font-size: 18px;
   font-weight: 900;
   color: #1a1a1a;
 }
 
-.bp-rl-topbar-actions {
+.rp-rl-topbar-actions {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.bp-btn-ghost--sm {
+.rp-btn-ghost--sm {
   height: 30px;
   padding: 0 12px;
   font-size: 13px;
 }
 
 /* Segmented control */
-.bp-rl-seg {
+.rp-rl-seg {
   display: flex;
   background: #f0f2f5;
   border-radius: 8px;
@@ -2922,7 +2883,7 @@
   gap: 2px;
 }
 
-.bp-rl-seg-btn {
+.rp-rl-seg-btn {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -2943,18 +2904,18 @@
   white-space: nowrap;
 }
 
-.bp-rl-seg-btn--active {
+.rp-rl-seg-btn--active {
   background: #fff;
   color: var(--c-blue-700);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
-.bp-rl-month-arrows {
+.rp-rl-month-arrows {
   display: flex;
   gap: 2px;
 }
 
-.bp-rl-arrow {
+.rp-rl-arrow {
   width: 28px;
   height: 28px;
   border: 1.5px solid #e0e0e0;
@@ -2969,25 +2930,25 @@
   color: #555;
 }
 
-.bp-rl-arrow:hover {
+.rp-rl-arrow:hover {
   background: #f5f5f5;
 }
 
 /* Week group */
-.bp-rl-week {
+.rp-rl-week {
   display: flex;
   flex-direction: column;
 }
 
 /* Table view — title and author stack in one cell */
-.bp-rl-tbl-title {
+.rp-rl-tbl-title {
   display: flex;
   flex-direction: column;
   gap: 1px;
   min-width: 0;
 }
 
-.bp-rl-tbl-name {
+.rp-rl-tbl-name {
   font-family: inherit;
   font-size: inherit;
   font-weight: 800;
@@ -2999,17 +2960,17 @@
   cursor: pointer;
 }
 
-.bp-rl-tbl-name:hover {
+.rp-rl-tbl-name:hover {
   text-decoration: underline;
 }
 
-.bp-rl-tbl-author {
+.rp-rl-tbl-author {
   font-size: 12.5px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
 
-.bp-rl-tbl-tags {
+.rp-rl-tbl-tags {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -3017,20 +2978,20 @@
   margin-top: 3px;
 }
 
-.bp-rl-tbl-tags .bp-rl-entry-lexile {
+.rp-rl-tbl-tags .rp-rl-entry-lexile {
   margin-left: 0;
 }
 
 /* Weeks sit inside the card's own padding */
-.bp-rl-body {
+.rp-rl-body {
   padding: 2px 18px 14px;
 }
 
-.bp-rl-week:first-child .bp-rl-week-label {
+.rp-rl-week:first-child .rp-rl-week-label {
   border-top: 0;
 }
 
-.bp-rl-week-label {
+.rp-rl-week-label {
   font-size: 12px;
   font-weight: 700;
   color: #acacac;
@@ -3042,19 +3003,19 @@
 
 /* Day row. Days with nothing logged collapse to just their date, so the month
    scrolls in a fraction of the height. */
-.bp-rl-day {
+.rp-rl-day {
   display: flex;
   gap: 12px;
   padding: 4px 0;
   align-items: flex-start;
 }
 
-.bp-rl-day--faded .bp-rl-day-num,
-.bp-rl-day--faded .bp-rl-day-name {
+.rp-rl-day--faded .rp-rl-day-num,
+.rp-rl-day--faded .rp-rl-day-name {
   opacity: 0.35;
 }
 
-.bp-rl-day-col {
+.rp-rl-day-col {
   width: 62px;
   flex-shrink: 0;
   display: flex;
@@ -3063,21 +3024,21 @@
   padding-top: 2px;
 }
 
-.bp-rl-day-num {
+.rp-rl-day-num {
   font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
   line-height: 1.1;
 }
 
-.bp-rl-day-name {
+.rp-rl-day-name {
   font-size: 12.5px;
   color: #9ca3af;
   font-weight: 600;
 }
 
 /* Streak count and flame in one pill */
-.bp-rl-flame {
+.rp-rl-flame {
   display: inline-flex;
   align-items: center;
   gap: 3px;
@@ -3091,7 +3052,7 @@
 }
 
 /* Entry cards */
-.bp-rl-entries {
+.rp-rl-entries {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -3100,7 +3061,7 @@
 }
 
 /* Tinted card with a left accent bar; `--rl-*` swap per state. */
-.bp-rl-entry {
+.rp-rl-entry {
   --rl-bg: #e8f1fe;
   --rl-bar: #2563eb;
   --rl-title: #1d4ed8;
@@ -3111,20 +3072,20 @@
   padding: 8px 10px 9px 11px;
 }
 
-.bp-rl-entry--flagged {
+.rp-rl-entry--flagged {
   --rl-bg: #fef6e7;
   --rl-bar: #d97706;
   --rl-title: #92400e;
 }
 
-.bp-rl-entry--completed {
+.rp-rl-entry--completed {
   --rl-bg: #fdeceb;
   --rl-bar: #dc2626;
   --rl-title: #b91c1c;
 }
 
 /* The "this book is finished" marker that replaces the amount line */
-.bp-rl-completed {
+.rp-rl-completed {
   display: inline-block;
   margin-top: 2px;
   padding: 2px 9px;
@@ -3135,16 +3096,47 @@
   font-weight: 800;
 }
 
-.bp-rl-entry-top {
+.rp-rl-entry-top {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 6px;
 }
 
+/* Markers on a log row: what the session holds, before you open it. */
+.rp-rl-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.rp-rl-mark:hover {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.rp-rl-mark--neg {
+  color: #dc2626;
+}
+
+.rp-rl-mark--pos {
+  color: #16a97a;
+}
+
+.rp-rl-mark--talk {
+  color: var(--rl-title);
+}
+
 /* A button now — it opens the session — but still the entry's heading, so the
    control chrome is stripped and the type kept. */
-.bp-rl-entry-title {
+.rp-rl-entry-title {
   font-family: inherit;
   font-size: 13px;
   font-weight: 800;
@@ -3159,42 +3151,11 @@
   cursor: pointer;
 }
 
-.bp-rl-entry-title:hover {
+.rp-rl-entry-title:hover {
   text-decoration: underline;
 }
 
-/* Markers on a log row: what the session holds, before you open it. */
-.bp-rl-mark {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: 0;
-  border-radius: 6px;
-  background: none;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.bp-rl-mark:hover {
-  background: rgba(15, 23, 42, 0.06);
-}
-
-.bp-rl-mark--neg {
-  color: #dc2626;
-}
-
-.bp-rl-mark--pos {
-  color: #16a97a;
-}
-
-.bp-rl-mark--talk {
-  color: var(--rl-title);
-}
-
-.bp-rl-entry-menu {
+.rp-rl-entry-menu {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -3202,7 +3163,7 @@
   padding-top: 1px;
 }
 
-.bp-rl-dots {
+.rp-rl-dots {
   display: inline-flex;
   padding: 0;
   background: none;
@@ -3211,25 +3172,25 @@
   cursor: pointer;
 }
 
-.bp-rl-dots:hover {
+.rp-rl-dots:hover {
   color: #4b5563;
 }
 
-.bp-rl-entry-author {
+.rp-rl-entry-author {
   font-size: 12.5px;
   color: #6b7280;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
-.bp-rl-entry-amount {
+.rp-rl-entry-amount {
   font-size: 13px;
   font-weight: 800;
   color: var(--rl-title);
 }
 
 /* ─── Calendar view ──────────────────────────────────────────────────────── */
-.bp-rl-cal {
+.rp-rl-cal {
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -3239,14 +3200,14 @@
   flex-shrink: 0;
 }
 
-.bp-rl-cal-dow {
+.rp-rl-cal-dow {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   background: #f8f9fa;
   border-bottom: 1px solid #ebebeb;
 }
 
-.bp-rl-cal-dow-cell {
+.rp-rl-cal-dow-cell {
   text-align: center;
   font-size: 13px;
   font-weight: 800;
@@ -3256,17 +3217,17 @@
   padding: 8px 0;
 }
 
-.bp-rl-cal-week {
+.rp-rl-cal-week {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
   border-bottom: 1px solid #f0f0f0;
 }
 
-.bp-rl-cal-week:last-of-type {
+.rp-rl-cal-week:last-of-type {
   border-bottom: none;
 }
 
-.bp-rl-cal-cell {
+.rp-rl-cal-cell {
   min-height: 64px;
   padding: 8px 6px 6px;
   display: flex;
@@ -3278,17 +3239,17 @@
   position: relative;
 }
 
-.bp-rl-cal-cell:last-child {
+.rp-rl-cal-cell:last-child {
   border-right: none;
 }
-.bp-rl-cal-cell--empty {
+.rp-rl-cal-cell--empty {
   cursor: default;
 }
-.bp-rl-cal-cell:hover:not(.bp-rl-cal-cell--empty):not(.bp-rl-cal-cell--selected) {
+.rp-rl-cal-cell:hover:not(.rp-rl-cal-cell--empty):not(.rp-rl-cal-cell--selected) {
   background: #f0f6ff;
 }
 
-.bp-rl-cal-date {
+.rp-rl-cal-date {
   font-size: 13px;
   font-weight: 700;
   color: #555;
@@ -3301,28 +3262,28 @@
   margin-bottom: 4px;
 }
 
-.bp-rl-cal-cell--active .bp-rl-cal-date {
+.rp-rl-cal-cell--active .rp-rl-cal-date {
   color: #1a1a1a;
   font-weight: 800;
 }
 
-.bp-rl-cal-cell--today .bp-rl-cal-date {
+.rp-rl-cal-cell--today .rp-rl-cal-date {
   background: var(--c-blue-700);
   color: #fff;
 }
 
-.bp-rl-cal-cell--selected {
+.rp-rl-cal-cell--selected {
   background: #eff6ff;
 }
 
-.bp-rl-cal-dots {
+.rp-rl-cal-dots {
   display: flex;
   gap: 3px;
   justify-content: center;
   flex-wrap: wrap;
 }
 
-.bp-rl-cal-dot {
+.rp-rl-cal-dot {
   width: 5px;
   height: 5px;
   border-radius: 50%;
@@ -3330,14 +3291,14 @@
   display: block;
 }
 
-.bp-rl-cal-flame {
+.rp-rl-cal-flame {
   font-size: 13px;
   margin-top: 2px;
   line-height: 1;
 }
 
 /* Day detail panel (below calendar when a day is selected) */
-.bp-rl-cal-detail {
+.rp-rl-cal-detail {
   background: #f0f6ff;
   border-top: 1.5px solid #bfdbfe;
   padding: 14px 16px;
@@ -3346,13 +3307,13 @@
   gap: 10px;
 }
 
-.bp-rl-cal-detail-header {
+.rp-rl-cal-detail-header {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.bp-rl-cal-detail-date {
+.rp-rl-cal-detail-date {
   font-size: 14px;
   font-weight: 800;
   color: #1a1a1a;
@@ -3367,79 +3328,79 @@
 
 /* ── Icons-only collapsed People sidebar (medium widths) ── */
 @media (max-width: 1099px) and (min-width: 700px) {
-  .bp-adm-people {
+  .rp-adm-people {
     width: 64px;
   }
 
-  .bp-adm-people-top {
+  .rp-adm-people-top {
     padding: 16px 0;
     text-align: center;
   }
-  .bp-adm-people-title,
-  .bp-adm-people-sub,
-  .bp-adm-people-collapse {
+  .rp-adm-people-title,
+  .rp-adm-people-sub,
+  .rp-adm-people-collapse {
     display: none;
   }
 
-  .bp-adm-nav {
+  .rp-adm-nav {
     padding: 8px 6px;
   }
 
-  .bp-adm-nav-item {
+  .rp-adm-nav-item {
     justify-content: center;
     padding: 10px 6px;
     gap: 0;
   }
-  .bp-adm-nav-item > span {
+  .rp-adm-nav-item > span {
     display: none;
   }
 
-  .bp-adm-nav-subgroup {
+  .rp-adm-nav-subgroup {
     margin-left: 0;
     padding-left: 0;
   }
-  .bp-adm-nav-subgroup::before {
+  .rp-adm-nav-subgroup::before {
     display: none;
   }
 
-  .bp-adm-nav-child {
+  .rp-adm-nav-child {
     justify-content: center;
     padding: 8px 6px;
     gap: 0;
     font-size: 0;
   }
-  .bp-adm-nav-child > svg {
+  .rp-adm-nav-child > svg {
     font-size: 15px;
   }
 
   /* Side-panel student profile becomes narrower so it doesn't overflow */
-  .bp-profile-slider {
+  .rp-profile-slider {
     width: min(682px, calc(100vw - 58px));
   }
 }
 
 /* ── Mobile: hide People sidebar; profile becomes full-width overlay ── */
 @media (max-width: 699px) {
-  .bp-adm-people {
+  .rp-adm-people {
     display: none;
   }
 
-  .bp-adm-main-body {
+  .rp-adm-main-body {
     padding: 14px 14px;
   }
 
   /* Slide-in profile occupies the full screen on mobile, stacked column */
-  .bp-profile-wrap {
+  .rp-profile-wrap {
     left: 0;
     flex-direction: column;
     align-items: stretch;
   }
-  .bp-profile-slider,
-  .bp-profile-wrap--full .bp-profile-slider {
+  .rp-profile-slider,
+  .rp-profile-wrap--full .rp-profile-slider {
     width: 100%;
   }
 
-  .bp-root {
+  .rp-root {
     width: 100%;
     box-shadow: none;
     flex: 1;
@@ -3450,62 +3411,64 @@
      copy-link and the reader pager at phone width was the point of having it.
      It just gets tighter, and drops expand: the panel already fills the
      screen here, so there's nothing to expand into. */
-  .bp-profile-ctrls {
+  .rp-profile-ctrls {
     width: 34px;
     gap: 8px;
     padding: 8px 0;
   }
 
-  .bp-ctrl-btn {
+  .rp-ctrl-btn {
     width: 28px;
     height: 28px;
   }
 
-  .bp-ctrl-btn--expand {
+  /* The button is wrapped in a Tooltip, so the wrapper is what has to go —
+     hiding the button alone would leave an empty inline-flex span in the rail. */
+  .ttp:has(.rp-ctrl-btn--expand) {
     display: none;
   }
 
   /* One header on mobile too — it spans the full width and already carries the
      avatar, so the separate topbar is gone. Actions collapses to its icon and
      both buttons drop their carets. */
-  .bp-panel-header {
+  .rp-panel-header {
     padding: 10px 12px;
     gap: 8px;
   }
 
-  .bp-panel-header .avatar {
+  .rp-panel-header .avatar {
     width: 38px;
     height: 38px;
     font-size: 13px;
   }
 
-  .bp-panel-name {
+  .rp-panel-name {
     font-size: 15px;
   }
 
-  .bp-student-actions {
+  .rp-student-actions {
     gap: 6px;
   }
 
-  .bp-student-actions .bp-btn-label,
-  .bp-student-actions .bp-btn-caret {
+  .rp-student-actions .rp-btn-label,
+  .rp-student-actions .rp-btn-caret {
     display: none;
   }
 
-  .bp-student-actions .btn-icon {
+  .rp-student-actions .btn-icon {
     display: inline-flex;
   }
 
-  .bp-student-actions .btn {
+  .rp-student-actions .btn {
     padding: 0 10px;
   }
 
   /* The rail's 168px is most of a phone — swap it for a select + the pager */
-  .bp-nav {
+  .rp-nav {
     display: none;
   }
 
-  .bp-mobile-nav {
+  .rp-mobile-nav {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -3515,40 +3478,40 @@
     flex-shrink: 0;
   }
 
-  .bp-mobile-nav .sel-wrap {
+  .rp-mobile-nav .sel-wrap {
     flex: 1;
     min-width: 0;
   }
 
   /* The pager sheds its rail chrome and sits inline beside the select */
   /* Tighter page gutters now that the rail is gone */
-  .bp-content {
+  .rp-content {
     padding: 14px;
   }
 
   /* Three medals across is too tight on a phone — names wrapped to three lines.
-     (`.bp-latest-grid` is a scrolling row at every width, so it's not here.) */
-  .bp-medal-grid {
+     (`.rp-latest-grid` is a scrolling row at every width, so it's not here.) */
+  .rp-medal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   /* Hero keeps title and action on one line, which collides at phone widths —
      let the action drop under the title instead. */
-  .bp-content .hero {
+  .rp-content .hero {
     flex-wrap: wrap;
     gap: 10px;
   }
 
-  .bp-content .hero-action {
+  .rp-content .hero-action {
     margin-left: 0;
     width: 100%;
   }
 
-  .bp-content .hero-action .tabs {
+  .rp-content .hero-action .tabs {
     width: 100%;
   }
 
-  .bp-content .hero-action .tabs .tab {
+  .rp-content .hero-action .tabs .tab {
     flex: 1;
     justify-content: center;
   }
@@ -3556,30 +3519,30 @@
   /* ── Admin mockup page: tighten layout for narrow widths ── */
 
   /* Class header: stack identity + buttons vertically */
-  .bp-adm-class-header {
+  .rp-adm-class-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
   }
-  .bp-adm-class-identity {
+  .rp-adm-class-identity {
     gap: 10px;
   }
-  .bp-adm-class-avatar {
+  .rp-adm-class-avatar {
     width: 40px;
     height: 40px;
     font-size: 13px;
   }
-  .bp-adm-class-title {
+  .rp-adm-class-title {
     font-size: 18px;
   }
-  .bp-adm-class-meta {
+  .rp-adm-class-meta {
     font-size: 11.5px;
   }
-  .bp-adm-class-btns {
+  .rp-adm-class-btns {
     width: 100%;
   }
-  .bp-adm-class-btns .bp-adm-btn-ghost,
-  .bp-adm-class-btns .bp-adm-btn-primary {
+  .rp-adm-class-btns .rp-adm-btn-ghost,
+  .rp-adm-class-btns .rp-adm-btn-primary {
     flex: 1;
     padding: 0 10px;
     font-size: 13px;
@@ -3587,53 +3550,53 @@
   }
 
   /* Tabs: scrollable row if they overflow */
-  .bp-adm-tabs {
+  .rp-adm-tabs {
     gap: 16px;
     overflow-x: auto;
     scrollbar-width: none;
   }
-  .bp-adm-tabs::-webkit-scrollbar {
+  .rp-adm-tabs::-webkit-scrollbar {
     display: none;
   }
-  .bp-adm-tab {
+  .rp-adm-tab {
     font-size: 13px;
     white-space: nowrap;
     flex-shrink: 0;
   }
 
   /* Filters: stack into a 2-column grid with the save button full-width */
-  .bp-adm-filters {
+  .rp-adm-filters {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     padding: 12px;
   }
-  .bp-adm-save-btn {
+  .rp-adm-save-btn {
     grid-column: 1 / -1;
     width: 100%;
   }
 
   /* Card / table: allow horizontal scroll so the daily columns aren't squished */
-  .bp-adm-card {
+  .rp-adm-card {
     overflow-x: auto;
   }
-  .bp-adm-table {
+  .rp-adm-table {
     min-width: 640px;
   }
 
   /* Week navigation: keep label on one line, tighten padding */
-  .bp-adm-week-nav {
+  .rp-adm-week-nav {
     padding: 10px 12px;
     gap: 8px;
   }
-  .bp-adm-week-label {
+  .rp-adm-week-label {
     font-size: 13px;
     white-space: nowrap;
   }
 }
 
 /* ─── Overview · Latest titles shelf ──────────────────────────────────────── */
-.bp-latest-head {
+.rp-latest-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3643,11 +3606,11 @@
   border-bottom: 1px solid #f0f0f0;
 }
 
-.bp-latest-head .bp-section-heading {
+.rp-latest-head .rp-section-heading {
   margin-bottom: 0;
 }
 
-.bp-latest-link {
+.rp-latest-link {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -3662,14 +3625,14 @@
   cursor: pointer;
 }
 
-.bp-latest-link:hover {
+.rp-latest-link:hover {
   text-decoration: underline;
 }
 
 /* One row, scrolled — a shelf. Wrapping to a second line made three titles read
    as a grid of unequal rows, and at narrow widths the last cover dropped
    underneath on its own. */
-.bp-latest-grid {
+.rp-latest-grid {
   display: flex;
   gap: 14px;
   overflow-x: auto;
@@ -3682,8 +3645,10 @@
 }
 
 /* Covers share the row's width instead of sitting at a fixed 140px and
-   scrolling off — they grow and shrink with the panel. */
-.bp-latest-grid > .bp-latest-item {
+   scrolling off — they grow and shrink with the panel. The cap stops three
+   titles becoming three enormous covers on a full-screen page, and the floor
+   plus the container's `overflow-x` keeps a long shelf usable. */
+.rp-latest-grid > .rp-latest-item {
   flex: 1 1 0;
   /* The floor stops six covers squeezing to thumbnails in a 500px panel — past
      it the shelf scrolls instead. The cap stops them ballooning full screen. */
@@ -3692,7 +3657,7 @@
   scroll-snap-align: start;
 }
 
-.bp-latest-item {
+.rp-latest-item {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -3701,13 +3666,13 @@
 }
 
 /* The cover carries the Lexile chip so the grid stays scannable */
-.bp-latest-cover {
+.rp-latest-cover {
   position: relative;
   margin-bottom: 7px;
 }
 
 /* Bigger than the list-row cover — this is the visual anchor of the card */
-.bp-latest-cover .bp-title-cover {
+.rp-latest-cover .rp-title-cover {
   width: 100%;
   height: auto;
   aspect-ratio: 2 / 3;
@@ -3715,11 +3680,11 @@
   transition: transform 0.14s ease;
 }
 
-.bp-latest-item:hover .bp-title-cover {
+.rp-latest-item:hover .rp-title-cover {
   transform: translateY(-2px);
 }
 
-.bp-latest-lexile {
+.rp-latest-lexile {
   position: absolute;
   right: 5px;
   bottom: 5px;
@@ -3732,18 +3697,18 @@
   letter-spacing: 0.01em;
 }
 
-.bp-latest-title {
+.rp-latest-title {
   font-size: 13px;
   font-weight: 800;
   color: #1a1a1a;
   line-height: 1.3;
 }
 
-.bp-latest-item:hover .bp-latest-title {
+.rp-latest-item:hover .rp-latest-title {
   text-decoration: underline;
 }
 
-.bp-latest-author {
+.rp-latest-author {
   font-size: 12px;
   font-weight: 600;
   color: #9ca3af;
@@ -3757,7 +3722,7 @@
    Handing the chart a box shrunk by the same factor lands the rendered SVG back
    inside its card. Only needed for JS-measured charts; hand-rolled SVGs scale
    together with their container. */
-.bp-chart-fit {
+.rp-chart-fit {
   height: var(--chart-h, 180px);
   /* Shrinking the measured box by the zoom lands the over-scaled SVG back
      inside the card horizontally... */
@@ -3769,18 +3734,18 @@
   margin-bottom: calc((var(--app-zoom, 1) - 1) * var(--chart-h, 180px) + 8px);
 }
 
-.bp-talk-kind:first-child {
+.rp-talk-kind:first-child {
   border-top: none;
   padding-top: 4px;
 }
 
 /* ChartCard writes its own smaller, lighter title — match the rest of the
    profile's card headings so the tabs don't show two title sizes. */
-.bp-content .rc-card-head {
+.rp-content .rc-card-head {
   padding: 15px 18px 13px;
 }
 
-.bp-content .rc-card-title {
+.rp-content .rc-card-title {
   font-size: 15px;
   font-weight: 800;
   color: #424242;
@@ -3790,35 +3755,35 @@
 /* ─── Text box challenges ────────────────────────────────────────────────────
    Prompt + the reader's own answer, one hairline-divided item per response.
    Same edge-to-edge bleed as the stat rows so the card reads as one list. */
-.bp-tb-item {
+.rp-tb-item {
   margin: 0 -18px;
   padding: 12px 18px;
   border-top: 1px solid #f0f0f0;
 }
 
-.bp-card > .bp-latest-head + .bp-tb-item {
+.rp-card > .rp-latest-head + .rp-tb-item {
   border-top: 0;
 }
 
-.bp-card:not(.bp-card--flush) > .bp-tb-item:last-child {
+.rp-card:not(.rp-card--flush) > .rp-tb-item:last-child {
   margin-bottom: -16px;
 }
 
-.bp-tb-head {
+.rp-tb-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
 }
 
-.bp-tb-prompt {
+.rp-tb-prompt {
   font-size: 13.5px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.4;
 }
 
-.bp-tb-date {
+.rp-tb-date {
   flex-shrink: 0;
   font-size: 11.5px;
   font-weight: 700;
@@ -3826,7 +3791,7 @@
   white-space: nowrap;
 }
 
-.bp-tb-answer {
+.rp-tb-answer {
   margin-top: 5px;
   font-size: 13.5px;
   font-weight: 500;
@@ -3836,33 +3801,33 @@
 
 /* FilterBar's items have a 200px floor for full-width pages; inside the
    flyout that stacks two selects onto separate rows. */
-.bp-content .fltr-item {
+.rp-content .fltr-item {
   min-width: 140px;
 }
 
 /* SearchInput is built for a horizontal toolbar (`flex: 1`), so dropped into
-   `.bp-content`'s flex *column* it grows to fill the page height. */
-.bp-content > .search-input {
+   `.rp-content`'s flex *column* it grows to fill the page height. */
+.rp-content > .search-input {
   flex: 0 0 auto;
 }
 
-/* Same trap: `.bp-content` is an overflowing flex column, so a page-level
+/* Same trap: `.rp-content` is an overflowing flex column, so a page-level
    segmented control shrinks to a sliver on any page long enough to scroll. */
-.bp-content > .tabs {
+.rp-content > .tabs {
   flex: 0 0 auto;
 }
 
 /* ─── Achievement & badge medallions ─────────────────────────────────────────
    Drawn stand-ins for the real illustrated art (so: inline shapes, not glyph
    icons). Both keep the recognisable disc silhouette and share one grid. */
-.bp-medal-grid {
+.rp-medal-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 16px 12px;
 }
 
 /* Each medal is its own clickable card, matching the real grid. */
-.bp-medal-card {
+.rp-medal-card {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -3879,12 +3844,12 @@
     box-shadow 0.12s ease;
 }
 
-.bp-medal-card:hover {
+.rp-medal-card:hover {
   border-color: var(--c-slate-300);
   box-shadow: 0 1px 6px rgb(15 23 42 / 8%);
 }
 
-.bp-medal-name {
+.rp-medal-name {
   margin-top: 6px;
   font-size: 12.5px;
   font-weight: 800;
@@ -3892,7 +3857,7 @@
   line-height: 1.3;
 }
 
-.bp-medal-sub {
+.rp-medal-sub {
   font-size: 11.5px;
   font-weight: 600;
   color: var(--c-slate-400);
@@ -3900,7 +3865,7 @@
 }
 
 /* Achievement: a coloured disc with the year on a ribbon across the bottom */
-.bp-medal {
+.rp-medal {
   position: relative;
   width: var(--medal-size, 68px);
   height: var(--medal-size, 68px);
@@ -3918,17 +3883,17 @@
   border: 2px solid color-mix(in srgb, var(--medal) 65%, white);
 }
 
-.bp-medal-glyph {
+.rp-medal-glyph {
   display: flex;
   margin-bottom: 6px;
 }
 
 /* No year ribbon (activity badges) — the glyph sits centred instead */
-.bp-medal--plain .bp-medal-glyph {
+.rp-medal--plain .rp-medal-glyph {
   margin-bottom: 0;
 }
 
-.bp-medal-year {
+.rp-medal-year {
   position: absolute;
   left: 0;
   right: 0;
@@ -3942,7 +3907,7 @@
 }
 
 /* Badge: a stamped seal — value, unit, year. Locked badges go grey. */
-.bp-seal {
+.rp-seal {
   width: var(--medal-size, 68px);
   height: var(--medal-size, 68px);
   border-radius: 50%;
@@ -3957,26 +3922,26 @@
   box-shadow: 0 0 0 2px #0f766e;
 }
 
-.bp-seal--locked {
+.rp-seal--locked {
   background: linear-gradient(160deg, #b8bfc9, #98a1ad);
   box-shadow: 0 0 0 2px #8b95a1;
 }
 
-.bp-seal-top {
+.rp-seal-top {
   font-size: calc(var(--medal-size, 68px) * 0.22);
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.02em;
 }
 
-.bp-seal-mid {
+.rp-seal-mid {
   font-size: calc(var(--medal-size, 68px) * 0.118);
   font-weight: 800;
   letter-spacing: 0.08em;
   opacity: 0.95;
 }
 
-.bp-seal-year {
+.rp-seal-year {
   font-size: calc(var(--medal-size, 68px) * 0.132);
   font-weight: 800;
   opacity: 0.85;
@@ -3985,7 +3950,7 @@
 /* ─── Profile pager ──────────────────────────────────────────────────────────
    Fixed footer on the panel: step to the previous/next student on the page. */
 /* Pinned to the foot of the rail: two icon buttons, names on hover. */
-.bp-pager {
+.rp-pager {
   flex-shrink: 0;
   display: flex;
   gap: 6px;
@@ -3994,7 +3959,7 @@
   border-top: 1px solid var(--c-slate-200);
 }
 
-.bp-pager-btn {
+.rp-pager-btn {
   flex: 1;
   display: inline-flex;
   align-items: center;
@@ -4007,12 +3972,12 @@
   cursor: pointer;
 }
 
-.bp-pager-btn:hover:not(:disabled) {
+.rp-pager-btn:hover:not(:disabled) {
   background: var(--c-slate-100);
   color: var(--c-slate-800);
 }
 
-.bp-pager-btn:disabled {
+.rp-pager-btn:disabled {
   color: var(--c-slate-300);
   border-color: var(--c-slate-100);
   cursor: default;
@@ -4021,7 +3986,7 @@
 /* ─── Activity badges ────────────────────────────────────────────────────────
    A flush card of badge rows: name + progress, the badge-level checkbox, and
    the button that opens its activity list. */
-.bp-act-row {
+.rp-act-row {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -4029,22 +3994,22 @@
   border-top: 1px solid #f0f0f0;
 }
 
-.bp-act-row:first-of-type {
+.rp-act-row:first-of-type {
   border-top: 0;
 }
 
-.bp-act-main {
+.rp-act-main {
   flex: 1;
   min-width: 0;
 }
 
-.bp-act-name {
+.rp-act-name {
   font-size: 13.5px;
   font-weight: 800;
   color: var(--c-slate-700);
 }
 
-.bp-act-count {
+.rp-act-count {
   margin-top: 1px;
   font-size: 12px;
   font-weight: 600;
@@ -4052,7 +4017,7 @@
 }
 
 /* ── Challenge rows ──────────────────────────────────────────────────────── */
-.bp-chal-row {
+.rp-chal-row {
   display: flex;
   align-items: flex-start;
   gap: 14px;
@@ -4060,23 +4025,23 @@
   border-top: 1px solid #f0f0f0;
 }
 
-.bp-chal-row:first-of-type {
+.rp-chal-row:first-of-type {
   border-top: 0;
 }
 
-.bp-chal-main {
+.rp-chal-main {
   flex: 1;
   min-width: 0;
 }
 
-.bp-chal-dates {
+.rp-chal-dates {
   margin-top: 1px;
   font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-600);
 }
 
-.bp-chal-meta {
+.rp-chal-meta {
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -4086,12 +4051,12 @@
   color: var(--c-slate-400);
 }
 
-.bp-chal-row .bp-latest-link {
+.rp-chal-row .rp-latest-link {
   margin-top: 8px;
 }
 
 /* Enrolment is a state, so it reads as a filled tick rather than a checkbox */
-.bp-chal-enrolled {
+.rp-chal-enrolled {
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
@@ -4105,7 +4070,7 @@
 }
 
 /* ── Action form modals ──────────────────────────────────────────────────── */
-.bp-form-body {
+.rp-form-body {
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -4115,34 +4080,34 @@
 }
 
 /* Section headings inside a form body are plain labels, not card titles, so
-   they skip the bleeding rule `.bp-card > .bp-section-heading` adds. */
-.bp-form-body .bp-section-heading {
+   they skip the bleeding rule `.rp-card > .rp-section-heading` adds. */
+.rp-form-body .rp-section-heading {
   margin: 4px 0 -4px;
 }
 
-.bp-form-body .bp-section-heading:first-child {
+.rp-form-body .rp-section-heading:first-child {
   margin-top: 0;
 }
 
 /* A Yes/No pill group is a control, not a full-width strip — `.tabs`'s
    `display: flex` makes it fill the field otherwise. */
-.bp-form-body .tabs--pill {
+.rp-form-body .tabs--pill {
   align-self: flex-start;
   width: auto;
 }
 
 /* First name / last name side by side */
-.bp-form-row {
+.rp-form-row {
   display: flex;
   gap: 10px;
 }
 
-.bp-form-row > * {
+.rp-form-row > * {
   flex: 1;
   min-width: 0;
 }
 
-.bp-form-foot {
+.rp-form-foot {
   display: flex;
   justify-content: flex-end;
   gap: 8px;
@@ -4151,7 +4116,7 @@
 }
 
 /* ── Activity list modal ─────────────────────────────────────────────────── */
-.bp-act-modal-head {
+.rp-act-modal-head {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -4159,7 +4124,7 @@
   border-bottom: 1px solid var(--c-slate-200);
 }
 
-.bp-act-modal-title {
+.rp-act-modal-title {
   flex: 1;
   min-width: 0;
   font-size: 17px;
@@ -4167,7 +4132,7 @@
   color: var(--c-slate-800);
 }
 
-.bp-act-modal-cols {
+.rp-act-modal-cols {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4180,12 +4145,12 @@
   color: var(--c-slate-500);
 }
 
-.bp-act-modal-body {
+.rp-act-modal-body {
   max-height: min(56vh, 420px);
   overflow-y: auto;
 }
 
-.bp-act-modal-row {
+.rp-act-modal-row {
   display: flex;
   align-items: flex-start;
   gap: 18px;
@@ -4193,11 +4158,11 @@
   border-top: 1px solid #f0f0f0;
 }
 
-.bp-act-modal-row:first-child {
+.rp-act-modal-row:first-child {
   border-top: 0;
 }
 
-.bp-act-modal-text {
+.rp-act-modal-text {
   flex: 1;
   min-width: 0;
   font-size: 13.5px;
@@ -4207,32 +4172,32 @@
 }
 
 /* ── Medal detail modal ──────────────────────────────────────────────────── */
-.bp-medal-modal {
+.rp-medal-modal {
   position: relative;
   text-align: center;
   padding: 26px 24px 0;
 }
 
-.bp-medal-modal-close {
+.rp-medal-modal-close {
   position: absolute;
   top: 10px;
   right: 10px;
   color: var(--c-slate-500);
 }
 
-.bp-medal-modal-art {
+.rp-medal-modal-art {
   display: flex;
   justify-content: center;
   margin-bottom: 16px;
 }
 
-.bp-medal-modal-label {
+.rp-medal-modal-label {
   font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-500);
 }
 
-.bp-medal-modal-headline {
+.rp-medal-modal-headline {
   margin-top: 3px;
   font-size: 20px;
   font-weight: 900;
@@ -4240,7 +4205,7 @@
   letter-spacing: -0.01em;
 }
 
-.bp-medal-modal-note {
+.rp-medal-modal-note {
   margin-top: 12px;
   font-size: 13.5px;
   font-weight: 700;
@@ -4248,13 +4213,13 @@
   line-height: 1.45;
 }
 
-.bp-medal-modal-foot {
+.rp-medal-modal-foot {
   margin-top: 22px;
   padding: 18px 0 22px;
   border-top: 1px solid var(--c-slate-200);
 }
 
-.bp-medal-modal-btn {
+.rp-medal-modal-btn {
   width: 100%;
   padding: 11px 16px;
   border: 0;
@@ -4266,24 +4231,24 @@
   cursor: pointer;
 }
 
-.bp-medal-modal-btn--danger {
+.rp-medal-modal-btn--danger {
   background: #c0392b;
 }
 
-.bp-medal-modal-btn--danger:hover {
+.rp-medal-modal-btn--danger:hover {
   background: #a93226;
 }
 
-.bp-medal-modal-btn--primary {
+.rp-medal-modal-btn--primary {
   background: #2563eb;
 }
 
-.bp-medal-modal-btn--primary:hover {
+.rp-medal-modal-btn--primary:hover {
   background: #1d4ed8;
 }
 
 /* The product's amber "this won't change the log" caveat */
-.bp-medal-modal-caution {
+.rp-medal-modal-caution {
   display: flex;
   align-items: flex-start;
   gap: 10px;
@@ -4300,31 +4265,31 @@
 
 /* ─── Book reviews ───────────────────────────────────────────────────────────
    One review per card: cover on the left, the reader's words beside it. */
-.bp-review-item {
+.rp-review-item {
   display: flex;
   gap: 14px;
 }
 
-.bp-review-main {
+.rp-review-main {
   flex: 1;
   min-width: 0;
 }
 
-.bp-review-head {
+.rp-review-head {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
 }
 
-.bp-review-title {
+.rp-review-title {
   font-size: 13.5px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.3;
 }
 
-.bp-review-text {
+.rp-review-text {
   margin-top: 7px;
   font-size: 13.5px;
   font-weight: 500;
@@ -4335,7 +4300,7 @@
 /* Manage / edit / delete are a card footer: full card width above the bottom
    edge, behind a hairline, and only colouring up on hover so they don't compete
    with the reader's words. */
-.bp-review-actions {
+.rp-review-actions {
   display: flex;
   justify-content: flex-end;
   gap: 2px;
@@ -4345,12 +4310,12 @@
   color: var(--c-slate-400);
 }
 
-.bp-review-actions .icnb:hover {
+.rp-review-actions .icnb:hover {
   color: var(--c-slate-700);
 }
 
 /* Em dash for a book talk with no flags */
-.bp-talk-noflag {
+.rp-talk-noflag {
   color: var(--c-slate-300);
   font-weight: 700;
 }
@@ -4359,7 +4324,7 @@
    Scoped to this prototype, not the shared Hero: inside the flyout the rule
    under the title read as a second panel divider, and the stock 34px gap left
    the heading floating away from its first card. */
-.bp-content .hero {
+.rp-content .hero {
   padding-bottom: 0;
   margin-bottom: 0;
   border-bottom: 0;
@@ -4369,7 +4334,7 @@
    One hairline-divided list carries all seven Overview figures. */
 
 /* Motivator names — the one figure that isn't a number */
-.bp-mv-name {
+.rp-mv-name {
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -4379,7 +4344,7 @@
   white-space: nowrap;
 }
 
-.bp-mv-icon {
+.rp-mv-icon {
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
@@ -4387,24 +4352,24 @@
   color: #993c1d;
 }
 
-.bp-statlist {
+.rp-statlist {
   flex-shrink: 0;
   padding: 14px 0 4px;
 }
 
 /* The heading sits at the card's padding edge; the rows keep their own. */
-.bp-statlist-head {
+.rp-statlist-head {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: space-between;
-  gap: 12px;
-  padding: 0 16px 11px;
+  gap: 10px;
+  padding: 0 16px 13px;
   margin-bottom: 0;
   border-bottom: 1px solid #f0f0f0;
 }
 
 /* Says what the delta chips are measured against, once. */
-.bp-statlist-note {
+.rp-statlist-note {
   font-size: 11.5px;
   font-weight: 700;
   color: var(--c-text-subtle);
@@ -4413,9 +4378,9 @@
 
 /* ─── Show more ──────────────────────────────────────────────────────────────
    Standing between cards on the page background, so it reads as a page control
-   rather than part of the card above it. `flex-shrink: 0` because `.bp-content`
+   rather than part of the card above it. `flex-shrink: 0` because `.rp-content`
    is an overflowing flex column — without it the button collapses to nothing. */
-.bp-showmore {
+.rp-showmore {
   flex-shrink: 0;
   align-self: center;
   display: inline-flex;
@@ -4428,17 +4393,17 @@
   font: inherit;
   font-size: 12.5px;
   font-weight: 800;
-  color: var(--bp-profile, var(--c-blue-700));
+  color: var(--rp-profile, var(--c-blue-700));
   cursor: pointer;
 }
 
-.bp-showmore:hover {
-  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 9%, #fff);
+.rp-showmore:hover {
+  background: color-mix(in srgb, var(--rp-profile, var(--c-blue-700)) 9%, #fff);
 }
 
 /* Inside a card it takes the card's full width and sits behind a hairline, so
    it reads as the card's own footer. */
-.bp-showmore--incard {
+.rp-showmore--incard {
   /* `width: auto` on a <button> is intrinsic, not fill — the same trap the
      bled stat rows hit — so the width is spelled out: the card's content box
      plus the 18px it bleeds either side. */
@@ -4454,7 +4419,7 @@
 
 /* Sits in the row rhythm — same divider, same padding — so the list reads as
    continuing rather than as a button bolted to the bottom of the card. */
-.bp-statlist-more {
+.rp-statlist-more {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4467,23 +4432,23 @@
   font: inherit;
   font-size: 12.5px;
   font-weight: 800;
-  color: var(--bp-profile, var(--c-blue-700));
+  color: var(--rp-profile, var(--c-blue-700));
   cursor: pointer;
 }
 
-.bp-statlist-more:hover {
+.rp-statlist-more:hover {
   background: var(--c-slate-50);
 }
 
-.bp-statlist-head .bp-section-heading {
+.rp-statlist-head .rp-section-heading {
   margin-bottom: 0;
 }
 
-.bp-statlist-head + .bp-statrow {
+.rp-statlist-head + .rp-statrow {
   border-top: 0;
 }
 
-.bp-statrow {
+.rp-statrow {
   display: flex;
   align-items: center;
   gap: 12px;
@@ -4497,22 +4462,22 @@
   cursor: pointer;
 }
 
-.bp-statrow:first-child {
+.rp-statrow:first-child {
   border-top: 0;
 }
 
 /* Standalone summary rows inside another card. They bleed out to the card's
    edges so their dividers span the full width, exactly like the Overview list,
    and they don't take the list's hover. */
-.bp-statrow--static {
+.rp-statrow--static {
   cursor: default;
 }
 
-.bp-statrow--static:hover {
+.rp-statrow--static:hover {
   background: none;
 }
 
-.bp-card:not(.bp-card--flush) > .bp-statrow--static {
+.rp-card:not(.rp-card--flush) > .rp-statrow--static {
   /* `width: 100%` is the card's *content* width, so it has to go — otherwise
      the negative margins slide the row left instead of widening it. */
   width: auto;
@@ -4521,33 +4486,33 @@
 }
 
 /* The last row sits on the card's bottom edge — no trailing card padding. */
-.bp-card:not(.bp-card--flush) > .bp-statrow--static:last-child {
+.rp-card:not(.rp-card--flush) > .rp-statrow--static:last-child {
   margin-bottom: -16px;
 }
 
 /* The title rule is the first row's divider, so the row drops its own and the
    heading drops the gap it would leave above the list. */
-.bp-card > .bp-section-heading + .bp-statrow--static {
+.rp-card > .rp-section-heading + .rp-statrow--static {
   border-top: 0;
 }
 
-.bp-card:has(> .bp-statrow--static) > .bp-section-heading:first-child {
+.rp-card:has(> .rp-statrow--static) > .rp-section-heading:first-child {
   margin-bottom: 0;
 }
 
-.bp-card:has(> .bp-tb-item) > .bp-latest-head {
+.rp-card:has(> .rp-tb-item) > .rp-latest-head {
   margin-bottom: 0;
 }
 
-.bp-medal-grid {
+.rp-medal-grid {
   margin-top: 2px;
 }
 
-.bp-statrow:hover {
+.rp-statrow:hover {
   background: var(--c-slate-50);
 }
 
-.bp-statrow-icon {
+.rp-statrow-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -4557,88 +4522,622 @@
   border-radius: 9px;
 }
 
-.bp-statrow-label {
+/* `line-height: 1` on each text span so its box hugs the glyphs — with the
+   default leading, the boxes centre perfectly while the ink sits visibly high. */
+.rp-statrow-label {
   flex: 1;
   min-width: 0;
   font-size: 13.5px;
   font-weight: 700;
+  line-height: 1;
   color: var(--c-slate-700);
 }
 
-.bp-statrow-value {
+.rp-statrow-value {
+  display: inline-flex;
+  align-items: baseline;
+  /* A flex container trims the leading space inside the unit span, so the gap
+     has to put it back. */
+  gap: 3px;
   font-size: 20px;
   font-weight: 900;
   color: var(--c-slate-800);
-  line-height: 1.1;
+  line-height: 1;
   white-space: nowrap;
 }
 
-.bp-statrow-unit {
+.rp-statrow-unit {
   font-size: 12px;
   font-weight: 700;
   color: var(--c-slate-400);
 }
 
-.bp-statrow-empty {
+.rp-statrow-empty {
   font-size: 12.5px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
 
-.bp-statrow-motivators {
+.rp-statrow-motivators {
   display: flex;
   gap: 12px;
 }
 
-.bp-statrow-go {
+.rp-statrow-go {
   flex-shrink: 0;
   color: var(--c-slate-300);
   transition: transform 0.12s ease;
 }
 
-.bp-statrow:hover .bp-statrow-go {
+.rp-statrow:hover .rp-statrow-go {
   color: var(--c-slate-500);
   transform: translateX(2px);
 }
 
+/* The Account page carries three header actions, which overlap the title in a
+   505px side panel. Wrapping is unconditional — it only kicks in when the row
+   genuinely doesn't fit, so wide layouts are unchanged. */
+.rp-content .hero {
+  flex-wrap: wrap;
+  row-gap: 10px;
+}
+
+/* `.hero-text` is `flex: 1; min-width: 0`, so on its own it squeezes to nothing
+   and lets the buttons sit on top of the title rather than wrapping. A floor on
+   the title forces the action onto its own line instead. */
+.rp-content .hero-text {
+  min-width: 150px;
+}
+
 /* Shelf arrows live in the card header beside the Reading Log link, matching
    the month arrows on the log itself. */
-.bp-latest-head-right {
+.rp-latest-head-right {
   display: flex;
   align-items: center;
   gap: 12px;
 }
 
-.bp-latest-arrows {
+.rp-latest-arrows {
   display: flex;
   gap: 5px;
 }
 
 /* The scrollbar was the affordance before the arrows existed; with them it's
    just a grey bar under the covers. */
-.bp-latest-grid {
+.rp-latest-grid {
   scrollbar-width: none;
 }
 
-.bp-latest-grid::-webkit-scrollbar {
+.rp-latest-grid::-webkit-scrollbar {
   display: none;
 }
 
 /* Trend chips sit in a fixed slot at the end of the row rather than trailing
    whatever width the figure happened to be — otherwise they land at a different
    x on every row and the column reads as jittery. */
-.bp-statrow > .pill {
+.rp-statrow > .pill {
   flex-shrink: 0;
   min-width: 64px;
   justify-content: center;
   font-variant-numeric: tabular-nums;
 }
 
+/* ─── Find a Person ───────────────────────────────────────────────────────────
+   A form of specific fields rather than one search box: library staff search
+   from whatever detail the person at the desk gave them. */
+.rp-find-head {
+  margin-bottom: 18px;
+}
+
+.rp-find-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--c-slate-800);
+  margin: 0;
+}
+
+.rp-find-sub {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  margin: 6px 0 0;
+}
+
+.rp-find-card {
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  margin-bottom: 18px;
+}
+
+.rp-find-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px 20px;
+}
+
+/* Advanced options disclosure, between the two halves of the search form. */
+.rp-find-advanced {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-blue-700);
+  cursor: pointer;
+}
+
+.rp-find-advanced:hover {
+  text-decoration: underline;
+}
+
+.rp-find-advanced-n {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--c-slate-200);
+  color: var(--c-slate-600);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rp-find-grid--advanced {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--c-slate-100);
+}
+
+.rp-find-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.rp-find-warn {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.rp-find-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 22px;
+  padding: 14px 2px;
+  border-top: 1px solid var(--c-gray-200);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-text-subtle);
+}
+
+/* Reader row: the account creator's name above their email. */
+.rp-adm-acct-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.rp-adm-acct-name {
+  font-weight: 700;
+  color: var(--c-slate-700);
+}
+
+.rp-adm-acct-email {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c-text-subtle);
+}
+
+/* ─── Account chip + switcher ─────────────────────────────────────────────────
+   The account is the reader's context, so it sits with their name; because it
+   can hold several readers, it doubles as the switcher between them. */
+.rp-panel-titles {
+  min-width: 0;
+}
+
+.rp-acct-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--rp-profile, #64748b) 26%, #fff);
+  background: color-mix(in srgb, var(--rp-profile, #64748b) 10%, #fff);
+  color: var(--rp-profile, var(--c-slate-600));
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.rp-acct-chip--static {
+  cursor: default;
+}
+
+.rp-acct-menu {
+  min-width: 250px;
+  padding: 0;
+}
+
+.rp-acct-menu-head {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--c-slate-100);
+}
+
+.rp-acct-menu-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-slate-800);
+}
+
+.rp-acct-menu-sub {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c-text-subtle);
+  margin-top: 1px;
+}
+
+.rp-acct-reader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 14px;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--c-slate-100);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rp-acct-reader:first-of-type {
+  border-top: 0;
+}
+
+.rp-acct-reader:hover:not(.rp-acct-reader--active) {
+  background: var(--c-slate-50);
+}
+
+.rp-acct-reader--active {
+  cursor: default;
+  color: var(--rp-profile, var(--c-blue-700));
+}
+
+.rp-acct-reader-main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+.rp-acct-reader-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-slate-800);
+}
+
+.rp-acct-reader-meta {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--c-text-subtle);
+}
+
+/* ─── Account page ────────────────────────────────────────────────────────────
+   Readers beside Account Info, as the real account screen lays it out. */
+.rp-acct-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: 14px;
+  flex-shrink: 0;
+}
+
+/* A reader row: identity on the left, its one action on the right. Both cards
+   on this page share one rhythm — 11px above and below each item, a hairline
+   between neighbours only. Putting the border on `+ sibling` rather than on
+   every item avoids doubling up with the card heading's own rule. */
+.rp-acct-reader-block {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+}
+
+.rp-acct-reader-block + .rp-acct-reader-block {
+  border-top: 1px solid var(--c-slate-100);
+}
+
+.rp-acct-reader-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.rp-acct-reader-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-blue-700);
+  cursor: pointer;
+}
+
+.rp-acct-reader-link:hover {
+  text-decoration: underline;
+}
+
+.rp-acct-reader-sub {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c-text-subtle);
+  margin-top: 2px;
+}
+
+.rp-acct-reader-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  margin-top: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+}
+
+.rp-acct-reader-stats b {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--c-slate-800);
+}
+
+.rp-acct-edit-link {
+  flex-shrink: 0;
+  align-self: center;
+  padding: 6px 12px;
+  background: #fff;
+  border: 1px solid var(--c-border-strong);
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-slate-700);
+  cursor: pointer;
+}
+
+.rp-acct-edit-link:hover {
+  background: var(--c-slate-50);
+  border-color: var(--c-slate-400);
+}
+
+.rp-acct-row-you {
+  font-size: 10.5px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--rp-profile, #64748b) 14%, #fff);
+  color: var(--rp-profile, var(--c-slate-600));
+}
+
+.rp-acct-field {
+  padding: 11px 0;
+}
+
+.rp-acct-field + .rp-acct-field {
+  border-top: 1px solid var(--c-slate-100);
+}
+
+.rp-acct-field-label {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--c-slate-700);
+}
+
+.rp-acct-field-value {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--c-text-muted);
+  margin-top: 3px;
+  word-break: break-word;
+}
+
+.rp-acct-info-btns {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+/* Grouped heading inside the account-creator form. */
+.rp-form-section {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-slate-700);
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--c-slate-100);
+}
+
+/* Account page header — title with its actions on the right, as the real
+   screen has it. */
+.rp-acct-page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+/* `.rp-adm-main-body` is a flex column with no gap, so anything dropped
+   straight into it has to space itself. */
+.rp-adm-main-body > .bnr {
+  margin-bottom: 14px;
+}
+
+.rp-acct-page-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rp-find-creator-link {
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  color: var(--c-blue-700);
+  cursor: pointer;
+}
+
+.rp-find-creator-link {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.rp-find-creator-link:hover {
+  text-decoration: underline;
+}
+
+/* The results card clips its corners, which also clips anything a row pops —
+   a tooltip or a menu — so the results card opts out and rounds its own edges
+   through the table instead. */
+.rp-adm-card:has(.rp-find-results) {
+  overflow: visible;
+}
+
+.rp-find-results tbody tr:last-child .tbl-td:first-child {
+  border-bottom-left-radius: 12px;
+}
+
+.rp-find-results tbody tr:last-child .tbl-td:last-child {
+  border-bottom-right-radius: 12px;
+}
+
+/* ─── Find a Person results ─────────────────────────────────────────────────
+   The account creator block repeats on every row: a row is a reader, and staff
+   need the login details next to whichever reader they matched. */
+/* The creator block is five lines tall and sets the row height; everything else
+   centres against it rather than hanging from the top. */
+.rp-find-results .tbl-td {
+  vertical-align: middle;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+.rp-find-row-actions {
+  display: inline-flex;
+  justify-content: flex-end;
+}
+
+.rp-find-count {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--c-slate-800);
+  margin: 4px 0 12px;
+}
+
+.rp-find-add {
+  color: var(--c-blue-700);
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.rp-find-creator-name {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--c-blue-700);
+  margin-bottom: 4px;
+}
+
+.rp-find-creator-name a {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-blue-700);
+}
+
+.rp-find-creator-line {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c-slate-700);
+  line-height: 1.55;
+}
+
+.rp-find-creator-line b {
+  font-weight: 800;
+}
+
+.rp-find-readers {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.rp-find-reader {
+  align-self: flex-start;
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--c-blue-700);
+  cursor: pointer;
+}
+
+.rp-find-reader:hover,
+.rp-find-reader--selected {
+  text-decoration: underline;
+}
+
+.rp-find-age {
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.55;
+  color: var(--c-slate-700);
+}
+
+@media (max-width: 900px) {
+  .rp-find-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .rp-acct-cols {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 699px) {
+  .rp-find-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ─── Header status flags ─────────────────────────────────────────────────────
    The grade line is an identity row now: grade first, then whatever standing
    facts the reader carries. It wraps rather than pushing the Actions buttons
    off the header — four flags plus a long name is a real case. */
-.bp-panel-meta {
+.rp-panel-meta {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -4648,7 +5147,7 @@
 /* Tone carries the meaning at a glance; the label and Tooltip carry the rest.
    Deliberately quieter than the section palettes — these sit beside a name,
    not in a chart. */
-.bp-status {
+.rp-status {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -4662,31 +5161,25 @@
   cursor: default;
 }
 
-.bp-status--partner {
+.rp-status--partner {
   border-color: #b6e6ee;
   background: #f0fbfd;
   color: #0a6f7d;
 }
 
-.bp-status--info {
+.rp-status--info {
   border-color: #c7d2fe;
   background: #eef2ff;
   color: #4338ca;
 }
 
-.bp-status--verified {
-  border-color: #bfdbfe;
-  background: #eff6ff;
-  color: #1d4ed8;
-}
-
-.bp-status--bad {
+.rp-status--bad {
   border-color: #fecaca;
   background: #fef2f2;
   color: #b91c1c;
 }
 
-.bp-status--partner {
+.rp-status--partner {
   padding-left: 9px;
 }
 
@@ -4694,26 +5187,26 @@
    Where the session came from, on the author line. A separator rather than a
    chip: the row already carries a coloured spine and a flag column, and a
    second badge on every imported entry would compete with them. */
-.bp-rl-entry-foot {
+.rp-rl-entry-foot {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 10px;
 }
 
-.bp-rl-source {
+.rp-rl-source {
   display: inline-flex;
   align-items: center;
   cursor: default;
 }
 
-.bp-rl-source .pb-mark {
-  background: var(--bp-mark-bg);
+.rp-rl-source .pb-mark {
+  background: var(--rp-mark-bg);
 }
 
 /* The table row's own version of the card's mark cluster: same marks, same
    source, same menu, laid out on one line at the end of the row. */
-.bp-rl-tbl-marks {
+.rp-rl-tbl-marks {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -4721,7 +5214,7 @@
 }
 
 /* The Lexile the table always had, now on the calendar card too. */
-.bp-rl-entry-lexile {
+.rp-rl-entry-lexile {
   white-space: nowrap;
   margin-left: 7px;
   padding: 1px 6px;
@@ -4735,7 +5228,7 @@
 /* A day with nothing logged. It takes the same column as a day's entries so
    the month reads as a calendar — a blank gap made the grid look broken. Kept
    short: an empty day shouldn't cost as much height as a real one. */
-.bp-rl-empty-day {
+.rp-rl-empty-day {
   flex: 1;
   min-width: 0;
   min-height: 34px;
@@ -4743,45 +5236,9 @@
   background: var(--c-slate-100);
 }
 
-/* The common daily goals, so the usual case is one click rather than typing a
-   number. */
-.bp-goal-presets {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.bp-goal-preset {
-  padding: 6px 12px;
-  border-radius: 999px;
-  border: 1px solid var(--c-slate-300);
-  background: #fff;
-  font-family: inherit;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--c-slate-600);
-  cursor: pointer;
-  transition:
-    background 0.12s,
-    border-color 0.12s,
-    color 0.12s;
-}
-
-.bp-goal-preset:hover {
-  border-color: var(--c-blue-700);
-  color: var(--c-blue-700);
-}
-
-.bp-goal-preset--on {
-  border-color: var(--c-blue-700);
-  background: var(--c-blue-700);
-  color: #fff;
-}
-
 /* Date and Unit are reference columns, not the row's subject — the title is.
    Tabular figures so the dates line up as a column of numbers. */
-.bp-rl-tbl-dim {
+.rp-rl-tbl-dim {
   font-size: 12.5px;
   color: var(--c-slate-500);
   font-variant-numeric: tabular-nums;
@@ -4790,7 +5247,7 @@
 
 /* The unit chip reads as the row's own figure rather than a reference value,
    so it takes the row's accent instead of the Lexile's neutral grey. */
-.bp-rl-entry-unit {
+.rp-rl-entry-unit {
   margin-left: 0;
   background: color-mix(in srgb, var(--c-blue-700) 9%, #fff);
   color: var(--c-blue-700);
@@ -4800,7 +5257,7 @@
    A document, not a panel: the overlay goes nearly full-bleed and the sheet
    inside it keeps a page's measure. `.modal--center` caps itself at 520px, so
    the sheet's own width is set here. */
-.modal--center:has(.bp-clog) {
+.modal--center:has(.rp-clog) {
   --clog-bar: 48px;
   --clog-gutter: 40px;
   /* Half the bar, so the space it takes comes off the bottom, not both ends. */
@@ -4811,7 +5268,7 @@
   top: calc(50% - var(--clog-lift) / var(--app-zoom, 1));
 }
 
-.bp-clog {
+.rp-clog {
   display: flex;
   flex-direction: column;
   max-height: var(--clog-h);
@@ -4819,7 +5276,7 @@
 }
 
 /* Screen-only chrome. */
-.bp-clog-bar {
+.rp-clog-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -4829,7 +5286,7 @@
   border-bottom: 1px solid var(--c-slate-200);
 }
 
-.bp-clog-bar-title {
+.rp-clog-bar-title {
   font-size: 13px;
   font-weight: 800;
   color: var(--c-slate-500);
@@ -4837,13 +5294,13 @@
   text-transform: uppercase;
 }
 
-.bp-clog-sheet {
+.rp-clog-sheet {
   overflow-y: auto;
   padding: 30px 34px 34px;
   background: #fff;
 }
 
-.bp-clog-head {
+.rp-clog-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
@@ -4852,20 +5309,20 @@
   border-bottom: 2px solid var(--c-slate-800);
 }
 
-.bp-clog-title {
+.rp-clog-title {
   margin: 0 0 2px;
   font-size: 24px;
   font-weight: 800;
   color: var(--c-slate-800);
 }
 
-.bp-clog-dates {
+.rp-clog-dates {
   font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-500);
 }
 
-.bp-clog-benny {
+.rp-clog-benny {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -4877,7 +5334,7 @@
 
 /* The identity block and the totals: the two things someone filing this sheet
    reads before the rows. */
-.bp-clog-reader {
+.rp-clog-reader {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 14px 20px;
@@ -4885,14 +5342,14 @@
   border-bottom: 1px solid var(--c-slate-200);
 }
 
-.bp-clog-field {
+.rp-clog-field {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
 
-.bp-clog-field-label {
+.rp-clog-field-label {
   font-size: 10.5px;
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -4900,20 +5357,20 @@
   color: var(--c-slate-400);
 }
 
-.bp-clog-field-value {
+.rp-clog-field-value {
   font-size: 14px;
   font-weight: 700;
   color: var(--c-slate-800);
 }
 
-.bp-clog-totals {
+.rp-clog-totals {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   gap: 12px;
   padding: 18px 0;
 }
 
-.bp-clog-total {
+.rp-clog-total {
   display: flex;
   flex-direction: column;
   gap: 1px;
@@ -4922,25 +5379,25 @@
   border-radius: 10px;
 }
 
-.bp-clog-total-num {
+.rp-clog-total-num {
   font-size: 22px;
   font-weight: 800;
   color: var(--c-slate-800);
   font-variant-numeric: tabular-nums;
 }
 
-.bp-clog-total-label {
+.rp-clog-total-label {
   font-size: 11.5px;
   font-weight: 700;
   color: var(--c-slate-500);
 }
 
-.bp-clog-table {
+.rp-clog-table {
   width: 100%;
   border-collapse: collapse;
 }
 
-.bp-clog-th {
+.rp-clog-th {
   padding: 8px 10px;
   border-bottom: 1.5px solid var(--c-slate-300);
   font-size: 10.5px;
@@ -4951,17 +5408,17 @@
   text-align: left;
 }
 
-.bp-clog-th--date {
+.rp-clog-th--date {
   width: 84px;
 }
 
-.bp-clog-th--num,
-.bp-clog-td--num {
+.rp-clog-th--num,
+.rp-clog-td--num {
   text-align: right;
   white-space: nowrap;
 }
 
-.bp-clog-td {
+.rp-clog-td {
   padding: 9px 10px;
   border-bottom: 1px solid var(--c-slate-100);
   font-size: 13px;
@@ -4969,42 +5426,42 @@
   vertical-align: top;
 }
 
-.bp-clog-td--date,
-.bp-clog-td--num {
+.rp-clog-td--date,
+.rp-clog-td--num {
   font-variant-numeric: tabular-nums;
 }
 
-.bp-clog-book {
+.rp-clog-book {
   display: block;
   font-weight: 700;
   color: var(--c-slate-800);
 }
 
-.bp-clog-by {
+.rp-clog-by {
   display: block;
   font-size: 12px;
   color: var(--c-slate-400);
 }
 
 /* Somewhere to sign — the reason a log gets printed at all. */
-.bp-clog-foot {
+.rp-clog-foot {
   display: flex;
   gap: 28px;
   padding-top: 34px;
 }
 
-.bp-clog-sign {
+.rp-clog-sign {
   display: flex;
   flex-direction: column;
   gap: 5px;
   flex: 1;
 }
 
-.bp-clog-sign:last-child {
+.rp-clog-sign:last-child {
   flex: 0 0 150px;
 }
 
-.bp-clog-sign-line {
+.rp-clog-sign-line {
   height: 1px;
   background: var(--c-slate-400);
 }
@@ -5013,16 +5470,16 @@
    display, so the sheet's own ancestors can stay laid out while it prints — a
    `display: none` on them would take the sheet down with them. */
 @media print {
-  body:has(.bp-clog) * {
+  body:has(.rp-clog) * {
     visibility: hidden;
   }
 
-  body:has(.bp-clog) .bp-clog,
-  body:has(.bp-clog) .bp-clog * {
+  body:has(.rp-clog) .rp-clog,
+  body:has(.rp-clog) .rp-clog * {
     visibility: visible;
   }
 
-  body:has(.bp-clog) .bp-clog {
+  body:has(.rp-clog) .rp-clog {
     position: absolute;
     inset: 0;
     max-height: none;
@@ -5030,23 +5487,23 @@
   }
 
   /* On paper the gutter is the printer's margin, not ours. */
-  .modal--center:has(.bp-clog) {
+  .modal--center:has(.rp-clog) {
     --clog-h: none;
     top: 0;
   }
 
-  .bp-clog-bar {
+  .rp-clog-bar {
     display: none;
   }
 
-  .bp-clog-sheet {
+  .rp-clog-sheet {
     overflow: visible;
     max-height: none;
     padding: 0;
   }
 
-  .bp-clog-td,
-  .bp-clog-th {
+  .rp-clog-td,
+  .rp-clog-th {
     /* Don't split a session across two pages. */
     break-inside: avoid;
   }

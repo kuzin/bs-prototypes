@@ -237,10 +237,50 @@
   transform: translateY(-50%) translateX(0);
 }
 
+/* Arrow pointing back at the anchor. A rotated square inheriting the bubble's
+   background, so it stays in step if the bubble colour ever changes. */
+.ttp-bubble::after {
+  content: '';
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background: inherit;
+  transform: rotate(45deg);
+}
+
+.ttp--top .ttp-bubble::after {
+  bottom: -3px;
+  left: 50%;
+  margin-left: -4px;
+}
+
+.ttp--bottom .ttp-bubble::after {
+  top: -3px;
+  left: 50%;
+  margin-left: -4px;
+}
+
+.ttp--left .ttp-bubble::after {
+  right: -3px;
+  top: 50%;
+  margin-top: -4px;
+}
+
+.ttp--right .ttp-bubble::after {
+  left: -3px;
+  top: 50%;
+  margin-top: -4px;
+}
+
 /* Cursor-following variant — position is set via inline style on each
-   mousemove. No placement transforms; just fade in. */
+   mousemove. No placement transforms, and no arrow: it isn't anchored to
+   anything to point at. */
 .ttp--cursor .ttp-bubble {
   transform: none;
+}
+
+.ttp--cursor .ttp-bubble::after {
+  display: none;
 }
 
 /* ── Banner ─────────────────────────────────────────────────────────────── */

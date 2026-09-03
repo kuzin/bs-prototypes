@@ -15,7 +15,7 @@ import { Select, Checkbox, Field, Input, Textarea, DateInput } from '@components
 import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import '@components/Form/Form.css'
 import { Avatar } from '@components/Avatar/Avatar'
-import { IconButton, EmptyState, Banner } from '@components/Primitives/Primitives'
+import { IconButton, EmptyState, Banner, Tooltip } from '@components/Primitives/Primitives'
 import { Pill } from '@components/Pill/Pill'
 import { BarList } from '@components/BarList/BarList'
 import { ChartCard } from '@components/Cards/Cards'
@@ -26,6 +26,7 @@ import { Sidebar } from '@components/Sidebar/Sidebar'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { Icon } from '@components/Icon/Icon'
+import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 import { Flyout } from '@components/Flyout/Flyout'
 import { Modal } from '@components/Modal/Modal'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -36,7 +37,6 @@ import { TrendChart } from '@components/TrendChart/TrendChart'
 import { ChartLegend } from '@components/charts/charts'
 import { SessionModal } from '../sfr/components/SessionModal'
 import { TALK_KINDS } from '../btwb/data'
-import { SESSIONS as SFR_SESSIONS } from '../sfr/data'
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
 // Monthly density modifiers per student profile (index 0 = Jan, 11 = Dec)
@@ -158,6 +158,25 @@ const ACTIONS_ITEMS = [
   { divider: true },
   { label: 'Delete Reader', danger: true },
 ]
+
+// Verify and Freeze are the two Reading Integrity actions on a student, and
+// unlike the rest of this menu they're stateful: each one toggles, and the
+// header says which state the student is in. Verified students log past the
+// site's limits; frozen students can't log for themselves for ten days.
+const INTEGRITY_ITEMS = [
+  {
+    key: 'verified',
+    label: 'Verify Student',
+    undo: 'Unverify Student',
+    icon: <Icon name="verified-badge" size={17} color="#2563EB" />,
+  },
+  {
+    key: 'frozen',
+    label: 'Freeze Access',
+    undo: 'Unfreeze Access',
+    icon: <Icon name="circle-minus" size={17} stroke={2.2} color="#DC2626" />,
+  },
+]
 const LOG_ITEMS = [{ label: 'Log Reading' }, { label: 'Log Activities' }]
 
 // ─── Action modals ────────────────────────────────────────────────────────────
@@ -169,7 +188,16 @@ const YES_NO = [
   { id: 'no', label: 'No' },
 ]
 
-function ActionModal({ open, onClose, title, children, save = 'Save', saveDisabled, secondary }) {
+function ActionModal({
+  open,
+  onClose,
+  title,
+  children,
+  save = 'Save',
+  saveDisabled,
+  secondary,
+  onSave,
+}) {
   return (
     <Modal open={open} onClose={onClose} variant="center" ariaLabel={title}>
       {({ close }) => (
@@ -187,7 +215,13 @@ function ActionModal({ open, onClose, title, children, save = 'Save', saveDisabl
                 {secondary}
               </Button>
             )}
-            <Button onClick={close} disabled={saveDisabled}>
+            <Button
+              onClick={() => {
+                onSave?.()
+                close()
+              }}
+              disabled={saveDisabled}
+            >
               {save}
             </Button>
           </div>
@@ -325,12 +359,20 @@ function TransferModal({ open, onClose }) {
   )
 }
 
-function StudentActions({ onClose, student }) {
+function StudentActions({ onClose, student, status = [], onToggleStatus }) {
   const [action, setAction] = useState(null)
   const close = () => setAction(null)
-  const items = ACTIONS_ITEMS.map((it) =>
-    it.action ? { ...it, onSelect: () => setAction(it.action) } : it,
-  )
+  const items = [
+    ...ACTIONS_ITEMS.map((it) =>
+      it.action ? { ...it, onSelect: () => setAction(it.action) } : it,
+    ),
+    { divider: true },
+    ...INTEGRITY_ITEMS.map((it) => ({
+      label: status.includes(it.key) ? it.undo : it.label,
+      icon: it.icon,
+      onSelect: () => onToggleStatus?.(it.key),
+    })),
+  ]
 
   return (
     <div className="bp-student-actions">
@@ -396,7 +438,73 @@ function StudentActions({ onClose, student }) {
 }
 
 // ─── Persistent student header ────────────────────────────────────────────────
+// ─── Header status flags ──────────────────────────────────────────────────────
+// Standing facts about the reader, as against the numbers below them: who they
+// are connected to, and what has been done to their account. They belong in the
+// header because each one changes how you read the rest of the page — imported
+// sessions explain minutes nobody logged by hand, a tandem link explains
+// reading done somewhere else entirely, and a banned reader's totals are
+// already excluded from the leaderboard you'd otherwise compare them against.
+//
+// A mark, not a sentence: the label is short and the Tooltip carries the
+// meaning, so a reader with four of these still has a legible name.
+const STATUS_FLAGS = {
+  comicsplus: {
+    label: 'Comics Plus',
+    tone: 'partner',
+    tip: 'Connected to Comics Plus — reading done in the app imports on its own',
+  },
+  tandem: {
+    label: 'Tandem',
+    icon: 'link',
+    tone: 'info',
+    tip: 'Tandem account — linked to a %s profile, and reading counts on both',
+  },
+  // The two school-only states, and the product's own two words for them. Both
+  // come from Actions on this header, and both are reversible from the same
+  // menu entry — see help.beanstack.com "How to verify or freeze a student".
+  verified: {
+    label: 'Verified',
+    icon: 'verified-badge',
+    tone: 'verified',
+    tip: 'Verified student — can log past the site log and daily limits, and other readers see the badge on leaderboards',
+  },
+  frozen: {
+    label: 'Frozen',
+    icon: 'circle-minus',
+    tone: 'bad',
+    tip: 'Access frozen for 10 days — they cannot log reading themselves, though staff still can. Not shown to other readers.',
+  },
+}
+
+function StatusFlags({ flags = [], tandemWith }) {
+  if (!flags.length) return null
+  return (
+    <>
+      {flags.map((key) => {
+        const f = STATUS_FLAGS[key]
+        if (!f) return null
+        return (
+          <Tooltip key={key} content={f.tip.replace('%s', tandemWith)}>
+            <span className={`bp-status bp-status--${f.tone}`}>
+              {f.icon && <Icon name={f.icon} size={13} stroke={2.1} />}
+              {f.label}
+            </span>
+          </Tooltip>
+        )
+      })}
+    </>
+  )
+}
+
 function StudentHeader({ student, onClose }) {
+  // Verified / frozen live here rather than in the fixture because Actions can
+  // change them — the chip beside the name is the same fact the menu toggles.
+  const [status, setStatus] = useState(student.status ?? [])
+  useEffect(() => setStatus(student.status ?? []), [student])
+  const toggle = (key) =>
+    setStatus((s) => (s.includes(key) ? s.filter((k) => k !== key) : [...s, key]))
+
   return (
     <div className="bp-panel-header">
       <div className="bp-panel-identity">
@@ -415,11 +523,19 @@ function StudentHeader({ student, onClose }) {
         />
         <div>
           <div className="bp-panel-name">{student.name}</div>
-          <div className="bp-panel-meta">{student.grade}</div>
+          <div className="bp-panel-meta">
+            <span>{student.grade}</span>
+            <StatusFlags flags={status} tandemWith="library" />
+          </div>
         </div>
       </div>
       <div className="bp-header-right">
-        <StudentActions onClose={onClose} student={student} />
+        <StudentActions
+          onClose={onClose}
+          student={student}
+          status={status}
+          onToggleStatus={toggle}
+        />
       </div>
     </div>
   )
@@ -579,12 +695,16 @@ const STAT_TINTS = {
 // order they'd scan it. Longest streak and Lexile sit behind "Show more"; they
 // answer a question you go looking for rather than one you scan.
 //
-// `trend` is this month against last (not against the selected range): a
-// year-long total hides a reader who started slipping three weeks ago, which is
-// exactly the signal the review said the page was missing. Streaks and Lexile
-// carry none — a streak is already an as-of-today number, and one month of
-// Lexile movement is noise.
-function overviewMetrics(ov, mo) {
+// `trend` belongs to the range you're viewing — This School Year moves against
+// last year — so the chips always compare like with like. All Time carries
+// none: there's no period before it.
+//
+// Every row carries one, including the streaks: "18 days, up 11 on last year"
+// is a real answer to whether the habit is building. The motivation row's chip
+// is the reader's Motivation Index movement — the top factor is a name, not a
+// number, so the trend belongs to the score behind it.
+function overviewMetrics(ov) {
+  const mo = ov.trend ?? {}
   const days = (n) => (n === 1 ? 'day' : 'days')
   return [
     {
@@ -605,6 +725,7 @@ function overviewMetrics(ov, mo) {
       label: 'Current streak',
       value: ov.currentStreak,
       unit: days(ov.currentStreak),
+      trend: { delta: mo.currentStreak, format: (n) => `${n} ${days(n)}` },
     },
     {
       key: 'habits',
@@ -635,6 +756,7 @@ function overviewMetrics(ov, mo) {
       label: 'Top motivation factor',
       motivators: ov.motivators?.slice(0, 1),
       empty: 'No clear motivator found',
+      trend: { delta: mo.rmi, format: (n) => `${n} RMI` },
     },
     {
       key: 'longest',
@@ -644,6 +766,7 @@ function overviewMetrics(ov, mo) {
       label: 'Longest streak',
       value: ov.longestStreak,
       unit: days(ov.longestStreak),
+      trend: { delta: mo.longestStreak, format: (n) => `${n} ${days(n)}` },
       more: true,
     },
     {
@@ -653,6 +776,7 @@ function overviewMetrics(ov, mo) {
       accent: C.skills,
       label: 'Average Lexile',
       value: `${ov.lexile}L`,
+      trend: { delta: mo.lexile, format: (n) => `${n}L` },
       more: true,
     },
   ]
@@ -704,7 +828,104 @@ function MotivatorNames({ names, className }) {
   )
 }
 
-function OverviewStats({ metrics, onOpen }) {
+// The cover shelf scrolls rather than wrapping, so it needs a way to get at the
+// titles that are off the end. The arrows page by a viewport's worth and
+// disable at each end — and hide entirely when everything already fits, which
+// is the common case on a wide screen.
+function TitleShelf({ titles, onNavigate }) {
+  const ref = useRef(null)
+  const [{ left, right }, setEnds] = useState({ left: false, right: false })
+
+  const sync = () => {
+    const el = ref.current
+    if (!el) return
+    // 1px of slack: fractional scroll widths never land exactly on the end.
+    setEnds({
+      left: el.scrollLeft > 1,
+      right: el.scrollLeft + el.clientWidth < el.scrollWidth - 1,
+    })
+  }
+
+  useEffect(() => {
+    sync()
+    const el = ref.current
+    if (!el) return undefined
+    const ro = new ResizeObserver(sync)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [titles])
+
+  const page = (dir) => {
+    const el = ref.current
+    if (!el) return
+    el.scrollBy({ left: dir * Math.max(el.clientWidth - 40, 120), behavior: 'smooth' })
+  }
+
+  const scrollable = left || right
+
+  return (
+    <>
+      <div className="bp-latest-head">
+        <SectionHeading>Latest titles</SectionHeading>
+        <div className="bp-latest-head-right">
+          {scrollable && (
+            <div className="bp-latest-arrows">
+              <Tooltip content="Previous titles">
+                <button
+                  type="button"
+                  className="bp-heatmap-nav-btn"
+                  onClick={() => page(-1)}
+                  disabled={!left}
+                  aria-label="Previous titles"
+                >
+                  <Icon name="chevron-left" size={13} stroke={2.2} />
+                </button>
+              </Tooltip>
+              <Tooltip content="More titles">
+                <button
+                  type="button"
+                  className="bp-heatmap-nav-btn"
+                  onClick={() => page(1)}
+                  disabled={!right}
+                  aria-label="More titles"
+                >
+                  <Icon name="chevron-right" size={13} stroke={2.2} />
+                </button>
+              </Tooltip>
+            </div>
+          )}
+          <button type="button" className="bp-latest-link" onClick={() => onNavigate('readinglog')}>
+            Reading Log
+            <Icon name="arrow-right" size={14} />
+          </button>
+        </div>
+      </div>
+      <div className="bp-latest-grid" ref={ref} onScroll={sync}>
+        {titles
+          .slice()
+          .reverse()
+          .map((t, i) => (
+            <a
+              key={i}
+              className="bp-latest-item"
+              href={`https://openlibrary.org/isbn/${t.isbn}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div className="bp-latest-cover">
+                <CoverImage isbn={t.isbn} title={t.title} />
+                <span className="bp-latest-lexile">{t.lexile}L</span>
+              </div>
+              <div className="bp-latest-title">{t.title}</div>
+              <div className="bp-latest-author">{t.author}</div>
+            </a>
+          ))}
+      </div>
+    </>
+  )
+}
+
+function OverviewStats({ metrics, onOpen, range, onRangeChange }) {
   const [showMore, setShowMore] = useState(false)
   const shown = metrics.filter((m) => !m.more || showMore)
   const hidden = metrics.filter((m) => m.more).length
@@ -713,9 +934,14 @@ function OverviewStats({ metrics, onOpen }) {
     <div className="bp-card bp-statlist">
       <div className="bp-statlist-head">
         <SectionHeading>At a glance</SectionHeading>
-        {/* The comparison is stated once here rather than repeated in every
-            chip — five rows each ending "vs last month" is noise. */}
-        <span className="bp-statlist-note">Trend vs last month</span>
+        <Tabs
+          variant="pill"
+          size="sm"
+          ariaLabel="Overview time range"
+          active={range}
+          onChange={onRangeChange}
+          items={OVERVIEW_RANGES}
+        />
       </div>
       {shown.map((m) => (
         <StatRow
@@ -748,12 +974,10 @@ function OverviewStats({ metrics, onOpen }) {
   )
 }
 
-function Overview({ student, onNavigate }) {
+function Overview({ student, onNavigate, goal }) {
   const [range, setRange] = useState('year')
   const ov = student.overview[range]
-  // Month-over-month is deliberately outside the range switcher: "is this
-  // reader slipping right now" reads the same whichever total you're looking at.
-  const metrics = overviewMetrics(ov, student.overview.month)
+  const metrics = overviewMetrics(ov)
 
   return (
     <div className="bp-content">
@@ -763,19 +987,6 @@ function Overview({ student, onNavigate }) {
         accent={SECTION_ACCENT.overview.text}
         accentBg={SECTION_ACCENT.overview.bg}
       />
-      {/* Segmented controls sit under the header on every page — Challenges and
-          Badges already did, and a switcher tucked into the header's right-hand
-          corner reads as a header control rather than as scoping the page. */}
-      <Tabs
-        variant="pill"
-        size="sm"
-        block
-        ariaLabel="Overview time range"
-        active={range}
-        onChange={setRange}
-        items={OVERVIEW_RANGES}
-      />
-
       {/* Benny says — the summary leads the page */}
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
@@ -783,38 +994,25 @@ function Overview({ student, onNavigate }) {
       </Card>
 
       {/* Overview figures — every one is scoped to the selected range */}
-      <OverviewStats metrics={metrics} onOpen={onNavigate} />
+      <OverviewStats metrics={metrics} onOpen={onNavigate} range={range} onRangeChange={setRange} />
 
-      {/* Latest titles — covers first, so the shelf reads at a glance */}
+      {/* This week against the daily goal. It was behind a toggle on the Goals
+          page; "did they read this week" is a scanning question, so it belongs
+          on the page you scan. */}
       <Card>
         <div className="bp-latest-head">
-          <SectionHeading>Latest titles</SectionHeading>
-          <button type="button" className="bp-latest-link" onClick={() => onNavigate('readinglog')}>
-            Reading Log
+          <SectionHeading>This week</SectionHeading>
+          <button type="button" className="bp-latest-link" onClick={() => onNavigate('habits')}>
+            Goals and Streaks
             <Icon name="arrow-right" size={14} />
           </button>
         </div>
-        <div className="bp-latest-grid">
-          {student.sections.skills.titles
-            .slice()
-            .reverse()
-            .map((t, i) => (
-              <a
-                key={i}
-                className="bp-latest-item"
-                href={`https://openlibrary.org/isbn/${t.isbn}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <div className="bp-latest-cover">
-                  <CoverImage isbn={t.isbn} title={t.title} />
-                  <span className="bp-latest-lexile">{t.lexile}L</span>
-                </div>
-                <div className="bp-latest-title">{t.title}</div>
-                <div className="bp-latest-author">{t.author}</div>
-              </a>
-            ))}
-        </div>
+        <WeekTracker sec={student.sections.habits} goalMinutes={goal} />
+      </Card>
+
+      {/* Latest titles — covers first, so the shelf reads at a glance */}
+      <Card>
+        <TitleShelf titles={student.sections.skills.titles} onNavigate={onNavigate} />
       </Card>
 
       {/* Recommended Actions */}
@@ -835,18 +1033,130 @@ function Overview({ student, onNavigate }) {
 }
 
 // ─── Section detail wrapper ───────────────────────────────────────────────────
-function SectionDetail({ student, sectionKey }) {
+// ─── Week tracker ─────────────────────────────────────────────────────────────
+// The week's days against the daily goal, with its own week stepper. It lives
+// on the Overview — "did they read this week" is a scanning question, and it
+// was buried behind a "show this week's tracker" toggle on the Goals page.
+function WeekTracker({ sec, goalMinutes }) {
+  const [weekIdx, setWeekIdx] = useState(0)
+  const week = sec.weeks[weekIdx]
+
+  return (
+    <>
+      <div className="bp-goal-week-nav">
+        <button
+          className="bp-heatmap-nav-btn"
+          onClick={() => setWeekIdx((i) => Math.min(i + 1, sec.weeks.length - 1))}
+          disabled={weekIdx === sec.weeks.length - 1}
+          aria-label="Previous week"
+        >
+          <Icon name="chevron-left" size={11} />
+        </button>
+        <span className="bp-goal-week-label">
+          {week.label}
+          {week.current ? ' (This Week)' : ''}
+        </span>
+        <button
+          className="bp-heatmap-nav-btn"
+          onClick={() => setWeekIdx((i) => Math.max(i - 1, 0))}
+          disabled={weekIdx === 0}
+          aria-label="Next week"
+        >
+          <Icon name="chevron-right" size={11} />
+        </button>
+      </div>
+      <GoalTracker week={week} goalMinutes={goalMinutes} />
+    </>
+  )
+}
+
+// ─── Edit goal ────────────────────────────────────────────────────────────────
+// The one editable thing in this prototype. It was inert twice before, which
+// made the Goals page read as a mock of itself; now Save actually moves the
+// number, and every ring, tracker and "of N days" figure that reads the goal
+// moves with it. Nothing is persisted past a reload — the same stance as the
+// rest of the demo's forms.
+const GOAL_PRESETS = [10, 15, 20, 30, 45, 60]
+
+function EditGoalModal({ open, onClose, goal, onSave }) {
+  const [minutes, setMinutes] = useState(goal)
+
+  // Reopening after a cancel should show the goal as it stands, not the number
+  // that was abandoned.
+  useEffect(() => {
+    if (open) setMinutes(goal)
+  }, [open, goal])
+
+  const value = Number(minutes)
+  const valid = Number.isFinite(value) && value >= 1 && value <= 240
+
+  return (
+    <ActionModal
+      open={open}
+      onClose={onClose}
+      title="Edit reading goal"
+      save="Save goal"
+      saveDisabled={!valid}
+      secondary="Cancel"
+      onSave={() => onSave(value)}
+    >
+      <Field label="Daily goal" hint="Minutes a day, between 1 and 240.">
+        <Input
+          type="number"
+          min={1}
+          max={240}
+          value={minutes}
+          onChange={(e) => setMinutes(e.target.value)}
+        />
+      </Field>
+      {/* The common goals, so the usual case is one click rather than typing. */}
+      <div className="bp-goal-presets">
+        {GOAL_PRESETS.map((n) => (
+          <button
+            key={n}
+            type="button"
+            className={`bp-goal-preset${value === n ? ' bp-goal-preset--on' : ''}`}
+            onClick={() => setMinutes(n)}
+          >
+            {n} min
+          </button>
+        ))}
+      </div>
+    </ActionModal>
+  )
+}
+
+function SectionDetail({ student, sectionKey, goal, onEditGoal }) {
   const sec = student.sections[sectionKey]
   const c = C[sectionKey]
   const firstName = student.name.split(' ')[0]
   return (
     <div className="bp-content">
       {/* `.text` is the palette's on-tint tone (what the nav and every other
-          page's Hero use); `.bar` is the chart-stroke tone, too light here. */}
-      <Hero icon={<Ic name={c.icon} />} title={LABEL[sectionKey]} accent={c.text} accentBg={c.bg} />
+          page's Hero use); `.bar` is the chart-stroke tone, too light here.
+          Editing the goal is a page action, so it sits in the header's top
+          right with Reading Log's "Print log" rather than inside a card. */}
+      <Hero
+        icon={<Ic name={c.icon} />}
+        title={LABEL[sectionKey]}
+        accent={c.text}
+        accentBg={c.bg}
+        action={
+          sectionKey === 'habits' ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<Icon name="pencil" size={14} />}
+              onClick={onEditGoal}
+            >
+              Edit Goal
+            </Button>
+          ) : undefined
+        }
+      />
       {sectionKey === 'motivation' && <MotivationDetail sec={sec} c={c} />}
-      {sectionKey === 'integrity' && <IntegrityDetail sec={sec} c={c} />}
-      {sectionKey === 'habits' && <HabitsDetail sec={sec} c={c} />}
+      {sectionKey === 'integrity' && <IntegrityDetail sec={sec} c={c} student={student} />}
+      {sectionKey === 'habits' && <HabitsDetail sec={sec} c={c} goal={goal} />}
       {sectionKey === 'skills' && <SkillsDetail sec={sec} c={c} firstName={firstName} />}
       {sectionKey === 'motivation' && (
         <ShowMore label="suggested actions">
@@ -863,6 +1173,14 @@ function SectionDetail({ student, sectionKey }) {
 function MotivationDetail({ sec, c }) {
   const [periodIdx, setPeriodIdx] = useState(0)
   const rmi = sec.rmiHistory[periodIdx]
+
+  // `rmiHistory` is newest first; a chart reads the other way. Every index has
+  // carried its own deltas all along — they were just never shown, so a page
+  // about motivation couldn't say whether motivation was rising.
+  const history = [...sec.rmiHistory].reverse()
+  const prev = sec.rmiHistory[periodIdx + 1]
+  const goalDelta = prev ? rmi.readingGoalMinutes - prev.readingGoalMinutes : null
+  const trend = (delta) => <TrendPill delta={delta} format={(n) => `${n}%`} />
 
   return (
     <>
@@ -885,6 +1203,7 @@ function MotivationDetail({ sec, c }) {
             max={rmi.intrinsicMax}
             label="Intrinsic"
             color={c.bar}
+            trend={trend(rmi.intrinsicDelta)}
           />
           <SplitDonutChart
             intrinsicVal={rmi.intrinsicAvg}
@@ -892,15 +1211,58 @@ function MotivationDetail({ sec, c }) {
             max={rmi.motivationMax}
             label="Overall"
             intrinsicColor={c.bar}
+            trend={trend(rmi.motivationDelta)}
           />
           <DonutChart
             value={rmi.extrinsicAvg}
             max={rmi.extrinsicMax}
             label="Extrinsic"
             color={EXTRINSIC_COLOR}
+            trend={trend(rmi.extrinsicDelta)}
           />
         </div>
+        <div className="bp-rmi-donuts-note">Change against the previous index</div>
       </Card>
+
+      {/* Where the index has been. One period's donuts can't tell you whether a
+          19.2 is a recovery or a slide, which is the question the page is for. */}
+      {history.length > 1 && (
+        <Card>
+          <SectionHeading>Index over time</SectionHeading>
+          <div className="bp-chart-fit" style={{ '--chart-h': '180px' }}>
+            <TrendChart
+              type="line"
+              data={history.map((r) => ({
+                period: r.period.replace(' Index', ''),
+                overall: r.motivationAvg,
+                intrinsic: r.intrinsicAvg,
+                extrinsic: r.extrinsicAvg,
+              }))}
+              xKey="period"
+              yDomain={[0, rmi.motivationMax]}
+              height="sm"
+              series={[
+                { key: 'overall', name: 'Overall', color: c.bar },
+                { key: 'intrinsic', name: 'Intrinsic', color: c.bar, dashed: true, fillOpacity: 0 },
+                {
+                  key: 'extrinsic',
+                  name: 'Extrinsic',
+                  color: EXTRINSIC_COLOR,
+                  dashed: true,
+                  fillOpacity: 0,
+                },
+              ]}
+            />
+          </div>
+          <ChartLegend
+            items={[
+              { color: c.bar, label: 'Overall' },
+              { color: c.bar, label: 'Intrinsic', dashed: true },
+              { color: EXTRINSIC_COLOR, label: 'Extrinsic', dashed: true },
+            ]}
+          />
+        </Card>
+      )}
 
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
@@ -911,6 +1273,8 @@ function MotivationDetail({ sec, c }) {
         <SectionHeading>Recommended reading goal</SectionHeading>
         <StatRow icon="target" accent={c} label="Minutes per day">
           <span className="bp-statrow-value">{rmi.readingGoalMinutes}</span>
+          {/* The recommendation follows the index, so it moves too. */}
+          <TrendPill delta={goalDelta} format={(n) => `${n} min`} />
         </StatRow>
       </Card>
 
@@ -934,6 +1298,7 @@ function MotivationDetail({ sec, c }) {
               value: (m.score / m.max) * 100,
               color: mColor,
               valueLabel: String(m.score),
+              delta: m.delta,
             }
           })}
         />
@@ -983,9 +1348,12 @@ function topFlags(talks) {
     .sort((a, b) => b.count - a.count)
 }
 
-function IntegrityDetail({ sec }) {
+function IntegrityDetail({ sec, student }) {
   const [openSession, setOpenSession] = useState(null)
-  const [sessions, setSessions] = useState(SFR_SESSIONS)
+  // Real sessions built from this student's own talks — not SFR's fixtures.
+  const [sessions, setSessions] = useState(() =>
+    sec.bookTalks.map((talk, i) => talkSession(talk, student, i)),
+  )
   const [kindFilter, setKindFilter] = useState('all')
   const [flagFilter, setFlagFilter] = useState(FLAG_FILTER_ANY)
 
@@ -999,10 +1367,11 @@ function IntegrityDetail({ sec }) {
     return true
   })
 
-  // The modal is fed by the SFR session fixtures, not by these rows — the row
-  // index just picks one, the same stand-in behaviour as before.
+  // The row you clicked opens *its* session.
   function openRow(rowIdx) {
-    setOpenSession(sessions[rowIdx % sessions.length])
+    const talk = shown[rowIdx]
+    const idx = sec.bookTalks.indexOf(talk)
+    setOpenSession(sessions[idx] ?? null)
   }
 
   function handleUpdateSession(updated) {
@@ -1096,29 +1465,38 @@ function IntegrityDetail({ sec }) {
         />
       </Card>
 
+      {/* No reader list: you're already inside this reader's profile, so the
+          sidebar's "their other sessions" is the page you came from. */}
       <SessionModal
         session={openSession}
         allSessions={sessions}
         onClose={() => setOpenSession(null)}
         onUpdateSession={handleUpdateSession}
         onSelectSession={setOpenSession}
+        showReaderList={false}
       />
     </>
   )
 }
 
 // ─── Habits detail ────────────────────────────────────────────────────────────
-function HabitsDetail({ sec, c }) {
-  const [weekIdx, setWeekIdx] = useState(0)
-  const week = sec.weeks[weekIdx]
-
-  const goal = sec.dailyGoalMinutes
-
+function HabitsDetail({ sec, c, goal }) {
   // Derive today's minutes from the current week (last non-null day)
   const currentWeek = sec.weeks.find((w) => w.current)
   const todayMins = currentWeek
     ? ([...currentWeek.days].reverse().find((d) => d.minutes !== null)?.minutes ?? 0)
     : 0
+
+  // The card used to print today's minutes twice — once in the ring and once
+  // beside it — and said nothing else. The ring keeps the figure; the text
+  // beside it answers the two questions it left open: what the goal is, and
+  // how much of today is left to make it. The week strip underneath says
+  // whether today is typical, which is the thing a single day can't tell you.
+  const met = todayMins >= goal
+  const remaining = Math.max(goal - todayMins, 0)
+  const weekDays = (currentWeek ?? sec.weeks[0]).days
+  const logged = weekDays.filter((d) => d.minutes !== null)
+  const metDays = logged.filter((d) => d.minutes >= goal).length
 
   // Per-session and best-day stats are only meaningful once there is reading to
   // average over — otherwise they show a leftover figure next to "0 of 30 days".
@@ -1131,48 +1509,53 @@ function HabitsDetail({ sec, c }) {
       {/* Daily goal */}
       <Card>
         <SectionHeading>Daily goal</SectionHeading>
-        <div className="bp-goal-ring-header">
+        <div className="bp-goal-hero">
           <GoalRing minutes={todayMins} goal={goal} color={c.bar} />
-          <div className="bp-goal-ring-info">
+          <div className="bp-goal-hero-main">
             <div className="bp-goal-title">{goal} minutes a day</div>
-            <div className="bp-goal-ring-meta">
-              <span className="bp-goal-ring-num">{todayMins} min</span>
-              <span className="bp-goal-ring-dot">·</span>
-              <span>logged today</span>
+            <div
+              className={`bp-goal-hero-status${met ? ' bp-goal-hero-status--met' : ''}`}
+              style={met ? { '--goal-c': c.bar } : undefined}
+            >
+              {met ? (
+                <>
+                  <Icon name="check" size={14} stroke={2.6} />
+                  Goal met today
+                </>
+              ) : (
+                `${remaining} min to go today`
+              )}
+            </div>
+            {/* The same cells as the activity heatmap below, so the legend
+                under it explains this strip too. */}
+            <div className="bp-goal-hero-week">
+              <div className="bp-goal-hero-cells">
+                {weekDays.map((d, i) => (
+                  <Tooltip
+                    key={i}
+                    content={
+                      d.minutes === null
+                        ? `${d.day} — not yet`
+                        : `${d.day} — ${d.minutes} min${d.minutes >= goal ? ' · goal met' : ''}`
+                    }
+                  >
+                    <div
+                      className={`bp-heatmap-cell${d.minutes !== null && d.minutes >= goal ? ' bp-heatmap-cell--goal' : ''}`}
+                      style={{
+                        '--cell-bg': d.minutes ? c.bar : '#EAECF0',
+                        opacity: d.minutes === null ? 0.45 : 1,
+                      }}
+                    />
+                  </Tooltip>
+                ))}
+              </div>
+              <span className="bp-goal-hero-week-label">
+                Met on {metDays} of {logged.length} {logged.length === 1 ? 'day' : 'days'} so far
+                this week
+              </span>
             </div>
           </div>
-          <Button variant="secondary" size="sm" icon={<Icon name="pencil" size={14} />}>
-            Edit Goal
-          </Button>
         </div>
-        {/* The week-by-week tracker restates what the Reading activity heatmap
-            below already shows, so it's tucked away — the goal itself, which is
-            what the card is for, stays in view. */}
-        <ShowMore label="this week's tracker" inCard>
-          <div className="bp-goal-week-nav">
-            <button
-              className="bp-heatmap-nav-btn"
-              onClick={() => setWeekIdx((i) => Math.min(i + 1, sec.weeks.length - 1))}
-              disabled={weekIdx === sec.weeks.length - 1}
-              aria-label="Previous week"
-            >
-              <Icon name="chevron-left" size={11} />
-            </button>
-            <span className="bp-goal-week-label">
-              {week.label}
-              {week.current ? ' (This Week)' : ''}
-            </span>
-            <button
-              className="bp-heatmap-nav-btn"
-              onClick={() => setWeekIdx((i) => Math.max(i - 1, 0))}
-              disabled={weekIdx === 0}
-              aria-label="Next week"
-            >
-              <Icon name="chevron-right" size={11} />
-            </button>
-          </div>
-          <GoalTracker week={week} goalMinutes={goal} />
-        </ShowMore>
       </Card>
 
       {/* Heatmap */}
@@ -1398,6 +1781,9 @@ const STUDENTS = {
   marcus: {
     name: 'Marcus Chen',
     avatarColor: '#0F766E',
+    // Marcus reads in Comics Plus, and is verified — his 1,000-minute read-a-thon
+    // day is real, so his logs are trusted past the site's daily limit.
+    status: ['comicsplus', 'verified'],
     grade: '7th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [
@@ -1727,6 +2113,17 @@ const STUDENTS = {
         longestStreak: 18,
         booksCompleted: 24,
         minutes: 5480,
+        // This year against last — the trend follows the range you're viewing.
+        trend: {
+          minutesPct: 26,
+          lexile: 120,
+          goalDays: 19,
+          flags: -2,
+          currentStreak: 11,
+          longestStreak: 6,
+          rmi: 7,
+          label: 'vs last year',
+        },
       },
       all: {
         motivators: ['Enjoyment', 'Challenge'],
@@ -1740,9 +2137,6 @@ const STUDENTS = {
         booksCompleted: 41,
         minutes: 10120,
       },
-      // This month against last. Marcus is steady, so his flag count doesn't
-      // move — a zero delta renders no chip at all.
-      month: { minutesPct: 8, goalDays: 2, flags: 0 },
     },
     bennySummary:
       "Marcus is an outstanding reader. He's logged reading on **21 of the last 30 days** — the highest consistency in the class — and is reading well above grade level at **870L**. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with **only 1 flagged session all year**. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
@@ -2070,6 +2464,8 @@ const STUDENTS = {
   anne: {
     name: 'Anne Boonchuy',
     avatarColor: '#7C3AED',
+    // Anne logs at her public library too, so her school profile is tandemed.
+    status: ['tandem', 'comicsplus'],
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [
@@ -2334,6 +2730,16 @@ const STUDENTS = {
         longestStreak: 6,
         booksCompleted: 11,
         minutes: 1780,
+        trend: {
+          minutesPct: 21,
+          lexile: 90,
+          goalDays: 14,
+          flags: -3,
+          currentStreak: 2,
+          longestStreak: 3,
+          rmi: 4,
+          label: 'vs last year',
+        },
       },
       all: {
         motivators: ['Recognition', 'Curiosity'],
@@ -2347,7 +2753,6 @@ const STUDENTS = {
         booksCompleted: 19,
         minutes: 3170,
       },
-      month: { minutesPct: 22, goalDays: 5, flags: -2 },
     },
     bennySummary:
       "Anne is making real progress this month! Her reading habits are building — she's logged reading on **10 of the last 30 days** and has already logged 85 minutes this week. Her Lexile average has **climbed 50 points since April**, and she's consistently choosing harder books. Integrity is improving, with **flags down from 7 to 4**. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and **2 unfinished BTWB conversations** that are worth following up on.",
@@ -2738,6 +3143,9 @@ const STUDENTS = {
   tyler: {
     name: 'Tyler Voss',
     avatarColor: '#1D4ED8',
+    // Tyler's over-logging is what a freeze is for: he keeps his profile, but
+    // can't log for himself for ten days.
+    status: ['frozen'],
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [{ name: 'Beanstack Bookmark', claimed: false }],
@@ -2932,6 +3340,16 @@ const STUDENTS = {
         longestStreak: 3,
         booksCompleted: 3,
         minutes: 470,
+        trend: {
+          minutesPct: -58,
+          lexile: -20,
+          goalDays: -12,
+          flags: 9,
+          currentStreak: -4,
+          longestStreak: -2,
+          rmi: -11,
+          label: 'vs last year',
+        },
       },
       all: {
         motivators: null,
@@ -2945,7 +3363,6 @@ const STUDENTS = {
         booksCompleted: 7,
         minutes: 1040,
       },
-      month: { minutesPct: -64, goalDays: -6, flags: 5 },
     },
     bennySummary:
       'Tyler needs immediate attention. He has **no logged reading days in the past 30 days** — the only student in the class with zero recent activity. His Lexile average has **declined 15 points since March**, and he has **13 flagged sessions** including **6 suspected over-logs**, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.',
@@ -3340,6 +3757,239 @@ const CLASS_TABLE = [
 ]
 
 // ─── Reading Log ──────────────────────────────────────────────────────────────
+// Sessions the reading log can open. There is **one** session modal in this
+// repo — Sessions for Review's — so these are shaped the way it expects: a
+// session may carry flags, a book talk (`conversation`), both, or neither.
+// Sessions with a book talk are the ones that surface on the Book Talks tab.
+// A log entry with no key here still opens; it just has details and nothing else.
+// A book talk row *is* a session. Building it here rather than picking an
+// unrelated SFR fixture by row index is what makes the Book Talks tab and the
+// reading log agree: both open the same object, and a flag removed in one is
+// gone in the other.
+function talkSession(talk, student, i) {
+  const kindRating = { engagement: 'green', comprehension: 'green', integrity: null }
+  return {
+    id: `talk-${student.key ?? 'x'}-${i}`,
+    date: `20${talk.date.slice(6)}-${talk.date.slice(0, 2)}-${talk.date.slice(3, 5)}`,
+    dateLabel: talk.date,
+    type: talk.kind === 'integrity' ? 'flagged' : 'engagement',
+    kind: talk.kind,
+    status: 'completed',
+    challenge: 'Spring Reading Challenge 2025',
+    minutesLogged: 20 + ((i * 7) % 25),
+    engagementRating: kindRating[talk.kind] ?? null,
+    book: { title: talk.title, author: BOOK_AUTHORS[talk.title] ?? '', color: '#0D9488' },
+    flags: talk.flags.map((f, fi) => ({
+      id: `tf-${i}-${fi}`,
+      type: f,
+      label: SESSION_FLAGS[f]?.label ?? f,
+      description: SESSION_FLAG_DESCS[f] ?? '',
+    })),
+    positiveFlags: [],
+    conversation: TALK_CONVERSATION(talk, student),
+    changeLog: [
+      {
+        id: `tc-${i}`,
+        label: 'Book talk completed',
+        icon: 'circle-check',
+        color: '#16A97A',
+        by: 'Benny',
+        at: talk.date,
+      },
+    ],
+    student,
+  }
+}
+
+const BOOK_AUTHORS = {
+  'The Hobbit': 'J.R.R. Tolkien',
+  'A Wrinkle in Time': "Madeleine L'Engle",
+  "Ender's Game": 'Orson Scott Card',
+  'Fahrenheit 451': 'Ray Bradbury',
+  'Island of the Blue Dolphins': "Scott O'Dell",
+  Holes: 'Louis Sachar',
+  Hatchet: 'Gary Paulsen',
+  'The Giver': 'Lois Lowry',
+  Wonder: 'R.J. Palacio',
+  "Charlotte's Web": 'E.B. White',
+}
+
+const SESSION_FLAG_DESCS = {
+  'time-warning': 'The conversation took much longer than this reader usually takes.',
+  'book-swap': 'The book on this session changed after logging.',
+  'btwb-incomplete': 'The reader left the conversation before finishing it.',
+  'missing-details': "The reader couldn't recall specific events or characters.",
+  'over-limit': "The minutes logged exceeded your site's logging warning.",
+}
+
+// A short talk in the reader's own register — enough to read as a real
+// conversation without authoring eight transcripts by hand.
+const TALK_CONVERSATION = (talk, student) => {
+  const first = student.name.split(' ')[0]
+  const opener = {
+    engagement: `Hi ${first}! What did you think of ${talk.title}?`,
+    comprehension: `Hi ${first}! What was ${talk.title} really about, in your own words?`,
+    integrity: `Hi ${first}! Tell me about your reading session for ${talk.title}.`,
+  }[talk.kind]
+  return [
+    { role: 'benny', text: opener },
+    { role: 'student', text: TALK_ANSWERS[talk.kind]?.[0] ?? 'It was good.' },
+    { role: 'benny', text: 'What made you say that?' },
+    {
+      role: 'student',
+      text: TALK_ANSWERS[talk.kind]?.[1] ?? 'I liked it.',
+      flagged: talk.flags.length > 0,
+    },
+  ]
+}
+
+const TALK_ANSWERS = {
+  engagement: [
+    'i really liked it, especially the middle part where everything goes wrong',
+    'because you think you know what happens next and then it doesnt go that way at all',
+  ],
+  comprehension: [
+    "it's about someone figuring out where they belong",
+    'the main character keeps trying to fit in and then realises they dont have to',
+  ],
+  integrity: ['idk it was fine', 'i read it'],
+}
+
+const RL_SESSIONS = {
+  'Fifteen Hundred Miles from the Sun': {
+    id: 'rl-sess-1',
+    date: '2024-07-16',
+    type: 'flagged',
+    status: 'completed',
+    challenge: 'Summer Reading 2026',
+    minutesLogged: 1000,
+    engagementRating: null,
+    book: {
+      title: 'Fifteen Hundred Miles from the Sun',
+      author: 'Jonny Garza Villa',
+      color: '#B45309',
+      isbn: '9781510763128',
+    },
+    flags: [
+      {
+        id: 'rf1',
+        type: 'exceeded-warning',
+        label: 'Exceeded Warning',
+        description: "The number of minutes logged exceeded your site's logging warning.",
+      },
+    ],
+    positiveFlags: [],
+    conversation: [],
+    changeLog: [
+      {
+        id: 'rc1',
+        label: 'Session flagged',
+        icon: 'flag',
+        color: '#DC2626',
+        by: 'Benny',
+        at: 'Jul 16, 8:02 PM',
+      },
+    ],
+  },
+  Snapdragon: {
+    id: 'rl-sess-2',
+    date: '2024-07-11',
+    type: 'flagged',
+    status: 'completed',
+    challenge: 'Summer Reading 2026',
+    minutesLogged: 512,
+    engagementRating: null,
+    book: { title: 'Snapdragon', author: 'Kat Leyh', color: '#7C3AED', isbn: '9781250312846' },
+    flags: [
+      {
+        id: 'rf2',
+        type: 'exceeded-warning',
+        label: 'Exceeded Warning',
+        description: "512 minutes in one sitting is above this site's logging warning.",
+      },
+      {
+        id: 'rf3',
+        type: 'slow-response',
+        label: 'Took a While to Respond',
+        description: 'Took over one minute to respond.',
+      },
+    ],
+    positiveFlags: [],
+    conversation: [],
+    changeLog: [
+      {
+        id: 'rc2',
+        label: 'Session flagged',
+        icon: 'flag',
+        color: '#DC2626',
+        by: 'Benny',
+        at: 'Jul 11, 7:41 PM',
+      },
+    ],
+  },
+  Found: {
+    id: 'rl-sess-3',
+    date: '2024-07-16',
+    type: 'engagement',
+    status: 'completed',
+    challenge: 'Summer Reading 2026',
+    minutesLogged: 23,
+    engagementRating: 'green',
+    book: {
+      title: 'Found',
+      author: 'Margaret Peterson Haddix',
+      color: '#0D9488',
+      isbn: '9781416954170',
+    },
+    flags: [],
+    positiveFlags: [
+      {
+        id: 'rp1',
+        type: 'key-idea',
+        label: 'Accurate Key Idea',
+        description: 'Named a real idea from the book rather than a plot summary.',
+      },
+      {
+        id: 'rp2',
+        type: 'connection',
+        label: 'Draws Connections',
+        description: 'Connected the book to something outside it.',
+      },
+    ],
+    conversation: [
+      {
+        role: 'benny',
+        text: "Hi! It looks like you're reading Found. How far in are you?",
+      },
+      { role: 'student', text: "I'm about halfway" },
+      { role: 'benny', text: 'What did you like about the book so far?' },
+      {
+        role: 'student',
+        text: 'the ending!! i did NOT see it coming. i had to go back and read the last chapter twice',
+      },
+      { role: 'benny', text: 'Would you recommend it to a friend?' },
+      {
+        role: 'student',
+        text: 'yes definitely. my friend likes mysteries and this is kind of a mystery but with a twist',
+      },
+      {
+        role: 'benny',
+        text: 'Wonderful! Thank you for sharing. Your thoughts about Found were very interesting.',
+      },
+    ],
+    changeLog: [
+      {
+        id: 'rc3',
+        label: 'Book talk completed',
+        icon: 'circle-check',
+        color: '#16A97A',
+        by: 'Benny',
+        at: 'Jul 16, 5:20 PM',
+      },
+    ],
+  },
+}
+
 const RL_DATA = [
   {
     weekLabel: 'July 14–20',
@@ -3349,6 +3999,25 @@ const RL_DATA = [
         day: 'Tuesday',
         streak: 1,
         entries: [
+          // Logged straight from Comics Plus — the reader borrowed and read it
+          // there, and the session arrived in Beanstack on its own.
+          {
+            title: 'Lumberjanes, Vol. 1',
+            author: 'Noelle Stevenson',
+            amount: '35 Minutes',
+            flagged: false,
+            lexile: 'GN340L',
+            source: 'comicsplus',
+          },
+          // Also a book talk — opening this row and opening its row on the Book
+          // Talks tab land on the same session.
+          {
+            title: 'The Hobbit',
+            author: 'J.R.R. Tolkien',
+            amount: '20 Minutes',
+            flagged: false,
+            lexile: '1000L',
+          },
           {
             title: 'Fifteen Hundred Miles from the Sun',
             author: 'Jonny Garza Villa',
@@ -3380,6 +4049,14 @@ const RL_DATA = [
         day: 'Thursday',
         streak: 2,
         entries: [
+          {
+            title: 'Mighty Jack',
+            author: 'Ben Hatke',
+            amount: 'Completed',
+            completed: true,
+            lexile: 'GN320L',
+            source: 'comicsplus',
+          },
           {
             title: 'Snapdragon',
             author: 'Kat Leyh',
@@ -3464,33 +4141,126 @@ const RL_DATA = [
 // ─── Reading Log page ─────────────────────────────────────────────────────────
 // Entry state drives the card's colour: finished books read red with a
 // Completed pill, integrity-flagged sessions amber, everything else blue.
-function RLEntryCard({ entry }) {
+// The marks a log entry advertises: what opening it will show. Derived once and
+// shared, because the calendar card and the table row have to agree — a flag
+// visible in one view and missing in the other reads as a data bug.
+function rlMarks(entry, session) {
+  return [
+    session?.flags?.length && {
+      key: 'flag',
+      icon: 'flag',
+      className: 'bp-rl-mark bp-rl-mark--neg',
+      label: session.flags.length === 1 ? session.flags[0].label : `${session.flags.length} flags`,
+    },
+    session?.positiveFlags?.length && {
+      key: 'pos',
+      icon: 'flag',
+      className: 'bp-rl-mark bp-rl-mark--pos',
+      label:
+        session.positiveFlags.length === 1
+          ? session.positiveFlags[0].label
+          : `${session.positiveFlags.length} positive flags`,
+    },
+    session?.conversation?.length && {
+      key: 'talk',
+      icon: 'message-chatbot',
+      className: 'bp-rl-mark bp-rl-mark--talk',
+      label: 'Book talk with Benny',
+    },
+  ].filter(Boolean)
+}
+
+function RLMarks({ marks, entry, onOpen }) {
+  return marks.map((m) => (
+    <Tooltip key={m.key} content={m.label}>
+      <button
+        type="button"
+        className={m.className}
+        onClick={() => onOpen?.(entry)}
+        aria-label={m.label}
+      >
+        <Icon name={m.icon} size={14} />
+      </button>
+    </Tooltip>
+  ))
+}
+
+// Where the session came from. A partner-logged session isn't something the
+// reader typed in — it arrived from the app they read in.
+function RLSource({ source }) {
+  if (!source || !PARTNER_BRANDS[source]) return null
+  return (
+    <Tooltip content={`Logged from ${PARTNER_BRANDS[source].name}`}>
+      <span className="bp-rl-source" style={{ '--bp-mark-bg': PARTNER_BRANDS[source].accent }}>
+        <PartnerMark id={source} size={16} />
+      </span>
+    </Tooltip>
+  )
+}
+
+function RLEntryMenu() {
+  return (
+    <Flyout
+      placement="bottom-end"
+      trigger={({ toggle }) => (
+        <Tooltip content="Entry actions">
+          <button type="button" className="bp-rl-dots" onClick={toggle} aria-label="Entry actions">
+            <Icon name="dots" size={16} />
+          </button>
+        </Tooltip>
+      )}
+    >
+      {({ close }) => (
+        <DropdownMenu
+          items={[
+            { label: 'Edit', icon: <Icon name="pencil" size={15} /> },
+            { label: 'Remove', icon: <Icon name="trash" size={15} />, danger: true },
+          ]}
+          onClose={close}
+        />
+      )}
+    </Flyout>
+  )
+}
+
+function RLEntryCard({ entry, onOpen, talkFor }) {
   const tone = entry.completed
     ? ' bp-rl-entry--completed'
     : entry.flagged
       ? ' bp-rl-entry--flagged'
       : ''
+  const session = RL_SESSIONS[entry.title] ?? talkFor?.(entry.title)
+  const marks = rlMarks(entry, session)
+
   return (
     <div className={`bp-rl-entry${tone}`}>
       <div className="bp-rl-entry-top">
-        <div className="bp-rl-entry-title">{entry.title}</div>
+        {/* The title opens the session — flags and any book talk live there, not
+            squeezed into the log row. */}
+        <button type="button" className="bp-rl-entry-title" onClick={() => onOpen?.(entry)}>
+          {entry.title}
+        </button>
         <div className="bp-rl-entry-menu">
-          {entry.flagged && (
-            <span className="bp-rl-flag" title="Flagged">
-              <Icon name="flag" size={14} />
-            </span>
-          )}
-          <button type="button" className="bp-rl-dots" aria-label="Entry actions">
-            <Icon name="dots" size={16} />
-          </button>
+          <RLMarks marks={marks} entry={entry} onOpen={onOpen} />
+          <RLEntryMenu />
         </div>
       </div>
-      <div className="bp-rl-entry-author">{entry.author}</div>
-      {entry.completed ? (
-        <span className="bp-rl-completed">Completed</span>
-      ) : (
-        <div className="bp-rl-entry-amount">{entry.amount}</div>
-      )}
+      <div className="bp-rl-entry-author">
+        {entry.author}
+        {/* The table listed a Lexile per row; the card was the only view
+            without one. */}
+        {entry.lexile && <span className="bp-rl-entry-lexile">{entry.lexile}</span>}
+      </div>
+      <div className="bp-rl-entry-foot">
+        {entry.completed ? (
+          <span className="bp-rl-completed">Completed</span>
+        ) : (
+          <div className="bp-rl-entry-amount">{entry.amount}</div>
+        )}
+        {/* Bottom corner, off the author line where it competed with the text
+            it sat against. */}
+        <RLSource source={entry.source} />
+      </div>
     </div>
   )
 }
@@ -3501,61 +4271,77 @@ function RLEntryCard({ entry }) {
 // entries against the same sitting). Sorted newest first: the week grouping
 // hid that `RL_DATA`'s day order isn't strictly descending, but a flat list
 // shows it.
-const RL_MONTH = { label: 'July 2024', mm: '07', yyyy: '2024' }
+const RL_MONTH = { label: 'July 2024', mm: '07', yy: '24' }
 
 const RL_ROWS = RL_DATA.flatMap((week) =>
   week.days.flatMap((day) =>
     day.entries.map((e) => ({
-      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yyyy}`,
-      title: e.title,
-      author: e.author,
-      unit: e.completed ? '1 book' : e.amount.toLowerCase(),
+      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yy}`,
+      unit: e.completed ? '1 book' : e.amount.toLowerCase().replace(' minutes', ' min'),
       lexile: e.lexile ?? null,
-      flagged: !!e.flagged,
+      // The entry itself rides along so the row can advertise the same flags,
+      // book talk and partner source the calendar card does, and open the same
+      // session.
+      entry: e,
     })),
   ),
 ).sort((a, b) => b.date.localeCompare(a.date))
 
 const RL_VIEWS = [
-  { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
+  // "Calendar", not "List": it's the month laid out by day, with streaks in the
+  // margin — the flat list is the other one.
+  { id: 'calendar', label: 'Calendar', icon: <Icon name="calendar" size={15} /> },
   { id: 'table', label: 'Table', icon: <Icon name="layout-grid" size={15} /> },
 ]
 
-function ReadingLogTable() {
+function ReadingLogTable({ onOpen, talkFor }) {
   return (
     <Table
       flush
       compact
       scrollX
       columns={[
-        { key: 'date', label: 'Date', width: 96 },
+        {
+          key: 'date',
+          label: 'Date',
+          width: 74,
+          render: (d) => <span className="bp-rl-tbl-dim">{d}</span>,
+        },
         {
           key: 'title',
           label: 'Title',
-          render: (title, row) => (
+          render: (_v, row) => (
             <div className="bp-rl-tbl-title">
-              <span className="bp-rl-tbl-name">{title}</span>
-              <span className="bp-rl-tbl-author">{row.author}</span>
+              {/* Same target as the calendar card's title: one session, two
+                  ways of finding it. */}
+              <button type="button" className="bp-rl-tbl-name" onClick={() => onOpen?.(row.entry)}>
+                {row.entry.title}
+              </button>
+              <span className="bp-rl-tbl-author">{row.entry.author}</span>
+              {/* Their own row: chips mixed into the author line broke it in
+                  awkward places and read as part of the name. */}
+              <span className="bp-rl-tbl-tags">
+                <span className="bp-rl-entry-lexile bp-rl-entry-unit">{row.unit}</span>
+                {row.lexile && <span className="bp-rl-entry-lexile">{row.lexile}</span>}
+              </span>
             </div>
           ),
         },
-        { key: 'unit', label: 'Unit', width: 96 },
         {
-          key: 'lexile',
-          label: 'Lexile',
-          width: 76,
-          render: (lex) => lex ?? <span className="bp-talk-noflag">–</span>,
-        },
-        {
-          key: 'flagged',
+          key: 'marks',
           label: '',
-          width: 40,
+          width: 100,
           align: 'right',
-          render: () => (
-            <button type="button" className="bp-rl-dots" aria-label="Entry actions">
-              <Icon name="dots" size={16} />
-            </button>
-          ),
+          render: (_v, row) => {
+            const session = RL_SESSIONS[row.entry.title] ?? talkFor?.(row.entry.title)
+            return (
+              <div className="bp-rl-tbl-marks">
+                <RLMarks marks={rlMarks(row.entry, session)} entry={row.entry} onOpen={onOpen} />
+                <RLSource source={row.entry.source} />
+                <RLEntryMenu />
+              </div>
+            )
+          },
         },
       ]}
       rows={RL_ROWS}
@@ -3564,9 +4350,50 @@ function ReadingLogTable() {
   )
 }
 
-function ReadingLogPage() {
-  const [view, setView] = useState('list')
+function ReadingLogPage({ reader }) {
+  const [view, setView] = useState('calendar')
+  const [openSession, setOpenSession] = useState(null)
   const month = RL_MONTH.label
+
+  // An entry with no authored session still opens — you get the details, which
+  // is all a plain minutes log has.
+  // Lets a log row know whether its book has a talk behind it.
+  const talkFor = (title) => {
+    const talks = reader?.sections?.integrity?.bookTalks ?? []
+    const i = talks.findIndex((talk) => talk.title === title)
+    return i > -1 ? talkSession(talks[i], reader, i) : undefined
+  }
+
+  // Shaped for the shared session modal. An entry with no authored session is
+  // still a session — it just has no flags and no book talk.
+  const openEntry = (entry) => {
+    // A log entry whose book was talked about opens that talk's session — the
+    // Book Talks tab and the log are the same sessions seen two ways.
+    const talkIdx = reader?.sections?.integrity?.bookTalks?.findIndex(
+      (talk) => talk.title === entry.title,
+    )
+    if (talkIdx != null && talkIdx > -1) {
+      setOpenSession(talkSession(reader.sections.integrity.bookTalks[talkIdx], reader, talkIdx))
+      return
+    }
+    const authored = RL_SESSIONS[entry.title]
+    setOpenSession({
+      id: authored?.id ?? `rl-${entry.title}-${entry.amount ?? 'completed'}`,
+      date: authored?.date ?? '2024-07-16',
+      type: authored?.type ?? 'engagement',
+      status: 'completed',
+      challenge: authored?.challenge ?? 'Summer Reading 2026',
+      minutesLogged: authored?.minutesLogged ?? (parseInt(entry.amount, 10) || 0),
+      engagementRating: authored?.engagementRating ?? null,
+      book: authored?.book ?? { title: entry.title, author: entry.author, color: '#0284C7' },
+      flags: authored?.flags ?? [],
+      positiveFlags: authored?.positiveFlags ?? [],
+      conversation: authored?.conversation ?? [],
+      changeLog: authored?.changeLog ?? [],
+      student: reader,
+    })
+  }
+
   return (
     <div className="bp-content">
       <Hero
@@ -3603,7 +4430,7 @@ function ReadingLogPage() {
           </div>
         </div>
         {view === 'table' ? (
-          <ReadingLogTable />
+          <ReadingLogTable onOpen={openEntry} talkFor={talkFor} />
         ) : (
           <div className="bp-rl-body">
             {RL_DATA.map((week, wi) => (
@@ -3621,11 +4448,12 @@ function ReadingLogPage() {
                         </span>
                       )}
                     </div>
-                    {/* A day with nothing logged shows only its date — no filler row. */}
-                    {day.entries.length > 0 && (
+                    {day.entries.length === 0 ? (
+                      <div className="bp-rl-empty-day" aria-label="Nothing logged" />
+                    ) : (
                       <div className="bp-rl-entries">
                         {day.entries.map((e, ei) => (
-                          <RLEntryCard key={ei} entry={e} />
+                          <RLEntryCard key={ei} entry={e} onOpen={openEntry} talkFor={talkFor} />
                         ))}
                       </div>
                     )}
@@ -3636,6 +4464,14 @@ function ReadingLogPage() {
           </div>
         )}
       </Card>
+
+      {/* The one session modal. No reader list: you're inside this reader's
+          own profile, so "their other sessions" is the page you came from. */}
+      <SessionModal
+        session={openSession}
+        onClose={() => setOpenSession(null)}
+        showReaderList={false}
+      />
     </div>
   )
 }
@@ -4251,13 +5087,175 @@ const CHALLENGE_TABS = [
   { id: 'past', label: 'Past' },
 ]
 
-function ChallengesPage({ student, onNavigate }) {
+// ─── Challenge log sheet ──────────────────────────────────────────────────────
+// The printable log a teacher hands in or files: everything a reader logged
+// toward one challenge, on one sheet, with somewhere to sign. It's a full-page
+// overlay rather than a panel because it's a document — and it really prints:
+// `@media print` drops the app around it and leaves the sheet on the page.
+//
+// The rows are the reader's own log entries; the totals are derived from them
+// rather than authored, so the sheet can't disagree with the log it came from.
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
+function challengeLogRows(startedOn) {
+  const m = /^(\w+)\s+\d+,\s*(\d{4})$/.exec(startedOn ?? '')
+  const mm = m ? String(MONTHS.indexOf(m[1]) + 1).padStart(2, '0') : RL_MONTH.mm
+  const yy = m ? m[2].slice(2) : RL_MONTH.yy
+
+  return RL_DATA.flatMap((week) =>
+    week.days.flatMap((day) =>
+      day.entries.map((e) => ({
+        date: `${mm}/${String(day.date).padStart(2, '0')}/${yy}`,
+        title: e.title,
+        author: e.author,
+        minutes: e.completed ? null : parseInt(e.amount.replace(/,/g, ''), 10) || 0,
+        completed: !!e.completed,
+        source: e.source,
+      })),
+    ),
+  ).sort((a, b) => a.date.localeCompare(b.date))
+}
+
+function ChallengeLogSheet({ open, onClose, student, challenge }) {
+  const rows = challengeLogRows(challenge.startedOn)
+  const minutes = rows.reduce((n, r) => n + (r.minutes ?? 0), 0)
+  const books = rows.filter((r) => r.completed).length
+  const days = new Set(rows.map((r) => r.date)).size
+
+  return (
+    <Modal open={open} onClose={onClose} variant="center" ariaLabel="Challenge log">
+      <div className="bp-clog">
+        {/* Screen-only chrome: it must not print. */}
+        <div className="bp-clog-bar">
+          <Button
+            variant="secondary"
+            size="sm"
+            icon={<Icon name="chevron-left" size={14} />}
+            onClick={onClose}
+          >
+            Back
+          </Button>
+          <span className="bp-clog-bar-title">Challenge log</span>
+          <Button size="sm" icon={<Icon name="printer" size={15} />} onClick={() => window.print()}>
+            Print
+          </Button>
+        </div>
+
+        <div className="bp-clog-sheet">
+          <div className="bp-clog-head">
+            <div>
+              <h1 className="bp-clog-title">{challenge.name}</h1>
+              <div className="bp-clog-dates">{challenge.dates}</div>
+            </div>
+            <div className="bp-clog-benny">
+              <img src="/bs-prototypes/benny.png" alt="" width={40} height={40} />
+              <span>Beanstack</span>
+            </div>
+          </div>
+
+          <div className="bp-clog-reader">
+            {[
+              ['Reader', student.name],
+              ['Grade', student.grade],
+              ['Started', challenge.startedOn],
+              ['Enrolled', 'Yes'],
+            ].map(([label, value]) => (
+              <div key={label} className="bp-clog-field">
+                <span className="bp-clog-field-label">{label}</span>
+                <span className="bp-clog-field-value">{value}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="bp-clog-totals">
+            {[
+              ['Minutes read', minutes.toLocaleString()],
+              ['Books finished', books],
+              ['Days logged', days],
+              ['Sessions', rows.length],
+            ].map(([label, value]) => (
+              <div key={label} className="bp-clog-total">
+                <span className="bp-clog-total-num">{value}</span>
+                <span className="bp-clog-total-label">{label}</span>
+              </div>
+            ))}
+          </div>
+
+          <table className="bp-clog-table">
+            <thead>
+              <tr>
+                <th className="bp-clog-th bp-clog-th--date">Date</th>
+                <th className="bp-clog-th">Title</th>
+                <th className="bp-clog-th bp-clog-th--num">Logged</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((r, i) => (
+                <tr key={i}>
+                  <td className="bp-clog-td bp-clog-td--date">{r.date}</td>
+                  <td className="bp-clog-td">
+                    <span className="bp-clog-book">{r.title}</span>
+                    <span className="bp-clog-by">
+                      {r.author}
+                      {/* Named, not marked: a printed sheet has no tooltips. */}
+                      {r.source && PARTNER_BRANDS[r.source]
+                        ? ` · via ${PARTNER_BRANDS[r.source].name}`
+                        : ''}
+                    </span>
+                  </td>
+                  <td className="bp-clog-td bp-clog-td--num">
+                    {r.completed ? 'Finished' : `${r.minutes} min`}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <div className="bp-clog-foot">
+            <div className="bp-clog-sign">
+              <span className="bp-clog-sign-line" />
+              <span className="bp-clog-field-label">Parent or guardian signature</span>
+            </div>
+            <div className="bp-clog-sign">
+              <span className="bp-clog-sign-line" />
+              <span className="bp-clog-field-label">Date</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Modal>
+  )
+}
+
+function ChallengesPage({ student }) {
   const [tab, setTab] = useState('current')
+  const [logFor, setLogFor] = useState(null)
   const all = student.challenges ?? []
   const shown = all.filter((c) => c.status === tab)
 
   return (
     <div className="bp-content">
+      {logFor && (
+        <ChallengeLogSheet
+          open={!!logFor}
+          onClose={() => setLogFor(null)}
+          student={student}
+          challenge={logFor}
+        />
+      )}
       <Hero
         icon={<Ic name="ti-trophy" />}
         title="Challenges"
@@ -4293,11 +5291,8 @@ function ChallengesPage({ student, onNavigate }) {
                   <span>Started on: {c.startedOn}</span>
                   {c.minutes != null && <span>Minutes reading: {c.minutes.toLocaleString()}</span>}
                 </div>
-                <button
-                  type="button"
-                  className="bp-latest-link"
-                  onClick={() => onNavigate('readinglog')}
-                >
+                {/* The printable sheet, not a detour to the reading log. */}
+                <button type="button" className="bp-latest-link" onClick={() => setLogFor(c)}>
                   View challenge log
                   <Icon name="arrow-right" size={14} />
                 </button>
@@ -4468,10 +5463,10 @@ export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], ren
                             <button
                               type="button"
                               className="bp-adm-student-name"
-                              title={`Open ${STUDENTS[s.key].name}'s full profile`}
+                              title={`Open ${STUDENTS[s.key].name}'s profile`}
                               onClick={(e) => {
                                 e.stopPropagation()
-                                onStudentClick?.(s.key, 'full')
+                                onStudentClick?.(s.key)
                               }}
                             >
                               {STUDENTS[s.key].name}
@@ -4701,8 +5696,22 @@ function ProfileBody({
   renderExtra,
 }) {
   const extraSections = extraNav.map((n) => n.section)
+  // The daily goal lives here because three places read it — the Overview's
+  // week tracker, the Goals page's ring, and the modal that changes it — and
+  // only the body sees all three. Reset per student: it's their goal, not the
+  // panel's. Not persisted past a reload, like the rest of the demo's forms.
+  const [goal, setGoal] = useState(student.sections.habits.dailyGoalMinutes)
+  const [editingGoal, setEditingGoal] = useState(false)
+  useEffect(() => setGoal(student.sections.habits.dailyGoalMinutes), [student])
+
   return (
     <>
+      <EditGoalModal
+        open={editingGoal}
+        onClose={() => setEditingGoal(false)}
+        goal={goal}
+        onSave={setGoal}
+      />
       <ProfileCtrls
         onClose={onClose}
         expanded={expanded}
@@ -4728,11 +5737,16 @@ function ProfileBody({
               {extraSections.includes(activeSection) ? (
                 renderExtra?.(activeSection, student)
               ) : activeSection === null ? (
-                <Overview student={student} onNavigate={onNavigate} />
+                <Overview student={student} onNavigate={onNavigate} goal={goal} />
               ) : ANALYSIS_SECTIONS.has(activeSection) ? (
-                <SectionDetail student={student} sectionKey={activeSection} />
+                <SectionDetail
+                  student={student}
+                  sectionKey={activeSection}
+                  goal={goal}
+                  onEditGoal={() => setEditingGoal(true)}
+                />
               ) : activeSection === 'readinglog' ? (
-                <ReadingLogPage />
+                <ReadingLogPage reader={student} />
               ) : activeSection === 'textchallenges' ? (
                 <TextChallengesPage student={student} />
               ) : activeSection === 'reviews' ? (
@@ -4748,7 +5762,7 @@ function ProfileBody({
               ) : activeSection === 'rewards' ? (
                 <RewardsPage student={student} />
               ) : activeSection === 'challenges' ? (
-                <ChallengesPage student={student} onNavigate={onNavigate} />
+                <ChallengesPage student={student} />
               ) : (
                 <PlaceholderPage pageKey={activeSection} />
               )}
