@@ -2,7 +2,7 @@
 // prototype. Styles live in ../ReaderProfile.css (imported by the prototype
 // root + the Pattern Library catalog). Shared bits (Ic, COVER_PALETTES) come
 // from @components/ui; everything generic lives in @components/*.
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { Ic, COVER_PALETTES } from '@components/ui'
 import { Icon } from '@components/Icon/Icon'
 
@@ -38,52 +38,100 @@ export function SectionHeading({ children }) {
 // ─── Goal ring ────────────────────────────────────────────────────────────────
 // The ring arc carries the progress; the caller states the goal in its own label,
 // so the ring shows only what was logged (no "/ 30 min" denominator to re-read).
+// Everything is drawn from the accent at different opacities rather than mixed
+// into new hex values, so the ring works with whatever colour the section
+// hands it and still reads as one object: a tinted track and a gradient arc.
+// `met` gets a real check badge capping the ring instead of a '✓' smuggled
+// into the unit label. Minutes past the goal are not drawn — an inner arc for
+// the surplus just read as a second ring; the filled ring says "done" and the
+// number says by how much.
 export function GoalRing({ minutes, goal, color }) {
-  const R = 34
-  const sw = 7
+  const SIZE = 96
+  const MID = SIZE / 2
+  const SW = 9
+  const R = 38 // leaves room for the badge, which sits 8px off the centreline
   const circ = 2 * Math.PI * R
+
   const pct = minutes == null ? 0 : Math.min(minutes / goal, 1)
-  const dash = pct * circ
-  const met = minutes !== null && minutes >= goal
+  const met = minutes != null && minutes >= goal
+
+  const gradId = useId()
 
   return (
-    <svg width={88} height={88} viewBox="0 0 88 88" style={{ flexShrink: 0 }}>
-      <circle cx={44} cy={44} r={R} fill="none" stroke="#EAECF0" strokeWidth={sw} />
-      {minutes > 0 && (
+    <svg
+      width={SIZE}
+      height={SIZE}
+      viewBox={`0 0 ${SIZE} ${SIZE}`}
+      style={{ flexShrink: 0 }}
+      role="img"
+      aria-label={
+        minutes == null ? `No reading logged today` : `${minutes} of ${goal} minutes read today`
+      }
+    >
+      <defs>
+        {/* Light at the start of the sweep, full strength by the end, so a
+            part-finished ring still has somewhere to go. */}
+        <linearGradient id={gradId} x1="0" y1="1" x2="1" y2="0">
+          <stop offset="0%" stopColor={color} stopOpacity={0.45} />
+          <stop offset="100%" stopColor={color} stopOpacity={1} />
+        </linearGradient>
+      </defs>
+
+      <circle cx={MID} cy={MID} r={R} fill="none" stroke={color} strokeWidth={SW} opacity={0.13} />
+
+      {pct > 0 && (
         <circle
-          cx={44}
-          cy={44}
+          cx={MID}
+          cy={MID}
           r={R}
           fill="none"
-          stroke={color}
-          strokeWidth={sw}
+          stroke={`url(#${gradId})`}
+          strokeWidth={SW}
           strokeLinecap="round"
-          strokeDasharray={`${dash} ${circ}`}
-          transform="rotate(-90 44 44)"
+          strokeDasharray={`${pct * circ} ${circ}`}
+          transform={`rotate(-90 ${MID} ${MID})`}
           style={{ transition: 'stroke-dasharray 0.4s ease' }}
         />
       )}
+
+      {met && (
+        <g transform={`translate(${MID} ${MID - R})`}>
+          <circle r={9} fill={color} />
+          <path
+            d="M -3.6 0.2 L -1 2.8 L 3.8 -2.6"
+            fill="none"
+            stroke="#fff"
+            strokeWidth={2.2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
+      )}
+
       <text
-        x={44}
-        y={met ? 44 : 45}
+        x={MID}
+        y={MID + 4}
         textAnchor="middle"
-        fontSize={met ? 20 : 21}
+        fontSize={27}
         fontWeight={800}
+        letterSpacing="-0.5"
         fill={met ? color : '#111827'}
         fontFamily="inherit"
       >
         {minutes ?? '–'}
       </text>
       <text
-        x={44}
-        y={met ? 59 : 60}
+        x={MID}
+        y={MID + 19}
         textAnchor="middle"
         fontSize={10}
         fontWeight={700}
+        letterSpacing="0.3"
         fill={met ? color : '#9CA3AF'}
         fontFamily="inherit"
+        opacity={met ? 0.85 : 1}
       >
-        {met ? 'min ✓' : 'min'}
+        min
       </text>
     </svg>
   )

@@ -100,152 +100,168 @@ export function SplitDonutChart({
   )
 }
 
+// One month at a time, in the same shape as the shared <DatePicker>: weekdays
+// across, weeks down. The grid spans the card — seven columns share whatever
+// width there is — and cells stay square between these two heights, so the
+// calendar can't grow the way an unbounded square grid did. The CSS reads all
+// three back off `--hm-row-min` / `--hm-row-max` / `--hm-gap`.
+const ROW_MIN = 28
+const ROW_MAX = 36
+// The gap is what a merged streak has to close, so it has to be wide enough to
+// see: at 4px a 121px-wide cell in a full-screen card read as joined to its
+// neighbour whether it was or not.
+const GAP = 6
+const WEEKDAYS = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+const STREAK_LOOKBACK = 60 // days of run-up, so a streak crossing the 1st counts
+const STREAK_LOOKAHEAD = 31 // and of run-out, so one crossing the last does too
+
+// Dates are parsed from `YYYY-MM-DD` — UTC midnight — and keys go back out
+// through `toISOString`, so every step here is a UTC step. Walking with the
+// local setters drifts an hour across a DST boundary and lands a cell on the
+// wrong day.
+const dayKey = (d) => d.toISOString().slice(0, 10)
+const addDays = (d, n) => {
+  const out = new Date(d)
+  out.setUTCDate(out.getUTCDate() + n)
+  return out
+}
+
 export function ReadingHeatmap({ goalMinutes, color, data }) {
-  const [monthOffset, setMonthOffset] = useState(0) // 0 = most recent 3-month window
-  const MAX_OFFSET = 19 // go back to Sep 2023
-
   const today = new Date('2025-05-15')
+  const FIRST = { year: 2023, month: 8 } // Sep 2023, the first month on record
+  const [view, setView] = useState({ year: today.getUTCFullYear(), month: today.getUTCMonth() })
 
-  // End of window: last day of (today's month − monthOffset)
-  const windowEndMonth = new Date(today.getFullYear(), today.getMonth() - monthOffset + 1, 0)
-  const windowEnd = monthOffset === 0 ? today : windowEndMonth
+  const first = new Date(Date.UTC(view.year, view.month, 1))
+  const last = new Date(Date.UTC(view.year, view.month + 1, 0))
+  const atStart = view.year === FIRST.year && view.month === FIRST.month
+  const atEnd = view.year === today.getUTCFullYear() && view.month === today.getUTCMonth()
 
-  // Start of window: first day of the month 3 months before windowEnd's month
-  const windowStart = new Date(windowEndMonth.getFullYear(), windowEndMonth.getMonth() - 3, 1)
-
-  // Grid starts on the Sunday on or before windowStart
-  const gridStart = new Date(windowStart)
-  gridStart.setDate(gridStart.getDate() - gridStart.getDay())
-
-  const FIXED_WEEKS = 18 // always render exactly 18 columns so grid height never jumps
-  const weeks = []
-  const cur = new Date(gridStart)
-  while (weeks.length < FIXED_WEEKS) {
-    const week = []
-    for (let i = 0; i < 7; i++) {
-      const key = cur.toISOString().slice(0, 10)
-      const inRange = cur >= windowStart && cur <= windowEnd
-      week.push({
-        key,
-        mins: inRange ? (data[key] ?? 0) : 0,
-        inRange,
-        month: cur.getMonth(),
-        dateObj: new Date(cur),
-      })
-      cur.setDate(cur.getDate() + 1)
-    }
-    weeks.push(week)
+  const step = (n) => {
+    const d = new Date(Date.UTC(view.year, view.month + n, 1))
+    setView({ year: d.getUTCFullYear(), month: d.getUTCMonth() })
   }
 
-  const allDays = weeks
-    .flat()
-    .filter((d) => d.inRange)
-    .sort((a, b) => (a.key < b.key ? -1 : 1))
-  const streakMap = {}
-  let run = 0
-  allDays.forEach((d) => {
-    run = d.mins > 0 ? run + 1 : 0
-    streakMap[d.key] = run
-  })
-
-  const monthLabels = []
-  let lastMonth = -1
-  weeks.forEach((week, wi) => {
-    const first = week.find((d) => d.inRange)
-    if (first && first.month !== lastMonth) {
-      monthLabels.push({ wi, label: first.dateObj.toLocaleString('en-US', { month: 'short' }) })
-      lastMonth = first.month
-    }
-  })
-
-  // Nav label: "Mar – May 2025" or "Dec 2024 – Feb 2025"
-  const fmtMonth = (d) => d.toLocaleString('en-US', { month: 'short' })
-  const navLabel =
-    windowStart.getFullYear() === windowEnd.getFullYear()
-      ? `${fmtMonth(windowStart)} – ${fmtMonth(windowEnd)} ${windowEnd.getFullYear()}`
-      : `${fmtMonth(windowStart)} ${windowStart.getFullYear()} – ${fmtMonth(windowEnd)} ${windowEnd.getFullYear()}`
-
-  const getBg = ({ mins, inRange }) => {
-    if (!inRange || mins === undefined) return 'transparent'
-    if (mins === 0) return '#EAECF0'
-    return color
+  // Streaks are a property of the reading, not of the window: the walk starts
+  // well before the 1st and runs past the last, so a streak that opened in
+  // the previous month or carries into the next one arrives here at its real
+  // length. `streakLen` holds that length for *every* day of the run — the
+  // day-so-far count it used to hold left the opening day of a run reading as
+  // a 1-day streak, which is to say not a streak at all.
+  const streakLen = {}
+  let group = []
+  const flush = () => {
+    group.forEach((k) => (streakLen[k] = group.length))
+    group = []
   }
+  const walkEnd = addDays(last, STREAK_LOOKAHEAD) < today ? addDays(last, STREAK_LOOKAHEAD) : today
+  for (let d = addDays(first, -STREAK_LOOKBACK); d <= walkEnd; d = addDays(d, 1)) {
+    const key = dayKey(d)
+    if ((data[key] ?? 0) > 0) group.push(key)
+    else flush()
+  }
+  flush()
 
-  const DAY_LABELS = ['', 'Mon', '', 'Wed', '', 'Fri', '']
+  const isStreak = (d) => streakLen[dayKey(d)] >= 2
+
+  // Leading blanks put the 1st under its weekday; trailing blanks keep the
+  // last row a full seven wide.
+  const cells = Array.from({ length: first.getUTCDay() }, () => null)
+  for (let d = 1; d <= last.getUTCDate(); d++) {
+    const date = new Date(Date.UTC(view.year, view.month, d))
+    const key = dayKey(date)
+    cells.push({
+      key,
+      date,
+      day: d,
+      mins: data[key] ?? 0,
+      future: date > today,
+      streak: streakLen[key] >= 2 ? streakLen[key] : 0,
+      // Whether the rail carries on into the next cell — which needs a next
+      // cell to carry on into. The grid wraps at the week, so a run spanning
+      // Saturday→Sunday caps off at the row's edge, and one crossing the 1st
+      // or the last caps off at the month's; in both cases there is nothing
+      // on the other side to draw across.
+      joinL: d > 1 && date.getUTCDay() !== 0 && isStreak(addDays(date, -1)),
+      joinR: d < last.getUTCDate() && date.getUTCDay() !== 6 && isStreak(addDays(date, 1)),
+    })
+  }
+  while (cells.length % 7) cells.push(null)
 
   return (
-    <div className="bp-heatmap">
+    <div
+      className="bp-heatmap"
+      style={{
+        '--hm-row-min': `${ROW_MIN}px`,
+        '--hm-row-max': `${ROW_MAX}px`,
+        '--hm-gap': `${GAP}px`,
+      }}
+    >
       <div className="bp-heatmap-nav">
         <button
           className="bp-heatmap-nav-btn"
-          onClick={() => setMonthOffset((o) => Math.min(o + 1, MAX_OFFSET))}
-          disabled={monthOffset >= MAX_OFFSET}
-          aria-label="Previous 4 months"
+          onClick={() => step(-1)}
+          disabled={atStart}
+          aria-label="Previous month"
         >
           <Icon name="chevron-left" size={11} />
         </button>
-        <span className="bp-heatmap-nav-label">{navLabel}</span>
+        <span className="bp-heatmap-nav-label">
+          {first.toLocaleString('en-US', { month: 'long', year: 'numeric', timeZone: 'UTC' })}
+        </span>
         <button
           className="bp-heatmap-nav-btn"
-          onClick={() => setMonthOffset((o) => Math.max(o - 1, 0))}
-          disabled={monthOffset === 0}
-          aria-label="Next 4 months"
+          onClick={() => step(1)}
+          disabled={atEnd}
+          aria-label="Next month"
         >
           <Icon name="chevron-right" size={11} />
         </button>
       </div>
-      <div className="bp-heatmap-body">
-        <div className="bp-heatmap-day-labels">
-          {DAY_LABELS.map((d, i) => (
-            <span key={i} className="bp-heatmap-day-label">
-              {d}
-            </span>
-          ))}
-        </div>
-        <div className="bp-heatmap-grid">
-          {weeks.map((week, wi) => (
-            <div key={wi} className="bp-heatmap-col">
-              {week.map((day, di) => {
-                const goalMet = day.inRange && day.mins >= goalMinutes
-                const inStreak = day.inRange && streakMap[day.key] >= 2
-                let cls = 'bp-heatmap-cell'
-                if (goalMet) cls += ' bp-heatmap-cell--goal'
-                if (inStreak) cls += ' bp-heatmap-cell--streak'
-                let tip = null
-                if (day.inRange) {
-                  const label = day.dateObj.toLocaleString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })
-                  const minsTxt = day.mins > 0 ? `${day.mins} min` : 'No reading'
-                  const badges = [
-                    goalMet && 'Goal met',
-                    inStreak && `🔥 ${streakMap[day.key]}-day streak`,
-                  ]
-                    .filter(Boolean)
-                    .join(' · ')
-                  tip = badges ? `${label} · ${minsTxt} · ${badges}` : `${label} · ${minsTxt}`
-                }
-                return (
-                  <div
-                    key={di}
-                    className={cls}
-                    style={{ '--cell-bg': getBg(day) }}
-                    data-tooltip={tip ?? undefined}
-                  />
-                )
-              })}
-            </div>
-          ))}
-        </div>
-      </div>
-      <div className="bp-heatmap-months">
-        <div className="bp-heatmap-month-spacer" />
-        {monthLabels.map((m, i) => {
-          const span = (monthLabels[i + 1]?.wi ?? weeks.length) - m.wi
+      <div className="bp-heatmap-grid">
+        {WEEKDAYS.map((d) => (
+          <span key={d} className="bp-heatmap-wd">
+            {d}
+          </span>
+        ))}
+        {cells.map((cell, i) => {
+          if (!cell) return <span key={`blank-${i}`} className="bp-heatmap-blank" />
+          const goalMet = !cell.future && cell.mins >= goalMinutes
+          const inStreak = !cell.future && cell.streak > 0
+          const label = cell.date.toLocaleString('en-US', {
+            month: 'short',
+            day: 'numeric',
+            timeZone: 'UTC',
+          })
+          const minsTxt = cell.mins > 0 ? `${cell.mins} min` : 'No reading'
+          const badges = [goalMet && 'Goal met', inStreak && `🔥 ${cell.streak}-day streak`]
+            .filter(Boolean)
+            .join(' · ')
           return (
-            <div key={i} className="bp-heatmap-month-label" style={{ flex: span }}>
-              {m.label}
+            <div
+              key={cell.key}
+              className={[
+                'bp-heatmap-cell',
+                cell.mins > 0 && !cell.future && 'bp-heatmap-cell--read',
+                goalMet && 'bp-heatmap-cell--goal',
+                inStreak && 'bp-heatmap-cell--streak',
+                inStreak && cell.joinL && 'bp-heatmap-cell--streak-l',
+                inStreak && cell.joinR && 'bp-heatmap-cell--streak-r',
+                cell.future && 'bp-heatmap-cell--future',
+              ]
+                .filter(Boolean)
+                .join(' ')}
+              style={{
+                '--cell-bg': cell.future ? 'transparent' : cell.mins > 0 ? color : '#EAECF0',
+              }}
+              data-tooltip={
+                cell.future
+                  ? undefined
+                  : badges
+                    ? `${label} · ${minsTxt} · ${badges}`
+                    : `${label} · ${minsTxt}`
+              }
+            >
+              <span className="bp-heatmap-daynum">{cell.day}</span>
             </div>
           )
         })}

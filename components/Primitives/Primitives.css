@@ -197,24 +197,28 @@
   opacity: 1;
 }
 
+/* `--ttp-shift` is set by the component when the centred bubble would cross
+   the edge of whatever clips it (a scroll pane, a card with `overflow:
+   hidden`). It nudges the bubble back inside; the arrow below counter-shifts
+   by the same amount so it still points at the anchor. */
 .ttp--top .ttp-bubble {
   bottom: calc(100% + 6px);
   left: 50%;
-  transform: translateX(-50%) translateY(2px);
+  transform: translateX(calc(-50% + var(--ttp-shift, 0px))) translateY(2px);
 }
 .ttp--top:hover .ttp-bubble,
 .ttp--top:focus-within .ttp-bubble {
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(calc(-50% + var(--ttp-shift, 0px))) translateY(0);
 }
 
 .ttp--bottom .ttp-bubble {
   top: calc(100% + 6px);
   left: 50%;
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateX(calc(-50% + var(--ttp-shift, 0px))) translateY(-2px);
 }
 .ttp--bottom:hover .ttp-bubble,
 .ttp--bottom:focus-within .ttp-bubble {
-  transform: translateX(-50%) translateY(0);
+  transform: translateX(calc(-50% + var(--ttp-shift, 0px))) translateY(0);
 }
 
 .ttp--left .ttp-bubble {
@@ -251,13 +255,13 @@
 .ttp--top .ttp-bubble::after {
   bottom: -3px;
   left: 50%;
-  margin-left: -4px;
+  margin-left: calc(-4px - var(--ttp-shift, 0px));
 }
 
 .ttp--bottom .ttp-bubble::after {
   top: -3px;
   left: 50%;
-  margin-left: -4px;
+  margin-left: calc(-4px - var(--ttp-shift, 0px));
 }
 
 .ttp--left .ttp-bubble::after {

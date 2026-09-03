@@ -961,7 +961,7 @@ function OverviewStats({ metrics, onOpen, range, onRangeChange }) {
               {m.unit && <span className="bp-statrow-unit"> {m.unit}</span>}
             </span>
           )}
-          {m.trend && <TrendPill {...m.trend} />}
+          {m.trend && <TrendDelta {...m.trend} />}
         </StatRow>
       ))}
       {hidden > 0 && (
@@ -1001,7 +1001,7 @@ function Overview({ student, onNavigate, goal }) {
           on the page you scan. */}
       <Card>
         <div className="bp-latest-head">
-          <SectionHeading>This week</SectionHeading>
+          <SectionHeading>Daily Goals</SectionHeading>
           <button type="button" className="bp-latest-link" onClick={() => onNavigate('habits')}>
             Goals and Streaks
             <Icon name="arrow-right" size={14} />
@@ -1180,7 +1180,7 @@ function MotivationDetail({ sec, c }) {
   const history = [...sec.rmiHistory].reverse()
   const prev = sec.rmiHistory[periodIdx + 1]
   const goalDelta = prev ? rmi.readingGoalMinutes - prev.readingGoalMinutes : null
-  const trend = (delta) => <TrendPill delta={delta} format={(n) => `${n}%`} />
+  const trend = (delta) => <TrendDelta delta={delta} format={(n) => `${n}%`} />
 
   return (
     <>
@@ -1274,7 +1274,7 @@ function MotivationDetail({ sec, c }) {
         <StatRow icon="target" accent={c} label="Minutes per day">
           <span className="bp-statrow-value">{rmi.readingGoalMinutes}</span>
           {/* The recommendation follows the index, so it moves too. */}
-          <TrendPill delta={goalDelta} format={(n) => `${n} min`} />
+          <TrendDelta delta={goalDelta} format={(n) => `${n} min`} />
         </StatRow>
       </Card>
 
@@ -1490,13 +1490,10 @@ function HabitsDetail({ sec, c, goal }) {
   // The card used to print today's minutes twice — once in the ring and once
   // beside it — and said nothing else. The ring keeps the figure; the text
   // beside it answers the two questions it left open: what the goal is, and
-  // how much of today is left to make it. The week strip underneath says
-  // whether today is typical, which is the thing a single day can't tell you.
+  // how much of today is left to make it. The month grid below covers the
+  // week-in-context job a strip in here used to do, badly.
   const met = todayMins >= goal
   const remaining = Math.max(goal - todayMins, 0)
-  const weekDays = (currentWeek ?? sec.weeks[0]).days
-  const logged = weekDays.filter((d) => d.minutes !== null)
-  const metDays = logged.filter((d) => d.minutes >= goal).length
 
   // Per-session and best-day stats are only meaningful once there is reading to
   // average over — otherwise they show a leftover figure next to "0 of 30 days".
@@ -1526,34 +1523,6 @@ function HabitsDetail({ sec, c, goal }) {
                 `${remaining} min to go today`
               )}
             </div>
-            {/* The same cells as the activity heatmap below, so the legend
-                under it explains this strip too. */}
-            <div className="bp-goal-hero-week">
-              <div className="bp-goal-hero-cells">
-                {weekDays.map((d, i) => (
-                  <Tooltip
-                    key={i}
-                    content={
-                      d.minutes === null
-                        ? `${d.day} — not yet`
-                        : `${d.day} — ${d.minutes} min${d.minutes >= goal ? ' · goal met' : ''}`
-                    }
-                  >
-                    <div
-                      className={`bp-heatmap-cell${d.minutes !== null && d.minutes >= goal ? ' bp-heatmap-cell--goal' : ''}`}
-                      style={{
-                        '--cell-bg': d.minutes ? c.bar : '#EAECF0',
-                        opacity: d.minutes === null ? 0.45 : 1,
-                      }}
-                    />
-                  </Tooltip>
-                ))}
-              </div>
-              <span className="bp-goal-hero-week-label">
-                Met on {metDays} of {logged.length} {logged.length === 1 ? 'day' : 'days'} so far
-                this week
-              </span>
-            </div>
           </div>
         </div>
       </Card>
@@ -1566,13 +1535,20 @@ function HabitsDetail({ sec, c, goal }) {
           <div className="bp-heatmap-legend">
             {[
               { bg: '#EAECF0', label: 'No reading' },
-              { bg: c.bar, label: 'Read' },
-              { bg: c.bar, label: 'Goal met', goal: true },
-              { bg: c.bar, label: 'Streak', streak: true },
+              { bg: c.bar, label: 'Read', read: true },
+              { bg: c.bar, label: 'Goal met', read: true, goal: true },
+              { bg: c.bar, label: 'Streak', read: true, goal: true, streak: true },
             ].map((item, i) => (
               <div key={i} className="bp-heatmap-legend-item">
                 <div
-                  className={`bp-heatmap-cell${item.goal ? ' bp-heatmap-cell--goal' : ''}${item.streak ? ' bp-heatmap-cell--streak' : ''}`}
+                  className={[
+                    'bp-heatmap-cell',
+                    item.read && 'bp-heatmap-cell--read',
+                    item.goal && 'bp-heatmap-cell--goal',
+                    item.streak && 'bp-heatmap-cell--streak',
+                  ]
+                    .filter(Boolean)
+                    .join(' ')}
                   style={{ '--cell-bg': item.bg }}
                 />
                 <span>{item.label}</span>
@@ -1662,25 +1638,28 @@ function niceLexileAxis(values, targetTicks = 5) {
 
 // ─── Skills detail ────────────────────────────────────────────────────────────
 // A signed Lexile delta, coloured the way it reads: up is good, down isn't.
-// A delta chip beside a figure. Green means the number moved the way you'd want
-// it to, which is not always up: `inverse` covers figures like flags, where
-// fewer is better. A zero delta renders nothing — "no change" is not news.
-function TrendPill({ delta, format, inverse = false, suffix }) {
+// A delta beside a figure. Green means the number moved the way you'd want it
+// to, which is not always up: `inverse` covers figures like flags, where fewer
+// is better. A zero delta renders nothing — "no change" is not news. Text, not
+// a pill: the arrow and the colour already carry the whole message, and five
+// tinted capsules down the side of a card competed with the figures they were
+// annotating.
+function TrendDelta({ delta, format, inverse = false, suffix }) {
   if (delta == null || delta === 0) return null
   const up = delta > 0
   const good = inverse ? !up : up
   const n = Math.abs(delta)
   return (
-    <Pill color={good ? '#16A34A' : '#DC2626'} size="sm">
+    <span className={`bp-trend${good ? ' bp-trend--good' : ' bp-trend--bad'}`}>
       {up ? '↑' : '↓'}
       {format ? format(n) : n}
       {suffix ? ` ${suffix}` : ''}
-    </Pill>
+    </span>
   )
 }
 
 function LexileDelta({ value, suffix }) {
-  return <TrendPill delta={value} format={(n) => `${n}L`} suffix={suffix} />
+  return <TrendDelta delta={value} format={(n) => `${n}L`} suffix={suffix} />
 }
 
 function SkillsDetail({ sec, c }) {
@@ -1704,9 +1683,7 @@ function SkillsDetail({ sec, c }) {
         </StatRow>
         <StatRow icon="arrow-up" accent={c} label="Highest logged recently">
           <span className="bp-statrow-value">{topTitle.lexile}L</span>
-          <Pill color="#64748B" size="sm">
-            {topTitle.title}
-          </Pill>
+          <span className="bp-statrow-note">{topTitle.title}</span>
         </StatRow>
         <StatRow icon="target" accent={c} label={`Vs. ${sec.gradeLevelLabel || 'grade level'}`}>
           <span className="bp-statrow-value">{sec.gradeLevel}L</span>
@@ -1717,9 +1694,7 @@ function SkillsDetail({ sec, c }) {
             {growth >= 0 ? '+' : '−'}
             {Math.abs(growth)}L
           </span>
-          <Pill color="#64748B" size="sm">
-            since {firstMonth}
-          </Pill>
+          <span className="bp-statrow-note">since {firstMonth}</span>
         </StatRow>
       </Card>
 
@@ -2352,6 +2327,15 @@ const STUDENTS = {
         status: 'Trending up',
         titles: [
           {
+            title: 'Found',
+            author: 'Margaret Peterson Haddix',
+            lexile: 700,
+            genre: 'Sci-Fi',
+            sessions: 4,
+            current: false,
+            isbn: '9781416954170',
+          },
+          {
             title: 'A Wrinkle in Time',
             author: "Madeleine L'Engle",
             lexile: 740,
@@ -2368,6 +2352,15 @@ const STUDENTS = {
             sessions: 14,
             current: false,
             isbn: '9780812550702',
+          },
+          {
+            title: 'The Hunger Games',
+            author: 'Suzanne Collins',
+            lexile: 810,
+            genre: 'Dystopian',
+            sessions: 9,
+            current: false,
+            isbn: '9780439023481',
           },
           {
             title: 'Fahrenheit 451',
@@ -3031,6 +3024,24 @@ const STUDENTS = {
         status: 'Trending up',
         titles: [
           {
+            title: 'Because of Winn-Dixie',
+            author: 'Kate DiCamillo',
+            lexile: 610,
+            genre: 'Adventure',
+            sessions: 4,
+            current: false,
+            isbn: '9780763680862',
+          },
+          {
+            title: 'Number the Stars',
+            author: 'Lois Lowry',
+            lexile: 670,
+            genre: 'Historical',
+            sessions: 5,
+            current: false,
+            isbn: '9780547577098',
+          },
+          {
             title: 'The Giver',
             author: 'Lois Lowry',
             lexile: 680,
@@ -3623,6 +3634,24 @@ const STUDENTS = {
         status: 'Watch',
         titles: [
           {
+            title: 'Dog Man: Fetch-22',
+            author: 'Dav Pilkey',
+            lexile: 390,
+            genre: 'Graphic Novel',
+            sessions: 3,
+            current: false,
+            isbn: '9781338323214',
+          },
+          {
+            title: 'Sarah, Plain and Tall',
+            author: 'Patricia MacLachlan',
+            lexile: 560,
+            genre: 'Historical',
+            sessions: 2,
+            current: false,
+            isbn: '9780064402057',
+          },
+          {
             title: 'The One and Only Ivan',
             author: 'Katherine Applegate',
             lexile: 570,
@@ -4192,7 +4221,7 @@ function RLSource({ source }) {
   return (
     <Tooltip content={`Logged from ${PARTNER_BRANDS[source].name}`}>
       <span className="bp-rl-source" style={{ '--bp-mark-bg': PARTNER_BRANDS[source].accent }}>
-        <PartnerMark id={source} size={16} />
+        <PartnerMark id={source} size={15} />
       </span>
     </Tooltip>
   )
@@ -4205,7 +4234,7 @@ function RLEntryMenu() {
       trigger={({ toggle }) => (
         <Tooltip content="Entry actions">
           <button type="button" className="bp-rl-dots" onClick={toggle} aria-label="Entry actions">
-            <Icon name="dots" size={16} />
+            <Icon name="dots" size={15} />
           </button>
         </Tooltip>
       )}
@@ -4240,7 +4269,12 @@ function RLEntryCard({ entry, onOpen, talkFor }) {
         <button type="button" className="bp-rl-entry-title" onClick={() => onOpen?.(entry)}>
           {entry.title}
         </button>
+        {/* One cluster, one grid: where the session came from, what's on it,
+            and what you can do to it. The partner mark used to sit alone in
+            the card's foot, which read as a stray badge on a second row
+            whenever the entry had no marks of its own. */}
         <div className="bp-rl-entry-menu">
+          <RLSource source={entry.source} />
           <RLMarks marks={marks} entry={entry} onOpen={onOpen} />
           <RLEntryMenu />
         </div>
@@ -4257,9 +4291,6 @@ function RLEntryCard({ entry, onOpen, talkFor }) {
         ) : (
           <div className="bp-rl-entry-amount">{entry.amount}</div>
         )}
-        {/* Bottom corner, off the author line where it competed with the text
-            it sat against. */}
-        <RLSource source={entry.source} />
       </div>
     </div>
   )
