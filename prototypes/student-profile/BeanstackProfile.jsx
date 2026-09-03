@@ -26,6 +26,7 @@ import { Sidebar } from '@components/Sidebar/Sidebar'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { Icon } from '@components/Icon/Icon'
+import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 import { Flyout } from '@components/Flyout/Flyout'
 import { Modal } from '@components/Modal/Modal'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -156,6 +157,25 @@ const ACTIONS_ITEMS = [
   { label: 'Transfer Reader', action: 'transfer' },
   { divider: true },
   { label: 'Delete Reader', danger: true },
+]
+
+// Verify and Freeze are the two Reading Integrity actions on a student, and
+// unlike the rest of this menu they're stateful: each one toggles, and the
+// header says which state the student is in. Verified students log past the
+// site's limits; frozen students can't log for themselves for ten days.
+const INTEGRITY_ITEMS = [
+  {
+    key: 'verified',
+    label: 'Verify Student',
+    undo: 'Unverify Student',
+    icon: <Icon name="verified-badge" size={17} color="#2563EB" />,
+  },
+  {
+    key: 'frozen',
+    label: 'Freeze Access',
+    undo: 'Unfreeze Access',
+    icon: <Icon name="circle-minus" size={17} stroke={2.2} color="#DC2626" />,
+  },
 ]
 const LOG_ITEMS = [{ label: 'Log Reading' }, { label: 'Log Activities' }]
 
@@ -324,12 +344,20 @@ function TransferModal({ open, onClose }) {
   )
 }
 
-function StudentActions({ onClose, student }) {
+function StudentActions({ onClose, student, status = [], onToggleStatus }) {
   const [action, setAction] = useState(null)
   const close = () => setAction(null)
-  const items = ACTIONS_ITEMS.map((it) =>
-    it.action ? { ...it, onSelect: () => setAction(it.action) } : it,
-  )
+  const items = [
+    ...ACTIONS_ITEMS.map((it) =>
+      it.action ? { ...it, onSelect: () => setAction(it.action) } : it,
+    ),
+    { divider: true },
+    ...INTEGRITY_ITEMS.map((it) => ({
+      label: status.includes(it.key) ? it.undo : it.label,
+      icon: it.icon,
+      onSelect: () => onToggleStatus?.(it.key),
+    })),
+  ]
 
   return (
     <div className="bp-student-actions">
@@ -395,7 +423,78 @@ function StudentActions({ onClose, student }) {
 }
 
 // ─── Persistent student header ────────────────────────────────────────────────
+// ─── Header status flags ──────────────────────────────────────────────────────
+// Standing facts about the reader, as against the numbers below them: who they
+// are connected to, and what has been done to their account. They belong in the
+// header because each one changes how you read the rest of the page — imported
+// sessions explain minutes nobody logged by hand, a tandem link explains
+// reading done somewhere else entirely, and a banned reader's totals are
+// already excluded from the leaderboard you'd otherwise compare them against.
+//
+// A mark, not a sentence: the label is short and the Tooltip carries the
+// meaning, so a reader with four of these still has a legible name.
+const STATUS_FLAGS = {
+  comicsplus: {
+    label: 'Comics Plus',
+    partner: 'comicsplus',
+    tone: 'partner',
+    tip: 'Connected to Comics Plus — reading done in the app imports on its own',
+  },
+  tandem: {
+    label: 'Tandem',
+    icon: 'link',
+    tone: 'info',
+    tip: 'Tandem account — linked to a %s profile, and reading counts on both',
+  },
+  // The two school-only states, and the product's own two words for them. Both
+  // come from Actions on this header, and both are reversible from the same
+  // menu entry — see help.beanstack.com "How to verify or freeze a student".
+  verified: {
+    label: 'Verified',
+    icon: 'verified-badge',
+    tone: 'verified',
+    tip: 'Verified student — can log past the site log and daily limits, and other readers see the badge on leaderboards',
+  },
+  frozen: {
+    label: 'Frozen',
+    icon: 'circle-minus',
+    tone: 'bad',
+    tip: 'Access frozen for 10 days — they cannot log reading themselves, though staff still can. Not shown to other readers.',
+  },
+}
+
+function StatusFlags({ flags = [], tandemWith }) {
+  if (!flags.length) return null
+  return (
+    <>
+      {flags.map((key) => {
+        const f = STATUS_FLAGS[key]
+        if (!f) return null
+        return (
+          <Tooltip key={key} content={f.tip.replace('%s', tandemWith)}>
+            <span className={`bp-status bp-status--${f.tone}`}>
+              {f.partner ? (
+                <PartnerMark id={f.partner} size={16} />
+              ) : (
+                <Icon name={f.icon} size={13} stroke={2.1} />
+              )}
+              {f.label}
+            </span>
+          </Tooltip>
+        )
+      })}
+    </>
+  )
+}
+
 function StudentHeader({ student, onClose }) {
+  // Verified / frozen live here rather than in the fixture because Actions can
+  // change them — the chip beside the name is the same fact the menu toggles.
+  const [status, setStatus] = useState(student.status ?? [])
+  useEffect(() => setStatus(student.status ?? []), [student])
+  const toggle = (key) =>
+    setStatus((s) => (s.includes(key) ? s.filter((k) => k !== key) : [...s, key]))
+
   return (
     <div className="bp-panel-header">
       <div className="bp-panel-identity">
@@ -414,11 +513,19 @@ function StudentHeader({ student, onClose }) {
         />
         <div>
           <div className="bp-panel-name">{student.name}</div>
-          <div className="bp-panel-meta">{student.grade}</div>
+          <div className="bp-panel-meta">
+            <span>{student.grade}</span>
+            <StatusFlags flags={status} tandemWith="library" />
+          </div>
         </div>
       </div>
       <div className="bp-header-right">
-        <StudentActions onClose={onClose} student={student} />
+        <StudentActions
+          onClose={onClose}
+          student={student}
+          status={status}
+          onToggleStatus={toggle}
+        />
       </div>
     </div>
   )
@@ -578,12 +685,16 @@ const STAT_TINTS = {
 // order they'd scan it. Longest streak and Lexile sit behind "Show more"; they
 // answer a question you go looking for rather than one you scan.
 //
-// `trend` is this month against last (not against the selected range): a
-// year-long total hides a reader who started slipping three weeks ago, which is
-// exactly the signal the review said the page was missing. Streaks and Lexile
-// carry none — a streak is already an as-of-today number, and one month of
-// Lexile movement is noise.
-function overviewMetrics(ov, mo) {
+// `trend` belongs to the range you're viewing — This School Year moves against
+// last year — so the chips always compare like with like. All Time carries
+// none: there's no period before it.
+//
+// Every row carries one, including the streaks: "18 days, up 11 on last year"
+// is a real answer to whether the habit is building. The motivation row's chip
+// is the reader's Motivation Index movement — the top factor is a name, not a
+// number, so the trend belongs to the score behind it.
+function overviewMetrics(ov) {
+  const mo = ov.trend ?? {}
   const days = (n) => (n === 1 ? 'day' : 'days')
   return [
     {
@@ -604,6 +715,7 @@ function overviewMetrics(ov, mo) {
       label: 'Current streak',
       value: ov.currentStreak,
       unit: days(ov.currentStreak),
+      trend: { delta: mo.currentStreak, format: (n) => `${n} ${days(n)}` },
     },
     {
       key: 'habits',
@@ -634,6 +746,7 @@ function overviewMetrics(ov, mo) {
       label: 'Top motivation factor',
       motivators: ov.motivators?.slice(0, 1),
       empty: 'No clear motivator found',
+      trend: { delta: mo.rmi, format: (n) => `${n} RMI` },
     },
     {
       key: 'longest',
@@ -643,6 +756,7 @@ function overviewMetrics(ov, mo) {
       label: 'Longest streak',
       value: ov.longestStreak,
       unit: days(ov.longestStreak),
+      trend: { delta: mo.longestStreak, format: (n) => `${n} ${days(n)}` },
       more: true,
     },
     {
@@ -652,6 +766,7 @@ function overviewMetrics(ov, mo) {
       accent: C.skills,
       label: 'Average Lexile',
       value: `${ov.lexile}L`,
+      trend: { delta: mo.lexile, format: (n) => `${n}L` },
       more: true,
     },
   ]
@@ -703,7 +818,104 @@ function MotivatorNames({ names, className }) {
   )
 }
 
-function OverviewStats({ metrics, onOpen }) {
+// The cover shelf scrolls rather than wrapping, so it needs a way to get at the
+// titles that are off the end. The arrows page by a viewport's worth and
+// disable at each end — and hide entirely when everything already fits, which
+// is the common case on a wide screen.
+function TitleShelf({ titles, onNavigate }) {
+  const ref = useRef(null)
+  const [{ left, right }, setEnds] = useState({ left: false, right: false })
+
+  const sync = () => {
+    const el = ref.current
+    if (!el) return
+    // 1px of slack: fractional scroll widths never land exactly on the end.
+    setEnds({
+      left: el.scrollLeft > 1,
+      right: el.scrollLeft + el.clientWidth < el.scrollWidth - 1,
+    })
+  }
+
+  useEffect(() => {
+    sync()
+    const el = ref.current
+    if (!el) return undefined
+    const ro = new ResizeObserver(sync)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [titles])
+
+  const page = (dir) => {
+    const el = ref.current
+    if (!el) return
+    el.scrollBy({ left: dir * Math.max(el.clientWidth - 40, 120), behavior: 'smooth' })
+  }
+
+  const scrollable = left || right
+
+  return (
+    <>
+      <div className="bp-latest-head">
+        <SectionHeading>Latest titles</SectionHeading>
+        <div className="bp-latest-head-right">
+          {scrollable && (
+            <div className="bp-latest-arrows">
+              <Tooltip content="Previous titles">
+                <button
+                  type="button"
+                  className="bp-heatmap-nav-btn"
+                  onClick={() => page(-1)}
+                  disabled={!left}
+                  aria-label="Previous titles"
+                >
+                  <Icon name="chevron-left" size={13} stroke={2.2} />
+                </button>
+              </Tooltip>
+              <Tooltip content="More titles">
+                <button
+                  type="button"
+                  className="bp-heatmap-nav-btn"
+                  onClick={() => page(1)}
+                  disabled={!right}
+                  aria-label="More titles"
+                >
+                  <Icon name="chevron-right" size={13} stroke={2.2} />
+                </button>
+              </Tooltip>
+            </div>
+          )}
+          <button type="button" className="bp-latest-link" onClick={() => onNavigate('readinglog')}>
+            Reading Log
+            <Icon name="arrow-right" size={14} />
+          </button>
+        </div>
+      </div>
+      <div className="bp-latest-grid" ref={ref} onScroll={sync}>
+        {titles
+          .slice()
+          .reverse()
+          .map((t, i) => (
+            <a
+              key={i}
+              className="bp-latest-item"
+              href={`https://openlibrary.org/isbn/${t.isbn}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div className="bp-latest-cover">
+                <CoverImage isbn={t.isbn} title={t.title} />
+                <span className="bp-latest-lexile">{t.lexile}L</span>
+              </div>
+              <div className="bp-latest-title">{t.title}</div>
+              <div className="bp-latest-author">{t.author}</div>
+            </a>
+          ))}
+      </div>
+    </>
+  )
+}
+
+function OverviewStats({ metrics, note, onOpen }) {
   const [showMore, setShowMore] = useState(false)
   const shown = metrics.filter((m) => !m.more || showMore)
   const hidden = metrics.filter((m) => m.more).length
@@ -712,9 +924,9 @@ function OverviewStats({ metrics, onOpen }) {
     <div className="bp-card bp-statlist">
       <div className="bp-statlist-head">
         <SectionHeading>At a glance</SectionHeading>
-        {/* The comparison is stated once here rather than repeated in every
-            chip — five rows each ending "vs last month" is noise. */}
-        <span className="bp-statlist-note">Trend vs last month</span>
+        {/* Stated once here rather than repeated in every chip. Absent on a
+            range with nothing to compare against, along with the chips. */}
+        {note && <span className="bp-statlist-note">Trend {note}</span>}
       </div>
       {shown.map((m) => (
         <StatRow
@@ -750,9 +962,7 @@ function OverviewStats({ metrics, onOpen }) {
 function Overview({ student, onNavigate }) {
   const [range, setRange] = useState('year')
   const ov = student.overview[range]
-  // Month-over-month is deliberately outside the range switcher: "is this
-  // reader slipping right now" reads the same whichever total you're looking at.
-  const metrics = overviewMetrics(ov, student.overview.month)
+  const metrics = overviewMetrics(ov)
 
   return (
     <div className="bp-content">
@@ -782,38 +992,11 @@ function Overview({ student, onNavigate }) {
       </Card>
 
       {/* Overview figures — every one is scoped to the selected range */}
-      <OverviewStats metrics={metrics} onOpen={onNavigate} />
+      <OverviewStats metrics={metrics} note={ov.trend?.label} onOpen={onNavigate} />
 
       {/* Latest titles — covers first, so the shelf reads at a glance */}
       <Card>
-        <div className="bp-latest-head">
-          <SectionHeading>Latest titles</SectionHeading>
-          <button type="button" className="bp-latest-link" onClick={() => onNavigate('readinglog')}>
-            Reading Log
-            <Icon name="arrow-right" size={14} />
-          </button>
-        </div>
-        <div className="bp-latest-grid">
-          {student.sections.skills.titles
-            .slice()
-            .reverse()
-            .map((t, i) => (
-              <a
-                key={i}
-                className="bp-latest-item"
-                href={`https://openlibrary.org/isbn/${t.isbn}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                <div className="bp-latest-cover">
-                  <CoverImage isbn={t.isbn} title={t.title} />
-                  <span className="bp-latest-lexile">{t.lexile}L</span>
-                </div>
-                <div className="bp-latest-title">{t.title}</div>
-                <div className="bp-latest-author">{t.author}</div>
-              </a>
-            ))}
-        </div>
+        <TitleShelf titles={student.sections.skills.titles} onNavigate={onNavigate} />
       </Card>
 
       {/* Recommended Actions */}
@@ -1404,6 +1587,9 @@ const STUDENTS = {
   marcus: {
     name: 'Marcus Chen',
     avatarColor: '#0F766E',
+    // Marcus reads in Comics Plus, and is verified — his 1,000-minute read-a-thon
+    // day is real, so his logs are trusted past the site's daily limit.
+    status: ['comicsplus', 'verified'],
     grade: '7th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [
@@ -1733,6 +1919,17 @@ const STUDENTS = {
         longestStreak: 18,
         booksCompleted: 24,
         minutes: 5480,
+        // This year against last — the trend follows the range you're viewing.
+        trend: {
+          minutesPct: 26,
+          lexile: 120,
+          goalDays: 19,
+          flags: -2,
+          currentStreak: 11,
+          longestStreak: 6,
+          rmi: 7,
+          label: 'vs last year',
+        },
       },
       all: {
         motivators: ['Enjoyment', 'Challenge'],
@@ -1746,9 +1943,6 @@ const STUDENTS = {
         booksCompleted: 41,
         minutes: 10120,
       },
-      // This month against last. Marcus is steady, so his flag count doesn't
-      // move — a zero delta renders no chip at all.
-      month: { minutesPct: 8, goalDays: 2, flags: 0 },
     },
     bennySummary:
       "Marcus is an outstanding reader. He's logged reading on **21 of the last 30 days** — the highest consistency in the class — and is reading well above grade level at **870L**. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with **only 1 flagged session all year**. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
@@ -2076,6 +2270,8 @@ const STUDENTS = {
   anne: {
     name: 'Anne Boonchuy',
     avatarColor: '#7C3AED',
+    // Anne logs at her public library too, so her school profile is tandemed.
+    status: ['tandem', 'comicsplus'],
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [
@@ -2340,6 +2536,16 @@ const STUDENTS = {
         longestStreak: 6,
         booksCompleted: 11,
         minutes: 1780,
+        trend: {
+          minutesPct: 21,
+          lexile: 90,
+          goalDays: 14,
+          flags: -3,
+          currentStreak: 2,
+          longestStreak: 3,
+          rmi: 4,
+          label: 'vs last year',
+        },
       },
       all: {
         motivators: ['Recognition', 'Curiosity'],
@@ -2353,7 +2559,6 @@ const STUDENTS = {
         booksCompleted: 19,
         minutes: 3170,
       },
-      month: { minutesPct: 22, goalDays: 5, flags: -2 },
     },
     bennySummary:
       "Anne is making real progress this month! Her reading habits are building — she's logged reading on **10 of the last 30 days** and has already logged 85 minutes this week. Her Lexile average has **climbed 50 points since April**, and she's consistently choosing harder books. Integrity is improving, with **flags down from 7 to 4**. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and **2 unfinished BTWB conversations** that are worth following up on.",
@@ -2744,6 +2949,9 @@ const STUDENTS = {
   tyler: {
     name: 'Tyler Voss',
     avatarColor: '#1D4ED8',
+    // Tyler's over-logging is what a freeze is for: he keeps his profile, but
+    // can't log for himself for ten days.
+    status: ['frozen'],
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [{ name: 'Beanstack Bookmark', claimed: false }],
@@ -2938,6 +3146,16 @@ const STUDENTS = {
         longestStreak: 3,
         booksCompleted: 3,
         minutes: 470,
+        trend: {
+          minutesPct: -58,
+          lexile: -20,
+          goalDays: -12,
+          flags: 9,
+          currentStreak: -4,
+          longestStreak: -2,
+          rmi: -11,
+          label: 'vs last year',
+        },
       },
       all: {
         motivators: null,
@@ -2951,7 +3169,6 @@ const STUDENTS = {
         booksCompleted: 7,
         minutes: 1040,
       },
-      month: { minutesPct: -64, goalDays: -6, flags: 5 },
     },
     bennySummary:
       'Tyler needs immediate attention. He has **no logged reading days in the past 30 days** — the only student in the class with zero recent activity. His Lexile average has **declined 15 points since March**, and he has **13 flagged sessions** including **6 suspected over-logs**, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.',
@@ -3588,6 +3805,16 @@ const RL_DATA = [
         day: 'Tuesday',
         streak: 1,
         entries: [
+          // Logged straight from Comics Plus — the reader borrowed and read it
+          // there, and the session arrived in Beanstack on its own.
+          {
+            title: 'Lumberjanes, Vol. 1',
+            author: 'Noelle Stevenson',
+            amount: '35 Minutes',
+            flagged: false,
+            lexile: 'GN340L',
+            source: 'comicsplus',
+          },
           // Also a book talk — opening this row and opening its row on the Book
           // Talks tab land on the same session.
           {
@@ -3628,6 +3855,14 @@ const RL_DATA = [
         day: 'Thursday',
         streak: 2,
         entries: [
+          {
+            title: 'Mighty Jack',
+            author: 'Ben Hatke',
+            amount: 'Completed',
+            completed: true,
+            lexile: 'GN320L',
+            source: 'comicsplus',
+          },
           {
             title: 'Snapdragon',
             author: 'Kat Leyh',
@@ -3794,7 +4029,20 @@ function RLEntryCard({ entry, onOpen, talkFor }) {
           </Flyout>
         </div>
       </div>
-      <div className="bp-rl-entry-author">{entry.author}</div>
+      <div className="bp-rl-entry-author">
+        {entry.author}
+        {/* Where the session came from. A partner-logged session isn't
+            something the reader typed in — it arrived from the app they read
+            in, which is worth saying on the row. */}
+        {entry.source && PARTNER_BRANDS[entry.source] && (
+          <Tooltip content={`Logged from ${PARTNER_BRANDS[entry.source].name}`}>
+            <span className="bp-rl-source">
+              <PartnerMark id={entry.source} size={16} />
+              {PARTNER_BRANDS[entry.source].name}
+            </span>
+          </Tooltip>
+        )}
+      </div>
       {entry.completed ? (
         <span className="bp-rl-completed">Completed</span>
       ) : (

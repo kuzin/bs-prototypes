@@ -5,9 +5,17 @@
   overflow: hidden;
 }
 
+/* With no reader list the modal is a short stack of detail cards rather than a
+   review queue, so it sizes to its content — a fixed full-height column left
+   two thirds of it blank. */
+.sm2-shell:not(:has(.sm2-sidebar)) {
+  height: auto;
+  max-height: calc(100vh - 180px);
+}
+
 /* Widen + shift the centered modal to clear the 48px PrototypeNav */
 .modal--center:has(.sm2-shell) {
-  width: min(860px, calc(100vw - 96px));
+  width: min(760px, calc(100vw - 96px));
   max-height: calc(100vh - 180px);
   top: calc(50% - 24px);
 }

@@ -3603,14 +3603,22 @@
   display: flex;
   gap: 14px;
   overflow-x: auto;
-  scroll-snap-type: x proximity;
+  /* Mandatory, not proximity: paging by a viewport's width otherwise stops
+     mid-cover and clips the first title in view. */
+  scroll-snap-type: x mandatory;
   /* Room for the scrollbar so it doesn't sit on the covers. */
   padding-bottom: 6px;
   scrollbar-width: thin;
 }
 
+/* Covers share the row's width instead of sitting at a fixed 140px and
+   scrolling off — they grow and shrink with the panel. */
 .bp-latest-grid > .bp-latest-item {
-  flex: 0 0 140px;
+  flex: 1 1 0;
+  /* The floor stops six covers squeezing to thumbnails in a 500px panel — past
+     it the shelf scrolls instead. The cap stops them ballooning full screen. */
+  min-width: 120px;
+  max-width: 200px;
   scroll-snap-align: start;
 }
 
@@ -4523,8 +4531,115 @@
   transform: translateX(2px);
 }
 
-/* With the reader list hidden, the main panel takes the modal's own padding on
-   both sides rather than only the side the sidebar wasn't on. */
-.bp-content .sm2-columns:not(:has(.sm2-sidebar)) .sm2-main {
-  padding: 0 24px 32px;
+/* Shelf arrows live in the card header beside the Reading Log link, matching
+   the month arrows on the log itself. */
+.bp-latest-head-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bp-latest-arrows {
+  display: flex;
+  gap: 5px;
+}
+
+/* The scrollbar was the affordance before the arrows existed; with them it's
+   just a grey bar under the covers. */
+.bp-latest-grid {
+  scrollbar-width: none;
+}
+
+.bp-latest-grid::-webkit-scrollbar {
+  display: none;
+}
+
+/* Trend chips sit in a fixed slot at the end of the row rather than trailing
+   whatever width the figure happened to be — otherwise they land at a different
+   x on every row and the column reads as jittery. */
+.bp-statrow > .pill {
+  flex-shrink: 0;
+  min-width: 64px;
+  justify-content: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ─── Header status flags ─────────────────────────────────────────────────────
+   The grade line is an identity row now: grade first, then whatever standing
+   facts the reader carries. It wraps rather than pushing the Actions buttons
+   off the header — four flags plus a long name is a real case. */
+.bp-panel-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Tone carries the meaning at a glance; the label and Tooltip carry the rest.
+   Deliberately quieter than the section palettes — these sit beside a name,
+   not in a chart. */
+.bp-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px 2px 6px;
+  border-radius: 999px;
+  border: 1px solid;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  cursor: default;
+}
+
+.bp-status--partner {
+  border-color: #b6e6ee;
+  background: #f0fbfd;
+  color: #0a6f7d;
+}
+
+.bp-status--info {
+  border-color: #c7d2fe;
+  background: #eef2ff;
+  color: #4338ca;
+}
+
+.bp-status--verified {
+  border-color: #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.bp-status--bad {
+  border-color: #fecaca;
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+/* The mark is artwork rather than a stroke glyph, so it sits tight against the
+   chip's left edge and keeps its own corner rounding. */
+.bp-status--partner {
+  padding-left: 4px;
+}
+
+/* ─── Partner-sourced log row ─────────────────────────────────────────────────
+   Where the session came from, on the author line. A separator rather than a
+   chip: the row already carries a coloured spine and a flag column, and a
+   second badge on every imported entry would compete with them. */
+.bp-rl-entry-author {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+.bp-rl-source {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding-left: 7px;
+  border-left: 1px solid var(--c-slate-300);
+  color: var(--c-slate-500);
+  font-weight: 700;
+  cursor: default;
 }

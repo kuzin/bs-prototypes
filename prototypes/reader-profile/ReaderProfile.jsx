@@ -23,9 +23,9 @@ import { Table } from '@components/Table/Table'
 import '@components/Table/Table.css'
 import { BackBar } from '@components/BackBar/BackBar'
 import { Sidebar } from '@components/Sidebar/Sidebar'
-import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { Icon } from '@components/Icon/Icon'
+import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 import { Flyout } from '@components/Flyout/Flyout'
 import { Modal } from '@components/Modal/Modal'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -35,19 +35,6 @@ import { Hero } from '@components/Hero/Hero'
 import { SessionModal } from '../sfr/components/SessionModal'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { ChartLegend } from '@components/charts/charts'
-
-// ─── Benny's emphasis ─────────────────────────────────────────────────────────
-// Benny's summaries are a paragraph of prose, and the figures a teacher is
-// scanning for get lost in it. The copy carries `**…**` around the load-bearing
-// numbers and phrases; this turns them into <strong>. Strings without markers
-// render exactly as before, so nothing has to be marked up to work.
-function emphasize(text) {
-  if (typeof text !== 'string' || !text.includes('**')) return text
-  return text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
-    // Odd indices are the captured groups — the emphasised runs.
-    i % 2 ? <strong key={i}>{part}</strong> : part,
-  )
-}
 
 // ─── Show more ────────────────────────────────────────────────────────────────
 // The review asked for several blocks to be "cut or hidden behind a show more".
@@ -354,6 +341,58 @@ function ReaderActions({ onClose, student }) {
 }
 
 // ─── Persistent student header ────────────────────────────────────────────────
+// ─── Header status flags ──────────────────────────────────────────────────────
+// Standing facts about the reader, as against the numbers below them: who they
+// are connected to, and what has been done to their account. They belong in the
+// header because each one changes how you read the rest of the page: imported
+// sessions explain minutes nobody logged by hand, and a tandem link explains
+// reading done somewhere else entirely.
+//
+// Verified and Frozen are missing on purpose — those are Reading Integrity
+// actions a teacher takes on a student, and a library has neither the log
+// limits to verify past nor a classroom to freeze someone out of.
+//
+// A mark, not a sentence: the label is short and the Tooltip carries the
+// meaning, so a reader with four of these still has a legible name.
+const STATUS_FLAGS = {
+  comicsplus: {
+    label: 'Comics Plus',
+    partner: 'comicsplus',
+    tone: 'partner',
+    tip: 'Connected to Comics Plus — reading done in the app imports on its own',
+  },
+  tandem: {
+    label: 'Tandem',
+    icon: 'link',
+    tone: 'info',
+    tip: 'Tandem account — linked to a %s profile, and reading counts on both',
+  },
+}
+
+function StatusFlags({ flags = [], tandemWith }) {
+  if (!flags.length) return null
+  return (
+    <>
+      {flags.map((key) => {
+        const f = STATUS_FLAGS[key]
+        if (!f) return null
+        return (
+          <Tooltip key={key} content={f.tip.replace('%s', tandemWith)}>
+            <span className={`rp-status rp-status--${f.tone}`}>
+              {f.partner ? (
+                <PartnerMark id={f.partner} size={16} />
+              ) : (
+                <Icon name={f.icon} size={13} stroke={2.1} />
+              )}
+              {f.label}
+            </span>
+          </Tooltip>
+        )
+      })}
+    </>
+  )
+}
+
 function ReaderHeader({ student, onClose }) {
   return (
     <div className="rp-panel-header">
@@ -364,7 +403,10 @@ function ReaderHeader({ student, onClose }) {
         <Avatar initials={initialsOf(student.name)} color={student.avatarColor} size="lg" />
         <div className="rp-panel-titles">
           <div className="rp-panel-name">{student.name}</div>
-          <div className="rp-panel-meta">{student.grade}</div>
+          <div className="rp-panel-meta">
+            <span>{student.grade}</span>
+            <StatusFlags flags={student.status} tandemWith="school" />
+          </div>
         </div>
       </div>
       <div className="rp-header-right">
@@ -468,14 +510,6 @@ function MobileSectionNav({ activeSection, onNavigate }) {
   )
 }
 
-// ─── Overview ─────────────────────────────────────────────────────────────────
-// Libraries run on programme years, not school years — summer reading is the
-// season that matters, so the range reads "This Year".
-const OVERVIEW_RANGES = [
-  { id: 'year', label: 'This Year' },
-  { id: 'all', label: 'All Time' },
-]
-
 // Tints for the Overview's habit stats. Deliberately outside the section
 // palettes in `C` so these don't read as belonging to one of the sections:
 // gold for streaks (matching the gold goal stars), teal for the brand's own
@@ -491,15 +525,18 @@ const STAT_TINTS = {
 // The Overview's seven figures are described once here, then rendered as a
 // single hairline-divided list — labels in one column, figures in another, so
 // the whole snapshot scans top to bottom.
-// Order comes from the review: logging volume first, then the habit signals,
-// then flags, then motivation — what a teacher scans for disengagement, in the
-// order they'd scan it. Longest streak and Challenges joined sit behind "Show
+// Order: logging volume first, then the habit signals, then what the reader
+// has taken part in. Longest streak and Challenges joined sit behind "Show
 // more"; they answer a question you go looking for rather than one you scan.
 //
-// `trend` belongs to the range you're viewing — This Year moves against last
-// year — so the chips always compare like with like. All Time carries none:
-// there's no period before it. Streaks carry no trend either; a streak is
-// already an as-of-today number.
+// No "Daily goals met" here — a daily reading goal is a classroom construct.
+// Public libraries set challenges, not daily targets, so the row had nothing
+// behind it.
+//
+// Every row carries a `trend` against the same window (`ov.trend.label` says
+// which), so the column of chips reads as one comparison rather than five
+// different ones. Even the streaks: "18 days, up 11 on last year" is a real
+// answer to whether this reader's habit is building.
 function overviewMetrics(ov) {
   const mo = ov.trend ?? {}
   const days = (n) => (n === 1 ? 'day' : 'days')
@@ -522,17 +559,7 @@ function overviewMetrics(ov) {
       label: 'Current streak',
       value: ov.currentStreak,
       unit: days(ov.currentStreak),
-    },
-    {
-      key: 'habits',
-      section: 'readinglog',
-      icon: 'calendar-stats',
-      accent: C.habits,
-      label: 'Daily goals met',
-      value: ov.daysRead > 0 ? ov.daysRead : null,
-      unit: `of ${ov.daysPossible} days`,
-      empty: 'No reading logged',
-      trend: { delta: mo.goalDays, format: (n) => `${n} ${days(n)}` },
+      trend: { delta: mo.currentStreak, format: (n) => `${n} ${days(n)}` },
     },
     {
       key: 'books',
@@ -552,6 +579,7 @@ function overviewMetrics(ov) {
       label: 'Longest streak',
       value: ov.longestStreak,
       unit: days(ov.longestStreak),
+      trend: { delta: mo.longestStreak, format: (n) => `${n} ${days(n)}` },
       more: true,
     },
     {
@@ -562,6 +590,7 @@ function overviewMetrics(ov) {
       label: 'Challenges joined',
       value: ov.challengesJoined,
       unit: ov.challengesJoined === 1 ? 'challenge' : 'challenges',
+      trend: { delta: mo.challenges },
       more: true,
     },
   ]
@@ -731,11 +760,14 @@ function OverviewStats({ metrics, note, onOpen }) {
   )
 }
 
+// A library's Overview is deliberately thin. No "Benny says" summary and no
+// recommended actions: those read a reader's behaviour and tell staff what to
+// do about it, which is a teacher's job over a class, not a librarian's over a
+// cardholder. And no range switcher — a library account has no school year to
+// scope to, so the page is simply "how this reader is doing", with each figure
+// carrying its own year-over-year chip.
 function Overview({ student, onNavigate }) {
-  const [range, setRange] = useState('year')
-  const ov = student.overview[range]
-  // Month-over-month is deliberately outside the range switcher: "is this
-  // reader slipping right now" reads the same whichever total you're looking at.
+  const ov = student.overview.year
   const metrics = overviewMetrics(ov)
 
   return (
@@ -746,45 +778,13 @@ function Overview({ student, onNavigate }) {
         accent={SECTION_ACCENT.overview.text}
         accentBg={SECTION_ACCENT.overview.bg}
       />
-      {/* Segmented controls sit under the header on every page — Challenges and
-          Badges already did, and a switcher tucked into the header's right-hand
-          corner reads as a header control rather than as scoping the page. */}
-      <Tabs
-        variant="pill"
-        size="sm"
-        block
-        ariaLabel="Overview time range"
-        active={range}
-        onChange={setRange}
-        items={OVERVIEW_RANGES}
-      />
 
-      {/* Benny says — the summary leads the page */}
-      <Card>
-        <SectionHeading>Benny says...</SectionHeading>
-        <BennyBubble timestamp={student.lastRun}>{emphasize(student.bennySummary)}</BennyBubble>
-      </Card>
-
-      {/* Overview figures — every one is scoped to the selected range */}
+      {/* Overview figures */}
       <OverviewStats metrics={metrics} note={ov.trend?.label} onOpen={onNavigate} />
 
       {/* Latest titles — covers first, so the shelf reads at a glance */}
       <Card>
         <TitleShelf titles={student.recentTitles} onNavigate={onNavigate} />
-      </Card>
-
-      {/* Recommended Actions */}
-      <Card flush>
-        <div className="rp-actions-title">Recommended actions</div>
-        {/* Three at most — a longer list stops reading as a shortlist. */}
-        {student.recommendedActions.slice(0, 3).map((action, i) => (
-          <div key={i} className="rp-action-item">
-            <div className="rp-action-body">
-              <div className="rp-action-title">{action.title}</div>
-              <div className="rp-action-text">{action.body}</div>
-            </div>
-          </div>
-        ))}
       </Card>
     </div>
   )
@@ -854,6 +854,9 @@ const READERS = {
     lastLogged: 'May 15',
     name: 'Mateo Torres',
     avatarColor: '#0F766E',
+    // Promoted and banned are school-only — a library has no class leaderboard
+    // to feature a reader on, and no teacher deciding who is off it.
+    status: ['comicsplus'],
     // Libraries identify readers by age, not grade, and every reader sits on a
     // login account that can hold several of them.
     grade: 'Age 12',
@@ -906,7 +909,6 @@ const READERS = {
         isbn: '9780786838653',
       },
     ],
-    lastRun: 'May 15 at 9:55am',
     rewards: [
       { name: 'Free Book Coupon', claimed: true },
       { name: 'Beanstack Bookmark', claimed: true },
@@ -1231,7 +1233,14 @@ const READERS = {
         booksCompleted: 24,
         challengesJoined: 4,
         // This year against last — the trend follows the range you're viewing.
-        trend: { minutesPct: 27, goalDays: 21, books: 7, label: 'vs last year' },
+        trend: {
+          minutesPct: 27,
+          books: 7,
+          currentStreak: 11,
+          longestStreak: 6,
+          challenges: 2,
+          label: 'vs last year',
+        },
         minutes: 5480,
       },
       all: {
@@ -1246,30 +1255,6 @@ const READERS = {
       // This month against last. Mateo is steady, so their flag count doesn't
       // move — a zero delta renders no chip at all.
     },
-    bennySummary:
-      "Mateo is one of the library's strongest readers. They've logged reading on **21 of the last 30 days** — the most consistent logger on this account — and have finished **24 books this year**, well ahead of the summer programme's pace. Their intrinsic motivation is the highest on record. They're ready for longer and harder books, and would do well with a leadership role like a teen reading-buddy pairing at a branch programme.",
-    recommendedActions: [
-      {
-        title: 'Nominate Mateo for a reading recognition award',
-        body: 'Their consistent reading record and near-perfect motivation scores make them an ideal candidate.',
-        section: 'motivation',
-      },
-      {
-        title: 'Celebrate their near-perfect integrity record',
-        body: 'Only 1 flagged session all year — a brief shoutout reinforces the behavior for the class.',
-        section: 'integrity',
-      },
-      {
-        title: 'Keep habits accountability light-touch',
-        body: "Mateo is self-directed. A weekly leaderboard or simple goal counter is enough — they don't need daily nudges.",
-        section: 'readinglog',
-      },
-      {
-        title: 'Recommend longer titles and series',
-        body: "They're at 870L and climbing. They're significantly above grade level and ready for a real challenge.",
-        section: 'skills',
-      },
-    ],
   },
 
   // ── Sofía Torres — Normal ─────────────────────────────────────────────────
@@ -1281,6 +1266,7 @@ const READERS = {
     lastLogged: 'May 14',
     name: 'Sofía Torres',
     avatarColor: '#7C3AED',
+    status: ['tandem', 'comicsplus'],
     // Libraries identify readers by age, not grade, and every reader sits on a
     // login account that can hold several of them.
     grade: 'Age 9',
@@ -1333,7 +1319,6 @@ const READERS = {
         isbn: '9780545912402',
       },
     ],
-    lastRun: 'May 15 at 9:55am',
     rewards: [
       { name: 'Beanstack Bookmark', claimed: true },
       { name: 'Free Book Coupon', claimed: false },
@@ -1593,7 +1578,14 @@ const READERS = {
         booksCompleted: 11,
         challengesJoined: 3,
         // This year against last — the trend follows the range you're viewing.
-        trend: { minutesPct: 24, goalDays: 18, books: 4, label: 'vs last year' },
+        trend: {
+          minutesPct: 24,
+          books: 4,
+          currentStreak: 2,
+          longestStreak: 3,
+          challenges: 1,
+          label: 'vs last year',
+        },
         minutes: 1780,
       },
       all: {
@@ -1606,30 +1598,6 @@ const READERS = {
         minutes: 3170,
       },
     },
-    bennySummary:
-      "Sofía is making real progress this month! Their reading habit is building — they've logged reading on **10 of the last 30 days** and have already logged 85 minutes this week. They've finished **3 more books than last month**, and they're consistently choosing longer ones. Storytime Club looks like it's doing its job. The main thing to keep an eye on is their extrinsic motivation, which has dipped 4 points — the reward chase may be wearing thin.",
-    recommendedActions: [
-      {
-        title: "Connect Sofía's reading to a self-chosen goal",
-        body: 'Extrinsic motivation is down 4 pts. Their top motivators are Recognition and Social Connection.',
-        section: 'motivation',
-      },
-      {
-        title: 'Check in with Sofía about her Storytime Club streak',
-        body: "They hasn't completed 2 open reflections. A quick prompt before their next log could help.",
-        section: 'integrity',
-      },
-      {
-        title: 'Encourage Sofía to keep up their logging momentum',
-        body: "They've been logging steadily this week. A quick nudge today can reinforce the habit while motivation is up.",
-        section: 'readinglog',
-      },
-      {
-        title: 'Suggest titles in the 760–800L range',
-        body: "Sofía's Lexile avg is 730L and rising. They're ready for a meaningful step up.",
-        section: 'skills',
-      },
-    ],
   },
 
   // ── Elena Torres — Struggling ────────────────────────────────────────────────
@@ -1641,6 +1609,7 @@ const READERS = {
     lastLogged: 'Mar 2',
     name: 'Elena Torres',
     avatarColor: '#1D4ED8',
+    status: [],
     // Libraries identify readers by age, not grade, and every reader sits on a
     // login account that can hold several of them.
     grade: 'Adult',
@@ -1693,7 +1662,6 @@ const READERS = {
         isbn: '9781571313560',
       },
     ],
-    lastRun: 'May 15 at 9:55am',
     rewards: [{ name: 'Beanstack Bookmark', claimed: false }],
     drawings: [{ name: 'Logging Week 2', claimed: false }],
     challenges: [
@@ -1883,7 +1851,14 @@ const READERS = {
         booksCompleted: 3,
         challengesJoined: 1,
         // This year against last — the trend follows the range you're viewing.
-        trend: { minutesPct: -62, goalDays: -19, books: -5, label: 'vs last year' },
+        trend: {
+          minutesPct: -62,
+          books: -5,
+          currentStreak: -9,
+          longestStreak: -4,
+          challenges: -2,
+          label: 'vs last year',
+        },
         minutes: 470,
       },
       all: {
@@ -1896,30 +1871,6 @@ const READERS = {
         minutes: 1040,
       },
     },
-    bennySummary:
-      "Elena signed up with the family in June and hasn't logged since March. They have **no logged reading days in the past 30 days** — the only reader on this account with no recent activity — and their minutes are **down 64% on last month**. Adults often sign the family up and then drop off the programme themselves. A nudge at pickup, or adding them to an adult challenge, is the highest-impact thing available.",
-    recommendedActions: [
-      {
-        title: 'Intervene directly — Elena needs a one-on-one conversation',
-        body: 'Across all four health indicators, Elena is in the bottom tier of the class. A personal check-in this week is the highest-impact action.',
-        section: 'motivation',
-      },
-      {
-        title: 'Investigate the 13 flagged sessions before trusting reading data',
-        body: "Suspected over-logging means Elena's numbers may not reflect actual reading. Address integrity first.",
-        section: 'integrity',
-      },
-      {
-        title: 'Set a micro-goal: just 3 days logged this week',
-        body: 'Elena has logged 1 day this week. Rather than raising the bar, focus on showing up consistently — even briefly.',
-        section: 'readinglog',
-      },
-      {
-        title: 'Switch to lower-Lexile titles Elena will actually complete',
-        body: "Elena's Lexile is declining. Books at 520–560L will build fluency and confidence better than aspirational titles.",
-        section: 'skills',
-      },
-    ],
   },
 }
 
@@ -2016,6 +1967,16 @@ const RL_DATA = [
         day: 'Tuesday',
         streak: 1,
         entries: [
+          // Logged straight from Comics Plus — the reader borrowed and read it
+          // there, and the session arrived in Beanstack on its own.
+          {
+            title: 'Lumberjanes, Vol. 1',
+            author: 'Noelle Stevenson',
+            amount: '35 Minutes',
+            flagged: false,
+            lexile: 'GN340L',
+            source: 'comicsplus',
+          },
           {
             title: 'Fifteen Hundred Miles from the Sun',
             author: 'Jonny Garza Villa',
@@ -2047,6 +2008,14 @@ const RL_DATA = [
         day: 'Thursday',
         streak: 2,
         entries: [
+          {
+            title: 'Mighty Jack',
+            author: 'Ben Hatke',
+            amount: 'Completed',
+            completed: true,
+            lexile: 'GN320L',
+            source: 'comicsplus',
+          },
           {
             title: 'Snapdragon',
             author: 'Kat Leyh',
@@ -2206,7 +2175,20 @@ function RLEntryCard({ entry, onOpen }) {
           </Flyout>
         </div>
       </div>
-      <div className="rp-rl-entry-author">{entry.author}</div>
+      <div className="rp-rl-entry-author">
+        {entry.author}
+        {/* Where the session came from. A partner-logged session isn't
+            something the reader typed in — it arrived from the app they read
+            in, which is worth saying on the row. */}
+        {entry.source && PARTNER_BRANDS[entry.source] && (
+          <Tooltip content={`Logged from ${PARTNER_BRANDS[entry.source].name}`}>
+            <span className="rp-rl-source">
+              <PartnerMark id={entry.source} size={16} />
+              {PARTNER_BRANDS[entry.source].name}
+            </span>
+          </Tooltip>
+        )}
+      </div>
       {entry.completed ? (
         <span className="rp-rl-completed">Completed</span>
       ) : (
