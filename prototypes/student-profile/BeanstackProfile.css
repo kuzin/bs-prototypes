@@ -53,20 +53,43 @@
   }
 }
 
+/* The wrap spans the whole shell in both modes so the panel can grow from
+   740px to full width without its containing block changing under it. Only the
+   panel itself takes clicks — the gap beside it belongs to the dim overlay. */
 .bp-profile-wrap {
   position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  inset: 0;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   z-index: 20;
+  pointer-events: none;
+}
+
+/* The control rail and the panel slide as one unit, so `.bp-profile-slider` is
+   what animates — not the wrap (whose `translateX(100%)` would be the whole
+   shell's width) and not `.bp-root` (which would leave the rail standing
+   still while the panel left under it). It also owns the side↔full width, so
+   the rail stays glued to the panel's edge the whole way. */
+.bp-profile-slider {
+  width: 782px;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
+  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  pointer-events: auto;
   animation: slideInRight 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bp-profile-wrap--full .bp-profile-slider {
+  width: 100%;
+  box-shadow: none;
 }
 
 /* Timing must match `SLIDE_MS` in the JSX, which unmounts after it plays. */
-.bp-profile-wrap--closing {
+.bp-profile-wrap--closing .bp-profile-slider {
   animation: slideOutRight 0.26s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
@@ -74,76 +97,117 @@
   animation: bpFadeOut 0.26s ease forwards;
 }
 
-.bp-profile-wrap--full {
-  left: 0;
-}
-
-/* Floating close / expand buttons */
+/* ─── Floating control rail ───────────────────────────────────────────────
+   Panel chrome (close, expand, step reader) in its own column beside the
+   panel. It's a full-height strip in both modes — the buttons need something to
+   sit on, and against the panel's own white nav rail (full screen) or the dim
+   overlay (side panel) they'd otherwise float loose. Tinted from the reader's
+   `--bp-profile` (see `profileVars`), with a neutral fallback for any surface
+   that doesn't set it. */
 .bp-profile-ctrls {
+  width: 42px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px 8px;
-  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
   align-self: stretch;
+  background: color-mix(in srgb, var(--bp-profile, #64748b) 14%, #fff);
+  border-right: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 28%, #fff);
 }
 
+.bp-ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Flat: a hairline instead of a lift. The panel's own shadow is on the slider,
+   not the panel, so it falls outside the strip rather than gradienting over it. */
 .bp-ctrl-btn {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #fff;
-  border: none;
-  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.18);
+  border: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 32%, #fff);
+  color: var(--bp-profile, var(--c-slate-600));
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition:
     background 0.15s,
-    box-shadow 0.15s;
-}
-.bp-ctrl-btn:hover {
-  background: #f0f4ff;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.26);
+    color 0.15s,
+    border-color 0.15s;
 }
 
-/* Full-screen mode — dark strip behind white buttons */
-.bp-profile-wrap--full .bp-profile-ctrls {
-  background: #1a2340;
+.bp-ctrl-btn:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--bp-profile, #64748b) 10%, #fff);
+  border-color: var(--bp-profile, var(--c-slate-600));
 }
 
-/* Reopen button */
-.bp-reopen-btn {
-  position: absolute;
-  right: 20px;
-  bottom: 24px;
-  z-index: 30;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #fff;
-  border: 1.5px solid #d1d5db;
-  border-radius: 20px;
-  padding: 9px 18px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  color: #1a6dd5;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+/* Copy-link confirmation — green while the "Copied" state holds. */
+.bp-ctrl-btn--done,
+.bp-ctrl-btn--done:hover:not(:disabled) {
+  background: #ecfdf5;
+  border-color: #16a34a;
+  color: #16a34a;
 }
 
-/* Profile root — fixed width when side panel */
-.bp-root {
-  width: 740px;
-  flex-shrink: 0;
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
+.bp-ctrl-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
-.bp-profile-wrap--full .bp-root {
-  width: 100%;
+
+/* Profile root — takes whatever its container has left after the rail. The
+   embed (`.bp-embed`) is the same arrangement inside a host's side Modal. */
+.bp-profile-wrap .bp-root,
+.bp-embed .bp-root {
   flex: 1;
+  min-width: 0;
   box-shadow: none;
+}
+
+/* Embedded panel — rail beside the profile, exactly as in the standalone. The
+   host sizes the surrounding Modal; this just lays the two out. */
+.bp-embed {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Full screen — reached by the rail's expand button on either surface, so the
+   selectors carry both. Room for a roomier rail, and a measure on the content:
+   cards built for a ~570px panel run to 1200px+ otherwise, which puts Benny's
+   paragraph at ~110 characters a line and strands each stat row's figure a long
+   way from its label. Padding the scroll container (rather than capping its
+   width) keeps the scrollbar at the window edge. The header stays flush left —
+   its avatar sits above the rail, not above the content column. */
+.bp-profile-wrap--full .bp-nav,
+.bp-embed--full .bp-nav {
+  width: 208px;
+}
+.bp-profile-wrap--full .bp-content,
+.bp-embed--full .bp-content {
+  padding-inline: max(20px, calc((100% - 1040px) / 2));
+}
+
+/* A lone Select doesn't need to be 1000px wide. (Block tabs deliberately do
+   still fill the page — `block` means block at every width.) */
+.bp-profile-wrap--full .bp-content .fltr-item,
+.bp-embed--full .bp-content .fltr-item {
+  max-width: 320px;
+}
+.bp-profile-wrap--full .bp-nav-item,
+.bp-embed--full .bp-nav-item {
+  min-height: 38px;
+}
+.bp-profile-wrap--full .bp-nav-label,
+.bp-embed--full .bp-nav-label {
+  font-size: 13px;
 }
 
 /* ─── Root ───────────────────────────────────────────────────────────────── */
@@ -223,12 +287,15 @@
   text-overflow: ellipsis;
 }
 
-.bp-nav-item--active .bp-nav-label {
-  color: var(--nav-active-color, #1a6dd5);
+/* The active row wears the reader's colour rather than the section's. Section
+   colour still identifies the page — it's on the Hero's icon chip. */
+.bp-nav-item--active .bp-nav-label,
+.bp-nav-item--active .icon {
+  color: var(--bp-profile, #1a6dd5);
 }
 
 .bp-nav-item--active {
-  background: var(--nav-active-bg, #e6f1ff);
+  background: color-mix(in srgb, var(--bp-profile, #1a6dd5) 12%, #fff);
   cursor: default;
 }
 
@@ -257,21 +324,6 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
-}
-
-.bp-panel-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4f7fd4, #2d5db5);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  letter-spacing: 0.03em;
 }
 
 .bp-panel-name {
@@ -524,11 +576,30 @@
   display: none;
 }
 
+/* Log is the panel's primary action, so it carries the reader's colour like
+   the rest of the chrome. Actions stays a neutral outline button. */
+.bp-panel-header .btn--primary {
+  background: var(--bp-profile, var(--c-blue-700));
+  border-color: var(--bp-profile, var(--c-blue-700));
+}
+
+.bp-panel-header .btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
+  border-color: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
+}
+
 .bp-header-right {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+/* Every surface closes from the floating rail; the header's copy is kept only
+   for the phone breakpoint, where the rail is hidden. */
+.bp-profile-wrap .bp-header-close,
+.bp-embed .bp-header-close {
+  display: none;
 }
 
 .bp-header-close {
@@ -2636,9 +2707,17 @@
   color: #fff;
 }
 
+/* A real link, not just row-click styling: it opens the full-screen profile
+   while the row opens the slide-in quick look. */
 .bp-adm-student-name {
+  font-family: inherit;
+  font-size: inherit;
   font-weight: 700;
   color: var(--c-blue-700);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
   cursor: pointer;
   text-decoration: none;
   transition: color 0.1s;
@@ -3226,8 +3305,8 @@
   }
 
   /* Side-panel student profile becomes narrower so it doesn't overflow */
-  .bp-root {
-    width: min(640px, calc(100vw - 116px));
+  .bp-profile-slider {
+    width: min(682px, calc(100vw - 58px));
   }
 }
 
@@ -3247,6 +3326,11 @@
     flex-direction: column;
     align-items: stretch;
   }
+  .bp-profile-slider,
+  .bp-profile-wrap--full .bp-profile-slider {
+    width: 100%;
+  }
+
   .bp-root {
     width: 100%;
     box-shadow: none;
@@ -3254,8 +3338,22 @@
     min-height: 0;
   }
 
-  /* Hide the left-side floating close column */
+  /* The rail stays — it's the one home for panel chrome, and losing close,
+     copy-link and the reader pager at phone width was the point of having it.
+     It just gets tighter, and drops expand: the panel already fills the
+     screen here, so there's nothing to expand into. */
   .bp-profile-ctrls {
+    width: 34px;
+    gap: 8px;
+    padding: 8px 0;
+  }
+
+  .bp-ctrl-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .bp-ctrl-btn--expand {
     display: none;
   }
 
@@ -3315,27 +3413,14 @@
   }
 
   /* The pager sheds its rail chrome and sits inline beside the select */
-  .bp-mobile-nav .bp-pager {
-    padding: 0;
-    border-top: 0;
-    background: none;
-    gap: 6px;
-  }
-
-  .bp-mobile-nav .bp-pager-btn {
-    flex: 0 0 auto;
-    width: 36px;
-    height: 36px;
-  }
-
   /* Tighter page gutters now that the rail is gone */
   .bp-content {
     padding: 14px;
   }
 
-  /* Three medals across is too tight on a phone — names wrapped to three lines */
-  .bp-medal-grid,
-  .bp-latest-grid {
+  /* Three medals across is too tight on a phone — names wrapped to three lines.
+     (`.bp-latest-grid` is a scrolling row at every width, so it's not here.) */
+  .bp-medal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -3473,10 +3558,22 @@
   text-decoration: underline;
 }
 
+/* One row, scrolled — a shelf. Wrapping to a second line made three titles read
+   as a grid of unequal rows, and at narrow widths the last cover dropped
+   underneath on its own. */
 .bp-latest-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  display: flex;
   gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  /* Room for the scrollbar so it doesn't sit on the covers. */
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.bp-latest-grid > .bp-latest-item {
+  flex: 0 0 140px;
+  scroll-snap-align: start;
 }
 
 .bp-latest-item {
@@ -3633,12 +3730,18 @@
   flex: 0 0 auto;
 }
 
+/* Same trap: `.bp-content` is an overflowing flex column, so a page-level
+   segmented control shrinks to a sliver on any page long enough to scroll. */
+.bp-content > .tabs {
+  flex: 0 0 auto;
+}
+
 /* ─── Achievement & badge medallions ─────────────────────────────────────────
    Drawn stand-ins for the real illustrated art (so: inline shapes, not glyph
    icons). Both keep the recognisable disc silhouette and share one grid. */
 .bp-medal-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 16px 12px;
 }
 
@@ -4175,9 +4278,85 @@
 
 /* The heading sits at the card's padding edge; the rows keep their own. */
 .bp-statlist-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
   padding: 0 16px 13px;
   margin-bottom: 0;
   border-bottom: 1px solid #f0f0f0;
+}
+
+/* Says what the delta chips are measured against, once. */
+.bp-statlist-note {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-text-subtle);
+  white-space: nowrap;
+}
+
+/* ─── Show more ──────────────────────────────────────────────────────────────
+   Standing between cards on the page background, so it reads as a page control
+   rather than part of the card above it. `flex-shrink: 0` because `.bp-content`
+   is an overflowing flex column — without it the button collapses to nothing. */
+.bp-showmore {
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--bp-profile, var(--c-blue-700));
+  cursor: pointer;
+}
+
+.bp-showmore:hover {
+  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 9%, #fff);
+}
+
+/* Inside a card it takes the card's full width and sits behind a hairline, so
+   it reads as the card's own footer. */
+.bp-showmore--incard {
+  /* `width: auto` on a <button> is intrinsic, not fill — the same trap the
+     bled stat rows hit — so the width is spelled out: the card's content box
+     plus the 18px it bleeds either side. */
+  display: flex;
+  align-self: stretch;
+  justify-content: center;
+  width: calc(100% + 36px);
+  margin: 14px -18px -16px;
+  padding: 11px 18px;
+  border-top: 1px solid var(--c-slate-100);
+  border-radius: 0;
+}
+
+/* Sits in the row rhythm — same divider, same padding — so the list reads as
+   continuing rather than as a button bolted to the bottom of the card. */
+.bp-statlist-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--c-slate-100);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--bp-profile, var(--c-blue-700));
+  cursor: pointer;
+}
+
+.bp-statlist-more:hover {
+  background: var(--c-slate-50);
 }
 
 .bp-statlist-head .bp-section-heading {

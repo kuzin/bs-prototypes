@@ -16,3 +16,11 @@
   height: 100%;
   width: 100%;
 }
+
+/* Expanded from the panel's control rail — the same affordance the standalone
+   prototype has, so the profile behaves the same wherever it's opened. */
+.modal--side:has(.stp-content--full) {
+  width: 100%;
+  max-width: 100%;
+  box-shadow: none;
+}
