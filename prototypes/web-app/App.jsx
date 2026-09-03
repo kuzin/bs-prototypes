@@ -6,16 +6,27 @@ import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { IconButton } from '@components/Primitives/Primitives'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
+import { Flyout } from '@components/Flyout/Flyout'
+import { JoyfulFooter, APPS } from '../footers/JoyfulFooter'
 
 import '../ris/index.css'
 import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
+import '@components/Flyout/Flyout.css'
 import '@components/Pill/Pill.css'
 import '@components/ProgressBar/ProgressBar.css'
 import '@components/Primitives/Primitives.css'
 import '@components/PrototypeNav/PrototypeNav.css'
 
-import { USER, STREAK, DAILY_GOAL, CHALLENGES, TOP_SCHOOLS, TOP_GRADES } from './data'
+import {
+  USER,
+  OTHER_READERS,
+  STREAK,
+  DAILY_GOAL,
+  CHALLENGES,
+  TOP_SCHOOLS,
+  TOP_GRADES,
+} from './data'
 import './index.css'
 
 // ─── Iconography ────────────────────────────────────────────────────────────
@@ -45,24 +56,71 @@ function TopBar() {
       <div className="wa-topbar-inner">
         <BeanstackLogo />
         <div className="wa-topbar-actions">
-          <Button variant="primary" size="sm" icon={<IconBook />}>
+          <Button variant="primary" size="md" icon={<IconBook />}>
             Log Reading
           </Button>
-          <Button variant="ghost" size="sm" icon={<IconCheck />}>
+          <Button variant="ghost" size="md" icon={<IconCheck />}>
             Complete Activity
           </Button>
-          <Button variant="ghost" size="sm" icon={<IconPencil />}>
-            Write Review
+          <Button variant="ghost" size="md" icon={<IconPencil />}>
+            Write a Review
           </Button>
         </div>
         <div className="wa-topbar-user">
-          <div className="wa-user-pill">
-            <span className="wa-user-avatar">{USER.initials}</span>
-            <span className="wa-user-name">{USER.firstName}</span>
-          </div>
-          <button className="wa-icon-btn" aria-label="Settings">
-            <IconGear />
-          </button>
+          {/* The reader pill switches reader; the gear is the account menu. */}
+          <Flyout
+            placement="bottom-end"
+            trigger={({ toggle }) => (
+              <button className="wa-user-pill" onClick={toggle} aria-label="Switch reader">
+                <span className="wa-user-avatar">{USER.initials}</span>
+                <span className="wa-user-name">{USER.firstName}</span>
+              </button>
+            )}
+          >
+            {({ close }) => (
+              <div className="wa-readers">
+                <div className="wa-readers-me">
+                  <span className="wa-user-avatar wa-user-avatar--lg">{USER.initials}</span>
+                  <span className="wa-readers-name">{USER.firstName}</span>
+                  <button className="wa-readers-edit" onClick={close}>
+                    Edit
+                  </button>
+                </div>
+                <div className="wa-readers-others">
+                  {OTHER_READERS.map((r) => (
+                    <button key={r.id} className="wa-readers-row" onClick={close}>
+                      <span className="wa-user-avatar" style={{ background: r.color }}>
+                        {r.initials}
+                      </span>
+                      {r.name}
+                    </button>
+                  ))}
+                </div>
+                <button className="wa-readers-add" onClick={close}>
+                  Add a Reader
+                </button>
+              </div>
+            )}
+          </Flyout>
+          <Flyout
+            placement="bottom-end"
+            trigger={({ toggle }) => (
+              <button className="wa-icon-btn" onClick={toggle} aria-label="Account settings">
+                <IconGear />
+              </button>
+            )}
+          >
+            {({ close }) => (
+              <div className="wa-acct">
+                <button className="wa-acct-item" onClick={close}>
+                  Edit Account
+                </button>
+                <button className="wa-acct-item" onClick={close}>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </Flyout>
         </div>
       </div>
 
@@ -243,33 +301,10 @@ function LeaderboardCard() {
 
 // ─── Footer ─────────────────────────────────────────────────────────────────
 
+// The current Beanstack footer lives in the `footers` prototype — rendered from
+// there rather than kept as a second, stale copy here.
 function Footer() {
-  return (
-    <>
-      <div className="wa-footer-thin">
-        <div className="wa-footer-thin-inner">
-          <div className="wa-footer-links">
-            <a href="#">FAQ</a>
-            <a href="#">Contact Us</a>
-            <a href="#">Share Code</a>
-          </div>
-          <button className="wa-footer-lang" type="button">
-            <span className="wa-footer-lang-g">G</span>
-            Select Language
-          </button>
-        </div>
-      </div>
-      <footer className="wa-footer">
-        <div className="wa-footer-inner">
-          <BeanstackLogo />
-          <div className="wa-footer-copy">
-            © 2024 Zoobean, Inc. <span>•</span> <a href="#">Terms</a> <span>•</span>{' '}
-            <a href="#">Privacy</a>
-          </div>
-        </div>
-      </footer>
-    </>
-  )
+  return <JoyfulFooter app={APPS.find((a) => a.id === 'beanstack')} />
 }
 
 // ─── Page ───────────────────────────────────────────────────────────────────

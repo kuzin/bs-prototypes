@@ -13,9 +13,10 @@ import {
 } from '@components/PartnerConnect/PartnerConnect'
 import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
 
-import { READER, CHALLENGES, TOP_SCHOOLS, TOP_GRADES, BOOKS } from '../data'
+import { READER, OTHER_READERS, CHALLENGES, TOP_SCHOOLS, TOP_GRADES, BOOKS } from '../data'
 import { CONNECTION_LIST, autoLoggedRows } from '../connections'
 import { ReadingLog } from './ReadingLog'
+import { JoyfulFooter, APPS } from '../../footers/JoyfulFooter'
 
 import './Dashboard.css'
 
@@ -58,15 +59,15 @@ function TopBar({
         {/* Log Reading always stays put; the secondary actions fold into a
             flyout once the bar runs out of room. */}
         <div className="wa-topbar-actions">
-          <Button variant="primary" size="sm" icon={<Icon name="book" size={16} />} onClick={onLog}>
+          <Button variant="primary" size="md" icon={<Icon name="book" size={16} />} onClick={onLog}>
             Log Reading
           </Button>
           <div className="wa-actions-wide">
-            <Button variant="ghost" size="sm" icon={<Icon name="check" size={15} />}>
+            <Button variant="ghost" size="md" icon={<Icon name="check" size={16} />}>
               Complete Activity
             </Button>
-            <Button variant="ghost" size="sm" icon={<Icon name="writing" size={15} />}>
-              Write Review
+            <Button variant="ghost" size="md" icon={<Icon name="writing" size={16} />}>
+              Write a Review
             </Button>
           </div>
           <div className="wa-actions-narrow">
@@ -99,13 +100,67 @@ function TopBar({
             onManage={onManageConnections}
             onVisit={onVisitPartner}
           />
-          <div className="wa-user-pill">
-            <span className="wa-user-avatar">{READER.initials}</span>
-            <span className="wa-user-name">{READER.name}</span>
-          </div>
-          <button className="wa-icon-btn" aria-label="Settings" onClick={onManageConnections}>
-            <Icon name="settings" size={20} />
-          </button>
+          {/* The reader pill switches reader; the gear is the account menu.
+              Both were inert before. */}
+          <Flyout
+            placement="bottom-end"
+            trigger={({ toggle }) => (
+              <button className="wa-user-pill" onClick={toggle} aria-label="Switch reader">
+                <span className="wa-user-avatar">{READER.initials}</span>
+                <span className="wa-user-name">{READER.name}</span>
+              </button>
+            )}
+          >
+            {({ close }) => (
+              <div className="wa-readers">
+                <div className="wa-readers-me">
+                  <span className="wa-user-avatar wa-user-avatar--lg">{READER.initials}</span>
+                  <span className="wa-readers-name">{READER.name}</span>
+                  <button className="wa-readers-edit" onClick={close}>
+                    Edit
+                  </button>
+                </div>
+                <div className="wa-readers-others">
+                  {OTHER_READERS.filter((r) => r.id !== READER.id).map((r) => (
+                    <button key={r.id} className="wa-readers-row" onClick={close}>
+                      <span className="wa-user-avatar" style={{ background: r.color }}>
+                        {r.initials}
+                      </span>
+                      {r.name}
+                    </button>
+                  ))}
+                </div>
+                <button className="wa-readers-add" onClick={close}>
+                  Add a Reader
+                </button>
+              </div>
+            )}
+          </Flyout>
+          <Flyout
+            placement="bottom-end"
+            trigger={({ toggle }) => (
+              <button className="wa-icon-btn" onClick={toggle} aria-label="Account settings">
+                <Icon name="settings" size={20} />
+              </button>
+            )}
+          >
+            {({ close }) => (
+              <div className="wa-acct">
+                <button
+                  className="wa-acct-item"
+                  onClick={() => {
+                    close()
+                    onManageConnections()
+                  }}
+                >
+                  Edit Account
+                </button>
+                <button className="wa-acct-item" onClick={close}>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </Flyout>
         </div>
       </div>
 
@@ -269,32 +324,11 @@ function LeaderboardCard() {
   )
 }
 
+// The current Beanstack footer lives in the `footers` prototype — logo + app
+// stores over a Joyful Reading Co. attribution row, language picker and legal
+// links. Rendered from there rather than kept as a second, stale copy here.
 function Footer() {
-  return (
-    <>
-      <div className="wa-footer-thin">
-        <div className="wa-footer-thin-inner">
-          <div className="wa-footer-links">
-            <a href="#">FAQ</a>
-            <a href="#">Contact Us</a>
-            <a href="#">Share Code</a>
-          </div>
-          <button className="wa-footer-lang" type="button">
-            <span className="wa-footer-lang-g">G</span>Select Language
-          </button>
-        </div>
-      </div>
-      <footer className="wa-footer">
-        <div className="wa-footer-inner">
-          <BeanstackLogo />
-          <div className="wa-footer-copy">
-            © 2024 Zoobean, Inc. <span>•</span> <a href="#">Terms</a> <span>•</span>{' '}
-            <a href="#">Privacy</a>
-          </div>
-        </div>
-      </footer>
-    </>
-  )
+  return <JoyfulFooter app={APPS.find((a) => a.id === 'beanstack')} />
 }
 
 /**

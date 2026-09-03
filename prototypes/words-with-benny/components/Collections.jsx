@@ -16,39 +16,36 @@ import './Collections.css'
 // dashboard's separate "All Badges" tab — three shelves of the same kind of
 // thing shouldn't be three top-level destinations.
 
-function BadgeDisc({ badge }) {
+// Badges and achievements are the same card in the product — circular art over
+// a bold name and a line of copy, with the earned date on its own footer strip
+// in green. One component, used by both panes.
+function CollectionCard({ art, name, blurb, date }) {
   return (
-    <article
-      className={`co-badge${badge.locked ? ' is-locked' : ''}`}
-      style={{ '--badge-color': badge.color }}
-    >
-      <span className="co-badge-disc">
-        <Icon name={badge.locked ? 'lock' : badge.icon} size={26} />
-      </span>
-      <h3 className="co-badge-name">{badge.name}</h3>
-      <p className="co-badge-meta">{badge.locked ? badge.hint : `Earned ${badge.date}`}</p>
+    <article className="co-card">
+      <div className="co-card-art" aria-hidden="true">
+        {art}
+      </div>
+      <h3 className="co-card-name">{name}</h3>
+      <p className="co-card-blurb">{blurb}</p>
+      <div className="co-card-foot">{date}</div>
     </article>
   )
 }
 
-function AchievementCard({ item }) {
+/** Each shelf states what it holds and how much of it, over a hairline. */
+function ShelfHead({ title, count, noun }) {
   return (
-    <article className="co-ach">
-      <div className="co-ach-art" aria-hidden="true">
-        <AchievementArt art={item.art} />
-      </div>
-      <div className="co-ach-text">
-        <h3 className="co-ach-name">{item.name}</h3>
-        <p className="co-ach-detail">{item.detail}</p>
-        <p className="co-ach-date">{item.date}</p>
-      </div>
-    </article>
+    <header className="co-shelf-head">
+      <h2 className="co-shelf-title">{title}</h2>
+      <p className="co-shelf-count">
+        {count} {noun}
+      </p>
+    </header>
   )
 }
 
 export function Collections({ collection, newestWord }) {
   const [pane, setPane] = useState('words')
-  const earned = BADGES.filter((b) => !b.locked).length
 
   return (
     <div className="co">
@@ -62,7 +59,7 @@ export function Collections({ collection, newestWord }) {
           <img src="/bs-prototypes/benny-happy.svg" alt="" className="co-benny-face" />
           <p className="co-benny-line">
             {collection.length >= 12
-              ? `${collection.length} words and ${earned} badges! Keep logging.`
+              ? `${collection.length} words and ${BADGES.length} badges! Keep logging.`
               : 'Log some reading and I’ll dig up a word for you.'}
           </p>
         </div>
@@ -78,7 +75,7 @@ export function Collections({ collection, newestWord }) {
         className="co-panes"
         items={[
           { id: 'words', label: 'Words', count: collection.length },
-          { id: 'badges', label: 'Badges', count: earned },
+          { id: 'badges', label: 'Badges', count: BADGES.length },
           { id: 'achievements', label: 'Achievements', count: ACHIEVEMENTS.length },
         ]}
       />
@@ -86,19 +83,41 @@ export function Collections({ collection, newestWord }) {
       {pane === 'words' && <MyWords collection={collection} newestWord={newestWord} />}
 
       {pane === 'badges' && (
-        <div className="co-badgegrid">
-          {BADGES.map((b) => (
-            <BadgeDisc key={b.name} badge={b} />
-          ))}
-        </div>
+        <>
+          <ShelfHead title="Earned Badges" count={BADGES.length} noun="Badges" />
+          <div className="co-grid">
+            {BADGES.map((b) => (
+              <CollectionCard
+                key={b.name}
+                art={
+                  <span className="co-card-disc" style={{ '--badge-color': b.color }}>
+                    <Icon name={b.icon} size={38} stroke={1.7} />
+                  </span>
+                }
+                name={b.name}
+                blurb={b.blurb}
+                date={b.date}
+              />
+            ))}
+          </div>
+        </>
       )}
 
       {pane === 'achievements' && (
-        <div className="co-achgrid">
-          {ACHIEVEMENTS.map((a) => (
-            <AchievementCard key={a.name} item={a} />
-          ))}
-        </div>
+        <>
+          <ShelfHead title="Achievements" count={ACHIEVEMENTS.length} noun="Achievements" />
+          <div className="co-grid">
+            {ACHIEVEMENTS.map((a) => (
+              <CollectionCard
+                key={a.name}
+                art={<AchievementArt art={a.art} />}
+                name={a.name}
+                blurb={a.detail}
+                date={a.date}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   )

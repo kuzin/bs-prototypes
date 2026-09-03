@@ -577,19 +577,43 @@ export const SEED_COLLECTION = [
 // the same shapes the `books` prototype already established (its `badge` /
 // `achievement` helpers and illustrated AchievementArt medallions).
 
-const badge = (name, date, color, icon = 'award') => ({ name, date, color, icon })
-const locked = (name, hint, color, icon = 'award') => ({ name, hint, color, icon, locked: true })
+const badge = (name, date, blurb, color, icon = 'award') => ({ name, date, blurb, color, icon })
 // `art` picks the illustrated medallion in books/AchievementArt.jsx.
 const achievement = (name, date, detail, art = 'books') => ({ name, date, detail, art })
 
+// Earned badges only — the shelf in the product is "Earned Badges", and unearned
+// ones live behind their own switch. Each carries the line the card shows under
+// its name, the way a real badge states what completed it.
 export const BADGES = [
-  badge('Word Collector', 'Jun 26, 2026', '#7C3AED', 'vocabulary'),
-  badge('2-Week Streak', 'Jun 24, 2026', '#F0A024', 'flame'),
-  badge('Spring Into Reading', 'Apr 30, 2026', '#0DA7BC', 'trophy'),
-  badge('First Review', 'Apr 18, 2026', '#16A97A', 'writing'),
-  badge('Ten Titles', 'Apr 6, 2026', '#2563EB', 'book-2'),
-  locked('Word Hoarder', 'Collect 25 words — 19 so far', '#8B5CF6', 'vocabulary'),
-  locked('Month-Long Streak', 'Log 30 days in a row', '#F59E0B', 'flame'),
+  badge(
+    'Word Collector',
+    'Jun 26, 2026',
+    'Earned for collecting 10 words!',
+    '#7C3AED',
+    'vocabulary',
+  ),
+  badge(
+    '2-Week Streak',
+    'Jun 24, 2026',
+    'Earned for logging 14 days in a row!',
+    '#F0A024',
+    'flame',
+  ),
+  badge(
+    'Spring Into Reading',
+    'Apr 30, 2026',
+    'Earned for completing Spring Into Reading!',
+    '#0DA7BC',
+    'trophy',
+  ),
+  badge(
+    'First Review',
+    'Apr 18, 2026',
+    'Earned for writing your first review!',
+    '#16A97A',
+    'writing',
+  ),
+  badge('Ten Titles', 'Apr 6, 2026', 'Earned for finishing 10 books!', '#2563EB', 'book-2'),
 ]
 
 export const ACHIEVEMENTS = [
