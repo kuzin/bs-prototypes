@@ -713,7 +713,7 @@ function TitleShelf({ titles, onNavigate }) {
   )
 }
 
-function OverviewStats({ metrics, note, onOpen }) {
+function OverviewStats({ metrics, onOpen }) {
   const [showMore, setShowMore] = useState(false)
   const shown = metrics.filter((m) => !m.more || showMore)
   const hidden = metrics.filter((m) => m.more).length
@@ -722,9 +722,6 @@ function OverviewStats({ metrics, note, onOpen }) {
     <div className="rp-card rp-statlist">
       <div className="rp-statlist-head">
         <SectionHeading>At a glance</SectionHeading>
-        {/* Stated once here rather than repeated in every chip. Absent on a
-            range with nothing to compare against, along with the chips. */}
-        {note && <span className="rp-statlist-note">Trend {note}</span>}
       </div>
       {shown.map((m) => (
         <StatRow
@@ -775,7 +772,7 @@ function Overview({ student, onNavigate }) {
       />
 
       {/* Overview figures */}
-      <OverviewStats metrics={metrics} note={ov.trend?.label} onOpen={onNavigate} />
+      <OverviewStats metrics={metrics} onOpen={onNavigate} />
 
       {/* Latest titles — covers first, so the shelf reads at a glance */}
       <Card>
@@ -2220,13 +2217,13 @@ function RLEntryCard({ entry, onOpen }) {
 // entries against the same sitting). Sorted newest first: the week grouping
 // hid that `RL_DATA`'s day order isn't strictly descending, but a flat list
 // shows it.
-const RL_MONTH = { label: 'July 2024', mm: '07', yyyy: '2024' }
+const RL_MONTH = { label: 'July 2024', mm: '07', yy: '24' }
 
 const RL_ROWS = RL_DATA.flatMap((week) =>
   week.days.flatMap((day) =>
     day.entries.map((e) => ({
-      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yyyy}`,
-      unit: e.completed ? '1 book' : e.amount.toLowerCase(),
+      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yy}`,
+      unit: e.completed ? '1 book' : e.amount.toLowerCase().replace(' minutes', ' min'),
       lexile: e.lexile ?? null,
       // The entry itself rides along so the row can advertise the same flags
       // and partner source the calendar card does, and open the same session.
@@ -2249,7 +2246,12 @@ function ReadingLogTable({ onOpen }) {
       compact
       scrollX
       columns={[
-        { key: 'date', label: 'Date', width: 96 },
+        {
+          key: 'date',
+          label: 'Date',
+          width: 74,
+          render: (d) => <span className="rp-rl-tbl-dim">{d}</span>,
+        },
         {
           key: 'title',
           label: 'Title',
@@ -2262,14 +2264,16 @@ function ReadingLogTable({ onOpen }) {
               </button>
               {/* Author and Lexile ride under the title, as on the card — a
                   Lexile column of its own cost the title the width it needed. */}
-              <span className="rp-rl-tbl-author">
-                {row.entry.author}
+              <span className="rp-rl-tbl-author">{row.entry.author}</span>
+              {/* Their own row: chips mixed into the author line broke it in
+                  awkward places and read as part of the name. */}
+              <span className="rp-rl-tbl-tags">
+                <span className="rp-rl-entry-lexile rp-rl-entry-unit">{row.unit}</span>
                 {row.lexile && <span className="rp-rl-entry-lexile">{row.lexile}</span>}
               </span>
             </div>
           ),
         },
-        { key: 'unit', label: 'Unit', width: 92 },
         {
           key: 'marks',
           label: '',
@@ -2380,8 +2384,9 @@ function ReadingLogPage({ reader }) {
                         </span>
                       )}
                     </div>
-                    {/* A day with nothing logged shows only its date — no filler row. */}
-                    {day.entries.length > 0 && (
+                    {day.entries.length === 0 ? (
+                      <div className="rp-rl-empty-day" aria-label="Nothing logged" />
+                    ) : (
                       <div className="rp-rl-entries">
                         {day.entries.map((e, ei) => (
                           <RLEntryCard key={ei} entry={e} onOpen={openEntry} />

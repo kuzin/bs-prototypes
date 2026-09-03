@@ -188,7 +188,16 @@ const YES_NO = [
   { id: 'no', label: 'No' },
 ]
 
-function ActionModal({ open, onClose, title, children, save = 'Save', saveDisabled, secondary }) {
+function ActionModal({
+  open,
+  onClose,
+  title,
+  children,
+  save = 'Save',
+  saveDisabled,
+  secondary,
+  onSave,
+}) {
   return (
     <Modal open={open} onClose={onClose} variant="center" ariaLabel={title}>
       {({ close }) => (
@@ -206,7 +215,13 @@ function ActionModal({ open, onClose, title, children, save = 'Save', saveDisabl
                 {secondary}
               </Button>
             )}
-            <Button onClick={close} disabled={saveDisabled}>
+            <Button
+              onClick={() => {
+                onSave?.()
+                close()
+              }}
+              disabled={saveDisabled}
+            >
               {save}
             </Button>
           </div>
@@ -910,7 +925,7 @@ function TitleShelf({ titles, onNavigate }) {
   )
 }
 
-function OverviewStats({ metrics, note, onOpen }) {
+function OverviewStats({ metrics, onOpen, range, onRangeChange }) {
   const [showMore, setShowMore] = useState(false)
   const shown = metrics.filter((m) => !m.more || showMore)
   const hidden = metrics.filter((m) => m.more).length
@@ -919,9 +934,14 @@ function OverviewStats({ metrics, note, onOpen }) {
     <div className="bp-card bp-statlist">
       <div className="bp-statlist-head">
         <SectionHeading>At a glance</SectionHeading>
-        {/* Stated once here rather than repeated in every chip. Absent on a
-            range with nothing to compare against, along with the chips. */}
-        {note && <span className="bp-statlist-note">Trend {note}</span>}
+        <Tabs
+          variant="pill"
+          size="sm"
+          ariaLabel="Overview time range"
+          active={range}
+          onChange={onRangeChange}
+          items={OVERVIEW_RANGES}
+        />
       </div>
       {shown.map((m) => (
         <StatRow
@@ -954,7 +974,7 @@ function OverviewStats({ metrics, note, onOpen }) {
   )
 }
 
-function Overview({ student, onNavigate }) {
+function Overview({ student, onNavigate, goal }) {
   const [range, setRange] = useState('year')
   const ov = student.overview[range]
   const metrics = overviewMetrics(ov)
@@ -967,19 +987,6 @@ function Overview({ student, onNavigate }) {
         accent={SECTION_ACCENT.overview.text}
         accentBg={SECTION_ACCENT.overview.bg}
       />
-      {/* Segmented controls sit under the header on every page — Challenges and
-          Badges already did, and a switcher tucked into the header's right-hand
-          corner reads as a header control rather than as scoping the page. */}
-      <Tabs
-        variant="pill"
-        size="sm"
-        block
-        ariaLabel="Overview time range"
-        active={range}
-        onChange={setRange}
-        items={OVERVIEW_RANGES}
-      />
-
       {/* Benny says — the summary leads the page */}
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
@@ -987,7 +994,21 @@ function Overview({ student, onNavigate }) {
       </Card>
 
       {/* Overview figures — every one is scoped to the selected range */}
-      <OverviewStats metrics={metrics} note={ov.trend?.label} onOpen={onNavigate} />
+      <OverviewStats metrics={metrics} onOpen={onNavigate} range={range} onRangeChange={setRange} />
+
+      {/* This week against the daily goal. It was behind a toggle on the Goals
+          page; "did they read this week" is a scanning question, so it belongs
+          on the page you scan. */}
+      <Card>
+        <div className="bp-latest-head">
+          <SectionHeading>This week</SectionHeading>
+          <button type="button" className="bp-latest-link" onClick={() => onNavigate('habits')}>
+            Goals and Streaks
+            <Icon name="arrow-right" size={14} />
+          </button>
+        </div>
+        <WeekTracker sec={student.sections.habits} goalMinutes={goal} />
+      </Card>
 
       {/* Latest titles — covers first, so the shelf reads at a glance */}
       <Card>
@@ -1012,18 +1033,130 @@ function Overview({ student, onNavigate }) {
 }
 
 // ─── Section detail wrapper ───────────────────────────────────────────────────
-function SectionDetail({ student, sectionKey }) {
+// ─── Week tracker ─────────────────────────────────────────────────────────────
+// The week's days against the daily goal, with its own week stepper. It lives
+// on the Overview — "did they read this week" is a scanning question, and it
+// was buried behind a "show this week's tracker" toggle on the Goals page.
+function WeekTracker({ sec, goalMinutes }) {
+  const [weekIdx, setWeekIdx] = useState(0)
+  const week = sec.weeks[weekIdx]
+
+  return (
+    <>
+      <div className="bp-goal-week-nav">
+        <button
+          className="bp-heatmap-nav-btn"
+          onClick={() => setWeekIdx((i) => Math.min(i + 1, sec.weeks.length - 1))}
+          disabled={weekIdx === sec.weeks.length - 1}
+          aria-label="Previous week"
+        >
+          <Icon name="chevron-left" size={11} />
+        </button>
+        <span className="bp-goal-week-label">
+          {week.label}
+          {week.current ? ' (This Week)' : ''}
+        </span>
+        <button
+          className="bp-heatmap-nav-btn"
+          onClick={() => setWeekIdx((i) => Math.max(i - 1, 0))}
+          disabled={weekIdx === 0}
+          aria-label="Next week"
+        >
+          <Icon name="chevron-right" size={11} />
+        </button>
+      </div>
+      <GoalTracker week={week} goalMinutes={goalMinutes} />
+    </>
+  )
+}
+
+// ─── Edit goal ────────────────────────────────────────────────────────────────
+// The one editable thing in this prototype. It was inert twice before, which
+// made the Goals page read as a mock of itself; now Save actually moves the
+// number, and every ring, tracker and "of N days" figure that reads the goal
+// moves with it. Nothing is persisted past a reload — the same stance as the
+// rest of the demo's forms.
+const GOAL_PRESETS = [10, 15, 20, 30, 45, 60]
+
+function EditGoalModal({ open, onClose, goal, onSave }) {
+  const [minutes, setMinutes] = useState(goal)
+
+  // Reopening after a cancel should show the goal as it stands, not the number
+  // that was abandoned.
+  useEffect(() => {
+    if (open) setMinutes(goal)
+  }, [open, goal])
+
+  const value = Number(minutes)
+  const valid = Number.isFinite(value) && value >= 1 && value <= 240
+
+  return (
+    <ActionModal
+      open={open}
+      onClose={onClose}
+      title="Edit reading goal"
+      save="Save goal"
+      saveDisabled={!valid}
+      secondary="Cancel"
+      onSave={() => onSave(value)}
+    >
+      <Field label="Daily goal" hint="Minutes a day, between 1 and 240.">
+        <Input
+          type="number"
+          min={1}
+          max={240}
+          value={minutes}
+          onChange={(e) => setMinutes(e.target.value)}
+        />
+      </Field>
+      {/* The common goals, so the usual case is one click rather than typing. */}
+      <div className="bp-goal-presets">
+        {GOAL_PRESETS.map((n) => (
+          <button
+            key={n}
+            type="button"
+            className={`bp-goal-preset${value === n ? ' bp-goal-preset--on' : ''}`}
+            onClick={() => setMinutes(n)}
+          >
+            {n} min
+          </button>
+        ))}
+      </div>
+    </ActionModal>
+  )
+}
+
+function SectionDetail({ student, sectionKey, goal, onEditGoal }) {
   const sec = student.sections[sectionKey]
   const c = C[sectionKey]
   const firstName = student.name.split(' ')[0]
   return (
     <div className="bp-content">
       {/* `.text` is the palette's on-tint tone (what the nav and every other
-          page's Hero use); `.bar` is the chart-stroke tone, too light here. */}
-      <Hero icon={<Ic name={c.icon} />} title={LABEL[sectionKey]} accent={c.text} accentBg={c.bg} />
+          page's Hero use); `.bar` is the chart-stroke tone, too light here.
+          Editing the goal is a page action, so it sits in the header's top
+          right with Reading Log's "Print log" rather than inside a card. */}
+      <Hero
+        icon={<Ic name={c.icon} />}
+        title={LABEL[sectionKey]}
+        accent={c.text}
+        accentBg={c.bg}
+        action={
+          sectionKey === 'habits' ? (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<Icon name="pencil" size={14} />}
+              onClick={onEditGoal}
+            >
+              Edit Goal
+            </Button>
+          ) : undefined
+        }
+      />
       {sectionKey === 'motivation' && <MotivationDetail sec={sec} c={c} />}
       {sectionKey === 'integrity' && <IntegrityDetail sec={sec} c={c} student={student} />}
-      {sectionKey === 'habits' && <HabitsDetail sec={sec} c={c} />}
+      {sectionKey === 'habits' && <HabitsDetail sec={sec} c={c} goal={goal} />}
       {sectionKey === 'skills' && <SkillsDetail sec={sec} c={c} firstName={firstName} />}
       {sectionKey === 'motivation' && (
         <ShowMore label="suggested actions">
@@ -1040,6 +1173,14 @@ function SectionDetail({ student, sectionKey }) {
 function MotivationDetail({ sec, c }) {
   const [periodIdx, setPeriodIdx] = useState(0)
   const rmi = sec.rmiHistory[periodIdx]
+
+  // `rmiHistory` is newest first; a chart reads the other way. Every index has
+  // carried its own deltas all along — they were just never shown, so a page
+  // about motivation couldn't say whether motivation was rising.
+  const history = [...sec.rmiHistory].reverse()
+  const prev = sec.rmiHistory[periodIdx + 1]
+  const goalDelta = prev ? rmi.readingGoalMinutes - prev.readingGoalMinutes : null
+  const trend = (delta) => <TrendPill delta={delta} format={(n) => `${n}%`} />
 
   return (
     <>
@@ -1062,6 +1203,7 @@ function MotivationDetail({ sec, c }) {
             max={rmi.intrinsicMax}
             label="Intrinsic"
             color={c.bar}
+            trend={trend(rmi.intrinsicDelta)}
           />
           <SplitDonutChart
             intrinsicVal={rmi.intrinsicAvg}
@@ -1069,15 +1211,58 @@ function MotivationDetail({ sec, c }) {
             max={rmi.motivationMax}
             label="Overall"
             intrinsicColor={c.bar}
+            trend={trend(rmi.motivationDelta)}
           />
           <DonutChart
             value={rmi.extrinsicAvg}
             max={rmi.extrinsicMax}
             label="Extrinsic"
             color={EXTRINSIC_COLOR}
+            trend={trend(rmi.extrinsicDelta)}
           />
         </div>
+        <div className="bp-rmi-donuts-note">Change against the previous index</div>
       </Card>
+
+      {/* Where the index has been. One period's donuts can't tell you whether a
+          19.2 is a recovery or a slide, which is the question the page is for. */}
+      {history.length > 1 && (
+        <Card>
+          <SectionHeading>Index over time</SectionHeading>
+          <div className="bp-chart-fit" style={{ '--chart-h': '180px' }}>
+            <TrendChart
+              type="line"
+              data={history.map((r) => ({
+                period: r.period.replace(' Index', ''),
+                overall: r.motivationAvg,
+                intrinsic: r.intrinsicAvg,
+                extrinsic: r.extrinsicAvg,
+              }))}
+              xKey="period"
+              yDomain={[0, rmi.motivationMax]}
+              height="sm"
+              series={[
+                { key: 'overall', name: 'Overall', color: c.bar },
+                { key: 'intrinsic', name: 'Intrinsic', color: c.bar, dashed: true, fillOpacity: 0 },
+                {
+                  key: 'extrinsic',
+                  name: 'Extrinsic',
+                  color: EXTRINSIC_COLOR,
+                  dashed: true,
+                  fillOpacity: 0,
+                },
+              ]}
+            />
+          </div>
+          <ChartLegend
+            items={[
+              { color: c.bar, label: 'Overall' },
+              { color: c.bar, label: 'Intrinsic', dashed: true },
+              { color: EXTRINSIC_COLOR, label: 'Extrinsic', dashed: true },
+            ]}
+          />
+        </Card>
+      )}
 
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
@@ -1088,6 +1273,8 @@ function MotivationDetail({ sec, c }) {
         <SectionHeading>Recommended reading goal</SectionHeading>
         <StatRow icon="target" accent={c} label="Minutes per day">
           <span className="bp-statrow-value">{rmi.readingGoalMinutes}</span>
+          {/* The recommendation follows the index, so it moves too. */}
+          <TrendPill delta={goalDelta} format={(n) => `${n} min`} />
         </StatRow>
       </Card>
 
@@ -1111,6 +1298,7 @@ function MotivationDetail({ sec, c }) {
               value: (m.score / m.max) * 100,
               color: mColor,
               valueLabel: String(m.score),
+              delta: m.delta,
             }
           })}
         />
@@ -1292,12 +1480,7 @@ function IntegrityDetail({ sec, student }) {
 }
 
 // ─── Habits detail ────────────────────────────────────────────────────────────
-function HabitsDetail({ sec, c }) {
-  const [weekIdx, setWeekIdx] = useState(0)
-  const week = sec.weeks[weekIdx]
-
-  const goal = sec.dailyGoalMinutes
-
+function HabitsDetail({ sec, c, goal }) {
   // Derive today's minutes from the current week (last non-null day)
   const currentWeek = sec.weeks.find((w) => w.current)
   const todayMins = currentWeek
@@ -1325,38 +1508,7 @@ function HabitsDetail({ sec, c }) {
               <span>logged today</span>
             </div>
           </div>
-          <Button variant="secondary" size="sm" icon={<Icon name="pencil" size={14} />}>
-            Edit Goal
-          </Button>
         </div>
-        {/* The week-by-week tracker restates what the Reading activity heatmap
-            below already shows, so it's tucked away — the goal itself, which is
-            what the card is for, stays in view. */}
-        <ShowMore label="this week's tracker" inCard>
-          <div className="bp-goal-week-nav">
-            <button
-              className="bp-heatmap-nav-btn"
-              onClick={() => setWeekIdx((i) => Math.min(i + 1, sec.weeks.length - 1))}
-              disabled={weekIdx === sec.weeks.length - 1}
-              aria-label="Previous week"
-            >
-              <Icon name="chevron-left" size={11} />
-            </button>
-            <span className="bp-goal-week-label">
-              {week.label}
-              {week.current ? ' (This Week)' : ''}
-            </span>
-            <button
-              className="bp-heatmap-nav-btn"
-              onClick={() => setWeekIdx((i) => Math.max(i - 1, 0))}
-              disabled={weekIdx === 0}
-              aria-label="Next week"
-            >
-              <Icon name="chevron-right" size={11} />
-            </button>
-          </div>
-          <GoalTracker week={week} goalMinutes={goal} />
-        </ShowMore>
       </Card>
 
       {/* Heatmap */}
@@ -4072,13 +4224,13 @@ function RLEntryCard({ entry, onOpen, talkFor }) {
 // entries against the same sitting). Sorted newest first: the week grouping
 // hid that `RL_DATA`'s day order isn't strictly descending, but a flat list
 // shows it.
-const RL_MONTH = { label: 'July 2024', mm: '07', yyyy: '2024' }
+const RL_MONTH = { label: 'July 2024', mm: '07', yy: '24' }
 
 const RL_ROWS = RL_DATA.flatMap((week) =>
   week.days.flatMap((day) =>
     day.entries.map((e) => ({
-      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yyyy}`,
-      unit: e.completed ? '1 book' : e.amount.toLowerCase(),
+      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yy}`,
+      unit: e.completed ? '1 book' : e.amount.toLowerCase().replace(' minutes', ' min'),
       lexile: e.lexile ?? null,
       // The entry itself rides along so the row can advertise the same flags,
       // book talk and partner source the calendar card does, and open the same
@@ -4102,7 +4254,12 @@ function ReadingLogTable({ onOpen, talkFor }) {
       compact
       scrollX
       columns={[
-        { key: 'date', label: 'Date', width: 96 },
+        {
+          key: 'date',
+          label: 'Date',
+          width: 74,
+          render: (d) => <span className="bp-rl-tbl-dim">{d}</span>,
+        },
         {
           key: 'title',
           label: 'Title',
@@ -4113,14 +4270,16 @@ function ReadingLogTable({ onOpen, talkFor }) {
               <button type="button" className="bp-rl-tbl-name" onClick={() => onOpen?.(row.entry)}>
                 {row.entry.title}
               </button>
-              <span className="bp-rl-tbl-author">
-                {row.entry.author}
+              <span className="bp-rl-tbl-author">{row.entry.author}</span>
+              {/* Their own row: chips mixed into the author line broke it in
+                  awkward places and read as part of the name. */}
+              <span className="bp-rl-tbl-tags">
+                <span className="bp-rl-entry-lexile bp-rl-entry-unit">{row.unit}</span>
                 {row.lexile && <span className="bp-rl-entry-lexile">{row.lexile}</span>}
               </span>
             </div>
           ),
         },
-        { key: 'unit', label: 'Unit', width: 92 },
         {
           key: 'marks',
           label: '',
@@ -4242,8 +4401,9 @@ function ReadingLogPage({ reader }) {
                         </span>
                       )}
                     </div>
-                    {/* A day with nothing logged shows only its date — no filler row. */}
-                    {day.entries.length > 0 && (
+                    {day.entries.length === 0 ? (
+                      <div className="bp-rl-empty-day" aria-label="Nothing logged" />
+                    ) : (
                       <div className="bp-rl-entries">
                         {day.entries.map((e, ei) => (
                           <RLEntryCard key={ei} entry={e} onOpen={openEntry} talkFor={talkFor} />
@@ -5330,8 +5490,22 @@ function ProfileBody({
   renderExtra,
 }) {
   const extraSections = extraNav.map((n) => n.section)
+  // The daily goal lives here because three places read it — the Overview's
+  // week tracker, the Goals page's ring, and the modal that changes it — and
+  // only the body sees all three. Reset per student: it's their goal, not the
+  // panel's. Not persisted past a reload, like the rest of the demo's forms.
+  const [goal, setGoal] = useState(student.sections.habits.dailyGoalMinutes)
+  const [editingGoal, setEditingGoal] = useState(false)
+  useEffect(() => setGoal(student.sections.habits.dailyGoalMinutes), [student])
+
   return (
     <>
+      <EditGoalModal
+        open={editingGoal}
+        onClose={() => setEditingGoal(false)}
+        goal={goal}
+        onSave={setGoal}
+      />
       <ProfileCtrls
         onClose={onClose}
         expanded={expanded}
@@ -5357,9 +5531,14 @@ function ProfileBody({
               {extraSections.includes(activeSection) ? (
                 renderExtra?.(activeSection, student)
               ) : activeSection === null ? (
-                <Overview student={student} onNavigate={onNavigate} />
+                <Overview student={student} onNavigate={onNavigate} goal={goal} />
               ) : ANALYSIS_SECTIONS.has(activeSection) ? (
-                <SectionDetail student={student} sectionKey={activeSection} />
+                <SectionDetail
+                  student={student}
+                  sectionKey={activeSection}
+                  goal={goal}
+                  onEditGoal={() => setEditingGoal(true)}
+                />
               ) : activeSection === 'readinglog' ? (
                 <ReadingLogPage reader={student} />
               ) : activeSection === 'textchallenges' ? (

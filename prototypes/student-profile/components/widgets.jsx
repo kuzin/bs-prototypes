@@ -10,7 +10,7 @@ import { Icon } from '@components/Icon/Icon'
 // rankings so intrinsic vs. extrinsic reads consistently.
 export const EXTRINSIC_COLOR = '#94A3B8'
 
-export function DonutChart({ value, max, label, color, size = 84 }) {
+export function DonutChart({ value, max, label, color, size = 84, trend }) {
   const sw = 9
   const r = (size - sw) / 2
   const circ = 2 * Math.PI * r
@@ -39,6 +39,7 @@ export function DonutChart({ value, max, label, color, size = 84 }) {
         </div>
       </div>
       <div className="bp-donut-label">{label}</div>
+      {trend}
     </div>
   )
 }
@@ -50,6 +51,7 @@ export function SplitDonutChart({
   label,
   intrinsicColor,
   size = 84,
+  trend,
 }) {
   const sw = 9
   const r = (size - sw) / 2
@@ -93,6 +95,7 @@ export function SplitDonutChart({
         </div>
       </div>
       <div className="bp-donut-label">{label}</div>
+      {trend}
     </div>
   )
 }
