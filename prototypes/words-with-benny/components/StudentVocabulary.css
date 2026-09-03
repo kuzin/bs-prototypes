@@ -26,6 +26,17 @@
 
 /* ─── Word list ──────────────────────────────────────────────────────────── */
 
+/* `.bp-content` is a flex column with a 14px gap, and `.bp-section-heading`
+   adds 12px under itself — so a loose heading ends up nearer the card above it
+   than the section it names. Reverse that: pull the gap out below, add to it
+   above. */
+.svo-listhead {
+  margin: 6px 0 -6px;
+}
+.svo-listhead .bp-section-heading {
+  margin-bottom: 0;
+}
+
 .svo-list {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(248px, 1fr));

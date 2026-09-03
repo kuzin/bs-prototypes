@@ -5,7 +5,6 @@ import { Button } from '@components/Button/Button'
 import { WordUnlock } from '../../words-with-benny/components/WordUnlock'
 import { MyWords, WordTile } from '../../words-with-benny/components/MyWords'
 import { Collections } from '../../words-with-benny/components/Collections'
-import { WordsRailCard } from '../../words-with-benny/components/WordsRailCard'
 import { EducatorWords } from '../../words-with-benny/components/EducatorWords'
 import { StudentVocabulary } from '../../words-with-benny/components/StudentVocabulary'
 import { ClassroomView } from '../../student-profile/BeanstackProfile'
@@ -37,16 +36,6 @@ function WordUnlockDemo() {
         onClose={() => setOpen(false)}
         onSeeAll={() => setOpen(false)}
       />
-    </div>
-  )
-}
-
-function RailCardDemo() {
-  return (
-    <div style={{ padding: 20, background: '#f3f4f6' }}>
-      <div style={{ width: 300 }}>
-        <WordsRailCard collection={SEED_COLLECTION} logsSinceWord={1} onOpen={noop} />
-      </div>
     </div>
   )
 }
@@ -118,26 +107,6 @@ export const wordsWithBennySections = [
   },
   {
     group: 'words-with-benny',
-    id: 'wb-rail-card',
-    name: 'WordsRailCard',
-    desc: (
-      <>
-        The collection&apos;s front door on the challenges page, injected into logging-flow&apos;s
-        dashboard rail through its <code>railTop</code> slot — so it borrows that page&apos;s{' '}
-        <code>.wa-card</code> shell and styles only its own internals. Carries the three most recent
-        words and how many logs stand between the reader and the next one, which is what makes the
-        &ldquo;every couple of logs&rdquo; cadence legible before it fires. Leads into the{' '}
-        <code>Collections</code> tab.
-      </>
-    ),
-    render: () => (
-      <Variant label="16 collected, a word due on the next log" bare>
-        <RailCardDemo />
-      </Variant>
-    ),
-  },
-  {
-    group: 'words-with-benny',
     id: 'wb-collections',
     name: 'Collections',
     desc: (
@@ -167,10 +136,9 @@ export const wordsWithBennySections = [
     desc: (
       <>
         The vocabulary collection itself — the brief&apos;s &ldquo;growing personal record,
-        analogous to a reading log&rdquo;. A stat strip over a tile grid, groupable{' '}
-        <strong>by book</strong> and searchable across word, meaning and title. It&apos;s the Words
-        pane of <code>Collections</code>, so it owns no header of its own and starts at the stat
-        strip.
+        analogous to a reading log&rdquo;. A stat strip over a tile grid, newest word first; each
+        tile names the book the word came from. It&apos;s the Words pane of <code>Collections</code>
+        , so it owns no header of its own and starts at the stat strip.
       </>
     ),
     render: () => (

@@ -7,6 +7,7 @@ import { Table } from '@components/Table/Table'
 import { Avatar } from '@components/Avatar/Avatar'
 import { BarList } from '@components/BarList/BarList'
 import { TrendChart } from '@components/TrendChart/TrendChart'
+import { WordCloud } from '@components/WordCloud/WordCloud'
 import { StatCard, ChartCard } from '@components/Cards/Cards'
 import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
@@ -15,7 +16,7 @@ import '@components/Avatar/Avatar.css'
 import '@components/BarList/BarList.css'
 import '@components/Cards/Cards.css'
 
-import { ALL_WORDS, CLASS, CLASS_TOP_WORDS, CLASS_TREND, ROSTER } from '../data'
+import { ALL_WORDS, CLASS_TOP_WORDS, CLASS_TREND, ROSTER } from '../data'
 import './EducatorWords.css'
 
 // The Vocabulary tab of a classroom page: "at-a-glance reporting showing
@@ -117,10 +118,23 @@ export function EducatorWords({ onOpenStudent }) {
 
   return (
     <div className="ew">
-      {/* The classroom page above already names the class and the tab, so this
-          keeps only the actions that belong to Vocabulary itself. */}
+      {/* The classroom page above already names the class and the tab, so the
+          header carries only what belongs to Vocabulary itself: which level
+          you're reading it at, and the actions. */}
       <header className="ew-head">
-        <p className="ew-term">{CLASS.term}</p>
+        <Tabs
+          variant="pill"
+          size="md"
+          active={tab}
+          onChange={setTab}
+          accent={ACCENT}
+          ariaLabel="Vocabulary reporting level"
+          items={[
+            { id: 'class', label: 'Class summary' },
+            { id: 'students', label: 'By student', count: ROSTER.length },
+          ]}
+          className="ew-tabs"
+        />
         <div className="ew-head-actions">
           <Button variant="ghost" size="sm" icon={<Icon name="download" size={15} />}>
             Export
@@ -130,30 +144,6 @@ export function EducatorWords({ onOpenStudent }) {
           </Button>
         </div>
       </header>
-
-      {/* The reason this page exists, said plainly. */}
-      <div className="ew-note">
-        <img src="/bs-prototypes/benny-happy.svg" alt="" className="ew-note-benny" />
-        <p className="ew-note-text">
-          <strong>Nothing here was assigned.</strong> Every word below came out of a book a student
-          chose and logged — Benny surfaces one every couple of logs, and the student earns it by
-          using it correctly. No lists to build, no lessons to plan.
-        </p>
-      </div>
-
-      <Tabs
-        variant="pill"
-        size="md"
-        active={tab}
-        onChange={setTab}
-        accent={ACCENT}
-        ariaLabel="Vocabulary reporting level"
-        items={[
-          { id: 'class', label: 'Class summary' },
-          { id: 'students', label: 'By student', count: ROSTER.length },
-        ]}
-        className="ew-tabs"
-      />
 
       {tab === 'class' ? (
         <>
@@ -188,6 +178,24 @@ export function EducatorWords({ onOpenStudent }) {
           </div>
 
           <div className="ew-grid">
+            <ChartCard
+              title="The class word wall"
+              subtitle="Every word the class has collected — the bigger the word, the more students have it"
+              icon={<Icon name="vocabulary" size={17} />}
+              accent={ACCENT}
+              span={2}
+              bodyPad="padded"
+            >
+              <WordCloud
+                words={CLASS_TOP_WORDS.map((w) => ({ text: w.word, value: w.students }))}
+                accent={ACCENT}
+                height="lg"
+                minSize={13}
+                maxSize={48}
+                valueLabel={(w) => `${w.value} of ${ROSTER.length} students`}
+              />
+            </ChartCard>
+
             <ChartCard
               title="Words collected, against reading logs"
               subtitle="Weekly, since Words with Benny turned on"
@@ -237,30 +245,11 @@ export function EducatorWords({ onOpenStudent }) {
             </ChartCard>
 
             <ChartCard
-              title="The class word wall"
-              subtitle="Words the most students have collected"
-              icon={<Icon name="vocabulary" size={17} />}
-              accent={ACCENT}
-              bodyPad="padded"
-            >
-              <BarList
-                header={{ label: 'Word', valueLabel: 'Students' }}
-                labelWidth={116}
-                items={CLASS_TOP_WORDS.map((w) => ({
-                  label: w.word,
-                  value: w.students,
-                  valueLabel: `${w.students}`,
-                  max: ROSTER.length,
-                  color: ACCENT,
-                }))}
-              />
-            </ChartCard>
-
-            <ChartCard
               title="How the class is spread"
               subtitle="Students by words collected"
               icon={<Icon name="users" size={17} />}
               accent={ACCENT}
+              span={2}
               bodyPad="padded"
             >
               <BarList labelWidth={92} items={distribution(ROSTER)} />

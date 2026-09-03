@@ -344,6 +344,9 @@ function Footer() {
  * defaults to logging-flow's own CONNECTION_LIST; pass `[]` and the entire
  * integration surface drops out — the connect banner, the topbar switcher, the
  * "logged for you" rail card, and the App Integrations settings section.
+ *
+ * `titlesView={false}` is passed straight through to the Reading Log: its
+ * "All Titles" tab stays on the page but stops being reachable.
  */
 export function Dashboard({
   streak,
@@ -360,6 +363,7 @@ export function Dashboard({
   onView: onViewProp,
   hideTabs = [],
   partners = CONNECTION_LIST,
+  titlesView = true,
 }) {
   const [scope, setScope] = useState('current')
   // 'challenges' | 'settings' | 'log' | any `extraTabs` id — the gear (and
@@ -395,7 +399,7 @@ export function Dashboard({
           {extraIds.includes(view) ? (
             renderExtra?.(view)
           ) : view === 'log' ? (
-            <ReadingLog partners={partners} />
+            <ReadingLog partners={partners} titlesView={titlesView} />
           ) : view === 'settings' ? (
             <PersonalizeReader
               reader={READER}

@@ -721,16 +721,55 @@ export function profileFor(studentId) {
   return { studentKey: key, overrides: { name: person.name, grade: '6th Grade' } }
 }
 
-/** Words the class has collected most — the "word wall" an educator can point to. */
+/**
+ * The class word wall — every word anyone in the room has collected, and how
+ * many of the 24 students have it. This is what the word cloud is drawn from,
+ * so it covers the whole vocabulary rather than a top-eight: the long tail is
+ * the point, and it is what makes the cloud look like a class rather than a
+ * chart.
+ *
+ * Two invariants hold it to the rest of the data — `wordByName` has to know
+ * every word here, and the counts sum to the 490 words the roster says the
+ * class has collected, because each one is a student-word pair.
+ */
 export const CLASS_TOP_WORDS = [
-  { word: 'mischievous', students: 21 },
-  { word: 'empathy', students: 19 },
-  { word: 'precept', students: 18 },
-  { word: 'desolate', students: 17 },
-  { word: 'resilient', students: 15 },
-  { word: 'destiny', students: 14 },
-  { word: 'melancholy', students: 12 },
-  { word: 'clandestine', students: 9 },
+  { word: 'mischievous', students: 24 },
+  { word: 'empathy', students: 23 },
+  { word: 'grief', students: 22 },
+  { word: 'precept', students: 20 },
+  { word: 'desolate', students: 19 },
+  { word: 'resilient', students: 19 },
+  { word: 'resourceful', students: 18 },
+  { word: 'destiny', students: 18 },
+  { word: 'legacy', students: 17 },
+  { word: 'instinct', students: 17 },
+  { word: 'rivalry', students: 16 },
+  { word: 'melancholy', students: 15 },
+  { word: 'prodigy', students: 15 },
+  { word: 'solace', students: 15 },
+  { word: 'awkward', students: 14 },
+  { word: 'tyrant', students: 14 },
+  { word: 'imaginary', students: 14 },
+  { word: 'defiance', students: 13 },
+  { word: 'momentum', students: 13 },
+  { word: 'peculiar', students: 12 },
+  { word: 'futile', students: 12 },
+  { word: 'suspicion', students: 12 },
+  { word: 'clandestine', students: 11 },
+  { word: 'ancestor', students: 11 },
+  { word: 'conspicuous', students: 11 },
+  { word: 'reluctant', students: 10 },
+  { word: 'heritage', students: 10 },
+  { word: 'earnest', students: 10 },
+  { word: 'bargain', students: 9 },
+  { word: 'conform', students: 9 },
+  { word: 'coincidence', students: 8 },
+  { word: 'superstition', students: 8 },
+  { word: 'vivid', students: 7 },
+  { word: 'infatuated', students: 7 },
+  { word: 'narrator', students: 6 },
+  { word: 'provisions', students: 6 },
+  { word: 'motive', students: 5 },
 ]
 
 /** Words collected per week, against reading logs per week, since the feature turned on. */

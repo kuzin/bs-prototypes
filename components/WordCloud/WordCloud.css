@@ -1,0 +1,56 @@
+/* Word cloud. The SVG carries the type sizes and colours from the layout, so
+   these rules only cover the frame and the interaction states. */
+
+.wcl {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  /* The words are drawn in the app face; the layout measures against whatever
+     this resolves to, so it has to be stated rather than inherited from a
+     parent that might be mid-swap. */
+  font-family: var(--font-sans);
+}
+
+.wcl-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.wcl-word text {
+  paint-order: stroke;
+  transition:
+    opacity 0.14s ease,
+    fill 0.14s ease;
+}
+
+/* Hovering one word quiets the rest, so a cloud dense enough to be worth
+   drawing is still readable one word at a time. */
+.wcl--interactive .wcl-word {
+  cursor: pointer;
+}
+.wcl--interactive:hover .wcl-word text {
+  opacity: 0.32;
+}
+.wcl--interactive .wcl-word:hover text,
+.wcl--interactive .wcl-word:focus-visible text {
+  opacity: 1;
+}
+.wcl-word:focus-visible {
+  outline: none;
+}
+.wcl-word:focus-visible text {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* The selected word keeps its own tinted plate. */
+.wcl-halo {
+  opacity: 0.13;
+}
+.wcl--interactive:hover .wcl-word--selected text {
+  opacity: 1;
+}

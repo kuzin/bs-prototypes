@@ -261,7 +261,11 @@ function TitlesView() {
 // `[]` and the log drops everything about imported sessions — the note and the
 // per-entry partner marks — since with nothing linked there's nothing to
 // explain. Defaults to logging-flow's own list, so that prototype is unchanged.
-export function ReadingLog({ partners = CONNECTION_LIST }) {
+//
+// `titlesView={false}` leaves the "All Titles" tab standing but inert — it is
+// part of the real page's furniture, so it stays visible, it just doesn't go
+// anywhere in a prototype that isn't about it.
+export function ReadingLog({ partners = CONNECTION_LIST, titlesView = true }) {
   const [tab, setTab] = useState('log')
   const [view, setView] = useState('calendar')
 
@@ -275,7 +279,7 @@ export function ReadingLog({ partners = CONNECTION_LIST }) {
           plain
           size="md"
           active={tab}
-          onChange={setTab}
+          onChange={(id) => (id !== 'titles' || titlesView) && setTab(id)}
           items={[
             { id: 'log', label: 'Reading Log' },
             { id: 'titles', label: 'All Titles' },

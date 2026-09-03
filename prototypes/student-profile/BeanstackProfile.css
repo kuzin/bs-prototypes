@@ -4509,7 +4509,10 @@
 
 /* Standalone summary rows inside another card. They bleed out to the card's
    edges so their dividers span the full width, exactly like the Overview list,
-   and they don't take the list's hover. */
+   and they don't take the list's hover. The bleed is measured against a card
+   carrying the standard 16/18px padding, so a `.bp-statlist` card — which has
+   no side padding of its own, because its rows carry it — opts out; otherwise
+   every row hangs 18px past the card on both sides. */
 .bp-statrow--static {
   cursor: default;
 }
@@ -4518,7 +4521,7 @@
   background: none;
 }
 
-.bp-card:not(.bp-card--flush) > .bp-statrow--static {
+.bp-card:not(.bp-card--flush):not(.bp-statlist) > .bp-statrow--static {
   /* `width: 100%` is the card's *content* width, so it has to go — otherwise
      the negative margins slide the row left instead of widening it. */
   width: auto;
@@ -4527,7 +4530,7 @@
 }
 
 /* The last row sits on the card's bottom edge — no trailing card padding. */
-.bp-card:not(.bp-card--flush) > .bp-statrow--static:last-child {
+.bp-card:not(.bp-card--flush):not(.bp-statlist) > .bp-statrow--static:last-child {
   margin-bottom: -16px;
 }
 
