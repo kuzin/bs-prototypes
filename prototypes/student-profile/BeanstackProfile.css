@@ -99,9 +99,11 @@
 
 /* ─── Floating control rail ───────────────────────────────────────────────
    Panel chrome (close, expand, step reader) in its own column beside the
-   panel. It's a full-height grey strip in both modes — the buttons need
-   something to sit on, and against the panel's own white nav rail (full
-   screen) or the dim overlay (side panel) they'd otherwise float loose. */
+   panel. It's a full-height strip in both modes — the buttons need something to
+   sit on, and against the panel's own white nav rail (full screen) or the dim
+   overlay (side panel) they'd otherwise float loose. Tinted from the reader's
+   `--bp-profile` (see `profileVars`), with a neutral fallback for any surface
+   that doesn't set it. */
 .bp-profile-ctrls {
   width: 42px;
   flex-shrink: 0;
@@ -111,8 +113,8 @@
   gap: 10px;
   padding: 10px 0;
   align-self: stretch;
-  background: var(--c-slate-200);
-  border-right: 1px solid var(--c-slate-300);
+  background: color-mix(in srgb, var(--bp-profile, #64748b) 14%, #fff);
+  border-right: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 28%, #fff);
 }
 
 .bp-ctrl-group {
@@ -128,8 +130,8 @@
   height: 30px;
   border-radius: 50%;
   background: #fff;
-  border: 1px solid var(--c-slate-300);
-  color: var(--c-slate-600);
+  border: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 32%, #fff);
+  color: var(--bp-profile, var(--c-slate-600));
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -141,9 +143,16 @@
 }
 
 .bp-ctrl-btn:hover:not(:disabled) {
-  background: #eef4ff;
-  border-color: var(--c-blue-700);
-  color: var(--c-blue-700);
+  background: color-mix(in srgb, var(--bp-profile, #64748b) 10%, #fff);
+  border-color: var(--bp-profile, var(--c-slate-600));
+}
+
+/* Copy-link confirmation — green while the "Copied" state holds. */
+.bp-ctrl-btn--done,
+.bp-ctrl-btn--done:hover:not(:disabled) {
+  background: #ecfdf5;
+  border-color: #16a34a;
+  color: #16a34a;
 }
 
 .bp-ctrl-btn:disabled {
@@ -151,35 +160,53 @@
   cursor: default;
 }
 
-/* Profile root — takes whatever the slider has left after the rail. */
-.bp-profile-wrap .bp-root {
+/* Profile root — takes whatever its container has left after the rail. The
+   embed (`.bp-embed`) is the same arrangement inside a host's side Modal. */
+.bp-profile-wrap .bp-root,
+.bp-embed .bp-root {
   flex: 1;
   min-width: 0;
   box-shadow: none;
 }
 
-/* Full screen has room for a roomier rail, and needs a measure on the content:
+/* Embedded panel — rail beside the profile, exactly as in the standalone. The
+   host sizes the surrounding Modal; this just lays the two out. */
+.bp-embed {
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Full screen — reached by the rail's expand button on either surface, so the
+   selectors carry both. Room for a roomier rail, and a measure on the content:
    cards built for a ~570px panel run to 1200px+ otherwise, which puts Benny's
    paragraph at ~110 characters a line and strands each stat row's figure a long
    way from its label. Padding the scroll container (rather than capping its
    width) keeps the scrollbar at the window edge. The header stays flush left —
    its avatar sits above the rail, not above the content column. */
-.bp-profile-wrap--full .bp-nav {
+.bp-profile-wrap--full .bp-nav,
+.bp-embed--full .bp-nav {
   width: 208px;
 }
-.bp-profile-wrap--full .bp-content {
+.bp-profile-wrap--full .bp-content,
+.bp-embed--full .bp-content {
   padding-inline: max(20px, calc((100% - 1040px) / 2));
 }
 
 /* A lone Select doesn't need to be 1000px wide. (Block tabs deliberately do
    still fill the page — `block` means block at every width.) */
-.bp-profile-wrap--full .bp-content .fltr-item {
+.bp-profile-wrap--full .bp-content .fltr-item,
+.bp-embed--full .bp-content .fltr-item {
   max-width: 320px;
 }
-.bp-profile-wrap--full .bp-nav-item {
+.bp-profile-wrap--full .bp-nav-item,
+.bp-embed--full .bp-nav-item {
   min-height: 38px;
 }
-.bp-profile-wrap--full .bp-nav-label {
+.bp-profile-wrap--full .bp-nav-label,
+.bp-embed--full .bp-nav-label {
   font-size: 13px;
 }
 
@@ -260,12 +287,15 @@
   text-overflow: ellipsis;
 }
 
-.bp-nav-item--active .bp-nav-label {
-  color: var(--nav-active-color, #1a6dd5);
+/* The active row wears the reader's colour rather than the section's. Section
+   colour still identifies the page — it's on the Hero's icon chip. */
+.bp-nav-item--active .bp-nav-label,
+.bp-nav-item--active .icon {
+  color: var(--bp-profile, #1a6dd5);
 }
 
 .bp-nav-item--active {
-  background: var(--nav-active-bg, #e6f1ff);
+  background: color-mix(in srgb, var(--bp-profile, #1a6dd5) 12%, #fff);
   cursor: default;
 }
 
@@ -294,21 +324,6 @@
   align-items: center;
   gap: 10px;
   min-width: 0;
-}
-
-.bp-panel-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #4f7fd4, #2d5db5);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  letter-spacing: 0.03em;
 }
 
 .bp-panel-name {
@@ -561,6 +576,18 @@
   display: none;
 }
 
+/* Log is the panel's primary action, so it carries the reader's colour like
+   the rest of the chrome. Actions stays a neutral outline button. */
+.bp-panel-header .btn--primary {
+  background: var(--bp-profile, var(--c-blue-700));
+  border-color: var(--bp-profile, var(--c-blue-700));
+}
+
+.bp-panel-header .btn--primary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
+  border-color: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
+}
+
 .bp-header-right {
   display: flex;
   align-items: center;
@@ -568,10 +595,10 @@
   flex-shrink: 0;
 }
 
-/* The standalone prototype closes from the floating rail; this one is kept for
-   the phone breakpoint, where that rail is hidden. RIS embeds the profile
-   outside `.bp-profile-wrap`, so its close button is unaffected. */
-.bp-profile-wrap .bp-header-close {
+/* Every surface closes from the floating rail; the header's copy is kept only
+   for the phone breakpoint, where the rail is hidden. */
+.bp-profile-wrap .bp-header-close,
+.bp-embed .bp-header-close {
   display: none;
 }
 
@@ -3311,14 +3338,23 @@
     min-height: 0;
   }
 
-  /* No room for a rail beside a full-bleed panel: close moves back into the
-     header, and there's nothing to expand into. */
+  /* The rail stays — it's the one home for panel chrome, and losing close,
+     copy-link and the reader pager at phone width was the point of having it.
+     It just gets tighter, and drops expand: the panel already fills the
+     screen here, so there's nothing to expand into. */
   .bp-profile-ctrls {
-    display: none;
+    width: 34px;
+    gap: 8px;
+    padding: 8px 0;
   }
 
-  .bp-profile-wrap .bp-header-close {
-    display: flex;
+  .bp-ctrl-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .bp-ctrl-btn--expand {
+    display: none;
   }
 
   /* One header on mobile too — it spans the full width and already carries the
@@ -3377,27 +3413,14 @@
   }
 
   /* The pager sheds its rail chrome and sits inline beside the select */
-  .bp-mobile-nav .bp-pager {
-    padding: 0;
-    border-top: 0;
-    background: none;
-    gap: 6px;
-  }
-
-  .bp-mobile-nav .bp-pager-btn {
-    flex: 0 0 auto;
-    width: 36px;
-    height: 36px;
-  }
-
   /* Tighter page gutters now that the rail is gone */
   .bp-content {
     padding: 14px;
   }
 
-  /* Three medals across is too tight on a phone — names wrapped to three lines */
-  .bp-medal-grid,
-  .bp-latest-grid {
+  /* Three medals across is too tight on a phone — names wrapped to three lines.
+     (`.bp-latest-grid` is a scrolling row at every width, so it's not here.) */
+  .bp-medal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -3535,12 +3558,22 @@
   text-decoration: underline;
 }
 
-/* auto-fill, not a fixed 3: the same shelf reads as 3 covers in the side panel
-   and 6 on a full-screen page, instead of three 340px-wide covers. */
+/* One row, scrolled — a shelf. Wrapping to a second line made three titles read
+   as a grid of unequal rows, and at narrow widths the last cover dropped
+   underneath on its own. */
 .bp-latest-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  display: flex;
   gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  /* Room for the scrollbar so it doesn't sit on the covers. */
+  padding-bottom: 6px;
+  scrollbar-width: thin;
+}
+
+.bp-latest-grid > .bp-latest-item {
+  flex: 0 0 140px;
+  scroll-snap-align: start;
 }
 
 .bp-latest-item {
@@ -3694,6 +3727,12 @@
 /* SearchInput is built for a horizontal toolbar (`flex: 1`), so dropped into
    `.bp-content`'s flex *column* it grows to fill the page height. */
 .bp-content > .search-input {
+  flex: 0 0 auto;
+}
+
+/* Same trap: `.bp-content` is an overflowing flex column, so a page-level
+   segmented control shrinks to a sliver on any page long enough to scroll. */
+.bp-content > .tabs {
   flex: 0 0 auto;
 }
 
@@ -4239,9 +4278,85 @@
 
 /* The heading sits at the card's padding edge; the rows keep their own. */
 .bp-statlist-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
   padding: 0 16px 13px;
   margin-bottom: 0;
   border-bottom: 1px solid #f0f0f0;
+}
+
+/* Says what the delta chips are measured against, once. */
+.bp-statlist-note {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-text-subtle);
+  white-space: nowrap;
+}
+
+/* ─── Show more ──────────────────────────────────────────────────────────────
+   Standing between cards on the page background, so it reads as a page control
+   rather than part of the card above it. `flex-shrink: 0` because `.bp-content`
+   is an overflowing flex column — without it the button collapses to nothing. */
+.bp-showmore {
+  flex-shrink: 0;
+  align-self: center;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  background: none;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--bp-profile, var(--c-blue-700));
+  cursor: pointer;
+}
+
+.bp-showmore:hover {
+  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 9%, #fff);
+}
+
+/* Inside a card it takes the card's full width and sits behind a hairline, so
+   it reads as the card's own footer. */
+.bp-showmore--incard {
+  /* `width: auto` on a <button> is intrinsic, not fill — the same trap the
+     bled stat rows hit — so the width is spelled out: the card's content box
+     plus the 18px it bleeds either side. */
+  display: flex;
+  align-self: stretch;
+  justify-content: center;
+  width: calc(100% + 36px);
+  margin: 14px -18px -16px;
+  padding: 11px 18px;
+  border-top: 1px solid var(--c-slate-100);
+  border-radius: 0;
+}
+
+/* Sits in the row rhythm — same divider, same padding — so the list reads as
+   continuing rather than as a button bolted to the bottom of the card. */
+.bp-statlist-more {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: 0;
+  border-top: 1px solid var(--c-slate-100);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--bp-profile, var(--c-blue-700));
+  cursor: pointer;
+}
+
+.bp-statlist-more:hover {
+  background: var(--c-slate-50);
 }
 
 .bp-statlist-head .bp-section-heading {
