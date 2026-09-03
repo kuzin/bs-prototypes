@@ -16,7 +16,6 @@ import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import '@components/Form/Form.css'
 import { Avatar } from '@components/Avatar/Avatar'
 import { IconButton, EmptyState, Banner, Tooltip } from '@components/Primitives/Primitives'
-import { Pill } from '@components/Pill/Pill'
 import { BarList } from '@components/BarList/BarList'
 import { ChartCard } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
@@ -739,7 +738,7 @@ function OverviewStats({ metrics, onOpen }) {
               {m.unit && <span className="rp-statrow-unit"> {m.unit}</span>}
             </span>
           )}
-          {m.trend && <TrendPill {...m.trend} />}
+          {m.trend && <TrendDelta {...m.trend} />}
         </StatRow>
       ))}
       {hidden > 0 && (
@@ -784,20 +783,23 @@ function Overview({ student, onNavigate }) {
 
 // ─── Section detail wrapper ───────────────────────────────────────────────────
 // ─── Trend chip ───────────────────────────────────────────────────────────────
-// A delta chip beside a figure. Green means the number moved the way you'd want
-// it to, which is not always up: `inverse` covers figures like flags, where
-// fewer is better. A zero delta renders nothing — "no change" is not news.
-function TrendPill({ delta, format, inverse = false, suffix }) {
+// A delta beside a figure. Green means the number moved the way you'd want it
+// to, which is not always up: `inverse` covers figures like flags, where fewer
+// is better. A zero delta renders nothing — "no change" is not news. Text, not
+// a pill: the arrow and the colour already carry the whole message, and five
+// tinted capsules down the side of a card competed with the figures they were
+// annotating.
+function TrendDelta({ delta, format, inverse = false, suffix }) {
   if (delta == null || delta === 0) return null
   const up = delta > 0
   const good = inverse ? !up : up
   const n = Math.abs(delta)
   return (
-    <Pill color={good ? '#16A34A' : '#DC2626'} size="sm">
+    <span className={`rp-trend${good ? ' rp-trend--good' : ' rp-trend--bad'}`}>
       {up ? '↑' : '↓'}
       {format ? format(n) : n}
       {suffix ? ` ${suffix}` : ''}
-    </Pill>
+    </span>
   )
 }
 
@@ -2138,7 +2140,7 @@ function RLSource({ source }) {
   return (
     <Tooltip content={`Logged from ${PARTNER_BRANDS[source].name}`}>
       <span className="rp-rl-source" style={{ '--rp-mark-bg': PARTNER_BRANDS[source].accent }}>
-        <PartnerMark id={source} size={16} />
+        <PartnerMark id={source} size={15} />
       </span>
     </Tooltip>
   )
@@ -2151,7 +2153,7 @@ function RLEntryMenu() {
       trigger={({ toggle }) => (
         <Tooltip content="Entry actions">
           <button type="button" className="rp-rl-dots" onClick={toggle} aria-label="Entry actions">
-            <Icon name="dots" size={16} />
+            <Icon name="dots" size={15} />
           </button>
         </Tooltip>
       )}
@@ -2186,7 +2188,12 @@ function RLEntryCard({ entry, onOpen }) {
         <button type="button" className="rp-rl-entry-title" onClick={() => onOpen?.(entry)}>
           {entry.title}
         </button>
+        {/* One cluster, one grid: where the session came from, what's on it,
+            and what you can do to it. The partner mark used to sit alone in
+            the card's foot, which read as a stray badge on a second row
+            whenever the entry had no marks of its own. */}
         <div className="rp-rl-entry-menu">
+          <RLSource source={entry.source} />
           <RLMarks marks={marks} entry={entry} onOpen={onOpen} />
           <RLEntryMenu />
         </div>
@@ -2203,9 +2210,6 @@ function RLEntryCard({ entry, onOpen }) {
         ) : (
           <div className="rp-rl-entry-amount">{entry.amount}</div>
         )}
-        {/* Bottom corner, off the author line where it competed with the text
-            it sat against. */}
-        <RLSource source={entry.source} />
       </div>
     </div>
   )

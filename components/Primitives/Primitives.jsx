@@ -92,12 +92,50 @@ export function IconButton({
  * track the cursor as it moves — best for chart-like surfaces where the
  * tooltip explains the value under the cursor.
  */
+// The horizontal span the bubble has to fit inside: every clipping ancestor
+// intersected, bounded by the viewport — a scroll pane, a card with `overflow:
+// hidden`, or both at once. A scroll container counts even when only one axis
+// is set to scroll: `overflow-y: auto` makes the used value of `overflow-x`
+// `auto` as well, so it clips sideways too.
+function clipBounds(node, margin = 6) {
+  let left = 0
+  let right = window.innerWidth
+  let el = node.parentElement
+  while (el && el !== document.body) {
+    const cs = getComputedStyle(el)
+    if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible') {
+      const r = el.getBoundingClientRect()
+      left = Math.max(left, r.left)
+      right = Math.min(right, r.right)
+    }
+    el = el.parentElement
+  }
+  return { left: left + margin, right: right - margin }
+}
+
 export function Tooltip({ content, placement = 'top', delay = 0, followCursor = false, children }) {
   const wrapRef = useRef(null)
+  const bubbleRef = useRef(null)
   const [resolved, setResolved] = useState('top')
   const [cursor, setCursor] = useState({ x: 0, y: 0 })
 
+  // A centred bubble on an anchor near the edge of its scroll pane hangs off
+  // the side and gets clipped — most visibly on a row-action button, where the
+  // anchor sits a few pixels from the pane's edge. Measured on enter rather
+  // than on mount because the bounds move with scroll and resize.
+  function clampBubble() {
+    const bubble = bubbleRef.current
+    if (!bubble || followCursor) return
+    // Clear the last nudge first, or each measurement compounds the previous.
+    bubble.style.setProperty('--ttp-shift', '0px')
+    const b = bubble.getBoundingClientRect()
+    const { left, right } = clipBounds(bubble)
+    const shift = b.left < left ? left - b.left : b.right > right ? right - b.right : 0
+    if (shift) bubble.style.setProperty('--ttp-shift', `${Math.round(shift)}px`)
+  }
+
   function onEnter() {
+    clampBubble()
     if (placement !== 'auto' || !wrapRef.current) return
     const r = wrapRef.current.getBoundingClientRect()
     // Prefer top; fall back to bottom if too close to viewport top.
@@ -125,7 +163,7 @@ export function Tooltip({ content, placement = 'top', delay = 0, followCursor = 
       onMouseMove={onMove}
     >
       {children}
-      <span className="ttp-bubble" role="tooltip" style={bubbleStyle}>
+      <span className="ttp-bubble" role="tooltip" style={bubbleStyle} ref={bubbleRef}>
         {content}
       </span>
     </span>

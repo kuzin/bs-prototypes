@@ -183,23 +183,19 @@
    selectors carry both. Room for a roomier rail, and a measure on the content:
    cards built for a ~570px panel run to 1200px+ otherwise, which puts Benny's
    paragraph at ~110 characters a line and strands each stat row's figure a long
-   way from its label. Padding the scroll container (rather than capping its
-   width) keeps the scrollbar at the window edge. The header stays flush left —
-   its avatar sits above the rail, not above the content column. */
+   way from its label. `--rp-measure` is that cap — 920px keeps the paragraph
+   near 90 characters and the widest table (Sessions) still uncramped. Padding
+   the scroll container (rather than capping its width) keeps the scrollbar at
+   the window edge, and `scrollbar-gutter` eats ~14px of it. The header stays
+   flush left — its avatar sits above the rail, not above the content column. */
 .rp-profile-wrap--full .rp-nav,
 .rp-embed--full .rp-nav {
   width: 208px;
 }
 .rp-profile-wrap--full .rp-content,
 .rp-embed--full .rp-content {
-  padding-inline: max(20px, calc((100% - 1040px) / 2));
-}
-
-/* A lone Select doesn't need to be 1000px wide. (Block tabs deliberately do
-   still fill the page — `block` means block at every width.) */
-.rp-profile-wrap--full .rp-content .fltr-item,
-.rp-embed--full .rp-content .fltr-item {
-  max-width: 320px;
+  --rp-measure: 920px;
+  padding-inline: max(20px, calc((100% - var(--rp-measure)) / 2));
 }
 .rp-profile-wrap--full .rp-nav-item,
 .rp-embed--full .rp-nav-item {
@@ -1556,116 +1552,97 @@
   cursor: default;
 }
 
-.rp-heatmap-months {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--c-text-subtle);
-  display: flex;
-  white-space: nowrap;
-  gap: 0;
-}
-
-.rp-heatmap-month-spacer {
-  width: 32px; /* day-labels col (26px) + body gap (6px) */
-  flex-shrink: 0;
-}
-
-.rp-heatmap-month-label {
-  min-width: 0;
-  overflow: hidden;
-  padding-left: 2px;
-}
-
-.rp-heatmap-body {
-  display: flex;
-  gap: 6px;
-}
-
-.rp-heatmap-day-labels {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding-top: 0;
-  flex-shrink: 0;
-}
-
-.rp-heatmap-day-label {
-  flex: 1;
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--c-text-subtle);
-  width: 26px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-/* Full-width grid — columns scale to fill available space */
+/* Month grid — weekdays across, weeks down, like the shared <DatePicker> but
+   spanning the card. The columns take the width they're given; the row height
+   is bounded, so a wide card gets wider cells rather than a calendar whose
+   squares grow to 125px and stand 700px tall. The bounds and the gap come
+   from the widget via `--hm-row-min` / `--hm-row-max` / `--hm-gap`; the
+   fallbacks cover the legend's
+   swatches, which set their own size and never see the vars. */
 .rp-heatmap-grid {
-  display: flex;
-  gap: 3px;
-  flex: 1;
-  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--hm-gap, 4px);
 }
 
-.rp-heatmap-col {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  flex: 1;
-  min-width: 0;
+.rp-heatmap-wd {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-text-muted);
+  text-align: center;
+  line-height: 1.4;
 }
 
 .rp-heatmap-cell {
-  background: var(--cell-bg, transparent);
-  aspect-ratio: 1;
   width: 100%;
-  border-radius: 4px;
+  /* Square, so long as the column is a sensible square. The min keeps a phone
+     from squashing the dates; the max stops a full-screen card from turning a
+     121px column into a 121px-tall block — past that the cells letterbox
+     instead of growing, which is what a month view does anyway. */
+  aspect-ratio: 1;
+  min-height: var(--hm-row-min, 34px);
+  max-height: var(--hm-row-max, 60px);
+  border-radius: 6px;
   flex-shrink: 0;
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* CSS tooltip */
-.rp-heatmap-cell[data-tooltip] {
-  cursor: default;
-}
-.rp-heatmap-cell[data-tooltip]:hover::after {
-  content: attr(data-tooltip);
-  position: absolute;
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: #1f2937;
-  color: #f9fafb;
-  font-size: 13px;
-  font-weight: 500;
-  padding: 5px 8px;
-  border-radius: 6px;
-  white-space: nowrap;
-  z-index: 200;
-  pointer-events: none;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  font-family: inherit;
-}
-
-/* Goal met — small white dot centered on cell */
-.rp-heatmap-cell--goal::before {
+/* The fill is a layer, not the cell's own background, because a streak has to
+   reach across the 4px gap into the next day and the cell can't (widening it
+   would drag `aspect-ratio` and the row height along with it). */
+.rp-heatmap-cell::before {
   content: '';
   position: absolute;
   inset: 0;
-  margin: auto;
-  width: 35%;
-  height: 35%;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.75);
-  pointer-events: none;
-  z-index: 1;
+  border-radius: 6px;
+  background: var(--cell-bg, transparent);
 }
 
-/* Streak — amber outer outline */
-.rp-heatmap-cell--streak {
-  outline: 2px solid rgba(245, 158, 11, 0.75);
-  outline-offset: -1px;
+/* Read, but short of the goal — a tint of the accent, so the two states read
+   as degrees of the same thing rather than two different colours. */
+.rp-heatmap-cell--read:not(.rp-heatmap-cell--goal)::before {
+  background: color-mix(in srgb, var(--cell-bg) 38%, #fff);
+}
+
+.rp-heatmap-daynum {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  position: relative;
+  z-index: 1;
+  /* One ink for every scored day. Reversing it out white on the goal-met fill
+     looked better but only cleared ~3:1 against the accent, and the fill
+     already carries the state — the date just has to be readable on all
+     three of them (grey, tint, accent), which this is. */
+  color: var(--c-slate-900);
+}
+
+/* Days the month hasn't reached yet — placeheld, not scored. */
+.rp-heatmap-cell--future .rp-heatmap-daynum {
+  color: var(--c-slate-400);
+  font-weight: 600;
+}
+
+/* Streak — consecutive days merge into a single pill. Nothing is added to say
+   so: the fill of each day reaches into the gap on whichever side the run
+   carries on, and the corners it would have had there are squared off, so a
+   run reads as one continuous bar and a lone day stays a rounded square. An
+   amber rail under the cells was the previous attempt — it read as an
+   underline bolted on beneath the calendar rather than as the days being
+   joined. The run still caps round wherever it stops: the week's edge, where
+   the grid wraps, and the month's, where there is nothing on the other side. */
+.rp-heatmap-cell--streak-r::before {
+  right: calc(-1 * var(--hm-gap, 4px));
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.rp-heatmap-cell--streak-l::before {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .rp-heatmap-legend {
@@ -1673,6 +1650,7 @@
   gap: 10px;
   align-items: center;
   justify-content: flex-end;
+  flex-wrap: wrap;
   flex-shrink: 0;
 }
 
@@ -1690,9 +1668,24 @@
   width: 11px;
   height: 11px;
   aspect-ratio: unset;
-  border-radius: 3px;
+  min-height: 0;
+  max-height: none;
   flex-shrink: 0;
   flex: none;
+}
+
+.rp-heatmap-legend-item .rp-heatmap-cell::before {
+  border-radius: 3px;
+}
+
+/* "Streak" is the only item whose swatch is a shape rather than a colour, so
+   it's drawn at the width a joined run has. */
+.rp-heatmap-legend-item .rp-heatmap-cell--streak {
+  width: 24px;
+}
+
+.rp-heatmap-legend-item .rp-heatmap-cell--streak::before {
+  border-radius: 999px;
 }
 
 /* Genre cloud */
@@ -2997,8 +2990,17 @@
   color: #acacac;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  padding: 12px 0 4px;
+  /* The margin is the point: it's outside the border, so it's what separates
+     the rule from the last day of the week above. Padding would only push the
+     label further down and leave the line where it was. */
+  margin-top: 20px;
+  padding: 10px 0 4px;
   border-top: 1px solid #ebebeb;
+}
+
+/* …except the first, which has the card's own head above it. */
+.rp-rl-week:first-child .rp-rl-week-label {
+  margin-top: 0;
 }
 
 /* Day row. Days with nothing logged collapse to just their date, so the month
@@ -3104,7 +3106,12 @@
 }
 
 /* Markers on a log row: what the session holds, before you open it. */
-.rp-rl-mark {
+/* Every icon in an entry's cluster sits in the same 22px box, so the flag, the
+   talk bubble, the partner mark and the dots line up on one grid however many
+   of them a given entry has. */
+.rp-rl-mark,
+.rp-rl-dots,
+.rp-rl-source {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -3114,11 +3121,16 @@
   border: 0;
   border-radius: 6px;
   background: none;
-  cursor: pointer;
   flex-shrink: 0;
 }
 
-.rp-rl-mark:hover {
+.rp-rl-mark,
+.rp-rl-dots {
+  cursor: pointer;
+}
+
+.rp-rl-mark:hover,
+.rp-rl-dots:hover {
   background: rgba(15, 23, 42, 0.06);
 }
 
@@ -3158,18 +3170,13 @@
 .rp-rl-entry-menu {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 1px;
   flex-shrink: 0;
   padding-top: 1px;
 }
 
 .rp-rl-dots {
-  display: inline-flex;
-  padding: 0;
-  background: none;
-  border: 0;
   color: #9ca3af;
-  cursor: pointer;
 }
 
 .rp-rl-dots:hover {
@@ -3450,17 +3457,39 @@
     gap: 6px;
   }
 
-  .rp-student-actions .rp-btn-label,
-  .rp-student-actions .rp-btn-caret {
+  /* Hide the *wrappers*, not just the label text and the caret glyph inside
+     them: an emptied span is still a flex item, so it still drew the button's
+     internal gap and pushed the dots off centre. `:has` picks out the label
+     wrapper belonging to a collapsible label, leaving Log's own text alone. */
+  .rp-student-actions .btn-label:has(.rp-btn-label),
+  .rp-student-actions .btn-icon--right {
     display: none;
   }
 
-  .rp-student-actions .btn-icon {
+  /* The leading icon only — `.btn-icon--right` is the caret, which the rule
+     above takes out. Without the `:not` this re-showed it: same specificity,
+     later in the file. */
+  .rp-student-actions .btn-icon:not(.btn-icon--right) {
     display: inline-flex;
   }
 
   .rp-student-actions .btn {
-    padding: 0 10px;
+    padding: 0 12px;
+  }
+
+  /* Actions is icon-only at this breakpoint (its label is hidden just above),
+     so it wants to be square — not a text button's side padding left standing
+     around a 16px glyph. Log keeps its label and its padding. */
+  .rp-student-actions .btn--secondary {
+    width: 36px;
+    padding: 0;
+  }
+
+  /* Seven 40px circles want 280px and a phone's card has about 267. */
+  .rp-goal-circle {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
   }
 
   /* The rail's 168px is most of a phone — swap it for a select + the pager */
@@ -3495,14 +3524,17 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  /* Hero keeps title and action on one line, which collides at phone widths —
-     let the action drop under the title instead. */
+  /* A hero action that is a tab group collides with the title at phone widths,
+     so it drops under it and spans the width. A plain button — Print log, Edit
+     Goal — is narrow enough to stay where it belongs, up beside the title on
+     the right; `flex-wrap` is still on, so it drops of its own accord if the
+     title ever needs the whole line. */
   .rp-content .hero {
     flex-wrap: wrap;
     gap: 10px;
   }
 
-  .rp-content .hero-action {
+  .rp-content .hero-action:has(.tabs) {
     margin-left: 0;
     width: 100%;
   }
@@ -4612,14 +4644,38 @@
   display: none;
 }
 
-/* Trend chips sit in a fixed slot at the end of the row rather than trailing
-   whatever width the figure happened to be — otherwise they land at a different
-   x on every row and the column reads as jittery. */
-.rp-statrow > .pill {
-  flex-shrink: 0;
-  min-width: 64px;
-  justify-content: center;
+/* Trend deltas — plain text, sized to what they say. They were pills in a
+   fixed 64px slot, which handed the widest one's width ("↑19 days") to every
+   chip and left "↓2" carrying 30px of empty capsule. The arrow and the colour
+   are the whole message; the capsule was just weight. */
+.rp-trend {
+  font-size: 12.5px;
+  font-weight: 700;
+  white-space: nowrap;
   font-variant-numeric: tabular-nums;
+}
+
+.rp-trend--good {
+  color: var(--c-success);
+}
+
+.rp-trend--bad {
+  color: var(--c-danger);
+}
+
+.rp-statrow > .rp-trend {
+  flex-shrink: 0;
+}
+
+/* A neutral caption in the same slot as a delta — the title behind a figure,
+   the month a total counts from. Muted text, for the same reason the deltas
+   are text. */
+.rp-statrow-note {
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--c-text-muted);
+  flex-shrink: 0;
 }
 
 /* ─── Find a Person ───────────────────────────────────────────────────────────
@@ -5194,14 +5250,15 @@
   gap: 10px;
 }
 
+/* The partner mark is a real logo, so it keeps its brand plate — but scaled
+   to sit inside the cluster's box rather than out-weighing the line icons. */
 .rp-rl-source {
-  display: inline-flex;
-  align-items: center;
   cursor: default;
 }
 
 .rp-rl-source .pb-mark {
   background: var(--rp-mark-bg);
+  border-radius: 5px;
 }
 
 /* The table row's own version of the card's mark cluster: same marks, same
@@ -5506,5 +5563,68 @@
   .rp-clog-th {
     /* Don't split a session across two pages. */
     break-inside: avoid;
+  }
+}
+
+/* ─── Phone: Overview stat list ───────────────────────────────────────────
+   Same breakpoint as the block above, but it has to sit here: `.rp-statrow`
+   and `.rp-statlist-head` are declared further down this file than that
+   block is, and at equal specificity the later rule wins. */
+@media (max-width: 699px) {
+  /* ── Overview on a phone ───────────────────────────────────────────────
+     Both of the overlaps here were the same failure: a flex row that ran out
+     of width, so the `flex: 1` item was squeezed to a few dozen pixels and
+     its text spilled out over the figure beside it. The head stacks; the
+     stat rows go to a grid that gives the label its own line. */
+  .rp-statlist-head {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  /* The range switch hugs its labels and sits under the heading's left edge —
+     stretched across the card it read as a full-width bar with the two pills
+     stranded at the left end. */
+  .rp-statlist-head .tabs {
+    align-self: flex-start;
+  }
+
+  .rp-statrow {
+    display: grid;
+    /* icon | figure | delta | slack | chevron. The figure and delta tracks hug
+       their content and the slack track eats the rest, so line two starts at
+       the label's left edge instead of being pushed to the right. */
+    grid-template-columns: auto auto auto minmax(0, 1fr) auto;
+    column-gap: 10px;
+    row-gap: 2px;
+    align-items: center;
+  }
+
+  .rp-statrow-icon {
+    grid-area: 1 / 1 / 3 / 2;
+  }
+
+  /* The label spans every track but the chevron's, so it wraps against the
+     card's edge rather than against the figure below it. */
+  .rp-statrow-label {
+    grid-area: 1 / 2 / 2 / 5;
+  }
+
+  /* Figure and delta drop to a second line, left-aligned under the label. A
+     row with neither delta nor chevron collapses those tracks to nothing. */
+  .rp-statrow-value,
+  .rp-statrow-empty,
+  .rp-statrow-motivators {
+    grid-area: 2 / 2 / 3 / 3;
+    justify-self: start;
+  }
+
+  .rp-statrow > .rp-trend,
+  .rp-statrow > .rp-statrow-note {
+    grid-area: 2 / 3 / 3 / 4;
+  }
+
+  .rp-statrow-go {
+    grid-area: 1 / 5 / 3 / 6;
   }
 }
