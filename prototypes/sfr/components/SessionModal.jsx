@@ -660,7 +660,7 @@ export function SessionModal({
             <div className="sm2-maintabs">
               <Tabs
                 items={[
-                  { id: 'conversation', label: 'Conversation' },
+                  { id: 'conversation', label: 'Logged Session' },
                   { id: 'activity', label: 'Activity', count: d.changeLog?.length || undefined },
                 ]}
                 active={mainTab}

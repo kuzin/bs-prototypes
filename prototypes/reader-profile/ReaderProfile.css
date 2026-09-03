@@ -3080,13 +3080,56 @@
   gap: 6px;
 }
 
+/* Markers on a log row: what the session holds, before you open it. */
+.rp-rl-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 0;
+  border-radius: 6px;
+  background: none;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.rp-rl-mark:hover {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.rp-rl-mark--neg {
+  color: #dc2626;
+}
+
+.rp-rl-mark--pos {
+  color: #16a97a;
+}
+
+.rp-rl-mark--talk {
+  color: var(--rl-title);
+}
+
+/* A button now — it opens the session — but still the entry's heading, so the
+   control chrome is stripped and the type kept. */
 .rp-rl-entry-title {
+  font-family: inherit;
   font-size: 13px;
   font-weight: 800;
   color: var(--rl-title);
   line-height: 1.3;
   flex: 1;
   min-width: 0;
+  padding: 0;
+  background: none;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.rp-rl-entry-title:hover {
+  text-decoration: underline;
 }
 
 .rp-rl-entry-menu {
@@ -3095,11 +3138,6 @@
   gap: 8px;
   flex-shrink: 0;
   padding-top: 1px;
-}
-
-.rp-rl-flag {
-  display: inline-flex;
-  color: var(--rl-bar);
 }
 
 .rp-rl-dots {
@@ -4559,6 +4597,61 @@
   min-width: 64px;
   justify-content: center;
   font-variant-numeric: tabular-nums;
+}
+
+/* One column: no reader sidebar, so the main panel keeps the modal's own
+   padding on both sides. */
+.rp-sm2 .sm2-main {
+  padding: 0 24px 32px;
+}
+
+/* SFR's `.sm2-book-cover` is `align-self: stretch`, so it stretches as detail
+   rows are added — pin it to a book's proportions instead. */
+.rp-sm2 .sm2-book-cover {
+  align-self: flex-start;
+  width: 74px;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+}
+
+.rp-sm2 .sm2-book-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Benny's summary reuses SFR's tinted prompt block, with his avatar for
+   authorship. Without the explicit size the image renders at its natural
+   width and swallows the card. */
+.rp-sm2-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.rp-sm2-summary-benny {
+  width: 30px;
+  height: 30px;
+  flex: none;
+  border-radius: 50%;
+  background: #fff;
+  padding: 1px;
+  object-fit: contain;
+}
+
+.rp-sm2-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  color: #16a97a;
+}
+
+.rp-sm2-heading {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-slate-800);
 }
 
 /* ─── Find a Person ───────────────────────────────────────────────────────────

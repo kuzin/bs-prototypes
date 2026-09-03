@@ -183,7 +183,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
             <div className="sm2-maintabs">
               <Tabs
                 items={[
-                  { id: 'conversation', label: 'Conversation' },
+                  { id: 'conversation', label: 'Logged Session' },
                   { id: 'activity', label: 'Activity', count: feed.length || undefined },
                 ]}
                 active={tab}
