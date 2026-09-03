@@ -662,7 +662,7 @@ function overviewMetrics(ov, mo) {
 // chip, label, then whatever figure the caller passes. With `onOpen` it's a
 // button that opens a section (the Overview list); without it the row is a
 // static summary sitting inside another card.
-function StatRow({ icon, accent, label, children, onOpen }) {
+export function StatRow({ icon, accent, label, children, onOpen }) {
   const Tag = onOpen ? 'button' : 'div'
   return (
     <Tag

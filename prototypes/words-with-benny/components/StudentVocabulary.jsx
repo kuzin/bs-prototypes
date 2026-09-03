@@ -8,9 +8,11 @@ import '@components/Pill/Pill.css'
 import '@components/ProgressBar/ProgressBar.css'
 
 // Built out of the Student Profile's own page furniture — `.bp-content` for the
-// page padding, `Hero` for the section header, `Card` + `SectionHeading` for the
-// blocks — so this section is laid out like every other section of the profile
-// rather than like the panel it replaced.
+// page padding, `Hero` for the section header, `Card` / `SectionHeading` for the
+// blocks, and its `StatRow` inside a `bp-statlist` card for the figures — so
+// this section is laid out like every other section of the profile rather than
+// like the panel it replaced.
+import { StatRow } from '../../student-profile/BeanstackProfile'
 import { Card, SectionHeading } from '../../student-profile/components/kit'
 
 import { BOOKS, ROSTER, collectionFor, wordByName } from '../data'
@@ -25,6 +27,9 @@ const prettyDate = (iso) => {
 const CLASS_MEDIAN = 22
 const ACCENT = '#7C3AED'
 const ACCENT_BG = '#F3E8FF'
+// StatRow's icon chip takes the same {bg, text} shape the profile's own
+// SECTION_ACCENT entries use.
+const CHIP = { bg: ACCENT_BG, text: ACCENT }
 
 export function StudentVocabulary({ studentId }) {
   const person = ROSTER.find((s) => s.id === studentId)
@@ -35,10 +40,10 @@ export function StudentVocabulary({ studentId }) {
   const ahead = person.words >= CLASS_MEDIAN
 
   const stats = [
-    { value: person.words, label: 'Words collected' },
-    { value: `+${person.week}`, label: 'This week' },
-    { value: `${person.firstTry}%`, label: 'Right on the first try' },
-    { value: person.logs, label: 'Reading logs' },
+    { key: 'words', icon: 'vocabulary', label: 'Words collected', value: person.words },
+    { key: 'week', icon: 'calendar-event', label: 'Collected this week', value: `+${person.week}` },
+    { key: 'first', icon: 'check', label: 'Right on the first try', value: `${person.firstTry}%` },
+    { key: 'logs', icon: 'notebook', label: 'Reading logs', value: person.logs },
   ]
 
   return (
@@ -50,19 +55,15 @@ export function StudentVocabulary({ studentId }) {
         accentBg={ACCENT_BG}
       />
 
-      <p className="svo-intro">
-        Words {first} collected by reading. Benny surfaces one every couple of logs; {first} earns
-        it by using it correctly — nothing here was assigned.
-      </p>
-
-      <div className="svo-stats">
+      <div className="bp-card bp-statlist">
+        <div className="bp-statlist-head">
+          <SectionHeading>At a glance</SectionHeading>
+          <span className="bp-statlist-note">This school year</span>
+        </div>
         {stats.map((s) => (
-          <Card key={s.label}>
-            <div className="svo-stat">
-              <span className="svo-stat-val">{s.value}</span>
-              <span className="svo-stat-lbl">{s.label}</span>
-            </div>
-          </Card>
+          <StatRow key={s.key} icon={s.icon} accent={CHIP} label={s.label}>
+            <span className="bp-statrow-value">{s.value}</span>
+          </StatRow>
         ))}
       </div>
 
