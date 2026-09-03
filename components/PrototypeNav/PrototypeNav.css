@@ -191,12 +191,6 @@
 }
 
 /* Backdrop closes the menu on outside click */
-.proto-nav-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 99;
-}
-
 /* Dropdown opens upward */
 .proto-nav-dropdown {
   position: absolute;
