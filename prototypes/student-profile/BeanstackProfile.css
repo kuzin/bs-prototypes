@@ -4762,7 +4762,7 @@
    inside it keeps a page's measure. `.modal--center` caps itself at 520px, so
    the sheet's own width is set here. */
 .modal--center:has(.bp-clog) {
-  --clog-h: calc((100vh - 72px) / var(--app-zoom, 1));
+  --clog-h: calc((100vh - 132px) / var(--app-zoom, 1));
   width: min(880px, calc((100vw - 96px) / var(--app-zoom, 1)));
   max-height: var(--clog-h);
 }
