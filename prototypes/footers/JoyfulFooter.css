@@ -7,7 +7,9 @@
    mode still comes from `data-theme="dark"` on the footer element. */
 
 .jf-footer {
-  --jf-bg: #fafaf7;
+  /* White, matching the live footer — the off-white it used to be read as grey
+     against the app above it. */
+  --jf-bg: #fff;
   --jf-ink: #1a1a1a;
   --jf-ink-2: #5f5e59;
   --jf-rule: rgb(0 0 0 / 8%);
