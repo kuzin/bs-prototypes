@@ -7,7 +7,9 @@ import { MyWords, WordTile } from '../../words-with-benny/components/MyWords'
 import { Collections } from '../../words-with-benny/components/Collections'
 import { WordsRailCard } from '../../words-with-benny/components/WordsRailCard'
 import { EducatorWords } from '../../words-with-benny/components/EducatorWords'
-import { StudentWords } from '../../words-with-benny/components/StudentWords'
+import { StudentVocabulary } from '../../words-with-benny/components/StudentVocabulary'
+import { ClassroomView } from '../../student-profile/BeanstackProfile'
+import { EducatorWords as EducatorWordsTab } from '../../words-with-benny/components/EducatorWords'
 import { SEED_COLLECTION, WORDS_BY_BOOK } from '../../words-with-benny/data'
 import { Variant } from './_shared'
 
@@ -35,21 +37,6 @@ function WordUnlockDemo() {
         onClose={() => setOpen(false)}
         onSeeAll={() => setOpen(false)}
       />
-    </div>
-  )
-}
-
-function StudentWordsDemo() {
-  const [id, setId] = useState(null)
-  return (
-    <div style={{ padding: 20, display: 'flex', gap: 10 }}>
-      <Button variant="primary" size="sm" onClick={() => setId('zoe')}>
-        Open a strong collector →
-      </Button>
-      <Button variant="secondary" size="sm" onClick={() => setId('devon')}>
-        Open a student barely started →
-      </Button>
-      <StudentWords studentId={id} onClose={() => setId(null)} />
     </div>
   )
 }
@@ -196,21 +183,54 @@ export const wordsWithBennySections = [
   },
   {
     group: 'words-with-benny',
-    id: 'wb-student-words',
-    name: 'StudentWords',
+    id: 'wb-classroom-page',
+    name: 'Vocabulary tab (ClassroomView)',
     desc: (
       <>
-        The per-student half of the educator view: the same collection the student sees, plus the
-        numbers a teacher actually asks about — words, this week, first-try accuracy, and where they
-        sit against the class median. Words that took more than one try are tagged{' '}
-        <code>retried</code>. Opens over the roster in a side <code>Modal</code> rather than
-        navigating away, so comparing two students stays cheap. Props: <code>studentId</code>,{' '}
-        <code>onClose</code>.
+        Vocabulary is a <strong>tab on the real classroom page</strong>, not a destination of its
+        own — that&apos;s where a teacher already goes to look at this class. The page is the
+        Student Profile prototype&apos;s own <code>ClassroomView</code> (People rail, class header,
+        Daily Reading / Students / Earned Rewards), which grew additive <code>extraTabs</code> /{' '}
+        <code>renderExtra</code> slots so another prototype can hang a tab off it instead of cloning
+        it. Vocabulary is <strong>appended as a fourth tab</strong>; the three real ones are there
+        to place it.
       </>
     ),
     render: () => (
-      <Variant label="a strong collector · a student barely started" bare>
-        <StudentWordsDemo />
+      <Variant label="the real classroom page with a Vocabulary tab" full>
+        <ClassroomView
+          onStudentClick={noop}
+          extraTabs={[{ id: 'vocabulary', label: 'Vocabulary' }]}
+          renderExtra={() => <EducatorWordsTab onOpenStudent={noop} />}
+        />
+      </Variant>
+    ),
+  },
+  {
+    group: 'words-with-benny',
+    id: 'wb-student-vocabulary',
+    name: 'StudentVocabulary',
+    desc: (
+      <>
+        The per-student half of the educator reporting, as a{' '}
+        <strong>section of the real Student Profile</strong> rather than a bespoke panel — a teacher
+        who clicks a name in the roster lands where they already go for everything else about that
+        student. <code>StudentProfileView</code> grew <code>initialSection</code>,{' '}
+        <code>extraNav</code>, <code>renderExtra</code> and <code>overrides</code> to allow it, all
+        additive, so Student Profile, RIS and SfR are untouched.
+        <br />
+        <br />
+        Shows the numbers a teacher actually asks about — words, this week, first-try accuracy,
+        reading logs, and where they sit against the class median — over the same collection the
+        student sees. Words that took more than one try are tagged <code>retried</code>. Props:{' '}
+        <code>studentId</code>.
+      </>
+    ),
+    render: () => (
+      <Variant label="a strong collector" full>
+        <div style={{ padding: 20, background: '#fff' }}>
+          <StudentVocabulary studentId="marcus" />
+        </div>
       </Variant>
     ),
   },

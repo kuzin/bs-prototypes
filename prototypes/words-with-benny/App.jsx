@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
-import { AppShell } from '@components/AppShell/AppShell'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 
 // The reader half runs on the real logging surfaces — logging-flow's dashboard
@@ -12,8 +11,11 @@ import { LogFlow } from '../logging-flow/components/LogFlow'
 
 import { WordUnlock } from './components/WordUnlock'
 import { Collections } from './components/Collections'
-import { ClassroomPage } from './components/ClassroomPage'
-import { StudentWords } from './components/StudentWords'
+// The real classroom page, straight out of the Student Profile prototype.
+import { ClassroomView } from '../student-profile/BeanstackProfile'
+import '../student-profile/BeanstackProfile.css'
+import { EducatorWords } from './components/EducatorWords'
+import { StudentProfilePanel } from './components/StudentProfilePanel'
 import { WordsRailCard } from './components/WordsRailCard'
 import {
   BOOKS,
@@ -49,15 +51,6 @@ const VIEWS = [
   { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
   { id: 'words', label: 'Reader · My Collections', short: 'Collections', icon: 'vocabulary' },
   { id: 'educator', label: 'Educator · Classroom', short: 'Educator', icon: 'chart-bar' },
-]
-
-// The admin section a classroom actually lives in — same nav shape the SfR
-// prototype uses for "Classes and Readers".
-const EDU_NAV = [
-  { id: 'classes', label: 'Classes', icon: 'demographics' },
-  { id: 'students', label: 'Students', icon: 'person' },
-  { id: 'staff', label: 'Staff', icon: 'person' },
-  { id: 'groups', label: 'Groups', icon: 'overview' },
 ]
 
 export function App() {
@@ -149,21 +142,15 @@ export function App() {
 
       <div className="wb-stage">
         {view === 'educator' ? (
+          // Vocabulary is a tab on Beanstack's real classroom page, added
+          // through the additive `extraTabs`/`renderExtra` slots rather than by
+          // cloning the page.
           <div className="wb-edu-shell">
-            <AppShell
-              sidebar={{
-                title: 'Classes and Readers',
-                subtitle: 'Find and log for students and classes.',
-                nav: EDU_NAV,
-                active: 'classes',
-                onNavigate: () => {},
-                mainRailIndex: 3,
-              }}
-              backBar={{ label: 'Back to Classes', onClick: () => {} }}
-              contentClassName="ew-content"
-            >
-              <ClassroomPage onOpenStudent={setOpenStudent} />
-            </AppShell>
+            <ClassroomView
+              onStudentClick={setOpenStudent}
+              extraTabs={[{ id: 'vocabulary', label: 'Vocabulary' }]}
+              renderExtra={() => <EducatorWords onOpenStudent={setOpenStudent} />}
+            />
           </div>
         ) : (
           <Dashboard
@@ -214,7 +201,7 @@ export function App() {
         onSeeAll={seeAllWords}
       />
 
-      <StudentWords studentId={openStudent} onClose={() => setOpenStudent(null)} />
+      <StudentProfilePanel studentId={openStudent} onClose={() => setOpenStudent(null)} />
 
       <PrototypeNav currentHref="/bs-prototypes/words-with-benny/" />
     </div>

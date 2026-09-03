@@ -432,11 +432,11 @@ const NAV_ITEMS = [
 ]
 const ANALYSIS_SECTIONS = new Set(['motivation', 'integrity', 'habits', 'skills'])
 
-function LeftNav({ activeSection, onNavigate, pager }) {
+function LeftNav({ activeSection, onNavigate, pager, extraNav = [] }) {
   return (
     <nav className="bp-nav">
       <div className="bp-nav-items">
-        {NAV_ITEMS.map(({ icon, section, label }) => {
+        {[...NAV_ITEMS, ...extraNav].map(({ icon, section, label }) => {
           const active = activeSection === section
           const pal = accentFor(section)
           return (
@@ -466,7 +466,7 @@ function LeftNav({ activeSection, onNavigate, pager }) {
 // Under 700px the 168px rail costs too much of the screen, so it's hidden and
 // this bar takes over: the same fourteen destinations as a select, plus the
 // student pager that normally lives at the foot of the rail.
-function MobileSectionNav({ activeSection, onNavigate, pager }) {
+function MobileSectionNav({ activeSection, onNavigate, pager, extraNav = [] }) {
   return (
     <div className="bp-mobile-nav">
       <Select
@@ -475,7 +475,7 @@ function MobileSectionNav({ activeSection, onNavigate, pager }) {
         value={activeSection ?? 'overview'}
         onChange={(e) => onNavigate(e.target.value === 'overview' ? null : e.target.value)}
       >
-        {NAV_ITEMS.map(({ section, label }) => (
+        {[...NAV_ITEMS, ...extraNav].map(({ section, label }) => (
           <option key={label} value={section ?? 'overview'}>
             {label}
           </option>
@@ -4223,8 +4223,17 @@ function PlaceholderPage({ pageKey }) {
 }
 
 // ─── Admin mockup ─────────────────────────────────────────────────────────────
-function AdminMockup({ onStudentClick, selectedKey }) {
+/**
+ * The classroom page a teacher opens from Classes — People rail, class header,
+ * and the Daily Reading / Students / Earned Rewards tabs.
+ *
+ * `extraTabs` / `renderExtra` are optional and additive: they let another
+ * prototype hang its own tab off this real page instead of cloning it (Words
+ * with Benny adds Vocabulary). Left off, the page is exactly as it was.
+ */
+export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], renderExtra }) {
   const [admTab, setAdmTab] = useState('daily')
+  const extraIds = extraTabs.map((t) => t.id)
   return (
     <div className="bp-adm">
       <Sidebar
@@ -4266,136 +4275,148 @@ function AdminMockup({ onStudentClick, selectedKey }) {
                 { id: 'daily', label: 'Daily Reading' },
                 { id: 'students', label: 'Students' },
                 { id: 'rewards', label: 'Earned Rewards' },
+                ...extraTabs,
               ]}
             />
           </div>
 
-          <div className="bp-adm-filter-wrap">
-            <FilterBar>
-              <FilterItem label="View as …">
-                <Select defaultValue="goal" size="sm">
-                  <option value="goal">Reading Goal</option>
-                  <option value="pages">Pages</option>
-                  <option value="minutes">Minutes</option>
-                </Select>
-              </FilterItem>
-              <FilterItem label="Log Type">
-                <Select defaultValue="minutes" size="sm">
-                  <option value="minutes">Minutes</option>
-                  <option value="pages">Pages</option>
-                  <option value="sessions">Sessions</option>
-                </Select>
-              </FilterItem>
-              <FilterItem label="Show as …">
-                <Select defaultValue="pct" size="sm">
-                  <option value="pct">Percentages</option>
-                  <option value="raw">Raw values</option>
-                </Select>
-              </FilterItem>
-            </FilterBar>
-          </div>
+          {extraIds.includes(admTab) ? (
+            renderExtra?.(admTab)
+          ) : (
+            <>
+              <div className="bp-adm-filter-wrap">
+                <FilterBar>
+                  <FilterItem label="View as …">
+                    <Select defaultValue="goal" size="sm">
+                      <option value="goal">Reading Goal</option>
+                      <option value="pages">Pages</option>
+                      <option value="minutes">Minutes</option>
+                    </Select>
+                  </FilterItem>
+                  <FilterItem label="Log Type">
+                    <Select defaultValue="minutes" size="sm">
+                      <option value="minutes">Minutes</option>
+                      <option value="pages">Pages</option>
+                      <option value="sessions">Sessions</option>
+                    </Select>
+                  </FilterItem>
+                  <FilterItem label="Show as …">
+                    <Select defaultValue="pct" size="sm">
+                      <option value="pct">Percentages</option>
+                      <option value="raw">Raw values</option>
+                    </Select>
+                  </FilterItem>
+                </FilterBar>
+              </div>
 
-          <div className="bp-adm-card">
-            <div className="bp-adm-week-nav">
-              <IconButton variant="ghost" size="md" aria-label="Previous week">
-                <Icon name="chevron-left" size={16} />
-              </IconButton>
-              <span className="bp-adm-week-label">5/11 – 5/17 (This Week)</span>
-              <IconButton variant="ghost" size="md" aria-label="Next week" style={{ opacity: 0.3 }}>
-                <Icon name="chevron-right" size={16} />
-              </IconButton>
-            </div>
-            <table className="tbl tbl--compact tbl--flush">
-              <thead>
-                <tr>
-                  <th className="tbl-th" style={{ width: 160, textAlign: 'left' }}>
-                    Student
-                  </th>
-                  <th className="tbl-th bp-adm-th--goal">Goal</th>
-                  <th className="tbl-th tbl-cell--center">Average</th>
-                  {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-                    <th key={d} className="tbl-th tbl-cell--center">
-                      {d}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {CLASS_TABLE.map((s) => (
-                  <tr
-                    key={s.key}
-                    className={`tbl-row tbl-row--clickable${selectedKey === s.key ? ' bp-adm-row--selected' : ''}`}
-                    onClick={() => onStudentClick?.(s.key)}
-                    onKeyDown={(e) => e.key === 'Enter' && onStudentClick?.(s.key)}
-                    role="button"
-                    tabIndex={0}
+              <div className="bp-adm-card">
+                <div className="bp-adm-week-nav">
+                  <IconButton variant="ghost" size="md" aria-label="Previous week">
+                    <Icon name="chevron-left" size={16} />
+                  </IconButton>
+                  <span className="bp-adm-week-label">5/11 – 5/17 (This Week)</span>
+                  <IconButton
+                    variant="ghost"
+                    size="md"
+                    aria-label="Next week"
+                    style={{ opacity: 0.3 }}
                   >
-                    <td className="tbl-td">
-                      <div className="bp-adm-student-cell">
-                        <span
-                          className={`bp-adm-rank bp-adm-rank--${s.rank === 1 ? 'gold' : s.rank === 2 ? 'silver' : 'bronze'}`}
-                        >
-                          {s.rank}
-                        </span>
-                        <span className="bp-adm-student-name">{STUDENTS[s.key].name}</span>
-                      </div>
-                    </td>
-                    <td className="tbl-td bp-adm-td--goal">
-                      <div className="bp-adm-goal-cell">
-                        <span className="bp-adm-goal-val">
-                          {STUDENTS[s.key].sections.habits.dailyGoalMinutes}m
-                        </span>
-                        <IconButton
-                          variant="ghost"
-                          size="sm"
-                          title="Edit goal"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Icon name="pencil" size={11} />
-                        </IconButton>
-                      </div>
-                    </td>
-                    <td className="tbl-td tbl-cell--center">
-                      <span className={`bp-adm-pct bp-adm-pct--${s.ac}`}>{s.avg}%</span>
-                    </td>
-                    {s.days.map((d, i) => (
-                      <td key={i} className="tbl-td tbl-cell--center">
-                        {d === null ? (
-                          <span className="bp-adm-dash">–</span>
-                        ) : d === true ? (
-                          <span className="bp-adm-check-circle">
-                            <Icon name="check" size={10} />
-                          </span>
-                        ) : (
-                          <span
-                            className={`bp-adm-pct bp-adm-pct--${s.ac === 'red' ? 'red' : 'orange'}`}
-                          >
-                            {d}
-                          </span>
-                        )}
-                      </td>
+                    <Icon name="chevron-right" size={16} />
+                  </IconButton>
+                </div>
+                <table className="tbl tbl--compact tbl--flush">
+                  <thead>
+                    <tr>
+                      <th className="tbl-th" style={{ width: 160, textAlign: 'left' }}>
+                        Student
+                      </th>
+                      <th className="tbl-th bp-adm-th--goal">Goal</th>
+                      <th className="tbl-th tbl-cell--center">Average</th>
+                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
+                        <th key={d} className="tbl-th tbl-cell--center">
+                          {d}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {CLASS_TABLE.map((s) => (
+                      <tr
+                        key={s.key}
+                        className={`tbl-row tbl-row--clickable${selectedKey === s.key ? ' bp-adm-row--selected' : ''}`}
+                        onClick={() => onStudentClick?.(s.key)}
+                        onKeyDown={(e) => e.key === 'Enter' && onStudentClick?.(s.key)}
+                        role="button"
+                        tabIndex={0}
+                      >
+                        <td className="tbl-td">
+                          <div className="bp-adm-student-cell">
+                            <span
+                              className={`bp-adm-rank bp-adm-rank--${s.rank === 1 ? 'gold' : s.rank === 2 ? 'silver' : 'bronze'}`}
+                            >
+                              {s.rank}
+                            </span>
+                            <span className="bp-adm-student-name">{STUDENTS[s.key].name}</span>
+                          </div>
+                        </td>
+                        <td className="tbl-td bp-adm-td--goal">
+                          <div className="bp-adm-goal-cell">
+                            <span className="bp-adm-goal-val">
+                              {STUDENTS[s.key].sections.habits.dailyGoalMinutes}m
+                            </span>
+                            <IconButton
+                              variant="ghost"
+                              size="sm"
+                              title="Edit goal"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Icon name="pencil" size={11} />
+                            </IconButton>
+                          </div>
+                        </td>
+                        <td className="tbl-td tbl-cell--center">
+                          <span className={`bp-adm-pct bp-adm-pct--${s.ac}`}>{s.avg}%</span>
+                        </td>
+                        {s.days.map((d, i) => (
+                          <td key={i} className="tbl-td tbl-cell--center">
+                            {d === null ? (
+                              <span className="bp-adm-dash">–</span>
+                            ) : d === true ? (
+                              <span className="bp-adm-check-circle">
+                                <Icon name="check" size={10} />
+                              </span>
+                            ) : (
+                              <span
+                                className={`bp-adm-pct bp-adm-pct--${s.ac === 'red' ? 'red' : 'orange'}`}
+                              >
+                                {d}
+                              </span>
+                            )}
+                          </td>
+                        ))}
+                      </tr>
                     ))}
-                  </tr>
-                ))}
-                <tr className="bp-adm-avg-row">
-                  <td className="tbl-td">Class Average</td>
-                  <td className="tbl-td bp-adm-td--goal" />
-                  <td className="tbl-td tbl-cell--center">67%</td>
-                  {['–', '58%', '50%', '33%', '67%', '24%', '–'].map((v, i) => (
-                    <td key={i} className="tbl-td tbl-cell--center">
-                      {v}
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
-            <div className="bp-adm-legend">
-              <span style={{ color: '#EF4444' }}>● 0–33%</span>
-              <span style={{ color: '#F59E0B' }}>● 34–66%</span>
-              <span style={{ color: '#3B82F6' }}>● 66–99%</span>
-              <span style={{ color: '#10B981' }}>✓ 100%</span>
-            </div>
-          </div>
+                    <tr className="bp-adm-avg-row">
+                      <td className="tbl-td">Class Average</td>
+                      <td className="tbl-td bp-adm-td--goal" />
+                      <td className="tbl-td tbl-cell--center">67%</td>
+                      {['–', '58%', '50%', '33%', '67%', '24%', '–'].map((v, i) => (
+                        <td key={i} className="tbl-td tbl-cell--center">
+                          {v}
+                        </td>
+                      ))}
+                    </tr>
+                  </tbody>
+                </table>
+                <div className="bp-adm-legend">
+                  <span style={{ color: '#EF4444' }}>● 0–33%</span>
+                  <span style={{ color: '#F59E0B' }}>● 34–66%</span>
+                  <span style={{ color: '#3B82F6' }}>● 66–99%</span>
+                  <span style={{ color: '#10B981' }}>✓ 100%</span>
+                </div>
+              </div>
+            </>
+          )}
         </div>
         {/* bp-adm-main-body */}
       </div>
@@ -4440,19 +4461,42 @@ function ProfilePager({ currentKey, onSelect }) {
 }
 
 // ─── Embeddable profile panel (used by RIS StudentPanel slide-in) ─────────────
-export function StudentProfileView({ studentKey, onClose }) {
-  const [activeSection, setActiveSection] = useState(null)
-  const student = STUDENTS[studentKey] || STUDENTS.marcus
+/**
+ * `initialSection`, `extraNav`, `renderExtra` and `overrides` are optional and
+ * additive — they let another prototype open the real profile on a section of
+ * its own (Words with Benny adds Vocabulary) instead of building a second,
+ * bespoke student panel. `overrides` merges onto the resolved student, so a
+ * roster row that has no full profile behind it still shows the right person in
+ * the header. Left off, the profile is exactly as it was.
+ */
+export function StudentProfileView({
+  studentKey,
+  onClose,
+  initialSection = null,
+  extraNav = [],
+  renderExtra,
+  overrides,
+}) {
+  const [activeSection, setActiveSection] = useState(initialSection)
+  const base = STUDENTS[studentKey] || STUDENTS.marcus
+  const student = overrides ? { ...base, ...overrides } : base
+  const extraSections = extraNav.map((n) => n.section)
 
   return (
     <div className="bp-root" style={{ width: '100%', flex: 1, minHeight: 0, boxShadow: 'none' }}>
       <StudentHeader student={student} onClose={onClose} />
       <div className="bp-root-body">
-        <LeftNav activeSection={activeSection} onNavigate={setActiveSection} />
+        <LeftNav activeSection={activeSection} onNavigate={setActiveSection} extraNav={extraNav} />
         <div className="bp-panel">
-          <MobileSectionNav activeSection={activeSection} onNavigate={setActiveSection} />
+          <MobileSectionNav
+            activeSection={activeSection}
+            onNavigate={setActiveSection}
+            extraNav={extraNav}
+          />
           <div key={`${studentKey}-${activeSection ?? 'overview'}`} className="bp-page-fade">
-            {activeSection === null ? (
+            {extraSections.includes(activeSection) ? (
+              renderExtra?.(activeSection, student)
+            ) : activeSection === null ? (
               <Overview student={student} onNavigate={setActiveSection} />
             ) : ANALYSIS_SECTIONS.has(activeSection) ? (
               <SectionDetail student={student} sectionKey={activeSection} />
@@ -4518,7 +4562,7 @@ export default function BeanstackProfile() {
     <div className="bp-shell">
       {/* Admin bg */}
       <div className={`bp-shell-admin${profileMode === 'full' ? ' bp-shell-admin--hidden' : ''}`}>
-        <AdminMockup onStudentClick={handleStudentClick} selectedKey={selectedStudentKey} />
+        <ClassroomView onStudentClick={handleStudentClick} selectedKey={selectedStudentKey} />
       </div>
 
       {/* Dim overlay */}

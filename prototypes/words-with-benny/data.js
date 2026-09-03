@@ -614,6 +614,10 @@ export const CLASS = {
   term: 'This school year',
 }
 
+// `id` doubles as the Student Profile's own key where one exists — marcus,
+// anne and tyler are the three the profile actually has data for, and the three
+// on Beanstack's real classroom page. Everyone else opens the profile with
+// their name carried over (see PROFILE_KEYS below).
 const student = (id, name, initials, color, words, week, firstTry, last, lastBook, logs) => ({
   id,
   name,
@@ -641,9 +645,9 @@ export const ROSTER = [
     41,
   ),
   student('noah', 'Noah Martinez', 'NM', '#7C5CFA', 28, 6, 90, 'instinct', 'hatchet', 58),
-  student('mia', 'Mia Chen', 'MC', '#0DA7BC', 27, 7, 94, 'defiance', 'telegraph-club', 62),
-  student('liam', 'Liam Park', 'LP', '#16A97A', 27, 4, 78, 'momentum', 'crossover', 49),
-  student('ava', 'Ava Thompson', 'AT', '#E8734A', 22, 5, 86, 'earnest', 'she-gets-the-girl', 44),
+  student('marcus', 'Marcus Chen', 'MC', '#0DA7BC', 27, 7, 94, 'defiance', 'telegraph-club', 62),
+  student('tyler', 'Tyler Voss', 'TV', '#16A97A', 27, 4, 78, 'momentum', 'crossover', 49),
+  student('anne', 'Anne Boonchuy', 'AB2', '#E8734A', 22, 5, 86, 'earnest', 'she-gets-the-girl', 44),
   student('ethan', 'Ethan Brooks', 'EB', '#5B7CFA', 12, 0, 71, 'tyrant', 'matilda', 26),
   student('sofia', 'Sofia Ramirez', 'SR', '#D946A0', 26, 6, 88, 'resilient', 'lesbianas-guide', 53),
   student('jayden', 'Jayden Cole', 'JC', '#0EA5A5', 9, 0, 64, 'grief', 'terabithia', 19),
@@ -675,6 +679,23 @@ export const ROSTER = [
     37,
   ),
 ]
+
+/** The roster ids the Student Profile has real data behind. */
+export const PROFILE_KEYS = new Set(['marcus', 'anne', 'tyler'])
+
+/**
+ * What to open the Student Profile with. A row the profile knows gets its own
+ * profile; every other row borrows one of the three as stand-in analysis and
+ * overrides the name, so the header still shows who you clicked.
+ */
+export function profileFor(studentId) {
+  const person = ROSTER.find((s) => s.id === studentId)
+  if (!person) return null
+  if (PROFILE_KEYS.has(person.id)) return { studentKey: person.id, overrides: undefined }
+  const standIns = [...PROFILE_KEYS]
+  const key = standIns[ROSTER.findIndex((s) => s.id === person.id) % standIns.length]
+  return { studentKey: key, overrides: { name: person.name, grade: '6th Grade' } }
+}
 
 /** Words the class has collected most — the "word wall" an educator can point to. */
 export const CLASS_TOP_WORDS = [
