@@ -32,20 +32,38 @@ function CollectionCard({ art, name, blurb, date }) {
   )
 }
 
-/** Each shelf states what it holds and how much of it, over a hairline. */
-function ShelfHead({ title, count, noun }) {
+/**
+ * Every pane gets the same head: what it holds and how much of it, over a
+ * hairline, with Benny's line on the right. There's no separate page title —
+ * the tab strip above already says you're in Collections.
+ */
+function ShelfHead({ title, count, noun, action }) {
   return (
     <header className="co-shelf-head">
-      <h2 className="co-shelf-title">{title}</h2>
-      <p className="co-shelf-count">
-        {count} {noun}
-      </p>
+      <div className="co-shelf-copy">
+        <h2 className="co-shelf-title">{title}</h2>
+        <p className="co-shelf-count">
+          {count} {noun}
+        </p>
+      </div>
+      {action}
     </header>
   )
 }
 
 export function Collections({ collection, newestWord }) {
   const [pane, setPane] = useState('words')
+
+  const benny = (
+    <div className="co-benny">
+      <img src="/bs-prototypes/benny-happy.svg" alt="" className="co-benny-face" />
+      <p className="co-benny-line">
+        {collection.length >= 12
+          ? `${collection.length} words and ${BADGES.length} badges! Keep logging.`
+          : 'Log some reading and I’ll dig up a word for you.'}
+      </p>
+    </div>
+  )
 
   return (
     <div className="co">
@@ -68,27 +86,16 @@ export function Collections({ collection, newestWord }) {
         />
       </div>
 
-      {/* Same shape as the Reading Log's own header next door — a plain title
-          row, no coloured banner. */}
-      <header className="co-head">
-        <div className="co-head-copy">
-          <h1 className="co-title">My Collections</h1>
-        </div>
-        <div className="co-benny">
-          <img src="/bs-prototypes/benny-happy.svg" alt="" className="co-benny-face" />
-          <p className="co-benny-line">
-            {collection.length >= 12
-              ? `${collection.length} words and ${BADGES.length} badges! Keep logging.`
-              : 'Log some reading and I’ll dig up a word for you.'}
-          </p>
-        </div>
-      </header>
-
-      {pane === 'words' && <MyWords collection={collection} newestWord={newestWord} />}
+      {pane === 'words' && (
+        <>
+          <ShelfHead title="Vocabulary" count={collection.length} noun="Words" action={benny} />
+          <MyWords collection={collection} newestWord={newestWord} />
+        </>
+      )}
 
       {pane === 'badges' && (
         <>
-          <ShelfHead title="Earned Badges" count={BADGES.length} noun="Badges" />
+          <ShelfHead title="Earned Badges" count={BADGES.length} noun="Badges" action={benny} />
           <div className="co-grid">
             {BADGES.map((b) => (
               <CollectionCard
@@ -109,7 +116,12 @@ export function Collections({ collection, newestWord }) {
 
       {pane === 'achievements' && (
         <>
-          <ShelfHead title="Achievements" count={ACHIEVEMENTS.length} noun="Achievements" />
+          <ShelfHead
+            title="Achievements"
+            count={ACHIEVEMENTS.length}
+            noun="Achievements"
+            action={benny}
+          />
           <div className="co-grid">
             {ACHIEVEMENTS.map((a) => (
               <CollectionCard

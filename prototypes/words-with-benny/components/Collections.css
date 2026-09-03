@@ -1,25 +1,7 @@
-/* ─── Header ─────────────────────────────────────────────────────────────
-   Matches the Reading Log's own `.rl-head` next door: a plain title row on the
-   page ground, no coloured banner. */
+/* ─── Benny's line ───────────────────────────────────────────────────────
+   Sits on the right of whichever shelf head is showing, in the register of the
+   Reading Log's `.rl-importnote` rather than as a panel on a banner. */
 
-.co-head {
-  display: flex;
-  gap: 20px;
-  align-items: center;
-  justify-content: space-between;
-  margin: 26px 0 22px;
-}
-.co-head-copy {
-  min-width: 0;
-}
-.co-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--c-text);
-}
-
-/* Benny's coach line — a light note, the same register as the log's
-   `.rl-importnote`, rather than a panel floating on a gradient. */
 .co-benny {
   display: flex;
   flex: 0 0 auto;
@@ -43,29 +25,22 @@
   color: #5b21b6;
 }
 
-.co {
-  padding: 0 0 48px;
-}
-
-/* The band bleeds to the container edges, cancelling .wa-main's top padding and
-   .wa-main-inner's side padding — same trick as ReadingLog's `.rl-subtabs`. */
-.co-subtabs {
-  display: flex;
-  justify-content: center;
-  padding: 16px 24px;
-  margin: -24px -24px 8px;
-  background: #f7f8fa;
-  border-bottom: 1px solid var(--c-border);
-}
-
 /* ─── Badge + achievement shelves ────────────────────────────────────────
    Both use the product's one card: circular art over a bold name and a line of
    copy, with the earned date on its own footer strip in green. */
 
+/* Same breathing room the Reading Log gives its own header under the band. */
 .co-shelf-head {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
   padding-bottom: 14px;
-  margin-bottom: 18px;
+  margin: 26px 0 20px;
   border-bottom: 1px solid var(--c-border);
+}
+.co-shelf-copy {
+  min-width: 0;
 }
 .co-shelf-title {
   font-size: 21px;
@@ -150,7 +125,7 @@
 }
 
 @media (max-width: 860px) {
-  .co-head {
+  .co-shelf-head {
     flex-direction: column;
     align-items: flex-start;
   }
