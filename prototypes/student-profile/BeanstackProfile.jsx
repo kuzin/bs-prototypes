@@ -5110,7 +5110,6 @@ function ChallengeLogSheet({ open, onClose, student, challenge }) {
         <div className="bp-clog-sheet">
           <div className="bp-clog-head">
             <div>
-              <div className="bp-clog-site">Lincoln Middle School</div>
               <h1 className="bp-clog-title">{challenge.name}</h1>
               <div className="bp-clog-dates">{challenge.dates}</div>
             </div>

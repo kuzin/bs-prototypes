@@ -3101,7 +3101,6 @@ function ChallengeLogSheet({ open, onClose, student, challenge }) {
         <div className="rp-clog-sheet">
           <div className="rp-clog-head">
             <div>
-              <div className="rp-clog-site">Riverside Public Library</div>
               <h1 className="rp-clog-title">{challenge.name}</h1>
               <div className="rp-clog-dates">{challenge.dates}</div>
             </div>

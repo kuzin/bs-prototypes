@@ -5258,9 +5258,14 @@
    inside it keeps a page's measure. `.modal--center` caps itself at 520px, so
    the sheet's own width is set here. */
 .modal--center:has(.rp-clog) {
-  --clog-h: calc((100vh - 132px) / var(--app-zoom, 1));
+  --clog-bar: 48px;
+  --clog-gutter: 40px;
+  /* Half the bar, so the space it takes comes off the bottom, not both ends. */
+  --clog-lift: calc(var(--clog-bar) / 2);
+  --clog-h: calc((100vh - var(--clog-gutter) * 2 - var(--clog-bar)) / var(--app-zoom, 1));
   width: min(880px, calc((100vw - 96px) / var(--app-zoom, 1)));
   max-height: var(--clog-h);
+  top: calc(50% - var(--clog-lift) / var(--app-zoom, 1));
 }
 
 .rp-clog {
@@ -5304,16 +5309,8 @@
   border-bottom: 2px solid var(--c-slate-800);
 }
 
-.rp-clog-site {
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--c-slate-500);
-}
-
 .rp-clog-title {
-  margin: 3px 0 2px;
+  margin: 0 0 2px;
   font-size: 24px;
   font-weight: 800;
   color: var(--c-slate-800);
@@ -5492,6 +5489,7 @@
   /* On paper the gutter is the printer's margin, not ours. */
   .modal--center:has(.rp-clog) {
     --clog-h: none;
+    top: 0;
   }
 
   .rp-clog-bar {
