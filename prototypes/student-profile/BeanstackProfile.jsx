@@ -472,7 +472,14 @@ function StatusFlags({ flags = [], tandemWith }) {
         if (!f) return null
         return (
           <Tooltip key={key} content={f.tip.replace('%s', tandemWith)}>
-            <span className={`bp-status bp-status--${f.tone}`}>
+            <span
+              className={`bp-status bp-status--${f.tone}`}
+              /* The Comics Plus mark is a brand-colour blob with a white glyph
+                 inside it, so on a pale chip only the white read and the mark
+                 looked empty. Sitting it on the partner's own accent puts the
+                 white back on colour — the app icon, as it looks in the app. */
+              style={f.partner ? { '--bp-mark-bg': PARTNER_BRANDS[f.partner].accent } : undefined}
+            >
               {f.partner ? (
                 <PartnerMark id={f.partner} size={16} />
               ) : (
@@ -4036,7 +4043,10 @@ function RLEntryCard({ entry, onOpen, talkFor }) {
             in, which is worth saying on the row. */}
         {entry.source && PARTNER_BRANDS[entry.source] && (
           <Tooltip content={`Logged from ${PARTNER_BRANDS[entry.source].name}`}>
-            <span className="bp-rl-source">
+            <span
+              className="bp-rl-source"
+              style={{ '--bp-mark-bg': PARTNER_BRANDS[entry.source].accent }}
+            >
               <PartnerMark id={entry.source} size={16} />
               {PARTNER_BRANDS[entry.source].name}
             </span>

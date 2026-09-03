@@ -15,7 +15,7 @@
 
 /* Widen + shift the centered modal to clear the 48px PrototypeNav */
 .modal--center:has(.sm2-shell) {
-  width: min(760px, calc(100vw - 96px));
+  width: min(680px, calc(100vw - 96px));
   max-height: calc(100vh - 180px);
   top: calc(50% - 24px);
 }

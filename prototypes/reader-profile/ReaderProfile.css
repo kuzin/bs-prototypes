@@ -5157,9 +5157,14 @@
 }
 
 /* The mark is artwork rather than a stroke glyph, so it sits tight against the
-   chip's left edge and keeps its own corner rounding. */
+   chip's left edge and keeps its own corner rounding. `--rp-mark-bg` is the
+   partner's accent, set inline by StatusFlags. */
 .rp-status--partner {
   padding-left: 4px;
+}
+
+.rp-status--partner .pb-mark {
+  background: var(--rp-mark-bg);
 }
 
 /* ─── Partner-sourced log row ─────────────────────────────────────────────────
@@ -5182,4 +5187,8 @@
   color: var(--c-slate-500);
   font-weight: 700;
   cursor: default;
+}
+
+.rp-rl-source .pb-mark {
+  background: var(--rp-mark-bg);
 }
