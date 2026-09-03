@@ -1,4 +1,4 @@
-import { useState, cloneElement } from 'react'
+import { useState, useEffect, useRef, cloneElement } from 'react'
 import './BeanstackProfile.css'
 import '../ris/components/SchoolDashboard.css'
 import { C, LABEL, Ic } from '@components/ui'
@@ -65,6 +65,41 @@ function makeHeatmapData(density, profile = 'consistent') {
     map[key] = n < threshold ? 0 : 10 + (n2 % 45)
   }
   return map
+}
+
+// ─── Benny's emphasis ─────────────────────────────────────────────────────────
+// Benny's summaries are a paragraph of prose, and the figures a teacher is
+// scanning for get lost in it. The copy carries `**…**` around the load-bearing
+// numbers and phrases; this turns them into <strong>. Strings without markers
+// render exactly as before, so nothing has to be marked up to work.
+function emphasize(text) {
+  if (typeof text !== 'string' || !text.includes('**')) return text
+  return text.split(/\*\*(.+?)\*\*/g).map((part, i) =>
+    // Odd indices are the captured groups — the emphasised runs.
+    i % 2 ? <strong key={i}>{part}</strong> : part,
+  )
+}
+
+// ─── Show more ────────────────────────────────────────────────────────────────
+// The review asked for several blocks to be "cut or hidden behind a show more".
+// Tucked rather than cut: the detail still belongs to the page it's on, it just
+// isn't what you came to the page for. One component, so every disclosure on
+// the profile opens the same way.
+function ShowMore({ label, inCard = false, children }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      {open && children}
+      <button
+        type="button"
+        className={`bp-showmore${inCard ? ' bp-showmore--incard' : ''}`}
+        onClick={() => setOpen((v) => !v)}
+      >
+        {open ? `Hide ${label}` : `Show ${label}`}
+        <Icon name={open ? 'chevron-up' : 'chevron-down'} size={14} stroke={2.4} />
+      </button>
+    </>
+  )
 }
 
 // ─── Action footer ────────────────────────────────────────────────────────────
@@ -365,15 +400,18 @@ function StudentHeader({ student, onClose }) {
   return (
     <div className="bp-panel-header">
       <div className="bp-panel-identity">
+        {/* A round, per-reader colour: the header is a person, not an
+    organisation, and stepping the pager should visibly change reader. The
+    hues are identity only — deliberately none of the status palette, so
+    Tyler doesn't read as "the red student". */}
         <Avatar
           initials={student.name
             .split(' ')
             .map((w) => w[0])
             .join('')
             .slice(0, 2)}
-          color="#1D4ED8"
+          color={student.avatarColor}
           size="lg"
-          shape="square"
         />
         <div>
           <div className="bp-panel-name">{student.name}</div>
@@ -432,18 +470,22 @@ const NAV_ITEMS = [
 ]
 const ANALYSIS_SECTIONS = new Set(['motivation', 'integrity', 'habits', 'skills'])
 
+// Every profile-coloured tint (control rail, nav active state, the Log button)
+// derives from this one property in CSS via `color-mix`, so a reader needs a
+// single authored hex rather than a hand-mixed scale. The Hero icon chips stay
+// on `SECTION_ACCENT` — the section you're on still has its own colour.
+const profileVars = (student) => ({ '--bp-profile': student.avatarColor })
+
 function LeftNav({ activeSection, onNavigate, pager, extraNav = [] }) {
   return (
     <nav className="bp-nav">
       <div className="bp-nav-items">
         {[...NAV_ITEMS, ...extraNav].map(({ icon, section, label }) => {
           const active = activeSection === section
-          const pal = accentFor(section)
           return (
             <div
               key={label}
               className={`bp-nav-item${active ? ' bp-nav-item--active' : ''}`}
-              style={active ? { '--nav-active-bg': pal.bg, '--nav-active-color': pal.text } : {}}
               onClick={() => onNavigate(section)}
               onKeyDown={(e) => e.key === 'Enter' && onNavigate(section)}
               role="button"
@@ -463,10 +505,12 @@ function LeftNav({ activeSection, onNavigate, pager, extraNav = [] }) {
 }
 
 // ─── Mobile section nav ───────────────────────────────────────────────────────
-// Under 700px the 168px rail costs too much of the screen, so it's hidden and
-// this bar takes over: the same fourteen destinations as a select, plus the
-// student pager that normally lives at the foot of the rail.
-function MobileSectionNav({ activeSection, onNavigate, pager, extraNav = [] }) {
+// Under 700px the 168px nav rail costs too much of the screen, so it's hidden
+// and this bar takes over with the same fourteen destinations as a select. It
+// used to carry a second copy of the student pager; the control rail keeps
+// that (and close, and copy link) at every width now, so there's one home for
+// panel chrome instead of three.
+function MobileSectionNav({ activeSection, onNavigate, extraNav = [] }) {
   return (
     <div className="bp-mobile-nav">
       <Select
@@ -481,7 +525,6 @@ function MobileSectionNav({ activeSection, onNavigate, pager, extraNav = [] }) {
           </option>
         ))}
       </Select>
-      {pager}
     </div>
   )
 }
@@ -531,44 +574,28 @@ const STAT_TINTS = {
 // The Overview's seven figures are described once here, then rendered as a
 // single hairline-divided list — labels in one column, figures in another, so
 // the whole snapshot scans top to bottom.
-function overviewMetrics(ov) {
+// Order comes from the review: logging volume first, then the habit signals,
+// then flags, then motivation — what a teacher scans for disengagement, in the
+// order they'd scan it. Longest streak and Lexile sit behind "Show more"; they
+// answer a question you go looking for rather than one you scan.
+//
+// `trend` is this month against last (not against the selected range): a
+// year-long total hides a reader who started slipping three weeks ago, which is
+// exactly the signal the review said the page was missing. Streaks and Lexile
+// carry none — a streak is already an as-of-today number, and one month of
+// Lexile movement is noise.
+function overviewMetrics(ov, mo) {
   const days = (n) => (n === 1 ? 'day' : 'days')
   return [
     {
-      key: 'motivation',
-      section: 'motivation',
-      icon: 'flame',
-      accent: C.motivation,
-      label: 'Top motivation factor',
-      motivators: ov.motivators?.slice(0, 1),
-      empty: 'No clear motivator found',
-    },
-    {
-      key: 'integrity',
-      section: 'integrity',
-      icon: 'shield-check',
-      accent: C.integrity,
-      label: 'Recent flags',
-      value: ov.flags,
-      unit: ov.flags === 1 ? 'flag' : 'flags',
-    },
-    {
-      key: 'habits',
+      key: 'minutes',
       section: 'habits',
-      icon: 'calendar-stats',
-      accent: C.habits,
-      label: 'Daily goals met',
-      value: ov.daysRead > 0 ? ov.daysRead : null,
-      unit: `of ${ov.daysPossible} days`,
-      empty: 'No reading logged',
-    },
-    {
-      key: 'skills',
-      section: 'skills',
-      icon: 'book-2',
-      accent: C.skills,
-      label: 'Average Lexile',
-      value: `${ov.lexile}L`,
+      icon: 'clock',
+      accent: STAT_TINTS.minutes,
+      label: 'Total minutes read',
+      value: ov.minutes.toLocaleString(),
+      unit: 'min',
+      trend: { delta: mo.minutesPct, format: (n) => `${n}%` },
     },
     {
       key: 'current',
@@ -580,6 +607,36 @@ function overviewMetrics(ov) {
       unit: days(ov.currentStreak),
     },
     {
+      key: 'habits',
+      section: 'habits',
+      icon: 'calendar-stats',
+      accent: C.habits,
+      label: 'Daily goals met',
+      value: ov.daysRead > 0 ? ov.daysRead : null,
+      unit: `of ${ov.daysPossible} days`,
+      empty: 'No reading logged',
+      trend: { delta: mo.goalDays, format: (n) => `${n} ${days(n)}` },
+    },
+    {
+      key: 'integrity',
+      section: 'integrity',
+      icon: 'shield-check',
+      accent: C.integrity,
+      label: 'Recent flags',
+      value: ov.flags,
+      unit: ov.flags === 1 ? 'flag' : 'flags',
+      trend: { delta: mo.flags, inverse: true },
+    },
+    {
+      key: 'motivation',
+      section: 'motivation',
+      icon: 'flame',
+      accent: C.motivation,
+      label: 'Top motivation factor',
+      motivators: ov.motivators?.slice(0, 1),
+      empty: 'No clear motivator found',
+    },
+    {
       key: 'longest',
       section: 'habits',
       icon: 'trophy',
@@ -587,15 +644,16 @@ function overviewMetrics(ov) {
       label: 'Longest streak',
       value: ov.longestStreak,
       unit: days(ov.longestStreak),
+      more: true,
     },
     {
-      key: 'minutes',
-      section: 'habits',
-      icon: 'clock',
-      accent: STAT_TINTS.minutes,
-      label: 'Total minutes read',
-      value: ov.minutes.toLocaleString(),
-      unit: 'min',
+      key: 'skills',
+      section: 'skills',
+      icon: 'book-2',
+      accent: C.skills,
+      label: 'Average Lexile',
+      value: `${ov.lexile}L`,
+      more: true,
     },
   ]
 }
@@ -647,12 +705,19 @@ function MotivatorNames({ names, className }) {
 }
 
 function OverviewStats({ metrics, onOpen }) {
+  const [showMore, setShowMore] = useState(false)
+  const shown = metrics.filter((m) => !m.more || showMore)
+  const hidden = metrics.filter((m) => m.more).length
+
   return (
     <div className="bp-card bp-statlist">
       <div className="bp-statlist-head">
         <SectionHeading>At a glance</SectionHeading>
+        {/* The comparison is stated once here rather than repeated in every
+            chip — five rows each ending "vs last month" is noise. */}
+        <span className="bp-statlist-note">Trend vs last month</span>
       </div>
-      {metrics.map((m) => (
+      {shown.map((m) => (
         <StatRow
           key={m.key}
           icon={m.icon}
@@ -670,8 +735,15 @@ function OverviewStats({ metrics, onOpen }) {
               {m.unit && <span className="bp-statrow-unit"> {m.unit}</span>}
             </span>
           )}
+          {m.trend && <TrendPill {...m.trend} />}
         </StatRow>
       ))}
+      {hidden > 0 && (
+        <button type="button" className="bp-statlist-more" onClick={() => setShowMore((v) => !v)}>
+          {showMore ? 'Show less' : `Show ${hidden} more`}
+          <Icon name={showMore ? 'chevron-up' : 'chevron-down'} size={14} stroke={2.4} />
+        </button>
+      )}
     </div>
   )
 }
@@ -679,7 +751,9 @@ function OverviewStats({ metrics, onOpen }) {
 function Overview({ student, onNavigate }) {
   const [range, setRange] = useState('year')
   const ov = student.overview[range]
-  const metrics = overviewMetrics(ov)
+  // Month-over-month is deliberately outside the range switcher: "is this
+  // reader slipping right now" reads the same whichever total you're looking at.
+  const metrics = overviewMetrics(ov, student.overview.month)
 
   return (
     <div className="bp-content">
@@ -688,22 +762,24 @@ function Overview({ student, onNavigate }) {
         title="Overview"
         accent={SECTION_ACCENT.overview.text}
         accentBg={SECTION_ACCENT.overview.bg}
-        action={
-          <Tabs
-            variant="pill"
-            size="sm"
-            ariaLabel="Overview time range"
-            active={range}
-            onChange={setRange}
-            items={OVERVIEW_RANGES}
-          />
-        }
+      />
+      {/* Segmented controls sit under the header on every page — Challenges and
+          Badges already did, and a switcher tucked into the header's right-hand
+          corner reads as a header control rather than as scoping the page. */}
+      <Tabs
+        variant="pill"
+        size="sm"
+        block
+        ariaLabel="Overview time range"
+        active={range}
+        onChange={setRange}
+        items={OVERVIEW_RANGES}
       />
 
       {/* Benny says — the summary leads the page */}
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
-        <BennyBubble timestamp={student.lastRun}>{student.bennySummary}</BennyBubble>
+        <BennyBubble timestamp={student.lastRun}>{emphasize(student.bennySummary)}</BennyBubble>
       </Card>
 
       {/* Overview figures — every one is scoped to the selected range */}
@@ -744,7 +820,8 @@ function Overview({ student, onNavigate }) {
       {/* Recommended Actions */}
       <Card flush>
         <div className="bp-actions-title">Recommended actions</div>
-        {student.recommendedActions.map((action, i) => (
+        {/* Three at most — a longer list stops reading as a shortlist. */}
+        {student.recommendedActions.slice(0, 3).map((action, i) => (
           <div key={i} className="bp-action-item">
             <div className="bp-action-body">
               <div className="bp-action-title">{action.title}</div>
@@ -772,9 +849,11 @@ function SectionDetail({ student, sectionKey }) {
       {sectionKey === 'habits' && <HabitsDetail sec={sec} c={c} />}
       {sectionKey === 'skills' && <SkillsDetail sec={sec} c={c} firstName={firstName} />}
       {sectionKey === 'motivation' && (
-        <Card>
-          <ActionFooter actions={sec.actions} />
-        </Card>
+        <ShowMore label="suggested actions">
+          <Card>
+            <ActionFooter actions={sec.actions} />
+          </Card>
+        </ShowMore>
       )}
     </div>
   )
@@ -825,7 +904,7 @@ function MotivationDetail({ sec, c }) {
 
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
-        <BennyBubble>{rmi.bennySummary}</BennyBubble>
+        <BennyBubble>{emphasize(rmi.bennySummary)}</BennyBubble>
       </Card>
 
       <Card>
@@ -1066,53 +1145,34 @@ function HabitsDetail({ sec, c }) {
             Edit Goal
           </Button>
         </div>
-        <div className="bp-goal-week-nav">
-          <button
-            className="bp-heatmap-nav-btn"
-            onClick={() => setWeekIdx((i) => Math.min(i + 1, sec.weeks.length - 1))}
-            disabled={weekIdx === sec.weeks.length - 1}
-            aria-label="Previous week"
-          >
-            <Icon name="chevron-left" size={11} />
-          </button>
-          <span className="bp-goal-week-label">
-            {week.label}
-            {week.current ? ' (This Week)' : ''}
-          </span>
-          <button
-            className="bp-heatmap-nav-btn"
-            onClick={() => setWeekIdx((i) => Math.max(i - 1, 0))}
-            disabled={weekIdx === 0}
-            aria-label="Next week"
-          >
-            <Icon name="chevron-right" size={11} />
-          </button>
-        </div>
-        <GoalTracker week={week} goalMinutes={goal} />
-      </Card>
-
-      {/* Consistency — days read and both streak figures in one place, so the
-          longest streak isn't restated as a separate "personal best" line. */}
-      <Card>
-        <SectionHeading>Consistency</SectionHeading>
-        <StatRow icon="calendar-stats" accent={c} label="Days read">
-          <span className="bp-statrow-value">
-            {sec.daysRead30}
-            <span className="bp-statrow-unit"> of last 30</span>
-          </span>
-        </StatRow>
-        <StatRow icon="flame" accent={c} label="Current streak">
-          <span className="bp-statrow-value">
-            {sec.currentStreak}
-            <span className="bp-statrow-unit"> {sec.currentStreak === 1 ? 'day' : 'days'}</span>
-          </span>
-        </StatRow>
-        <StatRow icon="trophy" accent={c} label="Longest streak">
-          <span className="bp-statrow-value">
-            {sec.personalBest}
-            <span className="bp-statrow-unit"> {sec.personalBest === 1 ? 'day' : 'days'}</span>
-          </span>
-        </StatRow>
+        {/* The week-by-week tracker restates what the Reading activity heatmap
+            below already shows, so it's tucked away — the goal itself, which is
+            what the card is for, stays in view. */}
+        <ShowMore label="this week's tracker" inCard>
+          <div className="bp-goal-week-nav">
+            <button
+              className="bp-heatmap-nav-btn"
+              onClick={() => setWeekIdx((i) => Math.min(i + 1, sec.weeks.length - 1))}
+              disabled={weekIdx === sec.weeks.length - 1}
+              aria-label="Previous week"
+            >
+              <Icon name="chevron-left" size={11} />
+            </button>
+            <span className="bp-goal-week-label">
+              {week.label}
+              {week.current ? ' (This Week)' : ''}
+            </span>
+            <button
+              className="bp-heatmap-nav-btn"
+              onClick={() => setWeekIdx((i) => Math.max(i - 1, 0))}
+              disabled={weekIdx === 0}
+              aria-label="Next week"
+            >
+              <Icon name="chevron-right" size={11} />
+            </button>
+          </div>
+          <GoalTracker week={week} goalMinutes={goal} />
+        </ShowMore>
       </Card>
 
       {/* Heatmap */}
@@ -1141,31 +1201,58 @@ function HabitsDetail({ sec, c }) {
         <ReadingHeatmap goalMinutes={goal} color={c.bar} data={sec.heatmapData} />
       </ChartCard>
 
-      {/* Habit patterns */}
+      {/* Consistency sits under the heatmap rather than above it: the Overview
+          already carries these three figures, so on this page they're a
+          footnote to the activity chart, not the headline. */}
       <Card>
-        <SectionHeading>Reading patterns</SectionHeading>
-        <StatRow icon="clock" accent={c} label="Avg session length">
+        <SectionHeading>Consistency</SectionHeading>
+        <StatRow icon="calendar-stats" accent={c} label="Days read">
           <span className="bp-statrow-value">
-            {hasRecentReading ? sec.avgSessionMins : EMPTY}
-            {hasRecentReading && <span className="bp-statrow-unit"> min</span>}
+            {sec.daysRead30}
+            <span className="bp-statrow-unit"> of last 30</span>
           </span>
         </StatRow>
-        <StatRow icon="calendar-event" accent={c} label="Days read this month">
+        <StatRow icon="flame" accent={c} label="Current streak">
           <span className="bp-statrow-value">
-            {sec.daysReadThisMonth}
-            <span className="bp-statrow-unit"> of {sec.daysInMonth}</span>
+            {sec.currentStreak}
+            <span className="bp-statrow-unit"> {sec.currentStreak === 1 ? 'day' : 'days'}</span>
           </span>
         </StatRow>
-        <StatRow icon="history" accent={c} label="Longest gap">
+        <StatRow icon="trophy" accent={c} label="Longest streak">
           <span className="bp-statrow-value">
-            {sec.longestGap}
-            <span className="bp-statrow-unit"> {sec.longestGap === 1 ? 'day' : 'days'}</span>
+            {sec.personalBest}
+            <span className="bp-statrow-unit"> {sec.personalBest === 1 ? 'day' : 'days'}</span>
           </span>
-        </StatRow>
-        <StatRow icon="star-filled" accent={c} label="Best reading day">
-          <span className="bp-statrow-value">{hasMonthReading ? sec.topReadingDay : EMPTY}</span>
         </StatRow>
       </Card>
+
+      {/* Habit patterns */}
+      <ShowMore label="reading patterns">
+        <Card>
+          <SectionHeading>Reading patterns</SectionHeading>
+          <StatRow icon="clock" accent={c} label="Avg session length">
+            <span className="bp-statrow-value">
+              {hasRecentReading ? sec.avgSessionMins : EMPTY}
+              {hasRecentReading && <span className="bp-statrow-unit"> min</span>}
+            </span>
+          </StatRow>
+          <StatRow icon="calendar-event" accent={c} label="Days read this month">
+            <span className="bp-statrow-value">
+              {sec.daysReadThisMonth}
+              <span className="bp-statrow-unit"> of {sec.daysInMonth}</span>
+            </span>
+          </StatRow>
+          <StatRow icon="history" accent={c} label="Longest gap">
+            <span className="bp-statrow-value">
+              {sec.longestGap}
+              <span className="bp-statrow-unit"> {sec.longestGap === 1 ? 'day' : 'days'}</span>
+            </span>
+          </StatRow>
+          <StatRow icon="star-filled" accent={c} label="Best reading day">
+            <span className="bp-statrow-value">{hasMonthReading ? sec.topReadingDay : EMPTY}</span>
+          </StatRow>
+        </Card>
+      </ShowMore>
     </>
   )
 }
@@ -1192,14 +1279,25 @@ function niceLexileAxis(values, targetTicks = 5) {
 
 // ─── Skills detail ────────────────────────────────────────────────────────────
 // A signed Lexile delta, coloured the way it reads: up is good, down isn't.
-function LexileDelta({ value, suffix }) {
-  const up = value >= 0
+// A delta chip beside a figure. Green means the number moved the way you'd want
+// it to, which is not always up: `inverse` covers figures like flags, where
+// fewer is better. A zero delta renders nothing — "no change" is not news.
+function TrendPill({ delta, format, inverse = false, suffix }) {
+  if (delta == null || delta === 0) return null
+  const up = delta > 0
+  const good = inverse ? !up : up
+  const n = Math.abs(delta)
   return (
-    <Pill color={up ? '#16A34A' : '#DC2626'} size="sm">
+    <Pill color={good ? '#16A34A' : '#DC2626'} size="sm">
       {up ? '↑' : '↓'}
-      {Math.abs(value)}L{suffix ? ` ${suffix}` : ''}
+      {format ? format(n) : n}
+      {suffix ? ` ${suffix}` : ''}
     </Pill>
   )
+}
+
+function LexileDelta({ value, suffix }) {
+  return <TrendPill delta={value} format={(n) => `${n}L`} suffix={suffix} />
 }
 
 function SkillsDetail({ sec, c }) {
@@ -1277,14 +1375,16 @@ function SkillsDetail({ sec, c }) {
         />
       </Card>
 
-      <div className="bp-titles-section">
-        <div className="bp-titles-header">
-          <span className="bp-titles-header-label">Recent titles</span>
+      <ShowMore label="recent titles">
+        <div className="bp-titles-section">
+          <div className="bp-titles-header">
+            <span className="bp-titles-header-label">Recent titles</span>
+          </div>
+          {sec.titles.map((t, i) => (
+            <TitleRow key={i} title={t} />
+          ))}
         </div>
-        {sec.titles.map((t, i) => (
-          <TitleRow key={i} title={t} />
-        ))}
-      </div>
+      </ShowMore>
     </>
   )
 }
@@ -1297,6 +1397,7 @@ const STUDENTS = {
   // ── Marcus Chen — Exceptional ──────────────────────────────────────────────
   marcus: {
     name: 'Marcus Chen',
+    avatarColor: '#0F766E',
     grade: '7th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [
@@ -1639,9 +1740,12 @@ const STUDENTS = {
         booksCompleted: 41,
         minutes: 10120,
       },
+      // This month against last. Marcus is steady, so his flag count doesn't
+      // move — a zero delta renders no chip at all.
+      month: { minutesPct: 8, goalDays: 2, flags: 0 },
     },
     bennySummary:
-      "Marcus is an outstanding reader. He's logged reading on 21 of the last 30 days — the highest consistency in the class — and is reading well above grade level at 870L. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with only 1 flagged session all year. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
+      "Marcus is an outstanding reader. He's logged reading on **21 of the last 30 days** — the highest consistency in the class — and is reading well above grade level at **870L**. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with **only 1 flagged session all year**. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
     sections: {
       motivation: {
         status: 'Strong',
@@ -1666,7 +1770,7 @@ const STUDENTS = {
             extrinsicDelta: 6,
             readingGoalMinutes: 30,
             bennySummary:
-              "Marcus's motivation is at its highest point this year. His intrinsic score of 19.2/20 is exceptional — Enjoyment, Curiosity, and Challenge are his top three drivers. He's genuinely in love with reading right now. The best thing you can do is keep the material challenging and get out of his way.",
+              "Marcus's motivation is at its highest point this year. His intrinsic score of **19.2/20** is exceptional — Enjoyment, Curiosity, and Challenge are his top three drivers. He's genuinely in love with reading right now. The best thing you can do is keep the material challenging and get out of his way.",
             recommendedActions: [
               {
                 label: 'Advanced Challenge',
@@ -1965,6 +2069,7 @@ const STUDENTS = {
   // ── Anne Boonchuy — Normal ─────────────────────────────────────────────────
   anne: {
     name: 'Anne Boonchuy',
+    avatarColor: '#7C3AED',
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [
@@ -2242,9 +2347,10 @@ const STUDENTS = {
         booksCompleted: 19,
         minutes: 3170,
       },
+      month: { minutesPct: 22, goalDays: 5, flags: -2 },
     },
     bennySummary:
-      "Anne is making real progress this month! Her reading habits are building — she's logged reading on 10 of the last 30 days and has already logged 85 minutes this week. Her Lexile average has climbed 50 points since April, and she's consistently choosing harder books. Integrity is improving, with flags down from 7 to 4. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and 2 unfinished BTWB conversations that are worth following up on.",
+      "Anne is making real progress this month! Her reading habits are building — she's logged reading on **10 of the last 30 days** and has already logged 85 minutes this week. Her Lexile average has **climbed 50 points since April**, and she's consistently choosing harder books. Integrity is improving, with **flags down from 7 to 4**. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and **2 unfinished BTWB conversations** that are worth following up on.",
     sections: {
       motivation: {
         status: 'Watch',
@@ -2631,6 +2737,7 @@ const STUDENTS = {
   // ── Tyler Voss — Struggling ────────────────────────────────────────────────
   tyler: {
     name: 'Tyler Voss',
+    avatarColor: '#1D4ED8',
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [{ name: 'Beanstack Bookmark', claimed: false }],
@@ -2838,9 +2945,10 @@ const STUDENTS = {
         booksCompleted: 7,
         minutes: 1040,
       },
+      month: { minutesPct: -64, goalDays: -6, flags: 5 },
     },
     bennySummary:
-      'Tyler needs immediate attention. He has no logged reading days in the past 30 days — the only student in the class with zero recent activity. His Lexile average has declined 15 points since March, and he has 13 flagged sessions including 6 suspected over-logs, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.',
+      'Tyler needs immediate attention. He has **no logged reading days in the past 30 days** — the only student in the class with zero recent activity. His Lexile average has **declined 15 points since March**, and he has **13 flagged sessions** including **6 suspected over-logs**, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.',
     sections: {
       motivation: {
         status: 'Watch',
@@ -2865,7 +2973,7 @@ const STUDENTS = {
             extrinsicDelta: -3,
             readingGoalMinutes: 10,
             bennySummary:
-              "Tyler's motivation scores are critically low across all 10 dimensions. Enjoyment — the single strongest predictor of long-term reading engagement — is at 0.8 out of 4. No extrinsic motivator is compensating for it. A personal conversation about what he genuinely finds interesting, completely disconnected from school expectations, is the most important next step.",
+              "Tyler's motivation scores are critically low across **all 10 dimensions**. Enjoyment — the single strongest predictor of long-term reading engagement — is at **0.8 out of 4**. No extrinsic motivator is compensating for it. A personal conversation about what he genuinely finds interesting, completely disconnected from school expectations, is the most important next step.",
             recommendedActions: [
               {
                 label: 'Find the Hook',
@@ -3467,20 +3575,19 @@ function ReadingLogPage() {
         accent={SECTION_ACCENT.readinglog.text}
         accentBg={SECTION_ACCENT.readinglog.bg}
         action={
-          <>
-            <Button variant="secondary" size="sm">
-              Print log
-            </Button>
-            <Tabs
-              variant="pill"
-              size="sm"
-              ariaLabel="Reading log view"
-              active={view}
-              onChange={setView}
-              items={RL_VIEWS}
-            />
-          </>
+          <Button variant="secondary" size="sm">
+            Print log
+          </Button>
         }
+      />
+      <Tabs
+        variant="pill"
+        size="sm"
+        block
+        ariaLabel="Reading log view"
+        active={view}
+        onChange={setView}
+        items={RL_VIEWS}
       />
       <Card flush>
         {/* The month and its arrows are this card's header */}
@@ -4229,7 +4336,9 @@ function PlaceholderPage({ pageKey }) {
  *
  * `extraTabs` / `renderExtra` are optional and additive: they let another
  * prototype hang its own tab off this real page instead of cloning it (Words
- * with Benny adds Vocabulary). Left off, the page is exactly as it was.
+ * with Benny adds Vocabulary). Left off, the page is exactly as it was — though
+ * note the Daily Reading body is now gated on the selected tab, where before it
+ * rendered whichever tab was active.
  */
 export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], renderExtra }) {
   const [admTab, setAdmTab] = useState('daily')
@@ -4356,7 +4465,17 @@ export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], ren
                             >
                               {s.rank}
                             </span>
-                            <span className="bp-adm-student-name">{STUDENTS[s.key].name}</span>
+                            <button
+                              type="button"
+                              className="bp-adm-student-name"
+                              title={`Open ${STUDENTS[s.key].name}'s full profile`}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                onStudentClick?.(s.key, 'full')
+                              }}
+                            >
+                              {STUDENTS[s.key].name}
+                            </button>
                           </div>
                         </td>
                         <td className="tbl-td bp-adm-td--goal">
@@ -4427,40 +4546,223 @@ export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], ren
 // ─── Profile pager ────────────────────────────────────────────────────────────
 // Step between the students on the page without closing the panel. The section
 // stays put, so you can compare the same tab across readers.
-const STUDENT_ORDER = ['marcus', 'anne', 'tyler']
+export const STUDENT_ORDER = ['marcus', 'anne', 'tyler']
 
-function ProfilePager({ currentKey, onSelect }) {
+// `variant`: 'inline' is the pair of wide buttons in the mobile nav bar;
+// 'float' is the round pair in the floating control rail beside the panel. Both
+// use left/right chevrons — the rail stacks them, but they step through a
+// horizontal list of readers, not up and down one.
+function ProfilePager({ currentKey, onSelect, variant = 'inline' }) {
   const idx = STUDENT_ORDER.indexOf(currentKey)
   const prev = idx > 0 ? STUDENT_ORDER[idx - 1] : null
   const next = idx < STUDENT_ORDER.length - 1 ? STUDENT_ORDER[idx + 1] : null
+  const float = variant === 'float'
+  const btnClass = float ? 'bp-ctrl-btn' : 'bp-pager-btn'
+  const icon = float ? { size: 15, stroke: 2.2 } : { size: 17, stroke: 2.2 }
 
   return (
-    <div className="bp-pager">
+    <div className={float ? 'bp-ctrl-group' : 'bp-pager'}>
       <button
         type="button"
-        className="bp-pager-btn"
+        className={btnClass}
         disabled={!prev}
         onClick={() => prev && onSelect(prev)}
         title={prev ? `Previous — ${STUDENTS[prev].name}` : 'No previous student'}
         aria-label={prev ? `Previous student, ${STUDENTS[prev].name}` : 'No previous student'}
       >
-        <Icon name="chevron-left" size={17} stroke={2.2} />
+        <Icon name="chevron-left" {...icon} />
       </button>
       <button
         type="button"
-        className="bp-pager-btn"
+        className={btnClass}
         disabled={!next}
         onClick={() => next && onSelect(next)}
         title={next ? `Next — ${STUDENTS[next].name}` : 'No next student'}
         aria-label={next ? `Next student, ${STUDENTS[next].name}` : 'No next student'}
       >
-        <Icon name="chevron-right" size={17} stroke={2.2} />
+        <Icon name="chevron-right" {...icon} />
       </button>
     </div>
   )
 }
 
-// ─── Embeddable profile panel (used by RIS StudentPanel slide-in) ─────────────
+// ─── Deep links ───────────────────────────────────────────────────────────────
+// The panel is addressable: `#/marcus` opens Marcus's overview in the side
+// panel, `#/marcus/lexile` opens a tab, `#/marcus/lexile/full` opens it
+// expanded. A link to a reader was the piece of the review that the expand
+// button alone didn't answer — you can send someone the exact view you're
+// looking at, the way you would an Asana task.
+const SECTION_KEYS = new Set(NAV_ITEMS.map((n) => n.section).filter(Boolean))
+
+// Links carry the reader-facing name, not the data key: the four analysis
+// sections were renamed for teachers while their keys stayed put, so `skills`
+// and `habits` would make for links nobody could read. Everything else already
+// matches its label.
+const SECTION_SLUGS = {
+  motivation: 'motivation',
+  integrity: 'book-talks',
+  habits: 'goals',
+  skills: 'lexile',
+  readinglog: 'reading-log',
+  textchallenges: 'text-box',
+}
+const slugFor = (section) => (section ? (SECTION_SLUGS[section] ?? section) : 'overview')
+const sectionFor = (slug) => {
+  if (!slug || slug === 'overview') return null
+  const named = Object.entries(SECTION_SLUGS).find(([, v]) => v === slug)
+  if (named) return named[0]
+  return SECTION_KEYS.has(slug) ? slug : null
+}
+
+function readHash() {
+  const [key, slug, mode] = window.location.hash.replace(/^#\/?/, '').split('/').filter(Boolean)
+  if (!STUDENTS[key]) return null
+  return { key, section: sectionFor(slug), mode: mode === 'full' ? 'full' : 'side' }
+}
+
+// `replaceState` rather than assigning `location.hash`: it doesn't fire
+// `hashchange` (so reading and writing can't loop) and switching tabs doesn't
+// pile up history entries.
+function writeHash(key, section, mode) {
+  const next = key
+    ? `#/${[key, slugFor(section), mode === 'full' ? 'full' : null].filter(Boolean).join('/')}`
+    : window.location.pathname + window.location.search
+  if (next !== (key ? window.location.hash : window.location.href)) {
+    window.history.replaceState(null, '', next)
+  }
+}
+
+// ─── Floating control rail ────────────────────────────────────────────────────
+// Panel chrome — close, expand, step between readers — lives in its own column
+// beside the panel rather than in the student header, which is the reader's
+// identity and their Actions/Log menus. Only the standalone prototype has it;
+// the RIS embed is inside RIS's own side Modal and keeps the header close.
+function ProfileCtrls({ onClose, expanded, onToggleExpand, currentKey, onSelectStudent }) {
+  const [copied, setCopied] = useState(false)
+
+  const copyLink = () => {
+    navigator.clipboard?.writeText(window.location.href)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1600)
+  }
+
+  return (
+    <div className="bp-profile-ctrls">
+      <div className="bp-ctrl-group">
+        <button
+          type="button"
+          className="bp-ctrl-btn"
+          onClick={onClose}
+          title="Close profile"
+          aria-label="Close profile"
+        >
+          <Icon name="x" size={15} stroke={2.2} />
+        </button>
+        <button
+          type="button"
+          className="bp-ctrl-btn bp-ctrl-btn--expand"
+          onClick={onToggleExpand}
+          title={expanded ? 'Exit full screen' : 'Expand to full screen'}
+          aria-label={expanded ? 'Exit full screen' : 'Expand to full screen'}
+        >
+          <Icon name={expanded ? 'minimize' : 'maximize'} size={14} stroke={2.1} />
+        </button>
+        <button
+          type="button"
+          className={`bp-ctrl-btn${copied ? ' bp-ctrl-btn--done' : ''}`}
+          onClick={copyLink}
+          title={copied ? 'Link copied' : 'Copy link to this view'}
+          aria-label={copied ? 'Link copied' : 'Copy link to this view'}
+        >
+          <Icon name={copied ? 'check' : 'link'} size={14} stroke={2.1} />
+        </button>
+      </div>
+      <ProfilePager variant="float" currentKey={currentKey} onSelect={onSelectStudent} />
+    </div>
+  )
+}
+
+// ─── The profile panel ────────────────────────────────────────────────────────
+// Control rail + header + nav + page — everything inside the panel, in one
+// place. Both surfaces render this: the standalone prototype inside its own
+// sliding wrap, and the RIS/SFR embed inside a side Modal. It used to be two
+// near-identical trees, which meant every new page had to be routed twice and
+// the chrome quietly drifted apart between them.
+function ProfileBody({
+  student,
+  activeSection,
+  onNavigate,
+  onClose,
+  expanded,
+  onToggleExpand,
+  currentKey,
+  onSelectStudent,
+  extraNav = [],
+  renderExtra,
+}) {
+  const extraSections = extraNav.map((n) => n.section)
+  return (
+    <>
+      <ProfileCtrls
+        onClose={onClose}
+        expanded={expanded}
+        onToggleExpand={onToggleExpand}
+        currentKey={currentKey}
+        onSelectStudent={onSelectStudent}
+      />
+      <div className="bp-root">
+        {/* The header spans the rail as well as the content — it identifies the
+    whole panel, not just the page inside it. Panel chrome (close, expand,
+    reader stepping) is in `ProfileCtrls`; the header keeps a close button for
+    the phone breakpoint, where the rail is hidden. */}
+        <StudentHeader student={student} onClose={onClose} />
+        <div className="bp-root-body">
+          <LeftNav activeSection={activeSection} onNavigate={onNavigate} extraNav={extraNav} />
+          <div className="bp-panel">
+            <MobileSectionNav
+              activeSection={activeSection}
+              onNavigate={onNavigate}
+              extraNav={extraNav}
+            />
+            <div key={`${currentKey}-${activeSection ?? 'overview'}`} className="bp-page-fade">
+              {extraSections.includes(activeSection) ? (
+                renderExtra?.(activeSection, student)
+              ) : activeSection === null ? (
+                <Overview student={student} onNavigate={onNavigate} />
+              ) : ANALYSIS_SECTIONS.has(activeSection) ? (
+                <SectionDetail student={student} sectionKey={activeSection} />
+              ) : activeSection === 'readinglog' ? (
+                <ReadingLogPage />
+              ) : activeSection === 'textchallenges' ? (
+                <TextChallengesPage student={student} />
+              ) : activeSection === 'reviews' ? (
+                <ReviewsPage student={student} />
+              ) : activeSection === 'achievements' ? (
+                <AchievementsPage student={student} />
+              ) : activeSection === 'badges' ? (
+                <BadgesPage student={student} />
+              ) : activeSection === 'activities' ? (
+                <ActivitiesPage student={student} />
+              ) : activeSection === 'drawings' ? (
+                <DrawingsPage student={student} />
+              ) : activeSection === 'rewards' ? (
+                <RewardsPage student={student} />
+              ) : activeSection === 'challenges' ? (
+                <ChallengesPage student={student} onNavigate={onNavigate} />
+              ) : (
+                <PlaceholderPage pageKey={activeSection} />
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  )
+}
+
+// ─── Embeddable profile panel (used by RIS + SFR's StudentPanel slide-in) ─────
+// Same rail, same pager, same expand as the standalone: the host only supplies
+// the close handler and, because it owns the panel's width, the expanded flag.
 /**
  * `initialSection`, `extraNav`, `renderExtra` and `overrides` are optional and
  * additive — they let another prototype open the real profile on a section of
@@ -4472,58 +4774,35 @@ function ProfilePager({ currentKey, onSelect }) {
 export function StudentProfileView({
   studentKey,
   onClose,
+  expanded,
+  onToggleExpand,
   initialSection = null,
   extraNav = [],
   renderExtra,
   overrides,
 }) {
   const [activeSection, setActiveSection] = useState(initialSection)
-  const base = STUDENTS[studentKey] || STUDENTS.marcus
+  // The pager steps readers inside the panel, so the open reader is local state
+  // seeded from the host — which stays in charge of *opening* the panel.
+  const [currentKey, setCurrentKey] = useState(studentKey)
+  useEffect(() => setCurrentKey(studentKey), [studentKey])
+  const base = STUDENTS[currentKey] || STUDENTS.marcus
   const student = overrides ? { ...base, ...overrides } : base
-  const extraSections = extraNav.map((n) => n.section)
 
   return (
-    <div className="bp-root" style={{ width: '100%', flex: 1, minHeight: 0, boxShadow: 'none' }}>
-      <StudentHeader student={student} onClose={onClose} />
-      <div className="bp-root-body">
-        <LeftNav activeSection={activeSection} onNavigate={setActiveSection} extraNav={extraNav} />
-        <div className="bp-panel">
-          <MobileSectionNav
-            activeSection={activeSection}
-            onNavigate={setActiveSection}
-            extraNav={extraNav}
-          />
-          <div key={`${studentKey}-${activeSection ?? 'overview'}`} className="bp-page-fade">
-            {extraSections.includes(activeSection) ? (
-              renderExtra?.(activeSection, student)
-            ) : activeSection === null ? (
-              <Overview student={student} onNavigate={setActiveSection} />
-            ) : ANALYSIS_SECTIONS.has(activeSection) ? (
-              <SectionDetail student={student} sectionKey={activeSection} />
-            ) : activeSection === 'readinglog' ? (
-              <ReadingLogPage />
-            ) : activeSection === 'textchallenges' ? (
-              <TextChallengesPage student={student} />
-            ) : activeSection === 'reviews' ? (
-              <ReviewsPage student={student} />
-            ) : activeSection === 'achievements' ? (
-              <AchievementsPage student={student} />
-            ) : activeSection === 'badges' ? (
-              <BadgesPage student={student} />
-            ) : activeSection === 'activities' ? (
-              <ActivitiesPage student={student} />
-            ) : activeSection === 'drawings' ? (
-              <DrawingsPage student={student} />
-            ) : activeSection === 'rewards' ? (
-              <RewardsPage student={student} />
-            ) : activeSection === 'challenges' ? (
-              <ChallengesPage student={student} onNavigate={setActiveSection} />
-            ) : (
-              <PlaceholderPage pageKey={activeSection} />
-            )}
-          </div>
-        </div>
-      </div>
+    <div className={`bp-embed${expanded ? ' bp-embed--full' : ''}`} style={profileVars(student)}>
+      <ProfileBody
+        student={student}
+        activeSection={activeSection}
+        onNavigate={setActiveSection}
+        onClose={onClose}
+        expanded={expanded}
+        onToggleExpand={onToggleExpand}
+        currentKey={currentKey}
+        onSelectStudent={setCurrentKey}
+        extraNav={extraNav}
+        renderExtra={renderExtra}
+      />
     </div>
   )
 }
@@ -4540,12 +4819,47 @@ export default function BeanstackProfile() {
 
   const student = selectedStudentKey ? STUDENTS[selectedStudentKey] : null
 
-  const handleStudentClick = (key) => {
+  // The class table opens a reader two ways, as the product does: the row is a
+  // quick look (slide-in panel), the name is the profile page itself.
+  const handleStudentClick = (key, mode = 'side') => {
     setSelectedStudentKey(key)
     setActiveSection(null)
     setClosing(false)
-    setProfileMode('side')
+    setProfileMode(mode)
   }
+
+  const toggleExpand = () => setProfileMode((m) => (m === 'full' ? 'side' : 'full'))
+
+  // The URL is the source of truth on load and on back/forward; after that the
+  // panel keeps it in step. `hydrated` stops the writer clobbering the incoming
+  // hash on the very first render, before the reader's state has landed.
+  const hydrated = useRef(false)
+
+  useEffect(() => {
+    const apply = () => {
+      const route = readHash()
+      if (!route) {
+        setProfileMode('closed')
+        return
+      }
+      setSelectedStudentKey(route.key)
+      setActiveSection(route.section)
+      setClosing(false)
+      setProfileMode(route.mode)
+    }
+    apply()
+    window.addEventListener('hashchange', apply)
+    return () => window.removeEventListener('hashchange', apply)
+  }, [])
+
+  useEffect(() => {
+    if (!hydrated.current) {
+      hydrated.current = true
+      return
+    }
+    if (profileMode === 'closed' || !selectedStudentKey) writeHash(null)
+    else writeHash(selectedStudentKey, activeSection, profileMode)
+  }, [profileMode, selectedStudentKey, activeSection])
 
   // Slide out the way it slid in, then unmount — the panel used to vanish on
   // the same frame as the click.
@@ -4579,61 +4893,19 @@ export default function BeanstackProfile() {
         <div
           className={`bp-profile-wrap${profileMode === 'full' ? ' bp-profile-wrap--full' : ''}${closing ? ' bp-profile-wrap--closing' : ''}`}
         >
-          <div className="bp-root">
-            {/* The header spans the rail as well as the content — it identifies the
-    whole panel, not just the page inside it. */}
-            <StudentHeader student={student} onClose={closeProfile} />
-            <div className="bp-root-body">
-              <LeftNav
-                activeSection={activeSection}
-                onNavigate={setActiveSection}
-                pager={
-                  <ProfilePager currentKey={selectedStudentKey} onSelect={setSelectedStudentKey} />
-                }
-              />
-              <div className="bp-panel">
-                <MobileSectionNav
-                  activeSection={activeSection}
-                  onNavigate={setActiveSection}
-                  pager={
-                    <ProfilePager
-                      currentKey={selectedStudentKey}
-                      onSelect={setSelectedStudentKey}
-                    />
-                  }
-                />
-                <div
-                  key={`${selectedStudentKey}-${activeSection ?? 'overview'}`}
-                  className="bp-page-fade"
-                >
-                  {activeSection === null ? (
-                    <Overview student={student} onNavigate={setActiveSection} />
-                  ) : ANALYSIS_SECTIONS.has(activeSection) ? (
-                    <SectionDetail student={student} sectionKey={activeSection} />
-                  ) : activeSection === 'readinglog' ? (
-                    <ReadingLogPage />
-                  ) : activeSection === 'textchallenges' ? (
-                    <TextChallengesPage student={student} />
-                  ) : activeSection === 'reviews' ? (
-                    <ReviewsPage student={student} />
-                  ) : activeSection === 'achievements' ? (
-                    <AchievementsPage student={student} />
-                  ) : activeSection === 'badges' ? (
-                    <BadgesPage student={student} />
-                  ) : activeSection === 'activities' ? (
-                    <ActivitiesPage student={student} />
-                  ) : activeSection === 'drawings' ? (
-                    <DrawingsPage student={student} />
-                  ) : activeSection === 'rewards' ? (
-                    <RewardsPage student={student} />
-                  ) : activeSection === 'challenges' ? (
-                    <ChallengesPage student={student} onNavigate={setActiveSection} />
-                  ) : (
-                    <PlaceholderPage pageKey={activeSection} />
-                  )}
-                </div>
-              </div>
-            </div>
+          {/* Rail + panel are one sliding unit, so the controls travel with the
+    panel edge on open, close and expand instead of sitting still. */}
+          <div className="bp-profile-slider" style={profileVars(student)}>
+            <ProfileBody
+              student={student}
+              activeSection={activeSection}
+              onNavigate={setActiveSection}
+              onClose={closeProfile}
+              expanded={profileMode === 'full'}
+              onToggleExpand={toggleExpand}
+              currentKey={selectedStudentKey}
+              onSelectStudent={setSelectedStudentKey}
+            />
           </div>
         </div>
       )}

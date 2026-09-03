@@ -14,11 +14,12 @@
 
 /* ─── Stats ──────────────────────────────────────────────────────────────── */
 
-/* Four across in the side panel (~417px of grid) and still four when the
-   profile opens full width — 132px min wrapped the fourth onto its own row. */
+/* Four across at every width. The side panel gives the grid ~375px once the
+   control rail takes its 42px, so the min has to clear (375 - 3×10) / 4 ≈ 86px;
+   auto-fit collapses the spare tracks when the profile opens full screen. */
 .svo-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
   gap: 10px;
   margin-bottom: 4px;
 }
