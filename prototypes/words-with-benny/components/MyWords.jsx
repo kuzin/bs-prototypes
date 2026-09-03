@@ -122,19 +122,21 @@ export function MyWords({ collection, newestWord }) {
 
   return (
     <div className="mw">
+      {/* Same shape as the Reading Log's streak blocks next door — a flat
+          tinted panel with the icon beside the figure, not a bordered card. */}
       <div className="mw-stats">
         {[
-          { label: 'Words collected', value: collection.length, icon: 'vocabulary' },
-          { label: 'This week', value: thisWeek, icon: 'calendar-event' },
-          { label: 'Books they came from', value: books, icon: 'book' },
-          { label: 'Right on the first try', value: `${firstTry}%`, icon: 'check' },
+          { tone: 'words', label: 'Words collected', value: collection.length, icon: 'vocabulary' },
+          { tone: 'week', label: 'Collected this week', value: thisWeek, icon: 'calendar-event' },
+          { tone: 'books', label: 'Books they came from', value: books, icon: 'book' },
+          { tone: 'first', label: 'Right on the first try', value: `${firstTry}%`, icon: 'check' },
         ].map((s) => (
-          <div key={s.label} className="mw-stat">
-            <span className="mw-stat-ic">
-              <Icon name={s.icon} size={16} />
-            </span>
-            <span className="mw-stat-val">{s.value}</span>
-            <span className="mw-stat-lbl">{s.label}</span>
+          <div key={s.label} className={`mw-stat mw-stat--${s.tone}`}>
+            <Icon name={s.icon} size={20} />
+            <div>
+              <div className="mw-stat-num">{s.value}</div>
+              <div className="mw-stat-lbl">{s.label}</div>
+            </div>
           </div>
         ))}
       </div>
