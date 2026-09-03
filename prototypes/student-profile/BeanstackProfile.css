@@ -2941,8 +2941,19 @@
 }
 
 .bp-rl-tbl-name {
+  font-family: inherit;
+  font-size: inherit;
   font-weight: 800;
   color: var(--c-blue-700);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bp-rl-tbl-name:hover {
+  text-decoration: underline;
 }
 
 .bp-rl-tbl-author {
@@ -4624,11 +4635,11 @@
    Where the session came from, on the author line. A separator rather than a
    chip: the row already carries a coloured spine and a flag column, and a
    second badge on every imported entry would compete with them. */
-.bp-rl-entry-author {
+.bp-rl-entry-foot {
   display: flex;
-  align-items: center;
-  gap: 7px;
-  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 10px;
 }
 
 .bp-rl-source {
@@ -4639,4 +4650,24 @@
 
 .bp-rl-source .pb-mark {
   background: var(--bp-mark-bg);
+}
+
+/* The table row's own version of the card's mark cluster: same marks, same
+   source, same menu, laid out on one line at the end of the row. */
+.bp-rl-tbl-marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+/* The Lexile the table always had, now on the calendar card too. */
+.bp-rl-entry-lexile {
+  margin-left: 7px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgb(15 23 42 / 6%);
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--c-slate-500);
 }

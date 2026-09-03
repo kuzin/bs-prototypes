@@ -2095,16 +2095,12 @@ const RL_DATA = [
 // ─── Reading Log page ─────────────────────────────────────────────────────────
 // Entry state drives the card's colour: finished books read red with a
 // Completed pill, integrity-flagged sessions amber, everything else blue.
-function RLEntryCard({ entry, onOpen }) {
-  const tone = entry.completed
-    ? ' rp-rl-entry--completed'
-    : entry.flagged
-      ? ' rp-rl-entry--flagged'
-      : ''
-  // The row advertises what opening it will show. Flags only — libraries don't
-  // run book talks, so there's no conversation to advertise.
-  const session = RL_SESSIONS[entry.title]
-  const marks = [
+// The marks a log entry advertises: what opening it will show. Derived once and
+// shared, because the calendar card and the table row have to agree — a flag
+// visible in one view and missing in the other reads as a data bug. Flags only:
+// libraries don't run book talks, so there's no conversation to advertise.
+function rlMarks(session) {
+  return [
     session?.flags?.length && {
       key: 'flag',
       icon: 'flag',
@@ -2121,6 +2117,69 @@ function RLEntryCard({ entry, onOpen }) {
           : `${session.positiveFlags.length} positive flags`,
     },
   ].filter(Boolean)
+}
+
+function RLMarks({ marks, entry, onOpen }) {
+  return marks.map((m) => (
+    <Tooltip key={m.key} content={m.label}>
+      <button
+        type="button"
+        className={m.className}
+        onClick={() => onOpen?.(entry)}
+        aria-label={m.label}
+      >
+        <Icon name={m.icon} size={14} />
+      </button>
+    </Tooltip>
+  ))
+}
+
+// Where the session came from. A partner-logged session isn't something the
+// reader typed in — it arrived from the app they read in.
+function RLSource({ source }) {
+  if (!source || !PARTNER_BRANDS[source]) return null
+  return (
+    <Tooltip content={`Logged from ${PARTNER_BRANDS[source].name}`}>
+      <span className="rp-rl-source" style={{ '--rp-mark-bg': PARTNER_BRANDS[source].accent }}>
+        <PartnerMark id={source} size={16} />
+      </span>
+    </Tooltip>
+  )
+}
+
+function RLEntryMenu() {
+  return (
+    <Flyout
+      placement="bottom-end"
+      trigger={({ toggle }) => (
+        <Tooltip content="Entry actions">
+          <button type="button" className="rp-rl-dots" onClick={toggle} aria-label="Entry actions">
+            <Icon name="dots" size={16} />
+          </button>
+        </Tooltip>
+      )}
+    >
+      {({ close }) => (
+        <DropdownMenu
+          items={[
+            { label: 'Edit', icon: <Icon name="pencil" size={15} /> },
+            { label: 'Remove', icon: <Icon name="trash" size={15} />, danger: true },
+          ]}
+          onClose={close}
+        />
+      )}
+    </Flyout>
+  )
+}
+
+function RLEntryCard({ entry, onOpen }) {
+  const tone = entry.completed
+    ? ' rp-rl-entry--completed'
+    : entry.flagged
+      ? ' rp-rl-entry--flagged'
+      : ''
+  const session = RL_SESSIONS[entry.title]
+  const marks = rlMarks(session)
 
   return (
     <div className={`rp-rl-entry${tone}`}>
@@ -2131,66 +2190,26 @@ function RLEntryCard({ entry, onOpen }) {
           {entry.title}
         </button>
         <div className="rp-rl-entry-menu">
-          {marks.map((m) => (
-            <Tooltip key={m.key} content={m.label}>
-              <button
-                type="button"
-                className={m.className}
-                onClick={() => onOpen?.(entry)}
-                aria-label={m.label}
-              >
-                <Icon name={m.icon} size={14} />
-              </button>
-            </Tooltip>
-          ))}
-          <Flyout
-            placement="bottom-end"
-            trigger={({ toggle }) => (
-              <Tooltip content="Entry actions">
-                <button
-                  type="button"
-                  className="rp-rl-dots"
-                  onClick={toggle}
-                  aria-label="Entry actions"
-                >
-                  <Icon name="dots" size={16} />
-                </button>
-              </Tooltip>
-            )}
-          >
-            {({ close }) => (
-              <DropdownMenu
-                items={[
-                  { label: 'Edit', icon: <Icon name="pencil" size={15} /> },
-                  { label: 'Remove', icon: <Icon name="trash" size={15} />, danger: true },
-                ]}
-                onClose={close}
-              />
-            )}
-          </Flyout>
+          <RLMarks marks={marks} entry={entry} onOpen={onOpen} />
+          <RLEntryMenu />
         </div>
       </div>
       <div className="rp-rl-entry-author">
         {entry.author}
-        {/* Where the session came from. A partner-logged session isn't
-            something the reader typed in — it arrived from the app they read
-            in, which is worth saying on the row. */}
-        {entry.source && PARTNER_BRANDS[entry.source] && (
-          <Tooltip content={`Logged from ${PARTNER_BRANDS[entry.source].name}`}>
-            <span
-              className="rp-rl-source"
-              style={{ '--rp-mark-bg': PARTNER_BRANDS[entry.source].accent }}
-            >
-              <PartnerMark id={entry.source} size={16} />
-            </span>
-          </Tooltip>
-        )}
+        {/* The table listed a Lexile per row; the card was the only view
+            without one. */}
+        {entry.lexile && <span className="rp-rl-entry-lexile">{entry.lexile}</span>}
       </div>
-      {entry.completed ? (
-        <span className="rp-rl-completed">Completed</span>
-      ) : (
-        <div className="rp-rl-entry-amount">{entry.amount}</div>
-      )}
+      <div className="rp-rl-entry-foot">
+        {entry.completed ? (
+          <span className="rp-rl-completed">Completed</span>
+        ) : (
+          <div className="rp-rl-entry-amount">{entry.amount}</div>
+        )}
+        {/* Bottom corner, off the author line where it competed with the text
+            it sat against. */}
+        <RLSource source={entry.source} />
+      </div>
     </div>
   )
 }
@@ -2207,21 +2226,23 @@ const RL_ROWS = RL_DATA.flatMap((week) =>
   week.days.flatMap((day) =>
     day.entries.map((e) => ({
       date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yyyy}`,
-      title: e.title,
-      author: e.author,
       unit: e.completed ? '1 book' : e.amount.toLowerCase(),
       lexile: e.lexile ?? null,
-      flagged: !!e.flagged,
+      // The entry itself rides along so the row can advertise the same flags
+      // and partner source the calendar card does, and open the same session.
+      entry: e,
     })),
   ),
 ).sort((a, b) => b.date.localeCompare(a.date))
 
 const RL_VIEWS = [
-  { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
+  // "Calendar", not "List": it's the month laid out by day, with streaks in the
+  // margin — the flat list is the other one.
+  { id: 'calendar', label: 'Calendar', icon: <Icon name="calendar" size={15} /> },
   { id: 'table', label: 'Table', icon: <Icon name="layout-grid" size={15} /> },
 ]
 
-function ReadingLogTable() {
+function ReadingLogTable({ onOpen }) {
   return (
     <Table
       flush
@@ -2232,31 +2253,38 @@ function ReadingLogTable() {
         {
           key: 'title',
           label: 'Title',
-          render: (title, row) => (
+          render: (_v, row) => (
             <div className="rp-rl-tbl-title">
-              <span className="rp-rl-tbl-name">{title}</span>
-              <span className="rp-rl-tbl-author">{row.author}</span>
+              {/* Same target as the calendar card's title: one session, two
+                  ways of finding it. */}
+              <button type="button" className="rp-rl-tbl-name" onClick={() => onOpen?.(row.entry)}>
+                {row.entry.title}
+              </button>
+              {/* Author and Lexile ride under the title, as on the card — a
+                  Lexile column of its own cost the title the width it needed. */}
+              <span className="rp-rl-tbl-author">
+                {row.entry.author}
+                {row.lexile && <span className="rp-rl-entry-lexile">{row.lexile}</span>}
+              </span>
             </div>
           ),
         },
-        { key: 'unit', label: 'Unit', width: 96 },
+        { key: 'unit', label: 'Unit', width: 92 },
         {
-          key: 'lexile',
-          label: 'Lexile',
-          width: 76,
-          render: (lex) => lex ?? <span className="rp-talk-noflag">–</span>,
-        },
-        {
-          key: 'flagged',
+          key: 'marks',
           label: '',
-          width: 40,
+          width: 100,
           align: 'right',
-          render: () => (
-            <Tooltip content="Entry actions">
-              <button type="button" className="rp-rl-dots" aria-label="Entry actions">
-                <Icon name="dots" size={16} />
-              </button>
-            </Tooltip>
+          render: (_v, row) => (
+            <div className="rp-rl-tbl-marks">
+              <RLMarks
+                marks={rlMarks(RL_SESSIONS[row.entry.title])}
+                entry={row.entry}
+                onOpen={onOpen}
+              />
+              <RLSource source={row.entry.source} />
+              <RLEntryMenu />
+            </div>
           ),
         },
       ]}
@@ -2267,7 +2295,7 @@ function ReadingLogTable() {
 }
 
 function ReadingLogPage({ reader }) {
-  const [view, setView] = useState('list')
+  const [view, setView] = useState('calendar')
   const [openSession, setOpenSession] = useState(null)
   const month = RL_MONTH.label
 
@@ -2334,7 +2362,7 @@ function ReadingLogPage({ reader }) {
           </div>
         </div>
         {view === 'table' ? (
-          <ReadingLogTable />
+          <ReadingLogTable onOpen={openEntry} />
         ) : (
           <div className="rp-rl-body">
             {RL_DATA.map((week, wi) => (
