@@ -53,20 +53,43 @@
   }
 }
 
+/* The wrap spans the whole shell in both modes so the panel can grow from
+   740px to full width without its containing block changing under it. Only the
+   panel itself takes clicks — the gap beside it belongs to the dim overlay. */
 .bp-profile-wrap {
   position: absolute;
-  right: 0;
-  top: 0;
-  bottom: 0;
+  inset: 0;
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   z-index: 20;
+  pointer-events: none;
+}
+
+/* The control rail and the panel slide as one unit, so `.bp-profile-slider` is
+   what animates — not the wrap (whose `translateX(100%)` would be the whole
+   shell's width) and not `.bp-root` (which would leave the rail standing
+   still while the panel left under it). It also owns the side↔full width, so
+   the rail stays glued to the panel's edge the whole way. */
+.bp-profile-slider {
+  width: 782px;
+  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
+  margin-left: auto;
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  pointer-events: auto;
   animation: slideInRight 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: width 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.bp-profile-wrap--full .bp-profile-slider {
+  width: 100%;
+  box-shadow: none;
 }
 
 /* Timing must match `SLIDE_MS` in the JSX, which unmounts after it plays. */
-.bp-profile-wrap--closing {
+.bp-profile-wrap--closing .bp-profile-slider {
   animation: slideOutRight 0.26s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
@@ -74,76 +97,90 @@
   animation: bpFadeOut 0.26s ease forwards;
 }
 
-.bp-profile-wrap--full {
-  left: 0;
-}
-
-/* Floating close / expand buttons */
+/* ─── Floating control rail ───────────────────────────────────────────────
+   Panel chrome (close, expand, step reader) in its own column beside the
+   panel. It's a full-height grey strip in both modes — the buttons need
+   something to sit on, and against the panel's own white nav rail (full
+   screen) or the dim overlay (side panel) they'd otherwise float loose. */
 .bp-profile-ctrls {
+  width: 42px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px 8px;
-  flex-shrink: 0;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
   align-self: stretch;
+  background: var(--c-slate-200);
+  border-right: 1px solid var(--c-slate-300);
 }
 
+.bp-ctrl-group {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+/* Flat: a hairline instead of a lift. The panel's own shadow is on the slider,
+   not the panel, so it falls outside the strip rather than gradienting over it. */
 .bp-ctrl-btn {
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   background: #fff;
-  border: none;
-  box-shadow: 4px 0 16px rgba(0, 0, 0, 0.18);
+  border: 1px solid var(--c-slate-300);
+  color: var(--c-slate-600);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition:
     background 0.15s,
-    box-shadow 0.15s;
-}
-.bp-ctrl-btn:hover {
-  background: #f0f4ff;
-  box-shadow: 4px 0 20px rgba(0, 0, 0, 0.26);
+    color 0.15s,
+    border-color 0.15s;
 }
 
-/* Full-screen mode — dark strip behind white buttons */
-.bp-profile-wrap--full .bp-profile-ctrls {
-  background: #1a2340;
+.bp-ctrl-btn:hover:not(:disabled) {
+  background: #eef4ff;
+  border-color: var(--c-blue-700);
+  color: var(--c-blue-700);
 }
 
-/* Reopen button */
-.bp-reopen-btn {
-  position: absolute;
-  right: 20px;
-  bottom: 24px;
-  z-index: 30;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: #fff;
-  border: 1.5px solid #d1d5db;
-  border-radius: 20px;
-  padding: 9px 18px;
-  font-family: inherit;
-  font-size: 13px;
-  font-weight: 700;
-  color: #1a6dd5;
-  cursor: pointer;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.14);
+.bp-ctrl-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
-/* Profile root — fixed width when side panel */
-.bp-root {
-  width: 740px;
-  flex-shrink: 0;
-  box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
-}
-.bp-profile-wrap--full .bp-root {
-  width: 100%;
+/* Profile root — takes whatever the slider has left after the rail. */
+.bp-profile-wrap .bp-root {
   flex: 1;
+  min-width: 0;
   box-shadow: none;
+}
+
+/* Full screen has room for a roomier rail, and needs a measure on the content:
+   cards built for a ~570px panel run to 1200px+ otherwise, which puts Benny's
+   paragraph at ~110 characters a line and strands each stat row's figure a long
+   way from its label. Padding the scroll container (rather than capping its
+   width) keeps the scrollbar at the window edge. The header stays flush left —
+   its avatar sits above the rail, not above the content column. */
+.bp-profile-wrap--full .bp-nav {
+  width: 208px;
+}
+.bp-profile-wrap--full .bp-content {
+  padding-inline: max(20px, calc((100% - 1040px) / 2));
+}
+
+/* A lone Select doesn't need to be 1000px wide. (Block tabs deliberately do
+   still fill the page — `block` means block at every width.) */
+.bp-profile-wrap--full .bp-content .fltr-item {
+  max-width: 320px;
+}
+.bp-profile-wrap--full .bp-nav-item {
+  min-height: 38px;
+}
+.bp-profile-wrap--full .bp-nav-label {
+  font-size: 13px;
 }
 
 /* ─── Root ───────────────────────────────────────────────────────────────── */
@@ -529,6 +566,13 @@
   align-items: center;
   gap: 8px;
   flex-shrink: 0;
+}
+
+/* The standalone prototype closes from the floating rail; this one is kept for
+   the phone breakpoint, where that rail is hidden. RIS embeds the profile
+   outside `.bp-profile-wrap`, so its close button is unaffected. */
+.bp-profile-wrap .bp-header-close {
+  display: none;
 }
 
 .bp-header-close {
@@ -2636,9 +2680,17 @@
   color: #fff;
 }
 
+/* A real link, not just row-click styling: it opens the full-screen profile
+   while the row opens the slide-in quick look. */
 .bp-adm-student-name {
+  font-family: inherit;
+  font-size: inherit;
   font-weight: 700;
   color: var(--c-blue-700);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
   cursor: pointer;
   text-decoration: none;
   transition: color 0.1s;
@@ -3226,8 +3278,8 @@
   }
 
   /* Side-panel student profile becomes narrower so it doesn't overflow */
-  .bp-root {
-    width: min(640px, calc(100vw - 116px));
+  .bp-profile-slider {
+    width: min(682px, calc(100vw - 58px));
   }
 }
 
@@ -3247,6 +3299,11 @@
     flex-direction: column;
     align-items: stretch;
   }
+  .bp-profile-slider,
+  .bp-profile-wrap--full .bp-profile-slider {
+    width: 100%;
+  }
+
   .bp-root {
     width: 100%;
     box-shadow: none;
@@ -3254,9 +3311,14 @@
     min-height: 0;
   }
 
-  /* Hide the left-side floating close column */
+  /* No room for a rail beside a full-bleed panel: close moves back into the
+     header, and there's nothing to expand into. */
   .bp-profile-ctrls {
     display: none;
+  }
+
+  .bp-profile-wrap .bp-header-close {
+    display: flex;
   }
 
   /* One header on mobile too — it spans the full width and already carries the
@@ -3473,9 +3535,11 @@
   text-decoration: underline;
 }
 
+/* auto-fill, not a fixed 3: the same shelf reads as 3 covers in the side panel
+   and 6 on a full-screen page, instead of three 340px-wide covers. */
 .bp-latest-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   gap: 14px;
 }
 
@@ -3638,7 +3702,7 @@
    icons). Both keep the recognisable disc silhouette and share one grid. */
 .bp-medal-grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 16px 12px;
 }
 

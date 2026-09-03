@@ -4337,7 +4337,17 @@ function AdminMockup({ onStudentClick, selectedKey }) {
                         >
                           {s.rank}
                         </span>
-                        <span className="bp-adm-student-name">{STUDENTS[s.key].name}</span>
+                        <button
+                          type="button"
+                          className="bp-adm-student-name"
+                          title={`Open ${STUDENTS[s.key].name}'s full profile`}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            onStudentClick?.(s.key, 'full')
+                          }}
+                        >
+                          {STUDENTS[s.key].name}
+                        </button>
                       </div>
                     </td>
                     <td className="tbl-td bp-adm-td--goal">
@@ -4408,33 +4418,73 @@ function AdminMockup({ onStudentClick, selectedKey }) {
 // stays put, so you can compare the same tab across readers.
 const STUDENT_ORDER = ['marcus', 'anne', 'tyler']
 
-function ProfilePager({ currentKey, onSelect }) {
+// `variant`: 'inline' is the pair of wide buttons in the mobile nav bar;
+// 'float' is the round pair in the floating control rail beside the panel. Both
+// use left/right chevrons — the rail stacks them, but they step through a
+// horizontal list of readers, not up and down one.
+function ProfilePager({ currentKey, onSelect, variant = 'inline' }) {
   const idx = STUDENT_ORDER.indexOf(currentKey)
   const prev = idx > 0 ? STUDENT_ORDER[idx - 1] : null
   const next = idx < STUDENT_ORDER.length - 1 ? STUDENT_ORDER[idx + 1] : null
+  const float = variant === 'float'
+  const btnClass = float ? 'bp-ctrl-btn' : 'bp-pager-btn'
+  const icon = float ? { size: 15, stroke: 2.2 } : { size: 17, stroke: 2.2 }
 
   return (
-    <div className="bp-pager">
+    <div className={float ? 'bp-ctrl-group' : 'bp-pager'}>
       <button
         type="button"
-        className="bp-pager-btn"
+        className={btnClass}
         disabled={!prev}
         onClick={() => prev && onSelect(prev)}
         title={prev ? `Previous — ${STUDENTS[prev].name}` : 'No previous student'}
         aria-label={prev ? `Previous student, ${STUDENTS[prev].name}` : 'No previous student'}
       >
-        <Icon name="chevron-left" size={17} stroke={2.2} />
+        <Icon name="chevron-left" {...icon} />
       </button>
       <button
         type="button"
-        className="bp-pager-btn"
+        className={btnClass}
         disabled={!next}
         onClick={() => next && onSelect(next)}
         title={next ? `Next — ${STUDENTS[next].name}` : 'No next student'}
         aria-label={next ? `Next student, ${STUDENTS[next].name}` : 'No next student'}
       >
-        <Icon name="chevron-right" size={17} stroke={2.2} />
+        <Icon name="chevron-right" {...icon} />
       </button>
+    </div>
+  )
+}
+
+// ─── Floating control rail ────────────────────────────────────────────────────
+// Panel chrome — close, expand, step between readers — lives in its own column
+// beside the panel rather than in the student header, which is the reader's
+// identity and their Actions/Log menus. Only the standalone prototype has it;
+// the RIS embed is inside RIS's own side Modal and keeps the header close.
+function ProfileCtrls({ onClose, expanded, onToggleExpand, currentKey, onSelectStudent }) {
+  return (
+    <div className="bp-profile-ctrls">
+      <div className="bp-ctrl-group">
+        <button
+          type="button"
+          className="bp-ctrl-btn"
+          onClick={onClose}
+          title="Close profile"
+          aria-label="Close profile"
+        >
+          <Icon name="x" size={15} stroke={2.2} />
+        </button>
+        <button
+          type="button"
+          className="bp-ctrl-btn"
+          onClick={onToggleExpand}
+          title={expanded ? 'Exit full screen' : 'Expand to full screen'}
+          aria-label={expanded ? 'Exit full screen' : 'Expand to full screen'}
+        >
+          <Icon name={expanded ? 'minimize' : 'maximize'} size={14} stroke={2.1} />
+        </button>
+      </div>
+      <ProfilePager variant="float" currentKey={currentKey} onSelect={onSelectStudent} />
     </div>
   )
 }
@@ -4496,12 +4546,16 @@ export default function BeanstackProfile() {
 
   const student = selectedStudentKey ? STUDENTS[selectedStudentKey] : null
 
-  const handleStudentClick = (key) => {
+  // The class table opens a reader two ways, as the product does: the row is a
+  // quick look (slide-in panel), the name is the profile page itself.
+  const handleStudentClick = (key, mode = 'side') => {
     setSelectedStudentKey(key)
     setActiveSection(null)
     setClosing(false)
-    setProfileMode('side')
+    setProfileMode(mode)
   }
+
+  const toggleExpand = () => setProfileMode((m) => (m === 'full' ? 'side' : 'full'))
 
   // Slide out the way it slid in, then unmount — the panel used to vanish on
   // the same frame as the click.
@@ -4535,58 +4589,66 @@ export default function BeanstackProfile() {
         <div
           className={`bp-profile-wrap${profileMode === 'full' ? ' bp-profile-wrap--full' : ''}${closing ? ' bp-profile-wrap--closing' : ''}`}
         >
-          <div className="bp-root">
-            {/* The header spans the rail as well as the content — it identifies the
-    whole panel, not just the page inside it. */}
-            <StudentHeader student={student} onClose={closeProfile} />
-            <div className="bp-root-body">
-              <LeftNav
-                activeSection={activeSection}
-                onNavigate={setActiveSection}
-                pager={
-                  <ProfilePager currentKey={selectedStudentKey} onSelect={setSelectedStudentKey} />
-                }
-              />
-              <div className="bp-panel">
-                <MobileSectionNav
-                  activeSection={activeSection}
-                  onNavigate={setActiveSection}
-                  pager={
-                    <ProfilePager
-                      currentKey={selectedStudentKey}
-                      onSelect={setSelectedStudentKey}
-                    />
-                  }
-                />
-                <div
-                  key={`${selectedStudentKey}-${activeSection ?? 'overview'}`}
-                  className="bp-page-fade"
-                >
-                  {activeSection === null ? (
-                    <Overview student={student} onNavigate={setActiveSection} />
-                  ) : ANALYSIS_SECTIONS.has(activeSection) ? (
-                    <SectionDetail student={student} sectionKey={activeSection} />
-                  ) : activeSection === 'readinglog' ? (
-                    <ReadingLogPage />
-                  ) : activeSection === 'textchallenges' ? (
-                    <TextChallengesPage student={student} />
-                  ) : activeSection === 'reviews' ? (
-                    <ReviewsPage student={student} />
-                  ) : activeSection === 'achievements' ? (
-                    <AchievementsPage student={student} />
-                  ) : activeSection === 'badges' ? (
-                    <BadgesPage student={student} />
-                  ) : activeSection === 'activities' ? (
-                    <ActivitiesPage student={student} />
-                  ) : activeSection === 'drawings' ? (
-                    <DrawingsPage student={student} />
-                  ) : activeSection === 'rewards' ? (
-                    <RewardsPage student={student} />
-                  ) : activeSection === 'challenges' ? (
-                    <ChallengesPage student={student} onNavigate={setActiveSection} />
-                  ) : (
-                    <PlaceholderPage pageKey={activeSection} />
-                  )}
+          {/* Rail + panel are one sliding unit, so the controls travel with the
+    panel edge on open, close and expand instead of sitting still. */}
+          <div className="bp-profile-slider">
+            <ProfileCtrls
+              onClose={closeProfile}
+              expanded={profileMode === 'full'}
+              onToggleExpand={toggleExpand}
+              currentKey={selectedStudentKey}
+              onSelectStudent={setSelectedStudentKey}
+            />
+
+            <div className="bp-root">
+              {/* The header spans the rail as well as the content — it identifies the
+    whole panel, not just the page inside it. Panel chrome (close, expand,
+    reader stepping) moved out to `ProfileCtrls`; the header keeps a close
+    button for the phone breakpoint, where the floating rail is hidden. */}
+              <StudentHeader student={student} onClose={closeProfile} />
+              <div className="bp-root-body">
+                <LeftNav activeSection={activeSection} onNavigate={setActiveSection} />
+                <div className="bp-panel">
+                  <MobileSectionNav
+                    activeSection={activeSection}
+                    onNavigate={setActiveSection}
+                    pager={
+                      <ProfilePager
+                        currentKey={selectedStudentKey}
+                        onSelect={setSelectedStudentKey}
+                      />
+                    }
+                  />
+                  <div
+                    key={`${selectedStudentKey}-${activeSection ?? 'overview'}`}
+                    className="bp-page-fade"
+                  >
+                    {activeSection === null ? (
+                      <Overview student={student} onNavigate={setActiveSection} />
+                    ) : ANALYSIS_SECTIONS.has(activeSection) ? (
+                      <SectionDetail student={student} sectionKey={activeSection} />
+                    ) : activeSection === 'readinglog' ? (
+                      <ReadingLogPage />
+                    ) : activeSection === 'textchallenges' ? (
+                      <TextChallengesPage student={student} />
+                    ) : activeSection === 'reviews' ? (
+                      <ReviewsPage student={student} />
+                    ) : activeSection === 'achievements' ? (
+                      <AchievementsPage student={student} />
+                    ) : activeSection === 'badges' ? (
+                      <BadgesPage student={student} />
+                    ) : activeSection === 'activities' ? (
+                      <ActivitiesPage student={student} />
+                    ) : activeSection === 'drawings' ? (
+                      <DrawingsPage student={student} />
+                    ) : activeSection === 'rewards' ? (
+                      <RewardsPage student={student} />
+                    ) : activeSection === 'challenges' ? (
+                      <ChallengesPage student={student} onNavigate={setActiveSection} />
+                    ) : (
+                      <PlaceholderPage pageKey={activeSection} />
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
