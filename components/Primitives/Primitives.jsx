@@ -113,7 +113,14 @@ function clipBounds(node, margin = 6) {
   return { left: left + margin, right: right - margin }
 }
 
-export function Tooltip({ content, placement = 'top', delay = 0, followCursor = false, children }) {
+export function Tooltip({
+  content,
+  placement = 'top',
+  delay = 0,
+  followCursor = false,
+  className = '',
+  children,
+}) {
   const wrapRef = useRef(null)
   const bubbleRef = useRef(null)
   const [resolved, setResolved] = useState('top')
@@ -156,7 +163,9 @@ export function Tooltip({ content, placement = 'top', delay = 0, followCursor = 
     : undefined
   return (
     <span
-      className={`ttp${followCursor ? ' ttp--cursor' : ` ttp--${pos}`}`}
+      className={`ttp${followCursor ? ' ttp--cursor' : ` ttp--${pos}`}${
+        className ? ` ${className}` : ''
+      }`}
       style={{ '--ttp-delay': `${delay}ms` }}
       ref={wrapRef}
       onMouseEnter={onEnter}

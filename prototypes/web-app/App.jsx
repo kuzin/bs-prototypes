@@ -261,6 +261,7 @@ function LeaderboardCard() {
         <Tabs
           variant="underline"
           size="sm"
+          center
           active={tab}
           onChange={setTab}
           accent="#0DA7BC"

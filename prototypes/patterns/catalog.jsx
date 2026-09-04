@@ -29,7 +29,7 @@ import { gameboardSections } from './sections/gameboard'
 import { gameboardReaderSections } from './sections/gameboard-reader'
 import { wordsWithBennySections } from './sections/words-with-benny'
 
-// Global resets + Nunito font on body (needed for Radix portals outside .pt-shell)
+// Global resets + body font (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
 
 // Bring in CSS for the components so they render properly here

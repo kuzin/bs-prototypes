@@ -101,11 +101,11 @@
    Panel chrome (close, expand, step reader) in its own column beside the
    panel. It's a full-height strip in both modes — the buttons need something to
    sit on, and against the panel's own white nav rail (full screen) or the dim
-   overlay (side panel) they'd otherwise float loose. Tinted from the reader's
-   `--rp-profile` (see `profileVars`), with a neutral fallback for any surface
-   that doesn't set it. */
+   overlay (side panel) they'd otherwise float loose. Tinted from the admin
+   accent, like the rest of the chrome. */
+/* Wide enough for the 36px targets below — the shared IconButton size. */
 .rp-profile-ctrls {
-  width: 42px;
+  width: 56px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -113,8 +113,8 @@
   gap: 10px;
   padding: 10px 0;
   align-self: stretch;
-  background: color-mix(in srgb, var(--rp-profile, #64748b) 14%, #fff);
-  border-right: 1px solid color-mix(in srgb, var(--rp-profile, #64748b) 28%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 14%, #fff);
+  border-right: 1px solid color-mix(in srgb, var(--c-accent) 28%, #fff);
 }
 
 .rp-ctrl-group {
@@ -126,12 +126,12 @@
 /* Flat: a hairline instead of a lift. The panel's own shadow is on the slider,
    not the panel, so it falls outside the strip rather than gradienting over it. */
 .rp-ctrl-btn {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #fff;
-  border: 1px solid color-mix(in srgb, var(--rp-profile, #64748b) 32%, #fff);
-  color: var(--rp-profile, var(--c-slate-600));
+  border: 1px solid color-mix(in srgb, var(--c-accent) 32%, #fff);
+  color: var(--c-accent);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -143,8 +143,8 @@
 }
 
 .rp-ctrl-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--rp-profile, #64748b) 10%, #fff);
-  border-color: var(--rp-profile, var(--c-slate-600));
+  background: color-mix(in srgb, var(--c-accent) 10%, #fff);
+  border-color: var(--c-accent);
 }
 
 /* Copy-link confirmation — green while the "Copied" state holds. */
@@ -201,11 +201,6 @@
 .rp-embed--full .rp-nav-item {
   min-height: 38px;
 }
-.rp-profile-wrap--full .rp-nav-label,
-.rp-embed--full .rp-nav-label {
-  font-size: 13px;
-}
-
 /* ─── Root ───────────────────────────────────────────────────────────────── */
 /* Column, so the student header can span the rail as well as the content. */
 .rp-root {
@@ -232,7 +227,7 @@
    stacked items ran to ~1160px, which was a wall. Horizontal rows bring the
    whole rail under 500px and match the product's own sidebar. */
 .rp-nav {
-  width: 168px;
+  width: 188px;
   background: #fff;
   border-right: 1px solid #eaeaea;
   display: flex;
@@ -246,8 +241,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 8px 8px 10px;
+  gap: 4px;
+  padding: 12px 10px;
   overflow-y: auto;
   scrollbar-width: none;
 }
@@ -255,15 +250,17 @@
 .rp-nav-items::-webkit-scrollbar {
   display: none;
 }
+/* Rows are sized for the 15px label: 40px tall with 10/12 padding, on a
+   4px rhythm — the old 34px/6px-9px was built for 12px text. */
 .rp-nav-item {
   width: 100%;
-  min-height: 34px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   cursor: pointer;
   position: relative;
-  gap: 9px;
-  padding: 6px 9px;
+  gap: 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   user-select: none;
 }
@@ -273,7 +270,7 @@
 }
 
 .rp-nav-label {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: #8a8f98;
   letter-spacing: 0.01em;
@@ -287,11 +284,11 @@
    colour still identifies the page — it's on the Hero's icon chip. */
 .rp-nav-item--active .rp-nav-label,
 .rp-nav-item--active .icon {
-  color: var(--rp-profile, #1a6dd5);
+  color: var(--c-accent);
 }
 
 .rp-nav-item--active {
-  background: color-mix(in srgb, var(--rp-profile, #1a6dd5) 12%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 12%, #fff);
   cursor: default;
 }
 
@@ -308,7 +305,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 26px 24px;
   background: #fff;
   border-bottom: 1px solid #eaeaea;
   flex-shrink: 0;
@@ -322,16 +319,18 @@
   min-width: 0;
 }
 
+/* 22px is the app's own section-title size, and a clear step over the
+   15px body the panel now uses. */
 .rp-panel-name {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 800;
   color: #424242;
   line-height: 1.2;
 }
 
 .rp-panel-meta {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: #9ca3af;
   margin-top: 2px;
 }
@@ -371,28 +370,9 @@
 }
 
 /* ─── Card ───────────────────────────────────────────────────────────────── */
-.rp-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px 18px;
-}
-
-.rp-card--flush {
-  padding: 0;
-}
-
-.rp-section-heading {
-  font-size: 15px;
-  font-weight: 800;
-  color: #424242;
-  margin-bottom: 12px;
-}
-
-.rp-card:not(.rp-card--flush) > .rp-section-heading:first-child {
-  margin: -16px -18px 14px;
-  padding: 15px 18px 13px;
-  border-bottom: 1px solid #f0f0f0;
-}
+/* Card visuals + the promoted first title now come from the shared
+   ProfileCard pattern (components/ProfileCard). These class names stay on the
+   same elements for the local descendant rules further down this file. */
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
 .rp-btn-primary {
@@ -402,7 +382,7 @@
   border: none;
   border-radius: 8px;
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -418,7 +398,7 @@
   border: 1.5px solid #dedede;
   border-radius: 8px;
   color: #424242;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -433,7 +413,7 @@
   border: none;
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #2b7ee5;
   text-align: right;
@@ -465,12 +445,12 @@
   font-weight: 800;
   border-radius: 100px;
   display: inline-block;
-  font-size: 13px;
+  font-size: 15px;
   padding: 4px 12px;
 }
 
 .rp-pill--sm {
-  font-size: 13px;
+  font-size: 15px;
   padding: 2px 9px;
 }
 
@@ -479,7 +459,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   border-radius: 100px;
   padding: 5px 11px;
@@ -523,14 +503,14 @@
 }
 
 .rp-action-footer-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
   margin-bottom: 5px;
 }
 
 .rp-action-footer-body {
-  font-size: 13px;
+  font-size: 15px;
   color: #555;
   line-height: 1.6;
   font-weight: 500;
@@ -566,22 +546,42 @@
   box-sizing: border-box;
 }
 
-/* The Actions button carries both a label and a dots icon; each breakpoint
-   shows one of them. Desktop: "Actions ⌄". Mobile: just the dots. */
-.rp-student-actions .btn-icon {
+/* The Actions button carries a leading dots icon, a label and a trailing
+   caret; each breakpoint shows a different pair. Desktop: "Actions ⌄" — so
+   only the *leading* icon hides here. Mobile (see the breakpoint block) flips
+   it: dots only, no label, no caret.
+   The caret follows the app's `.button--dropdown`: a 16px glyph in $gray700
+   with a 4px column gap. */
+.rp-student-actions .btn-icon:not(.btn-icon--right) {
   display: none;
+}
+
+/* Tighter than the default 0 20px — with a caret riding along, 20px each side
+   made "Actions ⌄" read long. 16px is the app's `.button--medium-small` inset. */
+.rp-student-actions .btn {
+  column-gap: 4px;
+  padding: 0 16px;
+}
+
+.rp-student-actions .btn-icon--right svg {
+  width: 16px;
+  height: 16px;
+}
+
+.rp-student-actions .btn--secondary .btn-icon--right {
+  color: var(--c-gray-700);
 }
 
 /* Log is the panel's primary action, so it carries the reader's colour like
    the rest of the chrome. Actions stays a neutral outline button. */
 .rp-panel-header .btn--primary {
-  background: var(--rp-profile, var(--c-blue-700));
-  border-color: var(--rp-profile, var(--c-blue-700));
+  background: var(--c-accent);
+  border-color: var(--c-accent);
 }
 
 .rp-panel-header .btn--primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--rp-profile, var(--c-blue-700)) 84%, #000);
-  border-color: color-mix(in srgb, var(--rp-profile, var(--c-blue-700)) 84%, #000);
+  background: color-mix(in srgb, var(--c-accent) 84%, #000);
+  border-color: color-mix(in srgb, var(--c-accent) 84%, #000);
 }
 
 .rp-header-right {
@@ -659,7 +659,7 @@
 }
 
 .rp-tile-empty {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: #424242;
   opacity: 0.75;
@@ -676,7 +676,7 @@
 }
 
 .rp-tile-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -707,13 +707,13 @@
 }
 
 .rp-tile-unit {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
 }
 
 .rp-tile-sub {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #424242;
   opacity: 0.6;
@@ -735,7 +735,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
 }
@@ -756,7 +756,7 @@
 }
 
 .rp-health-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
 }
@@ -788,7 +788,7 @@
 }
 
 .rp-health-verdict-outof {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--ht-text);
   opacity: 0.45;
@@ -804,7 +804,7 @@
   border: 1.5px solid color-mix(in srgb, var(--ht-bar) 40%, transparent);
   border-radius: 100px;
   padding: 6px 13px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -874,7 +874,7 @@
 .rp-health-row-top .rp-status {
   background: none;
   padding: 0;
-  font-size: 13px;
+  font-size: 15px;
 }
 .rp-health-row-top .rp-status img {
   filter: none;
@@ -893,7 +893,7 @@
 }
 
 .rp-health-row-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
 }
@@ -934,14 +934,14 @@
   background: #f2f2f2;
   border-radius: 12px;
   padding: 13px 15px;
-  font-size: 14px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.65;
   font-weight: 500;
 }
 
 .rp-benny-timestamp {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   margin-top: 7px;
 }
@@ -951,7 +951,7 @@
    comes from the title row rather than the card. */
 .rp-actions-title {
   padding: 15px 18px 13px;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
 }
@@ -970,14 +970,14 @@
 }
 
 .rp-action-title {
-  font-size: 14px;
-  font-weight: 900;
-  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text-real-dark);
   margin-bottom: 4px;
 }
 
 .rp-action-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.55;
   font-weight: 500;
@@ -988,7 +988,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   background: none;
@@ -1012,7 +1012,7 @@
 }
 
 .rp-score-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
 }
@@ -1024,7 +1024,7 @@
 }
 
 .rp-score-num {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   color: #424242;
 }
@@ -1036,7 +1036,7 @@
 }
 
 .rp-motivators-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -1051,7 +1051,7 @@
 }
 
 .rp-motivator-tag {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   padding: 5px 13px;
   border: 1.5px solid #eaeaea;
@@ -1068,7 +1068,7 @@
   border: 1px solid #fed7aa;
   border-radius: 10px;
   margin-top: 14px;
-  font-size: 13px;
+  font-size: 15px;
   color: #424242;
   font-weight: 500;
 }
@@ -1078,7 +1078,7 @@
 }
 
 .rp-flag-breakdown-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -1097,7 +1097,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .rp-flag-item:not(:last-child) {
@@ -1117,7 +1117,7 @@
   background: #fef2f2;
   border: 1px solid #fca5a5;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 15px;
   color: #991b1b;
   font-weight: 700;
 }
@@ -1151,7 +1151,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   color: #9ca3af;
   font-weight: 500;
 }
@@ -1164,7 +1164,7 @@
 }
 
 .rp-goal-title {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
 }
@@ -1177,7 +1177,7 @@
 }
 
 .rp-goal-week-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
 }
@@ -1204,7 +1204,7 @@
 }
 
 .rp-goal-mins {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-amber-600);
 }
@@ -1249,7 +1249,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 22px;
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -1278,7 +1278,7 @@
 }
 
 .rp-goal-day-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #9ca3af;
 }
@@ -1309,7 +1309,7 @@
 }
 
 .rp-habit-row-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #555;
 }
@@ -1322,7 +1322,7 @@
 }
 
 .rp-habit-row-value {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
 }
@@ -1338,7 +1338,7 @@
 }
 
 .rp-habit-row-note {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #acacac;
 }
@@ -1350,7 +1350,7 @@
 /* .rp-minutes-grid removed — absorbed into rp-streak-grid (4-col) */
 
 .rp-week-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -1390,7 +1390,7 @@
 }
 
 .rp-week-day-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: #acacac;
 }
@@ -1408,7 +1408,7 @@
 }
 
 .rp-minutes-label {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   font-weight: 600;
   margin-bottom: 3px;
@@ -1427,7 +1427,7 @@
 }
 
 .rp-minutes-delta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 .rp-minutes-delta--up {
@@ -1440,7 +1440,7 @@
 
 /* ─── Skills detail ──────────────────────────────────────────────────────── */
 .rp-book-current-badge {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #185fa5;
   background: #d0e3ff;
@@ -1469,13 +1469,13 @@
 }
 
 .rp-titles-header-meta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #9ca3af;
 }
 
 .rp-titles-header-label {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
   display: flex;
@@ -1484,7 +1484,7 @@
 }
 
 .rp-titles-range-chip {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #185fa5;
   background: #d0e3ff;
@@ -1520,23 +1520,26 @@
 .rp-heatmap-nav-label {
   flex: 1;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #111827;
 }
 
+/* Same box as the shared IconButton (36px / 8px radius / 20px glyph on a
+   #f2f2f2 ground) so every prev/next control in the app is one size — these
+   were a bespoke 26px outline that all but disappeared. */
 .rp-heatmap-nav-btn {
-  background: none;
-  border: 1px solid var(--c-gray-200);
-  border-radius: 6px;
-  width: 26px;
-  height: 26px;
+  background: var(--c-gray-150);
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
-  color: #6b7280;
+  color: var(--c-text-real);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -1544,12 +1547,14 @@
   padding: 0;
 }
 .rp-heatmap-nav-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--c-gray-250);
+  color: var(--c-text-real);
 }
+/* The app's disabled icon button: a paler ground, not a faded whole. */
 .rp-heatmap-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
+  background: var(--c-gray-0);
+  color: var(--c-gray-350);
+  cursor: auto;
 }
 
 /* Month grid — weekdays across, weeks down, like the shared <DatePicker> but
@@ -1566,7 +1571,7 @@
 }
 
 .rp-heatmap-wd {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-text-muted);
   text-align: center;
@@ -1608,7 +1613,7 @@
 }
 
 .rp-heatmap-daynum {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1;
   position: relative;
@@ -1658,7 +1663,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 600;
   white-space: nowrap;
@@ -1697,7 +1702,7 @@
 }
 
 .rp-genre-subhead {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   font-weight: 500;
   line-height: 1.4;
@@ -1729,7 +1734,7 @@
 }
 
 .rp-genre-chip-count {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   opacity: 0.6;
   background: var(--chip-color);
@@ -1757,7 +1762,7 @@
 
 /* Title name as a link */
 .rp-title-name-link {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
   text-decoration: none;
@@ -1815,7 +1820,7 @@
 }
 
 .rp-title-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
   flex: 1;
@@ -1823,7 +1828,7 @@
 }
 
 .rp-title-lexile-pill {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #6b7280;
   background: #f3f4f6;
@@ -1836,7 +1841,7 @@
 }
 
 .rp-title-author {
-  font-size: 13px;
+  font-size: 15px;
   color: #9ca3af;
   font-weight: 500;
   margin-top: 3px;
@@ -1871,7 +1876,7 @@
 }
 
 .rp-title-btwb-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
 }
@@ -1883,7 +1888,7 @@
 }
 
 .rp-title-genre-tag {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   background: #f0f0f0;
@@ -1892,7 +1897,7 @@
 }
 
 .rp-title-date {
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 500;
 }
@@ -1904,7 +1909,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 600;
 }
@@ -1948,14 +1953,14 @@
 }
 
 .rp-donut-max {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--c-text-subtle);
   line-height: 1;
 }
 
 .rp-donut-label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-text-muted);
   text-align: center;
@@ -1974,7 +1979,7 @@
 }
 
 .rp-rmi-period-select {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #424242;
   font-family: inherit;
@@ -2019,13 +2024,13 @@
 }
 
 .rp-rmi-max {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
 }
 
 .rp-rmi-delta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   margin-left: 4px;
 }
@@ -2038,7 +2043,7 @@
 }
 
 .rp-rmi-label {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   font-weight: 600;
   line-height: 1.3;
@@ -2068,7 +2073,7 @@
 }
 
 .rp-rmi-rec-goal-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   margin-bottom: 6px;
@@ -2076,14 +2081,14 @@
 }
 
 .rp-rmi-rec-goal-value {
-  font-size: 42px;
+  font-size: 40px;
   font-weight: 900;
   color: #424242;
   line-height: 1;
 }
 
 .rp-rmi-rec-goal-unit {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   margin-top: 4px;
@@ -2099,7 +2104,7 @@
 }
 
 .rp-rmi-rec-actions-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   text-transform: uppercase;
@@ -2113,7 +2118,7 @@
 }
 
 .rp-rmi-rec-action-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.5;
   margin: 0;
@@ -2145,7 +2150,7 @@
 }
 
 .rp-motivator-rank {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   width: 18px;
@@ -2154,7 +2159,7 @@
 }
 
 .rp-motivator-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
   width: 130px;
@@ -2167,7 +2172,7 @@
 }
 
 .rp-motivator-score {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
   width: 28px;
@@ -2176,7 +2181,7 @@
 }
 
 .rp-motivator-delta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   width: 38px;
   text-align: right;
@@ -2238,14 +2243,14 @@
 }
 
 .rp-placeholder-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   color: #2d2d2d;
   letter-spacing: -0.3px;
 }
 
 .rp-placeholder-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #9e9e9e;
 }
 
@@ -2310,7 +2315,7 @@
   border-radius: 50%;
   background: var(--c-blue-700);
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -2359,7 +2364,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
   transition: background 0.12s;
 }
@@ -2382,7 +2387,7 @@
   padding: 9px 11px;
   border-radius: 8px;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -2427,7 +2432,7 @@
   border-radius: 7px;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   transition:
     background 0.12s,
@@ -2460,14 +2465,20 @@
   overflow: hidden;
 }
 
+/* One frame for every admin page — see --admin-content-max in tokens.css. */
 .rp-adm-main-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px max(24px, calc((100% - 1280px) / 2));
+  padding: var(--admin-pad-top)
+    max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) var(--admin-pad-bottom);
   overflow-y: auto;
+  /* Reserve the scrollbar always. Without this the column is 15px narrower on
+     pages long enough to scroll than on pages that aren't — the exact
+     page-to-page inconsistency this frame exists to remove. */
+  scrollbar-gutter: stable;
   align-items: stretch;
-  gap: 0;
+  gap: var(--admin-section-gap);
 }
 
 /* Direct children of the scrolling column must not shrink — same flex trap as
@@ -2477,7 +2488,7 @@
 }
 
 .rp-adm-breadcrumb {
-  font-size: 13px;
+  font-size: 15px;
   color: #ef4444;
   font-weight: 700;
   margin-bottom: 10px;
@@ -2509,7 +2520,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #fff;
   flex-shrink: 0;
@@ -2524,7 +2535,7 @@
 }
 
 .rp-adm-class-meta {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--c-text-muted);
   margin-top: 2px;
 }
@@ -2541,7 +2552,7 @@
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #374151;
   cursor: pointer;
@@ -2554,7 +2565,7 @@
   border: none;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
@@ -2585,7 +2596,7 @@
 }
 
 .rp-adm-filter-lbl {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #6b7280;
   margin-bottom: 5px;
@@ -2598,7 +2609,7 @@
   display: flex;
   align-items: center;
   padding: 0 12px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #111;
   background: #fff;
@@ -2611,7 +2622,7 @@
   border: 1.5px solid var(--c-gray-200);
   border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #9ca3af;
   cursor: not-allowed;
@@ -2639,7 +2650,7 @@
   border-radius: 50%;
   background: #f3f4f6;
   border: none;
-  font-size: 16px;
+  font-size: 18px;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -2651,7 +2662,7 @@
 .rp-adm-week-label {
   flex: 1;
   text-align: center;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: #111;
 }
@@ -2669,17 +2680,10 @@
 .tbl-row--clickable:hover .tbl-td.rp-adm-td--goal {
   background: #ebf3ff;
 }
-.rp-adm-row--selected .tbl-td {
-  background: #f0f6ff;
-}
-.rp-adm-row--selected .tbl-td.rp-adm-td--goal {
-  background: #dbeafe;
-}
-
 .rp-adm-student-cell {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   padding-left: 4px;
 }
 
@@ -2690,7 +2694,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   flex-shrink: 0;
 }
@@ -2738,7 +2742,7 @@
 }
 
 .rp-adm-goal-val {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-800);
 }
@@ -2772,7 +2776,7 @@
   display: inline-block;
   padding: 3px 9px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
 }
 
@@ -2803,11 +2807,11 @@
 
 .rp-adm-dash {
   color: #d1d5db;
-  font-size: 15px;
+  font-size: 18px;
 }
 
 .rp-adm-avg-row .tbl-td {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #374151;
   background: #f9fafb;
@@ -2819,7 +2823,7 @@
   gap: 16px;
   justify-content: flex-end;
   padding: 10px 16px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   border-top: 1px solid #f0f0f0;
 }
@@ -2836,7 +2840,7 @@
 }
 
 .rp-placeholder-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 600;
 }
@@ -2864,7 +2868,7 @@
 .rp-btn-ghost--sm {
   height: 30px;
   padding: 0 12px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 /* Segmented control */
@@ -2886,7 +2890,7 @@
   border-radius: 6px;
   background: transparent;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #6b7280;
   cursor: pointer;
@@ -2914,7 +2918,7 @@
   border: 1.5px solid #e0e0e0;
   border-radius: 6px;
   background: #fff;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -2958,7 +2962,7 @@
 }
 
 .rp-rl-tbl-author {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -2985,7 +2989,7 @@
 }
 
 .rp-rl-week-label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -3027,14 +3031,14 @@
 }
 
 .rp-rl-day-num {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #1a1a1a;
   line-height: 1.1;
 }
 
 .rp-rl-day-name {
-  font-size: 12.5px;
+  font-size: 13px;
   color: #9ca3af;
   font-weight: 600;
 }
@@ -3049,7 +3053,7 @@
   border-radius: 999px;
   background: #ffedd5;
   color: #c2410c;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -3094,7 +3098,7 @@
   border-radius: 999px;
   background: #fbd5d3;
   color: #991b1b;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -3150,7 +3154,7 @@
    control chrome is stripped and the type kept. */
 .rp-rl-entry-title {
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--rl-title);
   line-height: 1.3;
@@ -3184,14 +3188,14 @@
 }
 
 .rp-rl-entry-author {
-  font-size: 12.5px;
+  font-size: 13px;
   color: #6b7280;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
 .rp-rl-entry-amount {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--rl-title);
 }
@@ -3216,7 +3220,7 @@
 
 .rp-rl-cal-dow-cell {
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #acacac;
   text-transform: uppercase;
@@ -3257,7 +3261,7 @@
 }
 
 .rp-rl-cal-date {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #555;
   width: 26px;
@@ -3299,7 +3303,7 @@
 }
 
 .rp-rl-cal-flame {
-  font-size: 13px;
+  font-size: 15px;
   margin-top: 2px;
   line-height: 1;
 }
@@ -3321,7 +3325,7 @@
 }
 
 .rp-rl-cal-detail-date {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
 }
@@ -3377,7 +3381,7 @@
     font-size: 0;
   }
   .rp-adm-nav-child > svg {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   /* Side-panel student profile becomes narrower so it doesn't overflow */
@@ -3446,11 +3450,11 @@
   .rp-panel-header .avatar {
     width: 38px;
     height: 38px;
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .rp-panel-name {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   .rp-student-actions {
@@ -3489,7 +3493,7 @@
   .rp-goal-circle {
     width: 34px;
     height: 34px;
-    font-size: 17px;
+    font-size: 18px;
   }
 
   /* The rail's 168px is most of a phone — swap it for a select + the pager */
@@ -3562,13 +3566,13 @@
   .rp-adm-class-avatar {
     width: 40px;
     height: 40px;
-    font-size: 13px;
+    font-size: 15px;
   }
   .rp-adm-class-title {
     font-size: 18px;
   }
   .rp-adm-class-meta {
-    font-size: 11.5px;
+    font-size: 13px;
   }
   .rp-adm-class-btns {
     width: 100%;
@@ -3577,7 +3581,7 @@
   .rp-adm-class-btns .rp-adm-btn-primary {
     flex: 1;
     padding: 0 10px;
-    font-size: 13px;
+    font-size: 15px;
     white-space: nowrap;
   }
 
@@ -3591,7 +3595,7 @@
     display: none;
   }
   .rp-adm-tab {
-    font-size: 13px;
+    font-size: 15px;
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -3622,7 +3626,7 @@
     gap: 8px;
   }
   .rp-adm-week-label {
-    font-size: 13px;
+    font-size: 15px;
     white-space: nowrap;
   }
 }
@@ -3651,7 +3655,7 @@
   border: none;
   background: none;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-blue-700);
   cursor: pointer;
@@ -3712,10 +3716,6 @@
   transition: transform 0.14s ease;
 }
 
-.rp-latest-item:hover .rp-title-cover {
-  transform: translateY(-2px);
-}
-
 .rp-latest-lexile {
   position: absolute;
   right: 5px;
@@ -3724,24 +3724,20 @@
   border-radius: 999px;
   background: rgba(17, 24, 39, 0.78);
   color: #fff;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.01em;
 }
 
 .rp-latest-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
   line-height: 1.3;
 }
 
-.rp-latest-item:hover .rp-latest-title {
-  text-decoration: underline;
-}
-
 .rp-latest-author {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: #9ca3af;
   line-height: 1.3;
@@ -3778,7 +3774,7 @@
 }
 
 .rp-content .rc-card-title {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
   letter-spacing: 0;
@@ -3809,7 +3805,7 @@
 }
 
 .rp-tb-prompt {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.4;
@@ -3817,7 +3813,7 @@
 
 .rp-tb-date {
   flex-shrink: 0;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-400);
   white-space: nowrap;
@@ -3825,7 +3821,7 @@
 
 .rp-tb-answer {
   margin-top: 5px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--c-slate-600);
   line-height: 1.55;
@@ -3883,14 +3879,14 @@
 
 .rp-medal-name {
   margin-top: 6px;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.3;
 }
 
 .rp-medal-sub {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
   line-height: 1.3;
@@ -4036,14 +4032,14 @@
 }
 
 .rp-act-name {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
 }
 
 .rp-act-count {
   margin-top: 1px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -4068,7 +4064,7 @@
 
 .rp-chal-dates {
   margin-top: 1px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-slate-600);
 }
@@ -4078,7 +4074,7 @@
   flex-direction: column;
   gap: 1px;
   margin-top: 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -4102,11 +4098,12 @@
 }
 
 /* ── Action form modals ──────────────────────────────────────────────────── */
+/* The app's `.modal__content` is padded 24px all round. */
 .rp-form-body {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 16px 18px 18px;
+  padding: 24px;
   max-height: min(62vh, 520px);
   overflow-y: auto;
 }
@@ -4143,25 +4140,32 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  padding: 14px 18px;
-  border-top: 1px solid var(--c-slate-200);
+  padding: 18px 24px;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 /* ── Activity list modal ─────────────────────────────────────────────────── */
+/* The app's `.modal__header`: 18px 24px over a $gray200 rule, contents
+   left-aligned (the close control floats outside the box now, so the header
+   no longer has to reserve room for it). */
 .rp-act-modal-head {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
-  padding: 12px 12px 12px 18px;
-  border-bottom: 1px solid var(--c-slate-200);
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
+/* `.modal__title`: 18px / 800 / $gray900 at 1.25 line-height — was 900,
+   which read heavier than anything in the app. */
 .rp-act-modal-title {
   flex: 1;
   min-width: 0;
-  font-size: 17px;
-  font-weight: 900;
-  color: var(--c-slate-800);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-real-dark);
 }
 
 .rp-act-modal-cols {
@@ -4172,7 +4176,7 @@
   padding: 9px 18px;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--c-slate-500);
 }
@@ -4197,7 +4201,7 @@
 .rp-act-modal-text {
   flex: 1;
   min-width: 0;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--c-slate-600);
   line-height: 1.55;
@@ -4210,13 +4214,6 @@
   padding: 26px 24px 0;
 }
 
-.rp-medal-modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: var(--c-slate-500);
-}
-
 .rp-medal-modal-art {
   display: flex;
   justify-content: center;
@@ -4224,14 +4221,14 @@
 }
 
 .rp-medal-modal-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-slate-500);
 }
 
 .rp-medal-modal-headline {
   margin-top: 3px;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   color: var(--c-slate-800);
   letter-spacing: -0.01em;
@@ -4239,7 +4236,7 @@
 
 .rp-medal-modal-note {
   margin-top: 12px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
   color: #15803d;
   line-height: 1.45;
@@ -4257,7 +4254,7 @@
   border: 0;
   border-radius: 8px;
   font: inherit;
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 800;
   color: #fff;
   cursor: pointer;
@@ -4289,7 +4286,7 @@
   border-radius: 8px;
   background: #fde9b4;
   color: #4b3a10;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.45;
   text-align: left;
@@ -4315,7 +4312,7 @@
 }
 
 .rp-review-title {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.3;
@@ -4323,7 +4320,7 @@
 
 .rp-review-text {
   margin-top: 7px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--c-slate-600);
   line-height: 1.55;
@@ -4370,7 +4367,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-700);
   white-space: nowrap;
@@ -4384,7 +4381,12 @@
   color: #993c1d;
 }
 
-.rp-statlist {
+/* The stat list's head and rows carry their own horizontal insets, so the card
+   itself contributes only the top/bottom rhythm — no side padding, or the rows
+   end up inset twice. Written with both classes so it beats `.pcard`, whose
+   stylesheet loads after this one. */
+.rp-statlist,
+.pcard.rp-statlist {
   flex-shrink: 0;
   padding: 14px 0 4px;
 }
@@ -4402,7 +4404,7 @@
 
 /* Says what the delta chips are measured against, once. */
 .rp-statlist-note {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-text-subtle);
   white-space: nowrap;
@@ -4423,14 +4425,14 @@
   border: 0;
   border-radius: 999px;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
-  color: var(--rp-profile, var(--c-blue-700));
+  color: var(--c-accent);
   cursor: pointer;
 }
 
 .rp-showmore:hover {
-  background: color-mix(in srgb, var(--rp-profile, var(--c-blue-700)) 9%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 9%, #fff);
 }
 
 /* Inside a card it takes the card's full width and sits behind a hairline, so
@@ -4462,9 +4464,9 @@
   border: 0;
   border-top: 1px solid var(--c-slate-100);
   font: inherit;
-  font-size: 12.5px;
+  font-size: 15px;
   font-weight: 800;
-  color: var(--rp-profile, var(--c-blue-700));
+  color: var(--c-accent);
   cursor: pointer;
 }
 
@@ -4562,7 +4564,7 @@
 .rp-statrow-label {
   flex: 1;
   min-width: 0;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1;
   color: var(--c-slate-700);
@@ -4574,21 +4576,21 @@
   /* A flex container trims the leading space inside the unit span, so the gap
      has to put it back. */
   gap: 3px;
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 22px;
+  font-weight: 800;
   color: var(--c-slate-800);
   line-height: 1;
   white-space: nowrap;
 }
 
 .rp-statrow-unit {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-400);
 }
 
 .rp-statrow-empty {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -4598,14 +4600,18 @@
   gap: 12px;
 }
 
+/* The row is a link; the chevron was $gray300-faint and barely read as an
+   affordance. Solid gray at rest, accent-tinted and nudged on hover. */
 .rp-statrow-go {
   flex-shrink: 0;
-  color: var(--c-slate-300);
-  transition: transform 0.12s ease;
+  color: var(--c-gray-600);
+  transition:
+    transform 0.12s ease,
+    color 0.12s ease;
 }
 
 .rp-statrow:hover .rp-statrow-go {
-  color: var(--c-slate-500);
+  color: var(--c-accent);
   transform: translateX(2px);
 }
 
@@ -4651,19 +4657,41 @@
    fixed 64px slot, which handed the widest one's width ("↑19 days") to every
    chip and left "↓2" carrying 30px of empty capsule. The arrow and the colour
    are the whole message; the capsule was just weight. */
+/* A status lozenge rather than bare coloured text, so the delta reads as its
+   own object next to the value. Shaped like the app's `.tag` (22px tall,
+   12px radius, 14px/800) and coloured from the product's pastel/dark status
+   pairs in variables.scss — $pastelGreen/$darkGreen and $pastelRed/$darkRed,
+   the same pairing the infobox variants use. */
 .rp-trend {
-  font-size: 12.5px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 18px;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
+/* $pastelGreen / $darkGreen */
 .rp-trend--good {
-  color: var(--c-success);
+  background: #dbf2e7;
+  color: #087542;
 }
 
+/* $pastelRed / $darkRed */
 .rp-trend--bad {
-  color: var(--c-danger);
+  background: #fce6e4;
+  color: #ab3f35;
+}
+
+/* No movement — neutral, so a flat week doesn't read as a warning. */
+.rp-trend--flat {
+  background: var(--c-gray-200);
+  color: var(--c-gray-800);
 }
 
 .rp-statrow > .rp-trend {
@@ -4674,7 +4702,7 @@
    the month a total counts from. Muted text, for the same reason the deltas
    are text. */
 .rp-statrow-note {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
   color: var(--c-text-muted);
@@ -4689,14 +4717,14 @@
 }
 
 .rp-find-title {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 800;
   color: var(--c-slate-800);
   margin: 0;
 }
 
 .rp-find-sub {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-text-muted);
   margin: 6px 0 0;
@@ -4708,7 +4736,6 @@
   border-radius: 12px;
   padding: 20px 22px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  margin-bottom: 18px;
 }
 
 .rp-find-grid {
@@ -4727,7 +4754,7 @@
   background: none;
   border: 0;
   font: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-blue-700);
   cursor: pointer;
@@ -4747,7 +4774,7 @@
   border-radius: 999px;
   background: var(--c-slate-200);
   color: var(--c-slate-600);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -4765,7 +4792,7 @@
 }
 
 .rp-find-warn {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   color: #b45309;
 }
@@ -4774,10 +4801,9 @@
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  margin-top: 22px;
   padding: 14px 2px;
   border-top: 1px solid var(--c-gray-200);
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-text-subtle);
 }
@@ -4796,7 +4822,7 @@
 }
 
 .rp-adm-acct-email {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-text-subtle);
 }
@@ -4814,11 +4840,11 @@
   gap: 5px;
   padding: 3px 9px;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--rp-profile, #64748b) 26%, #fff);
-  background: color-mix(in srgb, var(--rp-profile, #64748b) 10%, #fff);
-  color: var(--rp-profile, var(--c-slate-600));
+  border: 1px solid color-mix(in srgb, var(--c-accent) 26%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 10%, #fff);
+  color: var(--c-accent);
   font-family: inherit;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -4838,13 +4864,13 @@
 }
 
 .rp-acct-menu-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-800);
 }
 
 .rp-acct-menu-sub {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-text-subtle);
   margin-top: 1px;
@@ -4874,7 +4900,7 @@
 
 .rp-acct-reader--active {
   cursor: default;
-  color: var(--rp-profile, var(--c-blue-700));
+  color: var(--c-accent);
 }
 
 .rp-acct-reader-main {
@@ -4885,13 +4911,13 @@
 }
 
 .rp-acct-reader-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-800);
 }
 
 .rp-acct-reader-meta {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-text-subtle);
 }
@@ -4933,7 +4959,7 @@
   background: none;
   border: 0;
   font: inherit;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--c-blue-700);
   cursor: pointer;
@@ -4944,7 +4970,7 @@
 }
 
 .rp-acct-reader-sub {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-text-subtle);
   margin-top: 2px;
@@ -4955,13 +4981,13 @@
   flex-wrap: wrap;
   gap: 4px 14px;
   margin-top: 5px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-text-muted);
 }
 
 .rp-acct-reader-stats b {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 900;
   color: var(--c-slate-800);
 }
@@ -4974,7 +5000,7 @@
   border: 1px solid var(--c-border-strong);
   border-radius: 8px;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-700);
   cursor: pointer;
@@ -4986,14 +5012,14 @@
 }
 
 .rp-acct-row-you {
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   padding: 2px 7px;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--rp-profile, #64748b) 14%, #fff);
-  color: var(--rp-profile, var(--c-slate-600));
+  background: color-mix(in srgb, var(--c-accent) 14%, #fff);
+  color: var(--c-accent);
 }
 
 .rp-acct-field {
@@ -5005,13 +5031,13 @@
 }
 
 .rp-acct-field-label {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--c-slate-700);
 }
 
 .rp-acct-field-value {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-text-muted);
   margin-top: 3px;
@@ -5026,7 +5052,7 @@
 
 /* Grouped heading inside the account-creator form. */
 .rp-form-section {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
   padding-bottom: 10px;
@@ -5042,7 +5068,6 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  margin-bottom: 16px;
 }
 
 /* `.rp-adm-main-body` is a flex column with no gap, so anything dropped
@@ -5067,7 +5092,7 @@
 }
 
 .rp-find-creator-link {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
 }
 
@@ -5107,10 +5132,10 @@
 }
 
 .rp-find-count {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--c-slate-800);
-  margin: 4px 0 12px;
+  margin: 0;
 }
 
 .rp-find-add {
@@ -5120,20 +5145,20 @@
 }
 
 .rp-find-creator-name {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-blue-700);
   margin-bottom: 4px;
 }
 
 .rp-find-creator-name a {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-blue-700);
 }
 
 .rp-find-creator-line {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-700);
   line-height: 1.55;
@@ -5155,7 +5180,7 @@
   background: none;
   border: 0;
   font: inherit;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1.55;
   color: var(--c-blue-700);
@@ -5168,7 +5193,7 @@
 }
 
 .rp-find-age {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.55;
   color: var(--c-slate-700);
@@ -5213,7 +5238,7 @@
   padding: 2px 8px 2px 6px;
   border-radius: 999px;
   border: 1px solid;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -5280,7 +5305,7 @@
   padding: 1px 6px;
   border-radius: 999px;
   background: rgb(15 23 42 / 6%);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   color: var(--c-slate-500);
 }
@@ -5299,7 +5324,7 @@
 /* Date and Unit are reference columns, not the row's subject — the title is.
    Tabular figures so the dates line up as a column of numbers. */
 .rp-rl-tbl-dim {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--c-slate-500);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -5347,7 +5372,7 @@
 }
 
 .rp-clog-bar-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-500);
   letter-spacing: 0.02em;
@@ -5377,7 +5402,7 @@
 }
 
 .rp-clog-dates {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-slate-500);
 }
@@ -5386,7 +5411,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-500);
   flex-shrink: 0;
@@ -5410,7 +5435,7 @@
 }
 
 .rp-clog-field-label {
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -5418,7 +5443,7 @@
 }
 
 .rp-clog-field-value {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-800);
 }
@@ -5447,7 +5472,7 @@
 }
 
 .rp-clog-total-label {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-500);
 }
@@ -5460,7 +5485,7 @@
 .rp-clog-th {
   padding: 8px 10px;
   border-bottom: 1.5px solid var(--c-slate-300);
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -5481,7 +5506,7 @@
 .rp-clog-td {
   padding: 9px 10px;
   border-bottom: 1px solid var(--c-slate-100);
-  font-size: 13px;
+  font-size: 15px;
   color: var(--c-slate-700);
   vertical-align: top;
 }
@@ -5499,7 +5524,7 @@
 
 .rp-clog-by {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--c-slate-400);
 }
 
@@ -5629,5 +5654,68 @@
 
   .rp-statrow-go {
     grid-area: 1 / 5 / 3 / 6;
+  }
+}
+
+.rp-heatmap-nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ─── Latest titles pager ────────────────────────────────────────────────────
+   The arrows float over the cover rail they scroll rather than sitting in the
+   card header. `--latest-arrow-inset` keeps them clear of the card edge. */
+.rp-latest-body {
+  position: relative;
+}
+
+/* These classes sit on the Tooltip wrapper, not the button: the wrapper is
+   `position: relative`, so anchoring the button itself would position it
+   against the wrapper rather than the cover rail. Vertically centred on the
+   rail via a 50% offset less half the 36px button. */
+/* Centred on the cover artwork, not the whole tile: the tile also carries the
+   title and author, so a plain 50% left the arrows sitting ~37px low, over the
+   text. `--shelf-cover-h` is published by TitleShelf on each measure (the
+   covers are fluid, so CSS has no fixed height to work from); the fallback
+   matches a 120px column. */
+.rp-latest-body > .rp-latest-arrow {
+  position: absolute;
+  top: calc(var(--shelf-cover-h, 180px) / 2);
+  margin-top: -18px;
+  z-index: 2;
+}
+
+/* White with a lift, so the control reads against whatever cover it lands on
+   rather than the grey the rest of the nav buttons use. */
+.rp-latest-body > .rp-latest-arrow,
+.rp-latest-body > .rp-latest-arrow:hover:not(:disabled) {
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.18);
+}
+
+.rp-latest-body > .rp-latest-arrow--prev {
+  left: 6px;
+}
+
+.rp-latest-body > .rp-latest-arrow--next {
+  right: 6px;
+}
+
+/* Nothing to page to — leave the rail unobstructed rather than showing a dead
+   control over the covers. */
+.rp-latest-body > .rp-latest-arrow:disabled {
+  display: none;
+}
+
+/* An overlay scrollbar paints *over* the right gutter, so the page reads as
+   having less padding on the right than the left. Phones hide their scrollbars
+   until you scroll; matching that keeps the gutters even. */
+@media (max-width: 699px) {
+  .rp-adm-main-body {
+    scrollbar-width: none;
+  }
+
+  .rp-adm-main-body::-webkit-scrollbar {
+    display: none;
   }
 }

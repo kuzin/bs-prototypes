@@ -175,7 +175,7 @@ export function WordCloud({
 }) {
   const ref = useRef(null)
   const [box, setBox] = useState(null)
-  const [family, setFamily] = useState("'Nunito', 'Trebuchet MS', sans-serif")
+  const [family, setFamily] = useState("'museo-sans-rounded', 'Nunito', 'Trebuchet MS', sans-serif")
   const [fontsReady, setFontsReady] = useState(false)
 
   // The container's real size drives the spiral's aspect, so the cloud comes
@@ -194,7 +194,7 @@ export function WordCloud({
     return () => ro.disconnect()
   }, [])
 
-  // Nunito loads after first paint; metrics measured against the fallback pack
+  // The webfont loads after first paint; metrics measured against the fallback pack
   // wrong, so re-pack once the real face is in.
   useEffect(() => {
     let live = true

@@ -1,85 +1,114 @@
+/* Ported from the shipped app's `.button`
+   (bs-product app/assets/stylesheets/lib/_buttons.scss):
+     height 44px · radius 8px · 2px border · 14px · padding 0 20px
+     font-weight inherit (so 700, from the app's bold body)
+     :active { transform: scale(0.96) }
+   Sizes follow the app's modifiers: --small 36/8/12, --medium 44/10/15,
+   --large 56/16/17. */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   font-family: inherit;
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  border: 1px solid transparent;
+  font-weight: 700;
+  border: 2px solid transparent;
   border-radius: 8px;
+  background: #fff;
   cursor: pointer;
   text-decoration: none;
   white-space: nowrap;
-  transition:
-    background 0.12s,
-    border-color 0.12s,
-    color 0.12s,
-    transform 0.06s;
+  transition: all 0.13s ease;
   -webkit-user-select: none;
   user-select: none;
 }
 
 .btn:active:not(:disabled) {
-  transform: translateY(0.5px);
+  transform: scale(0.96);
 }
 
+/* `.button[disabled] { background: $lighterGray; color: $lightGray }` */
 .btn:disabled,
 .btn[aria-disabled='true'] {
-  cursor: not-allowed;
-  opacity: 0.55;
+  cursor: default;
+  background: var(--c-gray-200);
+  color: var(--c-gray-400);
+  border-color: var(--c-gray-200);
+}
+
+/* `&:focus { box-shadow: 0 0 0 3px #5599E1 }` */
+.btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px #5599e1;
 }
 
 /* ── Sizes ───────────────────────────────────────────────────────────────── */
+/* `.button--small` (36px / radius 8 / 14px). The app also has a
+   `.button--medium-small` at 40px / radius 10 between this and --md. */
 .btn--sm {
-  font-size: 13px;
-  padding: 5px 10px;
-  border-radius: 7px;
-}
-
-.btn--md {
-  font-size: 13px;
-  padding: 8px 14px;
-}
-
-.btn--lg {
+  height: 36px;
   font-size: 14px;
-  padding: 10px 18px;
+  padding: 0 12px;
+  border-radius: 8px;
+}
+
+/* `.button--medium` — the default in the admin header: same 44px height and
+   `padding: 0 20px` as the base `.button`, but radius 10px and 15px text. */
+.btn--md {
+  height: 44px;
+  font-size: 15px;
+  padding: 0 20px;
   border-radius: 10px;
 }
 
-/* ── Variants ────────────────────────────────────────────────────────────── */
-/* Primary — solid brand blue */
-.btn--primary {
-  background: var(--c-blue-700);
-  color: #fff;
-  border-color: var(--c-blue-700);
-}
-.btn--primary:hover:not(:disabled) {
-  background: #1e40af;
-  border-color: #1e40af;
+/* `.button--large` */
+.btn--lg {
+  height: 56px;
+  font-size: 17px;
+  padding: 0 24px;
+  border-radius: 16px;
 }
 
-/* Secondary — white with border */
+/* ── Variants ────────────────────────────────────────────────────────────── */
+/* Primary — the tenant accent, filled. In production this comes from the
+   microsite theme partial: `.new-admin .button { background-color: accent;
+   border-color: accent }`. */
+.btn--primary {
+  background: var(--c-accent);
+  color: #fff;
+  border-color: var(--c-accent);
+}
+.btn--primary:hover:not(:disabled) {
+  background: var(--c-accent-active);
+  border-color: var(--c-accent-active);
+}
+
+/* Secondary — `.button--secondary { border-color: $platinum; color: $textColor }`
+   over a transparent ground: the app's base `.button` is white, but
+   `_new-buttons.scss` overrides `.button--secondary { background-color:
+   transparent }` in the header / modal contexts, which is where these live.
+   Hover is `$whiteSmoke`. */
 .btn--secondary {
-  background: #fff;
-  color: var(--c-slate-800);
-  border-color: var(--c-border-strong);
+  background: transparent;
+  color: var(--c-text-real);
+  border-color: var(--c-gray-250);
 }
 .btn--secondary:hover:not(:disabled) {
   background: var(--c-slate-50);
   border-color: var(--c-slate-400);
 }
 
-/* Ghost — transparent */
+/* Ghost — the app's `.button--text`: transparent, $textColor, and a
+   $lightestGray hover. */
 .btn--ghost {
   background: transparent;
-  color: var(--c-slate-600);
+  color: var(--c-text-real);
   border-color: transparent;
 }
 .btn--ghost:hover:not(:disabled) {
-  background: var(--c-slate-100);
-  color: var(--c-slate-800);
+  background: var(--c-gray-150);
+  color: var(--c-text-real);
+  border-color: var(--c-gray-150);
 }
 
 /* Danger — red */

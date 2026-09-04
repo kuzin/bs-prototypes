@@ -6,16 +6,24 @@
 
    Default per tier:  mobile=closed   tablet=icon   desktop=full
    Visual rendering:
-     desktop + full   → MainRail + Sidebar 240px (in-flow, pushes content)
+     desktop + full   → MainRail + Sidebar 320px (in-flow, pushes content)
      desktop + icon   → MainRail + Sidebar 64px  (in-flow)
      tablet  + icon   → MainRail + Sidebar 64px  (in-flow)
-     tablet  + full   → MainRail + Sidebar 64px in-flow + 240px overlay sidebar
+     tablet  + full   → MainRail + Sidebar 64px in-flow + 320px overlay sidebar
      mobile  + closed → topbar only (no rail / sidebar)
-     mobile  + full   → topbar + drawer (MainRail + Sidebar 240px overlay)
+     mobile  + full   → topbar + drawer (MainRail + Sidebar 320px overlay)
 
    `position: absolute` for overlays keeps them inside the nearest positioned
    ancestor — so the showcase frame contains them, and the app shell does too.
    ────────────────────────────────────────────────────────────────────────── */
+
+/* Buttons don't inherit font-family from their ancestors, and several of the
+   rows below are <button>s. Set it here so the component carries its own type
+   instead of depending on the host prototype resetting `button`. */
+.sb-shell button,
+.sb-shell input {
+  font-family: inherit;
+}
 
 .sb-shell {
   position: relative;
@@ -119,14 +127,16 @@
 }
 
 /* ── Sidebar panel ─────────────────────────────────────────────────────── */
+/* `#admin-section-menu` in the shipped app
+   (bs-product admin/_admin_navigation.scss): a flat 320px panel in the tenant
+   accent — not a gradient. */
 .sb-sidebar {
-  width: 240px;
+  width: 320px;
   flex-shrink: 0;
-  background: linear-gradient(160deg, #1e40af 0%, var(--c-blue-700) 60%, #2563eb 100%);
-  color: rgba(255, 255, 255, 0.92);
+  background: var(--c-accent);
+  color: #fff;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
   position: relative;
 }
 
@@ -147,10 +157,19 @@
 .sb-sidebar--icon .sb-nav-item {
   justify-content: center;
   padding: 10px 6px;
+  border-radius: 8px;
   gap: 0;
   position: relative;
 }
-.sb-sidebar--icon .sb-nav-label {
+.sb-sidebar--icon .sb-nav-item--active::before {
+  display: none;
+}
+/* Icon mode is a prototype-only affordance: swap the real text rows back out
+   for the rail glyphs. */
+.sb-sidebar--icon .sb-nav-icon {
+  display: flex;
+}
+.sb-sidebar--icon .sb-nav-item-text {
   display: none;
 }
 .sb-sidebar--icon .sb-nav-badge {
@@ -167,10 +186,12 @@
   line-height: 0;
 }
 .sb-sidebar--icon .sb-nav-subgroup {
-  margin-left: 0;
-  padding-left: 0;
+  gap: 1px;
 }
-.sb-sidebar--icon .sb-nav-subgroup::before {
+.sb-sidebar--icon .sb-nav-subgroup .sb-nav-item {
+  padding-left: 6px;
+}
+.sb-sidebar--icon .sb-nav-expand {
   display: none;
 }
 .sb-sidebar--icon .sb-picker {
@@ -223,31 +244,11 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  left: 52px;
-  width: 240px;
+  left: 80px;
+  width: 320px;
   z-index: 40;
   box-shadow: 4px 0 18px rgba(15, 23, 42, 0.22);
   animation: sb-overlay-in 0.18s ease;
-}
-
-/* Mobile+full: drawer at the left edge — MainRail + Sidebar both visible */
-.sb-shell--mobile .sb-overlay-rail {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  z-index: 40;
-  animation: sb-overlay-in 0.22s ease;
-}
-.sb-shell--mobile .sb-sidebar--overlay {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 52px;
-  width: min(260px, calc(100% - 52px));
-  z-index: 40;
-  box-shadow: 4px 0 18px rgba(15, 23, 42, 0.25);
-  animation: sb-overlay-in 0.22s ease;
 }
 
 @keyframes sb-overlay-in {
@@ -262,56 +263,77 @@
 }
 
 /* ── Header (title + collapse) ─────────────────────────────────────────── */
+/* `.section-menu-header`: padded 40px 30px, with the 5px darken($accent, 5%)
+   bottom rule that `.section-menu-header-waves-bg` contributes. */
 .sb-sidebar-top {
-  padding: 16px 20px 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  display: flex;
-  align-items: center;
-  gap: 10px;
+  padding: 40px 30px;
+  border-bottom: 5px solid var(--c-accent-dark-5);
+  display: block;
+  position: relative;
+  flex: none;
 }
 
+/* Production leaves the text column the full 260px, so a long section
+   description can run under the contract notch. We reserve the notch's 13px of
+   overlap (plus breathing room) so the copy wraps before it — the only
+   deliberate deviation from the real values in this header. */
 .sb-sidebar-title {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.25;
+  display: block;
   min-width: 0;
-  flex: 1;
+  padding-right: 24px;
 }
 
+/* `.section-title`: 22px / 26.4px, weight 800 */
 .sb-sidebar-product {
-  font-size: 18px;
-  font-weight: 900;
+  font-size: 22px;
+  line-height: 26.4px;
+  font-weight: 800;
   color: #fff;
-  letter-spacing: -0.02em;
 }
 
+/* `.section-description`: 16px / 20px, weight 700, opacity .8, margin-top 5px */
 .sb-sidebar-sub {
-  font-size: 13px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
-  margin-top: 4px;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 700;
+  color: #fff;
+  opacity: 0.8;
+  margin-top: 5px;
 }
 
+/* `.close-menu { position: absolute; top: 50%; left: 277px;
+   margin-top: -38.5px }` — placed on the panel's right edge, centered on the
+   header, so the contract icon's tails read as a notch cut into it. */
 .sb-sidebar-collapse {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  position: absolute;
+  top: 50%;
+  left: 277px;
+  margin-top: -38.5px;
+  width: 70px;
+  height: 70px;
+  padding: 0;
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  margin-left: auto;
-  transition:
-    background 0.12s,
-    color 0.12s;
+  z-index: 3;
 }
-.sb-sidebar-collapse:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+
+/* `.sidebar-contract-icon { width: 70px; height: 70px }` — the app squeezes
+   the 40x76 viewBox into a 70x70 box, so the shape renders 36.8 x 70 and its
+   disc lands on the panel edge. Keep the box square to match. */
+.sb-contract-icon {
+  width: 70px;
+  height: 70px;
+  display: block;
+}
+/* `.sidebar-contract-icon .dark { fill: $accent-color }` — the disc *and* both
+   tails are painted in the panel color, so the tails blend into the panel edge
+   and the disc reads as part of it. */
+.sb-contract-tail {
+  fill: var(--c-accent);
 }
 
 /* Expand (hamburger) — only shown in icon mode */
@@ -335,64 +357,94 @@
 }
 
 /* ── Nav ───────────────────────────────────────────────────────────────── */
+/* `ul.section-menu-sub { padding: 10px 0 }` with `li { margin: 10px 0 }`. In
+   the app's block flow those margins collapse to a 10px gap, and the first
+   row sits 20px down (10px padding + 10px margin) — reproduced here with a
+   flex gap plus matching container padding. Rows are padded
+   20px 20px 20px 30px. No icons — those live on the rail. */
 .sb-nav {
-  flex: 1;
-  padding: 10px;
+  flex: 1 1 auto;
+  padding: 20px 0;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 10px;
   overflow-y: auto;
 }
 
 .sb-nav-item {
+  position: relative;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 10px;
-  padding: 9px 11px;
-  border-radius: 8px;
+  padding: 20px 20px 20px 30px;
   border: none;
+  border-radius: 0;
   background: none;
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
-  font-weight: 500;
+  color: #fff;
   cursor: pointer;
   text-align: left;
-  transition:
-    background 0.12s,
-    color 0.12s;
+  transition: background 0.13s ease;
   width: 100%;
 }
 
-.sb-nav-item:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+.sb-nav-item:hover,
+.sb-nav-item:focus-visible {
+  background: rgba(0, 0, 0, 0.15);
 }
 
+/* Active — `a.active { background-color: rgba(0,0,0,0.15) }` plus a 5px white
+   bar at opacity .4194931756882441, inset 20px from the row's top and bottom. */
 .sb-nav-item--active {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  font-weight: 600;
+  background: rgba(0, 0, 0, 0.15);
 }
 
+.sb-nav-item--active::before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 20px;
+  bottom: 20px;
+  width: 5px;
+  background: #fff;
+  opacity: 0.4194931756882441;
+}
+
+.sb-nav-item--active:focus-visible {
+  outline: 4px solid rgba(255, 255, 255, 0.9);
+  outline-offset: -4px;
+}
+
+/* The panel has no icons in the real app — they're kept only for icon mode. */
 .sb-nav-icon {
+  display: none;
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-  display: flex;
   align-items: center;
-  opacity: 0.85;
 }
 
-.sb-nav-item--active .sb-nav-icon {
-  opacity: 1;
-}
-
-.sb-nav-label {
+.sb-nav-item-text {
+  display: flex;
+  flex-direction: column;
   flex: 1;
   min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+/* `strong`: 17px / 20px, weight 800 */
+.sb-nav-label {
+  font-size: 17px;
+  line-height: 20px;
+  font-weight: 800;
+}
+
+/* `p`: 14px / 20px, weight 700, opacity .8, no margin */
+.sb-nav-desc {
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+  opacity: 0.8;
 }
 
 .sb-nav-section {
@@ -404,24 +456,33 @@
   padding: 14px 12px 3px;
 }
 
+/* Nested rows. No connector line — `.sub-menu li a .section-item` simply gets
+   `padding-left: 20px`, so a nested row's text sits at 50px instead of 30px.
+   Spacing stays the same 10px row rhythm. */
 .sb-nav-subgroup {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  margin-left: 10px;
-  padding-left: 8px;
-  position: relative;
+  gap: 10px;
 }
 
-.sb-nav-subgroup::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 8px;
-  bottom: 8px;
-  width: 2px;
-  background: rgba(255, 255, 255, 0.18);
-  border-radius: 1px;
+.sb-nav-subgroup .sb-nav-item {
+  padding-left: 50px;
+}
+
+/* `.expand-section { background: rgba(0,0,0,0.1); border-radius: 100%;
+   min-width: 32px; height: 32px; margin: 0 10px }` with a 16px white arrow. */
+.sb-nav-expand {
+  min-width: 32px;
+  width: 32px;
+  height: 32px;
+  margin: 0 10px;
+  border-radius: 100%;
+  background: rgba(0, 0, 0, 0.1);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .sb-nav-badge {

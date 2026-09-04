@@ -84,10 +84,26 @@ const CONCEPTS = [
   },
 ]
 
+// Every row carries a `desc` — the section menu always pairs title + description.
 const NAV = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'overview' },
-  { id: 'number-cruncher', label: 'Number Cruncher', icon: 'analytics' },
-  { id: 'leaderboards', label: 'Leaderboards', icon: 'lexile' },
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: 'overview',
+    desc: 'Participation and engagement at a glance.',
+  },
+  {
+    id: 'number-cruncher',
+    label: 'Number Cruncher',
+    icon: 'analytics',
+    desc: 'Ask questions of your reading data.',
+  },
+  {
+    id: 'leaderboards',
+    label: 'Leaderboards',
+    icon: 'lexile',
+    desc: 'Top readers by minutes, books, and streaks.',
+  },
 ]
 
 const ALL_TILE_IDS = QUERY_TILES.map((t) => t.id)

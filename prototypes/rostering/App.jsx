@@ -23,13 +23,48 @@ import './index.css'
  * active item; the others are shown for context. Single page (no tabs).
  */
 const SETUP_NAV = [
-  { id: 'reading-integrity', label: 'Reading Integrity Settings', icon: 'shield' },
-  { id: 'school-contact', label: 'School Contact Details', icon: 'person' },
-  { id: 'sync', label: 'Roster Sync Settings', icon: 'analytics' },
-  { id: 'community-goal', label: 'Community Goal', icon: 'flag' },
-  { id: 'achievements', label: 'Achievement Settings', icon: 'habits' },
-  { id: 'classroom-naming', label: 'Classroom Naming', icon: 'book' },
-  { id: 'other', label: 'Other Settings', icon: 'overview' },
+  {
+    id: 'reading-integrity',
+    label: 'Reading Integrity Settings',
+    icon: 'shield',
+    desc: 'Set flagging rules and review thresholds.',
+  },
+  {
+    id: 'school-contact',
+    label: 'School Contact Details',
+    icon: 'person',
+    desc: 'Update the contact shown to families.',
+  },
+  {
+    id: 'sync',
+    label: 'Roster Sync Settings',
+    icon: 'analytics',
+    desc: 'Connect and schedule your roster provider.',
+  },
+  {
+    id: 'community-goal',
+    label: 'Community Goal',
+    icon: 'flag',
+    desc: 'Set a shared reading goal for the site.',
+  },
+  {
+    id: 'achievements',
+    label: 'Achievement Settings',
+    icon: 'habits',
+    desc: 'Choose which badges and streaks readers earn.',
+  },
+  {
+    id: 'classroom-naming',
+    label: 'Classroom Naming',
+    icon: 'book',
+    desc: 'Choose how classes are labelled.',
+  },
+  {
+    id: 'other',
+    label: 'Other Settings',
+    icon: 'overview',
+    desc: 'Everything else for this site.',
+  },
 ]
 
 const filterKey = (f) =>

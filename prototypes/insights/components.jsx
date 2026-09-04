@@ -266,7 +266,7 @@ function BadgeArt({ name }) {
           fill="#fff"
           fontWeight="800"
           textAnchor="middle"
-          fontFamily="Nunito, sans-serif"
+          fontFamily="museo-sans-rounded, Nunito, sans-serif"
         >
           Registered
         </text>

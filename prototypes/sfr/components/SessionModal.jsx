@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
-import { Modal } from '@components/Modal/Modal'
+import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
-import { IconButton } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 import { SAFETY_SEVERITY } from './SessionsTable'
 import '@components/Modal/Modal.css'
@@ -561,7 +560,14 @@ export function SessionModal({
   )
 
   return (
-    <Modal open={!!session} onClose={onClose} variant="center" ariaLabel="Session detail">
+    <Modal
+      open={!!session}
+      onClose={onClose}
+      variant="center"
+      ariaLabel="Session detail"
+      closeBadge
+    >
+      <ModalClose onClick={onClose} />
       <div className="sm2-shell">
         {/* Top bar */}
         <div className="sm2-topbar">
@@ -594,11 +600,6 @@ export function SessionModal({
                 </button>
               </div>
             )}
-          </div>
-          <div className="sm2-topbar-right">
-            <IconButton variant="ghost" onClick={onClose} aria-label="Close" className="sm2-close">
-              <Icon name="x" size={15} stroke={2.2} />
-            </IconButton>
           </div>
         </div>
 

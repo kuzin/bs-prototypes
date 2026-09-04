@@ -46,9 +46,78 @@
   --c-brand-green: #16a97a;
   --c-brand-coral: #e8866a;
 
-  /* Font families */
-  --font-sans: 'Nunito', 'Trebuchet MS', sans-serif;
+  /* ── Real-app values (bs-product) ───────────────────────────────────────
+     Exact values lifted from the production Beanstack Rails app so
+     prototypes can serve as pixel references. Sources:
+       app/assets/stylesheets/lib/_colors.scss
+       app/assets/stylesheets/variables.scss
+       app/assets/stylesheets/admin/_admin_navigation.scss
+     The real neutrals are pure gray (NOT Tailwind's blue-tinted slate) and
+     the real action color is blue, not teal — teal is a brand accent. */
+
+  /* Accent — `$primary-color` / `$accent-color` from the shipped app
+     (bs-product `lib/_colors.scss`). Tenant-themable in production; this is the
+     default. The `-active` / `-hover` / `-dark-5` / `-wash` values are the Sass
+     darken()/lighten() results the app actually renders:
+       darken 10% #2858a5 · lighten 10% #5b8bd8
+       darken 5%  #2c63ba (section-header rule)
+       lighten 45% #ebf1fa (rail hover + active fill) */
+  --c-accent: #326ece;
+  --c-accent-active: #2858a5;
+  --c-accent-hover: #5b8bd8;
+  --c-accent-dark-5: #2c63ba;
+  --c-accent-wash: #ebf1fa;
+  --c-focus-blue: #6dafff;
+
+  /* The Figma design system's Blue ramp. Newer than the shipped Sass above and
+     kept here for reference — the components deliberately track the shipped
+     app, so these are NOT wired into the chrome. */
+  --c-fig-blue-0: #e6f1ff;
+  --c-fig-blue-200: #8cbefa;
+  --c-fig-blue-b3: #65a5f6;
+  --c-fig-blue-600: #1a6dd5;
+  --c-fig-blue-700: #0c5dbe;
+  --c-fig-blue-800: #064a9f;
+
+  /* $light-gray — lighten(black, 88%); the rail avatar's ground */
+  --c-light-gray: #e0e0e0;
+
+  /* Real grays — $gray0…$gray900 */
+  --c-gray-0: #f8f8f8;
+  --c-gray-100: #f5f5f5;
+  --c-gray-150: #f2f2f2;
+  --c-gray-200: #eaeaea;
+  --c-gray-250: #e5e5e5;
+  --c-gray-300: #dedede;
+  --c-gray-350: #d0d0d0;
+  --c-gray-400: #c8c8c8;
+  --c-gray-500: #acacac;
+  --c-gray-600: #929292;
+  --c-gray-700: #707070;
+  --c-gray-750: #656565;
+  --c-gray-800: #424242;
+  --c-gray-900: #2a2a2a;
+
+  /* Real text roles — $textColorDark / $textColor / $textColorLight */
+  --c-text-real: #424242;
+  --c-text-real-dark: #2a2a2a;
+  --c-text-real-light: #656565;
+
+  /* Font families.
+     Museo Sans Rounded is Beanstack's real typeface, served from the Adobe
+     Fonts kit `kus1pku` (loaded in the HTML template in vite.config.js). It
+     carries the same six weights as the product's own `dpo2eva` kit plus real
+     italics. Nunito stays behind it as a fallback for when the kit can't load.
+
+     The kit ships weights 100 / 300 / 500 / 700 / 800 / 900 — no 400 and no
+     600 — so per CSS font matching a requested 400 renders as 500 and a 600
+     renders as 700. Copy reads heavier than it did in Nunito, which is closer
+     to the real app (it sets `body { font-weight: 700 }` outright). Prefer the
+     weights the kit actually has. */
+  --font-sans: 'museo-sans-rounded', 'Nunito', 'Trebuchet MS', sans-serif;
   --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  /* Kept as an alias for call sites that already asked for the real stack. */
+  --font-real: var(--font-sans);
 
   /* Type scale (px) — 13px is the body default */
   --text-2xs: 10px;
@@ -84,6 +153,30 @@
   --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
   --shadow-lg: 0 8px 28px rgba(15, 23, 42, 0.14);
 
+  /* ── Admin page frame ───────────────────────────────────────────────────
+     One frame for every admin page, so pages line up with each other instead of
+     each sizing to its own content.
+
+     Every admin screen in the product Figma files uses the same geometry: the
+     80px rail, the 332px section menu (320 + the 12px contract notch), then a
+     content column at x=479 that is 900px wide on the 1440 canvas — i.e. 70px
+     gutters. The shipped app matches that gutter
+     (`#pjax-body-content { padding: 58px 70px 50px 150px }`) but sets no cap,
+     so content sprawls on wide monitors; --admin-content-max is a prototype
+     guard the real app lacks. At the 1440 design width the gutters bind first
+     and every page lands on Figma's 900px.
+
+     Top padding is Figma's y=56 (the app composes 58px of body padding with
+     `.page-wrap { margin-top: 56px }`); bottom is the app's 50px. */
+  --admin-content-max: 1280px;
+  --admin-gutter: 70px;
+  --admin-pad-top: 56px;
+  --admin-pad-bottom: 50px;
+  /* The single vertical rhythm between page-level blocks — back link, page
+     header, filter card, callout, table card. Applied as a flex `gap` on the
+     page container, so blocks must not carry their own bottom margins. */
+  --admin-section-gap: 20px;
+
   /* Spacing scale (px) */
   --space-2: 2px;
   --space-4: 4px;
@@ -115,4 +208,20 @@
   --c-warning: var(--c-amber-600);
   --c-success: var(--c-brand-green);
   --c-info: var(--c-blue-700);
+}
+
+/* ── Admin page frame on a phone ────────────────────────────────────────────
+   70px gutters and 56px of top padding are desktop values; on a phone they eat
+   the screen. The app's own `$small-only` rule drops to 20px
+   (`#pjax-body-content { padding: 100px 20px 20px 20px }` — the 100px top is
+   clearing its *fixed* mobile header, which ours doesn't need since the topbar
+   is in flow). Overriding the tokens fixes every surface built on the frame at
+   once: AppShell, both profiles, the admin dashboard and the back bar. */
+@media (max-width: 699px) {
+  :root {
+    --admin-gutter: 20px;
+    --admin-pad-top: 20px;
+    --admin-pad-bottom: 24px;
+    --admin-section-gap: 16px;
+  }
 }

@@ -1,22 +1,26 @@
-/* ── FilterBar ───────────────────────────────────────────────────────────── */
+/* ── FilterBar ─────────────────────────────────────────────────────────────
+   The shipped app's filter card: `.daily-reading__filters { padding: 20px }`
+   holding a `.filter-row { align-items: flex-end; gap: 20px; flex-wrap: wrap }`
+   of `.daily-reading-filters__input { flex: 1; min-width: 150px }`, with the
+   action sharing the row's baseline. Labels are the app's form labels —
+   16px / 900, 8px above the control. No border on the card. */
 .fltr {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 12px;
+  gap: 20px;
   background: #fff;
-  border: 1px solid var(--c-gray-200);
+  border: none;
   border-radius: 12px;
-  padding: 14px 16px;
+  padding: 20px;
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
 
 .fltr-items {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 20px;
   flex: 1;
   min-width: 0;
   align-items: flex-end;
@@ -24,15 +28,15 @@
 
 .fltr-item {
   flex: 1;
-  min-width: 200px;
+  min-width: 150px;
 }
 
 .fltr-lbl {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-text-muted);
-  margin-bottom: 5px;
-  line-height: 1;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-text-real);
+  margin-bottom: 6px;
+  line-height: 1.5;
 }
 
 .fltr-ctl {
@@ -60,11 +64,27 @@
     align-items: end;
   }
 
+  /* The 150px floor is for a flex row that can wrap; in a two-column grid it
+     just forces the card past a 320px screen. The grid already keeps the
+     columns even. */
+  .fltr-item {
+    min-width: 0;
+  }
+
   .fltr-action {
     width: 100%;
   }
 
   .fltr-action > * {
     width: 100%;
+  }
+}
+
+/* Two 150px-ish controls stop being readable on the narrowest phones, so below
+   this the card goes one filter per row — which is what the app's own
+   `$small-only` rule does (`flex-direction: column; align-items: stretch`). */
+@media (max-width: 379px) {
+  .fltr-items {
+    grid-template-columns: 1fr;
   }
 }

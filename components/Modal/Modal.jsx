@@ -11,7 +11,14 @@ const ANIM_DURATION = 220
  * Closes on Escape and backdrop click. Renders nothing when !open and the
  * closing animation finishes.
  */
-export function Modal({ open, onClose, variant = 'side', children, ariaLabel }) {
+export function Modal({
+  open,
+  onClose,
+  variant = 'side',
+  closeBadge = false,
+  children,
+  ariaLabel,
+}) {
   const [closing, setClosing] = useState(false)
   const [mounted, setMounted] = useState(open)
   // Keep the last children so the panel still shows its content while it
@@ -64,7 +71,7 @@ export function Modal({ open, onClose, variant = 'side', children, ariaLabel }) 
         onClick={handleClose}
       />
       <div
-        className={`modal modal--${variant}${closingClass}`}
+        className={`modal modal--${variant}${closeBadge ? ' modal--has-close-badge' : ''}${closingClass}`}
         role="dialog"
         aria-label={ariaLabel}
         aria-modal="true"
@@ -72,5 +79,39 @@ export function Modal({ open, onClose, variant = 'side', children, ariaLabel }) 
         {typeof content === 'function' ? content({ close: handleClose }) : content}
       </div>
     </>
+  )
+}
+
+/**
+ * The admin's modal close control: a floating white disc pinned just outside
+ * the modal's top-right corner (bs-product `.mfp-close-badge-modal`). Give the
+ * Modal `closeBadge` so it stops clipping the overhang:
+ *
+ *   <Modal open={open} onClose={close} variant="center" closeBadge>
+ *     <ModalClose onClick={close} />
+ *     …
+ *   </Modal>
+ */
+export function ModalClose({ onClick, label = 'Close', className = '' }) {
+  return (
+    <button
+      type="button"
+      className={`modal-close-badge ${className}`.trim()}
+      onClick={onClick}
+      aria-label={label}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M18 6l-12 12" />
+        <path d="M6 6l12 12" />
+      </svg>
+    </button>
   )
 }

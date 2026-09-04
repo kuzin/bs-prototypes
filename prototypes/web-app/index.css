@@ -54,6 +54,24 @@
   color: var(--c-slate-800);
 }
 
+/* The reader top bar is chrome, not a page CTA row. The admin default (44px /
+   15px / radius 10) makes the bar 72px tall and the actions shout over the nav
+   beneath them, so these take the `sm` scale — 36px / 14px / radius 8 — which
+   is what the reader's own buttons use elsewhere. Two class levels, so it holds
+   whatever size the markup asks for. Shared by every prototype built on this
+   chrome: web-app, logging-flow, beeverso and book-talks. */
+.wa-topbar-actions .btn {
+  height: 36px;
+  font-size: 14px;
+  padding: 0 12px;
+  border-radius: 8px;
+}
+
+.wa-topbar-actions .btn-icon svg {
+  width: 15px;
+  height: 15px;
+}
+
 .wa-topbar-user {
   margin-left: auto;
   display: flex;
@@ -423,9 +441,10 @@
 .wa-leadcard-tabs .tabs {
   gap: 0;
 }
+/* No font-size here — the `sm` size owns that. Just a little more room either
+   side of each tab, since the strip is centred in the card. */
 .wa-leadcard-tabs .tab {
-  padding: 8px 10px;
-  font-size: 13px;
+  padding: 9px 14px;
 }
 
 .wa-leadcard-meta {

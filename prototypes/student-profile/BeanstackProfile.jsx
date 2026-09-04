@@ -22,13 +22,15 @@ import { ChartCard } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
 import '@components/Table/Table.css'
 import { BackBar } from '@components/BackBar/BackBar'
+import { PageHeader } from '@components/PageHeader/PageHeader'
+import { DailyReadingTracker } from '@components/DailyReadingTracker/DailyReadingTracker'
 import { Sidebar } from '@components/Sidebar/Sidebar'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { Icon } from '@components/Icon/Icon'
 import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 import { Flyout } from '@components/Flyout/Flyout'
-import { Modal } from '@components/Modal/Modal'
+import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Toggle } from '@components/Toggle/Toggle'
 import { SearchInput } from '@components/SearchInput/SearchInput'
@@ -199,14 +201,12 @@ function ActionModal({
   onSave,
 }) {
   return (
-    <Modal open={open} onClose={onClose} variant="center" ariaLabel={title}>
+    <Modal open={open} onClose={onClose} variant="center" ariaLabel={title} closeBadge>
       {({ close }) => (
         <div className="bp-act-modal">
+          <ModalClose onClick={close} />
           <div className="bp-act-modal-head">
             <span className="bp-act-modal-title">{title}</span>
-            <IconButton variant="ghost" size="sm" aria-label="Close" onClick={close}>
-              <Icon name="x" size={18} stroke={2.2} />
-            </IconButton>
           </div>
           <div className="bp-form-body">{children}</div>
           <div className="bp-form-foot">
@@ -508,17 +508,17 @@ function StudentHeader({ student, onClose }) {
   return (
     <div className="bp-panel-header">
       <div className="bp-panel-identity">
-        {/* A round, per-reader colour: the header is a person, not an
-    organisation, and stepping the pager should visibly change reader. The
-    hues are identity only — deliberately none of the status palette, so
-    Tyler doesn't read as "the red student". */}
+        {/* Was a per-student hue so stepping the pager visibly changed
+    student; now the admin accent, so the whole panel reads as one themed
+    surface. `avatarColor` is still on the data if that identity cue is
+    wanted back. */}
         <Avatar
           initials={student.name
             .split(' ')
             .map((w) => w[0])
             .join('')
             .slice(0, 2)}
-          color={student.avatarColor}
+          color="var(--c-accent)"
           size="lg"
         />
         <div>
@@ -590,8 +590,6 @@ const ANALYSIS_SECTIONS = new Set(['motivation', 'integrity', 'habits', 'skills'
 // derives from this one property in CSS via `color-mix`, so a reader needs a
 // single authored hex rather than a hand-mixed scale. The Hero icon chips stay
 // on `SECTION_ACCENT` — the section you're on still has its own colour.
-const profileVars = (student) => ({ '--bp-profile': student.avatarColor })
-
 function LeftNav({ activeSection, onNavigate, pager, extraNav = [] }) {
   return (
     <nav className="bp-nav">
@@ -802,7 +800,13 @@ export function StatRow({ icon, accent, label, children, onOpen }) {
       <span className="bp-statrow-label">{label}</span>
       {children}
       {onOpen && (
-        <Icon name="chevron-right" size={16} className="bp-statrow-go" aria-hidden="true" />
+        <Icon
+          name="chevron-right"
+          size={18}
+          stroke={2.2}
+          className="bp-statrow-go"
+          aria-hidden="true"
+        />
       )}
     </Tag>
   )
@@ -844,6 +848,16 @@ function TitleShelf({ titles, onNavigate }) {
       left: el.scrollLeft > 1,
       right: el.scrollLeft + el.clientWidth < el.scrollWidth - 1,
     })
+    // Publish the rendered cover height so the pager arrows can centre on the
+    // artwork rather than on the whole tile. The covers are fluid (item width
+    // x 1.5 via `aspect-ratio`), so there's no fixed number to use in CSS.
+    const cover = el.querySelector('[class$="-latest-cover"]')
+    if (cover) {
+      el.parentElement?.style.setProperty(
+        '--shelf-cover-h',
+        `${Math.round(cover.getBoundingClientRect().height)}px`,
+      )
+    }
   }
 
   useEffect(() => {
@@ -867,59 +881,53 @@ function TitleShelf({ titles, onNavigate }) {
     <>
       <div className="bp-latest-head">
         <SectionHeading>Latest titles</SectionHeading>
-        <div className="bp-latest-head-right">
-          {scrollable && (
-            <div className="bp-latest-arrows">
-              <Tooltip content="Previous titles">
-                <button
-                  type="button"
-                  className="bp-heatmap-nav-btn"
-                  onClick={() => page(-1)}
-                  disabled={!left}
-                  aria-label="Previous titles"
-                >
-                  <Icon name="chevron-left" size={13} stroke={2.2} />
-                </button>
-              </Tooltip>
-              <Tooltip content="More titles">
-                <button
-                  type="button"
-                  className="bp-heatmap-nav-btn"
-                  onClick={() => page(1)}
-                  disabled={!right}
-                  aria-label="More titles"
-                >
-                  <Icon name="chevron-right" size={13} stroke={2.2} />
-                </button>
-              </Tooltip>
-            </div>
-          )}
-          <button type="button" className="bp-latest-link" onClick={() => onNavigate('readinglog')}>
-            Reading Log
-            <Icon name="arrow-right" size={14} />
-          </button>
-        </div>
+        <button type="button" className="bp-latest-link" onClick={() => onNavigate('readinglog')}>
+          Reading Log
+          <Icon name="arrow-right" size={14} />
+        </button>
       </div>
-      <div className="bp-latest-grid" ref={ref} onScroll={sync}>
-        {titles
-          .slice()
-          .reverse()
-          .map((t, i) => (
-            <a
-              key={i}
-              className="bp-latest-item"
-              href={`https://openlibrary.org/isbn/${t.isbn}`}
-              target="_blank"
-              rel="noreferrer"
+      {/* The pager sits over the rail it scrolls, not up in the header — the
+          header is for what the block is and where it goes. */}
+      <div className="bp-latest-body">
+        {scrollable && (
+          <>
+            <button
+              type="button"
+              className="bp-heatmap-nav-btn bp-latest-arrow bp-latest-arrow--prev"
+              onClick={() => page(-1)}
+              disabled={!left}
+              aria-label="Previous titles"
             >
-              <div className="bp-latest-cover">
-                <CoverImage isbn={t.isbn} title={t.title} />
-                <span className="bp-latest-lexile">{t.lexile}L</span>
+              <Icon name="chevron-left" size={13} stroke={2.2} />
+            </button>
+            <button
+              type="button"
+              className="bp-heatmap-nav-btn bp-latest-arrow bp-latest-arrow--next"
+              onClick={() => page(1)}
+              disabled={!right}
+              aria-label="More titles"
+            >
+              <Icon name="chevron-right" size={13} stroke={2.2} />
+            </button>
+          </>
+        )}
+        <div className="bp-latest-grid" ref={ref} onScroll={sync}>
+          {titles
+            .slice()
+            .reverse()
+            .map((t, i) => (
+              // Covers are display only — the shelf is a summary, and the
+              // Reading Log link in the header is the way through.
+              <div key={i} className="bp-latest-item">
+                <div className="bp-latest-cover">
+                  <CoverImage isbn={t.isbn} title={t.title} />
+                  <span className="bp-latest-lexile">{t.lexile}L</span>
+                </div>
+                <div className="bp-latest-title">{t.title}</div>
+                <div className="bp-latest-author">{t.author}</div>
               </div>
-              <div className="bp-latest-title">{t.title}</div>
-              <div className="bp-latest-author">{t.author}</div>
-            </a>
-          ))}
+            ))}
+        </div>
       </div>
     </>
   )
@@ -931,12 +939,12 @@ function OverviewStats({ metrics, onOpen, range, onRangeChange }) {
   const hidden = metrics.filter((m) => m.more).length
 
   return (
-    <div className="bp-card bp-statlist">
+    <div className="pcard bp-card bp-statlist">
       <div className="bp-statlist-head">
         <SectionHeading>At a glance</SectionHeading>
         <Tabs
           variant="pill"
-          size="sm"
+          size="xs"
           ariaLabel="Overview time range"
           active={range}
           onChange={onRangeChange}
@@ -1143,12 +1151,7 @@ function SectionDetail({ student, sectionKey, goal, onEditGoal }) {
         accentBg={c.bg}
         action={
           sectionKey === 'habits' ? (
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<Icon name="pencil" size={14} />}
-              onClick={onEditGoal}
-            >
+            <Button variant="secondary" size="sm" onClick={onEditGoal}>
               Edit Goal
             </Button>
           ) : undefined
@@ -1683,7 +1686,6 @@ function SkillsDetail({ sec, c }) {
         </StatRow>
         <StatRow icon="arrow-up" accent={c} label="Highest logged recently">
           <span className="bp-statrow-value">{topTitle.lexile}L</span>
-          <span className="bp-statrow-note">{topTitle.title}</span>
         </StatRow>
         <StatRow icon="target" accent={c} label={`Vs. ${sec.gradeLevelLabel || 'grade level'}`}>
           <span className="bp-statrow-value">{sec.gradeLevel}L</span>
@@ -2275,39 +2277,39 @@ const STUDENTS = {
             label: 'May 11–17',
             current: true,
             days: [
-              { day: 'Sun', minutes: 35 },
               { day: 'Mon', minutes: 40 },
               { day: 'Tue', minutes: 38 },
               { day: 'Wed', minutes: 32 },
               { day: 'Thu', minutes: 40 },
               { day: 'Fri', minutes: 35 },
               { day: 'Sat', minutes: null },
+              { day: 'Sun', minutes: null },
             ],
           },
           {
             label: 'May 4–10',
             current: false,
             days: [
-              { day: 'Sun', minutes: 30 },
               { day: 'Mon', minutes: 38 },
               { day: 'Tue', minutes: 42 },
               { day: 'Wed', minutes: 35 },
               { day: 'Thu', minutes: 45 },
               { day: 'Fri', minutes: 36 },
               { day: 'Sat', minutes: 28 },
+              { day: 'Sun', minutes: 30 },
             ],
           },
           {
             label: 'Apr 27 – May 3',
             current: false,
             days: [
-              { day: 'Sun', minutes: 32 },
               { day: 'Mon', minutes: 40 },
               { day: 'Tue', minutes: 38 },
               { day: 'Wed', minutes: 35 },
               { day: 'Thu', minutes: 42 },
               { day: 'Fri', minutes: 0 },
               { day: 'Sat', minutes: 31 },
+              { day: 'Sun', minutes: 32 },
             ],
           },
         ],
@@ -2972,39 +2974,39 @@ const STUDENTS = {
             label: 'May 11–17',
             current: true,
             days: [
-              { day: 'Sun', minutes: 0 },
               { day: 'Mon', minutes: 25 },
               { day: 'Tue', minutes: 22 },
               { day: 'Wed', minutes: 0 },
               { day: 'Thu', minutes: 12 },
               { day: 'Fri', minutes: 12 },
               { day: 'Sat', minutes: null },
+              { day: 'Sun', minutes: null },
             ],
           },
           {
             label: 'May 4–10',
             current: false,
             days: [
-              { day: 'Sun', minutes: 0 },
               { day: 'Mon', minutes: 28 },
               { day: 'Tue', minutes: 20 },
               { day: 'Wed', minutes: 0 },
               { day: 'Thu', minutes: 32 },
               { day: 'Fri', minutes: 25 },
               { day: 'Sat', minutes: 0 },
+              { day: 'Sun', minutes: 0 },
             ],
           },
           {
             label: 'Apr 27 – May 3',
             current: false,
             days: [
-              { day: 'Sun', minutes: 18 },
               { day: 'Mon', minutes: 22 },
               { day: 'Tue', minutes: 21 },
               { day: 'Wed', minutes: 19 },
               { day: 'Thu', minutes: 0 },
               { day: 'Fri', minutes: 0 },
               { day: 'Sat', minutes: 25 },
+              { day: 'Sun', minutes: 18 },
             ],
           },
         ],
@@ -3582,39 +3584,39 @@ const STUDENTS = {
             label: 'May 11–17',
             current: true,
             days: [
-              { day: 'Sun', minutes: 0 },
               { day: 'Mon', minutes: 0 },
               { day: 'Tue', minutes: 0 },
               { day: 'Wed', minutes: 0 },
               { day: 'Thu', minutes: 0 },
               { day: 'Fri', minutes: 0 },
               { day: 'Sat', minutes: null },
+              { day: 'Sun', minutes: null },
             ],
           },
           {
             label: 'May 4–10',
             current: false,
             days: [
-              { day: 'Sun', minutes: 0 },
               { day: 'Mon', minutes: 0 },
               { day: 'Tue', minutes: 22 },
               { day: 'Wed', minutes: 0 },
               { day: 'Thu', minutes: 0 },
               { day: 'Fri', minutes: 0 },
               { day: 'Sat', minutes: 0 },
+              { day: 'Sun', minutes: 0 },
             ],
           },
           {
             label: 'Apr 27 – May 3',
             current: false,
             days: [
-              { day: 'Sun', minutes: 0 },
               { day: 'Mon', minutes: 0 },
               { day: 'Tue', minutes: 0 },
               { day: 'Wed', minutes: 0 },
               { day: 'Thu', minutes: 0 },
               { day: 'Fri', minutes: 19 },
               { day: 'Sat', minutes: 0 },
+              { day: 'Sun', minutes: 0 },
             ],
           },
         ],
@@ -3767,21 +3769,116 @@ const CLASS_TABLE = [
     rank: 1,
     avg: 98,
     ac: 'blue',
-    days: [true, true, true, true, true, null, null],
+    days: [true, true, true, true, null, null, true],
   },
   {
     key: 'anne',
     rank: 2,
     avg: 73,
     ac: 'blue',
-    days: [null, true, true, null, true, '24%', null],
+    days: [true, true, null, true, '24%', null, null],
   },
   {
     key: 'tyler',
     rank: 3,
     avg: 31,
     ac: 'red',
-    days: [null, '18%', null, null, null, null, null],
+    days: ['18%', null, null, null, null, null, null],
+  },
+  // The rest of the roster. These rows carry their own `name` / `goal` because
+  // there's no built-out profile behind them — only Marcus, Anne and Tyler have
+  // one, so only their rows open the quick look. Everything else on the row
+  // renders identically, which is the point: the table needs a realistic
+  // number of rows to design against.
+  {
+    key: 'priya',
+    name: 'Priya Shah',
+    goal: 20,
+    rank: 4,
+    avg: 91,
+    ac: 'blue',
+    days: [true, true, true, '82%', true, null, null],
+  },
+  {
+    key: 'devon',
+    name: 'Devon Brooks',
+    goal: 20,
+    rank: 5,
+    avg: 88,
+    ac: 'blue',
+    days: [true, '76%', true, true, true, null, null],
+  },
+  {
+    key: 'mei',
+    name: 'Mei Tanaka',
+    goal: 15,
+    rank: 6,
+    avg: 84,
+    ac: 'blue',
+    days: [true, true, true, null, true, null, '67%'],
+  },
+  {
+    key: 'omar',
+    name: 'Omar Haddad',
+    goal: 30,
+    rank: 7,
+    avg: 79,
+    ac: 'blue',
+    days: [true, true, '58%', true, null, null, null],
+  },
+  {
+    key: 'sofia',
+    name: 'Sofía Reyes',
+    goal: 15,
+    rank: 8,
+    avg: 71,
+    ac: 'blue',
+    days: ['64%', true, true, null, '55%', null, null],
+  },
+  {
+    key: 'liam',
+    name: 'Liam O’Donnell',
+    goal: 20,
+    rank: 9,
+    avg: 66,
+    ac: 'blue',
+    days: [true, '48%', null, true, '61%', null, null],
+  },
+  {
+    key: 'ava',
+    name: 'Ava Nwosu',
+    goal: 15,
+    rank: 10,
+    avg: 58,
+    ac: 'orange',
+    days: ['52%', null, true, '44%', null, null, null],
+  },
+  {
+    key: 'noah',
+    name: 'Noah Feldman',
+    goal: 20,
+    rank: 11,
+    avg: 49,
+    ac: 'orange',
+    days: ['41%', '38%', null, null, '68%', null, null],
+  },
+  {
+    key: 'zara',
+    name: 'Zara Mahmood',
+    goal: 15,
+    rank: 12,
+    avg: 42,
+    ac: 'orange',
+    days: [null, '35%', '49%', null, null, null, null],
+  },
+  {
+    key: 'jonah',
+    name: 'Jonah Whitfield',
+    goal: 30,
+    rank: 13,
+    avg: 24,
+    ac: 'red',
+    days: ['22%', null, null, '26%', null, null, null],
   },
 ]
 
@@ -4693,18 +4790,10 @@ function SearchToggle({ open, onToggle }) {
 // stance as the Log and Edit Goal buttons.
 function MedalModal({ open, onClose, art, label, headline, note, action }) {
   return (
-    <Modal open={open} onClose={onClose} variant="center" ariaLabel={headline}>
+    <Modal open={open} onClose={onClose} variant="center" ariaLabel={headline} closeBadge>
       {({ close }) => (
         <div className="bp-medal-modal">
-          <IconButton
-            variant="ghost"
-            size="sm"
-            className="bp-medal-modal-close"
-            aria-label="Close"
-            onClick={close}
-          >
-            <Icon name="x" size={18} stroke={2.2} />
-          </IconButton>
+          <ModalClose onClick={close} />
           <div className="bp-medal-modal-art">{art}</div>
           <div className="bp-medal-modal-label">{label}</div>
           <div className="bp-medal-modal-headline">{headline}</div>
@@ -5014,15 +5103,14 @@ function ActivitiesPage({ student }) {
         onClose={() => setOpenIdx(null)}
         variant="center"
         ariaLabel={openBadge?.name}
+        closeBadge
       >
         {({ close }) => (
           <div className="bp-act-modal">
+            <ModalClose onClick={close} />
             <div className="bp-act-modal-head">
               {openBadge && <MedalDisc icon={openBadge.icon} color={openBadge.color} size={34} />}
               <span className="bp-act-modal-title">{openBadge?.name}</span>
-              <IconButton variant="ghost" size="sm" aria-label="Close" onClick={close}>
-                <Icon name="x" size={18} stroke={2.2} />
-              </IconButton>
             </div>
             <div className="bp-act-modal-cols">
               <span>Activity</span>
@@ -5366,7 +5454,7 @@ function PlaceholderPage({ pageKey }) {
  * note the Daily Reading body is now gated on the selected tab, where before it
  * rendered whichever tab was active.
  */
-export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], renderExtra }) {
+export function ClassroomView({ onStudentClick, extraTabs = [], renderExtra }) {
   const [admTab, setAdmTab] = useState('daily')
   const extraIds = extraTabs.map((t) => t.id)
   return (
@@ -5374,33 +5462,46 @@ export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], ren
       <Sidebar
         title="People"
         subtitle="Find and log for my students and classes."
-        mainRailIndex={1}
+        mainRailActive="people"
         nav={[
-          { id: 'classes', label: 'Classes', icon: 'overview' },
-          { id: 'students', label: 'Students', icon: 'demographics' },
-          { id: 'view-students', label: 'View Students', icon: 'person', subgroup: true },
-          { id: 'flagged', label: 'Flagged Entries', icon: 'flag', subgroup: true },
+          { id: 'classes', label: 'Classes', icon: 'overview', desc: 'View and log for classes.' },
+          {
+            id: 'students',
+            label: 'Students',
+            icon: 'demographics',
+            desc: 'View and log for students.',
+          },
+          {
+            id: 'view-students',
+            label: 'View Students',
+            icon: 'person',
+            subgroup: true,
+            desc: 'View and log for students.',
+          },
+          {
+            id: 'flagged',
+            label: 'Flagged Entries',
+            icon: 'flag',
+            subgroup: true,
+            desc: 'View and delete all sessions for review, including Flagged Entries.',
+          },
         ]}
-        active="view-students"
+        active="classes"
       />
 
       {/* Main content area */}
       <div className="bp-adm-main">
-        <BackBar label="Back to Classes" />
         <div className="bp-adm-main-body">
-          <div className="bp-adm-class-header">
-            <div className="bp-adm-class-identity">
-              <div className="bp-adm-class-avatar">CA</div>
-              <div>
-                <div className="bp-adm-class-title">Class A</div>
-                <div className="bp-adm-class-meta">24 students · 2024–25 School Year</div>
-              </div>
-            </div>
-            <div className="bp-adm-class-btns">
-              <Button variant="ghost">Set Classroom Goal</Button>
-              <Button variant="primary">Log for Class</Button>
-            </div>
-          </div>
+          <BackBar label="Back to Classes" />
+          <PageHeader
+            title="Class A"
+            actions={
+              <>
+                <Button variant="secondary">Print</Button>
+                <Button variant="primary">Log for Class</Button>
+              </>
+            }
+          />
 
           <div className="bp-adm-tabs-wrap">
             <Tabs
@@ -5419,24 +5520,20 @@ export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], ren
             renderExtra?.(admTab)
           ) : (
             <>
+              {/* The live page's filter card: two selects on a `.filter-row`
+                  (align-items: flex-end, gap 20px) with the Save & Update
+                  action sharing the baseline. */}
               <div className="bp-adm-filter-wrap">
-                <FilterBar>
-                  <FilterItem label="View as …">
-                    <Select defaultValue="goal" size="sm">
-                      <option value="goal">Reading Goal</option>
+                <FilterBar action={<Button variant="primary">Save &amp; Update</Button>}>
+                  <FilterItem label="View As">
+                    <Select defaultValue="goal">
+                      <option value="goal">Daily Reading Goal</option>
                       <option value="pages">Pages</option>
                       <option value="minutes">Minutes</option>
                     </Select>
                   </FilterItem>
-                  <FilterItem label="Log Type">
-                    <Select defaultValue="minutes" size="sm">
-                      <option value="minutes">Minutes</option>
-                      <option value="pages">Pages</option>
-                      <option value="sessions">Sessions</option>
-                    </Select>
-                  </FilterItem>
-                  <FilterItem label="Show as …">
-                    <Select defaultValue="pct" size="sm">
+                  <FilterItem label="Show As">
+                    <Select defaultValue="pct">
                       <option value="pct">Percentages</option>
                       <option value="raw">Raw values</option>
                     </Select>
@@ -5444,122 +5541,31 @@ export function ClassroomView({ onStudentClick, selectedKey, extraTabs = [], ren
                 </FilterBar>
               </div>
 
-              <div className="bp-adm-card">
-                <div className="bp-adm-week-nav">
-                  <IconButton variant="ghost" size="md" aria-label="Previous week">
-                    <Icon name="chevron-left" size={16} />
-                  </IconButton>
-                  <span className="bp-adm-week-label">5/11 – 5/17 (This Week)</span>
-                  <IconButton
-                    variant="ghost"
-                    size="md"
-                    aria-label="Next week"
-                    style={{ opacity: 0.3 }}
-                  >
-                    <Icon name="chevron-right" size={16} />
-                  </IconButton>
-                </div>
-                <table className="tbl tbl--compact tbl--flush">
-                  <thead>
-                    <tr>
-                      <th className="tbl-th" style={{ width: 160, textAlign: 'left' }}>
-                        Student
-                      </th>
-                      <th className="tbl-th bp-adm-th--goal">Goal</th>
-                      <th className="tbl-th tbl-cell--center">Average</th>
-                      {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => (
-                        <th key={d} className="tbl-th tbl-cell--center">
-                          {d}
-                        </th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {CLASS_TABLE.map((s) => (
-                      <tr
-                        key={s.key}
-                        className={`tbl-row tbl-row--clickable${selectedKey === s.key ? ' bp-adm-row--selected' : ''}`}
-                        onClick={() => onStudentClick?.(s.key)}
-                        onKeyDown={(e) => e.key === 'Enter' && onStudentClick?.(s.key)}
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <td className="tbl-td">
-                          <div className="bp-adm-student-cell">
-                            <span
-                              className={`bp-adm-rank bp-adm-rank--${s.rank === 1 ? 'gold' : s.rank === 2 ? 'silver' : 'bronze'}`}
-                            >
-                              {s.rank}
-                            </span>
-                            <button
-                              type="button"
-                              className="bp-adm-student-name"
-                              title={`Open ${STUDENTS[s.key].name}'s profile`}
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                onStudentClick?.(s.key)
-                              }}
-                            >
-                              {STUDENTS[s.key].name}
-                            </button>
-                          </div>
-                        </td>
-                        <td className="tbl-td bp-adm-td--goal">
-                          <div className="bp-adm-goal-cell">
-                            <span className="bp-adm-goal-val">
-                              {STUDENTS[s.key].sections.habits.dailyGoalMinutes}m
-                            </span>
-                            <IconButton
-                              variant="ghost"
-                              size="sm"
-                              title="Edit goal"
-                              onClick={(e) => e.stopPropagation()}
-                            >
-                              <Icon name="pencil" size={11} />
-                            </IconButton>
-                          </div>
-                        </td>
-                        <td className="tbl-td tbl-cell--center">
-                          <span className={`bp-adm-pct bp-adm-pct--${s.ac}`}>{s.avg}%</span>
-                        </td>
-                        {s.days.map((d, i) => (
-                          <td key={i} className="tbl-td tbl-cell--center">
-                            {d === null ? (
-                              <span className="bp-adm-dash">–</span>
-                            ) : d === true ? (
-                              <span className="bp-adm-check-circle">
-                                <Icon name="check" size={10} />
-                              </span>
-                            ) : (
-                              <span
-                                className={`bp-adm-pct bp-adm-pct--${s.ac === 'red' ? 'red' : 'orange'}`}
-                              >
-                                {d}
-                              </span>
-                            )}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                    <tr className="bp-adm-avg-row">
-                      <td className="tbl-td">Class Average</td>
-                      <td className="tbl-td bp-adm-td--goal" />
-                      <td className="tbl-td tbl-cell--center">67%</td>
-                      {['–', '58%', '50%', '33%', '67%', '24%', '–'].map((v, i) => (
-                        <td key={i} className="tbl-td tbl-cell--center">
-                          {v}
-                        </td>
-                      ))}
-                    </tr>
-                  </tbody>
-                </table>
-                <div className="bp-adm-legend">
-                  <span style={{ color: '#EF4444' }}>● 0–33%</span>
-                  <span style={{ color: '#F59E0B' }}>● 34–66%</span>
-                  <span style={{ color: '#3B82F6' }}>● 66–99%</span>
-                  <span style={{ color: '#10B981' }}>✓ 100%</span>
-                </div>
-              </div>
+              {/* `.infobox.helpbox` on the real page — see DailyReading.tsx */}
+              <Banner level="info">
+                Daily reading is calculated nightly. All reading logged today will appear on the
+                tracker tomorrow.
+              </Banner>
+
+              <DailyReadingTracker
+                weekLabel="5/11 – 5/17 (This Week)"
+                rows={CLASS_TABLE.map((row) => {
+                  // Only the three built-out students have a profile behind
+                  // them; the rest of the roster carries its own name/goal.
+                  const profile = STUDENTS[row.key]
+                  return {
+                    key: row.key,
+                    rank: row.rank,
+                    name: profile?.name ?? row.name,
+                    goal: profile?.sections.habits.dailyGoalMinutes ?? row.goal,
+                    average: row.avg,
+                    tone: row.ac,
+                    days: row.days,
+                    onOpen: profile ? () => onStudentClick?.(row.key) : undefined,
+                  }
+                })}
+                average={{ average: '67%', days: ['58%', '50%', '33%', '67%', '24%', null, null] }}
+              />
             </>
           )}
         </div>
@@ -5584,7 +5590,7 @@ function ProfilePager({ currentKey, onSelect, variant = 'inline' }) {
   const next = idx < STUDENT_ORDER.length - 1 ? STUDENT_ORDER[idx + 1] : null
   const float = variant === 'float'
   const btnClass = float ? 'bp-ctrl-btn' : 'bp-pager-btn'
-  const icon = float ? { size: 15, stroke: 2.2 } : { size: 17, stroke: 2.2 }
+  const icon = float ? { size: 18, stroke: 2.2 } : { size: 17, stroke: 2.2 }
 
   return (
     <div className={float ? 'bp-ctrl-group' : 'bp-pager'}>
@@ -5682,7 +5688,7 @@ function ProfileCtrls({ onClose, expanded, onToggleExpand, currentKey, onSelectS
           title="Close profile"
           aria-label="Close profile"
         >
-          <Icon name="x" size={15} stroke={2.2} />
+          <Icon name="x" size={18} stroke={2.2} />
         </button>
         <button
           type="button"
@@ -5691,7 +5697,7 @@ function ProfileCtrls({ onClose, expanded, onToggleExpand, currentKey, onSelectS
           title={expanded ? 'Exit full screen' : 'Expand to full screen'}
           aria-label={expanded ? 'Exit full screen' : 'Expand to full screen'}
         >
-          <Icon name={expanded ? 'minimize' : 'maximize'} size={14} stroke={2.1} />
+          <Icon name={expanded ? 'minimize' : 'maximize'} size={18} stroke={2.1} />
         </button>
         <button
           type="button"
@@ -5700,7 +5706,7 @@ function ProfileCtrls({ onClose, expanded, onToggleExpand, currentKey, onSelectS
           title={copied ? 'Link copied' : 'Copy link to this view'}
           aria-label={copied ? 'Link copied' : 'Copy link to this view'}
         >
-          <Icon name={copied ? 'check' : 'link'} size={14} stroke={2.1} />
+          <Icon name={copied ? 'check' : 'link'} size={18} stroke={2.1} />
         </button>
       </div>
       <ProfilePager variant="float" currentKey={currentKey} onSelect={onSelectStudent} />
@@ -5835,7 +5841,7 @@ export function StudentProfileView({
   const student = overrides ? { ...base, ...overrides } : base
 
   return (
-    <div className={`bp-embed${expanded ? ' bp-embed--full' : ''}`} style={profileVars(student)}>
+    <div className={`bp-embed${expanded ? ' bp-embed--full' : ''}`}>
       <ProfileBody
         student={student}
         activeSection={activeSection}
@@ -5921,7 +5927,7 @@ export default function BeanstackProfile() {
     <div className="bp-shell">
       {/* Admin bg */}
       <div className={`bp-shell-admin${profileMode === 'full' ? ' bp-shell-admin--hidden' : ''}`}>
-        <ClassroomView onStudentClick={handleStudentClick} selectedKey={selectedStudentKey} />
+        <ClassroomView onStudentClick={handleStudentClick} />
       </div>
 
       {/* Dim overlay */}
@@ -5940,7 +5946,7 @@ export default function BeanstackProfile() {
         >
           {/* Rail + panel are one sliding unit, so the controls travel with the
     panel edge on open, close and expand instead of sitting still. */}
-          <div className="bp-profile-slider" style={profileVars(student)}>
+          <div className="bp-profile-slider">
             <ProfileBody
               student={student}
               activeSection={activeSection}

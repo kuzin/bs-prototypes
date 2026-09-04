@@ -1,0 +1,554 @@
+/* Daily Reading tracker — a port of the app's `.daily-reading` card
+   (bs-product admin/_admin_daily_readings.scss). The table rules are the real
+   ones; the card list below `--phone` is ours, because the app doesn't have a
+   mobile treatment for this grid (it just lets a ten-column table scroll).
+
+   Values sourced from the Sass are noted per rule. */
+
+.drt {
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+}
+
+/* `.daily-reading__week-selector`: padding 10px 20px, split ends, $gray250
+   bottom rule. */
+.drt-week-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 20px;
+  border-bottom: 1px solid var(--c-gray-250);
+}
+
+/* `.daily-reading__week-selector-range`: 16px / 800 / 18px in $gray800 */
+.drt-week-label {
+  flex: 1;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 18px;
+  color: var(--c-gray-800);
+}
+
+/* ── The table ───────────────────────────────────────────────────────────────
+   `.daily-reading table` stripes by *column* (`td:nth-child(even)`), drops the
+   row borders, and left-aligns only the name cell. Student links are $blue600
+   on $gray800 body text; the averages row gets a $gray250 top rule. */
+
+/* The app's `.table-wrap.table-wrap-scroll`. Ten columns need room: below the
+   min-width the grid would squeeze the day columns until "Average" spilled over
+   "Mon", so between the phone breakpoint and that width the table scrolls
+   sideways instead of collapsing. */
+.drt-table-wrap {
+  overflow-x: auto;
+}
+
+/* Fixed layout so the eight metric columns come out identical — otherwise a
+   wide pill (or an empty Sat) sizes its own column. Student and Goal claim a
+   width; the rest split what's left evenly. */
+.drt-table {
+  /* The three named columns. Fixed px, not percentages: Student and Goal are
+     sticky, and a sticky offset has to be written against a known width. */
+  --drt-name-w: 200px;
+  --drt-goal-w: 90px;
+  --drt-avg-w: 88px;
+
+  /* What the grid actually needs: the three named columns plus seven day
+     columns wide enough for the 50px lozenge and its padding. That lands
+     inside the 888px the admin frame gives a page at the 1440 design width, so
+     the class page never scrolls — anything narrower does, rather than
+     squeezing the columns. */
+  min-width: 850px;
+  table-layout: fixed;
+
+  /* `.tbl` clips itself to round its corners, which would make the table its
+     own scroll container and stop the sticky columns sticking to the wrapper.
+     `.drt` already does the rounding. */
+  overflow: visible;
+}
+
+.drt-table .drt-th--name {
+  width: var(--drt-name-w);
+}
+.drt-table .drt-th--goal {
+  width: var(--drt-goal-w);
+}
+.drt-table .drt-th--avg {
+  width: var(--drt-avg-w);
+}
+
+/* Student and Goal hold their place while the day grid scrolls under them —
+   without them the horizontal scroll takes away the one thing that tells you
+   whose week you're reading. Both columns already paint an opaque ground
+   (`.tbl-td` is white, the header is $gray100, the averages row $gray50), so
+   nothing shows through, and Goal's own left/right rules read as the seam. */
+.drt-table .drt-th--name,
+.drt-table .drt-name-cell {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.drt-table .drt-th--goal,
+.drt-table .drt-td--goal {
+  position: sticky;
+  left: var(--drt-name-w);
+  z-index: 2;
+}
+
+.drt-table .tbl-td {
+  border-top: none;
+  text-align: center;
+}
+
+/* Columns: 1 Student · 2 Goal · 3 Average · 4-10 Mon-Sun.
+   The striping starts on Average and takes every other column from there
+   (3, 5, 7, 9 = Average / Tue / Thu / Sat), which leaves Sun white. */
+.drt-table .tbl-td:nth-child(n + 3):nth-child(odd),
+.drt-table .tbl-th:nth-child(n + 3):nth-child(odd) {
+  background: var(--c-gray-0);
+}
+
+/* Row hover has to read across white, striped and Goal cells alike, and on
+   *every* row — not every reader has a profile behind them (so not every row
+   carries `--clickable`), but hovering is orientation in a ten-column grid,
+   not just a click affordance.
+   The striping above is four class-level selectors deep; the trailing
+   `:nth-child(n)` (which matches every cell) brings this rule to the same
+   count, and the `tbody tr` elements break the tie. */
+.drt-table tbody tr:hover .tbl-td:nth-child(n) {
+  background: var(--c-gray-150);
+}
+
+.drt-table .drt-name-cell {
+  text-align: left;
+  color: var(--c-gray-800);
+  /* Names sit on one line — the column is wide enough for them. */
+  white-space: nowrap;
+}
+
+.drt-table .drt-avg-row .tbl-td {
+  border-top: 1px solid var(--c-gray-250);
+}
+
+.drt-avg-row .tbl-td {
+  font-size: 15px;
+  font-weight: 700;
+  color: #374151;
+  background: #f9fafb;
+  border-bottom: none;
+}
+
+/* The live rows are ~48px tall — much airier than the compact default. Height
+   rather than padding so the goal / pill / check cells all centre on one line.
+   `.tbl--flush` pads its first/last cells to 16px for card-edge alignment,
+   which left the Sun column asymmetric and pushed its contents off centre, so
+   the edge cells are named explicitly and the doubled `.drt-table.tbl`
+   outranks the flush rules rather than tying with them. */
+.drt-table.tbl .tbl-td,
+.drt-table.tbl .tbl-td:first-child,
+.drt-table.tbl .tbl-td:last-child {
+  height: 48px;
+  padding: 0 12px;
+  font-size: 15px;
+}
+
+/* Same for the header row, so the labels sit over their columns. */
+.drt-table.tbl .tbl-th:first-child,
+.drt-table.tbl .tbl-th:last-child {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* The metric columns run 8px instead of 12px, which is what lets a 50px
+   lozenge sit inside a seventh of the day grid without overhanging its cell. */
+.drt-table.tbl .tbl-td.tbl-cell--center,
+.drt-table.tbl .tbl-th.tbl-cell--center {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* Every metric column centres, including the last one — something upstream
+   right-aligns the final cell, which was pushing Sunday's dash and check disc
+   off centre. Stated at four class-levels so it wins outright. */
+.drt-table.tbl .tbl-td.tbl-cell--center,
+.drt-table.tbl .tbl-th.tbl-cell--center {
+  text-align: center;
+}
+
+/* ── Goal column ─────────────────────────────────────────────────────────────
+   Goal sits outside the day grid: white, fenced with a rule on each side so it
+   reads as its own column rather than part of the striping. No `!important` —
+   it's column 2, which the striping (column 3 onward) never touches, and the
+   flag was also blocking row hover. */
+.drt-th--goal,
+.drt-td--goal {
+  background: #fff;
+  text-align: center;
+  border-left: 1px solid var(--c-gray-250);
+  border-right: 1px solid var(--c-gray-250);
+}
+
+.drt-goal-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.drt-goal-val {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-gray-800);
+}
+
+/* The pencil is a secondary affordance next to the number that matters, so it
+   sits back: no button ground, a light gray glyph, and it only comes up to full
+   contrast on hover or focus. */
+.drt-goal-cell .icnb {
+  width: 20px;
+  height: 20px;
+  background: none;
+  color: var(--c-gray-400);
+  transition: color 0.12s;
+}
+
+.drt-goal-cell .icnb:hover:not(:disabled),
+.drt-goal-cell .icnb:focus-visible {
+  background: none;
+  color: var(--c-gray-700);
+}
+
+/* ── Reader identity ─────────────────────────────────────────────────────── */
+.drt-student-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-left: 4px;
+}
+
+.drt-rank {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.drt-rank--gold {
+  background: #fcd34d;
+  color: #92400e;
+}
+.drt-rank--silver {
+  background: var(--c-gray-200);
+  color: #374151;
+}
+.drt-rank--bronze {
+  background: var(--c-amber-600);
+  color: #fff;
+}
+.drt-rank--plain {
+  background: none;
+  color: var(--c-gray-750);
+  font-weight: 700;
+}
+
+/* A real link, not just row-click styling: it opens the full profile while the
+   row opens the slide-in quick look. Rows with no profile behind them render
+   the same name in the same blue, minus the affordance. */
+.drt-name {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-fig-blue-600);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 0.1s;
+}
+
+.drt-name:hover {
+  color: #1e40af;
+  text-decoration: underline;
+}
+
+.drt-name--static {
+  cursor: default;
+}
+
+/* ── Day values ──────────────────────────────────────────────────────────────
+   The app's daily-reading `.tag`: a fixed 50x22 lozenge, 14px/800, radius 12,
+   centered in its cell. */
+.drt-pct {
+  display: flex;
+  width: 50px;
+  height: 22px;
+  padding: 0 10px;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 18px;
+}
+
+/* $blue100 / $blue800 */
+.drt-pct--blue {
+  background: #b8d7fd;
+  color: #054a9e;
+}
+/* $yellow200 / $orange800 */
+.drt-pct--orange {
+  background: #ffe091;
+  color: #a43006;
+}
+/* $red100 / $red800 */
+.drt-pct--red {
+  background: #fabdb8;
+  color: #9c1307;
+}
+/* $green100 / $green800 */
+.drt-pct--green {
+  background: #b2fad8;
+  color: #017841;
+}
+
+.drt-check {
+  display: flex;
+  margin: 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #10b981;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.drt-dash {
+  color: #d1d5db;
+  font-size: 18px;
+}
+
+.drt-legend {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 700;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* The card list is the phone presentation only — hidden here, and never in
+   print (see the media queries below). */
+.drt-cards {
+  display: none;
+}
+
+/* ── Phone ───────────────────────────────────────────────────────────────────
+   Ten columns don't fit a 375px screen, and the app's answer — an
+   `overflow: auto` box — means swiping a table sideways with the names gone.
+   Instead the same rows render as one card per reader with the week as a
+   seven-day strip: rank + name + average on the first line, Mon–Sun below,
+   goal last. The whole week is visible at 320px with nothing to scroll. */
+@media (max-width: 699px) {
+  .drt-table-wrap {
+    display: none;
+  }
+
+  .drt-cards {
+    display: block;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .drt-week-nav {
+    padding: 10px 14px;
+  }
+
+  .drt-week-label {
+    font-size: 15px;
+  }
+
+  .drt-card {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--c-gray-200);
+  }
+
+  .drt-card-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  /* The name takes the slack so the average stays pinned right. */
+  .drt-card-head .drt-name {
+    flex: 1;
+    min-width: 0;
+    font-size: 16px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* The average is already labelled by its position on the reader's line, so
+     it drops the fixed lozenge width and hugs its value. */
+  .drt-card-avg {
+    width: auto;
+    min-width: 46px;
+    flex-shrink: 0;
+    margin: 0;
+  }
+
+  /* The goal rides the reader's line, just left of the average — the two
+     numbers that frame the week below them. */
+  .drt-card-goal {
+    flex-shrink: 0;
+  }
+
+  .drt-card-goal .drt-goal-val {
+    font-size: 14px;
+    color: var(--c-gray-750);
+  }
+
+  /* Seven equal columns — a fixed grid rather than flex, so the day labels and
+     their values line up down the list even when one reader's week is empty. */
+  .drt-card-week {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    margin-top: 10px;
+  }
+
+  /* Each day is its own block: a rounded tile carrying the label over the
+     result, so the week reads as seven days you can compare rather than one
+     undivided strip. */
+  .drt-card-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    min-width: 0;
+    padding: 6px 2px 7px;
+    background: var(--c-gray-0);
+    border-radius: 9px;
+  }
+
+  /* Labels for a strip you read by shape, not by word — small, light and low
+     contrast, so the day discs carry the row. */
+  .drt-card-day-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--c-gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* The lozenge can't hold "100%" at a seventh of 375px, so on a phone a day's
+     percentage becomes a tinted disc the same size as the goal-met check —
+     seven identical targets reading as a week, with the number inside. */
+  .drt-card-day .drt-pct {
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 11px;
+    letter-spacing: -0.02em;
+  }
+
+  .drt-card-day .drt-check {
+    width: 30px;
+    height: 30px;
+  }
+
+  .drt-card-day .drt-check svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  /* A dash has no disc, so it needs the discs' height to keep the row even. */
+  .drt-card-day .drt-dash {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+  }
+
+  /* The class average closes the list on the striped ground the table's own
+     footer row uses. */
+  .drt-card--avg {
+    background: var(--c-gray-0);
+    border-bottom: none;
+    border-top: 1px solid var(--c-gray-250);
+  }
+
+  /* The averages card already sits on the tinted ground, so its tiles invert to
+     white rather than disappearing into the card. */
+  .drt-card--avg .drt-card-day {
+    background: #fff;
+  }
+
+  .drt-card-avg-name {
+    flex: 1;
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--c-gray-800);
+  }
+
+  .drt-card--avg .drt-card-avg {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--c-gray-800);
+  }
+
+  .drt-card-day-avg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--c-gray-750);
+  }
+
+  /* Four legend entries won't sit on one 375px line — wrap them and start them
+     at the card's left edge, where the eye already is. */
+  .drt-legend {
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    justify-content: flex-start;
+    padding: 12px 14px;
+    font-size: 13px;
+  }
+}
+
+/* Print gets the table, whatever the paper width. */
+@media print {
+  .drt-table-wrap {
+    display: block;
+    overflow: visible;
+  }
+
+  .drt-table {
+    min-width: 0;
+  }
+
+  .drt-cards {
+    display: none;
+  }
+}

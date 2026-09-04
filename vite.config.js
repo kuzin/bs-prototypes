@@ -20,6 +20,15 @@ function htmlTemplate(title, scriptSrc) {
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="${BASE}bs.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- Museo Sans Rounded — Beanstack's real typeface, from an Adobe Fonts kit.
+         This kit carries the same six weights as the product's own \`dpo2eva\`
+         (100/300/500/700/800/900) plus all six italics, which \`dpo2eva\` lacks.
+         Loaded here rather than via a CSS @import so it starts downloading
+         before the JS bundle. Nunito stays as the fallback in --font-sans;
+         see components/ui/tokens.css. -->
+    <link rel="preconnect" href="https://use.typekit.net" crossorigin />
+    <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+    <link rel="stylesheet" href="https://use.typekit.net/kus1pku.css" />
     <title>${title}</title>
   </head>
   <body>

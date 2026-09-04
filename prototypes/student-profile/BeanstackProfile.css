@@ -101,11 +101,11 @@
    Panel chrome (close, expand, step reader) in its own column beside the
    panel. It's a full-height strip in both modes — the buttons need something to
    sit on, and against the panel's own white nav rail (full screen) or the dim
-   overlay (side panel) they'd otherwise float loose. Tinted from the reader's
-   `--bp-profile` (see `profileVars`), with a neutral fallback for any surface
-   that doesn't set it. */
+   overlay (side panel) they'd otherwise float loose. Tinted from the admin
+   accent, like the rest of the chrome. */
+/* Wide enough for the 36px targets below — the shared IconButton size. */
 .bp-profile-ctrls {
-  width: 42px;
+  width: 56px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -113,8 +113,8 @@
   gap: 10px;
   padding: 10px 0;
   align-self: stretch;
-  background: color-mix(in srgb, var(--bp-profile, #64748b) 14%, #fff);
-  border-right: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 28%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 14%, #fff);
+  border-right: 1px solid color-mix(in srgb, var(--c-accent) 28%, #fff);
 }
 
 .bp-ctrl-group {
@@ -126,12 +126,12 @@
 /* Flat: a hairline instead of a lift. The panel's own shadow is on the slider,
    not the panel, so it falls outside the strip rather than gradienting over it. */
 .bp-ctrl-btn {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #fff;
-  border: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 32%, #fff);
-  color: var(--bp-profile, var(--c-slate-600));
+  border: 1px solid color-mix(in srgb, var(--c-accent) 32%, #fff);
+  color: var(--c-accent);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -143,8 +143,8 @@
 }
 
 .bp-ctrl-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--bp-profile, #64748b) 10%, #fff);
-  border-color: var(--bp-profile, var(--c-slate-600));
+  background: color-mix(in srgb, var(--c-accent) 10%, #fff);
+  border-color: var(--c-accent);
 }
 
 /* Copy-link confirmation — green while the "Copied" state holds. */
@@ -201,11 +201,6 @@
 .bp-embed--full .bp-nav-item {
   min-height: 38px;
 }
-.bp-profile-wrap--full .bp-nav-label,
-.bp-embed--full .bp-nav-label {
-  font-size: 13px;
-}
-
 /* ─── Root ───────────────────────────────────────────────────────────────── */
 /* Column, so the student header can span the rail as well as the content. */
 .bp-root {
@@ -232,7 +227,7 @@
    stacked items ran to ~1160px, which was a wall. Horizontal rows bring the
    whole rail under 500px and match the product's own sidebar. */
 .bp-nav {
-  width: 168px;
+  width: 188px;
   background: #fff;
   border-right: 1px solid #eaeaea;
   display: flex;
@@ -246,8 +241,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 8px 8px 10px;
+  gap: 4px;
+  padding: 12px 10px;
   overflow-y: auto;
   scrollbar-width: none;
 }
@@ -255,15 +250,17 @@
 .bp-nav-items::-webkit-scrollbar {
   display: none;
 }
+/* Rows are sized for the 15px label: 40px tall with 10/12 padding, on a
+   4px rhythm — the old 34px/6px-9px was built for 12px text. */
 .bp-nav-item {
   width: 100%;
-  min-height: 34px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   cursor: pointer;
   position: relative;
-  gap: 9px;
-  padding: 6px 9px;
+  gap: 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   user-select: none;
 }
@@ -273,7 +270,7 @@
 }
 
 .bp-nav-label {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: #8a8f98;
   letter-spacing: 0.01em;
@@ -287,11 +284,11 @@
    colour still identifies the page — it's on the Hero's icon chip. */
 .bp-nav-item--active .bp-nav-label,
 .bp-nav-item--active .icon {
-  color: var(--bp-profile, #1a6dd5);
+  color: var(--c-accent);
 }
 
 .bp-nav-item--active {
-  background: color-mix(in srgb, var(--bp-profile, #1a6dd5) 12%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 12%, #fff);
   cursor: default;
 }
 
@@ -308,7 +305,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 26px 24px;
   background: #fff;
   border-bottom: 1px solid #eaeaea;
   flex-shrink: 0;
@@ -322,16 +319,18 @@
   min-width: 0;
 }
 
+/* 22px is the app's own section-title size, and a clear step over the
+   15px body the panel now uses. */
 .bp-panel-name {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 800;
   color: #424242;
   line-height: 1.2;
 }
 
 .bp-panel-meta {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: #9ca3af;
   margin-top: 2px;
 }
@@ -371,28 +370,9 @@
 }
 
 /* ─── Card ───────────────────────────────────────────────────────────────── */
-.bp-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px 18px;
-}
-
-.bp-card--flush {
-  padding: 0;
-}
-
-.bp-section-heading {
-  font-size: 15px;
-  font-weight: 800;
-  color: #424242;
-  margin-bottom: 12px;
-}
-
-.bp-card:not(.bp-card--flush) > .bp-section-heading:first-child {
-  margin: -16px -18px 14px;
-  padding: 15px 18px 13px;
-  border-bottom: 1px solid #f0f0f0;
-}
+/* Card visuals + the promoted first title now come from the shared
+   ProfileCard pattern (components/ProfileCard). These class names stay on the
+   same elements for the local descendant rules further down this file. */
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
 .bp-btn-primary {
@@ -402,7 +382,7 @@
   border: none;
   border-radius: 8px;
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -418,7 +398,7 @@
   border: 1.5px solid #dedede;
   border-radius: 8px;
   color: #424242;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -433,7 +413,7 @@
   border: none;
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #2b7ee5;
   text-align: right;
@@ -465,12 +445,12 @@
   font-weight: 800;
   border-radius: 100px;
   display: inline-block;
-  font-size: 13px;
+  font-size: 15px;
   padding: 4px 12px;
 }
 
 .bp-pill--sm {
-  font-size: 13px;
+  font-size: 15px;
   padding: 2px 9px;
 }
 
@@ -479,7 +459,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   border-radius: 100px;
   padding: 5px 11px;
@@ -523,14 +503,14 @@
 }
 
 .bp-action-footer-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
   margin-bottom: 5px;
 }
 
 .bp-action-footer-body {
-  font-size: 13px;
+  font-size: 15px;
   color: #555;
   line-height: 1.6;
   font-weight: 500;
@@ -566,22 +546,42 @@
   box-sizing: border-box;
 }
 
-/* The Actions button carries both a label and a dots icon; each breakpoint
-   shows one of them. Desktop: "Actions ⌄". Mobile: just the dots. */
-.bp-student-actions .btn-icon {
+/* The Actions button carries a leading dots icon, a label and a trailing
+   caret; each breakpoint shows a different pair. Desktop: "Actions ⌄" — so
+   only the *leading* icon hides here. Mobile (see the breakpoint block) flips
+   it: dots only, no label, no caret.
+   The caret follows the app's `.button--dropdown`: a 16px glyph in $gray700
+   with a 4px column gap. */
+.bp-student-actions .btn-icon:not(.btn-icon--right) {
   display: none;
+}
+
+/* Tighter than the default 0 20px — with a caret riding along, 20px each side
+   made "Actions ⌄" read long. 16px is the app's `.button--medium-small` inset. */
+.bp-student-actions .btn {
+  column-gap: 4px;
+  padding: 0 16px;
+}
+
+.bp-student-actions .btn-icon--right svg {
+  width: 16px;
+  height: 16px;
+}
+
+.bp-student-actions .btn--secondary .btn-icon--right {
+  color: var(--c-gray-700);
 }
 
 /* Log is the panel's primary action, so it carries the reader's colour like
    the rest of the chrome. Actions stays a neutral outline button. */
 .bp-panel-header .btn--primary {
-  background: var(--bp-profile, var(--c-blue-700));
-  border-color: var(--bp-profile, var(--c-blue-700));
+  background: var(--c-accent);
+  border-color: var(--c-accent);
 }
 
 .bp-panel-header .btn--primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
-  border-color: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
+  background: color-mix(in srgb, var(--c-accent) 84%, #000);
+  border-color: color-mix(in srgb, var(--c-accent) 84%, #000);
 }
 
 .bp-header-right {
@@ -659,7 +659,7 @@
 }
 
 .bp-tile-empty {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: #424242;
   opacity: 0.75;
@@ -676,7 +676,7 @@
 }
 
 .bp-tile-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -707,13 +707,13 @@
 }
 
 .bp-tile-unit {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
 }
 
 .bp-tile-sub {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #424242;
   opacity: 0.6;
@@ -735,7 +735,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
 }
@@ -756,7 +756,7 @@
 }
 
 .bp-health-title {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
 }
@@ -788,7 +788,7 @@
 }
 
 .bp-health-verdict-outof {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--ht-text);
   opacity: 0.45;
@@ -804,7 +804,7 @@
   border: 1.5px solid color-mix(in srgb, var(--ht-bar) 40%, transparent);
   border-radius: 100px;
   padding: 6px 13px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -874,7 +874,7 @@
 .bp-health-row-top .bp-status {
   background: none;
   padding: 0;
-  font-size: 13px;
+  font-size: 15px;
 }
 .bp-health-row-top .bp-status img {
   filter: none;
@@ -893,7 +893,7 @@
 }
 
 .bp-health-row-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
 }
@@ -934,14 +934,14 @@
   background: #f2f2f2;
   border-radius: 12px;
   padding: 13px 15px;
-  font-size: 14px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.65;
   font-weight: 500;
 }
 
 .bp-benny-timestamp {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   margin-top: 7px;
 }
@@ -951,7 +951,7 @@
    comes from the title row rather than the card. */
 .bp-actions-title {
   padding: 15px 18px 13px;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
 }
@@ -970,14 +970,14 @@
 }
 
 .bp-action-title {
-  font-size: 14px;
-  font-weight: 900;
-  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text-real-dark);
   margin-bottom: 4px;
 }
 
 .bp-action-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.55;
   font-weight: 500;
@@ -988,7 +988,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   background: none;
@@ -1012,7 +1012,7 @@
 }
 
 .bp-score-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
 }
@@ -1024,7 +1024,7 @@
 }
 
 .bp-score-num {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   color: #424242;
 }
@@ -1036,7 +1036,7 @@
 }
 
 .bp-motivators-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -1051,7 +1051,7 @@
 }
 
 .bp-motivator-tag {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   padding: 5px 13px;
   border: 1.5px solid #eaeaea;
@@ -1068,7 +1068,7 @@
   border: 1px solid #fed7aa;
   border-radius: 10px;
   margin-top: 14px;
-  font-size: 13px;
+  font-size: 15px;
   color: #424242;
   font-weight: 500;
 }
@@ -1078,7 +1078,7 @@
 }
 
 .bp-flag-breakdown-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -1097,7 +1097,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .bp-flag-item:not(:last-child) {
@@ -1117,7 +1117,7 @@
   background: #fef2f2;
   border: 1px solid #fca5a5;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 15px;
   color: #991b1b;
   font-weight: 700;
 }
@@ -1152,7 +1152,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-500);
 }
@@ -1164,7 +1164,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   color: #9ca3af;
   font-weight: 500;
 }
@@ -1177,7 +1177,7 @@
 }
 
 .bp-goal-title {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
 }
@@ -1190,7 +1190,7 @@
 }
 
 .bp-goal-week-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
 }
@@ -1217,7 +1217,7 @@
 }
 
 .bp-goal-mins {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-amber-600);
 }
@@ -1262,7 +1262,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 22px;
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -1291,7 +1291,7 @@
 }
 
 .bp-goal-day-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #9ca3af;
 }
@@ -1322,7 +1322,7 @@
 }
 
 .bp-habit-row-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #555;
 }
@@ -1335,7 +1335,7 @@
 }
 
 .bp-habit-row-value {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
 }
@@ -1351,7 +1351,7 @@
 }
 
 .bp-habit-row-note {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #acacac;
 }
@@ -1363,7 +1363,7 @@
 /* .bp-minutes-grid removed — absorbed into bp-streak-grid (4-col) */
 
 .bp-week-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -1403,7 +1403,7 @@
 }
 
 .bp-week-day-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: #acacac;
 }
@@ -1421,7 +1421,7 @@
 }
 
 .bp-minutes-label {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   font-weight: 600;
   margin-bottom: 3px;
@@ -1440,7 +1440,7 @@
 }
 
 .bp-minutes-delta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 .bp-minutes-delta--up {
@@ -1453,7 +1453,7 @@
 
 /* ─── Skills detail ──────────────────────────────────────────────────────── */
 .bp-book-current-badge {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #185fa5;
   background: #d0e3ff;
@@ -1482,13 +1482,13 @@
 }
 
 .bp-titles-header-meta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #9ca3af;
 }
 
 .bp-titles-header-label {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
   display: flex;
@@ -1497,7 +1497,7 @@
 }
 
 .bp-titles-range-chip {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #185fa5;
   background: #d0e3ff;
@@ -1533,23 +1533,26 @@
 .bp-heatmap-nav-label {
   flex: 1;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #111827;
 }
 
+/* Same box as the shared IconButton (36px / 8px radius / 20px glyph on a
+   #f2f2f2 ground) so every prev/next control in the app is one size — these
+   were a bespoke 26px outline that all but disappeared. */
 .bp-heatmap-nav-btn {
-  background: none;
-  border: 1px solid var(--c-gray-200);
-  border-radius: 6px;
-  width: 26px;
-  height: 26px;
+  background: var(--c-gray-150);
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
-  color: #6b7280;
+  color: var(--c-text-real);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -1557,12 +1560,14 @@
   padding: 0;
 }
 .bp-heatmap-nav-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--c-gray-250);
+  color: var(--c-text-real);
 }
+/* The app's disabled icon button: a paler ground, not a faded whole. */
 .bp-heatmap-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
+  background: var(--c-gray-0);
+  color: var(--c-gray-350);
+  cursor: auto;
 }
 
 /* Month grid — weekdays across, weeks down, like the shared <DatePicker> but
@@ -1579,7 +1584,7 @@
 }
 
 .bp-heatmap-wd {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-text-muted);
   text-align: center;
@@ -1621,7 +1626,7 @@
 }
 
 .bp-heatmap-daynum {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1;
   position: relative;
@@ -1671,7 +1676,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 600;
   white-space: nowrap;
@@ -1710,7 +1715,7 @@
 }
 
 .bp-genre-subhead {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   font-weight: 500;
   line-height: 1.4;
@@ -1742,7 +1747,7 @@
 }
 
 .bp-genre-chip-count {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   opacity: 0.6;
   background: var(--chip-color);
@@ -1770,7 +1775,7 @@
 
 /* Title name as a link */
 .bp-title-name-link {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
   text-decoration: none;
@@ -1828,7 +1833,7 @@
 }
 
 .bp-title-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
   flex: 1;
@@ -1836,7 +1841,7 @@
 }
 
 .bp-title-lexile-pill {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #6b7280;
   background: #f3f4f6;
@@ -1849,7 +1854,7 @@
 }
 
 .bp-title-author {
-  font-size: 13px;
+  font-size: 15px;
   color: #9ca3af;
   font-weight: 500;
   margin-top: 3px;
@@ -1884,7 +1889,7 @@
 }
 
 .bp-title-btwb-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
 }
@@ -1896,7 +1901,7 @@
 }
 
 .bp-title-genre-tag {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   background: #f0f0f0;
@@ -1905,7 +1910,7 @@
 }
 
 .bp-title-date {
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 500;
 }
@@ -1917,7 +1922,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 600;
 }
@@ -1934,7 +1939,7 @@
 /* Said once under the row rather than on each of the three chips. */
 .bp-rmi-donuts-note {
   text-align: center;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -1969,14 +1974,14 @@
 }
 
 .bp-donut-max {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--c-text-subtle);
   line-height: 1;
 }
 
 .bp-donut-label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-text-muted);
   text-align: center;
@@ -1995,7 +2000,7 @@
 }
 
 .bp-rmi-period-select {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #424242;
   font-family: inherit;
@@ -2040,13 +2045,13 @@
 }
 
 .bp-rmi-max {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
 }
 
 .bp-rmi-delta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   margin-left: 4px;
 }
@@ -2059,7 +2064,7 @@
 }
 
 .bp-rmi-label {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   font-weight: 600;
   line-height: 1.3;
@@ -2089,7 +2094,7 @@
 }
 
 .bp-rmi-rec-goal-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   margin-bottom: 6px;
@@ -2097,14 +2102,14 @@
 }
 
 .bp-rmi-rec-goal-value {
-  font-size: 42px;
+  font-size: 40px;
   font-weight: 900;
   color: #424242;
   line-height: 1;
 }
 
 .bp-rmi-rec-goal-unit {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   margin-top: 4px;
@@ -2120,7 +2125,7 @@
 }
 
 .bp-rmi-rec-actions-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   text-transform: uppercase;
@@ -2134,7 +2139,7 @@
 }
 
 .bp-rmi-rec-action-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.5;
   margin: 0;
@@ -2166,7 +2171,7 @@
 }
 
 .bp-motivator-rank {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   width: 18px;
@@ -2175,7 +2180,7 @@
 }
 
 .bp-motivator-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
   width: 130px;
@@ -2188,7 +2193,7 @@
 }
 
 .bp-motivator-score {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
   width: 28px;
@@ -2197,7 +2202,7 @@
 }
 
 .bp-motivator-delta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   width: 38px;
   text-align: right;
@@ -2259,14 +2264,14 @@
 }
 
 .bp-placeholder-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   color: #2d2d2d;
   letter-spacing: -0.3px;
 }
 
 .bp-placeholder-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #9e9e9e;
 }
 
@@ -2329,7 +2334,7 @@
   border-radius: 50%;
   background: var(--c-blue-700);
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -2378,7 +2383,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
   transition: background 0.12s;
 }
@@ -2401,7 +2406,7 @@
   padding: 9px 11px;
   border-radius: 8px;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -2446,7 +2451,7 @@
   border-radius: 7px;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   transition:
     background 0.12s,
@@ -2479,18 +2484,34 @@
   overflow: hidden;
 }
 
+/* One frame for every admin page: a centered column capped at
+   --admin-content-max with --admin-gutter minimum gutters. `align-items:
+   stretch` is what keeps the pages consistent — with flex-start each child
+   sized to its own content, so e.g. the tab strip came out narrower than the
+   cards below it. */
 .bp-adm-main-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px max(24px, calc((100% - 1280px) / 2));
+  padding: var(--admin-pad-top)
+    max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) var(--admin-pad-bottom);
   overflow-y: auto;
-  align-items: flex-start;
-  gap: 0;
+  /* Reserve the scrollbar always. Without this the column is 15px narrower on
+     pages long enough to scroll than on pages that aren't — the exact
+     page-to-page inconsistency this frame exists to remove. */
+  scrollbar-gutter: stable;
+  align-items: stretch;
+  gap: var(--admin-section-gap);
+}
+
+/* Same flex trap as reader-profile: children of a scrolling column must not
+   shrink. */
+.bp-adm-main-body > * {
+  flex-shrink: 0;
 }
 
 .bp-adm-breadcrumb {
-  font-size: 13px;
+  font-size: 15px;
   color: #ef4444;
   font-weight: 700;
   margin-bottom: 10px;
@@ -2522,7 +2543,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #fff;
   flex-shrink: 0;
@@ -2537,7 +2558,7 @@
 }
 
 .bp-adm-class-meta {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--c-text-muted);
   margin-top: 2px;
 }
@@ -2554,7 +2575,7 @@
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #374151;
   cursor: pointer;
@@ -2567,19 +2588,17 @@
   border: none;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
 }
 
 .bp-adm-tabs-wrap {
-  margin-bottom: 16px;
 }
 
 .bp-adm-filter-wrap {
   align-self: stretch;
-  margin-bottom: 12px;
 }
 
 .bp-adm-filters {
@@ -2598,7 +2617,7 @@
 }
 
 .bp-adm-filter-lbl {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #6b7280;
   margin-bottom: 5px;
@@ -2611,7 +2630,7 @@
   display: flex;
   align-items: center;
   padding: 0 12px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #111;
   background: #fff;
@@ -2624,217 +2643,11 @@
   border: 1.5px solid var(--c-gray-200);
   border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #9ca3af;
   cursor: not-allowed;
   white-space: nowrap;
-}
-
-.bp-adm-card {
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  width: 100%;
-}
-
-.bp-adm-week-nav {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.bp-adm-week-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #f3f4f6;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #374151;
-}
-
-.bp-adm-week-label {
-  flex: 1;
-  text-align: center;
-  font-size: 15px;
-  font-weight: 800;
-  color: #111;
-}
-
-/* ── Goal column highlight ────────────────────────────────────────────────── */
-.bp-adm-th--goal {
-  background: #eff6ff !important;
-  text-align: center !important;
-}
-
-.bp-adm-td--goal {
-  background: #f5f9ff;
-}
-
-.tbl-row--clickable:hover .tbl-td.bp-adm-td--goal {
-  background: #ebf3ff;
-}
-.bp-adm-row--selected .tbl-td {
-  background: #f0f6ff;
-}
-.bp-adm-row--selected .tbl-td.bp-adm-td--goal {
-  background: #dbeafe;
-}
-
-.bp-adm-student-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-left: 4px;
-}
-
-.bp-adm-rank {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 800;
-  flex-shrink: 0;
-}
-
-.bp-adm-rank--gold {
-  background: #fcd34d;
-  color: #92400e;
-}
-.bp-adm-rank--silver {
-  background: var(--c-gray-200);
-  color: #374151;
-}
-.bp-adm-rank--bronze {
-  background: var(--c-amber-600);
-  color: #fff;
-}
-
-/* A real link, not just row-click styling: it opens the full-screen profile
-   while the row opens the slide-in quick look. */
-.bp-adm-student-name {
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: 700;
-  color: var(--c-blue-700);
-  background: none;
-  border: 0;
-  padding: 0;
-  text-align: left;
-  cursor: pointer;
-  text-decoration: none;
-  transition: color 0.1s;
-}
-
-.bp-adm-student-name:hover {
-  color: #1e40af;
-  text-decoration: underline;
-}
-
-.bp-adm-goal-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-weight: 700;
-}
-
-.bp-adm-goal-val {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-slate-800);
-}
-
-.bp-adm-goal-edit-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  border: 1px solid var(--c-border);
-  background: var(--c-slate-50);
-  color: var(--c-text-muted);
-  cursor: pointer;
-  transition:
-    background 0.12s,
-    border-color 0.12s,
-    color 0.12s;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.bp-adm-goal-edit-btn:hover {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: var(--c-blue-700);
-}
-
-.bp-adm-pct {
-  display: inline-block;
-  padding: 3px 9px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.bp-adm-pct--blue {
-  background: #dbeafe;
-  color: var(--c-blue-700);
-}
-.bp-adm-pct--orange {
-  background: #fef3c7;
-  color: var(--c-amber-600);
-}
-.bp-adm-pct--red {
-  background: #fee2e2;
-  color: var(--c-red-600);
-}
-
-.bp-adm-check-circle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #10b981;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.bp-adm-dash {
-  color: #d1d5db;
-  font-size: 15px;
-}
-
-.bp-adm-avg-row .tbl-td {
-  font-size: 13px;
-  font-weight: 700;
-  color: #374151;
-  background: #f9fafb;
-  border-bottom: none;
-}
-
-.bp-adm-legend {
-  display: flex;
-  gap: 16px;
-  justify-content: flex-end;
-  padding: 10px 16px;
-  font-size: 13px;
-  font-weight: 700;
-  border-top: 1px solid #f0f0f0;
 }
 
 /* ─── Placeholder empty state (below consistent PageHeader) ─────────────── */
@@ -2849,7 +2662,7 @@
 }
 
 .bp-placeholder-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 600;
 }
@@ -2877,7 +2690,7 @@
 .bp-btn-ghost--sm {
   height: 30px;
   padding: 0 12px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 /* Segmented control */
@@ -2899,7 +2712,7 @@
   border-radius: 6px;
   background: transparent;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #6b7280;
   cursor: pointer;
@@ -2927,7 +2740,7 @@
   border: 1.5px solid #e0e0e0;
   border-radius: 6px;
   background: #fff;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -2971,7 +2784,7 @@
 }
 
 .bp-rl-tbl-author {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -2998,7 +2811,7 @@
 }
 
 .bp-rl-week-label {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -3040,14 +2853,14 @@
 }
 
 .bp-rl-day-num {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #1a1a1a;
   line-height: 1.1;
 }
 
 .bp-rl-day-name {
-  font-size: 12.5px;
+  font-size: 13px;
   color: #9ca3af;
   font-weight: 600;
 }
@@ -3062,7 +2875,7 @@
   border-radius: 999px;
   background: #ffedd5;
   color: #c2410c;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -3107,7 +2920,7 @@
   border-radius: 999px;
   background: #fbd5d3;
   color: #991b1b;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -3122,7 +2935,7 @@
    control chrome is stripped and the type kept. */
 .bp-rl-entry-title {
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--rl-title);
   line-height: 1.3;
@@ -3197,14 +3010,14 @@
 }
 
 .bp-rl-entry-author {
-  font-size: 12.5px;
+  font-size: 13px;
   color: #6b7280;
   font-weight: 600;
   margin-bottom: 4px;
 }
 
 .bp-rl-entry-amount {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--rl-title);
 }
@@ -3229,7 +3042,7 @@
 
 .bp-rl-cal-dow-cell {
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #acacac;
   text-transform: uppercase;
@@ -3270,7 +3083,7 @@
 }
 
 .bp-rl-cal-date {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #555;
   width: 26px;
@@ -3312,7 +3125,7 @@
 }
 
 .bp-rl-cal-flame {
-  font-size: 13px;
+  font-size: 15px;
   margin-top: 2px;
   line-height: 1;
 }
@@ -3334,7 +3147,7 @@
 }
 
 .bp-rl-cal-detail-date {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
 }
@@ -3390,7 +3203,7 @@
     font-size: 0;
   }
   .bp-adm-nav-child > svg {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   /* Side-panel student profile becomes narrower so it doesn't overflow */
@@ -3405,9 +3218,8 @@
     display: none;
   }
 
-  .bp-adm-main-body {
-    padding: 14px 14px;
-  }
+  /* No override — the admin frame tokens already drop to 20px gutters at this
+     width, so this page lines up with every other admin surface. */
 
   /* Slide-in profile occupies the full screen on mobile, stacked column */
   .bp-profile-wrap {
@@ -3457,11 +3269,11 @@
   .bp-panel-header .avatar {
     width: 38px;
     height: 38px;
-    font-size: 13px;
+    font-size: 15px;
   }
 
   .bp-panel-name {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   .bp-student-actions {
@@ -3500,7 +3312,7 @@
   .bp-goal-circle {
     width: 34px;
     height: 34px;
-    font-size: 17px;
+    font-size: 18px;
   }
 
   /* The rail's 168px is most of a phone — swap it for a select + the pager */
@@ -3573,13 +3385,13 @@
   .bp-adm-class-avatar {
     width: 40px;
     height: 40px;
-    font-size: 13px;
+    font-size: 15px;
   }
   .bp-adm-class-title {
     font-size: 18px;
   }
   .bp-adm-class-meta {
-    font-size: 11.5px;
+    font-size: 13px;
   }
   .bp-adm-class-btns {
     width: 100%;
@@ -3588,7 +3400,7 @@
   .bp-adm-class-btns .bp-adm-btn-primary {
     flex: 1;
     padding: 0 10px;
-    font-size: 13px;
+    font-size: 15px;
     white-space: nowrap;
   }
 
@@ -3602,7 +3414,7 @@
     display: none;
   }
   .bp-adm-tab {
-    font-size: 13px;
+    font-size: 15px;
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -3617,24 +3429,6 @@
   .bp-adm-save-btn {
     grid-column: 1 / -1;
     width: 100%;
-  }
-
-  /* Card / table: allow horizontal scroll so the daily columns aren't squished */
-  .bp-adm-card {
-    overflow-x: auto;
-  }
-  .bp-adm-table {
-    min-width: 640px;
-  }
-
-  /* Week navigation: keep label on one line, tighten padding */
-  .bp-adm-week-nav {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  .bp-adm-week-label {
-    font-size: 13px;
-    white-space: nowrap;
   }
 }
 
@@ -3662,7 +3456,7 @@
   border: none;
   background: none;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-blue-700);
   cursor: pointer;
@@ -3721,10 +3515,6 @@
   transition: transform 0.14s ease;
 }
 
-.bp-latest-item:hover .bp-title-cover {
-  transform: translateY(-2px);
-}
-
 .bp-latest-lexile {
   position: absolute;
   right: 5px;
@@ -3733,24 +3523,20 @@
   border-radius: 999px;
   background: rgba(17, 24, 39, 0.78);
   color: #fff;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.01em;
 }
 
 .bp-latest-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
   line-height: 1.3;
 }
 
-.bp-latest-item:hover .bp-latest-title {
-  text-decoration: underline;
-}
-
 .bp-latest-author {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: #9ca3af;
   line-height: 1.3;
@@ -3787,7 +3573,7 @@
 }
 
 .bp-content .rc-card-title {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #424242;
   letter-spacing: 0;
@@ -3818,7 +3604,7 @@
 }
 
 .bp-tb-prompt {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.4;
@@ -3826,7 +3612,7 @@
 
 .bp-tb-date {
   flex-shrink: 0;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-400);
   white-space: nowrap;
@@ -3834,7 +3620,7 @@
 
 .bp-tb-answer {
   margin-top: 5px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--c-slate-600);
   line-height: 1.55;
@@ -3892,14 +3678,14 @@
 
 .bp-medal-name {
   margin-top: 6px;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.3;
 }
 
 .bp-medal-sub {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
   line-height: 1.3;
@@ -4045,14 +3831,14 @@
 }
 
 .bp-act-name {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
 }
 
 .bp-act-count {
   margin-top: 1px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -4077,7 +3863,7 @@
 
 .bp-chal-dates {
   margin-top: 1px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-slate-600);
 }
@@ -4087,7 +3873,7 @@
   flex-direction: column;
   gap: 1px;
   margin-top: 8px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -4111,11 +3897,12 @@
 }
 
 /* ── Action form modals ──────────────────────────────────────────────────── */
+/* The app's `.modal__content` is padded 24px all round. */
 .bp-form-body {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 16px 18px 18px;
+  padding: 24px;
   max-height: min(62vh, 520px);
   overflow-y: auto;
 }
@@ -4152,25 +3939,32 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  padding: 14px 18px;
-  border-top: 1px solid var(--c-slate-200);
+  padding: 18px 24px;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 /* ── Activity list modal ─────────────────────────────────────────────────── */
+/* The app's `.modal__header`: 18px 24px over a $gray200 rule, contents
+   left-aligned (the close control floats outside the box now, so the header
+   no longer has to reserve room for it). */
 .bp-act-modal-head {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
-  padding: 12px 12px 12px 18px;
-  border-bottom: 1px solid var(--c-slate-200);
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
+/* `.modal__title`: 18px / 800 / $gray900 at 1.25 line-height — was 900,
+   which read heavier than anything in the app. */
 .bp-act-modal-title {
   flex: 1;
   min-width: 0;
-  font-size: 17px;
-  font-weight: 900;
-  color: var(--c-slate-800);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-real-dark);
 }
 
 .bp-act-modal-cols {
@@ -4181,7 +3975,7 @@
   padding: 9px 18px;
   background: #fafafa;
   border-bottom: 1px solid #f0f0f0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
   color: var(--c-slate-500);
 }
@@ -4206,7 +4000,7 @@
 .bp-act-modal-text {
   flex: 1;
   min-width: 0;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--c-slate-600);
   line-height: 1.55;
@@ -4219,13 +4013,6 @@
   padding: 26px 24px 0;
 }
 
-.bp-medal-modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: var(--c-slate-500);
-}
-
 .bp-medal-modal-art {
   display: flex;
   justify-content: center;
@@ -4233,14 +4020,14 @@
 }
 
 .bp-medal-modal-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-slate-500);
 }
 
 .bp-medal-modal-headline {
   margin-top: 3px;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   color: var(--c-slate-800);
   letter-spacing: -0.01em;
@@ -4248,7 +4035,7 @@
 
 .bp-medal-modal-note {
   margin-top: 12px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
   color: #15803d;
   line-height: 1.45;
@@ -4266,7 +4053,7 @@
   border: 0;
   border-radius: 8px;
   font: inherit;
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 800;
   color: #fff;
   cursor: pointer;
@@ -4298,7 +4085,7 @@
   border-radius: 8px;
   background: #fde9b4;
   color: #4b3a10;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.45;
   text-align: left;
@@ -4324,7 +4111,7 @@
 }
 
 .bp-review-title {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.3;
@@ -4332,7 +4119,7 @@
 
 .bp-review-text {
   margin-top: 7px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--c-slate-600);
   line-height: 1.55;
@@ -4379,7 +4166,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-700);
   white-space: nowrap;
@@ -4393,7 +4180,12 @@
   color: #993c1d;
 }
 
-.bp-statlist {
+/* The stat list's head and rows carry their own horizontal insets, so the card
+   itself contributes only the top/bottom rhythm — no side padding, or the rows
+   end up inset twice. Written with both classes so it beats `.pcard`, whose
+   stylesheet loads after this one. */
+.bp-statlist,
+.pcard.bp-statlist {
   flex-shrink: 0;
   padding: 14px 0 4px;
 }
@@ -4411,7 +4203,7 @@
 
 /* Says what the delta chips are measured against, once. */
 .bp-statlist-note {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-text-subtle);
   white-space: nowrap;
@@ -4432,14 +4224,14 @@
   border: 0;
   border-radius: 999px;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
-  color: var(--bp-profile, var(--c-blue-700));
+  color: var(--c-accent);
   cursor: pointer;
 }
 
 .bp-showmore:hover {
-  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 9%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 9%, #fff);
 }
 
 /* Inside a card it takes the card's full width and sits behind a hairline, so
@@ -4471,9 +4263,9 @@
   border: 0;
   border-top: 1px solid var(--c-slate-100);
   font: inherit;
-  font-size: 12.5px;
+  font-size: 15px;
   font-weight: 800;
-  color: var(--bp-profile, var(--c-blue-700));
+  color: var(--c-accent);
   cursor: pointer;
 }
 
@@ -4569,27 +4361,27 @@
 .bp-statrow-label {
   flex: 1;
   min-width: 0;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-700);
 }
 
 .bp-statrow-value {
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 22px;
+  font-weight: 800;
   color: var(--c-slate-800);
   line-height: 1.1;
   white-space: nowrap;
 }
 
 .bp-statrow-unit {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-400);
 }
 
 .bp-statrow-empty {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -4599,14 +4391,18 @@
   gap: 12px;
 }
 
+/* The row is a link; the chevron was $gray300-faint and barely read as an
+   affordance. Solid gray at rest, accent-tinted and nudged on hover. */
 .bp-statrow-go {
   flex-shrink: 0;
-  color: var(--c-slate-300);
-  transition: transform 0.12s ease;
+  color: var(--c-gray-600);
+  transition:
+    transform 0.12s ease,
+    color 0.12s ease;
 }
 
 .bp-statrow:hover .bp-statrow-go {
-  color: var(--c-slate-500);
+  color: var(--c-accent);
   transform: translateX(2px);
 }
 
@@ -4637,19 +4433,41 @@
    fixed 64px slot, which handed the widest one's width ("↑19 days") to every
    chip and left "↓2" carrying 30px of empty capsule. The arrow and the colour
    are the whole message; the capsule was just weight. */
+/* A status lozenge rather than bare coloured text, so the delta reads as its
+   own object next to the value. Shaped like the app's `.tag` (22px tall,
+   12px radius, 14px/800) and coloured from the product's pastel/dark status
+   pairs in variables.scss — $pastelGreen/$darkGreen and $pastelRed/$darkRed,
+   the same pairing the infobox variants use. */
 .bp-trend {
-  font-size: 12.5px;
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 18px;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 
+/* $pastelGreen / $darkGreen */
 .bp-trend--good {
-  color: var(--c-success);
+  background: #dbf2e7;
+  color: #087542;
 }
 
+/* $pastelRed / $darkRed */
 .bp-trend--bad {
-  color: var(--c-danger);
+  background: #fce6e4;
+  color: #ab3f35;
+}
+
+/* No movement — neutral, so a flat week doesn't read as a warning. */
+.bp-trend--flat {
+  background: var(--c-gray-200);
+  color: var(--c-gray-800);
 }
 
 .bp-statrow > .bp-trend {
@@ -4660,7 +4478,7 @@
    the month a total counts from. Muted text, for the same reason the deltas
    are text. */
 .bp-statrow-note {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
   color: var(--c-text-muted);
@@ -4688,7 +4506,7 @@
   padding: 2px 8px 2px 6px;
   border-radius: 999px;
   border: 1px solid;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -4761,7 +4579,7 @@
   padding: 1px 6px;
   border-radius: 999px;
   background: rgb(15 23 42 / 6%);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   color: var(--c-slate-500);
 }
@@ -4792,7 +4610,7 @@
   border: 1px solid var(--c-slate-300);
   background: #fff;
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-600);
   cursor: pointer;
@@ -4816,7 +4634,7 @@
 /* Date and Unit are reference columns, not the row's subject — the title is.
    Tabular figures so the dates line up as a column of numbers. */
 .bp-rl-tbl-dim {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--c-slate-500);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -4864,7 +4682,7 @@
 }
 
 .bp-clog-bar-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-500);
   letter-spacing: 0.02em;
@@ -4894,7 +4712,7 @@
 }
 
 .bp-clog-dates {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-slate-500);
 }
@@ -4903,7 +4721,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-500);
   flex-shrink: 0;
@@ -4927,7 +4745,7 @@
 }
 
 .bp-clog-field-label {
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4935,7 +4753,7 @@
 }
 
 .bp-clog-field-value {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-800);
 }
@@ -4964,7 +4782,7 @@
 }
 
 .bp-clog-total-label {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-500);
 }
@@ -4977,7 +4795,7 @@
 .bp-clog-th {
   padding: 8px 10px;
   border-bottom: 1.5px solid var(--c-slate-300);
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4998,7 +4816,7 @@
 .bp-clog-td {
   padding: 9px 10px;
   border-bottom: 1px solid var(--c-slate-100);
-  font-size: 13px;
+  font-size: 15px;
   color: var(--c-slate-700);
   vertical-align: top;
 }
@@ -5016,7 +4834,7 @@
 
 .bp-clog-by {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--c-slate-400);
 }
 
@@ -5146,5 +4964,68 @@
 
   .bp-statrow-go {
     grid-area: 1 / 5 / 3 / 6;
+  }
+}
+
+.bp-heatmap-nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ─── Latest titles pager ────────────────────────────────────────────────────
+   The arrows float over the cover rail they scroll rather than sitting in the
+   card header. `--latest-arrow-inset` keeps them clear of the card edge. */
+.bp-latest-body {
+  position: relative;
+}
+
+/* These classes sit on the Tooltip wrapper, not the button: the wrapper is
+   `position: relative`, so anchoring the button itself would position it
+   against the wrapper rather than the cover rail. Vertically centred on the
+   rail via a 50% offset less half the 36px button. */
+/* Centred on the cover artwork, not the whole tile: the tile also carries the
+   title and author, so a plain 50% left the arrows sitting ~37px low, over the
+   text. `--shelf-cover-h` is published by TitleShelf on each measure (the
+   covers are fluid, so CSS has no fixed height to work from); the fallback
+   matches a 120px column. */
+.bp-latest-body > .bp-latest-arrow {
+  position: absolute;
+  top: calc(var(--shelf-cover-h, 180px) / 2);
+  margin-top: -18px;
+  z-index: 2;
+}
+
+/* White with a lift, so the control reads against whatever cover it lands on
+   rather than the grey the rest of the nav buttons use. */
+.bp-latest-body > .bp-latest-arrow,
+.bp-latest-body > .bp-latest-arrow:hover:not(:disabled) {
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.18);
+}
+
+.bp-latest-body > .bp-latest-arrow--prev {
+  left: 6px;
+}
+
+.bp-latest-body > .bp-latest-arrow--next {
+  right: 6px;
+}
+
+/* Nothing to page to — leave the rail unobstructed rather than showing a dead
+   control over the covers. */
+.bp-latest-body > .bp-latest-arrow:disabled {
+  display: none;
+}
+
+/* An overlay scrollbar paints *over* the right gutter, so the page reads as
+   having less padding on the right than the left. Phones hide their scrollbars
+   until you scroll; matching that keeps the gutters even. */
+@media (max-width: 699px) {
+  .bp-adm-main-body {
+    scrollbar-width: none;
+  }
+
+  .bp-adm-main-body::-webkit-scrollbar {
+    display: none;
   }
 }
