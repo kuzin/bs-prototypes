@@ -93,38 +93,49 @@
   user-select: none;
 }
 
+/* `button[disabled].icon-button--disabled { background-color: #f8f8f8;
+   cursor: auto; svg { stroke: #d0d0d0 } }` */
 .icnb:disabled {
-  cursor: not-allowed;
-  opacity: 0.55;
+  cursor: auto;
+  background: var(--c-gray-0);
+  border-color: transparent;
+  color: var(--c-gray-350);
 }
 
-/* Sizes */
+/* `&:focus-visible { background: #e5e5e5; outline: 2px solid #6DAFFF;
+   outline-offset: 2px }` */
+.icnb:focus-visible {
+  outline: 2px solid var(--c-focus-blue);
+  outline-offset: 2px;
+}
+
+/* Sizes — the admin icon button is 36px with a 20px glyph. */
 .icnb--sm {
   width: 28px;
   height: 28px;
   border-radius: 7px;
 }
 .icnb--md {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
 }
 .icnb--lg {
-  width: 40px;
-  height: 40px;
+  width: 44px;
+  height: 44px;
   border-radius: 10px;
 }
 
 .icnb svg {
-  width: 14px;
-  height: 14px;
+  width: 20px;
+  height: 20px;
 }
 .icnb--sm svg {
-  width: 12px;
-  height: 12px;
+  width: 16px;
+  height: 16px;
 }
 .icnb--lg svg {
-  width: 18px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
 }
 
 /* Variants */
@@ -138,24 +149,28 @@
   border-color: #1e40af;
 }
 
+/* Secondary is the admin default: `button.icon-button` in
+   bs-product admin/components/_buttons.scss — a filled #f2f2f2 square with no
+   border, a #e5e5e5 hover/active, and a #424242 glyph. */
 .icnb--secondary {
-  background: #fff;
-  color: var(--c-slate-600);
-  border-color: var(--c-border-strong);
+  background: var(--c-gray-150);
+  color: var(--c-text-real);
+  border-color: transparent;
 }
-.icnb--secondary:hover:not(:disabled) {
-  background: var(--c-slate-50);
-  border-color: var(--c-slate-400);
-  color: var(--c-slate-800);
+.icnb--secondary:hover:not(:disabled),
+.icnb--secondary:active:not(:disabled) {
+  background: var(--c-gray-250);
+  border-color: transparent;
+  color: var(--c-text-real);
 }
 
 .icnb--ghost {
   background: transparent;
-  color: var(--c-text-muted);
+  color: var(--c-text-real);
 }
 .icnb--ghost:hover:not(:disabled) {
-  background: var(--c-slate-100);
-  color: var(--c-slate-800);
+  background: var(--c-gray-150);
+  color: var(--c-text-real);
 }
 
 .icnb--danger {
@@ -288,14 +303,20 @@
 }
 
 /* ── Banner ─────────────────────────────────────────────────────────────── */
+/* Banner — the shipped app's `.infobox`
+   (bs-product app/assets/stylesheets/lib/_infobox.scss): no border, a flat
+   saturated fill per level, 15px/1.5 text in $gray800. */
 .bnr {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border-radius: 10px;
-  border: 1px solid;
-  font-size: 13px;
+  border: none;
+  width: 100%;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--c-gray-800);
 }
 
 .bnr-icon {
@@ -317,13 +338,13 @@
 
 .bnr-title {
   font-weight: 700;
-  color: var(--c-text);
+  color: inherit;
   margin-bottom: 2px;
   line-height: 1.35;
 }
 
 .bnr-msg {
-  color: var(--c-slate-600);
+  color: inherit;
   line-height: 1.5;
 }
 
@@ -334,37 +355,36 @@
   flex-shrink: 0;
 }
 
-/* Levels */
+/* Levels — background only, matching the app's infobox variants:
+   .helpbox $blue50 · .alertbox $yellow200 (text $yellow800)
+   .successbox $green50 · .errorbox $red50 */
 .bnr--info {
-  background: #eff6ff;
-  border-color: #bfdbfe;
+  background: #cfe4fe;
 }
 .bnr--info .bnr-icon {
-  color: var(--c-blue-700);
+  color: #196dd5;
 }
 
 .bnr--success {
-  background: #ecfdf5;
-  border-color: #a7f3d0;
+  background: #cbfce5;
 }
 .bnr--success .bnr-icon {
-  color: #16a34a;
+  color: #017841;
 }
 
 .bnr--warning {
-  background: #fffbeb;
-  border-color: #fde68a;
+  background: #ffe091;
+  color: #895a04;
 }
 .bnr--warning .bnr-icon {
-  color: var(--c-amber-600);
+  color: #895a04;
 }
 
 .bnr--error {
-  background: #fef2f2;
-  border-color: #fecaca;
+  background: #fdd2ce;
 }
 .bnr--error .bnr-icon {
-  color: var(--c-red-600);
+  color: #ba1e0f;
 }
 
 /* ── Mobile: stack body/action vertically, full-width action ──────────── */

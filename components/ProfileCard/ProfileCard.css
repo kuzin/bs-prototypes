@@ -1,0 +1,38 @@
+/* ProfileCard — the titled card the profiles stack down their content column.
+   Extracted from the student/reader profiles so it can be reused and
+   catalogued; the profiles keep their own `bp-`/`rp-` class on the same element
+   for their local descendant rules, so only the visuals live here. */
+
+.pcard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+/* For content that owns its own edges — tables, full-width lists. */
+.pcard--flush {
+  padding: 0;
+}
+
+.pcard-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--c-text-real);
+  margin-bottom: 12px;
+}
+
+/* The first title in a padded card becomes a full-bleed header bar: negative
+   margins pull it back out to the card's edges, and a hairline separates it
+   from the body. */
+.pcard:not(.pcard--flush) > .pcard-title:first-child {
+  margin: -16px -18px 14px;
+  padding: 15px 18px 13px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+/* In a flush card the title supplies the padding the card gave up. */
+.pcard--flush > .pcard-title:first-child {
+  padding: 15px 18px 13px;
+  margin-bottom: 0;
+  border-bottom: 1px solid #f0f0f0;
+}

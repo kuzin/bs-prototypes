@@ -1,18 +1,21 @@
+/* Sits at the top left *inside* the page container, so it picks up the page's
+   own top padding and left edge and needs neither of its own — no background,
+   no rule, just a gap before the PageHeader beneath it. */
 .back-bar {
   display: flex;
   align-items: center;
   width: 100%;
-  padding: 11px max(24px, calc((100% - 1440px) / 2));
-  background: #fff;
-  border-bottom: 1px solid var(--c-gray-200);
+  padding: 0;
+  background: transparent;
+  border-bottom: none;
   flex-shrink: 0;
 }
 
 .back-bar-link {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-red-600);
   background: none;
@@ -29,4 +32,63 @@
 .back-bar-link:hover {
   color: #b91c1c;
   gap: 7px;
+}
+
+/* AppShell still renders the back bar as a sibling above its scrolling column
+   (consumers own the markup inside `.app-shell-page`), so there it has to
+   supply the page padding and gutters itself and the column drops its own top
+   padding. Everywhere the bar is a child of the padded container — the two
+   profiles — the rules above already do the right thing. */
+.app-shell-content > .back-bar {
+  padding: var(--admin-pad-top)
+    max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) 0;
+}
+
+.app-shell-content > .back-bar + .app-shell-page {
+  padding-top: 0;
+}
+
+/* ── `fixed` — a bar of its own ──────────────────────────────────────────────
+   The default bar leans on a page container for its padding and ground, which
+   only works when it has one. Where the back link tops a scrolling region
+   instead, it has to be its own object: stuck to the top of that region, on
+   white, padded, with a hairline so content scrolling underneath stops cleanly
+   instead of passing through the link. */
+.back-bar--fixed {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding: 14px 20px;
+  background: #fff;
+  border-bottom: 1px solid var(--c-gray-200);
+}
+
+/* ── Phone ───────────────────────────────────────────────────────────────────
+   A 15px text link pinned under the topbar is both hard to hit and hard to
+   see. Here it grows to a 44px tap target and a 16px label, with the extra
+   height pulled back out in negative margin so the row itself doesn't get
+   taller than the link looks. */
+@media (max-width: 699px) {
+  .back-bar-link {
+    min-height: 44px;
+    margin: -10px 0;
+    gap: 8px;
+    font-size: 16px;
+  }
+
+  .back-bar-link svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* The AppShell variant supplies its own page padding; the frame tokens have
+     already shrunk, so it only needs the gutters restated for the shorthand. */
+  .app-shell-content > .back-bar {
+    padding: var(--admin-pad-top) var(--admin-gutter) 0;
+  }
+
+  /* The 44px link already gives the fixed bar its height. */
+  .back-bar--fixed {
+    padding: 10px var(--admin-gutter);
+  }
 }

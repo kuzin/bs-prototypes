@@ -171,7 +171,7 @@ function Typography() {
                 color: 'var(--c-slate-900)',
               }}
             >
-              Nunito — the joyful sans for every prototype
+              Museo Sans Rounded — Beanstack's real typeface
             </div>
             <code style={META}>--font-sans</code>
           </div>
@@ -439,11 +439,15 @@ export const foundationsSections = [
     name: 'Typography',
     desc: (
       <>
-        The type system: <strong>Nunito</strong> (<code>--font-sans</code>) for everything, a
-        monospace stack (<code>--font-mono</code>) for code and data, plus the size scale (
-        <code>--text-*</code>, 13px body default) and the weight set (<code>--fw-*</code>). Font
-        families are tokenized at every call site; the size / weight tokens are the standard to
-        adopt going forward.
+        The type system: <strong>Museo Sans Rounded</strong> (<code>--font-sans</code>) for
+        everything, a monospace stack (<code>--font-mono</code>) for code and data, plus the size
+        scale (<code>--text-*</code>, 13px body default) and the weight set (<code>--fw-*</code>).
+        Museo is Beanstack's real typeface, served from the Adobe Fonts kit <code>kus1pku</code> —
+        the same six weights the product's own kit carries, plus real italics; Nunito sits behind it
+        as a fallback. The kit ships <strong>100 / 300 / 500 / 700 / 800 / 900</strong> — no 400 and
+        no 600 — so a requested 400 renders as 500 and a 600 renders as 700; prefer the weights the
+        kit actually has. Font families are tokenized at every call site; the size / weight tokens
+        are the standard to adopt going forward.
       </>
     ),
     render: () => <Typography />,

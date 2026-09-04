@@ -30,50 +30,88 @@
   mask-image: linear-gradient(90deg, transparent, #000 24px, #000 calc(100% - 24px), transparent);
 }
 
-/* ── Underline variant (default) ─────────────────────────────────────────── */
+/* ── Underline variant (default) ─────────────────────────────────────────────
+   The shipped app's `.border-tabs` / `.border-tab`
+   (bs-product app/assets/stylesheets/microsite/_tabs.scss):
+     container  flex, column-gap 24px, `--with-border` adds a 1px $gray200 rule
+     tab        padding 16px 0 (no horizontal padding — the gap does the work),
+                15px / 700 / $gray750, and a 3px underline that scales in
+     active     $gray900 text; the underline is the tenant accent (set in the
+                microsite theme partial's `.border-tab.active a:after`). */
 .tabs--underline {
   border-bottom: 1px solid var(--c-gray-200);
-  gap: 4px;
+  column-gap: 24px;
+  align-items: center;
 }
 
 .tabs--underline .tab {
+  position: relative;
   border: none;
   background: transparent;
   font: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--c-text-muted);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--c-gray-750);
   cursor: pointer;
-  padding: 10px 14px;
+  padding: 16px 0;
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
   white-space: nowrap;
   flex-shrink: 0;
-  transition:
-    color 0.12s,
-    border-color 0.12s;
+  transition: color 0.13s ease;
+}
+
+/* The 3px rule scales in from nothing, rather than swapping border colors. */
+.tabs--underline .tab::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  transform: scaleY(0);
+  background-color: var(--c-gray-400);
+  transition: transform 0.13s ease;
 }
 
 .tabs--underline .tab:hover {
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
+}
+.tabs--underline .tab:hover::after {
+  transform: scaleY(1);
+}
+
+.tabs--underline .tab:focus-visible {
+  outline: 2px solid var(--c-focus-blue);
+  outline-offset: 2px;
 }
 
 .tabs--underline .tab--active {
-  color: var(--tab-accent, var(--c-blue-700));
-  border-bottom-color: var(--tab-accent, var(--c-blue-700));
+  color: var(--c-gray-900);
+}
+.tabs--underline .tab--active::after {
+  transform: scaleY(1);
+  background-color: var(--tab-accent, var(--c-accent));
 }
 
-/* Sizes — underline */
+/* Sizes — underline. The ladder matches the pill variant's: 14 / 15 / 16.
+   `sm` used to drop to 13px, which read as fine print next to the 15px rows of
+   the card it usually sits in. */
 .tabs--underline.tabs--sm .tab {
-  padding: 7px 10px;
-  font-size: 13px;
+  padding: 9px 12px;
+  font-size: 14px;
 }
 .tabs--underline.tabs--lg .tab {
   padding: 12px 18px;
-  font-size: 15px;
+  font-size: 16px;
+}
+
+/* `center` — a short strip inside a card. Left-aligning two tabs against a
+   wide panel leaves the rest of the rule looking like a mistake. */
+.tabs--center {
+  justify-content: center;
 }
 
 .tab--disabled {
@@ -91,7 +129,7 @@
   background: var(--c-slate-200);
   border: 1px solid var(--c-slate-300);
   border-radius: 10px;
-  padding: 3px;
+  padding: 4px;
   display: inline-flex;
 }
 
@@ -103,11 +141,11 @@
   border: none;
   background: transparent;
   font: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-text-muted);
   cursor: pointer;
-  padding: 6px 12px;
+  padding: 9px 14px;
   border-radius: 7px;
   white-space: nowrap;
   flex-shrink: 0;
@@ -136,7 +174,7 @@
   border: 0;
 }
 .tabs--pill.tabs--plain .tab {
-  padding: 9px 20px;
+  padding: 11px 22px;
   font-size: 15px;
   font-weight: 700;
   border-radius: 999px;
@@ -147,13 +185,27 @@
   box-shadow: none;
 }
 
-.tabs--pill.tabs--sm .tab {
-  padding: 4px 10px;
-  font-size: 13px;
+/* `xs` — a pill group tucked into a card header or a settings row beside a
+   heading, where the standard control would out-weigh the text it sits next to
+   (the profiles' "At a glance" range switch). */
+.tabs--pill.tabs--xs {
+  padding: 3px;
+  border-radius: 8px;
 }
-.tabs--pill.tabs--lg .tab {
+.tabs--pill.tabs--xs .tab {
+  padding: 5px 11px;
+  font-size: 13px;
+  border-radius: 6px;
+  gap: 5px;
+}
+
+.tabs--pill.tabs--sm .tab {
   padding: 8px 14px;
   font-size: 14px;
+}
+.tabs--pill.tabs--lg .tab {
+  padding: 11px 18px;
+  font-size: 16px;
 }
 
 /* ── Full-width modifier — equal-flex tabs for segmented-control layouts ───── */
@@ -196,4 +248,37 @@
 .tab-icon svg {
   width: 14px;
   height: 14px;
+}
+
+/* ── Phone: a page tab bar collapses to a select ─────────────────────────────
+   The select lives inside `.tabs` (so no consumer's markup or selectors have
+   to change) and is hidden until the strip stops fitting. Below the break the
+   flex row becomes a plain block, the tabs and the bottom rule go, and the
+   select is all that's left. */
+/* `.sel-wrap` (Form.css) sets `display: inline-flex` at one class level too, so
+   a bare `.tabs-select` rule only wins when Tabs.css happens to load after
+   Form.css — in a prototype where it didn't, the strip *and* the select both
+   rendered. The child selector settles it either way. */
+.tabs > .tabs-select {
+  display: none;
+}
+
+@media (max-width: 699px) {
+  .tabs--underline:has(> .tabs-select) {
+    display: block;
+    border-bottom: none;
+    overflow: visible;
+    /* The mask that fades a scrolling strip's edges would clip the select. */
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .tabs--underline:has(> .tabs-select) .tab {
+    display: none;
+  }
+
+  .tabs--underline > .tabs-select {
+    display: block;
+    width: 100%;
+  }
 }

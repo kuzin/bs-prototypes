@@ -10,17 +10,20 @@
   overflow: hidden;
 }
 
+/* Header row — the shipped app's table headers are sentence case at 14px, not
+   uppercase small caps (see `.daily-reading table tr:first-child td/th` in
+   bs-product admin/_admin_daily_readings.scss: padding 8px, height 32px,
+   font-size 14px). */
 .tbl-th {
   text-align: left;
   font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--c-text-muted);
-  font-size: 12px;
-  padding: 14px 12px;
+  color: var(--c-gray-800);
+  font-size: 14px;
+  height: 32px;
+  padding: 8px 12px;
   border-top: 1px solid var(--c-gray-200);
-  border-bottom: 1px solid var(--c-gray-200);
-  background: var(--c-slate-50);
+  border-bottom: 1px solid var(--c-gray-250);
+  background: var(--c-gray-100);
   white-space: nowrap;
 }
 

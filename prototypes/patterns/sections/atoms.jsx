@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Icon, ICON_NAMES } from '@components/Icon/Icon'
+import { PlumpyIcon, PLUMPY_NAMES, PLUMPY_SOURCES } from '@components/PlumpyIcon/PlumpyIcon'
 import { Button } from '@components/Button/Button'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Pill } from '@components/Pill/Pill'
@@ -20,6 +21,73 @@ import {
   CheckIcon,
   StarIcon,
 } from './_shared'
+
+/**
+ * Plumpy duotone gallery. The `active` knob mirrors the real app's behavior:
+ * inactive icons sit at #2a2a2a, active ones repaint both layers in the accent.
+ */
+function PlumpyShowcase() {
+  const [size, setSize] = useState(24)
+  const [active, setActive] = useState(false)
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Input
+            type="range"
+            min="16"
+            max="48"
+            value={size}
+            onChange={(e) => setSize(Number(e.target.value))}
+          />
+        </Field>
+        <Field label="active (accent)">
+          <Toggle checked={active} onChange={setActive} />
+        </Field>
+      </Knobs>
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(104px, 1fr))',
+          gap: 8,
+          color: active ? 'var(--c-accent)' : 'var(--c-gray-900)',
+        }}
+      >
+        {PLUMPY_NAMES.map((name) => (
+          <div
+            key={name}
+            title={name}
+            style={{
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              gap: 8,
+              padding: '14px 6px',
+              background: active ? 'var(--c-accent-wash)' : '#fff',
+              border: '1px solid var(--c-border)',
+              borderRadius: 8,
+            }}
+          >
+            <PlumpyIcon name={name} size={size} />
+            <span
+              style={{
+                fontSize: 10,
+                color: 'var(--c-text-muted)',
+                textAlign: 'center',
+                wordBreak: 'break-word',
+                lineHeight: 1.25,
+              }}
+            >
+              {name}
+              <br />
+              <span style={{ opacity: 0.7 }}>{PLUMPY_SOURCES[name]}</span>
+            </span>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
 
 function IconShowcase() {
   const [size, setSize] = useState(24)
@@ -665,6 +733,29 @@ export const atomsSections = [
         <IconShowcase />
       </>
     ),
+  },
+  {
+    group: 'atoms',
+    id: 'plumpy-icon',
+    name: 'PlumpyIcon',
+    desc: (
+      <>
+        The <strong>duotone</strong> family the real Beanstack admin chrome uses for its main rail —
+        a solid layer plus a 35%-opacity layer, which is how both the Figma designs and the shipped
+        app build those icons (<code>.dark</code> / <code>.light</code> in{' '}
+        <code>_menu.html.haml</code>). These are the <strong>exact Icons8 Plumpy</strong> icons the
+        Figma nav specifies — its asset names (shown under each glyph) are literally{' '}
+        <code>icons8-staff</code>, <code>icons8-mission</code>, <code>icons8-deviation</code>, and
+        so on. Because Plumpy shares that two-layer construction, a single{' '}
+        <code>fill: currentColor</code> reproduces the real active state: both layers tint to the
+        accent together. Props: <code>name</code>, <code>size</code> (default 24),{' '}
+        <code>className</code>, <code>title</code>. Keep additions on the Plumpy pack — the Icons8
+        id is stored beside each entry in <code>components/PlumpyIcon/PlumpyIcon.jsx</code>. This is{' '}
+        <em>not</em> a replacement for <code>Icon</code>: Tabler line icons remain the default for
+        in-page glyphs; Plumpy is for nav chrome.
+      </>
+    ),
+    render: () => <PlumpyShowcase />,
   },
   {
     group: 'atoms',

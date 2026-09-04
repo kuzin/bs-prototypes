@@ -6,15 +6,19 @@ import './Sidebar.css'
 
 /**
  * Shared sidebar used by every admin prototype (RIS district + school views,
- * pattern library showcase, etc.). The blue-gradient chrome that lives to the
- * right of MainRail.
+ * pattern library showcase, etc.) — the accent-colored section menu that lives
+ * to the right of MainRail. Ported 1:1 from `#admin-section-menu` in the
+ * shipped app; see Sidebar.css for the per-rule provenance.
+ *
+ * Every nav row is a title + a one-line `desc`, the way the real section menu
+ * always renders them — `desc` is expected on every item, not optional polish.
  *
  * <Sidebar
  *   product="Reading Information System"
  *   view="School View"
  *   nav={[
- *     { id: 'dashboard', label: 'Overview', icon: 'overview' },
- *     { id: 'motivation', label: 'Motivation', icon: 'flame', subgroup: true },
+ *     { id: 'dashboard', label: 'Overview', icon: 'overview', desc: 'Reading health at a glance.' },
+ *     { id: 'motivation', label: 'Motivation', icon: 'flame', subgroup: true, desc: '…' },
  *     ...
  *   ]}
  *   active={page}
@@ -43,21 +47,82 @@ function NavIcon({ name }) {
   return icon ? <Icon name={icon} size={20} /> : null
 }
 
-// Render a single nav button.
-function NavItem({ item, isActive, badge, onClick }) {
+/**
+ * A single nav row: a bold title plus a muted description line (`strong` + `p`
+ * inside `.section-item`), and no icon — the icon lives on the rail. Every real
+ * section-menu row has both lines, so `desc` should always be supplied; a row
+ * without one renders as a lone title and looks broken next to its siblings.
+ * The icon here is kept for the collapsed icon-rail mode, which the real app
+ * doesn't have.
+ */
+function NavItem({ item, isActive, badge, expanded, onClick }) {
   return (
     <button
       type="button"
       className={`sb-nav-item${isActive ? ' sb-nav-item--active' : ''}`}
       onClick={onClick}
       title={item.label}
+      aria-expanded={expanded === undefined ? undefined : expanded}
     >
       <span className="sb-nav-icon">
         <NavIcon name={item.icon} />
       </span>
-      <span className="sb-nav-label">{item.label}</span>
+      <span className="sb-nav-item-text">
+        <span className="sb-nav-label">{item.label}</span>
+        {item.desc && <span className="sb-nav-desc">{item.desc}</span>}
+      </span>
       {badge > 0 && <span className="sb-nav-badge">{badge}</span>}
+      {/* `.expand-section` — a 32px translucent disc holding a 16px arrow, on
+          rows that own a nested group. The app swaps `subnav-expand-icon` for
+          `subnav-collapse-icon` when the group opens; children are always
+          rendered here, so it shows the collapse (up) arrow. */}
+      {expanded !== undefined && (
+        <span className="sb-nav-expand" aria-hidden="true">
+          <Icon name={expanded ? 'chevron-up' : 'chevron-down'} size={16} stroke={2.4} />
+        </span>
+      )}
     </button>
+  )
+}
+
+/**
+ * The real app's `sidebar-contract-icon` — a 40x76 shape whose two tails bleed
+ * into the panel edge so the chevron reads as a notch cut out of the sidebar.
+ * Copied from bs-product `new_admin/shared/menu/_contract_icon.html.haml`.
+ */
+function ContractIcon() {
+  return (
+    <svg
+      className="sb-contract-icon"
+      xmlns="http://www.w3.org/2000/svg"
+      width="40"
+      height="76"
+      viewBox="0 0 40 76"
+      aria-hidden="true"
+    >
+      <g fill="none">
+        {/* The app marks the disc `.dark` too, and its CSS fill beats the
+            `fill="#6271E4"` attribute in the markup — so the disc renders in
+            the accent, matching the panel. That attribute is dead code there;
+            omitted here. */}
+        <circle className="sb-contract-tail" cx="20" cy="37.979" r="20" />
+        <path
+          fill="#FFFFFF"
+          fillRule="nonzero"
+          d="M5.071,6 L1.25,2.179 C0.836,1.765 0.836,1.093 1.25,0.679 L1.25,0.679 C1.664,0.265 2.336,0.265 2.75,0.679 L7.364,5.293 C7.755,5.684 7.755,6.317 7.364,6.707 L2.75,11.321 C2.336,11.735 1.664,11.735 1.25,11.321 L1.25,11.321 C0.836,10.907 0.836,10.235 1.25,9.821 L5.071,6 Z"
+          transform="matrix(-1 0 0 1 24 31.979)"
+        />
+        <path
+          className="sb-contract-tail"
+          d="M37.6519356,28.4856169 C31.2173119,17.3509378 28,7.84870108 28,-0.0210931296 C28,-7.89088734 28,-0.16763091 28,23.1486762 L37.6519356,28.4856169 Z"
+        />
+        <path
+          className="sb-contract-tail"
+          d="M38.6849556,79.1486762 C31.5616519,66.4528743 28,56.1700762 28,48.300282 C28,40.4304878 28,48.1537442 28,71.4700513 L38.6849556,79.1486762 Z"
+          transform="matrix(1 0 0 -1 0 124.47)"
+        />
+      </g>
+    </svg>
   )
 }
 
@@ -70,7 +135,8 @@ export function Sidebar({
   subtitle,
   badges = {},
   picker,
-  mainRailIndex = 4,
+  mainRailIndex = 0,
+  mainRailActive,
   className = '',
 }) {
   // ── Tier detection via viewport width ─────────────────────────────────
@@ -80,7 +146,8 @@ export function Sidebar({
   const tier = useTier()
 
   // ── Mode state ────────────────────────────────────────────────────────
-  // 'closed' (no sidebar visible), 'icon' (64px rail), 'full' (240px panel).
+  // 'closed' (no sidebar visible), 'drawer' (mobile only — the rail promoted to
+  // a labelled full-height menu), 'icon' (64px rail), 'full' (240px panel).
   const defaultMode = tier === 'mobile' ? 'closed' : tier === 'tablet' ? 'icon' : 'full'
   const [mode, setMode] = useState(defaultMode)
 
@@ -89,14 +156,24 @@ export function Sidebar({
     setMode(defaultMode)
   }, [defaultMode])
 
+  // On a phone the hamburger opens the app menu — the rail's own destinations,
+  // labelled — the way it does in the product. The section menu isn't a screen
+  // you step into: a section's pages open as a group under its own row, so the
+  // whole navigation is one list you keep your place in. Wider tiers have the
+  // rail and the panel on screen at once, so `expand` goes straight to it.
   function expand() {
-    setMode('full')
+    setMode(tier === 'mobile' ? 'drawer' : 'full')
   }
   function collapse() {
     setMode(tier === 'mobile' ? 'closed' : 'icon')
   }
+  function close() {
+    setMode(tier === 'mobile' ? 'closed' : 'icon')
+  }
 
-  // Group consecutive `subgroup: true` items so we can draw the left connector.
+  // Group consecutive `subgroup: true` items under the row that precedes them.
+  // The app shows nesting two ways: `.sub-menu` indents the child rows' text by
+  // 20px (handled in CSS) and the parent row carries an `.expand-section` caret.
   const groups = []
   for (const item of nav) {
     const last = groups[groups.length - 1]
@@ -109,9 +186,17 @@ export function Sidebar({
       groups.push({ kind: 'item', item })
     }
   }
+  // A plain row immediately followed by a subgroup owns it, so it shows the
+  // caret. Children are always rendered here, so the group is always expanded.
+  const ownsSubgroup = new Set(
+    groups
+      .map((g, i) => (g.kind === 'item' && groups[i + 1]?.kind === 'subgroup' ? g.item.id : null))
+      .filter(Boolean),
+  )
 
-  // Overlay = full mode on tablet (sidebar floats; rail stays) or mobile (full
-  // drawer with rail). On desktop, full mode is just in-flow — no overlay.
+  // Overlay = full mode on tablet (sidebar floats; rail stays) or mobile (the
+  // section menu stepped into from the app menu). On desktop, full mode is just
+  // in-flow — no overlay.
   const isOverlay = mode === 'full' && tier !== 'desktop'
   // The in-flow sidebar shows icon styling at tablet+icon or desktop+icon.
   // At tablet+full it stays icon (placeholder rail); the overlay shows full.
@@ -143,7 +228,7 @@ export function Sidebar({
             title="Collapse navigation"
             aria-label="Collapse navigation"
           >
-            <Icon name="chevron-left" size={16} stroke={2} />
+            <ContractIcon />
           </button>
         </div>
 
@@ -163,6 +248,7 @@ export function Sidebar({
                   item={g.item}
                   isActive={active === g.item.id}
                   badge={badges[g.item.id]}
+                  expanded={ownsSubgroup.has(g.item.id) ? true : undefined}
                   onClick={() => onNavigate?.(g.item.id)}
                 />
               )
@@ -225,7 +311,7 @@ export function Sidebar({
 
       {/* In-flow rail + sidebar (desktop full / tablet icon / desktop icon) */}
       <div className="sb-chrome">
-        <MainRail activeIndex={mainRailIndex} />
+        <MainRail active={mainRailActive} activeIndex={mainRailIndex} />
         <aside className={`sb-sidebar${showInflowIcon ? ' sb-sidebar--icon' : ''}`}>
           {renderInner()}
         </aside>
@@ -233,9 +319,26 @@ export function Sidebar({
 
       {/* Overlay variants */}
       {/* Backdrop only on mobile — tablet overlay keeps MainRail interactive */}
-      {isOverlay && tier === 'mobile' && <div className="sb-backdrop" onClick={collapse} />}
-      {isOverlay && tier === 'mobile' && (
-        <MainRail activeIndex={mainRailIndex} className="sb-overlay-rail" />
+      {tier === 'mobile' && (mode === 'drawer' || mode === 'full') && (
+        <div className="sb-backdrop" onClick={close} />
+      )}
+      {tier === 'mobile' && mode === 'drawer' && (
+        <MainRail
+          drawer
+          active={mainRailActive}
+          activeIndex={mainRailIndex}
+          onClose={close}
+          // The section we're actually in is the one whose pages we can list —
+          // the others are elsewhere in the app, and tapping them is a
+          // navigation, not an expansion.
+          sections={mainRailActive ? { [mainRailActive]: nav } : {}}
+          activeSectionItem={active}
+          onSelectSectionItem={(id) => {
+            onNavigate?.(id)
+            close()
+          }}
+          onSelect={() => close()}
+        />
       )}
       {isOverlay && <aside className="sb-sidebar sb-sidebar--overlay">{renderInner()}</aside>}
     </div>

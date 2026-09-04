@@ -19,14 +19,22 @@ import { AppShell } from '@components/AppShell/AppShell'
 import { SchoolPicker } from '@components/Sidebar/Sidebar'
 import { useTooltipFlip } from '@components/useTooltipFlip/useTooltipFlip'
 
+// Every row carries a `desc` — the real section menu always pairs a title with
+// a one-line description, so a bare label reads as a broken row.
 const NAV = [
-  { id: 'dashboard', label: 'Overview', icon: 'overview' },
+  {
+    id: 'dashboard',
+    label: 'Overview',
+    icon: 'overview',
+    desc: 'Reading health at a glance, and who to watch.',
+  },
   {
     id: 'motivation',
     label: 'Motivation',
     icon: 'flame',
     subgroup: true,
     section: 'Reading Health',
+    desc: 'Motivation Index scores and survey trends.',
   },
   {
     id: 'integrity',
@@ -34,11 +42,38 @@ const NAV = [
     icon: 'shield',
     subgroup: true,
     section: 'Reading Health',
+    desc: 'Flag rates and book talk completion.',
   },
-  { id: 'habits', label: 'Habits', icon: 'habits', subgroup: true, section: 'Reading Health' },
-  { id: 'skills', label: 'Skills', icon: 'book', subgroup: true, section: 'Reading Health' },
-  { id: 'analytics', label: 'Analytics', icon: 'analytics', section: 'Data' },
-  { id: 'demographics', label: 'Demographics', icon: 'demographics', section: 'Data' },
+  {
+    id: 'habits',
+    label: 'Habits',
+    icon: 'habits',
+    subgroup: true,
+    section: 'Reading Health',
+    desc: 'Streaks, logging consistency, and minutes read.',
+  },
+  {
+    id: 'skills',
+    label: 'Skills',
+    icon: 'book',
+    subgroup: true,
+    section: 'Reading Health',
+    desc: 'Lexile growth and comprehension.',
+  },
+  {
+    id: 'analytics',
+    label: 'Analytics',
+    icon: 'analytics',
+    section: 'Data',
+    desc: 'Build and compare custom views.',
+  },
+  {
+    id: 'demographics',
+    label: 'Demographics',
+    icon: 'demographics',
+    section: 'Data',
+    desc: 'Compare reading health across student groups.',
+  },
 ]
 
 export function RisLayout({ scope, schoolId, onSchoolId, page, onPage }) {

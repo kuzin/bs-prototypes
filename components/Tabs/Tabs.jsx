@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
+import { Select } from '@components/Form/Form'
+import '@components/Form/Form.css'
 import '@components/Tabs/Tabs.css'
 
 /**
  * `plain` drops the pill variant's track, for a sub-tab bar that already sits on
  * a band of its own (the reader's Reading Log and Collections bars).
+ *
+ * `center` centres the strip in its container — for a short tab bar inside a
+ * card, where left-aligning two tabs against a wide panel leaves the rest of
+ * the rule looking empty. Page-level bars stay left-aligned.
  *
  * <Tabs
  *   active="daily"
@@ -24,10 +30,20 @@ export function Tabs({
   size = 'md',
   block = false,
   plain = false,
+  center = false,
   accent,
   ariaLabel,
+  collapse,
   className = '',
 }) {
+  // A page-level tab bar (the underline variant) becomes a select on a phone:
+  // three or four labels don't fit a 375px row, and a strip that scrolls
+  // sideways hides the tabs you haven't found yet. Pill groups are segmented
+  // controls, not navigation, so they keep their buttons — two or three short
+  // options read better as a control than as a dropdown. `collapse` overrides
+  // either way. The select is a child of `.tabs` rather than a sibling so no
+  // consumer's markup or selectors change; CSS swaps which one shows.
+  const collapses = collapse ?? variant === 'underline'
   const style = accent ? { '--tab-accent': accent } : undefined
 
   // Edge-fade hint for when the strip overflows and scrolls horizontally
@@ -62,11 +78,26 @@ export function Tabs({
     <div
       ref={scrollRef}
       onScroll={updateScrollFade}
-      className={`tabs tabs--${variant} tabs--${size}${plain ? ' tabs--plain' : ''}${block ? ' tabs--block' : ''}${canScrollLeft ? ' tabs--scroll-left' : ''}${canScrollRight ? ' tabs--scroll-right' : ''} ${className}`.trim()}
-      role="tablist"
-      aria-label={ariaLabel}
+      className={`tabs tabs--${variant} tabs--${size}${plain ? ' tabs--plain' : ''}${center ? ' tabs--center' : ''}${block ? ' tabs--block' : ''}${canScrollLeft ? ' tabs--scroll-left' : ''}${canScrollRight ? ' tabs--scroll-right' : ''} ${className}`.trim()}
+      role={collapses ? undefined : 'tablist'}
+      aria-label={collapses ? undefined : ariaLabel}
       style={style}
     >
+      {collapses && (
+        <Select
+          className="tabs-select"
+          value={active}
+          onChange={(e) => onChange?.(e.target.value)}
+          aria-label={ariaLabel}
+        >
+          {items.map((item) => (
+            <option key={item.id} value={item.id} disabled={item.disabled}>
+              {item.label}
+              {item.count != null ? ` (${item.count})` : ''}
+            </option>
+          ))}
+        </Select>
+      )}
       {items.map((item) => (
         <button
           key={item.id}

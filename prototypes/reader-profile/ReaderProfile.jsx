@@ -21,12 +21,13 @@ import { ChartCard } from '@components/Cards/Cards'
 import { Table } from '@components/Table/Table'
 import '@components/Table/Table.css'
 import { BackBar } from '@components/BackBar/BackBar'
+import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Sidebar } from '@components/Sidebar/Sidebar'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { Icon } from '@components/Icon/Icon'
 import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 import { Flyout } from '@components/Flyout/Flyout'
-import { Modal } from '@components/Modal/Modal'
+import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Toggle } from '@components/Toggle/Toggle'
 import { SearchInput } from '@components/SearchInput/SearchInput'
@@ -111,16 +112,12 @@ const YES_NO = [
 
 function ActionModal({ open, onClose, title, children, save = 'Save', saveDisabled, secondary }) {
   return (
-    <Modal open={open} onClose={onClose} variant="center" ariaLabel={title}>
+    <Modal open={open} onClose={onClose} variant="center" ariaLabel={title} closeBadge>
       {({ close }) => (
         <div className="rp-act-modal">
+          <ModalClose onClick={close} />
           <div className="rp-act-modal-head">
             <span className="rp-act-modal-title">{title}</span>
-            <Tooltip content="Close">
-              <IconButton variant="ghost" size="sm" aria-label="Close" onClick={close}>
-                <Icon name="x" size={18} stroke={2.2} />
-              </IconButton>
-            </Tooltip>
           </div>
           <div className="rp-form-body">{children}</div>
           <div className="rp-form-foot">
@@ -391,10 +388,11 @@ function ReaderHeader({ student, onClose }) {
   return (
     <div className="rp-panel-header">
       <div className="rp-panel-identity">
-        {/* A round, per-reader colour: the header is a person, not an
-    organisation, and stepping between readers should visibly change reader.
-    The hues are identity only — deliberately none of the status palette. */}
-        <Avatar initials={initialsOf(student.name)} color={student.avatarColor} size="lg" />
+        {/* Was a per-reader hue so stepping between readers visibly changed
+    reader; now the admin accent, so the whole panel reads as one themed
+    surface. `avatarColor` is still on the data if that identity cue is
+    wanted back — the reader avatars in the results list still use it. */}
+        <Avatar initials={initialsOf(student.name)} color="var(--c-accent)" size="lg" />
         <div className="rp-panel-titles">
           <div className="rp-panel-name">{student.name}</div>
           <div className="rp-panel-meta">
@@ -449,8 +447,6 @@ const NAV_ITEMS = [
 // derives from this one property in CSS via `color-mix`, so a reader needs a
 // single authored hex rather than a hand-mixed scale. The Hero icon chips stay
 // on `SECTION_ACCENT` — the section you're on still has its own colour.
-const profileVars = (student) => ({ '--rp-profile': student.avatarColor })
-
 function LeftNav({ activeSection, onNavigate, pager }) {
   return (
     <nav className="rp-nav">
@@ -610,7 +606,13 @@ function StatRow({ icon, accent, label, children, onOpen }) {
       <span className="rp-statrow-label">{label}</span>
       {children}
       {onOpen && (
-        <Icon name="chevron-right" size={16} className="rp-statrow-go" aria-hidden="true" />
+        <Icon
+          name="chevron-right"
+          size={18}
+          stroke={2.2}
+          className="rp-statrow-go"
+          aria-hidden="true"
+        />
       )}
     </Tag>
   )
@@ -632,6 +634,16 @@ function TitleShelf({ titles, onNavigate }) {
       left: el.scrollLeft > 1,
       right: el.scrollLeft + el.clientWidth < el.scrollWidth - 1,
     })
+    // Publish the rendered cover height so the pager arrows can centre on the
+    // artwork rather than on the whole tile. The covers are fluid (item width
+    // x 1.5 via `aspect-ratio`), so there's no fixed number to use in CSS.
+    const cover = el.querySelector('[class$="-latest-cover"]')
+    if (cover) {
+      el.parentElement?.style.setProperty(
+        '--shelf-cover-h',
+        `${Math.round(cover.getBoundingClientRect().height)}px`,
+      )
+    }
   }
 
   useEffect(() => {
@@ -655,58 +667,52 @@ function TitleShelf({ titles, onNavigate }) {
     <>
       <div className="rp-latest-head">
         <SectionHeading>Latest titles</SectionHeading>
-        <div className="rp-latest-head-right">
-          {scrollable && (
-            <div className="rp-latest-arrows">
-              <Tooltip content="Previous titles">
-                <button
-                  type="button"
-                  className="rp-heatmap-nav-btn"
-                  onClick={() => page(-1)}
-                  disabled={!left}
-                  aria-label="Previous titles"
-                >
-                  <Icon name="chevron-left" size={13} stroke={2.2} />
-                </button>
-              </Tooltip>
-              <Tooltip content="More titles">
-                <button
-                  type="button"
-                  className="rp-heatmap-nav-btn"
-                  onClick={() => page(1)}
-                  disabled={!right}
-                  aria-label="More titles"
-                >
-                  <Icon name="chevron-right" size={13} stroke={2.2} />
-                </button>
-              </Tooltip>
-            </div>
-          )}
-          <button type="button" className="rp-latest-link" onClick={() => onNavigate('readinglog')}>
-            Reading Log
-            <Icon name="arrow-right" size={14} />
-          </button>
-        </div>
+        <button type="button" className="rp-latest-link" onClick={() => onNavigate('readinglog')}>
+          Reading Log
+          <Icon name="arrow-right" size={14} />
+        </button>
       </div>
-      <div className="rp-latest-grid" ref={ref} onScroll={sync}>
-        {titles
-          .slice()
-          .reverse()
-          .map((t, i) => (
-            <a
-              key={i}
-              className="rp-latest-item"
-              href={`https://openlibrary.org/isbn/${t.isbn}`}
-              target="_blank"
-              rel="noreferrer"
+      {/* The pager sits over the rail it scrolls, not up in the header — the
+          header is for what the block is and where it goes. */}
+      <div className="rp-latest-body">
+        {scrollable && (
+          <>
+            <button
+              type="button"
+              className="rp-heatmap-nav-btn rp-latest-arrow rp-latest-arrow--prev"
+              onClick={() => page(-1)}
+              disabled={!left}
+              aria-label="Previous titles"
             >
-              <div className="rp-latest-cover">
-                <CoverImage isbn={t.isbn} title={t.title} />
+              <Icon name="chevron-left" size={13} stroke={2.2} />
+            </button>
+            <button
+              type="button"
+              className="rp-heatmap-nav-btn rp-latest-arrow rp-latest-arrow--next"
+              onClick={() => page(1)}
+              disabled={!right}
+              aria-label="More titles"
+            >
+              <Icon name="chevron-right" size={13} stroke={2.2} />
+            </button>
+          </>
+        )}
+        <div className="rp-latest-grid" ref={ref} onScroll={sync}>
+          {titles
+            .slice()
+            .reverse()
+            .map((t, i) => (
+              // Covers are display only — the shelf is a summary, and the
+              // Reading Log link in the header is the way through.
+              <div key={i} className="rp-latest-item">
+                <div className="rp-latest-cover">
+                  <CoverImage isbn={t.isbn} title={t.title} />
+                </div>
+                <div className="rp-latest-title">{t.title}</div>
+                <div className="rp-latest-author">{t.author}</div>
               </div>
-              <div className="rp-latest-title">{t.title}</div>
-              <div className="rp-latest-author">{t.author}</div>
-            </a>
-          ))}
+            ))}
+        </div>
       </div>
     </>
   )
@@ -718,7 +724,7 @@ function OverviewStats({ metrics, onOpen }) {
   const hidden = metrics.filter((m) => m.more).length
 
   return (
-    <div className="rp-card rp-statlist">
+    <div className="pcard rp-card rp-statlist">
       <div className="rp-statlist-head">
         <SectionHeading>At a glance</SectionHeading>
       </div>
@@ -2604,18 +2610,10 @@ function SearchToggle({ open, onToggle }) {
 // stance as the Log and Edit Goal buttons.
 function MedalModal({ open, onClose, art, label, headline, note, action }) {
   return (
-    <Modal open={open} onClose={onClose} variant="center" ariaLabel={headline}>
+    <Modal open={open} onClose={onClose} variant="center" ariaLabel={headline} closeBadge>
       {({ close }) => (
         <div className="rp-medal-modal">
-          <IconButton
-            variant="ghost"
-            size="sm"
-            className="rp-medal-modal-close"
-            aria-label="Close"
-            onClick={close}
-          >
-            <Icon name="x" size={18} stroke={2.2} />
-          </IconButton>
+          <ModalClose onClick={close} />
           <div className="rp-medal-modal-art">{art}</div>
           <div className="rp-medal-modal-label">{label}</div>
           <div className="rp-medal-modal-headline">{headline}</div>
@@ -2925,21 +2923,14 @@ function ActivitiesPage({ student }) {
         onClose={() => setOpenIdx(null)}
         variant="center"
         ariaLabel={openBadge?.name}
+        closeBadge
       >
         {({ close }) => (
           <div className="rp-act-modal">
+            <ModalClose onClick={close} />
             <div className="rp-act-modal-head">
               {openBadge && <MedalDisc icon={openBadge.icon} color={openBadge.color} size={34} />}
               <span className="rp-act-modal-title">{openBadge?.name}</span>
-              <IconButton
-                variant="ghost"
-                size="sm"
-                title="Close"
-                aria-label="Close"
-                onClick={close}
-              >
-                <Icon name="x" size={18} stroke={2.2} />
-              </IconButton>
             </div>
             <div className="rp-act-modal-cols">
               <span>Activity</span>
@@ -3336,14 +3327,14 @@ function AccountPage({ accountId, onReaderClick, onBack }) {
       <Sidebar
         title="People"
         subtitle="Find, add, delete, and take actions on behalf of account creators and readers."
-        mainRailIndex={1}
+        mainRailActive="people"
         nav={PEOPLE_NAV}
         active="find"
       />
 
       <div className="rp-adm-main">
-        <BackBar label="Back to Find a Person" onClick={onBack} />
         <div className="rp-adm-main-body">
+          <BackBar label="Back to Find a Person" onClick={onBack} />
           <div className="rp-acct-page-head">
             <h1 className="rp-find-title">{account.creator}</h1>
             <div className="rp-acct-page-btns">
@@ -3454,11 +3445,28 @@ function AccountPage({ accountId, onReaderClick, onBack }) {
 // so staff reach a reader by searching — and the search is a form of specific
 // fields (name, email, card number, branch…), not one box, because staff are
 // usually working from whatever detail the person at the desk gave them.
+// Titles and descriptions are the real strings from bs-product
+// `new_admin/shared/menu/_people_menu.html.erb`.
 const PEOPLE_NAV = [
-  { id: 'find', label: 'Find a Person', icon: 'person' },
-  { id: 'add', label: 'Add an Account Creator', icon: 'demographics' },
-  { id: 'messages', label: 'Contact Messages', icon: 'flag' },
-  { id: 'merges', label: 'Account Merges', icon: 'overview' },
+  {
+    id: 'find',
+    label: 'Find a Person',
+    icon: 'person',
+    desc: 'Search for a reader or account creator.',
+  },
+  {
+    id: 'add',
+    label: 'Add an Account Creator and Reader',
+    icon: 'demographics',
+    desc: 'Create a new account.',
+  },
+  { id: 'messages', label: 'Contact Messages', icon: 'flag', desc: 'View contact messages.' },
+  {
+    id: 'merges',
+    label: 'Account Merges',
+    icon: 'overview',
+    desc: 'Review queued, completed, and failed account merges.',
+  },
 ]
 
 // Nine fields is a wall. The three staff reach for most stay in view and the
@@ -3516,7 +3524,7 @@ const READER_ROW_ACTIONS = [
   { label: 'Challenge Actions', icon: 'trophy' },
 ]
 
-function FindAPerson({ onReaderClick, onOpenAccount, selectedKey }) {
+function FindAPerson({ onReaderClick, onOpenAccount }) {
   const [form, setForm] = useState(BLANK_SEARCH)
   const [searched, setSearched] = useState(false)
   const [advanced, setAdvanced] = useState(false)
@@ -3559,17 +3567,17 @@ function FindAPerson({ onReaderClick, onOpenAccount, selectedKey }) {
       <Sidebar
         title="People"
         subtitle="Find, add, delete, and take actions on behalf of account creators and readers."
-        mainRailIndex={1}
+        mainRailActive="people"
         nav={PEOPLE_NAV}
         active="find"
       />
 
       <div className="rp-adm-main">
         <div className="rp-adm-main-body">
-          <div className="rp-find-head">
-            <h1 className="rp-find-title">Find a Person</h1>
-            <p className="rp-find-sub">Search fields must contain at least two characters.</p>
-          </div>
+          <PageHeader
+            title="Find a Person"
+            subtitle="Search fields must contain at least two characters."
+          />
 
           <div className="rp-find-card">
             <div className="rp-find-grid">
@@ -3669,7 +3677,7 @@ function FindAPerson({ onReaderClick, onOpenAccount, selectedKey }) {
                         return (
                           <tr
                             key={key}
-                            className={`tbl-row tbl-row--clickable${selectedKey === key ? ' rp-adm-row--selected' : ''}`}
+                            className="tbl-row tbl-row--clickable"
                             onClick={() => onReaderClick?.(key)}
                             onKeyDown={(ev) => ev.key === 'Enter' && onReaderClick?.(key)}
                             role="button"
@@ -3790,7 +3798,7 @@ function ProfilePager({ currentKey, onSelect, variant = 'inline' }) {
   const next = idx < READER_ORDER.length - 1 ? READER_ORDER[idx + 1] : null
   const float = variant === 'float'
   const btnClass = float ? 'rp-ctrl-btn' : 'rp-pager-btn'
-  const icon = float ? { size: 15, stroke: 2.2 } : { size: 17, stroke: 2.2 }
+  const icon = float ? { size: 18, stroke: 2.2 } : { size: 17, stroke: 2.2 }
 
   return (
     <div className={float ? 'rp-ctrl-group' : 'rp-pager'}>
@@ -3892,7 +3900,7 @@ function ProfileCtrls({ onClose, expanded, onToggleExpand, currentKey, onSelectR
             onClick={onClose}
             aria-label="Close profile"
           >
-            <Icon name="x" size={15} stroke={2.2} />
+            <Icon name="x" size={18} stroke={2.2} />
           </button>
         </Tooltip>
         <Tooltip
@@ -3905,7 +3913,7 @@ function ProfileCtrls({ onClose, expanded, onToggleExpand, currentKey, onSelectR
             onClick={onToggleExpand}
             aria-label={expanded ? 'Exit full screen' : 'Expand to full screen'}
           >
-            <Icon name={expanded ? 'minimize' : 'maximize'} size={14} stroke={2.1} />
+            <Icon name={expanded ? 'minimize' : 'maximize'} size={18} stroke={2.1} />
           </button>
         </Tooltip>
         <Tooltip content={copied ? 'Link copied' : 'Copy link to this view'} placement="right">
@@ -3915,7 +3923,7 @@ function ProfileCtrls({ onClose, expanded, onToggleExpand, currentKey, onSelectR
             onClick={copyLink}
             aria-label={copied ? 'Link copied' : 'Copy link to this view'}
           >
-            <Icon name={copied ? 'check' : 'link'} size={14} stroke={2.1} />
+            <Icon name={copied ? 'check' : 'link'} size={18} stroke={2.1} />
           </button>
         </Tooltip>
       </div>
@@ -4004,7 +4012,7 @@ export function ReaderProfileView({ readerKey, onClose, expanded, onToggleExpand
   const student = READERS[currentKey] || READERS.mateo
 
   return (
-    <div className={`rp-embed${expanded ? ' rp-embed--full' : ''}`} style={profileVars(student)}>
+    <div className={`rp-embed${expanded ? ' rp-embed--full' : ''}`}>
       <ProfileBody
         student={student}
         activeSection={activeSection}
@@ -4098,11 +4106,7 @@ export default function ReaderProfile() {
             onBack={() => setOpenAccount(null)}
           />
         ) : (
-          <FindAPerson
-            onReaderClick={handleReaderClick}
-            onOpenAccount={setOpenAccount}
-            selectedKey={selectedReaderKey}
-          />
+          <FindAPerson onReaderClick={handleReaderClick} onOpenAccount={setOpenAccount} />
         )}
       </div>
 
@@ -4122,7 +4126,7 @@ export default function ReaderProfile() {
         >
           {/* Rail + panel are one sliding unit, so the controls travel with the
     panel edge on open, close and expand instead of sitting still. */}
-          <div className="rp-profile-slider" style={profileVars(student)}>
+          <div className="rp-profile-slider">
             <ProfileBody
               student={student}
               activeSection={activeSection}

@@ -5,6 +5,7 @@
 import { useId, useState } from 'react'
 import { Ic, COVER_PALETTES } from '@components/ui'
 import { Icon } from '@components/Icon/Icon'
+import { ProfileCard, ProfileCardTitle } from '@components/ProfileCard/ProfileCard'
 
 // ─── Status badge ──────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
@@ -26,13 +27,20 @@ export function StatusBadge({ label, size = 11, accent }) {
 }
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
+// The visuals live in the shared ProfileCard pattern; the `bp-` classes ride
+// along on the same elements because a lot of local CSS keys off them
+// (`.bp-card > .bp-tb-item`, heading rows, and so on).
 export function Card({ children, flush }) {
-  return <div className={`bp-card${flush ? ' bp-card--flush' : ''}`}>{children}</div>
+  return (
+    <ProfileCard flush={flush} className={`bp-card${flush ? ' bp-card--flush' : ''}`}>
+      {children}
+    </ProfileCard>
+  )
 }
 
 // ─── Section heading ──────────────────────────────────────────────────────────
 export function SectionHeading({ children }) {
-  return <div className="bp-section-heading">{children}</div>
+  return <ProfileCardTitle className="bp-section-heading">{children}</ProfileCardTitle>
 }
 
 // ─── Goal ring ────────────────────────────────────────────────────────────────

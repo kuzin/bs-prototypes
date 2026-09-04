@@ -60,6 +60,43 @@ function TabsShowcase() {
           ]}
         />
       </Variant>
+      <Variant label="underline + center — a short strip inside a card">
+        <div
+          style={{
+            width: 'min(320px, 100%)',
+            background: '#fff',
+            border: '1px solid var(--c-border)',
+            borderRadius: 12,
+            padding: '12px 14px',
+          }}
+        >
+          <Tabs
+            variant="underline"
+            size="sm"
+            center
+            ariaLabel="Leaderboard scope"
+            active={c}
+            onChange={setC}
+            items={[
+              { id: 'details', label: 'Top Schools' },
+              { id: 'all', label: 'Top Grades' },
+            ]}
+          />
+        </div>
+      </Variant>
+      <Variant label='pill + size="xs" — for a card header or settings row'>
+        <Tabs
+          variant="pill"
+          size="xs"
+          ariaLabel="Overview time range"
+          active={c}
+          onChange={setC}
+          items={[
+            { id: 'details', label: 'This School Year' },
+            { id: 'all', label: 'All Time' },
+          ]}
+        />
+      </Variant>
       <Variant label="pill + plain — a sub-tab bar on its own band">
         <div
           style={{
@@ -1085,6 +1122,22 @@ export const moleculesSections = [
         instead of white — for a sub-tab bar that already sits on a tinted band of its own, where a
         white-on-grey pill would vanish. That&apos;s the reader&apos;s Reading Log and Collections
         bars.
+        <br />
+        <br />
+        <code>center</code> centres the strip in its container — for a short bar inside a card,
+        where left-aligning two tabs against a wide panel leaves the rest of the rule looking empty.
+        Page-level bars stay left-aligned. The size ladder is <strong>14 / 15 / 16</strong> in both
+        variants.
+        <br />
+        <br />
+        <strong>On a phone the underline bar becomes a select.</strong> Three or four page labels
+        don&apos;t fit a 375px row, and a strip that scrolls sideways hides the tabs you
+        haven&apos;t found yet — so below 699px the tabs give way to a full-width dropdown carrying
+        the same items (counts in parentheses). Pill groups keep their buttons: those are segmented
+        controls, not navigation, and two short options read better as a control than a dropdown.{' '}
+        <code>collapse</code> forces it either way. The select is a child of <code>.tabs</code>, not
+        a sibling, so no consumer&apos;s markup or selectors change — CSS swaps which one shows.
+        Resize the window below 699px to see it.
       </>
     ),
     render: () => (

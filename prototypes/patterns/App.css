@@ -348,10 +348,9 @@
 /* ── Component page — sticky top bar (back link) ──────────────────────────── */
 /* Full-bleed to the content edges + pinned to the top of the scroll area so it
    reads as a header bar, matching the chrome in the other prototype views. */
+/* Full-bleed to the content column's edges; the sticky, white, padded part is
+   the back bar's own `fixed` variant. */
 .pt-page-bar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
   margin: 0 -32px 20px;
 }
 
@@ -465,6 +464,53 @@
 .pt-variant-frame--full {
   padding: 0;
   overflow: hidden;
+}
+
+/* ── Insights showcase ───────────────────────────────────────────────────────
+   The cards fill the content column, so the states stack as one column of
+   like-for-like comparisons. Without this the `value` and `loading` states
+   (divs) go full width while `clickable` and `empty` (buttons) shrink to their
+   content, and the four stop looking like the same object. On the real
+   dashboard they're grid cells, which stretch for free. */
+.pt-insights-cards .pt-variant-frame > * {
+  width: 100%;
+}
+
+/* ── BackBar showcase ────────────────────────────────────────────────────────
+   A stand-in page container, so the bar can be seen doing its actual job:
+   sitting inside the page's padding, above the page header, on the page ground.
+   Padding is 24px rather than the frame's real 56/70 so the preview fits. */
+.pt-backbar-page {
+  display: flex;
+  flex-direction: column;
+  gap: var(--admin-section-gap);
+  background: #f2f3f5;
+  padding: 24px;
+}
+
+.pt-backbar-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text-real);
+}
+
+/* A short scrolling region, so the `fixed` bar has something to stick against
+   and something to pass under. */
+.pt-backbar-scroller {
+  position: relative;
+  height: 220px;
+  overflow-y: auto;
+  background: #f2f3f5;
+}
+
+.pt-backbar-scroll-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 20px 20px;
 }
 
 /* ── MainRail showcase ───────────────────────────────────────────────────── */
