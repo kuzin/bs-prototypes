@@ -1,8 +1,12 @@
 /* ── BarList ─────────────────────────────────────────────────────────────── */
+/* A container, so rows can respond to the width they actually have. These
+   lists live in cards, in a profile flyout and in a phone column, and the
+   viewport tells you nothing about any of them. */
 .bl {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  container-type: inline-size;
 }
 
 .bl--grouped {
@@ -37,11 +41,16 @@
   }
 }
 
+/* A container as well as `.bl`, because a grouped list puts two of these side
+   by side (`.bl--columns`) — so the group, not the whole list, is the width a
+   row actually has. Without this the query below measured a 611px list while
+   its rows sat in 281px columns. */
 .bl-group {
   display: flex;
   flex-direction: column;
   gap: 6px;
   padding: 14px 0;
+  container-type: inline-size;
 }
 
 /* In a stacked grouped list, the first group sits flush against the
@@ -54,7 +63,7 @@
 }
 
 .bl-group-label {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -262,40 +271,56 @@
 }
 
 /* ── Value + delta ──────────────────────────────────────────────────────── */
-/* Value and delta sit on one line, sharing a baseline. Stacked, the delta read
-   as a second measurement under the first rather than as an annotation on it,
-   and the two-line block set the row's height. */
+/* Value and delta sit on one line. Stacked, the delta read as a second
+   measurement under the first rather than as an annotation on it, and the
+   two-line block set the row's height.
+
+   `center`, not `baseline`: the delta is a `TrendChip` now, and an inline-flex
+   chip's baseline is its bottom edge — so baseline alignment dropped the value
+   2px below the icon, the label and the bar, which all sit on the row's
+   centreline. `padding-left` is the gap between the bar and the figure it
+   belongs to; the grid's own 10px left the two touching. */
 .bl-right {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: flex-end;
-  gap: 6px;
+  gap: 10px;
   min-width: 36px;
+  padding-left: 6px;
   white-space: nowrap;
 }
 
+/* The figure a row is ranked by, so it reads at the same size as the label it
+   belongs to (15px) rather than as fine print beside it. The subvalue and the
+   delta stay a step down — they qualify the number, they aren't it. */
 .bl-value {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-800);
   font-variant-numeric: tabular-nums;
 }
 
 .bl-subvalue {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--c-text-muted);
   font-variant-numeric: tabular-nums;
 }
 
-.bl-delta {
-  font-size: 13px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
+/* Below this the bar stops being a measurement. In a 250px row the meta
+   column's 120px leaves the track about 24px — a dash, not a length you can
+   compare against the row above. The figure and its trend carry the row on
+   their own, and dropping the track out of the grid gives them the room.
 
-.bl-delta--pos {
-  color: var(--c-brand-green);
-}
-.bl-delta--neg {
-  color: var(--c-brand-coral);
+   At the end of the file on purpose: a container query carries no specificity
+   of its own, so declared above `.bl-row--icon`'s own `grid-template-columns`
+   it lost the tie on source order — the track vanished but the grid kept four
+   tracks and left a dead column. */
+@container (max-width: 330px) {
+  .bl-row--icon {
+    grid-template-columns: 28px 1fr auto;
+  }
+
+  .bl-row--icon .bl-track {
+    display: none;
+  }
 }

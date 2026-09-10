@@ -1509,6 +1509,14 @@ export const chartsSections = [
         rules by default; pass <code>divided={'{false}'}</code> to opt out. Pass{' '}
         <code>header={'{ label, valueLabel }'}</code> to add a table-style header row above the
         bars.
+        <br />
+        <br />
+        The list is a <strong>container</strong> (and so is each group, since{' '}
+        <code>layout="columns"</code> puts two side by side), so a row responds to the width it
+        actually has rather than the viewport&apos;s — these sit in cards and in a ~300px profile
+        flyout. Under <strong>330px</strong> the bar track is dropped from the grid: at that width
+        the meta column leaves it around 24px, which is a dash rather than a length you can compare
+        against the row above, so the figure and its trend carry the row on their own.
       </>
     ),
     render: () => (

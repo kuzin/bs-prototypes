@@ -52,6 +52,17 @@
   border-radius: 8px;
 }
 
+/* `.button--medium-small` — the rung the app reaches for when a button sits in
+   a header or a filter bar beside a 44px control: still 14px text, but 40px
+   tall on a 10px radius, so it doesn't read as a shrunken version of the thing
+   next to it. `sm` is for a button inside a row. */
+.btn--msm {
+  height: 40px;
+  font-size: 14px;
+  padding: 0 16px;
+  border-radius: 10px;
+}
+
 /* `.button--medium` — the default in the admin header: same 44px height and
    `padding: 0 20px` as the base `.button`, but radius 10px and 15px text. */
 .btn--md {

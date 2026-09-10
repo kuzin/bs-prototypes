@@ -6,7 +6,7 @@ import '@components/Button/Button.css'
  * <Button as="a" href="/path" variant="ghost">Open</Button>
  *
  * variants: primary | secondary | ghost | danger | accent
- * sizes:    sm | md | lg
+ * sizes:    sm | msm | md | lg   (the app's small / medium-small / medium / large)
  *
  * When variant="accent", pass `accent` (CSS color) to tint it.
  */

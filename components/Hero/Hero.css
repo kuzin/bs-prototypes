@@ -1,7 +1,11 @@
+/* Room above the title as well as below it. A page header pressed against the
+   top of its panel reads as cut off — the app's own `.page-header` sits below
+   the content area's `padding-top`, and inside a panel there isn't one. */
 .hero {
   display: flex;
   align-items: center;
   gap: 14px;
+  padding-top: 10px;
   padding-bottom: 16px;
   margin-bottom: 18px;
   border-bottom: 1px solid var(--c-gray-200);
@@ -49,6 +53,11 @@
   min-width: 0;
 }
 
+/* One line, clipped with an ellipsis. `.hero-text` is `flex: 1; min-width: 0`,
+   so a long title used to run under the action beside it rather than give way
+   — losing the tail of a title you can still read in the tab or the nav beats
+   two things drawn on top of each other. The full text stays in the DOM for a
+   screen reader and for the browser's own tooltip. */
 .hero-title {
   font-size: 22px;
   font-weight: 800;
@@ -56,6 +65,10 @@
   letter-spacing: -0.02em;
   margin: 0;
   line-height: 1.2;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .hero-sub {

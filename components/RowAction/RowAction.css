@@ -1,0 +1,53 @@
+/* The app's row action: `.redeem-reward-icon` is a bare 32px flex box, and
+   `.row-actions` right-aligns the cell it sits in (bs-product
+   admin/_admin_earned_rewards.scss, admin/_admin_tables.scss). No border and
+   no fill of its own — a column of 40 bordered buttons reads as a form. The
+   hover tint is ours: a bare glyph in a table row gives no sign it can be
+   pressed. */
+.row-action {
+  /* The hover tint is a variable so a coloured context can repoint it — on the
+     reading log's tinted entry cards a flat grey patch read as a hole in the
+     card, so each state points this at its own accent. Neutral by default,
+     which is what a white table row wants. */
+  --row-action-hover: var(--c-gray-150);
+  --row-action-hover-ink: var(--c-accent);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--c-gray-750);
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+
+.row-action:hover:not(:disabled):not(.row-action--static) {
+  background: var(--row-action-hover);
+  color: var(--row-action-hover-ink);
+}
+
+.row-action:disabled {
+  color: var(--c-gray-350);
+  cursor: default;
+}
+
+/* A mark rather than a control — it reports, so it doesn't invite a press. */
+.row-action--static {
+  cursor: default;
+}
+
+.row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  white-space: nowrap;
+}

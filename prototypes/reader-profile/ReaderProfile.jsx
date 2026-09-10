@@ -11,7 +11,17 @@ import {
   EXTRINSIC_COLOR,
 } from './components/widgets'
 import { Button } from '@components/Button/Button'
-import { Select, Checkbox, Field, Input, Textarea, DateInput } from '@components/Form/Form'
+import {
+  Select,
+  Checkbox,
+  CheckboxGroup,
+  CheckboxGroupItem,
+  Field,
+  Input,
+  Textarea,
+  DateInput,
+  NumberInput,
+} from '@components/Form/Form'
 import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import '@components/Form/Form.css'
 import { Avatar } from '@components/Avatar/Avatar'
@@ -24,6 +34,13 @@ import { BackBar } from '@components/BackBar/BackBar'
 import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Sidebar } from '@components/Sidebar/Sidebar'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
+import { TrendChip } from '@components/TrendChip/TrendChip'
+import { ToastStack, useToasts } from '@components/Toast/Toast'
+import { CompleteToggle } from '@components/CompleteToggle/CompleteToggle'
+import { RowAction, RowActions } from '@components/RowAction/RowAction'
+import { PlumpyIcon, PLUMPY_NAMES } from '@components/PlumpyIcon/PlumpyIcon'
+import { BsIcon, FlagIcon } from '@components/BsIcons/BsIcons'
+import { Pill } from '@components/Pill/Pill'
 import { Icon } from '@components/Icon/Icon'
 import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 import { Flyout } from '@components/Flyout/Flyout'
@@ -103,14 +120,25 @@ const LOG_ITEMS = [{ label: 'Log Reading' }, { label: 'Log Activities' }]
 
 // ─── Action modals ────────────────────────────────────────────────────────────
 // The five Actions entries that have a real screen behind them. Each is a form
-// the demo can open and fill; Save just closes — nothing is persisted, the same
-// stance as the rest of the prototype's affordances.
+// the demo can open and fill. Most just close on Save — nothing is persisted,
+// the same stance as the rest of the prototype's affordances — but a modal that
+// passes `onSave` gets it run first, which is how the recommendation-filter
+// editor writes its picks back.
 const YES_NO = [
   { id: 'yes', label: 'Yes' },
   { id: 'no', label: 'No' },
 ]
 
-function ActionModal({ open, onClose, title, children, save = 'Save', saveDisabled, secondary }) {
+function ActionModal({
+  open,
+  onClose,
+  title,
+  children,
+  save = 'Save',
+  saveDisabled,
+  secondary,
+  onSave,
+}) {
   return (
     <Modal open={open} onClose={onClose} variant="center" ariaLabel={title} closeBadge>
       {({ close }) => (
@@ -126,7 +154,16 @@ function ActionModal({ open, onClose, title, children, save = 'Save', saveDisabl
                 {secondary}
               </Button>
             )}
-            <Button onClick={close} disabled={saveDisabled}>
+            {/* Save has to run `onSave` before closing. This copy had drifted
+                from student-profile's, which does: it took the prop and then
+                ignored it, so a modal that passed one saved nothing. */}
+            <Button
+              onClick={() => {
+                onSave?.()
+                close()
+              }}
+              disabled={saveDisabled}
+            >
               {save}
             </Button>
           </div>
@@ -282,8 +319,8 @@ function ReaderActions({ onClose, student }) {
             iconRight={
               <Icon
                 name="chevron-down"
-                size={11}
-                stroke={2.5}
+                size={14}
+                stroke={2.4}
                 className="rp-btn-caret"
                 style={{ flexShrink: 0 }}
               />
@@ -305,8 +342,8 @@ function ReaderActions({ onClose, student }) {
             iconRight={
               <Icon
                 name="chevron-down"
-                size={11}
-                stroke={2.5}
+                size={14}
+                stroke={2.4}
                 className="rp-btn-caret"
                 style={{ flexShrink: 0 }}
               />
@@ -362,6 +399,15 @@ const STATUS_FLAGS = {
     tone: 'info',
     tip: 'Tandem account — linked to a %s profile, and reading counts on both',
   },
+  // `Profile.offline_readers` — a reader with no login of their own (the app
+  // spots them by a `qa_` username). Staff log for them, so their totals are
+  // real but nothing on the log was self-reported.
+  offline: {
+    label: 'Offline',
+    icon: 'user-off',
+    tone: 'neutral',
+    tip: 'Offline reader — no login of their own, so staff log their reading for them',
+  },
 }
 
 function StatusFlags({ flags = [], tandemWith }) {
@@ -395,8 +441,10 @@ function ReaderHeader({ student, onClose }) {
         <Avatar initials={initialsOf(student.name)} color="var(--c-accent)" size="lg" />
         <div className="rp-panel-titles">
           <div className="rp-panel-name">{student.name}</div>
+          {/* Status only. The grade is on every roster row and in the class
+              header you came from — repeating it under the name spent a line
+              on something already established. */}
           <div className="rp-panel-meta">
-            <span>{student.grade}</span>
             <StatusFlags flags={student.status} tandemWith="school" />
           </div>
         </div>
@@ -423,6 +471,10 @@ const SECTION_ACCENT = {
   achievements: { bg: '#FFEDD5', text: '#C2410C' },
   reviews: { bg: '#FFE4E6', text: '#BE123C' },
   textchallenges: { bg: '#E6F1FF', text: '#1A6DD5' },
+  points: { bg: '#FEF9C3', text: '#A16207' },
+  recofilters: { bg: '#F1F5F9', text: '#475569' },
+  recommended: { bg: '#FFE4E6', text: '#9F1239' },
+  wishlist: { bg: '#F5F3FF', text: '#6D28D9' },
 }
 const accentFor = (section) => SECTION_ACCENT[section ?? 'overview'] ?? SECTION_ACCENT.overview
 
@@ -430,17 +482,21 @@ const accentFor = (section) => SECTION_ACCENT[section ?? 'overview'] ?? SECTION_
 // the library-only addition: a reader belongs to a login account that can hold
 // several readers, so the account is a place you can go, not just a label.
 const NAV_ITEMS = [
-  { icon: 'ti-user', section: null, label: 'Overview' },
+  { icon: 'user', section: null, label: 'Overview' },
   // What the reader actually did comes before the analysis derived from it.
-  { icon: 'ti-reading-log', section: 'readinglog', label: 'Reading Log' },
-  { icon: 'ti-trophy', section: 'challenges', label: 'Challenges' },
-  { icon: 'ti-gift', section: 'rewards', label: 'Rewards' },
-  { icon: 'ti-pencil', section: 'drawings', label: 'Drawings' },
-  { icon: 'ti-puzzle', section: 'activities', label: 'Activities' },
-  { icon: 'ti-badge', section: 'badges', label: 'Badges' },
-  { icon: 'ti-certificate', section: 'achievements', label: 'Achievements' },
-  { icon: 'ti-rating', section: 'reviews', label: 'Reviews' },
-  { icon: 'ti-paragraph', section: 'textchallenges', label: 'Text Box' },
+  { icon: 'reading', section: 'readinglog', label: 'Reading Log' },
+  { icon: 'challenges', section: 'challenges', label: 'Challenges' },
+  { icon: 'gift', section: 'rewards', label: 'Rewards' },
+  { icon: 'ticket', section: 'drawings', label: 'Drawings' },
+  { icon: 'puzzle', section: 'activities', label: 'Activities' },
+  { icon: 'medal', section: 'badges', label: 'Badges' },
+  { icon: 'certificate', section: 'achievements', label: 'Achievements' },
+  { icon: 'star', section: 'reviews', label: 'Reviews' },
+  { icon: 'paragraph', section: 'textchallenges', label: 'Text Box' },
+  { icon: 'points', section: 'points', label: 'Points Summary' },
+  { icon: 'filter', section: 'recofilters', label: 'Recommendation Filters' },
+  { icon: 'heart', section: 'recommended', label: 'Recommended Books' },
+  { icon: 'bookmark', section: 'wishlist', label: 'Wish List' },
 ]
 
 // Every profile-coloured tint (control rail, nav active state, the Log button)
@@ -464,7 +520,10 @@ function LeftNav({ activeSection, onNavigate, pager }) {
               title={label}
               aria-label={label}
             >
-              <Ic name={icon} size={18} style={{ opacity: active ? 1 : 0.4 }} />
+              {/* Plumpy is duotone: inactive is currentColor, active is the
+                  accent, and both layers tint together — so it needs no
+                  hand-dimmed opacity the way a line icon did. */}
+              <PlumpyIcon name={icon} size={20} />
               <span className="rp-nav-label">{label}</span>
             </div>
           )
@@ -482,8 +541,28 @@ function LeftNav({ activeSection, onNavigate, pager }) {
 // that (and close, and copy link) at every width now, so there's one home for
 // panel chrome instead of three.
 function MobileSectionNav({ activeSection, onNavigate }) {
+  const at = Math.max(
+    0,
+    NAV_ITEMS.findIndex((n) => (n.section ?? 'overview') === (activeSection ?? 'overview')),
+  )
+
+  // Steppers either side of the select — a long menu to open every time you
+  // want the next section, and the rail's own pager is gone on a phone. The
+  // arrows walk the list in order; the select is for jumping.
+  const step = (d) => {
+    const next = NAV_ITEMS[at + d]
+    if (next) onNavigate(next.section ?? null)
+  }
+
   return (
     <div className="rp-mobile-nav">
+      <RowAction
+        icon="chevron-left"
+        label="Previous section"
+        tooltip={false}
+        disabled={at === 0}
+        onClick={() => step(-1)}
+      />
       <Select
         size="sm"
         aria-label="Profile section"
@@ -496,6 +575,13 @@ function MobileSectionNav({ activeSection, onNavigate }) {
           </option>
         ))}
       </Select>
+      <RowAction
+        icon="chevron-right"
+        label="Next section"
+        tooltip={false}
+        disabled={at === NAV_ITEMS.length - 1}
+        onClick={() => step(1)}
+      />
     </div>
   )
 }
@@ -544,7 +630,7 @@ function overviewMetrics(ov) {
     {
       key: 'current',
       section: 'readinglog',
-      icon: 'flame',
+      icon: 'fire',
       accent: STAT_TINTS.current,
       label: 'Current streak',
       value: ov.currentStreak,
@@ -554,7 +640,7 @@ function overviewMetrics(ov) {
     {
       key: 'books',
       section: 'readinglog',
-      icon: 'book-2',
+      icon: 'book',
       accent: STAT_TINTS.books,
       label: 'Books finished',
       value: ov.booksCompleted,
@@ -601,7 +687,16 @@ function StatRow({ icon, accent, label, children, onOpen }) {
         className="rp-statrow-icon"
         style={{ background: accent.bg, color: accent.bar || accent.text }}
       >
-        <Icon name={icon} size={16} />
+        {/* Plumpy where the pack has the glyph, a line icon otherwise — same
+            fallback `RowAction` uses, so a name that isn't in the pack still
+            draws rather than vanishing. Plumpy runs a rung bigger: it's a
+            filled duotone shape, so it reads smaller than a stroked icon at
+            the same box. */}
+        {PLUMPY_NAMES.includes(icon) ? (
+          <PlumpyIcon name={icon} size={18} />
+        ) : (
+          <Icon name={icon} size={16} />
+        )}
       </span>
       <span className="rp-statrow-label">{label}</span>
       {children}
@@ -703,13 +798,14 @@ function TitleShelf({ titles, onNavigate }) {
             .reverse()
             .map((t, i) => (
               // Covers are display only — the shelf is a summary, and the
-              // Reading Log link in the header is the way through.
-              <div key={i} className="rp-latest-item">
+              // Reading Log link in the header is the way through. Cover art
+              // only: the title and author under each one turned a scannable
+              // shelf into six stacked captions, and the art already says
+              // which book it is (`title` carries it for anyone who needs it).
+              <div key={i} className="rp-latest-item" title={`${t.title} — ${t.author}`}>
                 <div className="rp-latest-cover">
                   <CoverImage isbn={t.isbn} title={t.title} />
                 </div>
-                <div className="rp-latest-title">{t.title}</div>
-                <div className="rp-latest-author">{t.author}</div>
               </div>
             ))}
         </div>
@@ -748,7 +844,11 @@ function OverviewStats({ metrics, onOpen }) {
         </StatRow>
       ))}
       {hidden > 0 && (
-        <button type="button" className="rp-statlist-more" onClick={() => setShowMore((v) => !v)}>
+        <button
+          type="button"
+          className="rp-showmore rp-showmore--incard"
+          onClick={() => setShowMore((v) => !v)}
+        >
           {showMore ? 'Show less' : `Show ${hidden} more`}
           <Icon name={showMore ? 'chevron-up' : 'chevron-down'} size={14} stroke={2.4} />
         </button>
@@ -770,7 +870,7 @@ function Overview({ student, onNavigate }) {
   return (
     <div className="rp-content">
       <Hero
-        icon={<Ic name="ti-user" />}
+        icon={<PlumpyIcon name="user" size={22} />}
         title="Overview"
         accent={SECTION_ACCENT.overview.text}
         accentBg={SECTION_ACCENT.overview.bg}
@@ -795,18 +895,12 @@ function Overview({ student, onNavigate }) {
 // a pill: the arrow and the colour already carry the whole message, and five
 // tinted capsules down the side of a card competed with the figures they were
 // annotating.
+// The trend chip is shared now (components/TrendChip) so a profile stat row, a
+// Lexile delta and a bar-list row are visibly the same thing. This stays as the
+// profiles' own name for it, and as the one place the `inverse`/`format`
+// conventions for these metrics are written down.
 function TrendDelta({ delta, format, inverse = false, suffix }) {
-  if (delta == null || delta === 0) return null
-  const up = delta > 0
-  const good = inverse ? !up : up
-  const n = Math.abs(delta)
-  return (
-    <span className={`rp-trend${good ? ' rp-trend--good' : ' rp-trend--bad'}`}>
-      {up ? '↑' : '↓'}
-      {format ? format(n) : n}
-      {suffix ? ` ${suffix}` : ''}
-    </span>
-  )
+  return <TrendChip delta={delta} format={format} suffix={suffix} inverse={inverse} />
 }
 
 // ─── Accounts ─────────────────────────────────────────────────────────────────
@@ -910,19 +1004,129 @@ const READERS = {
       },
     ],
     rewards: [
-      { name: 'Free Book Coupon', claimed: true },
-      { name: 'Beanstack Bookmark', claimed: true },
-      { name: 'Front-of-Lunch-Line Pass', claimed: true },
-      { name: 'Library Tote Bag', claimed: false },
+      {
+        name: 'Free Book Coupon',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Mar 14, 2025',
+        redeemed: true,
+        // Earned more than 90 days ago, so the app files it under Past Rewards.
+        era: 'past',
+      },
+      {
+        name: 'Beanstack Bookmark',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Mar 28, 2025',
+        redeemed: true,
+      },
+      {
+        name: 'Front-of-Lunch-Line Pass',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Apr 11, 2025',
+        redeemed: true,
+      },
+      {
+        name: 'Library Tote Bag',
+        challenge: 'Read Across America',
+        earnedOn: 'May 2, 2025',
+        redeemed: false,
+      },
     ],
-    drawings: [
-      { name: 'Logging Week 2', claimed: true },
-      { name: 'Spring Reading -- April', claimed: true },
-      { name: 'Shout Out', claimed: false },
+    // `ticket_rewards` — a prize you enter a drawing for by spending tickets.
+    // `available` is what the challenge has awarded and not yet spent;
+    // `maxEntries` 0 means unlimited (the app's `unlimited_entries`).
+    ticketDrawings: [
+      {
+        name: 'Nintendo Switch Grand Prize',
+        challenge: 'Benny the Bean Reading Challenge',
+        description:
+          'The new home video game system from Nintendo — play at home or take it on the go.',
+        entered: 5,
+        available: 3,
+        maxEntries: 10,
+        endsOn: 'May 31, 2025',
+      },
+      {
+        name: 'Skate Park Season Pass',
+        challenge: 'Benny the Bean Reading Challenge',
+        description: 'A season pass to the city skate park, good through Labor Day.',
+        entered: 2,
+        available: 3,
+        maxEntries: 0,
+        endsOn: 'May 31, 2025',
+      },
+      // A second challenge, with its own pile — `available` is per challenge
+      // (`available_tickets_for_program`), so entering tickets here doesn't
+      // touch the balance above.
+      {
+        name: 'Bookstore Gift Card',
+        challenge: 'Read Across America',
+        description: 'A $25 gift card to the bookstore on Main Street.',
+        entered: 1,
+        available: 4,
+        maxEntries: 5,
+        endsOn: 'Mar 31, 2025',
+      },
+    ],
+    // `raffle_winners` — a drawing this reader actually won. `place` is only
+    // set on an Ordered Placement drawing; Equal Winners has no places.
+    drawingWins: [
+      { name: 'Logging Week 2', type: 'All Eligible Readers', place: null, claimed: true },
+      { name: 'Spring Reading -- April', type: 'Total Minutes Read', place: 1, claimed: true },
+      { name: 'Shout Out', type: 'Specific Earned Badge(s)', place: null, claimed: false },
+    ],
+    // `profile.points_summary` — the running total per point type. Only the
+    // types this reader has actually earned appear; the app's partial switches
+    // on whatever keys are present.
+    pointsSummary: {
+      book: 95,
+      page: 260,
+      minute: 4210,
+      day: 112,
+      'standard-activity': 45,
+      review: 20,
+    },
+    // `_customized_filters.html.haml` — the personalisation sets the reader
+    // picked, each editable on its own screen.
+    // Values are picked from `RECO_FILTERS`' own option lists — the app's real
+    // vocabulary — so the edit modal opens with them already ticked.
+    recoFilters: {
+      backgrounds: ['Hispanic or Latino', 'Siblings'],
+      genres: ['Fantasy & The Imagination', 'Adventure', 'Comedy & Humor'],
+      interests: ['Sports & Recreation', 'Math, Science & Technology'],
+      languages: ['English', 'Spanish'],
+      readingLevels: [],
+    },
+    // `recommendedBooks` — what Beanstack has put in front of this reader, and
+    // when. Display only in the app: no action on a row.
+    recommendedBooks: [
+      {
+        isbn: '9780064471046',
+        title: 'The Lion, the Witch and the Wardrobe',
+        author: 'C. S. Lewis',
+        date: 'May 04, 2026',
+      },
+      { isbn: '9780545790352', title: 'Ghosts', author: 'Raina Telgemeier', date: 'Apr 26, 2026' },
+      { isbn: '9781338299151', title: 'Guts', author: 'Raina Telgemeier', date: 'Apr 12, 2026' },
+      {
+        isbn: '9780316228534',
+        title: 'Wings of Fire: The Dragonet Prophecy',
+        author: 'Tui T. Sutherland',
+        date: 'Mar 30, 2026',
+      },
+    ],
+    // `wishList` — titles the reader saved for later, each removable by staff.
+    wishList: [
+      { title: 'Amulet, Book One: The Stonekeeper', author: 'Kazu Kibuishi' },
+      { title: 'New Kid', author: 'Jerry Craft' },
+      { title: 'The Wild Robot', author: 'Peter Brown' },
     ],
     challenges: [
       {
-        name: 'Spring Reading Challenge 2025',
+        name: 'Benny the Bean Reading Challenge',
+        // `program.has_ticket_rewards` — the challenges whose drawings the
+        // reader spends tickets on, so their rows get the drill-in link.
+        hasTicketRewards: true,
+        banner: 'benny-bean',
         dates: 'Mar 1, 2025 - May 31, 2025',
         startedOn: 'March 3, 2025',
         minutes: 2140,
@@ -930,33 +1134,82 @@ const READERS = {
       },
       {
         name: 'Read Across America',
+        // `program.has_ticket_rewards` — the challenges whose drawings the
+        // reader spends tickets on, so their rows get the drill-in link.
+        hasTicketRewards: true,
+        banner: 'read-across-america',
         dates: 'Ongoing',
         startedOn: 'March 2, 2025',
         minutes: 480,
         status: 'current',
       },
       {
-        name: 'Winter Reading Bingo',
+        name: 'Read with Benny: Winter Reading',
+        banner: 'winter-reading',
         dates: 'Jan 6, 2025 - Feb 28, 2025',
         startedOn: 'January 8, 2025',
         minutes: 1620,
         status: 'ended',
       },
       {
-        name: 'Summer Reading 2024',
+        name: 'Battle of the Books',
+        banner: 'battle-of-the-books',
         dates: 'Jun 1, 2024 - Aug 31, 2024',
         startedOn: 'June 4, 2024',
         minutes: 3010,
         status: 'past',
       },
+      {
+        name: 'Find Your Reading Joy',
+        banner: 'summer-reading',
+        dates: 'Jun 1, 2025 - Aug 31, 2025',
+        // Not started, so no start date and nothing logged — the app's
+        // Upcoming tab is challenges the reader is enrolled in that haven't
+        // opened yet.
+        status: 'upcoming',
+      },
     ],
     // Activity badges from the site's exploration challenge: each badge is a set
     // of activities the reader checks off.
     activityBadges: [
+      // A repeatable activity badge — points challenges only. Its activities
+      // can be completed without limit, the badge can never be earned, and a
+      // repeatable text box answer can't be edited once submitted.
+      {
+        name: 'Reading Streak Bonus',
+        icon: 'fire',
+        color: '#C849E5',
+        repeatable: true,
+        challenge: 'Summer Points 2025',
+        activities: [
+          {
+            text: 'Log a day of reading outside — anywhere that is not a chair indoors.',
+            type: 'Activity',
+            points: 5,
+            completions: 7,
+          },
+          {
+            text: 'Tell us the best sentence you read today.',
+            type: 'Text Box Challenge',
+            points: 10,
+            answer:
+              'It is a truth universally acknowledged that a fish out of water makes a scene.',
+            completions: 3,
+          },
+          {
+            text: 'Ask a librarian for a recommendation, then enter the code they give you.',
+            type: 'Activity Code',
+            codes: ['ASK-A-LIBRARIAN'],
+            points: 15,
+            completions: 2,
+          },
+        ],
+      },
       {
         name: 'Space',
         icon: 'rocket',
         color: '#4F46E5',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Watch a live feed from the International Space Station and write down one thing you saw that surprised you.',
@@ -976,6 +1229,7 @@ const READERS = {
         name: 'American Landmark',
         icon: 'building-monument',
         color: '#B45309',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Pick an American landmark and find out who built it and why. Was it built for the reason you expected?',
@@ -991,6 +1245,7 @@ const READERS = {
         name: 'Museums',
         icon: 'building-arch',
         color: '#7C3AED',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Browse a museum collection online and pick the one object you would most want to see in person. Why that one?',
@@ -1006,6 +1261,7 @@ const READERS = {
         name: 'Aquarium',
         icon: 'fish',
         color: '#0891B2',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Come see the fish, sea jellies, turtles, and more at the magnificent Monterey Bay Aquarium. Watch the animals swim, glide, and soar, and even take a peek outside the aquarium to see wildlife in its natural habitat. Which animal did you most enjoy visiting?',
@@ -1021,6 +1277,7 @@ const READERS = {
         name: 'National Parks',
         icon: 'trees',
         color: '#15803D',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Pick a national park and find out which animals live there that live nowhere else.',
@@ -1040,6 +1297,7 @@ const READERS = {
         name: 'Zoo',
         icon: 'paw',
         color: '#16A34A',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Watch a zoo live cam for ten minutes and describe what the animals actually did — not what you expected them to do.',
@@ -1053,31 +1311,42 @@ const READERS = {
     achievements: [
       {
         name: 'Book Publishers Day 2026',
+        category: 'literacy',
         date: 'Jan 16, 2026',
         icon: 'building',
         color: '#2563EB',
       },
       {
         name: "Author Louisa May Alcott's Birthday 2025",
+        category: 'literacy',
         date: 'Nov 29, 2025',
         icon: 'writing',
         color: '#7C3AED',
       },
       {
         name: 'National Cookbook Month 2025',
+        category: 'us',
         date: 'Oct 1, 2025',
         icon: 'apple',
         color: '#D97706',
       },
-      { name: 'Dear Diary Day 2025', date: 'Sep 22, 2025', icon: 'notebook', color: '#DB2777' },
+      {
+        name: 'Dear Diary Day 2025',
+        category: 'literacy',
+        date: 'Sep 22, 2025',
+        icon: 'notebook',
+        color: '#DB2777',
+      },
       {
         name: 'National Read a Book Day 2025',
+        category: 'literacy',
         date: 'Sep 7, 2025',
         icon: 'book',
         color: '#0D9488',
       },
       {
         name: 'Library Card Sign-Up Month 2025',
+        category: 'us',
         date: 'Sep 1, 2025',
         icon: 'barcode',
         color: '#DC2626',
@@ -1183,7 +1452,7 @@ const READERS = {
     // 7th-grader who is genuinely into the books.
     textChallenges: [
       {
-        challenge: 'Spring Reading Challenge 2025',
+        challenge: 'Benny the Bean Reading Challenge',
         responses: [
           {
             date: '05/09/25',
@@ -1206,7 +1475,7 @@ const READERS = {
         ],
       },
       {
-        challenge: 'Winter Reading Bingo',
+        challenge: 'Read with Benny: Winter Reading',
         responses: [
           {
             date: '02/14/25',
@@ -1320,34 +1589,84 @@ const READERS = {
       },
     ],
     rewards: [
-      { name: 'Beanstack Bookmark', claimed: true },
-      { name: 'Free Book Coupon', claimed: false },
+      {
+        name: 'Beanstack Bookmark',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Mar 21, 2025',
+        redeemed: true,
+        // Earned more than 90 days ago, so the app files it under Past Rewards.
+        era: 'past',
+      },
+      {
+        name: 'Free Book Coupon',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Apr 25, 2025',
+        redeemed: false,
+      },
     ],
-    drawings: [
-      { name: 'Logging Week 2', claimed: true },
-      { name: 'Shout Out', claimed: false },
+    ticketDrawings: [
+      {
+        name: 'Nintendo Switch Grand Prize',
+        challenge: 'Benny the Bean Reading Challenge',
+        description:
+          'The new home video game system from Nintendo — play at home or take it on the go.',
+        entered: 1,
+        available: 2,
+        maxEntries: 10,
+        endsOn: 'May 31, 2025',
+      },
     ],
+    drawingWins: [
+      { name: 'Logging Week 2', type: 'All Eligible Readers', place: null, claimed: true },
+      { name: 'Shout Out', type: 'Specific Earned Badge(s)', place: 2, claimed: false },
+    ],
+    // `profile.points_summary` — the running total per point type. Only the
+    // types this reader has actually earned appear; the app's partial switches
+    // on whatever keys are present.
+    pointsSummary: {
+      book: 60,
+      page: 140,
+      minute: 2380,
+      day: 74,
+      'standard-activity': 25,
+      review: 5,
+    },
     challenges: [
       {
-        name: 'Spring Reading Challenge 2025',
+        name: 'Benny the Bean Reading Challenge',
+        // `program.has_ticket_rewards` — the challenges whose drawings the
+        // reader spends tickets on, so their rows get the drill-in link.
+        hasTicketRewards: true,
+        banner: 'benny-bean',
         dates: 'Mar 1, 2025 - May 31, 2025',
         startedOn: 'March 11, 2025',
         minutes: 760,
         status: 'current',
       },
       {
-        name: 'Winter Reading Bingo',
+        name: 'Read with Benny: Winter Reading',
+        banner: 'winter-reading',
         dates: 'Jan 6, 2025 - Feb 28, 2025',
         startedOn: 'January 21, 2025',
         minutes: 540,
         status: 'ended',
       },
       {
-        name: 'Summer Reading 2024',
+        name: 'Battle of the Books',
+        banner: 'battle-of-the-books',
         dates: 'Jun 1, 2024 - Aug 31, 2024',
         startedOn: 'July 2, 2024',
         minutes: 610,
         status: 'past',
+      },
+      {
+        name: 'Find Your Reading Joy',
+        banner: 'summer-reading',
+        dates: 'Jun 1, 2025 - Aug 31, 2025',
+        // Not started, so no start date and nothing logged — the app's
+        // Upcoming tab is challenges the reader is enrolled in that haven't
+        // opened yet.
+        status: 'upcoming',
       },
     ],
     activityBadges: [
@@ -1355,6 +1674,7 @@ const READERS = {
         name: 'Aquarium',
         icon: 'fish',
         color: '#0891B2',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Come see the fish, sea jellies, turtles, and more at the magnificent Monterey Bay Aquarium. Watch the animals swim, glide, and soar, and even take a peek outside the aquarium to see wildlife in its natural habitat. Which animal did you most enjoy visiting?',
@@ -1370,6 +1690,7 @@ const READERS = {
         name: 'National Parks',
         icon: 'trees',
         color: '#15803D',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Pick a national park and find out which animals live there that live nowhere else.',
@@ -1389,6 +1710,7 @@ const READERS = {
         name: 'Zoo',
         icon: 'paw',
         color: '#16A34A',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Watch a zoo live cam for ten minutes and describe what the animals actually did — not what you expected them to do.',
@@ -1401,6 +1723,7 @@ const READERS = {
         name: 'Museums',
         icon: 'building-arch',
         color: '#7C3AED',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Browse a museum collection online and pick the one object you would most want to see in person. Why that one?',
@@ -1416,6 +1739,7 @@ const READERS = {
         name: 'Space',
         icon: 'rocket',
         color: '#4F46E5',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Watch a live feed from the International Space Station and write down one thing you saw that surprised you.',
@@ -1433,15 +1757,23 @@ const READERS = {
       },
     ],
     achievements: [
-      { name: 'Dear Diary Day 2025', date: 'Sep 22, 2025', icon: 'notebook', color: '#DB2777' },
+      {
+        name: 'Dear Diary Day 2025',
+        category: 'literacy',
+        date: 'Sep 22, 2025',
+        icon: 'notebook',
+        color: '#DB2777',
+      },
       {
         name: 'National Read a Book Day 2025',
+        category: 'literacy',
         date: 'Sep 7, 2025',
         icon: 'book',
         color: '#0D9488',
       },
       {
         name: 'Library Card Sign-Up Month 2025',
+        category: 'us',
         date: 'Sep 1, 2025',
         icon: 'barcode',
         color: '#DC2626',
@@ -1531,7 +1863,7 @@ const READERS = {
     ],
     textChallenges: [
       {
-        challenge: 'Spring Reading Challenge 2025',
+        challenge: 'Benny the Bean Reading Challenge',
         responses: [
           {
             date: '05/11/25',
@@ -1553,7 +1885,7 @@ const READERS = {
         ],
       },
       {
-        challenge: 'Winter Reading Bingo',
+        challenge: 'Read with Benny: Winter Reading',
         responses: [
           {
             date: '02/20/25',
@@ -1609,7 +1941,7 @@ const READERS = {
     lastLogged: 'Mar 2',
     name: 'Elena Torres',
     avatarColor: '#1D4ED8',
-    status: [],
+    status: ['offline'],
     // Libraries identify readers by age, not grade, and every reader sits on a
     // login account that can hold several of them.
     grade: 'Adult',
@@ -1662,22 +1994,57 @@ const READERS = {
         isbn: '9781571313560',
       },
     ],
-    rewards: [{ name: 'Beanstack Bookmark', claimed: false }],
-    drawings: [{ name: 'Logging Week 2', claimed: false }],
+    rewards: [
+      {
+        name: 'Beanstack Bookmark',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Apr 9, 2025',
+        redeemed: false,
+      },
+    ],
+    ticketDrawings: [],
+    drawingWins: [
+      { name: 'Logging Week 2', type: 'All Eligible Readers', place: null, claimed: false },
+    ],
+    // `profile.points_summary` — the running total per point type. Only the
+    // types this reader has actually earned appear; the app's partial switches
+    // on whatever keys are present.
+    pointsSummary: {
+      book: 20,
+      page: 45,
+      minute: 610,
+      day: 19,
+      'standard-activity': 10,
+      review: 0,
+    },
     challenges: [
       {
-        name: 'Spring Reading Challenge 2025',
+        name: 'Benny the Bean Reading Challenge',
+        // `program.has_ticket_rewards` — the challenges whose drawings the
+        // reader spends tickets on, so their rows get the drill-in link.
+        hasTicketRewards: true,
+        banner: 'benny-bean',
         dates: 'Mar 1, 2025 - May 31, 2025',
         startedOn: 'April 9, 2025',
         minutes: 120,
         status: 'current',
       },
       {
-        name: 'Winter Reading Bingo',
+        name: 'Read with Benny: Winter Reading',
+        banner: 'winter-reading',
         dates: 'Jan 6, 2025 - Feb 28, 2025',
         startedOn: 'February 14, 2025',
         minutes: 95,
         status: 'ended',
+      },
+      {
+        name: 'Find Your Reading Joy',
+        banner: 'summer-reading',
+        dates: 'Jun 1, 2025 - Aug 31, 2025',
+        // Not started, so no start date and nothing logged — the app's
+        // Upcoming tab is challenges the reader is enrolled in that haven't
+        // opened yet.
+        status: 'upcoming',
       },
     ],
     activityBadges: [
@@ -1685,6 +2052,7 @@ const READERS = {
         name: 'Zoo',
         icon: 'paw',
         color: '#16A34A',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Watch a zoo live cam for ten minutes and describe what the animals actually did — not what you expected them to do.',
@@ -1697,6 +2065,7 @@ const READERS = {
         name: 'Aquarium',
         icon: 'fish',
         color: '#0891B2',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Come see the fish, sea jellies, turtles, and more at the magnificent Monterey Bay Aquarium. Watch the animals swim, glide, and soar, and even take a peek outside the aquarium to see wildlife in its natural habitat. Which animal did you most enjoy visiting?',
@@ -1712,6 +2081,7 @@ const READERS = {
         name: 'Museums',
         icon: 'building-arch',
         color: '#7C3AED',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Browse a museum collection online and pick the one object you would most want to see in person. Why that one?',
@@ -1727,6 +2097,7 @@ const READERS = {
         name: 'Space',
         icon: 'rocket',
         color: '#4F46E5',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Watch a live feed from the International Space Station and write down one thing you saw that surprised you.',
@@ -1746,6 +2117,7 @@ const READERS = {
     achievements: [
       {
         name: 'Library Card Sign-Up Month 2025',
+        category: 'us',
         date: 'Sep 1, 2025',
         icon: 'barcode',
         color: '#DC2626',
@@ -1819,7 +2191,7 @@ const READERS = {
     // rest of their logging.
     textChallenges: [
       {
-        challenge: 'Spring Reading Challenge 2025',
+        challenge: 'Benny the Bean Reading Challenge',
         responses: [
           {
             date: '05/12/25',
@@ -1832,7 +2204,7 @@ const READERS = {
         ],
       },
       {
-        challenge: 'Winter Reading Bingo',
+        challenge: 'Read with Benny: Winter Reading',
         responses: [
           {
             date: '02/18/25',
@@ -2046,7 +2418,7 @@ const RL_DATA = [
     ],
   },
   {
-    weekLabel: 'June 30–July 6',
+    weekLabel: 'July 1–6',
     days: [
       {
         date: 6,
@@ -2084,15 +2456,6 @@ const RL_DATA = [
         streak: 2,
         entries: [{ title: 'Holes', author: 'Louis Sachar', amount: '677 Pages', flagged: true }],
       },
-      {
-        date: 30,
-        day: 'Sunday',
-        faded: true,
-        streak: 1,
-        entries: [
-          { title: 'Holes', author: 'Louis Sachar', amount: '844 Minutes', flagged: false },
-        ],
-      },
     ],
   },
 ]
@@ -2108,13 +2471,17 @@ function rlMarks(session) {
   return [
     session?.flags?.length && {
       key: 'flag',
-      icon: 'flag',
+      // The flag's own drawing, the same art the Book Talks table shows for it
+      // — a session flagged for time reads as the time drawing in both places.
+      flagType: session.flags[0].type ?? session.flags[0],
+      flagFallback: 'negative',
       className: 'rp-rl-mark rp-rl-mark--neg',
       label: session.flags.length === 1 ? session.flags[0].label : `${session.flags.length} flags`,
     },
     session?.positiveFlags?.length && {
       key: 'pos',
-      icon: 'flag',
+      flagType: session.positiveFlags[0].type ?? session.positiveFlags[0],
+      flagFallback: 'positive',
       className: 'rp-rl-mark rp-rl-mark--pos',
       label:
         session.positiveFlags.length === 1
@@ -2129,11 +2496,18 @@ function RLMarks({ marks, entry, onOpen }) {
     <Tooltip key={m.key} content={m.label}>
       <button
         type="button"
-        className={m.className}
+        className={`row-action ${m.className}`}
         onClick={() => onOpen?.(entry)}
         aria-label={m.label}
       >
-        <Icon name={m.icon} size={14} />
+        {m.flagType ? (
+          <FlagIcon type={m.flagType} fallback={m.flagFallback} size={20} />
+        ) : (
+          /* A book talk is a talk *with Benny*, so it's Benny who marks it —
+             the flag set has art for what a talk was flagged for, not for the
+             fact of one happening. */
+          <img className="rp-rl-benny" src="/bs-prototypes/benny-happy.svg" alt="" />
+        )}
       </button>
     </Tooltip>
   ))
@@ -2146,7 +2520,7 @@ function RLSource({ source }) {
   return (
     <Tooltip content={`Logged from ${PARTNER_BRANDS[source].name}`}>
       <span className="rp-rl-source" style={{ '--rp-mark-bg': PARTNER_BRANDS[source].accent }}>
-        <PartnerMark id={source} size={15} />
+        <PartnerMark id={source} size={18} />
       </span>
     </Tooltip>
   )
@@ -2157,11 +2531,7 @@ function RLEntryMenu() {
     <Flyout
       placement="bottom-end"
       trigger={({ toggle }) => (
-        <Tooltip content="Entry actions">
-          <button type="button" className="rp-rl-dots" onClick={toggle} aria-label="Entry actions">
-            <Icon name="dots" size={15} />
-          </button>
-        </Tooltip>
+        <RowAction icon="dots" label="Entry actions" tooltip={false} onClick={toggle} />
       )}
     >
       {({ close }) => (
@@ -2178,11 +2548,17 @@ function RLEntryMenu() {
 }
 
 function RLEntryCard({ entry, onOpen }) {
+  // Completed and flagged come first: they're what a reviewer is scanning for,
+  // and a session's provenance shouldn't outrank the state of it. Below them,
+  // a partner-logged session gets its own green — reading that arrived from the
+  // app the reader was reading in, rather than typed into Beanstack.
   const tone = entry.completed
     ? ' rp-rl-entry--completed'
     : entry.flagged
       ? ' rp-rl-entry--flagged'
-      : ''
+      : entry.source
+        ? ' rp-rl-entry--partner'
+        : ''
   const session = RL_SESSIONS[entry.title]
   const marks = rlMarks(session)
 
@@ -2198,118 +2574,30 @@ function RLEntryCard({ entry, onOpen }) {
             and what you can do to it. The partner mark used to sit alone in
             the card's foot, which read as a stray badge on a second row
             whenever the entry had no marks of its own. */}
-        <div className="rp-rl-entry-menu">
+        <RowActions className="rp-rl-entry-menu">
           <RLSource source={entry.source} />
           <RLMarks marks={marks} entry={entry} onOpen={onOpen} />
           <RLEntryMenu />
-        </div>
+        </RowActions>
       </div>
-      <div className="rp-rl-entry-author">
-        {entry.author}
-        {/* The table listed a Lexile per row; the card was the only view
-            without one. */}
-        {entry.lexile && <span className="rp-rl-entry-lexile">{entry.lexile}</span>}
-      </div>
+      <div className="rp-rl-entry-author">{entry.author}</div>
       <div className="rp-rl-entry-foot">
         {entry.completed ? (
           <span className="rp-rl-completed">Completed</span>
         ) : (
           <div className="rp-rl-entry-amount">{entry.amount}</div>
         )}
+        {/* Beside what was logged, not on the author line: both are readings of
+            the session, and the author is the book's. */}
+        {entry.lexile && <span className="rp-rl-entry-lexile">{entry.lexile}</span>}
       </div>
     </div>
   )
 }
 
-// The product offers the same month two ways: grouped by day, or as a flat
-// table of every logged unit. `RL_ROWS` is the second one — one row per unit,
-// which is how Beanstack stores them (5 minutes / 1 day / 1 book are separate
-// entries against the same sitting). Sorted newest first: the week grouping
-// hid that `RL_DATA`'s day order isn't strictly descending, but a flat list
-// shows it.
 const RL_MONTH = { label: 'July 2024', mm: '07', yy: '24' }
 
-const RL_ROWS = RL_DATA.flatMap((week) =>
-  week.days.flatMap((day) =>
-    day.entries.map((e) => ({
-      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yy}`,
-      unit: e.completed ? '1 book' : e.amount.toLowerCase().replace(' minutes', ' min'),
-      lexile: e.lexile ?? null,
-      // The entry itself rides along so the row can advertise the same flags
-      // and partner source the calendar card does, and open the same session.
-      entry: e,
-    })),
-  ),
-).sort((a, b) => b.date.localeCompare(a.date))
-
-const RL_VIEWS = [
-  // "Calendar", not "List": it's the month laid out by day, with streaks in the
-  // margin — the flat list is the other one.
-  { id: 'calendar', label: 'Calendar', icon: <Icon name="calendar" size={15} /> },
-  { id: 'table', label: 'Table', icon: <Icon name="layout-grid" size={15} /> },
-]
-
-function ReadingLogTable({ onOpen }) {
-  return (
-    <Table
-      flush
-      compact
-      scrollX
-      columns={[
-        {
-          key: 'date',
-          label: 'Date',
-          width: 74,
-          render: (d) => <span className="rp-rl-tbl-dim">{d}</span>,
-        },
-        {
-          key: 'title',
-          label: 'Title',
-          render: (_v, row) => (
-            <div className="rp-rl-tbl-title">
-              {/* Same target as the calendar card's title: one session, two
-                  ways of finding it. */}
-              <button type="button" className="rp-rl-tbl-name" onClick={() => onOpen?.(row.entry)}>
-                {row.entry.title}
-              </button>
-              {/* Author and Lexile ride under the title, as on the card — a
-                  Lexile column of its own cost the title the width it needed. */}
-              <span className="rp-rl-tbl-author">{row.entry.author}</span>
-              {/* Their own row: chips mixed into the author line broke it in
-                  awkward places and read as part of the name. */}
-              <span className="rp-rl-tbl-tags">
-                <span className="rp-rl-entry-lexile rp-rl-entry-unit">{row.unit}</span>
-                {row.lexile && <span className="rp-rl-entry-lexile">{row.lexile}</span>}
-              </span>
-            </div>
-          ),
-        },
-        {
-          key: 'marks',
-          label: '',
-          width: 100,
-          align: 'right',
-          render: (_v, row) => (
-            <div className="rp-rl-tbl-marks">
-              <RLMarks
-                marks={rlMarks(RL_SESSIONS[row.entry.title])}
-                entry={row.entry}
-                onOpen={onOpen}
-              />
-              <RLSource source={row.entry.source} />
-              <RLEntryMenu />
-            </div>
-          ),
-        },
-      ]}
-      rows={RL_ROWS}
-      getRowKey={(r, i) => i}
-    />
-  )
-}
-
 function ReadingLogPage({ reader }) {
-  const [view, setView] = useState('calendar')
   const [openSession, setOpenSession] = useState(null)
   const month = RL_MONTH.label
 
@@ -2339,24 +2627,15 @@ function ReadingLogPage({ reader }) {
   return (
     <div className="rp-content">
       <Hero
-        icon={<Ic name="ti-reading-log" />}
+        icon={<PlumpyIcon name="reading" size={22} />}
         title="Reading Log"
         accent={SECTION_ACCENT.readinglog.text}
         accentBg={SECTION_ACCENT.readinglog.bg}
         action={
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="msm">
             Print log
           </Button>
         }
-      />
-      <Tabs
-        variant="pill"
-        size="sm"
-        block
-        ariaLabel="Reading log view"
-        active={view}
-        onChange={setView}
-        items={RL_VIEWS}
       />
       <Card flush>
         {/* The month and its arrows are this card's header */}
@@ -2365,50 +2644,47 @@ function ReadingLogPage({ reader }) {
           <div className="rp-rl-month-arrows">
             <Tooltip content="Previous month">
               <button className="rp-heatmap-nav-btn" aria-label="Previous month">
-                <Icon name="chevron-left" size={11} />
+                <Icon name="chevron-left" size={16} stroke={2.4} />
               </button>
             </Tooltip>
             <Tooltip content="Next month">
-              <button className="rp-heatmap-nav-btn" aria-label="Next month">
-                <Icon name="chevron-right" size={11} />
+              {/* Nowhere forward to go: the log opens on its newest month. */}
+              <button className="rp-heatmap-nav-btn" aria-label="Next month" disabled>
+                <Icon name="chevron-right" size={16} stroke={2.4} />
               </button>
             </Tooltip>
           </div>
         </div>
-        {view === 'table' ? (
-          <ReadingLogTable onOpen={openEntry} />
-        ) : (
-          <div className="rp-rl-body">
-            {RL_DATA.map((week, wi) => (
-              <div key={wi} className="rp-rl-week">
-                <div className="rp-rl-week-label">{week.weekLabel}</div>
-                {week.days.map((day, di) => (
-                  <div key={di} className={`rp-rl-day${day.faded ? ' rp-rl-day--faded' : ''}`}>
-                    <div className="rp-rl-day-col">
-                      <div className="rp-rl-day-num">{day.date}</div>
-                      <div className="rp-rl-day-name">{day.day}</div>
-                      {day.streak > 0 && (
-                        <span className="rp-rl-flame">
-                          {day.streak}
-                          <Icon name="flame-filled" size={13} />
-                        </span>
-                      )}
-                    </div>
-                    {day.entries.length === 0 ? (
-                      <div className="rp-rl-empty-day" aria-label="Nothing logged" />
-                    ) : (
-                      <div className="rp-rl-entries">
-                        {day.entries.map((e, ei) => (
-                          <RLEntryCard key={ei} entry={e} onOpen={openEntry} />
-                        ))}
-                      </div>
+        <div className="rp-rl-body">
+          {RL_DATA.map((week, wi) => (
+            <div key={wi} className="rp-rl-week">
+              <div className="rp-rl-week-label">{week.weekLabel}</div>
+              {week.days.map((day, di) => (
+                <div key={di} className="rp-rl-day">
+                  <div className="rp-rl-day-col">
+                    <div className="rp-rl-day-num">{day.date}</div>
+                    <div className="rp-rl-day-name">{day.day}</div>
+                    {day.streak > 0 && (
+                      <span className="rp-rl-flame">
+                        {day.streak}
+                        <Icon name="flame-filled" size={15} />
+                      </span>
                     )}
                   </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        )}
+                  {day.entries.length === 0 ? (
+                    <div className="rp-rl-empty-day">No logged sessions</div>
+                  ) : (
+                    <div className="rp-rl-entries">
+                      {day.entries.map((e, ei) => (
+                        <RLEntryCard key={ei} entry={e} onOpen={openEntry} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </Card>
 
       {/* The one session modal. No reader list: you're inside this reader's own
@@ -2438,13 +2714,13 @@ function TextChallengesPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
-        icon={<Ic name="ti-paragraph" />}
+        icon={<PlumpyIcon name="paragraph" size={22} />}
         title="Text Box"
         accent={SECTION_ACCENT.textchallenges.text}
         accentBg={SECTION_ACCENT.textchallenges.bg}
       />
       {challenges.length > 1 && (
-        <FilterBar>
+        <FilterBar compact>
           <FilterItem label="Challenge">
             <Select
               size="sm"
@@ -2471,9 +2747,6 @@ function TextChallengesPage({ student }) {
           <Card key={ch.challenge}>
             <div className="rp-latest-head">
               <SectionHeading>{ch.challenge}</SectionHeading>
-              <span className="rp-titles-header-meta">
-                {ch.responses.length} {ch.responses.length === 1 ? 'response' : 'responses'}
-              </span>
             </div>
             {ch.responses.map((r) => (
               <div key={r.prompt + r.date} className="rp-tb-item">
@@ -2506,7 +2779,7 @@ function ReviewsPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
-        icon={<Ic name="ti-rating" />}
+        icon={<PlumpyIcon name="star" size={22} />}
         title="Reviews"
         accent={SECTION_ACCENT.reviews.text}
         accentBg={SECTION_ACCENT.reviews.bg}
@@ -2520,37 +2793,26 @@ function ReviewsPage({ student }) {
         reviews.map((r) => (
           <Card key={r.isbn}>
             <div className="rp-review-item">
-              <a
-                href={`https://openlibrary.org/isbn/${r.isbn}`}
-                target="_blank"
-                rel="noreferrer"
-                className="rp-title-cover-link"
-              >
-                <CoverImage isbn={r.isbn} title={r.title} />
-              </a>
-              <div className="rp-review-main">
-                <div className="rp-review-head">
-                  <div>
-                    <div className="rp-review-title">{r.title}</div>
-                    <div className="rp-title-author">{r.author}</div>
-                  </div>
-                  <span className="rp-tb-date">{r.date}</span>
+              <div className="rp-review-head">
+                <div>
+                  <div className="rp-review-title">{r.title}</div>
+                  <div className="rp-title-author">{r.author}</div>
                 </div>
-                <div className="rp-review-text">{r.text}</div>
+                <span className="rp-tb-date">{r.date}</span>
               </div>
+              <div className="rp-review-text">{r.text}</div>
             </div>
             {/* Card footer, full width past the cover column. Inert, like the Log
                 and Edit Goal buttons — the demo wants the affordances to look
                 right, not to wire up CRUD. */}
-            <div className="rp-review-actions">
+            {/* Same control as a table's row action — a record's actions shouldn't
+                change size and hover just because the record is drawn as a card.
+                `RowAction` carries its own tooltip. */}
+            <RowActions className="rp-card-actions">
               {REVIEW_ACTIONS.map((a) => (
-                <Tooltip key={a.label} content={a.label}>
-                  <IconButton variant="ghost" size="sm" aria-label={a.label}>
-                    <Icon name={a.icon} size={16} />
-                  </IconButton>
-                </Tooltip>
+                <RowAction key={a.label} icon={a.icon} label={a.label} />
               ))}
-            </div>
+            </RowActions>
           </Card>
         ))
       )}
@@ -2598,7 +2860,7 @@ function BadgeSeal({ badge, size = 68 }) {
 // behind a toggle rather than spending a row on it by default.
 function SearchToggle({ open, onToggle }) {
   return (
-    <Button variant="secondary" size="sm" onClick={onToggle}>
+    <Button variant="secondary" size="msm" onClick={onToggle}>
       {open ? 'Hide search' : 'Show search'}
     </Button>
   )
@@ -2639,19 +2901,72 @@ function MedalModal({ open, onClose, art, label, headline, note, action }) {
   )
 }
 
+/* The six achievement **categories** — the `achievement_categories` table
+   (ids 1-6). This is the taxonomy readers and admins actually see: Setup >
+   Achievement Settings toggles achievements on and off by these, grouped there
+   as "Action-related" (1-3) and "On Specific Dates" (4-6). Names from the
+   Outline wiki's Achievements page, which is where the seeded rows are written
+   down (they're DB data, not an enum in the code).
+
+   Not to be confused with `achievements.achievement_type` — Activity /
+   Challenge / Friend / LoggedBook / Review — which is the *trigger event* an
+   internal admin picks when authoring an achievement in classic_admin, and is
+   never shown to a reader. (Its sibling `condition_type` is the rule: First
+   Time / Streak / Holiday.) A date-based achievement is authored as
+   `achievement_type: "LoggedBook"` + `condition_type: "Holiday"`, so those
+   columns would drop every badge on this wall into one bucket.
+
+   `full` is the product's own wording, kept verbatim as the record of it;
+   `label` is what fits a filter — the official names run to 50 characters and
+   three of them start with the same nine words, which is unreadable in a
+   dropdown. */
+const ACHIEVEMENT_CATEGORIES = [
+  { id: 'logging', label: 'Logging', full: 'Logging' },
+  { id: 'streaks', label: 'Streaks', full: 'Streaks' },
+  { id: 'friends', label: 'Friends & leaderboards', full: 'Friends & Leaderboards' },
+  {
+    id: 'literacy',
+    label: 'Literacy days & months',
+    full: 'Literacy Themed Special Days, Weeks, & Months',
+  },
+  {
+    id: 'us',
+    label: 'US heritage days & months',
+    full: 'Other Special Days, Weeks, & Months (United States)',
+  },
+  {
+    id: 'intl',
+    label: 'International days & months',
+    full: 'Other Special Days, Weeks, & Months (International)',
+  },
+]
+
+function achievementYear(a) {
+  return String(a.date).trim().slice(-4)
+}
+
 function AchievementsPage({ student }) {
   const [q, setQ] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [openItem, setOpenItem] = useState(null)
+  const [cat, setCat] = useState('all')
+  const [year, setYear] = useState('all')
   const all = student.achievements ?? []
+  // Both filters offer only what this reader actually has — six categories with
+  // four dead options is a worse control than two live ones. Years newest first.
+  const cats = ACHIEVEMENT_CATEGORIES.filter((c) => all.some((a) => a.category === c.id))
+  const years = [...new Set(all.map(achievementYear))].sort().reverse()
+  const filtered = all.filter(
+    (a) => (cat === 'all' || a.category === cat) && (year === 'all' || achievementYear(a) === year),
+  )
   const shown = searchOpen
-    ? all.filter((a) => a.name.toLowerCase().includes(q.trim().toLowerCase()))
-    : all
+    ? filtered.filter((a) => a.name.toLowerCase().includes(q.trim().toLowerCase()))
+    : filtered
 
   return (
     <div className="rp-content">
       <Hero
-        icon={<Ic name="ti-certificate" />}
+        icon={<PlumpyIcon name="certificate" size={22} />}
         title="Achievements"
         accent={SECTION_ACCENT.achievements.text}
         accentBg={SECTION_ACCENT.achievements.bg}
@@ -2675,6 +2990,30 @@ function AchievementsPage({ student }) {
           ariaLabel="Search achievements"
         />
       )}
+      {all.length > 0 && (
+        <FilterBar compact>
+          <FilterItem label="Category">
+            <Select size="sm" value={cat} onChange={(e) => setCat(e.target.value)}>
+              <option value="all">All categories</option>
+              {cats.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </Select>
+          </FilterItem>
+          <FilterItem label="Year">
+            <Select size="sm" value={year} onChange={(e) => setYear(e.target.value)}>
+              <option value="all">All years</option>
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </Select>
+          </FilterItem>
+        </FilterBar>
+      )}
       {shown.length === 0 ? (
         <EmptyState
           variant="dashed"
@@ -2682,24 +3021,26 @@ function AchievementsPage({ student }) {
           description={
             all.length === 0
               ? 'Seasonal achievements this reader earns will show up here.'
-              : 'Try a different achievement name.'
+              : 'Try a different category, year or name.'
           }
         />
       ) : (
-        <div className="rp-medal-grid">
+        // The same row as an activity badge: art, name, its one line of
+        // detail, then the row action. The shipped app draws these as 250px
+        // centred tiles, but three medals across a 561px panel spent a screen
+        // on six records — the list scans, and the art still leads it.
+        <Card flush>
           {shown.map((a) => (
-            <button
-              key={a.name}
-              type="button"
-              className="rp-medal-card"
-              onClick={() => setOpenItem(a)}
-            >
-              <AchievementMedal item={a} />
-              <span className="rp-medal-name">{a.name}</span>
-              <span className="rp-medal-sub">Earned on {a.date}</span>
-            </button>
+            <div key={a.name} className="rp-act-row">
+              <AchievementMedal item={a} size={42} />
+              <div className="rp-act-main">
+                <div className="rp-act-name">{a.name}</div>
+                <div className="rp-act-count">Earned on {a.date}</div>
+              </div>
+              <RowAction icon="view" label="View achievement" onClick={() => setOpenItem(a)} />
+            </div>
           ))}
-        </div>
+        </Card>
       )}
 
       <MedalModal
@@ -2731,11 +3072,27 @@ function BadgesPage({ student }) {
   const [q, setQ] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [openItem, setOpenItem] = useState(null)
-  const all = student.badges ?? []
+  const [all, setAll] = useState(student.badges ?? [])
+  useEffect(() => setAll(student.badges ?? []), [student])
+  const { toasts, push, dismiss } = useToasts()
 
-  const shown = all.filter(
+  // Awarding or removing a badge is real state here, the way marking an
+  // activity complete is — it moves the row to the other tab.
+  function award(badge, earned) {
+    setAll((prev) => prev.map((b) => (b.name === badge.name ? { ...b, earned } : b)))
+    push({
+      title: earned ? 'Badge awarded' : 'Badge removed',
+      body: badge.name,
+      tone: earned ? 'info' : undefined,
+    })
+  }
+
+  // `list` is everything on this tab; `shown` is what survives the filters.
+  // The bar's reading is one against the other, so a narrow filter reads
+  // differently from an empty tab.
+  const list = all.filter((b) => b.earned === (tab === 'earned'))
+  const shown = list.filter(
     (b) =>
-      b.earned === (tab === 'earned') &&
       (kind === 'all' || b.kind === kind) &&
       (!searchOpen || b.name.toLowerCase().includes(q.trim().toLowerCase())),
   )
@@ -2743,7 +3100,7 @@ function BadgesPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
-        icon={<Ic name="ti-badge" />}
+        icon={<PlumpyIcon name="medal" size={22} />}
         title="Badges"
         accent={SECTION_ACCENT.badges.text}
         accentBg={SECTION_ACCENT.badges.bg}
@@ -2774,7 +3131,7 @@ function BadgesPage({ student }) {
           ariaLabel="Search badges"
         />
       )}
-      <FilterBar>
+      <FilterBar compact>
         <FilterItem label="Badge type">
           <Select size="sm" value={kind} onChange={(e) => setKind(e.target.value)}>
             {BADGE_KINDS.map((k) => (
@@ -2796,20 +3153,33 @@ function BadgesPage({ student }) {
           }
         />
       ) : (
-        <div className="rp-medal-grid">
+        // An activity-badge row, and the same two trailing controls: the
+        // CompleteToggle is the modal's own Award / Remove Badge, which is
+        // what earning a badge means here, and the row action opens the
+        // detail. Toggling moves the badge between the two tabs.
+        <Card flush>
           {shown.map((b) => (
-            <button
-              key={b.name}
-              type="button"
-              className="rp-medal-card"
-              onClick={() => setOpenItem(b)}
-            >
-              <BadgeSeal badge={b} />
-              <span className="rp-medal-name">{b.name}</span>
-              <span className="rp-medal-sub">{b.detail}</span>
-            </button>
+            <div key={b.name} className="rp-act-row">
+              <BadgeSeal badge={b} size={42} />
+              <div className="rp-act-main">
+                <div className="rp-act-name">{b.name}</div>
+                <div className="rp-act-count">{b.detail}</div>
+              </div>
+              <CompleteToggle
+                done={b.earned}
+                label={b.name}
+                wording={{
+                  set: 'Award badge',
+                  unset: 'Remove badge',
+                  on: 'Earned',
+                  off: 'Not earned',
+                }}
+                onChange={(v) => award(b, v)}
+              />
+              <RowAction icon="view" label="View badge" onClick={() => setOpenItem(b)} />
+            </div>
           ))}
-        </div>
+        </Card>
       )}
 
       <MedalModal
@@ -2833,6 +3203,9 @@ function BadgesPage({ student }) {
               }
         }
       />
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }
@@ -2841,11 +3214,106 @@ function BadgesPage({ student }) {
 // A challenge's activity badge is a set of activities the reader checks off;
 // the badge lands once they're all done. The checkboxes are live so the demo
 // can show a badge completing, but nothing is persisted.
+/* Activity badges and the three activity types, from the product itself.
+   `LearningTrack` is the model behind an **Activity Badge**; the activities
+   under it carry `activity_type` — "Activity", "Activity Code" or
+   "Text Box Challenge" (bs-product `activities.activity_type`, and the
+   Outline wiki's "Activity and Review Badges") — plus `activity_codes` (a
+   list: one activity can hold several codes), `point_value`, `link_url` /
+   `link_title` and `max_completions`.
+
+   A reader's completion is a `completed_activities` row carrying
+   `text_box_challenge_answer`, which is why a text box answer belongs to the
+   completion rather than the activity.
+
+   Two constraints from the docs that the UI has to respect:
+   - staff **cannot type a text box answer** from the back end; they can only
+     check the activity off as complete;
+   - **repeatable** activity badges exist only inside points challenges. Their
+     activities can be completed without limit, the badge itself can never be
+     earned, and a repeatable text box answer can't be edited. */
+const ACTIVITY_TYPES = {
+  Activity: { label: 'Activity', icon: 'circle-check' },
+  'Activity Code': { label: 'Code', icon: 'key' },
+  'Text Box Challenge': { label: 'Text box', icon: 'align-left' },
+}
+
+function ActivityTypeTag({ type }) {
+  const cfg = ACTIVITY_TYPES[type]
+  if (!cfg || type === 'Activity') return null
+  return (
+    <span className="rp-act-type">
+      <Icon name={cfg.icon} size={13} stroke={2.2} />
+      {cfg.label}
+    </span>
+  )
+}
+
+/* One activity, drawn for its type. The checkbox is the only control staff get
+   on any of them — the code and the answer are there to be read. */
+function ActivityDetail({ activity }) {
+  const { type = 'Activity', codes, answer, points } = activity
+  return (
+    <div className="rp-act-detail">
+      {/* Type and points are what kind of thing this is; they read as a label
+          above the activity rather than a trailer after it, which is where a
+          long prompt kept pushing them anyway. */}
+      <div className="rp-act-detail-head">
+        <ActivityTypeTag type={type} />
+        {points > 0 && <span className="rp-act-points">{points} pts</span>}
+      </div>
+      <span className="rp-act-modal-text">{activity.text}</span>
+
+      {/* `activity_codes` is a list — one activity can accept several. Staff
+          see them because the admin set them; there's nothing to enter here. */}
+      {type === 'Activity Code' && codes?.length > 0 && (
+        <div className="rp-act-codes">
+          {codes.map((c) => (
+            <code key={c} className="rp-act-code">
+              {c}
+            </code>
+          ))}
+        </div>
+      )}
+
+      {/* The reader's own words, from `text_box_challenge_answer`. Read-only by
+          design: the product doesn't let staff write one. */}
+      {type === 'Text Box Challenge' &&
+        (answer ? (
+          <blockquote className="rp-act-answer">{answer}</blockquote>
+        ) : (
+          <span className="rp-act-answer rp-act-answer--empty">No response yet</span>
+        ))}
+    </div>
+  )
+}
+
 function ActivitiesPage({ student }) {
   const [badges, setBadges] = useState(student.activityBadges ?? [])
   const [openIdx, setOpenIdx] = useState(null)
+  const [kind, setKind] = useState('activity')
+  const [challenge, setChallenge] = useState('all')
+  const { toasts, push, dismiss } = useToasts()
+
+  // Anything that lands a completion announces itself in the corner, and an
+  // activity that tips the badge over its threshold announces the badge too —
+  // that's the moment worth telling someone about.
+  function announce(badge, before, after) {
+    if (after > before) {
+      push({ title: 'Activity marked complete', body: badge.name })
+      const need = requiredFor(badge)
+      if (before < need && after >= need) {
+        push({ title: 'Badge earned', body: badge.name, tone: 'info' })
+      }
+    }
+  }
 
   function toggleActivity(badgeIdx, actIdx, done) {
+    const badge = badges[badgeIdx]
+    if (badge) {
+      const before = doneCount(badge)
+      announce(badge, before, done ? before + 1 : before - 1)
+    }
     setBadges((prev) =>
       prev.map((b, i) =>
         i !== badgeIdx
@@ -2861,6 +3329,10 @@ function ActivitiesPage({ student }) {
   // Ticking the badge-level box marks every activity under it, matching the
   // product's "mark the whole badge complete" affordance.
   function toggleBadge(badgeIdx, done) {
+    const badge = badges[badgeIdx]
+    if (badge && done) {
+      push({ title: 'Badge earned', body: badge.name, tone: 'info' })
+    }
     setBadges((prev) =>
       prev.map((b, i) =>
         i !== badgeIdx ? b : { ...b, activities: b.activities.map((a) => ({ ...a, done })) },
@@ -2868,50 +3340,122 @@ function ActivitiesPage({ student }) {
     )
   }
 
+  // Repeatable badges are their own kind of thing — they can't be earned, they
+  // count instead of completing, and they only exist inside points challenges.
+  // Mixing them into one list means two different sentences in one column, so
+  // they get their own tab. The tab only appears when there are any: points
+  // challenges aren't supported on school sites, so a student never has one.
+  const plainBadges = badges.filter((b) => !b.repeatable)
+  const repeatBadges = badges.filter((b) => b.repeatable)
+  const inKind = kind === 'repeatable' ? repeatBadges : plainBadges
+  const listed = challenge === 'all' ? inKind : inKind.filter((b) => b.challenge === challenge)
+
+  // A badge belongs to a challenge, and the filter above is where that lives.
+  const challenges = [...new Set(badges.map((b) => b.challenge).filter(Boolean))]
+
   const openBadge = openIdx == null ? null : badges[openIdx]
   const doneCount = (b) => b.activities.filter((a) => a.done).length
+  // A repeatable badge is never earned, so "3 of 4 completed" is the wrong
+  // sentence for it — it gets a running total of completions instead.
+  const completionCount = (b) =>
+    b.activities.reduce((n, a) => n + (a.completions ?? (a.done ? 1 : 0)), 0)
+
+  // "Activity badges are earned when readers complete the specified number of
+  // activities within them" — so the bar is a count, not necessarily all of
+  // them. `required` is that number; absent, the badge needs the lot.
+  const requiredFor = (b) => b.required ?? b.activities.length
+  const isEarned = (b) => !b.repeatable && doneCount(b) >= requiredFor(b)
 
   return (
     <div className="rp-content">
       <Hero
-        icon={<Ic name="ti-puzzle" />}
+        icon={<PlumpyIcon name="puzzle" size={22} />}
         title="Activities"
         accent={SECTION_ACCENT.activities.text}
         accentBg={SECTION_ACCENT.activities.bg}
       />
-      <FilterBar action={<Button size="sm">Update activity badges</Button>}>
+      <FilterBar compact>
         <FilterItem label="Challenge">
-          <Select size="sm" defaultValue="all">
+          <Select size="sm" value={challenge} onChange={(e) => setChallenge(e.target.value)}>
             <option value="all">All challenges</option>
-            <option value="spring">Spring Reading Challenge 2025</option>
-            <option value="winter">Winter Reading Bingo</option>
+            {challenges.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
           </Select>
         </FilterItem>
       </FilterBar>
+      {repeatBadges.length > 0 && (
+        <Tabs
+          variant="pill"
+          block
+          ariaLabel="Activity badge type"
+          active={kind}
+          onChange={setKind}
+          items={[
+            { id: 'activity', label: 'Activity badges' },
+            { id: 'repeatable', label: 'Repeatable' },
+          ]}
+        />
+      )}
       <Card flush>
-        <div className="rp-titles-header">
-          <span className="rp-titles-header-label">Activity badges</span>
-          <span className="rp-titles-header-meta">Completed?</span>
-        </div>
-        {badges.length === 0 ? (
-          <EmptyState title="No activity badges" description="This reader has none assigned yet." />
+        {listed.length === 0 ? (
+          <EmptyState
+            title={kind === 'repeatable' ? 'No repeatable badges' : 'No activity badges'}
+            description={
+              kind === 'repeatable'
+                ? 'Repeatable badges come from points challenges.'
+                : 'This reader has none assigned yet.'
+            }
+          />
         ) : (
-          badges.map((b, i) => {
+          // One flat list. The challenge each badge belongs to is what the
+          // filter above is for; repeating it as a heading every few rows just
+          // broke the run of rows up.
+          listed.map((b) => {
+            // The modal indexes into the full list, not the filtered one.
+            const i = badges.indexOf(b)
             const done = doneCount(b)
             const all = b.activities.length
             return (
               <div key={b.name} className="rp-act-row">
                 <MedalDisc icon={b.icon} color={b.color} size={42} />
                 <div className="rp-act-main">
-                  <div className="rp-act-name">{b.name}</div>
+                  <div className="rp-act-name">
+                    {b.name}
+                    {b.repeatable && (
+                      <Pill color="#c849e5" size="sm">
+                        Repeatable
+                      </Pill>
+                    )}
+                  </div>
                   <div className="rp-act-count">
-                    {done} of {all} activities completed
+                    {/* The app's exact sentences: "X of Y Activities
+                            Completed" and, for a repeatable badge, "N Total
+                            Activity Completions". */}
+                    {b.repeatable
+                      ? `${completionCount(b)} Total Activity Completions`
+                      : `${done} of ${all} Activities Completed`}
                   </div>
                 </div>
-                <Checkbox checked={done === all} onChange={(v) => toggleBadge(i, v)} />
-                <Button variant="secondary" size="sm" onClick={() => setOpenIdx(i)}>
-                  View activity
-                </Button>
+                {/* The product's own control: a filled checkbox glyph, green
+                        when complete, grey when not, clickable either way — and
+                        a repeatable row has no completion column at all, only
+                        the add glyph and its running count. Un-earning is the
+                        same toggle, which is how staff take a badge back. */}
+                <CompleteToggle
+                  done={isEarned(b)}
+                  repeatable={b.repeatable}
+                  count={b.repeatable ? completionCount(b) : undefined}
+                  onChange={b.repeatable ? undefined : (v) => toggleBadge(i, v)}
+                  label={b.name}
+                />
+                {/* The app draws this as a text `View Activity` button
+                    (`.view-activity-button-container`); here it's the same row
+                    action every other table ends with, so a row's trailing
+                    control is one shape across the whole profile. */}
+                <RowAction icon="view" label="View activities" onClick={() => setOpenIdx(i)} />
               </div>
             )
           })
@@ -2929,7 +3473,6 @@ function ActivitiesPage({ student }) {
           <div className="rp-act-modal">
             <ModalClose onClick={close} />
             <div className="rp-act-modal-head">
-              {openBadge && <MedalDisc icon={openBadge.icon} color={openBadge.color} size={34} />}
               <span className="rp-act-modal-title">{openBadge?.name}</span>
             </div>
             <div className="rp-act-modal-cols">
@@ -2939,90 +3482,517 @@ function ActivitiesPage({ student }) {
             <div className="rp-act-modal-body">
               {openBadge?.activities.map((a, j) => (
                 <div key={a.text} className="rp-act-modal-row">
-                  <span className="rp-act-modal-text">{a.text}</span>
-                  <Checkbox checked={a.done} onChange={(v) => toggleActivity(openIdx, j, v)} />
+                  <ActivityDetail activity={a} />
+                  <CompleteToggle
+                    done={a.done}
+                    repeatable={openBadge.repeatable}
+                    count={openBadge.repeatable ? (a.completions ?? 0) : undefined}
+                    onChange={
+                      openBadge.repeatable ? undefined : (v) => toggleActivity(openIdx, j, v)
+                    }
+                    label={a.text}
+                  />
                 </div>
               ))}
             </div>
           </div>
         )}
       </Modal>
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }
 
 // ─── Drawings & rewards ───────────────────────────────────────────────────────
-// Same page twice: a list of things the reader has won, with "Claimed?" as the
-// only column that moves — and it's the librarian's to tick.
-function ClaimListPage({ items: initial, icon, title, accent, accentBg, nameLabel, empty }) {
-  const [items, setItems] = useState(initial ?? [])
+// The claim tables, drawn the way the app draws them. On a reader's page
+// bs-product's `new_admin/earned_rewards/_incentive.html.haml` puts two side by
+// side — a drawing table keyed "Drawing / Redeemed?" and an incentive table
+// keyed "Earned Incentive / Challenge / Redeemed?" — and both are ticked with
+// the very same toggle rule that runs the Activities column
+// (`.redeem-incentive-toggle, .redeem-raffle-toggle` sit in that selector list).
+//
+// A row's trailing control is the class-level table's own icon action
+// (`.redeem-reward-icon` holding `icons/reward.svg`): an icon rather than a
+// labelled button because it repeats on every single row.
+
+// The shared row action, carrying one of the app's own drawings.
+function RowIconAction({ icon, title, onClick, disabled = false }) {
+  return (
+    <RowAction label={title} onClick={onClick} disabled={disabled}>
+      <BsIcon set="actions" name={icon} size={20} />
+    </RowAction>
+  )
+}
+
+// The app splits earned rewards by *age*, not by kind: `_rewards.html.haml` is
+// a Current Rewards / Past Rewards tab pair over one table, and Past carries a
+// helpbox saying what "past" means. A challenge's ticket drawings aren't a tab
+// here — they're reached from that challenge's own row, which is where the app
+// puts them and where the per-challenge ticket balance makes sense.
+const REWARD_KINDS = [
+  { id: 'current', label: 'Current Rewards' },
+  { id: 'past', label: 'Past Rewards' },
+]
+
+// The app's own button copy for a ticket drawing, case by case
+// (`ticket_rewards/_ticket_rewards_modal_overview.html.haml`).
+function ticketAction(t) {
+  const atMax = t.maxEntries > 0 && t.entered >= t.maxEntries
+  if (t.ended) return { label: 'Ended', disabled: true }
+  if (atMax) return { label: 'Max Entered (Subtract Tickets)', disabled: false }
+  if (t.available <= 0 && t.entered === 0) return { label: 'No Tickets Available', disabled: true }
+  if (t.available <= 0) return { label: 'Subtract Tickets', disabled: false }
+  return { label: 'Add/Remove Tickets', disabled: false }
+}
+
+function RewardsPage({ student }) {
+  const [rewards, setRewards] = useState(student.rewards ?? [])
+  const [kind, setKind] = useState('current')
+  const [q, setQ] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const { toasts, push, dismiss } = useToasts()
+
+  // Search runs over the list that's showing — a reader with forty earned
+  // rewards is the case this is for, and the name is the only thing worth
+  // matching on.
+  const match = (name) => !searchOpen || name.toLowerCase().includes(q.trim().toLowerCase())
+
+  function redeem(reward) {
+    setRewards((prev) => prev.map((r) => (r === reward ? { ...r, redeemed: !r.redeemed } : r)))
+    push(
+      reward.redeemed
+        ? { title: 'Marked not redeemed', body: reward.name, tone: 'info' }
+        : { title: 'Reward redeemed', body: reward.name },
+    )
+  }
+
+  // The app's profile-level table is two columns — "Earned Reward" and
+  // "Redeemed?" — so the challenge a reward came from rides under its name
+  // rather than taking a column the panel doesn't have.
+  const rewardCols = [
+    {
+      key: 'name',
+      label: 'Earned Reward',
+      minWidth: 200,
+      render: (v, r) => (
+        <>
+          <span className="rp-tbl-name">{v}</span>
+          <span className="rp-tbl-sub">{r.challenge}</span>
+        </>
+      ),
+    },
+    {
+      key: 'redeemed',
+      label: 'Redeemed?',
+      minWidth: 96,
+      align: 'right',
+      render: (v, r) => <CompleteToggle done={v} onChange={() => redeem(r)} label={r.name} />,
+    },
+  ]
+
+  // `era` is the 90-day line the app draws; anything unmarked is current.
+  const shown = rewards.filter((r) => (r.era ?? 'current') === kind && match(r.name))
 
   return (
     <div className="rp-content">
-      <Hero icon={<Ic name={icon} />} title={title} accent={accent} accentBg={accentBg} />
+      <Hero
+        icon={<PlumpyIcon name="gift" size={22} />}
+        title="Rewards"
+        accent={SECTION_ACCENT.rewards.text}
+        accentBg={SECTION_ACCENT.rewards.bg}
+        action={
+          rewards.length > 0 && (
+            <SearchToggle
+              open={searchOpen}
+              onToggle={() => {
+                setSearchOpen((v) => !v)
+                setQ('')
+              }}
+            />
+          )
+        }
+      />
+      {searchOpen && (
+        <SearchInput
+          value={q}
+          onChange={setQ}
+          placeholder="Search for a reward name…"
+          ariaLabel="Search rewards"
+        />
+      )}
+      <Tabs
+        variant="pill"
+        block
+        ariaLabel="Reward age"
+        active={kind}
+        onChange={setKind}
+        items={REWARD_KINDS}
+      />
+      {/* `.infobox.helpbox` on the real page, shown only on the Past tab. */}
+      {kind === 'past' && (
+        <Banner level="info">These are rewards that were earned more than 90 days ago.</Banner>
+      )}
       <Card flush>
-        <div className="rp-titles-header">
-          <span className="rp-titles-header-label">{nameLabel}</span>
-          <span className="rp-titles-header-meta">Claimed?</span>
-        </div>
-        {items.length === 0 ? (
-          <EmptyState title={empty.title} description={empty.description} />
-        ) : (
-          items.map((item, i) => (
-            <div key={item.name} className="rp-act-row">
-              <div className="rp-act-main">
-                <div className="rp-act-name">{item.name}</div>
-              </div>
-              <Checkbox
-                checked={item.claimed}
-                onChange={(v) =>
-                  setItems((prev) => prev.map((x, j) => (j === i ? { ...x, claimed: v } : x)))
-                }
-              />
-            </div>
-          ))
-        )}
+        <Table
+          flush
+          scrollX
+          columns={rewardCols}
+          rows={shown}
+          getRowKey={(r) => r.name}
+          empty={kind === 'past' ? 'No past rewards.' : 'No rewards to redeem.'}
+        />
       </Card>
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }
 
-// `key` on the student remounts the list so the checkbox state doesn't carry
-// across readers when the pager steps.
-function DrawingsPage({ student }) {
+// One challenge's ticket drawings. The app reaches this from a challenge row's
+// `View Ticket Rewards` link and draws it as a sub-view of Challenges — a Back
+// link, "Ticket Rewards for {challenge}", and how many tickets the reader has
+// left to spend — not as a tab of its own under Rewards.
+// One challenge's ticket drawings. The app reaches this from a challenge row's
+// `View Ticket Rewards` link and draws it as a sub-view of Challenges — a Back
+// link, "Ticket Rewards for {challenge}", and how many tickets the reader has
+// left to spend on it — because the balance is per challenge, not per reader
+// (`available_tickets_for_program`).
+function TicketRewardsView({ student, program, onBack }) {
+  const [tickets, setTickets] = useState(() =>
+    (student.ticketDrawings ?? []).filter((t) => t.challenge === program.name),
+  )
+  const [openIdx, setOpenIdx] = useState(null)
+  const [stepping, setStepping] = useState(false)
+  const { toasts, push, dismiss } = useToasts()
+
+  const open = openIdx == null ? null : tickets[openIdx]
+  const action = open ? ticketAction(open) : null
+
+  // Every drawing in this challenge draws on the same pile — the app's balance
+  // is `available_tickets_for_program(program_id)` — so it's one number, and
+  // the rows are kept in step with each other.
+  const available = tickets[0]?.available ?? 0
+
+  // Entering tickets moves them out of the challenge's pile and into this
+  // drawing (the app tracks the two as one balance, earned minus entered), so
+  // every drawing here sees the reduced pile, not just the one just changed.
+  function enterTickets(count) {
+    const row = tickets[openIdx]
+    const delta = count - row.entered
+    setTickets((prev) =>
+      prev.map((t, j) => ({
+        ...t,
+        entered: j === openIdx ? count : t.entered,
+        available: t.available - delta,
+      })),
+    )
+    setStepping(false)
+    setOpenIdx(null)
+    push({
+      title: `${count === 1 ? '1 Ticket' : `${count} Tickets`} Entered`,
+      body: row.name,
+    })
+  }
+
+  const ticketCols = [
+    {
+      key: 'name',
+      label: 'Drawing',
+      minWidth: 150,
+      // When it closes rides under the prize rather than taking a column of
+      // its own — it's a fact about the drawing, and the panel hasn't the width
+      // for a third column beside the count and the action.
+      render: (v, r) => (
+        <>
+          <span className="rp-tbl-name">{v}</span>
+          <span className="rp-tbl-sub">Ends {r.endsOn}</span>
+        </>
+      ),
+    },
+    {
+      key: 'entered',
+      label: 'Tickets Entered',
+      minWidth: 110,
+      // The app words this "5 Tickets Entered", with its ticket mark beside it.
+      render: (v) => (
+        <span className="rp-ticket-count">
+          <BsIcon set="actions" name="ticket" size={18} />
+          {v}
+        </span>
+      ),
+    },
+    // `max_entries` isn't a column either: the app only ever says it as part of
+    // the button that spends them — "Enter 3 (Max 10)".
+    {
+      key: 'act',
+      label: '',
+      minWidth: 48,
+      align: 'right',
+      render: (_, r) => (
+        <RowIconAction
+          icon="ticket"
+          title="View drawing"
+          onClick={() => setOpenIdx(tickets.indexOf(r))}
+        />
+      ),
+    },
+  ]
+
   return (
-    <ClaimListPage
-      key={student.name}
-      items={student.drawings}
-      icon="ti-pencil"
-      title="Drawings"
-      accent={SECTION_ACCENT.drawings.text}
-      accentBg={SECTION_ACCENT.drawings.bg}
-      nameLabel="Drawing name"
-      empty={{ title: 'No drawings', description: 'Drawings this reader enters will show here.' }}
-    />
+    <div className="rp-content">
+      <BackBar label="Back to Challenges" onClick={onBack} />
+      {/* No icon chip: this is a sub-view of Challenges reached from a row, not
+          a destination in the rail, and the Back link above already says where
+          you are. `Hero` renders without one. */}
+      <Hero
+        title={`Ticket Rewards for ${program.name}`}
+        accent={SECTION_ACCENT.rewards.text}
+        accentBg={SECTION_ACCENT.rewards.bg}
+      />
+      {/* The app says this as a bare line under the heading. Boxed here, with
+          the ticket mark: it's the balance every drawing below spends from, so
+          it reads as a wallet rather than as a caption. */}
+      <div className="rp-draw-avail">
+        <BsIcon set="actions" name="ticket" size={20} />
+        <span>
+          <strong>{available}</strong> {available === 1 ? 'ticket' : 'tickets'} available
+        </span>
+      </div>
+      <Card flush>
+        <Table
+          flush
+          scrollX
+          columns={ticketCols}
+          rows={tickets}
+          getRowKey={(r) => r.name}
+          empty="No drawings to enter."
+        />
+      </Card>
+
+      {/* The app's drawing overview: the prize, when it closes, how many
+          tickets are in, and the one button that changes that. */}
+      <Modal
+        open={open != null}
+        onClose={() => {
+          setOpenIdx(null)
+          setStepping(false)
+        }}
+        variant="center"
+        ariaLabel={open?.name}
+        closeBadge
+      >
+        {({ close }) => (
+          <div className="rp-draw-modal">
+            <ModalClose onClick={close} />
+            {/* Same chrome as every other modal on the page: a bordered head
+                holding the title, then a body. */}
+            <div className="rp-act-modal-head">
+              <span className="rp-act-modal-title">{open?.name}</span>
+            </div>
+            {stepping ? (
+              <TicketStepper
+                drawing={open}
+                onCancel={() => setStepping(false)}
+                onEnter={enterTickets}
+              />
+            ) : (
+              <div className="rp-draw-body">
+                <div className="rp-draw-meta">
+                  <span className="rp-ticket-count">
+                    <BsIcon set="actions" name="ticket" size={18} />
+                    {open?.entered ?? 0} Tickets Entered
+                  </span>
+                  <span className="rp-draw-date">Ends on {open?.endsOn}</span>
+                </div>
+                <p className="rp-draw-text">{open?.description}</p>
+                <Button
+                  variant="secondary"
+                  disabled={action?.disabled}
+                  onClick={() => setStepping(true)}
+                >
+                  {action?.label}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </div>
   )
 }
 
-function RewardsPage({ student }) {
+// The app's ticket stepper: a ± control over the reader's own balance, and a
+// button that spells out exactly what pressing it will do — including the max,
+// and "No Change" when the number is back where it started.
+function TicketStepper({ drawing, onCancel, onEnter }) {
+  const [n, setN] = useState(drawing.entered)
+  // You can never enter more than you hold, and never more than the drawing
+  // allows — `calculateMaxEntries` in the app's own words.
+  const pool = drawing.available + drawing.entered
+  const cap = drawing.maxEntries > 0 ? Math.min(drawing.maxEntries, pool) : pool
+  const left = pool - n
+  const maxText = drawing.maxEntries > 0 ? ` (Max ${drawing.maxEntries})` : ' (No Max)'
+
   return (
-    <ClaimListPage
-      key={student.name}
-      items={student.rewards}
-      icon="ti-gift"
-      title="Rewards"
-      accent={SECTION_ACCENT.rewards.text}
-      accentBg={SECTION_ACCENT.rewards.bg}
-      nameLabel="Reward name"
-      empty={{ title: 'No rewards', description: 'Rewards this reader earns will show here.' }}
-    />
+    <div className="rp-draw-body">
+      <span className="rp-draw-date">
+        {left === 1 ? '1 Ticket Available' : `${left} Tickets Available`}
+      </span>
+      <div className="rp-draw-stepper">
+        <NumberInput value={n} min={0} max={cap} onChange={setN} aria-label="Tickets to enter" />
+      </div>
+      <div className="rp-draw-actions">
+        <Button disabled={n === drawing.entered} onClick={() => onEnter(n)}>
+          {n === drawing.entered ? 'No Change' : `Enter ${n === 1 ? '1 Ticket' : n}${maxText}`}
+        </Button>
+        <Button variant="ghost" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </div>
   )
+}
+
+// Every row here is a drawing this reader *won* — a `raffle_winners` record,
+// not a drawing they entered. Entering is the Rewards tab's ticket list.
+// `key` on the student remounts the list so a toggle doesn't carry across
+// readers when the pager steps.
+function DrawingsPage({ student }) {
+  const [wins, setWins] = useState(student.drawingWins ?? [])
+  const [q, setQ] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const { toasts, push, dismiss } = useToasts()
+  const shown = searchOpen
+    ? wins.filter((w) => w.name.toLowerCase().includes(q.trim().toLowerCase()))
+    : wins
+
+  function claim(win) {
+    setWins((prev) => prev.map((w) => (w === win ? { ...w, claimed: !w.claimed } : w)))
+    push(
+      win.claimed
+        ? { title: 'Prize marked unclaimed', body: win.name, tone: 'info' }
+        : { title: 'Successfully Redeemed', body: win.name },
+    )
+  }
+
+  // `raffle_winners.place` is only filled in on an Ordered Placement drawing —
+  // an Equal Winners drawing has winners but no order, so the cell is empty
+  // rather than guessing a 1st.
+  const cols = [
+    {
+      key: 'name',
+      label: 'Drawing',
+      minWidth: 140,
+      render: (v) => <span className="rp-tbl-name">{v}</span>,
+    },
+    {
+      key: 'place',
+      label: 'Place',
+      minWidth: 68,
+      // Centred, and the placement itself is a tag: it's a standing this
+      // reader holds, not a measurement, so it reads like the other pills on
+      // the profile rather than as loose text in a column.
+      align: 'center',
+      render: (v) =>
+        v == null ? (
+          <span className="rp-none">—</span>
+        ) : (
+          <span className="rp-place">{ordinal(v)}</span>
+        ),
+    },
+    {
+      key: 'claimed',
+      label: 'Redeemed?',
+      minWidth: 96,
+      align: 'right',
+      render: (v, r) => <CompleteToggle done={v} onChange={() => claim(r)} label={r.name} />,
+    },
+  ]
+
+  return (
+    <div className="rp-content">
+      <Hero
+        icon={<PlumpyIcon name="ticket" size={22} />}
+        title="Drawings"
+        accent={SECTION_ACCENT.drawings.text}
+        accentBg={SECTION_ACCENT.drawings.bg}
+        action={
+          wins.length > 0 && (
+            <SearchToggle
+              open={searchOpen}
+              onToggle={() => {
+                setSearchOpen((v) => !v)
+                setQ('')
+              }}
+            />
+          )
+        }
+      />
+      {searchOpen && (
+        <SearchInput
+          value={q}
+          onChange={setQ}
+          placeholder="Search for a drawing name…"
+          ariaLabel="Search drawings"
+        />
+      )}
+      <Card flush>
+        <Table
+          flush
+          scrollX
+          columns={cols}
+          rows={shown}
+          getRowKey={(r) => r.name}
+          empty="There are no drawings to redeem."
+        />
+      </Card>
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </div>
+  )
+}
+
+// 1 → 1st. The app's `getOrdinal` / Rails `ordinalize`, which is what the
+// ordered-placement winners table prints.
+function ordinal(n) {
+  const rem100 = n % 100
+  if (rem100 >= 11 && rem100 <= 13) return `${n}th`
+  return `${n}${['th', 'st', 'nd', 'rd'][n % 10] ?? 'th'}`
 }
 
 // ─── Challenges ───────────────────────────────────────────────────────────────
+// ─── Challenge banners ────────────────────────────────────────────────────────
+// A challenge is a `Program`, and a Program has a `header_image` — the banner
+// staff upload when they build it, with `no-challenge-image.png` as the app's
+// fallback. These are the **real** banners Beanstack's design team ships with
+// its own challenges (Dropbox `Design/Projects/Challenges/<name>/Banner`),
+// copied into `public/challenge-banners/` and converted to 1200px webp.
+//
+// Every one of them is 2.62:1 — 920×351, or 1840×702 at 2× — which is the
+// product's banner ratio, and the same ratio the challenge creator generates
+// its theme art at. `.chal-banner` holds that ratio rather than a fixed height.
+const CHALLENGE_BANNERS = {
+  'read-across-america': 'read-across-america',
+  'winter-reading': 'winter-reading',
+  'summer-reading': 'summer-reading',
+  'benny-bean': 'benny-bean',
+  'battle-of-the-books': 'battle-of-the-books',
+  '25-in-25': '25-in-25',
+}
+const bannerSrc = (key) =>
+  CHALLENGE_BANNERS[key] ? `/bs-prototypes/challenge-banners/${CHALLENGE_BANNERS[key]}.webp` : null
+
+// The app's four, in its order: Current / Recently Ended / Upcoming / Past
+// Challenges (`showProgramTab` gates each on there being any).
 const CHALLENGE_TABS = [
   { id: 'current', label: 'Current' },
-  { id: 'ended', label: 'Recently ended' },
+  { id: 'ended', label: 'Recent' },
+  { id: 'upcoming', label: 'Upcoming' },
   { id: 'past', label: 'Past' },
 ]
 
@@ -3182,8 +4152,103 @@ function ChallengeLogSheet({ open, onClose, student, challenge }) {
 function ChallengesPage({ student }) {
   const [tab, setTab] = useState('current')
   const [logFor, setLogFor] = useState(null)
-  const all = student.challenges ?? []
-  const shown = all.filter((c) => c.status === tab)
+  // Enrolment is something staff set from this page: the app's own toggle calls
+  // `enrollProgram` on every click and draws `check`/`cross` from
+  // `isEnrolled`, so the same control puts a reader in a challenge and takes
+  // them back out.
+  const [rows, setRows] = useState(() =>
+    (student.challenges ?? []).map((c) => ({ ...c, enrolled: c.enrolled ?? true })),
+  )
+  const { toasts, push, dismiss } = useToasts()
+  // The app's `viewTicketRewards`: a challenge's drawings replace the page
+  // until you come back.
+  const [ticketsFor, setTicketsFor] = useState(null)
+
+  function toggleEnrolled(challenge) {
+    setRows((prev) => prev.map((c) => (c === challenge ? { ...c, enrolled: !c.enrolled } : c)))
+    push(
+      challenge.enrolled
+        ? { title: 'Unenrolled', body: challenge.name, tone: 'info' }
+        : { title: 'Enrolled', body: challenge.name },
+    )
+  }
+
+  // The app's own table is three columns wide — Challenge, Enrolled?,
+  // Completed? — and everything else lives *inside* the challenge cell: the
+  // name, the date span, a `ul.program-log-totals` of label:value pairs, and a
+  // "View Challenge Log" link. Giving Started and Minutes columns of their own
+  // is what made every name wrap in a 560px panel.
+  // One card per challenge rather than rows in a table. A challenge isn't a
+  // record you scan a column of — it's a block of label:value totals with its
+  // own actions — so the single "Challenge" header the table carried was a
+  // heading over nothing.
+  const renderCard = (c) => (
+    <Card key={c.name}>
+      {/* The banner bleeds to the card's own edges and takes its top corners —
+          it's the challenge's header image, not a thumbnail inside the card. */}
+      {bannerSrc(c.banner) && <img className="rp-chal-banner" src={bannerSrc(c.banner)} alt="" />}
+      <div className="rp-chal-cell">
+        <span className="rp-tbl-name">{c.name}</span>
+        <span className="rp-tbl-sub">{c.dates}</span>
+        <ul className="rp-chal-totals">
+          {c.startedOn && (
+            <li>
+              <span>Started On:</span> {c.startedOn}
+            </li>
+          )}
+          {c.completedOn && (
+            <li>
+              <span>Completed On:</span> {c.completedOn}
+            </li>
+          )}
+          {c.minutes != null && (
+            <li>
+              <span>Minutes:</span> {c.minutes.toLocaleString()}
+            </li>
+          )}
+        </ul>
+      </div>
+      {/* The app puts these inline in the cell as `View Challenge Log` and
+          `View Ticket Rewards` text links; here they're the same row actions
+          every table on the profile ends with. Enrolment leads the cluster —
+          it's the one control that changes the record rather than opening
+          something. The log is the printable sheet, not a detour to the
+          reading log, and an upcoming challenge has nothing logged yet;
+          Ticket Rewards follows the app's own condition,
+          `program.has_ticket_rewards && isEnrolled`. */}
+      <RowActions className="rp-card-actions">
+        <CompleteToggle
+          done={c.enrolled}
+          onChange={() => toggleEnrolled(c)}
+          label={c.name}
+          wording={{
+            set: 'Enroll',
+            unset: 'Unenroll',
+            on: 'Enrolled',
+            off: 'Not enrolled',
+          }}
+        />
+        {c.startedOn && (
+          <RowAction icon="log" label="View challenge log" onClick={() => setLogFor(c)} />
+        )}
+        {c.hasTicketRewards && c.enrolled && (
+          <RowAction icon="ticket" label="View ticket rewards" onClick={() => setTicketsFor(c)} />
+        )}
+      </RowActions>
+    </Card>
+  )
+
+  const shown = rows.filter((c) => c.status === tab)
+
+  if (ticketsFor) {
+    return (
+      <TicketRewardsView
+        student={student}
+        program={ticketsFor}
+        onBack={() => setTicketsFor(null)}
+      />
+    )
+  }
 
   return (
     <div className="rp-content">
@@ -3196,7 +4261,7 @@ function ChallengesPage({ student }) {
         />
       )}
       <Hero
-        icon={<Ic name="ti-trophy" />}
+        icon={<PlumpyIcon name="challenges" size={22} />}
         title="Challenges"
         accent={SECTION_ACCENT.challenges.text}
         accentBg={SECTION_ACCENT.challenges.bg}
@@ -3210,40 +4275,461 @@ function ChallengesPage({ student }) {
         onChange={setTab}
         items={CHALLENGE_TABS}
       />
-      <Card flush>
-        <div className="rp-titles-header">
-          <span className="rp-titles-header-label">Challenge</span>
-          <span className="rp-titles-header-meta">Enrolled?</span>
+      {shown.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title={`No ${tab === 'ended' ? 'recent' : tab} challenges`}
+          description="Challenges this reader is in will show up here."
+        />
+      ) : (
+        // The container has to be an *ancestor* of what queries it — an element
+        // can't match a container query it declares itself. It's this wrapper
+        // rather than `.rp-content` because layout containment would make that
+        // pane the containing block for the page's `position: fixed`
+        // ToastStack.
+        <div className="rp-chal-cols">
+          <div className="rp-chal-grid">{shown.map(renderCard)}</div>
         </div>
-        {shown.length === 0 ? (
-          <EmptyState
-            title={`No ${tab === 'ended' ? 'recently ended' : tab} challenges`}
-            description="Nothing to show for this reader here."
+      )}
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </div>
+  )
+}
+
+// ─── Points Summary ───────────────────────────────────────────────────────────
+// The app's `_points_summary.html.haml`: one row per point type with its
+// running total, and nothing else — no dates, no source, no drill-in. The ten
+// types are the ones the partial switches on, in its order.
+const POINT_TYPE_LABELS = {
+  book: 'Book Points',
+  page: 'Page Points',
+  minute: 'Minute Points',
+  day: 'Day Points',
+  moment: 'Learning Moment Points',
+  event: 'Library Event Points',
+  'standard-activity': 'Standard Activity Points',
+  'big-activity': 'Big Activity Points',
+  'super-activity': 'Super Activity Points',
+  review: 'Review Points',
+}
+const POINT_TYPE_ORDER = Object.keys(POINT_TYPE_LABELS)
+
+function PointsPage({ student }) {
+  const summary = student.pointsSummary ?? {}
+  const rows = POINT_TYPE_ORDER.filter((t) => summary[t] != null).map((t) => ({
+    type: t,
+    label: POINT_TYPE_LABELS[t],
+    total: summary[t],
+  }))
+  const total = rows.reduce((n, r) => n + r.total, 0)
+
+  return (
+    <div className="rp-content">
+      <Hero
+        icon={<PlumpyIcon name="points" size={22} />}
+        title="Points Summary"
+        accent={SECTION_ACCENT.points.text}
+        accentBg={SECTION_ACCENT.points.bg}
+      />
+      {rows.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title="No points earned"
+          description="This reader has not earned any points."
+        />
+      ) : (
+        <Card flush>
+          <Table
+            flush
+            scrollX
+            columns={[
+              {
+                key: 'label',
+                label: 'Point Type',
+                minWidth: 200,
+                render: (v) => <span className="rp-tbl-name">{v}</span>,
+              },
+              {
+                key: 'total',
+                label: 'Points',
+                minWidth: 96,
+                align: 'right',
+                render: (v) => <span className="rp-pts-value">{v.toLocaleString()}</span>,
+              },
+            ]}
+            rows={rows}
+            getRowKey={(r) => r.type}
           />
-        ) : (
-          shown.map((c) => (
-            <div key={c.name} className="rp-chal-row">
-              <div className="rp-chal-main">
-                <div className="rp-act-name">{c.name}</div>
-                <div className="rp-chal-dates">{c.dates}</div>
-                <div className="rp-chal-meta">
-                  <span>Started on: {c.startedOn}</span>
-                  {c.minutes != null && <span>Minutes reading: {c.minutes.toLocaleString()}</span>}
-                </div>
-                {/* The printable sheet, not a detour to the reading log. */}
-                <button type="button" className="rp-latest-link" onClick={() => setLogFor(c)}>
-                  View challenge log
-                  <Icon name="arrow-right" size={14} />
-                </button>
-              </div>
-              {/* Enrolment is a state, not a control — a green tick, not a checkbox */}
-              <span className="rp-chal-enrolled" aria-label="Enrolled">
-                <Icon name="check" size={15} stroke={2.6} />
-              </span>
-            </div>
-          ))
-        )}
+          {/* Not in the app's table — but a column of subtotals with no total
+              is a sum you have to do yourself, and the reader's point balance
+              is the question the tab exists to answer. */}
+          <div className="rp-pts-total">
+            <span>Total</span>
+            <span className="rp-pts-value">{total.toLocaleString()}</span>
+          </div>
+        </Card>
+      )}
+    </div>
+  )
+}
+
+// ─── Recommendation filters ───────────────────────────────────────────────────
+// `_customized_filters.html.haml`: the five personalisation sets a reader picks
+// during onboarding, each row a label, the reader's picks, and an Edit link to
+// that set's own screen (`/profiles/:id/edit_genres`, and so on). The order is
+// the partial's.
+//
+// `limit` is the app's own cap — `rpgenres_limit` / `rpinterests_limit` /
+// `rpbackgrounds_limit` are all 3 in `profiles_controller`, and languages and
+// reading levels have none. `title` is the edit screen's own heading, which for
+// backgrounds is "Edit Character Backgrounds" rather than the row's label.
+//
+// Options are the app's real vocabulary, from the migrations that seeded them
+// (`add_spanish_attributes_to_genre` / `_interest` / `_background_type`).
+// Reading levels and languages are configured per site, so those two are a
+// plausible set rather than a fixed list.
+const RECO_FILTERS = [
+  {
+    key: 'backgrounds',
+    label: 'Backgrounds',
+    title: 'Edit Character Backgrounds',
+    noun: 'character preferences',
+    limit: 3,
+    options: [
+      'No Main Character',
+      'More Than One Main Character',
+      'People',
+      'Animals',
+      'Humanoids',
+      'Female',
+      'Male',
+      'Transgender',
+      'Siblings',
+      'Twins',
+      'Brothers',
+      'Sisters',
+      'Brother & Sister',
+      'Mother & Child',
+      'Father & Child',
+      'Mother, Father, and Child',
+      'Mother, Mother, and Child',
+      'Father, Father, and Child',
+      'Grandparent & Child',
+      'Extended Family',
+      'Adopted Children',
+      'American Indian',
+      'Asian or Asian-American',
+      'Biracial or Multiracial',
+      'Black or African-American',
+      'Hispanic or Latino',
+      'Middle-Eastern',
+      'Pacific Islander',
+      'White or European-American',
+      'Buddhist',
+      'Christian',
+      'Hindu',
+      'Jewish',
+      'Muslim',
+    ],
+  },
+  {
+    key: 'genres',
+    label: 'Genres',
+    title: 'Edit Genres',
+    noun: 'genres',
+    limit: 3,
+    options: [
+      'Adventure',
+      'Classics',
+      'Comedy & Humor',
+      'Early Learning',
+      'Fables, Fairy Tales & Folklore',
+      'Fantasy & The Imagination',
+      'History & Biography',
+      'Mystery & Suspense',
+      'Nature & The Natural World',
+      'Non-Fiction',
+      'Poetry & Verse',
+      'Sports',
+    ],
+  },
+  {
+    key: 'interests',
+    label: 'Interests',
+    title: 'Edit Interests',
+    noun: 'interests',
+    limit: 3,
+    options: [
+      'Ballerinas & Princesses',
+      'Daring to be Different',
+      'Diverse Main Characters',
+      'Feelings & Friendship',
+      'Math, Science & Technology',
+      'Ninjas, Pirates & Warriors',
+      'Not So Pink Girls',
+      'Sports & Recreation',
+      'The Arts',
+      'Trains, Planes & Transportation',
+      'Zany',
+    ],
+  },
+  {
+    key: 'languages',
+    label: 'Languages',
+    title: 'Edit Languages',
+    noun: 'languages',
+    options: ['English', 'Spanish', 'French', 'Mandarin', 'Arabic', 'Vietnamese', 'Portuguese'],
+  },
+  {
+    key: 'readingLevels',
+    label: 'Reading levels',
+    title: 'Edit Reading Levels',
+    noun: 'reading levels',
+    options: ['Pre-K', 'Kindergarten', 'Grades 1–2', 'Grades 3–5', 'Grades 6–8', 'Grades 9–12'],
+  },
+]
+
+// The app's edit screens are a pick-up-to-N grid of icon tiles with a "no
+// preference" option and a limit notice. There's no icon art for the sets in
+// this prototype, so the tiles are the shared checkbox group — the cap, the
+// notice and the wording are the app's.
+function EditFilterModal({ filter, picks, onClose, onSave }) {
+  const [sel, setSel] = useState(picks ?? [])
+  useEffect(() => setSel(picks ?? []), [picks, filter])
+  if (!filter) return null
+
+  const atLimit = filter.limit != null && sel.length >= filter.limit
+  return (
+    <ActionModal
+      open
+      onClose={onClose}
+      title={filter.title}
+      secondary="Cancel"
+      onSave={() => onSave(filter.key, sel)}
+    >
+      {filter.limit != null && (
+        <p className="rp-reco-limit">
+          Please pick up to {filter.limit} {filter.noun}.
+        </p>
+      )}
+      <CheckboxGroup value={sel} onChange={setSel} layout="column">
+        {/* The app offers this on every set, and it's exclusive: picking it
+            clears the rest. */}
+        <Checkbox
+          checked={sel.length === 0}
+          onChange={(on) => on && setSel([])}
+          className="rp-reco-nopref"
+        >
+          No preference
+        </Checkbox>
+        {filter.options.map((o) => (
+          // Past the cap the app stops accepting new picks rather than swapping
+          // one out, so the unchecked boxes go disabled.
+          <CheckboxGroupItem key={o} value={o} disabled={atLimit && !sel.includes(o)}>
+            {o}
+          </CheckboxGroupItem>
+        ))}
+      </CheckboxGroup>
+    </ActionModal>
+  )
+}
+
+function RecoFiltersPage({ student }) {
+  const [picks, setPicks] = useState(student.recoFilters ?? {})
+  useEffect(() => setPicks(student.recoFilters ?? {}), [student])
+  const [editing, setEditing] = useState(null)
+  const { toasts, push, dismiss } = useToasts()
+
+  function save(key, values) {
+    setPicks((prev) => ({ ...prev, [key]: values }))
+    setEditing(null)
+    push({
+      title: 'Filters updated',
+      body: RECO_FILTERS.find((f) => f.key === key)?.label,
+    })
+  }
+
+  return (
+    <div className="rp-content">
+      <Hero
+        icon={<PlumpyIcon name="filter" size={22} />}
+        title="Recommendation Filters"
+        accent={SECTION_ACCENT.recofilters.text}
+        accentBg={SECTION_ACCENT.recofilters.bg}
+      />
+      <Card flush>
+        <Table
+          flush
+          scrollX
+          // One "Filter" header over a column of labels is a heading over
+          // nothing — the rows say what they are.
+          hideHeader
+          columns={[
+            {
+              key: 'label',
+              label: 'Filter',
+              minWidth: 240,
+              render: (v, r) => (
+                <>
+                  <span className="rp-tbl-name">{v}</span>
+                  {/* An unset filter reads as "No preference", which is the
+                      app's own word for it — the partial prints nothing, which
+                      looks like a bug. */}
+                  <span className="rp-tbl-sub">
+                    {picks[r.key]?.length ? picks[r.key].join(', ') : 'No preference'}
+                  </span>
+                </>
+              ),
+            },
+            {
+              key: 'act',
+              label: '',
+              minWidth: 56,
+              align: 'right',
+              // The app's `Edit` text link, as the row action every other table
+              // on the profile ends with.
+              render: (_v, r) => (
+                <RowAction
+                  icon="pencil"
+                  label={`Edit ${r.label.toLowerCase()}`}
+                  onClick={() => setEditing(r)}
+                />
+              ),
+            },
+          ]}
+          rows={RECO_FILTERS}
+          getRowKey={(r) => r.key}
+        />
       </Card>
+
+      <EditFilterModal
+        filter={editing}
+        picks={editing ? picks[editing.key] : undefined}
+        onClose={() => setEditing(null)}
+        onSave={save}
+      />
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </div>
+  )
+}
+
+// ─── Recommended books ────────────────────────────────────────────────────────
+// `_recommended_books.html.haml`: cover, title over author, and the date the
+// recommendation was made. Paginated in the app at ten a page.
+function RecommendedPage({ student }) {
+  const books = student.recommendedBooks ?? []
+  return (
+    <div className="rp-content">
+      <Hero
+        icon={<PlumpyIcon name="heart" size={22} />}
+        title="Recommended Books"
+        accent={SECTION_ACCENT.recommended.text}
+        accentBg={SECTION_ACCENT.recommended.bg}
+      />
+      {books.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title="No recommendations yet"
+          description="The reader hasn't received any book recommendations yet."
+        />
+      ) : (
+        <Card flush>
+          <Table
+            flush
+            scrollX
+            pageSize={10}
+            columns={[
+              {
+                key: 'title',
+                label: 'Title / Author',
+                minWidth: 220,
+                render: (v, r) => (
+                  <div className="rp-reco-cell">
+                    <CoverImage isbn={r.isbn} title={v} />
+                    <span>
+                      <span className="rp-tbl-name">{v}</span>
+                      <span className="rp-tbl-sub">{r.author}</span>
+                    </span>
+                  </div>
+                ),
+              },
+              { key: 'date', label: 'Date Recommended', minWidth: 130 },
+            ]}
+            rows={books}
+            getRowKey={(r) => r.isbn}
+          />
+        </Card>
+      )}
+    </div>
+  )
+}
+
+// ─── Wish list ────────────────────────────────────────────────────────────────
+// `_wish_list.html.haml`: titles the reader saved, each removable. The partial
+// exists in the app but nothing navigates to it — there's no nav entry for
+// `wishList` on the real page — so this is the tab that partial was written for.
+function WishListPage({ student }) {
+  const [items, setItems] = useState(student.wishList ?? [])
+  const { toasts, push, dismiss } = useToasts()
+
+  function remove(item) {
+    setItems((prev) => prev.filter((i) => i !== item))
+    push({ title: 'Removed from wish list', body: item.title, tone: 'info' })
+  }
+
+  return (
+    <div className="rp-content">
+      <Hero
+        icon={<PlumpyIcon name="bookmark" size={22} />}
+        title="Wish List"
+        accent={SECTION_ACCENT.wishlist.text}
+        accentBg={SECTION_ACCENT.wishlist.bg}
+      />
+      {items.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title="Nothing saved"
+          description="There is nothing in this reader's wish list."
+        />
+      ) : (
+        <Card flush>
+          <Table
+            flush
+            scrollX
+            columns={[
+              {
+                key: 'title',
+                label: 'Title',
+                minWidth: 220,
+                render: (v, r) => (
+                  <>
+                    <span className="rp-tbl-name">{v}</span>
+                    <span className="rp-tbl-sub">{r.author}</span>
+                  </>
+                ),
+              },
+              {
+                key: 'act',
+                label: '',
+                minWidth: 56,
+                align: 'right',
+                // The app's `Remove` link, gated on `wish_list.can_destroy`.
+                render: (_v, r) => (
+                  <RowAction icon="trash" label="Remove" onClick={() => remove(r)} />
+                ),
+              },
+            ]}
+            rows={items}
+            getRowKey={(r) => r.title}
+          />
+        </Card>
+      )}
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }
@@ -3253,7 +4739,7 @@ function PlaceholderPage({ pageKey }) {
   return (
     <div className="rp-content">
       <Hero
-        icon={<Ic name={item?.icon || 'ti-user'} />}
+        icon={<PlumpyIcon name={item?.icon || 'user'} size={22} />}
         title={item?.label || pageKey}
         accent={accentFor(pageKey).text}
         accentBg={accentFor(pageKey).bg}
@@ -3730,38 +5216,31 @@ function FindAPerson({ onReaderClick, onOpenAccount }) {
                               </div>
                             </td>
                             <td className="tbl-td">{r.age}</td>
-                            <td className="tbl-td">
-                              <span
-                                className="rp-find-row-actions"
-                                onClick={(ev) => ev.stopPropagation()}
-                                role="presentation"
+                            <td className="tbl-td row-actions">
+                              <Flyout
+                                placement="bottom-end"
+                                trigger={({ toggle }) => (
+                                  <RowAction
+                                    icon="dots"
+                                    label="Actions"
+                                    tooltip={false}
+                                    onClick={(ev) => {
+                                      ev.stopPropagation()
+                                      toggle()
+                                    }}
+                                  />
+                                )}
                               >
-                                <Flyout
-                                  placement="bottom-end"
-                                  trigger={({ toggle }) => (
-                                    <Button
-                                      variant="secondary"
-                                      size="sm"
-                                      onClick={toggle}
-                                      iconRight={
-                                        <Icon name="chevron-down" size={11} stroke={2.5} />
-                                      }
-                                    >
-                                      Actions
-                                    </Button>
-                                  )}
-                                >
-                                  {({ close }) => (
-                                    <DropdownMenu
-                                      items={READER_ROW_ACTIONS.map((a) => ({
-                                        ...a,
-                                        icon: <Icon name={a.icon} size={15} />,
-                                      }))}
-                                      onClose={close}
-                                    />
-                                  )}
-                                </Flyout>
-                              </span>
+                                {({ close }) => (
+                                  <DropdownMenu
+                                    items={READER_ROW_ACTIONS.map((a) => ({
+                                      ...a,
+                                      icon: <Icon name={a.icon} size={15} />,
+                                    }))}
+                                    onClose={close}
+                                  />
+                                )}
+                              </Flyout>
                             </td>
                           </tr>
                         )
@@ -3972,6 +5451,14 @@ function ProfileBody({
                 <Overview student={student} onNavigate={onNavigate} />
               ) : activeSection === 'readinglog' ? (
                 <ReadingLogPage reader={student} />
+              ) : activeSection === 'points' ? (
+                <PointsPage student={student} />
+              ) : activeSection === 'recofilters' ? (
+                <RecoFiltersPage student={student} />
+              ) : activeSection === 'recommended' ? (
+                <RecommendedPage student={student} />
+              ) : activeSection === 'wishlist' ? (
+                <WishListPage student={student} key={student.name} />
               ) : activeSection === 'textchallenges' ? (
                 <TextChallengesPage student={student} />
               ) : activeSection === 'reviews' ? (
@@ -3983,9 +5470,9 @@ function ProfileBody({
               ) : activeSection === 'activities' ? (
                 <ActivitiesPage student={student} />
               ) : activeSection === 'drawings' ? (
-                <DrawingsPage student={student} />
+                <DrawingsPage student={student} key={student.name} />
               ) : activeSection === 'rewards' ? (
-                <RewardsPage student={student} />
+                <RewardsPage student={student} key={student.name} />
               ) : activeSection === 'challenges' ? (
                 <ChallengesPage student={student} />
               ) : (

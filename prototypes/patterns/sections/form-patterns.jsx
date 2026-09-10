@@ -633,6 +633,8 @@ function CustomSelectKnobs() {
 
 function FilterBarKnobs() {
   const [showAction, setShowAction] = useState(true)
+  const [compact, setCompact] = useState(false)
+  const [summary, setSummary] = useState(false)
   const [view, setView] = useState('goal')
   const [logType, setLogType] = useState('minutes')
   const [showAs, setShowAs] = useState('pct')
@@ -640,16 +642,25 @@ function FilterBarKnobs() {
   return (
     <>
       <Knobs>
+        <Field label="compact (the bar, not the form)">
+          <Toggle checked={compact} onChange={setCompact} />
+        </Field>
+        <Field label="count + Clear">
+          <Toggle checked={summary} onChange={setSummary} />
+        </Field>
         <Field label="action button">
           <Toggle checked={showAction} onChange={setShowAction} />
         </Field>
       </Knobs>
       <div className="pt-variant-frame">
         <FilterBar
+          compact={compact}
+          count={summary ? '12 of 40' : undefined}
+          onClear={summary ? () => {} : undefined}
           action={
             showAction ? (
               <Button variant="primary" size="sm">
-                Save &amp; Update
+                {compact ? 'Update' : 'Save & Update'}
               </Button>
             ) : undefined
           }
@@ -997,8 +1008,35 @@ export const formPatternsSections = [
     name: 'FilterBar',
     desc: (
       <>
-        <code>FilterBar</code> is a horizontal row of labeled controls (<code>FilterItem</code>{' '}
-        children) with an optional trailing action. Collapses to a 2-column grid on mobile.
+        <code>FilterBar</code> is a horizontal row of controls (<code>FilterItem</code> children)
+        with an optional trailing action. Collapses to a 2-column grid on mobile.
+        <br />
+        <br />
+        Two shapes, because the app has two. The <strong>default</strong> is the app&apos;s filter{' '}
+        <em>form</em> (<code>.daily-reading__filters</code> holding a <code>.filter-row</code>):
+        labelled controls on a white card, the kind you fill in and then submit — use it when the
+        controls need naming (a date range, a goal, a log type).
+        <br />
+        <br />
+        <code>compact</code> is the app&apos;s filter <em>bar</em>, ported straight across from{' '}
+        <code>admin/_admin_filter_bar.scss</code>: <code>.filter-bar</code> is a white strip with no
+        border (<code>padding: 14px</code>, radius 12, <code>space-between</code>) holding a 10px
+        row of <code>.ms-parent.filter</code> controls — a <code>#f2f2f2</code> fill with no border,
+        radius 12, <code>padding: 10px 14px</code>, 14px / 600 over a 20px line, 28px of caret room,
+        and the <em>same</em> fill on hover, active and focus, which is what separates a filter
+        control from a text field. The app&apos;s <code>165px</code> is the pill&apos;s floor.
+        <br />
+        <br />
+        There are <strong>no labels above them</strong>, because each control already says what it
+        filters (&ldquo;All Challenges&rdquo;, &ldquo;All years&rdquo;) — the <code>label</code>{' '}
+        stays in the DOM as the control&apos;s accessible name. Use it above a list: it reads as a
+        filter rather than a form, and it costs one row instead of two.
+        <br />
+        <br />
+        <code>count</code> and <code>onClear</code> add a reading of what the filter is hiding and a
+        way out of it. The app doesn&apos;t print a count, but the app&apos;s filters run against a
+        paginated server response where the count lives in the pager; these filter a list in place,
+        and without a reading there&apos;s no telling a narrow filter from an empty tab.
       </>
     ),
     render: () => (

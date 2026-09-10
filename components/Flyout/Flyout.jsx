@@ -91,16 +91,34 @@ export function Flyout({ trigger, children, placement = 'bottom-start', offset =
       return
     }
 
-    // An explicit placement keeps the side the author chose on the axis that
-    // was a deliberate choice, and only flips the one that ran out of room.
+    // An explicit placement keeps the side the author chose for as long as it
+    // fits, and flips whichever axis ran out of room — both of them, not just
+    // the vertical. `bottom-end` means right-aligned to the trigger, so on a
+    // trigger near the left edge the menu grows leftwards and off the box; the
+    // author's choice was "hug this side", and honouring it past the edge just
+    // clips the menu.
     const match = /^(top|bottom)-(start|end)$/.exec(placement)
     if (!match) {
       setRP(placement)
       return
     }
-    const [, wantVert, horiz] = match
-    const flipped = wantVert === 'bottom' ? vert : roomAbove ? 'top' : roomBelow ? 'bottom' : 'top'
-    setRP(`${flipped}-${horiz}`)
+    const [, wantVert, wantHoriz] = match
+    const flipVert = wantVert === 'bottom' ? vert : roomAbove ? 'top' : roomBelow ? 'bottom' : 'top'
+
+    // `start` puts the pop's left edge at the trigger's left and grows right;
+    // `end` puts its right edge at the trigger's right and grows left.
+    const fitsStart = trigger.left + pop.width <= clip.right
+    const fitsEnd = trigger.right - pop.width >= clip.left
+    const flipHoriz =
+      wantHoriz === 'start'
+        ? fitsStart || !fitsEnd
+          ? 'start'
+          : 'end'
+        : fitsEnd || !fitsStart
+          ? 'end'
+          : 'start'
+
+    setRP(`${flipVert}-${flipHoriz}`)
   }, [open, placement])
 
   const activePlacement = resolvedPlacement

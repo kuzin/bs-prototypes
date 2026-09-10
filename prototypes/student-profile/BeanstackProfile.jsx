@@ -8,10 +8,19 @@ import {
   SplitDonutChart,
   ReadingHeatmap,
   GoalTracker,
+  INTRINSIC_COLOR,
   EXTRINSIC_COLOR,
 } from './components/widgets'
 import { Button } from '@components/Button/Button'
-import { Select, Checkbox, Field, Input, Textarea, DateInput } from '@components/Form/Form'
+import {
+  Select,
+  Checkbox,
+  Field,
+  Input,
+  Textarea,
+  DateInput,
+  NumberInput,
+} from '@components/Form/Form'
 import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import '@components/Form/Form.css'
 import { Avatar } from '@components/Avatar/Avatar'
@@ -27,6 +36,12 @@ import { DailyReadingTracker } from '@components/DailyReadingTracker/DailyReadin
 import { Sidebar } from '@components/Sidebar/Sidebar'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
+import { TrendChip } from '@components/TrendChip/TrendChip'
+import { ToastStack, useToasts } from '@components/Toast/Toast'
+import { CompleteToggle } from '@components/CompleteToggle/CompleteToggle'
+import { RowAction, RowActions } from '@components/RowAction/RowAction'
+import { PlumpyIcon, PLUMPY_NAMES } from '@components/PlumpyIcon/PlumpyIcon'
+import { BsIcon, FlagIcon } from '@components/BsIcons/BsIcons'
 import { Icon } from '@components/Icon/Icon'
 import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 import { Flyout } from '@components/Flyout/Flyout'
@@ -38,7 +53,7 @@ import { Hero } from '@components/Hero/Hero'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { ChartLegend } from '@components/charts/charts'
 import { SessionModal } from '../sfr/components/SessionModal'
-import { TALK_KINDS } from '../btwb/data'
+import { TALK_KINDS, POS_FLAG_DESCS } from '../btwb/data'
 
 // ─── Heatmap data generator ───────────────────────────────────────────────────
 // Monthly density modifiers per student profile (index 0 = Jan, 11 = Dec)
@@ -385,8 +400,8 @@ function StudentActions({ onClose, student, status = [], onToggleStatus }) {
             iconRight={
               <Icon
                 name="chevron-down"
-                size={11}
-                stroke={2.5}
+                size={14}
+                stroke={2.4}
                 className="bp-btn-caret"
                 style={{ flexShrink: 0 }}
               />
@@ -408,8 +423,8 @@ function StudentActions({ onClose, student, status = [], onToggleStatus }) {
             iconRight={
               <Icon
                 name="chevron-down"
-                size={11}
-                stroke={2.5}
+                size={14}
+                stroke={2.4}
                 className="bp-btn-caret"
                 style={{ flexShrink: 0 }}
               />
@@ -459,6 +474,15 @@ const STATUS_FLAGS = {
     icon: 'link',
     tone: 'info',
     tip: 'Tandem account — linked to a %s profile, and reading counts on both',
+  },
+  // `Profile.offline_readers` — a reader with no login of their own (the app
+  // spots them by a `qa_` username). Staff log for them, so their totals are
+  // real but nothing on the log was self-reported.
+  offline: {
+    label: 'Offline',
+    icon: 'user-off',
+    tone: 'neutral',
+    tip: 'Offline reader — no login of their own, so staff log their reading for them',
   },
   // The two school-only states, and the product's own two words for them. Both
   // come from Actions on this header, and both are reversible from the same
@@ -523,8 +547,10 @@ function StudentHeader({ student, onClose }) {
         />
         <div>
           <div className="bp-panel-name">{student.name}</div>
+          {/* Status only. The grade is on every roster row and in the class
+              header you came from — repeating it under the name spent a line
+              on something already established. */}
           <div className="bp-panel-meta">
-            <span>{student.grade}</span>
             <StatusFlags flags={status} tandemWith="library" />
           </div>
         </div>
@@ -560,6 +586,7 @@ const SECTION_ACCENT = {
   achievements: { bg: '#FFEDD5', text: '#C2410C' },
   reviews: { bg: '#FFE4E6', text: '#BE123C' },
   textchallenges: { bg: '#E6F1FF', text: '#1A6DD5' },
+  points: { bg: '#FEF9C3', text: '#A16207' },
 }
 const accentFor = (section) => SECTION_ACCENT[section ?? 'overview'] ?? SECTION_ACCENT.overview
 
@@ -568,21 +595,22 @@ const accentFor = (section) => SECTION_ACCENT[section ?? 'overview'] ?? SECTION_
 // the rest icon-only) made the lower nine look like second-class items you had
 // to hover to identify.
 const NAV_ITEMS = [
-  { icon: 'ti-user', section: null, label: 'Overview' },
+  { icon: 'user', section: null, label: 'Overview' },
   // What the reader actually did comes before the analysis derived from it.
-  { icon: 'ti-reading-log', section: 'readinglog', label: 'Reading Log' },
-  { icon: 'ti-trophy', section: 'challenges', label: 'Challenges' },
-  { icon: 'ti-flame', section: 'motivation', label: LABEL.motivation },
-  { icon: 'ti-shield-check', section: 'integrity', label: LABEL.integrity },
-  { icon: 'ti-calendar-stats', section: 'habits', label: LABEL.habits },
-  { icon: 'ti-book-2', section: 'skills', label: LABEL.skills },
-  { icon: 'ti-gift', section: 'rewards', label: 'Rewards' },
-  { icon: 'ti-pencil', section: 'drawings', label: 'Drawings' },
-  { icon: 'ti-puzzle', section: 'activities', label: 'Activities' },
-  { icon: 'ti-badge', section: 'badges', label: 'Badges' },
-  { icon: 'ti-certificate', section: 'achievements', label: 'Achievements' },
-  { icon: 'ti-rating', section: 'reviews', label: 'Reviews' },
-  { icon: 'ti-paragraph', section: 'textchallenges', label: 'Text Box' },
+  { icon: 'reading', section: 'readinglog', label: 'Reading Log' },
+  { icon: 'challenges', section: 'challenges', label: 'Challenges' },
+  { icon: 'fire', section: 'motivation', label: LABEL.motivation },
+  { icon: 'chat', section: 'integrity', label: LABEL.integrity },
+  { icon: 'calendar', section: 'habits', label: LABEL.habits },
+  { icon: 'book', section: 'skills', label: LABEL.skills },
+  { icon: 'gift', section: 'rewards', label: 'Rewards' },
+  { icon: 'ticket', section: 'drawings', label: 'Drawings' },
+  { icon: 'puzzle', section: 'activities', label: 'Activities' },
+  { icon: 'medal', section: 'badges', label: 'Badges' },
+  { icon: 'certificate', section: 'achievements', label: 'Achievements' },
+  { icon: 'star', section: 'reviews', label: 'Reviews' },
+  { icon: 'paragraph', section: 'textchallenges', label: 'Text Box' },
+  { icon: 'points', section: 'points', label: 'Points Summary' },
 ]
 const ANALYSIS_SECTIONS = new Set(['motivation', 'integrity', 'habits', 'skills'])
 
@@ -607,7 +635,10 @@ function LeftNav({ activeSection, onNavigate, pager, extraNav = [] }) {
               title={label}
               aria-label={label}
             >
-              <Ic name={icon} size={18} style={{ opacity: active ? 1 : 0.4 }} />
+              {/* Plumpy is duotone: inactive is currentColor, active is the
+                  accent, and both layers tint together — so it needs no
+                  hand-dimmed opacity the way a line icon did. */}
+              <PlumpyIcon name={icon} size={20} />
               <span className="bp-nav-label">{label}</span>
             </div>
           )
@@ -625,20 +656,49 @@ function LeftNav({ activeSection, onNavigate, pager, extraNav = [] }) {
 // that (and close, and copy link) at every width now, so there's one home for
 // panel chrome instead of three.
 function MobileSectionNav({ activeSection, onNavigate, extraNav = [] }) {
+  const items = [...NAV_ITEMS, ...extraNav]
+  const at = Math.max(
+    0,
+    items.findIndex((n) => (n.section ?? 'overview') === (activeSection ?? 'overview')),
+  )
+
+  // Steppers either side of the select. Fourteen sections is a long menu to
+  // open every time you want the next one, and on a phone the rail's own pager
+  // is gone — so the arrows walk the list in order and the select is there for
+  // jumping.
+  const step = (d) => {
+    const next = items[at + d]
+    if (next) onNavigate(next.section ?? null)
+  }
+
   return (
     <div className="bp-mobile-nav">
+      <RowAction
+        icon="chevron-left"
+        label="Previous section"
+        tooltip={false}
+        disabled={at === 0}
+        onClick={() => step(-1)}
+      />
       <Select
         size="sm"
         aria-label="Profile section"
         value={activeSection ?? 'overview'}
         onChange={(e) => onNavigate(e.target.value === 'overview' ? null : e.target.value)}
       >
-        {[...NAV_ITEMS, ...extraNav].map(({ section, label }) => (
+        {items.map(({ section, label }) => (
           <option key={label} value={section ?? 'overview'}>
             {label}
           </option>
         ))}
       </Select>
+      <RowAction
+        icon="chevron-right"
+        label="Next section"
+        tooltip={false}
+        disabled={at === items.length - 1}
+        onClick={() => step(1)}
+      />
     </div>
   )
 }
@@ -718,7 +778,7 @@ function overviewMetrics(ov) {
     {
       key: 'current',
       section: 'habits',
-      icon: 'flame',
+      icon: 'fire',
       accent: STAT_TINTS.current,
       label: 'Current streak',
       value: ov.currentStreak,
@@ -728,7 +788,7 @@ function overviewMetrics(ov) {
     {
       key: 'habits',
       section: 'habits',
-      icon: 'calendar-stats',
+      icon: 'calendar',
       accent: C.habits,
       label: 'Daily goals met',
       value: ov.daysRead > 0 ? ov.daysRead : null,
@@ -739,7 +799,7 @@ function overviewMetrics(ov) {
     {
       key: 'integrity',
       section: 'integrity',
-      icon: 'shield-check',
+      icon: 'alert',
       accent: C.integrity,
       label: 'Recent flags',
       value: ov.flags,
@@ -749,12 +809,14 @@ function overviewMetrics(ov) {
     {
       key: 'motivation',
       section: 'motivation',
-      icon: 'flame',
+      icon: 'fire',
       accent: C.motivation,
       label: 'Top motivation factor',
       motivators: ov.motivators?.slice(0, 1),
       empty: 'No clear motivator found',
-      trend: { delta: mo.rmi, format: (n) => `${n} RMI` },
+      // No trend: the value here is *which* factor leads, and a category can't
+      // go up or down. The index's own movement belongs to the Motivation
+      // section, where there's a number for it to describe.
     },
     {
       key: 'longest',
@@ -770,7 +832,7 @@ function overviewMetrics(ov) {
     {
       key: 'skills',
       section: 'skills',
-      icon: 'book-2',
+      icon: 'book',
       accent: C.skills,
       label: 'Average Lexile',
       value: `${ov.lexile}L`,
@@ -795,7 +857,16 @@ export function StatRow({ icon, accent, label, children, onOpen }) {
         className="bp-statrow-icon"
         style={{ background: accent.bg, color: accent.bar || accent.text }}
       >
-        <Icon name={icon} size={16} />
+        {/* Plumpy where the pack has the glyph, a line icon otherwise — same
+            fallback `RowAction` uses, so a name that isn't in the pack still
+            draws rather than vanishing. Plumpy runs a rung bigger: it's a
+            filled duotone shape, so it reads smaller than a stroked icon at
+            the same box. */}
+        {PLUMPY_NAMES.includes(icon) ? (
+          <PlumpyIcon name={icon} size={18} />
+        ) : (
+          <Icon name={icon} size={16} />
+        )}
       </span>
       <span className="bp-statrow-label">{label}</span>
       {children}
@@ -917,14 +988,15 @@ function TitleShelf({ titles, onNavigate }) {
             .reverse()
             .map((t, i) => (
               // Covers are display only — the shelf is a summary, and the
-              // Reading Log link in the header is the way through.
-              <div key={i} className="bp-latest-item">
+              // Reading Log link in the header is the way through. Cover art
+              // only: the title and author under each one turned a scannable
+              // shelf into six stacked captions, and the art already says
+              // which book it is (`title` carries it for anyone who needs it).
+              <div key={i} className="bp-latest-item" title={`${t.title} — ${t.author}`}>
                 <div className="bp-latest-cover">
                   <CoverImage isbn={t.isbn} title={t.title} />
                   <span className="bp-latest-lexile">{t.lexile}L</span>
                 </div>
-                <div className="bp-latest-title">{t.title}</div>
-                <div className="bp-latest-author">{t.author}</div>
               </div>
             ))}
         </div>
@@ -973,7 +1045,11 @@ function OverviewStats({ metrics, onOpen, range, onRangeChange }) {
         </StatRow>
       ))}
       {hidden > 0 && (
-        <button type="button" className="bp-statlist-more" onClick={() => setShowMore((v) => !v)}>
+        <button
+          type="button"
+          className="bp-showmore bp-showmore--incard"
+          onClick={() => setShowMore((v) => !v)}
+        >
           {showMore ? 'Show less' : `Show ${hidden} more`}
           <Icon name={showMore ? 'chevron-up' : 'chevron-down'} size={14} stroke={2.4} />
         </button>
@@ -990,7 +1066,7 @@ function Overview({ student, onNavigate, goal }) {
   return (
     <div className="bp-content">
       <Hero
-        icon={<Ic name="ti-user" />}
+        icon={<PlumpyIcon name="user" size={22} />}
         title="Overview"
         accent={SECTION_ACCENT.overview.text}
         accentBg={SECTION_ACCENT.overview.bg}
@@ -998,7 +1074,7 @@ function Overview({ student, onNavigate, goal }) {
       {/* Benny says — the summary leads the page */}
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
-        <BennyBubble timestamp={student.lastRun}>{emphasize(student.bennySummary)}</BennyBubble>
+        <BennyBubble>{emphasize(student.bennySummary)}</BennyBubble>
       </Card>
 
       {/* Overview figures — every one is scoped to the selected range */}
@@ -1145,13 +1221,13 @@ function SectionDetail({ student, sectionKey, goal, onEditGoal }) {
           Editing the goal is a page action, so it sits in the header's top
           right with Reading Log's "Print log" rather than inside a card. */}
       <Hero
-        icon={<Ic name={c.icon} />}
+        icon={<PlumpyIcon name={c.plumpy} size={22} />}
         title={LABEL[sectionKey]}
         accent={c.text}
         accentBg={c.bg}
         action={
           sectionKey === 'habits' ? (
-            <Button variant="secondary" size="sm" onClick={onEditGoal}>
+            <Button variant="secondary" size="msm" onClick={onEditGoal}>
               Edit Goal
             </Button>
           ) : undefined
@@ -1177,35 +1253,40 @@ function MotivationDetail({ sec, c }) {
   const [periodIdx, setPeriodIdx] = useState(0)
   const rmi = sec.rmiHistory[periodIdx]
 
-  // `rmiHistory` is newest first; a chart reads the other way. Every index has
-  // carried its own deltas all along — they were just never shown, so a page
-  // about motivation couldn't say whether motivation was rising.
-  const history = [...sec.rmiHistory].reverse()
+  // Each index carries its own deltas, so a period can say which way it moved
+  // without a chart of the whole run beside it.
   const prev = sec.rmiHistory[periodIdx + 1]
   const goalDelta = prev ? rmi.readingGoalMinutes - prev.readingGoalMinutes : null
   const trend = (delta) => <TrendDelta delta={delta} format={(n) => `${n}%`} />
 
   return (
     <>
-      <Card>
-        <Select
-          value={periodIdx}
-          onChange={(e) => setPeriodIdx(Number(e.target.value))}
-          style={{ width: '100%' }}
-        >
-          {sec.rmiHistory.map((r, i) => (
-            <option key={i} value={i}>
-              {r.period} ({r.range})
-            </option>
-          ))}
-        </Select>
+      {/* The period picker is a filter over everything below it, so it sits in
+          the same bar every other tab filters from rather than inside the card
+          it happens to change first. */}
+      <FilterBar compact>
+        <FilterItem label="Index period">
+          <Select
+            size="sm"
+            value={periodIdx}
+            onChange={(e) => setPeriodIdx(Number(e.target.value))}
+          >
+            {sec.rmiHistory.map((r, i) => (
+              <option key={i} value={i}>
+                {r.period} ({r.range})
+              </option>
+            ))}
+          </Select>
+        </FilterItem>
+      </FilterBar>
 
+      <Card>
         <div className="bp-rmi-donuts">
           <DonutChart
             value={rmi.intrinsicAvg}
             max={rmi.intrinsicMax}
             label="Intrinsic"
-            color={c.bar}
+            color={INTRINSIC_COLOR}
             trend={trend(rmi.intrinsicDelta)}
           />
           <SplitDonutChart
@@ -1213,7 +1294,7 @@ function MotivationDetail({ sec, c }) {
             extrinsicVal={rmi.extrinsicAvg}
             max={rmi.motivationMax}
             label="Overall"
-            intrinsicColor={c.bar}
+            intrinsicColor={INTRINSIC_COLOR}
             trend={trend(rmi.motivationDelta)}
           />
           <DonutChart
@@ -1224,48 +1305,7 @@ function MotivationDetail({ sec, c }) {
             trend={trend(rmi.extrinsicDelta)}
           />
         </div>
-        <div className="bp-rmi-donuts-note">Change against the previous index</div>
       </Card>
-
-      {/* Where the index has been. One period's donuts can't tell you whether a
-          19.2 is a recovery or a slide, which is the question the page is for. */}
-      {history.length > 1 && (
-        <Card>
-          <SectionHeading>Index over time</SectionHeading>
-          <div className="bp-chart-fit" style={{ '--chart-h': '180px' }}>
-            <TrendChart
-              type="line"
-              data={history.map((r) => ({
-                period: r.period.replace(' Index', ''),
-                overall: r.motivationAvg,
-                intrinsic: r.intrinsicAvg,
-                extrinsic: r.extrinsicAvg,
-              }))}
-              xKey="period"
-              yDomain={[0, rmi.motivationMax]}
-              height="sm"
-              series={[
-                { key: 'overall', name: 'Overall', color: c.bar },
-                { key: 'intrinsic', name: 'Intrinsic', color: c.bar, dashed: true, fillOpacity: 0 },
-                {
-                  key: 'extrinsic',
-                  name: 'Extrinsic',
-                  color: EXTRINSIC_COLOR,
-                  dashed: true,
-                  fillOpacity: 0,
-                },
-              ]}
-            />
-          </div>
-          <ChartLegend
-            items={[
-              { color: c.bar, label: 'Overall' },
-              { color: c.bar, label: 'Intrinsic', dashed: true },
-              { color: EXTRINSIC_COLOR, label: 'Extrinsic', dashed: true },
-            ]}
-          />
-        </Card>
-      )}
 
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
@@ -1293,7 +1333,7 @@ function MotivationDetail({ sec, c }) {
               'Competition',
               'Compliance',
             ])
-            const mColor = EXTRINSIC_NAMES.has(m.name) ? EXTRINSIC_COLOR : c.bar
+            const mColor = EXTRINSIC_NAMES.has(m.name) ? EXTRINSIC_COLOR : INTRINSIC_COLOR
             return {
               icon: cloneElement(RMI_ICONS[iconKey], { width: 15, height: 15 }),
               iconColor: mColor,
@@ -1326,13 +1366,130 @@ const SESSION_FLAGS = {
   'over-limit': { icon: 'alert-triangle', label: 'Logged over limit', color: '#D97706' },
 }
 
-function SessionFlag({ type }) {
-  const cfg = SESSION_FLAGS[type]
+// The flag drawings are the app's own (see BsIcons) — they carry their own
+// colour, so the tile behind them drops the tint it used to need to tell one
+// flag from another.
+function SessionFlag({ type, size = 20 }) {
+  // A flag is either one of the profile's own concerns or one of Book Talks'
+  // positive signals — the two columns draw from different vocabularies, so
+  // resolve against both rather than rendering nothing for half of them.
+  const cfg = SESSION_FLAGS[type] ?? POS_FLAG_DESCS[type]
   if (!cfg) return null
   return (
-    <span className="bp-session-flag" title={cfg.label} style={{ '--flag-color': cfg.color }}>
-      <Icon name={cfg.icon} size={15} />
+    <span className="bp-session-flag" title={cfg.label}>
+      <FlagIcon type={type} size={size} label={cfg.label} />
     </span>
+  )
+}
+
+/* The app's Engagement column: a pastel tag per rating, or its grey `N/A` chip
+   when a talk has no rating to give (`.flagged-entry__none` — `$gray150` on
+   `$gray350`). Colours are the hues' own `500` tones, which is what the tag
+   styling derives its fill from. */
+const TALK_RATINGS = {
+  positive: { label: 'Positive', color: '#1dc174' },
+  mixed: { label: 'Mixed', color: '#e7a327' },
+  negative: { label: 'Negative', color: '#df3f30' },
+}
+
+/* `.flagged-entry__none` is its own 68px box in the app, which made the empty
+   chip wider than the ratings beside it. Here it's the same Pill on the app's
+   own empty pairing ($gray350 text over the $gray150 fill the soft variant
+   derives), so every chip in the column measures the same way. */
+const RATING_NONE = '#d0d0d0'
+
+function TalkRating({ rating }) {
+  const cfg = TALK_RATINGS[rating]
+  return (
+    <Pill color={cfg?.color ?? RATING_NONE} size="sm">
+      {cfg?.label ?? 'N/A'}
+    </Pill>
+  )
+}
+
+/* `.flagged-entry__analysis`: a row of 32px targets, each holding the flag's
+   24px drawing, and the empty chip when there are none.
+   Past two drawings the cell stops growing and the rest collapse into a count —
+   the app's own `.flagged-entry__more`, tinted to the column it sits in
+   ($green50/$green500 positive, $red50/$red500 negative). Three flag drawings
+   in a table cell is a puzzle; "2 + 4 more" is a fact. */
+const FLAG_CELL_SHOWN = 2
+const FLAG_MORE_COLOR = { positive: '#1dc174', negative: '#df3f30' }
+
+function TalkFlagCell({ flags, tone = 'negative' }) {
+  if (!flags?.length)
+    return (
+      <Pill color={RATING_NONE} size="sm">
+        N/A
+      </Pill>
+    )
+  const shown = flags.slice(0, FLAG_CELL_SHOWN)
+  const rest = flags.length - shown.length
+  return (
+    <span className="bp-session-flags">
+      {shown.map((f) => (
+        <SessionFlag key={f} type={f} />
+      ))}
+      {rest > 0 && (
+        <Pill color={FLAG_MORE_COLOR[tone]} size="sm" title={`${rest} more`}>
+          +{rest}
+        </Pill>
+      )}
+    </span>
+  )
+}
+
+/* The row menu the app puts on a flagged entry / book talk
+   (`ui/src/sections/NewAdmin/SessionsForReview/components/FlaggedEntryMenu`):
+   its `ActionsMenu` trigger is a `more-horizontal` button, and the items are
+   Unflag Entry · Edit Entry · Delete Entry · View Entry, then a rule and
+   `CertificationMenuOptions` — Verify/Unverify Student and Freeze/Unfreeze
+   Access, whichever of each pair applies. The app gates those on
+   `profile.user.role === 'patron'` and a `displayCertification` flag; here
+   they're always shown, because this is a school profile and that's the case
+   they exist for (see the Verify / Freeze note in the docs).
+
+   Unflag only appears on a talk that actually drew a concern — the app hides it
+   for an engagement session, which is its name for a talk with nothing to
+   answer for. Everything is inert, like the rest of the profile's actions. */
+function TalkRowMenu({ talk, student, onView }) {
+  const flagged = talk.flags.length > 0
+  const verified = student.status?.includes('verified')
+  const frozen = student.status?.includes('frozen')
+
+  const items = [
+    flagged && { label: 'Unflag Entry', icon: <Icon name="flag-off" size={15} /> },
+    { label: 'Edit Entry', icon: <Icon name="pencil" size={15} /> },
+    { label: 'Delete Entry', icon: <Icon name="trash" size={15} />, danger: true },
+    { label: 'View Entry', icon: <Icon name="book" size={15} />, onSelect: onView },
+    { divider: true },
+    {
+      label: verified ? 'Unverify Student' : 'Verify Student',
+      icon: <Icon name="rosette-discount-check" size={15} />,
+    },
+    {
+      label: frozen ? 'Unfreeze Access' : 'Freeze Access',
+      icon: <Icon name="snowflake" size={15} />,
+    },
+  ].filter(Boolean)
+
+  return (
+    <Flyout
+      placement="bottom-end"
+      trigger={({ toggle }) => (
+        <RowAction
+          icon="dots"
+          label="Actions"
+          tooltip={false}
+          onClick={(e) => {
+            e.stopPropagation()
+            toggle()
+          }}
+        />
+      )}
+    >
+      {({ close }) => <DropdownMenu items={items} onClose={close} />}
+    </Flyout>
   )
 }
 
@@ -1340,16 +1497,30 @@ function SessionFlag({ type }) {
 const FLAG_FILTER_ANY = 'any'
 const FLAG_FILTER_NONE = 'none'
 
-// Which flags this student actually drew, most frequent first. Derived from the
-// talk rows rather than an authored breakdown, so the ranking always agrees
-// with the list underneath it.
-function topFlags(talks) {
+// Which flags this reader actually drew, most frequent first. Derived from the
+// talk rows rather than an authored breakdown, so a ranking always agrees with
+// the list underneath it.
+//
+// `key` is which column: `flags` are the concerns, `posFlags` the positive
+// signals, and the two draw from different vocabularies (`SESSION_FLAGS` and
+// the BTWB prototype's `POS_FLAG_DESCS`), so the descriptor is resolved against
+// both.
+function countFlags(talks, key) {
   const counts = {}
-  for (const t of talks) for (const f of t.flags) counts[f] = (counts[f] ?? 0) + 1
+  for (const t of talks) for (const f of t[key] ?? []) counts[f] = (counts[f] ?? 0) + 1
   return Object.entries(counts)
-    .map(([type, count]) => ({ type, count, ...SESSION_FLAGS[type] }))
+    .map(([type, count]) => ({
+      type,
+      count,
+      ...(SESSION_FLAGS[type] ?? POS_FLAG_DESCS[type]),
+    }))
     .sort((a, b) => b.count - a.count)
 }
+
+// The card shows what to look at first, not a full tally — the table below is
+// the tally. The *filter* gets the uncapped lists: an option that vanished
+// past the fifth flag would just look broken.
+const TOP_FLAGS_SHOWN = 5
 
 function IntegrityDetail({ sec, student }) {
   const [openSession, setOpenSession] = useState(null)
@@ -1360,13 +1531,24 @@ function IntegrityDetail({ sec, student }) {
   const [kindFilter, setKindFilter] = useState('all')
   const [flagFilter, setFlagFilter] = useState(FLAG_FILTER_ANY)
 
-  const talks = sec.bookTalks
-  const flags = topFlags(talks)
+  // The table's Engagement and positive-flag columns are derived per talk, so
+  // a fixture that predates them still fills them (see `talkRating`).
+  const talks = sec.bookTalks.map((t) => ({
+    ...t,
+    engagement: talkRating(t),
+    posFlags: talkPosFlags(t),
+  }))
+  const concerns = countFlags(talks, 'flags')
+  const positives = countFlags(talks, 'posFlags')
+  const flags = concerns.slice(0, TOP_FLAGS_SHOWN)
 
   const shown = talks.filter((t) => {
     if (kindFilter !== 'all' && t.kind !== kindFilter) return false
     if (flagFilter === FLAG_FILTER_NONE) return t.flags.length === 0
-    if (flagFilter !== FLAG_FILTER_ANY) return t.flags.includes(flagFilter)
+    // A selected flag can come from either column, so match both rather than
+    // silently returning nothing for every positive signal in the list.
+    if (flagFilter !== FLAG_FILTER_ANY)
+      return t.flags.includes(flagFilter) || t.posFlags.includes(flagFilter)
     return true
   })
 
@@ -1402,7 +1584,7 @@ function IntegrityDetail({ sec, student }) {
         )}
       </Card>
 
-      <FilterBar>
+      <FilterBar compact>
         <FilterItem label="Talk type">
           <Select size="sm" value={kindFilter} onChange={(e) => setKindFilter(e.target.value)}>
             <option value="all">All types</option>
@@ -1416,12 +1598,28 @@ function IntegrityDetail({ sec, student }) {
         <FilterItem label="Flags">
           <Select size="sm" value={flagFilter} onChange={(e) => setFlagFilter(e.target.value)}>
             <option value={FLAG_FILTER_ANY}>Any</option>
-            <option value={FLAG_FILTER_NONE}>No flags</option>
-            {flags.map((f) => (
-              <option key={f.type} value={f.type}>
-                {f.label}
-              </option>
-            ))}
+            <option value={FLAG_FILTER_NONE}>No concerns</option>
+            {/* Grouped, because the two columns are different questions: what
+                went wrong, and what went right. Ungrouped they read as one
+                list where half the options mean the opposite of the rest. */}
+            {concerns.length > 0 && (
+              <optgroup label="Concerns">
+                {concerns.map((f) => (
+                  <option key={f.type} value={f.type}>
+                    {f.label}
+                  </option>
+                ))}
+              </optgroup>
+            )}
+            {positives.length > 0 && (
+              <optgroup label="Positive signals">
+                {positives.map((f) => (
+                  <option key={f.type} value={f.type}>
+                    {f.label}
+                  </option>
+                ))}
+              </optgroup>
+            )}
           </Select>
         </FilterItem>
       </FilterBar>
@@ -1429,36 +1627,73 @@ function IntegrityDetail({ sec, student }) {
       <Card flush>
         <Table
           flush
-          compact
           scrollX
           columns={[
-            { key: 'date', label: 'Date', width: 84 },
-            { key: 'title', label: 'Title' },
+            // Column order follows the app's Flagged Entries table: Logged On
+            // · Title · positive flags · negative flags · row actions. Student
+            // and Grade are the app's first two and are dropped here — you're
+            // already inside one reader's profile. Type and Engagement are
+            // dropped too: the talk type is what the filter above selects, and
+            // the rating is a summary of the flags in the two columns beside
+            // it.
+            { key: 'date', label: 'Logged On', width: 96 },
             {
-              key: 'kind',
-              label: 'Type',
-              width: 116,
-              render: (kind) => (
-                <Pill color={TALK_KINDS[kind].color} size="sm">
-                  {TALK_KINDS[kind].short}
-                </Pill>
+              key: 'title',
+              label: 'Title',
+              // A floor, not a hint: `width` alone still lost the auto-layout
+              // argument to the columns that declare theirs, and titles wrapped
+              // one word per line. 170 fits "A Wrinkle in Time" on one line and
+              // lets a longer title take two rather than holding a third of the
+              // table for the rare case.
+              minWidth: 170,
+              // The row opens the talk too, but a title that opens something
+              // should look like it does — the row click is the convenience,
+              // not the affordance.
+              render: (title, row) => (
+                <button
+                  type="button"
+                  className="bp-talk-title"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openRow(talks.indexOf(row))
+                  }}
+                >
+                  {title}
+                </button>
               ),
+            },
+            // Two flag columns headed by the app's own green and red flags —
+            // positive signals on the left, concerns on the right, so a row's
+            // shape tells you which kind it drew before you read either.
+            {
+              key: 'posFlags',
+              label: <BsIcon set="flags" name="positive-flag" size={18} alt="Positive flags" />,
+              width: 104,
+              // Centred under the flag that heads them: the cell holds one or
+              // two small drawings, and left-aligned they drifted away from a
+              // header that's a single 18px mark.
+              align: 'center',
+              render: (flags) => <TalkFlagCell flags={flags} tone="positive" />,
             },
             {
               key: 'flags',
-              label: 'Flags',
+              label: <BsIcon set="flags" name="negative-flag" size={18} alt="Concerns" />,
+              width: 104,
+              align: 'center',
+              render: (flags) => <TalkFlagCell flags={flags} tone="negative" />,
+            },
+            {
+              key: 'actions',
+              label: '',
               align: 'right',
-              width: 78,
-              render: (rowFlags) =>
-                rowFlags.length ? (
-                  <span className="bp-session-flags">
-                    {rowFlags.map((f) => (
-                      <SessionFlag key={f} type={f} />
-                    ))}
-                  </span>
-                ) : (
-                  <span className="bp-talk-noflag">—</span>
-                ),
+              width: 56,
+              render: (_v, row) => (
+                <TalkRowMenu
+                  talk={row}
+                  student={student}
+                  onView={() => openRow(talks.indexOf(row))}
+                />
+              ),
             },
           ]}
           rows={shown}
@@ -1647,18 +1882,12 @@ function niceLexileAxis(values, targetTicks = 5) {
 // a pill: the arrow and the colour already carry the whole message, and five
 // tinted capsules down the side of a card competed with the figures they were
 // annotating.
+// The trend chip is shared now (components/TrendChip) so a profile stat row, a
+// Lexile delta and a bar-list row are visibly the same thing. This stays as the
+// profiles' own name for it, and as the one place the `inverse`/`format`
+// conventions for these metrics are written down.
 function TrendDelta({ delta, format, inverse = false, suffix }) {
-  if (delta == null || delta === 0) return null
-  const up = delta > 0
-  const good = inverse ? !up : up
-  const n = Math.abs(delta)
-  return (
-    <span className={`bp-trend${good ? ' bp-trend--good' : ' bp-trend--bad'}`}>
-      {up ? '↑' : '↓'}
-      {format ? format(n) : n}
-      {suffix ? ` ${suffix}` : ''}
-    </span>
-  )
+  return <TrendChip delta={delta} format={format} suffix={suffix} inverse={inverse} />
 }
 
 function LexileDelta({ value, suffix }) {
@@ -1764,19 +1993,94 @@ const STUDENTS = {
     grade: '7th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [
-      { name: 'Free Book Coupon', claimed: true },
-      { name: 'Beanstack Bookmark', claimed: true },
-      { name: 'Front-of-Lunch-Line Pass', claimed: true },
-      { name: 'Library Tote Bag', claimed: false },
+      {
+        name: 'Free Book Coupon',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Mar 14, 2025',
+        redeemed: true,
+        // Earned more than 90 days ago, so the app files it under Past Rewards.
+        era: 'past',
+      },
+      {
+        name: 'Beanstack Bookmark',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Mar 28, 2025',
+        redeemed: true,
+      },
+      {
+        name: 'Front-of-Lunch-Line Pass',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Apr 11, 2025',
+        redeemed: true,
+      },
+      {
+        name: 'Library Tote Bag',
+        challenge: 'Read Across America',
+        earnedOn: 'May 2, 2025',
+        redeemed: false,
+      },
     ],
-    drawings: [
-      { name: 'Logging Week 2', claimed: true },
-      { name: 'Spring Reading -- April', claimed: true },
-      { name: 'Shout Out', claimed: false },
+    // `ticket_rewards` — a prize you enter a drawing for by spending tickets.
+    // `available` is what the challenge has awarded and not yet spent;
+    // `maxEntries` 0 means unlimited (the app's `unlimited_entries`).
+    ticketDrawings: [
+      {
+        name: 'Nintendo Switch Grand Prize',
+        challenge: 'Benny the Bean Reading Challenge',
+        description:
+          'The new home video game system from Nintendo — play at home or take it on the go.',
+        entered: 5,
+        available: 3,
+        maxEntries: 10,
+        endsOn: 'May 31, 2025',
+      },
+      {
+        name: 'Skate Park Season Pass',
+        challenge: 'Benny the Bean Reading Challenge',
+        description: 'A season pass to the city skate park, good through Labor Day.',
+        entered: 2,
+        available: 3,
+        maxEntries: 0,
+        endsOn: 'May 31, 2025',
+      },
+      // A second challenge, with its own pile — `available` is per challenge
+      // (`available_tickets_for_program`), so entering tickets here doesn't
+      // touch the balance above.
+      {
+        name: 'Bookstore Gift Card',
+        challenge: 'Read Across America',
+        description: 'A $25 gift card to the bookstore on Main Street.',
+        entered: 1,
+        available: 4,
+        maxEntries: 5,
+        endsOn: 'Mar 31, 2025',
+      },
     ],
+    // `raffle_winners` — a drawing this reader actually won. `place` is only
+    // set on an Ordered Placement drawing; Equal Winners has no places.
+    drawingWins: [
+      { name: 'Logging Week 2', type: 'All Eligible Readers', place: null, claimed: true },
+      { name: 'Spring Reading -- April', type: 'Total Minutes Read', place: 1, claimed: true },
+      { name: 'Shout Out', type: 'Specific Earned Badge(s)', place: null, claimed: false },
+    ],
+    // `profile.points_summary` — the running total per point type. Only the
+    // types this reader has actually earned appear; the app's partial switches
+    // on whatever keys are present.
+    pointsSummary: {
+      book: 120,
+      page: 340,
+      minute: 5480,
+      day: 148,
+      'standard-activity': 60,
+      review: 15,
+    },
     challenges: [
       {
-        name: 'Spring Reading Challenge 2025',
+        name: 'Benny the Bean Reading Challenge',
+        // `program.has_ticket_rewards` — the challenges whose drawings the
+        // reader spends tickets on, so their rows get the drill-in link.
+        hasTicketRewards: true,
+        banner: 'benny-bean',
         dates: 'Mar 1, 2025 - May 31, 2025',
         startedOn: 'March 3, 2025',
         minutes: 2140,
@@ -1784,24 +2088,39 @@ const STUDENTS = {
       },
       {
         name: 'Read Across America',
+        // `program.has_ticket_rewards` — the challenges whose drawings the
+        // reader spends tickets on, so their rows get the drill-in link.
+        hasTicketRewards: true,
+        banner: 'read-across-america',
         dates: 'Ongoing',
         startedOn: 'March 2, 2025',
         minutes: 480,
         status: 'current',
       },
       {
-        name: 'Winter Reading Bingo',
+        name: 'Read with Benny: Winter Reading',
+        banner: 'winter-reading',
         dates: 'Jan 6, 2025 - Feb 28, 2025',
         startedOn: 'January 8, 2025',
         minutes: 1620,
         status: 'ended',
       },
       {
-        name: 'Summer Reading 2024',
+        name: 'Battle of the Books',
+        banner: 'battle-of-the-books',
         dates: 'Jun 1, 2024 - Aug 31, 2024',
         startedOn: 'June 4, 2024',
         minutes: 3010,
         status: 'past',
+      },
+      {
+        name: 'Find Your Reading Joy',
+        banner: 'summer-reading',
+        dates: 'Jun 1, 2025 - Aug 31, 2025',
+        // Not started, so no start date and nothing logged — the app's
+        // Upcoming tab is challenges the reader is enrolled in that haven't
+        // opened yet.
+        status: 'upcoming',
       },
     ],
     // Activity badges from the site's exploration challenge: each badge is a set
@@ -1811,17 +2130,29 @@ const STUDENTS = {
         name: 'Space',
         icon: 'rocket',
         color: '#4F46E5',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
+          // A text box challenge carries the reader's own words; staff can read
+          // it and tick the box, but the product won't let them write one.
           {
             text: 'Watch a live feed from the International Space Station and write down one thing you saw that surprised you.',
+            type: 'Text Box Challenge',
+            answer:
+              "You can see whole weather systems from up there. I thought clouds would look like clouds but they look like they're painted on.",
             done: true,
           },
           {
             text: "Read a book or article about a planet you couldn't point to on a map. What is one fact you didn't know?",
+            type: 'Text Box Challenge',
+            answer: 'Neptune has winds over 1,200 mph. Fastest in the solar system.',
             done: true,
           },
+          // `activity_codes` is a list — one activity can accept several, which
+          // is how a site runs the same code at two branches.
           {
             text: 'Find out what time the ISS passes over your town tonight, then go outside and look for it.',
+            type: 'Activity Code',
+            codes: ['SPOTTED-ISS', 'LOOKUP2025'],
             done: false,
           },
         ],
@@ -1830,6 +2161,7 @@ const STUDENTS = {
         name: 'American Landmark',
         icon: 'building-monument',
         color: '#B45309',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Pick an American landmark and find out who built it and why. Was it built for the reason you expected?',
@@ -1837,6 +2169,7 @@ const STUDENTS = {
           },
           {
             text: 'Take a virtual tour of a national monument and describe the view from the top.',
+            type: 'Text Box Challenge',
             done: false,
           },
         ],
@@ -1845,6 +2178,7 @@ const STUDENTS = {
         name: 'Museums',
         icon: 'building-arch',
         color: '#7C3AED',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Browse a museum collection online and pick the one object you would most want to see in person. Why that one?',
@@ -1852,6 +2186,8 @@ const STUDENTS = {
           },
           {
             text: 'Find a museum within an hour of where you live that you have never visited. What is it known for?',
+            type: 'Activity Code',
+            codes: ['MUSEUM-VISIT'],
             done: true,
           },
         ],
@@ -1860,6 +2196,7 @@ const STUDENTS = {
         name: 'Aquarium',
         icon: 'fish',
         color: '#0891B2',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Come see the fish, sea jellies, turtles, and more at the magnificent Monterey Bay Aquarium. Watch the animals swim, glide, and soar, and even take a peek outside the aquarium to see wildlife in its natural habitat. Which animal did you most enjoy visiting?',
@@ -1875,6 +2212,7 @@ const STUDENTS = {
         name: 'National Parks',
         icon: 'trees',
         color: '#15803D',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Pick a national park and find out which animals live there that live nowhere else.',
@@ -1894,6 +2232,7 @@ const STUDENTS = {
         name: 'Zoo',
         icon: 'paw',
         color: '#16A34A',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Watch a zoo live cam for ten minutes and describe what the animals actually did — not what you expected them to do.',
@@ -1907,31 +2246,42 @@ const STUDENTS = {
     achievements: [
       {
         name: 'Book Publishers Day 2026',
+        category: 'literacy',
         date: 'Jan 16, 2026',
         icon: 'building',
         color: '#2563EB',
       },
       {
         name: "Author Louisa May Alcott's Birthday 2025",
+        category: 'literacy',
         date: 'Nov 29, 2025',
         icon: 'writing',
         color: '#7C3AED',
       },
       {
         name: 'National Cookbook Month 2025',
+        category: 'us',
         date: 'Oct 1, 2025',
         icon: 'apple',
         color: '#D97706',
       },
-      { name: 'Dear Diary Day 2025', date: 'Sep 22, 2025', icon: 'notebook', color: '#DB2777' },
+      {
+        name: 'Dear Diary Day 2025',
+        category: 'literacy',
+        date: 'Sep 22, 2025',
+        icon: 'notebook',
+        color: '#DB2777',
+      },
       {
         name: 'National Read a Book Day 2025',
+        category: 'literacy',
         date: 'Sep 7, 2025',
         icon: 'book',
         color: '#0D9488',
       },
       {
         name: 'Library Card Sign-Up Month 2025',
+        category: 'us',
         date: 'Sep 1, 2025',
         icon: 'barcode',
         color: '#DC2626',
@@ -1977,7 +2327,7 @@ const STUDENTS = {
         earned: true,
         top: '10',
         mid: 'TALKS',
-        earnedNote: 'Earned for finishing 10 book talks in Spring Reading Challenge 2025',
+        earnedNote: 'Earned for finishing 10 book talks in Benny the Bean Reading Challenge',
         year: '2025',
       },
       {
@@ -2037,7 +2387,7 @@ const STUDENTS = {
     // 7th-grader who is genuinely into the books.
     textChallenges: [
       {
-        challenge: 'Spring Reading Challenge 2025',
+        challenge: 'Benny the Bean Reading Challenge',
         responses: [
           {
             date: '05/09/25',
@@ -2060,7 +2410,7 @@ const STUDENTS = {
         ],
       },
       {
-        challenge: 'Winter Reading Bingo',
+        challenge: 'Read with Benny: Winter Reading',
         responses: [
           {
             date: '02/14/25',
@@ -2116,7 +2466,7 @@ const STUDENTS = {
       },
     },
     bennySummary:
-      "Marcus is an outstanding reader. He's logged reading on **21 of the last 30 days** — the highest consistency in the class — and is reading well above grade level at **870L**. His intrinsic motivation is the highest on record, and his integrity score is nearly perfect with **only 1 flagged session all year**. He's ready for books 1–2 grade levels up, and would benefit from leadership opportunities like book talks or reading buddy programs.",
+      "Marcus is reading on **21 of the last 30 days** — the best consistency in the class — and well above grade level at **870L**, with **only 1 flagged session all year**. He's ready for books 1–2 grade levels up.",
     sections: {
       motivation: {
         status: 'Strong',
@@ -2141,7 +2491,7 @@ const STUDENTS = {
             extrinsicDelta: 6,
             readingGoalMinutes: 30,
             bennySummary:
-              "Marcus's motivation is at its highest point this year. His intrinsic score of **19.2/20** is exceptional — Enjoyment, Curiosity, and Challenge are his top three drivers. He's genuinely in love with reading right now. The best thing you can do is keep the material challenging and get out of his way.",
+              "Marcus's intrinsic score of **19.2/20** is his best this year, led by Enjoyment, Curiosity and Challenge. Keep the material challenging and get out of his way.",
             recommendedActions: [
               {
                 label: 'Advanced Challenge',
@@ -2179,7 +2529,7 @@ const STUDENTS = {
             extrinsicDelta: 4,
             readingGoalMinutes: 30,
             bennySummary:
-              'Marcus shows strong and consistently improving motivation. His intrinsic drivers continue to lead, and his Social Connection score is picking up — consider pairing him with a reading buddy or discussion group to capitalize on this emerging motivator.',
+              'Intrinsic drivers still lead, and Social Connection is picking up — a reading buddy or discussion group would build on it.',
             recommendedActions: [
               {
                 label: 'Peer sharing',
@@ -2464,34 +2814,84 @@ const STUDENTS = {
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
     rewards: [
-      { name: 'Beanstack Bookmark', claimed: true },
-      { name: 'Free Book Coupon', claimed: false },
+      {
+        name: 'Beanstack Bookmark',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Mar 21, 2025',
+        redeemed: true,
+        // Earned more than 90 days ago, so the app files it under Past Rewards.
+        era: 'past',
+      },
+      {
+        name: 'Free Book Coupon',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Apr 25, 2025',
+        redeemed: false,
+      },
     ],
-    drawings: [
-      { name: 'Logging Week 2', claimed: true },
-      { name: 'Shout Out', claimed: false },
+    ticketDrawings: [
+      {
+        name: 'Nintendo Switch Grand Prize',
+        challenge: 'Benny the Bean Reading Challenge',
+        description:
+          'The new home video game system from Nintendo — play at home or take it on the go.',
+        entered: 1,
+        available: 2,
+        maxEntries: 10,
+        endsOn: 'May 31, 2025',
+      },
     ],
+    drawingWins: [
+      { name: 'Logging Week 2', type: 'All Eligible Readers', place: null, claimed: true },
+      { name: 'Shout Out', type: 'Specific Earned Badge(s)', place: 2, claimed: false },
+    ],
+    // `profile.points_summary` — the running total per point type. Only the
+    // types this reader has actually earned appear; the app's partial switches
+    // on whatever keys are present.
+    pointsSummary: {
+      book: 80,
+      page: 210,
+      minute: 3120,
+      day: 96,
+      'standard-activity': 40,
+      review: 10,
+    },
     challenges: [
       {
-        name: 'Spring Reading Challenge 2025',
+        name: 'Benny the Bean Reading Challenge',
+        // `program.has_ticket_rewards` — the challenges whose drawings the
+        // reader spends tickets on, so their rows get the drill-in link.
+        hasTicketRewards: true,
+        banner: 'benny-bean',
         dates: 'Mar 1, 2025 - May 31, 2025',
         startedOn: 'March 11, 2025',
         minutes: 760,
         status: 'current',
       },
       {
-        name: 'Winter Reading Bingo',
+        name: 'Read with Benny: Winter Reading',
+        banner: 'winter-reading',
         dates: 'Jan 6, 2025 - Feb 28, 2025',
         startedOn: 'January 21, 2025',
         minutes: 540,
         status: 'ended',
       },
       {
-        name: 'Summer Reading 2024',
+        name: 'Battle of the Books',
+        banner: 'battle-of-the-books',
         dates: 'Jun 1, 2024 - Aug 31, 2024',
         startedOn: 'July 2, 2024',
         minutes: 610,
         status: 'past',
+      },
+      {
+        name: 'Find Your Reading Joy',
+        banner: 'summer-reading',
+        dates: 'Jun 1, 2025 - Aug 31, 2025',
+        // Not started, so no start date and nothing logged — the app's
+        // Upcoming tab is challenges the reader is enrolled in that haven't
+        // opened yet.
+        status: 'upcoming',
       },
     ],
     activityBadges: [
@@ -2499,6 +2899,7 @@ const STUDENTS = {
         name: 'Aquarium',
         icon: 'fish',
         color: '#0891B2',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Come see the fish, sea jellies, turtles, and more at the magnificent Monterey Bay Aquarium. Watch the animals swim, glide, and soar, and even take a peek outside the aquarium to see wildlife in its natural habitat. Which animal did you most enjoy visiting?',
@@ -2514,6 +2915,7 @@ const STUDENTS = {
         name: 'National Parks',
         icon: 'trees',
         color: '#15803D',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Pick a national park and find out which animals live there that live nowhere else.',
@@ -2533,6 +2935,7 @@ const STUDENTS = {
         name: 'Zoo',
         icon: 'paw',
         color: '#16A34A',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Watch a zoo live cam for ten minutes and describe what the animals actually did — not what you expected them to do.',
@@ -2545,6 +2948,7 @@ const STUDENTS = {
         name: 'Museums',
         icon: 'building-arch',
         color: '#7C3AED',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Browse a museum collection online and pick the one object you would most want to see in person. Why that one?',
@@ -2560,6 +2964,7 @@ const STUDENTS = {
         name: 'Space',
         icon: 'rocket',
         color: '#4F46E5',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Watch a live feed from the International Space Station and write down one thing you saw that surprised you.',
@@ -2577,15 +2982,23 @@ const STUDENTS = {
       },
     ],
     achievements: [
-      { name: 'Dear Diary Day 2025', date: 'Sep 22, 2025', icon: 'notebook', color: '#DB2777' },
+      {
+        name: 'Dear Diary Day 2025',
+        category: 'literacy',
+        date: 'Sep 22, 2025',
+        icon: 'notebook',
+        color: '#DB2777',
+      },
       {
         name: 'National Read a Book Day 2025',
+        category: 'literacy',
         date: 'Sep 7, 2025',
         icon: 'book',
         color: '#0D9488',
       },
       {
         name: 'Library Card Sign-Up Month 2025',
+        category: 'us',
         date: 'Sep 1, 2025',
         icon: 'barcode',
         color: '#DC2626',
@@ -2675,7 +3088,7 @@ const STUDENTS = {
     ],
     textChallenges: [
       {
-        challenge: 'Spring Reading Challenge 2025',
+        challenge: 'Benny the Bean Reading Challenge',
         responses: [
           {
             date: '05/11/25',
@@ -2697,7 +3110,7 @@ const STUDENTS = {
         ],
       },
       {
-        challenge: 'Winter Reading Bingo',
+        challenge: 'Read with Benny: Winter Reading',
         responses: [
           {
             date: '02/20/25',
@@ -2750,7 +3163,7 @@ const STUDENTS = {
       },
     },
     bennySummary:
-      "Anne is making real progress this month! Her reading habits are building — she's logged reading on **10 of the last 30 days** and has already logged 85 minutes this week. Her Lexile average has **climbed 50 points since April**, and she's consistently choosing harder books. Integrity is improving, with **flags down from 7 to 4**. The main thing to keep an eye on is her extrinsic motivation, which has dipped 4 points, and **2 unfinished BTWB conversations** that are worth following up on.",
+      'Anne is building real momentum — **10 of the last 30 days** logged, Lexile **up 50 points since April**, and **flags down from 7 to 4**. Worth a look: **2 unfinished BTWB conversations**.',
     sections: {
       motivation: {
         status: 'Watch',
@@ -2775,7 +3188,7 @@ const STUDENTS = {
             extrinsicDelta: 9,
             readingGoalMinutes: 15,
             bennySummary:
-              "Anne's motivation is mixed this period. Recognition and Social Connection are her clearest levers — she responds well to public acknowledgment and peer interaction. Her Enjoyment score has slipped, which is worth watching. A shoutout or leaderboard mention could give her a quick boost while you work on rebuilding deeper engagement.",
+              'Mixed this period. Recognition and Social Connection are her clearest levers, but Enjoyment has slipped — a shoutout buys time while you rebuild the deeper interest.',
             recommendedActions: [
               {
                 label: 'Recognition',
@@ -2813,7 +3226,7 @@ const STUDENTS = {
             extrinsicDelta: -5,
             readingGoalMinutes: 20,
             bennySummary:
-              "Anne showed steady motivation this period with Compliance and Recognition leading. Her Enjoyment score dropped noticeably though — she may be reading to meet expectations rather than out of genuine interest. Consider giving her full choice over her next book, even if it's shorter or easier than usual.",
+              'Steady, but led by Compliance and Recognition while Enjoyment dropped — she may be reading to meet expectations. Give her full choice of her next book, even an easier one.',
             recommendedActions: [
               {
                 label: 'Challenge',
@@ -2851,7 +3264,7 @@ const STUDENTS = {
             extrinsicDelta: -4,
             readingGoalMinutes: 10,
             bennySummary:
-              "This was a difficult period for Anne's motivation — nearly every dimension declined, with Enjoyment hitting a record low. This likely coincided with her tackling harder books. The Lexile challenge may be outpacing her confidence. Consider stepping back slightly on difficulty to let intrinsic motivation recover before pushing growth again.",
+              'Nearly every dimension declined, with Enjoyment at a record low — the harder books may be outpacing her confidence. Ease off difficulty until intrinsic motivation recovers.',
             recommendedActions: [
               {
                 label: 'Enjoyment',
@@ -3158,25 +3571,60 @@ const STUDENTS = {
     avatarColor: '#1D4ED8',
     // Tyler's over-logging is what a freeze is for: he keeps his profile, but
     // can't log for himself for ten days.
-    status: ['frozen'],
+    status: ['frozen', 'offline'],
     grade: '6th Grade',
     lastRun: 'May 15 at 9:55am',
-    rewards: [{ name: 'Beanstack Bookmark', claimed: false }],
-    drawings: [{ name: 'Logging Week 2', claimed: false }],
+    rewards: [
+      {
+        name: 'Beanstack Bookmark',
+        challenge: 'Benny the Bean Reading Challenge',
+        earnedOn: 'Apr 9, 2025',
+        redeemed: false,
+      },
+    ],
+    ticketDrawings: [],
+    drawingWins: [
+      { name: 'Logging Week 2', type: 'All Eligible Readers', place: null, claimed: false },
+    ],
+    // `profile.points_summary` — the running total per point type. Only the
+    // types this reader has actually earned appear; the app's partial switches
+    // on whatever keys are present.
+    pointsSummary: {
+      book: 30,
+      page: 60,
+      minute: 840,
+      day: 28,
+      'standard-activity': 20,
+      review: 0,
+    },
     challenges: [
       {
-        name: 'Spring Reading Challenge 2025',
+        name: 'Benny the Bean Reading Challenge',
+        // `program.has_ticket_rewards` — the challenges whose drawings the
+        // reader spends tickets on, so their rows get the drill-in link.
+        hasTicketRewards: true,
+        banner: 'benny-bean',
         dates: 'Mar 1, 2025 - May 31, 2025',
         startedOn: 'April 9, 2025',
         minutes: 120,
         status: 'current',
       },
       {
-        name: 'Winter Reading Bingo',
+        name: 'Read with Benny: Winter Reading',
+        banner: 'winter-reading',
         dates: 'Jan 6, 2025 - Feb 28, 2025',
         startedOn: 'February 14, 2025',
         minutes: 95,
         status: 'ended',
+      },
+      {
+        name: 'Find Your Reading Joy',
+        banner: 'summer-reading',
+        dates: 'Jun 1, 2025 - Aug 31, 2025',
+        // Not started, so no start date and nothing logged — the app's
+        // Upcoming tab is challenges the reader is enrolled in that haven't
+        // opened yet.
+        status: 'upcoming',
       },
     ],
     activityBadges: [
@@ -3184,6 +3632,7 @@ const STUDENTS = {
         name: 'Zoo',
         icon: 'paw',
         color: '#16A34A',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Watch a zoo live cam for ten minutes and describe what the animals actually did — not what you expected them to do.',
@@ -3196,6 +3645,7 @@ const STUDENTS = {
         name: 'Aquarium',
         icon: 'fish',
         color: '#0891B2',
+        challenge: 'Read with Benny: Winter Reading',
         activities: [
           {
             text: 'Come see the fish, sea jellies, turtles, and more at the magnificent Monterey Bay Aquarium. Watch the animals swim, glide, and soar, and even take a peek outside the aquarium to see wildlife in its natural habitat. Which animal did you most enjoy visiting?',
@@ -3211,6 +3661,7 @@ const STUDENTS = {
         name: 'Museums',
         icon: 'building-arch',
         color: '#7C3AED',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Browse a museum collection online and pick the one object you would most want to see in person. Why that one?',
@@ -3226,6 +3677,7 @@ const STUDENTS = {
         name: 'Space',
         icon: 'rocket',
         color: '#4F46E5',
+        challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
             text: 'Watch a live feed from the International Space Station and write down one thing you saw that surprised you.',
@@ -3245,6 +3697,7 @@ const STUDENTS = {
     achievements: [
       {
         name: 'Library Card Sign-Up Month 2025',
+        category: 'us',
         date: 'Sep 1, 2025',
         icon: 'barcode',
         color: '#DC2626',
@@ -3318,7 +3771,7 @@ const STUDENTS = {
     // unfinished book talks.
     textChallenges: [
       {
-        challenge: 'Spring Reading Challenge 2025',
+        challenge: 'Benny the Bean Reading Challenge',
         responses: [
           {
             date: '05/12/25',
@@ -3331,7 +3784,7 @@ const STUDENTS = {
         ],
       },
       {
-        challenge: 'Winter Reading Bingo',
+        challenge: 'Read with Benny: Winter Reading',
         responses: [
           {
             date: '02/18/25',
@@ -3378,7 +3831,7 @@ const STUDENTS = {
       },
     },
     bennySummary:
-      'Tyler needs immediate attention. He has **no logged reading days in the past 30 days** — the only student in the class with zero recent activity. His Lexile average has **declined 15 points since March**, and he has **13 flagged sessions** including **6 suspected over-logs**, which means his reading data may not be reliable. His motivation scores are critically low across all dimensions. A direct one-on-one conversation this week is the highest-impact action available.',
+      'Tyler needs attention now: **no logged reading in 30 days**, the only such student in the class. Lexile is **down 15 points since March** and **13 flagged sessions** make his data unreliable. A one-on-one this week is the highest-impact thing available.',
     sections: {
       motivation: {
         status: 'Watch',
@@ -3403,7 +3856,7 @@ const STUDENTS = {
             extrinsicDelta: -3,
             readingGoalMinutes: 10,
             bennySummary:
-              "Tyler's motivation scores are critically low across **all 10 dimensions**. Enjoyment — the single strongest predictor of long-term reading engagement — is at **0.8 out of 4**. No extrinsic motivator is compensating for it. A personal conversation about what he genuinely finds interesting, completely disconnected from school expectations, is the most important next step.",
+              'Critically low across **all 10 dimensions**, with Enjoyment — the strongest predictor of long-term engagement — at **0.8 of 4** and nothing extrinsic compensating. Ask him what he actually finds interesting, away from school expectations.',
             recommendedActions: [
               {
                 label: 'Find the Hook',
@@ -3441,7 +3894,7 @@ const STUDENTS = {
             extrinsicDelta: -2,
             readingGoalMinutes: 15,
             bennySummary:
-              "Tyler's motivation was already low this period and has continued to slide since. Compliance and Grades are his only active motivators — and even those are weakening. He's reading because he feels he has to, not because he wants to. This level of disconnection typically requires a significant intervention, starting with giving him full agency over his next book choice.",
+              "Already low here and sliding since. Compliance and Grades are his only live motivators and both are weakening — he's reading because he feels he has to. Start by handing him full choice of his next book.",
             recommendedActions: [
               {
                 label: 'Choice',
@@ -3892,6 +4345,29 @@ const CLASS_TABLE = [
 // unrelated SFR fixture by row index is what makes the Book Talks tab and the
 // reading log agree: both open the same object, and a flag removed in one is
 // gone in the other.
+/* The app's Flagged Entries table carries an engagement rating and a positive-
+   flag set per row. Our talk fixtures predate both columns, so they're derived
+   here rather than hand-authored eight times over: an integrity talk has no
+   rating to give (the app shows `N/A`), a talk that drew a concern reads Mixed,
+   and a clean talk reads Positive with the signals that earned it. */
+const TALK_POS_BY_KIND = {
+  engagement: ['positive-sentiment', 'answer-length'],
+  comprehension: ['references-details', 'answer-length'],
+  integrity: [],
+}
+
+function talkRating(talk) {
+  if (talk.rating) return talk.rating
+  if (talk.kind === 'integrity') return null
+  return talk.flags.length ? 'mixed' : 'positive'
+}
+
+function talkPosFlags(talk) {
+  if (talk.posFlags) return talk.posFlags
+  if (talk.kind === 'integrity' || talk.flags.length) return []
+  return TALK_POS_BY_KIND[talk.kind] ?? []
+}
+
 function talkSession(talk, student, i) {
   const kindRating = { engagement: 'green', comprehension: 'green', integrity: null }
   return {
@@ -3901,7 +4377,7 @@ function talkSession(talk, student, i) {
     type: talk.kind === 'integrity' ? 'flagged' : 'engagement',
     kind: talk.kind,
     status: 'completed',
-    challenge: 'Spring Reading Challenge 2025',
+    challenge: 'Benny the Bean Reading Challenge',
     minutesLogged: 20 + ((i * 7) % 25),
     engagementRating: kindRating[talk.kind] ?? null,
     book: { title: talk.title, author: BOOK_AUTHORS[talk.title] ?? '', color: '#0D9488' },
@@ -3911,7 +4387,12 @@ function talkSession(talk, student, i) {
       label: SESSION_FLAGS[f]?.label ?? f,
       description: SESSION_FLAG_DESCS[f] ?? '',
     })),
-    positiveFlags: [],
+    positiveFlags: talkPosFlags(talk).map((f, fi) => ({
+      id: `tp-${i}-${fi}`,
+      type: f,
+      label: POS_FLAG_DESCS[f]?.label ?? f,
+      description: POS_FLAG_DESCS[f]?.desc ?? '',
+    })),
     conversation: TALK_CONVERSATION(talk, student),
     changeLog: [
       {
@@ -4213,7 +4694,7 @@ const RL_DATA = [
     ],
   },
   {
-    weekLabel: 'June 30–July 6',
+    weekLabel: 'July 1–6',
     days: [
       {
         date: 6,
@@ -4251,15 +4732,6 @@ const RL_DATA = [
         streak: 2,
         entries: [{ title: 'Holes', author: 'Louis Sachar', amount: '677 Pages', flagged: true }],
       },
-      {
-        date: 30,
-        day: 'Sunday',
-        faded: true,
-        streak: 1,
-        entries: [
-          { title: 'Holes', author: 'Louis Sachar', amount: '844 Minutes', flagged: false },
-        ],
-      },
     ],
   },
 ]
@@ -4274,13 +4746,17 @@ function rlMarks(entry, session) {
   return [
     session?.flags?.length && {
       key: 'flag',
-      icon: 'flag',
+      // The flag's own drawing, the same art the Book Talks table shows for it
+      // — a session flagged for time reads as the time drawing in both places.
+      flagType: session.flags[0].type ?? session.flags[0],
+      flagFallback: 'negative',
       className: 'bp-rl-mark bp-rl-mark--neg',
       label: session.flags.length === 1 ? session.flags[0].label : `${session.flags.length} flags`,
     },
     session?.positiveFlags?.length && {
       key: 'pos',
-      icon: 'flag',
+      flagType: session.positiveFlags[0].type ?? session.positiveFlags[0],
+      flagFallback: 'positive',
       className: 'bp-rl-mark bp-rl-mark--pos',
       label:
         session.positiveFlags.length === 1
@@ -4288,6 +4764,9 @@ function rlMarks(entry, session) {
           : `${session.positiveFlags.length} positive flags`,
     },
     session?.conversation?.length && {
+      // No product art for "there is a talk here" — the flag set covers what a
+      // talk was flagged *for*, not that it happened — so this one stays a
+      // glyph.
       key: 'talk',
       icon: 'message-chatbot',
       className: 'bp-rl-mark bp-rl-mark--talk',
@@ -4301,11 +4780,18 @@ function RLMarks({ marks, entry, onOpen }) {
     <Tooltip key={m.key} content={m.label}>
       <button
         type="button"
-        className={m.className}
+        className={`row-action ${m.className}`}
         onClick={() => onOpen?.(entry)}
         aria-label={m.label}
       >
-        <Icon name={m.icon} size={14} />
+        {m.flagType ? (
+          <FlagIcon type={m.flagType} fallback={m.flagFallback} size={20} />
+        ) : (
+          /* A book talk is a talk *with Benny*, so it's Benny who marks it —
+             the flag set has art for what a talk was flagged for, not for the
+             fact of one happening. */
+          <img className="bp-rl-benny" src="/bs-prototypes/benny-happy.svg" alt="" />
+        )}
       </button>
     </Tooltip>
   ))
@@ -4318,7 +4804,7 @@ function RLSource({ source }) {
   return (
     <Tooltip content={`Logged from ${PARTNER_BRANDS[source].name}`}>
       <span className="bp-rl-source" style={{ '--bp-mark-bg': PARTNER_BRANDS[source].accent }}>
-        <PartnerMark id={source} size={15} />
+        <PartnerMark id={source} size={18} />
       </span>
     </Tooltip>
   )
@@ -4329,11 +4815,7 @@ function RLEntryMenu() {
     <Flyout
       placement="bottom-end"
       trigger={({ toggle }) => (
-        <Tooltip content="Entry actions">
-          <button type="button" className="bp-rl-dots" onClick={toggle} aria-label="Entry actions">
-            <Icon name="dots" size={15} />
-          </button>
-        </Tooltip>
+        <RowAction icon="dots" label="Entry actions" tooltip={false} onClick={toggle} />
       )}
     >
       {({ close }) => (
@@ -4350,11 +4832,17 @@ function RLEntryMenu() {
 }
 
 function RLEntryCard({ entry, onOpen, talkFor }) {
+  // Completed and flagged come first: they're what a reviewer is scanning for,
+  // and a session's provenance shouldn't outrank the state of it. Below them,
+  // a partner-logged session gets its own green — reading that arrived from the
+  // app the reader was reading in, rather than typed into Beanstack.
   const tone = entry.completed
     ? ' bp-rl-entry--completed'
     : entry.flagged
       ? ' bp-rl-entry--flagged'
-      : ''
+      : entry.source
+        ? ' bp-rl-entry--partner'
+        : ''
   const session = RL_SESSIONS[entry.title] ?? talkFor?.(entry.title)
   const marks = rlMarks(entry, session)
 
@@ -4370,116 +4858,30 @@ function RLEntryCard({ entry, onOpen, talkFor }) {
             and what you can do to it. The partner mark used to sit alone in
             the card's foot, which read as a stray badge on a second row
             whenever the entry had no marks of its own. */}
-        <div className="bp-rl-entry-menu">
+        <RowActions className="bp-rl-entry-menu">
           <RLSource source={entry.source} />
           <RLMarks marks={marks} entry={entry} onOpen={onOpen} />
           <RLEntryMenu />
-        </div>
+        </RowActions>
       </div>
-      <div className="bp-rl-entry-author">
-        {entry.author}
-        {/* The table listed a Lexile per row; the card was the only view
-            without one. */}
-        {entry.lexile && <span className="bp-rl-entry-lexile">{entry.lexile}</span>}
-      </div>
+      <div className="bp-rl-entry-author">{entry.author}</div>
       <div className="bp-rl-entry-foot">
         {entry.completed ? (
           <span className="bp-rl-completed">Completed</span>
         ) : (
           <div className="bp-rl-entry-amount">{entry.amount}</div>
         )}
+        {/* Beside what was logged, not on the author line: both are readings of
+            the session, and the author is the book's. */}
+        {entry.lexile && <span className="bp-rl-entry-lexile">{entry.lexile}</span>}
       </div>
     </div>
   )
 }
 
-// The product offers the same month two ways: grouped by day, or as a flat
-// table of every logged unit. `RL_ROWS` is the second one — one row per unit,
-// which is how Beanstack stores them (5 minutes / 1 day / 1 book are separate
-// entries against the same sitting). Sorted newest first: the week grouping
-// hid that `RL_DATA`'s day order isn't strictly descending, but a flat list
-// shows it.
 const RL_MONTH = { label: 'July 2024', mm: '07', yy: '24' }
 
-const RL_ROWS = RL_DATA.flatMap((week) =>
-  week.days.flatMap((day) =>
-    day.entries.map((e) => ({
-      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yy}`,
-      unit: e.completed ? '1 book' : e.amount.toLowerCase().replace(' minutes', ' min'),
-      lexile: e.lexile ?? null,
-      // The entry itself rides along so the row can advertise the same flags,
-      // book talk and partner source the calendar card does, and open the same
-      // session.
-      entry: e,
-    })),
-  ),
-).sort((a, b) => b.date.localeCompare(a.date))
-
-const RL_VIEWS = [
-  // "Calendar", not "List": it's the month laid out by day, with streaks in the
-  // margin — the flat list is the other one.
-  { id: 'calendar', label: 'Calendar', icon: <Icon name="calendar" size={15} /> },
-  { id: 'table', label: 'Table', icon: <Icon name="layout-grid" size={15} /> },
-]
-
-function ReadingLogTable({ onOpen, talkFor }) {
-  return (
-    <Table
-      flush
-      compact
-      scrollX
-      columns={[
-        {
-          key: 'date',
-          label: 'Date',
-          width: 74,
-          render: (d) => <span className="bp-rl-tbl-dim">{d}</span>,
-        },
-        {
-          key: 'title',
-          label: 'Title',
-          render: (_v, row) => (
-            <div className="bp-rl-tbl-title">
-              {/* Same target as the calendar card's title: one session, two
-                  ways of finding it. */}
-              <button type="button" className="bp-rl-tbl-name" onClick={() => onOpen?.(row.entry)}>
-                {row.entry.title}
-              </button>
-              <span className="bp-rl-tbl-author">{row.entry.author}</span>
-              {/* Their own row: chips mixed into the author line broke it in
-                  awkward places and read as part of the name. */}
-              <span className="bp-rl-tbl-tags">
-                <span className="bp-rl-entry-lexile bp-rl-entry-unit">{row.unit}</span>
-                {row.lexile && <span className="bp-rl-entry-lexile">{row.lexile}</span>}
-              </span>
-            </div>
-          ),
-        },
-        {
-          key: 'marks',
-          label: '',
-          width: 100,
-          align: 'right',
-          render: (_v, row) => {
-            const session = RL_SESSIONS[row.entry.title] ?? talkFor?.(row.entry.title)
-            return (
-              <div className="bp-rl-tbl-marks">
-                <RLMarks marks={rlMarks(row.entry, session)} entry={row.entry} onOpen={onOpen} />
-                <RLSource source={row.entry.source} />
-                <RLEntryMenu />
-              </div>
-            )
-          },
-        },
-      ]}
-      rows={RL_ROWS}
-      getRowKey={(r, i) => i}
-    />
-  )
-}
-
 function ReadingLogPage({ reader }) {
-  const [view, setView] = useState('calendar')
   const [openSession, setOpenSession] = useState(null)
   const month = RL_MONTH.label
 
@@ -4525,24 +4927,15 @@ function ReadingLogPage({ reader }) {
   return (
     <div className="bp-content">
       <Hero
-        icon={<Ic name="ti-reading-log" />}
+        icon={<PlumpyIcon name="reading" size={22} />}
         title="Reading Log"
         accent={SECTION_ACCENT.readinglog.text}
         accentBg={SECTION_ACCENT.readinglog.bg}
         action={
-          <Button variant="secondary" size="sm">
+          <Button variant="secondary" size="msm">
             Print log
           </Button>
         }
-      />
-      <Tabs
-        variant="pill"
-        size="sm"
-        block
-        ariaLabel="Reading log view"
-        active={view}
-        onChange={setView}
-        items={RL_VIEWS}
       />
       <Card flush>
         {/* The month and its arrows are this card's header */}
@@ -4550,47 +4943,44 @@ function ReadingLogPage({ reader }) {
           <span className="bp-titles-header-label">{month}</span>
           <div className="bp-rl-month-arrows">
             <button className="bp-heatmap-nav-btn" aria-label="Previous month">
-              <Icon name="chevron-left" size={11} />
+              <Icon name="chevron-left" size={16} stroke={2.4} />
             </button>
-            <button className="bp-heatmap-nav-btn" aria-label="Next month">
-              <Icon name="chevron-right" size={11} />
+            {/* Nowhere forward to go: the log opens on its newest month. */}
+            <button className="bp-heatmap-nav-btn" aria-label="Next month" disabled>
+              <Icon name="chevron-right" size={16} stroke={2.4} />
             </button>
           </div>
         </div>
-        {view === 'table' ? (
-          <ReadingLogTable onOpen={openEntry} talkFor={talkFor} />
-        ) : (
-          <div className="bp-rl-body">
-            {RL_DATA.map((week, wi) => (
-              <div key={wi} className="bp-rl-week">
-                <div className="bp-rl-week-label">{week.weekLabel}</div>
-                {week.days.map((day, di) => (
-                  <div key={di} className={`bp-rl-day${day.faded ? ' bp-rl-day--faded' : ''}`}>
-                    <div className="bp-rl-day-col">
-                      <div className="bp-rl-day-num">{day.date}</div>
-                      <div className="bp-rl-day-name">{day.day}</div>
-                      {day.streak > 0 && (
-                        <span className="bp-rl-flame">
-                          {day.streak}
-                          <Icon name="flame-filled" size={13} />
-                        </span>
-                      )}
-                    </div>
-                    {day.entries.length === 0 ? (
-                      <div className="bp-rl-empty-day" aria-label="Nothing logged" />
-                    ) : (
-                      <div className="bp-rl-entries">
-                        {day.entries.map((e, ei) => (
-                          <RLEntryCard key={ei} entry={e} onOpen={openEntry} talkFor={talkFor} />
-                        ))}
-                      </div>
+        <div className="bp-rl-body">
+          {RL_DATA.map((week, wi) => (
+            <div key={wi} className="bp-rl-week">
+              <div className="bp-rl-week-label">{week.weekLabel}</div>
+              {week.days.map((day, di) => (
+                <div key={di} className="bp-rl-day">
+                  <div className="bp-rl-day-col">
+                    <div className="bp-rl-day-num">{day.date}</div>
+                    <div className="bp-rl-day-name">{day.day}</div>
+                    {day.streak > 0 && (
+                      <span className="bp-rl-flame">
+                        {day.streak}
+                        <Icon name="flame-filled" size={15} />
+                      </span>
                     )}
                   </div>
-                ))}
-              </div>
-            ))}
-          </div>
-        )}
+                  {day.entries.length === 0 ? (
+                    <div className="bp-rl-empty-day">No logged sessions</div>
+                  ) : (
+                    <div className="bp-rl-entries">
+                      {day.entries.map((e, ei) => (
+                        <RLEntryCard key={ei} entry={e} onOpen={openEntry} talkFor={talkFor} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
       </Card>
 
       {/* The one session modal. No reader list: you're inside this reader's
@@ -4620,13 +5010,13 @@ function TextChallengesPage({ student }) {
   return (
     <div className="bp-content">
       <Hero
-        icon={<Ic name="ti-paragraph" />}
+        icon={<PlumpyIcon name="paragraph" size={22} />}
         title="Text Box"
         accent={SECTION_ACCENT.textchallenges.text}
         accentBg={SECTION_ACCENT.textchallenges.bg}
       />
       {challenges.length > 1 && (
-        <FilterBar>
+        <FilterBar compact>
           <FilterItem label="Challenge">
             <Select
               size="sm"
@@ -4653,9 +5043,6 @@ function TextChallengesPage({ student }) {
           <Card key={ch.challenge}>
             <div className="bp-latest-head">
               <SectionHeading>{ch.challenge}</SectionHeading>
-              <span className="bp-titles-header-meta">
-                {ch.responses.length} {ch.responses.length === 1 ? 'response' : 'responses'}
-              </span>
             </div>
             {ch.responses.map((r) => (
               <div key={r.prompt + r.date} className="bp-tb-item">
@@ -4681,14 +5068,14 @@ const REVIEW_ACTIONS = [
 ]
 
 // Reviews the reader wrote and published to the site: the book, the date, and
-// their own words. Cover + title come from the same Open Library lookup the
-// Lexile page's title rows use.
+// their own words. No cover — at review length the words are the record, and the
+// art was pushing the text into a narrow column beside it.
 function ReviewsPage({ student }) {
   const reviews = student.reviews ?? []
   return (
     <div className="bp-content">
       <Hero
-        icon={<Ic name="ti-rating" />}
+        icon={<PlumpyIcon name="star" size={22} />}
         title="Reviews"
         accent={SECTION_ACCENT.reviews.text}
         accentBg={SECTION_ACCENT.reviews.bg}
@@ -4702,35 +5089,25 @@ function ReviewsPage({ student }) {
         reviews.map((r) => (
           <Card key={r.isbn}>
             <div className="bp-review-item">
-              <a
-                href={`https://openlibrary.org/isbn/${r.isbn}`}
-                target="_blank"
-                rel="noreferrer"
-                className="bp-title-cover-link"
-              >
-                <CoverImage isbn={r.isbn} title={r.title} />
-              </a>
-              <div className="bp-review-main">
-                <div className="bp-review-head">
-                  <div>
-                    <div className="bp-review-title">{r.title}</div>
-                    <div className="bp-title-author">{r.author}</div>
-                  </div>
-                  <span className="bp-tb-date">{r.date}</span>
+              <div className="bp-review-head">
+                <div>
+                  <div className="bp-review-title">{r.title}</div>
+                  <div className="bp-title-author">{r.author}</div>
                 </div>
-                <div className="bp-review-text">{r.text}</div>
+                <span className="bp-tb-date">{r.date}</span>
               </div>
+              <div className="bp-review-text">{r.text}</div>
             </div>
             {/* Card footer, full width past the cover column. Inert, like the Log
                 and Edit Goal buttons — the demo wants the affordances to look
                 right, not to wire up CRUD. */}
-            <div className="bp-review-actions">
+            {/* Same control as a table's row action — a record's actions shouldn't
+                change size and hover just because the record is drawn as a card. */}
+            <RowActions className="bp-card-actions">
               {REVIEW_ACTIONS.map((a) => (
-                <IconButton key={a.label} variant="ghost" size="sm" aria-label={a.label}>
-                  <Icon name={a.icon} size={16} />
-                </IconButton>
+                <RowAction key={a.label} icon={a.icon} label={a.label} />
               ))}
-            </div>
+            </RowActions>
           </Card>
         ))
       )}
@@ -4778,7 +5155,7 @@ function BadgeSeal({ badge, size = 68 }) {
 // behind a toggle rather than spending a row on it by default.
 function SearchToggle({ open, onToggle }) {
   return (
-    <Button variant="secondary" size="sm" onClick={onToggle}>
+    <Button variant="secondary" size="msm" onClick={onToggle}>
       {open ? 'Hide search' : 'Show search'}
     </Button>
   )
@@ -4819,19 +5196,72 @@ function MedalModal({ open, onClose, art, label, headline, note, action }) {
   )
 }
 
+/* The six achievement **categories** — the `achievement_categories` table
+   (ids 1-6). This is the taxonomy readers and admins actually see: Setup >
+   Achievement Settings toggles achievements on and off by these, grouped there
+   as "Action-related" (1-3) and "On Specific Dates" (4-6). Names from the
+   Outline wiki's Achievements page, which is where the seeded rows are written
+   down (they're DB data, not an enum in the code).
+
+   Not to be confused with `achievements.achievement_type` — Activity /
+   Challenge / Friend / LoggedBook / Review — which is the *trigger event* an
+   internal admin picks when authoring an achievement in classic_admin, and is
+   never shown to a reader. (Its sibling `condition_type` is the rule: First
+   Time / Streak / Holiday.) A date-based achievement is authored as
+   `achievement_type: "LoggedBook"` + `condition_type: "Holiday"`, so those
+   columns would drop every badge on this wall into one bucket.
+
+   `full` is the product's own wording, kept verbatim as the record of it;
+   `label` is what fits a filter — the official names run to 50 characters and
+   three of them start with the same nine words, which is unreadable in a
+   dropdown. */
+const ACHIEVEMENT_CATEGORIES = [
+  { id: 'logging', label: 'Logging', full: 'Logging' },
+  { id: 'streaks', label: 'Streaks', full: 'Streaks' },
+  { id: 'friends', label: 'Friends & leaderboards', full: 'Friends & Leaderboards' },
+  {
+    id: 'literacy',
+    label: 'Literacy days & months',
+    full: 'Literacy Themed Special Days, Weeks, & Months',
+  },
+  {
+    id: 'us',
+    label: 'US heritage days & months',
+    full: 'Other Special Days, Weeks, & Months (United States)',
+  },
+  {
+    id: 'intl',
+    label: 'International days & months',
+    full: 'Other Special Days, Weeks, & Months (International)',
+  },
+]
+
+function achievementYear(a) {
+  return String(a.date).trim().slice(-4)
+}
+
 function AchievementsPage({ student }) {
   const [q, setQ] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [openItem, setOpenItem] = useState(null)
+  const [cat, setCat] = useState('all')
+  const [year, setYear] = useState('all')
   const all = student.achievements ?? []
+  // Both filters offer only what this reader actually has — six categories with
+  // four dead options is a worse control than two live ones. Years newest first.
+  const cats = ACHIEVEMENT_CATEGORIES.filter((c) => all.some((a) => a.category === c.id))
+  const years = [...new Set(all.map(achievementYear))].sort().reverse()
+  const filtered = all.filter(
+    (a) => (cat === 'all' || a.category === cat) && (year === 'all' || achievementYear(a) === year),
+  )
   const shown = searchOpen
-    ? all.filter((a) => a.name.toLowerCase().includes(q.trim().toLowerCase()))
-    : all
+    ? filtered.filter((a) => a.name.toLowerCase().includes(q.trim().toLowerCase()))
+    : filtered
 
   return (
     <div className="bp-content">
       <Hero
-        icon={<Ic name="ti-certificate" />}
+        icon={<PlumpyIcon name="certificate" size={22} />}
         title="Achievements"
         accent={SECTION_ACCENT.achievements.text}
         accentBg={SECTION_ACCENT.achievements.bg}
@@ -4855,6 +5285,30 @@ function AchievementsPage({ student }) {
           ariaLabel="Search achievements"
         />
       )}
+      {all.length > 0 && (
+        <FilterBar compact>
+          <FilterItem label="Category">
+            <Select size="sm" value={cat} onChange={(e) => setCat(e.target.value)}>
+              <option value="all">All categories</option>
+              {cats.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </Select>
+          </FilterItem>
+          <FilterItem label="Year">
+            <Select size="sm" value={year} onChange={(e) => setYear(e.target.value)}>
+              <option value="all">All years</option>
+              {years.map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
+            </Select>
+          </FilterItem>
+        </FilterBar>
+      )}
       {shown.length === 0 ? (
         <EmptyState
           variant="dashed"
@@ -4862,24 +5316,26 @@ function AchievementsPage({ student }) {
           description={
             all.length === 0
               ? 'Seasonal achievements this reader earns will show up here.'
-              : 'Try a different achievement name.'
+              : 'Try a different category, year or name.'
           }
         />
       ) : (
-        <div className="bp-medal-grid">
+        // The same row as an activity badge: art, name, its one line of
+        // detail, then the row action. The shipped app draws these as 250px
+        // centred tiles, but three medals across a 561px panel spent a screen
+        // on six records — the list scans, and the art still leads it.
+        <Card flush>
           {shown.map((a) => (
-            <button
-              key={a.name}
-              type="button"
-              className="bp-medal-card"
-              onClick={() => setOpenItem(a)}
-            >
-              <AchievementMedal item={a} />
-              <span className="bp-medal-name">{a.name}</span>
-              <span className="bp-medal-sub">Earned on {a.date}</span>
-            </button>
+            <div key={a.name} className="bp-act-row">
+              <AchievementMedal item={a} size={42} />
+              <div className="bp-act-main">
+                <div className="bp-act-name">{a.name}</div>
+                <div className="bp-act-count">Earned on {a.date}</div>
+              </div>
+              <RowAction icon="view" label="View achievement" onClick={() => setOpenItem(a)} />
+            </div>
           ))}
-        </div>
+        </Card>
       )}
 
       <MedalModal
@@ -4911,11 +5367,27 @@ function BadgesPage({ student }) {
   const [q, setQ] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [openItem, setOpenItem] = useState(null)
-  const all = student.badges ?? []
+  const [all, setAll] = useState(student.badges ?? [])
+  useEffect(() => setAll(student.badges ?? []), [student])
+  const { toasts, push, dismiss } = useToasts()
 
-  const shown = all.filter(
+  // Awarding or removing a badge is real state here, the way marking an
+  // activity complete is — it moves the row to the other tab.
+  function award(badge, earned) {
+    setAll((prev) => prev.map((b) => (b.name === badge.name ? { ...b, earned } : b)))
+    push({
+      title: earned ? 'Badge awarded' : 'Badge removed',
+      body: badge.name,
+      tone: earned ? 'info' : undefined,
+    })
+  }
+
+  // `list` is everything on this tab; `shown` is what survives the filters.
+  // The bar's reading is one against the other, so a narrow filter reads
+  // differently from an empty tab.
+  const list = all.filter((b) => b.earned === (tab === 'earned'))
+  const shown = list.filter(
     (b) =>
-      b.earned === (tab === 'earned') &&
       (kind === 'all' || b.kind === kind) &&
       (!searchOpen || b.name.toLowerCase().includes(q.trim().toLowerCase())),
   )
@@ -4923,7 +5395,7 @@ function BadgesPage({ student }) {
   return (
     <div className="bp-content">
       <Hero
-        icon={<Ic name="ti-badge" />}
+        icon={<PlumpyIcon name="medal" size={22} />}
         title="Badges"
         accent={SECTION_ACCENT.badges.text}
         accentBg={SECTION_ACCENT.badges.bg}
@@ -4954,7 +5426,7 @@ function BadgesPage({ student }) {
           ariaLabel="Search badges"
         />
       )}
-      <FilterBar>
+      <FilterBar compact>
         <FilterItem label="Badge type">
           <Select size="sm" value={kind} onChange={(e) => setKind(e.target.value)}>
             {BADGE_KINDS.map((k) => (
@@ -4976,20 +5448,33 @@ function BadgesPage({ student }) {
           }
         />
       ) : (
-        <div className="bp-medal-grid">
+        // An activity-badge row, and the same two trailing controls: the
+        // CompleteToggle is the modal's own Award / Remove Badge, which is
+        // what earning a badge means here, and the row action opens the
+        // detail. Toggling moves the badge between the two tabs.
+        <Card flush>
           {shown.map((b) => (
-            <button
-              key={b.name}
-              type="button"
-              className="bp-medal-card"
-              onClick={() => setOpenItem(b)}
-            >
-              <BadgeSeal badge={b} />
-              <span className="bp-medal-name">{b.name}</span>
-              <span className="bp-medal-sub">{b.detail}</span>
-            </button>
+            <div key={b.name} className="bp-act-row">
+              <BadgeSeal badge={b} size={42} />
+              <div className="bp-act-main">
+                <div className="bp-act-name">{b.name}</div>
+                <div className="bp-act-count">{b.detail}</div>
+              </div>
+              <CompleteToggle
+                done={b.earned}
+                label={b.name}
+                wording={{
+                  set: 'Award badge',
+                  unset: 'Remove badge',
+                  on: 'Earned',
+                  off: 'Not earned',
+                }}
+                onChange={(v) => award(b, v)}
+              />
+              <RowAction icon="view" label="View badge" onClick={() => setOpenItem(b)} />
+            </div>
           ))}
-        </div>
+        </Card>
       )}
 
       <MedalModal
@@ -5013,6 +5498,9 @@ function BadgesPage({ student }) {
               }
         }
       />
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }
@@ -5021,11 +5509,106 @@ function BadgesPage({ student }) {
 // A challenge's activity badge is a set of activities the reader checks off;
 // the badge lands once they're all done. The checkboxes are live so the demo
 // can show a badge completing, but nothing is persisted.
+/* Activity badges and the three activity types, from the product itself.
+   `LearningTrack` is the model behind an **Activity Badge**; the activities
+   under it carry `activity_type` — "Activity", "Activity Code" or
+   "Text Box Challenge" (bs-product `activities.activity_type`, and the
+   Outline wiki's "Activity and Review Badges") — plus `activity_codes` (a
+   list: one activity can hold several codes), `point_value`, `link_url` /
+   `link_title` and `max_completions`.
+
+   A reader's completion is a `completed_activities` row carrying
+   `text_box_challenge_answer`, which is why a text box answer belongs to the
+   completion rather than the activity.
+
+   Two constraints from the docs that the UI has to respect:
+   - staff **cannot type a text box answer** from the back end; they can only
+     check the activity off as complete;
+   - **repeatable** activity badges exist only inside points challenges. Their
+     activities can be completed without limit, the badge itself can never be
+     earned, and a repeatable text box answer can't be edited. */
+const ACTIVITY_TYPES = {
+  Activity: { label: 'Activity', icon: 'circle-check' },
+  'Activity Code': { label: 'Code', icon: 'key' },
+  'Text Box Challenge': { label: 'Text box', icon: 'align-left' },
+}
+
+function ActivityTypeTag({ type }) {
+  const cfg = ACTIVITY_TYPES[type]
+  if (!cfg || type === 'Activity') return null
+  return (
+    <span className="bp-act-type">
+      <Icon name={cfg.icon} size={13} stroke={2.2} />
+      {cfg.label}
+    </span>
+  )
+}
+
+/* One activity, drawn for its type. The checkbox is the only control staff get
+   on any of them — the code and the answer are there to be read. */
+function ActivityDetail({ activity }) {
+  const { type = 'Activity', codes, answer, points } = activity
+  return (
+    <div className="bp-act-detail">
+      {/* Type and points are what kind of thing this is; they read as a label
+          above the activity rather than a trailer after it, which is where a
+          long prompt kept pushing them anyway. */}
+      <div className="bp-act-detail-head">
+        <ActivityTypeTag type={type} />
+        {points > 0 && <span className="bp-act-points">{points} pts</span>}
+      </div>
+      <span className="bp-act-modal-text">{activity.text}</span>
+
+      {/* `activity_codes` is a list — one activity can accept several. Staff
+          see them because the admin set them; there's nothing to enter here. */}
+      {type === 'Activity Code' && codes?.length > 0 && (
+        <div className="bp-act-codes">
+          {codes.map((c) => (
+            <code key={c} className="bp-act-code">
+              {c}
+            </code>
+          ))}
+        </div>
+      )}
+
+      {/* The reader's own words, from `text_box_challenge_answer`. Read-only by
+          design: the product doesn't let staff write one. */}
+      {type === 'Text Box Challenge' &&
+        (answer ? (
+          <blockquote className="bp-act-answer">{answer}</blockquote>
+        ) : (
+          <span className="bp-act-answer bp-act-answer--empty">No response yet</span>
+        ))}
+    </div>
+  )
+}
+
 function ActivitiesPage({ student }) {
   const [badges, setBadges] = useState(student.activityBadges ?? [])
   const [openIdx, setOpenIdx] = useState(null)
+  const [kind, setKind] = useState('activity')
+  const [challenge, setChallenge] = useState('all')
+  const { toasts, push, dismiss } = useToasts()
+
+  // Anything that lands a completion announces itself in the corner, and an
+  // activity that tips the badge over its threshold announces the badge too —
+  // that's the moment worth telling someone about.
+  function announce(badge, before, after) {
+    if (after > before) {
+      push({ title: 'Activity marked complete', body: badge.name })
+      const need = requiredFor(badge)
+      if (before < need && after >= need) {
+        push({ title: 'Badge earned', body: badge.name, tone: 'info' })
+      }
+    }
+  }
 
   function toggleActivity(badgeIdx, actIdx, done) {
+    const badge = badges[badgeIdx]
+    if (badge) {
+      const before = doneCount(badge)
+      announce(badge, before, done ? before + 1 : before - 1)
+    }
     setBadges((prev) =>
       prev.map((b, i) =>
         i !== badgeIdx
@@ -5041,6 +5624,10 @@ function ActivitiesPage({ student }) {
   // Ticking the badge-level box marks every activity under it, matching the
   // product's "mark the whole badge complete" affordance.
   function toggleBadge(badgeIdx, done) {
+    const badge = badges[badgeIdx]
+    if (badge && done) {
+      push({ title: 'Badge earned', body: badge.name, tone: 'info' })
+    }
     setBadges((prev) =>
       prev.map((b, i) =>
         i !== badgeIdx ? b : { ...b, activities: b.activities.map((a) => ({ ...a, done })) },
@@ -5048,50 +5635,122 @@ function ActivitiesPage({ student }) {
     )
   }
 
+  // Repeatable badges are their own kind of thing — they can't be earned, they
+  // count instead of completing, and they only exist inside points challenges.
+  // Mixing them into one list means two different sentences in one column, so
+  // they get their own tab. The tab only appears when there are any: points
+  // challenges aren't supported on school sites, so a student never has one.
+  const plainBadges = badges.filter((b) => !b.repeatable)
+  const repeatBadges = badges.filter((b) => b.repeatable)
+  const inKind = kind === 'repeatable' ? repeatBadges : plainBadges
+  const listed = challenge === 'all' ? inKind : inKind.filter((b) => b.challenge === challenge)
+
+  // A badge belongs to a challenge, and the filter above is where that lives.
+  const challenges = [...new Set(badges.map((b) => b.challenge).filter(Boolean))]
+
   const openBadge = openIdx == null ? null : badges[openIdx]
   const doneCount = (b) => b.activities.filter((a) => a.done).length
+  // A repeatable badge is never earned, so "3 of 4 completed" is the wrong
+  // sentence for it — it gets a running total of completions instead.
+  const completionCount = (b) =>
+    b.activities.reduce((n, a) => n + (a.completions ?? (a.done ? 1 : 0)), 0)
+
+  // "Activity badges are earned when readers complete the specified number of
+  // activities within them" — so the bar is a count, not necessarily all of
+  // them. `required` is that number; absent, the badge needs the lot.
+  const requiredFor = (b) => b.required ?? b.activities.length
+  const isEarned = (b) => !b.repeatable && doneCount(b) >= requiredFor(b)
 
   return (
     <div className="bp-content">
       <Hero
-        icon={<Ic name="ti-puzzle" />}
+        icon={<PlumpyIcon name="puzzle" size={22} />}
         title="Activities"
         accent={SECTION_ACCENT.activities.text}
         accentBg={SECTION_ACCENT.activities.bg}
       />
-      <FilterBar action={<Button size="sm">Update activity badges</Button>}>
+      <FilterBar compact>
         <FilterItem label="Challenge">
-          <Select size="sm" defaultValue="all">
+          <Select size="sm" value={challenge} onChange={(e) => setChallenge(e.target.value)}>
             <option value="all">All challenges</option>
-            <option value="spring">Spring Reading Challenge 2025</option>
-            <option value="winter">Winter Reading Bingo</option>
+            {challenges.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
           </Select>
         </FilterItem>
       </FilterBar>
+      {repeatBadges.length > 0 && (
+        <Tabs
+          variant="pill"
+          block
+          ariaLabel="Activity badge type"
+          active={kind}
+          onChange={setKind}
+          items={[
+            { id: 'activity', label: 'Activity badges' },
+            { id: 'repeatable', label: 'Repeatable' },
+          ]}
+        />
+      )}
       <Card flush>
-        <div className="bp-titles-header">
-          <span className="bp-titles-header-label">Activity badges</span>
-          <span className="bp-titles-header-meta">Completed?</span>
-        </div>
-        {badges.length === 0 ? (
-          <EmptyState title="No activity badges" description="This reader has none assigned yet." />
+        {listed.length === 0 ? (
+          <EmptyState
+            title={kind === 'repeatable' ? 'No repeatable badges' : 'No activity badges'}
+            description={
+              kind === 'repeatable'
+                ? 'Repeatable badges come from points challenges.'
+                : 'This reader has none assigned yet.'
+            }
+          />
         ) : (
-          badges.map((b, i) => {
+          // One flat list. The challenge each badge belongs to is what the
+          // filter above is for; repeating it as a heading every few rows just
+          // broke the run of rows up.
+          listed.map((b) => {
+            // The modal indexes into the full list, not the filtered one.
+            const i = badges.indexOf(b)
             const done = doneCount(b)
             const all = b.activities.length
             return (
               <div key={b.name} className="bp-act-row">
                 <MedalDisc icon={b.icon} color={b.color} size={42} />
                 <div className="bp-act-main">
-                  <div className="bp-act-name">{b.name}</div>
+                  <div className="bp-act-name">
+                    {b.name}
+                    {b.repeatable && (
+                      <Pill color="#c849e5" size="sm">
+                        Repeatable
+                      </Pill>
+                    )}
+                  </div>
                   <div className="bp-act-count">
-                    {done} of {all} activities completed
+                    {/* The app's exact sentences: "X of Y Activities
+                            Completed" and, for a repeatable badge, "N Total
+                            Activity Completions". */}
+                    {b.repeatable
+                      ? `${completionCount(b)} Total Activity Completions`
+                      : `${done} of ${all} Activities Completed`}
                   </div>
                 </div>
-                <Checkbox checked={done === all} onChange={(v) => toggleBadge(i, v)} />
-                <Button variant="secondary" size="sm" onClick={() => setOpenIdx(i)}>
-                  View activity
-                </Button>
+                {/* The product's own control: a filled checkbox glyph, green
+                        when complete, grey when not, clickable either way — and
+                        a repeatable row has no completion column at all, only
+                        the add glyph and its running count. Un-earning is the
+                        same toggle, which is how staff take a badge back. */}
+                <CompleteToggle
+                  done={isEarned(b)}
+                  repeatable={b.repeatable}
+                  count={b.repeatable ? completionCount(b) : undefined}
+                  onChange={b.repeatable ? undefined : (v) => toggleBadge(i, v)}
+                  label={b.name}
+                />
+                {/* The app draws this as a text `View Activity` button
+                    (`.view-activity-button-container`); here it's the same row
+                    action every other table ends with, so a row's trailing
+                    control is one shape across the whole profile. */}
+                <RowAction icon="view" label="View activities" onClick={() => setOpenIdx(i)} />
               </div>
             )
           })
@@ -5109,100 +5768,528 @@ function ActivitiesPage({ student }) {
           <div className="bp-act-modal">
             <ModalClose onClick={close} />
             <div className="bp-act-modal-head">
-              {openBadge && <MedalDisc icon={openBadge.icon} color={openBadge.color} size={34} />}
               <span className="bp-act-modal-title">{openBadge?.name}</span>
             </div>
             <div className="bp-act-modal-cols">
               <span>Activity</span>
-              <span>Completed?</span>
+              <span>{openBadge?.repeatable ? 'Times' : 'Completed?'}</span>
             </div>
             <div className="bp-act-modal-body">
               {openBadge?.activities.map((a, j) => (
                 <div key={a.text} className="bp-act-modal-row">
-                  <span className="bp-act-modal-text">{a.text}</span>
-                  <Checkbox checked={a.done} onChange={(v) => toggleActivity(openIdx, j, v)} />
+                  <ActivityDetail activity={a} />
+                  {/* Repeatable activities have no single done state — the
+                      count is the record. */}
+                  <CompleteToggle
+                    done={a.done}
+                    repeatable={openBadge.repeatable}
+                    count={openBadge.repeatable ? (a.completions ?? 0) : undefined}
+                    onChange={
+                      openBadge.repeatable ? undefined : (v) => toggleActivity(openIdx, j, v)
+                    }
+                    label={a.text}
+                  />
                 </div>
               ))}
             </div>
           </div>
         )}
       </Modal>
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }
 
 // ─── Drawings & rewards ───────────────────────────────────────────────────────
-// Same page twice: a list of things the reader has won, with "Claimed?" as the
-// only column that moves — and it's the librarian's to tick.
-function ClaimListPage({ items: initial, icon, title, accent, accentBg, nameLabel, empty }) {
-  const [items, setItems] = useState(initial ?? [])
+// The claim tables, drawn the way the app draws them. On a reader's page
+// bs-product's `new_admin/earned_rewards/_incentive.html.haml` puts two side by
+// side — a drawing table keyed "Drawing / Redeemed?" and an incentive table
+// keyed "Earned Incentive / Challenge / Redeemed?" — and both are ticked with
+// the very same toggle rule that runs the Activities column
+// (`.redeem-incentive-toggle, .redeem-raffle-toggle` sit in that selector list).
+//
+// A row's trailing control is the class-level table's own icon action
+// (`.redeem-reward-icon` holding `icons/reward.svg`): an icon rather than a
+// labelled button because it repeats on every single row.
+
+// The shared row action, carrying one of the app's own drawings.
+function RowIconAction({ icon, title, onClick, disabled = false }) {
+  return (
+    <RowAction label={title} onClick={onClick} disabled={disabled}>
+      <BsIcon set="actions" name={icon} size={20} />
+    </RowAction>
+  )
+}
+
+// The app splits earned rewards by *age*, not by kind: `_rewards.html.haml` is
+// a Current Rewards / Past Rewards tab pair over one table, and Past carries a
+// helpbox saying what "past" means. A challenge's ticket drawings aren't a tab
+// here — they're reached from that challenge's own row, which is where the app
+// puts them and where the per-challenge ticket balance makes sense.
+const REWARD_KINDS = [
+  { id: 'current', label: 'Current Rewards' },
+  { id: 'past', label: 'Past Rewards' },
+]
+
+// The app's own button copy for a ticket drawing, case by case
+// (`ticket_rewards/_ticket_rewards_modal_overview.html.haml`).
+function ticketAction(t) {
+  const atMax = t.maxEntries > 0 && t.entered >= t.maxEntries
+  if (t.ended) return { label: 'Ended', disabled: true }
+  if (atMax) return { label: 'Max Entered (Subtract Tickets)', disabled: false }
+  if (t.available <= 0 && t.entered === 0) return { label: 'No Tickets Available', disabled: true }
+  if (t.available <= 0) return { label: 'Subtract Tickets', disabled: false }
+  return { label: 'Add/Remove Tickets', disabled: false }
+}
+
+function RewardsPage({ student }) {
+  const [rewards, setRewards] = useState(student.rewards ?? [])
+  const [kind, setKind] = useState('current')
+  const [q, setQ] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const { toasts, push, dismiss } = useToasts()
+
+  // Search runs over the list that's showing — a reader with forty earned
+  // rewards is the case this is for, and the name is the only thing worth
+  // matching on.
+  const match = (name) => !searchOpen || name.toLowerCase().includes(q.trim().toLowerCase())
+
+  function redeem(reward) {
+    setRewards((prev) => prev.map((r) => (r === reward ? { ...r, redeemed: !r.redeemed } : r)))
+    push(
+      reward.redeemed
+        ? { title: 'Marked not redeemed', body: reward.name, tone: 'info' }
+        : { title: 'Reward redeemed', body: reward.name },
+    )
+  }
+
+  // The app's profile-level table is two columns — "Earned Reward" and
+  // "Redeemed?" — so the challenge a reward came from rides under its name
+  // rather than taking a column the panel doesn't have.
+  const rewardCols = [
+    {
+      key: 'name',
+      label: 'Earned Reward',
+      minWidth: 200,
+      render: (v, r) => (
+        <>
+          <span className="bp-tbl-name">{v}</span>
+          <span className="bp-tbl-sub">{r.challenge}</span>
+        </>
+      ),
+    },
+    {
+      key: 'redeemed',
+      label: 'Redeemed?',
+      minWidth: 96,
+      align: 'right',
+      render: (v, r) => <CompleteToggle done={v} onChange={() => redeem(r)} label={r.name} />,
+    },
+  ]
+
+  // `era` is the 90-day line the app draws; anything unmarked is current.
+  const shown = rewards.filter((r) => (r.era ?? 'current') === kind && match(r.name))
 
   return (
     <div className="bp-content">
-      <Hero icon={<Ic name={icon} />} title={title} accent={accent} accentBg={accentBg} />
+      <Hero
+        icon={<PlumpyIcon name="gift" size={22} />}
+        title="Rewards"
+        accent={SECTION_ACCENT.rewards.text}
+        accentBg={SECTION_ACCENT.rewards.bg}
+        action={
+          rewards.length > 0 && (
+            <SearchToggle
+              open={searchOpen}
+              onToggle={() => {
+                setSearchOpen((v) => !v)
+                setQ('')
+              }}
+            />
+          )
+        }
+      />
+      {searchOpen && (
+        <SearchInput
+          value={q}
+          onChange={setQ}
+          placeholder="Search for a reward name…"
+          ariaLabel="Search rewards"
+        />
+      )}
+      <Tabs
+        variant="pill"
+        block
+        ariaLabel="Reward age"
+        active={kind}
+        onChange={setKind}
+        items={REWARD_KINDS}
+      />
+      {/* `.infobox.helpbox` on the real page, shown only on the Past tab. */}
+      {kind === 'past' && (
+        <Banner level="info">These are rewards that were earned more than 90 days ago.</Banner>
+      )}
       <Card flush>
-        <div className="bp-titles-header">
-          <span className="bp-titles-header-label">{nameLabel}</span>
-          <span className="bp-titles-header-meta">Claimed?</span>
-        </div>
-        {items.length === 0 ? (
-          <EmptyState title={empty.title} description={empty.description} />
-        ) : (
-          items.map((item, i) => (
-            <div key={item.name} className="bp-act-row">
-              <div className="bp-act-main">
-                <div className="bp-act-name">{item.name}</div>
-              </div>
-              <Checkbox
-                checked={item.claimed}
-                onChange={(v) =>
-                  setItems((prev) => prev.map((x, j) => (j === i ? { ...x, claimed: v } : x)))
-                }
-              />
-            </div>
-          ))
-        )}
+        <Table
+          flush
+          scrollX
+          columns={rewardCols}
+          rows={shown}
+          getRowKey={(r) => r.name}
+          empty={kind === 'past' ? 'No past rewards.' : 'No rewards to redeem.'}
+        />
       </Card>
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
   )
 }
 
-// `key` on the student remounts the list so the checkbox state doesn't carry
-// across readers when the pager steps.
-function DrawingsPage({ student }) {
+// One challenge's ticket drawings. The app reaches this from a challenge row's
+// `View Ticket Rewards` link and draws it as a sub-view of Challenges — a Back
+// link, "Ticket Rewards for {challenge}", and how many tickets the reader has
+// left to spend — not as a tab of its own under Rewards.
+// One challenge's ticket drawings. The app reaches this from a challenge row's
+// `View Ticket Rewards` link and draws it as a sub-view of Challenges — a Back
+// link, "Ticket Rewards for {challenge}", and how many tickets the reader has
+// left to spend on it — because the balance is per challenge, not per reader
+// (`available_tickets_for_program`).
+function TicketRewardsView({ student, program, onBack }) {
+  const [tickets, setTickets] = useState(() =>
+    (student.ticketDrawings ?? []).filter((t) => t.challenge === program.name),
+  )
+  const [openIdx, setOpenIdx] = useState(null)
+  const [stepping, setStepping] = useState(false)
+  const { toasts, push, dismiss } = useToasts()
+
+  const open = openIdx == null ? null : tickets[openIdx]
+  const action = open ? ticketAction(open) : null
+
+  // Every drawing in this challenge draws on the same pile — the app's balance
+  // is `available_tickets_for_program(program_id)` — so it's one number, and
+  // the rows are kept in step with each other.
+  const available = tickets[0]?.available ?? 0
+
+  // Entering tickets moves them out of the challenge's pile and into this
+  // drawing (the app tracks the two as one balance, earned minus entered), so
+  // every drawing here sees the reduced pile, not just the one just changed.
+  function enterTickets(count) {
+    const row = tickets[openIdx]
+    const delta = count - row.entered
+    setTickets((prev) =>
+      prev.map((t, j) => ({
+        ...t,
+        entered: j === openIdx ? count : t.entered,
+        available: t.available - delta,
+      })),
+    )
+    setStepping(false)
+    setOpenIdx(null)
+    push({
+      title: `${count === 1 ? '1 Ticket' : `${count} Tickets`} Entered`,
+      body: row.name,
+    })
+  }
+
+  const ticketCols = [
+    {
+      key: 'name',
+      label: 'Drawing',
+      minWidth: 150,
+      // When it closes rides under the prize rather than taking a column of
+      // its own — it's a fact about the drawing, and the panel hasn't the width
+      // for a third column beside the count and the action.
+      render: (v, r) => (
+        <>
+          <span className="bp-tbl-name">{v}</span>
+          <span className="bp-tbl-sub">Ends {r.endsOn}</span>
+        </>
+      ),
+    },
+    {
+      key: 'entered',
+      label: 'Tickets Entered',
+      minWidth: 110,
+      // The app words this "5 Tickets Entered", with its ticket mark beside it.
+      render: (v) => (
+        <span className="bp-ticket-count">
+          <BsIcon set="actions" name="ticket" size={18} />
+          {v}
+        </span>
+      ),
+    },
+    // `max_entries` isn't a column either: the app only ever says it as part of
+    // the button that spends them — "Enter 3 (Max 10)".
+    {
+      key: 'act',
+      label: '',
+      minWidth: 48,
+      align: 'right',
+      render: (_, r) => (
+        <RowIconAction
+          icon="ticket"
+          title="View drawing"
+          onClick={() => setOpenIdx(tickets.indexOf(r))}
+        />
+      ),
+    },
+  ]
+
   return (
-    <ClaimListPage
-      key={student.name}
-      items={student.drawings}
-      icon="ti-pencil"
-      title="Drawings"
-      accent={SECTION_ACCENT.drawings.text}
-      accentBg={SECTION_ACCENT.drawings.bg}
-      nameLabel="Drawing name"
-      empty={{ title: 'No drawings', description: 'Drawings this reader enters will show here.' }}
-    />
+    <div className="bp-content">
+      <BackBar label="Back to Challenges" onClick={onBack} />
+      {/* No icon chip: this is a sub-view of Challenges reached from a row, not
+          a destination in the rail, and the Back link above already says where
+          you are. `Hero` renders without one. */}
+      <Hero
+        title={`Ticket Rewards for ${program.name}`}
+        accent={SECTION_ACCENT.rewards.text}
+        accentBg={SECTION_ACCENT.rewards.bg}
+      />
+      {/* The app says this as a bare line under the heading. Boxed here, with
+          the ticket mark: it's the balance every drawing below spends from, so
+          it reads as a wallet rather than as a caption. */}
+      <div className="bp-draw-avail">
+        <BsIcon set="actions" name="ticket" size={20} />
+        <span>
+          <strong>{available}</strong> {available === 1 ? 'ticket' : 'tickets'} available
+        </span>
+      </div>
+      <Card flush>
+        <Table
+          flush
+          scrollX
+          columns={ticketCols}
+          rows={tickets}
+          getRowKey={(r) => r.name}
+          empty="No drawings to enter."
+        />
+      </Card>
+
+      {/* The app's drawing overview: the prize, when it closes, how many
+          tickets are in, and the one button that changes that. */}
+      <Modal
+        open={open != null}
+        onClose={() => {
+          setOpenIdx(null)
+          setStepping(false)
+        }}
+        variant="center"
+        ariaLabel={open?.name}
+        closeBadge
+      >
+        {({ close }) => (
+          <div className="bp-draw-modal">
+            <ModalClose onClick={close} />
+            {/* Same chrome as every other modal on the page: a bordered head
+                holding the title, then a body. */}
+            <div className="bp-act-modal-head">
+              <span className="bp-act-modal-title">{open?.name}</span>
+            </div>
+            {stepping ? (
+              <TicketStepper
+                drawing={open}
+                onCancel={() => setStepping(false)}
+                onEnter={enterTickets}
+              />
+            ) : (
+              <div className="bp-draw-body">
+                <div className="bp-draw-meta">
+                  <span className="bp-ticket-count">
+                    <BsIcon set="actions" name="ticket" size={18} />
+                    {open?.entered ?? 0} Tickets Entered
+                  </span>
+                  <span className="bp-draw-date">Ends on {open?.endsOn}</span>
+                </div>
+                <p className="bp-draw-text">{open?.description}</p>
+                <Button
+                  variant="secondary"
+                  disabled={action?.disabled}
+                  onClick={() => setStepping(true)}
+                >
+                  {action?.label}
+                </Button>
+              </div>
+            )}
+          </div>
+        )}
+      </Modal>
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </div>
   )
 }
 
-function RewardsPage({ student }) {
+// The app's ticket stepper: a ± control over the reader's own balance, and a
+// button that spells out exactly what pressing it will do — including the max,
+// and "No Change" when the number is back where it started.
+function TicketStepper({ drawing, onCancel, onEnter }) {
+  const [n, setN] = useState(drawing.entered)
+  // You can never enter more than you hold, and never more than the drawing
+  // allows — `calculateMaxEntries` in the app's own words.
+  const pool = drawing.available + drawing.entered
+  const cap = drawing.maxEntries > 0 ? Math.min(drawing.maxEntries, pool) : pool
+  const left = pool - n
+  const maxText = drawing.maxEntries > 0 ? ` (Max ${drawing.maxEntries})` : ' (No Max)'
+
   return (
-    <ClaimListPage
-      key={student.name}
-      items={student.rewards}
-      icon="ti-gift"
-      title="Rewards"
-      accent={SECTION_ACCENT.rewards.text}
-      accentBg={SECTION_ACCENT.rewards.bg}
-      nameLabel="Reward name"
-      empty={{ title: 'No rewards', description: 'Rewards this reader earns will show here.' }}
-    />
+    <div className="bp-draw-body">
+      <span className="bp-draw-date">
+        {left === 1 ? '1 Ticket Available' : `${left} Tickets Available`}
+      </span>
+      <div className="bp-draw-stepper">
+        <NumberInput value={n} min={0} max={cap} onChange={setN} aria-label="Tickets to enter" />
+      </div>
+      <div className="bp-draw-actions">
+        <Button disabled={n === drawing.entered} onClick={() => onEnter(n)}>
+          {n === drawing.entered ? 'No Change' : `Enter ${n === 1 ? '1 Ticket' : n}${maxText}`}
+        </Button>
+        <Button variant="ghost" onClick={onCancel}>
+          Cancel
+        </Button>
+      </div>
+    </div>
   )
+}
+
+// Every row here is a drawing this reader *won* — a `raffle_winners` record,
+// not a drawing they entered. Entering is the Rewards tab's ticket list.
+// `key` on the student remounts the list so a toggle doesn't carry across
+// readers when the pager steps.
+function DrawingsPage({ student }) {
+  const [wins, setWins] = useState(student.drawingWins ?? [])
+  const [q, setQ] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const { toasts, push, dismiss } = useToasts()
+  const shown = searchOpen
+    ? wins.filter((w) => w.name.toLowerCase().includes(q.trim().toLowerCase()))
+    : wins
+
+  function claim(win) {
+    setWins((prev) => prev.map((w) => (w === win ? { ...w, claimed: !w.claimed } : w)))
+    push(
+      win.claimed
+        ? { title: 'Prize marked unclaimed', body: win.name, tone: 'info' }
+        : { title: 'Successfully Redeemed', body: win.name },
+    )
+  }
+
+  // `raffle_winners.place` is only filled in on an Ordered Placement drawing —
+  // an Equal Winners drawing has winners but no order, so the cell is empty
+  // rather than guessing a 1st.
+  const cols = [
+    {
+      key: 'name',
+      label: 'Drawing',
+      minWidth: 140,
+      render: (v) => <span className="bp-tbl-name">{v}</span>,
+    },
+    {
+      key: 'place',
+      label: 'Place',
+      minWidth: 68,
+      // Centred, and the placement itself is a tag: it's a standing this
+      // reader holds, not a measurement, so it reads like the other pills on
+      // the profile rather than as loose text in a column.
+      align: 'center',
+      render: (v) =>
+        v == null ? (
+          <span className="bp-none">—</span>
+        ) : (
+          <span className="bp-place">{ordinal(v)}</span>
+        ),
+    },
+    {
+      key: 'claimed',
+      label: 'Redeemed?',
+      minWidth: 96,
+      align: 'right',
+      render: (v, r) => <CompleteToggle done={v} onChange={() => claim(r)} label={r.name} />,
+    },
+  ]
+
+  return (
+    <div className="bp-content">
+      <Hero
+        icon={<PlumpyIcon name="ticket" size={22} />}
+        title="Drawings"
+        accent={SECTION_ACCENT.drawings.text}
+        accentBg={SECTION_ACCENT.drawings.bg}
+        action={
+          wins.length > 0 && (
+            <SearchToggle
+              open={searchOpen}
+              onToggle={() => {
+                setSearchOpen((v) => !v)
+                setQ('')
+              }}
+            />
+          )
+        }
+      />
+      {searchOpen && (
+        <SearchInput
+          value={q}
+          onChange={setQ}
+          placeholder="Search for a drawing name…"
+          ariaLabel="Search drawings"
+        />
+      )}
+      <Card flush>
+        <Table
+          flush
+          scrollX
+          columns={cols}
+          rows={shown}
+          getRowKey={(r) => r.name}
+          empty="There are no drawings to redeem."
+        />
+      </Card>
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </div>
+  )
+}
+
+// 1 → 1st. The app's `getOrdinal` / Rails `ordinalize`, which is what the
+// ordered-placement winners table prints.
+function ordinal(n) {
+  const rem100 = n % 100
+  if (rem100 >= 11 && rem100 <= 13) return `${n}th`
+  return `${n}${['th', 'st', 'nd', 'rd'][n % 10] ?? 'th'}`
 }
 
 // ─── Challenges ───────────────────────────────────────────────────────────────
+// ─── Challenge banners ────────────────────────────────────────────────────────
+// A challenge is a `Program`, and a Program has a `header_image` — the banner
+// staff upload when they build it, with `no-challenge-image.png` as the app's
+// fallback. These are the **real** banners Beanstack's design team ships with
+// its own challenges (Dropbox `Design/Projects/Challenges/<name>/Banner`),
+// copied into `public/challenge-banners/` and converted to 1200px webp.
+//
+// Every one of them is 2.62:1 — 920×351, or 1840×702 at 2× — which is the
+// product's banner ratio, and the same ratio the challenge creator generates
+// its theme art at. `.chal-banner` holds that ratio rather than a fixed height.
+const CHALLENGE_BANNERS = {
+  'read-across-america': 'read-across-america',
+  'winter-reading': 'winter-reading',
+  'summer-reading': 'summer-reading',
+  'benny-bean': 'benny-bean',
+  'battle-of-the-books': 'battle-of-the-books',
+  '25-in-25': '25-in-25',
+}
+const bannerSrc = (key) =>
+  CHALLENGE_BANNERS[key] ? `/bs-prototypes/challenge-banners/${CHALLENGE_BANNERS[key]}.webp` : null
+
+// The app's four, in its order: Current / Recently Ended / Upcoming / Past
+// Challenges (`showProgramTab` gates each on there being any).
 const CHALLENGE_TABS = [
   { id: 'current', label: 'Current' },
-  { id: 'ended', label: 'Recently ended' },
+  { id: 'ended', label: 'Recent' },
+  { id: 'upcoming', label: 'Upcoming' },
   { id: 'past', label: 'Past' },
 ]
 
@@ -5362,8 +6449,103 @@ function ChallengeLogSheet({ open, onClose, student, challenge }) {
 function ChallengesPage({ student }) {
   const [tab, setTab] = useState('current')
   const [logFor, setLogFor] = useState(null)
-  const all = student.challenges ?? []
-  const shown = all.filter((c) => c.status === tab)
+  // Enrolment is something staff set from this page: the app's own toggle calls
+  // `enrollProgram` on every click and draws `check`/`cross` from
+  // `isEnrolled`, so the same control puts a reader in a challenge and takes
+  // them back out.
+  const [rows, setRows] = useState(() =>
+    (student.challenges ?? []).map((c) => ({ ...c, enrolled: c.enrolled ?? true })),
+  )
+  const { toasts, push, dismiss } = useToasts()
+  // The app's `viewTicketRewards`: a challenge's drawings replace the page
+  // until you come back.
+  const [ticketsFor, setTicketsFor] = useState(null)
+
+  function toggleEnrolled(challenge) {
+    setRows((prev) => prev.map((c) => (c === challenge ? { ...c, enrolled: !c.enrolled } : c)))
+    push(
+      challenge.enrolled
+        ? { title: 'Unenrolled', body: challenge.name, tone: 'info' }
+        : { title: 'Enrolled', body: challenge.name },
+    )
+  }
+
+  // The app's own table is three columns wide — Challenge, Enrolled?,
+  // Completed? — and everything else lives *inside* the challenge cell: the
+  // name, the date span, a `ul.program-log-totals` of label:value pairs, and a
+  // "View Challenge Log" link. Giving Started and Minutes columns of their own
+  // is what made every name wrap in a 560px panel.
+  // One card per challenge rather than rows in a table. A challenge isn't a
+  // record you scan a column of — it's a block of label:value totals with its
+  // own actions — so the single "Challenge" header the table carried was a
+  // heading over nothing.
+  const renderCard = (c) => (
+    <Card key={c.name}>
+      {/* The banner bleeds to the card's own edges and takes its top corners —
+          it's the challenge's header image, not a thumbnail inside the card. */}
+      {bannerSrc(c.banner) && <img className="bp-chal-banner" src={bannerSrc(c.banner)} alt="" />}
+      <div className="bp-chal-cell">
+        <span className="bp-tbl-name">{c.name}</span>
+        <span className="bp-tbl-sub">{c.dates}</span>
+        <ul className="bp-chal-totals">
+          {c.startedOn && (
+            <li>
+              <span>Started On:</span> {c.startedOn}
+            </li>
+          )}
+          {c.completedOn && (
+            <li>
+              <span>Completed On:</span> {c.completedOn}
+            </li>
+          )}
+          {c.minutes != null && (
+            <li>
+              <span>Minutes:</span> {c.minutes.toLocaleString()}
+            </li>
+          )}
+        </ul>
+      </div>
+      {/* The app puts these inline in the cell as `View Challenge Log` and
+          `View Ticket Rewards` text links; here they're the same row actions
+          every table on the profile ends with. Enrolment leads the cluster —
+          it's the one control that changes the record rather than opening
+          something. The log is the printable sheet, not a detour to the
+          reading log, and an upcoming challenge has nothing logged yet;
+          Ticket Rewards follows the app's own condition,
+          `program.has_ticket_rewards && isEnrolled`. */}
+      <RowActions className="bp-card-actions">
+        <CompleteToggle
+          done={c.enrolled}
+          onChange={() => toggleEnrolled(c)}
+          label={c.name}
+          wording={{
+            set: 'Enroll',
+            unset: 'Unenroll',
+            on: 'Enrolled',
+            off: 'Not enrolled',
+          }}
+        />
+        {c.startedOn && (
+          <RowAction icon="log" label="View challenge log" onClick={() => setLogFor(c)} />
+        )}
+        {c.hasTicketRewards && c.enrolled && (
+          <RowAction icon="ticket" label="View ticket rewards" onClick={() => setTicketsFor(c)} />
+        )}
+      </RowActions>
+    </Card>
+  )
+
+  const shown = rows.filter((c) => c.status === tab)
+
+  if (ticketsFor) {
+    return (
+      <TicketRewardsView
+        student={student}
+        program={ticketsFor}
+        onBack={() => setTicketsFor(null)}
+      />
+    )
+  }
 
   return (
     <div className="bp-content">
@@ -5376,7 +6558,7 @@ function ChallengesPage({ student }) {
         />
       )}
       <Hero
-        icon={<Ic name="ti-trophy" />}
+        icon={<PlumpyIcon name="challenges" size={22} />}
         title="Challenges"
         accent={SECTION_ACCENT.challenges.text}
         accentBg={SECTION_ACCENT.challenges.bg}
@@ -5390,40 +6572,102 @@ function ChallengesPage({ student }) {
         onChange={setTab}
         items={CHALLENGE_TABS}
       />
-      <Card flush>
-        <div className="bp-titles-header">
-          <span className="bp-titles-header-label">Challenge</span>
-          <span className="bp-titles-header-meta">Enrolled?</span>
+      {shown.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title={`No ${tab === 'ended' ? 'recent' : tab} challenges`}
+          description="Challenges this reader is in will show up here."
+        />
+      ) : (
+        // The container has to be an *ancestor* of what queries it — an element
+        // can't match a container query it declares itself. It's this wrapper
+        // rather than `.bp-content` because layout containment would make that
+        // pane the containing block for the page's `position: fixed`
+        // ToastStack.
+        <div className="bp-chal-cols">
+          <div className="bp-chal-grid">{shown.map(renderCard)}</div>
         </div>
-        {shown.length === 0 ? (
-          <EmptyState
-            title={`No ${tab === 'ended' ? 'recently ended' : tab} challenges`}
-            description="Nothing to show for this reader here."
+      )}
+
+      {/* Mounted once per page — the stack is `position: fixed`. */}
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </div>
+  )
+}
+
+// ─── Points Summary ───────────────────────────────────────────────────────────
+// The app's `_points_summary.html.haml`: one row per point type with its
+// running total, and nothing else — no dates, no source, no drill-in. The ten
+// types are the ones the partial switches on, in its order.
+const POINT_TYPE_LABELS = {
+  book: 'Book Points',
+  page: 'Page Points',
+  minute: 'Minute Points',
+  day: 'Day Points',
+  moment: 'Learning Moment Points',
+  event: 'Library Event Points',
+  'standard-activity': 'Standard Activity Points',
+  'big-activity': 'Big Activity Points',
+  'super-activity': 'Super Activity Points',
+  review: 'Review Points',
+}
+const POINT_TYPE_ORDER = Object.keys(POINT_TYPE_LABELS)
+
+function PointsPage({ student }) {
+  const summary = student.pointsSummary ?? {}
+  const rows = POINT_TYPE_ORDER.filter((t) => summary[t] != null).map((t) => ({
+    type: t,
+    label: POINT_TYPE_LABELS[t],
+    total: summary[t],
+  }))
+  const total = rows.reduce((n, r) => n + r.total, 0)
+
+  return (
+    <div className="bp-content">
+      <Hero
+        icon={<PlumpyIcon name="points" size={22} />}
+        title="Points Summary"
+        accent={SECTION_ACCENT.points.text}
+        accentBg={SECTION_ACCENT.points.bg}
+      />
+      {rows.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title="No points earned"
+          description="This reader has not earned any points."
+        />
+      ) : (
+        <Card flush>
+          <Table
+            flush
+            scrollX
+            columns={[
+              {
+                key: 'label',
+                label: 'Point Type',
+                minWidth: 200,
+                render: (v) => <span className="bp-tbl-name">{v}</span>,
+              },
+              {
+                key: 'total',
+                label: 'Points',
+                minWidth: 96,
+                align: 'right',
+                render: (v) => <span className="bp-pts-value">{v.toLocaleString()}</span>,
+              },
+            ]}
+            rows={rows}
+            getRowKey={(r) => r.type}
           />
-        ) : (
-          shown.map((c) => (
-            <div key={c.name} className="bp-chal-row">
-              <div className="bp-chal-main">
-                <div className="bp-act-name">{c.name}</div>
-                <div className="bp-chal-dates">{c.dates}</div>
-                <div className="bp-chal-meta">
-                  <span>Started on: {c.startedOn}</span>
-                  {c.minutes != null && <span>Minutes reading: {c.minutes.toLocaleString()}</span>}
-                </div>
-                {/* The printable sheet, not a detour to the reading log. */}
-                <button type="button" className="bp-latest-link" onClick={() => setLogFor(c)}>
-                  View challenge log
-                  <Icon name="arrow-right" size={14} />
-                </button>
-              </div>
-              {/* Enrolment is a state, not a control — a green tick, not a checkbox */}
-              <span className="bp-chal-enrolled" aria-label="Enrolled">
-                <Icon name="check" size={15} stroke={2.6} />
-              </span>
-            </div>
-          ))
-        )}
-      </Card>
+          {/* Not in the app's table — but a column of subtotals with no total
+              is a sum you have to do yourself, and the reader's point balance
+              is the question the tab exists to answer. */}
+          <div className="bp-pts-total">
+            <span>Total</span>
+            <span className="bp-pts-value">{total.toLocaleString()}</span>
+          </div>
+        </Card>
+      )}
     </div>
   )
 }
@@ -5433,7 +6677,7 @@ function PlaceholderPage({ pageKey }) {
   return (
     <div className="bp-content">
       <Hero
-        icon={<Ic name={item?.icon || 'ti-user'} />}
+        icon={<PlumpyIcon name={item?.icon || 'user'} size={22} />}
         title={item?.label || pageKey}
         accent={accentFor(pageKey).text}
         accentBg={accentFor(pageKey).bg}
@@ -5784,6 +7028,8 @@ function ProfileBody({
                 />
               ) : activeSection === 'readinglog' ? (
                 <ReadingLogPage reader={student} />
+              ) : activeSection === 'points' ? (
+                <PointsPage student={student} />
               ) : activeSection === 'textchallenges' ? (
                 <TextChallengesPage student={student} />
               ) : activeSection === 'reviews' ? (
@@ -5795,9 +7041,9 @@ function ProfileBody({
               ) : activeSection === 'activities' ? (
                 <ActivitiesPage student={student} />
               ) : activeSection === 'drawings' ? (
-                <DrawingsPage student={student} />
+                <DrawingsPage student={student} key={student.name} />
               ) : activeSection === 'rewards' ? (
-                <RewardsPage student={student} />
+                <RewardsPage student={student} key={student.name} />
               ) : activeSection === 'challenges' ? (
                 <ChallengesPage student={student} />
               ) : (

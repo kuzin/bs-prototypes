@@ -1,0 +1,33 @@
+/* The trend chip — the app's tag applied to a lone arrow: a pastel `50` fill
+   under its `500`/`800` glyph, radius 12 (bs-product
+   admin/_admin_flagged_entries.scss). Square-ish, since there's one glyph to
+   centre rather than a number to run along. */
+.trend-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 22px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+/* $green50 / $green800 */
+.trend-chip--good {
+  background: #cbfce5;
+  color: #017841;
+}
+
+/* $red50 / $red500 */
+.trend-chip--bad {
+  background: #fdd2ce;
+  color: #df3f30;
+}
+
+/* Tooltip wraps the chip in its own span, which then owns whatever flex or
+   table slot the chip was sitting in — so it has to hold the same shape. */
+.trend-tip {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}

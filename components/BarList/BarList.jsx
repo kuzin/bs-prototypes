@@ -1,3 +1,4 @@
+import { TrendChip } from '@components/TrendChip/TrendChip'
 import '@components/BarList/BarList.css'
 
 function BarListRow({
@@ -14,11 +15,12 @@ function BarListRow({
   valueLabel,
   subValue,
   delta,
+  deltaFormat,
+  deltaInverse,
   showBar,
 }) {
   const pct = value != null ? Math.max(0, Math.min(100, (value / max) * 100)) : 0
   const hasDelta = delta != null && delta !== 0
-  const deltaPos = hasDelta && delta > 0
 
   const cls = [
     'bl-row',
@@ -60,12 +62,9 @@ function BarListRow({
         <div className="bl-right">
           {valueLabel != null && <span className="bl-value">{valueLabel}</span>}
           {subValue != null && <span className="bl-subvalue">{subValue}</span>}
-          {hasDelta && (
-            <span className={`bl-delta bl-delta--${deltaPos ? 'pos' : 'neg'}`}>
-              {deltaPos ? '↑' : '↓'}
-              {Math.abs(delta)}
-            </span>
-          )}
+          {/* One trend look across the system — see TrendChip. `deltaFormat`
+              lets a row say what its delta is measured in. */}
+          {hasDelta && <TrendChip delta={delta} format={deltaFormat} inverse={deltaInverse} />}
         </div>
       )}
     </div>

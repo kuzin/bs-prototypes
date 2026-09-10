@@ -110,7 +110,9 @@ export function Hero({
       )}
 
       <div className="hero-text">
-        <h2 className="hero-title">{resolvedTitle}</h2>
+        <h2 className="hero-title" title={typeof title === 'string' ? title : undefined}>
+          {resolvedTitle}
+        </h2>
         {subtitle && <div className="hero-sub">{subtitle}</div>}
       </div>
 
