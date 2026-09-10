@@ -289,6 +289,24 @@ const PLUMPY = {
     ),
   },
 
+  classroom: {
+    id: 'h3lIsfs6ABLR',
+    figma: 'icons8-classroom',
+    body: (
+      <>
+        <path
+          d="M18,15H3V6c0-1.657,1.343-3,3-3h12c1.657,0,3,1.343,3,3v6C21,13.657,19.657,15,18,15z"
+          opacity=".35"
+        />
+        <circle cx="6.5" cy="4.5" r="2.5" />
+        <path d="M13.929,8H5c-1.105,0-2,0.895-2,2v5h6v-3.691c0-0.259,0.191-0.479,0.447-0.516l4.584-0.655 c0.518-0.074,0.942-0.492,0.967-1.014C15.028,8.508,14.538,8,13.929,8z" />
+        <circle cx="12" cy="19" r="2" />
+        <circle cx="19" cy="19" r="2" />
+        <circle cx="5" cy="19" r="2" />
+      </>
+    ),
+  },
+
   // ── Profile sections ──────────────────────────────────────────────────
   // One Plumpy icon per destination on the reader profile, so the left rail
   // and each page's Hero run the same family as the rest of the admin chrome.

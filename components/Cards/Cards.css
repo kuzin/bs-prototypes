@@ -52,10 +52,13 @@
 }
 
 /* ── Chart / content card ──────────────────────────────────────────────── */
+/* `--c-gray-200` (#eaeaea) is the app's `$gray200`, which is what the shipped
+   admin borders and divides everything with. Radius 12 to match `.pcard` —
+   14 here and 12 there put two different card shapes on one page. */
 .rc-card {
   background: #fff;
   border: 1px solid var(--c-gray-200);
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -85,7 +88,7 @@
   align-items: center;
   gap: 10px;
   padding: 14px 16px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .rc-card-icon {

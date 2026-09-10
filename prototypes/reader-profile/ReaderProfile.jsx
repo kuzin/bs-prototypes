@@ -4345,12 +4345,10 @@ function PointsPage({ student }) {
             flush
             scrollX
             columns={[
-              {
-                key: 'label',
-                label: 'Point Type',
-                minWidth: 200,
-                render: (v) => <span className="rp-tbl-name">{v}</span>,
-              },
+              // Plain cell text: a column of point types is a list of labels,
+              // and at `.rp-tbl-name`'s 16px/800 every row read as a heading
+              // and out-weighed the Total under them.
+              { key: 'label', label: 'Point Type', minWidth: 200 },
               {
                 key: 'total',
                 label: 'Points',

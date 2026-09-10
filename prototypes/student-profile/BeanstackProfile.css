@@ -506,7 +506,7 @@
 /* ─── Action footer (suggested action at bottom of detail cards) ──────────── */
 .bp-action-footer-item {
   padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
   margin-top: 2px;
 }
 
@@ -854,7 +854,7 @@
   gap: 10px;
   padding: 12px 0;
   cursor: pointer;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
   transition: opacity 0.12s;
 }
 .bp-health-row:hover {
@@ -1142,7 +1142,7 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 14px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
   margin-bottom: 14px;
 }
 
@@ -1326,7 +1326,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 11px 0;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
   gap: 12px;
 }
 
@@ -1483,7 +1483,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 18px 13px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
   background: #fff;
   border-radius: 12px 12px 0 0;
 }
@@ -3087,7 +3087,7 @@
 .bp-rl-cal-week {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .bp-rl-cal-week:last-of-type {
@@ -3100,7 +3100,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-right: 1px solid #f0f0f0;
+  border-right: 1px solid var(--c-gray-200);
   cursor: pointer;
   transition: background 0.12s;
   position: relative;
@@ -3503,7 +3503,7 @@
   gap: 12px;
   margin: -16px -18px 14px;
   padding: 15px 18px 13px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .bp-latest-head .bp-section-heading {
@@ -3634,7 +3634,7 @@
 .bp-tb-item {
   margin: 0 -18px;
   padding: 12px 18px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-card > .bp-latest-head + .bp-tb-item {
@@ -3896,7 +3896,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 18px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-act-row:first-of-type {
@@ -4063,7 +4063,7 @@
   gap: 16px;
   padding: 9px 18px;
   background: #fafafa;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
   font-size: 13px;
   font-weight: 800;
   color: var(--c-slate-500);
@@ -4079,7 +4079,7 @@
   align-items: flex-start;
   gap: 18px;
   padding: 14px 18px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-act-modal-row:first-child {
@@ -4222,7 +4222,7 @@
   gap: 2px;
   margin: 14px -18px -16px;
   padding: 8px 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
   color: var(--c-slate-400);
 }
 
@@ -4325,7 +4325,7 @@
   gap: 12px;
   padding: 0 16px 11px;
   margin-bottom: 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 /* Says what the delta chips are measured against, once. */
@@ -4384,6 +4384,15 @@
   margin: 12px auto 8px;
 }
 
+/* The list closes with a line, like every row in it opens with one. It goes on
+   the last row rather than on the pill: `.bp-showmore` *is* the pill — tinted
+   and fully rounded — so a border on it would draw across its own top edge
+   instead of across the card. The rows are bled out to the card's edges, so
+   this matches the other dividers' width exactly. */
+.bp-statrow:has(+ .bp-showmore--incard) {
+  border-bottom: 1px solid var(--c-gray-200);
+}
+
 /* One row at every width: the switch keeps its natural width and the heading
    takes what's left, ellipsising rather than wrapping or shoving the pills
    onto a line of their own. */
@@ -4411,7 +4420,7 @@
   padding: 11px 16px;
   background: none;
   border: 0;
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-200);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -4443,9 +4452,14 @@
   margin-right: -18px;
 }
 
-/* The last row sits on the card's bottom edge — no trailing card padding. */
+/* The last row keeps the card's own bottom padding. It used to bleed to the
+   card's bottom edge — the row list reaching the edge like a table — but that
+   left its content 11px off a rounded corner where everything else in the card
+   gets 16px, and it read as the row being cut off. Its own bottom padding goes
+   instead of the card's, so the space is the card's and not the sum of both.
+   The side bleed stays: that's what makes the dividers span the full width. */
 .bp-card:not(.bp-card--flush):not(.bp-statlist) > .bp-statrow--static:last-child {
-  margin-bottom: -16px;
+  padding-bottom: 0;
 }
 
 /* The title rule is the first row's divider, so the row drops its own and the
@@ -4911,7 +4925,7 @@
 
 .bp-clog-td {
   padding: 9px 10px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-200);
   font-size: 15px;
   color: var(--c-slate-700);
   vertical-align: top;
@@ -5527,7 +5541,7 @@
      `margin-bottom` here just doubled the gap to 28px. */
   margin: -4px 0 0;
   padding: 9px 14px;
-  border: 1px solid var(--c-gray-250);
+  border: 1px solid var(--c-gray-200);
   border-radius: 10px;
   background: var(--c-gray-150);
   font-size: 15px;
@@ -5540,8 +5554,8 @@
 }
 
 /* ── Points summary ──────────────────────────────────────────────────────── */
+/* Plain in the rows; the Total below overrides it. */
 .bp-pts-value {
-  font-weight: 800;
   font-variant-numeric: tabular-nums;
   color: var(--c-text-real);
 }
@@ -5554,11 +5568,19 @@
   align-items: center;
   justify-content: space-between;
   padding: 14px 18px;
-  border-top: 1px solid var(--c-gray-250);
+  border-top: 1px solid var(--c-gray-200);
   background: var(--c-gray-150);
-  font-size: 14px;
+  /* The table's own 15px, so the total sits on the same line as the rows
+     it sums. Weight is the only thing separating them — the rows are plain
+     and this is the one figure that isn't. */
+  font-size: 15px;
   font-weight: 900;
   color: var(--c-gray-800);
+}
+
+.bp-pts-total .bp-pts-value {
+  font-weight: 900;
+  color: inherit;
 }
 
 /* ── Recommended books ───────────────────────────────────────────────────── */
@@ -5639,4 +5661,32 @@
      numbers beside it. Nudged up by its own optical offset. */
   transform: translateY(-1px);
   color: #fff;
+}
+
+/* ── Classes ─────────────────────────────────────────────────────────────────
+   The classroom name is a link to that section's page, so it looks like one —
+   the same blue-on-white a talk title uses in the Book Talks table. */
+.bp-class-link {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-fig-blue-600);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bp-class-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Filter bar ──────────────────────────────────────────────────────────────
+   The shipped `.filter-bar` is white with no border, which suited a page whose
+   cards had none either. Every card in the profile carries the app's
+   `$gray200` now, so the filter bar takes it too — scoped here, so the
+   component keeps the app's own default everywhere else. */
+.bp-content > .fltr {
+  border: 1px solid var(--c-gray-200);
 }

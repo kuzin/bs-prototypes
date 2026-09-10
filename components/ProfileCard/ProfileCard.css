@@ -5,6 +5,11 @@
 
 .pcard {
   background: #fff;
+  /* Bordered like `.rc-card`, in the app's own `$gray200`. A borderless white
+     card and a bordered one sat side by side down the same column, and on the
+     page's light ground the borderless one had almost nothing holding its
+     edge. */
+  border: 1px solid var(--c-gray-200);
   border-radius: 12px;
   padding: 16px 18px;
 }
@@ -30,12 +35,12 @@
 .pcard:not(.pcard--flush) > .pcard-title:first-child {
   margin: -16px -18px 14px;
   padding: 15px 18px 13px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 /* In a flush card the title supplies the padding the card gave up. */
 .pcard--flush > .pcard-title:first-child {
   padding: 15px 18px 13px;
   margin-bottom: 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
 }

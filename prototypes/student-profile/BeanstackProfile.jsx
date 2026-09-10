@@ -578,6 +578,7 @@ const SECTION_ACCENT = {
   habits: C.habits,
   skills: C.skills,
   readinglog: { bg: '#E0F2FE', text: '#0284C7' },
+  classes: { bg: '#E7F0FE', text: '#1D4ED8' },
   challenges: { bg: '#FEF3C7', text: '#B45309' },
   rewards: { bg: '#FCE7F3', text: '#9D174D' },
   drawings: { bg: '#EEF2FF', text: '#4F46E5' },
@@ -598,6 +599,8 @@ const NAV_ITEMS = [
   { icon: 'user', section: null, label: 'Overview' },
   // What the reader actually did comes before the analysis derived from it.
   { icon: 'reading', section: 'readinglog', label: 'Reading Log' },
+  // Second in the rail, as the ticket's mock has it.
+  { icon: 'classroom', section: 'classes', label: 'Classes' },
   { icon: 'challenges', section: 'challenges', label: 'Challenges' },
   { icon: 'fire', section: 'motivation', label: LABEL.motivation },
   { icon: 'chat', section: 'integrity', label: LABEL.integrity },
@@ -1986,6 +1989,14 @@ const STUDENTS = {
   // ── Marcus Chen — Exceptional ──────────────────────────────────────────────
   marcus: {
     name: 'Marcus Chen',
+    // `classes` — every section this student is rostered into, with the
+    // section's primary teacher. Two sections sharing a teacher is the case
+    // the ticket's mock shows.
+    classes: [
+      { name: 'MWD Science 0621 FDK', teacher: 'Camila Noceda' },
+      { name: 'MWD Biology 3272 WER', teacher: 'Camila Noceda' },
+      { name: 'MWD Math 716 UEIW', teacher: 'Raine Whispers' },
+    ],
     avatarColor: '#0F766E',
     // Marcus reads in Comics Plus, and is verified — his 1,000-minute read-a-thon
     // day is real, so his logs are trusted past the site's daily limit.
@@ -2808,6 +2819,10 @@ const STUDENTS = {
   // ── Anne Boonchuy — Normal ─────────────────────────────────────────────────
   anne: {
     name: 'Anne Boonchuy',
+    classes: [
+      { name: 'MWD English 0418 QLM', teacher: 'Sasha Waybright' },
+      { name: 'MWD Math 716 UEIW', teacher: 'Raine Whispers' },
+    ],
     avatarColor: '#7C3AED',
     // Anne logs at her public library too, so her school profile is tandemed.
     status: ['tandem', 'comicsplus'],
@@ -3568,6 +3583,7 @@ const STUDENTS = {
   // ── Tyler Voss — Struggling ────────────────────────────────────────────────
   tyler: {
     name: 'Tyler Voss',
+    classes: [{ name: 'MWD English 0418 QLM', teacher: 'Sasha Waybright' }],
     avatarColor: '#1D4ED8',
     // Tyler's over-logging is what a freeze is for: he keeps his profile, but
     // can't log for himself for ten days.
@@ -6642,12 +6658,10 @@ function PointsPage({ student }) {
             flush
             scrollX
             columns={[
-              {
-                key: 'label',
-                label: 'Point Type',
-                minWidth: 200,
-                render: (v) => <span className="bp-tbl-name">{v}</span>,
-              },
+              // Plain cell text: a column of point types is a list of labels,
+              // and at `.bp-tbl-name`'s 16px/800 every row read as a heading
+              // and out-weighed the Total under them.
+              { key: 'label', label: 'Point Type', minWidth: 200 },
               {
                 key: 'total',
                 label: 'Points',
@@ -6666,6 +6680,62 @@ function PointsPage({ student }) {
             <span>Total</span>
             <span className="bp-pts-value">{total.toLocaleString()}</span>
           </div>
+        </Card>
+      )}
+    </div>
+  )
+}
+
+// ─── Classes ──────────────────────────────────────────────────────────────────
+// Asana 1208185510273613, "Display sections and teachers in a reader's profile":
+// a `Classes` tab on school sites with a two-column table — Classroom (linking
+// to that section in Classes & Readers > Classes) and Teacher, the section's
+// primary teacher as "<First Name> <Last Name>".
+//
+// The ask behind it: a librarian reviewing sessions for review can't see whose
+// class a student is in, and reverse-searching it means running the Individual
+// Student Participation and Section Report. School-only, so this is the student
+// profile's tab and not the library reader's.
+function ClassesPage({ student, onOpenClass }) {
+  const classes = student.classes ?? []
+  return (
+    <div className="bp-content">
+      <Hero
+        icon={<PlumpyIcon name="classroom" size={22} />}
+        title="Classes"
+        accent={SECTION_ACCENT.classes.text}
+        accentBg={SECTION_ACCENT.classes.bg}
+      />
+      {classes.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title="No classes"
+          description="Sections this student is rostered into will show up here."
+        />
+      ) : (
+        <Card flush>
+          <Table
+            flush
+            scrollX
+            columns={[
+              {
+                key: 'name',
+                label: 'Classroom',
+                minWidth: 200,
+                // The ticket's link: it takes you to that section's page under
+                // Classes & Readers. Here that's the classroom behind the
+                // panel, so opening one closes the profile onto it.
+                render: (v) => (
+                  <button type="button" className="bp-class-link" onClick={() => onOpenClass?.(v)}>
+                    {v}
+                  </button>
+                ),
+              },
+              { key: 'teacher', label: 'Teacher', minWidth: 140 },
+            ]}
+            rows={classes}
+            getRowKey={(c) => c.name}
+          />
         </Card>
       )}
     </div>
@@ -6698,7 +6768,12 @@ function PlaceholderPage({ pageKey }) {
  * note the Daily Reading body is now gated on the selected tab, where before it
  * rendered whichever tab was active.
  */
-export function ClassroomView({ onStudentClick, extraTabs = [], renderExtra }) {
+export function ClassroomView({
+  onStudentClick,
+  className = 'Class A',
+  extraTabs = [],
+  renderExtra,
+}) {
   const [admTab, setAdmTab] = useState('daily')
   const extraIds = extraTabs.map((t) => t.id)
   return (
@@ -6738,7 +6813,7 @@ export function ClassroomView({ onStudentClick, extraTabs = [], renderExtra }) {
         <div className="bp-adm-main-body">
           <BackBar label="Back to Classes" />
           <PageHeader
-            title="Class A"
+            title={className}
             actions={
               <>
                 <Button variant="secondary">Print</Button>
@@ -6973,6 +7048,7 @@ function ProfileBody({
   onToggleExpand,
   currentKey,
   onSelectStudent,
+  onOpenClass,
   extraNav = [],
   renderExtra,
 }) {
@@ -7028,6 +7104,8 @@ function ProfileBody({
                 />
               ) : activeSection === 'readinglog' ? (
                 <ReadingLogPage reader={student} />
+              ) : activeSection === 'classes' ? (
+                <ClassesPage student={student} onOpenClass={onOpenClass} />
               ) : activeSection === 'points' ? (
                 <PointsPage student={student} />
               ) : activeSection === 'textchallenges' ? (
@@ -7158,6 +7236,16 @@ export default function BeanstackProfile() {
     else writeHash(selectedStudentKey, activeSection, profileMode)
   }, [profileMode, selectedStudentKey, activeSection])
 
+  // The class a profile's Classes tab sent us to. The ticket's link "takes the
+  // user to that section's page in Classes & Readers > Classes" — here that
+  // page is the classroom behind the panel, so opening a section names it and
+  // closes the profile onto it.
+  const [shownClass, setShownClass] = useState('Class A')
+  const openClass = (name) => {
+    setShownClass(name)
+    closeProfile()
+  }
+
   // Slide out the way it slid in, then unmount — the panel used to vanish on
   // the same frame as the click.
   const closeProfile = () => {
@@ -7173,7 +7261,7 @@ export default function BeanstackProfile() {
     <div className="bp-shell">
       {/* Admin bg */}
       <div className={`bp-shell-admin${profileMode === 'full' ? ' bp-shell-admin--hidden' : ''}`}>
-        <ClassroomView onStudentClick={handleStudentClick} />
+        <ClassroomView onStudentClick={handleStudentClick} className={shownClass} />
       </div>
 
       {/* Dim overlay */}
@@ -7202,6 +7290,7 @@ export default function BeanstackProfile() {
               onToggleExpand={toggleExpand}
               currentKey={selectedStudentKey}
               onSelectStudent={setSelectedStudentKey}
+              onOpenClass={openClass}
             />
           </div>
         </div>
