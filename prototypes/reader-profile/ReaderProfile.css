@@ -4612,14 +4612,20 @@
   margin-right: -18px;
 }
 
-/* The last row keeps the card's own bottom padding. It used to bleed to the
-   card's bottom edge — the row list reaching the edge like a table — but that
-   left its content 11px off a rounded corner where everything else in the card
-   gets 16px, and it read as the row being cut off. Its own bottom padding goes
-   instead of the card's, so the space is the card's and not the sum of both.
-   The side bleed stays: that's what makes the dividers span the full width. */
+/* The last row used to bleed to the card's bottom edge — the row list reaching
+   the edge like a table — which left its content 11px off a rounded corner
+   where everything else in the card gets 16px, and read as the row being cut
+   off. Dropping the row's own bottom padding instead was worse: 11px above the
+   content and 0 below made the row itself lopsided, and its band looked
+   squashed next to the rows above.
+
+   So the row stays symmetric and the *card's* padding gives way. What's left
+   under the content is the row's own 11px plus 11px of the card's — 22px,
+   which is exactly the gap between two rows' content, so the last row sits in
+   the same rhythm as the rest. The side bleed stays: that's what makes the
+   dividers span the full width. */
 .rp-card:not(.rp-card--flush):not(.rp-statlist) > .rp-statrow--static:last-child {
-  padding-bottom: 0;
+  margin-bottom: calc(-1 * (16px - 11px));
 }
 
 /* The title rule is the first row's divider, so the row drops its own and the
