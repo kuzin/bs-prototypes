@@ -613,7 +613,7 @@ const NAV_ITEMS = [
   { icon: 'certificate', section: 'achievements', label: 'Achievements' },
   { icon: 'star', section: 'reviews', label: 'Reviews' },
   { icon: 'paragraph', section: 'textchallenges', label: 'Text Box' },
-  { icon: 'points', section: 'points', label: 'Points Summary' },
+  { icon: 'points', section: 'points', label: 'Points' },
 ]
 const ANALYSIS_SECTIONS = new Set(['motivation', 'integrity', 'habits', 'skills'])
 
@@ -1942,18 +1942,24 @@ function SkillsDetail({ sec, c }) {
           **no** horizontal ones, no X labels — the date comes from the tooltip
           — and Y ticks every 50. Its period selector sits above the plot. */}
       <Card>
+        {/* One header row, like every other card's: the title, and on the
+            right the period with the steppers that move it. The period used to
+            sit on a line of its own under the title, which left the arrows
+            floating in the card's corner beside nothing. */}
         <div className="bp-lex-head">
           <SectionHeading>Lexile trend</SectionHeading>
-          <div className="bp-rl-month-arrows">
-            <button className="bp-heatmap-nav-btn" aria-label="Previous period">
-              <Icon name="chevron-left" size={16} stroke={2.4} />
-            </button>
-            <button className="bp-heatmap-nav-btn" aria-label="Next period" disabled>
-              <Icon name="chevron-right" size={16} stroke={2.4} />
-            </button>
+          <div className="bp-lex-period-nav">
+            <span className="bp-lex-period">{lexilePeriod}</span>
+            <div className="bp-rl-month-arrows">
+              <button className="bp-heatmap-nav-btn" aria-label="Previous period">
+                <Icon name="chevron-left" size={16} stroke={2.4} />
+              </button>
+              <button className="bp-heatmap-nav-btn" aria-label="Next period" disabled>
+                <Icon name="chevron-right" size={16} stroke={2.4} />
+              </button>
+            </div>
           </div>
         </div>
-        <span className="bp-lex-period">{lexilePeriod}</span>
         <div className="bp-chart-fit" style={{ '--chart-h': '180px' }}>
           <TrendChart
             type="line"
@@ -6627,7 +6633,7 @@ function ChallengesPage({ student }) {
   )
 }
 
-// ─── Points Summary ───────────────────────────────────────────────────────────
+// ─── Points ───────────────────────────────────────────────────────────────────
 // The app's `_points_summary.html.haml`: one row per point type with its
 // running total, and nothing else — no dates, no source, no drill-in. The ten
 // types are the ones the partial switches on, in its order.
@@ -6658,7 +6664,7 @@ function PointsPage({ student }) {
     <div className="bp-content">
       <Hero
         icon={<PlumpyIcon name="points" size={22} />}
-        title="Points Summary"
+        title="Points"
         accent={SECTION_ACCENT.points.text}
         accentBg={SECTION_ACCENT.points.bg}
       />

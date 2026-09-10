@@ -283,6 +283,13 @@
   letter-spacing: 0.01em;
   line-height: 1.25;
   min-width: 0;
+  /* One line per row, always. A name long enough to wrap made its row taller
+     than every other, broke the rail's rhythm and left the icon sitting above
+     the label's centre instead of beside it. Clipped instead — the row already
+     carries the full name in `title`. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* The rail's own two tones, from the shipped app's hand-vendored icons
@@ -4608,6 +4615,12 @@
   width: auto;
   margin-left: -18px;
   margin-right: -18px;
+  /* Bled to the card's edges, a row owes the card's own 18px back — its stock
+     16px sat the icon 2px inside the title above it. This is the whole list,
+     not just the first row: patching the first one alone (which is how it was)
+     stepped the icons and the figures in and out down the card. */
+  padding-left: 18px;
+  padding-right: 18px;
 }
 
 /* A bled row list ends on the card's own padding — not on the sum of the
@@ -4772,6 +4785,31 @@
   white-space: nowrap;
   color: var(--c-text-muted);
   flex-shrink: 0;
+}
+
+/* ─── The figures read as a column ────────────────────────────────────────────
+   Whatever annotates a figure — a trend chip, a caption — sits in a lane of its
+   own beside it, and a row with nothing to annotate reserves that same lane.
+   Otherwise the annotated rows push their figure left and the bare ones run on
+   to the card's edge, so the figures no longer line up down the card. The lane
+   only exists in a card that has an annotation somewhere. */
+.rp-card:has(.rp-statrow > .trend-tip) {
+  --stat-trail: 26px; /* a chip */
+}
+
+/* A caption is wider than a chip, so one caption widens the lane for every row
+   in that card — the alternative is a column that steps in and out. */
+.rp-card:has(.rp-statrow > .rp-statrow-note) {
+  --stat-trail: 58px;
+}
+
+.rp-statrow > .trend-tip,
+.rp-statrow > .rp-statrow-note {
+  flex: 0 0 var(--stat-trail, auto);
+}
+
+.rp-statrow:not(:has(> .trend-tip, > .rp-statrow-note)) .rp-statrow-value {
+  margin-right: calc(var(--stat-trail, 0px) + 12px);
 }
 
 /* ─── Find a Person ───────────────────────────────────────────────────────────
@@ -5777,18 +5815,14 @@
     display: none;
   }
 }
-/* Two fixes for a stat row sitting directly under a card's header bar.
-   The gap: `.rp-card:has(> .rp-statrow--static) > .rp-section-heading` already
-   zeroes the heading's bottom margin, but ProfileCard.css loads *after* this
-   file and its own `.pcard-title:first-child` margin wins — so the 14px comes
-   back and stacks on the row's padding. Cancelling it here beats the order.
-   The inset: the row is bled out to the card's edges by the rule above, so it
-   owes the card's own 18px — its stock 16px left the icon off the title's edge,
-   and zeroing it (briefly) put the content flat on the border. */
+/* A stat row sitting directly under a card's header bar.
+   `.rp-card:has(> .rp-statrow--static) > .rp-section-heading` already zeroes
+   the heading's bottom margin, but ProfileCard.css loads *after* this file and
+   its own `.pcard-title:first-child` margin wins — so the 14px comes back and
+   stacks on the row's padding. Cancelling it here beats the order. The row's
+   own inset is the list's, set with the bleed above. */
 .pcard > .pcard-title:first-child + .rp-statrow {
   margin-top: -14px;
-  padding-left: 18px;
-  padding-right: 18px;
 }
 
 /* ── Activity types ─────────────────────────────────────────────────────────
