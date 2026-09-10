@@ -203,8 +203,12 @@
   color: var(--c-amber-600);
 }
 
-/* Action column — right-aligned and vertically centered */
-.tbl-td:last-child {
+/* Action column — right-aligned and vertically centered. Scoped like the rest
+   of this file: unscoped it right-aligned the last cell of *every* table in
+   any prototype that imports this CSS, which student-profile does by way of
+   `SessionModal` — a two-column Classes table came out with its Teacher
+   column hard against the card's right edge. */
+.sess-table .tbl-td:last-child {
   text-align: right;
   vertical-align: middle;
   white-space: nowrap;
