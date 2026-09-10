@@ -3632,17 +3632,14 @@
    Prompt + the reader's own answer, one hairline-divided item per response.
    Same edge-to-edge bleed as the stat rows so the card reads as one list. */
 .bp-tb-item {
+  --row-pad-y: 12px;
   margin: 0 -18px;
-  padding: 12px 18px;
+  padding: var(--row-pad-y) 18px;
   border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-card > .bp-latest-head + .bp-tb-item {
   border-top: 0;
-}
-
-.bp-card:not(.bp-card--flush) > .bp-tb-item:last-child {
-  margin-bottom: -16px;
 }
 
 .bp-tb-head {
@@ -4413,11 +4410,12 @@
 }
 
 .bp-statrow {
+  --row-pad-y: 11px;
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 11px 16px;
+  padding: var(--row-pad-y) 16px;
   background: none;
   border: 0;
   border-top: 1px solid var(--c-gray-200);
@@ -4452,20 +4450,21 @@
   margin-right: -18px;
 }
 
-/* The last row used to bleed to the card's bottom edge — the row list reaching
-   the edge like a table — which left its content 11px off a rounded corner
-   where everything else in the card gets 16px, and read as the row being cut
-   off. Dropping the row's own bottom padding instead was worse: 11px above the
-   content and 0 below made the row itself lopsided, and its band looked
-   squashed next to the rows above.
+/* A bled row list ends on the card's own padding — not on the sum of the
+   card's and the row's, which is what kept going wrong here. The last row
+   hands its bottom padding back, so under its content there is exactly the
+   16px the card gives everything else, while the row itself stays symmetric
+   (11px above and below its content, like every row above it). Each family
+   that bleeds declares what it has to give in `--row-pad-y`.
 
-   So the row stays symmetric and the *card's* padding gives way. What's left
-   under the content is the row's own 11px plus 11px of the card's — 22px,
-   which is exactly the gap between two rows' content, so the last row sits in
-   the same rhythm as the rest. The side bleed stays: that's what makes the
-   dividers span the full width. */
-.bp-card:not(.bp-card--flush):not(.bp-statlist) > .bp-statrow--static:last-child {
-  margin-bottom: calc(-1 * (16px - 11px));
+   Bleeding to the card's bottom edge instead — the row list reaching the edge
+   like a table — left the content 11px off a rounded corner and read as cut
+   off; leaving both paddings to stack read as a hole under the last row. The
+   side bleed stays either way: that's what makes the dividers span the full
+   width. */
+.bp-card:not(.bp-card--flush):not(.bp-statlist) > .bp-statrow--static:last-child,
+.bp-card:not(.bp-card--flush) > .bp-tb-item:last-child {
+  margin-bottom: calc(-1 * var(--row-pad-y));
 }
 
 /* The title rule is the first row's divider, so the row drops its own and the
