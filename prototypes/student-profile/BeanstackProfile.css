@@ -4258,9 +4258,9 @@
    "this word opens something" reads the same way across the prototype. */
 .bp-talk-title {
   font-family: inherit;
-  /* A rung under the cell's own 15px: it's a link in a row, not the row's
-     heading, and at cell size it out-weighed the date beside it. */
-  font-size: 14px;
+  /* The cell's own size — a link in a table row reads as row copy, and a rung
+     under it made this column look shrunken beside every other table. */
+  font-size: inherit;
   font-weight: 700;
   color: var(--c-fig-blue-600);
   background: none;
@@ -5695,4 +5695,59 @@
    component keeps the app's own default everywhere else. */
 .bp-content > .fltr {
   border: 1px solid var(--c-gray-200);
+}
+
+/* ── Lexile trend ────────────────────────────────────────────────────────────
+   The shipped chart's chrome: the heading with the period steppers on its
+   right, and the span it covers under them
+   (`lexile-chart__weeks-selector` / `__current-period`). */
+.bp-lex-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.bp-lex-head .bp-section-heading {
+  margin-bottom: 0;
+}
+
+.bp-lex-period {
+  display: block;
+  margin: 2px 0 10px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-slate-500);
+}
+
+/* The shipped chart's tooltip, ported from `#chartjs-tooltip`
+   (bs-product `admin/components/_charts.scss`): a `#2a2a2a` chip at 12px
+   radius holding the value over the word "Average", centred, and nothing
+   else — no date, no series name. */
+.bp-lex-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: #2a2a2a;
+}
+
+.bp-lex-tip-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #fff;
+  text-align: center;
+}
+
+.bp-lex-tip-caption {
+  display: block;
+  margin-top: -3px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #fff;
+  text-align: center;
 }

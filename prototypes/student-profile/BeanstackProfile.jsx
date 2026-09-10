@@ -1899,6 +1899,10 @@ function LexileDelta({ value, suffix }) {
 
 function SkillsDetail({ sec, c }) {
   const lexileAxis = niceLexileAxis([...sec.lexileHistory.map((d) => d.avg), sec.gradeLevel])
+  // The app labels the plot with the span it covers and steps through it with
+  // the arrows beside — `lexile-chart__current-period` and its two
+  // IconButtons. Derived from the history so the two can't disagree.
+  const lexilePeriod = `${sec.lexileHistory[0]?.month} – ${sec.lexileHistory[sec.lexileHistory.length - 1]?.month}`
 
   // Every figure below is derived from the titles and the history already on
   // the page — nothing authored separately that could drift from the chart.
@@ -1932,39 +1936,51 @@ function SkillsDetail({ sec, c }) {
         </StatRow>
       </Card>
 
+      {/* Drawn the way the shipped chart is (bs-product
+          `NewAdmin/ReaderProfile/.../LexileChart`): coral `#F26430` at 2px with
+          a 6px marker ringed in white, vertical gridlines in `$gray200` and
+          **no** horizontal ones, no X labels — the date comes from the tooltip
+          — and Y ticks every 50. Its period selector sits above the plot. */}
       <Card>
-        <SectionHeading>Lexile trend</SectionHeading>
+        <div className="bp-lex-head">
+          <SectionHeading>Lexile trend</SectionHeading>
+          <div className="bp-rl-month-arrows">
+            <button className="bp-heatmap-nav-btn" aria-label="Previous period">
+              <Icon name="chevron-left" size={16} stroke={2.4} />
+            </button>
+            <button className="bp-heatmap-nav-btn" aria-label="Next period" disabled>
+              <Icon name="chevron-right" size={16} stroke={2.4} />
+            </button>
+          </div>
+        </div>
+        <span className="bp-lex-period">{lexilePeriod}</span>
         <div className="bp-chart-fit" style={{ '--chart-h': '180px' }}>
           <TrendChart
             type="line"
-            data={sec.lexileHistory.map((d) => ({
-              month: d.month,
-              avg: d.avg,
-              grade: sec.gradeLevel,
-            }))}
+            data={sec.lexileHistory.map((d) => ({ month: d.month, avg: d.avg }))}
             xKey="month"
             yDomain={lexileAxis.domain}
             yTicks={lexileAxis.ticks}
             yUnit="L"
             height="sm"
-            series={[
-              { key: 'avg', name: 'Lexile', color: c.bar },
-              {
-                key: 'grade',
-                name: sec.gradeLevelLabel || 'Grade level',
-                color: '#9CA3AF',
-                dashed: true,
-                fillOpacity: 0,
-              },
-            ]}
+            gridX
+            gridY={false}
+            xAxisHidden
+            points
+            series={[{ key: 'avg', name: 'Lexile', color: LEXILE_LINE, strokeWidth: 2 }]}
+            /* The app's own tooltip: a dark chip carrying the value over the
+               word "Average" and nothing else — no date, no series name —
+               centred above the point it belongs to (`externalTooltip.ts` +
+               `admin/components/_charts.scss`). */
+            pointTooltip
+            tooltipContent={({ payload }) => (
+              <div className="bp-lex-tip">
+                <span className="bp-lex-tip-value">{payload[0]?.value}L</span>
+                <span className="bp-lex-tip-caption">Average</span>
+              </div>
+            )}
           />
         </div>
-        <ChartLegend
-          items={[
-            { color: c.bar, label: 'Monthly Lexile' },
-            { color: '#9CA3AF', label: sec.gradeLevelLabel || 'Grade level', dashed: true },
-          ]}
-        />
       </Card>
 
       <ShowMore label="recent titles">
@@ -6685,6 +6701,11 @@ function PointsPage({ student }) {
     </div>
   )
 }
+
+// The shipped Lexile chart's own colour — `#F26430`, set on both the line and
+// its markers in `useChartData.ts`. Not the section's accent: this one chart
+// carries the product's own hue.
+const LEXILE_LINE = '#F26430'
 
 // ─── Classes ──────────────────────────────────────────────────────────────────
 // Asana 1208185510273613, "Display sections and teachers in a reader's profile":
