@@ -384,21 +384,21 @@ export function TrendChart({
           const header = slice.points[0]?.data?.x
           if (tooltipContent) {
             const payload = slice.points.map((p) => {
-              const cfg = cfgByName.get(p.serieId)
+              const cfg = cfgByName.get(p.seriesId)
               return {
                 payload: rowByX.get(p.data.x),
                 value: p.data.y,
-                name: p.serieId,
-                color: p.serieColor,
+                name: p.seriesId,
+                color: p.seriesColor,
                 dataKey: cfg?.key,
               }
             })
             return tooltipContent({ payload, label: header })
           }
           const rows = slice.points.map((p) => {
-            const cfg = cfgByName.get(p.serieId)
-            const [v, n] = applyFmt(p.data.y, p.serieId, cfg?.isRight)
-            return { name: n, value: v, color: p.serieColor }
+            const cfg = cfgByName.get(p.seriesId)
+            const [v, n] = applyFmt(p.data.y, p.seriesId, cfg?.isRight)
+            return { name: n, value: v, color: p.seriesColor }
           })
           return <TcTooltip header={header} rows={rows} accent={accent} />
         }}

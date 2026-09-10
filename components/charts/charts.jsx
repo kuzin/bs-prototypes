@@ -51,6 +51,10 @@ function deltaParts(curr, prev, { inverse = false } = {}) {
   return { delta, cls: good ? 'up' : 'down', arrow: delta > 0 ? '▲' : '▼' }
 }
 
+// A line-chart slice point is `{ seriesId, seriesColor }` — @nivo/line renamed
+// both from `serieId` / `serieColor`, and reading the old names silently gave
+// every row a blank label and no dot colour. @nivo/scatterplot still says
+// `serieId`, so don't "fix" the scatter charts to match.
 export function SliceTooltip({
   slice,
   allData,
@@ -70,19 +74,19 @@ export function SliceTooltip({
     <div className="sdb-tooltip" style={{ '--tip-accent': accent }}>
       <div className="sdb-tooltip-header">{month}</div>
       {slice.points.map((pt) => {
-        const field = seriesMap?.[pt.serieId]
+        const field = seriesMap?.[pt.seriesId]
         const prevVal = field && prev ? prev[field] : null
-        const isInverse = inverseSeries.includes(pt.serieId)
+        const isInverse = inverseSeries.includes(pt.seriesId)
         const { delta, cls, arrow } = deltaParts(pt.data.y, prevVal, { inverse: isInverse })
         return (
           <div
             key={pt.id}
             className="sdb-tooltip-series"
-            style={{ '--series-color': pt.serieColor }}
+            style={{ '--series-color': pt.seriesColor }}
           >
             <div className="sdb-tooltip-row">
               <span className="sdb-tooltip-dot" />
-              <span className="sdb-tooltip-label">{pt.serieId}</span>
+              <span className="sdb-tooltip-label">{pt.seriesId}</span>
               <span className="sdb-tooltip-val">{formatY ? formatY(pt.data.y) : pt.data.y}</span>
             </div>
             {delta != null && (

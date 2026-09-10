@@ -105,8 +105,8 @@ export function SchoolIntegrity({ schoolId }) {
                   formatY={(v) => `${v}%`}
                   formatDelta={(d) => `${d > 0 ? '+' : ''}${d}pp`}
                   context={(s) => {
-                    const comp = s.points.find((p) => p.serieId === 'Book Talk completion')?.data.y
-                    const flag = s.points.find((p) => p.serieId === 'Flag rate')?.data.y
+                    const comp = s.points.find((p) => p.seriesId === 'Book Talk completion')?.data.y
+                    const flag = s.points.find((p) => p.seriesId === 'Flag rate')?.data.y
                     if (comp == null || flag == null) return null
                     const ratio = ((comp / (comp + flag)) * 100).toFixed(0)
                     return (
