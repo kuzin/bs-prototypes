@@ -14,8 +14,11 @@
   padding: 0;
 }
 
+/* One step down the ladder from 18: at 18px/800 the card title carried more
+   weight than the section hero above it, which is the thing that's meant to
+   lead. 16px still sits clear of the 15px body underneath. */
 .pcard-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--c-text-real);
   margin-bottom: 12px;

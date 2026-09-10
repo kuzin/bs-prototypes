@@ -6,12 +6,18 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 
-// Extrinsic-motivation accent — shared by the split donut and the motivator
-// rankings so intrinsic vs. extrinsic reads consistently.
-export const EXTRINSIC_COLOR = '#94A3B8'
+// The index's own two colours, from the RMI engine's summary page
+// (bs-product admin/_rmi_summary.scss: `.factor-icon--intrinsic` is `$teal600`,
+// `.factor-icon--extrinsic` is `$purple600`). Shared by the donut rings, the
+// index-over-time lines and the motivator rankings, so intrinsic vs. extrinsic
+// reads the same everywhere. These are the index's colours, not the Motivation
+// section's accent — the section's coral used to stand in for intrinsic, which
+// made the same coral mean two different things on one page.
+export const INTRINSIC_COLOR = '#0CA7BC'
+export const EXTRINSIC_COLOR = '#C849E5'
 
-export function DonutChart({ value, max, label, color, size = 84, trend }) {
-  const sw = 9
+export function DonutChart({ value, max, label, color, size = 108, trend }) {
+  const sw = 13
   const r = (size - sw) / 2
   const circ = 2 * Math.PI * r
   const dash = circ * Math.max(0, Math.min(1, value / max))
@@ -50,10 +56,10 @@ export function SplitDonutChart({
   max,
   label,
   intrinsicColor,
-  size = 84,
+  size = 108,
   trend,
 }) {
-  const sw = 9
+  const sw = 13
   const r = (size - sw) / 2
   const circ = 2 * Math.PI * r
   const mid = size / 2
@@ -261,7 +267,14 @@ export function ReadingHeatmap({ goalMinutes, color, data }) {
                     : `${label} · ${minsTxt}`
               }
             >
-              <span className="bp-heatmap-daynum">{cell.day}</span>
+              {/* A day that hit the goal wears a star instead of its number.
+                  The date is still in the tooltip, and on the goal fill the
+                  digit was the least interesting thing in the cell. */}
+              {goalMet ? (
+                <Icon name="star-filled" size={15} className="bp-heatmap-star" />
+              ) : (
+                <span className="bp-heatmap-daynum">{cell.day}</span>
+              )}
             </div>
           )
         })}

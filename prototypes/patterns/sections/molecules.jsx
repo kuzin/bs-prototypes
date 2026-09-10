@@ -1,6 +1,7 @@
 import { Fragment, useState } from 'react'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
+import { ToastStack, useToasts } from '@components/Toast/Toast'
 import { Flyout } from '@components/Flyout/Flyout'
 import { Modal } from '@components/Modal/Modal'
 import { Table } from '@components/Table/Table'
@@ -29,6 +30,38 @@ import {
   MoreIcon,
   TABLE_ROWS,
 } from './_shared'
+
+function ToastDemo() {
+  const { toasts, push, dismiss } = useToasts()
+  return (
+    <>
+      <div className="pt-variant-frame--row" style={{ display: 'flex', gap: 8, padding: 14 }}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => push({ title: 'Activity marked complete', body: 'Space' })}
+        >
+          success
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => push({ title: 'Badge earned', body: 'Space', tone: 'info' })}
+        >
+          info
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => push({ title: 'Nothing to update', tone: 'warning' })}
+        >
+          warning
+        </Button>
+      </div>
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </>
+  )
+}
 
 function TabsShowcase() {
   const [a, setA] = useState('daily')
@@ -951,7 +984,6 @@ function TableKnobs() {
   const [compact, setCompact] = useState(false)
   const [bordered, setBordered] = useState(false)
   const [flush, setFlush] = useState(false)
-  const [collapse, setCollapse] = useState(false)
   const [stickyHeader, setStickyHeader] = useState(false)
   const [sortable, setSortable] = useState(false)
   const [defaultSortKey, setDefaultSortKey] = useState('none')
@@ -1003,9 +1035,6 @@ function TableKnobs() {
         <Field label="flush">
           <Toggle checked={flush} onChange={setFlush} />
         </Field>
-        <Field label="collapse">
-          <Toggle checked={collapse} onChange={setCollapse} />
-        </Field>
         <Field label="stickyHeader">
           <Toggle checked={stickyHeader} onChange={setStickyHeader} />
         </Field>
@@ -1052,7 +1081,6 @@ function TableKnobs() {
           compact={compact}
           bordered={bordered}
           flush={flush}
-          collapse={collapse}
           stickyHeader={stickyHeader}
           scrollX={scrollX}
           className={scrollX ? 'pt-tbl-wide' : ''}
@@ -1313,6 +1341,37 @@ export const moleculesSections = [
     render: () => (
       <>
         <SettingRowShowcase />
+      </>
+    ),
+  },
+  {
+    group: 'molecules',
+    id: 'toast',
+    name: 'Toast',
+    desc: (
+      <>
+        A bottom-right stack of short confirmations, ported from the app&apos;s own toastr
+        (bs-product <code>lib/_toastr.scss</code>): radius 12, 15px, a flat pastel ground per tone
+        with the matching dark text — <code>$pastelGreen</code>/<code>$darkGreen</code>,{' '}
+        <code>$pastelDenim</code>/<code>$darkDenim</code>, <code>$pastelYellow</code>/
+        <code>$darkYellow</code> — capped at 500px on a 6px gap. Lifted clear of the PrototypeNav
+        bar, which the real app doesn&apos;t have.
+        <br />
+        <br />
+        For the thing that just happened and needs acknowledging but not deciding about: an activity
+        ticked off, a badge awarded, a goal saved. Anything the user has to answer is a{' '}
+        <code>Modal</code>. <code>useToasts()</code> owns the queue —{' '}
+        <code>{'{ toasts, push, dismiss }'}</code> — and <code>&lt;ToastStack&gt;</code> renders it;
+        it&apos;s a hook rather than a context so a page can hold its own without a provider. The
+        stack is <code>position: fixed</code>, so mount it once per page. Each toast clears itself
+        after 4s.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="push one — bottom right, auto-dismiss" full>
+          <ToastDemo />
+        </Variant>
       </>
     ),
   },

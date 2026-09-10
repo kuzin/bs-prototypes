@@ -105,7 +105,7 @@
 }
 
 .sb-topbar-page-sub {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.55);
   margin-top: 1px;
@@ -448,7 +448,7 @@
 }
 
 .sb-nav-section {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.07em;
   text-transform: uppercase;

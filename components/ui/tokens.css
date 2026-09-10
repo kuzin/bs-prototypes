@@ -67,6 +67,11 @@
   --c-accent-hover: #5b8bd8;
   --c-accent-dark-5: #2c63ba;
   --c-accent-wash: #ebf1fa;
+  /* `$pastelDenim` — the app's own light blue, and a real pair: it's the fill
+     behind `#326ece` text on a selected multiselect row and in the denim tag.
+     `--c-accent-wash` above is a `lighten()` result and only a few percent off
+     the page's grey ground, so it can't carry a control on its own. */
+  --c-accent-pastel: #dde9f9;
   --c-focus-blue: #6dafff;
 
   /* The Figma design system's Blue ramp. Newer than the shipped Sass above and
@@ -119,7 +124,43 @@
   /* Kept as an alias for call sites that already asked for the real stack. */
   --font-real: var(--font-sans);
 
-  /* Type scale (px) — 13px is the body default */
+  /* ── Type scale ────────────────────────────────────────────────────────────
+     The sizes the shipped app actually renders, named for the role it renders
+     them in. Counted across bs-product's stylesheets, its whole text scale is
+     14 (311×) · 16 (180×) · 15 (172×) · 13 (126×) · 18 (122×) · 12 (60×) ·
+     22 (52×) · 20 (50×) · 24 (40×) · 30 (4×) — and effectively no fractional
+     sizes at all. Anything between these rungs is drift.
+
+     The roles come from `lib/_typography.scss` and the component Sass:
+       30  page title (`h1`)
+       24  section head (`h2` / `subhead`)
+       20  card head (`h3` / `body`)
+       18  modal title (`.modal__title`)
+       17  sidebar nav row (`.main-nav strong`) — the one odd rung, and real
+       16  body (`p` / `body-2` / `h4`), and the default `select`
+       15  table cell (`td`), and the `sm` control
+       14  label, table header (`th`), button, `caption`
+       13  tag / pill
+       12  micro — the floor for text
+     Above 30 is the display tier: figures drawn to fit a graphic (a donut's
+     centre, a stat numeral, a stepper value), sized to the art, not to a
+     rung. */
+  --text-title: 30px;
+  --text-head: 24px;
+  --text-subhead: 20px;
+  --text-modal: 18px;
+  --text-nav: 17px;
+  --text-body: 16px;
+  --text-cell: 15px;
+  --text-label: 14px;
+  --text-tag: 13px;
+  --text-micro: 12px;
+
+  /* Legacy t-shirt names, pinned to the values they already had. They came
+     from a 13px-body ladder that predates the real theme — `--text-base: 13px`
+     is not the app's body size — and `gameboard-reader` is the only prototype
+     still on them. Use the role names above in new work; migrate a call site
+     when you're next in that prototype. */
   --text-2xs: 10px;
   --text-xs: 11px;
   --text-sm: 12px;

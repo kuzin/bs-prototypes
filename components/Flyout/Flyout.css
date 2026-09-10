@@ -56,16 +56,21 @@
   gap: 2px;
 }
 
+/* 14px / 600 on a 15px-tall padding, which is what the app's own menus run at
+   (`.ms-drop label` is 14px / 600 on `12px 20px`; the profile's Actions list is
+   14px / 1.4). 13px read as fine print for a list of things you're choosing
+   between. */
 .flyout-menu-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 9px 12px;
   border-radius: 6px;
   background: none;
   border: none;
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
+  font-weight: 600;
   color: var(--c-slate-800);
   text-align: left;
   cursor: pointer;

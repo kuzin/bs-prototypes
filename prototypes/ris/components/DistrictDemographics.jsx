@@ -344,7 +344,7 @@ export function DistrictDemographics() {
         >
           <Table
             flush
-            collapse
+            scrollX
             columns={ACTION_COLUMNS}
             rows={ACTIONS}
             getRowKey={(r) => r.school}

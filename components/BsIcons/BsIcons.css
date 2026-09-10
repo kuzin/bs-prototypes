@@ -1,0 +1,43 @@
+/* The product's illustrated icons. They arrive as `<img>`, so the only styling
+   they need is to sit on the text baseline like a glyph would and to keep their
+   square aspect whatever box they land in. */
+.bsi {
+  display: inline-block;
+  flex-shrink: 0;
+  vertical-align: middle;
+  object-fit: contain;
+  user-select: none;
+}
+
+/* The RMI factor drawings are monochrome silhouettes, so they're masked and
+   painted with the current text colour — the same thing the app does by setting
+   `fill` on their paths. */
+.bsi--mask {
+  background-color: currentColor;
+  -webkit-mask: var(--bsi-src) no-repeat center / contain;
+  mask: var(--bsi-src) no-repeat center / contain;
+}
+
+/* `.factor-icon`: a 24px rounded square, tinted by motivation type. */
+.bsi-factor {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--factor-box, 24px);
+  height: var(--factor-box, 24px);
+  min-width: var(--factor-box, 24px);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+/* $teal100 ground, $teal600 glyph */
+.bsi-factor--intrinsic {
+  background: #b4f7ff;
+  color: #0ca7bc;
+}
+
+/* $purple100 ground, $purple600 glyph */
+.bsi-factor--extrinsic {
+  background: #f7caff;
+  color: #c849e5;
+}

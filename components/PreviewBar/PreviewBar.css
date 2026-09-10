@@ -88,7 +88,7 @@
   align-items: center;
   height: var(--pvb-pill-h);
   padding: 0 13px;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 700;
   color: #cdeae7;
   white-space: nowrap;
@@ -132,7 +132,7 @@
   height: var(--pvb-tray-h);
   padding: 0 12px;
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   color: #cdeae7;
   background: transparent;
@@ -186,7 +186,7 @@
   }
   .pvb-view {
     padding: 0 10px;
-    font-size: 12.5px;
+    font-size: 13px;
   }
   /* Wrap rather than scroll — hiding a view off the edge is worse than a
      slightly taller bar. */

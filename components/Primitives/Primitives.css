@@ -189,9 +189,14 @@
   display: inline-flex;
 }
 
-.ttp-bubble {
-  position: absolute;
-  z-index: 100;
+/* The bubble lives in `document.body` (see Primitives.jsx): fixed, so no
+   ancestor's `overflow` can clip it and the only box it has to fit inside is
+   the viewport. The component sets `left`/`top` after measuring, and
+   `--ttp-shift` / `--ttp-shift-y` carry however far the viewport clamp moved
+   it so the arrow can counter that and keep pointing at the trigger. */
+.ttp-pop {
+  position: fixed;
+  z-index: 1000;
   background: var(--c-slate-900);
   color: #fff;
   font-size: 13px;
@@ -200,65 +205,35 @@
   border-radius: 6px;
   white-space: nowrap;
   pointer-events: none;
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
   opacity: 0;
   transition:
     opacity 0.12s var(--ttp-delay, 0ms),
     transform 0.12s var(--ttp-delay, 0ms);
-  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.18);
 }
 
-.ttp:hover .ttp-bubble,
-.ttp:focus-within .ttp-bubble {
+/* `is-shown` lands a frame after mount, so the fade has something to run from. */
+.ttp-pop.is-shown {
   opacity: 1;
+  transform: none;
 }
 
-/* `--ttp-shift` is set by the component when the centred bubble would cross
-   the edge of whatever clips it (a scroll pane, a card with `overflow:
-   hidden`). It nudges the bubble back inside; the arrow below counter-shifts
-   by the same amount so it still points at the anchor. */
-.ttp--top .ttp-bubble {
-  bottom: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(calc(-50% + var(--ttp-shift, 0px))) translateY(2px);
+.ttp-pop--top {
+  transform: translateY(2px);
 }
-.ttp--top:hover .ttp-bubble,
-.ttp--top:focus-within .ttp-bubble {
-  transform: translateX(calc(-50% + var(--ttp-shift, 0px))) translateY(0);
+.ttp-pop--bottom {
+  transform: translateY(-2px);
 }
-
-.ttp--bottom .ttp-bubble {
-  top: calc(100% + 6px);
-  left: 50%;
-  transform: translateX(calc(-50% + var(--ttp-shift, 0px))) translateY(-2px);
+.ttp-pop--left {
+  transform: translateX(2px);
 }
-.ttp--bottom:hover .ttp-bubble,
-.ttp--bottom:focus-within .ttp-bubble {
-  transform: translateX(calc(-50% + var(--ttp-shift, 0px))) translateY(0);
+.ttp-pop--right {
+  transform: translateX(-2px);
 }
 
-.ttp--left .ttp-bubble {
-  right: calc(100% + 6px);
-  top: 50%;
-  transform: translateY(-50%) translateX(2px);
-}
-.ttp--left:hover .ttp-bubble,
-.ttp--left:focus-within .ttp-bubble {
-  transform: translateY(-50%) translateX(0);
-}
-
-.ttp--right .ttp-bubble {
-  left: calc(100% + 6px);
-  top: 50%;
-  transform: translateY(-50%) translateX(-2px);
-}
-.ttp--right:hover .ttp-bubble,
-.ttp--right:focus-within .ttp-bubble {
-  transform: translateY(-50%) translateX(0);
-}
-
-/* Arrow pointing back at the anchor. A rotated square inheriting the bubble's
-   background, so it stays in step if the bubble colour ever changes. */
-.ttp-bubble::after {
+/* Arrow — a rotated square in the bubble's own colour, offset by the clamp so
+   it stays over the trigger even when the bubble had to slide along. */
+.ttp-pop::after {
   content: '';
   position: absolute;
   width: 8px;
@@ -267,38 +242,36 @@
   transform: rotate(45deg);
 }
 
-.ttp--top .ttp-bubble::after {
+.ttp-pop--top::after {
   bottom: -3px;
   left: 50%;
-  margin-left: calc(-4px - var(--ttp-shift, 0px));
+  margin-left: calc(-4px + var(--ttp-shift, 0px));
 }
 
-.ttp--bottom .ttp-bubble::after {
+.ttp-pop--bottom::after {
   top: -3px;
   left: 50%;
-  margin-left: calc(-4px - var(--ttp-shift, 0px));
+  margin-left: calc(-4px + var(--ttp-shift, 0px));
 }
 
-.ttp--left .ttp-bubble::after {
+.ttp-pop--left::after {
   right: -3px;
   top: 50%;
-  margin-top: -4px;
+  margin-top: calc(-4px + var(--ttp-shift-y, 0px));
 }
 
-.ttp--right .ttp-bubble::after {
+.ttp-pop--right::after {
   left: -3px;
   top: 50%;
-  margin-top: -4px;
+  margin-top: calc(-4px + var(--ttp-shift-y, 0px));
 }
 
-/* Cursor-following variant — position is set via inline style on each
-   mousemove. No placement transforms, and no arrow: it isn't anchored to
-   anything to point at. */
-.ttp--cursor .ttp-bubble {
+/* Cursor-following variant — the component sets x/y per mousemove, and there's
+   nothing anchored for an arrow to point at. */
+.ttp-pop--cursor {
   transform: none;
 }
-
-.ttp--cursor .ttp-bubble::after {
+.ttp-pop--cursor::after {
   display: none;
 }
 

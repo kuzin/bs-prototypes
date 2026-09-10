@@ -18,7 +18,11 @@ function htmlTemplate(title, scriptSrc) {
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="${BASE}bs.svg" />
+    <!-- \`/bs.svg\`, the public-root path — Vite prepends the base itself when
+         it rewrites the href. Spelling the base out here (\`${BASE}bs.svg\`) got
+         it prepended twice: \`/bs-prototypes/bs-prototypes/bs.svg\`, a 404 on
+         every page load and no favicon anywhere. -->
+    <link rel="icon" type="image/svg+xml" href="/bs.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Museo Sans Rounded — Beanstack's real typeface, from an Adobe Fonts kit.
          This kit carries the same six weights as the product's own \`dpo2eva\`

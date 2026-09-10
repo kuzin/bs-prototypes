@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { Icon, ICON_NAMES } from '@components/Icon/Icon'
 import { PlumpyIcon, PLUMPY_NAMES, PLUMPY_SOURCES } from '@components/PlumpyIcon/PlumpyIcon'
+import { BsIcon, FLAG_ICON_FILE, RMI_FACTOR_FILES, ACTION_ICONS } from '@components/BsIcons/BsIcons'
+import { TrendChip } from '@components/TrendChip/TrendChip'
+import { CompleteToggle } from '@components/CompleteToggle/CompleteToggle'
+import { RowAction, RowActions } from '@components/RowAction/RowAction'
 import { Button } from '@components/Button/Button'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Pill } from '@components/Pill/Pill'
@@ -668,6 +672,68 @@ function ProgressBarKnobs() {
 
 // ── More knob panels ─────────────────────────────────────────────────────
 
+/**
+ * The claim-column toggle. `repeatable` and `disabled` are separate states in
+ * the app, not variants of one another — a repeatable row has no done state,
+ * and a disabled-but-checked row is the app's $green100 "already, and not
+ * yours to change".
+ */
+function CompleteToggleKnobs() {
+  const [done, setDone] = useState(false)
+  const [repeatable, setRepeatable] = useState(false)
+  const [disabled, setDisabled] = useState(false)
+  const [readOnly, setReadOnly] = useState(false)
+  return (
+    <>
+      <Knobs>
+        <Field label="repeatable">
+          <Toggle checked={repeatable} onChange={setRepeatable} />
+        </Field>
+        <Field label="disabled">
+          <Toggle checked={disabled} onChange={setDisabled} />
+        </Field>
+        <Field label="read-only (no onChange)">
+          <Toggle checked={readOnly} onChange={setReadOnly} />
+        </Field>
+      </Knobs>
+      <Variant label="click it — the same control marks and unmarks">
+        <CompleteToggle
+          done={done}
+          repeatable={repeatable}
+          count={repeatable ? 7 : undefined}
+          disabled={disabled}
+          onChange={readOnly ? undefined : setDone}
+          label="Museums"
+        />
+      </Variant>
+      <Variant label="a claim column, as it reads in a table">
+        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+          <CompleteToggle done onChange={() => {}} label="Complete" />
+          <CompleteToggle done={false} onChange={() => {}} label="Not complete" />
+          <CompleteToggle done disabled label="Already redeemed" />
+          <CompleteToggle repeatable count={7} label="Repeatable" />
+        </div>
+      </Variant>
+      <Variant label="wording — the same control, renamed for its column (hover it)">
+        <div style={{ display: 'flex', gap: 20, alignItems: 'center' }}>
+          <CompleteToggle
+            done
+            onChange={() => {}}
+            label="Spring Reading Challenge"
+            wording={{ set: 'Enroll', unset: 'Unenroll', on: 'Enrolled', off: 'Not enrolled' }}
+          />
+          <CompleteToggle
+            done={false}
+            onChange={() => {}}
+            label="Library Tote Bag"
+            wording={{ set: 'Redeem reward', unset: 'Mark unredeemed' }}
+          />
+        </div>
+      </Variant>
+    </>
+  )
+}
+
 function TooltipKnobs() {
   const [placement, setPlacement] = useState('top')
   const [content, setContent] = useState('Mark as read')
@@ -1022,6 +1088,201 @@ export const atomsSections = [
     render: () => (
       <>
         <TooltipKnobs />
+      </>
+    ),
+  },
+  {
+    group: 'atoms',
+    id: 'bs-icons',
+    name: 'BsIcons',
+    desc: (
+      <>
+        The product&apos;s own illustrated icons, copied verbatim out of the shipped app (bs-product{' '}
+        <code>app/assets/images/icons/</code>) and served from <code>public/bs-icons/</code>. Three
+        sets: <code>flags</code> (the Book Talks integrity flags), <code>rmi-factors</code> (the ten
+        motivation factors) and <code>actions</code> (the admin&apos;s row-action glyphs).
+        <br />
+        <br />
+        These are deliberately <strong>not</strong> in the <code>&lt;Icon&gt;</code> registry.{' '}
+        <code>&lt;Icon&gt;</code> is a stroked single-glyph system where <code>currentColor</code>{' '}
+        does the work; these are multi-path full-colour drawings with gradient defs — the category
+        CLAUDE.md keeps as asset SVG. Rendered as <code>&lt;img&gt;</code> so gradient ids
+        can&apos;t collide between instances. The two single-colour sets are the exception: the app
+        tints those from CSS, so they render as a mask painted with <code>currentColor</code> —
+        which also keeps a drawing&apos;s own internal opacity (the reward box&apos;s lid is drawn
+        at 0.35, and an alpha mask preserves that as 35% of the tint).
+        <br />
+        <br />
+        <code>&lt;FlagIcon type&gt;</code> takes a prototype flag key and looks up the app&apos;s
+        file for it via <code>FLAG_ICON_FILE</code> — the prototypes name a flag for what a reviewer
+        sees (<code>time-warning</code>), the app names the asset for the signal that raised it (
+        <code>delayed_response</code>), and the map keeps both honest.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="flags — keyed by our flag types">
+          <div className="pt-bsicon-grid">
+            {Object.entries(FLAG_ICON_FILE).map(([type, file]) => (
+              <div key={type} className="pt-bsicon">
+                <BsIcon set="flags" name={file} size={32} />
+                <code>{type}</code>
+              </div>
+            ))}
+          </div>
+        </Variant>
+        <Variant label="rmi-factors — the ten motivation factors (+ mystery)">
+          <div className="pt-bsicon-grid">
+            {RMI_FACTOR_FILES.map((name) => (
+              <div key={name} className="pt-bsicon">
+                <BsIcon set="rmi-factors" name={name} size={32} />
+                <code>{name}</code>
+              </div>
+            ))}
+          </div>
+        </Variant>
+        <Variant label="actions — the row actions on a claim table">
+          <div className="pt-bsicon-grid">
+            {ACTION_ICONS.map((name) => (
+              <div key={name} className="pt-bsicon">
+                <BsIcon set="actions" name={name} size={32} />
+                <code>{name}</code>
+              </div>
+            ))}
+          </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'atoms',
+    id: 'row-action',
+    name: 'RowAction',
+    desc: (
+      <>
+        The one control that sits at the end of a table row. The app has exactly two shapes for this
+        and no others: <strong>an icon</strong>, for something you do to this row and every row —
+        redeem, open, re-run (<code>.redeem-reward-icon</code> in the earned-rewards table is the
+        reference: a bare 32px box holding a 20px drawing, no border and no fill until you&apos;re
+        over it, with the label in a tooltip because there&apos;s no room to write it forty times
+        down a column); and <strong>a text button</strong>, for &ldquo;open the thing this row is
+        about&rdquo; — the app&apos;s <code>View Activity</code>, which is a plain{' '}
+        <code>Button</code> at <code>width: max-content</code>, so this component doesn&apos;t wrap
+        it.
+        <br />
+        <br />
+        Before it, the profiles had four: a ghost <code>IconButton</code>, a bespoke 28px{' '}
+        <code>.rl-dots</code>, a bespoke 32px <code>.row-action</code>, and a bare text link — four
+        different targets and three different hover treatments down the same page.
+        <br />
+        <br />
+        The glyph is <strong>Plumpy</strong> wherever the pack has it, which is what the app does:{' '}
+        <code>
+          .refresh-icon {'{'} @include icon(&apos;refresh&apos;, &apos;#000000&apos;, 20,
+          &apos;plumpy&apos;) {'}'}
+        </code>{' '}
+        on its own row action, and the raffle editor pulls <code>train-ticket</code> and{' '}
+        <code>leaderboard</code> from the same pack. Anything Plumpy doesn&apos;t carry falls back
+        to the stroked <code>&lt;Icon&gt;</code> at the same size, so a name never renders nothing.
+        <br />
+        <br />
+        Pass <code>children</code> to draw something that isn&apos;t an <code>&lt;Icon&gt;</code> —
+        a product drawing, a partner mark. Pass <code>as=&quot;span&quot;</code> for a mark that
+        reports rather than acts (a flag, a partner logo): the same 32px cell, no button semantics.{' '}
+        <code>RowActions</code> is the cell they sit in — <code>.row-actions</code> right-aligns in
+        the app&apos;s table Sass, so several of them line up on one grid however many a given row
+        has.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="one action per row">
+          <RowAction icon="dots" label="Actions for The Hobbit" onClick={() => {}} />
+        </Variant>
+        <Variant label="a cluster — RowActions right-aligns them on one grid">
+          <RowActions>
+            <RowAction as="span" label="Logged from Comics Plus" icon="flame" />
+            <RowAction icon="flag" label="2 flags" onClick={() => {}} />
+            <RowAction icon="message-chatbot" label="Book talk with Benny" onClick={() => {}} />
+            <RowAction icon="dots" label="Entry actions" onClick={() => {}} />
+          </RowActions>
+        </Variant>
+        <Variant label="disabled — present, but nothing to do">
+          <RowAction icon="printer" label="Nothing to print" disabled />
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'atoms',
+    id: 'complete-toggle',
+    name: 'CompleteToggle',
+    desc: (
+      <>
+        The admin&apos;s row-completion toggle — the one control that runs down the{' '}
+        <code>Completed?</code> / <code>Redeemed?</code> column of every reader-profile table.
+        <br />
+        <br />
+        Ported from the shipped app, where a single rule covers all of them (
+        <code>
+          .complete-learning-track-toggle, .redeem-incentive-toggle, .redeem-raffle-toggle,
+          .redeem-reward-toggle
+        </code>{' '}
+        in <code>admin/_admin.scss</code>): a 32px filled checkbox glyph, green <code>#0BA85F</code>{' '}
+        when it&apos;s done and grey when it isn&apos;t, clickable either way — which is also how
+        staff take a badge or a reward <em>back</em>.
+        <br />
+        <br />
+        It is deliberately not a <code>Checkbox</code>: it reads as a state you set, not a form
+        field you fill in, and the app draws it as a glyph rather than an input.{' '}
+        <code>repeatable</code> swaps it for the app&apos;s <code>add</code> glyph and a running
+        count, because a row that can be completed more than once has no single done state — the
+        count is the record. Omit <code>onChange</code> for a read-only cell.
+        <br />
+        <br />
+        The same glyph runs several different columns, and &ldquo;Mark complete&rdquo; is the wrong
+        sentence in some of them — a challenge&apos;s <code>Enrolled?</code> column enrolls.{' '}
+        <code>
+          wording={'{'}
+          {'{'} set, unset, on, off {'}'}
+          {'}'}
+        </code>{' '}
+        renames the four states without changing the control.
+      </>
+    ),
+    render: () => <CompleteToggleKnobs />,
+  },
+  {
+    group: 'atoms',
+    id: 'trend-chip',
+    name: 'TrendChip',
+    desc: (
+      <>
+        The one way a trend is drawn: a pastel chip holding an arrow, and nothing else. The figure
+        it stands for lives in the tooltip.
+        <br />
+        <br />A direction, <strong>not a second number</strong> — wherever a trend appears it sits
+        beside a value that&apos;s already the number, and repeating a delta there makes the eye
+        read two figures per line. So the chip says which way it moved, hovering says by how much,
+        and every trend looks identical whether it&apos;s a profile stat row, a Lexile delta or a{' '}
+        <code>BarList</code> row. Colours are the app&apos;s own tag pairs — a hue&apos;s{' '}
+        <code>50</code> fill under its <code>500</code>/<code>800</code> text.
+        <br />
+        <br />
+        <code>inverse</code> flips which direction counts as good, for metrics where fewer is better
+        (flags, concerns). A null or zero delta renders nothing — a flat week isn&apos;t a trend.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="up / down, and inverse (fewer is better)" full>
+          <div className="pt-variant-frame--row" style={{ display: 'flex', gap: 16, padding: 14 }}>
+            <TrendChip delta={26} format={(n) => `${n}%`} />
+            <TrendChip delta={-15} format={(n) => `${n}L`} suffix="vs Apr" />
+            <TrendChip delta={2} inverse format={(n) => `${n} flags`} />
+            <TrendChip delta={-3} inverse format={(n) => `${n} flags`} />
+          </div>
+        </Variant>
       </>
     ),
   },

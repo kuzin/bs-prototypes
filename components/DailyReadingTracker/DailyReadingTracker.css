@@ -156,7 +156,16 @@
   font-size: 15px;
 }
 
-/* Same for the header row, so the labels sit over their columns. */
+/* Same for the header row, so the labels sit over their columns. The
+   daily-reading header is its own 32px (`.daily-reading table tr:first-child
+   td/th { padding: 8px; height: 32px }`), tighter than the generic admin
+   table's 14px/18px cells — so it's restated here rather than inherited. */
+.drt-table.tbl .tbl-th {
+  height: 32px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
 .drt-table.tbl .tbl-th:first-child,
 .drt-table.tbl .tbl-th:last-child {
   padding-left: 12px;
@@ -452,7 +461,7 @@
   /* Labels for a strip you read by shape, not by word — small, light and low
      contrast, so the day discs carry the row. */
   .drt-card-day-label {
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
     color: var(--c-gray-500);
     text-transform: uppercase;
@@ -467,7 +476,7 @@
     height: 30px;
     padding: 0;
     border-radius: 50%;
-    font-size: 11px;
+    font-size: 13px;
     letter-spacing: -0.02em;
   }
 

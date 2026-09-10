@@ -152,7 +152,7 @@
   border-radius: 6px;
   background: var(--c-slate-100);
   font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 13px;
   white-space: pre-wrap;
   overflow-x: auto;
 }
@@ -173,7 +173,7 @@
   resize: vertical;
   padding: 12px 14px;
   font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.6;
   tab-size: 2;
   color: var(--c-slate-200);

@@ -115,7 +115,11 @@ export function Select({ size = 'md', label, children, className = '', ...rest }
       <select id={selectId} aria-required={required || undefined} className="sel" {...rest}>
         {children}
       </select>
-      <Icon name="chevron-down" size={15} stroke={2} className="sel-caret" />
+      {/* One dropdown caret across the system: 14px / 2.4. The Actions and Log
+          buttons carry the same mark, so a select and a menu button read as the
+          same affordance — 11px was the buttons' old size and disappeared in a
+          44px control. */}
+      <Icon name="chevron-down" size={14} stroke={2.4} className="sel-caret" />
     </div>
   )
 
@@ -527,7 +531,7 @@ export function MultiSelect({
           )}
           <span className="msel-display-text">{displayText}</span>
         </span>
-        <Icon name="chevron-down" size={15} stroke={2} className="msel-caret" />
+        <Icon name="chevron-down" size={14} stroke={2.4} className="msel-caret" />
       </button>
       {open &&
         coords &&

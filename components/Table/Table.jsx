@@ -24,9 +24,9 @@ export function Table({
   compact = false,
   bordered = false,
   flush = false, // remove outer border + radius — use inside ChartCard bodyPad="flush"
-  collapse = false, // on narrow viewports, collapse each row to a stacked card (label : value)
   scrollX = false, // wrap the table in a horizontal scroller; pagination stays pinned outside it
   stickyHeader = false,
+  hideHeader = false, // drop the header row — for a two-column key/value table
   loading = false,
   empty, // string | node — shown when rows is empty
   highlightRow, // (row) => bool — gives a row the highlight style
@@ -78,7 +78,6 @@ export function Table({
     compact && 'tbl--compact',
     bordered && 'tbl--bordered',
     flush && 'tbl--flush',
-    collapse && 'tbl--collapse',
     stickyHeader && 'tbl--sticky',
     className,
   ]
@@ -119,7 +118,10 @@ export function Table({
 
   const tableEl = (
     <table className={cls}>
-      <thead>
+      {/* A `hideHeader` table still declares its columns — `minWidth` and
+          `align` come off them — it just doesn't draw the row. Kept in the DOM
+          as `aria-hidden` so the layout the widths produce is unchanged. */}
+      <thead aria-hidden={hideHeader || undefined} className={hideHeader ? 'tbl-head--off' : ''}>
         <tr>
           {columns.map((c) => (
             <th
@@ -132,7 +134,10 @@ export function Table({
               ]
                 .filter(Boolean)
                 .join(' ')}
-              style={c.width ? { width: c.width } : undefined}
+              // `width` is only a hint under `table-layout: auto` — a column of
+              // long text loses it to siblings that declared theirs. `minWidth`
+              // is a floor the layout has to honour.
+              style={c.width || c.minWidth ? { width: c.width, minWidth: c.minWidth } : undefined}
               onClick={c.sortable ? () => handleSort(c.key) : undefined}
             >
               {c.label}
@@ -175,11 +180,7 @@ export function Table({
                   const value = row[c.key]
                   const content = c.render ? c.render(value, row) : value
                   return (
-                    <td
-                      key={c.key}
-                      className={`tbl-td${c.align ? ` tbl-cell--${c.align}` : ''}`}
-                      data-label={typeof c.label === 'string' ? c.label : undefined}
-                    >
+                    <td key={c.key} className={`tbl-td${c.align ? ` tbl-cell--${c.align}` : ''}`}>
                       {content}
                     </td>
                   )
