@@ -3717,21 +3717,9 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
 // Rewards mirrors the Badges phase: choose which kinds of reward this challenge
 // hands out, then set each one up on its own screen.
 const REWARD_TYPES = [
-  {
-    key: 'prizesEnabled',
-    label: 'Prizes',
-    sub: 'Things readers claim when they earn the badges you choose.',
-  },
-  {
-    key: 'ticketsEnabled',
-    label: 'Raffle tickets',
-    sub: 'Tickets readers collect as they earn badges, for a drawing later.',
-  },
-  {
-    key: 'certsEnabled',
-    label: 'Certificates',
-    sub: 'A printable certificate for finishing the challenge.',
-  },
+  { key: 'prizesEnabled', label: 'Prizes' },
+  { key: 'ticketsEnabled', label: 'Raffle tickets' },
+  { key: 'certsEnabled', label: 'Certificates' },
 ]
 const REWARD_HEADS = {
   'rewards.types': {
@@ -3865,10 +3853,7 @@ export function RewardsStep({ screen, challenge, update }) {
           <div className="cc-settings">
             {REWARD_TYPES.map((t) => (
               <div key={t.key} className="cc-setting-row">
-                <div className="cc-setting-text">
-                  <span className="cc-setting-label">{t.label}</span>
-                  <span className="cc-setting-sub">{t.sub}</span>
-                </div>
+                <span className="cc-setting-label">{t.label}</span>
                 <div className="cc-type-state">
                   <Toggle checked={!!r[t.key]} size="md" onChange={(v) => setR({ [t.key]: v })} />
                 </div>
