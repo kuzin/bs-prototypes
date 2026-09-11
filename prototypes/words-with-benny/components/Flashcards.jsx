@@ -151,15 +151,9 @@ export function Flashcards({ open, cards, collection, onGrade, onClose }) {
 
   return (
     <div className="fc" role="dialog" aria-modal="true" aria-label="Flashcards">
-      <header className="fc-top">
-        <button className="fc-close" onClick={onClose} aria-label="Close flashcards">
-          <Icon name="x" size={16} stroke={2.2} />
-        </button>
-        <div className="fc-count">{finished ? 'Done' : `${i + 1} of ${deck.length}`}</div>
-        <div className="fc-bar" aria-hidden="true">
-          <span style={{ width: `${(Math.min(i, deck.length) / deck.length) * 100}%` }} />
-        </div>
-      </header>
+      <button className="fc-close" onClick={onClose} aria-label="Close flashcards">
+        <Icon name="x" size={16} stroke={2.2} />
+      </button>
 
       {!finished && word && (
         <div className="fc-stage">
@@ -224,6 +218,21 @@ export function Flashcards({ open, cards, collection, onGrade, onClose }) {
             Back to my words
           </Button>
         </div>
+      )}
+
+      {/* How far through the deck, at the foot of the screen: the card is what
+          the reader is looking at, and a counter over the top of it competes
+          for the same attention. The summary replaces it rather than sitting
+          under it — by then there's no progress left to report. */}
+      {!finished && (
+        <footer className="fc-foot">
+          <div className="fc-bar" aria-hidden="true">
+            <span style={{ width: `${(Math.min(i, deck.length) / deck.length) * 100}%` }} />
+          </div>
+          <div className="fc-count">
+            {i + 1} of {deck.length}
+          </div>
+        </footer>
       )}
     </div>
   )

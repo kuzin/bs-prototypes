@@ -77,17 +77,27 @@
     linear-gradient(180deg, #1b1436 0%, #120e26 100%);
 }
 
-.fc-top {
-  position: relative;
+/* Progress sits at the foot of the deck. `.fc-stage` takes the free space
+   above it, so this lands on the bottom edge without needing a margin. */
+.fc-foot {
+  display: flex;
   flex: 0 0 auto;
+  flex-direction: column;
+  gap: 9px;
+  align-items: center;
   width: 100%;
   max-width: 560px;
-  padding: 18px 20px 0;
+  padding: 0 20px 28px;
 }
+/* Pinned to the screen's corner. It used to be `absolute` inside a centred
+   560px header, which parked it at the edge of the content rather than the
+   edge of the overlay. Same rule as the unlock overlay's own close — the two
+   share a ground, so they should share a corner. */
 .fc-close {
-  position: absolute;
-  top: 14px;
-  right: 16px;
+  position: fixed;
+  top: 18px;
+  right: 18px;
+  z-index: 2;
   display: grid;
   place-items: center;
   width: 34px;
@@ -109,7 +119,7 @@
   letter-spacing: 0.08em;
 }
 .fc-bar {
-  margin-top: 9px;
+  width: 100%;
   overflow: hidden;
   background: rgba(255, 255, 255, 0.14);
   border-radius: 999px;
