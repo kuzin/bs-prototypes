@@ -140,6 +140,13 @@
   color: #495057;
   flex-wrap: wrap;
 }
+/* On the details step it heads a left-aligned form, so it lines up with the
+   fields under it rather than floating centred above them. The search step
+   keeps it centred, under a centred heading. */
+.lf-details .lf-readerline {
+  justify-content: flex-start;
+}
+
 .lf-readerlabel {
   font-weight: 600;
 }

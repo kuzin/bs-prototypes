@@ -890,9 +890,13 @@ function DetailsStep({
           </label>
         )}
 
+        {/* `md`, not `lg`: this button closes a form whose own controls are
+            44px, and a 56px one next to them read as a different scale. The
+            hero CTAs on the success step stay large — nothing sits beside
+            them to be measured against. */}
         <Button
           variant="primary"
-          size="lg"
+          size="md"
           disabled={!canLog}
           onClick={onSubmit}
           className="lf-logbtn"
