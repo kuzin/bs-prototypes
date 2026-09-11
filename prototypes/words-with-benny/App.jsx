@@ -56,7 +56,10 @@ const OWN_BOOKS = { books: BOOKS, recentlyLogged: RECENTLY_LOGGED }
 const VIEWS = [
   { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
   { id: 'words', label: 'Reader · My Collections', short: 'Collections', icon: 'vocabulary' },
-  { id: 'educator', label: 'Educator · Classroom', short: 'Educator', icon: 'chart-bar' },
+  { id: 'educator', label: 'Educator · Classroom', short: 'Classroom', icon: 'chart-bar' },
+  // The feature's own educator surface is a tab inside the classroom page, so
+  // reaching it meant two clicks past the bar. This lands on it directly.
+  { id: 'edu-vocab', label: 'Educator · Vocabulary', short: 'Vocabulary', icon: 'vocabulary' },
 ]
 
 export function App() {
@@ -202,13 +205,15 @@ export function App() {
       />
 
       <div className="wb-stage">
-        {view === 'educator' ? (
+        {view === 'educator' || view === 'edu-vocab' ? (
           // Vocabulary is a tab on Beanstack's real classroom page, added
           // through the additive `extraTabs`/`renderExtra` slots rather than by
           // cloning the page.
           <div className="wb-edu-shell">
             <ClassroomView
+              key={view}
               onStudentClick={setOpenStudent}
+              initialTab={view === 'edu-vocab' ? 'vocabulary' : 'daily'}
               extraTabs={[{ id: 'vocabulary', label: 'Vocabulary' }]}
               renderExtra={() => <EducatorWords onOpenStudent={setOpenStudent} written={written} />}
             />

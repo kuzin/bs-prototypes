@@ -124,28 +124,16 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
       {onReview && <ReviewStrip cards={cards} onStart={onReview} />}
 
       {/* The design system's tinted stat, not a hand-rolled copy of it — this
-          row was the same shape (wash, icon chip, figure over label) written
-          out locally, at its own smaller type. */}
+          row was the same shape (wash, figure over label) written out locally,
+          at its own smaller type. */}
       <div className="mw-stats">
         {[
-          { label: 'Words collected', value: collection.length, icon: 'vocabulary', c: '#5B21B6' },
-          {
-            label: 'Collected this week',
-            value: thisWeek,
-            icon: 'calendar-event',
-            c: '#0B6B78',
-          },
-          { label: 'Books they came from', value: books, icon: 'book', c: '#075985' },
-          { label: 'Aced with no misses', value: `${firstTry}%`, icon: 'check', c: '#166534' },
+          { label: 'Words collected', value: collection.length, c: '#5B21B6' },
+          { label: 'Collected this week', value: thisWeek, c: '#0B6B78' },
+          { label: 'Books they came from', value: books, c: '#075985' },
+          { label: 'Aced with no misses', value: `${firstTry}%`, c: '#166534' },
         ].map((s) => (
-          <StatCard
-            key={s.label}
-            variant="tinted"
-            icon={<Icon name={s.icon} size={19} />}
-            value={s.value}
-            label={s.label}
-            color={s.c}
-          />
+          <StatCard key={s.label} variant="tinted" value={s.value} label={s.label} color={s.c} />
         ))}
       </div>
 

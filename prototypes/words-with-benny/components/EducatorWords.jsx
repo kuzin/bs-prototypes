@@ -71,7 +71,6 @@ function byActivity() {
     const type = activityType(a.id)
     return {
       label: type.label,
-      sublabel: `${a.attempts.toLocaleString()} attempts`,
       value: a.firstTry,
       valueLabel: `${a.firstTry}%`,
       color: a.firstTry >= 85 ? '#16A34A' : a.firstTry >= 70 ? '#8B5CF6' : '#D97706',
@@ -110,9 +109,6 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
     const firstTry = Math.round(ROSTER.reduce((n, s) => n + s.firstTry, 0) / ROSTER.length)
     return { words, week, collecting, median, firstTry }
   }, [])
-
-  // Words at least one student in the class has collected.
-  const distinct = ALL_WORDS.length
 
   const columns = [
     {
@@ -192,7 +188,6 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
           <div className="ew-stats">
             <StatCard
               variant="tinted"
-              icon={<Icon name="vocabulary" size={19} />}
               value={totals.words.toLocaleString()}
               label="Words collected this year"
               trend={{ delta: totals.week, format: (n) => `${n} in the last 7 days` }}
@@ -200,34 +195,34 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
             />
             <StatCard
               variant="tinted"
-              icon={<Icon name="users" size={19} />}
               value={totals.collecting}
               unit={`/${ROSTER.length}`}
               label="Students collecting this week"
-              footer={`${Math.round((totals.collecting / ROSTER.length) * 100)}% of the class`}
               color="#0DA7BC"
             />
             <StatCard
               variant="tinted"
-              icon={<Icon name="chart-bar" size={19} />}
               value={totals.median}
               label="Median words per student"
-              footer={`${distinct} distinct words in play`}
               color="#16A97A"
             />
             <StatCard
               variant="tinted"
-              icon={<Icon name="check" size={19} />}
               value={totals.firstTry}
               unit="%"
               label="Used correctly first try"
-              footer="Class average across all words"
               color="#D97706"
             />
           </div>
 
           <div className="ew-grid">
-            <ChartCard title="The class word wall" accent={ACCENT} span={2} bodyPad="padded">
+            <ChartCard
+              title="The class word wall"
+              accent={ACCENT}
+              span={2}
+              bodyPad="padded"
+              className="ew-cloudcard"
+            >
               <WordCloud
                 words={CLASS_TOP_WORDS.map((w) => ({ text: w.word, value: w.students }))}
                 accent={ACCENT}
@@ -238,17 +233,7 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
               />
             </ChartCard>
 
-            <ChartCard
-              title="Where the words stop sticking"
-              accent={ACCENT}
-              bodyPad="padded"
-              footer={
-                <p className="ew-cardnote">
-                  Recognising a word is not the same as using one. The gap between the top and
-                  bottom rows is the part worth a mini-lesson.
-                </p>
-              }
-            >
+            <ChartCard title="Where the words stop sticking" accent={ACCENT} bodyPad="padded">
               <BarList labelWidth={132} items={byActivity()} />
             </ChartCard>
 
@@ -306,7 +291,6 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
               <ul className="ew-queue">
                 {queue.slice(0, 6).map((row, i) => {
                   const person = ROSTER.find((s) => s.id === row.student)
-                  const book = row.bookId ? BOOKS[row.bookId] : null
                   return (
                     <li key={`${row.student}-${row.word}-${i}`} className="ew-queue-row">
                       <button
@@ -319,10 +303,7 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
                           color={person?.color}
                           size="sm"
                         />
-                        <span className="ew-queue-whom">
-                          <span className="ew-queue-name">{person?.name ?? row.student}</span>
-                          <span className="ew-queue-book">{book ? book.title : 'No title'}</span>
-                        </span>
+                        <span className="ew-queue-name">{person?.name ?? row.student}</span>
                       </button>
                       <p className="ew-queue-text">
                         {row.text

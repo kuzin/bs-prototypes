@@ -6800,8 +6800,11 @@ export function ClassroomView({
   className = 'Class A',
   extraTabs = [],
   renderExtra,
+  // Which tab to open on. Additive and defaulted, so a prototype that hangs an
+  // extra tab off this page can also link straight to it.
+  initialTab = 'daily',
 }) {
-  const [admTab, setAdmTab] = useState('daily')
+  const [admTab, setAdmTab] = useState(initialTab)
   const extraIds = extraTabs.map((t) => t.id)
   return (
     <div className="bp-adm">

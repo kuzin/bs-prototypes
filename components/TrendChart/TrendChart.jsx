@@ -312,7 +312,10 @@ export function TrendChart({
 
   const margin = {
     top: 16,
-    right: hasRight ? 44 : 16,
+    // The last x tick is centred on the final data point, which sits on the
+    // plot's right edge — so the margin has to hold half a label. 16px was
+    // enough for "May" but clipped a "Jun 15"; 30 covers a six-character date.
+    right: hasRight ? 44 : 30,
     bottom: 32,
     left: yAxisHidden ? 8 : longUnit(yUnit) ? 56 : 44,
   }

@@ -51,19 +51,22 @@
   grid-column: 1 / -1;
 }
 
-/* A line of framing under a card. Says what the reader should take from the
-   numbers above it — these two cards are the ones a teacher could misread as
-   a grade, so neither is left to speak for itself. */
-.ew-cardnote {
-  font-size: var(--text-tag);
-  font-weight: 600;
-  line-height: 1.5;
-  color: #64748b;
+/* The cloud packs its words to the edge of whatever box it's given, so the
+   shared `--padded` body's 14/16 left the longest ones grazing the border.
+   Local, not a bump to the shared rule: every other card here holds a bar list
+   or a table, which are already inset by their own rows. */
+.ew-cloudcard .rc-card-body {
+  padding: 26px 30px 30px;
 }
 
 /* ─── The writing queue ──────────────────────────────────────────────────── */
 
+/* `list-style: none` doesn't touch the UA's own `padding-inline-start: 40px`
+   or its block margins, so the rows sat indented inside a card that had
+   already padded itself. */
 .ew-queue {
+  padding: 0;
+  margin: 0;
   list-style: none;
 }
 .ew-queue-row {
@@ -90,11 +93,6 @@
   text-align: left;
   background: none;
   border: 0;
-}
-.ew-queue-whom {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
 }
 .ew-queue-name {
   overflow: hidden;
@@ -127,14 +125,6 @@
   gap: 9px;
   align-items: center;
   justify-content: flex-end;
-}
-.ew-queue-book {
-  overflow: hidden;
-  font-size: var(--text-micro);
-  font-weight: 600;
-  color: #94a3b8;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
 @media (max-width: 860px) {
