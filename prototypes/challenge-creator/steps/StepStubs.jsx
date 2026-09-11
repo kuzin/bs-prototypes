@@ -3714,10 +3714,21 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
 }
 
 // ─── Rewards phase · one screen per kind of reward ──────────────────────────
+// Rewards mirrors the Badges phase: choose which kinds of reward this challenge
+// hands out, then set each one up on its own screen.
+const REWARD_TYPES = [
+  { key: 'prizesEnabled', label: 'Prizes' },
+  { key: 'ticketsEnabled', label: 'Raffle tickets' },
+  { key: 'certsEnabled', label: 'Certificates' },
+]
 const REWARD_HEADS = {
-  'rewards.prizes': {
+  'rewards.types': {
     title: 'What do readers win?',
-    sub: 'Prizes readers claim when they earn the badges you choose. Skip it if you’d rather not.',
+    sub: 'Turn on the kinds of reward you want — you’ll set each one up next. Skip it entirely if you’d rather not.',
+  },
+  'rewards.prizes': {
+    title: 'Prizes',
+    sub: 'What readers claim when they earn the badges you choose.',
   },
   'rewards.tickets': {
     title: 'Raffle tickets',
@@ -3831,15 +3842,29 @@ export function RewardsStep({ screen, challenge, update }) {
     })
 
   const is = (id) => screen === id
-  const heads = REWARD_HEADS[screen] || REWARD_HEADS['rewards.prizes']
+  const heads = REWARD_HEADS[screen] || REWARD_HEADS['rewards.types']
 
   return (
     <Screen>
       <StepHead title={heads.title} sub={heads.sub} />
 
+      {is('rewards.types') && (
+        <div className="cc-panel">
+          <div className="cc-settings">
+            {REWARD_TYPES.map((t) => (
+              <div key={t.key} className="cc-setting-row">
+                <span className="cc-setting-label">{t.label}</span>
+                <div className="cc-type-state">
+                  <Toggle checked={!!r[t.key]} size="md" onChange={(v) => setR({ [t.key]: v })} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {is('rewards.prizes') && (
         <>
-          {/* 1 · Rewards */}
           <div className="cc-panel">
             <div className="cc-panel-head">
               <h3 className="cc-panel-title">Prizes readers can claim</h3>
@@ -3907,17 +3932,100 @@ export function RewardsStep({ screen, challenge, update }) {
       )}
 
       {is('rewards.tickets') && (
-        <>
-          {/* 2 · Ticket rewards (opt-in) */}
-          <div className={`cc-panel${ticketsEnabled ? '' : ' cc-panel--collapsed'}`}>
-            <div className="cc-panel-head">
-              <h3 className="cc-panel-title">Ticket rewards</h3>
-              <div className="cc-panel-actions">
-                {ticketsEnabled && (
-                  <>
-                    <Button variant="ghost" size="sm" onClick={() => setTicketPicker(true)}>
-                      Use existing
-                    </Button>
+        <div className="cc-panel">
+          <div className="cc-panel-head">
+            <h3 className="cc-panel-title">Ticket rewards</h3>
+            <div className="cc-panel-actions">
+              <Button variant="ghost" size="sm" onClick={() => setTicketPicker(true)}>
+                Use existing
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => setTicketEditor({ new: true })}>
+                + Add ticket reward
+              </Button>
+            </div>
+          </div>
+          {ticketsEnabled && (
+            <>
+              <div className="cc-ticket-source">
+                <span className="cc-ticket-source-label">How do readers earn tickets?</span>
+                <div
+                  className="cc-optcards cc-optcards--stack"
+                  role="radiogroup"
+                  aria-label="How do readers earn tickets?"
+                >
+                  {TICKET_SOURCES.map((o) => {
+                    const on = ticketSource === o.value
+                    return (
+                      <div key={o.value} className={`cc-optrow${on ? ' is-on' : ''}`}>
+                        <button
+                          type="button"
+                          role="radio"
+                          aria-checked={on}
+                          className={`cc-optcard${on ? ' is-on' : ''}`}
+                          onClick={() => setR({ ticketSource: o.value })}
+                        >
+                          <span className="cc-optcard-ic" aria-hidden="true">
+                            <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
+                          </span>
+                          <span className="cc-optcard-text">
+                            <strong>{o.label}</strong>
+                            <span>{o.sub}</span>
+                          </span>
+                          <span className="cc-optcard-dot" aria-hidden="true" />
+                        </button>
+                        {on && o.value === 'all' && (
+                          <div className="cc-optcard-sub">
+                            <div className="cc-ticket-allcount">
+                              <span>Each badge awards</span>
+                              <NumberInput
+                                value={ticketsPerBadge}
+                                min={1}
+                                max={100}
+                                onChange={(v) => setR({ ticketsPerBadge: v })}
+                              />
+                              <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
+                            </div>
+                          </div>
+                        )}
+                        {on && o.value === 'specific' && (
+                          <div className="cc-optcard-sub">
+                            <BadgeSelect
+                              badges={badgePool}
+                              selectedIds={Object.keys(ticketBadges)}
+                              onToggle={toggleTicketBadge}
+                              valueMode
+                              values={ticketBadges}
+                              onValue={setTicketBadgeValue}
+                              valueLabel="tickets"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              </div>
+              {ticketRewards.length ? (
+                <div className="cc-badge-rows">
+                  {ticketRewards.map((t) => (
+                    <BadgeRow
+                      key={t.id}
+                      img={t.image || null}
+                      icon="gift"
+                      square
+                      title={t.name}
+                      meta={`${t.cost} ticket${t.cost === 1 ? '' : 's'} to enter`}
+                      onEdit={() => setTicketEditor(t)}
+                      onRemove={() => removeTicket(t.id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={TICKET_EMPTY_ICON}
+                  title="No ticket rewards yet"
+                  description="Add a prize readers enter to win with the tickets they collect."
+                  action={
                     <Button
                       variant="secondary"
                       size="sm"
@@ -3925,178 +4033,63 @@ export function RewardsStep({ screen, challenge, update }) {
                     >
                       + Add ticket reward
                     </Button>
-                  </>
-                )}
-                <Toggle
-                  checked={ticketsEnabled}
-                  size="md"
-                  onChange={(v) => setR({ ticketsEnabled: v })}
+                  }
                 />
-              </div>
-            </div>
-            {ticketsEnabled && (
-              <>
-                <div className="cc-ticket-source">
-                  <span className="cc-ticket-source-label">How do readers earn tickets?</span>
-                  <div
-                    className="cc-optcards cc-optcards--stack"
-                    role="radiogroup"
-                    aria-label="How do readers earn tickets?"
-                  >
-                    {TICKET_SOURCES.map((o) => {
-                      const on = ticketSource === o.value
-                      return (
-                        <div key={o.value} className={`cc-optrow${on ? ' is-on' : ''}`}>
-                          <button
-                            type="button"
-                            role="radio"
-                            aria-checked={on}
-                            className={`cc-optcard${on ? ' is-on' : ''}`}
-                            onClick={() => setR({ ticketSource: o.value })}
-                          >
-                            <span className="cc-optcard-ic" aria-hidden="true">
-                              <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
-                            </span>
-                            <span className="cc-optcard-text">
-                              <strong>{o.label}</strong>
-                              <span>{o.sub}</span>
-                            </span>
-                            <span className="cc-optcard-dot" aria-hidden="true" />
-                          </button>
-                          {on && o.value === 'all' && (
-                            <div className="cc-optcard-sub">
-                              <div className="cc-ticket-allcount">
-                                <span>Each badge awards</span>
-                                <NumberInput
-                                  value={ticketsPerBadge}
-                                  min={1}
-                                  max={100}
-                                  onChange={(v) => setR({ ticketsPerBadge: v })}
-                                />
-                                <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
-                              </div>
-                            </div>
-                          )}
-                          {on && o.value === 'specific' && (
-                            <div className="cc-optcard-sub">
-                              <BadgeSelect
-                                badges={badgePool}
-                                selectedIds={Object.keys(ticketBadges)}
-                                onToggle={toggleTicketBadge}
-                                valueMode
-                                values={ticketBadges}
-                                onValue={setTicketBadgeValue}
-                                valueLabel="tickets"
-                              />
-                            </div>
-                          )}
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
-                {ticketRewards.length ? (
-                  <div className="cc-badge-rows">
-                    {ticketRewards.map((t) => (
-                      <BadgeRow
-                        key={t.id}
-                        img={t.image || null}
-                        icon="gift"
-                        square
-                        title={t.name}
-                        meta={`${t.cost} ticket${t.cost === 1 ? '' : 's'} to enter`}
-                        onEdit={() => setTicketEditor(t)}
-                        onRemove={() => removeTicket(t.id)}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <EmptyState
-                    icon={TICKET_EMPTY_ICON}
-                    title="No ticket rewards yet"
-                    description="Add a prize readers enter to win with the tickets they collect."
-                    action={
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setTicketEditor({ new: true })}
-                      >
-                        + Add ticket reward
-                      </Button>
-                    }
-                  />
-                )}
-              </>
-            )}
-          </div>
-        </>
+              )}
+            </>
+          )}
+        </div>
       )}
 
       {is('rewards.certificates') && (
-        <>
-          {/* 3 · Certificates (opt-in) */}
-          <div className={`cc-panel${certsEnabled ? '' : ' cc-panel--collapsed'}`}>
-            <div className="cc-panel-head">
-              <h3 className="cc-panel-title">Certificates</h3>
-              <div className="cc-panel-actions">
-                {certsEnabled && (
-                  <>
-                    <Button variant="ghost" size="sm" onClick={() => setCertPicker(true)}>
-                      Use existing
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setCertEditor({ new: true })}
-                    >
-                      + Add certificate
-                    </Button>
-                  </>
-                )}
-                <Toggle
-                  checked={certsEnabled}
-                  size="md"
-                  onChange={(v) => setR({ certsEnabled: v })}
-                />
-              </div>
+        <div className="cc-panel">
+          <div className="cc-panel-head">
+            <h3 className="cc-panel-title">Certificates</h3>
+            <div className="cc-panel-actions">
+              <Button variant="ghost" size="sm" onClick={() => setCertPicker(true)}>
+                Use existing
+              </Button>
+              <Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>
+                + Add certificate
+              </Button>
             </div>
-            {certsEnabled &&
-              (certificates.length ? (
-                <div className="cc-badge-rows">
-                  {certificates.map((c) => {
-                    const cb = assignedBadges(c.badgeIds)
-                    return (
-                      <BadgeRow
-                        key={c.id}
-                        icon="certificate"
-                        square
-                        title={c.title}
-                        meta={cb.length ? <BadgeAvatars badges={cb} /> : 'Not assigned to a badge'}
-                        metaMissing={!cb.length}
-                        onEdit={() => setCertEditor(c)}
-                        onRemove={() => removeCert(c.id)}
-                      />
-                    )
-                  })}
-                </div>
-              ) : (
-                <EmptyState
-                  icon={CERT_EMPTY_ICON}
-                  title="No certificates yet"
-                  description="Create a printable certificate readers earn when they finish."
-                  action={
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setCertEditor({ new: true })}
-                    >
-                      + Add certificate
-                    </Button>
-                  }
-                />
-              ))}
           </div>
-        </>
+          {certsEnabled &&
+            (certificates.length ? (
+              <div className="cc-badge-rows">
+                {certificates.map((c) => {
+                  const cb = assignedBadges(c.badgeIds)
+                  return (
+                    <BadgeRow
+                      key={c.id}
+                      icon="certificate"
+                      square
+                      title={c.title}
+                      meta={cb.length ? <BadgeAvatars badges={cb} /> : 'Not assigned to a badge'}
+                      metaMissing={!cb.length}
+                      onEdit={() => setCertEditor(c)}
+                      onRemove={() => removeCert(c.id)}
+                    />
+                  )
+                })}
+              </div>
+            ) : (
+              <EmptyState
+                icon={CERT_EMPTY_ICON}
+                title="No certificates yet"
+                description="Create a printable certificate readers earn when they finish."
+                action={
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setCertEditor({ new: true })}
+                  >
+                    + Add certificate
+                  </Button>
+                }
+              />
+            ))}
+        </div>
       )}
 
       <Modal

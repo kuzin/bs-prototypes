@@ -662,6 +662,35 @@
   gap: 12px;
   margin-bottom: 12px;
 }
+/* ── Card header bar ──
+   A panel that opens with a title is a titled card, so the title gets the real
+   header treatment — the tinted, divided strip the shared <SectionCard>'s
+   `bar` header draws. Negative margins pull it out to the panel's edges; the
+   panel keeps its own padding for the body below.
+   Only a *leading* title becomes a bar: sub-headings further down a panel, and
+   the ones inside a <MoreOptions> disclosure, stay plain text. */
+.cc-panel > .cc-panel-head:first-child,
+.cc-panel > .cc-panel-title:first-child {
+  margin: -18px -20px 16px;
+  padding: 14px 20px;
+  background: var(--c-slate-50);
+  border-bottom: 1px solid var(--line);
+  border-radius: 13px 13px 0 0;
+}
+/* The panel clips its own corners so the strip's square top corners don't
+   poke past the card's radius. */
+.cc-panel {
+  overflow: hidden;
+}
+/* A collapsed panel is a single toggle row, not a titled card with a body —
+   it keeps the plain header so it doesn't render a bar over an empty card. */
+.cc-panel--collapsed > .cc-panel-head:first-child {
+  margin: 0;
+  padding: 0;
+  background: none;
+  border-bottom: 0;
+}
+
 /* Plain text section headers — no number, no accent bar. */
 .cc-panel-title {
   display: flex;

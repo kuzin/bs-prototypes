@@ -250,18 +250,18 @@ export function ReviewStep({ challenge, role, type, screens = [], phases = [], o
         </Group>
       )}
 
-      {has('rewards.prizes') && (
+      {has('rewards.types') && (
         <Group title={phaseName('rewards') || 'Rewards'}>
           <Row
             label="Prizes"
             value={rewards.items?.length ? count(rewards.items.length, 'prize') : 'None'}
-            screen="rewards.prizes"
+            screen={to('rewards.prizes') || 'rewards.types'}
             onEdit={onEdit}
           />
           <Row
             label="Raffle tickets"
             value={rewards.ticketsEnabled ? 'On' : 'Off'}
-            screen="rewards.tickets"
+            screen={to('rewards.tickets') || 'rewards.types'}
             onEdit={onEdit}
           />
           <Row
@@ -271,7 +271,7 @@ export function ReviewStep({ challenge, role, type, screens = [], phases = [], o
                 ? count(rewards.certificates.length, 'certificate')
                 : 'None'
             }
-            screen="rewards.certificates"
+            screen={to('rewards.certificates') || 'rewards.types'}
             onEdit={onEdit}
           />
         </Group>
