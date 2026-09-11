@@ -55,7 +55,11 @@ export function StudentVocabulary({ studentId }) {
         accentBg={ACCENT_BG}
       />
 
-      <div className="bp-card bp-statlist">
+      {/* `pcard bp-card bp-statlist` is the profile's own literal for this block
+          (see OverviewStats) — `pcard` is the class carrying the white ground,
+          the hairline and the radius, so without it the card had no chrome at
+          all and the rows sat loose on the page. */}
+      <div className="pcard bp-card bp-statlist">
         <div className="bp-statlist-head">
           <SectionHeading>At a glance</SectionHeading>
           <span className="bp-statlist-note">This school year</span>
