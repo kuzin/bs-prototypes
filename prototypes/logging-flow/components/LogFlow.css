@@ -1,8 +1,15 @@
 /* ── Full-screen logging overlay ─────────────────────────────────────────── */
 
+/* Inset by whatever prototype chrome the host shell declares, so the overlay
+   sits between the preview bar and the prototype nav rather than under them —
+   the corner buttons are pinned to its top edge and were disappearing behind
+   the bar. Both tokens default to 0, so a shell without bars is unchanged. */
 .lf-overlay {
   position: fixed;
-  inset: 0;
+  top: var(--chrome-top, 0px);
+  right: 0;
+  bottom: var(--chrome-bottom, 0px);
+  left: 0;
   z-index: 100;
   background: #ffffff;
   overflow-y: auto;
@@ -44,12 +51,14 @@
 .lf-iconbtn:hover {
   background: #e5e8eb;
 }
+/* `fixed` positions against the viewport, not the overlay, so these have to
+   clear the chrome themselves. */
 .lf-close {
-  top: 18px;
+  top: calc(var(--chrome-top, 0px) + 18px);
   right: 18px;
 }
 .lf-back {
-  top: 18px;
+  top: calc(var(--chrome-top, 0px) + 18px);
   left: 18px;
 }
 

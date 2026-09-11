@@ -65,7 +65,10 @@
 
 .fc {
   position: fixed;
-  inset: 0;
+  top: var(--chrome-top, 0px);
+  right: 0;
+  bottom: var(--chrome-bottom, 0px);
+  left: 0;
   z-index: 220;
   display: flex;
   flex-direction: column;
@@ -95,7 +98,7 @@
    share a ground, so they should share a corner. */
 .fc-close {
   position: fixed;
-  top: 18px;
+  top: calc(var(--chrome-top, 0px) + 18px);
   right: 18px;
   z-index: 2;
   display: grid;

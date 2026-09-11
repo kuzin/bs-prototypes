@@ -36,8 +36,8 @@ body,
   min-height: 100%;
   /* This shell carries both prototype bars, so modals opened inside it stop at
      them rather than scrimming over the top of the demo chrome. */
-  --modal-chrome-top: var(--preview-bar-h);
-  --modal-chrome-bottom: var(--proto-nav-h);
+  --chrome-top: var(--preview-bar-h);
+  --chrome-bottom: var(--proto-nav-h);
 }
 
 .wb-stage {

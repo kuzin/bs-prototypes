@@ -23,7 +23,7 @@
   left: 0;
   /* Above the modal layer (199/200): this bar is scaffolding for whoever is
      reviewing the prototype, so a modal inside the prototype shouldn't scrim
-     it. The modal insets itself instead — see --modal-chrome-bottom. */
+     it. The modal insets itself instead — see --chrome-bottom. */
   z-index: 300;
 }
 
