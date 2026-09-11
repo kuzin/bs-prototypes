@@ -3,7 +3,8 @@ import { Icon } from '@components/Icon/Icon'
 import { EmptyState } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 
-import { BOOKS, wordByName } from '../data'
+import { BOOKS, boxInfo, wordByName } from '../data'
+import { ReviewStrip } from './Flashcards'
 import './MyWords.css'
 
 // The personal vocabulary collection — the brief's "growing personal record of
@@ -18,8 +19,12 @@ function prettyDate(iso) {
   return `${MONTHS[Number(m) - 1]} ${Number(d)}`
 }
 
-/** One collected word. `isNew` gives the word just banked a moment of its own. */
-export function WordTile({ entry, isNew }) {
+/**
+ * One collected word. `isNew` gives the word just banked a moment of its own;
+ * `card` is where the review deck currently has it, which is the difference
+ * between a collection and a list — a word here is either sticking or slipping.
+ */
+export function WordTile({ entry, isNew, card }) {
   const word = wordByName(entry.word)
   const book = entry.bookId ? BOOKS[entry.bookId] : null
   if (!word) return null
@@ -27,7 +32,18 @@ export function WordTile({ entry, isNew }) {
     <article className={`mw-tile${isNew ? ' is-new' : ''}`}>
       <header className="mw-tile-head">
         <h3 className="mw-tile-word">{word.word}</h3>
-        {isNew && <span className="mw-tile-new">New</span>}
+        {isNew ? (
+          <span className="mw-tile-new">New</span>
+        ) : (
+          card && (
+            <span
+              className={`mw-tile-box mw-tile-box--${card.box}`}
+              title={`Review box ${card.box} of 5`}
+            >
+              {boxInfo(card.box).label}
+            </span>
+          )
+        )}
       </header>
       <p className="mw-tile-say">
         {word.say} <span className="mw-tile-part">· {word.part}</span>
@@ -44,7 +60,7 @@ export function WordTile({ entry, isNew }) {
   )
 }
 
-export function MyWords({ collection, newestWord }) {
+export function MyWords({ collection, newestWord, cards = {}, onReview }) {
   // Newest first — a collection reads like a log, most recent at the top.
   const ordered = useMemo(() => [...collection].reverse(), [collection])
 
@@ -56,6 +72,11 @@ export function MyWords({ collection, newestWord }) {
 
   return (
     <div className="mw">
+      {/* The collection is also the deck. It leads, because a word revisited is
+          worth more than the next word collected — the whole reason the deck
+          exists is that reviewers pointed out one interaction doesn't stick. */}
+      {onReview && <ReviewStrip cards={cards} onStart={onReview} />}
+
       {/* Same shape as the Reading Log's streak blocks next door — a flat
           tinted panel with the icon beside the figure, not a bordered card. */}
       <div className="mw-stats">
@@ -63,7 +84,7 @@ export function MyWords({ collection, newestWord }) {
           { tone: 'words', label: 'Words collected', value: collection.length, icon: 'vocabulary' },
           { tone: 'week', label: 'Collected this week', value: thisWeek, icon: 'calendar-event' },
           { tone: 'books', label: 'Books they came from', value: books, icon: 'book' },
-          { tone: 'first', label: 'Right on the first try', value: `${firstTry}%`, icon: 'check' },
+          { tone: 'first', label: 'Aced with no misses', value: `${firstTry}%`, icon: 'check' },
         ].map((s) => (
           <div key={s.label} className={`mw-stat mw-stat--${s.tone}`}>
             <Icon name={s.icon} size={20} />
@@ -85,7 +106,7 @@ export function MyWords({ collection, newestWord }) {
       ) : (
         <div className="mw-grid">
           {ordered.map((e) => (
-            <WordTile key={e.word} entry={e} isNew={e.word === newestWord} />
+            <WordTile key={e.word} entry={e} isNew={e.word === newestWord} card={cards[e.word]} />
           ))}
         </div>
       )}

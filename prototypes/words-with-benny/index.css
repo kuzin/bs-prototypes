@@ -62,3 +62,27 @@ body,
 .wb-edu-shell .ew-content {
   overflow-y: auto;
 }
+
+/* ─── Preview-bar activity picker ─────────────────────────────────────────
+   A demo control: which activity the next unlock runs, so a single type can be
+   shown on its own instead of only inside a full round. Matched to the bar's
+   own `.pvb-actions button` rule, which a <select> doesn't inherit. */
+.wb-actpick {
+  height: var(--pvb-tray-h);
+  padding: 0 10px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #cdeae7;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 8px;
+}
+.wb-actpick:hover {
+  color: #fff;
+  border-color: rgb(255 255 255 / 55%);
+}
+.wb-actpick option {
+  color: #1e293b;
+}

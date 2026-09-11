@@ -323,6 +323,155 @@
   height: 26px;
 }
 
+/* What the round is going to ask, shown before it starts. Three named steps
+   with an end in sight read as a game; an unannounced series of questions
+   reads as a test. */
+
+.wb-plan {
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #eef2f7;
+}
+.wb-plan-lead {
+  font-size: 13px;
+  font-weight: 800;
+  color: #7c3aed;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.wb-plan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 11px;
+  list-style: none;
+}
+.wb-plan-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+.wb-plan-num {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 21px;
+  height: 21px;
+  font-size: 11.5px;
+  font-weight: 900;
+  color: #6d28d9;
+  background: #f3e8ff;
+  border-radius: 999px;
+}
+.wb-plan-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.wb-plan-label {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #1e293b;
+}
+.wb-plan-blurb {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #94a3b8;
+}
+
+.wb-card > .btn {
+  width: 100%;
+  margin-top: 18px;
+}
+
+/* ─── The round ─────────────────────────────────────────────────────────── */
+
+/* The word, pinned above every activity in its round. */
+.wb-pin {
+  padding-bottom: 13px;
+  border-bottom: 1px solid #eef2f7;
+}
+.wb-pin-word {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+}
+.wb-pin-term {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.015em;
+  color: #0f172a;
+}
+.wb-pin-part {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #a78bfa;
+}
+.wb-pin-meaning {
+  margin-top: 3px;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+/* Three rungs, named. A step already answered keeps its name — knowing you
+   did "Meaning" and are now on "Sentence" is the part that makes repetition
+   feel like progress rather than more of the same. */
+.wb-rail {
+  display: flex;
+  gap: 6px;
+  margin-top: 14px;
+}
+.wb-rail-step {
+  display: flex;
+  flex: 1 1 0;
+  gap: 6px;
+  align-items: center;
+  min-width: 0;
+  padding: 6px 9px;
+  background: #f4f7fa;
+  border-radius: 999px;
+}
+.wb-rail-dot {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  color: #fff;
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+.wb-rail-label {
+  overflow: hidden;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #94a3b8;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.wb-rail-step.is-now {
+  background: #f3e8ff;
+}
+.wb-rail-step.is-now .wb-rail-dot {
+  background: #7c3aed;
+  box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.16);
+}
+.wb-rail-step.is-now .wb-rail-label {
+  color: #6d28d9;
+}
+.wb-rail-step.is-done {
+  background: #ecfdf5;
+}
+.wb-rail-step.is-done .wb-rail-dot {
+  background: #10b981;
+}
+.wb-rail-step.is-done .wb-rail-label {
+  color: #047857;
+}
+
 /* ─── Beat 3: collected ─────────────────────────────────────────────────── */
 
 .wb-done {
@@ -417,5 +566,30 @@
   }
   .wb-word {
     font-size: 32px;
+  }
+}
+
+/* Where the word goes next. The unlock is the only place a reader is told the
+   deck exists, so it says when this word comes back rather than just pointing
+   at another tab. */
+.wb-done-next {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #ddd6fe;
+  background: rgba(124, 58, 237, 0.28);
+  border-radius: 999px;
+}
+
+@media (max-width: 520px) {
+  .wb-rail-label {
+    display: none;
+  }
+  .wb-rail-step {
+    justify-content: center;
   }
 }

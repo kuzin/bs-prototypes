@@ -1027,7 +1027,7 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
             <div className="lf-benny-copy">
               <div className="lf-benny-title">I found a word in there</div>
               <p className="lf-benny-sub">
-                One word from {bookTitle}, about ten seconds of your time, and it’s yours to keep.
+                One word from {bookTitle}, a short round with Benny, and it’s yours to keep.
               </p>
             </div>
           </div>

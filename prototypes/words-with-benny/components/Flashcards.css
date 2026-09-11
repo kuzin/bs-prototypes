@@ -1,0 +1,361 @@
+/* The review deck. Same dark violet ground as the unlock overlay — collecting a
+   word and revisiting it are two halves of one thing, so they share a room. */
+
+/* ─── The strip above the collection ─────────────────────────────────────── */
+
+.fc-strip {
+  display: flex;
+  gap: 13px;
+  align-items: center;
+  padding: 14px 16px;
+  background: linear-gradient(100deg, #f5f3ff, #faf5ff);
+  border: 1px solid #e9d5ff;
+  border-radius: 14px;
+}
+.fc-strip.is-clear {
+  background: #f8fafc;
+  border-color: #e8eef5;
+}
+
+.fc-strip-art {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  color: #fff;
+  background: #7c3aed;
+  border-radius: 12px;
+}
+.fc-strip.is-clear .fc-strip-art {
+  color: #94a3b8;
+  background: #e8eef5;
+}
+
+.fc-strip-copy {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.fc-strip-lead {
+  font-size: 15px;
+  font-weight: 800;
+  color: #1e293b;
+}
+.fc-strip-sub {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #64748b;
+}
+
+@media (max-width: 620px) {
+  .fc-strip {
+    flex-wrap: wrap;
+  }
+  .fc-strip-copy {
+    flex-basis: calc(100% - 55px);
+  }
+  .fc-strip .btn {
+    width: 100%;
+  }
+}
+
+/* ─── The deck ───────────────────────────────────────────────────────────── */
+
+.fc {
+  position: fixed;
+  inset: 0;
+  z-index: 220;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow-y: auto;
+  color: #fff;
+  background:
+    radial-gradient(900px 520px at 50% -8%, rgba(124, 58, 237, 0.5), transparent 70%),
+    linear-gradient(180deg, #1b1436 0%, #120e26 100%);
+}
+
+.fc-top {
+  position: relative;
+  flex: 0 0 auto;
+  width: 100%;
+  max-width: 560px;
+  padding: 18px 20px 0;
+}
+.fc-close {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.14);
+  border: 0;
+  border-radius: 999px;
+}
+.fc-close:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+.fc-count {
+  font-size: 12px;
+  font-weight: 800;
+  color: #c4b5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.fc-bar {
+  margin-top: 9px;
+  overflow: hidden;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+}
+.fc-bar span {
+  display: block;
+  height: 5px;
+  background: #a78bfa;
+  border-radius: 999px;
+  transition: width 260ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+.fc-stage {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: 560px;
+  padding: 22px 20px 40px;
+}
+
+/* The card. Both faces are stacked in the same grid cell so the card is as tall
+   as its longest side and flipping never changes its size. */
+.fc-card {
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  perspective: 1400px;
+}
+.fc-card-inner {
+  display: grid;
+  min-height: 268px;
+  transition: transform 460ms cubic-bezier(0.3, 0.9, 0.3, 1);
+  transform-style: preserve-3d;
+}
+.fc-card.is-flipped .fc-card-inner {
+  transform: rotateY(180deg);
+}
+
+.fc-face {
+  display: flex;
+  flex-direction: column;
+  grid-area: 1 / 1;
+  gap: 9px;
+  align-items: center;
+  justify-content: center;
+  padding: 30px 26px;
+  text-align: center;
+  backface-visibility: hidden;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.34);
+}
+
+.fc-front-word {
+  font-size: 40px;
+  font-weight: 900;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+}
+.fc-front-hint {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #b6c2d1;
+}
+
+.fc-face--back {
+  justify-content: center;
+  transform: rotateY(180deg);
+}
+.fc-back-say {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #7c3aed;
+}
+.fc-back-say em {
+  font-style: normal;
+  font-weight: 600;
+  color: #b6c2d1;
+}
+.fc-back-meaning {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: #0f172a;
+}
+.fc-back-example {
+  font-size: 14px;
+  font-weight: 600;
+  font-style: italic;
+  line-height: 1.5;
+  color: #64748b;
+}
+.fc-back-from {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  margin-top: 4px;
+  padding: 5px 11px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #6d28d9;
+  background: #f3e8ff;
+  border-radius: 999px;
+}
+
+/* ─── Grading ────────────────────────────────────────────────────────────── */
+
+.fc-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+}
+.fc-grade-btn {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  align-items: center;
+  padding: 14px 12px;
+  font-size: 15px;
+  font-weight: 800;
+  border: 1.5px solid transparent;
+  border-radius: 14px;
+}
+.fc-grade-btn em {
+  font-size: 11.5px;
+  font-weight: 700;
+  font-style: normal;
+  opacity: 0.72;
+}
+.fc-grade-btn--miss {
+  color: #fde68a;
+  background: rgba(251, 191, 36, 0.14);
+  border-color: rgba(251, 191, 36, 0.32);
+}
+.fc-grade-btn--miss:hover {
+  background: rgba(251, 191, 36, 0.22);
+}
+.fc-grade-btn--knew {
+  color: #a7f3d0;
+  background: rgba(16, 185, 129, 0.16);
+  border-color: rgba(16, 185, 129, 0.36);
+}
+.fc-grade-btn--knew:hover {
+  background: rgba(16, 185, 129, 0.26);
+}
+
+.fc-prod {
+  margin-top: 18px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.74);
+  text-align: center;
+}
+.fc-keys {
+  display: block;
+  margin-top: 9px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.4);
+}
+.fc-keys kbd {
+  padding: 1px 6px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+}
+
+/* ─── Done ───────────────────────────────────────────────────────────────── */
+
+.fc-summary {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  max-width: 460px;
+  padding: 20px 20px 48px;
+  text-align: center;
+}
+.fc-summary-benny {
+  width: 96px;
+  height: 96px;
+}
+.fc-summary-h1 {
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+}
+.fc-summary-sub {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.72);
+}
+.fc-summary-list {
+  width: 100%;
+  margin-top: 6px;
+  padding: 13px 14px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+}
+.fc-summary-lbl {
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #c4b5fd;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+.fc-summary-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.fc-summary-word {
+  padding: 5px 12px;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+}
+.fc-summary .btn {
+  margin-top: 12px;
+}
+
+@media (max-width: 460px) {
+  .fc-grade {
+    grid-template-columns: 1fr;
+  }
+  .fc-front-word {
+    font-size: 34px;
+  }
+}

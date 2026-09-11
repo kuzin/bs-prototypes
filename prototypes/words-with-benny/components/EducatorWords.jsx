@@ -16,7 +16,16 @@ import '@components/Avatar/Avatar.css'
 import '@components/BarList/BarList.css'
 import '@components/Cards/Cards.css'
 
-import { ALL_WORDS, CLASS_TOP_WORDS, CLASS_TREND, ROSTER } from '../data'
+import {
+  ACTIVITY_ACCURACY,
+  ALL_WORDS,
+  BOOKS,
+  CLASS_TOP_WORDS,
+  CLASS_TREND,
+  ROSTER,
+  WRITING_QUEUE,
+  activityType,
+} from '../data'
 import './EducatorWords.css'
 
 // The Vocabulary tab of a classroom page: "at-a-glance reporting showing
@@ -50,6 +59,27 @@ function distribution(roster) {
   })
 }
 
+/**
+ * First-try accuracy by activity type. This is the one number the class summary
+ * gained by asking about a word five different ways rather than once: a class
+ * can be near-perfect at picking a definition out of a list and still unable to
+ * put the word in a sentence of its own, and only the second of those is worth
+ * a teacher's minute.
+ */
+function byActivity() {
+  return ACTIVITY_ACCURACY.map((a) => {
+    const type = activityType(a.id)
+    return {
+      label: type.label,
+      sublabel: `${a.attempts.toLocaleString()} attempts`,
+      value: a.firstTry,
+      valueLabel: `${a.firstTry}%`,
+      color: a.firstTry >= 85 ? '#16A34A' : a.firstTry >= 70 ? '#8B5CF6' : '#D97706',
+      max: 100,
+    }
+  })
+}
+
 function AccuracyPill({ value }) {
   const color = value >= 85 ? '#16A34A' : value >= 70 ? '#D97706' : '#DC2626'
   return (
@@ -59,8 +89,17 @@ function AccuracyPill({ value }) {
   )
 }
 
-export function EducatorWords({ onOpenStudent }) {
+export function EducatorWords({ onOpenStudent, written = [] }) {
   const [tab, setTab] = useState('class')
+
+  // Sentences students wrote in the "write your own" activity. Anything the
+  // automatic check couldn't confidently take is a `flagged` row, and those
+  // come first — the queue is the only part of this feature that asks a
+  // teacher for time, so it has to be short and sorted by who needs a look.
+  const queue = useMemo(() => {
+    const all = [...written, ...WRITING_QUEUE]
+    return [...all].sort((a, b) => (a.status === b.status ? 0 : a.status === 'flagged' ? -1 : 1))
+  }, [written])
 
   const totals = useMemo(() => {
     const words = ROSTER.reduce((n, s) => n + s.words, 0)
@@ -197,6 +236,32 @@ export function EducatorWords({ onOpenStudent }) {
             </ChartCard>
 
             <ChartCard
+              title="Where the words stop sticking"
+              subtitle="First-try accuracy by the kind of question asked"
+              icon={<Icon name="target" size={17} />}
+              accent={ACCENT}
+              bodyPad="padded"
+              footer={
+                <p className="ew-cardnote">
+                  Recognising a word is not the same as using one. The gap between the top and
+                  bottom rows is the part worth a mini-lesson.
+                </p>
+              }
+            >
+              <BarList labelWidth={132} items={byActivity()} />
+            </ChartCard>
+
+            <ChartCard
+              title="How the class is spread"
+              subtitle="Students by words collected"
+              icon={<Icon name="users" size={17} />}
+              accent={ACCENT}
+              bodyPad="padded"
+            >
+              <BarList labelWidth={92} items={distribution(ROSTER)} />
+            </ChartCard>
+
+            <ChartCard
               title="Words collected, against reading logs"
               subtitle="Weekly, since Words with Benny turned on"
               icon={<Icon name="chart-bar" size={17} />}
@@ -245,14 +310,60 @@ export function EducatorWords({ onOpenStudent }) {
             </ChartCard>
 
             <ChartCard
-              title="How the class is spread"
-              subtitle="Students by words collected"
-              icon={<Icon name="users" size={17} />}
+              title="Sentences students wrote"
+              subtitle="From the writing activity — flagged ones are waiting on you"
+              icon={<Icon name="pencil" size={17} />}
               accent={ACCENT}
               span={2}
-              bodyPad="padded"
+              bodyPad="flush"
+              footer={
+                <p className="ew-cardnote">
+                  Everything else was accepted automatically. Nothing here is graded — a flag only
+                  means Benny wasn’t sure enough to take it on his own.
+                </p>
+              }
             >
-              <BarList labelWidth={92} items={distribution(ROSTER)} />
+              <ul className="ew-queue">
+                {queue.slice(0, 6).map((row, i) => {
+                  const person = ROSTER.find((s) => s.id === row.student)
+                  const book = row.bookId ? BOOKS[row.bookId] : null
+                  return (
+                    <li key={`${row.student}-${row.word}-${i}`} className="ew-queue-row">
+                      <button
+                        className="ew-queue-who"
+                        onClick={() => onOpenStudent(row.student)}
+                        aria-label={`Open ${person?.name ?? row.student}`}
+                      >
+                        <Avatar
+                          initials={person?.initials ?? '??'}
+                          color={person?.color}
+                          size="sm"
+                        />
+                        <span className="ew-queue-whom">
+                          <span className="ew-queue-name">{person?.name ?? row.student}</span>
+                          <span className="ew-queue-book">{book ? book.title : 'No title'}</span>
+                        </span>
+                      </button>
+                      <p className="ew-queue-text">
+                        {row.text
+                          .split(new RegExp(`(${row.word})`, 'i'))
+                          .map((bit, j) =>
+                            bit.toLowerCase() === row.word.toLowerCase() ? (
+                              <strong key={j}>{bit}</strong>
+                            ) : (
+                              <span key={j}>{bit}</span>
+                            ),
+                          )}
+                      </p>
+                      <div className="ew-queue-meta">
+                        <Pill color={row.status === 'flagged' ? '#D97706' : '#16A34A'} size="sm">
+                          {row.status === 'flagged' ? 'Needs a look' : 'Accepted'}
+                        </Pill>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
             </ChartCard>
           </div>
         </>
