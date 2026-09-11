@@ -495,41 +495,52 @@ function SearchStep({
 
   return (
     <div className="lf-search">
-      <ReaderLine reader={reader} onChange={onChangeReader} />
-      <h1 className="lf-h1">What did you read today?</h1>
+      {/* Scanning takes the whole step — no reader line, no heading, no
+          instruction. Pointing a camera at a book is a physical, two-handed
+          thing, and a viewfinder with a live scan line needs no caption to
+          explain itself. Cancel puts the step back. */}
+      {!scanOpen && (
+        <>
+          <ReaderLine reader={reader} onChange={onChangeReader} />
+          <h1 className="lf-h1">What did you read today?</h1>
 
-      <div className="lf-searchrow">
-        <SearchInput value={query} onChange={setQuery} placeholder="Search for title or author" />
-        <span className="lf-searchdiv" />
-        <Button
-          variant="secondary"
-          size="md"
-          icon={<Icon name="barcode" size={18} />}
-          onClick={() => setScanOpen(true)}
-        >
-          Scan ISBN
-        </Button>
-      </div>
+          <div className="lf-searchrow">
+            <SearchInput
+              value={query}
+              onChange={setQuery}
+              placeholder="Search for title or author"
+            />
+            <span className="lf-searchdiv" />
+            <Button
+              variant="secondary"
+              size="md"
+              icon={<Icon name="barcode" size={18} />}
+              onClick={() => setScanOpen(true)}
+            >
+              Scan ISBN
+            </Button>
+          </div>
+        </>
+      )}
 
       {scanOpen && (
         <div className="lf-scanner">
           <div className="lf-scanner-frame">
-            <Icon name="barcode" size={48} stroke={1.4} />
+            <Icon name="barcode" size={104} stroke={1.3} />
             <span className="lf-scanner-line" />
           </div>
-          <p className="lf-scanner-hint">Point your camera at the book's barcode.</p>
           <div className="lf-scanner-actions">
-            <Button variant="primary" size="sm" onClick={() => onPick(scanTarget)}>
+            <Button variant="primary" size="md" onClick={() => onPick(scanTarget)}>
               Simulate scan
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setScanOpen(false)}>
+            <Button variant="ghost" size="md" onClick={() => setScanOpen(false)}>
               Cancel
             </Button>
           </div>
         </div>
       )}
 
-      {q && (
+      {q && !scanOpen && (
         <div className="lf-results">
           {results.length === 0 ? (
             <p className="lf-noresults">
