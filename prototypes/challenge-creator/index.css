@@ -983,6 +983,19 @@
   background: var(--line, var(--c-slate-200));
 }
 /* "Look & feel" is a dense form — tighten the gaps between its fields. */
+/* The tab bar carries its own 16px of top padding, so the panel shouldn't add
+   a second helping above it — together they land on the usual 18px. */
+.cc-panel--lookfeel {
+  padding-top: 2px;
+}
+.cc-lookfeel-tabs {
+  margin-bottom: 20px;
+}
+/* Both selects in this row are the same size variant, so they should be the
+   same height — whether or not the chosen option carries a theme badge. */
+.cc-lookfeel-row .csel-trigger {
+  min-height: 38px;
+}
 .cc-panel--lookfeel > .fld,
 .cc-panel--lookfeel > .cc-lookfeel-row {
   margin-top: 16px;
@@ -1192,6 +1205,14 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 2px 14px;
+}
+/* When the list IS the panel's whole content, the panel is already the card —
+   drawing a second one inside it just boxes the rows twice. */
+.cc-panel > .cc-settings:only-child {
+  margin-top: 0;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
 }
 /* Shared <SettingRow> (class .setting-row) inside the legacy .cc-settings card
    keeps row dividers — the shared component only draws them inside <SettingList>. */
@@ -4421,11 +4442,17 @@
   display: inline-flex;
   align-items: center;
   gap: 9px;
+  /* Sit on the middle rather than the baseline — an inline-flex on the baseline
+     drags its descender space into the line box and makes the select taller. */
+  vertical-align: middle;
 }
 .cc-theme-opt-badge {
   flex: none;
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
+  /* Negative block margins keep the badge inside the trigger's text line box,
+     so a themed select is exactly as tall as a text-only one beside it. */
+  margin-block: -2px;
   border-radius: 50%;
   background: var(--c, var(--c-slate-300));
   overflow: hidden;

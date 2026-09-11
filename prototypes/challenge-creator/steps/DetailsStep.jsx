@@ -243,7 +243,7 @@ export function DetailsStep({ screen, challenge, role, updateDetails, onTemplate
 
       {screen === 'details.look' && (
         <div className="cc-panel cc-panel--lookfeel">
-          <div style={{ marginBottom: 20 }}>
+          <div className="cc-lookfeel-tabs">
             <Tabs
               accent="#0DA7BC"
               active={bgUploaded ? 'upload' : 'theme'}
