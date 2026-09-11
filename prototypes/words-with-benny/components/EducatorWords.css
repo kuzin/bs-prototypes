@@ -1,10 +1,12 @@
 /* Educator · Vocabulary — the classroom roll-up. Lives inside AppShell's
    content column, so it owns the page padding but not the chrome. */
 
+/* No frame of its own. `.bp-adm-main-body` is the admin frame — it caps the
+   column, sets the gutters and puts --admin-section-gap between its children —
+   so a second max-width and padding in here made this tab narrower and inset
+   compared with Daily Reading and the others beside it. */
 .ew {
-  max-width: 1180px;
-  padding: 26px 30px 56px;
-  margin: 0 auto;
+  align-self: stretch;
 }
 
 /* ─── Header ────────────────────────────────────────────────────────────── */
@@ -53,7 +55,7 @@
    numbers above it — these two cards are the ones a teacher could misread as
    a grade, so neither is left to speak for itself. */
 .ew-cardnote {
-  font-size: 12.5px;
+  font-size: var(--text-tag);
   font-weight: 600;
   line-height: 1.5;
   color: #64748b;
@@ -96,7 +98,7 @@
 }
 .ew-queue-name {
   overflow: hidden;
-  font-size: 13.5px;
+  font-size: var(--text-cell);
   font-weight: 700;
   color: #1e293b;
   text-overflow: ellipsis;
@@ -108,7 +110,7 @@
 }
 
 .ew-queue-text {
-  font-size: 14px;
+  font-size: var(--text-cell);
   font-weight: 500;
   font-style: italic;
   line-height: 1.5;
@@ -128,7 +130,7 @@
 }
 .ew-queue-book {
   overflow: hidden;
-  font-size: 11.5px;
+  font-size: var(--text-micro);
   font-weight: 600;
   color: #94a3b8;
   text-overflow: ellipsis;

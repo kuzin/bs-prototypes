@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
+import { StatCard } from '@components/Cards/Cards'
 import { EmptyState, Tooltip } from '@components/Primitives/Primitives'
 import '@components/Tabs/Tabs.css'
+import '@components/Cards/Cards.css'
 import '@components/Primitives/Primitives.css'
 
 import { BOOKS, KNOWN_BANDS, bandFor, boxInfo, wordByName } from '../data'
@@ -121,22 +123,29 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
           exists is that reviewers pointed out one interaction doesn't stick. */}
       {onReview && <ReviewStrip cards={cards} onStart={onReview} />}
 
-      {/* Same shape as the Reading Log's streak blocks next door — a flat
-          tinted panel with the icon beside the figure, not a bordered card. */}
+      {/* The design system's tinted stat, not a hand-rolled copy of it — this
+          row was the same shape (wash, icon chip, figure over label) written
+          out locally, at its own smaller type. */}
       <div className="mw-stats">
         {[
-          { tone: 'words', label: 'Words collected', value: collection.length, icon: 'vocabulary' },
-          { tone: 'week', label: 'Collected this week', value: thisWeek, icon: 'calendar-event' },
-          { tone: 'books', label: 'Books they came from', value: books, icon: 'book' },
-          { tone: 'first', label: 'Aced with no misses', value: `${firstTry}%`, icon: 'check' },
+          { label: 'Words collected', value: collection.length, icon: 'vocabulary', c: '#5B21B6' },
+          {
+            label: 'Collected this week',
+            value: thisWeek,
+            icon: 'calendar-event',
+            c: '#0B6B78',
+          },
+          { label: 'Books they came from', value: books, icon: 'book', c: '#075985' },
+          { label: 'Aced with no misses', value: `${firstTry}%`, icon: 'check', c: '#166534' },
         ].map((s) => (
-          <div key={s.label} className={`mw-stat mw-stat--${s.tone}`}>
-            <Icon name={s.icon} size={20} />
-            <div>
-              <div className="mw-stat-num">{s.value}</div>
-              <div className="mw-stat-lbl">{s.label}</div>
-            </div>
-          </div>
+          <StatCard
+            key={s.label}
+            variant="tinted"
+            icon={<Icon name={s.icon} size={19} />}
+            value={s.value}
+            label={s.label}
+            color={s.c}
+          />
         ))}
       </div>
 

@@ -186,15 +186,21 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
 
       {tab === 'class' ? (
         <>
+          {/* The tinted shape, not the centred one: these sit inside a page
+              that already has a heading and five cards under them, and a row
+              of big centred numerals shouted over all of it. */}
           <div className="ew-stats">
             <StatCard
+              variant="tinted"
+              icon={<Icon name="vocabulary" size={19} />}
               value={totals.words.toLocaleString()}
               label="Words collected this year"
-              footer={`+${totals.week} in the last 7 days`}
-              footerColor="#16A34A"
+              trend={{ delta: totals.week, format: (n) => `${n} in the last 7 days` }}
               color={ACCENT}
             />
             <StatCard
+              variant="tinted"
+              icon={<Icon name="users" size={19} />}
               value={totals.collecting}
               unit={`/${ROSTER.length}`}
               label="Students collecting this week"
@@ -202,12 +208,16 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
               color="#0DA7BC"
             />
             <StatCard
+              variant="tinted"
+              icon={<Icon name="chart-bar" size={19} />}
               value={totals.median}
               label="Median words per student"
               footer={`${distinct} distinct words in play`}
               color="#16A97A"
             />
             <StatCard
+              variant="tinted"
+              icon={<Icon name="check" size={19} />}
               value={totals.firstTry}
               unit="%"
               label="Used correctly first try"
@@ -217,14 +227,7 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
           </div>
 
           <div className="ew-grid">
-            <ChartCard
-              title="The class word wall"
-              subtitle="Every word the class has collected — the bigger the word, the more students have it"
-              icon={<Icon name="vocabulary" size={17} />}
-              accent={ACCENT}
-              span={2}
-              bodyPad="padded"
-            >
+            <ChartCard title="The class word wall" accent={ACCENT} span={2} bodyPad="padded">
               <WordCloud
                 words={CLASS_TOP_WORDS.map((w) => ({ text: w.word, value: w.students }))}
                 accent={ACCENT}
@@ -237,8 +240,6 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
 
             <ChartCard
               title="Where the words stop sticking"
-              subtitle="First-try accuracy by the kind of question asked"
-              icon={<Icon name="target" size={17} />}
               accent={ACCENT}
               bodyPad="padded"
               footer={
@@ -251,20 +252,12 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
               <BarList labelWidth={132} items={byActivity()} />
             </ChartCard>
 
-            <ChartCard
-              title="How the class is spread"
-              subtitle="Students by words collected"
-              icon={<Icon name="users" size={17} />}
-              accent={ACCENT}
-              bodyPad="padded"
-            >
+            <ChartCard title="How the class is spread" accent={ACCENT} bodyPad="padded">
               <BarList labelWidth={92} items={distribution(ROSTER)} />
             </ChartCard>
 
             <ChartCard
               title="Words collected, against reading logs"
-              subtitle="Weekly, since Words with Benny turned on"
-              icon={<Icon name="chart-bar" size={17} />}
               accent={ACCENT}
               span={2}
               footer={
@@ -309,20 +302,7 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
               />
             </ChartCard>
 
-            <ChartCard
-              title="Sentences students wrote"
-              subtitle="From the writing activity — flagged ones are waiting on you"
-              icon={<Icon name="pencil" size={17} />}
-              accent={ACCENT}
-              span={2}
-              bodyPad="flush"
-              footer={
-                <p className="ew-cardnote">
-                  Everything else was accepted automatically. Nothing here is graded — a flag only
-                  means Benny wasn’t sure enough to take it on his own.
-                </p>
-              }
-            >
+            <ChartCard title="Sentences students wrote" accent={ACCENT} span={2} bodyPad="flush">
               <ul className="ew-queue">
                 {queue.slice(0, 6).map((row, i) => {
                   const person = ROSTER.find((s) => s.id === row.student)

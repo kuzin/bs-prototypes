@@ -34,41 +34,6 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
-.mw-stat {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  min-width: 0;
-  padding: 18px 20px;
-  border-radius: 12px;
-}
-.mw-stat svg {
-  flex: 0 0 auto;
-}
-.mw-stat--words {
-  color: #5b21b6;
-  background: #ede4ff;
-}
-.mw-stat--week {
-  color: #0b6b78;
-  background: #dff4f7;
-}
-.mw-stat--books {
-  color: #075985;
-  background: #e0f2fe;
-}
-.mw-stat--first {
-  color: #166534;
-  background: #dcfce7;
-}
-.mw-stat-num {
-  font-size: 17px;
-  font-weight: 800;
-}
-.mw-stat-lbl {
-  font-size: 13px;
-  opacity: 0.85;
-}
 
 /* The band filter sits between the stats and the grid, spanning it: `block`
    divides the row evenly, so the strip lines up with the tile grid below

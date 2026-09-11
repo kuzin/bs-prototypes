@@ -6866,11 +6866,13 @@ export function ClassroomView({
             renderExtra?.(admTab)
           ) : (
             <>
-              {/* The live page's filter card: two selects on a `.filter-row`
-                  (align-items: flex-end, gap 20px) with the Save & Update
-                  action sharing the baseline. */}
+              {/* `compact`: the app's filter *bar* rather than its filter
+                  *form* — grey pill controls on a white strip, no labels above
+                  them, because each control already names what it filters
+                  ("Daily Reading Goal", "Percentages"). It's the newer of the
+                  two shapes and costs one row instead of two. */}
               <div className="bp-adm-filter-wrap">
-                <FilterBar action={<Button variant="primary">Save &amp; Update</Button>}>
+                <FilterBar compact action={<Button variant="primary">Save &amp; Update</Button>}>
                   <FilterItem label="View As">
                     <Select defaultValue="goal">
                       <option value="goal">Daily Reading Goal</option>
