@@ -17,6 +17,7 @@ import {
   SectionHeading,
 } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
+import { Confetti } from '@components/Confetti/Confetti'
 import {
   Knobs,
   Variant,
@@ -1069,6 +1070,36 @@ function SettingRowShowcase() {
   )
 }
 
+function ConfettiShowcase() {
+  // The burst animates once, so replaying it means remounting it.
+  const [run, setRun] = useState(0)
+  return (
+    <div>
+      <div
+        key={run}
+        style={{
+          position: 'relative',
+          overflow: 'hidden',
+          height: 200,
+          borderRadius: 14,
+          border: '1px solid var(--c-border)',
+          background: 'var(--c-surface-sunken, #f8fafc)',
+          display: 'grid',
+          placeItems: 'center',
+        }}
+      >
+        <Confetti count={18} distance={220} />
+        <strong style={{ position: 'relative', fontSize: 18 }}>🎉 You did it!</strong>
+      </div>
+      <div style={{ marginTop: 12 }}>
+        <Button variant="secondary" size="sm" onClick={() => setRun((n) => n + 1)}>
+          Replay
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 export const moleculesSections = [
   {
     group: 'molecules',
@@ -1260,6 +1291,24 @@ export const moleculesSections = [
     render: () => (
       <>
         <SettingRowShowcase />
+      </>
+    ),
+  },
+  {
+    group: 'molecules',
+    id: 'confetti',
+    name: 'Confetti',
+    desc: (
+      <>
+        A one-shot celebration burst that fills its nearest positioned ancestor — drop it into a
+        modal or card with <code>position: relative</code>. Props: <code>count</code>,{' '}
+        <code>colors</code>, <code>duration</code>, <code>distance</code>. Decorative and
+        aria-hidden; it doesn’t animate under <code>prefers-reduced-motion</code>.
+      </>
+    ),
+    render: () => (
+      <>
+        <ConfettiShowcase />
       </>
     ),
   },

@@ -64,9 +64,44 @@ const VALIDATORS = {
   badges: validateBadges,
 }
 
+// Which screen of the walk-through owns each error. A screen only shows (and
+// only blocks Next on) its own fields — so a name you haven't typed yet can't
+// stop you leaving the dates screen; it stops you leaving the name screen.
+const SCREEN_FIELDS = {
+  'details.basics': ['name'],
+  'details.dates': ['end'],
+  'details.audience': ['classrooms', 'code'],
+  'badges.methods': ['badgeWindow'],
+  'badges.logging': ['badges'],
+}
+
+// Every phase names one screen that catches errors no screen claims, so a new
+// validation rule can never go unreported (and can never block Publish from a
+// screen the wizard won't stop on).
+const PHASE_CATCHALL = {
+  details: 'details.basics',
+  badges: 'badges.methods',
+}
+
+// The phase a screen belongs to ('details.basics' → 'details'; 'type' → 'type').
+export const phaseOf = (screenId) => String(screenId).split('.')[0]
+
 export function validateStep(stepId, challenge, ctx = {}) {
-  const fn = VALIDATORS[stepId]
-  return fn ? fn(challenge, ctx) : {}
+  const phase = phaseOf(stepId)
+  const fn = VALIDATORS[phase]
+  const errors = fn ? fn(challenge, ctx) : {}
+  // A whole-phase id (no dot, e.g. 'completion') keeps every error it produced.
+  if (stepId === phase) return errors
+  const own = SCREEN_FIELDS[stepId] || []
+  const claimed = new Set(
+    Object.entries(SCREEN_FIELDS)
+      .filter(([id]) => phaseOf(id) === phase)
+      .flatMap(([, keys]) => keys),
+  )
+  const isCatchAll = PHASE_CATCHALL[phase] === stepId
+  return Object.fromEntries(
+    Object.entries(errors).filter(([k]) => own.includes(k) || (isCatchAll && !claimed.has(k))),
+  )
 }
 
 export function isStepValid(stepId, challenge, ctx = {}) {

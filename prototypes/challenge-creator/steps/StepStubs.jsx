@@ -10,6 +10,7 @@ import {
   RangeSlider,
 } from '@components/Form/Form'
 import { Toggle } from '@components/Toggle/Toggle'
+import { SettingRow } from '@components/SettingRow/SettingRow'
 import { Button } from '@components/Button/Button'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -41,6 +42,8 @@ import {
 import {
   STEP_ICONS,
   StepHead,
+  Screen,
+  MoreOptions,
   ColorPicker,
   GalleryCheck,
   TrashIcon,
@@ -469,6 +472,7 @@ const METHOD_LABELS = {
   points: 'Earning Points',
   repeatable: 'Repeatable Activities',
   bingo: 'Bingo',
+  bookTalks: 'Book Talks with Benny',
 }
 
 // Gallery: a left nav (Recommended · Favorites · Recently used · Subjects ·
@@ -1208,7 +1212,7 @@ function BadgeEditor({
   const [goal, setGoal] = useState(initial?.goal ?? 1)
   const [picking, setPicking] = useState(false)
   // 'log' badges need a log type + goal; 'reviews'/'points' badges need a count.
-  const needsGoal = goalMode === 'log' || goalMode === 'reviews' || goalMode === 'points'
+  const needsGoal = ['log', 'reviews', 'points', 'bookTalks'].includes(goalMode)
   const valid =
     !!(badge?.img && name.trim()) &&
     (!needsGoal || (Number(goal) >= 1 && (goalMode !== 'log' || logType)))
@@ -1220,6 +1224,7 @@ function BadgeEditor({
       ...(badge.edit ? { edit: badge.edit } : {}),
       ...(goalMode === 'log' ? { logType, goal: Number(goal) } : {}),
       ...(goalMode === 'reviews' ? { goal: Number(goal) } : {}),
+      ...(goalMode === 'bookTalks' ? { goal: Number(goal) } : {}),
       ...(goalMode === 'points' ? { goal: Number(goal) } : {}),
     })
   return (
@@ -1328,6 +1333,17 @@ function BadgeEditor({
                   }
                 >
                   <NumberInput value={goal} min={1} max={10000} onChange={(n) => setGoal(n)} />
+                </Field>
+              )}
+              {goalMode === 'bookTalks' && (
+                <Field
+                  label={
+                    <>
+                      Book Talks to earn <span className="cc-req">*</span>
+                    </>
+                  }
+                >
+                  <NumberInput value={goal} min={1} max={100} onChange={(n) => setGoal(n)} />
                 </Field>
               )}
               {goalMode === 'points' && (
@@ -2294,10 +2310,46 @@ function ActBadgeActions({ onUse, onDuplicate, onCreate, allowUse = true }) {
   )
 }
 
-export function BadgesStep({ challenge, role, type, update, errors = {} }) {
+// ─── Badges phase · one screen per kind of badge ────────────────────────────
+// Each screen asks about one earning method, so nobody meets ten badge panels
+// at once. The heading is the question; rare settings go in <MoreOptions>.
+const BADGE_HEADS = {
+  'badges.methods': {
+    title: 'How do readers earn badges?',
+    sub: 'Your challenge type already earns one way — turn on any others you want.',
+  },
+  'badges.points': {
+    title: 'Points badges',
+    sub: 'Badges readers unlock as they rack up points.',
+  },
+  'badges.logging': {
+    title: 'Logging badges',
+    sub: 'The milestones readers hit for minutes, books, days, or pages.',
+  },
+  'badges.activities': {
+    title: 'Activity badges',
+    sub: 'Badges readers earn for finishing the activities you set.',
+  },
+  'badges.reviews': {
+    title: 'Review badges',
+    sub: 'Badges readers earn for writing book reviews.',
+  },
+  'badges.bookTalks': {
+    title: 'Book Talks with Benny',
+    sub: 'When Benny talks to readers in this challenge, and the badges they earn for it.',
+  },
+  'badges.special': {
+    title: 'Milestone badges',
+    sub: 'The badges for signing up and for finishing — both optional.',
+  },
+}
+
+export function BadgesStep({ screen, challenge, role, type, update, errors = {} }) {
   const methods = challenge.methods || {}
   const badges = challenge.badges || []
   const reviewBadges = challenge.reviewBadges || []
+  const bookTalkBadges = challenge.bookTalkBadges || []
+  const bookTalkTriggers = challenge.bookTalks || {}
   const activityBadges = challenge.activityBadges || []
   const repeatableActivities = challenge.repeatableActivities || []
   const pointsBadges = challenge.pointsBadges || []
@@ -2312,6 +2364,10 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   const activitiesOn =
     !!methods.activities || type?.primaryMethod === 'activities' || type?.id === 'bingo'
   const reviewsOn = !!methods.reviews || type?.primaryMethod === 'reviews'
+  // Book Talks are Benny's reading conversations — schools only, and only for
+  // challenges built on logging (there's nothing to talk about otherwise).
+  const bookTalksAvailable = role?.site === 'school' && type?.primaryMethod === 'log'
+  const bookTalksOn = !!methods.bookTalks && bookTalksAvailable
   const isPoints = type?.id === 'points'
   // Earnable badge types come from the challenge type: its primary method
   // (required) plus its add-ons. Points challenges also offer repeatable activities.
@@ -2323,7 +2379,12 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
     ...new Set(
       (isBingo
         ? ['log', 'activities']
-        : [type?.primaryMethod, ...(type?.addOns || []), ...(isPoints ? ['repeatable'] : [])]
+        : [
+            type?.primaryMethod,
+            ...(type?.addOns || []),
+            ...(isPoints ? ['repeatable'] : []),
+            ...(bookTalksAvailable ? ['bookTalks'] : []),
+          ]
       ).filter(Boolean),
     ),
   ].map((key) => ({ key, label: METHOD_LABELS[key] || key }))
@@ -2418,6 +2479,8 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
   }
   const removeReviewBadge = (i) =>
     update({ reviewBadges: reviewBadges.filter((_, idx) => idx !== i) })
+  const removeBookTalkBadge = (i) =>
+    update({ bookTalkBadges: bookTalkBadges.filter((_, idx) => idx !== i) })
   const removePointsBadge = (i) =>
     update({ pointsBadges: pointsBadges.filter((_, idx) => idx !== i) })
   // ── Activity badges (and repeatable activities — same editor, separate list) ──
@@ -2508,6 +2571,12 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
       if (editor.index != null)
         update({ reviewBadges: reviewBadges.map((b, idx) => (idx === editor.index ? badge : b)) })
       else update({ reviewBadges: [...reviewBadges, badge] })
+    } else if (editor?.target === 'bookTalk') {
+      if (editor.index != null)
+        update({
+          bookTalkBadges: bookTalkBadges.map((b, idx) => (idx === editor.index ? badge : b)),
+        })
+      else update({ bookTalkBadges: [...bookTalkBadges, badge] })
     } else if (editor?.target === 'points') {
       if (editor.index != null)
         update({ pointsBadges: pointsBadges.map((b, idx) => (idx === editor.index ? badge : b)) })
@@ -2540,387 +2609,498 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
     return <BadgeRow img={b.img} title={b.name} onEdit={open} />
   }
 
-  return (
-    <section className="cc-step">
-      <StepHead
-        title="Badges & activities"
-        sub="Choose how readers earn, then add the badges they'll collect."
-        icon={STEP_ICONS.badges}
-      />
+  const is = (id) => screen === id
+  const heads = BADGE_HEADS[screen] || BADGE_HEADS['badges.methods']
 
-      <div className="cc-panel">
-        <h3 className="cc-panel-title">Earnable badge types</h3>
-        <div className="cc-settings">
-          {earnableTypes.map((t) => {
-            const isPrimary = t.key === primaryKey
-            const on = isPrimary || !!methods[t.key]
-            return (
-              <div key={t.key} className={`cc-setting-row${isPrimary ? ' is-disabled' : ''}`}>
-                <span className="cc-setting-label">{t.label}</span>
-                <div className="cc-type-state">
-                  {isPrimary && <span className="cc-reg-state">Required</span>}
+  return (
+    <Screen>
+      <StepHead title={heads.title} sub={heads.sub} />
+
+      {is('badges.methods') && (
+        <>
+          <div className="cc-panel">
+            <div className="cc-settings">
+              {earnableTypes.map((t) => {
+                const isPrimary = t.key === primaryKey
+                const on = isPrimary || !!methods[t.key]
+                return (
+                  <div key={t.key} className={`cc-setting-row${isPrimary ? ' is-disabled' : ''}`}>
+                    <span className="cc-setting-label">{t.label}</span>
+                    <div className="cc-type-state">
+                      {isPrimary && <span className="cc-reg-state">Required</span>}
+                      <Toggle
+                        checked={on}
+                        size="md"
+                        disabled={isPrimary}
+                        onChange={(v) => (v ? setMethod(t.key, true) : setConfirmType(t))}
+                      />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+          {isPoints && (
+            <div className="cc-panel">
+              <h3 className="cc-panel-title">Earnable point types</h3>
+              <div className="cc-warn-note">
+                If you turn off one of the types below, points will no longer be awarded for it.
+              </div>
+              <div className="cc-settings">
+                {POINT_TYPES.map((pt) => {
+                  const on = pointTypes[pt.key] !== false
+                  return (
+                    <div key={pt.key} className="cc-setting-row">
+                      <span className="cc-setting-label">{pt.label}</span>
+                      <div className="cc-type-state">
+                        <Toggle checked={on} size="md" onChange={(v) => setPointType(pt.key, v)} />
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+          {!isBingo && !isSimple && (
+            <MoreOptions
+              hint="Limit when badges can be earned"
+              defaultOpen={badgeTime === 'restricted'}
+            >
+              <div className="cc-settings">
+                <div className="cc-setting-row">
+                  <div className="cc-setting-text">
+                    <span className="cc-setting-label">Restrict when badges can be earned</span>
+                    <span className="cc-setting-sub">
+                      By default badges can be earned any time within the challenge dates.
+                    </span>
+                  </div>
                   <Toggle
-                    checked={on}
+                    checked={badgeTime === 'restricted'}
                     size="md"
-                    disabled={isPrimary}
-                    onChange={(v) => (v ? setMethod(t.key, true) : setConfirmType(t))}
+                    onChange={(v) =>
+                      update(
+                        v
+                          ? {
+                              badgeTime: 'restricted',
+                              // Default the window to the challenge dates so it never
+                              // opens in an empty/error state.
+                              badgeWindow: {
+                                start: bw.start || challenge.details?.start || '',
+                                end: bw.end || challenge.details?.end || '',
+                              },
+                            }
+                          : { badgeTime: 'any' },
+                      )
+                    }
                   />
                 </div>
-              </div>
-            )
-          })}
-        </div>
-      </div>
-
-      {isPoints && (
-        <div className="cc-panel">
-          <h3 className="cc-panel-title">Earnable point types</h3>
-          <div className="cc-warn-note">
-            If you turn off one of the types below, points will no longer be awarded for it.
-          </div>
-          <div className="cc-settings">
-            {POINT_TYPES.map((pt) => {
-              const on = pointTypes[pt.key] !== false
-              return (
-                <div key={pt.key} className="cc-setting-row">
-                  <span className="cc-setting-label">{pt.label}</span>
-                  <div className="cc-type-state">
-                    <Toggle checked={on} size="md" onChange={(v) => setPointType(pt.key, v)} />
+                {badgeTime === 'restricted' && (
+                  <div className="cc-badge-window-wrap">
+                    <div
+                      className={`cc-date-row cc-badge-window${errors.badgeWindow ? ' has-error' : ''}`}
+                    >
+                      <Field label="Badges can be earned from…">
+                        <DateInput
+                          value={bw.start}
+                          onChange={(e) => setWindow({ start: e.target.value })}
+                        />
+                      </Field>
+                      <Field label="Until…">
+                        <DateInput
+                          value={bw.end}
+                          onChange={(e) => setWindow({ end: e.target.value })}
+                        />
+                      </Field>
+                    </div>
+                    {errors.badgeWindow && <p className="cc-badge-reqnote">{errors.badgeWindow}</p>}
                   </div>
-                </div>
-              )
-            })}
-          </div>
-        </div>
+                )}
+              </div>
+            </MoreOptions>
+          )}
+        </>
       )}
 
-      {!isBingo && !isSimple && (
-        <div className="cc-panel">
-          <h3 className="cc-panel-title">Badge time restrictions</h3>
-          <div className="cc-settings">
-            <div className="cc-setting-row">
-              <div className="cc-setting-text">
-                <span className="cc-setting-label">Restrict when badges can be earned</span>
-                <span className="cc-setting-sub">
-                  By default badges can be earned any time within the challenge dates.
-                </span>
+      {is('badges.points') && isPoints && (
+        <>
+          {isPoints && (
+            <div className="cc-panel">
+              <div className="cc-panel-head">
+                <h3 className="cc-panel-title">Badges readers earn</h3>
+                <div className="cc-panel-actions">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setEditor({ title: 'Add a points badge', target: 'points' })}
+                  >
+                    + Add badge
+                  </Button>
+                </div>
               </div>
-              <Toggle
-                checked={badgeTime === 'restricted'}
-                size="md"
-                onChange={(v) =>
-                  update(
-                    v
-                      ? {
-                          badgeTime: 'restricted',
-                          // Default the window to the challenge dates so it never
-                          // opens in an empty/error state.
-                          badgeWindow: {
-                            start: bw.start || challenge.details?.start || '',
-                            end: bw.end || challenge.details?.end || '',
-                          },
+              {pointsBadges.length > 0 ? (
+                <div className="cc-badge-rows">
+                  {pointsBadges
+                    .map((b, i) => ({ b, i }))
+                    .sort((a, z) => (a.b.goal ?? Infinity) - (z.b.goal ?? Infinity))
+                    .map(({ b, i }) => (
+                      <BadgeRow
+                        key={i}
+                        img={b.img || badgeImage(b.icon)}
+                        icon={b.icon}
+                        color={b.color}
+                        title={b.name}
+                        meta={b.goal ? `Earn ${b.goal} points` : 'Needs a points value'}
+                        metaMissing={!b.goal}
+                        onEdit={() =>
+                          setEditor({
+                            title: 'Edit points badge',
+                            target: 'points',
+                            index: i,
+                            initial: b,
+                          })
                         }
-                      : { badgeTime: 'any' },
-                  )
+                        onRemove={() => removePointsBadge(i)}
+                      />
+                    ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={BADGE_EMPTY_ICON}
+                  title="No points badges yet"
+                  description="Add badges readers earn as they rack up points."
+                />
+              )}
+            </div>
+          )}
+          {isPoints && !!methods.repeatable && (
+            <div className="cc-panel">
+              <div className="cc-panel-head">
+                <h3 className="cc-panel-title">Repeatable activities</h3>
+                <ActBadgeActions
+                  allowUse={!isSimple}
+                  onUse={() => setActPicker({ repeatable: true, mode: 'use' })}
+                  onDuplicate={() => setActPicker({ repeatable: true, mode: 'duplicate' })}
+                  onCreate={() => setAbEditor({ index: null, repeatable: true })}
+                />
+              </div>
+              <div className="cc-warn-note">
+                Completing repeatable activities earns points (and thus points badges), but the
+                repeatable activity badges themselves can never be earned or completed.
+              </div>
+              {repeatableActivities.length ? (
+                <div className="cc-badge-rows">
+                  {repeatableActivities.map((ab, i) => {
+                    const n = ab.activities?.length || 0
+                    return (
+                      <BadgeRow
+                        key={ab.id || i}
+                        img={ab.badge?.img}
+                        title={ab.title || ab.name}
+                        meta={`${n} repeatable ${n === 1 ? 'activity' : 'activities'}`}
+                        active={ab.active}
+                        onToggleActive={() => toggleRepeatableActive(i)}
+                        onEdit={() => setAbEditor({ index: i, initial: ab, repeatable: true })}
+                        onRemove={() => removeRepeatable(i)}
+                        drag={rptDrag(i)}
+                      />
+                    )
+                  })}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={BADGE_EMPTY_ICON}
+                  title="No repeatable activities yet"
+                  description="Create one readers can complete again and again for points."
+                />
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {is('badges.logging') && loggingOn && (
+        <>
+          {loggingOn && (
+            <div className="cc-panel">
+              <div className="cc-panel-head">
+                <h3 className="cc-panel-title">Badges readers earn</h3>
+                <div className="cc-panel-actions">
+                  <Button variant="ghost" size="sm" onClick={() => setQuickBadge(true)}>
+                    ⚡ Quick-create
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setEditor({ title: 'Add a badge', target: 'milestone' })}
+                  >
+                    + Add badge
+                  </Button>
+                </div>
+              </div>
+              {type?.primaryMethod === 'readingList' && (
+                <Banner level="info" className="cc-panel-banner">
+                  Readers enrolled in a Reading List challenge will earn logging badges only for
+                  reading the specific titles added to your Reading List.
+                </Banner>
+              )}
+              {errors.badges && <p className="cc-badge-reqnote">{errors.badges}</p>}
+              {badges.length > 0 ? (
+                <div className="cc-badge-rows">
+                  {badges
+                    // Show in increasing order of the logging requirement (goal);
+                    // badges without a goal sort to the end. Keep the original index
+                    // so edit/remove still target the right badge.
+                    .map((b, i) => ({ b, i }))
+                    .sort((a, z) => (a.b.goal ?? Infinity) - (z.b.goal ?? Infinity))
+                    .map(({ b, i }) => (
+                      <BadgeRow
+                        key={i}
+                        img={b.img || badgeImage(b.icon)}
+                        icon={b.icon}
+                        color={b.color}
+                        title={b.name}
+                        meta={
+                          b.goal && b.logType
+                            ? `Log ${b.goal} ${b.goal === 1 ? b.logType.replace(/s$/, '') : b.logType}`
+                            : 'Needs a log value'
+                        }
+                        metaMissing={!(b.goal && b.logType)}
+                        onEdit={() =>
+                          setEditor({
+                            title: 'Edit badge',
+                            target: 'milestone',
+                            index: i,
+                            initial: b,
+                          })
+                        }
+                        onRemove={() => removeBadge(i)}
+                      />
+                    ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={BADGE_EMPTY_ICON}
+                  title="No badges yet"
+                  description="Add the badges readers will earn as they read."
+                />
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {is('badges.activities') && activitiesOn && (
+        <>
+          {activitiesOn && (
+            <div className="cc-panel">
+              <div className="cc-panel-head">
+                <h3 className="cc-panel-title">Badges readers earn</h3>
+                <ActBadgeActions
+                  allowUse={!isSimple}
+                  onUse={() => setActPicker({ repeatable: false, mode: 'use' })}
+                  onDuplicate={() => setActPicker({ repeatable: false, mode: 'duplicate' })}
+                  onCreate={() => setAbEditor({ index: null })}
+                />
+              </div>
+              {activityBadges.length ? (
+                <div className="cc-badge-rows">
+                  {activityBadges.map((ab, i) => {
+                    const count = ab.earn || ab.activities?.length || 0
+                    return (
+                      <BadgeRow
+                        key={ab.id || i}
+                        img={ab.badge?.img}
+                        title={ab.title || ab.name}
+                        meta={`Complete ${count} ${count === 1 ? 'activity' : 'activities'}`}
+                        active={ab.active}
+                        onToggleActive={() => toggleActivityBadgeActive(i)}
+                        onEdit={() => setAbEditor({ index: i, initial: ab })}
+                        onRemove={() => removeActivityBadge(i)}
+                        drag={abDrag(i)}
+                      />
+                    )
+                  })}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={BADGE_EMPTY_ICON}
+                  title="No activity badges yet"
+                  description="Create one to add activities readers complete to earn it."
+                />
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {is('badges.reviews') && reviewsOn && (
+        <>
+          {reviewsOn && (
+            <div className="cc-panel">
+              <div className="cc-panel-head">
+                <h3 className="cc-panel-title">Badges readers earn</h3>
+                <div className="cc-panel-actions">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setEditor({ title: 'Add a review badge', target: 'review' })}
+                  >
+                    + Add review badge
+                  </Button>
+                </div>
+              </div>
+              {reviewBadges.length > 0 ? (
+                <div className="cc-badge-rows">
+                  {reviewBadges
+                    .map((b, i) => ({ b, i }))
+                    .sort((a, z) => (a.b.goal ?? Infinity) - (z.b.goal ?? Infinity))
+                    .map(({ b, i }) => (
+                      <BadgeRow
+                        key={i}
+                        img={b.img || badgeImage(b.icon)}
+                        icon={b.icon}
+                        color={b.color}
+                        title={b.name}
+                        meta={
+                          b.goal
+                            ? `Write ${b.goal} ${b.goal === 1 ? 'review' : 'reviews'}`
+                            : 'Needs a review goal'
+                        }
+                        metaMissing={!b.goal}
+                        onEdit={() =>
+                          setEditor({
+                            title: 'Edit review badge',
+                            target: 'review',
+                            index: i,
+                            initial: b,
+                          })
+                        }
+                        onRemove={() => removeReviewBadge(i)}
+                      />
+                    ))}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={BADGE_EMPTY_ICON}
+                  title="No review badges yet"
+                  description="Add badges readers earn for writing reviews."
+                />
+              )}
+            </div>
+          )}
+        </>
+      )}
+
+      {is('badges.bookTalks') && bookTalksOn && (
+        <>
+          <div className="cc-panel">
+            <h3 className="cc-panel-title">When should Benny start a Book Talk?</h3>
+            <div className="cc-settings">
+              <SettingRow
+                label="On title completions"
+                sub="Benny starts a short conversation each time a reader in this challenge finishes a title."
+                state={bookTalkTriggers.onTitleCompletions ? 'Enabled' : 'Disabled'}
+                checked={!!bookTalkTriggers.onTitleCompletions}
+                onChange={(v) =>
+                  update({ bookTalks: { ...bookTalkTriggers, onTitleCompletions: v } })
                 }
               />
             </div>
-            {badgeTime === 'restricted' && (
-              <div className="cc-badge-window-wrap">
-                <div
-                  className={`cc-date-row cc-badge-window${errors.badgeWindow ? ' has-error' : ''}`}
+            <Banner level="info" className="cc-panel-banner">
+              This challenge’s trigger takes priority over the site-wide ones in{' '}
+              <a href="#setup-book-talks" className="cc-link">
+                Setup › Book Talks with Benny
+              </a>
+              .
+            </Banner>
+          </div>
+
+          <div className="cc-panel">
+            <div className="cc-panel-head">
+              <h3 className="cc-panel-title">Badges readers earn</h3>
+              <div className="cc-panel-actions">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setEditor({ title: 'Add a Book Talk badge', target: 'bookTalk' })}
                 >
-                  <Field label="Badges can be earned from…">
-                    <DateInput
-                      value={bw.start}
-                      onChange={(e) => setWindow({ start: e.target.value })}
-                    />
-                  </Field>
-                  <Field label="Until…">
-                    <DateInput
-                      value={bw.end}
-                      onChange={(e) => setWindow({ end: e.target.value })}
-                    />
-                  </Field>
-                </div>
-                {errors.badgeWindow && <p className="cc-badge-reqnote">{errors.badgeWindow}</p>}
+                  + Add Book Talk badge
+                </Button>
               </div>
+            </div>
+            {bookTalkBadges.length > 0 ? (
+              <div className="cc-badge-rows">
+                {bookTalkBadges
+                  .map((b, i) => ({ b, i }))
+                  .sort((a, z) => (a.b.goal ?? Infinity) - (z.b.goal ?? Infinity))
+                  .map(({ b, i }) => (
+                    <BadgeRow
+                      key={i}
+                      img={b.img || badgeImage(b.icon)}
+                      icon={b.icon}
+                      color={b.color}
+                      title={b.name}
+                      meta={
+                        b.goal
+                          ? `${b.goal} Book ${b.goal === 1 ? 'Talk' : 'Talks'} with Benny`
+                          : 'Needs a Book Talk goal'
+                      }
+                      metaMissing={!b.goal}
+                      onEdit={() =>
+                        setEditor({
+                          title: 'Edit Book Talk badge',
+                          target: 'bookTalk',
+                          index: i,
+                          initial: b,
+                        })
+                      }
+                      onRemove={() => removeBookTalkBadge(i)}
+                    />
+                  ))}
+              </div>
+            ) : (
+              <EmptyState
+                icon={<Icon name="message-chatbot" size={26} />}
+                title="No Book Talk badges yet"
+                description="Add a badge readers earn by having Book Talks with Benny about their reading."
+              />
             )}
-          </div>
-        </div>
-      )}
-
-      <div className="cc-panel">
-        <h3 className="cc-panel-title">Registration badge</h3>
-        <PinSlot slot="registration" label="Registration badge" />
-      </div>
-
-      {isBingo ? (
-        <>
-          <div className="cc-panel">
-            <h3 className="cc-panel-title">Bingo badge</h3>
-            <PinSlot slot="bingo" label="Bingo badge" />
-          </div>
-          <div className="cc-panel">
-            <h3 className="cc-panel-title">Full-card badge</h3>
-            <PinSlot slot="fullCard" label="Full-card badge" />
+            <Banner level="info" className="cc-panel-banner">
+              Readers earn these by starting a Book Talk themselves — from anywhere on the site.
+              Every completed talk lands on your{' '}
+              <a href="#sessions-for-review" className="cc-link">
+                Sessions for Review
+              </a>{' '}
+              page with Benny’s breakdown.
+            </Banner>
           </div>
         </>
-      ) : (
-        <div className="cc-panel">
-          <h3 className="cc-panel-title">Completion badge</h3>
-          <PinSlot slot="completion" label="Completion badge" />
-        </div>
       )}
 
-      {isPoints && (
-        <div className="cc-panel">
-          <div className="cc-panel-head">
-            <h3 className="cc-panel-title">Points badges</h3>
-            <div className="cc-panel-actions">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setEditor({ title: 'Add a points badge', target: 'points' })}
-              >
-                + Add badge
-              </Button>
-            </div>
+      {is('badges.special') && (
+        <>
+          <div className="cc-panel">
+            <h3 className="cc-panel-title">Registration badge</h3>
+            <PinSlot slot="registration" label="Registration badge" />
           </div>
-          {pointsBadges.length > 0 ? (
-            <div className="cc-badge-rows">
-              {pointsBadges
-                .map((b, i) => ({ b, i }))
-                .sort((a, z) => (a.b.goal ?? Infinity) - (z.b.goal ?? Infinity))
-                .map(({ b, i }) => (
-                  <BadgeRow
-                    key={i}
-                    img={b.img || badgeImage(b.icon)}
-                    icon={b.icon}
-                    color={b.color}
-                    title={b.name}
-                    meta={b.goal ? `Earn ${b.goal} points` : 'Needs a points value'}
-                    metaMissing={!b.goal}
-                    onEdit={() =>
-                      setEditor({
-                        title: 'Edit points badge',
-                        target: 'points',
-                        index: i,
-                        initial: b,
-                      })
-                    }
-                    onRemove={() => removePointsBadge(i)}
-                  />
-                ))}
-            </div>
+          {isBingo ? (
+            <>
+              <div className="cc-panel">
+                <h3 className="cc-panel-title">Bingo badge</h3>
+                <PinSlot slot="bingo" label="Bingo badge" />
+              </div>
+              <div className="cc-panel">
+                <h3 className="cc-panel-title">Full-card badge</h3>
+                <PinSlot slot="fullCard" label="Full-card badge" />
+              </div>
+            </>
           ) : (
-            <EmptyState
-              icon={BADGE_EMPTY_ICON}
-              title="No points badges yet"
-              description="Add badges readers earn as they rack up points."
-            />
-          )}
-        </div>
-      )}
-
-      {loggingOn && (
-        <div className="cc-panel">
-          <div className="cc-panel-head">
-            <h3 className="cc-panel-title">Logging badges</h3>
-            <div className="cc-panel-actions">
-              <Button variant="ghost" size="sm" onClick={() => setQuickBadge(true)}>
-                ⚡ Quick-create
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setEditor({ title: 'Add a badge', target: 'milestone' })}
-              >
-                + Add badge
-              </Button>
+            <div className="cc-panel">
+              <h3 className="cc-panel-title">Completion badge</h3>
+              <PinSlot slot="completion" label="Completion badge" />
             </div>
-          </div>
-          {type?.primaryMethod === 'readingList' && (
-            <Banner level="info" className="cc-panel-banner">
-              Readers enrolled in a Reading List challenge will earn logging badges only for reading
-              the specific titles added to your Reading List.
-            </Banner>
           )}
-          {errors.badges && <p className="cc-badge-reqnote">{errors.badges}</p>}
-          {badges.length > 0 ? (
-            <div className="cc-badge-rows">
-              {badges
-                // Show in increasing order of the logging requirement (goal);
-                // badges without a goal sort to the end. Keep the original index
-                // so edit/remove still target the right badge.
-                .map((b, i) => ({ b, i }))
-                .sort((a, z) => (a.b.goal ?? Infinity) - (z.b.goal ?? Infinity))
-                .map(({ b, i }) => (
-                  <BadgeRow
-                    key={i}
-                    img={b.img || badgeImage(b.icon)}
-                    icon={b.icon}
-                    color={b.color}
-                    title={b.name}
-                    meta={
-                      b.goal && b.logType
-                        ? `Log ${b.goal} ${b.goal === 1 ? b.logType.replace(/s$/, '') : b.logType}`
-                        : 'Needs a log value'
-                    }
-                    metaMissing={!(b.goal && b.logType)}
-                    onEdit={() =>
-                      setEditor({ title: 'Edit badge', target: 'milestone', index: i, initial: b })
-                    }
-                    onRemove={() => removeBadge(i)}
-                  />
-                ))}
-            </div>
-          ) : (
-            <EmptyState
-              icon={BADGE_EMPTY_ICON}
-              title="No badges yet"
-              description="Add the badges readers will earn as they read."
-            />
-          )}
-        </div>
-      )}
-
-      {activitiesOn && (
-        <div className="cc-panel">
-          <div className="cc-panel-head">
-            <h3 className="cc-panel-title">Activity badges</h3>
-            <ActBadgeActions
-              allowUse={!isSimple}
-              onUse={() => setActPicker({ repeatable: false, mode: 'use' })}
-              onDuplicate={() => setActPicker({ repeatable: false, mode: 'duplicate' })}
-              onCreate={() => setAbEditor({ index: null })}
-            />
-          </div>
-          {activityBadges.length ? (
-            <div className="cc-badge-rows">
-              {activityBadges.map((ab, i) => {
-                const count = ab.earn || ab.activities?.length || 0
-                return (
-                  <BadgeRow
-                    key={ab.id || i}
-                    img={ab.badge?.img}
-                    title={ab.title || ab.name}
-                    meta={`Complete ${count} ${count === 1 ? 'activity' : 'activities'}`}
-                    active={ab.active}
-                    onToggleActive={() => toggleActivityBadgeActive(i)}
-                    onEdit={() => setAbEditor({ index: i, initial: ab })}
-                    onRemove={() => removeActivityBadge(i)}
-                    drag={abDrag(i)}
-                  />
-                )
-              })}
-            </div>
-          ) : (
-            <EmptyState
-              icon={BADGE_EMPTY_ICON}
-              title="No activity badges yet"
-              description="Create one to add activities readers complete to earn it."
-            />
-          )}
-        </div>
-      )}
-
-      {isPoints && !!methods.repeatable && (
-        <div className="cc-panel">
-          <div className="cc-panel-head">
-            <h3 className="cc-panel-title">Repeatable activities</h3>
-            <ActBadgeActions
-              allowUse={!isSimple}
-              onUse={() => setActPicker({ repeatable: true, mode: 'use' })}
-              onDuplicate={() => setActPicker({ repeatable: true, mode: 'duplicate' })}
-              onCreate={() => setAbEditor({ index: null, repeatable: true })}
-            />
-          </div>
-          <div className="cc-warn-note">
-            Completing repeatable activities earns points (and thus points badges), but the
-            repeatable activity badges themselves can never be earned or completed.
-          </div>
-          {repeatableActivities.length ? (
-            <div className="cc-badge-rows">
-              {repeatableActivities.map((ab, i) => {
-                const n = ab.activities?.length || 0
-                return (
-                  <BadgeRow
-                    key={ab.id || i}
-                    img={ab.badge?.img}
-                    title={ab.title || ab.name}
-                    meta={`${n} repeatable ${n === 1 ? 'activity' : 'activities'}`}
-                    active={ab.active}
-                    onToggleActive={() => toggleRepeatableActive(i)}
-                    onEdit={() => setAbEditor({ index: i, initial: ab, repeatable: true })}
-                    onRemove={() => removeRepeatable(i)}
-                    drag={rptDrag(i)}
-                  />
-                )
-              })}
-            </div>
-          ) : (
-            <EmptyState
-              icon={BADGE_EMPTY_ICON}
-              title="No repeatable activities yet"
-              description="Create one readers can complete again and again for points."
-            />
-          )}
-        </div>
-      )}
-
-      {reviewsOn && (
-        <div className="cc-panel">
-          <div className="cc-panel-head">
-            <h3 className="cc-panel-title">Review badges</h3>
-            <div className="cc-panel-actions">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setEditor({ title: 'Add a review badge', target: 'review' })}
-              >
-                + Add review badge
-              </Button>
-            </div>
-          </div>
-          {reviewBadges.length > 0 ? (
-            <div className="cc-badge-rows">
-              {reviewBadges
-                .map((b, i) => ({ b, i }))
-                .sort((a, z) => (a.b.goal ?? Infinity) - (z.b.goal ?? Infinity))
-                .map(({ b, i }) => (
-                  <BadgeRow
-                    key={i}
-                    img={b.img || badgeImage(b.icon)}
-                    icon={b.icon}
-                    color={b.color}
-                    title={b.name}
-                    meta={
-                      b.goal
-                        ? `Write ${b.goal} ${b.goal === 1 ? 'review' : 'reviews'}`
-                        : 'Needs a review goal'
-                    }
-                    metaMissing={!b.goal}
-                    onEdit={() =>
-                      setEditor({
-                        title: 'Edit review badge',
-                        target: 'review',
-                        index: i,
-                        initial: b,
-                      })
-                    }
-                    onRemove={() => removeReviewBadge(i)}
-                  />
-                ))}
-            </div>
-          ) : (
-            <EmptyState
-              icon={BADGE_EMPTY_ICON}
-              title="No review badges yet"
-              description="Add badges readers earn for writing reviews."
-            />
-          )}
-        </div>
+        </>
       )}
 
       <Modal
@@ -2993,9 +3173,11 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
                 ? 'log'
                 : editor.target === 'review'
                   ? 'reviews'
-                  : editor.target === 'points'
-                    ? 'points'
-                    : undefined
+                  : editor.target === 'bookTalk'
+                    ? 'bookTalks'
+                    : editor.target === 'points'
+                      ? 'points'
+                      : undefined
             }
             editing={
               editor.index != null ||
@@ -3041,7 +3223,7 @@ export function BadgesStep({ challenge, role, type, update, errors = {} }) {
           </div>
         )}
       </Modal>
-    </section>
+    </Screen>
   )
 }
 
@@ -3531,7 +3713,23 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
   )
 }
 
-export function RewardsStep({ challenge, update }) {
+// ─── Rewards phase · one screen per kind of reward ──────────────────────────
+const REWARD_HEADS = {
+  'rewards.prizes': {
+    title: 'What do readers win?',
+    sub: 'Prizes readers claim when they earn the badges you choose. Skip it if you’d rather not.',
+  },
+  'rewards.tickets': {
+    title: 'Raffle tickets',
+    sub: 'Hand out tickets as readers earn badges, then draw winners later.',
+  },
+  'rewards.certificates': {
+    title: 'Certificates',
+    sub: 'A printable certificate readers get for finishing.',
+  },
+}
+
+export function RewardsStep({ screen, challenge, update }) {
   const r = challenge.rewards || {}
   const items = r.items || []
   const ticketsEnabled = !!r.ticketsEnabled
@@ -3632,244 +3830,274 @@ export function RewardsStep({ challenge, update }) {
       ],
     })
 
+  const is = (id) => screen === id
+  const heads = REWARD_HEADS[screen] || REWARD_HEADS['rewards.prizes']
+
   return (
-    <section className="cc-step">
-      <StepHead
-        title="Rewards"
-        sub="Set up the prizes, tickets, and certificates readers can earn."
-        icon={STEP_ICONS.prizes}
-      />
+    <Screen>
+      <StepHead title={heads.title} sub={heads.sub} />
 
-      {/* 1 · Rewards */}
-      <div className="cc-panel">
-        <div className="cc-panel-head">
-          <h3 className="cc-panel-title">Rewards</h3>
-          <div className="cc-panel-actions">
-            <Button variant="ghost" size="sm" onClick={() => setRewardPicker(true)}>
-              Use existing
-            </Button>
-            <Button variant="secondary" size="sm" onClick={() => setRewardEditor({ new: true })}>
-              + Create reward
-            </Button>
-          </div>
-        </div>
-        {items.length ? (
-          <div className="cc-badge-rows">
-            {items.map((it) => {
-              const b = assignedBadges(it.badgeIds)
-              return (
-                <BadgeRow
-                  key={it.id}
-                  icon="gift"
-                  square
-                  title={it.title}
-                  meta={b.length ? <BadgeAvatars badges={b} /> : 'Not assigned to a badge'}
-                  metaMissing={!b.length}
-                  onEdit={() => setRewardEditor(it)}
-                  onRemove={() => removeReward(it.id)}
-                />
-              )
-            })}
-          </div>
-        ) : (
-          <EmptyState
-            icon={REWARD_EMPTY_ICON}
-            title="No rewards yet"
-            description="Add a reward readers can earn — pick a saved one or write your own."
-            action={
-              <Button variant="secondary" size="sm" onClick={() => setRewardEditor({ new: true })}>
-                + Create reward
-              </Button>
-            }
-          />
-        )}
-      </div>
-
-      {/* 2 · Ticket rewards (opt-in) */}
-      <div className={`cc-panel${ticketsEnabled ? '' : ' cc-panel--collapsed'}`}>
-        <div className="cc-panel-head">
-          <h3 className="cc-panel-title">Ticket rewards</h3>
-          <div className="cc-panel-actions">
-            {ticketsEnabled && (
-              <>
-                <Button variant="ghost" size="sm" onClick={() => setTicketPicker(true)}>
+      {is('rewards.prizes') && (
+        <>
+          {/* 1 · Rewards */}
+          <div className="cc-panel">
+            <div className="cc-panel-head">
+              <h3 className="cc-panel-title">Prizes readers can claim</h3>
+              <div className="cc-panel-actions">
+                <Button variant="ghost" size="sm" onClick={() => setRewardPicker(true)}>
                   Use existing
                 </Button>
                 <Button
                   variant="secondary"
                   size="sm"
-                  onClick={() => setTicketEditor({ new: true })}
+                  onClick={() => setRewardEditor({ new: true })}
                 >
-                  + Add ticket reward
+                  + Create reward
                 </Button>
-              </>
-            )}
-            <Toggle
-              checked={ticketsEnabled}
-              size="md"
-              onChange={(v) => setR({ ticketsEnabled: v })}
-            />
-          </div>
-        </div>
-        {ticketsEnabled && (
-          <>
-            <div className="cc-ticket-source">
-              <span className="cc-ticket-source-label">How do readers earn tickets?</span>
-              <div
-                className="cc-optcards cc-optcards--stack"
-                role="radiogroup"
-                aria-label="How do readers earn tickets?"
-              >
-                {TICKET_SOURCES.map((o) => {
-                  const on = ticketSource === o.value
+              </div>
+            </div>
+            {items.length ? (
+              <div className="cc-badge-rows">
+                {items.map((it) => {
+                  const b = assignedBadges(it.badgeIds)
                   return (
-                    <div key={o.value} className={`cc-optrow${on ? ' is-on' : ''}`}>
-                      <button
-                        type="button"
-                        role="radio"
-                        aria-checked={on}
-                        className={`cc-optcard${on ? ' is-on' : ''}`}
-                        onClick={() => setR({ ticketSource: o.value })}
-                      >
-                        <span className="cc-optcard-ic" aria-hidden="true">
-                          <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
-                        </span>
-                        <span className="cc-optcard-text">
-                          <strong>{o.label}</strong>
-                          <span>{o.sub}</span>
-                        </span>
-                        <span className="cc-optcard-dot" aria-hidden="true" />
-                      </button>
-                      {on && o.value === 'all' && (
-                        <div className="cc-optcard-sub">
-                          <div className="cc-ticket-allcount">
-                            <span>Each badge awards</span>
-                            <NumberInput
-                              value={ticketsPerBadge}
-                              min={1}
-                              max={100}
-                              onChange={(v) => setR({ ticketsPerBadge: v })}
-                            />
-                            <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
-                          </div>
-                        </div>
-                      )}
-                      {on && o.value === 'specific' && (
-                        <div className="cc-optcard-sub">
-                          <BadgeSelect
-                            badges={badgePool}
-                            selectedIds={Object.keys(ticketBadges)}
-                            onToggle={toggleTicketBadge}
-                            valueMode
-                            values={ticketBadges}
-                            onValue={setTicketBadgeValue}
-                            valueLabel="tickets"
-                          />
-                        </div>
-                      )}
-                    </div>
+                    <BadgeRow
+                      key={it.id}
+                      icon="gift"
+                      square
+                      title={it.title}
+                      meta={b.length ? <BadgeAvatars badges={b} /> : 'Not assigned to a badge'}
+                      metaMissing={!b.length}
+                      onEdit={() => setRewardEditor(it)}
+                      onRemove={() => removeReward(it.id)}
+                    />
                   )
                 })}
               </div>
-            </div>
-            {ticketRewards.length ? (
-              <div className="cc-badge-rows">
-                {ticketRewards.map((t) => (
-                  <BadgeRow
-                    key={t.id}
-                    img={t.image || null}
-                    icon="gift"
-                    square
-                    title={t.name}
-                    meta={`${t.cost} ticket${t.cost === 1 ? '' : 's'} to enter`}
-                    onEdit={() => setTicketEditor(t)}
-                    onRemove={() => removeTicket(t.id)}
-                  />
-                ))}
-              </div>
             ) : (
               <EmptyState
-                icon={TICKET_EMPTY_ICON}
-                title="No ticket rewards yet"
-                description="Add a prize readers enter to win with the tickets they collect."
+                icon={REWARD_EMPTY_ICON}
+                title="No rewards yet"
+                description="Add a reward readers can earn — pick a saved one or write your own."
                 action={
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => setTicketEditor({ new: true })}
+                    onClick={() => setRewardEditor({ new: true })}
                   >
-                    + Add ticket reward
+                    + Create reward
                   </Button>
                 }
               />
             )}
-          </>
-        )}
-      </div>
+          </div>
+          <Banner
+            level="info"
+            className="cc-rewards-drawings-note"
+            action={
+              <Button variant="secondary" size="sm">
+                Go to Drawings →
+              </Button>
+            }
+          >
+            Drawings are run from this challenge’s data in the <strong>Drawings</strong> tool — pick
+            winners from badge earners or ticket holders there.
+          </Banner>
+        </>
+      )}
 
-      {/* 3 · Certificates (opt-in) */}
-      <div className={`cc-panel${certsEnabled ? '' : ' cc-panel--collapsed'}`}>
-        <div className="cc-panel-head">
-          <h3 className="cc-panel-title">Certificates</h3>
-          <div className="cc-panel-actions">
-            {certsEnabled && (
+      {is('rewards.tickets') && (
+        <>
+          {/* 2 · Ticket rewards (opt-in) */}
+          <div className={`cc-panel${ticketsEnabled ? '' : ' cc-panel--collapsed'}`}>
+            <div className="cc-panel-head">
+              <h3 className="cc-panel-title">Ticket rewards</h3>
+              <div className="cc-panel-actions">
+                {ticketsEnabled && (
+                  <>
+                    <Button variant="ghost" size="sm" onClick={() => setTicketPicker(true)}>
+                      Use existing
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setTicketEditor({ new: true })}
+                    >
+                      + Add ticket reward
+                    </Button>
+                  </>
+                )}
+                <Toggle
+                  checked={ticketsEnabled}
+                  size="md"
+                  onChange={(v) => setR({ ticketsEnabled: v })}
+                />
+              </div>
+            </div>
+            {ticketsEnabled && (
               <>
-                <Button variant="ghost" size="sm" onClick={() => setCertPicker(true)}>
-                  Use existing
-                </Button>
-                <Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>
-                  + Add certificate
-                </Button>
+                <div className="cc-ticket-source">
+                  <span className="cc-ticket-source-label">How do readers earn tickets?</span>
+                  <div
+                    className="cc-optcards cc-optcards--stack"
+                    role="radiogroup"
+                    aria-label="How do readers earn tickets?"
+                  >
+                    {TICKET_SOURCES.map((o) => {
+                      const on = ticketSource === o.value
+                      return (
+                        <div key={o.value} className={`cc-optrow${on ? ' is-on' : ''}`}>
+                          <button
+                            type="button"
+                            role="radio"
+                            aria-checked={on}
+                            className={`cc-optcard${on ? ' is-on' : ''}`}
+                            onClick={() => setR({ ticketSource: o.value })}
+                          >
+                            <span className="cc-optcard-ic" aria-hidden="true">
+                              <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
+                            </span>
+                            <span className="cc-optcard-text">
+                              <strong>{o.label}</strong>
+                              <span>{o.sub}</span>
+                            </span>
+                            <span className="cc-optcard-dot" aria-hidden="true" />
+                          </button>
+                          {on && o.value === 'all' && (
+                            <div className="cc-optcard-sub">
+                              <div className="cc-ticket-allcount">
+                                <span>Each badge awards</span>
+                                <NumberInput
+                                  value={ticketsPerBadge}
+                                  min={1}
+                                  max={100}
+                                  onChange={(v) => setR({ ticketsPerBadge: v })}
+                                />
+                                <span>ticket{ticketsPerBadge === 1 ? '' : 's'}</span>
+                              </div>
+                            </div>
+                          )}
+                          {on && o.value === 'specific' && (
+                            <div className="cc-optcard-sub">
+                              <BadgeSelect
+                                badges={badgePool}
+                                selectedIds={Object.keys(ticketBadges)}
+                                onToggle={toggleTicketBadge}
+                                valueMode
+                                values={ticketBadges}
+                                onValue={setTicketBadgeValue}
+                                valueLabel="tickets"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+                {ticketRewards.length ? (
+                  <div className="cc-badge-rows">
+                    {ticketRewards.map((t) => (
+                      <BadgeRow
+                        key={t.id}
+                        img={t.image || null}
+                        icon="gift"
+                        square
+                        title={t.name}
+                        meta={`${t.cost} ticket${t.cost === 1 ? '' : 's'} to enter`}
+                        onEdit={() => setTicketEditor(t)}
+                        onRemove={() => removeTicket(t.id)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <EmptyState
+                    icon={TICKET_EMPTY_ICON}
+                    title="No ticket rewards yet"
+                    description="Add a prize readers enter to win with the tickets they collect."
+                    action={
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setTicketEditor({ new: true })}
+                      >
+                        + Add ticket reward
+                      </Button>
+                    }
+                  />
+                )}
               </>
             )}
-            <Toggle checked={certsEnabled} size="md" onChange={(v) => setR({ certsEnabled: v })} />
           </div>
-        </div>
-        {certsEnabled &&
-          (certificates.length ? (
-            <div className="cc-badge-rows">
-              {certificates.map((c) => {
-                const cb = assignedBadges(c.badgeIds)
-                return (
-                  <BadgeRow
-                    key={c.id}
-                    icon="certificate"
-                    square
-                    title={c.title}
-                    meta={cb.length ? <BadgeAvatars badges={cb} /> : 'Not assigned to a badge'}
-                    metaMissing={!cb.length}
-                    onEdit={() => setCertEditor(c)}
-                    onRemove={() => removeCert(c.id)}
-                  />
-                )
-              })}
-            </div>
-          ) : (
-            <EmptyState
-              icon={CERT_EMPTY_ICON}
-              title="No certificates yet"
-              description="Create a printable certificate readers earn when they finish."
-              action={
-                <Button variant="secondary" size="sm" onClick={() => setCertEditor({ new: true })}>
-                  + Add certificate
-                </Button>
-              }
-            />
-          ))}
-      </div>
+        </>
+      )}
 
-      <Banner
-        level="info"
-        className="cc-rewards-drawings-note"
-        action={
-          <Button variant="secondary" size="sm">
-            Go to Drawings →
-          </Button>
-        }
-      >
-        Drawings are run from this challenge’s data in the <strong>Drawings</strong> tool — pick
-        winners from badge earners or ticket holders there.
-      </Banner>
+      {is('rewards.certificates') && (
+        <>
+          {/* 3 · Certificates (opt-in) */}
+          <div className={`cc-panel${certsEnabled ? '' : ' cc-panel--collapsed'}`}>
+            <div className="cc-panel-head">
+              <h3 className="cc-panel-title">Certificates</h3>
+              <div className="cc-panel-actions">
+                {certsEnabled && (
+                  <>
+                    <Button variant="ghost" size="sm" onClick={() => setCertPicker(true)}>
+                      Use existing
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setCertEditor({ new: true })}
+                    >
+                      + Add certificate
+                    </Button>
+                  </>
+                )}
+                <Toggle
+                  checked={certsEnabled}
+                  size="md"
+                  onChange={(v) => setR({ certsEnabled: v })}
+                />
+              </div>
+            </div>
+            {certsEnabled &&
+              (certificates.length ? (
+                <div className="cc-badge-rows">
+                  {certificates.map((c) => {
+                    const cb = assignedBadges(c.badgeIds)
+                    return (
+                      <BadgeRow
+                        key={c.id}
+                        icon="certificate"
+                        square
+                        title={c.title}
+                        meta={cb.length ? <BadgeAvatars badges={cb} /> : 'Not assigned to a badge'}
+                        metaMissing={!cb.length}
+                        onEdit={() => setCertEditor(c)}
+                        onRemove={() => removeCert(c.id)}
+                      />
+                    )
+                  })}
+                </div>
+              ) : (
+                <EmptyState
+                  icon={CERT_EMPTY_ICON}
+                  title="No certificates yet"
+                  description="Create a printable certificate readers earn when they finish."
+                  action={
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setCertEditor({ new: true })}
+                    >
+                      + Add certificate
+                    </Button>
+                  }
+                />
+              ))}
+          </div>
+        </>
+      )}
 
       <Modal
         open={!!rewardEditor}
@@ -4000,14 +4228,13 @@ export function RewardsStep({ challenge, update }) {
           />
         )}
       </Modal>
-    </section>
+    </Screen>
   )
 }
 
 // ─── Barrel re-exports ────────────────────────────────────────────────────────
 // The leaf steps and shared helpers live in their own files now; re-export them
 // here so the external import surface (App.jsx, patterns, book-talks) is unchanged.
-export { BookTalksStep } from './BookTalksStep'
 export { DetailsStep } from './DetailsStep'
 export { SetupStep } from './SetupStep'
 export { CompletionStep } from './CompletionStep'

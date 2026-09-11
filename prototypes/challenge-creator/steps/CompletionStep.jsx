@@ -3,7 +3,7 @@ import { Toggle } from '@components/Toggle/Toggle'
 import { Banner } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 import { SAMPLE_TITLES } from '../data'
-import { STEP_ICONS, StepHead, badgePoolOf, BadgeMultiSelect } from './shared'
+import { StepHead, badgePoolOf, BadgeMultiSelect } from './shared'
 
 // ─── Step 6 · Completion ──────────────────────────────────────────────────────
 const BADGE_REQ_OPTIONS = [
@@ -94,9 +94,8 @@ export function CompletionStep({ challenge, update }) {
   return (
     <section className="cc-step">
       <StepHead
-        title="Completion"
-        sub="Decide what it takes to finish the challenge."
-        icon={STEP_ICONS.completion}
+        title="What counts as finished?"
+        sub="How much a reader has to do before the challenge is complete."
       />
 
       {isRLC && (

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Hero } from '@components/Hero/Hero'
 import { Banner } from '@components/Primitives/Primitives'
 import { ColorInput, NumberInput, MultiSelect } from '@components/Form/Form'
@@ -19,6 +20,34 @@ export function StepHead({ title, sub }) {
   return (
     <div className="cc-step-head">
       <Hero title={title} subtitle={sub} accent="#0DA7BC" />
+    </div>
+  )
+}
+
+// One screen of the walk-through: a single focused decision. Everything rare or
+// advanced goes in <MoreOptions> so the default path stays a straight line.
+export function Screen({ children }) {
+  return <section className="cc-step">{children}</section>
+}
+
+// Collapsed disclosure for the settings most creators never touch. Starts open
+// when `defaultOpen` (e.g. the draft already uses something inside it), so a
+// saved value is never hidden from the person who set it.
+export function MoreOptions({ label = 'More options', hint, defaultOpen = false, children }) {
+  const [open, setOpen] = useState(defaultOpen)
+  return (
+    <div className={`cc-more${open ? ' is-open' : ''}`}>
+      <button
+        type="button"
+        className="cc-more-toggle"
+        aria-expanded={open}
+        onClick={() => setOpen((o) => !o)}
+      >
+        <Icon name="chevron-down" size={15} stroke={2.2} className="cc-more-chev" />
+        {label}
+        {hint && !open && <span className="cc-more-hint">{hint}</span>}
+      </button>
+      {open && <div className="cc-more-body">{children}</div>}
     </div>
   )
 }

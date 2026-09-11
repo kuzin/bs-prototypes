@@ -350,9 +350,6 @@
   flex: 1 1 auto;
   min-height: 0;
   display: flex;
-  /* Anchor for the absolutely-positioned preview side tab; clip the preview
-     pane as it slides out so it doesn't cause horizontal scroll. */
-  position: relative;
   overflow: hidden;
 }
 
@@ -404,73 +401,7 @@
   margin-left: 12px;
 }
 
-/* ── Preview pane ── */
-.cc-preview {
-  flex: 0 0 380px;
-  border-left: 1px solid var(--line);
-  background: var(--c-slate-50);
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  /* Slides out in sync with the side tab (right transition is 0.2s too). */
-  transition:
-    margin-right 0.2s ease,
-    transform 0.2s ease;
-}
-/* Collapsed: pull back its 380px of space and slide off to the right. */
-.cc-preview.is-collapsed {
-  margin-right: -380px;
-  transform: translateX(100%);
-}
-/* Desktop side tab that opens/closes the preview. Hugs the preview's left edge
-   when open; rides the screen's right edge when collapsed. */
-.cc-preview-tab {
-  position: absolute;
-  top: 50%;
-  right: 0;
-  transform: translateY(-50%);
-  z-index: 6;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  width: 30px;
-  padding: 13px 0;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-right: 0;
-  border-radius: 11px 0 0 11px;
-  /* background is set inline to match the preview pane (previewBg). */
-  color: rgba(255, 255, 255, 0.92);
-  cursor: pointer;
-  box-shadow: -3px 0 10px rgba(15, 23, 42, 0.14);
-  transition:
-    right 0.2s ease,
-    filter 0.15s ease;
-}
-.cc-preview-tab:hover {
-  filter: brightness(1.08);
-}
-.cc-preview-tab.is-open {
-  /* Matches .cc-preview width so the tab sits on the pane's left edge. */
-  right: 380px;
-}
-.cc-preview-tab-chev {
-  transition: transform 0.2s ease;
-}
-.cc-preview-tab.is-open .cc-preview-tab-chev {
-  transform: rotate(180deg);
-}
-.cc-preview-tab-label {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  /* Subtle on the dark tab so the label reads as part of it; the chevron
-     (brighter) carries the affordance. */
-  color: rgba(255, 255, 255, 0.5);
-}
+/* ── Preview frame (inside the preview overlay) ── */
 .cc-preview-frame {
   flex: 1 1 auto;
   overflow-y: auto;
@@ -487,6 +418,141 @@
 .cc-step-head .hero {
   padding-bottom: 0;
   border-bottom: none;
+}
+/* ── More options: the disclosure that keeps the default path a straight line ── */
+.cc-more {
+  margin-top: 18px;
+  border-top: 1px solid var(--line);
+  padding-top: 14px;
+}
+.cc-more-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+.cc-more-toggle:hover {
+  text-decoration: underline;
+}
+.cc-more-chev {
+  transition: transform 0.15s ease;
+}
+.cc-more.is-open .cc-more-chev {
+  transform: rotate(180deg);
+}
+/* Names what's inside while it's shut, so nothing feels buried. */
+.cc-more-hint {
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: none;
+}
+.cc-more-hint::before {
+  content: '· ';
+}
+.cc-more-body {
+  padding-top: 16px;
+}
+.cc-more-body > .cc-panel-title {
+  margin-top: 22px;
+}
+.cc-more-body > .cc-panel-title:first-child {
+  margin-top: 0;
+}
+.cc-more-note {
+  margin: -6px 0 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+/* ── Review & publish: the recap that closes the walk-through ── */
+.cc-review-group .cc-panel-title {
+  margin-bottom: 4px;
+}
+.cc-review-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line);
+}
+.cc-review-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 2px;
+}
+.cc-review-label {
+  flex: 0 0 190px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--muted);
+}
+.cc-review-value {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--c-text);
+  overflow-wrap: anywhere;
+}
+/* A required answer that's still blank — the one thing to fix before publishing. */
+.cc-review-value.is-missing {
+  color: var(--c-red-600);
+  font-weight: 700;
+}
+.cc-review-edit {
+  flex: 0 0 auto;
+  background: none;
+  border: 0;
+  padding: 0 2px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--teal-dk);
+  cursor: pointer;
+}
+.cc-review-edit:hover {
+  text-decoration: underline;
+}
+.cc-review-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+.cc-review-cta {
+  margin: 4px 0 8px;
+  padding: 18px 20px;
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--teal) 8%, #fff);
+  border: 1px solid color-mix(in srgb, var(--teal) 22%, #fff);
+}
+.cc-review-cta p {
+  margin: 0;
+  font-size: 15px;
+}
+.cc-review-cta-sub {
+  margin-top: 6px !important;
+  color: var(--muted);
+  font-size: 14px !important;
+}
+
+/* Review rows stack their label above the value on narrow screens. */
+@media (max-width: 640px) {
+  .cc-review-row {
+    flex-wrap: wrap;
+    gap: 4px 12px;
+  }
+  .cc-review-label {
+    flex: 1 1 100%;
+  }
 }
 
 /* ── Type picker ── */
@@ -621,6 +687,11 @@
 .cc-panel > .cc-panel-title + .cc-date-row,
 .cc-panel > .cc-panel-head + .fld,
 .cc-panel > .cc-panel-head + .cc-date-row {
+  margin-top: 0;
+}
+/* A screen whose heading already asks the question has no panel title to butt
+   against, so the panel's own padding is the only gap above its first child. */
+.cc-panel > :first-child {
   margin-top: 0;
 }
 .cc-panel--link {
@@ -937,6 +1008,53 @@
 }
 
 /* ── Confirm (reset) modal ── */
+/* ── Published! The celebration that closes the walk-through ── */
+.cc-published {
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+  padding: 30px 28px 26px;
+}
+.cc-published-inner {
+  position: relative;
+  z-index: 1;
+}
+.cc-published-mark {
+  display: grid;
+  place-items: center;
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 16px;
+  border-radius: 999px;
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(13, 167, 188, 0.32);
+}
+.cc-published-title {
+  margin: 0;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--ink);
+}
+.cc-published-name {
+  margin: 6px 0 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+}
+.cc-published-sub {
+  margin: 8px auto 0;
+  max-width: 42ch;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.cc-published-actions {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 22px;
+}
+
 .cc-confirm {
   width: 100%;
   box-sizing: border-box;
@@ -1084,30 +1202,6 @@
   border-top: 0;
 }
 
-/* ── Book Talks step ── */
-.cc-bt-measure h4 {
-  margin: 0 0 6px;
-  font-size: 15px;
-  font-weight: 700;
-  color: var(--ink);
-}
-.cc-bt-measure > p {
-  margin: 0 0 16px;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--muted);
-}
-/* Benny's sample questions, shown in the shared <BennyBubble>. */
-.cc-bt-bubble-lead {
-  margin: 0 0 6px;
-}
-.cc-bt-measure .benny-bubble ul {
-  margin: 0;
-  padding-left: 18px;
-}
-.cc-bt-measure .benny-bubble li {
-  margin: 2px 0;
-}
 .cc-settings .cc-setting-row:first-child {
   border-top: 0;
 }
@@ -4101,24 +4195,7 @@
   cursor: not-allowed;
 }
 
-/* ── Mobile click-to-preview ── */
-.cc-preview-mobile-btn {
-  display: none; /* shown only on mobile (see media query); desktop uses the toggle */
-  align-items: center;
-  gap: 6px;
-  padding: 7px 14px;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--c-slate-700);
-  font: inherit;
-  font-weight: 600;
-  font-size: 14px;
-  cursor: pointer;
-}
-.cc-preview-mobile-btn:hover {
-  border-color: var(--c-slate-500);
-}
+/* ── Preview overlay ── */
 .cc-mobile-preview {
   width: 100%;
   max-height: 86vh;
@@ -4605,25 +4682,8 @@
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
 }
 
-/* ── Preview icon button: phone only ── */
-/* Desktop (split pane available): hide the footer preview button — the side
-   tab handles open/close there. */
-@media (min-width: 901px) {
-  .cc-preview-icon-btn {
-    display: none;
-  }
-}
-
-/* ── Responsive: collapse preview under the form on narrow screens ── */
+/* ── Responsive ── */
 @media (max-width: 900px) {
-  /* Preview becomes a click-to-open overlay; the split pane + side tab hide. */
-  .cc-preview,
-  .cc-preview-tab {
-    display: none;
-  }
-  .cc-preview-mobile-btn {
-    display: inline-flex;
-  }
   /* Step dropdown fills the bar on mobile. */
   .cc-stepbar {
     padding: 8px 12px;
