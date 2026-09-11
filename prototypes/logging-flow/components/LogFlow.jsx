@@ -1080,7 +1080,7 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
       {onTalkToBenny ? (
         <>
           <div className="lf-benny">
-            <BennyBubble>
+            <BennyBubble variant="centered">
               <strong>Want to tell me about it?</strong> A quick chat about what you just read —
               I’ll hand you any Book Talk badge you earn along the way.
             </BennyBubble>
@@ -1101,7 +1101,7 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
         <>
           {/* Same catch-them-here moment, spent on a word from the book. */}
           <div className="lf-benny">
-            <BennyBubble>
+            <BennyBubble variant="centered">
               <strong>I found a word in there.</strong> One word from {bookTitle}, a short round
               with me, and it’s yours to keep.
             </BennyBubble>

@@ -3,7 +3,7 @@ import { Button } from '@components/Button/Button'
 import { Modal } from '@components/Modal/Modal'
 import { Table } from '@components/Table/Table'
 import { Toggle } from '@components/Toggle/Toggle'
-import { Field, Input, Textarea } from '@components/Form/Form'
+import { Field, Input, Select, Textarea } from '@components/Form/Form'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { HighlightCard } from '../../sfr/components/Overview'
 import { SessionsTable } from '../../sfr/components/SessionsTable'
@@ -19,6 +19,7 @@ function BennyBubbleKnobs() {
   const [text, setText] = useState(
     "Marcus is an outstanding reader. He's logged reading on 21 of the last 30 days — the highest consistency in the class — and is reading well above grade level at 870L.",
   )
+  const [variant, setVariant] = useState('side')
   const [withTimestamp, setWithTimestamp] = useState(false)
   const [timestamp, setTimestamp] = useState('May 15 at 9:55am')
   return (
@@ -26,6 +27,12 @@ function BennyBubbleKnobs() {
       <Knobs>
         <Field label="text" className="pt-knob-full">
           <Textarea rows={3} value={text} onChange={(e) => setText(e.target.value)} />
+        </Field>
+        <Field label="variant">
+          <Select value={variant} onChange={(e) => setVariant(e.target.value)}>
+            <option value="side">side</option>
+            <option value="centered">centered</option>
+          </Select>
         </Field>
         <Field label="timestamp">
           <Toggle checked={withTimestamp} onChange={setWithTimestamp} />
@@ -36,8 +43,13 @@ function BennyBubbleKnobs() {
           </Field>
         )}
       </Knobs>
-      <div className="pt-variant-frame">
-        <BennyBubble timestamp={withTimestamp ? timestamp : undefined}>{text}</BennyBubble>
+      <div
+        className="pt-variant-frame"
+        style={variant === 'centered' ? { maxWidth: 460, margin: '0 auto' } : undefined}
+      >
+        <BennyBubble variant={variant} timestamp={withTimestamp ? timestamp : undefined}>
+          {text}
+        </BennyBubble>
       </div>
     </>
   )
@@ -256,9 +268,17 @@ export const sfrSections = [
     name: 'BennyBubble',
     desc: (
       <>
-        Benny's avatar + speech bubble with a left-pointing chat arrow. Pass text or JSX as{' '}
-        <code>children</code>. Use <code>{'<strong>'}</code> for bold emphasis. Pass{' '}
-        <code>timestamp</code> to show an "Analysis last run on …" line below the bubble.
+        Benny saying something. Pass text or JSX as <code>children</code>; use{' '}
+        <code>{'<strong>'}</code> for bold emphasis, and <code>timestamp</code> for an "Analysis
+        last run on …" line below the bubble.
+        <br />
+        <br />
+        <code>variant="side"</code> (the default) is the chat shape — avatar left, bubble beside it,
+        copy ranged left. It belongs in a left-aligned page or card. <code>variant="centered"</code>{' '}
+        stacks Benny above the bubble with the tail pointing up at him and the copy centred, for a
+        centred column: there, a left-hand avatar sits off the axis everything else is composed on,
+        and ranged-left copy has no edge to start from. The log flow's post-log handoff is the
+        centred case.
       </>
     ),
     render: () => (

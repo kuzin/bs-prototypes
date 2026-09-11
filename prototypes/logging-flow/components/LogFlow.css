@@ -996,17 +996,14 @@
    centred column of copy, and boxing the last line of it made the next beat
    look like an ad for itself rather than the obvious thing to do next. */
 /* Benny's handoff is Benny talking, so it uses the design system's own
-   <BennyBubble> — avatar, tail, left-aligned copy — rather than a one-off row.
-   Centring the *text* beside a left-hand face was the thing that read wrong:
-   the face sat off the column's axis and the copy had no edge to start from.
-   The wrapper centres the bubble as a block and leaves its copy ranged left,
-   which is how a message from someone is meant to look. */
+   <BennyBubble> rather than a one-off row — in its `centered` variant, since
+   this whole step is one centred column and a left-hand avatar sat off the
+   axis everything else is composed on. Its own whitespace separates it from
+   the confirmation above; the bubble is already a distinct object, so a rule
+   as well was one divider too many. */
 .lf-benny {
-  /* Its own whitespace separates it from the confirmation above — the bubble
-     is already a distinct object, so a rule as well was one divider too many. */
-  width: min(500px, 100%);
+  width: min(440px, 100%);
   margin: 22px auto 20px;
-  text-align: left;
 }
 /* Book titles vary in length, so the closing line lands differently on every
    one of them; `pretty` reflows rather than stranding a word. */
