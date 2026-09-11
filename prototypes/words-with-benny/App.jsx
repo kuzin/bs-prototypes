@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Icon } from '@components/Icon/Icon'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 
@@ -177,19 +178,26 @@ export function App() {
           if (id === 'words') setReaderTab('collections')
         }}
         actions={
-          <select
-            className="wb-actpick"
-            value={demoActivity}
-            onChange={(e) => setDemoActivity(e.target.value)}
-            aria-label="Which activity the next unlock runs"
-          >
-            <option value="auto">Activities · full round</option>
-            {ACTIVITY_TYPES.map((t) => (
-              <option key={t.id} value={t.id}>
-                Activities · {t.label}
-              </option>
-            ))}
-          </select>
+          // Same shape as the design system's own <Select>: the native control
+          // with its appearance off, and one drawn caret over it. A native
+          // arrow sits where the UA puts it — padding won't move it — and it
+          // wouldn't take the bar's colour either.
+          <span className="wb-actpick-wrap">
+            <select
+              className="wb-actpick"
+              value={demoActivity}
+              onChange={(e) => setDemoActivity(e.target.value)}
+              aria-label="Which activity the next unlock runs"
+            >
+              <option value="auto">Activities · full round</option>
+              {ACTIVITY_TYPES.map((t) => (
+                <option key={t.id} value={t.id}>
+                  Activities · {t.label}
+                </option>
+              ))}
+            </select>
+            <Icon name="chevron-down" size={14} stroke={2.4} className="wb-actpick-caret" />
+          </span>
         }
       />
 
