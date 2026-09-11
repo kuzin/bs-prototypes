@@ -295,14 +295,9 @@ export function PassageDrag({ word, bookId, onPass }) {
         })}
       </div>
 
-      {!solved &&
-        (misses > 0 ? (
-          <Nudge>That word doesn’t belong in that gap. Read the sentence around it again.</Nudge>
-        ) : (
-          <p className="wb-hint">
-            {held ? `Now tap the gap where “${held}” goes.` : 'Tap a word, then tap its gap.'}
-          </p>
-        ))}
+      {!solved && misses > 0 && (
+        <Nudge>That word doesn’t belong in that gap. Read the sentence around it again.</Nudge>
+      )}
     </div>
   )
 }
@@ -313,11 +308,12 @@ export function PassageDrag({ word, bookId, onPass }) {
 // either takes it or asks for another go — and anything the check isn't sure
 // about goes to the teacher's queue rather than being marked wrong at a child.
 
-export function SentenceWrite({ word, bookId, onPass }) {
+/* Takes no `bookId` — it's the one activity that never names the book. The
+   dispatcher passes it regardless, which is the point of the uniform contract. */
+export function SentenceWrite({ word, onPass }) {
   const [text, setText] = useState('')
   const [result, setResult] = useState(null)
   const [tries, setTries] = useState(0)
-  const book = bookId ? BOOKS[bookId] : null
 
   function submit(e) {
     e.preventDefault()
@@ -337,10 +333,6 @@ export function SentenceWrite({ word, bookId, onPass }) {
       <Prompt>
         Now write your own sentence using <strong>{word.word}</strong>.
       </Prompt>
-      <p className="wb-write-hint">
-        {book ? `It can be about ${book.title}, or about anything you like.` : 'Anything you like.'}
-      </p>
-
       <textarea
         className={`wb-write${settled ? ' is-settled' : ''}`}
         value={text}

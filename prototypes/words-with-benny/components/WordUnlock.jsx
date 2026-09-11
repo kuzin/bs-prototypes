@@ -3,7 +3,7 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import '@components/Button/Button.css'
 
-import { BOOKS, roundFor } from '../data'
+import { roundFor } from '../data'
 import { Activity } from './Activities'
 import './WordUnlock.css'
 
@@ -46,6 +46,11 @@ export function WordUnlock({
   const [stage, setStage] = useState('card')
   const [step, setStep] = useState(0)
   const [results, setResults] = useState([])
+  // The rung the reader has just got right, held until they press Next. The
+  // round used to advance on a timer, which took the screen away mid-read —
+  // the answer they picked is worth a beat to look at, and on the writing rung
+  // it took Benny's reply with it.
+  const [cleared, setCleared] = useState(null)
 
   const round = useMemo(() => {
     if (!word) return []
@@ -57,35 +62,35 @@ export function WordUnlock({
     setStage('card')
     setStep(0)
     setResults([])
+    setCleared(null)
   }, [open, word])
 
   if (!open || !word) return null
 
-  const book = bookId ? BOOKS[bookId] : null
-  const source = book ? book.title : 'what you just read'
   const firstTryAll = results.every((r) => r.firstTry)
 
+  const last = step + 1 >= round.length
+
   function passed(result) {
-    const all = [...results, result]
+    setCleared(result)
+  }
+
+  function next() {
+    const all = [...results, cleared]
     setResults(all)
-    const last = step + 1 >= round.length
-    setTimeout(
-      () => {
-        if (!last) {
-          setStep((s) => s + 1)
-          return
-        }
-        onCollect?.({
-          word: word.word,
-          bookId,
-          firstTry: all.every((r) => r.firstTry),
-          written: all.find((r) => r.written)?.written ?? null,
-          flagged: all.some((r) => r.flagged),
-        })
-        setStage('done')
-      },
-      result.written ? 1100 : 650,
-    )
+    setCleared(null)
+    if (!last) {
+      setStep((s) => s + 1)
+      return
+    }
+    onCollect?.({
+      word: word.word,
+      bookId,
+      firstTry: all.every((r) => r.firstTry),
+      written: all.find((r) => r.written)?.written ?? null,
+      flagged: all.some((r) => r.flagged),
+    })
+    setStage('done')
   }
 
   return (
@@ -98,7 +103,6 @@ export function WordUnlock({
         {stage === 'card' && (
           <div className="wb-reveal">
             <img src="/bs-prototypes/benny-excited.svg" alt="" className="wb-reveal-benny" />
-            <p className="wb-reveal-kicker">A new word from {source}</p>
             <h1 className="wb-reveal-word">{word.word}</h1>
             <p className="wb-reveal-say">
               {word.say} <span className="wb-reveal-part">· {word.part}</span>
@@ -120,19 +124,30 @@ export function WordUnlock({
         {stage === 'round' && (
           <div className="wb-card">
             {/* The word stays put for the whole round: the point is to learn
-                it, so hiding it would only make this an exam. The meaning rides
-                along too — except on the one activity that asks for it, where
-                leaving it up there would answer the question. */}
+                it, so hiding it would only make this an exam. Just the word,
+                though — the meaning was either the answer to the rung on
+                screen or a line the reader had already read on the way in. */}
             <header className="wb-pin">
               <div className="wb-pin-word">
                 <h2 className="wb-pin-term">{word.word}</h2>
                 <span className="wb-pin-part">{word.part}</span>
               </div>
-              {round[step] !== 'definition' && <p className="wb-pin-meaning">{word.meaning}</p>}
             </header>
 
             <div className="wb-check">
               <Activity type={round[step]} word={word} bookId={bookId} onPass={passed} />
+
+              {cleared && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  className="wb-next"
+                  iconRight={<Icon name="arrow-right" size={17} />}
+                  onClick={next}
+                >
+                  {last ? 'Collect it' : 'Next'}
+                </Button>
+              )}
             </div>
           </div>
         )}
@@ -152,30 +167,9 @@ export function WordUnlock({
                 : '. Nice recovery.'}
             </p>
 
-            <div className="wb-done-card">
-              <span className="wb-done-word">{word.word}</span>
-              <span className="wb-done-meaning">{word.meaning}</span>
-              {book && <span className="wb-done-from">from {book.title}</span>}
-            </div>
-
-            {/* The word doesn't stop here — saying when it comes back is what
-                makes the deck in My Collections feel like it's for something. */}
-            <p className="wb-done-next">
-              <Icon name="layers" size={14} />
-              I’ll bring this one back to your flashcards tomorrow.
-            </p>
-
-            <Button
-              variant="primary"
-              size="lg"
-              icon={<Icon name="vocabulary" size={18} />}
-              onClick={onSeeAll}
-            >
+            <Button variant="primary" size="lg" onClick={onSeeAll}>
               See My Words
             </Button>
-            <button className="wb-done-skip" onClick={onClose}>
-              Keep reading
-            </button>
           </div>
         )}
       </div>

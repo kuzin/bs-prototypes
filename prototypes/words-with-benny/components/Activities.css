@@ -223,21 +223,7 @@
   }
 }
 
-.wb-hint {
-  margin-top: 11px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #94a3b8;
-}
-
 /* ─── Write your own ─────────────────────────────────────────────────────── */
-
-.wb-write-hint {
-  margin-top: 5px;
-  font-size: 13.5px;
-  font-weight: 600;
-  color: #94a3b8;
-}
 
 .wb-write {
   width: 100%;

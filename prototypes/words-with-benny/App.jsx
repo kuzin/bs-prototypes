@@ -20,6 +20,7 @@ import { EducatorWords } from './components/EducatorWords'
 import { StudentProfilePanel } from './components/StudentProfilePanel'
 import {
   ACTIVITY_TYPES,
+  ALL_WORDS,
   BOOKS,
   RECENTLY_LOGGED,
   SEED_COLLECTION,
@@ -126,12 +127,15 @@ export function App() {
     setPending({ word, bookId: word.bookId ?? null })
   }
 
-  // Picks a word from the first book that still has one unclaimed, so the
-  // unlock names a real title rather than falling through to the generic pool.
+  // Any word the reader hasn't collected yet, at random — pressing the button
+  // twice should show two different words, and every one still names a real
+  // book. Falls back to the generic pool only once the catalog is exhausted.
   function demoUnlock() {
-    const taken = collection.map((e) => e.word)
-    const bookId = Object.keys(BOOKS).find((id) => pickWord(id, taken)?.bookId === id)
-    const word = pickWord(bookId ?? null, taken)
+    const taken = new Set(collection.map((e) => e.word))
+    const pool = ALL_WORDS.filter((w) => w.bookId && !taken.has(w.word))
+    const word = pool.length
+      ? pool[Math.floor(Math.random() * pool.length)]
+      : pickWord(null, [...taken])
     if (!word) return
     setPending({ word, bookId: word.bookId ?? null })
     setFlowOpen(false)
