@@ -493,9 +493,9 @@ const NAV_ITEMS = [
   { icon: 'certificate', section: 'achievements', label: 'Achievements' },
   { icon: 'star', section: 'reviews', label: 'Reviews' },
   { icon: 'paragraph', section: 'textchallenges', label: 'Text Box' },
-  { icon: 'points', section: 'points', label: 'Points Summary' },
-  { icon: 'filter', section: 'recofilters', label: 'Recommendation Filters' },
-  { icon: 'heart', section: 'recommended', label: 'Recommended Books' },
+  { icon: 'points', section: 'points', label: 'Points' },
+  { icon: 'filter', section: 'recofilters', label: 'Filters' },
+  { icon: 'heart', section: 'recommended', label: 'Recommendations' },
   { icon: 'bookmark', section: 'wishlist', label: 'Wish List' },
 ]
 
@@ -4298,7 +4298,7 @@ function ChallengesPage({ student }) {
   )
 }
 
-// ─── Points Summary ───────────────────────────────────────────────────────────
+// ─── Points ───────────────────────────────────────────────────────────────────
 // The app's `_points_summary.html.haml`: one row per point type with its
 // running total, and nothing else — no dates, no source, no drill-in. The ten
 // types are the ones the partial switches on, in its order.
@@ -4329,7 +4329,7 @@ function PointsPage({ student }) {
     <div className="rp-content">
       <Hero
         icon={<PlumpyIcon name="points" size={22} />}
-        title="Points Summary"
+        title="Points"
         accent={SECTION_ACCENT.points.text}
         accentBg={SECTION_ACCENT.points.bg}
       />
@@ -4553,7 +4553,7 @@ function RecoFiltersPage({ student }) {
     <div className="rp-content">
       <Hero
         icon={<PlumpyIcon name="filter" size={22} />}
-        title="Recommendation Filters"
+        title="Filters"
         accent={SECTION_ACCENT.recofilters.text}
         accentBg={SECTION_ACCENT.recofilters.bg}
       />
@@ -4624,7 +4624,7 @@ function RecommendedPage({ student }) {
     <div className="rp-content">
       <Hero
         icon={<PlumpyIcon name="heart" size={22} />}
-        title="Recommended Books"
+        title="Recommendations"
         accent={SECTION_ACCENT.recommended.text}
         accentBg={SECTION_ACCENT.recommended.bg}
       />

@@ -283,6 +283,13 @@
   letter-spacing: 0.01em;
   line-height: 1.25;
   min-width: 0;
+  /* One line per row, always. A name long enough to wrap made its row taller
+     than every other, broke the rail's rhythm and left the icon sitting above
+     the label's centre instead of beside it. Clipped instead — the row already
+     carries the full name in `title`. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* The rail's own two tones, from the shipped app's hand-vendored icons
@@ -3578,15 +3585,20 @@
   transition: transform 0.14s ease;
 }
 
+/* Centred along the cover's bottom edge rather than tucked into its corner:
+   in the corner at 12px it read as a watermark on the artwork, and a Lexile is
+   the one fact this shelf carries. Centred and a rung up it reads as a caption
+   the cover is wearing. */
 .bp-latest-lexile {
   position: absolute;
-  right: 5px;
-  bottom: 5px;
-  padding: 2px 6px;
+  left: 50%;
+  bottom: 7px;
+  transform: translateX(-50%);
+  padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(17, 24, 39, 0.78);
+  background: rgba(17, 24, 39, 0.82);
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.01em;
 }
@@ -4448,6 +4460,12 @@
   width: auto;
   margin-left: -18px;
   margin-right: -18px;
+  /* Bled to the card's edges, a row owes the card's own 18px back — its stock
+     16px sat the icon 2px inside the title above it. This is the whole list,
+     not just the first row: patching the first one alone (which is how it was)
+     stepped the icons and the figures in and out down the card. */
+  padding-left: 18px;
+  padding-right: 18px;
 }
 
 /* A bled row list ends on the card's own padding — not on the sum of the
@@ -4589,6 +4607,34 @@
   white-space: nowrap;
   color: var(--c-text-muted);
   flex-shrink: 0;
+}
+
+/* ─── The figures read as a column ────────────────────────────────────────────
+   Whatever annotates a figure — a trend chip, a caption like "since Jan" — sits
+   in a lane of its own beside it, and a row with nothing to annotate reserves
+   that same lane. Otherwise the annotated rows push their figure left and the
+   bare ones run on to the card's edge, which is how "890L" ended up hanging
+   further right than the "870L" above it.
+
+   The lane only exists in a card that has an annotation somewhere: everywhere
+   else the figures still end on the card's own padding, unchanged. */
+.bp-card:has(.bp-statrow > .trend-tip) {
+  --stat-trail: 26px; /* a chip */
+}
+
+/* A caption is wider than a chip, so one caption widens the lane for every row
+   in that card — the alternative is a column that steps in and out. */
+.bp-card:has(.bp-statrow > .bp-statrow-note) {
+  --stat-trail: 58px;
+}
+
+.bp-statrow > .trend-tip,
+.bp-statrow > .bp-statrow-note {
+  flex: 0 0 var(--stat-trail, auto);
+}
+
+.bp-statrow:not(:has(> .trend-tip, > .bp-statrow-note)) .bp-statrow-value {
+  margin-right: calc(var(--stat-trail, 0px) + 12px);
 }
 
 /* ─── Header status flags ─────────────────────────────────────────────────────
@@ -5128,18 +5174,14 @@
     display: none;
   }
 }
-/* Two fixes for a stat row sitting directly under a card's header bar.
-   The gap: `.bp-card:has(> .bp-statrow--static) > .bp-section-heading` already
-   zeroes the heading's bottom margin, but ProfileCard.css loads *after* this
-   file and its own `.pcard-title:first-child` margin wins — so the 14px comes
-   back and stacks on the row's padding. Cancelling it here beats the order.
-   The inset: the row is bled out to the card's edges by the rule above, so it
-   owes the card's own 18px — its stock 16px left the icon off the title's edge,
-   and zeroing it (briefly) put the content flat on the border. */
+/* A stat row sitting directly under a card's header bar.
+   `.bp-card:has(> .bp-statrow--static) > .bp-section-heading` already zeroes
+   the heading's bottom margin, but ProfileCard.css loads *after* this file and
+   its own `.pcard-title:first-child` margin wins — so the 14px comes back and
+   stacks on the row's padding. Cancelling it here beats the order. The row's
+   own inset is the list's, set with the bleed above. */
 .pcard > .pcard-title:first-child + .bp-statrow {
   margin-top: -14px;
-  padding-left: 18px;
-  padding-right: 18px;
 }
 
 /* ── Activity types ─────────────────────────────────────────────────────────
@@ -5700,23 +5742,38 @@
    The shipped chart's chrome: the heading with the period steppers on its
    right, and the span it covers under them
    (`lexile-chart__weeks-selector` / `__current-period`). */
+/* The chart card's header bar. Wrapping the heading so the steppers could sit
+   beside it took the heading out of the `.pcard-title:first-child` slot that
+   draws every other card's header, so the wrapper takes that treatment
+   instead: bled to the card's edges, with the same hairline under it. */
 .bp-lex-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  margin: -16px -18px 12px;
+  padding: 8px 14px 8px 18px;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .bp-lex-head .bp-section-heading {
   margin-bottom: 0;
 }
 
+/* The period and the arrows that step it are one control, so they travel
+   together at the right of the bar. */
+.bp-lex-period-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
 .bp-lex-period {
-  display: block;
-  margin: 2px 0 10px;
   font-size: 14px;
   font-weight: 600;
   color: var(--c-slate-500);
+  white-space: nowrap;
 }
 
 /* The shipped chart's tooltip, ported from `#chartjs-tooltip`
