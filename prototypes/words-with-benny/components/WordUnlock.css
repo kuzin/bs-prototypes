@@ -128,18 +128,28 @@
   background: rgb(124 58 237 / 22%);
   border-radius: 16px;
 }
-/* The opening quote, set big and quiet behind the first line — decoration, so
-   it stays out of the accessibility tree. */
-.wb-reveal-why::before {
-  content: '“';
+/* The quote marks, set big and quiet at opposite corners — decoration, so both
+   stay out of the accessibility tree. */
+.wb-reveal-why::before,
+.wb-reveal-why::after {
   position: absolute;
-  top: -2px;
-  left: 8px;
   font-size: 38px;
   font-style: normal;
   font-weight: 900;
   line-height: 1;
   color: rgb(196 181 253 / 45%);
+}
+.wb-reveal-why::before {
+  content: '“';
+  top: -1px;
+  left: 8px;
+}
+/* The closing mark hangs below its own baseline, so it sits lower than the
+   opening one at the same offset — this lifts it back onto the same inset. */
+.wb-reveal-why::after {
+  content: '”';
+  right: 8px;
+  bottom: -13px;
 }
 
 .wb-reveal .btn {
