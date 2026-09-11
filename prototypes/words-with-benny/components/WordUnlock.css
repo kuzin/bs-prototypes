@@ -112,14 +112,34 @@
 }
 
 /* Benny's line tying the word to the book — the premise of the whole feature,
-   so it stays. One sentence of why, not three of how. */
+   so it gets to look like something rather than trailing off as grey text
+   under the meaning. A quoted aside: he's already on screen above it, so it
+   reads as him saying this without needing a second portrait. */
 .wb-reveal-why {
-  max-width: 420px;
-  margin: 12px auto 0;
-  font-size: 14.5px;
-  line-height: 1.5;
-  color: rgb(255 255 255 / 62%);
+  position: relative;
+  max-width: 430px;
+  margin: 20px auto 0;
+  padding: 14px 22px 15px;
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.55;
+  color: rgb(255 255 255 / 80%);
   text-wrap: pretty;
+  background: rgb(124 58 237 / 22%);
+  border-radius: 16px;
+}
+/* The opening quote, set big and quiet behind the first line — decoration, so
+   it stays out of the accessibility tree. */
+.wb-reveal-why::before {
+  content: '“';
+  position: absolute;
+  top: -2px;
+  left: 8px;
+  font-size: 38px;
+  font-style: normal;
+  font-weight: 900;
+  line-height: 1;
+  color: rgb(196 181 253 / 45%);
 }
 
 .wb-reveal .btn {
