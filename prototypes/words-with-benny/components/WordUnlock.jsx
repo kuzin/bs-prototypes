@@ -3,7 +3,7 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import '@components/Button/Button.css'
 
-import { BOOKS, activityType, roundFor } from '../data'
+import { BOOKS, roundFor } from '../data'
 import { Activity } from './Activities'
 import './WordUnlock.css'
 
@@ -12,15 +12,19 @@ import './WordUnlock.css'
 // short round of activities.
 //
 // Three beats:
-//   card    Benny turns up holding the word: what it is, how to say it, what
-//           it means, why it came from this book, and what the round will ask.
-//           This used to be two screens — a sealed card you tapped to open,
-//           then the word — but the seal was a tap that bought nothing: the
-//           reader already knows a word is coming, they pressed a button that
-//           said so.
+//   card    Benny hands the word over: what it is, how to say it, what it
+//           means, and why it came from this book — on the dark ground, in the
+//           big type, as a moment rather than a form. It used to be two
+//           screens with a sealed card between them; the seal was a tap that
+//           bought nothing, since the reader had just pressed a button saying a
+//           word was coming. What the round will ask isn't announced here — the
+//           rail above the activities already says where you are, and a list of
+//           three instructions turned the moment into a briefing.
 //   round   Three activities on that one word — recognise it, use it, produce
 //           something with it. The word stays pinned above them: this is a
 //           collection, not a test, so nothing here is hidden from the reader.
+//           No step counter: three short goes don't need a progress bar, and
+//           one made a game look like a form to be completed.
 //   done    Collected.
 //
 // The round replaced a single multiple-choice question after reviewers watched
@@ -92,59 +96,25 @@ export function WordUnlock({
 
       <div className="wb-unlock-inner">
         {stage === 'card' && (
-          <>
-            <img src="/bs-prototypes/benny-excited.svg" alt="" className="wb-card-benny" />
-            <div className="wb-card">
-              <div className="wb-card-head">
-                <span className="wb-card-kicker">
-                  <Icon name="sparkles" size={13} /> A new word from {source}
-                </span>
-                <h1 className="wb-word">{word.word}</h1>
-                <p className="wb-word-say">
-                  {word.say} <span className="wb-word-part">· {word.part}</span>
-                </p>
-                <p className="wb-word-meaning">{word.meaning}</p>
-              </div>
+          <div className="wb-reveal">
+            <img src="/bs-prototypes/benny-excited.svg" alt="" className="wb-reveal-benny" />
+            <p className="wb-reveal-kicker">A new word from {source}</p>
+            <h1 className="wb-reveal-word">{word.word}</h1>
+            <p className="wb-reveal-say">
+              {word.say} <span className="wb-reveal-part">· {word.part}</span>
+            </p>
+            <p className="wb-reveal-meaning">{word.meaning}</p>
+            <p className="wb-reveal-why">{word.why}</p>
 
-              <div className="wb-why">
-                <img src="/bs-prototypes/benny-happy.svg" alt="" className="wb-why-benny" />
-                <p className="wb-why-text">{word.why}</p>
-              </div>
-
-              {/* What's coming, before it arrives. A reader who can see the three
-                rungs knows the round ends — an open-ended quiz doesn't. */}
-              <div className="wb-plan">
-                <p className="wb-plan-lead">
-                  {round.length === 1
-                    ? 'One thing to do, then it’s yours:'
-                    : `${round.length} quick goes and ${word.word} is yours:`}
-                </p>
-                <ol className="wb-plan-list">
-                  {round.map((id, i) => {
-                    const type = activityType(id)
-                    return (
-                      <li key={id} className="wb-plan-item">
-                        <span className="wb-plan-num">{i + 1}</span>
-                        <span className="wb-plan-copy">
-                          <span className="wb-plan-label">{type.label}</span>
-                          <span className="wb-plan-blurb">{type.blurb}</span>
-                        </span>
-                      </li>
-                    )
-                  })}
-                </ol>
-              </div>
-
-              <Button
-                variant="primary"
-                size="lg"
-                iconRight={<Icon name="arrow-right" size={18} />}
-                onClick={() => setStage('round')}
-              >
-                Let’s go
-              </Button>
-            </div>
-          </>
+            <Button
+              variant="primary"
+              size="lg"
+              iconRight={<Icon name="arrow-right" size={18} />}
+              onClick={() => setStage('round')}
+            >
+              Let’s go
+            </Button>
+          </div>
         )}
 
         {stage === 'round' && (
@@ -160,23 +130,6 @@ export function WordUnlock({
               </div>
               {round[step] !== 'definition' && <p className="wb-pin-meaning">{word.meaning}</p>}
             </header>
-
-            <div className="wb-rail" aria-label={`Step ${step + 1} of ${round.length}`}>
-              {round.map((id, i) => {
-                const state = i < step ? ' is-done' : i === step ? ' is-now' : ''
-                const missed = results[i] && !results[i].firstTry
-                return (
-                  <span key={id} className={`wb-rail-step${state}`}>
-                    <span className="wb-rail-dot">
-                      {i < step && (
-                        <Icon name={missed ? 'refresh' : 'check'} size={11} stroke={3} />
-                      )}
-                    </span>
-                    <span className="wb-rail-label">{activityType(id).short}</span>
-                  </span>
-                )
-              })}
-            </div>
 
             <div className="wb-check">
               <Activity type={round[step]} word={word} bookId={bookId} onPass={passed} />

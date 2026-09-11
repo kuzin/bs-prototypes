@@ -165,11 +165,15 @@
   border-radius: 13px;
 }
 
+/* A real target. Empty, the gap held only a 2px rule, so it came out 8px tall —
+   fine to look at, far too small to tap or drop onto. The min-height also
+   matches the filled state, so a word landing in one doesn't reflow the line. */
 .wb-gap {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   min-width: 110px;
+  min-height: 30px;
   padding: 2px 10px;
   font-size: 15px;
   font-weight: 800;

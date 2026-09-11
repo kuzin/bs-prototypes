@@ -116,15 +116,19 @@ export const wordsWithBennySections = [
     name: 'WordUnlock',
     desc: (
       <>
-        The post-log moment, in three beats. <strong>card</strong> — Benny turns up holding the
-        word: what it is, how to say it, what it means, the line tying it back to the book, and what
-        the round is going to ask, named up front so the reader can see it ends. This was two
-        screens — a sealed card you tapped to open, then the word — but the seal was a tap that
-        bought nothing, since the reader had just pressed a button saying a word was coming.{' '}
-        <strong>round</strong> — three <code>Activity</code> rungs on that one word, with the word
-        pinned above them (this is a collection, not an exam) and a named progress rail.{' '}
+        The post-log moment, in three beats. <strong>card</strong> — Benny hands the word over on
+        the dark ground, in the big type: what it is, how to say it, what it means, and the line
+        tying it back to the book. It was two screens with a sealed card between them; the seal was
+        a tap that bought nothing, since the reader had just pressed a button saying a word was
+        coming. <strong>round</strong> — three <code>Activity</code> rungs on that one word, with
+        the word pinned above them, because this is a collection and not an exam.{' '}
         <strong>done</strong> — banked, with the running count and when the word comes back in the
         deck.
+        <br />
+        <br />
+        Neither the plan nor a progress rail is drawn. Three short goes don&apos;t need a step
+        counter, and announcing them up front turned the moment a reader is given something into a
+        briefing about what they now have to do.
         <br />
         <br />
         The round replaced a single multiple-choice question: one touch banks a word the reader has
