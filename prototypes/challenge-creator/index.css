@@ -1207,12 +1207,17 @@
   padding: 2px 14px;
 }
 /* When the list IS the panel's whole content, the panel is already the card —
-   drawing a second one inside it just boxes the rows twice. */
+   drawing a second one inside it just boxes the rows twice. The rows bring
+   their own 13px, so the panel trims its block padding to land on the usual
+   18px above the first label and below the last. */
 .cc-panel > .cc-settings:only-child {
   margin-top: 0;
   border: 0;
   border-radius: 0;
   padding: 0;
+}
+.cc-panel:has(> .cc-settings:only-child) {
+  padding-block: 5px;
 }
 /* Shared <SettingRow> (class .setting-row) inside the legacy .cc-settings card
    keeps row dividers — the shared component only draws them inside <SettingList>. */
