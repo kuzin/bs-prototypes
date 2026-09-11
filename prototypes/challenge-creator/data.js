@@ -892,6 +892,19 @@ function badgeScreens({ type, challenge, role }) {
   return screens
 }
 
+function rewardScreens(challenge) {
+  const r = challenge?.rewards || {}
+  const screens = [{ id: 'rewards.types', phase: 'rewards', name: 'Rewards' }]
+  if (r.prizesEnabled) screens.push({ id: 'rewards.prizes', phase: 'rewards', name: 'Prizes' })
+  if (r.ticketsEnabled) {
+    screens.push({ id: 'rewards.tickets', phase: 'rewards', name: 'Raffle tickets' })
+  }
+  if (r.certsEnabled) {
+    screens.push({ id: 'rewards.certificates', phase: 'rewards', name: 'Certificates' })
+  }
+  return screens
+}
+
 export function getScreens({ mode, role, type, challenge }) {
   const phases = getSteps({ mode, role, type })
   const setupName = type?.setupName || BASE_STEP_NAMES.setup
@@ -901,12 +914,9 @@ export function getScreens({ mode, role, type, challenge }) {
         return detailsScreens({ typeId: challenge?.typeId })
       case 'badges':
         return badgeScreens({ type, challenge, role })
+      // Rewards works like badges: pick the kinds you want, then a screen each.
       case 'rewards':
-        return [
-          { id: 'rewards.prizes', phase: 'rewards', name: 'Prizes' },
-          { id: 'rewards.tickets', phase: 'rewards', name: 'Raffle tickets' },
-          { id: 'rewards.certificates', phase: 'rewards', name: 'Certificates' },
-        ]
+        return rewardScreens(challenge)
       // Type / Book Talks / Setup / Completion / Review are single-decision
       // screens already — they map 1:1 onto their phase.
       case 'setup':
