@@ -7,6 +7,7 @@ import { EmptyState, Spinner } from '@components/Primitives/Primitives'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Icon } from '@components/Icon/Icon'
 
+import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 
 import { BookCover } from './BookCover'
@@ -1078,16 +1079,11 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
       {/* Benny catches the reader here, while the book is still in mind. */}
       {onTalkToBenny ? (
         <>
-          <hr className="lf-benny-rule" />
           <div className="lf-benny">
-            <img src="/bs-prototypes/benny-excited.svg" alt="" className="lf-benny-face" />
-            <div className="lf-benny-copy">
-              <div className="lf-benny-title">Want to tell me about it?</div>
-              <p className="lf-benny-sub">
-                A quick chat about what you just read — I’ll hand you any Book Talk badge you earn
-                along the way.
-              </p>
-            </div>
+            <BennyBubble>
+              <strong>Want to tell me about it?</strong> A quick chat about what you just read —
+              I’ll hand you any Book Talk badge you earn along the way.
+            </BennyBubble>
           </div>
           <Button
             variant="primary"
@@ -1104,15 +1100,11 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
       ) : onOpenWord ? (
         <>
           {/* Same catch-them-here moment, spent on a word from the book. */}
-          <hr className="lf-benny-rule" />
           <div className="lf-benny">
-            <img src="/bs-prototypes/benny-excited.svg" alt="" className="lf-benny-face" />
-            <div className="lf-benny-copy">
-              <div className="lf-benny-title">I found a word in there</div>
-              <p className="lf-benny-sub">
-                One word from {bookTitle}, a short round with Benny, and it’s yours to keep.
-              </p>
-            </div>
+            <BennyBubble>
+              <strong>I found a word in there.</strong> One word from {bookTitle}, a short round
+              with me, and it’s yours to keep.
+            </BennyBubble>
           </div>
           <Button variant="primary" size="lg" onClick={() => onOpenWord(result)}>
             Unlock My Word

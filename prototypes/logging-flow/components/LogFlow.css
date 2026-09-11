@@ -995,46 +995,22 @@
 /* Benny's handoff sits on the page, not in a panel: this screen is already one
    centred column of copy, and boxing the last line of it made the next beat
    look like an ad for itself rather than the obvious thing to do next. */
+/* Benny's handoff is Benny talking, so it uses the design system's own
+   <BennyBubble> — avatar, tail, left-aligned copy — rather than a one-off row.
+   Centring the *text* beside a left-hand face was the thing that read wrong:
+   the face sat off the column's axis and the copy had no edge to start from.
+   The wrapper centres the bubble as a block and leaves its copy ranged left,
+   which is how a message from someone is meant to look. */
 .lf-benny {
-  display: flex;
-  gap: 13px;
-  align-items: center;
-  justify-content: center;
-  /* A flex block doesn't inherit the column's text-align, so without the auto
-     margins it sat left of everything else on a centred screen. */
-  width: min(520px, 100%);
-  margin: 0 auto 20px;
-  text-align: center;
+  /* Its own whitespace separates it from the confirmation above — the bubble
+     is already a distinct object, so a rule as well was one divider too many. */
+  width: min(500px, 100%);
+  margin: 22px auto 20px;
+  text-align: left;
 }
-/* Its own rule, so the handoff reads as a second beat rather than more of the
-   sentence above it. Sized to the block it introduces. */
-.lf-benny-rule {
-  width: min(520px, 100%);
-  margin: 18px auto;
-  border: 0;
-  border-top: 1px solid #eceef0;
-}
-.lf-benny-face {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  flex: 0 0 auto;
-}
-.lf-benny-copy {
-  min-width: 0;
-}
-.lf-benny-title {
-  font-size: 15.5px;
-  font-weight: 800;
-  color: #0b5d58;
-}
-/* Body copy now that there's no tinted ground to sit on — the same grey as the
-   sentence above it, so the column reads as one voice. */
-.lf-benny-sub {
-  margin-top: 2px;
-  font-size: 13.5px;
-  line-height: 1.45;
-  color: #495057;
+/* Book titles vary in length, so the closing line lands differently on every
+   one of them; `pretty` reflows rather than stranding a word. */
+.lf-benny .benny-bubble {
   text-wrap: pretty;
 }
 .lf-benny-skip {
