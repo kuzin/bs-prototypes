@@ -2830,6 +2830,64 @@
   flex-direction: column;
 }
 
+/* `.tbl-scroll > .tbl` is `width: max-content` by default, which is what a wide
+   data table wants — but here it let long titles widen the table and push the
+   marks out past the card's right edge. This one fits the card instead, and the
+   title cell is what gives way. */
+.tbl-scroll > .tbl.bp-rl-tbl {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Table view — title and author stack in one cell. The cell is the one column
+   that gives way: Date and the mark cluster are fixed widths, so a long title
+   wraps inside its own column instead of widening the table and pushing the
+   row's controls out of sight. */
+.bp-rl-tbl-title {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.bp-rl-tbl-name {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 800;
+  color: var(--c-blue-700);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  /* Break between words, and only inside one if a single word is wider than
+     the column — `anywhere` let the browser shrink the column to a few
+     characters and hyphen-less-ly chop every title in half. */
+  overflow-wrap: break-word;
+}
+
+.bp-rl-tbl-name:hover {
+  text-decoration: underline;
+}
+
+.bp-rl-tbl-author {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-slate-400);
+}
+
+.bp-rl-tbl-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.bp-rl-tbl-tags .bp-rl-entry-lexile {
+  margin-left: 0;
+}
+
 /* Weeks sit inside the card's own padding */
 .bp-rl-body {
   padding: 6px 18px 18px;
@@ -3430,6 +3488,76 @@
   .bp-content .hero-action:has(.tabs) {
     margin-left: 0;
     width: 100%;
+  }
+
+  /* A plain hero button goes icon-only here, the way the header's Actions menu
+     does: its label is what pushed the action off the title's row, and the row
+     is where it belongs. Hide the label *wrapper*, or the emptied span still
+     draws the button's internal gap. */
+  .bp-content .hero-action .btn-label:has(.bp-btn-label) {
+    display: none;
+  }
+
+  .bp-content .hero-action .btn:has(.bp-btn-label) {
+    padding: 0 10px;
+  }
+
+  /* The stat row's icon chip is decoration — the label says what the figure is
+     — and at 375 it was the 28px that made "Total minutes read" wrap to three
+     lines. The label and the figure get it back. */
+  .bp-content .bp-statrow-icon {
+    display: none;
+  }
+
+  /* And the row stacks: the label takes a line of its own and the figure sits
+     under it, so every figure in the card starts at the same left edge instead
+     of landing wherever its label happened to end. Side by side at 375 they
+     were ragged, and a 22px number in the middle of the row left the longer
+     labels wrapping to three lines. */
+  /* Grid rather than a wrapped flex row: wrapping put the label on its own
+     line but left the trend chip and the chevron stuck on the second one,
+     beside the figure. Here the text stacks down the first column and the two
+     marks each span both rows, so they centre against the whole row however
+     tall it gets. The gap is on the marks themselves, not the tracks — a row
+     with no chip and no chevron would otherwise still pay for both. */
+  .bp-content .bp-statrow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: 0;
+    row-gap: 4px;
+  }
+
+  .bp-content .bp-statrow-label {
+    grid-area: 1 / 1;
+  }
+
+  .bp-content .bp-statrow-value,
+  .bp-content .bp-statrow-empty,
+  .bp-content .bp-statrow-motivators {
+    grid-area: 2 / 1;
+  }
+
+  .bp-content .bp-statrow > .trend-tip,
+  .bp-content .bp-statrow > .trend-chip {
+    grid-area: 1 / 2 / span 2 / auto;
+    margin-left: 12px;
+  }
+
+  .bp-content .bp-statrow-go {
+    grid-area: 1 / 3 / span 2 / auto;
+    margin-left: 10px;
+  }
+
+  .bp-content .bp-statrow-value {
+    font-size: 18px;
+  }
+
+  /* The card's own heading keeps its line too — the range switcher beside it
+     doesn't shrink, so "At a glance" was being ellipsised to "A…". */
+  .bp-content .bp-statlist-head {
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
 
   .bp-content .hero-action .tabs {
@@ -4732,6 +4860,29 @@
 
 /* The table row's own version of the card's mark cluster: same marks, same
    source, same menu, laid out on one line at the end of the row. */
+.bp-rl-tbl-marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+/* Date and Unit are reference columns, not the row's subject — the title is.
+   Tabular figures so the dates line up as a column of numbers. */
+.bp-rl-tbl-dim {
+  font-size: 13px;
+  color: var(--c-slate-500);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* The unit chip reads as the row's own figure rather than a reference value,
+   so it takes the row's accent instead of the Lexile's neutral grey. */
+.bp-rl-entry-unit {
+  margin-left: 0;
+  background: color-mix(in srgb, var(--c-blue-700) 9%, #fff);
+  color: var(--c-blue-700);
+}
 
 /* The Lexile the table always had, now on the calendar card too. Every pill on
    this page runs the app's own tag box — 13px / 800 on 3px 10px — so the

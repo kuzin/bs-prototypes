@@ -87,34 +87,6 @@
   border-radius: 6px;
 }
 
-.sb-topbar-page {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.2;
-  min-width: 0;
-  flex: 1;
-}
-
-.sb-topbar-page-label {
-  font-size: 14px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.sb-topbar-page-sub {
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.55);
-  margin-top: 1px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  letter-spacing: 0.01em;
-}
-
 /* ── Chrome (in-flow MainRail + Sidebar) ─────────────────────────────── */
 .sb-chrome {
   display: flex;
