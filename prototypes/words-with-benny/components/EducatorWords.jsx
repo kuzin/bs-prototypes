@@ -341,9 +341,6 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
             scrollX
             stickyHeader
           />
-          <p className="ew-tablenote">
-            <Icon name="info" size={14} /> Pick a student to see the words they’ve collected.
-          </p>
         </div>
       )}
     </div>
