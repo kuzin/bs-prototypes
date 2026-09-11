@@ -1,5 +1,19 @@
 /* ── Beanstack Web App prototype ─────────────────────────────────────────── */
 
+:root {
+  /* One cap for every page-level container here — top bar, tab strip, main
+     column and both footers. They have to move together or the page stops
+     lining up, so the width lives in one place rather than being repeated at
+     each of them. 1440 was effectively no cap at all on a laptop: the reader
+     dashboard is a content column plus a rail, and letting it run the full
+     width of a monitor pushed the two ends of every row apart.
+
+     The admin surfaces hold to --admin-content-max (1280px); this is the
+     reader-facing equivalent, a little tighter because these pages are cards
+     and covers rather than tables. */
+  --wa-content-max: 1200px;
+}
+
 .wa-shell {
   min-height: 100vh;
   background: #ffffff;
@@ -20,7 +34,7 @@
 }
 
 .wa-topbar-inner {
-  max-width: 1440px;
+  max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 14px 24px;
   display: flex;
@@ -130,7 +144,7 @@
   border-top: 1px solid var(--c-slate-100);
 }
 .wa-tabsbar .tabs {
-  max-width: 1440px;
+  max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 0 24px;
   justify-content: center;
@@ -148,7 +162,7 @@
   padding: 24px 0 48px;
 }
 .wa-main-inner {
-  max-width: 1440px;
+  max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -527,7 +541,7 @@
   background: #ffffff;
 }
 .wa-footer-thin-inner {
-  max-width: 1440px;
+  max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 12px 24px;
   display: flex;
@@ -576,7 +590,7 @@
   background: #ffffff;
 }
 .wa-footer-inner {
-  max-width: 1440px;
+  max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 18px 24px 24px;
   display: flex;

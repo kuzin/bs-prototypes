@@ -3,6 +3,7 @@ import { Button } from '@components/Button/Button'
 import { Toggle } from '@components/Toggle/Toggle'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
 import { SearchInput } from '@components/SearchInput/SearchInput'
+import { EmptyState, Spinner } from '@components/Primitives/Primitives'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Icon } from '@components/Icon/Icon'
 
@@ -18,6 +19,7 @@ import '@components/Button/Button.css'
 import '@components/Toggle/Toggle.css'
 import '@components/CustomSelect/CustomSelect.css'
 import '@components/SearchInput/SearchInput.css'
+import '@components/Primitives/Primitives.css'
 import '@components/Avatar/Avatar.css'
 
 const LOTS_OF_MINUTES = 90 // integrity threshold → attestation required
@@ -484,12 +486,54 @@ function SearchStep({
   onWithoutTitle,
   onChangeReader,
 }) {
-  const q = query.trim().toLowerCase()
+  // Searching is debounced and given a visible wait. A real catalog lookup is a
+  // network call, and matching on every keystroke both lied about that and made
+  // the panel rebuild itself five times per word.
+  const typed = query.trim().toLowerCase()
+  const [q, setQ] = useState(typed)
+  const [searching, setSearching] = useState(false)
+
+  useEffect(() => {
+    if (!typed) {
+      // Clearing the field goes straight back to the shelves — nobody expects
+      // to wait for the absence of a search.
+      setQ('')
+      setSearching(false)
+      return
+    }
+    if (typed === q) return
+    setSearching(true)
+    const t = setTimeout(() => {
+      setQ(typed)
+      setSearching(false)
+    }, 420)
+    return () => clearTimeout(t)
+  }, [typed, q])
+
   const results = q
     ? Object.values(books).filter(
         (b) => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q),
       )
     : []
+
+  // What the step looks like at rest, measured. Everything the search can put
+  // below the field — spinner, results, no-matches — then gets at least that
+  // much room, so none of them can shrink the panel and pull the field up
+  // while someone is typing into it. A long list is still free to grow down
+  // the page. Reserving a hard-coded number instead would be wrong in
+  // whichever prototype has a different set of shelves.
+  const bodyRef = useRef(null)
+  const [restHeight, setRestHeight] = useState(null)
+  const atRest = !q && !searching && !scanOpen
+
+  useEffect(() => {
+    if (!atRest || !bodyRef.current) return
+    const h = bodyRef.current.offsetHeight
+    if (h) setRestHeight((prev) => (prev === h ? prev : h))
+  }, [atRest, books, recentlyLogged])
+
+  const bodyStyle = !atRest && !scanOpen && restHeight ? { minHeight: restHeight } : undefined
+
   // The barcode demo picks a real title out of whatever catalog is in play.
   const scanTarget = books['lucky-cap'] ?? Object.values(books)[0]
 
@@ -540,108 +584,133 @@ function SearchStep({
         </div>
       )}
 
-      {q && !scanOpen && (
-        <div className="lf-results">
-          {results.length === 0 ? (
-            <p className="lf-noresults">
-              No matches for “{query}”.{' '}
-              <button className="lf-link" onClick={onManual}>
-                Log manually
-              </button>
-            </p>
-          ) : (
-            results.map((b) => (
-              <button key={b.id} className="lf-resultrow" onClick={() => onPick(b)}>
-                <BookCover book={b} size="sm" />
-                <span className="lf-resultmeta">
-                  <span className="lf-resulttitle">{b.title}</span>
-                  <span className="lf-resultauthor">{b.author}</span>
-                </span>
-                {b.partner && partners.some((p) => p.id === b.partner) ? (
-                  <PartnerResultBadge partnerId={b.partner} connections={connections} />
-                ) : (
-                  b.readable && (
-                    <span className="lf-resultbadge">
-                      <Icon name="book-2" size={12} stroke={2.2} /> Readable
-                    </span>
-                  )
-                )}
-                <Icon name="chevron-right" size={18} className="lf-resultchev" />
-              </button>
-            ))
+      {/* One region for everything the field can put on screen — shelves,
+          spinner, results, no-matches — pinned to the resting height so
+          swapping between them doesn't move the field the reader is typing
+          into. */}
+      {!scanOpen && (
+        <div className="lf-searchbody" ref={bodyRef} style={bodyStyle}>
+          {searching && (
+            <div className="lf-searching">
+              <Spinner size="md" color="#1a6dd5" />
+              <p className="lf-searching-text">Searching the catalog…</p>
+            </div>
           )}
-        </div>
-      )}
 
-      {!q && !scanOpen && (
-        <>
-          {/* A shelf from a linked partner's catalog, so it only appears once
+          {!searching && q && results.length === 0 && (
+            <EmptyState
+              className="lf-empty"
+              icon={<Icon name="search" size={26} stroke={1.7} />}
+              title={`No titles match “${query}”`}
+              description="Check the spelling, try the author instead, or put it in by hand — a title Beanstack doesn't know still counts."
+              action={
+                <div className="lf-empty-actions">
+                  <Button variant="secondary" size="md" onClick={onManual}>
+                    Log manually
+                  </Button>
+                  <Button variant="ghost" size="md" onClick={onWithoutTitle}>
+                    Without a Title
+                  </Button>
+                </div>
+              }
+            />
+          )}
+
+          {!searching && q && results.length > 0 && (
+            <div className="lf-results">
+              {results.map((b) => (
+                <button key={b.id} className="lf-resultrow" onClick={() => onPick(b)}>
+                  <BookCover book={b} size="sm" />
+                  <span className="lf-resultmeta">
+                    <span className="lf-resulttitle">{b.title}</span>
+                    <span className="lf-resultauthor">{b.author}</span>
+                  </span>
+                  {b.partner && partners.some((p) => p.id === b.partner) ? (
+                    <PartnerResultBadge partnerId={b.partner} connections={connections} />
+                  ) : (
+                    b.readable && (
+                      <span className="lf-resultbadge">
+                        <Icon name="book-2" size={12} stroke={2.2} /> Readable
+                      </span>
+                    )
+                  )}
+                  <Icon name="chevron-right" size={18} className="lf-resultchev" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {!searching && !q && (
+            <>
+              {/* A shelf from a linked partner's catalog, so it only appears once
               that account is connected. */}
-          {(!READING_LIST.partner || connections[READING_LIST.partner]) && (
-            <section className="lf-panel lf-rlband">
-              <div className="lf-rlhead">
-                <PartnerMark id={READING_LIST.partner} size={20} />
-                <h2 className="lf-panel-title lf-rlhead-title">{READING_LIST.title}</h2>
-              </div>
+              {(!READING_LIST.partner || connections[READING_LIST.partner]) && (
+                <section className="lf-panel lf-rlband">
+                  <div className="lf-rlhead">
+                    <PartnerMark id={READING_LIST.partner} size={20} />
+                    <h2 className="lf-panel-title lf-rlhead-title">{READING_LIST.title}</h2>
+                  </div>
 
-              <div className="lf-coverrow lf-coverrow--rl">
-                {READING_LIST.titles
-                  .filter((id) => books[id])
-                  .map((id) => {
-                    const logged = READING_LIST.completed.includes(id)
-                    return (
+                  <div className="lf-coverrow lf-coverrow--rl">
+                    {READING_LIST.titles
+                      .filter((id) => books[id])
+                      .map((id) => {
+                        const logged = READING_LIST.completed.includes(id)
+                        return (
+                          <button
+                            key={id}
+                            className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
+                            onClick={() => onPick(books[id])}
+                            title={coverLabel(books[id])}
+                          >
+                            <BookCover book={books[id]} size="md" />
+                            {logged && (
+                              <span className="lf-rlcheck" aria-label="Logged">
+                                <Icon name="check" size={12} stroke={3} />
+                              </span>
+                            )}
+                          </button>
+                        )
+                      })}
+                  </div>
+                  <button className="lf-link lf-viewall">
+                    View all {READING_LIST.total} {READING_LIST.unit || 'titles'} ›
+                  </button>
+                </section>
+              )}
+
+              {/* Recently logged */}
+              <section className="lf-panel">
+                <h2 className="lf-panel-title">Recently Logged Titles</h2>
+                <div className="lf-coverrow lf-coverrow--center">
+                  {recentlyLogged
+                    .filter((id) => books[id])
+                    .map((id) => (
                       <button
                         key={id}
-                        className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
+                        className="lf-coverbtn"
                         onClick={() => onPick(books[id])}
                         title={coverLabel(books[id])}
                       >
                         <BookCover book={books[id]} size="md" />
-                        {logged && (
-                          <span className="lf-rlcheck" aria-label="Logged">
-                            <Icon name="check" size={12} stroke={3} />
-                          </span>
-                        )}
                       </button>
-                    )
-                  })}
-              </div>
-              <button className="lf-link lf-viewall">
-                View all {READING_LIST.total} {READING_LIST.unit || 'titles'} ›
-              </button>
-            </section>
+                    ))}
+                </div>
+              </section>
+
+              <p className="lf-escape">
+                Can&apos;t find a title?{' '}
+                <button className="lf-link" onClick={onManual}>
+                  Log manually
+                </button>{' '}
+                or{' '}
+                <button className="lf-link" onClick={onWithoutTitle}>
+                  Without a Title
+                </button>
+              </p>
+            </>
           )}
-
-          {/* Recently logged */}
-          <section className="lf-panel">
-            <h2 className="lf-panel-title">Recently Logged Titles</h2>
-            <div className="lf-coverrow lf-coverrow--center">
-              {recentlyLogged
-                .filter((id) => books[id])
-                .map((id) => (
-                  <button
-                    key={id}
-                    className="lf-coverbtn"
-                    onClick={() => onPick(books[id])}
-                    title={coverLabel(books[id])}
-                  >
-                    <BookCover book={books[id]} size="md" />
-                  </button>
-                ))}
-            </div>
-          </section>
-
-          <p className="lf-escape">
-            Can&apos;t find a title?{' '}
-            <button className="lf-link" onClick={onManual}>
-              Log manually
-            </button>{' '}
-            or{' '}
-            <button className="lf-link" onClick={onWithoutTitle}>
-              Without a Title
-            </button>
-          </p>
-        </>
+        </div>
       )}
     </div>
   )

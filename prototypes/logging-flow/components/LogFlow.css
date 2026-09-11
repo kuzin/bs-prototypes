@@ -245,18 +245,83 @@
   gap: 10px;
 }
 
-/* search results */
-.lf-results {
+/* Everything the field can put below itself lives in here, held at the height
+   the step has at rest (measured in SearchStep, applied inline). Without that,
+   swapping shelves → spinner → results changed the panel's height, and because
+   `.lf-scroll` centres itself with `margin: auto`, the field the reader was
+   typing into slid up and down by as much as 300px between keystrokes. */
+.lf-searchbody {
+  display: flex;
+  flex-direction: column;
+  /* Every state starts at the same point under the field — the spinner sits
+     exactly where the first result will land, so the list doesn't appear to
+     jump up the page when the wait ends. */
+  justify-content: flex-start;
+}
+/* Every child in here centres itself with `margin: … auto`, and an auto inline
+   margin cancels a flex item's cross-axis stretch — so without this the panels
+   and the results list collapse to their content width. An explicit width puts
+   their own max-width back in charge. */
+.lf-searchbody > * {
+  width: 100%;
+}
+
+.lf-searching {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
   max-width: 560px;
   margin: 18px auto 0;
+  padding: 48px 24px;
+  background: #f6f7f8;
+  border-radius: 16px;
+  animation: lf-fade 0.18s ease;
+}
+.lf-searching-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #868e96;
+}
+
+/* The no-matches state takes the same grey ground and radius as the shelves it
+   replaces (.lf-panel), so the space below the field always holds one panel
+   rather than sometimes a panel and sometimes loose text. */
+.lf-empty {
+  max-width: 560px;
+  margin: 18px auto 0;
+  padding: 32px 24px;
+  background: #f6f7f8;
+  border-radius: 16px;
+  animation: lf-fade 0.18s ease;
+}
+.lf-empty .emp-icon {
+  background: #fff;
+}
+.lf-empty .emp-title {
+  font-size: 16px;
+  font-weight: 800;
+}
+.lf-empty .emp-desc {
+  max-width: 400px;
+  font-size: 13.5px;
+}
+.lf-empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+/* search results */
+.lf-results {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-.lf-noresults {
-  text-align: center;
-  color: #868e96;
-  font-size: 14px;
+  max-width: 560px;
+  margin: 18px auto 0;
+  animation: lf-fade 0.18s ease;
 }
 .lf-resultrow {
   display: flex;
