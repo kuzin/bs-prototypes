@@ -15,7 +15,9 @@
 }
 
 .pvb {
-  z-index: 40;
+  /* Above the modal layer (199/200), for the same reason the prototype nav is:
+     it's the reviewer's chrome, not the screen under review. */
+  z-index: 300;
   display: flex;
   flex: none;
   gap: 18px;

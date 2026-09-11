@@ -30,11 +30,11 @@
    adds 12px under itself — so a loose heading ends up nearer the card above it
    than the section it names. Reverse that: pull the gap out below, add to it
    above. */
-.svo-listhead {
-  margin: 6px 0 -6px;
-}
-.svo-listhead .bp-section-heading {
-  margin-bottom: 0;
+/* The segmented control that replaced this section's heading. `.bp-content` is
+   a flex column with its own gap, so it only needs the extra air a loose
+   heading used to provide above it. */
+.svo-cuts {
+  margin-top: 6px;
 }
 
 .svo-list {

@@ -6800,8 +6800,11 @@ export function ClassroomView({
   className = 'Class A',
   extraTabs = [],
   renderExtra,
+  // Which tab to open on. Additive and defaulted, so a prototype that hangs an
+  // extra tab off this page can also link straight to it.
+  initialTab = 'daily',
 }) {
-  const [admTab, setAdmTab] = useState('daily')
+  const [admTab, setAdmTab] = useState(initialTab)
   const extraIds = extraTabs.map((t) => t.id)
   return (
     <div className="bp-adm">
@@ -6866,11 +6869,13 @@ export function ClassroomView({
             renderExtra?.(admTab)
           ) : (
             <>
-              {/* The live page's filter card: two selects on a `.filter-row`
-                  (align-items: flex-end, gap 20px) with the Save & Update
-                  action sharing the baseline. */}
+              {/* `compact`: the app's filter *bar* rather than its filter
+                  *form* — grey pill controls on a white strip, no labels above
+                  them, because each control already names what it filters
+                  ("Daily Reading Goal", "Percentages"). It's the newer of the
+                  two shapes and costs one row instead of two. */}
               <div className="bp-adm-filter-wrap">
-                <FilterBar action={<Button variant="primary">Save &amp; Update</Button>}>
+                <FilterBar compact action={<Button variant="primary">Save &amp; Update</Button>}>
                   <FilterItem label="View As">
                     <Select defaultValue="goal">
                       <option value="goal">Daily Reading Goal</option>

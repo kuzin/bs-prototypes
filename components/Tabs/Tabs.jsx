@@ -4,6 +4,10 @@ import '@components/Form/Form.css'
 import '@components/Tabs/Tabs.css'
 
 /**
+ * `variant` picks the shape: `underline` (default, page and card tab bars),
+ * `pill` (segmented controls) or `folder` — tabs that sit on top of a panel
+ * with the active one filled to match it, as the app's leaderboard widget does.
+ *
  * `plain` drops the pill variant's track, for a sub-tab bar that already sits on
  * a band of its own (the reader's Reading Log and Collections bars).
  *

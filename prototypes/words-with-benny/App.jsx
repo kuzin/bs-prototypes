@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Icon } from '@components/Icon/Icon'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 
@@ -10,6 +11,7 @@ import { Dashboard } from '../logging-flow/components/Dashboard'
 import { LogFlow } from '../logging-flow/components/LogFlow'
 
 import { WordUnlock } from './components/WordUnlock'
+import { Flashcards } from './components/Flashcards'
 import { Collections } from './components/Collections'
 // The real classroom page, straight out of the Student Profile prototype.
 import { ClassroomView } from '../student-profile/BeanstackProfile'
@@ -17,13 +19,19 @@ import '../student-profile/BeanstackProfile.css'
 import { EducatorWords } from './components/EducatorWords'
 import { StudentProfilePanel } from './components/StudentProfilePanel'
 import {
+  ACTIVITY_TYPES,
+  ALL_WORDS,
   BOOKS,
   RECENTLY_LOGGED,
   SEED_COLLECTION,
   STREAK,
   DAILY_GOAL,
+  TODAY,
   UNLOCK_EVERY,
+  gradeCard,
+  newCard,
   pickWord,
+  seedReviews,
 } from './data'
 
 import './index.css'
@@ -49,7 +57,10 @@ const OWN_BOOKS = { books: BOOKS, recentlyLogged: RECENTLY_LOGGED }
 const VIEWS = [
   { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
   { id: 'words', label: 'Reader · My Collections', short: 'Collections', icon: 'vocabulary' },
-  { id: 'educator', label: 'Educator · Classroom', short: 'Educator', icon: 'chart-bar' },
+  { id: 'educator', label: 'Educator · Classroom', short: 'Classroom', icon: 'chart-bar' },
+  // The feature's own educator surface is a tab inside the classroom page, so
+  // reaching it meant two clicks past the bar. This lands on it directly.
+  { id: 'edu-vocab', label: 'Educator · Vocabulary', short: 'Vocabulary', icon: 'vocabulary' },
 ]
 
 export function App() {
@@ -61,6 +72,21 @@ export function App() {
   const [dailyGoal, setDailyGoal] = useState(DAILY_GOAL)
   const [collection, setCollection] = useState(SEED_COLLECTION)
   const [newestWord, setNewestWord] = useState(null)
+
+  // Where the review deck has every collected word. Collecting a word adds it
+  // at box 1; flipping through the deck moves it up or back.
+  const [cards, setCards] = useState(() => seedReviews(SEED_COLLECTION))
+  const [deckOpen, setDeckOpen] = useState(false)
+
+  // Anything the reader writes in the "write your own" activity, so the
+  // educator's review queue shows their own sentence rather than only seeded
+  // ones — the loop the writing activity is pointless without.
+  const [written, setWritten] = useState([])
+
+  // A demo control, not product: which activity the unlock runs. `auto` is the
+  // real behaviour — the word's own three — and the rest force one type so a
+  // single activity can be shown on its own.
+  const [demoActivity, setDemoActivity] = useState('auto')
 
   // A word surfaces every UNLOCK_EVERY logs — "periodically", not every time.
   // Seeded one short of the interval so the first log in a demo unlocks a word.
@@ -101,14 +127,47 @@ export function App() {
     setPending({ word, bookId: word.bookId ?? null })
   }
 
+  // Any word the reader hasn't collected yet, at random — pressing the button
+  // twice should show two different words, and every one still names a real
+  // book. Falls back to the generic pool only once the catalog is exhausted.
+  function demoUnlock() {
+    const taken = new Set(collection.map((e) => e.word))
+    const pool = ALL_WORDS.filter((w) => w.bookId && !taken.has(w.word))
+    const word = pool.length
+      ? pool[Math.floor(Math.random() * pool.length)]
+      : pickWord(null, [...taken])
+    if (!word) return
+    setPending({ word, bookId: word.bookId ?? null })
+    setFlowOpen(false)
+    setUnlockOpen(true)
+  }
+
   function openWord() {
     setFlowOpen(false)
     setUnlockOpen(true)
   }
 
-  function collectWord({ word, bookId, firstTry }) {
-    setCollection((c) => [...c, { word, bookId, date: '2026-06-28', firstTry }])
+  function collectWord({ word, bookId, firstTry, written: sentence, flagged }) {
+    setCollection((c) => [...c, { word, bookId, date: TODAY, firstTry }])
+    setCards((m) => ({ ...m, [word]: newCard(word) }))
     setNewestWord(word)
+    if (sentence) {
+      setWritten((w) => [
+        {
+          student: 'olivia',
+          word,
+          bookId,
+          text: sentence,
+          status: flagged ? 'flagged' : 'accepted',
+          date: TODAY,
+        },
+        ...w,
+      ])
+    }
+  }
+
+  function gradeWord(word, knewIt) {
+    setCards((m) => ({ ...m, [word]: gradeCard(m[word], knewIt) }))
   }
 
   function closeUnlock() {
@@ -137,18 +196,52 @@ export function App() {
           if (id === 'log') setReaderTab('challenges')
           if (id === 'words') setReaderTab('collections')
         }}
+        actions={
+          <>
+            {/* The unlock is the heart of the prototype but it only appears
+                after a log, so seeing it meant walking the whole flow every
+                time. This jumps straight to it — paired with the picker beside
+                it, any single activity is one click away. */}
+            <button className="wb-actbtn" onClick={demoUnlock}>
+              <Icon name="sparkles" size={15} /> Unlock a word
+            </button>
+
+            {/* Same shape as the design system's own <Select>: the native
+                control with its appearance off, and one drawn caret over it. A
+                native arrow sits where the UA puts it — padding won't move it —
+                and it wouldn't take the bar's colour either. */}
+            <span className="wb-actpick-wrap">
+              <select
+                className="wb-actpick"
+                value={demoActivity}
+                onChange={(e) => setDemoActivity(e.target.value)}
+                aria-label="Which activity the next unlock runs"
+              >
+                <option value="auto">Activities · full round</option>
+                {ACTIVITY_TYPES.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    Activities · {t.label}
+                  </option>
+                ))}
+              </select>
+              <Icon name="chevron-down" size={14} stroke={2.4} className="wb-actpick-caret" />
+            </span>
+          </>
+        }
       />
 
       <div className="wb-stage">
-        {view === 'educator' ? (
+        {view === 'educator' || view === 'edu-vocab' ? (
           // Vocabulary is a tab on Beanstack's real classroom page, added
           // through the additive `extraTabs`/`renderExtra` slots rather than by
           // cloning the page.
           <div className="wb-edu-shell">
             <ClassroomView
+              key={view}
               onStudentClick={setOpenStudent}
+              initialTab={view === 'edu-vocab' ? 'vocabulary' : 'daily'}
               extraTabs={[{ id: 'vocabulary', label: 'Vocabulary' }]}
-              renderExtra={() => <EducatorWords onOpenStudent={setOpenStudent} />}
+              renderExtra={() => <EducatorWords onOpenStudent={setOpenStudent} written={written} />}
             />
           </div>
         ) : (
@@ -169,7 +262,14 @@ export function App() {
             // The Reading Log's "All Titles" tab is part of the real page, so
             // it stays on screen — it just doesn't lead anywhere here.
             titlesView={false}
-            renderExtra={() => <Collections collection={collection} newestWord={newestWord} />}
+            renderExtra={() => (
+              <Collections
+                collection={collection}
+                newestWord={newestWord}
+                cards={cards}
+                onReview={() => setDeckOpen(true)}
+              />
+            )}
           />
         )}
       </div>
@@ -188,9 +288,18 @@ export function App() {
         word={pending?.word}
         bookId={pending?.bookId}
         collectedCount={collection.length}
+        round={demoActivity === 'auto' ? undefined : [demoActivity]}
         onCollect={collectWord}
         onClose={closeUnlock}
         onSeeAll={seeAllWords}
+      />
+
+      <Flashcards
+        open={deckOpen}
+        cards={cards}
+        collection={collection}
+        onGrade={gradeWord}
+        onClose={() => setDeckOpen(false)}
       />
 
       <StudentProfilePanel studentId={openStudent} onClose={() => setOpenStudent(null)} />

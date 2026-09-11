@@ -66,6 +66,15 @@ function rampColor(accent, t) {
   return mix(PALE, accent, t * 2)
 }
 
+/**
+ * The tail also fades out, not just toward slate. Hue alone wasn't enough
+ * separation once a cloud ran to thirty-odd words: the small ones sat at full
+ * strength between the big ones and read as clutter rather than as the quiet
+ * end of a range. Bottoms out at 0.45 — still legible, which is the floor the
+ * ramp's PALE was picked for too.
+ */
+const tailOpacity = (t) => 0.45 + 0.55 * clamp01(t)
+
 // ─── Layout ─────────────────────────────────────────────────────────────────
 
 let measureCtx = null
@@ -289,6 +298,7 @@ export function WordCloud({
                   fontSize={w.size}
                   fontWeight={w.weight}
                   fill={w.color || rampColor(accent, w.t)}
+                  fillOpacity={w.color ? 1 : tailOpacity(w.t)}
                 >
                   <title>{w.title || `${w.text} — ${valueLabel(w)}`}</title>
                   {w.text}
