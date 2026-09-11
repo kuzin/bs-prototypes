@@ -71,6 +71,14 @@ body,
    A demo control: which activity the next unlock runs, so a single type can be
    shown on its own instead of only inside a full round. Matched to the bar's
    own `.pvb-actions button` rule, which a <select> doesn't inherit. */
+/* Sits beside the activity picker in the bar's actions slot. `.pvb-actions`
+   styles a bare <button>, so this only adds the icon gap and the height the
+   picker uses. */
+.wb-actbtn {
+  gap: 6px;
+  height: var(--pvb-tray-h);
+}
+
 .wb-actpick-wrap {
   position: relative;
   display: inline-flex;

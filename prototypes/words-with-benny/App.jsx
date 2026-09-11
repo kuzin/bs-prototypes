@@ -126,6 +126,18 @@ export function App() {
     setPending({ word, bookId: word.bookId ?? null })
   }
 
+  // Picks a word from the first book that still has one unclaimed, so the
+  // unlock names a real title rather than falling through to the generic pool.
+  function demoUnlock() {
+    const taken = collection.map((e) => e.word)
+    const bookId = Object.keys(BOOKS).find((id) => pickWord(id, taken)?.bookId === id)
+    const word = pickWord(bookId ?? null, taken)
+    if (!word) return
+    setPending({ word, bookId: word.bookId ?? null })
+    setFlowOpen(false)
+    setUnlockOpen(true)
+  }
+
   function openWord() {
     setFlowOpen(false)
     setUnlockOpen(true)
@@ -181,26 +193,36 @@ export function App() {
           if (id === 'words') setReaderTab('collections')
         }}
         actions={
-          // Same shape as the design system's own <Select>: the native control
-          // with its appearance off, and one drawn caret over it. A native
-          // arrow sits where the UA puts it — padding won't move it — and it
-          // wouldn't take the bar's colour either.
-          <span className="wb-actpick-wrap">
-            <select
-              className="wb-actpick"
-              value={demoActivity}
-              onChange={(e) => setDemoActivity(e.target.value)}
-              aria-label="Which activity the next unlock runs"
-            >
-              <option value="auto">Activities · full round</option>
-              {ACTIVITY_TYPES.map((t) => (
-                <option key={t.id} value={t.id}>
-                  Activities · {t.label}
-                </option>
-              ))}
-            </select>
-            <Icon name="chevron-down" size={14} stroke={2.4} className="wb-actpick-caret" />
-          </span>
+          <>
+            {/* The unlock is the heart of the prototype but it only appears
+                after a log, so seeing it meant walking the whole flow every
+                time. This jumps straight to it — paired with the picker beside
+                it, any single activity is one click away. */}
+            <button className="wb-actbtn" onClick={demoUnlock}>
+              <Icon name="sparkles" size={15} /> Unlock a word
+            </button>
+
+            {/* Same shape as the design system's own <Select>: the native
+                control with its appearance off, and one drawn caret over it. A
+                native arrow sits where the UA puts it — padding won't move it —
+                and it wouldn't take the bar's colour either. */}
+            <span className="wb-actpick-wrap">
+              <select
+                className="wb-actpick"
+                value={demoActivity}
+                onChange={(e) => setDemoActivity(e.target.value)}
+                aria-label="Which activity the next unlock runs"
+              >
+                <option value="auto">Activities · full round</option>
+                {ACTIVITY_TYPES.map((t) => (
+                  <option key={t.id} value={t.id}>
+                    Activities · {t.label}
+                  </option>
+                ))}
+              </select>
+              <Icon name="chevron-down" size={14} stroke={2.4} className="wb-actpick-caret" />
+            </span>
+          </>
         }
       />
 
