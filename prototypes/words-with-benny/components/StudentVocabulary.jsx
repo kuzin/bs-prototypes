@@ -1,11 +1,14 @@
+import { useMemo, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Ic } from '@components/ui'
 import { Hero } from '@components/Hero/Hero'
 import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
+import { Tabs } from '@components/Tabs/Tabs'
 import '@components/Hero/Hero.css'
 import '@components/Pill/Pill.css'
 import '@components/ProgressBar/ProgressBar.css'
+import '@components/Tabs/Tabs.css'
 
 // Built out of the Student Profile's own page furniture — `.bp-content` for the
 // page padding, `Hero` for the section header, `Card` / `SectionHeading` for the
@@ -31,11 +34,39 @@ const ACCENT_BG = '#F3E8FF'
 // SECTION_ACCENT entries use.
 const CHIP = { bg: ACCENT_BG, text: ACCENT }
 
-export function StudentVocabulary({ studentId }) {
-  const person = ROSTER.find((s) => s.id === studentId)
-  if (!person) return null
+// The heading over the word list is a segmented control instead, filtering on
+// the one thing about a collected word a teacher can act on: did it stick the
+// first time, or did it take another go. It's the same split the "Right on the
+// first try" figure above reports, so the list can now answer the question that
+// figure raises — which words were they?
+const CUTS = [
+  { id: 'all', label: 'All words' },
+  { id: 'first', label: 'First try', keep: (e) => e.firstTry },
+  { id: 'retried', label: 'Took another go', keep: (e) => !e.firstTry },
+]
 
-  const collection = [...collectionFor(person.id)].reverse()
+export function StudentVocabulary({ studentId }) {
+  const [cut, setCut] = useState('all')
+  const person = ROSTER.find((s) => s.id === studentId)
+  const collection = useMemo(
+    () => (person ? [...collectionFor(person.id)].reverse() : []),
+    [person],
+  )
+  const tabs = useMemo(
+    () =>
+      CUTS.map((c) => ({
+        id: c.id,
+        label: c.label,
+        count: c.keep ? collection.filter(c.keep).length : collection.length,
+      })),
+    [collection],
+  )
+  const shown = useMemo(() => {
+    const keep = CUTS.find((c) => c.id === cut)?.keep
+    return keep ? collection.filter(keep) : collection
+  }, [collection, cut])
+
+  if (!person) return null
   const first = person.name.split(' ')[0]
   const ahead = person.words >= CLASS_MEDIAN
 
@@ -96,13 +127,19 @@ export function StudentVocabulary({ studentId }) {
         </div>
       </Card>
 
-      {/* This one titles a grid of cards rather than a single card, so it stays
-          loose — but the spacing has to say so: more air above than below. */}
-      <div className="svo-listhead">
-        <SectionHeading>Words collected</SectionHeading>
-      </div>
+      <Tabs
+        variant="pill"
+        size="md"
+        block
+        active={cut}
+        onChange={setCut}
+        accent={ACCENT}
+        ariaLabel="Which words to show"
+        className="svo-cuts"
+        items={tabs}
+      />
       <div className="svo-list">
-        {collection.map((e) => {
+        {shown.map((e) => {
           const word = wordByName(e.word)
           const book = e.bookId ? BOOKS[e.bookId] : null
           return (

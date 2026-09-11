@@ -809,6 +809,15 @@ export function collectionFor(studentId) {
   const pool = ALL_WORDS.filter((x) => x.bookId)
   const start = ROSTER.findIndex((s) => s.id === studentId) * 3
   const n = Math.min(person.words, pool.length)
+  // How many of these took a second go has to come out at the roster's own
+  // `firstTry` percentage — the profile prints that figure directly above the
+  // list, and the list is now filterable by exactly that split, so a fixed
+  // one-in-seven would have had the two disagreeing in plain sight.
+  const retries = Math.round((n * (100 - person.firstTry)) / 100)
+  // Spread evenly through the run rather than clustered, and deterministic.
+  const retried = new Set(
+    Array.from({ length: retries }, (_, k) => Math.floor(((k + 0.5) * n) / Math.max(retries, 1))),
+  )
   // Dated oldest-first, one every couple of days up to Jun 26, so the view's
   // newest-first ordering actually descends.
   const END = Date.UTC(2026, 5, 26)
@@ -819,7 +828,7 @@ export function collectionFor(studentId) {
       word: src.word,
       bookId: src.bookId,
       date: day.toISOString().slice(0, 10),
-      firstTry: (start + i) % 7 !== 0,
+      firstTry: !retried.has(i),
     }
   })
 }

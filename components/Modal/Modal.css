@@ -1,6 +1,19 @@
+/* A modal fills the app, not the window. In these prototypes the window also
+   carries the preview bar and the prototype nav, which are scaffolding rather
+   than product — a scrim over them made the demo chrome look like part of the
+   screen being reviewed. A shell that has either sets these and the modal
+   inset itself; everything else keeps the full viewport. */
+:root {
+  --modal-chrome-top: 0px;
+  --modal-chrome-bottom: 0px;
+}
+
 .modal-backdrop {
   position: fixed;
-  inset: 0;
+  top: var(--modal-chrome-top);
+  right: 0;
+  bottom: var(--modal-chrome-bottom);
+  left: 0;
   background: rgba(15, 23, 42, 0.42);
   z-index: 199;
   animation: modal-fade-in 0.22s ease-out;
@@ -37,9 +50,9 @@
 
 /* ── Side panel (right-slide) ────────────────────────────────────────────── */
 .modal--side {
-  top: 0;
+  top: var(--modal-chrome-top);
   right: 0;
-  bottom: 0;
+  bottom: var(--modal-chrome-bottom);
   width: min(560px, 100vw);
   border-left: 1px solid var(--c-gray-200);
   animation: modal-side-in 0.22s cubic-bezier(0.25, 0.46, 0.45, 0.94);
@@ -73,11 +86,13 @@
 
 /* ── Centered overlay ────────────────────────────────────────────────────── */
 .modal--center {
-  top: 50%;
+  /* Centred in the app area the backdrop covers, not the window, so it doesn't
+     drift under the preview bar on a shell that has one. */
+  top: calc(50% + (var(--modal-chrome-top) - var(--modal-chrome-bottom)) / 2);
   left: 50%;
-  transform: translate(-50%, -50%);
   width: min(520px, calc(100vw - 32px));
-  max-height: calc(100vh - 32px);
+  max-height: calc(100vh - 32px - var(--modal-chrome-top) - var(--modal-chrome-bottom));
+  transform: translate(-50%, -50%);
   border-radius: 14px;
   border: 1px solid var(--c-gray-200);
   animation: modal-center-in 0.18s cubic-bezier(0.16, 1, 0.3, 1);

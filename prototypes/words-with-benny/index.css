@@ -34,6 +34,10 @@ body,
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  /* This shell carries both prototype bars, so modals opened inside it stop at
+     them rather than scrimming over the top of the demo chrome. */
+  --modal-chrome-top: var(--preview-bar-h);
+  --modal-chrome-bottom: var(--proto-nav-h);
 }
 
 .wb-stage {
@@ -51,7 +55,7 @@ body,
 .wb-edu-shell {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--preview-bar-h) - 48px);
+  height: calc(100vh - var(--preview-bar-h) - var(--proto-nav-h));
 }
 .wb-edu-shell > .app-shell {
   flex: 1;
