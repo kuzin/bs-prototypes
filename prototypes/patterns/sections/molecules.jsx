@@ -68,6 +68,7 @@ function TabsShowcase() {
   const [b, setB] = useState('overview')
   const [c, setC] = useState('details')
   const [seg, setSeg] = useState('classes')
+  const [folder, setFolder] = useState('schools')
   return (
     <>
       <Variant label="underline (default)">
@@ -92,6 +93,33 @@ function TabsShowcase() {
             { id: 'history', label: 'History' },
           ]}
         />
+      </Variant>
+      <Variant label="folder variant — tabs on top of a panel">
+        <div style={{ width: 'min(320px, 100%)' }}>
+          <Tabs
+            variant="folder"
+            size="sm"
+            block
+            active={folder}
+            onChange={setFolder}
+            items={[
+              { id: 'schools', label: 'Top Schools' },
+              { id: 'grades', label: 'Top Grades' },
+            ]}
+          />
+          <div
+            style={{
+              padding: '17px 21px',
+              fontSize: 14,
+              color: 'var(--c-text-real-light)',
+              border: '2px solid var(--c-gray-150)',
+              borderRadius: '0 0 8px 8px',
+            }}
+          >
+            The panel the tabs belong to. The active tab is filled with the same grey, so the two
+            read as one surface.
+          </div>
+        </div>
       </Variant>
       <Variant label="underline + center — a short strip inside a card">
         <div
@@ -1142,8 +1170,16 @@ export const moleculesSections = [
     desc: (
       <>
         Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>.
-        Two variants: <code>underline</code> (default) and <code>pill</code>. The underline variant
-        also doubles as a full-bleed header tab bar inside a modal (see the in-modal example below).
+        Three variants: <code>underline</code> (default), <code>pill</code> and <code>folder</code>.
+        The underline variant also doubles as a full-bleed header tab bar inside a modal (see the
+        in-modal example below).
+        <br />
+        <br />
+        <code>folder</code> is for tabs that sit on top of a panel: the active one is filled with
+        the panel&apos;s own grey so tab and panel read as a single surface, and the strip carries
+        no rule of its own — the panel supplies the edge. Ported from the shipped leaderboard
+        widget, which is where it&apos;s used. Pair it with <code>block</code> for the app&apos;s
+        50/50 split.
         <br />
         <br />
         <code>plain</code> drops the pill variant&apos;s track and gives the active pill a grey fill

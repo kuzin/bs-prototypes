@@ -293,27 +293,55 @@
   gap: 10px;
   margin-top: 14px;
 }
+/* Portrait, like a card in a hand. At 96px they were three wide buttons in a
+   row — the shape is what says "turn one over" before any of the copy does. */
 .wb-deck-card {
   display: grid;
   place-items: center;
-  height: 96px;
-  color: #a78bfa;
-  background: linear-gradient(150deg, #f5f3ff, #ede9fe);
-  border: 1.5px solid #ddd6fe;
+  height: 164px;
+  color: var(--face, #7c3aed);
+  background: var(--face-wash, #f5f3ff);
+  border: 1.5px solid var(--face-line, #ddd6fe);
   border-radius: 14px;
   transition:
     transform 130ms ease,
     border-color 130ms ease;
 }
-.wb-deck-card:hover {
-  border-color: #a78bfa;
+.wb-deck-card:hover:not(:disabled) {
+  border-color: var(--face, #a78bfa);
   transform: translateY(-2px);
+}
+
+/* The turn, in two halves. The chosen card rotates to edge-on and the sentence
+   swings in from edge-on the other way, so the two read as one motion — the
+   card becoming the thing you have to judge. `perspective()` sits inside the
+   transform rather than on the deck, because the second half happens after the
+   deck has already been replaced. */
+.wb-deck.is-turning .wb-deck-card:not(.is-flipping) {
+  opacity: 0.4;
+  transition: opacity 190ms ease;
+}
+.wb-deck-card.is-flipping {
+  border-color: var(--face, #a78bfa);
+  animation: wb-turn-away 190ms ease-in forwards;
+}
+@keyframes wb-turn-away {
+  to {
+    transform: perspective(900px) rotateY(88deg);
+  }
+}
+@keyframes wb-turn-in {
+  from {
+    opacity: 0.5;
+    transform: perspective(900px) rotateY(-88deg);
+  }
 }
 
 /* The sentence the reader turned over. Bigger than an option in a list — it's
    the only thing to read, and the judgement is about this one alone. */
 .wb-drawn {
   margin-top: 14px;
+  animation: wb-turn-in 260ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
   padding: 18px 20px;
   font-size: 16.5px;
   font-weight: 600;
@@ -430,4 +458,18 @@
 .wb-marked {
   font-weight: 800;
   color: #7c3aed;
+}
+/* Once the drawn card is judged it carries its own green or red, and a purple
+   word inside it belonged to neither. */
+.wb-drawn.is-right .wb-marked,
+.wb-drawn.is-wrong .wb-marked {
+  color: inherit;
+}
+
+/* The flip is decoration on top of a state change the reader can already see. */
+@media (prefers-reduced-motion: reduce) {
+  .wb-deck-card.is-flipping,
+  .wb-drawn {
+    animation: none;
+  }
 }

@@ -492,9 +492,33 @@ export function OddOneOut({ word, onPass }) {
 // the options and pick whichever looks most familiar — they get the sentence
 // they get, and have to decide about that one on its own terms.
 
+/**
+ * The backs of the three cards. Each deck deals three different faces, picked
+ * from the word so a given word always shows the same three — "random" here
+ * only has to mean "not the same three every single round". Three identical
+ * backs made the choice look decorative; three different ones make it a pick.
+ */
+const CARD_FACES = [
+  { icon: 'star', color: '#7c3aed', wash: '#f5f3ff', line: '#ddd6fe' },
+  { icon: 'flame', color: '#c2410c', wash: '#fff7ed', line: '#fed7aa' },
+  { icon: 'leaf', color: '#0f766e', wash: '#f0fdfa', line: '#99f6e4' },
+  { icon: 'moon', color: '#1d4ed8', wash: '#eff6ff', line: '#bfdbfe' },
+  { icon: 'bolt', color: '#a16207', wash: '#fefce8', line: '#fde68a' },
+  { icon: 'heart', color: '#be185d', wash: '#fdf2f8', line: '#fbcfe8' },
+]
+
 export function PickACard({ word, onPass }) {
   const deck = useMemo(() => cardDeck(word), [word])
+  const faces = useMemo(
+    () => deck.map((_, i) => CARD_FACES[(word.word.length + i * 2) % CARD_FACES.length]),
+    [deck, word],
+  )
   const [turned, setTurned] = useState(null)
+  // The card the reader is turning, held for the half-turn before the sentence
+  // takes over. The flip is two halves of one motion: the card rotates to
+  // edge-on, and the sentence swings in from edge-on the other way. A single
+  // double-sided card can't do it — the back has to be as wide as a sentence.
+  const [flipping, setFlipping] = useState(null)
   const [verdict, setVerdict] = useState(null) // what the reader said
   const [misses, setMisses] = useState(0)
 
@@ -520,22 +544,35 @@ export function PickACard({ word, onPass }) {
       </Prompt>
 
       {turned === null ? (
-        <div className="wb-deck" role="group" aria-label="Three cards, face down">
+        <div
+          className={`wb-deck${flipping !== null ? ' is-turning' : ''}`}
+          role="group"
+          aria-label="Three cards, face down"
+        >
           {deck.map((c, i) => (
             <button
               key={c.text}
-              className="wb-deck-card"
+              className={`wb-deck-card${flipping === i ? ' is-flipping' : ''}`}
+              style={{
+                '--face': faces[i].color,
+                '--face-wash': faces[i].wash,
+                '--face-line': faces[i].line,
+              }}
               aria-label={`Card ${i + 1}`}
-              onClick={() => setTurned(i)}
+              disabled={flipping !== null}
+              onClick={() => {
+                setFlipping(i)
+                setTimeout(() => setTurned(i), 190)
+              }}
             >
-              <Icon name="vocabulary" size={26} stroke={1.5} />
+              <Icon name={faces[i].icon} size={32} stroke={1.5} />
             </button>
           ))}
         </div>
       ) : (
         <>
           <p className={`wb-drawn${settled ? (card.correct ? ' is-right' : ' is-wrong') : ''}`}>
-            {card.text}
+            <Marked text={card.text} word={word.word} />
           </p>
           <div className="wb-verdicts">
             <button
@@ -615,6 +652,15 @@ export function PairMatch({ word, bookId, onPass }) {
     return ''
   }
 
+  // A solved pair rises to the same row in both columns, in the order it was
+  // solved. The columns are shuffled independently, so without this the two
+  // halves of a pair stay in whatever rows they started in — and a finished
+  // grid reads as if each word means whatever ended up beside it.
+  const order = (id) => {
+    const at = matched.indexOf(id)
+    return at === -1 ? matched.length + 1 : at
+  }
+
   return (
     <div className="wb-act">
       <Prompt>Tap a word, then tap what it means.</Prompt>
@@ -624,6 +670,7 @@ export function PairMatch({ word, bookId, onPass }) {
             <button
               key={p.word}
               className={`wb-pair wb-pair--word${state(p.word, 'word')}`}
+              style={{ order: order(p.word) }}
               disabled={matched.includes(p.word)}
               aria-pressed={pickedWord === p.word}
               onClick={() => tapWord(p)}
@@ -637,6 +684,7 @@ export function PairMatch({ word, bookId, onPass }) {
             <button
               key={p.word}
               className={`wb-pair${state(p.word, 'meaning')}`}
+              style={{ order: order(p.word) }}
               disabled={matched.includes(p.word)}
               onClick={() => tapMeaning(p)}
             >

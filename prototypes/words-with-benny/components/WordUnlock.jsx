@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
+import { Tooltip } from '@components/Primitives/Primitives'
 import '@components/Button/Button.css'
+import '@components/Primitives/Primitives.css'
 
 import { roundFor } from '../data'
 import { Activity } from './Activities'
@@ -124,33 +126,25 @@ export function WordUnlock({
         {stage === 'round' && (
           <div className="wb-card">
             {/* The word stays put for the whole round: the point is to learn
-                it, so hiding it would only make this an exam. Just the word,
-                though — the meaning was either the answer to the rung on
-                screen or a line the reader had already read on the way in. */}
+                it, so hiding it would only make this an exam. The meaning is
+                behind the ?, because printing it was often the answer to the
+                rung on screen — a reader who needs it can still ask, which is
+                a different thing from being handed it. */}
             <header className="wb-pin">
               <div className="wb-pin-word">
                 <h2 className="wb-pin-term">{word.word}</h2>
                 <span className="wb-pin-part">{word.part}</span>
               </div>
+              <Tooltip content={word.meaning} placement="left">
+                <button
+                  type="button"
+                  className="wb-pin-help"
+                  aria-label={`What ${word.word} means`}
+                >
+                  ?
+                </button>
+              </Tooltip>
             </header>
-
-            {/* How far through, as a meter rather than the named steps this
-                used to carry: three labelled pills announced what was coming
-                and read as a form to complete, where a bar just says you're
-                getting somewhere. Only when there's more than one rung — a
-                single-activity round has no progress to report. */}
-            {round.length > 1 && (
-              <div
-                className="wb-meter"
-                role="progressbar"
-                aria-valuemin={0}
-                aria-valuemax={round.length}
-                aria-valuenow={step + (cleared ? 1 : 0)}
-                aria-label={`Step ${step + 1} of ${round.length}`}
-              >
-                <span style={{ width: `${((step + (cleared ? 1 : 0)) / round.length) * 100}%` }} />
-              </div>
-            )}
 
             <div className="wb-check">
               <Activity type={round[step]} word={word} bookId={bookId} onPass={passed} />
@@ -168,6 +162,29 @@ export function WordUnlock({
               )}
             </div>
           </div>
+        )}
+
+        {/* How far through, at the foot of the overlay rather than inside the
+            card — the same place the review deck keeps its own. The card is
+            what the reader is working on, and a bar across the top of it
+            competed with the question for the same glance. As a meter rather
+            than the named steps this used to carry: three labelled pills
+            announced what was coming and read as a form to complete, where a
+            bar just says you're getting somewhere. Only when there's more than
+            one rung — a single-activity round has no progress to report. */}
+        {stage === 'round' && round.length > 1 && (
+          <footer className="wb-foot">
+            <div
+              className="wb-meter"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={round.length}
+              aria-valuenow={step + (cleared ? 1 : 0)}
+              aria-label={`Step ${step + 1} of ${round.length}`}
+            >
+              <span style={{ width: `${((step + (cleared ? 1 : 0)) / round.length) * 100}%` }} />
+            </div>
+          </footer>
         )}
 
         {stage === 'done' && (
