@@ -897,7 +897,7 @@ function rewardScreens(challenge) {
   const screens = [{ id: 'rewards.types', phase: 'rewards', name: 'Rewards' }]
   if (r.prizesEnabled) screens.push({ id: 'rewards.prizes', phase: 'rewards', name: 'Prizes' })
   if (r.ticketsEnabled) {
-    screens.push({ id: 'rewards.tickets', phase: 'rewards', name: 'Raffle tickets' })
+    screens.push({ id: 'rewards.tickets', phase: 'rewards', name: 'Raffle Tickets' })
   }
   if (r.certsEnabled) {
     screens.push({ id: 'rewards.certificates', phase: 'rewards', name: 'Certificates' })

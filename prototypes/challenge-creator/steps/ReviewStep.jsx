@@ -259,7 +259,7 @@ export function ReviewStep({ challenge, role, type, screens = [], phases = [], o
             onEdit={onEdit}
           />
           <Row
-            label="Raffle tickets"
+            label="Raffle Tickets"
             value={rewards.ticketsEnabled ? 'On' : 'Off'}
             screen={to('rewards.tickets') || 'rewards.types'}
             onEdit={onEdit}

@@ -3718,12 +3718,12 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
 // hands out, then set each one up on its own screen.
 const REWARD_TYPES = [
   { key: 'prizesEnabled', label: 'Prizes' },
-  { key: 'ticketsEnabled', label: 'Raffle tickets' },
+  { key: 'ticketsEnabled', label: 'Raffle Tickets' },
   { key: 'certsEnabled', label: 'Certificates' },
 ]
 const REWARD_HEADS = {
   'rewards.types': {
-    title: 'What do readers win?',
+    title: 'What do readers earn?',
     sub: 'Turn on the kinds of reward you want — you’ll set each one up next. Skip it entirely if you’d rather not.',
   },
   'rewards.prizes': {
@@ -3731,7 +3731,7 @@ const REWARD_HEADS = {
     sub: 'What readers claim when they earn the badges you choose.',
   },
   'rewards.tickets': {
-    title: 'Raffle tickets',
+    title: 'Raffle Tickets',
     sub: 'Hand out tickets as readers earn badges, then draw winners later.',
   },
   'rewards.certificates': {
