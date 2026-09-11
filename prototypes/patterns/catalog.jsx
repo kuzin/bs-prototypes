@@ -28,6 +28,7 @@ import { adminDashboardSections } from './sections/admin-dashboard'
 import { gameboardSections } from './sections/gameboard'
 import { gameboardReaderSections } from './sections/gameboard-reader'
 import { wordsWithBennySections } from './sections/words-with-benny'
+import { engagementSignalsSections } from './sections/engagement-signals'
 
 // Global resets + body font (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -234,6 +235,14 @@ export const GROUPS = [
     color: '#7C3AED',
     icon: <Icon name="vocabulary" size={22} />,
   },
+  {
+    id: 'engagement-signals',
+    kind: 'prototype',
+    title: 'Engagement Signals',
+    desc: 'Components for Reading Engagement Signals — the Increasing / Consistent / Declining pill, the month-by-month trajectory, the six drivers behind a reading, and the two surfaces they appear on: the classroom Engagement tab and the profile\u2019s Engagement section.',
+    color: '#16A97A',
+    icon: <Icon name="activity-pulse" size={22} />,
+  },
 ]
 
 export const SECTIONS = [
@@ -255,4 +264,5 @@ export const SECTIONS = [
   ...gameboardSections,
   ...gameboardReaderSections,
   ...wordsWithBennySections,
+  ...engagementSignalsSections,
 ]

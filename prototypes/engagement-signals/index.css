@@ -1,0 +1,48 @@
+/* ─── Base ─────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--c-gray-100);
+  color: var(--c-text-real);
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+}
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+html,
+body,
+#root {
+  height: 100%;
+}
+
+/* ─── Shell ────────────────────────────────────────────────────────────── */
+/* The classroom page is the whole prototype, so the shell is just a
+   full-height stage for it with the profile panel over the top. */
+.es-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.es-stage {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+}
+/* The classroom page is a two-column admin layout that expects to own the
+   viewport; inside the stage it fills the stage instead. */
+.es-stage .bp-adm {
+  min-height: 100%;
+}

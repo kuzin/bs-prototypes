@@ -1,7 +1,11 @@
 .benny-bubble-wrap {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  /* The tail sticks 8px out of the bubble's left edge, so the gap has to clear
+     it before any of it reads as space — 12px left about 4px between the tip
+     and Benny. This is 8px of tail plus 12px of actual room, the same
+     reasoning the centred variant below already carries. */
+  gap: 20px;
 }
 
 .benny-bubble-avatar {

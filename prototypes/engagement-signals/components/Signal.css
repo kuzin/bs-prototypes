@@ -1,0 +1,73 @@
+/* Signal vocabulary — pill, trajectory strip, driver row. Shared by the class
+   table and the profile page so the two can't drift. */
+
+/* ─── The pill ──────────────────────────────────────────────────────────── */
+.es-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--es-bg);
+  color: var(--es-c);
+  font-weight: var(--fw-bold);
+  white-space: nowrap;
+}
+.es-pill--md {
+  padding: 3px 10px 3px 8px;
+  font-size: var(--text-tag);
+}
+.es-pill--lg {
+  padding: 6px 16px 6px 12px;
+  font-size: var(--text-body);
+  font-weight: var(--fw-extrabold);
+}
+
+/* ─── Driver groups ─────────────────────────────────────────────────────── */
+/* A filled band in the group's own colour, full-bleed across the card. Small
+   caps on the card ground read as a caption on the row under them rather than
+   as a break between two lists — the whole point of the grouping is that you
+   can see where one stops without reading either. */
+.es-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--es-bg);
+  padding: 8px 16px;
+  color: var(--es-c);
+  font-size: var(--text-tag);
+  font-weight: var(--fw-extrabold);
+}
+.es-group-label {
+  flex: 1;
+  min-width: 0;
+}
+/* How many inputs are in this group — the quick read on a Declining reader is
+   often just "five against one". */
+.es-group-count {
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--es-c) 14%, transparent);
+  padding: 1px 8px;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+}
+/* The band is its own divider, so the row under it doesn't draw a second one. */
+.es-group + .bp-statrow {
+  border-top: 0;
+}
+
+/* ─── Driver row ────────────────────────────────────────────────────────── */
+/* The row itself is the profile's `.bp-statrow`; the only thing this adds is
+   what a row with no movement says in the trend's place. */
+/* A row that didn't move. Same box as `.trend-chip` so the three states line up
+   down the column, in the neutral pair rather than a hue's 50/500. */
+.es-steady {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 22px;
+  border-radius: 12px;
+  background: var(--c-gray-150);
+  color: var(--c-gray-700);
+}

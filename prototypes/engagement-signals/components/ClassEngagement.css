@@ -1,0 +1,27 @@
+/* The Engagement tab of the classroom page. The page frame around it (rail,
+   header, tabs, gutters) is the Student Profile prototype's admin chrome. */
+
+.ce {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 24px;
+}
+
+/* ─── Table cells ───────────────────────────────────────────────────────── */
+.ce-student-name {
+  font-weight: var(--fw-semibold);
+}
+.ce-student-name--link {
+  color: var(--c-accent);
+}
+.tbl-row--clickable:hover .ce-student-name--link {
+  text-decoration: underline;
+}
+.ce-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
