@@ -284,11 +284,6 @@ export function Sidebar({
     .filter(Boolean)
     .join(' ')
 
-  // Resolve active page label + section for the mobile topbar
-  const activeItem = nav.find((item) => item.id === active)
-  const pageLabel = activeItem?.label ?? title
-  const pageSection = activeItem?.section
-
   return (
     <div className={shellClass}>
       {/* Mobile-only topbar — hamburger opens the drawer */}
@@ -302,11 +297,10 @@ export function Sidebar({
         >
           <Icon name="menu" size={18} stroke={2} />
         </button>
+        {/* Hamburger and mark only. The page's own `<h1>` sits directly under
+            this bar, so naming the page here said it twice — and the second
+            copy was the one in 14px white on blue. */}
         <img src="/bs-prototypes/bs.svg" className="sb-topbar-logo" alt="" aria-hidden="true" />
-        <div className="sb-topbar-page">
-          <span className="sb-topbar-page-label">{pageLabel}</span>
-          {pageSection && <span className="sb-topbar-page-sub">{pageSection}</span>}
-        </div>
       </div>
 
       {/* In-flow rail + sidebar (desktop full / tablet icon / desktop icon) */}

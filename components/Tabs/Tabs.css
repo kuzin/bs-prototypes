@@ -267,6 +267,22 @@
   justify-content: center;
 }
 
+/* A pill keeps `flex-shrink: 0` so a strip of them never squeezes its labels —
+   but a *block* group has to fit the width it was given, and three or four
+   pills at 375px were overflowing the card and hiding the last one entirely.
+   In block mode the row wraps instead: a second line of full labels beats one
+   line of half-words. `min-width: 0` is the last resort, for a single label
+   too wide for the whole row. */
+.tabs--pill.tabs--block {
+  flex-wrap: wrap;
+}
+
+.tabs--pill.tabs--block .tab {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+}
+
 /* ── Shared ──────────────────────────────────────────────────────────────── */
 .tab-count {
   font-size: 13px;
