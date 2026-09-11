@@ -2,8 +2,14 @@
    restores the RIS panel's faithful sizing: wider than the default side modal,
    and sitting above the 48px proto-nav strip (matching .ris-shell). The
    :has() override targets only this panel, leaving other side modals untouched. */
+/* The profile's own left rail takes 188px of whatever this panel is given, so
+   640px left a 396px content column — too narrow for the two-column stat cards
+   the sections are built from. 880 gives the content ~660px, which is what the
+   profile is drawn against. Shared by RIS, SfR and Words with Benny, all three
+   of which open the same <StudentProfileView>. The expand toggle still goes to
+   full width. */
 .modal--side:has(.stp-content) {
-  width: 640px;
+  width: 880px;
   max-width: 95vw;
   bottom: 48px;
   border-left: none;
