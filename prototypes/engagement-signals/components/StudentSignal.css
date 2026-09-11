@@ -1,0 +1,117 @@
+/* The Engagement section, inside the profile panel. Card chrome and the
+   action-list styles come from the profile's own CSS (`bp-*`); this file is
+   only the bits the section adds. */
+
+/* ─── Headline ──────────────────────────────────────────────────────────── */
+.es-headline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.es-headline-text {
+  flex: 1;
+  min-width: 160px;
+}
+.es-headline-head {
+  color: var(--c-text-real-dark);
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+}
+.es-headline-since {
+  margin-top: 1px;
+  color: var(--c-text-real-light);
+  font-size: var(--text-tag);
+}
+.es-how-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  border: 0;
+  background: none;
+  padding: 0;
+  color: var(--c-accent);
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+}
+.es-how-toggle:hover {
+  color: var(--c-accent-active);
+}
+.es-traj-wrap {
+  margin-top: 14px;
+}
+
+/* ─── Ask the reader ────────────────────────────────────────────────────── */
+.es-ask {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.es-ask li {
+  display: grid;
+  grid-template-columns: 20px 1fr;
+  gap: 8px;
+  color: var(--c-text-real);
+  font-size: var(--text-tag);
+  line-height: 1.5;
+}
+.es-ask li svg {
+  margin-top: 2px;
+  color: var(--c-violet-600);
+}
+
+/* ─── The Overview card ─────────────────────────────────────────────────── */
+.es-ov {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+.es-ov-main {
+  flex: 1;
+  min-width: 0;
+}
+.es-ov-top {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.es-ov-since {
+  color: var(--c-text-real-light);
+  font-size: var(--text-tag);
+  font-weight: var(--fw-semibold);
+}
+.es-ov-head {
+  margin-top: 8px;
+  color: var(--c-text-real-dark);
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
+}
+.es-ov-why {
+  margin-top: 2px;
+  color: var(--c-text-real-light);
+  font-size: var(--text-tag);
+  line-height: 1.45;
+}
+/* `bp-latest-link` carries the look; it just needs to stop shrinking and stay
+   on the headline's baseline. */
+.es-ov-link {
+  flex: none;
+  margin-top: 4px;
+}
+
+/* On a phone the link goes under the text rather than squeezing the headline
+   into two words per line. */
+@media (max-width: 560px) {
+  .es-ov {
+    flex-direction: column;
+    gap: 10px;
+  }
+  .es-ov-link {
+    margin-top: 0;
+  }
+}

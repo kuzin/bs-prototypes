@@ -61,6 +61,7 @@ const ICON_NAMES = {
   beeverso: 'plug-connected', // an account plugged into Beanstack
   'words-with-benny': 'vocabulary',
   'reader-profile': 'users',
+  'engagement-signals': 'activity-pulse',
 }
 
 const ICONS = Object.fromEntries(

@@ -617,6 +617,22 @@ const NAV_ITEMS = [
 ]
 const ANALYSIS_SECTIONS = new Set(['motivation', 'integrity', 'habits', 'skills'])
 
+// `extraNav` items append to the end of the rail unless one names a `before`
+// section, in which case it's spliced in ahead of it — Engagement Signals wants
+// its section leading the four analysis pages it's derived from, not filed last
+// after Points Summary. One helper, so the rail and the phone stepper below
+// can't disagree about the order.
+function mergeNav(extraNav = []) {
+  const items = [...NAV_ITEMS]
+  const appended = []
+  for (const item of extraNav) {
+    const at = item.before ? items.findIndex((n) => n.section === item.before) : -1
+    if (at === -1) appended.push(item)
+    else items.splice(at, 0, item)
+  }
+  return [...items, ...appended]
+}
+
 // Every profile-coloured tint (control rail, nav active state, the Log button)
 // derives from this one property in CSS via `color-mix`, so a reader needs a
 // single authored hex rather than a hand-mixed scale. The Hero icon chips stay
@@ -625,7 +641,7 @@ function LeftNav({ activeSection, onNavigate, pager, extraNav = [] }) {
   return (
     <nav className="bp-nav">
       <div className="bp-nav-items">
-        {[...NAV_ITEMS, ...extraNav].map(({ icon, section, label }) => {
+        {mergeNav(extraNav).map(({ icon, section, label }) => {
           const active = activeSection === section
           return (
             <div
@@ -659,7 +675,7 @@ function LeftNav({ activeSection, onNavigate, pager, extraNav = [] }) {
 // that (and close, and copy link) at every width now, so there's one home for
 // panel chrome instead of three.
 function MobileSectionNav({ activeSection, onNavigate, extraNav = [] }) {
-  const items = [...NAV_ITEMS, ...extraNav]
+  const items = mergeNav(extraNav)
   const at = Math.max(
     0,
     items.findIndex((n) => (n.section ?? 'overview') === (activeSection ?? 'overview')),
@@ -1061,7 +1077,7 @@ function OverviewStats({ metrics, onOpen, range, onRangeChange }) {
   )
 }
 
-function Overview({ student, onNavigate, goal }) {
+function Overview({ student, onNavigate, goal, renderOverviewTop }) {
   const [range, setRange] = useState('year')
   const ov = student.overview[range]
   const metrics = overviewMetrics(ov)
@@ -1074,6 +1090,12 @@ function Overview({ student, onNavigate, goal }) {
         accent={SECTION_ACCENT.overview.text}
         accentBg={SECTION_ACCENT.overview.bg}
       />
+      {/* An optional slot above the summary, for a prototype that leads the
+          Overview with something of its own (Engagement Signals puts the
+          reader's signal here). It's handed the student and the navigator so
+          it can follow the pager and link into its own section. Left off, the
+          Overview is exactly as it was. */}
+      {renderOverviewTop?.(student, onNavigate)}
       {/* Benny says — the summary leads the page */}
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
@@ -6773,8 +6795,11 @@ export function ClassroomView({
   className = 'Class A',
   extraTabs = [],
   renderExtra,
+  // Which tab the page opens on. Additive, and 'daily' by default — a
+  // prototype that adds a tab through `extraTabs` usually wants to land on it.
+  initialTab = 'daily',
 }) {
-  const [admTab, setAdmTab] = useState('daily')
+  const [admTab, setAdmTab] = useState(initialTab)
   const extraIds = extraTabs.map((t) => t.id)
   return (
     <div className="bp-adm">
@@ -7051,6 +7076,7 @@ function ProfileBody({
   onOpenClass,
   extraNav = [],
   renderExtra,
+  renderOverviewTop,
 }) {
   const extraSections = extraNav.map((n) => n.section)
   // The daily goal lives here because three places read it — the Overview's
@@ -7094,7 +7120,12 @@ function ProfileBody({
               {extraSections.includes(activeSection) ? (
                 renderExtra?.(activeSection, student)
               ) : activeSection === null ? (
-                <Overview student={student} onNavigate={onNavigate} goal={goal} />
+                <Overview
+                  student={student}
+                  onNavigate={onNavigate}
+                  goal={goal}
+                  renderOverviewTop={renderOverviewTop}
+                />
               ) : ANALYSIS_SECTIONS.has(activeSection) ? (
                 <SectionDetail
                   student={student}
@@ -7139,10 +7170,11 @@ function ProfileBody({
 // Same rail, same pager, same expand as the standalone: the host only supplies
 // the close handler and, because it owns the panel's width, the expanded flag.
 /**
- * `initialSection`, `extraNav`, `renderExtra` and `overrides` are optional and
- * additive — they let another prototype open the real profile on a section of
- * its own (Words with Benny adds Vocabulary) instead of building a second,
- * bespoke student panel. `overrides` merges onto the resolved student, so a
+ * `initialSection`, `extraNav`, `renderExtra`, `renderOverviewTop` and
+ * `overrides` are optional and additive — they let another prototype open the
+ * real profile on a section of its own (Words with Benny adds Vocabulary,
+ * Engagement Signals adds Engagement and a card at the top of the Overview)
+ * instead of building a second, bespoke student panel. `overrides` merges onto the resolved student, so a
  * roster row that has no full profile behind it still shows the right person in
  * the header. Left off, the profile is exactly as it was.
  */
@@ -7154,6 +7186,7 @@ export function StudentProfileView({
   initialSection = null,
   extraNav = [],
   renderExtra,
+  renderOverviewTop,
   overrides,
 }) {
   const [activeSection, setActiveSection] = useState(initialSection)
@@ -7177,6 +7210,7 @@ export function StudentProfileView({
         onSelectStudent={setCurrentKey}
         extraNav={extraNav}
         renderExtra={renderExtra}
+        renderOverviewTop={renderOverviewTop}
       />
     </div>
   )
