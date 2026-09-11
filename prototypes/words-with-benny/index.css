@@ -69,7 +69,9 @@ body,
    own `.pvb-actions button` rule, which a <select> doesn't inherit. */
 .wb-actpick {
   height: var(--pvb-tray-h);
-  padding: 0 10px;
+  /* Extra padding on the right: the UA draws the dropdown arrow at the edge of
+     the content box, so a symmetric inset leaves it crowding the border. */
+  padding: 0 14px 0 12px;
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
