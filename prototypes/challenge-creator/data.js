@@ -77,6 +77,9 @@ export const METHODS = {
   points: { id: 'points', name: 'Earn points', badgeKind: 'points' },
   readingList: { id: 'readingList', name: 'Log specific titles', badgeKind: 'logging' },
   bingo: { id: 'bingo', name: 'Fill a bingo card', badgeKind: 'bingo' },
+  // Conversations readers start with Benny themselves. Whether they can do that
+  // at all is a site-wide setting; the challenge only decides on badges for it.
+  bookTalks: { id: 'bookTalks', name: 'Book Talks with Benny', badgeKind: 'bookTalk' },
 }
 
 // ─── Challenge types (Step 1 cards) ───────────────────────────────────────────
@@ -812,6 +815,7 @@ const BASE_STEP_NAMES = {
   setup: 'Setup',
   rewards: 'Rewards',
   completion: 'Completion',
+  review: 'Review',
 }
 
 export function getSteps({ mode, role, type }) {
@@ -824,12 +828,6 @@ export function getSteps({ mode, role, type }) {
     { id: 'details', name: BASE_STEP_NAMES.details },
   ]
   if (type?.setup && isReadingList) steps.push(setupStep)
-  // Book Talks (AI reading conversations) — logging-style challenges at schools
-  // only. It sits BEFORE badges: a Book Talk can be a badge's requirement, so
-  // you decide whether Benny is involved before you build the badges.
-  if (type?.primaryMethod === 'log' && role?.site === 'school') {
-    steps.push({ id: 'bookTalks', name: 'Book Talks' })
-  }
   steps.push({ id: 'badges', name: BASE_STEP_NAMES.badges })
   // Rewards/tickets/certificates: full creators only (MS+, public librarian).
   // Teacher/MS (simple) can't access rewards in the creator, per Beanstack's
@@ -839,7 +837,84 @@ export function getSteps({ mode, role, type }) {
   if (type?.setup && !isReadingList) steps.push(setupStep)
   // Completion, unless it's implicit (bingo).
   if (!type?.autoComplete) steps.push({ id: 'completion', name: BASE_STEP_NAMES.completion })
+  // Every walk-through ends on a recap of every choice, then Publish.
+  steps.push({ id: 'review', name: BASE_STEP_NAMES.review })
   return steps
+}
+
+// ─── The walk-through: one decision per screen ────────────────────────────────
+// Screens are the unit of navigation (Back / Next); phases are the unit of
+// progress (the top rail). Each phase from getSteps() expands into the screens
+// below — a screen is one panel's worth of decision, and anything rare inside
+// it hides behind a <MoreOptions> disclosure rather than becoming its own stop.
+//
+//   id     unique; the component for `phase` switches on it
+//   phase  the getSteps() step it belongs to (drives the rail + validation)
+//   name   short label — the footer's "Next: …" and the review recap
+function detailsScreens({ typeId }) {
+  return [
+    // Only offered when this type actually has templates to seed from.
+    ...(getTemplatesForType(typeId).length
+      ? [{ id: 'details.template', phase: 'details', name: 'Starting point' }]
+      : []),
+    { id: 'details.basics', phase: 'details', name: 'Name & description' },
+    { id: 'details.dates', phase: 'details', name: 'Dates' },
+    { id: 'details.look', phase: 'details', name: 'Look & feel' },
+    { id: 'details.audience', phase: 'details', name: 'Who it’s for' },
+  ]
+}
+
+function badgeScreens({ type, challenge, role }) {
+  const methods = challenge?.methods || {}
+  const primary = type?.primaryMethod
+  const on = (key) => primary === key || !!methods[key]
+  const isBingo = primary === 'bingo'
+  const isPoints = primary === 'points'
+  const screens = []
+  // "How badges are earned" — the add-on toggles. A type with no add-ons and no
+  // point types has nothing to decide here, so the screen is skipped.
+  if (type?.addOns?.length || isPoints || (!isBingo && role?.tier !== 'simple')) {
+    screens.push({ id: 'badges.methods', phase: 'badges', name: 'How badges are earned' })
+  }
+  if (isPoints) screens.push({ id: 'badges.points', phase: 'badges', name: 'Points badges' })
+  if (on('log') || primary === 'readingList') {
+    screens.push({ id: 'badges.logging', phase: 'badges', name: 'Logging badges' })
+  }
+  if (on('activities')) {
+    screens.push({ id: 'badges.activities', phase: 'badges', name: 'Activity badges' })
+  }
+  if (on('reviews')) screens.push({ id: 'badges.reviews', phase: 'badges', name: 'Review badges' })
+  if (on('bookTalks')) {
+    screens.push({ id: 'badges.bookTalks', phase: 'badges', name: 'Book Talks' })
+  }
+  // Registration / completion (or bingo + full-card) badges — the pinned slots.
+  screens.push({ id: 'badges.special', phase: 'badges', name: 'Milestone badges' })
+  return screens
+}
+
+export function getScreens({ mode, role, type, challenge }) {
+  const phases = getSteps({ mode, role, type })
+  const setupName = type?.setupName || BASE_STEP_NAMES.setup
+  return phases.flatMap((phase) => {
+    switch (phase.id) {
+      case 'details':
+        return detailsScreens({ typeId: challenge?.typeId })
+      case 'badges':
+        return badgeScreens({ type, challenge, role })
+      case 'rewards':
+        return [
+          { id: 'rewards.prizes', phase: 'rewards', name: 'Prizes' },
+          { id: 'rewards.tickets', phase: 'rewards', name: 'Raffle tickets' },
+          { id: 'rewards.certificates', phase: 'rewards', name: 'Certificates' },
+        ]
+      // Type / Book Talks / Setup / Completion / Review are single-decision
+      // screens already — they map 1:1 onto their phase.
+      case 'setup':
+        return [{ id: 'setup', phase: 'setup', name: setupName }]
+      default:
+        return [{ id: phase.id, phase: phase.id, name: phase.name }]
+    }
+  })
 }
 
 // Default challenge window: today → one week out, as yyyy-mm-dd for <input type=date>.
@@ -863,7 +938,7 @@ export function blankChallenge(typeId) {
     templateId: 'scratch',
     methods: type ? { [type.primaryMethod]: true } : {},
     details: {
-      name: '',
+      name: suggestedName(),
       description: '',
       previewDescription: '',
       position: 1,
@@ -899,6 +974,9 @@ export function blankChallenge(typeId) {
     registrationBadge: null,
     completionBadge: null,
     activities: SAMPLE_ACTIVITIES.map((a) => ({ ...a })),
+    // Starter badges for this type — "start from scratch" still means a draft,
+    // not a blank page. Spread last so it wins over the empty defaults above.
+    ...starterBadges(typeId),
     setup: {
       bingoSize: '4x4',
       titles: [],
@@ -913,6 +991,9 @@ export function blankChallenge(typeId) {
     },
     rewards: { perBadge: {}, library: [], tickets: [] },
     completion: { mode: 'all', required: [] },
+    bookTalkBadges: [], // badges earned by having N Book Talks with Benny
+    // This challenge's own Book Talk trigger. It overrides the site-wide
+    // triggers in Setup › Book Talks with Benny for readers in this challenge.
     bookTalks: { onTitleCompletions: false },
   }
 }
@@ -1289,6 +1370,55 @@ const badgesToActivityBadges = (badges = []) =>
     badge: { img: b.img },
     activities: [{ type: 'activity', description: '', linkTitle: '', linkUrl: '', codes: [] }],
   }))
+
+// ─── Starter content ──────────────────────────────────────────────────────────
+// A brand-new challenge opens already filled in: a suggested name and a badge
+// ladder in the default theme's art. The creator's job is to *edit* a draft,
+// not to produce one from nothing — so every screen arrives answered.
+const SEASON = (m) =>
+  m <= 1 || m === 11 ? 'Winter' : m <= 4 ? 'Spring' : m <= 7 ? 'Summer' : 'Fall'
+export const suggestedName = (now = new Date()) =>
+  `${SEASON(now.getMonth())} Reading Challenge ${now.getFullYear()}`
+
+// A five-rung ladder that reads like a real challenge rather than "Badge 1…5".
+const STARTER_BADGES = [
+  ['First Steps', 1],
+  ['Getting Hooked', 3],
+  ['Bookworm', 5],
+  ['Reading Star', 10],
+  ['Champion Reader', 20],
+]
+const STARTER_ACTIVITIES = [
+  ['Visit the library', 'activity', 'Stop by and check out something new'],
+  ['Attend a book club', 'event', 'Join a book club meeting'],
+  ['Recommend a book', 'review', 'Tell someone why they should read it'],
+]
+
+// Starter badges for a type's primary earning method, drawn in the theme's art.
+export function starterBadges(typeId, themeId = 'reading') {
+  const art = themeBadges(themeId)
+  const seeds = STARTER_BADGES.map(([name, goal], i) => ({ name, goal, img: art[i]?.img }))
+  switch (getType(typeId)?.primaryMethod) {
+    case 'points':
+      // Points ladders climb in point thresholds, not books.
+      return { pointsBadges: withPointMilestones(seeds.map(({ name, img }) => ({ name, img }))) }
+    case 'reviews':
+      return { reviewBadges: withReviewMilestones(seeds) }
+    case 'activities':
+      return {
+        activityBadges: STARTER_ACTIVITIES.map(([title, type, description], i) => ({
+          id: `seed-act-${i}`,
+          title,
+          badge: { img: art[i]?.img },
+          activities: [{ type, description, linkTitle: '', linkUrl: '', codes: [] }],
+        })),
+      }
+    // Bingo/gameboard build their board from logging badges too, so they seed the
+    // same ladder — the board step then has tiles to place.
+    default:
+      return { badges: withLogMilestones(seeds) }
+  }
+}
 
 export function applyTemplate(challenge, templateId) {
   if (!templateId || templateId === 'scratch') {

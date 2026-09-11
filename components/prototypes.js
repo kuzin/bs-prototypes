@@ -2,7 +2,7 @@ export const PROTOTYPES = [
   {
     id: 'challenge-creator',
     name: 'Challenge Creator v2',
-    section: 'Experiments',
+    section: 'Prototypes',
     category: 'Challenges',
     href: '/bs-prototypes/challenge-creator/',
     accent: '#F0A024',

@@ -16,20 +16,17 @@ import {
   getTypesForRole,
   getType,
   getSteps,
+  getScreens,
   blankChallenge,
   applyTemplate,
   withLogMilestones,
 } from './data'
-import { validateStep, firstInvalidStep } from './validation'
+import { validateStep, firstInvalidStep, phaseOf } from './validation'
 import { TypeStep } from './steps/TypeStep'
-import {
-  DetailsStep,
-  BadgesStep,
-  SetupStep,
-  RewardsStep,
-  CompletionStep,
-  BookTalksStep,
-} from './steps/StepStubs'
+import { DetailsStep, BadgesStep, SetupStep, RewardsStep, CompletionStep } from './steps/StepStubs'
+import { Confetti } from '@components/Confetti/Confetti'
+import { ReviewStep } from './steps/ReviewStep'
+import { badgePoolOf } from './steps/shared'
 import { Preview } from './Preview'
 import './index.css'
 
@@ -160,31 +157,40 @@ export function App() {
   const [challenge, setChallenge] = useState(
     saved?.challenge ? normalizeChallenge(saved.challenge) : blankChallenge('logging'),
   )
-  const [stepId, setStepId] = useState(saved?.stepId ?? 'type')
-  const [previewOpen, setPreviewOpen] = useState(saved?.previewOpen ?? true)
-  const [mobilePreviewOpen, setMobilePreviewOpen] = useState(false)
+  const [screenId, setScreenId] = useState(saved?.screenId ?? 'type')
+  const [previewOpen, setPreviewOpen] = useState(false)
   const [saveState, setSaveState] = useState('saved')
   // `dirty` = the user has customized since the last template/scratch pick.
   const [dirty, setDirty] = useState(false)
   const [pendingTemplate, setPendingTemplate] = useState(null)
   const [pendingType, setPendingType] = useState(null)
   const [confirmPublish, setConfirmPublish] = useState(false)
+  // The payoff: set once the challenge is published, so the walk-through ends on
+  // a celebration instead of a dialog quietly closing.
+  const [published, setPublished] = useState(false)
 
   const firstRun = useRef(true)
   const saveTimer = useRef(null)
 
   const role = getRole(mode, roleId)
   const type = getType(challenge.typeId)
-  const steps = useMemo(() => getSteps({ mode, role, type }), [mode, role, type])
+  // Phases = the top rail (Type · Details · Badges · … · Review). Screens = the
+  // walk-through itself: one decision each, Back/Next stepping through them.
+  const phases = useMemo(() => getSteps({ mode, role, type }), [mode, role, type])
+  const screens = useMemo(
+    () => getScreens({ mode, role, type, challenge }),
+    [mode, role, type, challenge],
+  )
 
-  // Keep the current step valid when the visible steps change (type/role/mode).
+  // Keep the current screen valid when the visible screens change (a type or
+  // role switch, or a badge method toggled off).
   useEffect(() => {
-    if (!steps.find((s) => s.id === stepId)) setStepId(steps[0].id)
-  }, [steps, stepId])
+    if (!screens.find((s) => s.id === screenId)) setScreenId(screens[0].id)
+  }, [screens, screenId])
 
   // Persist (draft + dev settings) and drive the autosave indicator.
   useEffect(() => {
-    localStorage.setItem(LS_KEY, JSON.stringify({ mode, roleId, challenge, stepId, previewOpen }))
+    localStorage.setItem(LS_KEY, JSON.stringify({ mode, roleId, challenge, screenId }))
     if (firstRun.current) {
       firstRun.current = false
       return
@@ -193,7 +199,7 @@ export function App() {
     clearTimeout(saveTimer.current)
     saveTimer.current = setTimeout(() => setSaveState('saved'), 650)
     return () => clearTimeout(saveTimer.current)
-  }, [mode, roleId, challenge, stepId, previewOpen])
+  }, [mode, roleId, challenge, screenId])
 
   const changeMode = (m) => {
     setMode(m)
@@ -236,8 +242,19 @@ export function App() {
     else applyTpl(templateId)
   }
 
-  const idx = steps.findIndex((s) => s.id === stepId)
-  const isLast = idx === steps.length - 1
+  const idx = Math.max(
+    0,
+    screens.findIndex((s) => s.id === screenId),
+  )
+  const screen = screens[idx]
+  const isLast = idx === screens.length - 1
+  const phaseId = screen?.phase ?? phaseOf(screenId)
+  // How far through the current phase we are, so the rail's connector fills as
+  // a real progress bar instead of jumping a whole step at a time.
+  const inPhase = screens.filter((s) => s.phase === phaseId)
+  const phaseProgress = inPhase.findIndex((s) => s.id === screenId) / inPhase.length
+  // Jumping via the rail lands on a phase's first screen.
+  const goPhase = (id) => setScreenId(screens.find((s) => s.phase === id)?.id ?? id)
 
   // ── Validation ──
   // Errors are computed continuously, but only *revealed* once the user has
@@ -249,11 +266,11 @@ export function App() {
   const formRef = useRef(null)
 
   const stepErrors = useMemo(
-    () => validateStep(stepId, challenge, { role, type }),
-    [stepId, challenge, role, type],
+    () => validateStep(screenId, challenge, { role, type }),
+    [screenId, challenge, role, type],
   )
   const stepValid = Object.keys(stepErrors).length === 0
-  const visibleErrors = revealed[stepId] ? stepErrors : {}
+  const visibleErrors = revealed[screenId] ? stepErrors : {}
 
   const revealStep = (id) => setRevealed((r) => (r[id] ? r : { ...r, [id]: true }))
   // After revealing, focus the first invalid field's control and scroll it into
@@ -272,18 +289,18 @@ export function App() {
   const goNext = () => {
     if (isLast) return
     if (!stepValid) {
-      revealStep(stepId)
+      revealStep(screenId)
       focusFirstError()
       return
     }
-    setStepId(steps[idx + 1].id)
+    setScreenId(screens[idx + 1].id)
   }
-  const goPrev = () => idx > 0 && setStepId(steps[idx - 1].id)
+  const goPrev = () => idx > 0 && setScreenId(screens[idx - 1].id)
   // Publishing is a deliberate step: validate first, then confirm.
   const publish = () => {
-    const bad = firstInvalidStep(steps, challenge, { role, type })
+    const bad = firstInvalidStep(screens, challenge, { role, type })
     if (bad) {
-      setStepId(bad)
+      setScreenId(bad)
       revealStep(bad)
       focusFirstError()
       return
@@ -292,22 +309,22 @@ export function App() {
   }
   const doPublish = () => {
     setConfirmPublish(false)
-    window.alert('Prototype: the challenge would publish now. ✅')
+    setPublished(true)
   }
-  // Preview: split-pane toggle on desktop, full-screen modal on mobile.
-  const togglePreview = () => {
-    if (window.matchMedia('(max-width: 900px)').matches) setMobilePreviewOpen(true)
-    else setPreviewOpen((v) => !v)
-  }
+  // A walk-through always starts a screen at its heading — never mid-page from
+  // wherever the previous one was scrolled to. (.cc-form-inner is the scroller.)
+  useEffect(() => {
+    formRef.current?.querySelector('.cc-form-inner')?.scrollTo({ top: 0 })
+  }, [screenId])
+
+  // Preview opens as an overlay from the footer's eye button.
+  const openPreview = () => setPreviewOpen(true)
 
   const titleVerb = mode === 'template' ? 'Create a template' : 'Create a challenge'
   // A single title that becomes more specific as the challenge takes shape:
   // "Create a challenge" → the chosen type → the named title (each replaces the last).
   const headerTitle =
-    challenge.details.name?.trim() || (stepId !== 'type' && type ? type.name : titleVerb)
-  // The preview pane is mounted on every step past Type, and slides in/out via a
-  // CSS class so it animates cohesively with the side tab (instead of popping).
-  const showPreview = stepId !== 'type'
+    challenge.details.name?.trim() || (screenId !== 'type' && type ? type.name : titleVerb)
   // Preview backdrop = the challenge accent, a touch darker, so the mock pops;
   // the header bar sits a shade darker still.
   const accent = challenge.details.accent || '#0DA7BC'
@@ -340,21 +357,28 @@ export function App() {
       </header>
 
       <div className="cc-stepbar">
-        <Stepper steps={steps} current={stepId} onStep={setStepId} accent={type?.accent} />
+        <Stepper
+          steps={phases}
+          current={phaseId}
+          onStep={goPhase}
+          accent={type?.accent}
+          progress={phaseProgress}
+        />
       </div>
 
       <div className="cc-main">
         <main className="cc-form" ref={formRef}>
           <div className="cc-form-inner">
-            {stepId === 'type' && (
+            {phaseId === 'type' && (
               <TypeStep
                 types={getTypesForRole(role)}
                 value={challenge.typeId}
                 onSelect={selectType}
               />
             )}
-            {stepId === 'details' && (
+            {phaseId === 'details' && (
               <DetailsStep
+                screen={screenId}
                 challenge={challenge}
                 role={role}
                 type={type}
@@ -363,8 +387,9 @@ export function App() {
                 errors={visibleErrors}
               />
             )}
-            {stepId === 'badges' && (
+            {phaseId === 'badges' && (
               <BadgesStep
+                screen={screenId}
                 challenge={challenge}
                 role={role}
                 type={type}
@@ -372,10 +397,21 @@ export function App() {
                 errors={visibleErrors}
               />
             )}
-            {stepId === 'setup' && <SetupStep challenge={challenge} type={type} update={update} />}
-            {stepId === 'rewards' && <RewardsStep challenge={challenge} update={update} />}
-            {stepId === 'bookTalks' && <BookTalksStep challenge={challenge} update={update} />}
-            {stepId === 'completion' && <CompletionStep challenge={challenge} update={update} />}
+            {phaseId === 'setup' && <SetupStep challenge={challenge} type={type} update={update} />}
+            {phaseId === 'rewards' && (
+              <RewardsStep screen={screenId} challenge={challenge} update={update} />
+            )}
+            {phaseId === 'completion' && <CompletionStep challenge={challenge} update={update} />}
+            {phaseId === 'review' && (
+              <ReviewStep
+                challenge={challenge}
+                role={role}
+                type={type}
+                screens={screens}
+                phases={phases}
+                onEdit={setScreenId}
+              />
+            )}
           </div>
 
           <div className="cc-form-footer">
@@ -383,10 +419,10 @@ export function App() {
               Back
             </Button>
             <div className="cc-footer-right">
-              {stepId !== 'type' && (
+              {screenId !== 'type' && (
                 <IconButton
                   className="cc-preview-icon-btn"
-                  onClick={togglePreview}
+                  onClick={openPreview}
                   aria-label="Preview"
                 >
                   <Icon name="eye" size={16} />
@@ -398,37 +434,12 @@ export function App() {
                 </Button>
               ) : (
                 <Button variant="primary" accent={type?.accent || '#0DA7BC'} onClick={goNext}>
-                  Next: {steps[idx + 1]?.name}
+                  Next: {screens[idx + 1]?.name}
                 </Button>
               )}
             </div>
           </div>
         </main>
-
-        {/* Desktop-only handle to open/close the live preview (mobile uses the
-            footer button → modal). Sits on the preview's left edge when open,
-            and on the screen's right edge when collapsed. */}
-        {stepId !== 'type' && (
-          <button
-            type="button"
-            className={`cc-preview-tab${previewOpen ? ' is-open' : ''}`}
-            style={{ background: previewBg }}
-            onClick={() => setPreviewOpen((v) => !v)}
-            aria-label={previewOpen ? 'Hide challenge preview' : 'Show challenge preview'}
-            aria-expanded={previewOpen}
-            title={previewOpen ? 'Hide preview' : 'Show preview'}
-          >
-            <Icon className="cc-preview-tab-chev" name="chevron-left" size={18} stroke={2.2} />
-            <span className="cc-preview-tab-label">Preview</span>
-          </button>
-        )}
-        {showPreview && (
-          <aside className={`cc-preview${previewOpen ? '' : ' is-collapsed'}`}>
-            <div className="cc-preview-frame" style={{ background: previewBg }}>
-              <Preview challenge={challenge} />
-            </div>
-          </aside>
-        )}
       </div>
 
       <Modal
@@ -523,8 +534,42 @@ export function App() {
       </Modal>
 
       <Modal
-        open={mobilePreviewOpen}
-        onClose={() => setMobilePreviewOpen(false)}
+        open={published}
+        onClose={() => setPublished(false)}
+        variant="center"
+        ariaLabel="Challenge published"
+      >
+        {({ close }) => (
+          <div className="cc-published">
+            <Confetti count={18} distance={360} duration={2.4} />
+            <div className="cc-published-inner">
+              <span className="cc-published-mark" style={{ background: accent }}>
+                <Icon name="check" size={30} stroke={2.6} />
+              </span>
+              <h3 className="cc-published-title">It’s live!</h3>
+              <p className="cc-published-name">{challenge.details.name?.trim()}</p>
+              <p className="cc-published-sub">
+                {badgePoolOf(challenge).length} badges are waiting for your readers
+                {mode === 'template'
+                  ? '. Schools can find and run it now.'
+                  : '. They can find and join it right now.'}
+              </p>
+              <div className="cc-published-actions">
+                <Button variant="secondary" onClick={close}>
+                  Keep editing
+                </Button>
+                <Button variant="primary" accent="#0DA7BC" onClick={close}>
+                  View challenge
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      <Modal
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
         variant="center"
         ariaLabel="Challenge preview"
       >

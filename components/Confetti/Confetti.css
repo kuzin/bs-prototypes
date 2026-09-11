@@ -1,0 +1,39 @@
+.cft {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.cft-bit {
+  position: absolute;
+  top: -18px;
+  width: 9px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0;
+  animation-name: cft-fall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+}
+@keyframes cft-fall {
+  0% {
+    translate: 0 0;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    translate: 0 var(--cft-distance, 420px);
+    rotate: 240deg;
+    opacity: 0;
+  }
+}
+
+/* Celebration is decoration — never make it move for someone who asked not to. */
+@media (prefers-reduced-motion: reduce) {
+  .cft-bit {
+    animation: none;
+    opacity: 0.9;
+  }
+}

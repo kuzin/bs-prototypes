@@ -295,6 +295,10 @@
   border-radius: 10px;
   border: none;
   width: 100%;
+  /* The width above is only safe inside a padded container if the padding is
+     counted in — without this a banner breaks out of any host that hasn't set
+     a border-box reset of its own. */
+  box-sizing: border-box;
   font-size: 15px;
   line-height: 1.5;
   color: var(--c-gray-800);
