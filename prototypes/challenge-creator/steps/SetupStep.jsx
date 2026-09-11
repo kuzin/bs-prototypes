@@ -18,7 +18,6 @@ import gbOcean from '../assets/gameboard/ocean.webp'
 import gbJungle from '../assets/gameboard/jungle.webp'
 import { SAMPLE_TITLES, BOOK_CATALOG, TEMPLATE_PRESETS, badgeImage, FAKE_UPLOAD_IMG } from '../data'
 import {
-  STEP_ICONS,
   StepHead,
   Tip,
   ColorPicker,
@@ -779,11 +778,7 @@ export function SetupStep({ challenge, type, update }) {
     const cells = Array.from({ length: n }, (_, i) => (s.bingoCells || [])[i] ?? null)
     return (
       <section className="cc-step">
-        <StepHead
-          title="Bingo card"
-          sub="Pick a card size, then drag badges onto the grid."
-          icon={STEP_ICONS.bingo}
-        />
+        <StepHead title="Bingo card" sub="Pick a card size, then drag badges onto the grid." />
         <div className="cc-panel">
           <h3 className="cc-panel-title">Card size</h3>
           <div className="cc-bingo-sizes">
@@ -888,7 +883,6 @@ export function SetupStep({ challenge, type, update }) {
         <StepHead
           title="Gameboard"
           sub="Theme the board, then drag badges onto the path readers travel as they read."
-          icon={STEP_ICONS.gameboard}
         />
 
         <div className="cc-panel">
@@ -1051,11 +1045,7 @@ export function SetupStep({ challenge, type, update }) {
   const removeTitle = (i) => setTitles(titles.filter((_, idx) => idx !== i))
   return (
     <section className="cc-step">
-      <StepHead
-        title="Reading list"
-        sub="Add the specific titles readers must log (up to 30)."
-        icon={STEP_ICONS.readingList}
-      />
+      <StepHead title="Reading list" sub="Add the specific titles readers must log (up to 30)." />
       <div className="cc-panel">
         <div className="cc-panel-head">
           <h3 className="cc-panel-title">

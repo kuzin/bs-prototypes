@@ -18,15 +18,24 @@
   flex-direction: column;
   background: var(--bg);
   color: var(--ink);
-  font-family:
-    'Inter',
-    system-ui,
-    -apple-system,
-    'Segoe UI',
-    Roboto,
-    Helvetica,
-    Arial,
-    sans-serif;
+  /* Beanstack's real typeface (Adobe Fonts kit, see tokens.css) — the creator
+     had been sitting on its own Inter stack instead. */
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+/* Form controls don't inherit the family on their own. */
+.cc-root button,
+.cc-root input,
+.cc-root select,
+.cc-root textarea {
+  font-family: inherit;
+}
+
+/* The shared Hero's subtitle is 13px — the tag rung. As the sentence that
+   explains each screen's question it carries more weight than that here, so
+   the creator lifts it to the body rung. */
+.cc-root .hero-sub {
+  font-size: var(--text-cell);
 }
 
 /* ── Accessibility: lift shared design-system control text within the creator

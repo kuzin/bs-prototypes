@@ -3,19 +3,10 @@ import { Hero } from '@components/Hero/Hero'
 import { Banner } from '@components/Primitives/Primitives'
 import { ColorInput, NumberInput, MultiSelect } from '@components/Form/Form'
 import { Icon } from '@components/Icon/Icon'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import { TEMPLATE_PRESETS, badgeImage } from '../data'
 
 // ─── shared bits ──────────────────────────────────────────────────────────────
-// Page-header icons per step (drawn by the shared <Hero>).
-export const STEP_ICONS = {
-  details: <Icon name="settings" size={22} />,
-  badges: <Icon name="award" size={22} />,
-  bingo: <Icon name="layout-grid" size={22} />,
-  gameboard: <Icon name="route" size={22} />,
-  readingList: <Icon name="list" size={22} />,
-  prizes: <Icon name="gift" size={22} />,
-  completion: <Icon name="flag" size={22} />,
-}
 export function StepHead({ title, sub }) {
   return (
     <div className="cc-step-head">
@@ -101,9 +92,9 @@ export function TrashIcon() {
   return <Icon name="trash" size={15} />
 }
 // Search / no-results empty state icon.
-export const SEARCH_EMPTY_ICON = <Icon name="search" size={26} />
+export const SEARCH_EMPTY_ICON = <PlumpyIcon name="filter" size={30} />
 // Open-book empty state icon (reading list).
-export const BOOK_EMPTY_ICON = <Icon name="book" size={26} />
+export const BOOK_EMPTY_ICON = <PlumpyIcon name="book" size={30} />
 
 // Small badge avatars shown on a reward (the badges that grant it).
 export function BadgeAvatars({ badges }) {

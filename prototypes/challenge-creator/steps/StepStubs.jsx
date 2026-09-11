@@ -21,6 +21,7 @@ import { Banner, EmptyState } from '@components/Primitives/Primitives'
 import { Modal } from '@components/Modal/Modal'
 import { Ic } from '@components/ui'
 import { Icon } from '@components/Icon/Icon'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import {
   QUICK_FONTS,
   PICKER_BADGE_GROUPS,
@@ -40,7 +41,6 @@ import {
   themeBgImages,
 } from '../data'
 import {
-  STEP_ICONS,
   StepHead,
   Screen,
   MoreOptions,
@@ -1498,7 +1498,7 @@ const DEFAULT_POINT_TYPES = {
   reviews: false,
 }
 // Shared icon for badge-list empty states (a simple award medal).
-const BADGE_EMPTY_ICON = <Icon name="award" size={26} />
+const BADGE_EMPTY_ICON = <PlumpyIcon name="trophy" size={30} />
 const stripHtml = (html) =>
   String(html || '')
     .replace(/<[^>]+>/g, '')

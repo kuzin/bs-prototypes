@@ -1,20 +1,21 @@
 import { Hero } from '@components/Hero/Hero'
-import { Icon } from '@components/Icon/Icon'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 
-// Per-type icon, drawn from the shared Tabler set. Tinted by each type accent
-// (the .cc-type-glyph wrapper sets the color, which the icon inherits).
+// Per-type icon, on the Plumpy duotone family the real admin chrome uses. Both
+// Plumpy layers tint from `fill: currentColor`, so the .cc-type-glyph wrapper's
+// accent still drives them.
 const GLYPH_NAMES = {
-  logging: 'reading-log',
-  activity: 'circle-check',
-  bingo: 'layout-grid',
-  points: 'star',
-  'reading-list': 'list',
-  reviews: 'message-circle',
-  gameboard: 'route',
+  logging: 'log',
+  activity: 'puzzle',
+  bingo: 'classroom',
+  points: 'points',
+  'reading-list': 'book',
+  reviews: 'chat',
+  gameboard: 'challenges',
 }
 
 export function TypeGlyph({ id, size = 26 }) {
-  return <Icon name={GLYPH_NAMES[id] ?? 'puzzle'} size={size} />
+  return <PlumpyIcon name={GLYPH_NAMES[id] ?? 'puzzle'} size={size} />
 }
 
 export function TypeStep({ types, value, onSelect }) {
@@ -22,7 +23,6 @@ export function TypeStep({ types, value, onSelect }) {
     <section className="cc-step">
       <div className="cc-step-head">
         <Hero
-          icon={<Icon name="layout-grid" size={22} />}
           title="Choose a challenge type"
           subtitle="Pick the main way readers earn badges — you can layer on more in the Badges step."
           accent="#0DA7BC"
