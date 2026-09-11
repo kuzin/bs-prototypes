@@ -1086,6 +1086,23 @@ export const REVIEW_BOXES = [
 
 export const boxInfo = (box) => REVIEW_BOXES[Math.min(Math.max(box, 1), 5) - 1]
 
+/**
+ * The five boxes are the deck's own bookkeeping — they decide when a word comes
+ * back and nothing else. What a reader is shown is one of three bands, because
+ * "is this sticking yet?" is the only question they're actually asking of the
+ * collection. One vocabulary for the tile tags and the filter above them: two
+ * sets of names for the same idea had a word tagged "Nearly known" sitting
+ * under a filter called "Known well".
+ */
+export const KNOWN_BANDS = [
+  { id: 'learning', label: 'Still learning', boxes: [1, 2] },
+  { id: 'sticking', label: 'Sticking', boxes: [3] },
+  { id: 'known', label: 'Known well', boxes: [4, 5] },
+]
+
+export const bandFor = (box) =>
+  KNOWN_BANDS.find((b) => b.boxes.includes(Math.min(Math.max(box, 1), 5))) ?? KNOWN_BANDS[0]
+
 const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400000)
 
 export const isDue = (card, today = TODAY) =>

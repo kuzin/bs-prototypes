@@ -16,6 +16,10 @@
 
 .wa-shell {
   min-height: 100vh;
+  /* Absorbs the sub-tab bands' full-bleed overshoot: they size to 100vw, which
+     includes the scrollbar. `clip` rather than `hidden` — hidden would make
+     this a scroll container and kill the sticky top bar. */
+  overflow-x: clip;
   background: #ffffff;
   color: var(--c-slate-800);
   padding-bottom: 48px; /* PrototypeNav rail */

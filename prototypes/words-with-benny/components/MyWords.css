@@ -70,11 +70,18 @@
   opacity: 0.85;
 }
 
+/* The band filter sits between the stats and the grid, spanning it: `block`
+   divides the row evenly, so the strip lines up with the tile grid below
+   instead of ending halfway across it. */
+.mw-filters {
+  margin-top: 22px;
+}
+
 /* ─── Word tiles ────────────────────────────────────────────────────────── */
 
 .mw-grid {
   display: grid;
-  margin-top: 22px;
+  margin-top: 16px;
   grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
   gap: 12px;
 }
@@ -123,27 +130,26 @@
   background: #7c3aed;
   border-radius: 999px;
 }
-/* Where the deck has this word. Deliberately quiet — it's a state, not a score,
-   and a word slipping back to box 1 must not read as a failure. */
-.mw-tile-box {
+/* Where the deck has this word — a dot, with the wording in a tooltip. It's a
+   state, not a score, and a word slipping back to the first band must not read
+   as a failure, so it stays quiet and the same size whatever it says. */
+.mw-tile-dot {
+  display: block;
   flex: 0 0 auto;
-  padding: 2px 8px;
-  font-size: 10.5px;
-  font-weight: 800;
-  color: #64748b;
-  white-space: nowrap;
-  background: #f1f5f9;
+  width: 9px;
+  height: 9px;
+  margin-top: 6px;
+  background: var(--c-slate-300);
   border-radius: 999px;
 }
-.mw-tile-box--1,
-.mw-tile-box--2 {
-  color: #92400e;
-  background: #fef3c7;
+.mw-tile-dot--learning {
+  background: #f59e0b;
 }
-.mw-tile-box--4,
-.mw-tile-box--5 {
-  color: #166534;
-  background: #dcfce7;
+.mw-tile-dot--sticking {
+  background: #8b5cf6;
+}
+.mw-tile-dot--known {
+  background: #16a34a;
 }
 
 .mw-tile-say {

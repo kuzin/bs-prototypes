@@ -1,11 +1,26 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { EmptyState } from '@components/Primitives/Primitives'
+import { Tabs } from '@components/Tabs/Tabs'
+import { EmptyState, Tooltip } from '@components/Primitives/Primitives'
+import '@components/Tabs/Tabs.css'
 import '@components/Primitives/Primitives.css'
 
-import { BOOKS, boxInfo, wordByName } from '../data'
+import { BOOKS, KNOWN_BANDS, bandFor, boxInfo, wordByName } from '../data'
 import { ReviewStrip } from './Flashcards'
 import './MyWords.css'
+
+// The filter is a pill Tabs strip rather than a dropdown: only four choices,
+// the counts are worth seeing without opening anything, and a segmented control
+// is what this repo uses for a view switcher. The bands themselves live in
+// data.js, shared with the tile tags so both say the same words.
+const FILTERS = [{ id: 'all', label: 'All words' }, ...KNOWN_BANDS]
+
+/** When the deck will ask for this word again — the one fact the dot's colour
+ *  doesn't already carry. (Naming the box as well just said the band twice.) */
+const dueIn = (box) => {
+  const days = boxInfo(box).days
+  return days === 1 ? 'tomorrow' : `in ${days} days`
+}
 
 // The personal vocabulary collection — the brief's "growing personal record of
 // unlocked words, analogous to a reading log". It's the Words pane of the
@@ -36,12 +51,17 @@ export function WordTile({ entry, isNew, card }) {
           <span className="mw-tile-new">New</span>
         ) : (
           card && (
-            <span
-              className={`mw-tile-box mw-tile-box--${card.box}`}
-              title={`Review box ${card.box} of 5`}
-            >
-              {boxInfo(card.box).label}
-            </span>
+            /* A dot, not a pill. Where a word stands is the tile's least
+               important fact — it's a glance across the whole grid, not a
+               label to read one at a time — and a filled pill next to every
+               word was competing with the word itself. */
+            <Tooltip content={`${bandFor(card.box).label} — back in your deck ${dueIn(card.box)}`}>
+              <span
+                className={`mw-tile-dot mw-tile-dot--${bandFor(card.box).id}`}
+                role="img"
+                aria-label={bandFor(card.box).label}
+              />
+            </Tooltip>
           )
         )}
       </header>
@@ -61,8 +81,32 @@ export function WordTile({ entry, isNew, card }) {
 }
 
 export function MyWords({ collection, newestWord, cards = {}, onReview }) {
+  const [band, setBand] = useState('all')
+
   // Newest first — a collection reads like a log, most recent at the top.
   const ordered = useMemo(() => [...collection].reverse(), [collection])
+
+  const inBand = (entry, id) => {
+    const boxes = FILTERS.find((k) => k.id === id)?.boxes
+    return !boxes || boxes.includes(cards[entry.word]?.box ?? 1)
+  }
+
+  const tabs = useMemo(
+    () =>
+      FILTERS.map((k) => ({
+        id: k.id,
+        label: k.label,
+        count: ordered.filter((e) => inBand(e, k.id)).length,
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ordered, cards],
+  )
+
+  const shown = useMemo(
+    () => ordered.filter((e) => inBand(e, band)),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [ordered, band, cards],
+  )
 
   const thisWeek = collection.filter((e) => e.date >= '2026-06-20').length
   const firstTry = collection.length
@@ -96,6 +140,20 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
         ))}
       </div>
 
+      {ordered.length > 0 && (
+        <Tabs
+          variant="pill"
+          size="md"
+          block
+          active={band}
+          onChange={setBand}
+          accent="#7C3AED"
+          ariaLabel="Filter words by how well they're known"
+          className="mw-filters"
+          items={tabs}
+        />
+      )}
+
       {ordered.length === 0 ? (
         <EmptyState
           variant="dashed"
@@ -103,9 +161,16 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
           title="No words yet"
           description="Log some reading and Benny will hand you a word from what you read."
         />
+      ) : shown.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          icon={<Icon name="vocabulary" size={26} />}
+          title="Nothing here yet"
+          description="No words have reached this stage — keep going through the deck and they'll move up."
+        />
       ) : (
         <div className="mw-grid">
-          {ordered.map((e) => (
+          {shown.map((e) => (
             <WordTile key={e.word} entry={e} isNew={e.word === newestWord} card={cards[e.word]} />
           ))}
         </div>
