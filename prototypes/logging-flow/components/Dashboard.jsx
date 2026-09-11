@@ -238,14 +238,17 @@ function ChallengeCard({ challenge }) {
         <span className="wa-chcard-arttitle" style={{ color: art.titleColor }}>
           {art.title}
         </span>
-        <span className="wa-chcard-pill">
+      </div>
+      <div className="wa-chcard-body">
+        {/* What the challenge measures belongs with its name, not floated over
+            the artwork — the art is the challenge's identity and the pill was
+            covering whatever part of it landed in that corner. */}
+        <div className="wa-chcard-titlerow">
+          <div className="wa-chcard-title">{challenge.title}</div>
           <Pill color="#1A6DD5" variant="filled" size="sm">
             {challenge.badge}
           </Pill>
-        </span>
-      </div>
-      <div className="wa-chcard-body">
-        <div className="wa-chcard-title">{challenge.title}</div>
+        </div>
         <div className="wa-chcard-dates">{challenge.dates}</div>
       </div>
     </button>

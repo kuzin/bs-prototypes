@@ -338,19 +338,26 @@
   letter-spacing: 0.02em;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
-.wa-chcard-pill {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-}
-
 .wa-chcard-body {
   padding: 12px 14px 14px;
 }
+/* The name takes the room it needs and the measure pill holds the right edge;
+   a long title wraps under itself rather than pushing the pill off the card. */
+.wa-chcard-titlerow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.wa-chcard-titlerow .pill {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
 .wa-chcard-title {
+  min-width: 0;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-text);
-  font-size: 15px;
 }
 .wa-chcard-dates {
   font-size: 12px;

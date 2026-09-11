@@ -42,13 +42,21 @@ const INHERITED_COVER_IDS = {
 // front of picking a title — a whole second thing to explain in a demo that is
 // about what happens *after* a log. It's data-driven, so dropping the flag
 // takes the corner chip, the callout and the reader path with it.
+//
+// And every title is logged in minutes. logging-flow carries both measures on
+// purpose; here a book that asks for pages is just a second thing the details
+// step can say, and the challenges this reader is in are all minutes anyway.
 const PLAIN_BOOKS = Object.fromEntries(
   Object.entries(LF_BOOKS)
     .filter(([, b]) => !b.partner)
     // eslint-disable-next-line no-unused-vars
     .map(([id, { readable, ...b }]) => [
       id,
-      INHERITED_COVER_IDS[id] ? { ...b, coverId: INHERITED_COVER_IDS[id] } : b,
+      {
+        ...b,
+        measure: 'minutes',
+        ...(INHERITED_COVER_IDS[id] ? { coverId: INHERITED_COVER_IDS[id] } : null),
+      },
     ]),
 )
 
@@ -60,7 +68,7 @@ export const BOOKS = {
     title: 'Matilda',
     author: 'Roald Dahl',
     cover: ['#1E3A8A', '#DC2626'],
-    measure: 'pages',
+    measure: 'minutes',
     pages: 240,
   },
   wonder: {
@@ -78,7 +86,7 @@ export const BOOKS = {
     title: 'Holes',
     author: 'Louis Sachar',
     cover: ['#B45309', '#FBBF24'],
-    measure: 'pages',
+    measure: 'minutes',
     pages: 233,
   },
   crossover: {
@@ -96,7 +104,7 @@ export const BOOKS = {
     title: 'Bridge to Terabithia',
     author: 'Katherine Paterson',
     cover: ['#15803D', '#65A30D'],
-    measure: 'pages',
+    measure: 'minutes',
     pages: 208,
   },
   hatchet: {

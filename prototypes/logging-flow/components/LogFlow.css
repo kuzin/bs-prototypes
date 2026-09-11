@@ -946,13 +946,23 @@
   }
 }
 .lf-success-sub {
+  /* Wide enough that "Your streak is now 1 day." can't drop its last word onto
+     a line of its own — 420px orphaned it on most titles. `pretty` covers the
+     rest: book titles vary in length, so no single width avoids an orphan for
+     every one of them, and it reflows the closing lines rather than leaving a
+     word stranded. */
+  max-width: 480px;
   font-size: 15px;
-  color: #495057;
-  max-width: 420px;
   line-height: 1.5;
+  color: #495057;
+  text-wrap: pretty;
 }
 .lf-success-sub strong {
   color: #1f2933;
+}
+.lf-success-streak {
+  display: block;
+  margin-top: 2px;
 }
 /* Stands on its own now the figure block it used to sit beside is gone, so it
    carries its own ground instead of a divider rule. */
@@ -987,11 +997,22 @@
    look like an ad for itself rather than the obvious thing to do next. */
 .lf-benny {
   display: flex;
-  align-items: center;
   gap: 13px;
-  width: min(420px, 100%);
-  margin: 10px 0 20px;
-  text-align: left;
+  align-items: center;
+  justify-content: center;
+  /* A flex block doesn't inherit the column's text-align, so without the auto
+     margins it sat left of everything else on a centred screen. */
+  width: min(520px, 100%);
+  margin: 0 auto 20px;
+  text-align: center;
+}
+/* Its own rule, so the handoff reads as a second beat rather than more of the
+   sentence above it. Sized to the block it introduces. */
+.lf-benny-rule {
+  width: min(520px, 100%);
+  margin: 18px auto;
+  border: 0;
+  border-top: 1px solid #eceef0;
 }
 .lf-benny-face {
   width: 48px;
@@ -1010,10 +1031,11 @@
 /* Body copy now that there's no tinted ground to sit on — the same grey as the
    sentence above it, so the column reads as one voice. */
 .lf-benny-sub {
+  margin-top: 2px;
   font-size: 13.5px;
   line-height: 1.45;
   color: #495057;
-  margin-top: 2px;
+  text-wrap: pretty;
 }
 .lf-benny-skip {
   margin-top: 12px;

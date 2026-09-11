@@ -1058,8 +1058,12 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
       </h1>
       <p className="lf-success-sub">
         You logged <strong>{amount}</strong> for <strong>{bookTitle}</strong>
-        {result.finished ? ' and finished it. ' : '. '}
-        Your streak is now <strong>1 day</strong>.
+        {result.finished ? ' and finished it.' : '.'}
+        {/* The streak takes its own line: it's a different fact from what was
+            just logged, and a long title pushed it into an awkward wrap. */}
+        <span className="lf-success-streak">
+          Your streak is now <strong>1 day</strong>.
+        </span>
       </p>
 
       {/* No figure block here: the sentence above already says how much was
@@ -1074,6 +1078,7 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
       {/* Benny catches the reader here, while the book is still in mind. */}
       {onTalkToBenny ? (
         <>
+          <hr className="lf-benny-rule" />
           <div className="lf-benny">
             <img src="/bs-prototypes/benny-excited.svg" alt="" className="lf-benny-face" />
             <div className="lf-benny-copy">
@@ -1099,6 +1104,7 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
       ) : onOpenWord ? (
         <>
           {/* Same catch-them-here moment, spent on a word from the book. */}
+          <hr className="lf-benny-rule" />
           <div className="lf-benny">
             <img src="/bs-prototypes/benny-excited.svg" alt="" className="lf-benny-face" />
             <div className="lf-benny-copy">
