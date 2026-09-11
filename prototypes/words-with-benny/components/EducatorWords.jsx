@@ -16,7 +16,16 @@ import '@components/Avatar/Avatar.css'
 import '@components/BarList/BarList.css'
 import '@components/Cards/Cards.css'
 
-import { ALL_WORDS, CLASS_TOP_WORDS, CLASS_TREND, ROSTER } from '../data'
+import {
+  ACTIVITY_ACCURACY,
+  ALL_WORDS,
+  BOOKS,
+  CLASS_TOP_WORDS,
+  CLASS_TREND,
+  ROSTER,
+  WRITING_QUEUE,
+  activityType,
+} from '../data'
 import './EducatorWords.css'
 
 // The Vocabulary tab of a classroom page: "at-a-glance reporting showing
@@ -50,6 +59,26 @@ function distribution(roster) {
   })
 }
 
+/**
+ * First-try accuracy by activity type. This is the one number the class summary
+ * gained by asking about a word five different ways rather than once: a class
+ * can be near-perfect at picking a definition out of a list and still unable to
+ * put the word in a sentence of its own, and only the second of those is worth
+ * a teacher's minute.
+ */
+function byActivity() {
+  return ACTIVITY_ACCURACY.map((a) => {
+    const type = activityType(a.id)
+    return {
+      label: type.label,
+      value: a.firstTry,
+      valueLabel: `${a.firstTry}%`,
+      color: a.firstTry >= 85 ? '#16A34A' : a.firstTry >= 70 ? '#8B5CF6' : '#D97706',
+      max: 100,
+    }
+  })
+}
+
 function AccuracyPill({ value }) {
   const color = value >= 85 ? '#16A34A' : value >= 70 ? '#D97706' : '#DC2626'
   return (
@@ -59,8 +88,17 @@ function AccuracyPill({ value }) {
   )
 }
 
-export function EducatorWords({ onOpenStudent }) {
+export function EducatorWords({ onOpenStudent, written = [] }) {
   const [tab, setTab] = useState('class')
+
+  // Sentences students wrote in the "write your own" activity. Anything the
+  // automatic check couldn't confidently take is a `flagged` row, and those
+  // come first — the queue is the only part of this feature that asks a
+  // teacher for time, so it has to be short and sorted by who needs a look.
+  const queue = useMemo(() => {
+    const all = [...written, ...WRITING_QUEUE]
+    return [...all].sort((a, b) => (a.status === b.status ? 0 : a.status === 'flagged' ? -1 : 1))
+  }, [written])
 
   const totals = useMemo(() => {
     const words = ROSTER.reduce((n, s) => n + s.words, 0)
@@ -71,9 +109,6 @@ export function EducatorWords({ onOpenStudent }) {
     const firstTry = Math.round(ROSTER.reduce((n, s) => n + s.firstTry, 0) / ROSTER.length)
     return { words, week, collecting, median, firstTry }
   }, [])
-
-  // Words at least one student in the class has collected.
-  const distinct = ALL_WORDS.length
 
   const columns = [
     {
@@ -147,32 +182,35 @@ export function EducatorWords({ onOpenStudent }) {
 
       {tab === 'class' ? (
         <>
+          {/* The tinted shape, not the centred one: these sit inside a page
+              that already has a heading and five cards under them, and a row
+              of big centred numerals shouted over all of it. */}
           <div className="ew-stats">
             <StatCard
+              variant="tinted"
               value={totals.words.toLocaleString()}
               label="Words collected this year"
-              footer={`+${totals.week} in the last 7 days`}
-              footerColor="#16A34A"
+              trend={{ delta: totals.week, format: (n) => `${n} in the last 7 days` }}
               color={ACCENT}
             />
             <StatCard
+              variant="tinted"
               value={totals.collecting}
               unit={`/${ROSTER.length}`}
               label="Students collecting this week"
-              footer={`${Math.round((totals.collecting / ROSTER.length) * 100)}% of the class`}
               color="#0DA7BC"
             />
             <StatCard
+              variant="tinted"
               value={totals.median}
               label="Median words per student"
-              footer={`${distinct} distinct words in play`}
               color="#16A97A"
             />
             <StatCard
+              variant="tinted"
               value={totals.firstTry}
               unit="%"
               label="Used correctly first try"
-              footer="Class average across all words"
               color="#D97706"
             />
           </div>
@@ -180,11 +218,10 @@ export function EducatorWords({ onOpenStudent }) {
           <div className="ew-grid">
             <ChartCard
               title="The class word wall"
-              subtitle="Every word the class has collected — the bigger the word, the more students have it"
-              icon={<Icon name="vocabulary" size={17} />}
               accent={ACCENT}
               span={2}
               bodyPad="padded"
+              className="ew-cloudcard"
             >
               <WordCloud
                 words={CLASS_TOP_WORDS.map((w) => ({ text: w.word, value: w.students }))}
@@ -196,10 +233,16 @@ export function EducatorWords({ onOpenStudent }) {
               />
             </ChartCard>
 
+            <ChartCard title="Where the words stop sticking" accent={ACCENT} bodyPad="padded">
+              <BarList labelWidth={132} items={byActivity()} />
+            </ChartCard>
+
+            <ChartCard title="How the class is spread" accent={ACCENT} bodyPad="padded">
+              <BarList labelWidth={92} items={distribution(ROSTER)} />
+            </ChartCard>
+
             <ChartCard
               title="Words collected, against reading logs"
-              subtitle="Weekly, since Words with Benny turned on"
-              icon={<Icon name="chart-bar" size={17} />}
               accent={ACCENT}
               span={2}
               footer={
@@ -244,15 +287,44 @@ export function EducatorWords({ onOpenStudent }) {
               />
             </ChartCard>
 
-            <ChartCard
-              title="How the class is spread"
-              subtitle="Students by words collected"
-              icon={<Icon name="users" size={17} />}
-              accent={ACCENT}
-              span={2}
-              bodyPad="padded"
-            >
-              <BarList labelWidth={92} items={distribution(ROSTER)} />
+            <ChartCard title="Sentences students wrote" accent={ACCENT} span={2} bodyPad="flush">
+              <ul className="ew-queue">
+                {queue.slice(0, 6).map((row, i) => {
+                  const person = ROSTER.find((s) => s.id === row.student)
+                  return (
+                    <li key={`${row.student}-${row.word}-${i}`} className="ew-queue-row">
+                      <button
+                        className="ew-queue-who"
+                        onClick={() => onOpenStudent(row.student)}
+                        aria-label={`Open ${person?.name ?? row.student}`}
+                      >
+                        <Avatar
+                          initials={person?.initials ?? '??'}
+                          color={person?.color}
+                          size="sm"
+                        />
+                        <span className="ew-queue-name">{person?.name ?? row.student}</span>
+                      </button>
+                      <p className="ew-queue-text">
+                        {row.text
+                          .split(new RegExp(`(${row.word})`, 'i'))
+                          .map((bit, j) =>
+                            bit.toLowerCase() === row.word.toLowerCase() ? (
+                              <strong key={j}>{bit}</strong>
+                            ) : (
+                              <span key={j}>{bit}</span>
+                            ),
+                          )}
+                      </p>
+                      <div className="ew-queue-meta">
+                        <Pill color={row.status === 'flagged' ? '#D97706' : '#16A34A'} size="sm">
+                          {row.status === 'flagged' ? 'Needs a look' : 'Accepted'}
+                        </Pill>
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
             </ChartCard>
           </div>
         </>
@@ -269,9 +341,6 @@ export function EducatorWords({ onOpenStudent }) {
             scrollX
             stickyHeader
           />
-          <p className="ew-tablenote">
-            <Icon name="info" size={14} /> Pick a student to see the words they’ve collected.
-          </p>
         </div>
       )}
     </div>

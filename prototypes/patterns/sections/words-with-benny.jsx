@@ -3,13 +3,20 @@ import { useState } from 'react'
 import { Button } from '@components/Button/Button'
 
 import { WordUnlock } from '../../words-with-benny/components/WordUnlock'
+import { Activity } from '../../words-with-benny/components/Activities'
+import { Flashcards, ReviewStrip } from '../../words-with-benny/components/Flashcards'
 import { MyWords, WordTile } from '../../words-with-benny/components/MyWords'
 import { Collections } from '../../words-with-benny/components/Collections'
 import { EducatorWords } from '../../words-with-benny/components/EducatorWords'
 import { StudentVocabulary } from '../../words-with-benny/components/StudentVocabulary'
 import { ClassroomView } from '../../student-profile/BeanstackProfile'
 import { EducatorWords as EducatorWordsTab } from '../../words-with-benny/components/EducatorWords'
-import { SEED_COLLECTION, WORDS_BY_BOOK } from '../../words-with-benny/data'
+import {
+  ACTIVITY_TYPES,
+  SEED_COLLECTION,
+  WORDS_BY_BOOK,
+  seedReviews,
+} from '../../words-with-benny/data'
 import { Variant } from './_shared'
 
 // The rail card borrows `.wa-card` from the consumer dashboard it's injected
@@ -40,6 +47,61 @@ function WordUnlockDemo() {
   )
 }
 
+// Each activity type, driven for real. Passing a one-type `round` is the same
+// override the prototype's preview bar uses to demo one on its own.
+function ActivityDemo({ type }) {
+  const [done, setDone] = useState(false)
+  return (
+    <div style={{ padding: 20, background: '#f3f4f6' }}>
+      <div
+        style={{
+          maxWidth: 520,
+          margin: '0 auto',
+          padding: '20px 22px',
+          background: '#fff',
+          borderRadius: 20,
+        }}
+      >
+        <Activity
+          type={type}
+          word={WORDS_BY_BOOK.matilda[1]}
+          bookId="matilda"
+          onPass={() => setDone(true)}
+        />
+        {done && (
+          <p style={{ marginTop: 12, fontSize: 13, fontWeight: 700, color: '#047857' }}>
+            Passed — the round would move on here.
+          </p>
+        )}
+      </div>
+    </div>
+  )
+}
+
+const DECK_CARDS = seedReviews(SEED_COLLECTION)
+
+function FlashcardsDemo() {
+  const [open, setOpen] = useState(false)
+  const [cards, setCards] = useState(DECK_CARDS)
+  return (
+    <div style={{ padding: 20, background: '#f3f4f6' }}>
+      <ReviewStrip cards={cards} onStart={() => setOpen(true)} />
+      <Flashcards
+        open={open}
+        cards={cards}
+        collection={SEED_COLLECTION}
+        onGrade={(word, knewIt) =>
+          setCards((m) => ({
+            ...m,
+            [word]: { ...m[word], box: knewIt ? Math.min(m[word].box + 1, 5) : 1 },
+          }))
+        }
+        onClose={() => setOpen(false)}
+      />
+    </div>
+  )
+}
+
 // Newest (rung as new) · a plain collected word · one from a magazine issue.
 const TILE_CASES = [
   { entry: SEED_COLLECTION[SEED_COLLECTION.length - 1], isNew: true },
@@ -54,24 +116,129 @@ export const wordsWithBennySections = [
     name: 'WordUnlock',
     desc: (
       <>
-        The post-log moment, in three beats. <strong>knock</strong> — Benny turns up with a sealed
-        card naming the book that was just logged, and the card is the only target on the screen.{' '}
-        <strong>card</strong> — the word, how to say it, what it means, and the line tying it back
-        to the book, then one check: which of three sentences uses it correctly. A wrong pick is
-        marked and nudged rather than penalised, and the reader stays on the card until they get it.{' '}
-        <strong>done</strong> — banked, with the running count. Whether it took one try is the
-        signal the educator roll-up reports as first-try accuracy.
+        The post-log moment, in three beats. <strong>card</strong> — Benny hands the word over on
+        the dark ground, in the big type: what it is, how to say it, what it means, and the line
+        tying it back to the book. It was two screens with a sealed card between them; the seal was
+        a tap that bought nothing, since the reader had just pressed a button saying a word was
+        coming. <strong>round</strong> — three <code>Activity</code> rungs on that one word, with
+        the word pinned above them, because this is a collection and not an exam.{' '}
+        <strong>done</strong> — banked, with the running count and when the word comes back in the
+        deck.
+        <br />
+        <br />
+        Neither the plan nor a progress rail is drawn. Three short goes don&apos;t need a step
+        counter, and announcing them up front turned the moment a reader is given something into a
+        briefing about what they now have to do.
+        <br />
+        <br />
+        The round replaced a single multiple-choice question: one touch banks a word the reader has
+        already forgotten by the next log. A wrong answer is marked and nudged rather than
+        penalised, and the reader stays on the rung until they get it — whether they needed a second
+        go is the signal the educator roll-up reports as first-try accuracy.
         <br />
         <br />
         Props: <code>open</code>, <code>word</code>, <code>bookId</code>,{' '}
-        <code>collectedCount</code>, <code>onCollect</code>, <code>onClose</code>,{' '}
-        <code>onSeeAll</code>. With no <code>bookId</code> (a manual or untitled log) the copy falls
-        back to &ldquo;what you just read&rdquo;.
+        <code>collectedCount</code>, <code>round</code> (override the word&apos;s own three),{' '}
+        <code>onCollect</code>, <code>onClose</code>, <code>onSeeAll</code>. With no{' '}
+        <code>bookId</code> (a manual or untitled log) the copy falls back to &ldquo;what you just
+        read&rdquo;.
       </>
     ),
     render: () => (
-      <Variant label="knock → card → collected" bare>
+      <Variant label="word → round → collected" bare>
         <WordUnlockDemo />
+      </Variant>
+    ),
+  },
+  {
+    group: 'words-with-benny',
+    id: 'wb-activities',
+    name: 'Activity',
+    desc: (
+      <>
+        The nine ways Benny asks about a word, behind one dispatcher. All take <code>type</code> /{' '}
+        <code>word</code> / <code>bookId</code> / <code>onPass</code> and report the same{' '}
+        <code>{'{ firstTry }'}</code>, so <code>WordUnlock</code> can string any three together
+        without knowing which is which.
+        <br />
+        <br />
+        They climb a ladder — <strong>recognise it</strong> (match the meaning, fill in the blank,
+        find the near-match, match the pairs), <strong>use it</strong> (pick the right sentence,
+        finish the passage, pick a card, spot the odd one), <strong>produce it</strong> (write your
+        own) — and a round never repeats a rung. Four of them are the same choose-from-a-list shape,
+        so the newer ones deliberately aren&apos;t: <em>pick a card</em> deals one sentence face
+        down and asks for a yes/no on that one alone, <em>spot the odd one</em> is elimination
+        rather than selection, and <em>match the pairs</em> is the only rung that puts several words
+        in play at once — the new one shuffled in with two collected earlier, which is the
+        repetition the whole round exists for.
+        <br />
+        <br />
+        Only the passage, the writing check and the near-match need authored content — and the
+        near-match only one everyday word per entry, kept in its own <code>SYNONYMS</code> map.
+        Everything else is derived from the word itself, so adding a word still costs one entry.
+        <br />
+        <br />
+        The passage is <strong>tap-then-tap first</strong>, with native drag as an enhancement —
+        that&apos;s what a student on a trackpad or a tablet will actually do, and it&apos;s the
+        path a keyboard can follow. The writing check is deliberately shallow (a prototype
+        can&apos;t run the model) but the same shape a real one would take: did they use the word,
+        is it a sentence, is it theirs — and anything it can&apos;t confidently accept goes to the
+        teacher&apos;s queue rather than being marked wrong at a child.
+      </>
+    ),
+    render: () => (
+      <Variant label={ACTIVITY_TYPES.map((t) => t.short).join(' · ')} full>
+        <div>
+          {ACTIVITY_TYPES.map((t) => (
+            <div key={t.id}>
+              <p
+                style={{
+                  padding: '14px 20px 0',
+                  fontSize: 12,
+                  fontWeight: 800,
+                  letterSpacing: '0.05em',
+                  textTransform: 'uppercase',
+                  color: '#7c3aed',
+                  background: '#f3f4f6',
+                }}
+              >
+                {t.rung} — {t.label}
+              </p>
+              <ActivityDemo type={t.id} />
+            </div>
+          ))}
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'words-with-benny',
+    id: 'wb-flashcards',
+    name: 'Flashcards',
+    desc: (
+      <>
+        The collection, turned round. Everything else pushes words <em>into</em> the collection;
+        this is the one surface that hands them back — a deck built from the words the reader
+        already owns, led by the ones going stale.
+        <br />
+        <br />
+        Scheduling is Leitner: five boxes at widening intervals, a word the reader knows moves up a
+        box and isn&apos;t asked again for twice as long, a word they miss drops to box one and
+        comes round tomorrow. That&apos;s what lets the collection keep growing without the early
+        words quietly falling out of it — and why each grade button says when the word comes back
+        rather than just being right or wrong.
+        <br />
+        <br />
+        <code>ReviewStrip</code> is the entry point, sitting above the collection; it states the
+        caught-up case rather than disappearing. The deck itself takes <code>open</code>,{' '}
+        <code>cards</code>, <code>collection</code>, <code>onGrade</code>, <code>onClose</code>, is
+        fixed at the moment it opens (grading must not reshuffle the pile mid-session), and is
+        driveable from the keyboard: space flips, ← and → grade.
+      </>
+    ),
+    render: () => (
+      <Variant label="the strip, and the deck behind it" full>
+        <FlashcardsDemo />
       </Variant>
     ),
   },

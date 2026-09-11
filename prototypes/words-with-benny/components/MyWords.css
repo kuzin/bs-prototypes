@@ -11,52 +11,42 @@
    tinted panel per stat, icon beside a figure-over-label column, one soft tone
    each. Not a bordered white card — nothing else on this page is one. */
 
+/* The review strip leads the pane, so the stats need the gap under it. */
+.mw .fc-strip {
+  margin-bottom: 18px;
+}
+
 .mw-stats {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  /* Four fixed columns rather than auto-fit: with exactly four stats, auto-fit
+     drops to three at this width and leaves the fourth alone on its own row. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 4px;
 }
-.mw-stat {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 18px 22px;
-  border-radius: 12px;
+@media (max-width: 1040px) {
+  .mw-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
-.mw-stat svg {
-  flex: 0 0 auto;
+@media (max-width: 520px) {
+  .mw-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
-.mw-stat--words {
-  color: #5b21b6;
-  background: #ede4ff;
-}
-.mw-stat--week {
-  color: #0b6b78;
-  background: #dff4f7;
-}
-.mw-stat--books {
-  color: #075985;
-  background: #e0f2fe;
-}
-.mw-stat--first {
-  color: #166534;
-  background: #dcfce7;
-}
-.mw-stat-num {
-  font-size: 17px;
-  font-weight: 800;
-}
-.mw-stat-lbl {
-  font-size: 13px;
-  opacity: 0.85;
+
+/* The band filter sits between the stats and the grid, spanning it: `block`
+   divides the row evenly, so the strip lines up with the tile grid below
+   instead of ending halfway across it. */
+.mw-filters {
+  margin-top: 22px;
 }
 
 /* ─── Word tiles ────────────────────────────────────────────────────────── */
 
 .mw-grid {
   display: grid;
-  margin-top: 22px;
+  margin-top: 16px;
   grid-template-columns: repeat(auto-fill, minmax(238px, 1fr));
   gap: 12px;
 }
@@ -105,6 +95,28 @@
   background: #7c3aed;
   border-radius: 999px;
 }
+/* Where the deck has this word — a dot, with the wording in a tooltip. It's a
+   state, not a score, and a word slipping back to the first band must not read
+   as a failure, so it stays quiet and the same size whatever it says. */
+.mw-tile-dot {
+  display: block;
+  flex: 0 0 auto;
+  width: 9px;
+  height: 9px;
+  margin-top: 6px;
+  background: var(--c-slate-300);
+  border-radius: 999px;
+}
+.mw-tile-dot--learning {
+  background: #f59e0b;
+}
+.mw-tile-dot--sticking {
+  background: #8b5cf6;
+}
+.mw-tile-dot--known {
+  background: #16a34a;
+}
+
 .mw-tile-say {
   margin-top: 2px;
   font-size: 12px;

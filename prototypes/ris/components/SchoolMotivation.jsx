@@ -131,8 +131,8 @@ export function SchoolMotivation({ schoolId }) {
                   seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
                   formatDelta={(d) => `${d > 0 ? '+' : ''}${d} pts`}
                   context={(s) => {
-                    const my = s.points.find((p) => p.serieId === shortName)?.data.y
-                    const dist = s.points.find((p) => p.serieId === 'District avg')?.data.y
+                    const my = s.points.find((p) => p.seriesId === shortName)?.data.y
+                    const dist = s.points.find((p) => p.seriesId === 'District avg')?.data.y
                     if (my == null || dist == null) return null
                     const gap = my - dist
                     return gap === 0 ? (

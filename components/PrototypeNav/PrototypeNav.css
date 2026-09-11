@@ -1,21 +1,30 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&display=swap');
 
+:root {
+  /* Published so a shell can inset content — or a modal — by the nav's height
+     rather than repeating 48px. */
+  --proto-nav-h: 48px;
+}
+
 .proto-nav {
   font-family: var(--font-sans);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 48px;
+  height: var(--proto-nav-h);
   padding: 0 16px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
   position: fixed;
+  right: 0;
   bottom: 0;
   left: 0;
-  right: 0;
-  z-index: 100;
+  /* Above the modal layer (199/200): this bar is scaffolding for whoever is
+     reviewing the prototype, so a modal inside the prototype shouldn't scrim
+     it. The modal insets itself instead — see --chrome-bottom. */
+  z-index: 300;
 }
 
 /* Left cluster of icon-only buttons (Prototypes / Patterns / Components). */

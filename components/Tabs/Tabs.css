@@ -213,6 +213,50 @@
   font-size: 16px;
 }
 
+/* ── Folder variant ──────────────────────────────────────────────────────────
+   The shipped leaderboard widget's tabs
+   (bs-product microsite/components/_leaderboard_widget.scss): they sit on top
+   of a panel, and the active one is filled with the same $lightestGray as the
+   panel's action band, so tab and panel read as one surface with the inactive
+   tab cut away from it. Unlike the underline variant these carry no rule of
+   their own — the panel below supplies the edge.
+     tab      16px 32px, 17px/1.2, $mediumGray, radius 8px 8px 0 0
+     hover    $ghostWhite fill, $textColor
+     active   $lightestGray fill, $textColor, 800
+   Pair with `block` for the app's own 50/50 split. */
+.tabs--folder {
+  display: flex;
+  column-gap: 0;
+}
+.tabs--folder .tab {
+  padding: 16px 32px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--c-text-real-light);
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  border-radius: 8px 8px 0 0;
+  transition:
+    color 130ms ease,
+    background-color 130ms ease;
+}
+.tabs--folder .tab:hover:not(.tab--disabled) {
+  color: var(--c-text-real);
+  background: var(--c-gray-0);
+}
+.tabs--folder .tab--active,
+.tabs--folder .tab--active:hover {
+  font-weight: 800;
+  color: var(--c-text-real);
+  background: var(--c-gray-150);
+}
+.tabs--folder.tabs--sm .tab {
+  padding: 12px 16px;
+  font-size: 15px;
+}
+
 /* ── Full-width modifier — equal-flex tabs for segmented-control layouts ───── */
 .tabs--block {
   display: flex;
@@ -221,6 +265,22 @@
   flex: 1;
   text-align: center;
   justify-content: center;
+}
+
+/* A pill keeps `flex-shrink: 0` so a strip of them never squeezes its labels —
+   but a *block* group has to fit the width it was given, and three or four
+   pills at 375px were overflowing the card and hiding the last one entirely.
+   In block mode the row wraps instead: a second line of full labels beats one
+   line of half-words. `min-width: 0` is the last resort, for a single label
+   too wide for the whole row. */
+.tabs--pill.tabs--block {
+  flex-wrap: wrap;
+}
+
+.tabs--pill.tabs--block .tab {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
 }
 
 /* ── Shared ──────────────────────────────────────────────────────────────── */

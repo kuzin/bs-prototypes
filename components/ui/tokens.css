@@ -204,12 +204,18 @@
      gutters. The shipped app matches that gutter
      (`#pjax-body-content { padding: 58px 70px 50px 150px }`) but sets no cap,
      so content sprawls on wide monitors; --admin-content-max is a prototype
-     guard the real app lacks. At the 1440 design width the gutters bind first
-     and every page lands on Figma's 900px.
+     guard the real app lacks.
+
+     It was 1280px, which only ever bound above a ~1420px viewport: on a laptop
+     the gutter won first and the column ran the better part of 1200px, which
+     is not what the design intends and did not read as capped. 1100 bites at
+     the widths these prototypes are actually reviewed at, while still leaving
+     the wide-monitor guard doing its job. Surfaces with two rails (the
+     classroom page, RIS) land nearer Figma's 900px column as a result.
 
      Top padding is Figma's y=56 (the app composes 58px of body padding with
      `.page-wrap { margin-top: 56px }`); bottom is the app's 50px. */
-  --admin-content-max: 1280px;
+  --admin-content-max: 1100px;
   --admin-gutter: 70px;
   --admin-pad-top: 56px;
   --admin-pad-bottom: 50px;

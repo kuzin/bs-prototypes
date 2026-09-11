@@ -26,9 +26,9 @@ import { Knobs, Variant, TABLE_ROWS } from './_shared'
 
 const fakeSlicePoints = (points) => ({
   points: points.map((p, i) => ({
-    id: `${p.serieId}.${i}`,
-    serieId: p.serieId,
-    serieColor: p.color,
+    id: `${p.seriesId}.${i}`,
+    seriesId: p.seriesId,
+    seriesColor: p.color,
     data: { x: p.x, y: p.y },
   })),
 })
@@ -1631,8 +1631,8 @@ export const chartsSections = [
           <Variant label="SliceTooltip — line chart">
             <SliceTooltip
               slice={fakeSlicePoints([
-                { serieId: 'Lincoln', color: '#E8866A', x: 'Jan', y: 68 },
-                { serieId: 'District avg', color: '#CBD5E1', x: 'Jan', y: 72 },
+                { seriesId: 'Lincoln', color: '#E8866A', x: 'Jan', y: 68 },
+                { seriesId: 'District avg', color: '#CBD5E1', x: 'Jan', y: 72 },
               ])}
               accent="#E8866A"
               allData={RMI_TREND_FIXTURE}

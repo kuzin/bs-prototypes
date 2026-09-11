@@ -283,6 +283,13 @@
   letter-spacing: 0.01em;
   line-height: 1.25;
   min-width: 0;
+  /* One line per row, always. A name long enough to wrap made its row taller
+     than every other, broke the rail's rhythm and left the icon sitting above
+     the label's centre instead of beside it. Clipped instead — the row already
+     carries the full name in `title`. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* The rail's own two tones, from the shipped app's hand-vendored icons
@@ -2823,6 +2830,64 @@
   flex-direction: column;
 }
 
+/* `.tbl-scroll > .tbl` is `width: max-content` by default, which is what a wide
+   data table wants — but here it let long titles widen the table and push the
+   marks out past the card's right edge. This one fits the card instead, and the
+   title cell is what gives way. */
+.tbl-scroll > .tbl.bp-rl-tbl {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Table view — title and author stack in one cell. The cell is the one column
+   that gives way: Date and the mark cluster are fixed widths, so a long title
+   wraps inside its own column instead of widening the table and pushing the
+   row's controls out of sight. */
+.bp-rl-tbl-title {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.bp-rl-tbl-name {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 800;
+  color: var(--c-blue-700);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+  /* Break between words, and only inside one if a single word is wider than
+     the column — `anywhere` let the browser shrink the column to a few
+     characters and hyphen-less-ly chop every title in half. */
+  overflow-wrap: break-word;
+}
+
+.bp-rl-tbl-name:hover {
+  text-decoration: underline;
+}
+
+.bp-rl-tbl-author {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-slate-400);
+}
+
+.bp-rl-tbl-tags {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.bp-rl-tbl-tags .bp-rl-entry-lexile {
+  margin-left: 0;
+}
+
 /* Weeks sit inside the card's own padding */
 .bp-rl-body {
   padding: 6px 18px 18px;
@@ -3425,6 +3490,76 @@
     width: 100%;
   }
 
+  /* A plain hero button goes icon-only here, the way the header's Actions menu
+     does: its label is what pushed the action off the title's row, and the row
+     is where it belongs. Hide the label *wrapper*, or the emptied span still
+     draws the button's internal gap. */
+  .bp-content .hero-action .btn-label:has(.bp-btn-label) {
+    display: none;
+  }
+
+  .bp-content .hero-action .btn:has(.bp-btn-label) {
+    padding: 0 10px;
+  }
+
+  /* The stat row's icon chip is decoration — the label says what the figure is
+     — and at 375 it was the 28px that made "Total minutes read" wrap to three
+     lines. The label and the figure get it back. */
+  .bp-content .bp-statrow-icon {
+    display: none;
+  }
+
+  /* And the row stacks: the label takes a line of its own and the figure sits
+     under it, so every figure in the card starts at the same left edge instead
+     of landing wherever its label happened to end. Side by side at 375 they
+     were ragged, and a 22px number in the middle of the row left the longer
+     labels wrapping to three lines. */
+  /* Grid rather than a wrapped flex row: wrapping put the label on its own
+     line but left the trend chip and the chevron stuck on the second one,
+     beside the figure. Here the text stacks down the first column and the two
+     marks each span both rows, so they centre against the whole row however
+     tall it gets. The gap is on the marks themselves, not the tracks — a row
+     with no chip and no chevron would otherwise still pay for both. */
+  .bp-content .bp-statrow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: 0;
+    row-gap: 4px;
+  }
+
+  .bp-content .bp-statrow-label {
+    grid-area: 1 / 1;
+  }
+
+  .bp-content .bp-statrow-value,
+  .bp-content .bp-statrow-empty,
+  .bp-content .bp-statrow-motivators {
+    grid-area: 2 / 1;
+  }
+
+  .bp-content .bp-statrow > .trend-tip,
+  .bp-content .bp-statrow > .trend-chip {
+    grid-area: 1 / 2 / span 2 / auto;
+    margin-left: 12px;
+  }
+
+  .bp-content .bp-statrow-go {
+    grid-area: 1 / 3 / span 2 / auto;
+    margin-left: 10px;
+  }
+
+  .bp-content .bp-statrow-value {
+    font-size: 18px;
+  }
+
+  /* The card's own heading keeps its line too — the range switcher beside it
+     doesn't shrink, so "At a glance" was being ellipsised to "A…". */
+  .bp-content .bp-statlist-head {
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+
   .bp-content .hero-action .tabs {
     width: 100%;
   }
@@ -3578,15 +3713,20 @@
   transition: transform 0.14s ease;
 }
 
+/* Centred along the cover's bottom edge rather than tucked into its corner:
+   in the corner at 12px it read as a watermark on the artwork, and a Lexile is
+   the one fact this shelf carries. Centred and a rung up it reads as a caption
+   the cover is wearing. */
 .bp-latest-lexile {
   position: absolute;
-  right: 5px;
-  bottom: 5px;
-  padding: 2px 6px;
+  left: 50%;
+  bottom: 7px;
+  transform: translateX(-50%);
+  padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(17, 24, 39, 0.78);
+  background: rgba(17, 24, 39, 0.82);
   color: #fff;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.01em;
 }
@@ -3632,17 +3772,14 @@
    Prompt + the reader's own answer, one hairline-divided item per response.
    Same edge-to-edge bleed as the stat rows so the card reads as one list. */
 .bp-tb-item {
+  --row-pad-y: 12px;
   margin: 0 -18px;
-  padding: 12px 18px;
+  padding: var(--row-pad-y) 18px;
   border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-card > .bp-latest-head + .bp-tb-item {
   border-top: 0;
-}
-
-.bp-card:not(.bp-card--flush) > .bp-tb-item:last-child {
-  margin-bottom: -16px;
 }
 
 .bp-tb-head {
@@ -4258,9 +4395,9 @@
    "this word opens something" reads the same way across the prototype. */
 .bp-talk-title {
   font-family: inherit;
-  /* A rung under the cell's own 15px: it's a link in a row, not the row's
-     heading, and at cell size it out-weighed the date beside it. */
-  font-size: 14px;
+  /* The cell's own size — a link in a table row reads as row copy, and a rung
+     under it made this column look shrunken beside every other table. */
+  font-size: inherit;
   font-weight: 700;
   color: var(--c-fig-blue-600);
   background: none;
@@ -4413,11 +4550,12 @@
 }
 
 .bp-statrow {
+  --row-pad-y: 11px;
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 11px 16px;
+  padding: var(--row-pad-y) 16px;
   background: none;
   border: 0;
   border-top: 1px solid var(--c-gray-200);
@@ -4450,22 +4588,29 @@
   width: auto;
   margin-left: -18px;
   margin-right: -18px;
+  /* Bled to the card's edges, a row owes the card's own 18px back — its stock
+     16px sat the icon 2px inside the title above it. This is the whole list,
+     not just the first row: patching the first one alone (which is how it was)
+     stepped the icons and the figures in and out down the card. */
+  padding-left: 18px;
+  padding-right: 18px;
 }
 
-/* The last row used to bleed to the card's bottom edge — the row list reaching
-   the edge like a table — which left its content 11px off a rounded corner
-   where everything else in the card gets 16px, and read as the row being cut
-   off. Dropping the row's own bottom padding instead was worse: 11px above the
-   content and 0 below made the row itself lopsided, and its band looked
-   squashed next to the rows above.
+/* A bled row list ends on the card's own padding — not on the sum of the
+   card's and the row's, which is what kept going wrong here. The last row
+   hands its bottom padding back, so under its content there is exactly the
+   16px the card gives everything else, while the row itself stays symmetric
+   (11px above and below its content, like every row above it). Each family
+   that bleeds declares what it has to give in `--row-pad-y`.
 
-   So the row stays symmetric and the *card's* padding gives way. What's left
-   under the content is the row's own 11px plus 11px of the card's — 22px,
-   which is exactly the gap between two rows' content, so the last row sits in
-   the same rhythm as the rest. The side bleed stays: that's what makes the
-   dividers span the full width. */
-.bp-card:not(.bp-card--flush):not(.bp-statlist) > .bp-statrow--static:last-child {
-  margin-bottom: calc(-1 * (16px - 11px));
+   Bleeding to the card's bottom edge instead — the row list reaching the edge
+   like a table — left the content 11px off a rounded corner and read as cut
+   off; leaving both paddings to stack read as a hole under the last row. The
+   side bleed stays either way: that's what makes the dividers span the full
+   width. */
+.bp-card:not(.bp-card--flush):not(.bp-statlist) > .bp-statrow--static:last-child,
+.bp-card:not(.bp-card--flush) > .bp-tb-item:last-child {
+  margin-bottom: calc(-1 * var(--row-pad-y));
 }
 
 /* The title rule is the first row's divider, so the row drops its own and the
@@ -4592,6 +4737,34 @@
   flex-shrink: 0;
 }
 
+/* ─── The figures read as a column ────────────────────────────────────────────
+   Whatever annotates a figure — a trend chip, a caption like "since Jan" — sits
+   in a lane of its own beside it, and a row with nothing to annotate reserves
+   that same lane. Otherwise the annotated rows push their figure left and the
+   bare ones run on to the card's edge, which is how "890L" ended up hanging
+   further right than the "870L" above it.
+
+   The lane only exists in a card that has an annotation somewhere: everywhere
+   else the figures still end on the card's own padding, unchanged. */
+.bp-card:has(.bp-statrow > .trend-tip) {
+  --stat-trail: 26px; /* a chip */
+}
+
+/* A caption is wider than a chip, so one caption widens the lane for every row
+   in that card — the alternative is a column that steps in and out. */
+.bp-card:has(.bp-statrow > .bp-statrow-note) {
+  --stat-trail: 58px;
+}
+
+.bp-statrow > .trend-tip,
+.bp-statrow > .bp-statrow-note {
+  flex: 0 0 var(--stat-trail, auto);
+}
+
+.bp-statrow:not(:has(> .trend-tip, > .bp-statrow-note)) .bp-statrow-value {
+  margin-right: calc(var(--stat-trail, 0px) + 12px);
+}
+
 /* ─── Header status flags ─────────────────────────────────────────────────────
    The grade line is an identity row now: grade first, then whatever standing
    facts the reader carries. It wraps rather than pushing the Actions buttons
@@ -4687,6 +4860,29 @@
 
 /* The table row's own version of the card's mark cluster: same marks, same
    source, same menu, laid out on one line at the end of the row. */
+.bp-rl-tbl-marks {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  justify-content: flex-end;
+}
+
+/* Date and Unit are reference columns, not the row's subject — the title is.
+   Tabular figures so the dates line up as a column of numbers. */
+.bp-rl-tbl-dim {
+  font-size: 13px;
+  color: var(--c-slate-500);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* The unit chip reads as the row's own figure rather than a reference value,
+   so it takes the row's accent instead of the Lexile's neutral grey. */
+.bp-rl-entry-unit {
+  margin-left: 0;
+  background: color-mix(in srgb, var(--c-blue-700) 9%, #fff);
+  color: var(--c-blue-700);
+}
 
 /* The Lexile the table always had, now on the calendar card too. Every pill on
    this page runs the app's own tag box — 13px / 800 on 3px 10px — so the
@@ -5129,18 +5325,14 @@
     display: none;
   }
 }
-/* Two fixes for a stat row sitting directly under a card's header bar.
-   The gap: `.bp-card:has(> .bp-statrow--static) > .bp-section-heading` already
-   zeroes the heading's bottom margin, but ProfileCard.css loads *after* this
-   file and its own `.pcard-title:first-child` margin wins — so the 14px comes
-   back and stacks on the row's padding. Cancelling it here beats the order.
-   The inset: the row is bled out to the card's edges by the rule above, so it
-   owes the card's own 18px — its stock 16px left the icon off the title's edge,
-   and zeroing it (briefly) put the content flat on the border. */
+/* A stat row sitting directly under a card's header bar.
+   `.bp-card:has(> .bp-statrow--static) > .bp-section-heading` already zeroes
+   the heading's bottom margin, but ProfileCard.css loads *after* this file and
+   its own `.pcard-title:first-child` margin wins — so the 14px comes back and
+   stacks on the row's padding. Cancelling it here beats the order. The row's
+   own inset is the list's, set with the bleed above. */
 .pcard > .pcard-title:first-child + .bp-statrow {
   margin-top: -14px;
-  padding-left: 18px;
-  padding-right: 18px;
 }
 
 /* ── Activity types ─────────────────────────────────────────────────────────
@@ -5695,4 +5887,74 @@
    component keeps the app's own default everywhere else. */
 .bp-content > .fltr {
   border: 1px solid var(--c-gray-200);
+}
+
+/* ── Lexile trend ────────────────────────────────────────────────────────────
+   The shipped chart's chrome: the heading with the period steppers on its
+   right, and the span it covers under them
+   (`lexile-chart__weeks-selector` / `__current-period`). */
+/* The chart card's header bar. Wrapping the heading so the steppers could sit
+   beside it took the heading out of the `.pcard-title:first-child` slot that
+   draws every other card's header, so the wrapper takes that treatment
+   instead: bled to the card's edges, with the same hairline under it. */
+.bp-lex-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -16px -18px 12px;
+  padding: 8px 14px 8px 18px;
+  border-bottom: 1px solid var(--c-gray-200);
+}
+
+.bp-lex-head .bp-section-heading {
+  margin-bottom: 0;
+}
+
+/* The period and the arrows that step it are one control, so they travel
+   together at the right of the bar. */
+.bp-lex-period-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.bp-lex-period {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-slate-500);
+  white-space: nowrap;
+}
+
+/* The shipped chart's tooltip, ported from `#chartjs-tooltip`
+   (bs-product `admin/components/_charts.scss`): a `#2a2a2a` chip at 12px
+   radius holding the value over the word "Average", centred, and nothing
+   else — no date, no series name. */
+.bp-lex-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: #2a2a2a;
+}
+
+.bp-lex-tip-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #fff;
+  text-align: center;
+}
+
+.bp-lex-tip-caption {
+  display: block;
+  margin-top: -3px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #fff;
+  text-align: center;
 }

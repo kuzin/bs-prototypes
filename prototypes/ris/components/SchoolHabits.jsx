@@ -145,8 +145,8 @@ export function SchoolHabits({ schoolId }) {
                   formatY={(v) => `${v} min`}
                   formatDelta={(d) => `${d > 0 ? '+' : ''}${d} min`}
                   context={(s) => {
-                    const my = s.points.find((p) => p.serieId === shortName)?.data.y
-                    const dist = s.points.find((p) => p.serieId === 'District avg')?.data.y
+                    const my = s.points.find((p) => p.seriesId === shortName)?.data.y
+                    const dist = s.points.find((p) => p.seriesId === 'District avg')?.data.y
                     if (my == null || dist == null) return null
                     const gap = my - dist
                     return gap === 0 ? (

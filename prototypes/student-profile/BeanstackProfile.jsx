@@ -586,7 +586,6 @@ const SECTION_ACCENT = {
   badges: { bg: '#EFFBF9', text: '#0D9488' },
   achievements: { bg: '#FFEDD5', text: '#C2410C' },
   reviews: { bg: '#FFE4E6', text: '#BE123C' },
-  textchallenges: { bg: '#E6F1FF', text: '#1A6DD5' },
   points: { bg: '#FEF9C3', text: '#A16207' },
 }
 const accentFor = (section) => SECTION_ACCENT[section ?? 'overview'] ?? SECTION_ACCENT.overview
@@ -597,23 +596,23 @@ const accentFor = (section) => SECTION_ACCENT[section ?? 'overview'] ?? SECTION_
 // to hover to identify.
 const NAV_ITEMS = [
   { icon: 'user', section: null, label: 'Overview' },
-  // What the reader actually did comes before the analysis derived from it.
+  // What the reader actually did comes first, then the challenges that asked
+  // for it and what those paid out — the reader's own run through the site.
   { icon: 'reading', section: 'readinglog', label: 'Reading Log' },
-  // Second in the rail, as the ticket's mock has it.
-  { icon: 'classroom', section: 'classes', label: 'Classes' },
   { icon: 'challenges', section: 'challenges', label: 'Challenges' },
-  { icon: 'fire', section: 'motivation', label: LABEL.motivation },
-  { icon: 'chat', section: 'integrity', label: LABEL.integrity },
-  { icon: 'calendar', section: 'habits', label: LABEL.habits },
-  { icon: 'book', section: 'skills', label: LABEL.skills },
   { icon: 'gift', section: 'rewards', label: 'Rewards' },
   { icon: 'ticket', section: 'drawings', label: 'Drawings' },
-  { icon: 'puzzle', section: 'activities', label: 'Activities' },
+  // Then the analysis derived from all of it.
+  { icon: 'chat', section: 'integrity', label: LABEL.integrity },
+  { icon: 'calendar', section: 'habits', label: LABEL.habits },
+  { icon: 'fire', section: 'motivation', label: LABEL.motivation },
+  { icon: 'book', section: 'skills', label: LABEL.skills },
+  // Then everything the reader has collected, and the roster fact last.
   { icon: 'medal', section: 'badges', label: 'Badges' },
-  { icon: 'certificate', section: 'achievements', label: 'Achievements' },
-  { icon: 'star', section: 'reviews', label: 'Reviews' },
-  { icon: 'paragraph', section: 'textchallenges', label: 'Text Box' },
-  { icon: 'points', section: 'points', label: 'Points Summary' },
+  { icon: 'puzzle', section: 'activities', label: 'Activities' },
+  { icon: 'star', section: 'reviews', label: 'Book Reviews' },
+  { icon: 'points', section: 'points', label: 'Points' },
+  { icon: 'classroom', section: 'classes', label: 'Classes' },
 ]
 const ANALYSIS_SECTIONS = new Set(['motivation', 'integrity', 'habits', 'skills'])
 
@@ -1921,6 +1920,10 @@ function LexileDelta({ value, suffix }) {
 
 function SkillsDetail({ sec, c }) {
   const lexileAxis = niceLexileAxis([...sec.lexileHistory.map((d) => d.avg), sec.gradeLevel])
+  // The app labels the plot with the span it covers and steps through it with
+  // the arrows beside — `lexile-chart__current-period` and its two
+  // IconButtons. Derived from the history so the two can't disagree.
+  const lexilePeriod = `${sec.lexileHistory[0]?.month} – ${sec.lexileHistory[sec.lexileHistory.length - 1]?.month}`
 
   // Every figure below is derived from the titles and the history already on
   // the page — nothing authored separately that could drift from the chart.
@@ -1954,39 +1957,57 @@ function SkillsDetail({ sec, c }) {
         </StatRow>
       </Card>
 
+      {/* Drawn the way the shipped chart is (bs-product
+          `NewAdmin/ReaderProfile/.../LexileChart`): coral `#F26430` at 2px with
+          a 6px marker ringed in white, vertical gridlines in `$gray200` and
+          **no** horizontal ones, no X labels — the date comes from the tooltip
+          — and Y ticks every 50. Its period selector sits above the plot. */}
       <Card>
-        <SectionHeading>Lexile trend</SectionHeading>
+        {/* One header row, like every other card's: the title, and on the
+            right the period with the steppers that move it. The period used to
+            sit on a line of its own under the title, which left the arrows
+            floating in the card's corner beside nothing. */}
+        <div className="bp-lex-head">
+          <SectionHeading>Lexile trend</SectionHeading>
+          <div className="bp-lex-period-nav">
+            <span className="bp-lex-period">{lexilePeriod}</span>
+            <div className="bp-rl-month-arrows">
+              <button className="bp-heatmap-nav-btn" aria-label="Previous period">
+                <Icon name="chevron-left" size={16} stroke={2.4} />
+              </button>
+              <button className="bp-heatmap-nav-btn" aria-label="Next period" disabled>
+                <Icon name="chevron-right" size={16} stroke={2.4} />
+              </button>
+            </div>
+          </div>
+        </div>
         <div className="bp-chart-fit" style={{ '--chart-h': '180px' }}>
           <TrendChart
             type="line"
-            data={sec.lexileHistory.map((d) => ({
-              month: d.month,
-              avg: d.avg,
-              grade: sec.gradeLevel,
-            }))}
+            data={sec.lexileHistory.map((d) => ({ month: d.month, avg: d.avg }))}
             xKey="month"
             yDomain={lexileAxis.domain}
             yTicks={lexileAxis.ticks}
             yUnit="L"
             height="sm"
-            series={[
-              { key: 'avg', name: 'Lexile', color: c.bar },
-              {
-                key: 'grade',
-                name: sec.gradeLevelLabel || 'Grade level',
-                color: '#9CA3AF',
-                dashed: true,
-                fillOpacity: 0,
-              },
-            ]}
+            gridX
+            gridY={false}
+            xAxisHidden
+            points
+            series={[{ key: 'avg', name: 'Lexile', color: LEXILE_LINE, strokeWidth: 2 }]}
+            /* The app's own tooltip: a dark chip carrying the value over the
+               word "Average" and nothing else — no date, no series name —
+               centred above the point it belongs to (`externalTooltip.ts` +
+               `admin/components/_charts.scss`). */
+            pointTooltip
+            tooltipContent={({ payload }) => (
+              <div className="bp-lex-tip">
+                <span className="bp-lex-tip-value">{payload[0]?.value}L</span>
+                <span className="bp-lex-tip-caption">Average</span>
+              </div>
+            )}
           />
         </div>
-        <ChartLegend
-          items={[
-            { color: c.bar, label: 'Monthly Lexile' },
-            { color: '#9CA3AF', label: sec.gradeLevelLabel || 'Grade level', dashed: true },
-          ]}
-        />
       </Card>
 
       <ShowMore label="recent titles">
@@ -2135,6 +2156,7 @@ const STUDENTS = {
         banner: 'winter-reading',
         dates: 'Jan 6, 2025 - Feb 28, 2025',
         startedOn: 'January 8, 2025',
+        completedOn: 'February 24, 2025',
         minutes: 1620,
         status: 'ended',
       },
@@ -2357,6 +2379,10 @@ const STUDENTS = {
         name: 'Book Chatter | 2025',
         detail: 'Finish 10 book talks',
         kind: 'challenge',
+        // A challenge badge belongs to the challenge that defined it — that's
+        // what the Challenge filter above the list reads. A logging badge has
+        // no challenge: the site awards it for the year's totals.
+        challenge: 'Benny the Bean Reading Challenge',
         earned: true,
         top: '10',
         mid: 'TALKS',
@@ -2385,6 +2411,7 @@ const STUDENTS = {
         name: 'Genre Explorer | 2025',
         detail: 'Finish a book in 8 genres',
         kind: 'challenge',
+        challenge: 'Read Across America',
         earned: false,
         top: '8',
         mid: 'GENRES',
@@ -2910,6 +2937,7 @@ const STUDENTS = {
         banner: 'winter-reading',
         dates: 'Jan 6, 2025 - Feb 28, 2025',
         startedOn: 'January 21, 2025',
+        completedOn: 'February 26, 2025',
         minutes: 540,
         status: 'ended',
       },
@@ -3094,9 +3122,21 @@ const STUDENTS = {
         name: 'Book Chatter | 2025',
         detail: 'Finish 10 book talks',
         kind: 'challenge',
+        challenge: 'Benny the Bean Reading Challenge',
         earned: false,
         top: '10',
         mid: 'TALKS',
+        year: '2025',
+      },
+      {
+        name: 'Cocoa Club | 2025',
+        detail: 'Finish 5 books in winter',
+        kind: 'challenge',
+        challenge: 'Read with Benny: Winter Reading',
+        earned: true,
+        top: '5',
+        mid: 'BOOKS',
+        earnedNote: 'Earned for finishing 5 books in Read with Benny: Winter Reading',
         year: '2025',
       },
     ],
@@ -3783,9 +3823,21 @@ const STUDENTS = {
         name: 'Book Chatter | 2025',
         detail: 'Finish 10 book talks',
         kind: 'challenge',
+        challenge: 'Benny the Bean Reading Challenge',
         earned: false,
         top: '10',
         mid: 'TALKS',
+        year: '2025',
+      },
+      {
+        name: 'Cocoa Club | 2025',
+        detail: 'Finish 5 books in winter',
+        kind: 'challenge',
+        challenge: 'Read with Benny: Winter Reading',
+        earned: true,
+        top: '5',
+        mid: 'BOOKS',
+        earnedNote: 'Earned for finishing 5 books in Read with Benny: Winter Reading',
         year: '2025',
       },
     ],
@@ -4917,9 +4969,99 @@ function RLEntryCard({ entry, onOpen, talkFor }) {
   )
 }
 
+// The product offers the same month two ways: grouped by day, or as a flat
+// table of every logged unit. `RL_ROWS` is the second one — one row per unit,
+// which is how Beanstack stores them (5 minutes / 1 day / 1 book are separate
+// entries against the same sitting). Sorted newest first: the week grouping
+// hid that `RL_DATA`'s day order isn't strictly descending, but a flat list
+// shows it.
 const RL_MONTH = { label: 'July 2024', mm: '07', yy: '24' }
 
+const RL_ROWS = RL_DATA.flatMap((week) =>
+  week.days.flatMap((day) =>
+    day.entries.map((e) => ({
+      date: `${RL_MONTH.mm}/${String(day.date).padStart(2, '0')}/${RL_MONTH.yy}`,
+      unit: e.completed ? '1 book' : e.amount.toLowerCase().replace(' minutes', ' min'),
+      lexile: e.lexile ?? null,
+      // The entry itself rides along so the row can advertise the same flags,
+      // book talk and partner source the calendar card does, and open the same
+      // session.
+      entry: e,
+    })),
+  ),
+).sort((a, b) => b.date.localeCompare(a.date))
+
+const RL_VIEWS = [
+  // "Calendar", not "List": it's the month laid out by day, with streaks in the
+  // margin — the flat list is the other one.
+  { id: 'calendar', label: 'Calendar', icon: <Icon name="calendar" size={15} /> },
+  { id: 'table', label: 'Table', icon: <Icon name="layout-grid" size={15} /> },
+]
+
+function ReadingLogTable({ onOpen, talkFor }) {
+  return (
+    <Table
+      flush
+      compact
+      // `scrollX` is the guard, not the layout: this table is sized to fit, so
+      // the scroller only earns its keep if a phone can't take even that.
+      scrollX
+      className="bp-rl-tbl"
+      columns={[
+        {
+          key: 'date',
+          label: 'Date',
+          width: 74,
+          render: (d) => <span className="bp-rl-tbl-dim">{d}</span>,
+        },
+        {
+          key: 'title',
+          label: 'Title',
+          render: (_v, row) => (
+            <div className="bp-rl-tbl-title">
+              {/* Same target as the calendar card's title: one session, two
+                  ways of finding it. */}
+              <button type="button" className="bp-rl-tbl-name" onClick={() => onOpen?.(row.entry)}>
+                {row.entry.title}
+              </button>
+              <span className="bp-rl-tbl-author">{row.entry.author}</span>
+              {/* Their own row: chips mixed into the author line broke it in
+                  awkward places and read as part of the name. */}
+              <span className="bp-rl-tbl-tags">
+                <span className="bp-rl-entry-lexile bp-rl-entry-unit">{row.unit}</span>
+                {row.lexile && <span className="bp-rl-entry-lexile">{row.lexile}</span>}
+              </span>
+            </div>
+          ),
+        },
+        {
+          key: 'marks',
+          label: '',
+          width: 100,
+          align: 'right',
+          render: (_v, row) => {
+            const session = RL_SESSIONS[row.entry.title] ?? talkFor?.(row.entry.title)
+            return (
+              <div className="bp-rl-tbl-marks">
+                <RLMarks marks={rlMarks(row.entry, session)} entry={row.entry} onOpen={onOpen} />
+                <RLSource source={row.entry.source} />
+                <RLEntryMenu />
+              </div>
+            )
+          },
+        },
+      ]}
+      rows={RL_ROWS}
+      getRowKey={(r, i) => i}
+    />
+  )
+}
+
 function ReadingLogPage({ reader }) {
+  // The app's own two readings of the same month. The calendar is the default
+  // — it's the one with the streaks in the margin — and the table is every
+  // logged unit as a flat list, newest first.
+  const [view, setView] = useState('calendar')
   const [openSession, setOpenSession] = useState(null)
   const month = RL_MONTH.label
 
@@ -4970,10 +5112,25 @@ function ReadingLogPage({ reader }) {
         accent={SECTION_ACCENT.readinglog.text}
         accentBg={SECTION_ACCENT.readinglog.bg}
         action={
-          <Button variant="secondary" size="msm">
-            Print log
+          <Button
+            variant="secondary"
+            size="msm"
+            aria-label="Print log"
+            title="Print log"
+            icon={<Icon name="printer" size={16} stroke={2.1} />}
+          >
+            <span className="bp-btn-label">Print log</span>
           </Button>
         }
+      />
+      <Tabs
+        variant="pill"
+        size="sm"
+        block
+        ariaLabel="Reading log view"
+        active={view}
+        onChange={setView}
+        items={RL_VIEWS}
       />
       <Card flush>
         {/* The month and its arrows are this card's header */}
@@ -4989,36 +5146,40 @@ function ReadingLogPage({ reader }) {
             </button>
           </div>
         </div>
-        <div className="bp-rl-body">
-          {RL_DATA.map((week, wi) => (
-            <div key={wi} className="bp-rl-week">
-              <div className="bp-rl-week-label">{week.weekLabel}</div>
-              {week.days.map((day, di) => (
-                <div key={di} className="bp-rl-day">
-                  <div className="bp-rl-day-col">
-                    <div className="bp-rl-day-num">{day.date}</div>
-                    <div className="bp-rl-day-name">{day.day}</div>
-                    {day.streak > 0 && (
-                      <span className="bp-rl-flame">
-                        {day.streak}
-                        <Icon name="flame-filled" size={15} />
-                      </span>
+        {view === 'table' ? (
+          <ReadingLogTable onOpen={openEntry} talkFor={talkFor} />
+        ) : (
+          <div className="bp-rl-body">
+            {RL_DATA.map((week, wi) => (
+              <div key={wi} className="bp-rl-week">
+                <div className="bp-rl-week-label">{week.weekLabel}</div>
+                {week.days.map((day, di) => (
+                  <div key={di} className="bp-rl-day">
+                    <div className="bp-rl-day-col">
+                      <div className="bp-rl-day-num">{day.date}</div>
+                      <div className="bp-rl-day-name">{day.day}</div>
+                      {day.streak > 0 && (
+                        <span className="bp-rl-flame">
+                          {day.streak}
+                          <Icon name="flame-filled" size={15} />
+                        </span>
+                      )}
+                    </div>
+                    {day.entries.length === 0 ? (
+                      <div className="bp-rl-empty-day">No logged sessions</div>
+                    ) : (
+                      <div className="bp-rl-entries">
+                        {day.entries.map((e, ei) => (
+                          <RLEntryCard key={ei} entry={e} onOpen={openEntry} talkFor={talkFor} />
+                        ))}
+                      </div>
                     )}
                   </div>
-                  {day.entries.length === 0 ? (
-                    <div className="bp-rl-empty-day">No logged sessions</div>
-                  ) : (
-                    <div className="bp-rl-entries">
-                      {day.entries.map((e, ei) => (
-                        <RLEntryCard key={ei} entry={e} onOpen={openEntry} talkFor={talkFor} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          ))}
-        </div>
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
       </Card>
 
       {/* The one session modal. No reader list: you're inside this reader's
@@ -5033,48 +5194,28 @@ function ReadingLogPage({ reader }) {
 }
 
 // ─── Placeholder page ─────────────────────────────────────────────────────────
-// ─── Text box challenges ──────────────────────────────────────────────────────
+// ─── Text box answers ────────────────────────────────────────────────────────
 // A "text box challenge" is a site-authored prompt the reader answers in a free
-// text box (see the Challenge Creator's activity types). This page is the
-// reader's own words, grouped by the challenge that asked for them.
-function TextChallengesPage({ student }) {
-  const [challengeFilter, setChallengeFilter] = useState('all')
+// text box (see the Challenge Creator's activity types) — so an answer is a
+// completed activity, which is why this is a tab inside Activities rather than
+// a destination of its own. It's the reader's own words, grouped by the
+// challenge that asked for them; `challenge` is the Activities page's own
+// filter, which scopes both tabs.
+function TextChallengesBody({ student, challenge = 'all' }) {
   const challenges = student.textChallenges ?? []
   const shown =
-    challengeFilter === 'all'
-      ? challenges
-      : challenges.filter((ch) => ch.challenge === challengeFilter)
+    challenge === 'all' ? challenges : challenges.filter((ch) => ch.challenge === challenge)
 
   return (
-    <div className="bp-content">
-      <Hero
-        icon={<PlumpyIcon name="paragraph" size={22} />}
-        title="Text Box"
-        accent={SECTION_ACCENT.textchallenges.text}
-        accentBg={SECTION_ACCENT.textchallenges.bg}
-      />
-      {challenges.length > 1 && (
-        <FilterBar compact>
-          <FilterItem label="Challenge">
-            <Select
-              size="sm"
-              value={challengeFilter}
-              onChange={(e) => setChallengeFilter(e.target.value)}
-            >
-              <option value="all">All challenges</option>
-              {challenges.map((ch) => (
-                <option key={ch.challenge} value={ch.challenge}>
-                  {ch.challenge}
-                </option>
-              ))}
-            </Select>
-          </FilterItem>
-        </FilterBar>
-      )}
-      {challenges.length === 0 ? (
+    <>
+      {shown.length === 0 ? (
         <EmptyState
           title="No responses yet"
-          description="Answers to text box challenges will show up here."
+          description={
+            challenges.length === 0
+              ? 'Answers to text box challenges will show up here.'
+              : 'Nothing answered in this challenge.'
+          }
         />
       ) : (
         shown.map((ch) => (
@@ -5094,7 +5235,7 @@ function TextChallengesPage({ student }) {
           </Card>
         ))
       )}
-    </div>
+    </>
   )
 }
 
@@ -5114,7 +5255,7 @@ function ReviewsPage({ student }) {
     <div className="bp-content">
       <Hero
         icon={<PlumpyIcon name="star" size={22} />}
-        title="Reviews"
+        title="Book Reviews"
         accent={SECTION_ACCENT.reviews.text}
         accentBg={SECTION_ACCENT.reviews.bg}
       />
@@ -5191,10 +5332,21 @@ function BadgeSeal({ badge, size = 68 }) {
 
 // Show/hide search matches the real pages, which start with the field hidden
 // behind a toggle rather than spending a row on it by default.
+// The Hero's action slot. The label collapses on a phone — a 110px button beside
+// a 150px title floor is what was pushing the whole action onto a second row —
+// leaving the glyph, which is the whole message anyway.
 function SearchToggle({ open, onToggle }) {
+  const label = open ? 'Hide search' : 'Show search'
   return (
-    <Button variant="secondary" size="msm" onClick={onToggle}>
-      {open ? 'Hide search' : 'Show search'}
+    <Button
+      variant="secondary"
+      size="msm"
+      onClick={onToggle}
+      aria-label={label}
+      title={label}
+      icon={<Icon name={open ? 'x' : 'search'} size={16} stroke={2.1} />}
+    >
+      <span className="bp-btn-label">{label}</span>
     </Button>
   )
 }
@@ -5278,9 +5430,12 @@ function achievementYear(a) {
   return String(a.date).trim().slice(-4)
 }
 
-function AchievementsPage({ student }) {
-  const [q, setQ] = useState('')
-  const [searchOpen, setSearchOpen] = useState(false)
+// The achievements themselves — the two filters and the list. They're the
+// Achievements tab inside Badges, which is how the shipped profile pairs them
+// (`profiles/_badges_and_achievements_tabs.html.haml`): both are a medal with
+// a name and a date, so one page holds them instead of two rail destinations.
+// `q` comes from the Badges page, which owns the search box.
+function AchievementsBody({ student, q = '' }) {
   const [openItem, setOpenItem] = useState(null)
   const [cat, setCat] = useState('all')
   const [year, setYear] = useState('all')
@@ -5292,37 +5447,12 @@ function AchievementsPage({ student }) {
   const filtered = all.filter(
     (a) => (cat === 'all' || a.category === cat) && (year === 'all' || achievementYear(a) === year),
   )
-  const shown = searchOpen
+  const shown = q.trim()
     ? filtered.filter((a) => a.name.toLowerCase().includes(q.trim().toLowerCase()))
     : filtered
 
   return (
-    <div className="bp-content">
-      <Hero
-        icon={<PlumpyIcon name="certificate" size={22} />}
-        title="Achievements"
-        accent={SECTION_ACCENT.achievements.text}
-        accentBg={SECTION_ACCENT.achievements.bg}
-        action={
-          all.length > 0 && (
-            <SearchToggle
-              open={searchOpen}
-              onToggle={() => {
-                setSearchOpen((v) => !v)
-                setQ('')
-              }}
-            />
-          )
-        }
-      />
-      {searchOpen && (
-        <SearchInput
-          value={q}
-          onChange={setQ}
-          placeholder="Search for achievement name…"
-          ariaLabel="Search achievements"
-        />
-      )}
+    <>
       {all.length > 0 && (
         <FilterBar compact>
           <FilterItem label="Category">
@@ -5385,13 +5515,21 @@ function AchievementsPage({ student }) {
         note={openItem && `Earned on ${openItem.date}`}
         action={{ tone: 'danger', label: 'Remove Achievement' }}
       />
-    </div>
+    </>
   )
 }
 
+// Unearned first: it's the half with something to do in it — awarding a badge
+// the reader has finished the work for. The page still lands on Earned, which
+// is the reader's record.
+// Achievements ride along as a third tab: the shipped profile pairs "Earned
+// Badges" and "Achievements" as sibling tabs of one page
+// (`profiles/_badges_and_achievements_tabs.html.haml`), and both are the same
+// thing to a reader — a medal with a name and a date.
 const BADGE_TABS = [
-  { id: 'earned', label: 'Earned' },
   { id: 'unearned', label: 'Unearned' },
+  { id: 'earned', label: 'Earned' },
+  { id: 'achievements', label: 'Achievements' },
 ]
 const BADGE_KINDS = [
   { id: 'all', label: 'All badges' },
@@ -5402,6 +5540,7 @@ const BADGE_KINDS = [
 function BadgesPage({ student }) {
   const [tab, setTab] = useState('earned')
   const [kind, setKind] = useState('all')
+  const [challenge, setChallenge] = useState('all')
   const [q, setQ] = useState('')
   const [searchOpen, setSearchOpen] = useState(false)
   const [openItem, setOpenItem] = useState(null)
@@ -5427,8 +5566,17 @@ function BadgesPage({ student }) {
   const shown = list.filter(
     (b) =>
       (kind === 'all' || b.kind === kind) &&
+      (challenge === 'all' || b.challenge === challenge) &&
       (!searchOpen || b.name.toLowerCase().includes(q.trim().toLowerCase())),
   )
+
+  // A challenge badge belongs to a challenge, the way an activity badge does,
+  // and this is where that lives. Only the challenges this reader actually has
+  // badges from — and picking one leaves the logging badges out, because the
+  // site awards those for the year, not for any challenge.
+  const challenges = [...new Set(all.map((b) => b.challenge).filter(Boolean))]
+
+  const onAchievements = tab === 'achievements'
 
   return (
     <div className="bp-content">
@@ -5460,59 +5608,77 @@ function BadgesPage({ student }) {
         <SearchInput
           value={q}
           onChange={setQ}
-          placeholder="Search for badge name…"
-          ariaLabel="Search badges"
+          placeholder={onAchievements ? 'Search for achievement name…' : 'Search for badge name…'}
+          ariaLabel={onAchievements ? 'Search achievements' : 'Search badges'}
         />
       )}
-      <FilterBar compact>
-        <FilterItem label="Badge type">
-          <Select size="sm" value={kind} onChange={(e) => setKind(e.target.value)}>
-            {BADGE_KINDS.map((k) => (
-              <option key={k.id} value={k.id}>
-                {k.label}
-              </option>
-            ))}
-          </Select>
-        </FilterItem>
-      </FilterBar>
-      {shown.length === 0 ? (
-        <EmptyState
-          variant="dashed"
-          title={`No ${tab} badges`}
-          description={
-            q || kind !== 'all'
-              ? 'Try a different search or badge type.'
-              : `Badges this reader has ${tab === 'earned' ? 'earned' : 'still to earn'} will show up here.`
-          }
-        />
+      {/* Achievements carry their own two filters and their own list — the
+          badge filters below don't apply to them. */}
+      {onAchievements ? (
+        <AchievementsBody student={student} q={searchOpen ? q : ''} />
       ) : (
-        // An activity-badge row, and the same two trailing controls: the
-        // CompleteToggle is the modal's own Award / Remove Badge, which is
-        // what earning a badge means here, and the row action opens the
-        // detail. Toggling moves the badge between the two tabs.
-        <Card flush>
-          {shown.map((b) => (
-            <div key={b.name} className="bp-act-row">
-              <BadgeSeal badge={b} size={42} />
-              <div className="bp-act-main">
-                <div className="bp-act-name">{b.name}</div>
-                <div className="bp-act-count">{b.detail}</div>
-              </div>
-              <CompleteToggle
-                done={b.earned}
-                label={b.name}
-                wording={{
-                  set: 'Award badge',
-                  unset: 'Remove badge',
-                  on: 'Earned',
-                  off: 'Not earned',
-                }}
-                onChange={(v) => award(b, v)}
-              />
-              <RowAction icon="view" label="View badge" onClick={() => setOpenItem(b)} />
-            </div>
-          ))}
-        </Card>
+        <>
+          <FilterBar compact>
+            <FilterItem label="Challenge">
+              <Select size="sm" value={challenge} onChange={(e) => setChallenge(e.target.value)}>
+                <option value="all">All challenges</option>
+                {challenges.map((c) => (
+                  <option key={c} value={c}>
+                    {c}
+                  </option>
+                ))}
+              </Select>
+            </FilterItem>
+            <FilterItem label="Badge type">
+              <Select size="sm" value={kind} onChange={(e) => setKind(e.target.value)}>
+                {BADGE_KINDS.map((k) => (
+                  <option key={k.id} value={k.id}>
+                    {k.label}
+                  </option>
+                ))}
+              </Select>
+            </FilterItem>
+          </FilterBar>
+          {shown.length === 0 ? (
+            <EmptyState
+              variant="dashed"
+              title={`No ${tab} badges`}
+              description={
+                q || kind !== 'all' || challenge !== 'all'
+                  ? 'Try a different search, challenge or badge type.'
+                  : `Badges this reader has ${tab === 'earned' ? 'earned' : 'still to earn'} will show up here.`
+              }
+            />
+          ) : (
+            // An activity-badge row, and the same two trailing controls: the
+            // CompleteToggle is the modal's own Award / Remove Badge, which is
+            // what earning a badge means here, and the row action opens the
+            // detail. Toggling moves the badge between the two tabs.
+            <Card flush>
+              {shown.map((b) => (
+                <div key={b.name} className="bp-act-row">
+                  <BadgeSeal badge={b} size={42} />
+                  <div className="bp-act-main">
+                    <div className="bp-act-name">{b.name}</div>
+                    <div className="bp-act-count">{b.detail}</div>
+                  </div>
+                  <CompleteToggle
+                    done={b.earned}
+                    label={b.name}
+                    wording={{
+                      set: 'Award badge',
+                      unset: 'Remove badge',
+                      on: 'Earned',
+                      off: 'Not earned',
+                    }}
+                    onChange={(v) => award(b, v)}
+                  />
+                  <RowAction icon="view" label="View badge" onClick={() => setOpenItem(b)} />
+                </div>
+              ))}
+            </Card>
+          )}
+        </>
       )}
 
       <MedalModal
@@ -5684,7 +5850,16 @@ function ActivitiesPage({ student }) {
   const listed = challenge === 'all' ? inKind : inKind.filter((b) => b.challenge === challenge)
 
   // A badge belongs to a challenge, and the filter above is where that lives.
-  const challenges = [...new Set(badges.map((b) => b.challenge).filter(Boolean))]
+  // Text box answers are grouped by challenge too, so the one filter covers
+  // both tabs and the options are the union of what either has.
+  const challenges = [
+    ...new Set(
+      [
+        ...badges.map((b) => b.challenge),
+        ...(student.textChallenges ?? []).map((ch) => ch.challenge),
+      ].filter(Boolean),
+    ),
+  ]
 
   const openBadge = openIdx == null ? null : badges[openIdx]
   const doneCount = (b) => b.activities.filter((a) => a.done).length
@@ -5719,81 +5894,89 @@ function ActivitiesPage({ student }) {
           </Select>
         </FilterItem>
       </FilterBar>
-      {repeatBadges.length > 0 && (
-        <Tabs
-          variant="pill"
-          block
-          ariaLabel="Activity badge type"
-          active={kind}
-          onChange={setKind}
-          items={[
-            { id: 'activity', label: 'Activity badges' },
-            { id: 'repeatable', label: 'Repeatable' },
-          ]}
-        />
-      )}
-      <Card flush>
-        {listed.length === 0 ? (
-          <EmptyState
-            title={kind === 'repeatable' ? 'No repeatable badges' : 'No activity badges'}
-            description={
-              kind === 'repeatable'
-                ? 'Repeatable badges come from points challenges.'
-                : 'This reader has none assigned yet.'
-            }
-          />
-        ) : (
-          // One flat list. The challenge each badge belongs to is what the
-          // filter above is for; repeating it as a heading every few rows just
-          // broke the run of rows up.
-          listed.map((b) => {
-            // The modal indexes into the full list, not the filtered one.
-            const i = badges.indexOf(b)
-            const done = doneCount(b)
-            const all = b.activities.length
-            return (
-              <div key={b.name} className="bp-act-row">
-                <MedalDisc icon={b.icon} color={b.color} size={42} />
-                <div className="bp-act-main">
-                  <div className="bp-act-name">
-                    {b.name}
-                    {b.repeatable && (
-                      <Pill color="#c849e5" size="sm">
-                        Repeatable
-                      </Pill>
-                    )}
-                  </div>
-                  <div className="bp-act-count">
-                    {/* The app's exact sentences: "X of Y Activities
+      {/* A text box answer is a completed activity — `completed_activities`
+          carries `text_box_challenge_answer` — so the reader's words live here
+          beside the badges those activities belong to, rather than in a
+          destination of their own. Repeatable only appears when the reader has
+          one; text box answers are always a tab. */}
+      <Tabs
+        variant="pill"
+        block
+        ariaLabel="Activity type"
+        active={kind}
+        onChange={setKind}
+        items={[
+          { id: 'activity', label: 'Activity badges' },
+          ...(repeatBadges.length > 0 ? [{ id: 'repeatable', label: 'Repeatable' }] : []),
+          { id: 'textbox', label: 'Text Box Answers' },
+        ]}
+      />
+      {kind === 'textbox' ? (
+        <TextChallengesBody student={student} challenge={challenge} />
+      ) : (
+        <Card flush>
+          {listed.length === 0 ? (
+            <EmptyState
+              title={kind === 'repeatable' ? 'No repeatable badges' : 'No activity badges'}
+              description={
+                kind === 'repeatable'
+                  ? 'Repeatable badges come from points challenges.'
+                  : 'This reader has none assigned yet.'
+              }
+            />
+          ) : (
+            // One flat list. The challenge each badge belongs to is what the
+            // filter above is for; repeating it as a heading every few rows just
+            // broke the run of rows up.
+            listed.map((b) => {
+              // The modal indexes into the full list, not the filtered one.
+              const i = badges.indexOf(b)
+              const done = doneCount(b)
+              const all = b.activities.length
+              return (
+                <div key={b.name} className="bp-act-row">
+                  <MedalDisc icon={b.icon} color={b.color} size={42} />
+                  <div className="bp-act-main">
+                    <div className="bp-act-name">
+                      {b.name}
+                      {b.repeatable && (
+                        <Pill color="#c849e5" size="sm">
+                          Repeatable
+                        </Pill>
+                      )}
+                    </div>
+                    <div className="bp-act-count">
+                      {/* The app's exact sentences: "X of Y Activities
                             Completed" and, for a repeatable badge, "N Total
                             Activity Completions". */}
-                    {b.repeatable
-                      ? `${completionCount(b)} Total Activity Completions`
-                      : `${done} of ${all} Activities Completed`}
+                      {b.repeatable
+                        ? `${completionCount(b)} Total Activity Completions`
+                        : `${done} of ${all} Activities Completed`}
+                    </div>
                   </div>
-                </div>
-                {/* The product's own control: a filled checkbox glyph, green
+                  {/* The product's own control: a filled checkbox glyph, green
                         when complete, grey when not, clickable either way — and
                         a repeatable row has no completion column at all, only
                         the add glyph and its running count. Un-earning is the
                         same toggle, which is how staff take a badge back. */}
-                <CompleteToggle
-                  done={isEarned(b)}
-                  repeatable={b.repeatable}
-                  count={b.repeatable ? completionCount(b) : undefined}
-                  onChange={b.repeatable ? undefined : (v) => toggleBadge(i, v)}
-                  label={b.name}
-                />
-                {/* The app draws this as a text `View Activity` button
+                  <CompleteToggle
+                    done={isEarned(b)}
+                    repeatable={b.repeatable}
+                    count={b.repeatable ? completionCount(b) : undefined}
+                    onChange={b.repeatable ? undefined : (v) => toggleBadge(i, v)}
+                    label={b.name}
+                  />
+                  {/* The app draws this as a text `View Activity` button
                     (`.view-activity-button-container`); here it's the same row
                     action every other table ends with, so a row's trailing
                     control is one shape across the whole profile. */}
-                <RowAction icon="view" label="View activities" onClick={() => setOpenIdx(i)} />
-              </div>
-            )
-          })
-        )}
-      </Card>
+                  <RowAction icon="view" label="View activities" onClick={() => setOpenIdx(i)} />
+                </div>
+              )
+            })
+          )}
+        </Card>
+      )}
 
       <Modal
         open={openIdx != null}
@@ -6324,6 +6507,11 @@ const bannerSrc = (key) =>
 
 // The app's four, in its order: Current / Recently Ended / Upcoming / Past
 // Challenges (`showProgramTab` gates each on there being any).
+// The date a staff-set completion is stamped with, in the same long form the
+// challenge fixtures write "Started On" in.
+const longToday = () =>
+  new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+
 const CHALLENGE_TABS = [
   { id: 'current', label: 'Current' },
   { id: 'ended', label: 'Recent' },
@@ -6508,6 +6696,23 @@ function ChallengesPage({ student }) {
     )
   }
 
+  // The app's second column: `completeProgram`, which stamps the challenge
+  // complete for this reader and is what the "Completed On" total reads. It's
+  // staff's override — a challenge normally completes itself when the reader
+  // finishes the work — so unsetting it clears the date again. You can't
+  // complete a challenge the reader isn't in, so the control follows enrolment.
+  function toggleCompleted(challenge) {
+    const on = !challenge.completedOn
+    setRows((prev) =>
+      prev.map((c) => (c === challenge ? { ...c, completedOn: on ? longToday() : null } : c)),
+    )
+    push(
+      on
+        ? { title: 'Marked complete', body: challenge.name }
+        : { title: 'Marked not complete', body: challenge.name, tone: 'info' },
+    )
+  }
+
   // The app's own table is three columns wide — Challenge, Enrolled?,
   // Completed? — and everything else lives *inside* the challenge cell: the
   // name, the date span, a `ul.program-log-totals` of label:value pairs, and a
@@ -6552,17 +6757,39 @@ function ChallengesPage({ student }) {
           Ticket Rewards follows the app's own condition,
           `program.has_ticket_rewards && isEnrolled`. */}
       <RowActions className="bp-card-actions">
-        <CompleteToggle
-          done={c.enrolled}
-          onChange={() => toggleEnrolled(c)}
-          label={c.name}
-          wording={{
-            set: 'Enroll',
-            unset: 'Unenroll',
-            on: 'Enrolled',
-            off: 'Not enrolled',
-          }}
-        />
+        {/* Two identical checkboxes side by side say nothing about which
+            column is which — the app has "Enrolled?" and "Completed?" as table
+            headers, and a card has no headers to borrow. The tooltip is that
+            heading. */}
+        <Tooltip content={c.enrolled ? 'Enrolled — unenroll this reader' : 'Enroll this reader'}>
+          <CompleteToggle
+            done={c.enrolled}
+            onChange={() => toggleEnrolled(c)}
+            label={c.name}
+            wording={{
+              set: 'Enroll',
+              unset: 'Unenroll',
+              on: 'Enrolled',
+              off: 'Not enrolled',
+            }}
+          />
+        </Tooltip>
+        <Tooltip
+          content={
+            !c.enrolled
+              ? 'Enroll this reader before completing the challenge'
+              : c.completedOn
+                ? `Completed ${c.completedOn} — mark not complete`
+                : 'Mark this challenge complete'
+          }
+        >
+          <CompleteToggle
+            done={!!c.completedOn}
+            onChange={() => toggleCompleted(c)}
+            disabled={!c.enrolled}
+            label={c.name}
+          />
+        </Tooltip>
         {c.startedOn && (
           <RowAction icon="log" label="View challenge log" onClick={() => setLogFor(c)} />
         )}
@@ -6633,7 +6860,7 @@ function ChallengesPage({ student }) {
   )
 }
 
-// ─── Points Summary ───────────────────────────────────────────────────────────
+// ─── Points ───────────────────────────────────────────────────────────────────
 // The app's `_points_summary.html.haml`: one row per point type with its
 // running total, and nothing else — no dates, no source, no drill-in. The ten
 // types are the ones the partial switches on, in its order.
@@ -6664,7 +6891,7 @@ function PointsPage({ student }) {
     <div className="bp-content">
       <Hero
         icon={<PlumpyIcon name="points" size={22} />}
-        title="Points Summary"
+        title="Points"
         accent={SECTION_ACCENT.points.text}
         accentBg={SECTION_ACCENT.points.bg}
       />
@@ -6707,6 +6934,11 @@ function PointsPage({ student }) {
     </div>
   )
 }
+
+// The shipped Lexile chart's own colour — `#F26430`, set on both the line and
+// its markers in `useChartData.ts`. Not the section's accent: this one chart
+// carries the product's own hue.
+const LEXILE_LINE = '#F26430'
 
 // ─── Classes ──────────────────────────────────────────────────────────────────
 // Asana 1208185510273613, "Display sections and teachers in a reader's profile":
@@ -6795,8 +7027,8 @@ export function ClassroomView({
   className = 'Class A',
   extraTabs = [],
   renderExtra,
-  // Which tab the page opens on. Additive, and 'daily' by default — a
-  // prototype that adds a tab through `extraTabs` usually wants to land on it.
+  // Which tab to open on. Additive and defaulted, so a prototype that hangs an
+  // extra tab off this page can also link straight to it.
   initialTab = 'daily',
 }) {
   const [admTab, setAdmTab] = useState(initialTab)
@@ -6864,11 +7096,13 @@ export function ClassroomView({
             renderExtra?.(admTab)
           ) : (
             <>
-              {/* The live page's filter card: two selects on a `.filter-row`
-                  (align-items: flex-end, gap 20px) with the Save & Update
-                  action sharing the baseline. */}
+              {/* `compact`: the app's filter *bar* rather than its filter
+                  *form* — grey pill controls on a white strip, no labels above
+                  them, because each control already names what it filters
+                  ("Daily Reading Goal", "Percentages"). It's the newer of the
+                  two shapes and costs one row instead of two. */}
               <div className="bp-adm-filter-wrap">
-                <FilterBar action={<Button variant="primary">Save &amp; Update</Button>}>
+                <FilterBar compact action={<Button variant="primary">Save &amp; Update</Button>}>
                   <FilterItem label="View As">
                     <Select defaultValue="goal">
                       <option value="goal">Daily Reading Goal</option>
@@ -6980,7 +7214,6 @@ const SECTION_SLUGS = {
   habits: 'goals',
   skills: 'lexile',
   readinglog: 'reading-log',
-  textchallenges: 'text-box',
 }
 const slugFor = (section) => (section ? (SECTION_SLUGS[section] ?? section) : 'overview')
 const sectionFor = (slug) => {
@@ -7139,12 +7372,8 @@ function ProfileBody({
                 <ClassesPage student={student} onOpenClass={onOpenClass} />
               ) : activeSection === 'points' ? (
                 <PointsPage student={student} />
-              ) : activeSection === 'textchallenges' ? (
-                <TextChallengesPage student={student} />
               ) : activeSection === 'reviews' ? (
                 <ReviewsPage student={student} />
-              ) : activeSection === 'achievements' ? (
-                <AchievementsPage student={student} />
               ) : activeSection === 'badges' ? (
                 <BadgesPage student={student} />
               ) : activeSection === 'activities' ? (

@@ -1,27 +1,56 @@
 /* ── Beanstack Web App prototype ─────────────────────────────────────────── */
 
+:root {
+  /* One cap for every page-level container here — top bar, tab strip, main
+     column and both footers. They have to move together or the page stops
+     lining up, so the width lives in one place rather than being repeated at
+     each of them. 1440 was effectively no cap at all on a laptop: the reader
+     dashboard is a content column plus a rail, and letting it run the full
+     width of a monitor pushed the two ends of every row apart.
+
+     The admin surfaces hold to --admin-content-max (1280px); this is the
+     reader-facing equivalent, a little tighter because these pages are cards
+     and covers rather than tables. */
+  --wa-content-max: 1200px;
+}
+
 .wa-shell {
-  min-height: 100vh;
-  background: #ffffff;
-  color: var(--c-slate-800);
-  padding-bottom: 48px; /* PrototypeNav rail */
   display: flex;
   flex-direction: column;
+  /* The window may also be carrying a preview bar above the app and the
+     prototype nav below it; the app gets what's left. Reserving that as height
+     rather than as bottom padding is the difference between the footer ending
+     where the nav starts and it ending 48px short of it with a band of dead
+     white in between. */
+  min-height: calc(100vh - var(--chrome-top, 0px) - var(--proto-nav-h, 48px));
+  /* Absorbs the sub-tab bands' full-bleed overshoot: they size to 100vw, which
+     includes the scrollbar. `clip` rather than `hidden` — hidden would make
+     this a scroll container and kill the sticky top bar. */
+  overflow-x: clip;
+  background: #ffffff;
+  color: var(--c-slate-800);
 }
 
 /* ── Top bar ─────────────────────────────────────────────────────────────── */
 
+/* The top bar carries the tab strip inside it, so both stick together. They
+   stop below whatever prototype chrome the shell declares — at `top: 0` they
+   slid under the preview bar, which sits above them in the stack. */
 .wa-topbar {
+  position: sticky;
+  top: var(--chrome-top, 0px);
+  z-index: 20;
   background: #ffffff;
   border-bottom: 1px solid var(--c-gray-200);
-  position: sticky;
-  top: 0;
-  z-index: 20;
 }
 
+/* The one container here that isn't capped: the top bar is app chrome and runs
+   the width of the window, like the preview bar above it. Capping it left the
+   logo floating in from the edge while the bar's own ground went edge to edge.
+   The page columns below it — tab strip, main, footers — keep the cap. */
 .wa-topbar-inner {
-  max-width: 1440px;
-  margin: 0 auto;
+  max-width: none;
+  margin: 0;
   padding: 14px 24px;
   display: flex;
   align-items: center;
@@ -130,7 +159,7 @@
   border-top: 1px solid var(--c-slate-100);
 }
 .wa-tabsbar .tabs {
-  max-width: 1440px;
+  max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 0 24px;
   justify-content: center;
@@ -148,7 +177,7 @@
   padding: 24px 0 48px;
 }
 .wa-main-inner {
-  max-width: 1440px;
+  max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 0 24px;
 }
@@ -324,19 +353,26 @@
   letter-spacing: 0.02em;
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
 }
-.wa-chcard-pill {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-}
-
 .wa-chcard-body {
   padding: 12px 14px 14px;
 }
+/* The name takes the room it needs and the measure pill holds the right edge;
+   a long title wraps under itself rather than pushing the pill off the card. */
+.wa-chcard-titlerow {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.wa-chcard-titlerow .pill {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
 .wa-chcard-title {
+  min-width: 0;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-text);
-  font-size: 15px;
 }
 .wa-chcard-dates {
   font-size: 12px;
@@ -431,93 +467,100 @@
 }
 
 /* Leaderboard card */
+/* The leaderboard widget, ported from the shipped one
+   (bs-product microsite/components/_leaderboard_widget.scss). Folder tabs over
+   a panel, so the card carries no chrome of its own — `.wa-leadcard-body` owns
+   the 2px rule and the bottom corners, and the active tab's fill closes the
+   top edge. */
 .wa-leadcard {
-  padding: 14px 14px 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
 }
-.wa-leadcard-tabs {
-  border-bottom: 1px solid var(--c-slate-100);
-  margin-bottom: 10px;
-}
-.wa-leadcard-tabs .tabs {
-  gap: 0;
-}
-/* No font-size here — the `sm` size owns that. Just a little more room either
-   side of each tab, since the strip is centred in the card. */
-.wa-leadcard-tabs .tab {
-  padding: 9px 14px;
+.wa-leadcard-body {
+  border: 2px solid var(--c-gray-150);
+  border-radius: 0 0 8px 8px;
 }
 
+/* The two range pickers, on the same grey band as the active tab. Dark text at
+   800, not a link colour: in the app these are dropdown triggers, and the blue
+   read as three competing links stacked above the rows. */
 .wa-leadcard-meta {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  margin: 4px 0 10px;
+  padding: 17px 23px;
+  background: var(--c-gray-150);
 }
 .wa-leadcard-meta-btn {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 0;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--c-text-real);
+  cursor: pointer;
   background: transparent;
   border: 0;
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--c-brand-teal);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 0;
 }
 
 .wa-leadcard-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
   display: flex;
   flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 .wa-leadcard-row {
   display: flex;
+  gap: 16px;
   align-items: center;
-  gap: 10px;
-  padding: 8px 4px;
-  border-bottom: 1px solid var(--c-slate-100);
-  font-size: 13.5px;
-}
-.wa-leadcard-row:last-child {
-  border-bottom: 0;
+  padding: 11px 21px;
+  font-size: 14px;
+  line-height: 1.25;
 }
 .wa-leadcard-rank {
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: 800;
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #ffffff;
+  border-radius: 999px;
 }
 .wa-leadcard-name {
   flex: 1;
-  color: var(--c-text);
   font-weight: 600;
+  color: var(--c-text-real);
 }
 .wa-leadcard-val {
-  color: var(--c-slate-600);
   font-weight: 700;
+  color: var(--c-text-real-light);
 }
 
+/* Behind a rule of its own — the rows carry no dividers in the app, so this is
+   the only line inside the panel. */
+.wa-leadcard-foot {
+  display: flex;
+  justify-content: center;
+  padding: 19px 21px;
+  border-top: 1px solid var(--c-gray-150);
+}
 .wa-leadcard-more {
-  display: block;
-  text-align: center;
-  padding: 10px 0 2px;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
   color: var(--c-brand-teal);
   text-decoration: none;
 }
 .wa-leadcard-more:hover {
-  text-decoration: underline;
+  text-decoration: none;
 }
 
 /* ── Footer ──────────────────────────────────────────────────────────────── */
@@ -527,7 +570,7 @@
   background: #ffffff;
 }
 .wa-footer-thin-inner {
-  max-width: 1440px;
+  max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 12px 24px;
   display: flex;
@@ -576,7 +619,7 @@
   background: #ffffff;
 }
 .wa-footer-inner {
-  max-width: 1440px;
+  max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 18px 24px 24px;
   display: flex;

@@ -1,64 +1,99 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
+import { Tooltip } from '@components/Primitives/Primitives'
 import '@components/Button/Button.css'
+import '@components/Primitives/Primitives.css'
 
-import { BOOKS } from '../data'
+import { roundFor } from '../data'
+import { Activity } from './Activities'
 import './WordUnlock.css'
 
 // The unlock moment: a post-log overlay where Benny hands over one word from
-// the book that was just logged, and the reader banks it by picking the sentence
-// that uses it correctly.
+// the book that was just logged, and the reader banks it by working through a
+// short round of activities.
 //
-// Three beats, deliberately short — the brief asks for "a brief, delightful
-// interaction", not an assignment:
-//   knock   Benny turns up with a sealed word card. One tap to open it.
-//   card    The word, how to say it, what it means, and why it came from
-//           this book — then the one check that banks it.
-//   done    Collected. Count goes up, and the reader can keep going.
+// Three beats:
+//   card    Benny hands the word over: what it is, how to say it, what it
+//           means, and why it came from this book — on the dark ground, in the
+//           big type, as a moment rather than a form. It used to be two
+//           screens with a sealed card between them; the seal was a tap that
+//           bought nothing, since the reader had just pressed a button saying a
+//           word was coming. What the round will ask isn't announced here — the
+//           rail above the activities already says where you are, and a list of
+//           three instructions turned the moment into a briefing.
+//   round   Three activities on that one word — recognise it, use it, produce
+//           something with it. The word stays pinned above them: this is a
+//           collection, not a test, so nothing here is hidden from the reader.
+//           No step counter: three short goes don't need a progress bar, and
+//           one made a game look like a form to be completed.
+//   done    Collected.
+//
+// The round replaced a single multiple-choice question after reviewers watched
+// a student use a vocabulary program that hit each word three to five times:
+// one question banks a word the reader has already forgotten by the next log.
 
-/** Deterministic shuffle so the right answer isn't always in the same slot. */
-function shuffled(word) {
-  const options = [
-    { text: word.check.correct, correct: true },
-    ...word.check.wrong.map((text) => ({ text, correct: false })),
-  ]
-  // Rotate by the word's length — stable across re-renders, varied across words.
-  const by = word.word.length % options.length
-  return [...options.slice(by), ...options.slice(0, by)]
-}
+export function WordUnlock({
+  open,
+  word,
+  bookId,
+  collectedCount,
+  // Which activities this round runs. Defaults to the word's own three; the
+  // preview bar overrides it with a single type to demo one in isolation.
+  round: roundOverride,
+  onCollect,
+  onClose,
+  onSeeAll,
+}) {
+  const [stage, setStage] = useState('card')
+  const [step, setStep] = useState(0)
+  const [results, setResults] = useState([])
+  // The rung the reader has just got right, held until they press Next. The
+  // round used to advance on a timer, which took the screen away mid-read —
+  // the answer they picked is worth a beat to look at, and on the writing rung
+  // it took Benny's reply with it.
+  const [cleared, setCleared] = useState(null)
 
-export function WordUnlock({ open, word, bookId, collectedCount, onCollect, onClose, onSeeAll }) {
-  const [stage, setStage] = useState('knock')
-  const [picked, setPicked] = useState(null) // index of the option chosen
-  const [misses, setMisses] = useState(0)
+  const round = useMemo(() => {
+    if (!word) return []
+    return roundOverride?.length ? roundOverride : roundFor(word)
+  }, [word, roundOverride])
 
   useEffect(() => {
     if (!open) return
-    setStage('knock')
-    setPicked(null)
-    setMisses(0)
+    setStage('card')
+    setStep(0)
+    setResults([])
+    setCleared(null)
   }, [open, word])
-
-  const options = useMemo(() => (word ? shuffled(word) : []), [word])
 
   if (!open || !word) return null
 
-  const book = bookId ? BOOKS[bookId] : null
-  const source = book ? book.title : 'what you just read'
+  const firstTryAll = results.every((r) => r.firstTry)
 
-  function pick(i) {
-    setPicked(i)
-    if (options[i].correct) {
-      // First-try accuracy is the signal the educator roll-up reports on.
-      onCollect?.({ word: word.word, bookId, firstTry: misses === 0 })
-      setTimeout(() => setStage('done'), 700)
-    } else {
-      setMisses((m) => m + 1)
-    }
+  const last = step + 1 >= round.length
+
+  function passed(result) {
+    setCleared(result)
   }
 
-  const wrongPick = picked !== null && !options[picked].correct
+  function next() {
+    const all = [...results, cleared]
+    setResults(all)
+    setCleared(null)
+    if (!last) {
+      setStep((s) => s + 1)
+      return
+    }
+    onCollect?.({
+      word: word.word,
+      bookId,
+      firstTry: all.every((r) => r.firstTry),
+      written: all.find((r) => r.written)?.written ?? null,
+      flagged: all.some((r) => r.flagged),
+    })
+    setStage('done')
+  }
 
   return (
     <div className="wb-unlock" role="dialog" aria-modal="true" aria-label="A new word from Benny">
@@ -67,83 +102,89 @@ export function WordUnlock({ open, word, bookId, collectedCount, onCollect, onCl
       </button>
 
       <div className="wb-unlock-inner">
-        {stage === 'knock' && (
-          <div className="wb-knock">
-            <img src="/bs-prototypes/benny-excited.svg" alt="" className="wb-knock-benny" />
-            <p className="wb-knock-kicker">Benny found something</p>
-            <h1 className="wb-knock-h1">
-              There’s a word hiding in <em>{source}</em>
-            </h1>
-            <p className="wb-knock-sub">
-              Open it up and it’s yours to keep. Takes about ten seconds.
+        {stage === 'card' && (
+          <div className="wb-reveal">
+            <img src="/bs-prototypes/benny-excited.svg" alt="" className="wb-reveal-benny" />
+            <h1 className="wb-reveal-word">{word.word}</h1>
+            <p className="wb-reveal-say">
+              {word.say} <span className="wb-reveal-part">· {word.part}</span>
             </p>
+            <p className="wb-reveal-meaning">{word.meaning}</p>
+            <p className="wb-reveal-why">{word.why}</p>
 
-            <button className="wb-envelope" onClick={() => setStage('card')}>
-              <span className="wb-envelope-glow" aria-hidden="true" />
-              <span className="wb-envelope-face">
-                <Icon name="vocabulary" size={40} stroke={1.6} />
-                <span className="wb-envelope-hint">Tap to open</span>
-              </span>
-            </button>
+            <Button
+              variant="primary"
+              size="lg"
+              iconRight={<Icon name="arrow-right" size={18} />}
+              onClick={() => setStage('round')}
+            >
+              Let’s go
+            </Button>
           </div>
         )}
 
-        {stage === 'card' && (
+        {stage === 'round' && (
           <div className="wb-card">
-            <div className="wb-card-head">
-              <span className="wb-card-kicker">
-                <Icon name="sparkles" size={13} /> A new word from {source}
-              </span>
-              <h1 className="wb-word">{word.word}</h1>
-              <p className="wb-word-say">
-                {word.say} <span className="wb-word-part">· {word.part}</span>
-              </p>
-              <p className="wb-word-meaning">{word.meaning}</p>
-            </div>
-
-            <div className="wb-why">
-              <img src="/bs-prototypes/benny-happy.svg" alt="" className="wb-why-benny" />
-              <p className="wb-why-text">{word.why}</p>
-            </div>
+            {/* The word stays put for the whole round: the point is to learn
+                it, so hiding it would only make this an exam. The meaning is
+                behind the ?, because printing it was often the answer to the
+                rung on screen — a reader who needs it can still ask, which is
+                a different thing from being handed it. */}
+            <header className="wb-pin">
+              <div className="wb-pin-word">
+                <h2 className="wb-pin-term">{word.word}</h2>
+                <span className="wb-pin-part">{word.part}</span>
+              </div>
+              <Tooltip content={word.meaning} placement="left">
+                <button
+                  type="button"
+                  className="wb-pin-help"
+                  aria-label={`What ${word.word} means`}
+                >
+                  ?
+                </button>
+              </Tooltip>
+            </header>
 
             <div className="wb-check">
-              <p className="wb-check-prompt">
-                Which sentence uses <strong>{word.word}</strong> the right way?
-              </p>
-              <div className="wb-check-options" role="radiogroup" aria-label="Pick a sentence">
-                {options.map((o, i) => {
-                  const isPicked = picked === i
-                  const state = !isPicked ? '' : o.correct ? ' is-right' : ' is-wrong'
-                  // A wrong pick is out of play; the right one is still choosable.
-                  const spent = picked !== null && options[picked].correct
-                  return (
-                    <button
-                      key={i}
-                      role="radio"
-                      aria-checked={isPicked}
-                      className={`wb-option${state}`}
-                      disabled={spent}
-                      onClick={() => pick(i)}
-                    >
-                      <span className="wb-option-mark" aria-hidden="true">
-                        {isPicked && (
-                          <Icon name={o.correct ? 'check' : 'x'} size={14} stroke={2.6} />
-                        )}
-                      </span>
-                      <span className="wb-option-text">{o.text}</span>
-                    </button>
-                  )
-                })}
-              </div>
+              <Activity type={round[step]} word={word} bookId={bookId} onPass={passed} />
 
-              {wrongPick && (
-                <p className="wb-nudge">
-                  <img src="/bs-prototypes/benny-thinking.svg" alt="" className="wb-nudge-benny" />
-                  Not that one — that sentence doesn’t match the meaning. Try another.
-                </p>
+              {cleared && (
+                <Button
+                  variant="primary"
+                  size="md"
+                  className="wb-next"
+                  iconRight={<Icon name="arrow-right" size={17} />}
+                  onClick={next}
+                >
+                  {last ? 'Collect it' : 'Next'}
+                </Button>
               )}
             </div>
           </div>
+        )}
+
+        {/* How far through, at the foot of the overlay rather than inside the
+            card — the same place the review deck keeps its own. The card is
+            what the reader is working on, and a bar across the top of it
+            competed with the question for the same glance. As a meter rather
+            than the named steps this used to carry: three labelled pills
+            announced what was coming and read as a form to complete, where a
+            bar just says you're getting somewhere. Only when there's more than
+            one rung — a single-activity round has no progress to report. */}
+        {stage === 'round' && round.length > 1 && (
+          <footer className="wb-foot">
+            <div
+              className="wb-meter"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={round.length}
+              aria-valuenow={step + (cleared ? 1 : 0)}
+              aria-label={`Step ${step + 1} of ${round.length}`}
+            >
+              <span style={{ width: `${((step + (cleared ? 1 : 0)) / round.length) * 100}%` }} />
+            </div>
+          </footer>
         )}
 
         {stage === 'done' && (
@@ -156,26 +197,14 @@ export function WordUnlock({ open, word, bookId, collectedCount, onCollect, onCl
             </h1>
             <p className="wb-done-sub">
               That’s <strong>{collectedCount}</strong> words collected
-              {misses === 0 ? ' — and you nailed that one first try.' : '. Nice recovery.'}
+              {firstTryAll
+                ? ` — and you got ${round.length === 1 ? 'that' : 'all ' + round.length} first try.`
+                : '. Nice recovery.'}
             </p>
 
-            <div className="wb-done-card">
-              <span className="wb-done-word">{word.word}</span>
-              <span className="wb-done-meaning">{word.meaning}</span>
-              {book && <span className="wb-done-from">from {book.title}</span>}
-            </div>
-
-            <Button
-              variant="primary"
-              size="lg"
-              icon={<Icon name="vocabulary" size={18} />}
-              onClick={onSeeAll}
-            >
+            <Button variant="primary" size="lg" onClick={onSeeAll}>
               See My Words
             </Button>
-            <button className="wb-done-skip" onClick={onClose}>
-              Keep reading
-            </button>
           </div>
         )}
       </div>
