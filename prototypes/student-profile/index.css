@@ -11,6 +11,7 @@ body,
   height: 100%;
 }
 body {
+  font-family: var(--font-sans);
   background: #e8e8e8;
   -webkit-font-smoothing: antialiased;
 }

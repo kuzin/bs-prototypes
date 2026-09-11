@@ -1,6 +1,7 @@
 import { Fragment, useState } from 'react'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
+import { ToastStack, useToasts } from '@components/Toast/Toast'
 import { Flyout } from '@components/Flyout/Flyout'
 import { Modal } from '@components/Modal/Modal'
 import { Table } from '@components/Table/Table'
@@ -31,11 +32,44 @@ import {
   TABLE_ROWS,
 } from './_shared'
 
+function ToastDemo() {
+  const { toasts, push, dismiss } = useToasts()
+  return (
+    <>
+      <div className="pt-variant-frame--row" style={{ display: 'flex', gap: 8, padding: 14 }}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => push({ title: 'Activity marked complete', body: 'Space' })}
+        >
+          success
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => push({ title: 'Badge earned', body: 'Space', tone: 'info' })}
+        >
+          info
+        </Button>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => push({ title: 'Nothing to update', tone: 'warning' })}
+        >
+          warning
+        </Button>
+      </div>
+      <ToastStack toasts={toasts} onDismiss={dismiss} />
+    </>
+  )
+}
+
 function TabsShowcase() {
   const [a, setA] = useState('daily')
   const [b, setB] = useState('overview')
   const [c, setC] = useState('details')
   const [seg, setSeg] = useState('classes')
+  const [folder, setFolder] = useState('schools')
   return (
     <>
       <Variant label="underline (default)">
@@ -58,6 +92,70 @@ function TabsShowcase() {
             { id: 'overview', label: 'Overview' },
             { id: 'detail', label: 'Detail' },
             { id: 'history', label: 'History' },
+          ]}
+        />
+      </Variant>
+      <Variant label="folder variant — tabs on top of a panel">
+        <div style={{ width: 'min(320px, 100%)' }}>
+          <Tabs
+            variant="folder"
+            size="sm"
+            block
+            active={folder}
+            onChange={setFolder}
+            items={[
+              { id: 'schools', label: 'Top Schools' },
+              { id: 'grades', label: 'Top Grades' },
+            ]}
+          />
+          <div
+            style={{
+              padding: '17px 21px',
+              fontSize: 14,
+              color: 'var(--c-text-real-light)',
+              border: '2px solid var(--c-gray-150)',
+              borderRadius: '0 0 8px 8px',
+            }}
+          >
+            The panel the tabs belong to. The active tab is filled with the same grey, so the two
+            read as one surface.
+          </div>
+        </div>
+      </Variant>
+      <Variant label="underline + center — a short strip inside a card">
+        <div
+          style={{
+            width: 'min(320px, 100%)',
+            background: '#fff',
+            border: '1px solid var(--c-border)',
+            borderRadius: 12,
+            padding: '12px 14px',
+          }}
+        >
+          <Tabs
+            variant="underline"
+            size="sm"
+            center
+            ariaLabel="Leaderboard scope"
+            active={c}
+            onChange={setC}
+            items={[
+              { id: 'details', label: 'Top Schools' },
+              { id: 'all', label: 'Top Grades' },
+            ]}
+          />
+        </div>
+      </Variant>
+      <Variant label='pill + size="xs" — for a card header or settings row'>
+        <Tabs
+          variant="pill"
+          size="xs"
+          ariaLabel="Overview time range"
+          active={c}
+          onChange={setC}
+          items={[
+            { id: 'details', label: 'This School Year' },
+            { id: 'all', label: 'All Time' },
           ]}
         />
       </Variant>
@@ -915,7 +1013,6 @@ function TableKnobs() {
   const [compact, setCompact] = useState(false)
   const [bordered, setBordered] = useState(false)
   const [flush, setFlush] = useState(false)
-  const [collapse, setCollapse] = useState(false)
   const [stickyHeader, setStickyHeader] = useState(false)
   const [sortable, setSortable] = useState(false)
   const [defaultSortKey, setDefaultSortKey] = useState('none')
@@ -967,9 +1064,6 @@ function TableKnobs() {
         <Field label="flush">
           <Toggle checked={flush} onChange={setFlush} />
         </Field>
-        <Field label="collapse">
-          <Toggle checked={collapse} onChange={setCollapse} />
-        </Field>
         <Field label="stickyHeader">
           <Toggle checked={stickyHeader} onChange={setStickyHeader} />
         </Field>
@@ -1016,7 +1110,6 @@ function TableKnobs() {
           compact={compact}
           bordered={bordered}
           flush={flush}
-          collapse={collapse}
           stickyHeader={stickyHeader}
           scrollX={scrollX}
           className={scrollX ? 'pt-tbl-wide' : ''}
@@ -1108,14 +1201,38 @@ export const moleculesSections = [
     desc: (
       <>
         Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>.
-        Two variants: <code>underline</code> (default) and <code>pill</code>. The underline variant
-        also doubles as a full-bleed header tab bar inside a modal (see the in-modal example below).
+        Three variants: <code>underline</code> (default), <code>pill</code> and <code>folder</code>.
+        The underline variant also doubles as a full-bleed header tab bar inside a modal (see the
+        in-modal example below).
+        <br />
+        <br />
+        <code>folder</code> is for tabs that sit on top of a panel: the active one is filled with
+        the panel&apos;s own grey so tab and panel read as a single surface, and the strip carries
+        no rule of its own — the panel supplies the edge. Ported from the shipped leaderboard
+        widget, which is where it&apos;s used. Pair it with <code>block</code> for the app&apos;s
+        50/50 split.
         <br />
         <br />
         <code>plain</code> drops the pill variant&apos;s track and gives the active pill a grey fill
         instead of white — for a sub-tab bar that already sits on a tinted band of its own, where a
         white-on-grey pill would vanish. That&apos;s the reader&apos;s Reading Log and Collections
         bars.
+        <br />
+        <br />
+        <code>center</code> centres the strip in its container — for a short bar inside a card,
+        where left-aligning two tabs against a wide panel leaves the rest of the rule looking empty.
+        Page-level bars stay left-aligned. The size ladder is <strong>14 / 15 / 16</strong> in both
+        variants.
+        <br />
+        <br />
+        <strong>On a phone the underline bar becomes a select.</strong> Three or four page labels
+        don&apos;t fit a 375px row, and a strip that scrolls sideways hides the tabs you
+        haven&apos;t found yet — so below 699px the tabs give way to a full-width dropdown carrying
+        the same items (counts in parentheses). Pill groups keep their buttons: those are segmented
+        controls, not navigation, and two short options read better as a control than a dropdown.{' '}
+        <code>collapse</code> forces it either way. The select is a child of <code>.tabs</code>, not
+        a sibling, so no consumer&apos;s markup or selectors change — CSS swaps which one shows.
+        Resize the window below 699px to see it.
       </>
     ),
     render: () => (
@@ -1291,6 +1408,37 @@ export const moleculesSections = [
     render: () => (
       <>
         <SettingRowShowcase />
+      </>
+    ),
+  },
+  {
+    group: 'molecules',
+    id: 'toast',
+    name: 'Toast',
+    desc: (
+      <>
+        A bottom-right stack of short confirmations, ported from the app&apos;s own toastr
+        (bs-product <code>lib/_toastr.scss</code>): radius 12, 15px, a flat pastel ground per tone
+        with the matching dark text — <code>$pastelGreen</code>/<code>$darkGreen</code>,{' '}
+        <code>$pastelDenim</code>/<code>$darkDenim</code>, <code>$pastelYellow</code>/
+        <code>$darkYellow</code> — capped at 500px on a 6px gap. Lifted clear of the PrototypeNav
+        bar, which the real app doesn&apos;t have.
+        <br />
+        <br />
+        For the thing that just happened and needs acknowledging but not deciding about: an activity
+        ticked off, a badge awarded, a goal saved. Anything the user has to answer is a{' '}
+        <code>Modal</code>. <code>useToasts()</code> owns the queue —{' '}
+        <code>{'{ toasts, push, dismiss }'}</code> — and <code>&lt;ToastStack&gt;</code> renders it;
+        it&apos;s a hook rather than a context so a page can hold its own without a provider. The
+        stack is <code>position: fixed</code>, so mount it once per page. Each toast clears itself
+        after 4s.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="push one — bottom right, auto-dismiss" full>
+          <ToastDemo />
+        </Variant>
       </>
     ),
   },

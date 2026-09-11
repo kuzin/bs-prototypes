@@ -1,10 +1,12 @@
 /* Educator · Vocabulary — the classroom roll-up. Lives inside AppShell's
    content column, so it owns the page padding but not the chrome. */
 
+/* No frame of its own. `.bp-adm-main-body` is the admin frame — it caps the
+   column, sets the gutters and puts --admin-section-gap between its children —
+   so a second max-width and padding in here made this tab narrower and inset
+   compared with Daily Reading and the others beside it. */
 .ew {
-  max-width: 1180px;
-  padding: 26px 30px 56px;
-  margin: 0 auto;
+  align-self: stretch;
 }
 
 /* ─── Header ────────────────────────────────────────────────────────────── */
@@ -47,6 +49,91 @@
 /* ChartCard's own span={2} class targets .sv-grid; restate it for this grid. */
 .ew-grid .rc-card--wide {
   grid-column: 1 / -1;
+}
+
+/* The cloud packs its words to the edge of whatever box it's given, so the
+   shared `--padded` body's 14/16 left the longest ones grazing the border.
+   Local, not a bump to the shared rule: every other card here holds a bar list
+   or a table, which are already inset by their own rows. */
+.ew-cloudcard .rc-card-body {
+  padding: 26px 30px 30px;
+}
+
+/* ─── The writing queue ──────────────────────────────────────────────────── */
+
+/* `list-style: none` doesn't touch the UA's own `padding-inline-start: 40px`
+   or its block margins, so the rows sat indented inside a card that had
+   already padded itself. */
+.ew-queue {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.ew-queue-row {
+  display: grid;
+  grid-template-columns: 186px minmax(0, 1fr) 104px;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 16px;
+  border-top: 1px solid #eef2f7;
+}
+.ew-queue-row:first-child {
+  border-top: 0;
+}
+.ew-queue-row:hover {
+  background: #fbfcfe;
+}
+
+.ew-queue-who {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+  background: none;
+  border: 0;
+}
+.ew-queue-name {
+  overflow: hidden;
+  font-size: var(--text-cell);
+  font-weight: 700;
+  color: #1e293b;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ew-queue-who:hover .ew-queue-name {
+  color: #6d28d9;
+  text-decoration: underline;
+}
+
+.ew-queue-text {
+  font-size: var(--text-cell);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.5;
+  color: #334155;
+}
+.ew-queue-text strong {
+  font-weight: 800;
+  font-style: normal;
+  color: #6d28d9;
+}
+
+.ew-queue-meta {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+@media (max-width: 860px) {
+  .ew-queue-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .ew-queue-text {
+    grid-column: 1 / -1;
+  }
 }
 
 .ew-legend {
@@ -93,16 +180,6 @@
   font-weight: 700;
   color: #6d28d9;
 }
-.ew-tablenote {
-  display: flex;
-  gap: 6px;
-  align-items: center;
-  margin-top: 11px;
-  font-size: 12.5px;
-  font-weight: 600;
-  color: #94a3b8;
-}
-
 @media (max-width: 1080px) {
   .ew-stats {
     grid-template-columns: repeat(2, 1fr);

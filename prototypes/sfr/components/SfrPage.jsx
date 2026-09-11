@@ -13,20 +13,80 @@ import '../../ris/components/StudentPanel.css'
 import '@components/Tabs/Tabs.css'
 import './SfrPage.css'
 
+// Every row carries a `desc`. Where the shipped People menu has copy for the
+// row (bs-product `new_admin/shared/menu/_people_menu.html.erb` and
+// `_students.html.erb`) it's used verbatim.
 function buildNav() {
   return [
-    { id: 'classes', label: 'Classes', icon: 'demographics' },
-    { id: 'students', label: 'Students', icon: 'person' },
-    { id: 'view-students', label: 'View Students', icon: 'person', subgroup: true },
-    { id: 'earned-rewards', label: 'Earned Rewards', icon: 'habits', subgroup: true },
-    { id: 'book-talks', label: 'Book Talks', icon: 'book' },
-    { id: 'overview', label: 'Overview', icon: 'overview', subgroup: true },
-    { id: 'all', label: 'All Book Talks', icon: 'book', subgroup: true },
-    { id: 'safety', label: 'Safety Signals', icon: 'shield', subgroup: true },
-    { id: 'flagged', label: 'Flagged Sessions', icon: 'flag', subgroup: true },
-    { id: 'engagement', label: 'Engagement Sessions', icon: 'flame', subgroup: true },
-    { id: 'staff', label: 'Staff', icon: 'person' },
-    { id: 'groups', label: 'Groups', icon: 'overview' },
+    {
+      id: 'classes',
+      label: 'Classes',
+      icon: 'demographics',
+      desc: 'View and log for classes.',
+    },
+    { id: 'students', label: 'Students', icon: 'person', desc: 'View and log for students.' },
+    {
+      id: 'view-students',
+      label: 'View Students',
+      icon: 'person',
+      subgroup: true,
+      desc: 'View and log for students.',
+    },
+    {
+      id: 'earned-rewards',
+      label: 'Earned Rewards',
+      icon: 'habits',
+      subgroup: true,
+      desc: 'View and redeem rewards by class and challenge.',
+    },
+    {
+      id: 'book-talks',
+      label: 'Book Talks',
+      icon: 'book',
+      desc: 'Review book talks and sessions for review.',
+    },
+    {
+      id: 'overview',
+      label: 'Overview',
+      icon: 'overview',
+      subgroup: true,
+      desc: 'Book talk activity at a glance.',
+    },
+    {
+      id: 'all',
+      label: 'All Book Talks',
+      icon: 'book',
+      subgroup: true,
+      desc: 'Browse every completed book talk.',
+    },
+    {
+      id: 'safety',
+      label: 'Safety Signals',
+      icon: 'shield',
+      subgroup: true,
+      desc: 'Review sessions flagged for a safety risk.',
+    },
+    {
+      id: 'flagged',
+      label: 'Flagged Sessions',
+      icon: 'flag',
+      subgroup: true,
+      desc: 'View and delete all sessions for review, including Flagged Entries.',
+    },
+    {
+      id: 'engagement',
+      label: 'Engagement Sessions',
+      icon: 'flame',
+      subgroup: true,
+      desc: 'Review sessions flagged for low engagement.',
+    },
+    { id: 'staff', label: 'Staff', icon: 'person', desc: 'View staff.' },
+    {
+      id: 'groups',
+      label: 'Groups',
+      icon: 'overview',
+      desc: 'Create, edit, delete, and log for groups.',
+    },
   ]
 }
 

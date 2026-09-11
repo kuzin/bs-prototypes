@@ -12,8 +12,11 @@ import '../../ris/components/StudentPanel.css'
 import { StudentVocabulary } from './StudentVocabulary'
 import { profileFor } from '../data'
 
-// Appended to the profile's own left rail.
-const EXTRA_NAV = [{ icon: 'ti-vocabulary', section: 'vocabulary', label: 'Vocabulary' }]
+// Appended to the profile's own left rail. The rail draws these with
+// <PlumpyIcon>, not <Icon>, so the name has to be one from that pack — a
+// `ti-*` name resolved to nothing and the item sat there iconless next to
+// sixteen that weren't.
+const EXTRA_NAV = [{ icon: 'vocabulary', section: 'vocabulary', label: 'Vocabulary' }]
 
 export function StudentProfilePanel({ studentId, onClose }) {
   // The panel owns its width, so expanding is the host's call to make — the

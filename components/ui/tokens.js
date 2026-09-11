@@ -2,11 +2,26 @@
 // Section colors mirror ReadingHealth's SECTIONS (the canonical app palette) so the
 // Student Profile stays in sync with the landing cards, ReadingHealth tiles, and RIS.
 // `bar` = accent (charts / Hero icon / fills); `bg`/`text` = soft tile + chip tint.
+// `icon` is the Tabler name RIS still draws; `plumpy` is the Icons8 Plumpy
+// name the reader profile's rail and Heroes use, so the profile chrome runs
+// the same duotone family as the rest of the admin.
 export const C = {
-  motivation: { bg: '#FDEEE6', text: '#993C1D', bar: '#E8866A', icon: 'ti-flame' },
-  integrity: { bg: '#E8EFFE', text: '#1E40AF', bar: '#1D4ED8', icon: 'ti-shield-check' },
-  habits: { bg: '#E6F8EF', text: '#0F6E56', bar: '#16A97A', icon: 'ti-calendar-stats' },
-  skills: { bg: '#F1EBFF', text: '#5B21B6', bar: '#7C3AED', icon: 'ti-book-2' },
+  motivation: { bg: '#FDEEE6', text: '#993C1D', bar: '#E8866A', icon: 'ti-flame', plumpy: 'fire' },
+  integrity: {
+    bg: '#E8EFFE',
+    text: '#1E40AF',
+    bar: '#1D4ED8',
+    icon: 'ti-shield-check',
+    plumpy: 'chat',
+  },
+  habits: {
+    bg: '#E6F8EF',
+    text: '#0F6E56',
+    bar: '#16A97A',
+    icon: 'ti-calendar-stats',
+    plumpy: 'calendar',
+  },
+  skills: { bg: '#F1EBFF', text: '#5B21B6', bar: '#7C3AED', icon: 'ti-book-2', plumpy: 'book' },
 }
 
 // Display names for the four analysis sections. The keys stay as the original

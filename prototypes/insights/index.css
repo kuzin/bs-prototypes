@@ -566,7 +566,10 @@ button.ins-metric {
     opacity: 1;
   }
 }
-.ins-book--skel {
+/* Doubled class: this modifier is declared above `.ins-book`, whose own
+   `background` would otherwise win on source order and paint the skeleton
+   solid. */
+.ins-book.ins-book--skel {
   background: linear-gradient(
     110deg,
     var(--c-slate-200) 30%,
@@ -605,7 +608,10 @@ button.ins-metric {
   background: var(--c-slate-200);
   animation: ins-skel-pulse 1.4s ease-in-out infinite;
 }
-.ins-age-bar--skel {
+/* Doubled class: this modifier is declared above `.ins-age-bar`, whose own
+   `background` would otherwise win on source order and paint the skeleton
+   solid. */
+.ins-age-bar.ins-age-bar--skel {
   background: linear-gradient(
     110deg,
     var(--c-slate-200) 30%,

@@ -1,0 +1,55 @@
+/* The admin's row-completion toggle. One rule in the app covers activities,
+   rewards, incentives and raffles alike (`.complete-learning-track-toggle,
+   .redeem-incentive-toggle, .redeem-raffle-toggle, .redeem-reward-toggle` in
+   bs-product admin/_admin.scss): a 32px filled checkbox glyph, green `#0BA85F`
+   when done, `$gray` when not. */
+.ctog {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  color: var(--c-gray-500);
+  cursor: pointer;
+  transition:
+    color 0.12s,
+    background 0.12s;
+}
+
+/* `#0BA85F` — the app's own checked green, not one of the tag greens. */
+.ctog--done {
+  color: #0ba85f;
+}
+
+.ctog:hover:not(.ctog--disabled) {
+  background: var(--c-gray-150);
+}
+
+/* Disabled-but-checked is `$green100` in the app, i.e. present but inert. */
+.ctog--disabled {
+  cursor: default;
+  color: #b2fad8;
+}
+
+/* A repeatable row can't be completed, so the app shows its "add" glyph — and
+   the running count is the actual record, so it rides alongside. The app draws
+   this one smaller than the checkbox (`.repeatable { height: 22px; width: 22px }`). */
+.ctog--repeatable {
+  width: auto;
+  min-width: 36px;
+  cursor: default;
+  color: var(--c-gray-500);
+}
+
+.ctog-count {
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gray-800);
+}

@@ -3,6 +3,9 @@
   flex-direction: column;
   height: calc(100vh - 180px);
   overflow: hidden;
+  /* The modal turns `overflow: visible` to let the close badge hang past its
+     corner, so the shell has to round its own. */
+  border-radius: 14px;
 }
 
 /* With no reader list the modal is a short stack of detail cards rather than a
@@ -25,7 +28,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 18px 14px 20px;
+  padding: 16px 20px;
   border-bottom: 1px solid #e5e7eb;
   flex-shrink: 0;
 }
@@ -46,7 +49,7 @@
   padding: 4px 10px;
   margin-top: 10px;
   font-family: inherit;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #1d4ed8;
   cursor: pointer;
@@ -59,12 +62,6 @@
   background: #eff6ff;
   border-color: #bfdbfe;
   color: #1e40af;
-}
-
-.sm2-topbar-right {
-  display: flex;
-  align-items: center;
-  gap: 8px;
 }
 
 .sm2-nav {
@@ -88,7 +85,7 @@
   border: none;
   background: #f8fafc;
   color: #334155;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -117,38 +114,20 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 12px;
+  font-size: 14px;
   color: #64748b;
   padding: 0 4px;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
 }
 .sm2-nav-count strong {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #0f172a;
 }
 .sm2-nav-count-sep {
   color: #cbd5e1;
   font-weight: 500;
-}
-
-.sm2-close.icnb {
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  border: none;
-  background: none;
-  color: #94a3b8;
-  flex-shrink: 0;
-}
-.sm2-close.icnb svg {
-  width: 15px;
-  height: 15px;
-}
-.sm2-close.icnb:hover:not(:disabled) {
-  background: #f1f5f9;
-  color: #475569;
 }
 
 /* ── Engagement Rating ── */
@@ -158,9 +137,9 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 700;
-  padding: 2px 8px;
+  padding: 3px 9px;
   border-radius: 99px;
   background: #fffbeb;
   color: #92400e;
@@ -186,9 +165,9 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
-  padding: 10px 14px;
+  padding: 11px 15px;
   border-radius: 7px;
   border: none;
   background: transparent;
@@ -288,7 +267,7 @@
 }
 
 .sm2-approve-body {
-  font-size: 13.5px;
+  font-size: 15px;
   color: #475569;
   line-height: 1.5;
   margin-bottom: 22px;
@@ -303,12 +282,12 @@
   width: 100%;
   box-sizing: border-box;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   color: #1e293b;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 9px;
-  padding: 9px 11px;
+  padding: 11px 13px;
   resize: vertical;
   margin-bottom: 18px;
   transition:
@@ -347,7 +326,7 @@
   width: 220px;
   flex-shrink: 0;
   border-right: 1px solid #e5e7eb;
-  padding: 24px 18px 20px;
+  padding: 24px 20px 22px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -372,7 +351,7 @@
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 800;
   letter-spacing: -0.02em;
   margin-bottom: 10px;
@@ -380,7 +359,7 @@
 }
 
 .sm2-reader-name {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 800;
   color: #0f172a;
   text-align: center;
@@ -388,7 +367,7 @@
 }
 
 .sm2-reader-meta {
-  font-size: 12px;
+  font-size: 14px;
   color: #64748b;
   text-align: center;
   margin-top: 2px;
@@ -401,7 +380,7 @@
   gap: 16px;
   border: 1.5px solid #e2e8f0;
   border-radius: 12px;
-  padding: 14px;
+  padding: 16px 18px;
 }
 
 .sm2-book-cover {
@@ -421,7 +400,7 @@
 }
 
 .sm2-book-title {
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 800;
   color: #0f172a;
   line-height: 1.3;
@@ -429,7 +408,7 @@
 }
 
 .sm2-book-author {
-  font-size: 12.5px;
+  font-size: 14px;
   color: #64748b;
   margin-bottom: 8px;
 }
@@ -468,13 +447,13 @@
 }
 
 .sm2-section-title {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #0f172a;
 }
 
 .sm2-section-aside {
-  font-size: 12px;
+  font-size: 14px;
   color: #94a3b8;
 }
 
@@ -489,7 +468,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 6px 0;
+  padding: 8px 0;
   border-bottom: 1px solid #f1f5f9;
   gap: 8px;
 }
@@ -498,7 +477,7 @@
 }
 
 .sm2-detail-row span:first-child {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #94a3b8;
   text-transform: uppercase;
@@ -507,7 +486,7 @@
 }
 
 .sm2-detail-row span:last-child {
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 600;
   color: #334155;
   text-align: right;
@@ -518,12 +497,12 @@
   border: 1px solid #cffafe;
   background: #f5feff;
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 14px 16px;
 }
 
 .sm2-prompt-text {
   margin: 0;
-  font-size: 13px;
+  font-size: 15px;
   color: #334155;
   line-height: 1.5;
 }
@@ -533,12 +512,12 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 14px;
+  padding: 11px 15px;
   margin: 0 0 8px;
   background: #fffbeb;
   border: 1px solid #fde68a;
   border-radius: 8px;
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 500;
   color: #78350f;
   line-height: 1.4;
@@ -552,7 +531,7 @@
   background: #f8fafc;
   border: 1px solid #eef2f6;
   border-radius: 12px;
-  padding: 16px;
+  padding: 18px;
 }
 
 .sm2-bubble-wrap {
@@ -581,7 +560,7 @@
   border-radius: 50%;
   background: #dbeafe;
   color: #1d4ed8;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 800;
   letter-spacing: -0.02em;
   display: flex;
@@ -593,9 +572,9 @@
 
 .sm2-bubble {
   max-width: 88%;
-  padding: 10px 14px;
+  padding: 11px 15px;
   border-radius: 12px;
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.55;
   color: #1e293b;
 }
@@ -629,7 +608,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 14px 20px;
+  padding: 16px 20px;
   border-top: 1px solid #e5e7eb;
   background: #f8fafc;
   flex-shrink: 0;
@@ -643,9 +622,9 @@
 }
 
 .sm2-btn {
-  padding: 8px 18px;
+  padding: 10px 20px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   font-family: inherit;
   cursor: pointer;
@@ -672,7 +651,7 @@
   justify-content: space-between;
   width: 100%;
   padding: 0 2px 8px;
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -683,9 +662,9 @@
 .sm2-sidebar-tab-count {
   background: #eff6ff;
   color: #3b82f6;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
-  padding: 1px 6px;
+  padding: 2px 7px;
   border-radius: 99px;
   text-transform: none;
   letter-spacing: normal;
@@ -702,7 +681,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 5px 6px;
+  padding: 7px 8px;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 6px;
@@ -739,7 +718,7 @@
 .sm2-reader-row-book {
   flex: 1;
   min-width: 0;
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 600;
   color: #1e293b;
   white-space: nowrap;
@@ -748,7 +727,7 @@
 }
 
 .sm2-reader-row-date {
-  font-size: 11px;
+  font-size: 13px;
   color: #94a3b8;
   white-space: nowrap;
   flex-shrink: 0;
@@ -769,7 +748,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 6px 8px;
+  padding: 8px 10px;
   border-radius: 7px;
   transition: background 0.1s;
   cursor: pointer;
@@ -785,22 +764,22 @@
 }
 
 .sm2-log-date {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #334155;
   min-width: 52px;
 }
 
 .sm2-log-mins {
-  font-size: 12px;
+  font-size: 14px;
   color: #94a3b8;
   flex: 1;
 }
 
 .sm2-log-badge {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 2px 7px;
+  padding: 3px 8px;
   border-radius: 99px;
   background: #f1f5f9;
   color: #64748b;
@@ -816,9 +795,9 @@
   display: flex;
   align-items: flex-start;
   gap: 7px;
-  padding: 7px 12px;
+  padding: 9px 13px;
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 500;
   line-height: 1.45;
   /* Pull up toward the preceding bubble, push down before the next. */
@@ -861,7 +840,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 13px 15px;
+  padding: 14px 16px;
 }
 .sm2-review-badge {
   display: inline-flex;
@@ -882,12 +861,12 @@
   min-width: 0;
 }
 .sm2-review-card-label {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   margin-bottom: 3px;
 }
 .sm2-review-card-desc {
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.45;
   color: #475569;
 }
@@ -926,7 +905,7 @@
 
 /* Resolver caption in the trailing slot of a resolved safety card */
 .sm2-review-by {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: #64748b;
   white-space: nowrap;
@@ -940,24 +919,24 @@
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
-  padding: 12px 14px;
+  padding: 14px 16px;
 }
 .sm2-res-item {
   border-left: 3px solid #fda4af;
   padding-left: 11px;
 }
 .sm2-res-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #1e293b;
 }
 .sm2-res-contact {
-  font-size: 12.5px;
+  font-size: 14px;
   font-weight: 700;
   color: #be123c;
 }
 .sm2-res-blurb {
-  font-size: 12px;
+  font-size: 14px;
   color: #64748b;
   line-height: 1.4;
   margin-top: 1px;
@@ -966,7 +945,7 @@
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
   color: #2563eb;
   text-decoration: none;
@@ -1038,12 +1017,12 @@
   flex: 1;
   min-width: 0;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   color: #1e293b;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 9px;
-  padding: 9px 11px;
+  padding: 11px 13px;
   line-height: 1.45;
   resize: vertical;
   min-height: 58px;
@@ -1066,7 +1045,7 @@
   gap: 8px;
   padding: 30px 16px;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   color: #94a3b8;
 }
 
@@ -1118,7 +1097,7 @@
   gap: 8px;
 }
 .sm2-tl-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #1e293b;
 }
@@ -1129,7 +1108,7 @@
   flex-shrink: 0;
 }
 .sm2-tl-meta {
-  font-size: 11.5px;
+  font-size: 13px;
   color: #94a3b8;
   white-space: nowrap;
   flex-shrink: 0;
@@ -1139,13 +1118,13 @@
   align-items: center;
   gap: 4px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 700;
   color: #475569;
   background: #fff;
   border: 1px solid #e2e8f0;
   border-radius: 6px;
-  padding: 2px 8px;
+  padding: 3px 9px;
   cursor: pointer;
   transition:
     background 0.12s,
@@ -1158,13 +1137,13 @@
   color: #0f172a;
 }
 .sm2-tl-note {
-  font-size: 12.5px;
+  font-size: 14px;
   color: #475569;
   line-height: 1.45;
   background: #f8fafc;
   border: 1px solid #eef2f6;
   border-radius: 8px;
-  padding: 7px 10px;
+  padding: 9px 12px;
   margin-top: 6px;
 }
 

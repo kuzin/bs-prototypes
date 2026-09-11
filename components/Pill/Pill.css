@@ -3,7 +3,10 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  font-weight: 600;
+  /* The app's own tag is 13px / 800 on a 12px radius (bs-product
+     admin/_admin_flagged_entries.scss, admin/_admin_daily_readings.scss) — a
+     chunky pastel chip, not the light 600 we had. */
+  font-weight: 800;
   line-height: 1.15;
   white-space: nowrap;
   border-radius: 99px;
@@ -14,13 +17,13 @@
 
 /* Sizes — visible scale step + balanced vertical padding */
 .pill--sm {
-  font-size: 11px;
-  padding: 3px 8px;
+  font-size: 13px;
+  padding: 3px 9px;
   gap: 4px;
 }
 .pill--md {
-  font-size: 13px;
-  padding: 4px 10px;
+  font-size: 14px;
+  padding: 4px 11px;
   gap: 5px;
 }
 .pill--lg {
@@ -29,11 +32,16 @@
   gap: 6px;
 }
 
-/* ── Soft (default) — pale tint, dark text ───────────────────────────────── */
+/* ── Soft (default) — the app's pastel tag ───────────────────────────────────
+   The shipped pairs are a hue's `50` fill under its `500` text and no border at
+   all: `#cbfce5`/`#1dc174` green, `#fdd2ce`/`#df3f30` red, `#f2f2f2`/`#d0d0d0`
+   for N/A. Mixing 22% of the passed colour into white lands on that `50`, and
+   the text is the colour itself rather than a muddied blend of it — which is
+   what made these read as washed-out next to the real thing. */
 .pill--soft {
-  color: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 55%, var(--c-slate-700));
-  background: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 12%, white);
-  border-color: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 22%, transparent);
+  color: var(--pill-color, var(--c-slate-600));
+  background: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 22%, white);
+  border-color: transparent;
 }
 
 /* ── Filled — solid background, white text ───────────────────────────────── */

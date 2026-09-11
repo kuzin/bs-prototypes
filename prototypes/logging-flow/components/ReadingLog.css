@@ -10,8 +10,15 @@
 .rl-subtabs {
   display: flex;
   justify-content: center;
+  /* Full-bleed: the band belongs to the page chrome, like the nav above it, so
+     it runs edge to edge rather than stopping at the content column. `100vw`
+     counts the scrollbar, which would overflow by ~15px — `.wa-shell` carries
+     `overflow-x: clip` to absorb that (clip, not hidden, so it doesn't become
+     a scroll container and break sticky positioning). */
+  width: 100vw;
   padding: 16px 24px;
-  margin: -24px -24px 8px;
+  margin: -24px 0 8px;
+  margin-inline: calc(50% - 50vw);
   background: #f7f8fa;
   border-bottom: 1px solid var(--c-border);
 }

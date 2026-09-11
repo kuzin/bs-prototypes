@@ -26,9 +26,9 @@ import { Knobs, Variant, TABLE_ROWS } from './_shared'
 
 const fakeSlicePoints = (points) => ({
   points: points.map((p, i) => ({
-    id: `${p.serieId}.${i}`,
-    serieId: p.serieId,
-    serieColor: p.color,
+    id: `${p.seriesId}.${i}`,
+    seriesId: p.seriesId,
+    seriesColor: p.color,
     data: { x: p.x, y: p.y },
   })),
 })
@@ -1509,6 +1509,14 @@ export const chartsSections = [
         rules by default; pass <code>divided={'{false}'}</code> to opt out. Pass{' '}
         <code>header={'{ label, valueLabel }'}</code> to add a table-style header row above the
         bars.
+        <br />
+        <br />
+        The list is a <strong>container</strong> (and so is each group, since{' '}
+        <code>layout="columns"</code> puts two side by side), so a row responds to the width it
+        actually has rather than the viewport&apos;s — these sit in cards and in a ~300px profile
+        flyout. Under <strong>330px</strong> the bar track is dropped from the grid: at that width
+        the meta column leaves it around 24px, which is a dash rather than a length you can compare
+        against the row above, so the figure and its trend carry the row on their own.
       </>
     ),
     render: () => (
@@ -1623,8 +1631,8 @@ export const chartsSections = [
           <Variant label="SliceTooltip — line chart">
             <SliceTooltip
               slice={fakeSlicePoints([
-                { serieId: 'Lincoln', color: '#E8866A', x: 'Jan', y: 68 },
-                { serieId: 'District avg', color: '#CBD5E1', x: 'Jan', y: 72 },
+                { seriesId: 'Lincoln', color: '#E8866A', x: 'Jan', y: 68 },
+                { seriesId: 'District avg', color: '#CBD5E1', x: 'Jan', y: 72 },
               ])}
               accent="#E8866A"
               allData={RMI_TREND_FIXTURE}

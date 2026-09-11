@@ -2,7 +2,10 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 13px;
+  /* The shipped app's admin table runs its cells at 15px on 16px/18px padding
+     (bs-product admin/_admin_tables.scss). 13px was the old prototype scale and
+     read as fine print against the rest of the theme. */
+  font-size: 15px;
   color: var(--c-slate-800);
   background: #fff;
   border: 1px solid var(--c-gray-200);
@@ -10,17 +13,20 @@
   overflow: hidden;
 }
 
+/* Header row — the shipped app's table headers are sentence case at 14px, not
+   uppercase small caps (see `.daily-reading table tr:first-child td/th` in
+   bs-product admin/_admin_daily_readings.scss: padding 8px, height 32px,
+   font-size 14px). */
 .tbl-th {
   text-align: left;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--c-text-muted);
-  font-size: 12px;
-  padding: 14px 12px;
+  /* `thead th`: `#f2f2f2`, weight 900, 14px, `padding: 14px 18px`. */
+  font-weight: 900;
+  color: var(--c-gray-800);
+  font-size: 14px;
+  padding: 14px 18px;
   border-top: 1px solid var(--c-gray-200);
   border-bottom: 1px solid var(--c-gray-200);
-  background: var(--c-slate-50);
+  background: var(--c-gray-150);
   white-space: nowrap;
 }
 
@@ -36,6 +42,8 @@
   color: var(--c-slate-800);
 }
 
+/* `font-size` here sizes a glyph (⇅ / ↑ / ↓), not copy — it's off the type
+   ladder on purpose, the way an icon's `size` is. */
 .tbl-sort-icon {
   display: inline-block;
   margin-left: 5px;
@@ -53,8 +61,9 @@
   color: var(--c-blue-700);
 }
 
+/* `tbody td`: `padding: 16px 18px`, white, middle-aligned. */
 .tbl-td {
-  padding: 10px 12px;
+  padding: 16px 18px;
   border-bottom: 1px solid var(--c-slate-100);
   vertical-align: middle;
   background: #fff;
@@ -85,9 +94,13 @@
   background: #fafbfd;
 }
 
+/* `compact` is ours, not the app's — a denser variant for a table inside a
+   panel or a card, where the real 16px/18px cells would push the row count off
+   the screen. It tightens the padding only; the type stays on the theme's
+   scale, which is what made these read as fine print before. */
 .tbl--compact .tbl-th,
 .tbl--compact .tbl-td {
-  padding: 7px 10px;
+  padding: 10px 12px;
 }
 
 .tbl--bordered .tbl-td,
@@ -119,6 +132,17 @@
    below it, so the footer never rides along with the horizontal scroll. */
 .tbl-scroll {
   overflow-x: auto;
+}
+
+/* `overflow-x: auto` on its own only lets the table reach its *min*-content
+   width, so a narrow container squeezes every prose column down to one word
+   per line and scrolls a table that's still unreadable. `max-content` sizes
+   the table to what its cells actually want and scrolls the overflow;
+   `min-width: 100%` keeps it filling the card when there's room to spare.
+   Columns that shouldn't hug declare their own `width` / `minWidth`. */
+.tbl-scroll > .tbl {
+  width: max-content;
+  min-width: 100%;
 }
 
 /* ── Pagination ──────────────────────────────────────────────────────────── */
@@ -168,10 +192,52 @@
   color: var(--c-slate-300);
 }
 
+/* `hideHeader` — the row goes, but the cells keep laying the columns out, so
+   the widths a `minWidth` buys still apply. */
+.tbl-head--off .tbl-th {
+  height: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0;
+  line-height: 0;
+  overflow: hidden;
+}
+
 /* ── Flush variant — edge-to-edge inside ChartCard bodyPad="flush" ────────── */
+/* A flush table has no border of its own, but it IS its card's whole body, so
+   its outer cells have to carry the card's radius: the header's grey fill was
+   squaring off the rounded corners above it, and a hovered or zebra last row
+   did the same below. Set `--tbl-flush-radius: 0` where a table sits under a
+   heading rather than at the card's own top edge. */
 .tbl--flush {
+  --tbl-flush-radius: 12px;
+
   border: none;
-  border-radius: 0;
+  /* The table paints its own white ground, so it needs the radius too — with a
+     square background behind rounded corner cells, the white corner showed
+     through outside the header's grey. `overflow: hidden` on a table doesn't
+     clip reliably, which is why the corner cells below carry it as well — and
+     since they do, the flush table doesn't need to clip at all. Not clipping
+     matters: `.tbl`'s own `overflow: hidden` was cutting off a row action's
+     tooltip at the table's edge. */
+  border-radius: var(--tbl-flush-radius);
+  overflow: visible;
+}
+
+.tbl--flush thead tr:first-child .tbl-th:first-child {
+  border-top-left-radius: var(--tbl-flush-radius);
+}
+
+.tbl--flush thead tr:first-child .tbl-th:last-child {
+  border-top-right-radius: var(--tbl-flush-radius);
+}
+
+.tbl--flush tbody tr:last-child .tbl-td:first-child {
+  border-bottom-left-radius: var(--tbl-flush-radius);
+}
+
+.tbl--flush tbody tr:last-child .tbl-td:last-child {
+  border-bottom-right-radius: var(--tbl-flush-radius);
 }
 .tbl--flush .tbl-th:first-child,
 .tbl--flush .tbl-td:first-child {
@@ -182,73 +248,22 @@
   padding-right: 16px;
 }
 
-/* ── Mobile — tighter padding and font so wide tables fit. Anything that
-   still doesn't fit will scroll horizontally inside the card body (set
-   by .rc-card-body--flush:has(.tbl)). ───────────────────────────────── */
+/* ── Mobile — the same type as desktop on a tighter gutter. A wide table
+   scrolls horizontally (`scrollX`) rather than restyling itself: shrinking
+   the copy to 12px bought a column or two and still didn't fit, so it cost
+   legibility for nothing. ─────────────────────────────────────────────── */
 @media (max-width: 600px) {
-  .tbl {
-    font-size: 12px;
-  }
-  .tbl-th {
-    padding: 7px 6px;
-    font-size: 11px;
-    letter-spacing: 0.03em;
-  }
+  .tbl-th,
   .tbl-td {
-    padding: 7px 6px;
+    padding: 12px 12px;
   }
   .tbl--flush .tbl-th:first-child,
   .tbl--flush .tbl-td:first-child {
-    padding-left: 10px;
+    padding-left: 12px;
   }
   .tbl--flush .tbl-th:last-child,
   .tbl--flush .tbl-td:last-child {
-    padding-right: 10px;
-  }
-
-  /* Collapse variant — on mobile, each row becomes a stack of label-value
-     pairs, so wide multi-column tables (Recommended Actions, etc.) read
-     vertically without horizontal scroll. Opt-in via the `collapse` prop. */
-  .tbl--collapse,
-  .tbl--collapse thead,
-  .tbl--collapse tbody,
-  .tbl--collapse tr,
-  .tbl--collapse td {
-    display: block;
-    width: 100%;
-  }
-  .tbl--collapse thead {
-    display: none;
-  }
-  .tbl--collapse .tbl-row {
-    border-bottom: 1px solid var(--c-border);
-    padding: 10px 12px;
-  }
-  .tbl--collapse .tbl-row:last-child {
-    border-bottom: none;
-  }
-  .tbl--collapse .tbl-td,
-  .tbl--collapse .tbl-td.tbl-cell--right,
-  .tbl--collapse .tbl-td.tbl-cell--center {
-    border-bottom: none;
-    padding: 4px 0;
-    text-align: left;
-  }
-  /* Tiny inline label rendered from the column's data-label attribute. */
-  .tbl--collapse .tbl-td[data-label]::before {
-    content: attr(data-label);
-    display: block;
-    font-size: 10px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--c-text-muted);
-    margin-bottom: 2px;
-  }
-  /* When there's no label (e.g. the action column), drop the placeholder
-     line so the row doesn't get an extra blank top. */
-  .tbl--collapse .tbl-td:not([data-label]) {
-    padding-top: 0;
+    padding-right: 12px;
   }
 }
 

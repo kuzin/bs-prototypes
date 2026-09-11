@@ -1,23 +1,34 @@
 // Icons for the 10 RMI motivation factors (5 intrinsic + 5 extrinsic).
-// Rendered via the shared <Icon> (Tabler) so they match the rest of the system.
-// Each entry is an element; consumers render it directly, pass it as an `icon`
-// prop, or cloneElement() it to resize. Color inherits from CSS `color`.
+//
+// These are the app's own drawings, copied out of bs-product
+// (`app/assets/images/icons/rmi-factors/`) and served from `public/bs-icons/`
+// via <BsIcon>. They used to be stroked Tabler glyphs, which read as our
+// approximation of the factors rather than the factors themselves.
+//
+// The shape of this export is unchanged — an element per factor key — so
+// consumers still render it directly, pass it as an `icon` prop, or
+// cloneElement() it to resize. What changed is that the drawings carry their
+// own colour now, so a `color` on the parent no longer tints them.
 
-import { Icon } from '@components/Icon/Icon'
+import { BsIcon } from '@components/BsIcons/BsIcons'
 
 const SIZE = 18
 
+const factor = (name) => <BsIcon set="rmi-factors" name={name} size={SIZE} />
+
 export const RMI_ICONS = {
   // ── Intrinsic ──
-  enjoyment: <Icon name="smile" size={SIZE} />,
-  curiosity: <Icon name="search" size={SIZE} />,
-  importance: <Icon name="star" size={SIZE} />,
-  confidence: <Icon name="shield-check" size={SIZE} />,
-  challenge: <Icon name="trending-up" size={SIZE} />,
+  enjoyment: factor('enjoyment'),
+  curiosity: factor('curiosity'),
+  importance: factor('importance'),
+  confidence: factor('confidence'),
+  challenge: factor('challenge'),
   // ── Extrinsic ──
-  social: <Icon name="users" size={SIZE} />,
-  recognition: <Icon name="award" size={SIZE} />,
-  grades: <Icon name="file-text" size={SIZE} />,
-  competition: <Icon name="chart-column" size={SIZE} />,
-  compliance: <Icon name="clipboard-check" size={SIZE} />,
+  social: factor('social'),
+  recognition: factor('recognition'),
+  grades: factor('grades'),
+  competition: factor('competition'),
+  compliance: factor('compliance'),
+  // Not one of the ten — the app's placeholder for an unscored factor.
+  mystery: factor('mystery'),
 }

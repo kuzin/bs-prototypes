@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react'
-import { Modal } from '@components/Modal/Modal'
+import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
-import { IconButton } from '@components/Primitives/Primitives'
 import { Pill } from '@components/Pill/Pill'
 import {
   SESSIONS,
@@ -93,7 +92,14 @@ export function SessionModal({ session, onSelectSession, onClose }) {
   }
 
   return (
-    <Modal open={!!session} onClose={onClose} variant="center" ariaLabel="Book talk session">
+    <Modal
+      open={!!session}
+      onClose={onClose}
+      variant="center"
+      ariaLabel="Book talk session"
+      closeBadge
+    >
+      <ModalClose onClick={onClose} />
       <div className="sm2-shell bw-sm2">
         {/* Top bar — step through the example sessions. */}
         <div className="sm2-topbar">
@@ -123,11 +129,6 @@ export function SessionModal({ session, onSelectSession, onClose }) {
                 <Icon name="chevron-right" size={14} stroke={2.2} />
               </button>
             </div>
-          </div>
-          <div className="sm2-topbar-right">
-            <IconButton variant="ghost" onClick={onClose} aria-label="Close" className="sm2-close">
-              <Icon name="x" size={15} stroke={2.2} />
-            </IconButton>
           </div>
         </div>
 

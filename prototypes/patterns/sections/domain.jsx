@@ -19,6 +19,7 @@ import {
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
 import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+import { DailyReadingTracker } from '@components/DailyReadingTracker/DailyReadingTracker'
 import { RMI_FACTORS } from '../../ris/data'
 import { CONNECTIONS, CONNECTION_LIST, TAKEN_USERNAMES } from '../../logging-flow/connections'
 import { READER as PARTNER_READER } from '../../logging-flow/data'
@@ -37,6 +38,53 @@ const SAMPLE_HEALTH = {
   dI: 3,
   dH: 5,
   dS: -3,
+}
+
+// A week of the class tracker: a medalled top three, a mid-roster reader whose
+// week is patchy, and the Saturday/Sunday nulls the live page shows for days
+// that haven't happened yet.
+const SAMPLE_TRACKER = [
+  {
+    key: 'marcus',
+    rank: 1,
+    name: 'Marcus Chen',
+    goal: 30,
+    average: 98,
+    tone: 'blue',
+    days: [true, true, true, true, null, null, true],
+  },
+  {
+    key: 'anne',
+    rank: 2,
+    name: 'Anne Boonchuy',
+    goal: 20,
+    average: 73,
+    tone: 'blue',
+    days: [true, true, null, true, '24%', null, null],
+  },
+  {
+    key: 'tyler',
+    rank: 3,
+    name: 'Tyler Voss',
+    goal: 15,
+    average: 31,
+    tone: 'red',
+    days: ['18%', null, null, null, null, null, null],
+  },
+  {
+    key: 'priya',
+    rank: 4,
+    name: 'Priya Shah',
+    goal: 20,
+    average: 91,
+    tone: 'blue',
+    days: [true, true, true, '82%', true, null, null],
+  },
+]
+
+const SAMPLE_TRACKER_AVG = {
+  average: '73%',
+  days: ['75%', '50%', '25%', '75%', '24%', null, null],
 }
 
 const SAMPLE_ALERTS = [
@@ -563,6 +611,34 @@ export const domainSections = [
       <Variant label="Comics Plus connected, Scholastic not" full>
         <div style={{ padding: '0 24px' }}>
           <PersonalizeReaderDemo />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'domain',
+    id: 'daily-reading-tracker',
+    name: 'DailyReadingTracker',
+    desc: (
+      <>
+        The class page&apos;s Daily Reading grid — who hit their daily goal, day by day. The table
+        is the shipped one (column striping, the fenced Goal column, 48px rows, the 50&times;22 tone
+        lozenge, medals for the top three); <code>rows</code> takes a day as <code>true</code> (a
+        check disc), <code>null</code> (a dash) or a percentage. Ten columns don&apos;t fit a phone
+        and the app only wraps them in an <code>overflow: auto</code> box, so at{' '}
+        <strong>&le;&nbsp;699px</strong> the same rows re-render as one card per reader with the
+        week as a seven-day strip — resize the window to see it. Both trees stay in the DOM and swap
+        in CSS, so there&apos;s no resize flash and print always gets the table.
+      </>
+    ),
+    render: () => (
+      <Variant label="a week of the class tracker" full>
+        <div style={{ padding: '0 24px' }}>
+          <DailyReadingTracker
+            weekLabel="5/11 – 5/17 (This Week)"
+            rows={SAMPLE_TRACKER}
+            average={SAMPLE_TRACKER_AVG}
+          />
         </div>
       </Variant>
     ),

@@ -36,12 +36,27 @@ const INHERITED_COVER_IDS = {
 }
 
 // Anything with a `partner` lives in a linked app's catalog — drop those.
+//
+// `readable` goes too, on every title. It marks a book with a digital edition
+// you can open in Beanstack's own reader, which puts a read-or-log fork in
+// front of picking a title — a whole second thing to explain in a demo that is
+// about what happens *after* a log. It's data-driven, so dropping the flag
+// takes the corner chip, the callout and the reader path with it.
+//
+// And every title is logged in minutes. logging-flow carries both measures on
+// purpose; here a book that asks for pages is just a second thing the details
+// step can say, and the challenges this reader is in are all minutes anyway.
 const PLAIN_BOOKS = Object.fromEntries(
   Object.entries(LF_BOOKS)
     .filter(([, b]) => !b.partner)
-    .map(([id, b]) => [
+    // eslint-disable-next-line no-unused-vars
+    .map(([id, { readable, ...b }]) => [
       id,
-      INHERITED_COVER_IDS[id] ? { ...b, coverId: INHERITED_COVER_IDS[id] } : b,
+      {
+        ...b,
+        measure: 'minutes',
+        ...(INHERITED_COVER_IDS[id] ? { coverId: INHERITED_COVER_IDS[id] } : null),
+      },
     ]),
 )
 
@@ -53,7 +68,7 @@ export const BOOKS = {
     title: 'Matilda',
     author: 'Roald Dahl',
     cover: ['#1E3A8A', '#DC2626'],
-    measure: 'pages',
+    measure: 'minutes',
     pages: 240,
   },
   wonder: {
@@ -64,7 +79,6 @@ export const BOOKS = {
     cover: ['#3B82F6', '#93C5FD'],
     measure: 'minutes',
     pages: 320,
-    readable: true,
   },
   holes: {
     id: 'holes',
@@ -72,7 +86,7 @@ export const BOOKS = {
     title: 'Holes',
     author: 'Louis Sachar',
     cover: ['#B45309', '#FBBF24'],
-    measure: 'pages',
+    measure: 'minutes',
     pages: 233,
   },
   crossover: {
@@ -83,7 +97,6 @@ export const BOOKS = {
     cover: ['#C2410C', '#7C2D12'],
     measure: 'minutes',
     pages: 240,
-    readable: true,
   },
   terabithia: {
     id: 'terabithia',
@@ -91,7 +104,7 @@ export const BOOKS = {
     title: 'Bridge to Terabithia',
     author: 'Katherine Paterson',
     cover: ['#15803D', '#65A30D'],
-    measure: 'pages',
+    measure: 'minutes',
     pages: 208,
   },
   hatchet: {
@@ -102,7 +115,6 @@ export const BOOKS = {
     cover: ['#166534', '#0F766E'],
     measure: 'minutes',
     pages: 208,
-    readable: true,
   },
 }
 
@@ -797,6 +809,15 @@ export function collectionFor(studentId) {
   const pool = ALL_WORDS.filter((x) => x.bookId)
   const start = ROSTER.findIndex((s) => s.id === studentId) * 3
   const n = Math.min(person.words, pool.length)
+  // How many of these took a second go has to come out at the roster's own
+  // `firstTry` percentage — the profile prints that figure directly above the
+  // list, and the list is now filterable by exactly that split, so a fixed
+  // one-in-seven would have had the two disagreeing in plain sight.
+  const retries = Math.round((n * (100 - person.firstTry)) / 100)
+  // Spread evenly through the run rather than clustered, and deterministic.
+  const retried = new Set(
+    Array.from({ length: retries }, (_, k) => Math.floor(((k + 0.5) * n) / Math.max(retries, 1))),
+  )
   // Dated oldest-first, one every couple of days up to Jun 26, so the view's
   // newest-first ordering actually descends.
   const END = Date.UTC(2026, 5, 26)
@@ -807,7 +828,734 @@ export function collectionFor(studentId) {
       word: src.word,
       bookId: src.bookId,
       date: day.toISOString().slice(0, 10),
-      firstTry: (start + i) % 7 !== 0,
+      firstTry: !retried.has(i),
     }
   })
+}
+
+// ─── Activities ──────────────────────────────────────────────────────────────
+// One word, three activities. The single multiple-choice question the first
+// version shipped with turned out to be the thing reviewers pushed back on
+// hardest — watching a student use Flocabulary, "she had to identify
+// definitions, pick accurate statements, etc. probably 3–5 times per key vocab
+// word", where Benny was asking once. So collecting a word is now a short round
+// that climbs a ladder: recognise it, use it, then produce something with it.
+//
+// Only `passage` and `write` need authored content beyond what a word already
+// carries — the other three are derived, so adding a word to WORDS_BY_BOOK
+// still costs one entry.
+
+export const ACTIVITY_TYPES = [
+  {
+    id: 'definition',
+    rung: 'Recognise it',
+    label: 'Match the meaning',
+    short: 'Meaning',
+    icon: 'vocabulary',
+    blurb: 'The word, three meanings, one of them right.',
+  },
+  {
+    id: 'blank',
+    rung: 'Recognise it',
+    label: 'Fill in the blank',
+    short: 'Blank',
+    icon: 'edit',
+    blurb: 'A sentence with a hole in it and three words to drop in.',
+  },
+  {
+    id: 'sentence',
+    rung: 'Use it',
+    label: 'Pick the right sentence',
+    short: 'Sentence',
+    icon: 'quote',
+    blurb: 'Three sentences, one of which actually uses the word correctly.',
+  },
+  {
+    id: 'passage',
+    rung: 'Use it',
+    label: 'Finish the passage',
+    short: 'Passage',
+    icon: 'book',
+    blurb: 'A paragraph about the book with words dragged into its gaps.',
+  },
+  {
+    id: 'write',
+    rung: 'Produce it',
+    label: 'Write your own',
+    short: 'Write',
+    icon: 'pencil',
+    blurb: 'Write a sentence using the word; Benny reads it back.',
+  },
+  {
+    id: 'synonym',
+    rung: 'Recognise it',
+    label: 'Find the near-match',
+    short: 'Near-match',
+    icon: 'arrows-exchange',
+    blurb: 'Which everyday word means almost the same thing.',
+  },
+  {
+    id: 'pairs',
+    rung: 'Recognise it',
+    label: 'Match the pairs',
+    short: 'Pairs',
+    icon: 'layout-columns',
+    blurb: 'Words down one side, meanings down the other — tap across.',
+  },
+  {
+    id: 'card',
+    rung: 'Use it',
+    label: 'Pick a card',
+    short: 'Card',
+    icon: 'layers',
+    blurb: 'Turn one over and say whether it uses the word right.',
+  },
+  {
+    id: 'oddoneout',
+    rung: 'Use it',
+    label: 'Spot the odd one',
+    short: 'Odd one',
+    icon: 'circle-x',
+    blurb: 'Four sentences, one of which gets its word wrong.',
+  },
+]
+
+export const activityType = (id) => ACTIVITY_TYPES.find((t) => t.id === id)
+
+export const ROUND_LENGTH = 3
+
+// Four rounds, rotated by word. Every round is three *different* activities and
+// climbs the same ladder; across the four, all five types get used and writing
+// lands in half of them, so a reader banking several words in a week is neither
+// asked the same question three times nor made to type every single time.
+const ROUNDS = [
+  ['definition', 'card', 'write'],
+  ['blank', 'passage', 'sentence'],
+  ['synonym', 'oddoneout', 'write'],
+  ['pairs', 'sentence', 'card'],
+]
+
+/** The three activities this word takes to collect. */
+export function roundFor(word) {
+  return ROUNDS[word.word.length % ROUNDS.length]
+}
+
+/** Deterministic rotation, so the right answer isn't always in the same slot. */
+export function arrange(options, seed) {
+  const by = seed % options.length
+  return [...options.slice(by), ...options.slice(0, by)]
+}
+
+/** Other words that could plausibly be confused with this one — same part of
+ *  speech where the pool has enough of them, in a stable order. */
+export function decoys(word, count = 2) {
+  const sameKind = ALL_WORDS.filter((x) => x.word !== word.word && x.part === word.part)
+  const pool = sameKind.length >= count ? sameKind : ALL_WORDS.filter((x) => x.word !== word.word)
+  const start = word.word.length % pool.length
+  // Strided, then filled in sequence. The stride keeps the decoys spread
+  // through the list rather than adjacent; the second pass exists because a
+  // stride alone repeats itself once `count` is large (offsets 0, 3, 6, 9 all
+  // collide in a pool of nine), which put the same chip on screen twice.
+  const out = []
+  for (let i = 0; i < pool.length && out.length < count; i++) {
+    const pick = pool[(start + i * 3) % pool.length]
+    if (!out.includes(pick)) out.push(pick)
+  }
+  for (let i = 0; i < pool.length && out.length < count; i++) {
+    const pick = pool[(start + i) % pool.length]
+    if (!out.includes(pick)) out.push(pick)
+  }
+  return out
+}
+
+export function definitionOptions(word) {
+  const options = [
+    { text: word.meaning, correct: true },
+    ...decoys(word).map((d) => ({ text: d.meaning, correct: false })),
+  ]
+  return arrange(options, word.word.length)
+}
+
+/**
+ * The sentence for the fill-in-the-blank, with the word punched out. It uses
+ * Benny's book line rather than the generic example, for two reasons: the gap
+ * then sits in a sentence about the book the reader just put down, and the
+ * generic example stays unspent for the pick-a-sentence activity — the two can
+ * land in the same round, and asking the same sentence twice would show.
+ */
+export function clozeFor(word) {
+  const hole = new RegExp(`\\b${word.word}\\b`, 'i')
+  const source = hole.test(word.why) ? word.why : word.check.correct
+  return source.replace(hole, '____')
+}
+
+/** Fill-in-the-blank: the word against four others of the same kind. Single
+ *  words are quick to scan, so a three-chip row was a one-in-three guess — this
+ *  makes reading the sentence cheaper than trying them all. */
+export function blankOptions(word) {
+  const options = [
+    { text: word.word, correct: true },
+    ...decoys(word, 4).map((d) => ({ text: d.word, correct: false })),
+  ]
+  return arrange(options, word.word.length + 1)
+}
+
+// ─── Passages ────────────────────────────────────────────────────────────────
+// The drag-into-context activity. Each passage is about the book the word came
+// from and takes that book's whole set of words, so the activity reviews words
+// the reader already banked while it teaches the new one — the point of the
+// exercise is the words sitting next to each other in one piece of writing.
+//
+// `text` carries {0}-style slots; `answers[i]` is the word that belongs in slot
+// i. The tray adds two near-miss words on top of the answers.
+
+const passage = (text, answers) => ({ text, answers })
+
+export const PASSAGES = {
+  'she-gets-the-girl': passage(
+    'Alex agrees to help, but she is a deeply {0} wingman — she would rather be anywhere else. Molly is the opposite: she is completely {1} with Cora, and she is so {2} about the whole plan that she writes it down step by step.',
+    ['reluctant', 'infatuated', 'earnest'],
+  ),
+  rump: passage(
+    'Rump believes his half-a-name has already decided his {0}. The spinning is a {1} kind of magic, and every time he uses it he ends up striking another {2} he does not fully understand.',
+    ['destiny', 'peculiar', 'bargain'],
+  ),
+  'lucky-cap': passage(
+    'Enzo is sure the cap is what turned his luck around, which makes it less of a {0} than a full-blown {1} — he will not step onto the field without it.',
+    ['coincidence', 'superstition'],
+  ),
+  'lesbianas-guide': passage(
+    'Dani spends the first half of the book trying to {0} to what everyone at school expects of her. What makes her {1} is that she keeps going anyway, even after the parts that should have flattened her.',
+    ['conform', 'resilient'],
+  ),
+  'telegraph-club': passage(
+    'Lily’s trips to the club are {0} — nobody at home can know. In 1954 that secrecy draws {1} all on its own, and every night she goes back is a quiet act of {2}.',
+    ['clandestine', 'suspicion', 'defiance'],
+  ),
+  darius: passage(
+    'Darius lands in Yazd feeling {0} about a {1} he has only ever heard about second-hand. The first few days are {2} in every direction, until a boy named Sohrab knocks on the door.',
+    ['melancholy', 'heritage', 'awkward'],
+  ),
+  matilda: passage(
+    'Miss Trunchbull runs Crunchem Hall like a {0}, and the children learn to keep their heads down. Matilda is a genuine {1} — she has read half the library before she turns five — and just {2} enough to start getting even.',
+    ['tyrant', 'prodigy', 'mischievous'],
+  ),
+  wonder: passage(
+    'Mr. Browne writes a {0} on the board every month, and the one everybody remembers is about choosing kind. Auggie is the most {1} kid in the building on his first day; the book is really about how much {2} the rest of them can find.',
+    ['precept', 'conspicuous', 'empathy'],
+  ),
+  holes: passage(
+    'Camp Green Lake is a {0} stretch of dried-up dirt, and digging a hole a day feels completely {1} — until Stanley works out that the curse on his family goes all the way back to one {2}.',
+    ['desolate', 'futile', 'ancestor'],
+  ),
+  crossover: passage(
+    'Josh and Jordan’s {0} runs the whole season, on the court and off it. Their dad’s {1} is the thing they are both playing against, and once Josh loses his {2} he cannot get it back.',
+    ['rivalry', 'legacy', 'momentum'],
+  ),
+  terabithia: passage(
+    'Terabithia is an {0} kingdom the two of them rule out past the creek, and it is where Jess finds {1} when everything at home is loud. What the last chapters are really about is {2}.',
+    ['imaginary', 'solace', 'grief'],
+  ),
+  hatchet: passage(
+    'Brian has no {0} beyond a bag of snacks, so he has to be {1} with a single hatchet and whatever the lake will give him. By the end he trusts his own {2} more than anything he was ever told.',
+    ['provisions', 'resourceful', 'instinct'],
+  ),
+  // A manual log, or a title Beanstack has no words for yet.
+  _default: passage(
+    'The parts of a book you can still picture afterwards are the {0} ones. Ask who the {1} is and what each character’s {2} is, and most stories open right up.',
+    ['vivid', 'narrator', 'motive'],
+  ),
+}
+
+/** The passage for a book, with the tray it needs: the answers plus four
+ *  near-misses, in a stable order. Two extras against three gaps meant the last
+ *  gap could be filled by elimination without reading it. */
+export function passageFor(bookId) {
+  const p = PASSAGES[bookId] ?? PASSAGES._default
+  const spare = ALL_WORDS.filter((x) => !p.answers.includes(x.word))
+  const start = p.answers.join('').length % spare.length
+  const extra = [0, 7, 13, 19].map((n) => spare[(start + n) % spare.length].word)
+  return { ...p, tray: arrange([...p.answers, ...new Set(extra)], p.answers.length) }
+}
+
+// ─── The writing activity ────────────────────────────────────────────────────
+// "Write a sentence using the word" with an automated read-back. The check here
+// is deliberately shallow — a prototype cannot run the model — but it is the
+// same shape a real one would take: did they use the word, is it a sentence,
+// and did they write something of their own rather than copy the example back.
+// Anything it can't confidently accept is sent on for the teacher to look at,
+// which is what the educator view's review queue is.
+
+export const WRITING_PROMPTS = {
+  definition: 'Write one sentence that shows you know what it means.',
+  book: (title) => `Write one sentence using it — about ${title} if you like, or anything else.`,
+}
+
+export function checkSentence(text, word) {
+  const clean = text.trim()
+  const words = clean.split(/\s+/).filter(Boolean)
+  const stem = word.word.slice(0, Math.max(4, word.word.length - 3))
+  const usedIt = new RegExp(stem, 'i').test(clean)
+
+  if (!usedIt) return { verdict: 'retry', note: `This one needs the word ${word.word} in it.` }
+  if (words.length < 5)
+    return { verdict: 'retry', note: 'Give me a bit more — a whole sentence, not just a phrase.' }
+
+  const copied =
+    clean.toLowerCase().replace(/[^a-z ]/g, '') ===
+    word.check.correct.toLowerCase().replace(/[^a-z ]/g, '')
+  if (copied) return { verdict: 'retry', note: 'That’s my sentence! Try one that’s yours.' }
+
+  // A sentence that just restates the definition is accepted, but it's the kind
+  // of thing a teacher would want to see — so it goes in the queue flagged.
+  const restated = word.meaning
+    .toLowerCase()
+    .split(/\W+/)
+    .filter((t) => t.length > 5)
+    .filter((t) => clean.toLowerCase().includes(t)).length
+
+  if (restated >= 2)
+    return {
+      verdict: 'flag',
+      note: 'Got it — though that’s close to the definition. I’ll pass it to Mr. Reyes.',
+    }
+
+  return { verdict: 'accept', note: 'That works. You used it the way it’s meant to be used.' }
+}
+
+// ─── Review ──────────────────────────────────────────────────────────────────
+// The flashcard deck, and the scheduling behind it. A word a reader collected
+// once is a word they will lose — so the collection doubles as a deck that
+// keeps handing back the words that are going stale, at widening intervals.
+// Five boxes, Leitner-style: getting a word right moves it up a box and buys
+// more time before it comes round again; missing it sends it back to the start.
+
+export const TODAY = '2026-06-28'
+
+export const REVIEW_BOXES = [
+  { box: 1, days: 1, label: 'Learning' },
+  { box: 2, days: 2, label: 'Getting there' },
+  { box: 3, days: 4, label: 'Sticking' },
+  { box: 4, days: 8, label: 'Nearly known' },
+  { box: 5, days: 16, label: 'Known' },
+]
+
+export const boxInfo = (box) => REVIEW_BOXES[Math.min(Math.max(box, 1), 5) - 1]
+
+/**
+ * The five boxes are the deck's own bookkeeping — they decide when a word comes
+ * back and nothing else. What a reader is shown is one of three bands, because
+ * "is this sticking yet?" is the only question they're actually asking of the
+ * collection. One vocabulary for the tile tags and the filter above them: two
+ * sets of names for the same idea had a word tagged "Nearly known" sitting
+ * under a filter called "Known well".
+ */
+export const KNOWN_BANDS = [
+  { id: 'learning', label: 'Still learning', boxes: [1, 2] },
+  { id: 'sticking', label: 'Sticking', boxes: [3] },
+  { id: 'known', label: 'Known well', boxes: [4, 5] },
+]
+
+export const bandFor = (box) =>
+  KNOWN_BANDS.find((b) => b.boxes.includes(Math.min(Math.max(box, 1), 5))) ?? KNOWN_BANDS[0]
+
+const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / 86400000)
+
+export const isDue = (card, today = TODAY) =>
+  daysBetween(card.seen, today) >= boxInfo(card.box).days
+
+/**
+ * Where each collected word stands. A word banked on the first try starts a box
+ * higher than one that took a second attempt, and the last time it was seen is
+ * the day it was collected — so an older word with a low box is exactly the one
+ * that has gone stale, which is what the deck should lead with.
+ */
+export function seedReviews(collection) {
+  const cards = {}
+  collection.forEach((entry, i) => {
+    cards[entry.word] = {
+      word: entry.word,
+      box: entry.firstTry ? 1 + ((i + 1) % 4) : 1,
+      seen: entry.date,
+      right: 0,
+      wrong: 0,
+    }
+  })
+  return cards
+}
+
+/** Newly collected words enter at box 1 — they have never been reviewed. */
+export const newCard = (word, seen = TODAY) => ({ word, box: 1, seen, right: 0, wrong: 0 })
+
+/** Which words are asking to be looked at, stalest first. */
+export function dueCards(cards, today = TODAY) {
+  return Object.values(cards)
+    .filter((c) => isDue(c, today))
+    .sort((a, b) => daysBetween(a.seen, today) - daysBetween(b.seen, today))
+    .reverse()
+}
+
+/** Where a card lands after the reader says whether they knew it. */
+export function gradeCard(card, knewIt, today = TODAY) {
+  return {
+    ...card,
+    box: knewIt ? Math.min(card.box + 1, 5) : 1,
+    seen: today,
+    right: card.right + (knewIt ? 1 : 0),
+    wrong: card.wrong + (knewIt ? 0 : 1),
+  }
+}
+
+// ─── What the educator sees of all this ──────────────────────────────────────
+// With one activity type there was one number. With five there is a shape: the
+// class is fine at picking a meaning out of a list and much shakier at putting
+// the word into a sentence of their own, which is the distinction a teacher can
+// actually act on.
+
+export const ACTIVITY_ACCURACY = [
+  { id: 'definition', attempts: 412, firstTry: 91 },
+  { id: 'blank', attempts: 388, firstTry: 84 },
+  { id: 'sentence', attempts: 431, firstTry: 79 },
+  { id: 'passage', attempts: 301, firstTry: 68 },
+  { id: 'write', attempts: 274, firstTry: 61 },
+]
+
+/**
+ * The writing activity's output. Everything students wrote is here; `flagged`
+ * ones are the ones the automatic check wasn't confident about and wants a
+ * person to look at. This is the only part of the feature that puts work on a
+ * teacher's desk, so it stays a short queue rather than a full inbox.
+ */
+const written = (student, word, bookId, text, status, date) => ({
+  student,
+  word,
+  bookId,
+  text,
+  status, // 'flagged' — needs a look — or 'accepted'
+  date,
+})
+
+export const WRITING_QUEUE = [
+  written(
+    'jayden',
+    'grief',
+    'terabithia',
+    'The grief was a heavy thing that Jess carried around in his chest for a long time.',
+    'accepted',
+    '2026-06-27',
+  ),
+  written(
+    'ethan',
+    'tyrant',
+    'matilda',
+    'A tyrant is a person who is a cruel ruler with total power over people.',
+    'flagged',
+    '2026-06-27',
+  ),
+  written(
+    'caleb',
+    'vivid',
+    null,
+    'The dream was vivid so I remembered it.',
+    'flagged',
+    '2026-06-26',
+  ),
+  written(
+    'zoe',
+    'melancholy',
+    'darius',
+    'Darius gets melancholy on the plane because he is going somewhere he has never been but is supposed to be from.',
+    'accepted',
+    '2026-06-26',
+  ),
+  written(
+    'omar',
+    'provisions',
+    'hatchet',
+    'We packed provisions for the camping trip, mostly granola bars.',
+    'accepted',
+    '2026-06-25',
+  ),
+  written(
+    'devon',
+    'narrator',
+    null,
+    'The narrator is the voice telling you the story of the book.',
+    'flagged',
+    '2026-06-25',
+  ),
+]
+
+// ─── Near-synonyms ───────────────────────────────────────────────────────────
+// The one thing the synonym activity can't derive: a word the reader plausibly
+// already owns that lands close to this one. Kept as its own map rather than an
+// eighth argument to `w()` — adding a word still costs one entry there, and one
+// line here, which is the trade the rest of this file is built on.
+//
+// Deliberately everyday words. The point is "you know a word for this already",
+// not a thesaurus drill, so `clandestine → secret` rather than `→ surreptitious`.
+
+export const SYNONYMS = {
+  earnest: 'sincere',
+  reluctant: 'unwilling',
+  infatuated: 'smitten',
+  destiny: 'fate',
+  bargain: 'deal',
+  peculiar: 'odd',
+  coincidence: 'fluke',
+  superstition: 'myth',
+  conform: 'comply',
+  resilient: 'tough',
+  clandestine: 'secret',
+  suspicion: 'doubt',
+  defiance: 'resistance',
+  melancholy: 'sadness',
+  heritage: 'tradition',
+  awkward: 'clumsy',
+  mischievous: 'naughty',
+  tyrant: 'dictator',
+  prodigy: 'genius',
+  precept: 'rule',
+  empathy: 'compassion',
+  conspicuous: 'noticeable',
+  desolate: 'barren',
+  futile: 'pointless',
+  ancestor: 'forebear',
+  rivalry: 'competition',
+  legacy: 'inheritance',
+  momentum: 'drive',
+  grief: 'sorrow',
+  solace: 'comfort',
+  imaginary: 'make-believe',
+  resourceful: 'inventive',
+  instinct: 'hunch',
+  provisions: 'supplies',
+  vivid: 'lifelike',
+  narrator: 'storyteller',
+  motive: 'reason',
+}
+
+/** Which everyday word means almost the same — against two that don't. */
+export function synonymOptions(word) {
+  const right = SYNONYMS[word.word]
+  // De-duplicated: two collected words can share a synonym, and the same chip
+  // twice reads as a trick rather than a choice.
+  const others = [
+    ...new Set(
+      ALL_WORDS.filter((x) => x.word !== word.word && SYNONYMS[x.word]).map(
+        (x) => SYNONYMS[x.word],
+      ),
+    ),
+  ].filter((t) => t !== right)
+  const start = word.word.length % others.length
+  const picks = []
+  for (let i = 0; i < others.length && picks.length < 4; i++) {
+    const t = others[(start + i * 5) % others.length]
+    if (!picks.includes(t)) picks.push(t)
+  }
+  const options = [
+    { text: right, correct: true },
+    ...picks.map((text) => ({ text, correct: false })),
+  ]
+  return arrange(options, word.word.length + 2)
+}
+
+// ─── Odd one out ─────────────────────────────────────────────────────────────
+// Four sentences about the *same* word; exactly one misuses it. Every option
+// used to be a different word, which meant a reader could find the odd one by
+// spotting the word they didn't know rather than by reading — the test was of
+// vocabulary breadth, not of this word. Elimination rather than selection: a
+// reader can often pick the right answer out of three without being able to say
+// why the others are wrong, and this asks for the why.
+
+/**
+ * Two more sentences that use each word correctly, on top of the one in its
+ * `check`. The odd-one-out needs them: every option in that activity is a
+ * sentence about the *same* word, so three right uses have to exist before one
+ * wrong one can hide among them.
+ */
+const MORE_USES = {
+  earnest: [
+    'He made an earnest promise to pay back every cent.',
+    'Her earnest questions showed she had actually read the book.',
+  ],
+  reluctant: [
+    'The cat was reluctant to come in out of the rain.',
+    'He gave a reluctant thumbs-up from the back of the room.',
+  ],
+  infatuated: [
+    'She was infatuated with the new drummer for exactly one week.',
+    'Too infatuated to look up, he walked straight into the door.',
+  ],
+  destiny: [
+    'The prophecy claimed her destiny was already written.',
+    'He believed his destiny was waiting somewhere past the mountains.',
+  ],
+  bargain: [
+    'They made a bargain: dishes tonight, laundry tomorrow.',
+    'No bargain is fair if one side has no choice.',
+  ],
+  peculiar: [
+    'He had a peculiar habit of walking backwards up the stairs.',
+    'Something peculiar was happening to the clock in the hall.',
+  ],
+  coincidence: [
+    'It was pure coincidence that we both wore green.',
+    'Two friends sharing a birthday is just a coincidence.',
+  ],
+  superstition: [
+    'Carrying a lucky coin is a superstition he refuses to drop.',
+    'One old superstition says an open umbrella indoors brings bad luck.',
+  ],
+  conform: [
+    'She refused to conform to a dress code she thought was silly.',
+    'New students often conform to whatever the group does first.',
+  ],
+  resilient: [
+    'Resilient plants grow back even after a hard frost.',
+    'He proved resilient, back at practice a week after the injury.',
+  ],
+  clandestine: [
+    'Their clandestine plan fell apart when somebody talked.',
+    'He kept a clandestine notebook nobody else was allowed to read.',
+  ],
+  suspicion: [
+    'A single muddy footprint confirmed her suspicion.',
+    'He watched the empty hallway with growing suspicion.',
+  ],
+  defiance: [
+    'He folded his arms in defiance and refused to move.',
+    'Her defiance cost her a week of detention.',
+  ],
+  melancholy: [
+    'The melancholy song made the whole room go quiet.',
+    'A kind of melancholy follows him around every winter.',
+  ],
+  heritage: [
+    'The festival celebrates the heritage of everyone in town.',
+    'He learned the language to stay close to his heritage.',
+  ],
+  awkward: [
+    'The awkward silence lasted until somebody changed the subject.',
+    'She felt awkward standing alone at the edge of the gym.',
+  ],
+  mischievous: [
+    'A mischievous grin gave away who had moved the chairs.',
+    'His mischievous little brother swapped the sugar and the salt.',
+  ],
+  tyrant: [
+    'The old king ruled as a tyrant for thirty years.',
+    'Nobody spoke up at work, because the manager was a tyrant.',
+  ],
+  prodigy: [
+    'The chess prodigy beat three adults in one afternoon.',
+    'Being a prodigy did not make practice any easier.',
+  ],
+  precept: [
+    'Every classroom had a precept painted above the door.',
+    'His grandfather lived by one simple precept.',
+  ],
+  empathy: [
+    'Empathy is what made him sit with her instead of leaving.',
+    'She listened with real empathy and never once interrupted.',
+  ],
+  conspicuous: [
+    'The new sign was conspicuous from the far end of the street.',
+    'He tried to be quiet, but his boots made him conspicuous.',
+  ],
+  desolate: [
+    'They crossed a desolate plain with no trees for miles.',
+    'The station felt desolate at four in the morning.',
+  ],
+  futile: [
+    'Bailing out the boat with a paper cup was futile.',
+    'It is futile to call a phone that is switched off.',
+  ],
+  ancestor: [
+    'An ancestor of hers built the mill by the river.',
+    'He traced one ancestor back nine generations.',
+  ],
+  rivalry: [
+    'Their rivalry pushed them both to train harder.',
+    'A friendly rivalry grew between the two bakeries.',
+  ],
+  legacy: [
+    'The legacy of that team is still up on the gym wall.',
+    'He wanted his legacy to be more than a trophy.',
+  ],
+  momentum: [
+    'The bus lost momentum halfway up the hill.',
+    'Once the crowd started clapping, the momentum built fast.',
+  ],
+  grief: [
+    'Grief made the house feel twice as large.',
+    'She wrote about her grief in a notebook nobody read.',
+  ],
+  solace: [
+    'He took solace in the fact that everyone else failed too.',
+    'There was some solace in a warm kitchen and an old song.',
+  ],
+  imaginary: [
+    'Her imaginary friend had a name and a birthday.',
+    'The map led to an imaginary island that was never there.',
+  ],
+  resourceful: [
+    'A resourceful camper can start a fire in the rain.',
+    'She was resourceful enough to turn an old crate into a desk.',
+  ],
+  instinct: [
+    'His instinct was to duck before he heard the crash.',
+    'Trust your instinct when a room goes suddenly quiet.',
+  ],
+  provisions: [
+    'Their provisions ran low on the fourth day.',
+    'He loaded the sled with provisions and a spare rope.',
+  ],
+  vivid: [
+    'His vivid description made the room easy to picture.',
+    'She kept a vivid image of that beach all winter.',
+  ],
+  narrator: [
+    'The narrator stops to explain what happened ten years earlier.',
+    'A narrator you cannot trust makes the story twice as good.',
+  ],
+  motive: [
+    'The detective could not find a motive for the theft.',
+    'Her motive was simple: she wanted the job.',
+  ],
+}
+
+export function oddOneOut(word) {
+  const right = [word.check.correct, ...(MORE_USES[word.word] ?? [])].slice(0, 3)
+  const options = [
+    { text: word.check.wrong[0], odd: true },
+    ...right.map((text) => ({ text, odd: false })),
+  ]
+  return arrange(options, word.word.length + 3)
+}
+
+// ─── Pick a card ─────────────────────────────────────────────────────────────
+// Three face-down cards; whichever is turned over gets judged right or wrong.
+// The chance is the point: the reader can't scan three options and pick the
+// familiar-looking one, so they have to read the sentence in front of them.
+
+export function cardDeck(word) {
+  const options = [
+    { text: word.check.correct, correct: true },
+    ...word.check.wrong.map((text) => ({ text, correct: false })),
+  ]
+  return arrange(options, word.word.length + 4)
+}
+
+// ─── Match the pairs ─────────────────────────────────────────────────────────
+// Three words and three meanings, to be paired across two columns. The only
+// activity that makes the reader handle words they collected earlier while
+// learning the new one, which is the repetition the whole round exists for.
+
+export function pairsFor(word, bookId) {
+  const fromBook = (WORDS_BY_BOOK[bookId] ?? []).filter((x) => x.word !== word.word)
+  const spare = ALL_WORDS.filter((x) => x.word !== word.word && x.bookId !== bookId)
+  const start = word.word.length % spare.length
+  const others = [...fromBook, spare[start], spare[(start + 6) % spare.length]].slice(0, 2)
+  return [word, ...others].map((w) => ({ word: w.word, meaning: w.meaning }))
 }

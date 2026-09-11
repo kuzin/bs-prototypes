@@ -123,14 +123,7 @@ writeFileSync(
 }
 body {
   margin: 0;
-  font-family:
-    'Nunito',
-    'Trebuchet MS',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-sans);
   background: #f3f4f6;
   color: #1e293b;
   -webkit-font-smoothing: antialiased;

@@ -203,14 +203,16 @@ function ChallengeCard({ challenge }) {
         <span className="wa-chcard-arttitle" style={{ color: art.titleColor }}>
           {art.title}
         </span>
-        <span className="wa-chcard-pill">
+      </div>
+      <div className="wa-chcard-body">
+        {/* Beside the name, not floated over the artwork — this card shares its
+            stylesheet with logging-flow's, so the two have to agree. */}
+        <div className="wa-chcard-titlerow">
+          <div className="wa-chcard-title">{challenge.title}</div>
           <Pill color="#0DA7BC" variant="filled" size="sm">
             {challenge.badge}
           </Pill>
-        </span>
-      </div>
-      <div className="wa-chcard-body">
-        <div className="wa-chcard-title">{challenge.title}</div>
+        </div>
         <div className="wa-chcard-dates">{challenge.dates}</div>
       </div>
     </button>
@@ -261,6 +263,7 @@ function LeaderboardCard() {
         <Tabs
           variant="underline"
           size="sm"
+          center
           active={tab}
           onChange={setTab}
           accent="#0DA7BC"

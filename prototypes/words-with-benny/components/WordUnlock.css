@@ -3,20 +3,23 @@
 
 .wb-unlock {
   position: fixed;
-  inset: 0;
+  top: var(--chrome-top, 0px);
+  right: 0;
+  bottom: var(--chrome-bottom, 0px);
+  left: 0;
   z-index: 200;
   display: flex;
   align-items: center;
   justify-content: center;
   overflow-y: auto;
-  background:
-    radial-gradient(900px 520px at 50% -8%, rgba(124, 58, 237, 0.5), transparent 70%),
-    linear-gradient(180deg, #1b1436 0%, #120e26 100%);
+  /* One flat ground, no gradient. The wash read as a vignette behind a white
+     card that is already the focus — it drew the eye to the corners. */
+  background: #161231;
 }
 
 .wb-unlock-close {
   position: fixed;
-  top: 18px;
+  top: calc(var(--chrome-top, 0px) + 18px);
   right: 18px;
   z-index: 2;
   display: grid;
@@ -44,9 +47,17 @@
   color: #fff;
 }
 
-/* ─── Beat 1: the knock ─────────────────────────────────────────────────── */
+/* ─── Beat 1: the word ──────────────────────────────────────────────────── */
+/* The old opening screen's composition — dark ground, Benny bobbing, big type
+   — with the word itself where the sealed card used to be. Deliberately not a
+   white panel: this is the moment the reader is given something, and a card
+   full of instructions read like a form. */
 
-.wb-knock-benny {
+.wb-reveal {
+  animation: wb-in 260ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.wb-reveal-benny {
   width: 88px;
   height: 88px;
   animation: wb-bob 2.6s ease-in-out infinite;
@@ -61,95 +72,58 @@
   }
 }
 
-.wb-knock-kicker {
-  margin-top: 6px;
-  font-size: 12px;
-  font-weight: 800;
-  color: #d8b4fe;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.wb-knock-h1 {
-  margin-top: 8px;
-  font-size: 30px;
+.wb-reveal-word {
+  margin-top: 10px;
+  font-size: 46px;
   font-weight: 900;
-  line-height: 1.18;
-  letter-spacing: -0.01em;
-}
-.wb-knock-h1 em {
-  font-style: normal;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
   color: #fcd34d;
 }
-.wb-knock-sub {
-  margin-top: 10px;
+
+.wb-reveal-say {
+  margin-top: 8px;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #c4b5fd;
+}
+.wb-reveal-part {
+  font-weight: 600;
+  color: rgb(255 255 255 / 45%);
+}
+
+.wb-reveal-meaning {
+  max-width: 420px;
+  margin: 14px auto 0;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #fff;
+  text-wrap: pretty;
+}
+
+/* Benny's line tying the word to the book — the premise of the whole feature,
+   so it gets its own panel rather than trailing off as grey text under the
+   meaning. No quote marks and no second portrait: he's already on screen above
+   it, and the italic in a tinted panel is enough to read as him. */
+.wb-reveal-why {
+  max-width: 430px;
+  margin: 20px auto 0;
+  padding: 14px 22px 15px;
   font-size: 15px;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-/* The sealed card. It's the only target on the screen, so it's big. */
-.wb-envelope {
-  position: relative;
-  display: block;
-  width: 208px;
-  margin: 30px auto 0;
-  padding: 0;
-  background: none;
-  border: 0;
-}
-.wb-envelope-glow {
-  position: absolute;
-  inset: -22px;
-  background: radial-gradient(closest-side, rgba(252, 211, 77, 0.42), transparent 72%);
-  animation: wb-pulse 2.2s ease-in-out infinite;
-}
-@keyframes wb-pulse {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: scale(0.94);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.04);
-  }
-}
-.wb-envelope-face {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  aspect-ratio: 3 / 2;
-  color: #4c1d95;
-  background: linear-gradient(160deg, #fef3c7 0%, #fde68a 55%, #fbbf24 100%);
+  font-style: italic;
+  line-height: 1.55;
+  color: rgb(255 255 255 / 80%);
+  text-wrap: pretty;
+  background: rgb(124 58 237 / 22%);
   border-radius: 16px;
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 3px rgba(255, 255, 255, 0.5);
-  transition:
-    transform 140ms ease,
-    box-shadow 140ms ease;
-}
-.wb-envelope:hover .wb-envelope-face {
-  transform: translateY(-4px) rotate(-1.2deg);
-  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.4);
-}
-.wb-envelope:active .wb-envelope-face {
-  transform: translateY(-1px) scale(0.985);
-}
-.wb-envelope:focus-visible .wb-envelope-face {
-  outline: 3px solid #fff;
-  outline-offset: 3px;
-}
-.wb-envelope-hint {
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
 }
 
-/* ─── Beat 2: the word card ─────────────────────────────────────────────── */
+.wb-reveal .btn {
+  margin-top: 26px;
+}
+
+/* ─── The card ─────────────────────────────────────────────── */
 
 .wb-card {
   padding: 26px 22px 24px;
@@ -233,14 +207,47 @@
   color: #475569;
 }
 
-.wb-check {
-  margin-top: 20px;
-  padding-top: 18px;
-  border-top: 1px solid #eef2f7;
+/* The meter, under the card on the dark ground — the review deck's footer,
+   same bar on the same ground, so the two overlays report progress the same
+   way. It advances the moment an answer lands rather than when Next is
+   pressed, so the reader sees the reward for the rung they just finished. */
+.wb-foot {
+  padding: 0 2px;
+  margin-top: 18px;
 }
+.wb-meter {
+  overflow: hidden;
+  width: 100%;
+  height: 5px;
+  background: rgb(255 255 255 / 14%);
+  border-radius: 999px;
+}
+.wb-meter span {
+  display: block;
+  height: 100%;
+  background: #a78bfa;
+  border-radius: 999px;
+  transition: width 320ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+/* No rule of its own: `.wb-pin` above already closes with one. */
+.wb-check {
+  margin-top: 18px;
+}
+
+/* Ends the rung. Full width so it reads as the way forward rather than as one
+   more thing on the card to consider. */
+.wb-next {
+  width: 100%;
+  margin-top: 16px;
+}
+/* 16px, off the app's own ladder — the question is the thing being read, and
+   at 14.5 it sat below the answers it was asking about. (The ladder has no
+   fractional sizes; this one was inherited from nowhere.) */
 .wb-check-prompt {
-  font-size: 14.5px;
+  font-size: 16px;
   font-weight: 800;
+  line-height: 1.4;
   color: #0f172a;
 }
 .wb-check-prompt strong {
@@ -309,18 +316,80 @@
   border-color: #ef4444;
 }
 
+/* A <BennyBubble> wearing the "not quite" tint — the app's own amber tag pair,
+   so a correction is visibly a different kind of remark from Benny's other
+   bubbles without being an error state. */
 .wb-nudge {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 12px;
+  margin-top: 14px;
+}
+.wb-nudge .benny-bubble-avatar {
+  width: 34px;
+  height: 34px;
+}
+.wb-nudge .benny-bubble {
+  padding: 10px 13px;
   font-size: 13.5px;
   font-weight: 700;
+  line-height: 1.45;
   color: #92400e;
+  background: #fef3c7;
 }
-.wb-nudge-benny {
-  width: 26px;
-  height: 26px;
+.wb-nudge .benny-bubble::before {
+  border-right-color: #fef3c7;
+}
+
+.wb-card > .btn {
+  width: 100%;
+  margin-top: 18px;
+}
+
+/* ─── The round ─────────────────────────────────────────────────────────── */
+
+/* The word, pinned above every activity in its round. */
+.wb-pin {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 13px;
+  border-bottom: 1px solid #eef2f7;
+}
+
+/* The meaning, on request. Quiet enough that it isn't the first thing read —
+   it's a way out of being stuck, not part of the question. */
+.wb-pin-help {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 800;
+  color: #7c3aed;
+  background: #f3e8ff;
+  border: 0;
+  border-radius: 999px;
+}
+.wb-pin-help:hover,
+.wb-pin-help:focus-visible {
+  color: #fff;
+  background: #7c3aed;
+}
+.wb-pin-word {
+  display: flex;
+  gap: 9px;
+  align-items: baseline;
+}
+.wb-pin-term {
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.015em;
+  color: #0f172a;
+}
+.wb-pin-part {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #a78bfa;
 }
 
 /* ─── Beat 3: collected ─────────────────────────────────────────────────── */
@@ -365,55 +434,15 @@
   color: #fff;
 }
 
-.wb-done-card {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  margin: 22px auto 24px;
-  padding: 16px 18px;
-  color: #1e293b;
-  text-align: left;
-  background: #fff;
-  border-radius: 15px;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
-}
-.wb-done-word {
-  font-size: 21px;
-  font-weight: 900;
-  color: #6d28d9;
-}
-.wb-done-meaning {
-  font-size: 14px;
-  font-weight: 600;
-  color: #475569;
-}
-.wb-done-from {
-  margin-top: 3px;
-  font-size: 12px;
-  font-weight: 700;
-  color: #94a3b8;
-}
-
-.wb-done-skip {
-  display: block;
-  margin: 14px auto 0;
-  padding: 6px 10px;
-  font-size: 14px;
-  font-weight: 700;
-  color: rgba(255, 255, 255, 0.72);
-  background: none;
-  border: 0;
-}
-.wb-done-skip:hover {
-  color: #fff;
+/* The word card used to sit between this and the sentence above and carried the
+   gap; without it the button crowded the copy. */
+.wb-done .btn {
+  margin-top: 26px;
 }
 
 @media (max-width: 560px) {
   .wb-unlock-inner {
     padding: 40px 14px 60px;
-  }
-  .wb-knock-h1 {
-    font-size: 25px;
   }
   .wb-word {
     font-size: 32px;

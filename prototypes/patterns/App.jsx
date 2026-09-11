@@ -98,7 +98,7 @@ function ComponentView({ section }) {
   return (
     <div className="pt-group">
       <div className="pt-page-bar">
-        <BackBar label="Pattern Library" href="#/" />
+        <BackBar fixed label="Pattern Library" href="#/" />
       </div>
       <section id={section.id} className="pt-section">
         <div className="pt-section-head">

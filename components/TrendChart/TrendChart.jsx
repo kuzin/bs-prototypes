@@ -80,6 +80,25 @@ export function TrendChart({
   barGap, // accepted for API compatibility (unused by Nivo grouping)
   xPadding, // accepted for API compatibility (Nivo handles edge insets via band padding)
   leftMargin, // override left margin (horizontal layout often needs more room for category labels)
+  // Line-chart knobs, all defaulting to what this component already did. The
+  // shipped Lexile chart is the inverse of the usual arrangement — vertical
+  // gridlines and no X labels, the date coming from the tooltip instead — so
+  // the grid axes and the bottom axis had to become per-instance.
+  gridX = false, // vertical gridlines at each category
+  gridY = true, // horizontal gridlines at the value ticks
+  xAxisHidden = false, // drop the category labels
+  points = false, // draw a marker at each datum
+  pointSize = 12,
+  pointBorderWidth = 3,
+  pointBorderColor = '#fff',
+  // Explicit, not inherited: `colors` here is a function, and nivo's
+  // `{ from: 'color' }` inherit chain doesn't resolve through one — the markers
+  // came out black. Defaults to the first series' colour.
+  pointColor,
+  // Anchor the tooltip above the hovered point — centred, 14px clear — the way
+  // the shipped Lexile chart does, instead of letting it trail the cursor down
+  // an x-slice. Turns the crosshair off with it: the app draws none.
+  pointTooltip = false,
 }) {
   void barCategoryGap
   void barGap
@@ -280,12 +299,23 @@ export function TrendChart({
     )
   }
 
-  const layers = ['grid', 'axes', SeriesLayer, 'crosshair', 'slices', 'mesh']
+  // The lines come from `SeriesLayer`, not nivo's own `lines` layer, so
+  // `enablePoints` alone draws nothing — nivo's `points` layer has to be in
+  // the list for the markers to render. It reads the series nivo computed
+  // regardless of who draws the line, so `pointSize` / `pointColor` /
+  // `pointBorderWidth` all still apply.
+  const layers = ['grid', 'axes', SeriesLayer]
+  if (points) layers.push('points')
+  if (!pointTooltip) layers.push('crosshair', 'slices')
+  layers.push('mesh')
   if (hasRight) layers.push(makeRightAxis(yRight.domain, yRight.unit))
 
   const margin = {
     top: 16,
-    right: hasRight ? 44 : 16,
+    // The last x tick is centred on the final data point, which sits on the
+    // plot's right edge — so the margin has to hold half a label. 16px was
+    // enough for "May" but clipped a "Jun 15"; 30 covers a six-character date.
+    right: hasRight ? 44 : 30,
     bottom: 32,
     left: yAxisHidden ? 8 : longUnit(yUnit) ? 56 : 44,
   }
@@ -304,10 +334,18 @@ export function TrendChart({
         }}
         curve="monotoneX"
         colors={(d) => d.color}
-        enablePoints={false}
-        enableGridX={false}
+        enablePoints={points}
+        pointSize={pointSize}
+        // The marker is the line's colour with a ring cut out of the card,
+        // which is how the app draws it.
+        pointColor={pointColor ?? accent}
+        pointBorderWidth={pointBorderWidth}
+        pointBorderColor={pointBorderColor}
+        enableGridX={gridX}
+        gridXValues={gridX ? data.map((r) => r[xKey]) : undefined}
+        enableGridY={gridY}
         gridYValues={yTicks ?? yTickCount ?? 5}
-        axisBottom={AXIS_BOTTOM}
+        axisBottom={xAxisHidden ? null : AXIS_BOTTOM}
         axisLeft={
           yAxisHidden
             ? null
@@ -319,26 +357,51 @@ export function TrendChart({
         }
         layers={layers}
         animate={false}
-        enableSlices="x"
+        // Nivo hit-tests points through the mesh and x-slices through the
+        // slices layer, and only the mesh anchors its tooltip to the datum.
+        enableSlices={pointTooltip ? false : 'x'}
+        useMesh={pointTooltip}
+        enableCrosshair={!pointTooltip}
+        tooltip={({ point }) => {
+          const cfg = cfgByName.get(point.seriesId)
+          if (tooltipContent) {
+            const entry = {
+              payload: rowByX.get(point.data.x),
+              value: point.data.y,
+              name: point.seriesId,
+              color: point.seriesColor,
+              dataKey: cfg?.key,
+            }
+            return tooltipContent({ payload: [entry], label: point.data.x })
+          }
+          const [v, n] = applyFmt(point.data.y, point.seriesId, cfg?.isRight)
+          return (
+            <TcTooltip
+              header={point.data.x}
+              rows={[{ name: n, value: v, color: point.seriesColor }]}
+              accent={accent}
+            />
+          )
+        }}
         sliceTooltip={({ slice }) => {
           const header = slice.points[0]?.data?.x
           if (tooltipContent) {
             const payload = slice.points.map((p) => {
-              const cfg = cfgByName.get(p.serieId)
+              const cfg = cfgByName.get(p.seriesId)
               return {
                 payload: rowByX.get(p.data.x),
                 value: p.data.y,
-                name: p.serieId,
-                color: p.serieColor,
+                name: p.seriesId,
+                color: p.seriesColor,
                 dataKey: cfg?.key,
               }
             })
             return tooltipContent({ payload, label: header })
           }
           const rows = slice.points.map((p) => {
-            const cfg = cfgByName.get(p.serieId)
-            const [v, n] = applyFmt(p.data.y, p.serieId, cfg?.isRight)
-            return { name: n, value: v, color: p.serieColor }
+            const cfg = cfgByName.get(p.seriesId)
+            const [v, n] = applyFmt(p.data.y, p.seriesId, cfg?.isRight)
+            return { name: n, value: v, color: p.seriesColor }
           })
           return <TcTooltip header={header} rows={rows} accent={accent} />
         }}

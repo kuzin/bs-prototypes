@@ -201,4 +201,13 @@ export const PROTOTYPES = [
     description:
       'Log reading, unlock a word from the book — collect them, and educators see the growth.',
   },
+  {
+    id: 'engagement-signals',
+    name: 'Reading Engagement Signals',
+    section: 'Prototypes',
+    category: 'Profiles',
+    href: '/bs-prototypes/engagement-signals/',
+    accent: '#16A97A',
+    description: 'Increasing, consistent or declining — and what is driving it.',
+  },
 ]

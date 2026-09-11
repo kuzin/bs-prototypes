@@ -72,7 +72,7 @@
    still while the panel left under it). It also owns the side↔full width, so
    the rail stays glued to the panel's edge the whole way. */
 .bp-profile-slider {
-  width: 782px;
+  width: 860px;
   box-shadow: -8px 0 32px rgba(0, 0, 0, 0.2);
   margin-left: auto;
   display: flex;
@@ -101,11 +101,11 @@
    Panel chrome (close, expand, step reader) in its own column beside the
    panel. It's a full-height strip in both modes — the buttons need something to
    sit on, and against the panel's own white nav rail (full screen) or the dim
-   overlay (side panel) they'd otherwise float loose. Tinted from the reader's
-   `--bp-profile` (see `profileVars`), with a neutral fallback for any surface
-   that doesn't set it. */
+   overlay (side panel) they'd otherwise float loose. Tinted from the admin
+   accent, like the rest of the chrome. */
+/* Wide enough for the 36px targets below — the shared IconButton size. */
 .bp-profile-ctrls {
-  width: 42px;
+  width: 56px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -113,8 +113,8 @@
   gap: 10px;
   padding: 10px 0;
   align-self: stretch;
-  background: color-mix(in srgb, var(--bp-profile, #64748b) 14%, #fff);
-  border-right: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 28%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 14%, #fff);
+  border-right: 1px solid color-mix(in srgb, var(--c-accent) 28%, #fff);
 }
 
 .bp-ctrl-group {
@@ -126,12 +126,12 @@
 /* Flat: a hairline instead of a lift. The panel's own shadow is on the slider,
    not the panel, so it falls outside the strip rather than gradienting over it. */
 .bp-ctrl-btn {
-  width: 30px;
-  height: 30px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   background: #fff;
-  border: 1px solid color-mix(in srgb, var(--bp-profile, #64748b) 32%, #fff);
-  color: var(--bp-profile, var(--c-slate-600));
+  border: 1px solid color-mix(in srgb, var(--c-accent) 32%, #fff);
+  color: var(--c-accent);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -143,8 +143,8 @@
 }
 
 .bp-ctrl-btn:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--bp-profile, #64748b) 10%, #fff);
-  border-color: var(--bp-profile, var(--c-slate-600));
+  background: color-mix(in srgb, var(--c-accent) 10%, #fff);
+  border-color: var(--c-accent);
 }
 
 /* Copy-link confirmation — green while the "Copied" state holds. */
@@ -201,16 +201,14 @@
 .bp-embed--full .bp-nav-item {
   min-height: 38px;
 }
-.bp-profile-wrap--full .bp-nav-label,
-.bp-embed--full .bp-nav-label {
-  font-size: 13px;
-}
-
 /* ─── Root ───────────────────────────────────────────────────────────────── */
 /* Column, so the student header can span the rail as well as the content. */
 .bp-root {
   font-family: var(--font-sans);
-  background: #f5f5f5;
+  /* One rung up the app's own grey scale — `$gray100` #f5f5f5 → #f8f8f8 — so
+     the cards still read as raised without the page sitting so heavy behind
+     them. */
+  background: var(--c-gray-0);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -232,7 +230,7 @@
    stacked items ran to ~1160px, which was a wall. Horizontal rows bring the
    whole rail under 500px and match the product's own sidebar. */
 .bp-nav {
-  width: 168px;
+  width: 188px;
   background: #fff;
   border-right: 1px solid #eaeaea;
   display: flex;
@@ -246,8 +244,8 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 8px 8px 10px;
+  gap: 4px;
+  padding: 12px 10px;
   overflow-y: auto;
   scrollbar-width: none;
 }
@@ -255,15 +253,17 @@
 .bp-nav-items::-webkit-scrollbar {
   display: none;
 }
+/* Rows are sized for the 15px label: 40px tall with 10/12 padding, on a
+   4px rhythm — the old 34px/6px-9px was built for 12px text. */
 .bp-nav-item {
   width: 100%;
-  min-height: 34px;
+  min-height: 40px;
   display: flex;
   align-items: center;
   cursor: pointer;
   position: relative;
-  gap: 9px;
-  padding: 6px 9px;
+  gap: 10px;
+  padding: 10px 12px;
   border-radius: 8px;
   user-select: none;
 }
@@ -272,26 +272,44 @@
   background: #f4f5f7;
 }
 
+/* Wraps rather than truncates. Two of the app's own labels are
+   "Recommendation Filters" and "Recommended Books" — ellipsised in a 168px
+   rail they both come out as "Recommend…", which is worse than a second line.
+   The item's `min-height` lets the row grow. */
 .bp-nav-label {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: #8a8f98;
   letter-spacing: 0.01em;
-  line-height: 1.2;
-  white-space: nowrap;
+  line-height: 1.25;
+  min-width: 0;
+  /* One line per row, always. A name long enough to wrap made its row taller
+     than every other, broke the rail's rhythm and left the icon sitting above
+     the label's centre instead of beside it. Clipped instead — the row already
+     carries the full name in `title`. */
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* The rail's own two tones, from the shipped app's hand-vendored icons
+   (`.dark` #2A2A2A in bs-product `_menu.html.haml`): a Plumpy icon fills from
+   `currentColor`, so the colour it inherits here is the whole treatment. */
+.bp-nav-item .plumpy-icon {
+  color: #2a2a2a;
 }
 
 /* The active row wears the reader's colour rather than the section's. Section
-   colour still identifies the page — it's on the Hero's icon chip. */
+   colour still identifies the page — it's on the Hero's icon chip. Both of
+   Plumpy's layers tint together, so the icon picks the accent up whole. */
 .bp-nav-item--active .bp-nav-label,
-.bp-nav-item--active .icon {
-  color: var(--bp-profile, #1a6dd5);
+.bp-nav-item--active .icon,
+.bp-nav-item--active .plumpy-icon {
+  color: var(--c-accent);
 }
 
 .bp-nav-item--active {
-  background: color-mix(in srgb, var(--bp-profile, #1a6dd5) 12%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 12%, #fff);
   cursor: default;
 }
 
@@ -308,7 +326,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
+  padding: 26px 24px;
   background: #fff;
   border-bottom: 1px solid #eaeaea;
   flex-shrink: 0;
@@ -322,16 +340,18 @@
   min-width: 0;
 }
 
+/* 22px is the app's own section-title size, and a clear step over the
+   15px body the panel now uses. */
 .bp-panel-name {
-  font-size: 16px;
+  font-size: 22px;
   font-weight: 800;
   color: #424242;
   line-height: 1.2;
 }
 
 .bp-panel-meta {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: #9ca3af;
   margin-top: 2px;
 }
@@ -371,28 +391,9 @@
 }
 
 /* ─── Card ───────────────────────────────────────────────────────────────── */
-.bp-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 16px 18px;
-}
-
-.bp-card--flush {
-  padding: 0;
-}
-
-.bp-section-heading {
-  font-size: 15px;
-  font-weight: 800;
-  color: #424242;
-  margin-bottom: 12px;
-}
-
-.bp-card:not(.bp-card--flush) > .bp-section-heading:first-child {
-  margin: -16px -18px 14px;
-  padding: 15px 18px 13px;
-  border-bottom: 1px solid #f0f0f0;
-}
+/* Card visuals + the promoted first title now come from the shared
+   ProfileCard pattern (components/ProfileCard). These class names stay on the
+   same elements for the local descendant rules further down this file. */
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
 .bp-btn-primary {
@@ -402,7 +403,7 @@
   border: none;
   border-radius: 8px;
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -418,7 +419,7 @@
   border: 1.5px solid #dedede;
   border-radius: 8px;
   color: #424242;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   font-family: inherit;
   cursor: pointer;
@@ -433,7 +434,7 @@
   border: none;
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #2b7ee5;
   text-align: right;
@@ -465,12 +466,12 @@
   font-weight: 800;
   border-radius: 100px;
   display: inline-block;
-  font-size: 13px;
+  font-size: 15px;
   padding: 4px 12px;
 }
 
 .bp-pill--sm {
-  font-size: 13px;
+  font-size: 15px;
   padding: 2px 9px;
 }
 
@@ -479,7 +480,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   border-radius: 100px;
   padding: 5px 11px;
@@ -512,7 +513,7 @@
 /* ─── Action footer (suggested action at bottom of detail cards) ──────────── */
 .bp-action-footer-item {
   padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
   margin-top: 2px;
 }
 
@@ -523,14 +524,14 @@
 }
 
 .bp-action-footer-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
   margin-bottom: 5px;
 }
 
 .bp-action-footer-body {
-  font-size: 13px;
+  font-size: 15px;
   color: #555;
   line-height: 1.6;
   font-weight: 500;
@@ -566,22 +567,42 @@
   box-sizing: border-box;
 }
 
-/* The Actions button carries both a label and a dots icon; each breakpoint
-   shows one of them. Desktop: "Actions ⌄". Mobile: just the dots. */
-.bp-student-actions .btn-icon {
+/* The Actions button carries a leading dots icon, a label and a trailing
+   caret; each breakpoint shows a different pair. Desktop: "Actions ⌄" — so
+   only the *leading* icon hides here. Mobile (see the breakpoint block) flips
+   it: dots only, no label, no caret.
+   The caret follows the app's `.button--dropdown`: a 16px glyph in $gray700
+   with a 4px column gap. */
+.bp-student-actions .btn-icon:not(.btn-icon--right) {
   display: none;
+}
+
+/* Tighter than the default 0 20px — with a caret riding along, 20px each side
+   made "Actions ⌄" read long. 16px is the app's `.button--medium-small` inset. */
+.bp-student-actions .btn {
+  column-gap: 4px;
+  padding: 0 16px;
+}
+
+.bp-student-actions .btn-icon--right svg {
+  width: 16px;
+  height: 16px;
+}
+
+.bp-student-actions .btn--secondary .btn-icon--right {
+  color: var(--c-gray-700);
 }
 
 /* Log is the panel's primary action, so it carries the reader's colour like
    the rest of the chrome. Actions stays a neutral outline button. */
 .bp-panel-header .btn--primary {
-  background: var(--bp-profile, var(--c-blue-700));
-  border-color: var(--bp-profile, var(--c-blue-700));
+  background: var(--c-accent);
+  border-color: var(--c-accent);
 }
 
 .bp-panel-header .btn--primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
-  border-color: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 84%, #000);
+  background: color-mix(in srgb, var(--c-accent) 84%, #000);
+  border-color: color-mix(in srgb, var(--c-accent) 84%, #000);
 }
 
 .bp-header-right {
@@ -659,7 +680,7 @@
 }
 
 .bp-tile-empty {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: #424242;
   opacity: 0.75;
@@ -676,7 +697,7 @@
 }
 
 .bp-tile-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -707,13 +728,13 @@
 }
 
 .bp-tile-unit {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
 }
 
 .bp-tile-sub {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: #424242;
   opacity: 0.6;
@@ -735,7 +756,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
 }
@@ -788,7 +809,7 @@
 }
 
 .bp-health-verdict-outof {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--ht-text);
   opacity: 0.45;
@@ -804,7 +825,7 @@
   border: 1.5px solid color-mix(in srgb, var(--ht-bar) 40%, transparent);
   border-radius: 100px;
   padding: 6px 13px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   white-space: nowrap;
 }
@@ -840,7 +861,7 @@
   gap: 10px;
   padding: 12px 0;
   cursor: pointer;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
   transition: opacity 0.12s;
 }
 .bp-health-row:hover {
@@ -874,7 +895,7 @@
 .bp-health-row-top .bp-status {
   background: none;
   padding: 0;
-  font-size: 13px;
+  font-size: 15px;
 }
 .bp-health-row-top .bp-status img {
   filter: none;
@@ -893,7 +914,7 @@
 }
 
 .bp-health-row-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
 }
@@ -934,14 +955,14 @@
   background: #f2f2f2;
   border-radius: 12px;
   padding: 13px 15px;
-  font-size: 14px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.65;
   font-weight: 500;
 }
 
 .bp-benny-timestamp {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   margin-top: 7px;
 }
@@ -951,7 +972,7 @@
    comes from the title row rather than the card. */
 .bp-actions-title {
   padding: 15px 18px 13px;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: #424242;
 }
@@ -970,14 +991,14 @@
 }
 
 .bp-action-title {
-  font-size: 14px;
-  font-weight: 900;
-  color: #000;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text-real-dark);
   margin-bottom: 4px;
 }
 
 .bp-action-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.55;
   font-weight: 500;
@@ -988,7 +1009,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   background: none;
@@ -1012,7 +1033,7 @@
 }
 
 .bp-score-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
 }
@@ -1024,7 +1045,7 @@
 }
 
 .bp-score-num {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   color: #424242;
 }
@@ -1036,7 +1057,7 @@
 }
 
 .bp-motivators-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -1051,7 +1072,7 @@
 }
 
 .bp-motivator-tag {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   padding: 5px 13px;
   border: 1.5px solid #eaeaea;
@@ -1068,7 +1089,7 @@
   border: 1px solid #fed7aa;
   border-radius: 10px;
   margin-top: 14px;
-  font-size: 13px;
+  font-size: 15px;
   color: #424242;
   font-weight: 500;
 }
@@ -1078,7 +1099,7 @@
 }
 
 .bp-flag-breakdown-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -1097,7 +1118,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 10px 14px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 .bp-flag-item:not(:last-child) {
@@ -1117,7 +1138,7 @@
   background: #fef2f2;
   border: 1px solid #fca5a5;
   border-radius: 10px;
-  font-size: 13px;
+  font-size: 15px;
   color: #991b1b;
   font-weight: 700;
 }
@@ -1128,7 +1149,7 @@
   align-items: center;
   justify-content: space-between;
   padding-bottom: 14px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
   margin-bottom: 14px;
 }
 
@@ -1152,7 +1173,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-500);
 }
@@ -1164,7 +1185,7 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   color: #9ca3af;
   font-weight: 500;
 }
@@ -1177,7 +1198,7 @@
 }
 
 .bp-goal-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: #424242;
 }
@@ -1190,7 +1211,7 @@
 }
 
 .bp-goal-week-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
 }
@@ -1217,7 +1238,7 @@
 }
 
 .bp-goal-mins {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-amber-600);
 }
@@ -1262,7 +1283,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 22px;
   flex-shrink: 0;
   position: relative;
   z-index: 1;
@@ -1291,7 +1312,7 @@
 }
 
 .bp-goal-day-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #9ca3af;
 }
@@ -1312,7 +1333,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 11px 0;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
   gap: 12px;
 }
 
@@ -1322,7 +1343,7 @@
 }
 
 .bp-habit-row-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #555;
 }
@@ -1335,7 +1356,7 @@
 }
 
 .bp-habit-row-value {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
 }
@@ -1351,7 +1372,7 @@
 }
 
 .bp-habit-row-note {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #acacac;
 }
@@ -1363,7 +1384,7 @@
 /* .bp-minutes-grid removed — absorbed into bp-streak-grid (4-col) */
 
 .bp-week-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   text-transform: uppercase;
@@ -1403,7 +1424,7 @@
 }
 
 .bp-week-day-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: #acacac;
 }
@@ -1421,7 +1442,7 @@
 }
 
 .bp-minutes-label {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   font-weight: 600;
   margin-bottom: 3px;
@@ -1440,7 +1461,7 @@
 }
 
 .bp-minutes-delta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
 }
 .bp-minutes-delta--up {
@@ -1453,7 +1474,7 @@
 
 /* ─── Skills detail ──────────────────────────────────────────────────────── */
 .bp-book-current-badge {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #185fa5;
   background: #d0e3ff;
@@ -1469,7 +1490,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 18px 13px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
   background: #fff;
   border-radius: 12px 12px 0 0;
 }
@@ -1482,13 +1503,13 @@
 }
 
 .bp-titles-header-meta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #9ca3af;
 }
 
 .bp-titles-header-label {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: #424242;
   display: flex;
@@ -1497,7 +1518,7 @@
 }
 
 .bp-titles-range-chip {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #185fa5;
   background: #d0e3ff;
@@ -1533,23 +1554,26 @@
 .bp-heatmap-nav-label {
   flex: 1;
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #111827;
 }
 
+/* Same box as the shared IconButton (36px / 8px radius / 20px glyph on a
+   #f2f2f2 ground) so every prev/next control in the app is one size — these
+   were a bespoke 26px outline that all but disappeared. */
 .bp-heatmap-nav-btn {
-  background: none;
-  border: 1px solid var(--c-gray-200);
-  border-radius: 6px;
-  width: 26px;
-  height: 26px;
+  background: var(--c-gray-150);
+  border: none;
+  border-radius: 8px;
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
-  color: #6b7280;
+  color: var(--c-text-real);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -1557,12 +1581,14 @@
   padding: 0;
 }
 .bp-heatmap-nav-btn:hover:not(:disabled) {
-  background: #f3f4f6;
-  color: #111827;
+  background: var(--c-gray-250);
+  color: var(--c-text-real);
 }
+/* The app's disabled icon button: a paler ground, not a faded whole. */
 .bp-heatmap-nav-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
+  background: var(--c-gray-0);
+  color: var(--c-gray-350);
+  cursor: auto;
 }
 
 /* Month grid — weekdays across, weeks down, like the shared <DatePicker> but
@@ -1579,7 +1605,7 @@
 }
 
 .bp-heatmap-wd {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-text-muted);
   text-align: center;
@@ -1621,7 +1647,7 @@
 }
 
 .bp-heatmap-daynum {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   line-height: 1;
   position: relative;
@@ -1647,6 +1673,13 @@
    underline bolted on beneath the calendar rather than as the days being
    joined. The run still caps round wherever it stops: the week's edge, where
    the grid wraps, and the month's, where there is nothing on the other side. */
+/* The colour a multi-day run is outlined in: the app's own `$yellow400`
+   (`lib/_colors.scss`). Bright enough to read over both the full-accent goal
+   fill and the 38% tint a read-only day gets. */
+.bp-heatmap {
+  --hm-streak-line: #ffbc42;
+}
+
 .bp-heatmap-cell--streak-r::before {
   right: calc(-1 * var(--hm-gap, 4px));
   border-top-right-radius: 0;
@@ -1656,6 +1689,49 @@
 .bp-heatmap-cell--streak-l::before {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
+}
+
+/* A run of two or more days is outlined, so a streak is a shape you can see
+   rather than something you have to infer from where the gaps aren't. Only a
+   multi-day run carries a join class — a lone streak day has neither — so
+   these two selectors are exactly "longer than one day".
+   The tone is a warm line rather than a cut of the green: a run mixes
+   full-accent goal days with 38% tint read days, and one bright yellow reads
+   against both where a darker green only showed over the lighter cells. The
+   border draws inside the `::before` (`border-box`), so nothing shifts. */
+.bp-heatmap-cell--streak-l::before,
+.bp-heatmap-cell--streak-r::before {
+  border: 2px solid var(--hm-streak-line);
+}
+
+/* No vertical rule mid-run: each cell drops the border on whichever side the
+   run carries on, so the outline closes only at the two ends. */
+.bp-heatmap-cell--streak-r::before {
+  border-right: 0;
+}
+
+.bp-heatmap-cell--streak-l::before {
+  border-left: 0;
+}
+
+/* A cell that continues the run paints a full gap of extra fill past its own
+   right edge (`--streak-r` above), so its content — centred on the cell box —
+   sat left of centre in the segment it actually draws. A centred flex item
+   moves by half its margin, so a full gap of margin shifts it by half a gap,
+   which is the overhang. The run's last cell doesn't extend, so it doesn't
+   move. */
+.bp-heatmap-cell--streak-r .bp-heatmap-daynum,
+.bp-heatmap-cell--streak-r .bp-heatmap-star {
+  margin-left: var(--hm-gap, 4px);
+}
+
+/* The legend's Streak swatch is a single box standing in for a run, so it
+   takes the outline whole. */
+/* The literal colour, not `--hm-streak-line`: the legend is the ChartCard's
+   `footer`, outside `.bp-heatmap`, so it never sees that variable and fell back
+   to the legend's own grey text colour. Keep it in step with the run above. */
+.bp-heatmap-legend-item .bp-heatmap-cell--streak::before {
+  border: 2px solid #ffbc42;
 }
 
 .bp-heatmap-legend {
@@ -1671,7 +1747,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 600;
   white-space: nowrap;
@@ -1710,7 +1786,7 @@
 }
 
 .bp-genre-subhead {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   font-weight: 500;
   line-height: 1.4;
@@ -1742,7 +1818,7 @@
 }
 
 .bp-genre-chip-count {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   opacity: 0.6;
   background: var(--chip-color);
@@ -1770,7 +1846,7 @@
 
 /* Title name as a link */
 .bp-title-name-link {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
   text-decoration: none;
@@ -1828,7 +1904,7 @@
 }
 
 .bp-title-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
   flex: 1;
@@ -1836,7 +1912,7 @@
 }
 
 .bp-title-lexile-pill {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #6b7280;
   background: #f3f4f6;
@@ -1849,7 +1925,7 @@
 }
 
 .bp-title-author {
-  font-size: 13px;
+  font-size: 15px;
   color: #9ca3af;
   font-weight: 500;
   margin-top: 3px;
@@ -1884,7 +1960,7 @@
 }
 
 .bp-title-btwb-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
 }
@@ -1896,7 +1972,7 @@
 }
 
 .bp-title-genre-tag {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   background: #f0f0f0;
@@ -1905,7 +1981,7 @@
 }
 
 .bp-title-date {
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 500;
 }
@@ -1917,7 +1993,7 @@
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 600;
 }
@@ -1931,19 +2007,11 @@
   gap: 8px;
 }
 
-/* Said once under the row rather than on each of the three chips. */
-.bp-rmi-donuts-note {
-  text-align: center;
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--c-slate-400);
-}
-
 .bp-donut-wrap {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 7px;
+  gap: 9px;
 }
 
 .bp-donut-chart {
@@ -1961,22 +2029,24 @@
   gap: 1px;
 }
 
+/* Sized against the 108px ring: the figure is the point of the chart, so it
+   carries the weight rather than floating in the middle of it. */
 .bp-donut-val {
-  font-size: 18px;
+  font-size: 24px;
   font-weight: 900;
   color: var(--c-slate-800);
   line-height: 1;
 }
 
 .bp-donut-max {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-text-subtle);
   line-height: 1;
 }
 
 .bp-donut-label {
-  font-size: 12px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-text-muted);
   text-align: center;
@@ -1995,7 +2065,7 @@
 }
 
 .bp-rmi-period-select {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: #424242;
   font-family: inherit;
@@ -2040,13 +2110,13 @@
 }
 
 .bp-rmi-max {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
 }
 
 .bp-rmi-delta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   margin-left: 4px;
 }
@@ -2059,7 +2129,7 @@
 }
 
 .bp-rmi-label {
-  font-size: 13px;
+  font-size: 15px;
   color: #707070;
   font-weight: 600;
   line-height: 1.3;
@@ -2089,7 +2159,7 @@
 }
 
 .bp-rmi-rec-goal-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   margin-bottom: 6px;
@@ -2097,14 +2167,14 @@
 }
 
 .bp-rmi-rec-goal-value {
-  font-size: 42px;
+  font-size: 40px;
   font-weight: 900;
   color: #424242;
   line-height: 1;
 }
 
 .bp-rmi-rec-goal-unit {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   margin-top: 4px;
@@ -2120,7 +2190,7 @@
 }
 
 .bp-rmi-rec-actions-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #707070;
   text-transform: uppercase;
@@ -2134,7 +2204,7 @@
 }
 
 .bp-rmi-rec-action-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.5;
   margin: 0;
@@ -2166,7 +2236,7 @@
 }
 
 .bp-motivator-rank {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #acacac;
   width: 18px;
@@ -2175,7 +2245,7 @@
 }
 
 .bp-motivator-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #424242;
   width: 130px;
@@ -2188,7 +2258,7 @@
 }
 
 .bp-motivator-score {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #424242;
   width: 28px;
@@ -2197,7 +2267,7 @@
 }
 
 .bp-motivator-delta {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   width: 38px;
   text-align: right;
@@ -2212,24 +2282,30 @@
 }
 
 /* ─── Session flag chips (Integrity detail) ──────────────────────────────────── */
+/* `.flagged-entry__analysis`: a centred row on a 2px gap. No fixed width — at
+   90px this cell claimed ~130px of the table once padding was counted, and the
+   surplus came out of Title. The column's own `width` does the reserving. */
+/* Centred, to match the flag mark that heads the column. `inline-flex` so the
+   cell's own `text-align: center` can place it — a full-width flex row would
+   sit left whatever the cell says. */
 .bp-session-flags {
-  display: flex;
-  gap: 5px;
+  display: inline-flex;
+  gap: 2px;
   align-items: center;
-  justify-content: flex-end;
-  width: 90px;
+  justify-content: center;
   flex-shrink: 0;
 }
 
+/* `.flagged-entry__icon`: a bare 32px target holding the flag's 24px drawing —
+   no tile behind it. The drawings carry their own colour, so the tinted chip we
+   used to need to tell one flag from another is just noise now. */
 .bp-session-flag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
-  background: #f5f5f5;
-  cursor: default;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
 }
 
 /* ─── Placeholder page ───────────────────────────────────────────────────── */
@@ -2259,14 +2335,14 @@
 }
 
 .bp-placeholder-title {
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 800;
   color: #2d2d2d;
   letter-spacing: -0.3px;
 }
 
 .bp-placeholder-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #9e9e9e;
 }
 
@@ -2329,7 +2405,7 @@
   border-radius: 50%;
   background: var(--c-blue-700);
   color: #fff;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   display: flex;
   align-items: center;
@@ -2378,7 +2454,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
   transition: background 0.12s;
 }
@@ -2401,7 +2477,7 @@
   padding: 9px 11px;
   border-radius: 8px;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   cursor: pointer;
   transition:
@@ -2446,7 +2522,7 @@
   border-radius: 7px;
   cursor: pointer;
   color: rgba(255, 255, 255, 0.7);
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 500;
   transition:
     background 0.12s,
@@ -2479,18 +2555,34 @@
   overflow: hidden;
 }
 
+/* One frame for every admin page: a centered column capped at
+   --admin-content-max with --admin-gutter minimum gutters. `align-items:
+   stretch` is what keeps the pages consistent — with flex-start each child
+   sized to its own content, so e.g. the tab strip came out narrower than the
+   cards below it. */
 .bp-adm-main-body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  padding: 20px max(24px, calc((100% - 1280px) / 2));
+  padding: var(--admin-pad-top)
+    max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) var(--admin-pad-bottom);
   overflow-y: auto;
-  align-items: flex-start;
-  gap: 0;
+  /* Reserve the scrollbar always. Without this the column is 15px narrower on
+     pages long enough to scroll than on pages that aren't — the exact
+     page-to-page inconsistency this frame exists to remove. */
+  scrollbar-gutter: stable;
+  align-items: stretch;
+  gap: var(--admin-section-gap);
+}
+
+/* Same flex trap as reader-profile: children of a scrolling column must not
+   shrink. */
+.bp-adm-main-body > * {
+  flex-shrink: 0;
 }
 
 .bp-adm-breadcrumb {
-  font-size: 13px;
+  font-size: 15px;
   color: #ef4444;
   font-weight: 700;
   margin-bottom: 10px;
@@ -2522,7 +2614,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: #fff;
   flex-shrink: 0;
@@ -2537,7 +2629,7 @@
 }
 
 .bp-adm-class-meta {
-  font-size: 12.5px;
+  font-size: 13px;
   color: var(--c-text-muted);
   margin-top: 2px;
 }
@@ -2554,7 +2646,7 @@
   border: 1.5px solid #d1d5db;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #374151;
   cursor: pointer;
@@ -2567,19 +2659,17 @@
   border: none;
   border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #fff;
   cursor: pointer;
 }
 
 .bp-adm-tabs-wrap {
-  margin-bottom: 16px;
 }
 
 .bp-adm-filter-wrap {
   align-self: stretch;
-  margin-bottom: 12px;
 }
 
 .bp-adm-filters {
@@ -2598,7 +2688,7 @@
 }
 
 .bp-adm-filter-lbl {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #6b7280;
   margin-bottom: 5px;
@@ -2611,7 +2701,7 @@
   display: flex;
   align-items: center;
   padding: 0 12px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #111;
   background: #fff;
@@ -2624,217 +2714,11 @@
   border: 1.5px solid var(--c-gray-200);
   border-radius: 8px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #9ca3af;
   cursor: not-allowed;
   white-space: nowrap;
-}
-
-.bp-adm-card {
-  background: #fff;
-  border-radius: 12px;
-  overflow: hidden;
-  width: 100%;
-}
-
-.bp-adm-week-nav {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.bp-adm-week-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #f3f4f6;
-  border: none;
-  font-size: 16px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  color: #374151;
-}
-
-.bp-adm-week-label {
-  flex: 1;
-  text-align: center;
-  font-size: 15px;
-  font-weight: 800;
-  color: #111;
-}
-
-/* ── Goal column highlight ────────────────────────────────────────────────── */
-.bp-adm-th--goal {
-  background: #eff6ff !important;
-  text-align: center !important;
-}
-
-.bp-adm-td--goal {
-  background: #f5f9ff;
-}
-
-.tbl-row--clickable:hover .tbl-td.bp-adm-td--goal {
-  background: #ebf3ff;
-}
-.bp-adm-row--selected .tbl-td {
-  background: #f0f6ff;
-}
-.bp-adm-row--selected .tbl-td.bp-adm-td--goal {
-  background: #dbeafe;
-}
-
-.bp-adm-student-cell {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-left: 4px;
-}
-
-.bp-adm-rank {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 800;
-  flex-shrink: 0;
-}
-
-.bp-adm-rank--gold {
-  background: #fcd34d;
-  color: #92400e;
-}
-.bp-adm-rank--silver {
-  background: var(--c-gray-200);
-  color: #374151;
-}
-.bp-adm-rank--bronze {
-  background: var(--c-amber-600);
-  color: #fff;
-}
-
-/* A real link, not just row-click styling: it opens the full-screen profile
-   while the row opens the slide-in quick look. */
-.bp-adm-student-name {
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: 700;
-  color: var(--c-blue-700);
-  background: none;
-  border: 0;
-  padding: 0;
-  text-align: left;
-  cursor: pointer;
-  text-decoration: none;
-  transition: color 0.1s;
-}
-
-.bp-adm-student-name:hover {
-  color: #1e40af;
-  text-decoration: underline;
-}
-
-.bp-adm-goal-cell {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  font-weight: 700;
-}
-
-.bp-adm-goal-val {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-slate-800);
-}
-
-.bp-adm-goal-edit-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 6px;
-  border: 1px solid var(--c-border);
-  background: var(--c-slate-50);
-  color: var(--c-text-muted);
-  cursor: pointer;
-  transition:
-    background 0.12s,
-    border-color 0.12s,
-    color 0.12s;
-  padding: 0;
-  flex-shrink: 0;
-}
-
-.bp-adm-goal-edit-btn:hover {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: var(--c-blue-700);
-}
-
-.bp-adm-pct {
-  display: inline-block;
-  padding: 3px 9px;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.bp-adm-pct--blue {
-  background: #dbeafe;
-  color: var(--c-blue-700);
-}
-.bp-adm-pct--orange {
-  background: #fef3c7;
-  color: var(--c-amber-600);
-}
-.bp-adm-pct--red {
-  background: #fee2e2;
-  color: var(--c-red-600);
-}
-
-.bp-adm-check-circle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #10b981;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.bp-adm-dash {
-  color: #d1d5db;
-  font-size: 15px;
-}
-
-.bp-adm-avg-row .tbl-td {
-  font-size: 13px;
-  font-weight: 700;
-  color: #374151;
-  background: #f9fafb;
-  border-bottom: none;
-}
-
-.bp-adm-legend {
-  display: flex;
-  gap: 16px;
-  justify-content: flex-end;
-  padding: 10px 16px;
-  font-size: 13px;
-  font-weight: 700;
-  border-top: 1px solid #f0f0f0;
 }
 
 /* ─── Placeholder empty state (below consistent PageHeader) ─────────────── */
@@ -2849,7 +2733,7 @@
 }
 
 .bp-placeholder-text {
-  font-size: 13px;
+  font-size: 15px;
   color: #acacac;
   font-weight: 600;
 }
@@ -2877,7 +2761,7 @@
 .bp-btn-ghost--sm {
   height: 30px;
   padding: 0 12px;
-  font-size: 13px;
+  font-size: 15px;
 }
 
 /* Segmented control */
@@ -2899,7 +2783,7 @@
   border-radius: 6px;
   background: transparent;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #6b7280;
   cursor: pointer;
@@ -2927,7 +2811,7 @@
   border: 1.5px solid #e0e0e0;
   border-radius: 6px;
   background: #fff;
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   display: flex;
@@ -2946,7 +2830,19 @@
   flex-direction: column;
 }
 
-/* Table view — title and author stack in one cell */
+/* `.tbl-scroll > .tbl` is `width: max-content` by default, which is what a wide
+   data table wants — but here it let long titles widen the table and push the
+   marks out past the card's right edge. This one fits the card instead, and the
+   title cell is what gives way. */
+.tbl-scroll > .tbl.bp-rl-tbl {
+  width: 100%;
+  min-width: 0;
+}
+
+/* Table view — title and author stack in one cell. The cell is the one column
+   that gives way: Date and the mark cluster are fixed widths, so a long title
+   wraps inside its own column instead of widening the table and pushing the
+   row's controls out of sight. */
 .bp-rl-tbl-title {
   display: flex;
   flex-direction: column;
@@ -2964,6 +2860,10 @@
   padding: 0;
   text-align: left;
   cursor: pointer;
+  /* Break between words, and only inside one if a single word is wider than
+     the column — `anywhere` let the browser shrink the column to a few
+     characters and hyphen-less-ly chop every title in half. */
+  overflow-wrap: break-word;
 }
 
 .bp-rl-tbl-name:hover {
@@ -2971,7 +2871,7 @@
 }
 
 .bp-rl-tbl-author {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -2990,24 +2890,27 @@
 
 /* Weeks sit inside the card's own padding */
 .bp-rl-body {
-  padding: 2px 18px 14px;
+  padding: 6px 18px 18px;
 }
 
 .bp-rl-week:first-child .bp-rl-week-label {
   border-top: 0;
 }
 
+/* A week is a section rule, so it takes the weight the app gives a table
+   header — 14px / 800 — rather than the 13px it had, which sat below the
+   entry cards it was supposed to be heading. */
 .bp-rl-week-label {
-  font-size: 12px;
-  font-weight: 700;
-  color: #acacac;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--c-gray-600);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   /* The margin is the point: it's outside the border, so it's what separates
      the rule from the last day of the week above. Padding would only push the
      label further down and leave the line where it was. */
-  margin-top: 20px;
-  padding: 10px 0 4px;
+  margin-top: 24px;
+  padding: 13px 0 7px;
   border-top: 1px solid #ebebeb;
 }
 
@@ -3020,49 +2923,46 @@
    scrolls in a fraction of the height. */
 .bp-rl-day {
   display: flex;
-  gap: 12px;
-  padding: 4px 0;
+  gap: 16px;
+  padding: 7px 0;
   align-items: flex-start;
 }
 
-.bp-rl-day--faded .bp-rl-day-num,
-.bp-rl-day--faded .bp-rl-day-name {
-  opacity: 0.35;
-}
-
+/* Wide enough for "Wednesday" at 14px — 66px clipped it. */
 .bp-rl-day-col {
-  width: 62px;
+  width: 80px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding-top: 2px;
+  gap: 1px;
+  padding-top: 4px;
 }
 
 .bp-rl-day-num {
-  font-size: 15px;
+  font-size: 20px;
   font-weight: 800;
   color: #1a1a1a;
   line-height: 1.1;
 }
 
 .bp-rl-day-name {
-  font-size: 12.5px;
+  font-size: 14px;
   color: #9ca3af;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* Streak count and flame in one pill */
 .bp-rl-flame {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  margin-top: 5px;
-  padding: 1px 7px 1px 8px;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 3px 9px 3px 10px;
   border-radius: 999px;
   background: #ffedd5;
   color: #c2410c;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -3071,7 +2971,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 8px;
   min-width: 0;
 }
 
@@ -3082,9 +2982,9 @@
   --rl-title: #1d4ed8;
 
   background: var(--rl-bg);
-  border-left: 3px solid var(--rl-bar);
-  border-radius: 6px;
-  padding: 8px 10px 9px 11px;
+  border-left: 4px solid var(--rl-bar);
+  border-radius: 8px;
+  padding: 12px 13px 12px 14px;
 }
 
 .bp-rl-entry--flagged {
@@ -3099,15 +2999,24 @@
   --rl-title: #b91c1c;
 }
 
+/* Logged by a partner app — Comics Plus, Scholastic — rather than by hand. The
+   bar and the title are the app's own green pair (`$green500` / `$green800`);
+   the ground is a pale tint of it, matching how light the other three are. */
+.bp-rl-entry--partner {
+  --rl-bg: #e7f7ef;
+  --rl-bar: #1dc174;
+  --rl-title: #017841;
+}
+
 /* The "this book is finished" marker that replaces the amount line */
 .bp-rl-completed {
-  display: inline-block;
-  margin-top: 2px;
-  padding: 2px 9px;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
   border-radius: 999px;
   background: #fbd5d3;
   color: #991b1b;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -3115,14 +3024,14 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 6px;
+  gap: 10px;
 }
 
 /* A button now — it opens the session — but still the entry's heading, so the
    control chrome is stripped and the type kept. */
 .bp-rl-entry-title {
   font-family: inherit;
-  font-size: 13px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--rl-title);
   line-height: 1.3;
@@ -3139,33 +3048,26 @@
   text-decoration: underline;
 }
 
-/* Markers on a log row: what the session holds, before you open it. */
-/* Every icon in an entry's cluster sits in the same 22px box, so the flag, the
-   talk bubble, the partner mark and the dots line up on one grid however many
-   of them a given entry has. */
-.bp-rl-mark,
-.bp-rl-dots,
+/* Markers on a log row: what the session holds, before you open it. The box,
+   the hover and the pointer all come from `.row-action` (components/RowAction)
+   — only the tones are the log's own. `.bp-rl-source` isn't a control, so it
+   borrows the same cell without the button behaviour. */
 .bp-rl-source {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: 0;
-  border-radius: 6px;
-  background: none;
+  width: 32px;
+  height: 32px;
   flex-shrink: 0;
 }
 
-.bp-rl-mark,
-.bp-rl-dots {
-  cursor: pointer;
-}
-
-.bp-rl-mark:hover,
-.bp-rl-dots:hover {
-  background: rgba(15, 23, 42, 0.06);
+/* The hover tint comes off the card's own accent rather than the neutral grey
+   `.row-action` defaults to — on a tinted card a flat grey square read as a
+   hole punched in it. Each state carries its own `--rl-*`, so the mark cluster
+   hovers blue / amber / red / green with the card it sits on. */
+.bp-rl-entry .row-action {
+  --row-action-hover: color-mix(in srgb, var(--rl-bar) 24%, #fff);
+  --row-action-hover-ink: var(--rl-title);
 }
 
 .bp-rl-mark--neg {
@@ -3180,33 +3082,43 @@
   color: var(--rl-title);
 }
 
+/* The 28px icon boxes were making the top row taller than the 21px title, and
+   that extra 7px was pushing the author line away from the name it belongs to.
+   Negative block margins let the cluster keep its tap targets without setting
+   the row's height. */
 .bp-rl-entry-menu {
   display: flex;
   align-items: center;
-  gap: 1px;
+  gap: 2px;
   flex-shrink: 0;
-  padding-top: 1px;
-}
-
-.bp-rl-dots {
-  color: #9ca3af;
-}
-
-.bp-rl-dots:hover {
-  color: #4b5563;
+  margin: -4px -4px -3px 0;
 }
 
 .bp-rl-entry-author {
-  font-size: 12.5px;
+  font-size: 14px;
   color: #6b7280;
   font-weight: 600;
-  margin-bottom: 4px;
+  margin-top: 2px;
+  margin-bottom: 7px;
 }
 
+/* A pill, like the Lexile chip beside it and the Completed marker that stands
+   in for it — the three are all readings of the session, so they read as one
+   set. The fill is a tint of the card's own accent, so it stays legible on
+   whichever of the four grounds the row is sitting on. */
 .bp-rl-entry-amount {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  /* 16% of the accent landed on nearly the same value as `--rl-bg`, so the
+     pill was invisible on its own card. A tint has to clear the ground it sits
+     on, not just the page. */
+  background: color-mix(in srgb, var(--rl-bar) 26%, #fff);
   font-size: 13px;
   font-weight: 800;
   color: var(--rl-title);
+  white-space: nowrap;
 }
 
 /* ─── Calendar view ──────────────────────────────────────────────────────── */
@@ -3229,7 +3141,7 @@
 
 .bp-rl-cal-dow-cell {
   text-align: center;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: #acacac;
   text-transform: uppercase;
@@ -3240,7 +3152,7 @@
 .bp-rl-cal-week {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .bp-rl-cal-week:last-of-type {
@@ -3253,7 +3165,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  border-right: 1px solid #f0f0f0;
+  border-right: 1px solid var(--c-gray-200);
   cursor: pointer;
   transition: background 0.12s;
   position: relative;
@@ -3270,7 +3182,7 @@
 }
 
 .bp-rl-cal-date {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: #555;
   width: 26px;
@@ -3312,7 +3224,7 @@
 }
 
 .bp-rl-cal-flame {
-  font-size: 13px;
+  font-size: 15px;
   margin-top: 2px;
   line-height: 1;
 }
@@ -3334,7 +3246,7 @@
 }
 
 .bp-rl-cal-detail-date {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: #1a1a1a;
 }
@@ -3390,12 +3302,12 @@
     font-size: 0;
   }
   .bp-adm-nav-child > svg {
-    font-size: 15px;
+    font-size: 18px;
   }
 
   /* Side-panel student profile becomes narrower so it doesn't overflow */
   .bp-profile-slider {
-    width: min(682px, calc(100vw - 58px));
+    width: min(750px, calc(100vw - 58px));
   }
 }
 
@@ -3405,9 +3317,8 @@
     display: none;
   }
 
-  .bp-adm-main-body {
-    padding: 14px 14px;
-  }
+  /* No override — the admin frame tokens already drop to 20px gutters at this
+     width, so this page lines up with every other admin surface. */
 
   /* Slide-in profile occupies the full screen on mobile, stacked column */
   .bp-profile-wrap {
@@ -3431,15 +3342,13 @@
      copy-link and the reader pager at phone width was the point of having it.
      It just gets tighter, and drops expand: the panel already fills the
      screen here, so there's nothing to expand into. */
+  /* Only a little tighter than desktop's 56px. The buttons keep their full
+     36px: a phone needs a bigger target than a mouse, not a smaller one, and
+     28px in a 34px rail was under every hit-target floor there is. */
   .bp-profile-ctrls {
-    width: 34px;
+    width: 46px;
     gap: 8px;
     padding: 8px 0;
-  }
-
-  .bp-ctrl-btn {
-    width: 28px;
-    height: 28px;
   }
 
   .bp-ctrl-btn--expand {
@@ -3449,19 +3358,45 @@
   /* One header on mobile too — it spans the full width and already carries the
      avatar, so the separate topbar is gone. Actions collapses to its icon and
      both buttons drop their carets. */
+  /* Name and the two actions share the top line; the standing flags sit under
+     the name, inside the identity column. Stacking all three on their own rows
+     spent 3 lines and left the buttons stranded at the bottom-left, away from
+     both the name they act on and the thumb. */
   .bp-panel-header {
-    padding: 10px 12px;
+    align-items: center;
+    padding: 12px 16px;
     gap: 8px;
   }
 
+  /* No avatar here. The panel is this one reader's, the name is directly under
+     it, and the initials were spending 48px to repeat what the name says. */
   .bp-panel-header .avatar {
-    width: 38px;
-    height: 38px;
-    font-size: 13px;
+    display: none;
   }
 
+  /* `min-width: 0` is what lets the name ellipsize instead of shoving the
+     buttons off the right edge. */
+  .bp-panel-identity {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  /* A long name truncates rather than wrapping to three lines beside a 40px
+     button cluster. */
   .bp-panel-name {
-    font-size: 15px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .bp-panel-meta {
+    gap: 6px;
+    margin-top: 3px;
+  }
+
+  /* 20px, the rung below the desktop 22 — it's still the page's own title. */
+  .bp-panel-name {
+    font-size: 20px;
   }
 
   .bp-student-actions {
@@ -3500,7 +3435,7 @@
   .bp-goal-circle {
     width: 34px;
     height: 34px;
-    font-size: 17px;
+    font-size: 18px;
   }
 
   /* The rail's 168px is most of a phone — swap it for a select + the pager */
@@ -3530,8 +3465,13 @@
   }
 
   /* Three medals across is too tight on a phone — names wrapped to three lines.
-     (`.bp-latest-grid` is a scrolling row at every width, so it's not here.) */
-  .bp-medal-grid {
+     (`.bp-latest-grid` is a scrolling row at every width, so it's not here.)
+
+     Scoped to `.bp-content` for the specificity: the base `.bp-medal-grid`
+     rule is declared *later* in this file, and a media query adds no weight of
+     its own — so at equal specificity the 3-column rule was winning and this
+     one never applied. */
+  .bp-content .bp-medal-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -3548,6 +3488,76 @@
   .bp-content .hero-action:has(.tabs) {
     margin-left: 0;
     width: 100%;
+  }
+
+  /* A plain hero button goes icon-only here, the way the header's Actions menu
+     does: its label is what pushed the action off the title's row, and the row
+     is where it belongs. Hide the label *wrapper*, or the emptied span still
+     draws the button's internal gap. */
+  .bp-content .hero-action .btn-label:has(.bp-btn-label) {
+    display: none;
+  }
+
+  .bp-content .hero-action .btn:has(.bp-btn-label) {
+    padding: 0 10px;
+  }
+
+  /* The stat row's icon chip is decoration — the label says what the figure is
+     — and at 375 it was the 28px that made "Total minutes read" wrap to three
+     lines. The label and the figure get it back. */
+  .bp-content .bp-statrow-icon {
+    display: none;
+  }
+
+  /* And the row stacks: the label takes a line of its own and the figure sits
+     under it, so every figure in the card starts at the same left edge instead
+     of landing wherever its label happened to end. Side by side at 375 they
+     were ragged, and a 22px number in the middle of the row left the longer
+     labels wrapping to three lines. */
+  /* Grid rather than a wrapped flex row: wrapping put the label on its own
+     line but left the trend chip and the chevron stuck on the second one,
+     beside the figure. Here the text stacks down the first column and the two
+     marks each span both rows, so they centre against the whole row however
+     tall it gets. The gap is on the marks themselves, not the tracks — a row
+     with no chip and no chevron would otherwise still pay for both. */
+  .bp-content .bp-statrow {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: 0;
+    row-gap: 4px;
+  }
+
+  .bp-content .bp-statrow-label {
+    grid-area: 1 / 1;
+  }
+
+  .bp-content .bp-statrow-value,
+  .bp-content .bp-statrow-empty,
+  .bp-content .bp-statrow-motivators {
+    grid-area: 2 / 1;
+  }
+
+  .bp-content .bp-statrow > .trend-tip,
+  .bp-content .bp-statrow > .trend-chip {
+    grid-area: 1 / 2 / span 2 / auto;
+    margin-left: 12px;
+  }
+
+  .bp-content .bp-statrow-go {
+    grid-area: 1 / 3 / span 2 / auto;
+    margin-left: 10px;
+  }
+
+  .bp-content .bp-statrow-value {
+    font-size: 18px;
+  }
+
+  /* The card's own heading keeps its line too — the range switcher beside it
+     doesn't shrink, so "At a glance" was being ellipsised to "A…". */
+  .bp-content .bp-statlist-head {
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
 
   .bp-content .hero-action .tabs {
@@ -3573,13 +3583,13 @@
   .bp-adm-class-avatar {
     width: 40px;
     height: 40px;
-    font-size: 13px;
+    font-size: 15px;
   }
   .bp-adm-class-title {
     font-size: 18px;
   }
   .bp-adm-class-meta {
-    font-size: 11.5px;
+    font-size: 13px;
   }
   .bp-adm-class-btns {
     width: 100%;
@@ -3588,7 +3598,7 @@
   .bp-adm-class-btns .bp-adm-btn-primary {
     flex: 1;
     padding: 0 10px;
-    font-size: 13px;
+    font-size: 15px;
     white-space: nowrap;
   }
 
@@ -3602,7 +3612,7 @@
     display: none;
   }
   .bp-adm-tab {
-    font-size: 13px;
+    font-size: 15px;
     white-space: nowrap;
     flex-shrink: 0;
   }
@@ -3618,24 +3628,6 @@
     grid-column: 1 / -1;
     width: 100%;
   }
-
-  /* Card / table: allow horizontal scroll so the daily columns aren't squished */
-  .bp-adm-card {
-    overflow-x: auto;
-  }
-  .bp-adm-table {
-    min-width: 640px;
-  }
-
-  /* Week navigation: keep label on one line, tighten padding */
-  .bp-adm-week-nav {
-    padding: 10px 12px;
-    gap: 8px;
-  }
-  .bp-adm-week-label {
-    font-size: 13px;
-    white-space: nowrap;
-  }
 }
 
 /* ─── Overview · Latest titles shelf ──────────────────────────────────────── */
@@ -3646,7 +3638,7 @@
   gap: 12px;
   margin: -16px -18px 14px;
   padding: 15px 18px 13px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .bp-latest-head .bp-section-heading {
@@ -3662,7 +3654,7 @@
   border: none;
   background: none;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-blue-700);
   cursor: pointer;
@@ -3706,10 +3698,10 @@
   color: inherit;
 }
 
-/* The cover carries the Lexile chip so the grid stays scannable */
+/* The cover carries the Lexile chip so the grid stays scannable — and, with
+   the captions gone, it's the whole tile. */
 .bp-latest-cover {
   position: relative;
-  margin-bottom: 7px;
 }
 
 /* Bigger than the list-row cover — this is the visual anchor of the card */
@@ -3721,39 +3713,22 @@
   transition: transform 0.14s ease;
 }
 
-.bp-latest-item:hover .bp-title-cover {
-  transform: translateY(-2px);
-}
-
+/* Centred along the cover's bottom edge rather than tucked into its corner:
+   in the corner at 12px it read as a watermark on the artwork, and a Lexile is
+   the one fact this shelf carries. Centred and a rung up it reads as a caption
+   the cover is wearing. */
 .bp-latest-lexile {
   position: absolute;
-  right: 5px;
-  bottom: 5px;
-  padding: 2px 6px;
+  left: 50%;
+  bottom: 7px;
+  transform: translateX(-50%);
+  padding: 3px 9px;
   border-radius: 999px;
-  background: rgba(17, 24, 39, 0.78);
+  background: rgba(17, 24, 39, 0.82);
   color: #fff;
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 800;
   letter-spacing: 0.01em;
-}
-
-.bp-latest-title {
-  font-size: 13px;
-  font-weight: 800;
-  color: #1a1a1a;
-  line-height: 1.3;
-}
-
-.bp-latest-item:hover .bp-latest-title {
-  text-decoration: underline;
-}
-
-.bp-latest-author {
-  font-size: 12px;
-  font-weight: 600;
-  color: #9ca3af;
-  line-height: 1.3;
 }
 
 /* ─── Chart fit ───────────────────────────────────────────────────────────── */
@@ -3787,7 +3762,7 @@
 }
 
 .bp-content .rc-card-title {
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: #424242;
   letter-spacing: 0;
@@ -3797,17 +3772,14 @@
    Prompt + the reader's own answer, one hairline-divided item per response.
    Same edge-to-edge bleed as the stat rows so the card reads as one list. */
 .bp-tb-item {
+  --row-pad-y: 12px;
   margin: 0 -18px;
-  padding: 12px 18px;
-  border-top: 1px solid #f0f0f0;
+  padding: var(--row-pad-y) 18px;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-card > .bp-latest-head + .bp-tb-item {
   border-top: 0;
-}
-
-.bp-card:not(.bp-card--flush) > .bp-tb-item:last-child {
-  margin-bottom: -16px;
 }
 
 .bp-tb-head {
@@ -3818,7 +3790,7 @@
 }
 
 .bp-tb-prompt {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.4;
@@ -3826,7 +3798,7 @@
 
 .bp-tb-date {
   flex-shrink: 0;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-400);
   white-space: nowrap;
@@ -3834,7 +3806,7 @@
 
 .bp-tb-answer {
   margin-top: 5px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--c-slate-600);
   line-height: 1.55;
@@ -3861,17 +3833,26 @@
 /* ─── Achievement & badge medallions ─────────────────────────────────────────
    Drawn stand-ins for the real illustrated art (so: inline shapes, not glyph
    icons). Both keep the recognisable disc silhouette and share one grid. */
+/* Three across, not `auto-fill`. Left to fill, the grid went to four (and more
+   in full screen), which shrank each card until the badge names wrapped to
+   three lines — a badge wall is meant to be scanned, and the name is the thing
+   you scan. The phone rule below drops it to two. */
 .bp-medal-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px 12px;
 }
 
 /* Each medal is its own clickable card, matching the real grid. */
+/* Grid rows stretch every card to the tallest in the row, so a one-line badge
+   name left its seal and date pinned to the top with dead space under them.
+   Centring the column puts the content in the middle of whatever height the row
+   settles on. */
 .bp-medal-card {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   text-align: center;
   gap: 3px;
   padding: 16px 12px 14px;
@@ -3890,19 +3871,39 @@
   box-shadow: 0 1px 6px rgb(15 23 42 / 8%);
 }
 
+/* The badge's name is the thing you're scanning for, so it sits on the
+   theme's body size rather than a step under it. */
 .bp-medal-name {
   margin-top: 6px;
-  font-size: 12.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.3;
 }
 
+/* What the badge *asks for* ("Read 100 books") — a requirement, so it stays
+   prose, just clearly subordinate to the name above it. */
 .bp-medal-sub {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--c-slate-400);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-gray-600);
   line-height: 1.3;
+}
+
+/* When it earned itself is a different kind of fact — a date, not a
+   requirement — so it takes the app's neutral tag instead of a third line of
+   prose. "Earned on" is implied by the badge being here at all. */
+.bp-medal-date {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 3px;
+  padding: 2px 9px;
+  border-radius: 12px;
+  background: var(--c-gray-150);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-gray-750);
+  line-height: 18px;
 }
 
 /* Achievement: a coloured disc with the year on a ribbon across the bottom */
@@ -4032,7 +4033,7 @@
   align-items: center;
   gap: 12px;
   padding: 12px 18px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-act-row:first-of-type {
@@ -4045,77 +4046,89 @@
 }
 
 .bp-act-name {
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-700);
 }
 
 .bp-act-count {
   margin-top: 1px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
 
-/* ── Challenge rows ──────────────────────────────────────────────────────── */
-.bp-chal-row {
+/* ── Challenge cell ──────────────────────────────────────────────────────────
+   A port of the app's own program-participation cell
+   (bs-product `admin/_admin.scss`): `.pp-name` bold at body-2 with 4px under
+   it, `.pp-dates` at body-2 with 16px, then `.program-log-totals` at caption
+   with 16px, then the "View Challenge Log" link. Everything about a challenge
+   lives in one cell, which is why the app's table is three columns wide and
+   nothing has to wrap. */
+.bp-chal-cell {
   display: flex;
+  flex-direction: column;
   align-items: flex-start;
-  gap: 14px;
-  padding: 14px 18px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.bp-chal-row:first-of-type {
-  border-top: 0;
-}
-
-.bp-chal-main {
-  flex: 1;
   min-width: 0;
 }
 
-.bp-chal-dates {
-  margin-top: 1px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--c-slate-600);
+/* `.program-log-totals` — `caption` (14px / 1.4), with the label in 700 over
+   `$dark-gray` and the figure alongside it. A list, not a column each. */
+.bp-chal-totals {
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--c-gray-750);
 }
 
-.bp-chal-meta {
+/* An upcoming challenge hasn't started, so it has no totals — and an empty
+   `ul` still draws its 10px top margin. */
+.bp-chal-totals:empty {
+  display: none;
+}
+
+.bp-chal-totals span {
+  font-weight: 700;
+  color: var(--c-text-real-dark);
+}
+
+/* The app renders this as an `<a>` in the cell, not a button in its own
+   column. */
+/* The cell can carry two links now — View Challenge Log and View Ticket
+   Rewards — so the top margin moves to the row that holds them and each link
+   keeps its own hit box. */
+.bp-chal-links {
   display: flex;
-  flex-direction: column;
-  gap: 1px;
-  margin-top: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--c-slate-400);
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 16px;
+  margin-top: 10px;
 }
 
-.bp-chal-row .bp-latest-link {
-  margin-top: 8px;
+.bp-chal-log {
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--c-accent);
+  cursor: pointer;
 }
 
-/* Enrolment is a state, so it reads as a filled tick rather than a checkbox */
-.bp-chal-enrolled {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 22px;
-  height: 22px;
-  margin-top: 2px;
-  border-radius: 5px;
-  background: #16a34a;
-  color: #fff;
+.bp-chal-log:hover {
+  text-decoration: underline;
 }
 
 /* ── Action form modals ──────────────────────────────────────────────────── */
+/* The app's `.modal__content` is padded 24px all round. */
 .bp-form-body {
   display: flex;
   flex-direction: column;
   gap: 14px;
-  padding: 16px 18px 18px;
+  padding: 24px;
   max-height: min(62vh, 520px);
   overflow-y: auto;
 }
@@ -4152,25 +4165,32 @@
   display: flex;
   justify-content: flex-end;
   gap: 8px;
-  padding: 14px 18px;
-  border-top: 1px solid var(--c-slate-200);
+  padding: 18px 24px;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 /* ── Activity list modal ─────────────────────────────────────────────────── */
+/* The app's `.modal__header`: 18px 24px over a $gray200 rule, contents
+   left-aligned (the close control floats outside the box now, so the header
+   no longer has to reserve room for it). */
 .bp-act-modal-head {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   gap: 10px;
-  padding: 12px 12px 12px 18px;
-  border-bottom: 1px solid var(--c-slate-200);
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
+/* `.modal__title`: 18px / 800 / $gray900 at 1.25 line-height — was 900,
+   which read heavier than anything in the app. */
 .bp-act-modal-title {
   flex: 1;
   min-width: 0;
-  font-size: 17px;
-  font-weight: 900;
-  color: var(--c-slate-800);
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-real-dark);
 }
 
 .bp-act-modal-cols {
@@ -4180,8 +4200,8 @@
   gap: 16px;
   padding: 9px 18px;
   background: #fafafa;
-  border-bottom: 1px solid #f0f0f0;
-  font-size: 12px;
+  border-bottom: 1px solid var(--c-gray-200);
+  font-size: 13px;
   font-weight: 800;
   color: var(--c-slate-500);
 }
@@ -4196,7 +4216,7 @@
   align-items: flex-start;
   gap: 18px;
   padding: 14px 18px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-act-modal-row:first-child {
@@ -4206,7 +4226,7 @@
 .bp-act-modal-text {
   flex: 1;
   min-width: 0;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--c-slate-600);
   line-height: 1.55;
@@ -4219,13 +4239,6 @@
   padding: 26px 24px 0;
 }
 
-.bp-medal-modal-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  color: var(--c-slate-500);
-}
-
 .bp-medal-modal-art {
   display: flex;
   justify-content: center;
@@ -4233,14 +4246,14 @@
 }
 
 .bp-medal-modal-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-slate-500);
 }
 
 .bp-medal-modal-headline {
   margin-top: 3px;
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 900;
   color: var(--c-slate-800);
   letter-spacing: -0.01em;
@@ -4248,7 +4261,7 @@
 
 .bp-medal-modal-note {
   margin-top: 12px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
   color: #15803d;
   line-height: 1.45;
@@ -4266,7 +4279,7 @@
   border: 0;
   border-radius: 8px;
   font: inherit;
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 800;
   color: #fff;
   cursor: pointer;
@@ -4298,24 +4311,14 @@
   border-radius: 8px;
   background: #fde9b4;
   color: #4b3a10;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 600;
   line-height: 1.45;
   text-align: left;
 }
 
 /* ─── Book reviews ───────────────────────────────────────────────────────────
-   One review per card: cover on the left, the reader's words beside it. */
-.bp-review-item {
-  display: flex;
-  gap: 14px;
-}
-
-.bp-review-main {
-  flex: 1;
-  min-width: 0;
-}
-
+   One review per card: title and date, then the reader's words full width. */
 .bp-review-head {
   display: flex;
   align-items: baseline;
@@ -4324,7 +4327,7 @@
 }
 
 .bp-review-title {
-  font-size: 13.5px;
+  font-size: 16px;
   font-weight: 800;
   color: var(--c-slate-700);
   line-height: 1.3;
@@ -4332,26 +4335,35 @@
 
 .bp-review-text {
   margin-top: 7px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--c-slate-600);
   line-height: 1.55;
 }
 
-/* Manage / edit / delete are a card footer: full card width above the bottom
-   edge, behind a hairline, and only colouring up on hover so they don't compete
-   with the reader's words. */
-.bp-review-actions {
+/* A record's actions as a card footer: full card width above the bottom edge,
+   behind a hairline, and only colouring up on hover so they don't compete with
+   the record itself. Shared by every card that carries row actions — a review,
+   a challenge — so a card's controls are always in the same place. */
+/* `.row-actions` (components/RowAction) is `display: inline-flex` and is
+   declared later, so at equal specificity it won and the footer collapsed to
+   its content at the card's left edge — `justify-content` had nothing to
+   distribute. Scoped to both classes so this rule takes it. */
+.row-actions.bp-card-actions {
   display: flex;
+  /* No `width: 100%` — that resolves against the card's *content* box and so
+     cancels the negative margins that bleed the footer out to the card's
+     edges. A block-level flex box already fills its containing block. */
+  align-items: center;
   justify-content: flex-end;
   gap: 2px;
   margin: 14px -18px -16px;
   padding: 8px 12px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--c-gray-200);
   color: var(--c-slate-400);
 }
 
-.bp-review-actions .icnb:hover {
+.row-actions.bp-card-actions .icnb:hover {
   color: var(--c-slate-700);
 }
 
@@ -4359,6 +4371,45 @@
 .bp-talk-noflag {
   color: var(--c-slate-300);
   font-weight: 700;
+}
+
+/* `.flagged-entry__none`: the app's own empty chip — $gray150 on $gray350,
+   13px / 800, radius 12. It reads as "we looked and there was nothing", which
+   a bare dash doesn't. */
+.bp-talk-na {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 62px;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 12px;
+  background: var(--c-gray-150);
+  color: var(--c-gray-350);
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 18px;
+}
+
+/* A title that opens the talk. Same blue as the roster's student links, so
+   "this word opens something" reads the same way across the prototype. */
+.bp-talk-title {
+  font-family: inherit;
+  /* The cell's own size — a link in a table row reads as row copy, and a rung
+     under it made this column look shrunken beside every other table. */
+  font-size: inherit;
+  font-weight: 700;
+  color: var(--c-fig-blue-600);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bp-talk-title:hover {
+  color: #1e40af;
+  text-decoration: underline;
 }
 
 /* ─── Section hero ───────────────────────────────────────────────────────────
@@ -4379,7 +4430,7 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-700);
   white-space: nowrap;
@@ -4393,7 +4444,12 @@
   color: #993c1d;
 }
 
-.bp-statlist {
+/* The stat list's head and rows carry their own horizontal insets, so the card
+   itself contributes only the top/bottom rhythm — no side padding, or the rows
+   end up inset twice. Written with both classes so it beats `.pcard`, whose
+   stylesheet loads after this one. */
+.bp-statlist,
+.pcard.bp-statlist {
   flex-shrink: 0;
   padding: 14px 0 4px;
 }
@@ -4406,12 +4462,12 @@
   gap: 12px;
   padding: 0 16px 11px;
   margin-bottom: 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 /* Says what the delta chips are measured against, once. */
 .bp-statlist-note {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-text-subtle);
   white-space: nowrap;
@@ -4421,68 +4477,72 @@
    Standing between cards on the page background, so it reads as a page control
    rather than part of the card above it. `flex-shrink: 0` because `.bp-content`
    is an overflowing flex column — without it the button collapses to nothing. */
+/* A ground of its own: at 13px on nothing this read as a stray link between
+   two cards rather than the control that opens the next one. The accent wash is
+   the same fill the rail and the nav use for "this is the live one". */
 .bp-showmore {
   flex-shrink: 0;
   align-self: center;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 7px 14px;
-  background: none;
+  padding: 9px 18px;
+  /* `$pastelDenim` under `$accent-color` text — the app's own pairing, the one
+     it uses for a selected multiselect row and for the denim tag. It carries
+     the control on both grounds this button stands on: the profile's grey page
+     and a card's white. `lighten($accent, 45%)`, which this had before, is
+     within a few percent of that grey and disappeared into it. */
+  background: var(--c-accent-pastel);
   border: 0;
   border-radius: 999px;
   font: inherit;
-  font-size: 12.5px;
+  font-size: 15px;
   font-weight: 800;
-  color: var(--bp-profile, var(--c-blue-700));
+  color: var(--c-accent);
   cursor: pointer;
 }
 
 .bp-showmore:hover {
-  background: color-mix(in srgb, var(--bp-profile, var(--c-blue-700)) 9%, #fff);
+  background: color-mix(in srgb, var(--c-accent) 22%, #fff);
 }
 
-/* Inside a card it takes the card's full width and sits behind a hairline, so
-   it reads as the card's own footer. */
+/* Inside a card it's the very same pill, just placed rather than bled: a
+   `max-content` box centred with auto margins, because `.bp-statlist` is a
+   plain block and there's no flex line to `align-self` on.
+
+   It used to be a full-bleed footer behind a hairline. One disclosure control
+   drawn two ways is one too many — a reader shouldn't have to learn that the
+   thing at the bottom of a card and the thing between two cards do the same
+   job. `align-self: center` from the base rule is harmless here and keeps the
+   pill working if a flex parent ever wraps it. */
 .bp-showmore--incard {
-  /* `width: auto` on a <button> is intrinsic, not fill — the same trap the
-     bled stat rows hit — so the width is spelled out: the card's content box
-     plus the 18px it bleeds either side. */
   display: flex;
-  align-self: stretch;
-  justify-content: center;
-  width: calc(100% + 36px);
-  margin: 14px -18px -16px;
-  padding: 11px 18px;
-  border-top: 1px solid var(--c-slate-100);
-  border-radius: 0;
+  width: max-content;
+  margin: 12px auto 8px;
 }
 
-/* Sits in the row rhythm — same divider, same padding — so the list reads as
-   continuing rather than as a button bolted to the bottom of the card. */
-.bp-statlist-more {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  width: 100%;
-  padding: 10px 16px;
-  background: none;
-  border: 0;
-  border-top: 1px solid var(--c-slate-100);
-  font: inherit;
-  font-size: 12.5px;
-  font-weight: 800;
-  color: var(--bp-profile, var(--c-blue-700));
-  cursor: pointer;
+/* The list closes with a line, like every row in it opens with one. It goes on
+   the last row rather than on the pill: `.bp-showmore` *is* the pill — tinted
+   and fully rounded — so a border on it would draw across its own top edge
+   instead of across the card. The rows are bled out to the card's edges, so
+   this matches the other dividers' width exactly. */
+.bp-statrow:has(+ .bp-showmore--incard) {
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
-.bp-statlist-more:hover {
-  background: var(--c-slate-50);
-}
-
+/* One row at every width: the switch keeps its natural width and the heading
+   takes what's left, ellipsising rather than wrapping or shoving the pills
+   onto a line of their own. */
 .bp-statlist-head .bp-section-heading {
   margin-bottom: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bp-statlist-head .tabs {
+  flex-shrink: 0;
 }
 
 .bp-statlist-head + .bp-statrow {
@@ -4490,14 +4550,15 @@
 }
 
 .bp-statrow {
+  --row-pad-y: 11px;
   display: flex;
   align-items: center;
   gap: 12px;
   width: 100%;
-  padding: 11px 16px;
+  padding: var(--row-pad-y) 16px;
   background: none;
   border: 0;
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-200);
   font: inherit;
   text-align: left;
   cursor: pointer;
@@ -4527,11 +4588,29 @@
   width: auto;
   margin-left: -18px;
   margin-right: -18px;
+  /* Bled to the card's edges, a row owes the card's own 18px back — its stock
+     16px sat the icon 2px inside the title above it. This is the whole list,
+     not just the first row: patching the first one alone (which is how it was)
+     stepped the icons and the figures in and out down the card. */
+  padding-left: 18px;
+  padding-right: 18px;
 }
 
-/* The last row sits on the card's bottom edge — no trailing card padding. */
-.bp-card:not(.bp-card--flush):not(.bp-statlist) > .bp-statrow--static:last-child {
-  margin-bottom: -16px;
+/* A bled row list ends on the card's own padding — not on the sum of the
+   card's and the row's, which is what kept going wrong here. The last row
+   hands its bottom padding back, so under its content there is exactly the
+   16px the card gives everything else, while the row itself stays symmetric
+   (11px above and below its content, like every row above it). Each family
+   that bleeds declares what it has to give in `--row-pad-y`.
+
+   Bleeding to the card's bottom edge instead — the row list reaching the edge
+   like a table — left the content 11px off a rounded corner and read as cut
+   off; leaving both paddings to stack read as a hole under the last row. The
+   side bleed stays either way: that's what makes the dividers span the full
+   width. */
+.bp-card:not(.bp-card--flush):not(.bp-statlist) > .bp-statrow--static:last-child,
+.bp-card:not(.bp-card--flush) > .bp-tb-item:last-child {
+  margin-bottom: calc(-1 * var(--row-pad-y));
 }
 
 /* The title rule is the first row's divider, so the row drops its own and the
@@ -4569,27 +4648,27 @@
 .bp-statrow-label {
   flex: 1;
   min-width: 0;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-700);
 }
 
 .bp-statrow-value {
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 22px;
+  font-weight: 800;
   color: var(--c-slate-800);
   line-height: 1.1;
   white-space: nowrap;
 }
 
 .bp-statrow-unit {
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-400);
 }
 
 .bp-statrow-empty {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--c-slate-400);
 }
@@ -4599,14 +4678,18 @@
   gap: 12px;
 }
 
+/* The row is a link; the chevron was $gray300-faint and barely read as an
+   affordance. Solid gray at rest, accent-tinted and nudged on hover. */
 .bp-statrow-go {
   flex-shrink: 0;
-  color: var(--c-slate-300);
-  transition: transform 0.12s ease;
+  color: var(--c-gray-600);
+  transition:
+    transform 0.12s ease,
+    color 0.12s ease;
 }
 
 .bp-statrow:hover .bp-statrow-go {
-  color: var(--c-slate-500);
+  color: var(--c-accent);
   transform: translateX(2px);
 }
 
@@ -4637,34 +4720,49 @@
    fixed 64px slot, which handed the widest one's width ("↑19 days") to every
    chip and left "↓2" carrying 30px of empty capsule. The arrow and the colour
    are the whole message; the capsule was just weight. */
-.bp-trend {
-  font-size: 12.5px;
-  font-weight: 700;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.bp-trend--good {
-  color: var(--c-success);
-}
-
-.bp-trend--bad {
-  color: var(--c-danger);
-}
-
-.bp-statrow > .bp-trend {
-  flex-shrink: 0;
-}
+/* A status lozenge rather than bare coloured text, so the delta reads as its
+   own object next to the value. Shaped like the app's `.tag` (22px tall,
+   12px radius, 14px/800) and coloured from the product's pastel/dark status
+   pairs in variables.scss — $pastelGreen/$darkGreen and $pastelRed/$darkRed,
+   the same pairing the infobox variants use. */
 
 /* A neutral caption in the same slot as a delta — the title behind a figure,
    the month a total counts from. Muted text, for the same reason the deltas
    are text. */
 .bp-statrow-note {
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
   color: var(--c-text-muted);
   flex-shrink: 0;
+}
+
+/* ─── The figures read as a column ────────────────────────────────────────────
+   Whatever annotates a figure — a trend chip, a caption like "since Jan" — sits
+   in a lane of its own beside it, and a row with nothing to annotate reserves
+   that same lane. Otherwise the annotated rows push their figure left and the
+   bare ones run on to the card's edge, which is how "890L" ended up hanging
+   further right than the "870L" above it.
+
+   The lane only exists in a card that has an annotation somewhere: everywhere
+   else the figures still end on the card's own padding, unchanged. */
+.bp-card:has(.bp-statrow > .trend-tip) {
+  --stat-trail: 26px; /* a chip */
+}
+
+/* A caption is wider than a chip, so one caption widens the lane for every row
+   in that card — the alternative is a column that steps in and out. */
+.bp-card:has(.bp-statrow > .bp-statrow-note) {
+  --stat-trail: 58px;
+}
+
+.bp-statrow > .trend-tip,
+.bp-statrow > .bp-statrow-note {
+  flex: 0 0 var(--stat-trail, auto);
+}
+
+.bp-statrow:not(:has(> .trend-tip, > .bp-statrow-note)) .bp-statrow-value {
+  margin-right: calc(var(--stat-trail, 0px) + 12px);
 }
 
 /* ─── Header status flags ─────────────────────────────────────────────────────
@@ -4688,7 +4786,7 @@
   padding: 2px 8px 2px 6px;
   border-radius: 999px;
   border: 1px solid;
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 800;
   letter-spacing: 0.01em;
   white-space: nowrap;
@@ -4719,6 +4817,14 @@
   color: #b91c1c;
 }
 
+/* Grey, deliberately: an offline reader is a fact about how the log was
+   entered, not a standing worth colouring. */
+.bp-status--neutral {
+  border-color: var(--c-gray-250);
+  background: var(--c-gray-100);
+  color: var(--c-gray-750);
+}
+
 .bp-status--partner {
   padding-left: 9px;
 }
@@ -4727,11 +4833,18 @@
    Where the session came from, on the author line. A separator rather than a
    chip: the row already carries a coloured spine and a flag column, and a
    second badge on every imported entry would compete with them. */
+/* The logged amount and the Lexile sit side by side — `space-between` would
+   fling them to opposite edges of the card, which reads as two unrelated
+   figures rather than one measurement and its reference. */
 .bp-rl-entry-foot {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+}
+
+.bp-rl-entry-foot .bp-rl-entry-lexile {
+  margin-left: 0;
 }
 
 /* The partner mark is a real logo, so it keeps its brand plate — but scaled
@@ -4754,14 +4867,37 @@
   justify-content: flex-end;
 }
 
-/* The Lexile the table always had, now on the calendar card too. */
-.bp-rl-entry-lexile {
+/* Date and Unit are reference columns, not the row's subject — the title is.
+   Tabular figures so the dates line up as a column of numbers. */
+.bp-rl-tbl-dim {
+  font-size: 13px;
+  color: var(--c-slate-500);
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  margin-left: 7px;
-  padding: 1px 6px;
+}
+
+/* The unit chip reads as the row's own figure rather than a reference value,
+   so it takes the row's accent instead of the Lexile's neutral grey. */
+.bp-rl-entry-unit {
+  margin-left: 0;
+  background: color-mix(in srgb, var(--c-blue-700) 9%, #fff);
+  color: var(--c-blue-700);
+}
+
+/* The Lexile the table always had, now on the calendar card too. Every pill on
+   this page runs the app's own tag box — 13px / 800 on 3px 10px — so the
+   minutes, the Lexile, the streak and the completion marker are one set. */
+.bp-rl-entry-lexile {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-left: 8px;
+  padding: 3px 10px;
   border-radius: 999px;
-  background: rgb(15 23 42 / 6%);
-  font-size: 11px;
+  /* Neutral, so it reads as a reference rather than part of the card's state —
+     but at 6% over a tinted card it was a ghost. */
+  background: rgb(15 23 42 / 12%);
+  font-size: 13px;
   font-weight: 800;
   color: var(--c-slate-500);
 }
@@ -4770,11 +4906,22 @@
    the month reads as a calendar — a blank gap made the grid look broken. Kept
    short: an empty day shouldn't cost as much height as a real one. */
 .bp-rl-empty-day {
+  display: flex;
+  align-items: center;
+  /* `stretch` so the block is as tall as the date beside it — the row is
+     `align-items: flex-start` (a tall entry list mustn't drag the date down
+     with it), which left the 43px date column hanging 3px below a 40px
+     block. */
+  align-self: stretch;
   flex: 1;
   min-width: 0;
-  min-height: 34px;
+  min-height: 40px;
+  padding: 0 14px;
   border-radius: 8px;
   background: var(--c-slate-100);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-gray-500);
 }
 
 /* The common daily goals, so the usual case is one click rather than typing a
@@ -4792,7 +4939,7 @@
   border: 1px solid var(--c-slate-300);
   background: #fff;
   font-family: inherit;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-600);
   cursor: pointer;
@@ -4811,23 +4958,6 @@
   border-color: var(--c-blue-700);
   background: var(--c-blue-700);
   color: #fff;
-}
-
-/* Date and Unit are reference columns, not the row's subject — the title is.
-   Tabular figures so the dates line up as a column of numbers. */
-.bp-rl-tbl-dim {
-  font-size: 12.5px;
-  color: var(--c-slate-500);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-}
-
-/* The unit chip reads as the row's own figure rather than a reference value,
-   so it takes the row's accent instead of the Lexile's neutral grey. */
-.bp-rl-entry-unit {
-  margin-left: 0;
-  background: color-mix(in srgb, var(--c-blue-700) 9%, #fff);
-  color: var(--c-blue-700);
 }
 
 /* ─── Challenge log sheet ─────────────────────────────────────────────────────
@@ -4864,7 +4994,7 @@
 }
 
 .bp-clog-bar-title {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-500);
   letter-spacing: 0.02em;
@@ -4894,7 +5024,7 @@
 }
 
 .bp-clog-dates {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-slate-500);
 }
@@ -4903,7 +5033,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-slate-500);
   flex-shrink: 0;
@@ -4927,7 +5057,7 @@
 }
 
 .bp-clog-field-label {
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4935,7 +5065,7 @@
 }
 
 .bp-clog-field-value {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-slate-800);
 }
@@ -4964,7 +5094,7 @@
 }
 
 .bp-clog-total-label {
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--c-slate-500);
 }
@@ -4977,7 +5107,7 @@
 .bp-clog-th {
   padding: 8px 10px;
   border-bottom: 1.5px solid var(--c-slate-300);
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -4997,8 +5127,8 @@
 
 .bp-clog-td {
   padding: 9px 10px;
-  border-bottom: 1px solid var(--c-slate-100);
-  font-size: 13px;
+  border-bottom: 1px solid var(--c-gray-200);
+  font-size: 15px;
   color: var(--c-slate-700);
   vertical-align: top;
 }
@@ -5016,7 +5146,7 @@
 
 .bp-clog-by {
   display: block;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--c-slate-400);
 }
 
@@ -5096,55 +5226,735 @@
      of width, so the `flex: 1` item was squeezed to a few dozen pixels and
      its text spilled out over the figure beside it. The head stacks; the
      stat rows go to a grid that gives the label its own line. */
-  .bp-statlist-head {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-  }
+  /* The head stays one row at every width — see `.bp-statlist-head` above,
+     where the heading gives up its width to the range switch rather than
+     pushing it onto a second line. */
 
-  /* The range switch hugs its labels and sits under the heading's left edge —
-     stretched across the card it read as a full-width bar with the two pills
-     stranded at the left end. */
-  .bp-statlist-head .tabs {
-    align-self: flex-start;
-  }
-
+  /* The figure stays on the right at every width. It used to drop to a second
+     line here — a grid with the label spanning the top row — but a stat row
+     reads as label-then-number across, and moving the number under the label
+     made a list of them look like a list of headings with captions. The label
+     wraps instead; it's the part that can afford to. */
   .bp-statrow {
-    display: grid;
-    /* icon | figure | delta | slack | chevron. The figure and delta tracks hug
-       their content and the slack track eats the rest, so line two starts at
-       the label's left edge instead of being pushed to the right. */
-    grid-template-columns: auto auto auto minmax(0, 1fr) auto;
     column-gap: 10px;
-    row-gap: 2px;
-    align-items: center;
   }
 
-  .bp-statrow-icon {
-    grid-area: 1 / 1 / 3 / 2;
-  }
-
-  /* The label spans every track but the chevron's, so it wraps against the
-     card's edge rather than against the figure below it. */
   .bp-statrow-label {
-    grid-area: 1 / 2 / 2 / 5;
+    white-space: normal;
+  }
+}
+
+.bp-heatmap-nav-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ─── Latest titles pager ────────────────────────────────────────────────────
+   The arrows float over the cover rail they scroll rather than sitting in the
+   card header. `--latest-arrow-inset` keeps them clear of the card edge. */
+.bp-latest-body {
+  position: relative;
+}
+
+/* These classes sit on the Tooltip wrapper, not the button: the wrapper is
+   `position: relative`, so anchoring the button itself would position it
+   against the wrapper rather than the cover rail. Vertically centred on the
+   rail via a 50% offset less half the 36px button. */
+/* Centred on the cover artwork, not the whole tile: the tile also carries the
+   title and author, so a plain 50% left the arrows sitting ~37px low, over the
+   text. `--shelf-cover-h` is published by TitleShelf on each measure (the
+   covers are fluid, so CSS has no fixed height to work from); the fallback
+   matches a 120px column. */
+.bp-latest-body > .bp-latest-arrow {
+  position: absolute;
+  top: calc(var(--shelf-cover-h, 180px) / 2);
+  margin-top: -18px;
+  z-index: 2;
+}
+
+/* White with a lift, so the control reads against whatever cover it lands on
+   rather than the grey the rest of the nav buttons use. */
+.bp-latest-body > .bp-latest-arrow,
+.bp-latest-body > .bp-latest-arrow:hover:not(:disabled) {
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(15, 23, 42, 0.18);
+}
+
+.bp-latest-body > .bp-latest-arrow--prev {
+  left: 6px;
+}
+
+.bp-latest-body > .bp-latest-arrow--next {
+  right: 6px;
+}
+
+/* Nothing to page to — leave the rail unobstructed rather than showing a dead
+   control over the covers. */
+.bp-latest-body > .bp-latest-arrow:disabled {
+  display: none;
+}
+
+/* The arrows sit *over* the artwork, so at rest they're covering the thing you
+   came to look at. They fade in on hover — the shelf itself is the affordance,
+   the same way a streaming rail works — and on keyboard focus, or they'd be
+   unreachable without a mouse. `visibility` rides along so a hidden arrow can't
+   be clicked by accident. */
+.bp-latest-body > .bp-latest-arrow {
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.14s ease,
+    visibility 0.14s ease;
+}
+
+.bp-latest-body:hover > .bp-latest-arrow,
+.bp-latest-body:focus-within > .bp-latest-arrow {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* An overlay scrollbar paints *over* the right gutter, so the page reads as
+   having less padding on the right than the left. Phones hide their scrollbars
+   until you scroll; matching that keeps the gutters even. */
+@media (max-width: 699px) {
+  .bp-adm-main-body {
+    scrollbar-width: none;
   }
 
-  /* Figure and delta drop to a second line, left-aligned under the label. A
-     row with neither delta nor chevron collapses those tracks to nothing. */
-  .bp-statrow-value,
-  .bp-statrow-empty,
-  .bp-statrow-motivators {
-    grid-area: 2 / 2 / 3 / 3;
-    justify-self: start;
+  .bp-adm-main-body::-webkit-scrollbar {
+    display: none;
+  }
+}
+/* A stat row sitting directly under a card's header bar.
+   `.bp-card:has(> .bp-statrow--static) > .bp-section-heading` already zeroes
+   the heading's bottom margin, but ProfileCard.css loads *after* this file and
+   its own `.pcard-title:first-child` margin wins — so the 14px comes back and
+   stacks on the row's padding. Cancelling it here beats the order. The row's
+   own inset is the list's, set with the bleed above. */
+.pcard > .pcard-title:first-child + .bp-statrow {
+  margin-top: -14px;
+}
+
+/* ── Activity types ─────────────────────────────────────────────────────────
+   An activity is one of three kinds (bs-product `activities.activity_type`):
+   a plain checkbox, a secret code the reader enters, or a text box they write
+   into. The checkbox is the only control staff get on any of them — a code and
+   an answer are both there to be read. */
+.bp-act-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+/* Empty when the type is the plain default and there are no points — an empty
+   flex row would still draw the column's gap above the text. */
+.bp-act-detail-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.bp-act-detail-head:empty {
+  display: none;
+}
+
+/* The type only earns a tag when it isn't the plain default — labelling every
+   row "Activity" is noise. */
+.bp-act-type {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 2px 8px;
+  border-radius: 12px;
+  background: var(--c-gray-150);
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-gray-750);
+}
+
+/* `point_value` — only repeatable badges (points challenges) tend to set it. */
+.bp-act-points {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-accent);
+}
+
+.bp-act-codes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* The admin's own code, shown as something to read out rather than type in. */
+.bp-act-code {
+  padding: 3px 9px;
+  border-radius: 8px;
+  border: 1px dashed var(--c-gray-350);
+  background: var(--c-gray-0);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--c-gray-800);
+}
+
+/* The reader's words, quoted — a rule down the left says "this is theirs, not
+   the site's copy", and it's read-only because the product won't let staff
+   write one. */
+.bp-act-answer {
+  margin: 0;
+  padding: 2px 0 2px 12px;
+  border-left: 3px solid var(--c-gray-250);
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--c-text-real);
+}
+
+.bp-act-answer--empty {
+  color: var(--c-gray-600);
+  font-style: italic;
+}
+
+/* A repeatable badge can never be earned, so there's no box to tick — the
+   count of completions is the whole record. */
+.bp-act-reps {
+  flex-shrink: 0;
+  min-width: 34px;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  color: var(--c-gray-800);
+}
+
+.bp-act-noearn {
+  flex-shrink: 0;
+  width: 20px;
+  text-align: center;
+  font-weight: 800;
+  color: var(--c-gray-350);
+}
+
+/* The badge name now shares its line with a Repeatable pill. */
+.bp-act-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Each modal row is now a block of its own rather than one line, so it needs
+   room and a top-aligned checkbox. */
+.bp-act-modal-row {
+  align-items: flex-start;
+  gap: 14px;
+}
+
+/* A challenge heading over its badges — activity badges belong to a challenge,
+   so a flat run of them puts two challenges' badges shoulder to shoulder with
+   nothing to tell them apart. Sits on the row rhythm rather than looking like
+   a second card header. */
+.bp-act-group-head {
+  padding: 12px 18px 8px;
+  border-top: 1px solid var(--c-gray-200);
+  background: var(--c-gray-0);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-gray-750);
+}
+
+/* The first group opens straight under the card's own header, so it doesn't
+   need a rule of its own on top of it. */
+.bp-act-group:first-of-type .bp-act-group-head {
+  border-top: 0;
+}
+
+/* Earned — a state *and* the control for taking it back, since staff can
+   un-earn a badge the same way they un-earn a challenge badge. Reads as a
+   settled fact until you hover it, then it offers the undo. */
+.bp-act-earned {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 8px;
+  background: #cbfce5;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: #017841;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+
+.bp-act-earned:hover {
+  background: #fdd2ce;
+  color: #df3f30;
+}
+
+/* The same pairing one level down, on a single activity. */
+.bp-act-done {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  height: 32px;
+  padding: 0 10px;
+  border: 0;
+  border-radius: 8px;
+  background: #cbfce5;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: #017841;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+
+.bp-act-done:hover {
+  background: #fdd2ce;
+  color: #df3f30;
+}
+
+/* Both row controls are icon buttons now, so the earned chip matches their
+   36px square rather than being a wide label beside them. */
+.bp-act-earned {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  justify-content: center;
+}
+
+/* ── Rewards & drawing wins ─────────────────────────────────────────────────
+   The row's icon action is the shared `RowAction` now (see
+   components/RowAction) — it was a local `.bp-row-action` here, a 28px
+   `.bp-rl-dots` in the reading log and a ghost `IconButton` in Book Talks,
+   which is three targets and three hovers down one page. */
+
+/* "5 Tickets Entered", the app's phrasing, with its ticket mark leading. */
+.bp-ticket-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--c-gray-800);
+  font-variant-numeric: tabular-nums;
+}
+
+/* An unset value that's genuinely unset — no max, no placement — rather than
+   a zero. */
+.bp-none {
+  color: var(--c-gray-350);
+  font-weight: 700;
+}
+
+/* ── Drawing overview modal ─────────────────────────────────────────────────
+   Same chrome as the activity modal — `.bp-act-modal-head` carries the title
+   and the rule under it — so the body is just the facts, the description and
+   the one button that changes anything. */
+.bp-draw-modal {
+  min-width: 0;
+}
+
+.bp-draw-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 24px 24px;
+}
+
+.bp-draw-meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.bp-draw-date {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-gray-750);
+}
+
+.bp-draw-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 500;
+  color: var(--c-slate-600);
+}
+
+/* The stepper is the whole point of the second step, so it gets the middle of
+   the panel to itself — but as a cluster, the way the app's `.tickets-stepper`
+   sits: two buttons either side of one big number, not a field stretched
+   across the panel. */
+.bp-draw-stepper {
+  display: flex;
+  justify-content: center;
+  align-self: stretch;
+  padding: 4px 0;
+}
+
+.bp-draw-stepper .ninp {
+  width: 200px;
+  height: 56px;
+}
+
+.bp-draw-stepper .ninp-inp {
+  font-size: 24px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.bp-draw-actions {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  gap: 8px;
+}
+
+/* ── A two-line table cell ──────────────────────────────────────────────────
+   A name over the thing that qualifies it — a challenge over its dates. Same
+   pair everywhere it's needed, so one row of a claim table reads like the
+   next. */
+.bp-tbl-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--c-text-real);
+}
+
+/* A reference value folded under the row's subject — the challenge a reward
+   came from, the way the reading log puts an author under a title. */
+.bp-tbl-sub {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--c-slate-400);
+}
+
+.bp-tbl-sub {
+  display: block;
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-gray-750);
+}
+
+/* The app sizes this row button to its own text — `width: max-content` in
+   `.view-activity-button-container` — and lets it go full-width only on a
+/* No phone override for `.bp-act-row`: every trailing control on it is the
+   32px row action or the toggle now, not the wide `View Activity` button this
+   used to break onto a second line for. The base flex row fits art + name +
+   toggle + action inside a 289px panel. */
+
+/* ── Reading log, stacked ────────────────────────────────────────────────────
+   The 80px day column is a luxury a phone doesn't have: it left the entry card
+   about 190px, so every title broke over two or three lines and the icon
+   cluster crowded it. The day becomes a heading above its entries instead —
+   "16 Tuesday 1🔥" on one line — and the cards take the full width. */
+@media (max-width: 699px) {
+  .bp-rl-day {
+    display: block;
+    padding: 10px 0;
   }
 
-  .bp-statrow > .bp-trend,
-  .bp-statrow > .bp-statrow-note {
-    grid-area: 2 / 3 / 3 / 4;
+  /* `baseline`, not `center`: the date and the day name are two bits of text
+     side by side, and the eye checks their baselines, not their boxes — the
+     number's own `line-height: 1.1` crops its box tighter than the name's, so
+     box-centring them looked a pixel off. The pill has no baseline worth
+     sharing, so it opts out and centres. */
+  .bp-rl-day-col {
+    width: auto;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    padding: 0 0 8px;
   }
 
-  .bp-statrow-go {
-    grid-area: 1 / 5 / 3 / 6;
+  .bp-rl-day-col .bp-rl-flame {
+    align-self: center;
   }
+
+  .bp-rl-day-num {
+    font-size: 16px;
+  }
+
+  /* The streak goes to the far end of the day heading. Left of it, next to the
+     date, it read as part of the date; out on the right it reads as the day's
+     own tally, and it lines up down the month. */
+  .bp-rl-flame {
+    margin-top: 0;
+    margin-left: auto;
+  }
+
+  /* The title and its icon cluster stop competing for one line. */
+  .bp-rl-entry-top {
+    flex-wrap: wrap;
+  }
+
+  /* `auto` on the left pushes the cluster to the far side when the title
+     wraps; the negative block margins are the same ones the base rule uses, so
+     the cluster still doesn't set the row's height. */
+  .bp-rl-entry-menu {
+    margin: -4px -4px -3px auto;
+  }
+}
+
+/* Benny, marking a session that carries a book talk. Sized to the same 20px
+   the flag drawings beside him use, so the cluster stays on one grid. */
+.bp-rl-benny {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+/* The balance under `Ticket Rewards for {challenge}` — what the reader still
+   has to spend across that challenge's drawings. On the same neutral fill as a
+   table header and the segmented control, so it reads as part of that chrome
+   rather than as a third colour on the page. */
+.bp-draw-avail {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  /* `.bp-content` is a flex column with its own 14px gap, so the only margin
+     this needs is the negative one pulling it up under the Hero — a
+     `margin-bottom` here just doubled the gap to 28px. */
+  margin: -4px 0 0;
+  padding: 9px 14px;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 10px;
+  background: var(--c-gray-150);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--c-gray-800);
+}
+
+.bp-draw-avail strong {
+  font-weight: 900;
+}
+
+/* ── Points summary ──────────────────────────────────────────────────────── */
+/* Plain in the rows; the Total below overrides it. */
+.bp-pts-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--c-text-real);
+}
+
+/* The total under the table's last row — inside the card, past the table's
+   own edges, and on the header's grey so it reads as a footer rather than
+   another point type. */
+.bp-pts-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-top: 1px solid var(--c-gray-200);
+  background: var(--c-gray-150);
+  /* The table's own 15px, so the total sits on the same line as the rows
+     it sums. Weight is the only thing separating them — the rows are plain
+     and this is the one figure that isn't. */
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--c-gray-800);
+}
+
+.bp-pts-total .bp-pts-value {
+  font-weight: 900;
+  color: inherit;
+}
+
+/* ── Recommended books ───────────────────────────────────────────────────── */
+.bp-reco-cell {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* A drawing placement — the app's own `.tag` box (13px / 800 on 3px 10px),
+   the same one every pill on the reading log runs. */
+.bp-place {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--c-accent) 14%, #fff);
+  color: var(--c-accent);
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* ── Challenge banner ────────────────────────────────────────────────────────
+   A `Program`'s `header_image`, bled out past the card's padding so it meets
+   the card's edges and rounds with them. Fixed height with `cover` so a wide
+   banner crops rather than setting the card's proportions. */
+.bp-chal-banner {
+  display: block;
+  width: calc(100% + 36px);
+  /* Every shipped Beanstack banner is 2.62:1 (920×351, or 1840×702 at 2×) and
+     composed with the subject at the edges and open space in the middle for
+     the title — so a short crop lands on fragments. Held at its own ratio and
+     shown whole instead. */
+  aspect-ratio: 920 / 351;
+  margin: -16px -18px 14px;
+  object-fit: cover;
+  border-radius: 12px 12px 0 0;
+}
+
+/* ── Challenge grid ──────────────────────────────────────────────────────────
+   One column in the side panel, two once there's room for them. A challenge
+   card carries a 2.62:1 banner, so at full width a single column made each one
+   ~400px tall and three challenges ran well past a screen.
+
+   The container query goes on the grid itself — it spans the content width, so
+   that's the width the cards actually share. It sits after the base rule
+   because a container query carries no specificity of its own. */
+.bp-chal-cols {
+  container-type: inline-size;
+}
+
+.bp-chal-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 14px;
+  align-items: start;
+}
+
+/* 680px is two ~330px cards plus the gap — narrower than that and the banner
+   gets too small to read the challenge name off it. */
+@container (min-width: 680px) {
+  .bp-chal-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* A goal-met day shows a star rather than its date — see `ReadingHeatmap`.
+   Every cell paints its fill through a `::before` that covers the whole box,
+   so the star needs the same lift `.bp-heatmap-daynum` has or the fill hides
+   it. White, because it sits on the saturated goal colour. */
+.bp-heatmap-star {
+  position: relative;
+  z-index: 1;
+  /* A five-point star's mass hangs below its box centre — one point up, two
+     legs down — so a geometrically centred one reads low against the day
+     numbers beside it. Nudged up by its own optical offset. */
+  transform: translateY(-1px);
+  color: #fff;
+}
+
+/* ── Classes ─────────────────────────────────────────────────────────────────
+   The classroom name is a link to that section's page, so it looks like one —
+   the same blue-on-white a talk title uses in the Book Talks table. */
+.bp-class-link {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-fig-blue-600);
+  background: none;
+  border: 0;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bp-class-link:hover {
+  text-decoration: underline;
+}
+
+/* ── Filter bar ──────────────────────────────────────────────────────────────
+   The shipped `.filter-bar` is white with no border, which suited a page whose
+   cards had none either. Every card in the profile carries the app's
+   `$gray200` now, so the filter bar takes it too — scoped here, so the
+   component keeps the app's own default everywhere else. */
+.bp-content > .fltr {
+  border: 1px solid var(--c-gray-200);
+}
+
+/* ── Lexile trend ────────────────────────────────────────────────────────────
+   The shipped chart's chrome: the heading with the period steppers on its
+   right, and the span it covers under them
+   (`lexile-chart__weeks-selector` / `__current-period`). */
+/* The chart card's header bar. Wrapping the heading so the steppers could sit
+   beside it took the heading out of the `.pcard-title:first-child` slot that
+   draws every other card's header, so the wrapper takes that treatment
+   instead: bled to the card's edges, with the same hairline under it. */
+.bp-lex-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: -16px -18px 12px;
+  padding: 8px 14px 8px 18px;
+  border-bottom: 1px solid var(--c-gray-200);
+}
+
+.bp-lex-head .bp-section-heading {
+  margin-bottom: 0;
+}
+
+/* The period and the arrows that step it are one control, so they travel
+   together at the right of the bar. */
+.bp-lex-period-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+.bp-lex-period {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-slate-500);
+  white-space: nowrap;
+}
+
+/* The shipped chart's tooltip, ported from `#chartjs-tooltip`
+   (bs-product `admin/components/_charts.scss`): a `#2a2a2a` chip at 12px
+   radius holding the value over the word "Average", centred, and nothing
+   else — no date, no series name. */
+.bp-lex-tip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: #2a2a2a;
+}
+
+.bp-lex-tip-value {
+  display: block;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: #fff;
+  text-align: center;
+}
+
+.bp-lex-tip-caption {
+  display: block;
+  margin-top: -3px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: #fff;
+  text-align: center;
 }

@@ -50,7 +50,7 @@ function ShelfHead({ title, count, noun }) {
   )
 }
 
-export function Collections({ collection, newestWord }) {
+export function Collections({ collection, newestWord, cards, onReview }) {
   const [pane, setPane] = useState('words')
 
   return (
@@ -78,7 +78,12 @@ export function Collections({ collection, newestWord }) {
       {pane === 'words' && (
         <>
           <ShelfHead title="Vocabulary" count={collection.length} noun="Words" />
-          <MyWords collection={collection} newestWord={newestWord} />
+          <MyWords
+            collection={collection}
+            newestWord={newestWord}
+            cards={cards}
+            onReview={onReview}
+          />
         </>
       )}
 

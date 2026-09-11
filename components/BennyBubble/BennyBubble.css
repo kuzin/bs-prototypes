@@ -1,7 +1,11 @@
 .benny-bubble-wrap {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
+  /* The tail sticks 8px out of the bubble's left edge, so the gap has to clear
+     it before any of it reads as space — 12px left about 4px between the tip
+     and Benny. This is 8px of tail plus 12px of actual room, the same
+     reasoning the centred variant below already carries. */
+  gap: 20px;
 }
 
 .benny-bubble-avatar {
@@ -23,7 +27,7 @@
   background: #f2f2f2;
   border-radius: 12px;
   padding: 13px 15px;
-  font-size: 14px;
+  font-size: 15px;
   color: #424242;
   line-height: 1.65;
   font-weight: 500;
@@ -33,11 +37,41 @@
 .benny-bubble::before {
   content: '';
   position: absolute;
-  left: -8px;
   top: 16px;
+  left: -8px;
   border: 8px solid transparent;
   border-right: 8px solid #f2f2f2;
   border-left: 0;
+}
+
+/* ── Centered ─────────────────────────────────────────────────────────────
+   Benny above the bubble with the tail pointing up at him, everything on one
+   vertical axis. For a centred column: the side variant's left-hand avatar
+   sits off that axis, and its ranged-left copy has no edge to start from when
+   nothing around it is left-aligned. */
+
+.benny-bubble-wrap--centered {
+  flex-direction: column;
+  align-items: center;
+  /* The tail sticks 8px above the bubble, so the gap has to clear it before
+     it becomes visible space — 9px left barely a pixel between the tip and
+     Benny's chin. This is 8px of tail plus 10px of actual room. */
+  gap: 18px;
+  text-align: center;
+}
+.benny-bubble-wrap--centered .benny-bubble-body {
+  /* `flex: 1` is for sharing a row; stacked, it must not stretch the bubble to
+     the wrapper's full width — the bubble should hug its own copy. */
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+.benny-bubble-wrap--centered .benny-bubble::before {
+  top: -8px;
+  left: 50%;
+  border: 8px solid transparent;
+  border-top: 0;
+  border-bottom: 8px solid #f2f2f2;
+  transform: translateX(-50%);
 }
 
 .benny-bubble strong {

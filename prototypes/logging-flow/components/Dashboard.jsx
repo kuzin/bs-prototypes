@@ -205,7 +205,11 @@ function StreakBanner({ streak, onLog }) {
           </>
         )}
       </div>
-      <Button variant="secondary" size="sm" onClick={onLog}>
+      {/* `accent`, not `danger`: this wants the banner's red, but nothing here
+          is destructive and a red button that means "delete" everywhere else
+          shouldn't also mean "view my streaks". The accent variant takes the
+          colour and leaves the semantics alone. */}
+      <Button variant="accent" accent="#DC2626" size="sm" onClick={onLog}>
         {has ? 'Log Today' : 'View Streaks'}
       </Button>
     </div>
@@ -238,14 +242,17 @@ function ChallengeCard({ challenge }) {
         <span className="wa-chcard-arttitle" style={{ color: art.titleColor }}>
           {art.title}
         </span>
-        <span className="wa-chcard-pill">
+      </div>
+      <div className="wa-chcard-body">
+        {/* What the challenge measures belongs with its name, not floated over
+            the artwork — the art is the challenge's identity and the pill was
+            covering whatever part of it landed in that corner. */}
+        <div className="wa-chcard-titlerow">
+          <div className="wa-chcard-title">{challenge.title}</div>
           <Pill color="#1A6DD5" variant="filled" size="sm">
             {challenge.badge}
           </Pill>
-        </span>
-      </div>
-      <div className="wa-chcard-body">
-        <div className="wa-chcard-title">{challenge.title}</div>
+        </div>
         <div className="wa-chcard-dates">{challenge.dates}</div>
       </div>
     </button>
@@ -280,46 +287,58 @@ function GoalCard({ dailyGoal }) {
   )
 }
 
+/**
+ * The reader dashboard's leaderboard, shaped like the shipped widget
+ * (bs-product app/views/programs/_leaderboard_widget.html.haml): folder tabs
+ * on top of a bordered panel, the two range pickers on a grey band across the
+ * panel's head, then the rows, then "View all" behind a rule of its own. It
+ * used to be a plain white card with an underlined tab bar inside it — the
+ * same parts, but none of the app's anatomy.
+ */
 function LeaderboardCard() {
   const [tab, setTab] = useState('schools')
   const rows = tab === 'schools' ? TOP_SCHOOLS : TOP_GRADES
   return (
-    <aside className="wa-card wa-leadcard">
-      <div className="wa-leadcard-tabs">
-        <Tabs
-          variant="underline"
-          size="sm"
-          active={tab}
-          onChange={setTab}
-          accent="#1A6DD5"
-          items={[
-            { id: 'schools', label: 'Top Schools' },
-            { id: 'grades', label: 'Top Grades' },
-          ]}
-        />
+    <aside className="wa-leadcard">
+      <Tabs
+        variant="folder"
+        size="sm"
+        block
+        active={tab}
+        onChange={setTab}
+        ariaLabel="Which leaderboard"
+        className="wa-leadcard-tabs"
+        items={[
+          { id: 'schools', label: 'Top Schools' },
+          { id: 'grades', label: 'Top Grades' },
+        ]}
+      />
+      <div className="wa-leadcard-body">
+        <div className="wa-leadcard-meta">
+          <button className="wa-leadcard-meta-btn" type="button">
+            This Week <Icon name="chevron-down" size={16} />
+          </button>
+          <button className="wa-leadcard-meta-btn" type="button">
+            By Minutes <Icon name="chevron-down" size={16} />
+          </button>
+        </div>
+        <ul className="wa-leadcard-list">
+          {rows.map((row) => (
+            <li key={row.rank} className="wa-leadcard-row">
+              <span className="wa-leadcard-rank" style={{ background: row.color }}>
+                {row.rank}
+              </span>
+              <span className="wa-leadcard-name">{row.name}</span>
+              <span className="wa-leadcard-val">{row.value}</span>
+            </li>
+          ))}
+        </ul>
+        <div className="wa-leadcard-foot">
+          <a href="#" className="wa-leadcard-more">
+            View All {tab === 'schools' ? 'Schools' : 'Grades'}
+          </a>
+        </div>
       </div>
-      <div className="wa-leadcard-meta">
-        <button className="wa-leadcard-meta-btn" type="button">
-          This Week <Icon name="chevron-down" size={11} />
-        </button>
-        <button className="wa-leadcard-meta-btn" type="button">
-          By Minutes <Icon name="chevron-down" size={11} />
-        </button>
-      </div>
-      <ul className="wa-leadcard-list">
-        {rows.map((row) => (
-          <li key={row.rank} className="wa-leadcard-row">
-            <span className="wa-leadcard-rank" style={{ background: row.color }}>
-              {row.rank}
-            </span>
-            <span className="wa-leadcard-name">{row.name}</span>
-            <span className="wa-leadcard-val">{row.value}</span>
-          </li>
-        ))}
-      </ul>
-      <a href="#" className="wa-leadcard-more">
-        View All Schools
-      </a>
     </aside>
   )
 }

@@ -16,7 +16,7 @@ export const insightsSections = [
       </>
     ),
     render: () => (
-      <div className="pt-variants pt-variants--4">
+      <div className="pt-variants pt-insights-cards">
         <Variant label="value" bare>
           <MetricCard label="Active readers" note="this month" value={1284} />
         </Variant>
@@ -47,7 +47,7 @@ export const insightsSections = [
       </>
     ),
     render: () => (
-      <div className="pt-variants pt-variants--3">
+      <div className="pt-variants pt-insights-cards">
         <Variant label="value (+ clickable header)" bare>
           <PanelCard title="Top Books" onClick={() => {}}>
             <div style={{ padding: '6px 2px', color: '#64748b', fontSize: 13 }}>

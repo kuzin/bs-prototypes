@@ -5,17 +5,70 @@
    nothing is set. Only the value text uses the resolved color. */
 .rc-stat {
   --rc-stat-color: var(--rc-accent, var(--c-slate-900));
-  background: #fff;
-  border: 1px solid var(--c-gray-200);
-  border-radius: 12px;
-  padding: 18px 16px;
   display: flex;
+  gap: 4px;
+  border-radius: 12px;
+}
+
+/* ── plain: the headline row across the top of a report page ───────────── */
+.rc-stat--plain {
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  padding: 18px 16px;
   text-align: center;
-  gap: 4px;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+/* ── tinted: the admin dashboard's `.adm-stat` ─────────────────────────────
+   Whole card washed in the accent with an icon chip and the figure ranged
+   left. Both the wash and the border come from the one authored --rc-stat-color
+   via color-mix, so the caller states a colour rather than a palette entry —
+   the admin dashboard's own version needed a hand-authored trio per tone. */
+.rc-stat--tinted {
+  gap: 12px;
+  align-items: center;
+  padding: 14px 16px;
+  color: var(--rc-stat-color);
+  background: color-mix(in srgb, var(--rc-stat-color) 11%, white);
+  border: 1px solid color-mix(in srgb, var(--rc-stat-color) 34%, white);
+}
+.rc-stat-ico {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgb(255 255 255 / 70%);
+  border-radius: 11px;
+}
+.rc-stat-main {
+  min-width: 0;
+}
+/* Sized off the profile's own stat row (22px figure over a 15px label), not
+   the admin dashboard's 22/12 — that label was calibrated inside a narrow
+   widget column and reads undersized on a full page. Role tokens rather than
+   raw px, so these stay on the app's ladder. */
+.rc-stat--tinted .rc-stat-val {
+  font-size: var(--text-2xl);
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+.rc-stat--tinted .rc-stat-lbl {
+  margin-top: 3px;
+  font-size: var(--text-cell);
+  font-weight: 700;
+  color: inherit;
+}
+.rc-stat--tinted .rc-stat-foot {
+  margin-top: 3px;
+  font-size: var(--text-tag);
+  color: inherit;
+  opacity: 0.78;
 }
 
 .rc-stat-val {
@@ -52,10 +105,13 @@
 }
 
 /* ── Chart / content card ──────────────────────────────────────────────── */
+/* `--c-gray-200` (#eaeaea) is the app's `$gray200`, which is what the shipped
+   admin borders and divides everything with. Radius 12 to match `.pcard` —
+   14 here and 12 there put two different card shapes on one page. */
 .rc-card {
   background: #fff;
   border: 1px solid var(--c-gray-200);
-  border-radius: 14px;
+  border-radius: 12px;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -85,7 +141,7 @@
   align-items: center;
   gap: 10px;
   padding: 14px 16px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .rc-card-icon {
@@ -114,17 +170,20 @@
   min-width: 0;
 }
 
+/* Matched to the profile's own `.pcard-title` (16/800). At 13/700 these read a
+   step below every other card heading on an admin page — the two card families
+   sit side by side on the classroom tabs, so they have to agree. */
 .rc-card-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-slate-800);
+  font-size: var(--text-lg);
+  font-weight: 800;
   letter-spacing: -0.01em;
+  color: var(--c-slate-800);
 }
 
 .rc-card-sub {
-  font-size: 13px;
-  color: var(--c-text-muted);
+  font-size: var(--text-label);
   font-weight: 500;
+  color: var(--c-text-muted);
 }
 
 .rc-card-action {

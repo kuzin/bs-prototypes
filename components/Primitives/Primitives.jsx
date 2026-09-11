@@ -1,4 +1,5 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, useCallback, useId } from 'react'
+import { createPortal } from 'react-dom'
 import { Icon } from '@components/Icon/Icon'
 import '@components/Primitives/Primitives.css'
 
@@ -92,81 +93,151 @@ export function IconButton({
  * track the cursor as it moves — best for chart-like surfaces where the
  * tooltip explains the value under the cursor.
  */
-// The horizontal span the bubble has to fit inside: every clipping ancestor
-// intersected, bounded by the viewport — a scroll pane, a card with `overflow:
-// hidden`, or both at once. A scroll container counts even when only one axis
-// is set to scroll: `overflow-y: auto` makes the used value of `overflow-x`
-// `auto` as well, so it clips sideways too.
-function clipBounds(node, margin = 6) {
-  let left = 0
-  let right = window.innerWidth
-  let el = node.parentElement
-  while (el && el !== document.body) {
-    const cs = getComputedStyle(el)
-    if (cs.overflowX !== 'visible' || cs.overflowY !== 'visible') {
-      const r = el.getBoundingClientRect()
-      left = Math.max(left, r.left)
-      right = Math.min(right, r.right)
-    }
-    el = el.parentElement
-  }
-  return { left: left + margin, right: right - margin }
-}
+// A tooltip is rendered into `document.body`, not beside its trigger. Anything
+// with `overflow` other than `visible` clips an absolutely positioned child —
+// a table's scroll pane, a card, a chart body — and a bubble on an anchor near
+// that box's edge got cut in half. Nudging it back inside only traded the clip
+// for a bubble that no longer pointed at anything, and it still couldn't cross
+// the container. A fixed-position portal has no clipping ancestor at all, so
+// the only thing left to fit inside is the viewport.
+//
+// It also means an idle tooltip has no box in the layout: the bubble simply
+// isn't mounted until you hover it, which is what used to inflate a card's
+// scroll extent and grow phantom scrollbars.
+const TTP_MARGIN = 8 // keep this far off the viewport edge
+const TTP_GAP = 8 // distance from the trigger
 
-export function Tooltip({ content, placement = 'top', delay = 0, followCursor = false, children }) {
+export function Tooltip({
+  content,
+  placement = 'top',
+  delay = 0,
+  followCursor = false,
+  className = '',
+  children,
+}) {
   const wrapRef = useRef(null)
   const bubbleRef = useRef(null)
-  const [resolved, setResolved] = useState('top')
+  const [open, setOpen] = useState(false)
+  const [shown, setShown] = useState(false) // drives the fade, one frame behind
+  const [pos, setPos] = useState(null)
   const [cursor, setCursor] = useState({ x: 0, y: 0 })
+  const id = useId()
 
-  // A centred bubble on an anchor near the edge of its scroll pane hangs off
-  // the side and gets clipped — most visibly on a row-action button, where the
-  // anchor sits a few pixels from the pane's edge. Measured on enter rather
-  // than on mount because the bounds move with scroll and resize.
-  function clampBubble() {
+  // Measure once the bubble is mounted, then place it: pick the side with room,
+  // clamp along the cross axis to the viewport, and tell the arrow how far the
+  // clamp moved it so it still points at the trigger.
+  const place = useCallback(() => {
+    const wrap = wrapRef.current
     const bubble = bubbleRef.current
-    if (!bubble || followCursor) return
-    // Clear the last nudge first, or each measurement compounds the previous.
-    bubble.style.setProperty('--ttp-shift', '0px')
+    if (!wrap || !bubble) return
+    const t = wrap.getBoundingClientRect()
     const b = bubble.getBoundingClientRect()
-    const { left, right } = clipBounds(bubble)
-    const shift = b.left < left ? left - b.left : b.right > right ? right - b.right : 0
-    if (shift) bubble.style.setProperty('--ttp-shift', `${Math.round(shift)}px`)
-  }
+    const vw = window.innerWidth
+    const vh = window.innerHeight
 
-  function onEnter() {
-    clampBubble()
-    if (placement !== 'auto' || !wrapRef.current) return
-    const r = wrapRef.current.getBoundingClientRect()
-    // Prefer top; fall back to bottom if too close to viewport top.
-    setResolved(r.top < 60 ? 'bottom' : 'top')
-  }
+    let side = placement === 'auto' ? 'top' : placement
+    // Flip to the opposite side when this one has no room for the bubble.
+    if (side === 'top' && t.top - b.height - TTP_GAP < TTP_MARGIN) side = 'bottom'
+    else if (side === 'bottom' && t.bottom + b.height + TTP_GAP > vh - TTP_MARGIN) side = 'top'
+    else if (side === 'left' && t.left - b.width - TTP_GAP < TTP_MARGIN) side = 'right'
+    else if (side === 'right' && t.right + b.width + TTP_GAP > vw - TTP_MARGIN) side = 'left'
 
+    const vertical = side === 'top' || side === 'bottom'
+    let left = vertical
+      ? t.left + t.width / 2 - b.width / 2
+      : side === 'left'
+        ? t.left - b.width - TTP_GAP
+        : t.right + TTP_GAP
+    let top = vertical
+      ? side === 'top'
+        ? t.top - b.height - TTP_GAP
+        : t.bottom + TTP_GAP
+      : t.top + t.height / 2 - b.height / 2
+
+    // Clamp inside the viewport, and record the correction so the arrow can
+    // counter it and keep pointing at the trigger's centre.
+    const clampedLeft = Math.min(Math.max(left, TTP_MARGIN), vw - b.width - TTP_MARGIN)
+    const clampedTop = Math.min(Math.max(top, TTP_MARGIN), vh - b.height - TTP_MARGIN)
+    const shiftX = vertical ? left - clampedLeft : 0
+    const shiftY = vertical ? 0 : top - clampedTop
+
+    setPos({ side, left: Math.round(clampedLeft), top: Math.round(clampedTop), shiftX, shiftY })
+  }, [placement])
+
+  // Place after mount, then keep up with scroll and resize while open — the
+  // trigger moves under a fixed bubble otherwise.
+  useEffect(() => {
+    if (!open || followCursor) return
+    place()
+    const frame = requestAnimationFrame(() => setShown(true))
+    window.addEventListener('scroll', place, true)
+    window.addEventListener('resize', place)
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', place, true)
+      window.removeEventListener('resize', place)
+    }
+  }, [open, followCursor, place])
+
+  useEffect(() => {
+    if (!open || !followCursor) return
+    const frame = requestAnimationFrame(() => setShown(true))
+    return () => cancelAnimationFrame(frame)
+  }, [open, followCursor])
+
+  function show() {
+    setOpen(true)
+  }
+  function hide() {
+    setOpen(false)
+    setShown(false)
+    setPos(null)
+  }
   function onMove(e) {
-    if (!followCursor) return
-    setCursor({ x: e.clientX, y: e.clientY })
+    if (followCursor) setCursor({ x: e.clientX, y: e.clientY })
   }
 
   if (!content) return children
-  const pos = placement === 'auto' ? resolved : placement
-  // When following the cursor we use fixed positioning and skip the
-  // placement-specific CSS classes — JS sets x/y per mousemove.
-  const bubbleStyle = followCursor
-    ? { position: 'fixed', left: cursor.x + 12, top: cursor.y - 32 }
-    : undefined
+
+  const side = followCursor ? 'cursor' : (pos?.side ?? (placement === 'auto' ? 'top' : placement))
+  const style = followCursor
+    ? { left: cursor.x + 12, top: cursor.y - 32 }
+    : // Off-screen until measured, so the first frame never flashes at 0,0.
+      {
+        left: pos ? pos.left : -9999,
+        top: pos ? pos.top : -9999,
+        '--ttp-shift': `${pos?.shiftX ?? 0}px`,
+        '--ttp-shift-y': `${pos?.shiftY ?? 0}px`,
+      }
+
   return (
-    <span
-      className={`ttp${followCursor ? ' ttp--cursor' : ` ttp--${pos}`}`}
-      style={{ '--ttp-delay': `${delay}ms` }}
-      ref={wrapRef}
-      onMouseEnter={onEnter}
-      onMouseMove={onMove}
-    >
-      {children}
-      <span className="ttp-bubble" role="tooltip" style={bubbleStyle} ref={bubbleRef}>
-        {content}
+    <>
+      <span
+        className={`ttp${className ? ` ${className}` : ''}`}
+        ref={wrapRef}
+        aria-describedby={open ? id : undefined}
+        onMouseEnter={show}
+        onMouseLeave={hide}
+        onMouseMove={onMove}
+        onFocus={show}
+        onBlur={hide}
+      >
+        {children}
       </span>
-    </span>
+      {open &&
+        createPortal(
+          <span
+            id={id}
+            className={`ttp-pop ttp-pop--${side}${shown ? ' is-shown' : ''}`}
+            role="tooltip"
+            style={{ ...style, '--ttp-delay': `${delay}ms` }}
+            ref={bubbleRef}
+          >
+            {content}
+          </span>,
+          document.body,
+        )}
+    </>
   )
 }
 

@@ -1,78 +1,463 @@
+/* Main rail — a 1:1 port of `.main-header` / `.main-navigation` /
+   `.sub-navigation` from the shipped app
+   (bs-product app/assets/stylesheets/admin/_admin_navigation.scss).
+   The Figma redesign of this rail differs (56px items on a 6px gap, a
+   #1A6DD5 accent, #E6F1FF fill, no radius); those values live in tokens.css as
+   --c-fig-blue-* but are deliberately NOT wired up here. */
+
+/* Buttons don't inherit font-family; the avatar initials need the real face. */
+.main-rail button {
+  font-family: inherit;
+}
+
 .main-rail {
-  width: 52px;
+  width: 80px;
   flex-shrink: 0;
-  background: #1e3a8a;
+  background: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 12px 0 10px;
-  gap: 4px;
+}
+
+/* Logo box — 80x80, hairline rule below (Sass: 1px darken(#f5f5f5, 5%)) */
+.main-rail-top {
+  width: 80px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid #e8e8e8;
+  flex-shrink: 0;
 }
 
 .main-rail-logo-link {
   display: block;
-  margin-bottom: 12px;
+  line-height: 0;
+  transition: transform 0.2s ease-in-out;
+}
+.main-rail-logo-link:hover {
+  transform: scale(1.1);
 }
 
+/* 24 x 32, filled with the accent */
 .main-rail-logo {
-  width: 32px;
+  width: 24px;
   height: 32px;
   display: block;
+  fill: var(--c-accent);
 }
 
+/* `.main-navigation ul { padding-top: 20px }`. Never scrolls — what doesn't
+   fit collapses into the overflow popout below, so `overflow` stays visible or
+   the popout gets clipped by this box. */
+.main-rail-nav {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  overflow: visible;
+}
+
+/* `a { height: 52px; width: 100%; margin: 7px; border-radius: 24px }` — a
+   centered flex row, so the active bar can sit in it as a flex child. */
 .main-rail-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 8px;
+  height: 52px;
+  width: calc(100% - 14px);
+  margin: 7px;
+  border: none;
+  background: transparent;
+  border-radius: 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: background 0.12s;
+  flex-shrink: 0;
+  color: var(--c-gray-900);
+  transition: background 0.13s ease;
 }
 
-.main-rail-btn:hover:not(.main-rail-btn--active) {
-  background: rgba(255, 255, 255, 0.08);
+.main-rail-btn:hover {
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
 }
+
+/* `&:focus-visible { outline: 4px solid $primary-color }` */
+.main-rail-btn:focus-visible {
+  outline: 4px solid var(--c-accent);
+  outline-offset: -4px;
+}
+
+/* Active — the app drops the radius, squares the target to the full 80px, and
+   adds the bar as a *flex child* nudged 25px left (`position: relative;
+   right: 25px`). Reproduced with the same technique rather than absolute
+   positioning, so the ~2.5px rightward shift it gives the icon matches too. */
 .main-rail-btn--active {
-  background: rgba(255, 255, 255, 0.2);
+  width: 100%;
+  margin: 5px 0;
+  border-radius: 0;
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
 }
 
-.main-rail-icon {
-  width: 18px;
-  height: 18px;
-  border-radius: 3px;
-  background: rgba(255, 255, 255, 0.55);
-}
-
-.main-rail-icon--round {
-  border-radius: 50%;
-}
-
-.main-rail-icon--help {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.55);
-}
-
-.main-rail-spacer {
-  flex: 1;
-}
-
-.main-rail-avatar {
-  width: 32px;
+.main-rail-btn--active::before {
+  content: '';
+  position: relative;
+  right: 25px;
+  width: 5px;
   height: 32px;
-  border-radius: 50%;
-  background: var(--c-blue-700);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 800;
+  flex-shrink: 0;
+  background: var(--c-accent);
+}
+
+/* `.main-header-bottom { border-top: solid 1px darken(#f5f5f5, 5%) }` over
+   `.sub-navigation` (80px wide, `li { padding: 20px }`). */
+.main-rail-bottom {
+  width: 80px;
+  border-top: 1px solid #e8e8e8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* `.sub-navigation ul li { padding: 20px }` around a 40px round target — an
+   80px row — with `.nav-help-icon { margin-bottom: -20px }` cancelling the
+   bottom padding, so each of these rows advances 60px. */
+.main-rail-icon-btn {
+  width: 40px;
+  height: 40px;
+  margin: 20px 20px 0;
+  border: none;
+  background: transparent;
+  border-radius: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--c-gray-900);
+  transition: background 0.13s ease;
+}
+.main-rail-icon-btn:hover {
+  background: var(--c-gray-200);
+}
+/* `&:active, &:focus { border: 3px solid $accent-color }` */
+.main-rail-icon-btn:focus-visible {
+  outline: 3px solid var(--c-accent);
+}
+
+/* `.reader__avatar`: 40px, border-radius 100%, $light-gray ground, initials
+   uppercase at 12px / weight 900. Its `li` keeps both 20px pads (no negative
+   margin), so this row advances the full 80px. */
+.main-rail-avatar {
+  width: 40px;
+  height: 40px;
+  margin: 20px;
+  border-radius: 100%;
+  background: var(--c-light-gray);
+  color: var(--c-gray-900);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 6px;
+  cursor: pointer;
+}
+
+/* ── Overflow popout ────────────────────────────────────────────────────────
+   The product's `li.menu-overflow` + `.dropdown-items-list#overflow-dropdown`
+   (bs-product `_menu.html.haml` / admin/_admin_navigation.scss): whatever
+   doesn't fit the rail collapses behind a "more" trigger that opens a white
+   rounded panel beside it. */
+.main-rail-overflow {
+  position: relative;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* `.menu-overflow svg { fill: #2a2a2a; height: 24px; width: 24px }` */
+.main-rail-overflow-trigger {
+  color: var(--c-gray-900);
+}
+
+/* `&:hover { background-color: rgba(0, 0, 0, 0.05) }` */
+.main-rail-overflow-trigger:hover:not(.main-rail-btn--active) {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--c-gray-900);
+}
+
+.main-rail-btn--open {
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
+}
+
+/* `.dropdown-items-list { min-width: 200px; background: white;
+   border-radius: 16px; box-shadow: 0 3px 10px 0 rgba(0,0,0,0.06);
+   ul { padding: 15px 0 } }`, anchored just right of the rail. */
+.main-rail-overflow-menu {
+  position: absolute;
+  left: calc(100% - 7px);
+  bottom: 0;
+  min-width: 200px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.06);
+  z-index: 999;
+}
+
+.main-rail-overflow-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 15px 0;
+}
+
+/* `#overflow-dropdown li a { padding: 4px 25px; justify-content: flex-start }`
+   with the label as a 14px/17px #2a2a2a span 15px from the glyph. */
+.main-rail-overflow-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 4px 25px;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 14px;
+  line-height: 17px;
+  color: var(--c-gray-900);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.13s ease;
+}
+
+.main-rail-overflow-item span {
+  margin-left: 15px;
+}
+
+/* `&.active, &:hover { background-color: lighten($accent-color, 45%) }` and the
+   duotone glyph tints to the accent, same as an active rail item. */
+.main-rail-overflow-item:hover,
+.main-rail-overflow-item--active {
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
+}
+
+.main-rail-overflow-item:focus-visible {
+  outline: 2px solid var(--c-accent);
+  outline-offset: -2px;
+}
+
+/* ── Mobile drawer ──────────────────────────────────────────────────────────
+   `$small-only` in the app doesn't shrink the rail, it promotes it: the whole
+   menu becomes an 85vw full-height panel and every row finally shows its label
+   (bs-product admin/_admin_navigation.scss, the `$small-only` block):
+
+     .main-header      position: fixed; height: 100vh; width: 85vw; z-index: 998
+     .main-header-top  → .mobile-nav-header: flex, space-between (close/heart/help)
+     .main-header-bottom  display: none
+     .main-navigation  height: calc(100vh - 64px); overflow-y: auto
+     li a              width: 100%; margin: 0; border-radius: 0
+     li a svg          margin: 5px 20px
+     li a span         display: block   (the label, $textColor, text-align left)
+     .subnav-forward-icon  display: block
+     &.active::before  height: 48px; right: 0   (the accent bar, flush left)
+     &:active, &:focus     background-color: lighten($accent-color, 45%) */
+.main-rail--drawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  /* The app leaves a 15vw sliver of page showing; ours takes the whole width —
+     a menu is the only thing you're doing while it's open, and the sliver just
+     invites a mis-tap. Nothing behind it means no shadow to cast, either. */
+  width: 100%;
+  height: 100vh;
+  z-index: 998;
+  align-items: stretch;
+}
+
+/* `.main-header-top.mobile-nav-header` — 64px, since the nav below it is sized
+   `calc(100vh - 64px)`. */
+.main-rail-drawer-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 20px;
+  border-bottom: 1px solid #e8e8e8;
+  flex-shrink: 0;
+}
+
+.main-rail-drawer-close,
+.main-rail-drawer-help {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  border-radius: 100%;
+  background: transparent;
+  color: var(--c-gray-900);
+  cursor: pointer;
+}
+
+.main-rail-drawer-close:hover,
+.main-rail-drawer-help:hover {
+  background: var(--c-gray-150);
+}
+
+.main-rail-drawer-close:focus-visible,
+.main-rail-drawer-help:focus-visible {
+  outline: 3px solid var(--c-accent);
+}
+
+/* `.main-navigation { height: calc(100vh - 64px); overflow-y: auto }` — the
+   list is complete here (nothing collapses into the overflow popout), so it
+   scrolls rather than dropping rows. */
+.main-rail-drawer-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* `li a`: full width, no margin, no radius — a flat list row. 48px is the
+   height the active bar takes at this width. */
+.main-rail-drawer-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 52px;
+  margin: 0;
+  padding: 0 20px 0 0;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+  font: inherit;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--c-text-real);
+  text-align: left;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.13s ease;
+}
+
+/* `svg { margin: 5px 20px }` */
+.main-rail-drawer-row > svg,
+.main-rail-drawer-row > span:first-child > svg {
+  margin: 5px 20px;
+  flex-shrink: 0;
+}
+
+/* `span { display: block; width: 100%; text-align: left }` */
+.main-rail-drawer-label {
+  flex: 1;
+  min-width: 0;
+}
+
+/* `.subnav-forward-icon { display: block }` — only on the rows that own a
+   section menu. */
+.main-rail-drawer-fwd {
+  display: inline-flex;
+  align-items: center;
+  color: var(--c-gray-500);
+  flex-shrink: 0;
+}
+
+/* `&:active, &:focus { background-color: lighten($accent-color, 45%) }` */
+.main-rail-drawer-row:hover {
+  background: var(--c-accent-wash);
+}
+
+.main-rail-drawer-row:focus-visible {
+  outline: none;
+  background: var(--c-accent-wash);
+  box-shadow: inset 0 0 0 3px var(--c-accent);
+}
+
+/* Active — the wash, the accent label and chevron, and the 5px bar pulled
+   flush to the edge (`&.active::before { height: 48px; right: 0 }`). */
+.main-rail-drawer-row--active {
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
+}
+
+.main-rail-drawer-row--active::before {
+  content: '';
+  width: 5px;
+  height: 48px;
+  flex-shrink: 0;
+  background: var(--c-accent);
+}
+
+/* The bar eats 5px of the icon's left margin so the labels still line up with
+   the inactive rows'. */
+.main-rail-drawer-row--active > svg,
+.main-rail-drawer-row--active > span:first-child > svg {
+  margin-left: 15px;
+}
+
+.main-rail-drawer-row--active .main-rail-drawer-fwd {
+  color: var(--c-accent);
+}
+
+/* A section's pages, opened under its row. No icons — the parent row's glyph
+   already says which section you're in — so they align to the labels above
+   them (20px margin + 24px glyph + 20px gap) rather than to the icon column. */
+.main-rail-drawer-group {
+  flex-shrink: 0;
+}
+
+.main-rail-drawer-sub {
+  display: flex;
+  flex-direction: column;
+  background: var(--c-gray-0);
+}
+
+.main-rail-drawer-subrow {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 20px 8px 64px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c-text-real);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.13s ease;
+}
+
+/* The section menu nests one level (`.sub-menu` indents its rows by 20px in the
+   app); the drawer keeps that step. */
+.main-rail-drawer-subrow--nested {
+  padding-left: 84px;
+}
+
+.main-rail-drawer-subrow:hover {
+  background: var(--c-accent-wash);
+}
+
+.main-rail-drawer-subrow:focus-visible {
+  outline: none;
+  background: var(--c-accent-wash);
+  box-shadow: inset 0 0 0 3px var(--c-accent);
+}
+
+.main-rail-drawer-subrow--active {
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
 }

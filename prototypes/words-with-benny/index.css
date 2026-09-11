@@ -6,14 +6,7 @@
 }
 body {
   margin: 0;
-  font-family:
-    'Nunito',
-    'Trebuchet MS',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    sans-serif;
+  font-family: var(--font-sans);
   background: #f3f4f6;
   color: #1e293b;
   -webkit-font-smoothing: antialiased;
@@ -41,6 +34,10 @@ body,
   display: flex;
   flex-direction: column;
   min-height: 100%;
+  /* This shell carries both prototype bars, so modals opened inside it stop at
+     them rather than scrimming over the top of the demo chrome. */
+  --chrome-top: var(--preview-bar-h);
+  --chrome-bottom: var(--proto-nav-h);
 }
 
 .wb-stage {
@@ -58,7 +55,7 @@ body,
 .wb-edu-shell {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - var(--preview-bar-h) - 48px);
+  height: calc(100vh - var(--preview-bar-h) - var(--proto-nav-h));
 }
 .wb-edu-shell > .app-shell {
   flex: 1;
@@ -68,4 +65,57 @@ body,
    CSS bundle order turns out to be. */
 .wb-edu-shell .ew-content {
   overflow-y: auto;
+}
+
+/* ─── Preview-bar activity picker ─────────────────────────────────────────
+   A demo control: which activity the next unlock runs, so a single type can be
+   shown on its own instead of only inside a full round. Matched to the bar's
+   own `.pvb-actions button` rule, which a <select> doesn't inherit. */
+/* Sits beside the activity picker in the bar's actions slot. `.pvb-actions`
+   styles a bare <button>, so this only adds the icon gap and the height the
+   picker uses. */
+.wb-actbtn {
+  gap: 6px;
+  height: var(--pvb-tray-h);
+}
+
+.wb-actpick-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.wb-actpick {
+  height: var(--pvb-tray-h);
+  /* Room for the drawn caret, the way `.sel` leaves room for `.sel-caret`. */
+  padding: 0 30px 0 12px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: #cdeae7;
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 8px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+.wb-actpick:hover {
+  color: #fff;
+  border-color: rgb(255 255 255 / 55%);
+}
+.wb-actpick option {
+  color: #1e293b;
+}
+
+.wb-actpick-caret {
+  position: absolute;
+  top: 50%;
+  right: 11px;
+  color: rgb(255 255 255 / 55%);
+  pointer-events: none;
+  transform: translateY(-50%);
+}
+.wb-actpick-wrap:hover .wb-actpick-caret {
+  color: #fff;
 }

@@ -3,9 +3,11 @@ import { Button } from '@components/Button/Button'
 import { Toggle } from '@components/Toggle/Toggle'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
 import { SearchInput } from '@components/SearchInput/SearchInput'
+import { EmptyState, Spinner } from '@components/Primitives/Primitives'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Icon } from '@components/Icon/Icon'
 
+import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 
 import { BookCover } from './BookCover'
@@ -18,6 +20,7 @@ import '@components/Button/Button.css'
 import '@components/Toggle/Toggle.css'
 import '@components/CustomSelect/CustomSelect.css'
 import '@components/SearchInput/SearchInput.css'
+import '@components/Primitives/Primitives.css'
 import '@components/Avatar/Avatar.css'
 
 const LOTS_OF_MINUTES = 90 // integrity threshold → attestation required
@@ -484,153 +487,231 @@ function SearchStep({
   onWithoutTitle,
   onChangeReader,
 }) {
-  const q = query.trim().toLowerCase()
+  // Searching is debounced and given a visible wait. A real catalog lookup is a
+  // network call, and matching on every keystroke both lied about that and made
+  // the panel rebuild itself five times per word.
+  const typed = query.trim().toLowerCase()
+  const [q, setQ] = useState(typed)
+  const [searching, setSearching] = useState(false)
+
+  useEffect(() => {
+    if (!typed) {
+      // Clearing the field goes straight back to the shelves — nobody expects
+      // to wait for the absence of a search.
+      setQ('')
+      setSearching(false)
+      return
+    }
+    if (typed === q) return
+    setSearching(true)
+    const t = setTimeout(() => {
+      setQ(typed)
+      setSearching(false)
+    }, 420)
+    return () => clearTimeout(t)
+  }, [typed, q])
+
   const results = q
     ? Object.values(books).filter(
         (b) => b.title.toLowerCase().includes(q) || b.author.toLowerCase().includes(q),
       )
     : []
+
+  // What the step looks like at rest, measured. Everything the search can put
+  // below the field — spinner, results, no-matches — then gets at least that
+  // much room, so none of them can shrink the panel and pull the field up
+  // while someone is typing into it. A long list is still free to grow down
+  // the page. Reserving a hard-coded number instead would be wrong in
+  // whichever prototype has a different set of shelves.
+  const bodyRef = useRef(null)
+  const [restHeight, setRestHeight] = useState(null)
+  const atRest = !q && !searching && !scanOpen
+
+  useEffect(() => {
+    if (!atRest || !bodyRef.current) return
+    const h = bodyRef.current.offsetHeight
+    if (h) setRestHeight((prev) => (prev === h ? prev : h))
+  }, [atRest, books, recentlyLogged])
+
+  const bodyStyle = !atRest && !scanOpen && restHeight ? { minHeight: restHeight } : undefined
+
   // The barcode demo picks a real title out of whatever catalog is in play.
   const scanTarget = books['lucky-cap'] ?? Object.values(books)[0]
 
   return (
     <div className="lf-search">
-      <ReaderLine reader={reader} onChange={onChangeReader} />
-      <h1 className="lf-h1">What did you read today?</h1>
+      {/* Scanning takes the whole step — no reader line, no heading, no
+          instruction. Pointing a camera at a book is a physical, two-handed
+          thing, and a viewfinder with a live scan line needs no caption to
+          explain itself. Cancel puts the step back. */}
+      {!scanOpen && (
+        <>
+          <ReaderLine reader={reader} onChange={onChangeReader} />
+          <h1 className="lf-h1">What did you read today?</h1>
 
-      <div className="lf-searchrow">
-        <SearchInput value={query} onChange={setQuery} placeholder="Search for title or author" />
-        <span className="lf-searchdiv" />
-        <Button
-          variant="secondary"
-          size="md"
-          icon={<Icon name="barcode" size={18} />}
-          onClick={() => setScanOpen(true)}
-        >
-          Scan ISBN
-        </Button>
-      </div>
+          <div className="lf-searchrow">
+            <SearchInput
+              value={query}
+              onChange={setQuery}
+              placeholder="Search for title or author"
+            />
+            <span className="lf-searchdiv" />
+            <Button
+              variant="secondary"
+              size="md"
+              icon={<Icon name="barcode" size={18} />}
+              onClick={() => setScanOpen(true)}
+            >
+              Scan ISBN
+            </Button>
+          </div>
+        </>
+      )}
 
       {scanOpen && (
         <div className="lf-scanner">
           <div className="lf-scanner-frame">
-            <Icon name="barcode" size={48} stroke={1.4} />
+            <Icon name="barcode" size={104} stroke={1.3} />
             <span className="lf-scanner-line" />
           </div>
-          <p className="lf-scanner-hint">Point your camera at the book's barcode.</p>
           <div className="lf-scanner-actions">
-            <Button variant="primary" size="sm" onClick={() => onPick(scanTarget)}>
+            <Button variant="primary" size="md" onClick={() => onPick(scanTarget)}>
               Simulate scan
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => setScanOpen(false)}>
+            <Button variant="ghost" size="md" onClick={() => setScanOpen(false)}>
               Cancel
             </Button>
           </div>
         </div>
       )}
 
-      {q && (
-        <div className="lf-results">
-          {results.length === 0 ? (
-            <p className="lf-noresults">
-              No matches for “{query}”.{' '}
-              <button className="lf-link" onClick={onManual}>
-                Log manually
-              </button>
-            </p>
-          ) : (
-            results.map((b) => (
-              <button key={b.id} className="lf-resultrow" onClick={() => onPick(b)}>
-                <BookCover book={b} size="sm" />
-                <span className="lf-resultmeta">
-                  <span className="lf-resulttitle">{b.title}</span>
-                  <span className="lf-resultauthor">{b.author}</span>
-                </span>
-                {b.partner && partners.some((p) => p.id === b.partner) ? (
-                  <PartnerResultBadge partnerId={b.partner} connections={connections} />
-                ) : (
-                  b.readable && (
-                    <span className="lf-resultbadge">
-                      <Icon name="book-2" size={12} stroke={2.2} /> Readable
-                    </span>
-                  )
-                )}
-                <Icon name="chevron-right" size={18} className="lf-resultchev" />
-              </button>
-            ))
+      {/* One region for everything the field can put on screen — shelves,
+          spinner, results, no-matches — pinned to the resting height so
+          swapping between them doesn't move the field the reader is typing
+          into. */}
+      {!scanOpen && (
+        <div className="lf-searchbody" ref={bodyRef} style={bodyStyle}>
+          {searching && (
+            <div className="lf-searching">
+              <Spinner size="md" color="#1a6dd5" />
+              <p className="lf-searching-text">Searching the catalog…</p>
+            </div>
           )}
-        </div>
-      )}
 
-      {!q && !scanOpen && (
-        <>
-          {/* A shelf from a linked partner's catalog, so it only appears once
+          {!searching && q && results.length === 0 && (
+            <EmptyState
+              className="lf-empty"
+              icon={<Icon name="search" size={26} stroke={1.7} />}
+              title={`No titles match “${query}”`}
+              description="Check the spelling, try the author instead, or put it in by hand — a title Beanstack doesn't know still counts."
+              action={
+                <div className="lf-empty-actions">
+                  <Button variant="secondary" size="md" onClick={onManual}>
+                    Log manually
+                  </Button>
+                  <Button variant="ghost" size="md" onClick={onWithoutTitle}>
+                    Without a Title
+                  </Button>
+                </div>
+              }
+            />
+          )}
+
+          {!searching && q && results.length > 0 && (
+            <div className="lf-results">
+              {results.map((b) => (
+                <button key={b.id} className="lf-resultrow" onClick={() => onPick(b)}>
+                  <BookCover book={b} size="sm" />
+                  <span className="lf-resultmeta">
+                    <span className="lf-resulttitle">{b.title}</span>
+                    <span className="lf-resultauthor">{b.author}</span>
+                  </span>
+                  {b.partner && partners.some((p) => p.id === b.partner) ? (
+                    <PartnerResultBadge partnerId={b.partner} connections={connections} />
+                  ) : (
+                    b.readable && (
+                      <span className="lf-resultbadge">
+                        <Icon name="book-2" size={12} stroke={2.2} /> Readable
+                      </span>
+                    )
+                  )}
+                  <Icon name="chevron-right" size={18} className="lf-resultchev" />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {!searching && !q && (
+            <>
+              {/* A shelf from a linked partner's catalog, so it only appears once
               that account is connected. */}
-          {(!READING_LIST.partner || connections[READING_LIST.partner]) && (
-            <section className="lf-panel lf-rlband">
-              <div className="lf-rlhead">
-                <PartnerMark id={READING_LIST.partner} size={20} />
-                <h2 className="lf-panel-title lf-rlhead-title">{READING_LIST.title}</h2>
-              </div>
+              {(!READING_LIST.partner || connections[READING_LIST.partner]) && (
+                <section className="lf-panel lf-rlband">
+                  <div className="lf-rlhead">
+                    <PartnerMark id={READING_LIST.partner} size={20} />
+                    <h2 className="lf-panel-title lf-rlhead-title">{READING_LIST.title}</h2>
+                  </div>
 
-              <div className="lf-coverrow lf-coverrow--rl">
-                {READING_LIST.titles
-                  .filter((id) => books[id])
-                  .map((id) => {
-                    const logged = READING_LIST.completed.includes(id)
-                    return (
+                  <div className="lf-coverrow lf-coverrow--rl">
+                    {READING_LIST.titles
+                      .filter((id) => books[id])
+                      .map((id) => {
+                        const logged = READING_LIST.completed.includes(id)
+                        return (
+                          <button
+                            key={id}
+                            className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
+                            onClick={() => onPick(books[id])}
+                            title={coverLabel(books[id])}
+                          >
+                            <BookCover book={books[id]} size="md" />
+                            {logged && (
+                              <span className="lf-rlcheck" aria-label="Logged">
+                                <Icon name="check" size={12} stroke={3} />
+                              </span>
+                            )}
+                          </button>
+                        )
+                      })}
+                  </div>
+                  <button className="lf-link lf-viewall">
+                    View all {READING_LIST.total} {READING_LIST.unit || 'titles'} ›
+                  </button>
+                </section>
+              )}
+
+              {/* Recently logged */}
+              <section className="lf-panel">
+                <h2 className="lf-panel-title">Recently Logged Titles</h2>
+                <div className="lf-coverrow lf-coverrow--center">
+                  {recentlyLogged
+                    .filter((id) => books[id])
+                    .map((id) => (
                       <button
                         key={id}
-                        className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
+                        className="lf-coverbtn"
                         onClick={() => onPick(books[id])}
                         title={coverLabel(books[id])}
                       >
                         <BookCover book={books[id]} size="md" />
-                        {logged && (
-                          <span className="lf-rlcheck" aria-label="Logged">
-                            <Icon name="check" size={12} stroke={3} />
-                          </span>
-                        )}
                       </button>
-                    )
-                  })}
-              </div>
-              <button className="lf-link lf-viewall">
-                View all {READING_LIST.total} {READING_LIST.unit || 'titles'} ›
-              </button>
-            </section>
+                    ))}
+                </div>
+              </section>
+
+              <p className="lf-escape">
+                Can&apos;t find a title?{' '}
+                <button className="lf-link" onClick={onManual}>
+                  Log manually
+                </button>{' '}
+                or{' '}
+                <button className="lf-link" onClick={onWithoutTitle}>
+                  Without a Title
+                </button>
+              </p>
+            </>
           )}
-
-          {/* Recently logged */}
-          <section className="lf-panel">
-            <h2 className="lf-panel-title">Recently Logged Titles</h2>
-            <div className="lf-coverrow lf-coverrow--center">
-              {recentlyLogged
-                .filter((id) => books[id])
-                .map((id) => (
-                  <button
-                    key={id}
-                    className="lf-coverbtn"
-                    onClick={() => onPick(books[id])}
-                    title={coverLabel(books[id])}
-                  >
-                    <BookCover book={books[id]} size="md" />
-                  </button>
-                ))}
-            </div>
-          </section>
-
-          <p className="lf-escape">
-            Can&apos;t find a title?{' '}
-            <button className="lf-link" onClick={onManual}>
-              Log manually
-            </button>{' '}
-            or{' '}
-            <button className="lf-link" onClick={onWithoutTitle}>
-              Without a Title
-            </button>
-          </p>
-        </>
+        </div>
       )}
     </div>
   )
@@ -810,9 +891,13 @@ function DetailsStep({
           </label>
         )}
 
+        {/* `md`, not `lg`: this button closes a form whose own controls are
+            44px, and a 56px one next to them read as a different scale. The
+            hero CTAs on the success step stay large — nothing sits beside
+            them to be measured against. */}
         <Button
           variant="primary"
-          size="lg"
+          size="md"
           disabled={!canLog}
           onClick={onSubmit}
           className="lf-logbtn"
@@ -974,38 +1059,31 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
       </h1>
       <p className="lf-success-sub">
         You logged <strong>{amount}</strong> for <strong>{bookTitle}</strong>
-        {result.finished ? ' and finished it. ' : '. '}
-        Your streak is now <strong>1 day</strong> 🔥
+        {result.finished ? ' and finished it.' : '.'}
+        {/* The streak takes its own line: it's a different fact from what was
+            just logged, and a long title pushed it into an awkward wrap. */}
+        <span className="lf-success-streak">
+          Your streak is now <strong>1 day</strong>.
+        </span>
       </p>
 
-      <div className="lf-success-card">
-        <div className="lf-success-stat">
-          <span className="lf-success-statnum">
-            {result.measure === 'minutes' ? result.minutes : result.pages}
-          </span>
-          <span className="lf-success-statlbl">
-            {result.measure === 'minutes' ? 'minutes' : 'pages'}
-          </span>
+      {/* No figure block here: the sentence above already says how much was
+          logged, and repeating it as a big number said nothing new. What is
+          worth confirming is the review, which nothing else mentions. */}
+      {result.review?.text && (
+        <div className="lf-success-review">
+          <Icon name="writing" size={15} /> Review saved
         </div>
-        {result.review?.text && (
-          <div className="lf-success-review">
-            <Icon name="writing" size={15} /> Review saved
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Benny catches the reader here, while the book is still in mind. */}
       {onTalkToBenny ? (
         <>
           <div className="lf-benny">
-            <img src="/bs-prototypes/benny-excited.svg" alt="" className="lf-benny-face" />
-            <div className="lf-benny-copy">
-              <div className="lf-benny-title">Want to tell me about it?</div>
-              <p className="lf-benny-sub">
-                A quick chat about what you just read — I’ll hand you any Book Talk badge you earn
-                along the way.
-              </p>
-            </div>
+            <BennyBubble variant="centered">
+              <strong>Want to tell me about it?</strong> A quick chat about what you just read —
+              I’ll hand you any Book Talk badge you earn along the way.
+            </BennyBubble>
           </div>
           <Button
             variant="primary"
@@ -1023,20 +1101,12 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
         <>
           {/* Same catch-them-here moment, spent on a word from the book. */}
           <div className="lf-benny">
-            <img src="/bs-prototypes/benny-excited.svg" alt="" className="lf-benny-face" />
-            <div className="lf-benny-copy">
-              <div className="lf-benny-title">I found a word in there</div>
-              <p className="lf-benny-sub">
-                One word from {bookTitle}, about ten seconds of your time, and it’s yours to keep.
-              </p>
-            </div>
+            <BennyBubble variant="centered">
+              <strong>I found a word in there.</strong> One word from {bookTitle}, a short round
+              with me, and it’s yours to keep.
+            </BennyBubble>
           </div>
-          <Button
-            variant="primary"
-            size="lg"
-            icon={<Icon name="vocabulary" size={18} />}
-            onClick={() => onOpenWord(result)}
-          >
+          <Button variant="primary" size="lg" onClick={() => onOpenWord(result)}>
             Unlock My Word
           </Button>
           <button className="lf-benny-skip" onClick={onDone}>

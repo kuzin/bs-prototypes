@@ -1,0 +1,110 @@
+/* PageHeader — a port of `.page-header` from the shipped app
+   (bs-product app/assets/stylesheets/microsite/_page_header.scss). */
+
+/* No bottom margin: the page container owns the vertical rhythm via
+   --admin-section-gap, so a margin here would stack on top of it. */
+.page-header {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+/* `.page-header--with-border` */
+.page-header--with-border {
+  border-bottom: 1px solid var(--c-gray-200);
+  padding-bottom: 24px;
+}
+
+/* Not in the app's stylesheet — an additive slot for the leading avatar some
+   of our admin pages show beside the title (e.g. a class or reader crest). */
+.page-header__before {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* `.page-header__heading` — column, 4px gap, left-aligned above 540px */
+.page-header__heading {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 4px;
+  width: auto;
+  min-width: 0;
+  flex: 1;
+}
+
+/* `.page-title`. The admin class view renders its title as a bare `h1`, which
+   `_typography.scss` sets to 30px / $dark-gray — larger than the microsite
+   `.page-title`'s 28px — and that's what the live page shows. */
+.page-title {
+  font-size: 30px;
+  line-height: 1.25;
+  font-weight: 800;
+  color: var(--c-text-real-dark);
+  margin: 0;
+}
+
+/* `.page-title-search` — the subtitle slot: 500 / $gray750. The app sets 22px;
+   20px sits better under our 30px title, so this is a deliberate 2px trim. */
+.page-title-search {
+  display: block;
+  font-size: 20px;
+  line-height: 1.25;
+  font-weight: 500;
+  color: var(--c-gray-750);
+}
+
+/* `.page-header__actions` */
+.page-header__actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  align-self: center;
+  gap: 12px;
+  width: auto;
+  flex-shrink: 0;
+}
+
+@media print {
+  .page-header__actions {
+    display: none;
+  }
+}
+
+/* The heading and the actions each take their own row below 540px.
+   `flex-basis`, not `width`: the base rules give the heading `flex: 1 1 0%` and
+   the actions `flex-shrink: 0`, and a flex item's basis beats its `width`. With
+   only `width: 100%` the two stayed on one line (basis 0 + the actions' own
+   width happens to fill the row exactly, so nothing wrapped), which collapsed
+   the heading to 0 and spilled the title out of its box.
+
+   The app centers both here; we keep them left-aligned, flush with the page
+   gutter and with every block below them. A centered title over a left-aligned
+   back link and left-aligned cards reads as a mistake. */
+@media (max-width: 539px) {
+  .page-header {
+    gap: 0;
+  }
+  .page-header__heading {
+    flex: 1 1 100%;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .page-header__actions {
+    flex: 0 0 100%;
+    justify-content: flex-start;
+    align-self: flex-start;
+    margin-top: 16px;
+  }
+}
+
+@media (max-width: 639px) {
+  .page-title {
+    font-size: 24px;
+  }
+}

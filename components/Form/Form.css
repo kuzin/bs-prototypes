@@ -16,17 +16,21 @@
   min-width: 100px;
 }
 
+/* The shipped app has `label, .label { font-weight: 900; font-size: 16px;
+   margin-bottom: 8px }` (bs-product lib/_forms.scss). We run it a step lighter
+   at 800 and tuck it 6px above the control instead of 8px. */
 .fld-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-slate-700);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.5;
+  color: var(--c-text-real);
 }
 
 /* Self-label: rendered by Input/Select/Textarea when label prop is passed directly */
 .frm-labeled {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 6px;
   width: 100%;
   min-width: 0;
 }
@@ -70,21 +74,21 @@
 }
 
 /* ── Input ──────────────────────────────────────────────────────────────── */
+/* Controls follow the app's form spec: 44px tall, `2px solid $gray300`,
+   radius 10px, 16px text in $textColor, `$gray400` on hover. */
 .inp {
   font: inherit;
   width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
-  color: var(--c-text);
-  transition:
-    border-color 0.12s,
-    box-shadow 0.12s;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
+  color: var(--c-text-real);
+  transition: all 0.13s ease;
 }
 
 .inp:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-400);
 }
 
 .inp:focus {
@@ -104,17 +108,20 @@
 }
 
 .inp--sm {
-  font-size: 13px;
-  padding: 6px 10px;
+  height: 36px;
+  font-size: 14px;
+  padding: 0 10px;
 }
+/* the app's default control */
 .inp--md {
-  font-size: 13px;
-  padding: 8px 12px;
+  height: 44px;
+  font-size: 16px;
+  padding: 0 12px;
 }
 .inp--lg {
-  font-size: 14px;
-  padding: 10px 14px;
-  border-radius: 10px;
+  height: 52px;
+  font-size: 16px;
+  padding: 0 14px;
 }
 
 .inp--error,
@@ -218,25 +225,27 @@
   width: 100%;
 }
 
+/* `select` in the shipped app: 44px tall, `2px solid $gray300`, radius 10px,
+   16px in $textColor at weight 700, `$gray400` on hover
+   (bs-product lib/_forms.scss). */
 .sel {
   font: inherit;
   width: 100%;
   background: #fff;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
-  color: var(--c-text);
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
+  color: var(--c-text-real);
+  font-weight: 700;
   padding-right: 32px;
   cursor: pointer;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  transition:
-    border-color 0.12s,
-    box-shadow 0.12s;
+  transition: all 0.13s ease;
 }
 
 .sel:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-400);
 }
 
 .sel:focus {
@@ -252,20 +261,23 @@
 }
 
 .sel-wrap--sm .sel {
-  font-size: 13px;
-  padding: 6px 10px;
+  height: 36px;
+  font-size: 14px;
+  padding: 0 10px;
   padding-right: 28px;
 }
+/* the app's default control */
 .sel-wrap--md .sel {
-  font-size: 13px;
-  padding: 8px 12px;
+  height: 44px;
+  font-size: 16px;
+  padding: 0 12px;
   padding-right: 32px;
 }
 .sel-wrap--lg .sel {
-  font-size: 14px;
-  padding: 10px 14px;
+  height: 52px;
+  font-size: 16px;
+  padding: 0 14px;
   padding-right: 36px;
-  border-radius: 10px;
 }
 
 .sel-wrap--error .sel {
@@ -1042,4 +1054,9 @@
   min-width: 2.5em;
   text-align: right;
   flex-shrink: 0;
+}
+
+/* `select` is the same control at weight 700 (bs-product lib/_forms.scss). */
+select.inp {
+  font-weight: 700;
 }
