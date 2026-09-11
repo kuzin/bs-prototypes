@@ -6,7 +6,7 @@ import '@components/Modal/Modal.css'
 // side-panel treatment RIS, SfR and Words with Benny already use, rather than a
 // second, bespoke student window. Engagement rides in through the profile's own
 // additive slots: `extraNav`/`renderExtra` for the section, and
-// `renderOverviewTop` for the card that leads the Overview.
+// `renderAfterSummary` for the card that leads the Overview.
 import { StudentProfileView } from '../../student-profile/BeanstackProfile'
 import '../../student-profile/BeanstackProfile.css'
 import '../../ris/components/StudentPanel.css'
@@ -51,7 +51,7 @@ export function StudentProfilePanel({ studentKey, section = null, onClose }) {
               onToggleExpand={() => setExpanded((v) => !v)}
               extraNav={EXTRA_NAV}
               renderExtra={(_section, student) => <StudentSignal student={student} />}
-              renderOverviewTop={(student, onNavigate) => (
+              renderAfterSummary={(student, onNavigate) => (
                 <SignalOverviewCard student={student} onNavigate={() => onNavigate('engagement')} />
               )}
             />

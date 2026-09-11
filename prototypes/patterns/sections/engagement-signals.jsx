@@ -1,8 +1,4 @@
-import {
-  SignalPill,
-  SignalTrajectory,
-  DriverList,
-} from '../../engagement-signals/components/Signal'
+import { SignalPill, DriverList } from '../../engagement-signals/components/Signal'
 import {
   StudentSignal,
   SignalOverviewCard,
@@ -63,63 +59,44 @@ export const engagementSignalsSections = [
   },
   {
     group: 'engagement-signals',
-    id: 'es-trajectory',
-    name: 'SignalTrajectory',
-    desc: (
-      <>
-        The signal month by month, so &ldquo;Declining&rdquo; and &ldquo;declining since
-        March&rdquo; arrive together — a signal with no duration behind it invites acting on one
-        quiet week. Categorical rather than a line, because there is no composite score underneath
-        to plot: this feature deliberately has a direction and its drivers, not a number. The
-        current period carries the outline; everything left of it is history. Each cell names its
-        month and reading on hover. Props: <code>trajectory</code> —{' '}
-        <code>{'[{ label, signal, current }]'}</code>.
-      </>
-    ),
-    render: () => (
-      <>
-        <Variant label="steady — six periods of Consistent (Marcus)">
-          <SignalTrajectory trajectory={MARCUS.trajectory} />
-        </Variant>
-        <Variant label="turning up — declining, flat, then two months of gains (Anne)">
-          <SignalTrajectory trajectory={ANNE.trajectory} />
-        </Variant>
-        <Variant label="turning down — steady until February (Tyler)">
-          <SignalTrajectory trajectory={TYLER.trajectory} />
-        </Variant>
-      </>
-    ),
-  },
-  {
-    group: 'engagement-signals',
     id: 'es-drivers',
     name: 'DriverList / DriverRow',
     desc: (
       <>
-        The six inputs the signal reads, in the ticket&rsquo;s own order: reading frequency and
-        consistency, volume, logging behaviours, Book Talks with Benny, RMI growth, and Words with
-        Benny. Every row is shown for every reader, including the ones that had nothing to say — a
-        teacher asking &ldquo;why does it say Declining?&rdquo; is owed the whole basis, not the
-        flattering half. Two tags carry the reading: <strong>Driving the signal</strong> and{' '}
-        <strong>Points the other way</strong>, so the counter-evidence is on the page rather than
-        smoothed out of it.
+        The six inputs the signal reads: reading frequency and consistency, volume, logging
+        behaviours, Book Talks with Benny, RMI growth, and Words with Benny. Every input is shown
+        for every reader — a teacher asking &ldquo;why does it say Declining?&rdquo; is owed the
+        whole basis, not the flattering half — sorted into what each one did to this reading:{' '}
+        <strong>Lifting the signal</strong>, <strong>Holding it back</strong>,{' '}
+        <strong>No change</strong>. The case for and the case against are two lists, not one list
+        you decode by arrow colour.
         <br />
         <br />
-        The arrow is <code>TrendChip</code>: it says which way the number moved, and its colour says
-        whether that is good news — so a falling flag count is a green down arrow (
-        <code>inverse</code>). A move the signal considers noise draws no chip at all, just{' '}
-        <em>Steady</em>, which is what a Consistent reader should look like. Words with Benny is a
-        site-level feature and off here, so it renders greyed and says what it will contribute once
-        it lands.
+        Each row is the profile&rsquo;s own <code>StatRow</code>, the component every other
+        at-a-glance figure on that panel is drawn with — label left, figure and unit right, trend
+        after it. <code>TrendChip</code> follows the figure and nothing else: up is green, down is
+        red, whatever the figure happens to be, because whether the move is good news is the group
+        heading&rsquo;s job. A move the signal treats as noise draws the same chip in the neutral
+        pair, holding a dash — three states in one box, so the column reads as a column rather than
+        a scatter of arrows with gaps in it. A Consistent reader is a page of them.
+        <br />
+        <br />
+        Words with Benny is site-level — a site either has it or it doesn&rsquo;t, so it can never
+        be live for one reader and not another. With <code>SITE.wordsWithBenny</code> off, the row
+        stays in the list under <strong>Not measured yet</strong>, saying what it will contribute.
       </>
     ),
     render: () => (
       <>
         <Variant label="all six, on a Declining reader (Tyler)">
-          <DriverList drivers={TYLER.drivers} />
+          <div className="pcard bp-card bp-statlist">
+            <DriverList drivers={TYLER.drivers} />
+          </div>
         </Variant>
         <Variant label="a Consistent reader — no arrows, because nothing moved (Marcus)">
-          <DriverList drivers={MARCUS.drivers} />
+          <div className="pcard bp-card bp-statlist">
+            <DriverList drivers={MARCUS.drivers} />
+          </div>
         </Variant>
       </>
     ),
@@ -131,10 +108,17 @@ export const engagementSignalsSections = [
     desc: (
       <>
         The compact form, which leads the profile&rsquo;s Overview through the{' '}
-        <code>renderOverviewTop</code> slot added to <code>StudentProfileView</code> for it. The
-        Overview is where a teacher lands, so the signal has to be legible there — but this is a
-        pointer to the Engagement section, not a second copy of it: the pill, how long it has read
-        that way, the headline, and a way in. Props: <code>student</code>, <code>onNavigate</code>.
+        <code>renderAfterSummary</code> slot added to <code>StudentProfileView</code> for it. It
+        sits directly under &ldquo;Benny says&hellip;&rdquo;, where a teacher has just read the
+        summary the signal is a verdict on — and it is a pointer to the Engagement section, not a
+        second copy of it: the headline, the reading, and a way in.
+        <br />
+        <br />
+        It takes the profile&rsquo;s own titled head row (<code>bp-latest-head</code>), the same one
+        the Daily Goals and Latest titles cards below it use, so the Overview reads as one page
+        rather than a card with a heading of its own invention — and the pill sits at the
+        row&rsquo;s trailing edge, where the stat rows under it put their figure. Props:{' '}
+        <code>student</code>, <code>onNavigate</code>.
       </>
     ),
     render: () => (
@@ -154,12 +138,23 @@ export const engagementSignalsSections = [
     desc: (
       <>
         The Engagement section of the student profile, rendered inside the real profile panel
-        through its <code>extraNav</code>/<code>renderExtra</code> slots. Five cards, in the order
-        the question gets asked: the signal and its trajectory, Benny explaining what is driving it,
-        the six drivers, the questions to ask this reader, and the actions to take. The last two are
-        separate lists because they are separate jobs — the ticket asks for &ldquo;questions{' '}
-        <em>or</em> actions&rdquo;, and a question you can ask in the two minutes you have with a
-        student is not the same artefact as a plan for the term. Props: <code>student</code>.
+        through its <code>extraNav</code>/<code>renderExtra</code> slots. It is one statement
+        followed by its reasons: the reading gets a block of its own, drawn as a three-band scale
+        with the reader&rsquo;s band lit — worst to best, left to right — so it says the signal and
+        what it is a signal out of in the same object. Three bands rather than a gradient, because
+        there are three readings and no continuum underneath. Then the period picker, Benny
+        explaining what is driving the signal (wearing the face that goes with it — <code>sad</code>{' '}
+        for a reader who has stopped, <code>excited</code> for one picking up), the six drivers, the
+        questions to ask, and the actions to take. The last two are separate lists because they are
+        separate jobs.
+        <br />
+        <br />
+        The picker is a compact <code>FilterBar</code> above everything, the same call the
+        Motivation tab makes for its RMI index period: it filters the whole page, so it sits in the
+        bar every other tab filters from rather than inside the first card it changes. Choosing a
+        closed window swaps the headline, the summary and every driver figure for that
+        period&rsquo;s, and drops the questions and actions — both are advice for now, and what to
+        ask in March is not something you can act on. Props: <code>student</code>.
       </>
     ),
     render: () => (
@@ -184,9 +179,10 @@ export const engagementSignalsSections = [
         <br />
         The table sorts on a triage rank rather than the label, so Declining leads and alphabetical
         order can&rsquo;t put Consistent above it — the reason to open the tab is the first thing on
-        it. Each row carries the app&rsquo;s two row actions, opening the real profile on the
-        Overview or on its Reading Log; both are disabled for the roster rows with no profile behind
-        them. Props: <code>onOpenStudent(key, section)</code>.
+        it. A row opens that reader&rsquo;s Engagement section — you were already asking about their
+        signal — and the app&rsquo;s two row actions open the rest of the profile, on the Overview
+        or on its Reading Log. All three are inert for the roster rows with no profile behind them.
+        Props: <code>onOpenStudent(key, section)</code>.
       </>
     ),
     render: () => (

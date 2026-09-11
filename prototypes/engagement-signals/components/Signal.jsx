@@ -1,13 +1,16 @@
 // The signal's vocabulary — the pieces every surface draws it with, so the
 // class table and the profile page can't drift apart. One pill, one trajectory
 // strip, one driver row.
+import { Fragment } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { TrendChip } from '@components/TrendChip/TrendChip'
 import { Tooltip } from '@components/Primitives/Primitives'
 import '@components/TrendChip/TrendChip.css'
 import '@components/Primitives/Primitives.css'
 
-import { SIGNALS, DRIVERS, SITE } from '../data'
+import { StatRow } from '../../student-profile/BeanstackProfile'
+
+import { SIGNALS, DRIVERS, DRIVER_OFF_ACCENT, SITE } from '../data'
 import './Signal.css'
 
 // Benny's prose carries `**…**` around the figures a teacher is scanning for.
@@ -42,124 +45,99 @@ export function SignalPill({ signal, size = 'md', className = '' }) {
 }
 
 /**
- * The signal, month by month. Categorical rather than a line: there is no
- * score underneath to draw, and the question it answers is "is this new?" —
- * which a run of six labelled cells answers better than a trend line would.
+ * One input, and what it contributed — the profile's own `StatRow`, which is
+ * what every other at-a-glance figure on this panel is drawn with: label left,
+ * figure right, trend after it. Building a second row shape for the same job
+ * would put two rhythms on one page.
  */
-export function SignalTrajectory({ trajectory }) {
-  return (
-    <div className="es-traj" role="img" aria-label="Signal by month, oldest first">
-      {trajectory.map((p) => {
-        const s = SIGNALS[p.signal]
-        return (
-          <Tooltip key={p.label} content={`${p.label} — ${s.label}`} className="es-traj-tip">
-            <div className={`es-traj-cell${p.current ? ' es-traj-cell--now' : ''}`}>
-              <span
-                className="es-traj-bar"
-                style={{ '--es-c': s.color, '--es-bg': s.bg }}
-                aria-hidden="true"
-              >
-                <Icon name={s.icon} size={13} stroke={2.8} />
-              </span>
-              <span className="es-traj-label">{p.label}</span>
-            </div>
-          </Tooltip>
-        )
-      })}
-    </div>
-  )
-}
-
-// What the driver did to this reading. `lead` is the ticket's "what is driving
-// the signal"; `counter` is the part that argues the other way, which a
-// teacher needs more than a tidy story does.
-const WEIGHTS = {
-  lead: { label: 'Driving the signal', cls: 'es-weight--lead' },
-  counter: { label: 'Points the other way', cls: 'es-weight--counter' },
-}
-
-/** One input, and what it contributed. */
 export function DriverRow({ driver, data }) {
-  const weight = data ? WEIGHTS[data.weight] : null
   // A driver with nothing behind it is still shown — greyed, and saying why.
   // Dropping the row would leave a teacher guessing whether it was considered.
   const off = !data
 
   return (
-    <div className={`es-driver${off ? ' es-driver--off' : ''}`}>
-      <span className="es-driver-icon" style={{ '--es-c': driver.color }} aria-hidden="true">
-        <Icon name={driver.icon} size={17} />
-      </span>
-
-      <div className="es-driver-main">
-        <div className="es-driver-head">
-          <span className="es-driver-label">{driver.label}</span>
-          {weight && <span className={`es-weight ${weight.cls}`}>{weight.label}</span>}
-        </div>
-
-        {off ? (
-          <div className="es-driver-stat">
-            Not live at this site yet — vocabulary a reader collects by logging will feed the signal
-            once it is.
-          </div>
-        ) : (
-          <>
-            <div className="es-driver-stat">
-              <strong>{data.stat}</strong>
-              {data.prev && <span className="es-driver-prev"> · {data.prev}</span>}
-            </div>
-            <div className="es-driver-note">{data.note}</div>
-          </>
-        )}
-      </div>
-
-      <div className="es-driver-trend">
-        {/* The arrow says which way the number moved; the colour says whether
-            that is good news. So a falling flag count is a green down arrow —
-            hence `inverse` on the rows where fewer is better. */}
-        {data?.delta != null ? (
-          <TrendChip delta={data.delta} format={data.deltaFormat} inverse={data.inverse} />
-        ) : data ? (
-          <span className="es-driver-steady">Steady</span>
-        ) : null}
-      </div>
-    </div>
+    <StatRow
+      icon={driver.icon}
+      accent={off ? DRIVER_OFF_ACCENT : driver.accent}
+      label={driver.label}
+    >
+      {off ? (
+        <span className="bp-statrow-empty">Not live at this site yet</span>
+      ) : (
+        <>
+          <span className="bp-statrow-value">
+            {data.value}
+            {data.unit && <span className="bp-statrow-unit"> {data.unit}</span>}
+          </span>
+          {/* Arrow and colour both follow the figure: up is green, down is red,
+              whatever the figure happens to be. Whether the move is good news
+              is the group heading's job now — so a falling flag count draws a
+              red down arrow under "Lifting the signal", which reads as "this
+              went down, and that's helping". */}
+          {data.delta != null ? (
+            <TrendChip delta={data.delta} format={data.deltaFormat} />
+          ) : (
+            // The same chip as a trend, in the neutral pair — a row that did
+            // not move still gets a mark, so the column reads as a column
+            // rather than a scatter of arrows with gaps in it.
+            <Tooltip content="No change" className="trend-tip">
+              <span className="es-steady" aria-label="No change">
+                <Icon name="minus" size={15} stroke={2.6} />
+              </span>
+            </Tooltip>
+          )}
+        </>
+      )}
+    </StatRow>
   )
 }
 
-/** The six drivers, in the order the ticket lists them. */
-export function DriverList({ drivers }) {
-  return (
-    <div className="es-drivers">
-      {DRIVERS.map((d) => {
-        // Words with Benny is site-level, so it is off for the whole class
-        // until the site has it — never on for one reader and not another.
-        const data = d.key === 'words' && !SITE.wordsWithBenny ? null : drivers[d.key]
-        return <DriverRow key={d.key} driver={d} data={data} />
-      })}
-    </div>
-  )
-}
+// Which way each input pushed. A teacher reading "why Declining?" wants the
+// case for and the case against separated, not a flat list they have to decode
+// arrow colours down. The direction is the driver's own reading — "up" means
+// good for engagement, which is why a falling flag count is an up.
+const GROUPS = [
+  // Colours are the app's own tag pairs — a hue's 50 fill under its 500/800
+  // text, the same pairs the signal pill and `TrendChip` use.
+  { key: 'up', label: 'Lifting the signal', icon: 'arrow-up', color: '#017841', bg: '#CBFCE5' },
+  { key: 'down', label: 'Holding it back', icon: 'arrow-down', color: '#DF3F30', bg: '#FDD2CE' },
+  { key: 'flat', label: 'No change', icon: 'arrow-right', color: '#656565', bg: '#F1F1F1' },
+  { key: 'na', label: 'Not measured yet', icon: 'minus', color: '#656565', bg: '#F1F1F1' },
+]
 
 /**
- * How the signal is worked out, in the words a teacher would use. Every
- * surface that shows the signal can open this, because "where does this come
- * from" is the first question the column gets asked.
+ * The six drivers, in the ticket's order within each group, sorted into what
+ * they did to this reading.
  */
-export function HowItWorks() {
+export function DriverList({ drivers }) {
+  const rows = DRIVERS.map((d) => ({
+    driver: d,
+    // Words with Benny is site-level, so it is off for the whole class until
+    // the site has it — never on for one reader and not another.
+    data: d.key === 'words' && !SITE.wordsWithBenny ? null : drivers[d.key],
+  }))
+
   return (
-    <div className="es-how">
-      <p>
-        The signal compares a reader’s <strong>last 30 days</strong> with the 30 before, across the
-        six inputs below. It reads <strong>change, not standing</strong> — a strong reader holding
-        steady is <em>Consistent</em>, and a striving reader logging more than last month is{' '}
-        <em>Increasing</em>.
-      </p>
-      <p>
-        It needs about <strong>three weeks of logging</strong> before it will say anything, and it
-        won’t move on a single quiet week. Frequency and volume carry the most weight; the other
-        inputs confirm or complicate what those two say.
-      </p>
-    </div>
+    <>
+      {GROUPS.map((g) => {
+        const inGroup = rows.filter((r) => (r.data ? (r.data.direction ?? 'flat') : 'na') === g.key)
+        if (inGroup.length === 0) return null
+        return (
+          <Fragment key={g.key}>
+            {/* A filled band rather than a line of small caps: the point of the
+                grouping is that you can see where one list stops and the next
+                starts without reading either. */}
+            <div className="es-group" style={{ '--es-c': g.color, '--es-bg': g.bg }}>
+              <Icon name={g.icon} size={15} stroke={2.8} />
+              <span className="es-group-label">{g.label}</span>
+              <span className="es-group-count">{inGroup.length}</span>
+            </div>
+            {inGroup.map((r) => (
+              <DriverRow key={r.driver.key} driver={r.driver} data={r.data} />
+            ))}
+          </Fragment>
+        )
+      })}
+    </>
   )
 }

@@ -1076,7 +1076,7 @@ function OverviewStats({ metrics, onOpen, range, onRangeChange }) {
   )
 }
 
-function Overview({ student, onNavigate, goal, renderOverviewTop }) {
+function Overview({ student, onNavigate, goal, renderAfterSummary }) {
   const [range, setRange] = useState('year')
   const ov = student.overview[range]
   const metrics = overviewMetrics(ov)
@@ -1089,17 +1089,18 @@ function Overview({ student, onNavigate, goal, renderOverviewTop }) {
         accent={SECTION_ACCENT.overview.text}
         accentBg={SECTION_ACCENT.overview.bg}
       />
-      {/* An optional slot above the summary, for a prototype that leads the
-          Overview with something of its own (Engagement Signals puts the
-          reader's signal here). It's handed the student and the navigator so
-          it can follow the pager and link into its own section. Left off, the
-          Overview is exactly as it was. */}
-      {renderOverviewTop?.(student, onNavigate)}
       {/* Benny says — the summary leads the page */}
       <Card>
         <SectionHeading>Benny says...</SectionHeading>
         <BennyBubble>{emphasize(student.bennySummary)}</BennyBubble>
       </Card>
+
+      {/* An optional slot under the summary, for a prototype that adds a card
+          of its own near the top of the Overview (Engagement Signals puts the
+          reader's signal here). It's handed the student and the navigator so it
+          can follow the pager and link into its own section. Left off, the
+          Overview is exactly as it was. */}
+      {renderAfterSummary?.(student, onNavigate)}
 
       {/* Overview figures — every one is scoped to the selected range */}
       <OverviewStats metrics={metrics} onOpen={onNavigate} range={range} onRangeChange={setRange} />
@@ -7309,7 +7310,7 @@ function ProfileBody({
   onOpenClass,
   extraNav = [],
   renderExtra,
-  renderOverviewTop,
+  renderAfterSummary,
 }) {
   const extraSections = extraNav.map((n) => n.section)
   // The daily goal lives here because three places read it — the Overview's
@@ -7357,7 +7358,7 @@ function ProfileBody({
                   student={student}
                   onNavigate={onNavigate}
                   goal={goal}
-                  renderOverviewTop={renderOverviewTop}
+                  renderAfterSummary={renderAfterSummary}
                 />
               ) : ANALYSIS_SECTIONS.has(activeSection) ? (
                 <SectionDetail
@@ -7399,7 +7400,7 @@ function ProfileBody({
 // Same rail, same pager, same expand as the standalone: the host only supplies
 // the close handler and, because it owns the panel's width, the expanded flag.
 /**
- * `initialSection`, `extraNav`, `renderExtra`, `renderOverviewTop` and
+ * `initialSection`, `extraNav`, `renderExtra`, `renderAfterSummary` and
  * `overrides` are optional and additive — they let another prototype open the
  * real profile on a section of its own (Words with Benny adds Vocabulary,
  * Engagement Signals adds Engagement and a card at the top of the Overview)
@@ -7415,7 +7416,7 @@ export function StudentProfileView({
   initialSection = null,
   extraNav = [],
   renderExtra,
-  renderOverviewTop,
+  renderAfterSummary,
   overrides,
 }) {
   const [activeSection, setActiveSection] = useState(initialSection)
@@ -7439,7 +7440,7 @@ export function StudentProfileView({
         onSelectStudent={setCurrentKey}
         extraNav={extraNav}
         renderExtra={renderExtra}
-        renderOverviewTop={renderOverviewTop}
+        renderAfterSummary={renderAfterSummary}
       />
     </div>
   )

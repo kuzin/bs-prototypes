@@ -2,116 +2,100 @@
    action-list styles come from the profile's own CSS (`bp-*`); this file is
    only the bits the section adds. */
 
-/* ─── Headline ──────────────────────────────────────────────────────────── */
-.es-headline {
+/* ─── The signal ────────────────────────────────────────────────────────── */
+/* The reading, said outright. A label so you know what you're being told, the
+   word itself at title size in its own colour, and the sentence that qualifies
+   it — then every card below is the answer to "why". */
+.es-heat {
+  display: flex;
+  gap: 5px;
+}
+.es-heat-seg {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 14px;
-}
-.es-headline-text {
+  justify-content: center;
+  gap: 7px;
   flex: 1;
-  min-width: 160px;
-}
-.es-headline-head {
-  color: var(--c-text-real-dark);
-  font-size: var(--text-cell);
-  font-weight: var(--fw-bold);
-}
-.es-headline-since {
-  margin-top: 1px;
-  color: var(--c-text-real-light);
+  min-width: 0;
+  border-radius: var(--radius-md);
+  background: var(--c-gray-150);
+  padding: 11px 8px;
+  color: var(--c-gray-600);
   font-size: var(--text-tag);
-}
-.es-how-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  border: 0;
-  background: none;
-  padding: 0;
-  color: var(--c-accent);
-  font-size: var(--text-micro);
   font-weight: var(--fw-bold);
+  white-space: nowrap;
 }
-.es-how-toggle:hover {
-  color: var(--c-accent-active);
+/* The reader's band: its own tag pair, ringed so it still reads as the one
+   that's lit when the three sit side by side. */
+.es-heat-seg--on {
+  background: var(--es-bg);
+  box-shadow: inset 0 0 0 2px var(--es-c);
+  color: var(--es-c);
+  font-weight: var(--fw-extrabold);
 }
-.es-traj-wrap {
-  margin-top: 14px;
-}
-
-/* ─── Ask the reader ────────────────────────────────────────────────────── */
+/* ─── Ask the reader ───────────────────────────────────────────────────── */
+/* One question per row, on the same 14/18 grid and the same 15px body as the
+   profile's `.bp-action-item` — they sit in consecutive cards, so a smaller
+   list here just read as a footnote to the actions below it. */
 .es-ask {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .es-ask li {
-  display: grid;
-  grid-template-columns: 20px 1fr;
-  gap: 8px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  border-top: 1px solid var(--c-gray-200);
+  padding: 14px 18px;
   color: var(--c-text-real);
-  font-size: var(--text-tag);
-  line-height: 1.5;
+  font-size: var(--text-cell);
+  font-weight: var(--fw-medium);
+  line-height: 1.55;
 }
 .es-ask li svg {
+  flex: none;
   margin-top: 2px;
   color: var(--c-violet-600);
 }
 
 /* ─── The Overview card ─────────────────────────────────────────────────── */
+/* The head row and its link are the profile's own (`bp-latest-head`); this is
+   only the body under it — headline left, signal right. */
 .es-ov {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
+  justify-content: space-between;
   gap: 14px;
 }
-.es-ov-main {
-  flex: 1;
-  min-width: 0;
-}
-.es-ov-top {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-.es-ov-since {
-  color: var(--c-text-real-light);
-  font-size: var(--text-tag);
-  font-weight: var(--fw-semibold);
-}
 .es-ov-head {
-  margin-top: 8px;
+  min-width: 0;
   color: var(--c-text-real-dark);
   font-size: var(--text-cell);
   font-weight: var(--fw-bold);
 }
-.es-ov-why {
-  margin-top: 2px;
-  color: var(--c-text-real-light);
-  font-size: var(--text-tag);
-  line-height: 1.45;
-}
-/* `bp-latest-link` carries the look; it just needs to stop shrinking and stay
-   on the headline's baseline. */
-.es-ov-link {
-  flex: none;
-  margin-top: 4px;
-}
 
-/* On a phone the link goes under the text rather than squeezing the headline
-   into two words per line. */
+/* On a phone the pill drops under the headline rather than squeezing it into
+   two words a line. */
 @media (max-width: 560px) {
   .es-ov {
+    align-items: flex-start;
     flex-direction: column;
     gap: 10px;
   }
-  .es-ov-link {
-    margin-top: 0;
+}
+
+/* On a phone three labelled bands don't fit a row, so they stack — and the
+   scale turns over with them: left-to-right runs worst-to-best, but stacked it
+   has to run best-at-the-top, because up is better on a vertical axis the way
+   right is better on a horizontal one. `column-reverse` rather than reordering
+   the markup, so the DOM keeps one source order for both. */
+@media (max-width: 560px) {
+  .es-heat {
+    flex-direction: column-reverse;
+  }
+  .es-heat-seg {
+    justify-content: flex-start;
+    padding: 9px 12px;
   }
 }

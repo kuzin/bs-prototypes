@@ -23,10 +23,8 @@ export function App() {
     <div className="es-root">
       <div className="es-stage">
         <ClassroomView
-          // A row opens the Overview, where the signal card leads the page and
-          // links into the section — the profile's own behaviour for a row on
-          // the class page, rather than a shortcut past it. The row actions name
-          // their own destination.
+          // The Daily Reading table's own rows still open the Overview; the
+          // Engagement tab's rows name Engagement themselves.
           onStudentClick={openStudent}
           extraTabs={[{ id: 'engagement', label: 'Engagement' }]}
           initialTab="engagement"

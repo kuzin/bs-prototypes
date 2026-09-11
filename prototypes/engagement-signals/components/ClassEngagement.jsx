@@ -71,8 +71,8 @@ export function ClassEngagement({ onOpenStudent }) {
       ),
     },
     {
-      key: 'minsWeek',
-      label: 'Minutes / week',
+      key: 'mins30',
+      label: 'Minutes (30d)',
       align: 'center',
       sortable: true,
       minWidth: 130,
@@ -119,10 +119,11 @@ export function ClassEngagement({ onOpenStudent }) {
 
   return (
     <div className="ce">
-      {/* The same nightly-calculation caveat the Daily Reading tab carries, for
-          the same reason: today's logs aren't in these numbers yet. */}
+      {/* What the column is measuring, and the same nightly-calculation caveat
+          the Daily Reading tab carries — today's logs aren't in it yet. */}
       <Banner level="info">
-        Signals are recalculated nightly. Reading logged today will be reflected tomorrow.
+        Each signal compares a reader’s <strong>last 30 days</strong> with the 30 before, and is
+        recalculated nightly. Reading logged today will be reflected tomorrow.
       </Banner>
 
       <Table
@@ -131,7 +132,10 @@ export function ClassEngagement({ onOpenStudent }) {
         getRowKey={(r) => r.key}
         defaultSortKey="rank"
         defaultSortDir="asc"
-        onRowClick={(r) => r.openable && onOpenStudent?.(r.key)}
+        // Clicked from the Engagement tab, a row lands on the reader's
+        // Engagement section — you were already asking about their signal. The
+        // row actions are how you get to the rest of the profile.
+        onRowClick={(r) => r.openable && onOpenStudent?.(r.key, 'engagement')}
         highlightRow={(r) => r.signal === 'declining'}
         zebra
         scrollX
