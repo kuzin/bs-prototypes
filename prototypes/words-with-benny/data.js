@@ -886,6 +886,38 @@ export const ACTIVITY_TYPES = [
     icon: 'pencil',
     blurb: 'Write a sentence using the word; Benny reads it back.',
   },
+  {
+    id: 'synonym',
+    rung: 'Recognise it',
+    label: 'Find the near-match',
+    short: 'Near-match',
+    icon: 'arrows-exchange',
+    blurb: 'Which everyday word means almost the same thing.',
+  },
+  {
+    id: 'pairs',
+    rung: 'Recognise it',
+    label: 'Match the pairs',
+    short: 'Pairs',
+    icon: 'layout-columns',
+    blurb: 'Words down one side, meanings down the other — tap across.',
+  },
+  {
+    id: 'card',
+    rung: 'Use it',
+    label: 'Pick a card',
+    short: 'Card',
+    icon: 'layers',
+    blurb: 'Turn one over and say whether it uses the word right.',
+  },
+  {
+    id: 'oddoneout',
+    rung: 'Use it',
+    label: 'Spot the odd one',
+    short: 'Odd one',
+    icon: 'circle-x',
+    blurb: 'Four sentences, one of which gets its word wrong.',
+  },
 ]
 
 export const activityType = (id) => ACTIVITY_TYPES.find((t) => t.id === id)
@@ -897,10 +929,10 @@ export const ROUND_LENGTH = 3
 // lands in half of them, so a reader banking several words in a week is neither
 // asked the same question three times nor made to type every single time.
 const ROUNDS = [
-  ['definition', 'sentence', 'write'],
-  ['blank', 'passage', 'write'],
-  ['definition', 'passage', 'sentence'],
-  ['blank', 'sentence', 'passage'],
+  ['definition', 'card', 'write'],
+  ['blank', 'passage', 'sentence'],
+  ['synonym', 'oddoneout', 'write'],
+  ['pairs', 'sentence', 'card'],
 ]
 
 /** The three activities this word takes to collect. */
@@ -920,10 +952,22 @@ export function decoys(word, count = 2) {
   const sameKind = ALL_WORDS.filter((x) => x.word !== word.word && x.part === word.part)
   const pool = sameKind.length >= count ? sameKind : ALL_WORDS.filter((x) => x.word !== word.word)
   const start = word.word.length % pool.length
-  return Array.from({ length: count }, (_, i) => pool[(start + i * 3) % pool.length])
+  // Strided, then filled in sequence. The stride keeps the decoys spread
+  // through the list rather than adjacent; the second pass exists because a
+  // stride alone repeats itself once `count` is large (offsets 0, 3, 6, 9 all
+  // collide in a pool of nine), which put the same chip on screen twice.
+  const out = []
+  for (let i = 0; i < pool.length && out.length < count; i++) {
+    const pick = pool[(start + i * 3) % pool.length]
+    if (!out.includes(pick)) out.push(pick)
+  }
+  for (let i = 0; i < pool.length && out.length < count; i++) {
+    const pick = pool[(start + i) % pool.length]
+    if (!out.includes(pick)) out.push(pick)
+  }
+  return out
 }
 
-/** Match-the-meaning: the word's own meaning against two others'. */
 export function definitionOptions(word) {
   const options = [
     { text: word.meaning, correct: true },
@@ -945,11 +989,13 @@ export function clozeFor(word) {
   return source.replace(hole, '____')
 }
 
-/** Fill-in-the-blank: the word against two others of the same kind. */
+/** Fill-in-the-blank: the word against four others of the same kind. Single
+ *  words are quick to scan, so a three-chip row was a one-in-three guess — this
+ *  makes reading the sentence cheaper than trying them all. */
 export function blankOptions(word) {
   const options = [
     { text: word.word, correct: true },
-    ...decoys(word).map((d) => ({ text: d.word, correct: false })),
+    ...decoys(word, 4).map((d) => ({ text: d.word, correct: false })),
   ]
   return arrange(options, word.word.length + 1)
 }
@@ -1021,14 +1067,15 @@ export const PASSAGES = {
   ),
 }
 
-/** The passage for a book, with the tray it needs: the answers plus two
- *  near-misses, in a stable order. */
+/** The passage for a book, with the tray it needs: the answers plus four
+ *  near-misses, in a stable order. Two extras against three gaps meant the last
+ *  gap could be filled by elimination without reading it. */
 export function passageFor(bookId) {
   const p = PASSAGES[bookId] ?? PASSAGES._default
   const spare = ALL_WORDS.filter((x) => !p.answers.includes(x.word))
   const start = p.answers.join('').length % spare.length
-  const extra = [spare[start].word, spare[(start + 7) % spare.length].word]
-  return { ...p, tray: arrange([...p.answers, ...extra], p.answers.length) }
+  const extra = [0, 7, 13, 19].map((n) => spare[(start + n) % spare.length].word)
+  return { ...p, tray: arrange([...p.answers, ...new Set(extra)], p.answers.length) }
 }
 
 // ─── The writing activity ────────────────────────────────────────────────────
@@ -1238,3 +1285,277 @@ export const WRITING_QUEUE = [
     '2026-06-25',
   ),
 ]
+
+// ─── Near-synonyms ───────────────────────────────────────────────────────────
+// The one thing the synonym activity can't derive: a word the reader plausibly
+// already owns that lands close to this one. Kept as its own map rather than an
+// eighth argument to `w()` — adding a word still costs one entry there, and one
+// line here, which is the trade the rest of this file is built on.
+//
+// Deliberately everyday words. The point is "you know a word for this already",
+// not a thesaurus drill, so `clandestine → secret` rather than `→ surreptitious`.
+
+export const SYNONYMS = {
+  earnest: 'sincere',
+  reluctant: 'unwilling',
+  infatuated: 'smitten',
+  destiny: 'fate',
+  bargain: 'deal',
+  peculiar: 'odd',
+  coincidence: 'fluke',
+  superstition: 'myth',
+  conform: 'comply',
+  resilient: 'tough',
+  clandestine: 'secret',
+  suspicion: 'doubt',
+  defiance: 'resistance',
+  melancholy: 'sadness',
+  heritage: 'tradition',
+  awkward: 'clumsy',
+  mischievous: 'naughty',
+  tyrant: 'dictator',
+  prodigy: 'genius',
+  precept: 'rule',
+  empathy: 'compassion',
+  conspicuous: 'noticeable',
+  desolate: 'barren',
+  futile: 'pointless',
+  ancestor: 'forebear',
+  rivalry: 'competition',
+  legacy: 'inheritance',
+  momentum: 'drive',
+  grief: 'sorrow',
+  solace: 'comfort',
+  imaginary: 'make-believe',
+  resourceful: 'inventive',
+  instinct: 'hunch',
+  provisions: 'supplies',
+  vivid: 'lifelike',
+  narrator: 'storyteller',
+  motive: 'reason',
+}
+
+/** Which everyday word means almost the same — against two that don't. */
+export function synonymOptions(word) {
+  const right = SYNONYMS[word.word]
+  // De-duplicated: two collected words can share a synonym, and the same chip
+  // twice reads as a trick rather than a choice.
+  const others = [
+    ...new Set(
+      ALL_WORDS.filter((x) => x.word !== word.word && SYNONYMS[x.word]).map(
+        (x) => SYNONYMS[x.word],
+      ),
+    ),
+  ].filter((t) => t !== right)
+  const start = word.word.length % others.length
+  const picks = []
+  for (let i = 0; i < others.length && picks.length < 4; i++) {
+    const t = others[(start + i * 5) % others.length]
+    if (!picks.includes(t)) picks.push(t)
+  }
+  const options = [
+    { text: right, correct: true },
+    ...picks.map((text) => ({ text, correct: false })),
+  ]
+  return arrange(options, word.word.length + 2)
+}
+
+// ─── Odd one out ─────────────────────────────────────────────────────────────
+// Four sentences about the *same* word; exactly one misuses it. Every option
+// used to be a different word, which meant a reader could find the odd one by
+// spotting the word they didn't know rather than by reading — the test was of
+// vocabulary breadth, not of this word. Elimination rather than selection: a
+// reader can often pick the right answer out of three without being able to say
+// why the others are wrong, and this asks for the why.
+
+/**
+ * Two more sentences that use each word correctly, on top of the one in its
+ * `check`. The odd-one-out needs them: every option in that activity is a
+ * sentence about the *same* word, so three right uses have to exist before one
+ * wrong one can hide among them.
+ */
+const MORE_USES = {
+  earnest: [
+    'He made an earnest promise to pay back every cent.',
+    'Her earnest questions showed she had actually read the book.',
+  ],
+  reluctant: [
+    'The cat was reluctant to come in out of the rain.',
+    'He gave a reluctant thumbs-up from the back of the room.',
+  ],
+  infatuated: [
+    'She was infatuated with the new drummer for exactly one week.',
+    'Too infatuated to look up, he walked straight into the door.',
+  ],
+  destiny: [
+    'The prophecy claimed her destiny was already written.',
+    'He believed his destiny was waiting somewhere past the mountains.',
+  ],
+  bargain: [
+    'They made a bargain: dishes tonight, laundry tomorrow.',
+    'No bargain is fair if one side has no choice.',
+  ],
+  peculiar: [
+    'He had a peculiar habit of walking backwards up the stairs.',
+    'Something peculiar was happening to the clock in the hall.',
+  ],
+  coincidence: [
+    'It was pure coincidence that we both wore green.',
+    'Two friends sharing a birthday is just a coincidence.',
+  ],
+  superstition: [
+    'Carrying a lucky coin is a superstition he refuses to drop.',
+    'One old superstition says an open umbrella indoors brings bad luck.',
+  ],
+  conform: [
+    'She refused to conform to a dress code she thought was silly.',
+    'New students often conform to whatever the group does first.',
+  ],
+  resilient: [
+    'Resilient plants grow back even after a hard frost.',
+    'He proved resilient, back at practice a week after the injury.',
+  ],
+  clandestine: [
+    'Their clandestine plan fell apart when somebody talked.',
+    'He kept a clandestine notebook nobody else was allowed to read.',
+  ],
+  suspicion: [
+    'A single muddy footprint confirmed her suspicion.',
+    'He watched the empty hallway with growing suspicion.',
+  ],
+  defiance: [
+    'He folded his arms in defiance and refused to move.',
+    'Her defiance cost her a week of detention.',
+  ],
+  melancholy: [
+    'The melancholy song made the whole room go quiet.',
+    'A kind of melancholy follows him around every winter.',
+  ],
+  heritage: [
+    'The festival celebrates the heritage of everyone in town.',
+    'He learned the language to stay close to his heritage.',
+  ],
+  awkward: [
+    'The awkward silence lasted until somebody changed the subject.',
+    'She felt awkward standing alone at the edge of the gym.',
+  ],
+  mischievous: [
+    'A mischievous grin gave away who had moved the chairs.',
+    'His mischievous little brother swapped the sugar and the salt.',
+  ],
+  tyrant: [
+    'The old king ruled as a tyrant for thirty years.',
+    'Nobody spoke up at work, because the manager was a tyrant.',
+  ],
+  prodigy: [
+    'The chess prodigy beat three adults in one afternoon.',
+    'Being a prodigy did not make practice any easier.',
+  ],
+  precept: [
+    'Every classroom had a precept painted above the door.',
+    'His grandfather lived by one simple precept.',
+  ],
+  empathy: [
+    'Empathy is what made him sit with her instead of leaving.',
+    'She listened with real empathy and never once interrupted.',
+  ],
+  conspicuous: [
+    'The new sign was conspicuous from the far end of the street.',
+    'He tried to be quiet, but his boots made him conspicuous.',
+  ],
+  desolate: [
+    'They crossed a desolate plain with no trees for miles.',
+    'The station felt desolate at four in the morning.',
+  ],
+  futile: [
+    'Bailing out the boat with a paper cup was futile.',
+    'It is futile to call a phone that is switched off.',
+  ],
+  ancestor: [
+    'An ancestor of hers built the mill by the river.',
+    'He traced one ancestor back nine generations.',
+  ],
+  rivalry: [
+    'Their rivalry pushed them both to train harder.',
+    'A friendly rivalry grew between the two bakeries.',
+  ],
+  legacy: [
+    'The legacy of that team is still up on the gym wall.',
+    'He wanted his legacy to be more than a trophy.',
+  ],
+  momentum: [
+    'The bus lost momentum halfway up the hill.',
+    'Once the crowd started clapping, the momentum built fast.',
+  ],
+  grief: [
+    'Grief made the house feel twice as large.',
+    'She wrote about her grief in a notebook nobody read.',
+  ],
+  solace: [
+    'He took solace in the fact that everyone else failed too.',
+    'There was some solace in a warm kitchen and an old song.',
+  ],
+  imaginary: [
+    'Her imaginary friend had a name and a birthday.',
+    'The map led to an imaginary island that was never there.',
+  ],
+  resourceful: [
+    'A resourceful camper can start a fire in the rain.',
+    'She was resourceful enough to turn an old crate into a desk.',
+  ],
+  instinct: [
+    'His instinct was to duck before he heard the crash.',
+    'Trust your instinct when a room goes suddenly quiet.',
+  ],
+  provisions: [
+    'Their provisions ran low on the fourth day.',
+    'He loaded the sled with provisions and a spare rope.',
+  ],
+  vivid: [
+    'His vivid description made the room easy to picture.',
+    'She kept a vivid image of that beach all winter.',
+  ],
+  narrator: [
+    'The narrator stops to explain what happened ten years earlier.',
+    'A narrator you cannot trust makes the story twice as good.',
+  ],
+  motive: [
+    'The detective could not find a motive for the theft.',
+    'Her motive was simple: she wanted the job.',
+  ],
+}
+
+export function oddOneOut(word) {
+  const right = [word.check.correct, ...(MORE_USES[word.word] ?? [])].slice(0, 3)
+  const options = [
+    { text: word.check.wrong[0], odd: true },
+    ...right.map((text) => ({ text, odd: false })),
+  ]
+  return arrange(options, word.word.length + 3)
+}
+
+// ─── Pick a card ─────────────────────────────────────────────────────────────
+// Three face-down cards; whichever is turned over gets judged right or wrong.
+// The chance is the point: the reader can't scan three options and pick the
+// familiar-looking one, so they have to read the sentence in front of them.
+
+export function cardDeck(word) {
+  const options = [
+    { text: word.check.correct, correct: true },
+    ...word.check.wrong.map((text) => ({ text, correct: false })),
+  ]
+  return arrange(options, word.word.length + 4)
+}
+
+// ─── Match the pairs ─────────────────────────────────────────────────────────
+// Three words and three meanings, to be paired across two columns. The only
+// activity that makes the reader handle words they collected earlier while
+// learning the new one, which is the repetition the whole round exists for.
+
+export function pairsFor(word, bookId) {
+  const fromBook = (WORDS_BY_BOOK[bookId] ?? []).filter((x) => x.word !== word.word)
+  const spare = ALL_WORDS.filter((x) => x.word !== word.word && x.bookId !== bookId)
+  const start = word.word.length % spare.length
+  const others = [...fromBook, spare[start], spare[(start + 6) % spare.length]].slice(0, 2)
+  return [word, ...others].map((w) => ({ word: w.word, meaning: w.meaning }))
+}

@@ -156,17 +156,26 @@ export const wordsWithBennySections = [
     name: 'Activity',
     desc: (
       <>
-        The five ways Benny asks about a word, behind one dispatcher. All take <code>type</code> /{' '}
+        The nine ways Benny asks about a word, behind one dispatcher. All take <code>type</code> /{' '}
         <code>word</code> / <code>bookId</code> / <code>onPass</code> and report the same{' '}
         <code>{'{ firstTry }'}</code>, so <code>WordUnlock</code> can string any three together
         without knowing which is which.
         <br />
         <br />
-        They climb a ladder — <strong>recognise it</strong> (match the meaning, fill in the blank),{' '}
-        <strong>use it</strong> (pick the right sentence, finish the passage),{' '}
-        <strong>produce it</strong> (write your own) — and a round never repeats a rung. Only the
-        passage and the writing check need authored content: the two multiple-choice bodies and the
-        cloze are derived from the word itself, so adding a word still costs one entry.
+        They climb a ladder — <strong>recognise it</strong> (match the meaning, fill in the blank,
+        find the near-match, match the pairs), <strong>use it</strong> (pick the right sentence,
+        finish the passage, pick a card, spot the odd one), <strong>produce it</strong> (write your
+        own) — and a round never repeats a rung. Four of them are the same choose-from-a-list shape,
+        so the newer ones deliberately aren&apos;t: <em>pick a card</em> deals one sentence face
+        down and asks for a yes/no on that one alone, <em>spot the odd one</em> is elimination
+        rather than selection, and <em>match the pairs</em> is the only rung that puts several words
+        in play at once — the new one shuffled in with two collected earlier, which is the
+        repetition the whole round exists for.
+        <br />
+        <br />
+        Only the passage, the writing check and the near-match need authored content — and the
+        near-match only one everyday word per entry, kept in its own <code>SYNONYMS</code> map.
+        Everything else is derived from the word itself, so adding a word still costs one entry.
         <br />
         <br />
         The passage is <strong>tap-then-tap first</strong>, with native drag as an enhancement —

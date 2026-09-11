@@ -7,16 +7,21 @@ import '@components/Button/Button.css'
 import {
   BOOKS,
   blankOptions,
+  cardDeck,
   clozeFor,
   checkSentence,
   definitionOptions,
+  arrange,
+  oddOneOut,
+  pairsFor,
   passageFor,
+  synonymOptions,
   wordByName,
 } from '../data'
 import './WordUnlock.css'
 import './Activities.css'
 
-// The five ways Benny asks about a word. Every one takes the same props and
+// The nine ways Benny asks about a word. Every one takes the same props and
 // reports the same thing, so the round that strings three of them together
 // doesn't need to know which is which:
 //
@@ -40,6 +45,29 @@ function Nudge({ children }) {
     <BennyBubble avatar="/bs-prototypes/benny-thinking.svg" className="wb-nudge">
       {children}
     </BennyBubble>
+  )
+}
+
+/**
+ * A sentence with the vocab word picked out in bold. Every option in the
+ * odd-one-out is now a sentence about the same word, so without this the reader
+ * has to hunt for it four times over before they can start judging anything.
+ * The pattern is stem-based on purpose: the misuse sentences lean on inflected
+ * forms ("bargained", "tyranted") that a whole-word match would walk past — and
+ * a trailing y goes too, since that's the letter the inflections eat
+ * ("melancholy" turns up as "melancholied", "prodigy" as "prodigied").
+ */
+function Marked({ text, word }) {
+  const stem = word.replace(/[sy]$/, '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const parts = text.split(new RegExp(`(${stem}[a-z\u2019']*)`, 'gi'))
+  return parts.map((part, i) =>
+    i % 2 ? (
+      <strong key={i} className="wb-marked">
+        {part}
+      </strong>
+    ) : (
+      part
+    ),
   )
 }
 
@@ -200,7 +228,9 @@ export function SentenceCheck({ word, onPass }) {
 // on a Chromebook trackpad or a tablet will actually do, and it's the path a
 // keyboard can follow.
 
-export function PassageDrag({ word, bookId, onPass }) {
+/* Takes no `word`: the passage is about the book, and every gap in it matters
+   equally — singling out today's word told the reader which one to place first. */
+export function PassageDrag({ bookId, onPass }) {
   const { text, answers, tray } = useMemo(() => passageFor(bookId), [bookId])
   const [slots, setSlots] = useState(() => answers.map(() => null))
   const [held, setHeld] = useState(null) // a word picked up, waiting for a slot
@@ -267,17 +297,13 @@ export function PassageDrag({ word, bookId, onPass }) {
       <div className="wb-tray" role="group" aria-label="Words to place">
         {tray.map((t) => {
           const used = placed.has(t)
-          // The word being collected today is marked, so the activity reads as
-          // "here's your new one among the ones you already have" rather than
-          // as a pop quiz on five words at once.
-          const isNew = t === word.word
           return (
             <button
               key={t}
               draggable={!used}
               className={`wb-chip wb-chip--drag${held === t ? ' is-held' : ''}${
                 used ? ' is-used' : ''
-              }${isNew ? ' is-new' : ''}`}
+              }`}
               disabled={used || solved}
               aria-pressed={held === t}
               onClick={() => setHeld(held === t ? null : t)}
@@ -289,7 +315,6 @@ export function PassageDrag({ word, bookId, onPass }) {
             >
               <Icon name="grip" size={13} />
               {t}
-              {isNew && <span className="wb-chip-new">new</span>}
             </button>
           )
         })}
@@ -367,6 +392,266 @@ export function SentenceWrite({ word, onPass }) {
   )
 }
 
+/* ── 6. Find the near-match ───────────────────────────────────────────────── */
+// The recognition rung from a third angle: not what it means in a sentence, but
+// which word you already own that sits closest to it.
+
+export function SynonymCheck({ word, onPass }) {
+  const options = useMemo(() => synonymOptions(word), [word])
+  return (
+    <div className="wb-act">
+      <Prompt>
+        Which word means almost the same as <strong>{word.word}</strong>?
+      </Prompt>
+      <div className="wb-chips wb-chips--wide" role="radiogroup" aria-label="Pick a word">
+        <ChipChoices options={options} onPass={onPass} />
+      </div>
+    </div>
+  )
+}
+
+/** The chip row three activities share — same contract as <Choices>. */
+function ChipChoices({ options, onPass }) {
+  const [picked, setPicked] = useState(null)
+  const [misses, setMisses] = useState(0)
+  const done = picked !== null && options[picked].correct
+
+  return (
+    <>
+      {options.map((o, i) => (
+        <button
+          key={o.text}
+          role="radio"
+          aria-checked={picked === i}
+          className={`wb-chip${picked === i ? (o.correct ? ' is-right' : ' is-wrong') : ''}`}
+          disabled={done}
+          onClick={() => {
+            setPicked(i)
+            if (o.correct) onPass({ firstTry: misses === 0 })
+            else setMisses((m) => m + 1)
+          }}
+        >
+          {o.text}
+        </button>
+      ))}
+      {picked !== null && !done && <Nudge>Not that one — try another.</Nudge>}
+    </>
+  )
+}
+
+/* ── 7. Spot the odd one ──────────────────────────────────────────────────── */
+// Elimination rather than selection. A reader can often pick the right answer
+// out of three without being able to say why the other two are wrong; this asks
+// for exactly that, over sentences that all look plausible at a glance.
+
+export function OddOneOut({ word, onPass }) {
+  const options = useMemo(() => oddOneOut(word), [word])
+  const [picked, setPicked] = useState(null)
+  const [misses, setMisses] = useState(0)
+  const done = picked !== null && options[picked].odd
+
+  return (
+    <div className="wb-act">
+      <Prompt>
+        Three of these use <strong>{word.word}</strong> right. Which one doesn’t?
+      </Prompt>
+      <div className="wb-check-options" role="radiogroup" aria-label="Pick the wrong sentence">
+        {options.map((o, i) => {
+          const isPicked = picked === i
+          const state = !isPicked ? '' : o.odd ? ' is-right' : ' is-wrong'
+          return (
+            <button
+              key={o.text}
+              role="radio"
+              aria-checked={isPicked}
+              className={`wb-option${state}`}
+              disabled={done}
+              onClick={() => {
+                setPicked(i)
+                if (o.odd) onPass({ firstTry: misses === 0 })
+                else setMisses((m) => m + 1)
+              }}
+            >
+              <span className="wb-option-mark" aria-hidden="true">
+                {isPicked && <Icon name={o.odd ? 'check' : 'x'} size={14} stroke={2.6} />}
+              </span>
+              <span className="wb-option-text">
+                <Marked text={o.text} word={word.word} />
+              </span>
+            </button>
+          )
+        })}
+      </div>
+      {picked !== null && !done && <Nudge>That one’s fine, actually. Keep looking.</Nudge>}
+    </div>
+  )
+}
+
+/* ── 8. Pick a card ───────────────────────────────────────────────────────── */
+// Chance, then a judgement. Three face-down cards mean the reader can't scan
+// the options and pick whichever looks most familiar — they get the sentence
+// they get, and have to decide about that one on its own terms.
+
+export function PickACard({ word, onPass }) {
+  const deck = useMemo(() => cardDeck(word), [word])
+  const [turned, setTurned] = useState(null)
+  const [verdict, setVerdict] = useState(null) // what the reader said
+  const [misses, setMisses] = useState(0)
+
+  const card = turned !== null ? deck[turned] : null
+  const settled = verdict !== null && verdict === card?.correct
+
+  function judge(saysCorrect) {
+    setVerdict(saysCorrect)
+    if (saysCorrect === card.correct) onPass({ firstTry: misses === 0 })
+    else setMisses((m) => m + 1)
+  }
+
+  return (
+    <div className="wb-act">
+      <Prompt>
+        {turned === null ? (
+          <>Turn over a card.</>
+        ) : (
+          <>
+            Does this use <strong>{word.word}</strong> the right way?
+          </>
+        )}
+      </Prompt>
+
+      {turned === null ? (
+        <div className="wb-deck" role="group" aria-label="Three cards, face down">
+          {deck.map((c, i) => (
+            <button
+              key={c.text}
+              className="wb-deck-card"
+              aria-label={`Card ${i + 1}`}
+              onClick={() => setTurned(i)}
+            >
+              <Icon name="vocabulary" size={26} stroke={1.5} />
+            </button>
+          ))}
+        </div>
+      ) : (
+        <>
+          <p className={`wb-drawn${settled ? (card.correct ? ' is-right' : ' is-wrong') : ''}`}>
+            {card.text}
+          </p>
+          <div className="wb-verdicts">
+            <button
+              className={`wb-chip${verdict === true ? (card.correct ? ' is-right' : ' is-wrong') : ''}`}
+              disabled={settled}
+              onClick={() => judge(true)}
+            >
+              <Icon name="check" size={15} stroke={2.4} /> It does
+            </button>
+            <button
+              className={`wb-chip${verdict === false ? (!card.correct ? ' is-right' : ' is-wrong') : ''}`}
+              disabled={settled}
+              onClick={() => judge(false)}
+            >
+              <Icon name="x" size={15} stroke={2.4} /> It doesn’t
+            </button>
+          </div>
+          {verdict !== null && !settled && (
+            <Nudge>
+              {card.correct
+                ? 'That one’s actually fine — read it once more.'
+                : 'Look again: that sentence doesn’t match what the word means.'}
+            </Nudge>
+          )}
+        </>
+      )}
+    </div>
+  )
+}
+
+/* ── 9. Match the pairs ───────────────────────────────────────────────────── */
+// Two columns, everything face up: tap a word on the left, tap its meaning on
+// the right. Duolingo's shape, and the right one here — a face-down memory grid
+// tested recall of *where a card was*, which is a different skill from the one
+// this round is about. It's still the only rung that puts several words in play
+// at once: the new word is shuffled in with two the reader collected earlier,
+// so learning this one means handling those again.
+
+export function PairMatch({ word, bookId, onPass }) {
+  const pairs = useMemo(() => pairsFor(word, bookId), [word, bookId])
+
+  // The two columns are shuffled independently, or the answer would be to read
+  // straight across.
+  const words = useMemo(() => arrange(pairs, word.word.length), [pairs, word])
+  const meanings = useMemo(() => arrange(pairs, word.word.length + 2), [pairs, word])
+
+  const [pickedWord, setPickedWord] = useState(null)
+  const [matched, setMatched] = useState([])
+  const [wrong, setWrong] = useState(null) // the pair of ids that just missed
+  const [misses, setMisses] = useState(0)
+
+  function tapWord(p) {
+    if (matched.includes(p.word)) return
+    setPickedWord(pickedWord === p.word ? null : p.word)
+    setWrong(null)
+  }
+
+  function tapMeaning(p) {
+    if (!pickedWord || matched.includes(p.word)) return
+    if (p.word === pickedWord) {
+      const done = [...matched, p.word]
+      setMatched(done)
+      setPickedWord(null)
+      if (done.length === pairs.length) onPass({ firstTry: misses === 0 })
+    } else {
+      setMisses((m) => m + 1)
+      setWrong({ word: pickedWord, meaning: p.word })
+      setPickedWord(null)
+      setTimeout(() => setWrong(null), 600)
+    }
+  }
+
+  const state = (id, kind) => {
+    if (matched.includes(id)) return ' is-matched'
+    if (wrong && wrong[kind] === id) return ' is-wrong'
+    if (kind === 'word' && pickedWord === id) return ' is-picked'
+    return ''
+  }
+
+  return (
+    <div className="wb-act">
+      <Prompt>Tap a word, then tap what it means.</Prompt>
+      <div className="wb-pairs">
+        <div className="wb-pairs-col" role="group" aria-label="Words">
+          {words.map((p) => (
+            <button
+              key={p.word}
+              className={`wb-pair wb-pair--word${state(p.word, 'word')}`}
+              disabled={matched.includes(p.word)}
+              aria-pressed={pickedWord === p.word}
+              onClick={() => tapWord(p)}
+            >
+              {p.word}
+            </button>
+          ))}
+        </div>
+        <div className="wb-pairs-col" role="group" aria-label="Meanings">
+          {meanings.map((p) => (
+            <button
+              key={p.word}
+              className={`wb-pair${state(p.word, 'meaning')}`}
+              disabled={matched.includes(p.word)}
+              onClick={() => tapMeaning(p)}
+            >
+              {p.meaning}
+            </button>
+          ))}
+        </div>
+      </div>
+      {misses > 0 && matched.length < pairs.length && (
+        <Nudge>Not those two — the meaning belongs to one of the others.</Nudge>
+      )}
+    </div>
+  )
+}
+
 /* ── The dispatcher ───────────────────────────────────────────────────────── */
 
 const BY_TYPE = {
@@ -375,6 +660,10 @@ const BY_TYPE = {
   sentence: SentenceCheck,
   passage: PassageDrag,
   write: SentenceWrite,
+  synonym: SynonymCheck,
+  oddoneout: OddOneOut,
+  card: PickACard,
+  pairs: PairMatch,
 }
 
 export function Activity({ type, word, bookId, onPass }) {

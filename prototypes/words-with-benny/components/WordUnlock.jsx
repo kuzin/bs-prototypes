@@ -134,6 +134,24 @@ export function WordUnlock({
               </div>
             </header>
 
+            {/* How far through, as a meter rather than the named steps this
+                used to carry: three labelled pills announced what was coming
+                and read as a form to complete, where a bar just says you're
+                getting somewhere. Only when there's more than one rung — a
+                single-activity round has no progress to report. */}
+            {round.length > 1 && (
+              <div
+                className="wb-meter"
+                role="progressbar"
+                aria-valuemin={0}
+                aria-valuemax={round.length}
+                aria-valuenow={step + (cleared ? 1 : 0)}
+                aria-label={`Step ${step + 1} of ${round.length}`}
+              >
+                <span style={{ width: `${((step + (cleared ? 1 : 0)) / round.length) * 100}%` }} />
+              </div>
+            )}
+
             <div className="wb-check">
               <Activity type={round[step]} word={word} bookId={bookId} onPass={passed} />
 

@@ -121,30 +121,7 @@
 .wb-chip--drag.is-held .tabler-icon {
   color: rgba(255, 255, 255, 0.6);
 }
-.wb-chip--drag.is-new {
-  border-color: #a78bfa;
-  border-style: solid;
-}
-.wb-chip-new {
-  padding: 1px 6px;
-  font-size: 9.5px;
-  font-weight: 900;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #7c3aed;
-  border-radius: 999px;
-}
-.wb-chip--drag.is-held .wb-chip-new {
-  color: #6d28d9;
-  background: #fff;
-}
-.wb-chip--drag.is-used .wb-chip-new {
-  color: #fff;
-  background: #cbd5e1;
-}
-
-.wb-chip--drag.is-used {
+.wb-chip--drag.is-held .wb-chip--drag.is-used .wb-chip--drag.is-used {
   color: #cbd5e1;
   background: #f8fafc;
   border-color: #eef2f7;
@@ -298,4 +275,159 @@
   .wb-gap {
     min-width: 88px;
   }
+}
+
+/* ─── Find the near-match ────────────────────────────────────────────────── */
+/* Synonyms are single words, so they get a wider chip than the fill-in-the-blank
+   row — there's no sentence around them to lend context. */
+.wb-chips--wide .wb-chip {
+  padding: 11px 18px;
+  font-size: 15.5px;
+}
+
+/* ─── Pick a card ────────────────────────────────────────────────────────── */
+
+.wb-deck {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+}
+.wb-deck-card {
+  display: grid;
+  place-items: center;
+  height: 96px;
+  color: #a78bfa;
+  background: linear-gradient(150deg, #f5f3ff, #ede9fe);
+  border: 1.5px solid #ddd6fe;
+  border-radius: 14px;
+  transition:
+    transform 130ms ease,
+    border-color 130ms ease;
+}
+.wb-deck-card:hover {
+  border-color: #a78bfa;
+  transform: translateY(-2px);
+}
+
+/* The sentence the reader turned over. Bigger than an option in a list — it's
+   the only thing to read, and the judgement is about this one alone. */
+.wb-drawn {
+  margin-top: 14px;
+  padding: 18px 20px;
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #334155;
+  text-align: center;
+  background: #f8fafc;
+  border: 1.5px solid #e8eef5;
+  border-radius: 14px;
+  animation: wb-act-in 220ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+.wb-drawn.is-right {
+  color: #065f46;
+  background: #ecfdf5;
+  border-color: #34d399;
+}
+.wb-drawn.is-wrong {
+  color: #7f1d1d;
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.wb-verdicts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 12px;
+}
+.wb-verdicts .wb-chip {
+  justify-content: center;
+  padding: 12px;
+  font-size: 15px;
+}
+
+/* ─── Match the pairs ────────────────────────────────────────────────────── */
+
+.wb-pairs {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.wb-pairs-col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+/* Both columns stretch their buttons to the same heights, so a long meaning
+   doesn't leave its own row taller than the word it pairs with. */
+.wb-pairs-col > * {
+  flex: 1 1 0;
+}
+
+.wb-pair {
+  display: flex;
+  align-items: center;
+  padding: 11px 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #475569;
+  text-align: left;
+  background: #fff;
+  border: 1.5px solid #dbe4ee;
+  border-radius: 12px;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+.wb-pair:hover:not(:disabled) {
+  background: #faf7ff;
+  border-color: #c4b5fd;
+}
+.wb-pair:disabled {
+  cursor: default;
+}
+.wb-pair--word {
+  justify-content: center;
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #5b21b6;
+  text-align: center;
+}
+/* Picked and waiting for its other half. */
+.wb-pair.is-picked {
+  color: #fff;
+  background: #7c3aed;
+  border-color: #7c3aed;
+}
+.wb-pair.is-matched {
+  color: #047857;
+  background: #ecfdf5;
+  border-color: #6ee7b7;
+}
+.wb-pair.is-wrong {
+  color: #7f1d1d;
+  background: #fef2f2;
+  border-color: #fca5a5;
+  animation: wb-gap-off 400ms ease;
+}
+
+@media (max-width: 520px) {
+  .wb-deck {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .wb-verdicts {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* The vocab word inside an option sentence. Purple rather than just heavier —
+   at 13.5px a weight change alone barely reads, and the same purple already
+   marks the word everywhere else in the round. */
+.wb-marked {
+  font-weight: 800;
+  color: #7c3aed;
 }
