@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
+import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import '@components/Button/Button.css'
 
 import {
@@ -32,12 +33,13 @@ function Prompt({ children }) {
   return <p className="wb-check-prompt">{children}</p>
 }
 
+/* Benny saying "not that one" — so it's the design system's bubble, wearing
+   his thinking face rather than the neutral avatar. */
 function Nudge({ children }) {
   return (
-    <p className="wb-nudge">
-      <img src="/bs-prototypes/benny-thinking.svg" alt="" className="wb-nudge-benny" />
+    <BennyBubble avatar="/bs-prototypes/benny-thinking.svg" className="wb-nudge">
       {children}
-    </p>
+    </BennyBubble>
   )
 }
 

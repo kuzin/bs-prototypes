@@ -273,6 +273,12 @@ export const sfrSections = [
         last run on …" line below the bubble.
         <br />
         <br />
+        <code>avatar</code> swaps the face: Benny has a set of them — excited, thinking, laughing —
+        and which one he&apos;s wearing is part of what he&apos;s saying, so a bubble that corrects
+        you shouldn&apos;t use the same portrait as one that praises you. The word unlock&apos;s
+        wrong-answer nudge passes the thinking face.
+        <br />
+        <br />
         <code>variant="side"</code> (the default) is the chat shape — avatar left, bubble beside it,
         copy ranged left. It belongs in a left-aligned page or card. <code>variant="centered"</code>{' '}
         stacks Benny above the bubble with the tail pointing up at him and the copy centred, for a

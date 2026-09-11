@@ -205,7 +205,11 @@ function StreakBanner({ streak, onLog }) {
           </>
         )}
       </div>
-      <Button variant="secondary" size="sm" onClick={onLog}>
+      {/* `accent`, not `danger`: this wants the banner's red, but nothing here
+          is destructive and a red button that means "delete" everywhere else
+          shouldn't also mean "view my streaks". The accent variant takes the
+          colour and leaves the semantics alone. */}
+      <Button variant="accent" accent="#DC2626" size="sm" onClick={onLog}>
         {has ? 'Log Today' : 'View Streaks'}
       </Button>
     </div>

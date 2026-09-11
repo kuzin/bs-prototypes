@@ -12,9 +12,9 @@
   align-items: center;
   justify-content: center;
   overflow-y: auto;
-  background:
-    radial-gradient(900px 520px at 50% -8%, rgba(124, 58, 237, 0.5), transparent 70%),
-    linear-gradient(180deg, #1b1436 0%, #120e26 100%);
+  /* One flat ground, no gradient. The wash read as a vignette behind a white
+     card that is already the focus — it drew the eye to the corners. */
+  background: #161231;
 }
 
 .wb-unlock-close {
@@ -286,18 +286,26 @@
   border-color: #ef4444;
 }
 
+/* A <BennyBubble> wearing the "not quite" tint — the app's own amber tag pair,
+   so a correction is visibly a different kind of remark from Benny's other
+   bubbles without being an error state. */
 .wb-nudge {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  margin-top: 12px;
+  margin-top: 14px;
+}
+.wb-nudge .benny-bubble-avatar {
+  width: 34px;
+  height: 34px;
+}
+.wb-nudge .benny-bubble {
+  padding: 10px 13px;
   font-size: 13.5px;
   font-weight: 700;
+  line-height: 1.45;
   color: #92400e;
+  background: #fef3c7;
 }
-.wb-nudge-benny {
-  width: 26px;
-  height: 26px;
+.wb-nudge .benny-bubble::before {
+  border-right-color: #fef3c7;
 }
 
 .wb-card > .btn {
