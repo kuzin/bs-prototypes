@@ -898,16 +898,15 @@
 /* ─── Optional Benny hand-off (`onTalkToBenny` / `onOpenWord`) ──────────────
    Benny catching the reader right after a log, while the book is still fresh —
    a self-started Book Talk, or the vocabulary word the log just unlocked. */
+/* Benny's handoff sits on the page, not in a panel: this screen is already one
+   centred column of copy, and boxing the last line of it made the next beat
+   look like an ad for itself rather than the obvious thing to do next. */
 .lf-benny {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 13px;
   width: min(420px, 100%);
-  margin: 4px 0 18px;
-  padding: 14px 16px;
-  border-radius: 14px;
-  border: 1.5px solid #cdeae7;
-  background: linear-gradient(120deg, #f0fdfa 0%, #ecfdf5 100%);
+  margin: 10px 0 20px;
   text-align: left;
 }
 .lf-benny-face {
@@ -924,10 +923,12 @@
   font-weight: 800;
   color: #0b5d58;
 }
+/* Body copy now that there's no tinted ground to sit on — the same grey as the
+   sentence above it, so the column reads as one voice. */
 .lf-benny-sub {
-  font-size: 13px;
+  font-size: 13.5px;
   line-height: 1.45;
-  color: #0c6b65;
+  color: #495057;
   margin-top: 2px;
 }
 .lf-benny-skip {

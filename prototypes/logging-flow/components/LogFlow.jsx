@@ -975,7 +975,7 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
       <p className="lf-success-sub">
         You logged <strong>{amount}</strong> for <strong>{bookTitle}</strong>
         {result.finished ? ' and finished it. ' : '. '}
-        Your streak is now <strong>1 day</strong> 🔥
+        Your streak is now <strong>1 day</strong>.
       </p>
 
       {/* No figure block here: the sentence above already says how much was
@@ -1024,12 +1024,7 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
               </p>
             </div>
           </div>
-          <Button
-            variant="primary"
-            size="lg"
-            icon={<Icon name="vocabulary" size={18} />}
-            onClick={() => onOpenWord(result)}
-          >
+          <Button variant="primary" size="lg" onClick={() => onOpenWord(result)}>
             Unlock My Word
           </Button>
           <button className="lf-benny-skip" onClick={onDone}>
