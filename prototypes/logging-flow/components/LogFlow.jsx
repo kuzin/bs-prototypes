@@ -978,21 +978,14 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
         Your streak is now <strong>1 day</strong> 🔥
       </p>
 
-      <div className="lf-success-card">
-        <div className="lf-success-stat">
-          <span className="lf-success-statnum">
-            {result.measure === 'minutes' ? result.minutes : result.pages}
-          </span>
-          <span className="lf-success-statlbl">
-            {result.measure === 'minutes' ? 'minutes' : 'pages'}
-          </span>
+      {/* No figure block here: the sentence above already says how much was
+          logged, and repeating it as a big number said nothing new. What is
+          worth confirming is the review, which nothing else mentions. */}
+      {result.review?.text && (
+        <div className="lf-success-review">
+          <Icon name="writing" size={15} /> Review saved
         </div>
-        {result.review?.text && (
-          <div className="lf-success-review">
-            <Icon name="writing" size={15} /> Review saved
-          </div>
-        )}
-      </div>
+      )}
 
       {/* Benny catches the reader here, while the book is still in mind. */}
       {onTalkToBenny ? (

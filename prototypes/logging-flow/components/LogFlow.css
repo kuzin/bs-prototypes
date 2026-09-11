@@ -870,42 +870,19 @@
 .lf-success-sub strong {
   color: #1f2933;
 }
-.lf-success-card {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  background: #f6f7f8;
-  border-radius: 16px;
-  padding: 18px 28px;
-  margin: 6px 0;
-}
-.lf-success-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-.lf-success-statnum {
-  font-size: 30px;
-  font-weight: 900;
-  color: #1a6dd5;
-  line-height: 1;
-}
-.lf-success-statlbl {
-  font-size: 12px;
-  font-weight: 700;
-  color: #868e96;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
+/* Stands on its own now the figure block it used to sit beside is gone, so it
+   carries its own ground instead of a divider rule. */
 .lf-success-review {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  margin: 4px 0;
+  padding: 7px 14px;
   font-size: 13px;
   font-weight: 700;
   color: #16a97a;
-  border-left: 1px solid #e0e3e6;
-  padding-left: 18px;
+  background: #eafaf4;
+  border-radius: 999px;
 }
 
 /* Search-result badge for a partner-catalog title. */

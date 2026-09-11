@@ -36,10 +36,17 @@ const INHERITED_COVER_IDS = {
 }
 
 // Anything with a `partner` lives in a linked app's catalog — drop those.
+//
+// `readable` goes too, on every title. It marks a book with a digital edition
+// you can open in Beanstack's own reader, which puts a read-or-log fork in
+// front of picking a title — a whole second thing to explain in a demo that is
+// about what happens *after* a log. It's data-driven, so dropping the flag
+// takes the corner chip, the callout and the reader path with it.
 const PLAIN_BOOKS = Object.fromEntries(
   Object.entries(LF_BOOKS)
     .filter(([, b]) => !b.partner)
-    .map(([id, b]) => [
+    // eslint-disable-next-line no-unused-vars
+    .map(([id, { readable, ...b }]) => [
       id,
       INHERITED_COVER_IDS[id] ? { ...b, coverId: INHERITED_COVER_IDS[id] } : b,
     ]),
@@ -64,7 +71,6 @@ export const BOOKS = {
     cover: ['#3B82F6', '#93C5FD'],
     measure: 'minutes',
     pages: 320,
-    readable: true,
   },
   holes: {
     id: 'holes',
@@ -83,7 +89,6 @@ export const BOOKS = {
     cover: ['#C2410C', '#7C2D12'],
     measure: 'minutes',
     pages: 240,
-    readable: true,
   },
   terabithia: {
     id: 'terabithia',
@@ -102,7 +107,6 @@ export const BOOKS = {
     cover: ['#166534', '#0F766E'],
     measure: 'minutes',
     pages: 208,
-    readable: true,
   },
 }
 
