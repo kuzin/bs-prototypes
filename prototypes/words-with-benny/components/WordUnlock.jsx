@@ -11,10 +11,13 @@ import './WordUnlock.css'
 // the book that was just logged, and the reader banks it by working through a
 // short round of activities.
 //
-// Four beats:
-//   knock   Benny turns up with a sealed word card. One tap to open it.
-//   card    The word, how to say it, what it means, and why it came from
-//           this book.
+// Three beats:
+//   card    Benny turns up holding the word: what it is, how to say it, what
+//           it means, why it came from this book, and what the round will ask.
+//           This used to be two screens — a sealed card you tapped to open,
+//           then the word — but the seal was a tap that bought nothing: the
+//           reader already knows a word is coming, they pressed a button that
+//           said so.
 //   round   Three activities on that one word — recognise it, use it, produce
 //           something with it. The word stays pinned above them: this is a
 //           collection, not a test, so nothing here is hidden from the reader.
@@ -36,7 +39,7 @@ export function WordUnlock({
   onClose,
   onSeeAll,
 }) {
-  const [stage, setStage] = useState('knock')
+  const [stage, setStage] = useState('card')
   const [step, setStep] = useState(0)
   const [results, setResults] = useState([])
 
@@ -47,7 +50,7 @@ export function WordUnlock({
 
   useEffect(() => {
     if (!open) return
-    setStage('knock')
+    setStage('card')
     setStep(0)
     setResults([])
   }, [open, word])
@@ -88,80 +91,60 @@ export function WordUnlock({
       </button>
 
       <div className="wb-unlock-inner">
-        {stage === 'knock' && (
-          <div className="wb-knock">
-            <img src="/bs-prototypes/benny-excited.svg" alt="" className="wb-knock-benny" />
-            <p className="wb-knock-kicker">Benny found something</p>
-            <h1 className="wb-knock-h1">
-              There’s a word hiding in <em>{source}</em>
-            </h1>
-            <p className="wb-knock-sub">
-              {round.length === 1
-                ? 'Open it up, work it out, and it’s yours to keep.'
-                : `Open it up, work it out ${round.length} ways, and it’s yours to keep.`}
-            </p>
-
-            <button className="wb-envelope" onClick={() => setStage('card')}>
-              <span className="wb-envelope-glow" aria-hidden="true" />
-              <span className="wb-envelope-face">
-                <Icon name="vocabulary" size={40} stroke={1.6} />
-                <span className="wb-envelope-hint">Tap to open</span>
-              </span>
-            </button>
-          </div>
-        )}
-
         {stage === 'card' && (
-          <div className="wb-card">
-            <div className="wb-card-head">
-              <span className="wb-card-kicker">
-                <Icon name="sparkles" size={13} /> A new word from {source}
-              </span>
-              <h1 className="wb-word">{word.word}</h1>
-              <p className="wb-word-say">
-                {word.say} <span className="wb-word-part">· {word.part}</span>
-              </p>
-              <p className="wb-word-meaning">{word.meaning}</p>
-            </div>
+          <>
+            <img src="/bs-prototypes/benny-excited.svg" alt="" className="wb-card-benny" />
+            <div className="wb-card">
+              <div className="wb-card-head">
+                <span className="wb-card-kicker">
+                  <Icon name="sparkles" size={13} /> A new word from {source}
+                </span>
+                <h1 className="wb-word">{word.word}</h1>
+                <p className="wb-word-say">
+                  {word.say} <span className="wb-word-part">· {word.part}</span>
+                </p>
+                <p className="wb-word-meaning">{word.meaning}</p>
+              </div>
 
-            <div className="wb-why">
-              <img src="/bs-prototypes/benny-happy.svg" alt="" className="wb-why-benny" />
-              <p className="wb-why-text">{word.why}</p>
-            </div>
+              <div className="wb-why">
+                <img src="/bs-prototypes/benny-happy.svg" alt="" className="wb-why-benny" />
+                <p className="wb-why-text">{word.why}</p>
+              </div>
 
-            {/* What's coming, before it arrives. A reader who can see the three
+              {/* What's coming, before it arrives. A reader who can see the three
                 rungs knows the round ends — an open-ended quiz doesn't. */}
-            <div className="wb-plan">
-              <p className="wb-plan-lead">
-                {round.length === 1
-                  ? 'One thing to do, then it’s yours:'
-                  : `${round.length} quick goes and ${word.word} is yours:`}
-              </p>
-              <ol className="wb-plan-list">
-                {round.map((id, i) => {
-                  const type = activityType(id)
-                  return (
-                    <li key={id} className="wb-plan-item">
-                      <span className="wb-plan-num">{i + 1}</span>
-                      <span className="wb-plan-copy">
-                        <span className="wb-plan-label">{type.label}</span>
-                        <span className="wb-plan-blurb">{type.blurb}</span>
-                      </span>
-                    </li>
-                  )
-                })}
-              </ol>
-            </div>
+              <div className="wb-plan">
+                <p className="wb-plan-lead">
+                  {round.length === 1
+                    ? 'One thing to do, then it’s yours:'
+                    : `${round.length} quick goes and ${word.word} is yours:`}
+                </p>
+                <ol className="wb-plan-list">
+                  {round.map((id, i) => {
+                    const type = activityType(id)
+                    return (
+                      <li key={id} className="wb-plan-item">
+                        <span className="wb-plan-num">{i + 1}</span>
+                        <span className="wb-plan-copy">
+                          <span className="wb-plan-label">{type.label}</span>
+                          <span className="wb-plan-blurb">{type.blurb}</span>
+                        </span>
+                      </li>
+                    )
+                  })}
+                </ol>
+              </div>
 
-            <Button
-              variant="primary"
-              size="lg"
-              iconRight={<Icon name="arrow-right" size={18} />}
-              onClick={() => setStage('round')}
-            >
-              Let’s go
-            </Button>
-          </div>
+              <Button
+                variant="primary"
+                size="lg"
+                iconRight={<Icon name="arrow-right" size={18} />}
+                onClick={() => setStage('round')}
+              >
+                Let’s go
+              </Button>
+            </div>
+          </>
         )}
 
         {stage === 'round' && (

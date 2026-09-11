@@ -116,12 +116,13 @@ export const wordsWithBennySections = [
     name: 'WordUnlock',
     desc: (
       <>
-        The post-log moment, in four beats. <strong>knock</strong> — Benny turns up with a sealed
-        card naming the book that was just logged, and the card is the only target on the screen.{' '}
-        <strong>card</strong> — the word, how to say it, what it means, the line tying it back to
-        the book, and then what the round is going to ask, named up front so the reader can see it
-        ends. <strong>round</strong> — three <code>Activity</code> rungs on that one word, with the
-        word pinned above them (this is a collection, not an exam) and a named progress rail.{' '}
+        The post-log moment, in three beats. <strong>card</strong> — Benny turns up holding the
+        word: what it is, how to say it, what it means, the line tying it back to the book, and what
+        the round is going to ask, named up front so the reader can see it ends. This was two
+        screens — a sealed card you tapped to open, then the word — but the seal was a tap that
+        bought nothing, since the reader had just pressed a button saying a word was coming.{' '}
+        <strong>round</strong> — three <code>Activity</code> rungs on that one word, with the word
+        pinned above them (this is a collection, not an exam) and a named progress rail.{' '}
         <strong>done</strong> — banked, with the running count and when the word comes back in the
         deck.
         <br />
@@ -140,7 +141,7 @@ export const wordsWithBennySections = [
       </>
     ),
     render: () => (
-      <Variant label="knock → card → round → collected" bare>
+      <Variant label="word → round → collected" bare>
         <WordUnlockDemo />
       </Variant>
     ),

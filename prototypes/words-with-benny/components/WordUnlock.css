@@ -47,11 +47,16 @@
   color: #fff;
 }
 
-/* ─── Beat 1: the knock ─────────────────────────────────────────────────── */
+/* ─── Beat 1: the word ──────────────────────────────────────────────────── */
 
-.wb-knock-benny {
-  width: 88px;
-  height: 88px;
+/* Benny hands it over. He sits above the card rather than on a screen of his
+   own — the sealed-envelope tap that used to separate them bought nothing, so
+   his arrival and the word are now the same beat. */
+.wb-card-benny {
+  display: block;
+  width: 84px;
+  height: 84px;
+  margin: 0 auto 14px;
   animation: wb-bob 2.6s ease-in-out infinite;
 }
 @keyframes wb-bob {
@@ -64,95 +69,7 @@
   }
 }
 
-.wb-knock-kicker {
-  margin-top: 6px;
-  font-size: 12px;
-  font-weight: 800;
-  color: #d8b4fe;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-.wb-knock-h1 {
-  margin-top: 8px;
-  font-size: 30px;
-  font-weight: 900;
-  line-height: 1.18;
-  letter-spacing: -0.01em;
-}
-.wb-knock-h1 em {
-  font-style: normal;
-  color: #fcd34d;
-}
-.wb-knock-sub {
-  margin-top: 10px;
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.72);
-}
-
-/* The sealed card. It's the only target on the screen, so it's big. */
-.wb-envelope {
-  position: relative;
-  display: block;
-  width: 208px;
-  margin: 30px auto 0;
-  padding: 0;
-  background: none;
-  border: 0;
-}
-.wb-envelope-glow {
-  position: absolute;
-  inset: -22px;
-  background: radial-gradient(closest-side, rgba(252, 211, 77, 0.42), transparent 72%);
-  animation: wb-pulse 2.2s ease-in-out infinite;
-}
-@keyframes wb-pulse {
-  0%,
-  100% {
-    opacity: 0.55;
-    transform: scale(0.94);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.04);
-  }
-}
-.wb-envelope-face {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  aspect-ratio: 3 / 2;
-  color: #4c1d95;
-  background: linear-gradient(160deg, #fef3c7 0%, #fde68a 55%, #fbbf24 100%);
-  border-radius: 16px;
-  box-shadow:
-    0 18px 40px rgba(0, 0, 0, 0.34),
-    inset 0 0 0 3px rgba(255, 255, 255, 0.5);
-  transition:
-    transform 140ms ease,
-    box-shadow 140ms ease;
-}
-.wb-envelope:hover .wb-envelope-face {
-  transform: translateY(-4px) rotate(-1.2deg);
-  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.4);
-}
-.wb-envelope:active .wb-envelope-face {
-  transform: translateY(-1px) scale(0.985);
-}
-.wb-envelope:focus-visible .wb-envelope-face {
-  outline: 3px solid #fff;
-  outline-offset: 3px;
-}
-.wb-envelope-hint {
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-
-/* ─── Beat 2: the word card ─────────────────────────────────────────────── */
+/* ─── The card ─────────────────────────────────────────────── */
 
 .wb-card {
   padding: 26px 22px 24px;
@@ -563,9 +480,6 @@
 @media (max-width: 560px) {
   .wb-unlock-inner {
     padding: 40px 14px 60px;
-  }
-  .wb-knock-h1 {
-    font-size: 25px;
   }
   .wb-word {
     font-size: 32px;
