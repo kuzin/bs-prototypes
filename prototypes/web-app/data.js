@@ -2,7 +2,7 @@
 
 export const USER = {
   initials: 'OM',
-  firstName: 'Olivia',
+  name: 'Olivia',
 }
 
 // The readers this account can switch between, for the topbar's reader menu.
@@ -29,7 +29,7 @@ export const CHALLENGES = [
     subtitle: 'Reading Challenge',
     dates: 'Apr 1 — Apr 30',
     badge: 'Minutes',
-    illustration: 'spring',
+    art: 'spring',
   },
   {
     id: 'love-hurts',
@@ -37,7 +37,7 @@ export const CHALLENGES = [
     subtitle: 'A Julie Murphy Challenge',
     dates: 'Ongoing',
     badge: 'Minutes',
-    illustration: 'love-hurts',
+    art: 'love-hurts',
   },
   {
     id: 'arresting',
@@ -45,7 +45,7 @@ export const CHALLENGES = [
     subtitle: 'A Gregory Maguire Challenge',
     dates: 'Jun 1 — Jun 30',
     badge: 'Minutes',
-    illustration: 'arresting',
+    art: 'arresting',
   },
 ]
 

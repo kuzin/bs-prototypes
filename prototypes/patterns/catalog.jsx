@@ -19,6 +19,7 @@ import { formPatternsSections } from './sections/form-patterns'
 import { chartsSections } from './sections/charts'
 import { domainSections } from './sections/domain'
 import { layoutSections } from './sections/layout'
+import { readerAppSections } from './sections/reader-app'
 import { sfrSections } from './sections/sfr'
 import { insightsSections } from './sections/insights'
 import { challengeCreatorSections } from './sections/challenge-creator'
@@ -177,7 +178,7 @@ export const GROUPS = [
     id: 'web-app',
     kind: 'prototype',
     title: 'Web App',
-    desc: 'The reader-facing chrome — the partner-connection kit every integration prototype mounts: the connect banner, the linking flow, the partner switcher, imported sessions, and reader personalisation.',
+    desc: 'The reader-facing chrome — the app bar and reader switcher, the challenge grid, the rail’s goal and leaderboard cards, and the partner-connection kit every integration prototype mounts.',
     color: 'var(--c-orange)',
   },
   {
@@ -268,6 +269,7 @@ export const SECTIONS = [
   ...chartsSections,
   ...domainSections,
   ...layoutSections,
+  ...readerAppSections,
   ...sfrSections,
   ...insightsSections,
   ...challengeCreatorSections,

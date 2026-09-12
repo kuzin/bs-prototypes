@@ -3,7 +3,8 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Modal } from '@components/Modal/Modal'
-import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
+// The reader app bar this page sits under — top bar, logo, user pill, nav tabs.
+import { ReaderTopBar } from '@components/ReaderApp/ReaderApp'
 import { BennyChat } from '../components/BennyChat'
 // Entry point 4 uses the REAL logging flow, reused from the Logging Flow
 // prototype — Benny's hand-off is an additive prop on its success step.
@@ -17,8 +18,8 @@ import deepImg from '../assets/challenge/badge-3.png'
 import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
 import '@components/Modal/Modal.css'
-// Reuse the web-app reader chrome (top bar, logo, user pill, nav tabs).
-import '../../web-app/index.css'
+
+const READER = { initials: 'O', name: 'Olivia' }
 
 const NAV_TABS = [
   { id: 'challenges', label: 'Challenges' },
@@ -232,38 +233,26 @@ export function StudentView({ badge, selfStart = true }) {
 
   return (
     <div className="bt-reader">
-      {/* App top bar */}
-      <header className="wa-topbar">
-        <div className="wa-topbar-inner">
-          <BeanstackLogo />
-          <div className="wa-topbar-actions">
+      {/* The shared reader app bar, with this prototype's own two actions and
+          its longer site nav. The accent stays teal: it is what every tab strip
+          on this page uses, and the top bar shouldn't be the odd one out. */}
+      <ReaderTopBar
+        reader={READER}
+        accountMenu={false}
+        tabs={NAV_TABS}
+        active="challenges"
+        accent="var(--c-teal)"
+        actions={
+          <>
             <Button variant="primary" size="sm" onClick={() => setLogOpen(true)}>
               Log Reading and Activities
             </Button>
             <Button variant="secondary" size="sm" icon={<Icon name="chevron-down" size={13} />}>
               Add Review
             </Button>
-          </div>
-          <div className="wa-topbar-user">
-            <span className="wa-user-pill">
-              <span className="wa-user-avatar">O</span>
-              Olivia
-            </span>
-            <button className="wa-icon-btn" aria-label="Settings">
-              <Icon name="settings" size={20} />
-            </button>
-          </div>
-        </div>
-        <div className="wa-tabsbar">
-          <Tabs
-            variant="underline"
-            size="md"
-            active="challenges"
-            accent="#0CA7BC"
-            items={NAV_TABS}
-          />
-        </div>
-      </header>
+          </>
+        }
+      />
 
       {/* Challenge banner header */}
       <div className="bt-reader-band">

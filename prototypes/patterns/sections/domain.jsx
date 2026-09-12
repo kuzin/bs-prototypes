@@ -26,8 +26,8 @@ import { READER as PARTNER_READER } from '../../logging-flow/data'
 import { BEEVERSO } from '../../beeverso/connections'
 import { Knobs, Variant } from './_shared'
 
-// The auto-logged rail card borrows the consumer dashboard's card chrome.
-import '../../web-app/index.css'
+// The auto-logged rail card borrows the reader dashboard's card chrome.
+import '@components/ReaderApp/ReaderApp.css'
 
 const SAMPLE_HEALTH = {
   motivation: 71,

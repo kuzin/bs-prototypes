@@ -19,9 +19,9 @@ import {
 } from '../../words-with-benny/data'
 import { Variant } from './_shared'
 
-// The rail card borrows `.wa-card` from the consumer dashboard it's injected
-// into, so pull that page's stylesheet in the way the other groups do.
-import '../../web-app/index.css'
+// The rail card borrows `.wa-card` from the reader dashboard it's injected
+// into, so pull that stylesheet in the way the other groups do.
+import '@components/ReaderApp/ReaderApp.css'
 
 const noop = () => {}
 

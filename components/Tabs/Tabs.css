@@ -224,8 +224,8 @@
    Pair with `block` for a 50/50 split.
 
    The shipped widget inverts this (grey active, filled to match its own grey
-   action band); `web-app`'s leaderboard keeps that look with a local override
-   in prototypes/web-app/index.css. */
+   action band); the reader dashboard's leaderboard keeps that look with a local
+   override in components/ReaderApp/ReaderApp.css. */
 /* A few pixels between them: butted together the strip reads as one segmented
    control rather than as tabs sitting on a panel. */
 .tabs--folder {
