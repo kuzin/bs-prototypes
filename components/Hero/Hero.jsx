@@ -1,5 +1,6 @@
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 import { Icon } from '@components/Icon/Icon'
+import { PageHeader } from '@components/PageHeader/PageHeader'
 import '@components/Hero/Hero.css'
 
 /**
@@ -26,6 +27,19 @@ import '@components/Hero/Hero.css'
  *   delta     — optional, ↑/↓ pts indicator next to score
  *   accent    — primary color (icon stroke, avatar bg, score color)
  *   accentBg  — background tint for the icon block (defaults to a soft mix of accent)
+ *   variant   — 'hero' (default) or 'page'
+ *
+ * `variant="page"` renders the same content through the shared <PageHeader>,
+ * the port of the app's own `.page-header`. A page that titles a whole screen
+ * takes it, so its title lands on the same baseline and at the same size as
+ * every other admin page; `hero` stays for the panel headers inside a page,
+ * where 30px would out-shout the content under it.
+ *
+ * It drops the section icon and the bottom rule the panel header carries. At
+ * 30px the title names the page on its own, and the page already says which
+ * section you are in — the tinted glyph beside it was decoration, and the rule
+ * under it fenced the header off from the blocks it belongs to. An `initials`
+ * avatar stays: that is the school or district's identity, not decoration.
  */
 
 function DeltaArrow({ positive, flat }) {
@@ -72,6 +86,7 @@ export function Hero({
   accent,
   accentBg,
   action,
+  variant = 'hero',
 }) {
   // Auto-derive from a section bucket key. `icon={false}` opts out: with a
   // `bucket` the section's icon would otherwise always win, and there was no
@@ -93,6 +108,47 @@ export function Hero({
   const style = {
     '--hero-color': resolvedAccent,
     '--hero-bg': resolvedAccentBg,
+  }
+
+  const lead = initials ? (
+    <div
+      className="hero-avatar"
+      style={resolvedAccent ? { background: resolvedAccent } : undefined}
+    >
+      {initials}
+    </div>
+  ) : resolvedIcon ? (
+    <div className="hero-icon" aria-hidden="true">
+      {resolvedIcon}
+    </div>
+  ) : null
+
+  if (variant === 'page') {
+    return (
+      <PageHeader
+        className="hero-page"
+        style={style}
+        before={initials ? lead : null}
+        title={resolvedTitle}
+        subtitle={subtitle}
+        actions={
+          score != null || action ? (
+            <>
+              {score != null && (
+                <div className="hero-score-card">
+                  <div className="hero-score-row">
+                    <span className="hero-score">{score}</span>
+                    <span className="hero-score-suffix">/100</span>
+                  </div>
+                  <Delta value={delta} />
+                </div>
+              )}
+              {action}
+            </>
+          ) : null
+        }
+      />
+    )
   }
 
   return (

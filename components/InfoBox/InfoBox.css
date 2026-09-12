@@ -1,0 +1,79 @@
+/* The icon and the actions centre against the whole box, not against the
+   title — an announcement's message runs to two or three lines, and the ends
+   are the only fixed points it has. `.bnr` already centres; this only has to
+   undo the per-consumer overrides that used to pin the glyph to the first
+   line. */
+.ibx {
+  align-items: center;
+  /* The tiled glyph needs more air than a bare 18px icon did. */
+  gap: 14px;
+}
+
+/* The glyph sits on its own tile rather than loose against the tint — at 26px
+   it is art, not a status dot, and the tile gives it an edge on a ground only
+   a shade lighter than itself. */
+.ibx > .bnr-icon {
+  margin-top: 0;
+  align-self: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fff;
+  color: var(--ibx-ink, #196dd5);
+}
+.ibx > .bnr-icon svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* The bar is one line high whatever it is handed. An announcement that wraps
+   to four lines pushes the whole dashboard down and still doesn't say enough
+   to act on — the detail lives behind the action, so the message is the hook
+   and gets clipped rather than allowed to grow. */
+.ibx .bnr-title,
+.ibx .bnr-msg {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Both actions sit at the end of the bar as one block, side by side while
+   there is room and stacked once the message has taken the width. */
+.ibx-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 699px) {
+  .ibx {
+    flex-wrap: wrap;
+  }
+  .ibx-actions {
+    flex-basis: 100%;
+    margin-top: 4px;
+  }
+}
+
+/* A secondary button is a light-grey outline on white, which all but vanishes
+   on the box's tinted ground — so inside an InfoBox it takes a white ground
+   and the level's own ink instead. Still quieter than the primary, still
+   legibly a button. */
+.ibx .ibx-actions .btn--secondary {
+  background: #fff;
+  border-color: #fff;
+  color: var(--ibx-ink, #196dd5);
+}
+.ibx .ibx-actions .btn--secondary:hover {
+  border-color: currentColor;
+}
+.ibx.bnr--success {
+  --ibx-ink: #017841;
+}
+.ibx.bnr--warning {
+  --ibx-ink: #895a04;
+}
+.ibx.bnr--danger {
+  --ibx-ink: #b3271a;
+}

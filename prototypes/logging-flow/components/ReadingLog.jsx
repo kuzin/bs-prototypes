@@ -38,7 +38,7 @@ const MONTHS = [
 const iso = (d) =>
   `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 
-const entriesOn = (key) => READING_LOG.filter((e) => e.date === key)
+const entriesOn = (entries, key) => entries.filter((e) => e.date === key)
 
 /** The calendar grid always shows whole weeks, so it spills into both neighbours. */
 function monthGrid(year, month) {
@@ -107,7 +107,7 @@ function EntryChip({ entry, dense, showImported = true }) {
   )
 }
 
-function CalendarView({ showImported }) {
+function CalendarView({ entries, showImported }) {
   const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
   return (
     <div className="rl-cal">
@@ -123,7 +123,7 @@ function CalendarView({ showImported }) {
           <div key={wi} className="rl-cal-week">
             {week.map((day) => {
               const key = iso(day)
-              const rows = entriesOn(key)
+              const rows = entriesOn(entries, key)
               const outside = day.getMonth() !== LOG_MONTH.month
               const streak = rows.find((r) => r.streak)?.streak
               return (
@@ -148,12 +148,12 @@ function CalendarView({ showImported }) {
   )
 }
 
-function ListView({ showImported }) {
+function ListView({ entries, showImported }) {
   const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
   return (
     <div className="rl-list">
       {weeks.map((week, wi) => {
-        const days = week.filter((d) => entriesOn(iso(d)).length > 0)
+        const days = week.filter((d) => entriesOn(entries, iso(d)).length > 0)
         if (days.length === 0) return null
         const first = week[0]
         const last = week[6]
@@ -166,7 +166,7 @@ function ListView({ showImported }) {
             <div className="rl-week-range">{range}</div>
             {/* Most recent day first, matching the product. */}
             {[...days].reverse().map((day) => {
-              const rows = entriesOn(iso(day))
+              const rows = entriesOn(entries, iso(day))
               const streak = rows.find((r) => r.streak)?.streak
               return (
                 <div key={iso(day)} className="rl-day">
@@ -195,9 +195,9 @@ function ListView({ showImported }) {
 }
 
 /** "All Titles" — the same entries rolled up per book. */
-function TitlesView() {
+function TitlesView({ entries }) {
   const byTitle = new Map()
-  for (const e of READING_LOG) {
+  for (const e of entries) {
     if (e.kind !== 'log') continue
     const row = byTitle.get(e.title) ?? {
       title: e.title,
@@ -265,11 +265,15 @@ function TitlesView() {
 // `titlesView={false}` leaves the "All Titles" tab standing but inert — it is
 // part of the real page's furniture, so it stays visible, it just doesn't go
 // anywhere in a prototype that isn't about it.
-export function ReadingLog({ partners = CONNECTION_LIST, titlesView = true }) {
+export function ReadingLog({
+  entries = READING_LOG,
+  partners = CONNECTION_LIST,
+  titlesView = true,
+}) {
   const [tab, setTab] = useState('log')
   const [view, setView] = useState('calendar')
 
-  const imported = partners.length ? READING_LOG.filter((e) => e.source).length : 0
+  const imported = partners.length ? entries.filter((e) => e.source).length : 0
 
   return (
     <div className="rl-page">
@@ -353,13 +357,13 @@ export function ReadingLog({ partners = CONNECTION_LIST, titlesView = true }) {
             </div>
           </div>
           {view === 'calendar' ? (
-            <CalendarView showImported={imported > 0} />
+            <CalendarView entries={entries} showImported={imported > 0} />
           ) : (
-            <ListView showImported={imported > 0} />
+            <ListView entries={entries} showImported={imported > 0} />
           )}
         </>
       ) : (
-        <TitlesView />
+        <TitlesView entries={entries} />
       )}
     </div>
   )

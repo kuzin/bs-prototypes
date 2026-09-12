@@ -906,6 +906,7 @@ function Overview({ student, onNavigate }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="user" size={22} />}
         title="Overview"
         accent={SECTION_ACCENT.overview.text}
@@ -2784,6 +2785,7 @@ function ReadingLogPage({ reader }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="reading" size={22} />}
         title="Reading Log"
         accent={SECTION_ACCENT.readinglog.text}
@@ -2935,6 +2937,7 @@ function ReviewsPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="star" size={22} />}
         title="Book Reviews"
         accent={SECTION_ACCENT.reviews.text}
@@ -3263,6 +3266,7 @@ function BadgesPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="medal" size={22} />}
         title="Badges"
         accent={SECTION_ACCENT.badges.text}
@@ -3559,6 +3563,7 @@ function ActivitiesPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="puzzle" size={22} />}
         title="Activities"
         accent={SECTION_ACCENT.activities.text}
@@ -3796,6 +3801,7 @@ function RewardsPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="gift" size={22} />}
         title="Rewards"
         accent={SECTION_ACCENT.rewards.text}
@@ -3946,6 +3952,7 @@ function TicketRewardsView({ student, program, onBack }) {
           a destination in the rail, and the Back link above already says where
           you are. `Hero` renders without one. */}
       <Hero
+        variant="page"
         title={`Ticket Rewards for ${program.name}`}
         accent={SECTION_ACCENT.rewards.text}
         accentBg={SECTION_ACCENT.rewards.bg}
@@ -4116,6 +4123,7 @@ function DrawingsPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="ticket" size={22} />}
         title="Drawings"
         accent={SECTION_ACCENT.drawings.text}
@@ -4503,6 +4511,7 @@ function ChallengesPage({ student }) {
         />
       )}
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="challenges" size={22} />}
         title="Challenges"
         accent={SECTION_ACCENT.challenges.text}
@@ -4570,6 +4579,7 @@ function PointsPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="points" size={22} />}
         title="Points"
         accent={SECTION_ACCENT.points.text}
@@ -4794,6 +4804,7 @@ function RecoFiltersPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="filter" size={22} />}
         title="Filters"
         accent={SECTION_ACCENT.recofilters.text}
@@ -4865,6 +4876,7 @@ function RecommendedPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="heart" size={22} />}
         title="Recommendations"
         accent={SECTION_ACCENT.recommended.text}
@@ -4924,6 +4936,7 @@ function WishListPage({ student }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name="bookmark" size={22} />}
         title="Wish List"
         accent={SECTION_ACCENT.wishlist.text}
@@ -4979,6 +4992,7 @@ function PlaceholderPage({ pageKey }) {
   return (
     <div className="rp-content">
       <Hero
+        variant="page"
         icon={<PlumpyIcon name={item?.icon || 'user'} size={22} />}
         title={item?.label || pageKey}
         accent={accentFor(pageKey).text}

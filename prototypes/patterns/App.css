@@ -609,6 +609,13 @@
   width: 100%;
 }
 
+/* ── Admin rail showcase ─────────────────────────────────────────────────────
+   `.adm-rail` pins itself to 420px because on the dashboard it is a fixed
+   sidebar. Here it is the example, so it fills the card. */
+.pt-adm-rail .adm-rail {
+  width: 100%;
+}
+
 /* ── BackBar showcase ────────────────────────────────────────────────────────
    A stand-in page container, so the bar can be seen doing its actual job:
    sitting inside the page's padding, above the page header, on the page ground.

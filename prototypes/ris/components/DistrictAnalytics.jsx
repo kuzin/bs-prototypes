@@ -159,6 +159,7 @@ export function DistrictAnalytics() {
   return (
     <div className="rc-page" style={{ '--rc-accent': ACCENT }}>
       <Hero
+        variant="page"
         icon={ANALYTICS_ICON}
         title="Analytics"
         subtitle="School performance scorecard, engagement trends, and outcome data across the district"

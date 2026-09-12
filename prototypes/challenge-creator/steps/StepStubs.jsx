@@ -1900,7 +1900,7 @@ function PencilIcon() {
   return <Icon name="pencil" size={15} />
 }
 // Drag-to-reorder for a list; getProps(index) spreads onto the draggable row.
-function useDragReorder(onMove) {
+export function useDragReorder(onMove) {
   const from = useRef(null)
   const [dragging, setDragging] = useState(null)
   const [over, setOver] = useState(null)

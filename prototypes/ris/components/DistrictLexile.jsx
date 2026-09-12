@@ -53,7 +53,7 @@ export function DistrictLexile() {
 
   return (
     <div className="rc-page" style={{ '--rc-accent': ACCENT }}>
-      <Hero bucket="skills" />
+      <Hero variant="page" bucket="skills" />
 
       <div className="rc-stats-row">
         <StatCard label="District avg Lexile growth" value="+82L" footer="YTD vs. expected +65L" />

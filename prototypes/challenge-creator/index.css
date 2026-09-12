@@ -23,6 +23,28 @@
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
+/* The same tokens without the fixed full-screen frame, so the Pattern Library
+   can render a Challenge Creator component on an ordinary page. `.cc-root` is
+   `position: fixed` and owns the viewport, so it can't be used as a wrapper
+   around one component the way `.bk-catalog` is for Book Discovery. */
+.cc-catalog {
+  --teal: var(--c-teal);
+  --teal-dk: #0b7a89;
+  --ink: var(--c-gray-900);
+  --muted: var(--c-gray-700);
+  --line: var(--c-gray-200);
+  --bg: var(--c-gray-100);
+  --panel: #ffffff;
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+.cc-catalog button,
+.cc-catalog input,
+.cc-catalog select,
+.cc-catalog textarea {
+  font-family: inherit;
+}
+
 /* Form controls don't inherit the family on their own. */
 .cc-root button,
 .cc-root input,

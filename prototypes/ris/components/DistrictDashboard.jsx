@@ -159,6 +159,7 @@ export function DistrictDashboard({ onNavigate }) {
   return (
     <div className="rc-page">
       <Hero
+        variant="page"
         initials="RUSD"
         title={DISTRICT.name}
         subtitle={`${DISTRICT.schools} schools · ${DISTRICT.students.toLocaleString()} students`}

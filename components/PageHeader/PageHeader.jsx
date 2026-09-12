@@ -27,6 +27,7 @@ import './PageHeader.css'
  * @param {ReactNode} before     optional slot left of the heading (e.g. an avatar)
  * @param {ReactNode} actions    optional right-aligned actions
  * @param {boolean}   border     draw the app's `--with-border` bottom rule
+ * @param {object}    style      inline style (e.g. accent tokens the `before` slot reads)
  * @param {ReactNode} children   optional extra row below (e.g. a tab strip)
  */
 export function PageHeader({
@@ -36,6 +37,7 @@ export function PageHeader({
   actions,
   border = false,
   className = '',
+  style,
   children,
 }) {
   const cls = ['page-header', border && 'page-header--with-border', className]
@@ -43,7 +45,7 @@ export function PageHeader({
     .join(' ')
 
   return (
-    <div className={cls}>
+    <div className={cls} style={style}>
       {before && <div className="page-header__before">{before}</div>}
       <header className="page-header__heading">
         {title && <h1 className="page-title">{title}</h1>}

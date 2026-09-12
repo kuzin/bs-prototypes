@@ -305,6 +305,16 @@ export const CHALLENGE_ART = {
     title: 'ARRESTING\nSTRANGENESS',
     titleColor: '#3D2A18',
   },
+  lectores: {
+    bg: 'linear-gradient(180deg, #7B3FA8 0%, #4A1D6B 100%)',
+    title: 'LECTORES\nDEL\nMUNDO',
+    titleColor: '#F6D9A8',
+  },
+  'minutes-march': {
+    bg: 'linear-gradient(180deg, #6FE0D6 0%, #0C7E8E 100%)',
+    title: 'MARCH\nMINUTE\nMADNESS',
+    titleColor: '#052F38',
+  },
 }
 
 /**
@@ -327,9 +337,11 @@ export function ChallengeCard({ challenge, accent = READER_ACCENT }) {
       <div className="wa-chcard-body">
         <div className="wa-chcard-titlerow">
           <div className="wa-chcard-title">{challenge.title}</div>
-          <Pill color={accent} variant="filled" size="sm">
-            {challenge.badge}
-          </Pill>
+          {challenge.badge && (
+            <Pill color={accent} variant="filled" size="sm">
+              {challenge.badge}
+            </Pill>
+          )}
         </div>
         <div className="wa-chcard-dates">{challenge.dates}</div>
       </div>

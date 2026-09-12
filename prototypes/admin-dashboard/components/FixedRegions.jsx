@@ -10,33 +10,26 @@ import {
 import { SettingsPopover } from './SettingsPopover'
 import { RcaLevelGlyph } from './RcaLevelGlyph'
 import { Icon } from '@components/Icon/Icon'
-import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
+import { InfoBox } from '@components/InfoBox/InfoBox'
 import { Banner } from '@components/Primitives/Primitives'
 import { Button } from '@components/Button/Button'
 import '@components/Primitives/Primitives.css'
 import '@components/Button/Button.css'
 
 // ─── Feature announcement bar (admin-controlled, not editable) ───────────
-// The shipped dashboard's `BeanstackAd` — its announcement slot. It's the
-// shared <Banner> at `level="info"` with an action: `.bnr--info` is already
-// `#CFE4FE` with a `#196DD5` icon and no border, which is what this is. The
-// only thing the dashboard adds is the blue outline on the CTA.
+// The shipped dashboard's `BeanstackAd` — its announcement slot, and now just
+// the shared <InfoBox> with this dashboard's copy in it.
 export function FeatureBar({ onClose }) {
   if (!FEATURE_BAR) return null
   return (
-    <Banner
-      level="info"
+    <InfoBox
       className="adm-ad"
-      icon={<PlumpyIcon name="announcement" size={26} />}
       title={FEATURE_BAR.title}
-      action={
-        <Button as="a" href={FEATURE_BAR.href} variant="primary" size="md" className="adm-ad-cta">
-          {FEATURE_BAR.cta}
-        </Button>
-      }
+      action={{ label: FEATURE_BAR.cta, href: FEATURE_BAR.href }}
+      onDismiss={onClose}
     >
       {FEATURE_BAR.body}
-    </Banner>
+    </InfoBox>
   )
 }
 

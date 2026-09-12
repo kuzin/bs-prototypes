@@ -213,6 +213,7 @@ export function DistrictDemographics() {
   return (
     <div className="rc-page" style={{ '--rc-accent': ACCENT }}>
       <Hero
+        variant="page"
         icon={DEMOGRAPHICS_ICON}
         title="Demographics"
         subtitle="Equity mapping, grade-level performance, and resource allocation indicators"

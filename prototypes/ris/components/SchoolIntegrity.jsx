@@ -37,8 +37,8 @@ export function SchoolIntegrity({ schoolId }) {
   ]
 
   return (
-    <div className="mot-root">
-      <Hero bucket="integrity" />
+    <div className="mot-root" style={{ '--rc-accent': COMPLETION_COLOR }}>
+      <Hero variant="page" bucket="integrity" />
 
       <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
         <StatCard

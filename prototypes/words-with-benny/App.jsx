@@ -258,10 +258,10 @@ export function App() {
             // Collections supersedes the built-in "All Badges" tab — words,
             // badges and achievements are one destination, not three.
             extraTabs={[{ id: 'collections', label: 'My Collections' }]}
-            hideTabs={['badges']}
-            // The Reading Log's "All Titles" tab is part of the real page, so
-            // it stays on screen — it just doesn't lead anywhere here.
-            titlesView={false}
+            // Collections supersedes All Badges; the Reading Log is off because
+            // this prototype is about what a log *unlocks*, and a second place
+            // to read the log back only draws the eye away from that.
+            hideTabs={['badges', 'log']}
             renderExtra={() => (
               <Collections
                 collection={collection}

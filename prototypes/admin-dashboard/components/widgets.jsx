@@ -678,10 +678,15 @@ export function AdmQuickLinks({ settings = {} }) {
       <div className="adm-w-body">
         <div className="adm-links">
           {visible.map((l) => (
-            <a key={l.id} href="#" className={`adm-link adm-link--${l.color}`}>
+            <a
+              key={l.id}
+              href="#"
+              className={`adm-link adm-link--${l.color}`}
+              onClick={(e) => e.preventDefault()}
+            >
               <span className="adm-link-ico">{LINK_ICONS[l.icon] || LINK_ICONS.classes}</span>
-              <span>{l.label}</span>
-              <span className="adm-link-arrow">›</span>
+              <span className="adm-link-label">{l.label}</span>
+              <Icon name="chevron-right" size={15} className="adm-link-chev" />
             </a>
           ))}
           {visible.length === 0 && (

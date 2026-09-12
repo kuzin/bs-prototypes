@@ -176,6 +176,49 @@ export const OWN_SESSIONS = [
   { id: 'own-2', title: 'Esperanza Rising', author: 'Pam Muñoz Ryan', minutes: 15, when: 'Sunday' },
 ]
 
+// ─── The reading log, as the calendar draws it ───────────────────────────────
+// The log page is logging-flow's real calendar, so the sessions above have to
+// land on actual days rather than "Today"/"Monday". The week is anchored to the
+// same June 2026 the calendar opens on, so both apps' history is in view.
+
+const DAY_DATE = {
+  Today: '2026-06-11',
+  Yesterday: '2026-06-10',
+  Monday: '2026-06-08',
+  Sunday: '2026-06-07',
+}
+
+/**
+ * Every session — the reader's own and each linked app's — as calendar
+ * entries. An imported one carries its app in `source`, which is what puts the
+ * partner's mark on the row and turns on the "imported" key.
+ */
+export const readingLogEntries = (connections) => [
+  ...OWN_SESSIONS.map((s) => ({
+    id: s.id,
+    date: DAY_DATE[s.when] ?? DAY_DATE.Today,
+    kind: 'log',
+    title: s.title,
+    author: s.author,
+    minutes: s.minutes,
+    tone: 'blue',
+  })),
+  ...importedSessions(connections).map((s) => {
+    const t = TITLE_BY_ID[s.title]
+    return {
+      id: s.id,
+      date: DAY_DATE[s.when] ?? DAY_DATE.Today,
+      kind: 'log',
+      title: t?.title ?? s.title,
+      author: t?.author,
+      minutes: s.minutes,
+      completed: s.finished,
+      source: s.partnerId,
+      tone: s.partnerId === 'beeverso' ? 'purple' : 'teal',
+    }
+  }),
+]
+
 // ─── Dashboard furniture ─────────────────────────────────────────────────────
 
 export const STREAK = { current: 0, longest: 11 }
@@ -184,23 +227,21 @@ export const STREAK = { current: 0, longest: 11 }
 // over — the whole point of showing two connections at once.
 export const DAILY_GOAL = { minutes: 0, goal: 40 }
 
+// The shared reader `ChallengeCard`'s shape: cover art, name, dates and what
+// the challenge measures.
 export const CHALLENGES = [
   {
     id: 'lectores',
-    name: 'Lectores del Mundo',
-    sub: 'Arlington ISD · Spring Challenge',
-    progress: 4,
-    total: 10,
-    unit: 'books',
-    color: '#662D91',
+    art: 'lectores',
+    title: 'Lectores del Mundo',
+    dates: 'Arlington ISD · Spring Challenge',
+    badge: 'Books',
   },
   {
     id: 'minutes-march',
-    name: 'March Minute Madness',
-    sub: 'Whole school · Ends Mar 31',
-    progress: 312,
-    total: 600,
-    unit: 'minutes',
-    color: '#0CA7BC',
+    art: 'minutes-march',
+    title: 'March Minute Madness',
+    dates: 'Whole school · Ends Mar 31',
+    badge: 'Minutes',
   },
 ]

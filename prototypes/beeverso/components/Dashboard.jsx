@@ -1,6 +1,10 @@
 import { useState } from 'react'
-import { ProgressBar } from '@components/ProgressBar/ProgressBar'
-import { GoalCard, ReaderTopBar, StreakBanner } from '@components/ReaderApp/ReaderApp'
+import {
+  ChallengeCard,
+  GoalCard,
+  ReaderTopBar,
+  StreakBanner,
+} from '@components/ReaderApp/ReaderApp'
 import {
   ConnectBanner,
   PartnerSwitcher,
@@ -9,34 +13,10 @@ import {
 import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
 
 import { PARTNERS, PARTNER_BY_ID } from '../connections'
-import { READER, CHALLENGES, TITLE_BY_ID, importedSessions } from '../data'
-import { ReadingLog } from './ReadingLog'
+import { READER, CHALLENGES, TITLE_BY_ID, importedSessions, readingLogEntries } from '../data'
+import { ReadingLog } from '../../logging-flow/components/ReadingLog'
 import { JoyfulFooter, APPS } from '../../footers/JoyfulFooter'
 import './Dashboard.css'
-
-import '@components/ProgressBar/ProgressBar.css'
-
-// Beeverso's own challenge card — a progress meter rather than the cover art
-// the Beanstack challenges carry, because these track a linked app's minutes
-// and titles. The chrome around it is the shared reader app.
-
-function ChallengeCard({ challenge }) {
-  const pct = Math.round((challenge.progress / challenge.total) * 100)
-  return (
-    <button className="bvch" type="button" style={{ '--bvch-color': challenge.color }}>
-      <span className="bvch-hero">
-        <span className="bvch-hero-title">{challenge.name}</span>
-      </span>
-      <span className="bvch-body">
-        <span className="bvch-sub">{challenge.sub}</span>
-        <ProgressBar value={challenge.progress} max={challenge.total} color={challenge.color} />
-        <span className="bvch-meter">
-          {challenge.progress} of {challenge.total} {challenge.unit} · {pct}%
-        </span>
-      </span>
-    </button>
-  )
-}
 
 // Today's reading from every linked app, in the shape the shared rail card
 // wants. With two apps connected the card is the clearest picture of the
@@ -94,7 +74,7 @@ export function Dashboard({
       <main className="wa-main">
         <div className="wa-main-inner">
           {view === 'log' ? (
-            <ReadingLog connections={connections} />
+            <ReadingLog entries={readingLogEntries(connections)} partners={PARTNERS} />
           ) : view === 'settings' ? (
             <PersonalizeReader
               reader={READER}
@@ -132,7 +112,7 @@ export function Dashboard({
                     <div className="wa-group-sub">
                       Reading in any linked app counts toward these.
                     </div>
-                    <div className="bvch-grid">
+                    <div className="wa-chgrid">
                       {CHALLENGES.map((c) => (
                         <ChallengeCard key={c.id} challenge={c} />
                       ))}

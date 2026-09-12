@@ -80,8 +80,9 @@ export function SchoolDemographics({ schoolId }) {
   })
 
   return (
-    <div className="dm-root">
+    <div className="dm-root" style={{ '--rc-accent': DEMO_COLOR }}>
       <Hero
+        variant="page"
         icon={<DemographicsIcon />}
         title="Demographics"
         subtitle={`Student cohorts, equity indicators, and grade-level performance · ${school.name}`}

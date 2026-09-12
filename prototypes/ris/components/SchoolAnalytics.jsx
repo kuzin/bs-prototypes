@@ -145,8 +145,9 @@ export function SchoolAnalytics({ schoolId }) {
   ]
 
   return (
-    <div className="an-root">
+    <div className="an-root" style={{ '--rc-accent': ANALYTICS_COLOR }}>
       <Hero
+        variant="page"
         icon={<AnalyticsIcon />}
         title="Analytics"
         subtitle={`Student engagement, reading behavior, and outcome correlations · ${school.name}`}
