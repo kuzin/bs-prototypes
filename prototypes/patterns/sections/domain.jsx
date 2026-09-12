@@ -301,6 +301,10 @@ export const domainSections = [
     group: 'domain',
     id: 'health-stat',
     name: 'HealthStat',
+    usage: `import { HealthStat } from '@components/ReadingHealth/ReadingHealth'
+import '@components/ReadingHealth/ReadingHealth.css'
+
+<HealthStat section="volume" score={32} delta={4} onClick={open} />`,
     desc: (
       <>
         Single health-area tile (one of Motivation / Integrity / Habits / Skills). Props:{' '}
@@ -318,6 +322,10 @@ export const domainSections = [
     group: 'domain',
     id: 'reading-health',
     name: 'ReadingHealth',
+    usage: `import { ReadingHealth } from '@components/ReadingHealth/ReadingHealth'
+import '@components/ReadingHealth/ReadingHealth.css'
+
+<ReadingHealth title="Reading health" data={data} onNavigate={go} />`,
     desc: (
       <>
         Full 4-tile grid wrapping HealthStat. Props: <code>title</code>, <code>data</code>,{' '}
@@ -334,6 +342,10 @@ export const domainSections = [
     group: 'domain',
     id: 'alert-row',
     name: 'AlertRow',
+    usage: `import { AlertRow } from '@components/AlertsBanner/AlertsBanner'
+import '@components/AlertsBanner/AlertsBanner.css'
+
+<AlertRow level="warning" title="12 sessions flagged" description="Review before Friday" action="Review" onAction={go} />`,
     desc: (
       <>
         Single alert tile. Props: <code>level</code> (critical | warning | positive | info),{' '}
@@ -351,6 +363,10 @@ export const domainSections = [
     group: 'domain',
     id: 'alerts-banner',
     name: 'AlertsBanner',
+    usage: `import { AlertsBanner } from '@components/AlertsBanner/AlertsBanner'
+import '@components/AlertsBanner/AlertsBanner.css'
+
+<AlertsBanner alerts={alerts} onNavigate={go} />`,
     desc: (
       <>
         List wrapper around AlertRow. Pass <code>alerts</code> array and optional{' '}
@@ -366,9 +382,13 @@ export const domainSections = [
     ),
   },
   {
-    group: 'domain',
+    group: 'iconography',
     id: 'rmi-icons',
     name: 'RMI Icons',
+    usage: `import { BsIcon } from '@components/BsIcons/BsIcons'
+
+/* RMI factor art is a tintable silhouette — it must be masked, not <img> */
+<BsIcon set="rmiFactors" name="volume" size={24} />`,
     desc: (
       <>
         10 SVG icons keyed by motivation factor. Use via{' '}
@@ -377,30 +397,35 @@ export const domainSections = [
     ),
     render: () => (
       <>
-        <div className="pt-icons">
-          {RMI_FACTORS.map((f) => (
-            <div key={f.name} className="pt-icon-cell">
-              <div
-                className="pt-icon-bg"
-                style={{
-                  '--c': f.color,
-                  '--bg': `color-mix(in srgb, ${f.color} 10%, white)`,
-                }}
-              >
-                {RMI_ICONS[f.iconKey]}
+        <Variant label="The ten motivation factors">
+          <div className="pt-icons">
+            {RMI_FACTORS.map((f) => (
+              <div key={f.name} className="pt-icon-cell">
+                <div
+                  className="pt-icon-bg"
+                  style={{
+                    '--c': f.color,
+                    '--bg': `color-mix(in srgb, ${f.color} 10%, white)`,
+                  }}
+                >
+                  {RMI_ICONS[f.iconKey]}
+                </div>
+                <div className="pt-icon-name">{f.name}</div>
+                <div className="pt-icon-key">{f.iconKey}</div>
               </div>
-              <div className="pt-icon-name">{f.name}</div>
-              <div className="pt-icon-key">{f.iconKey}</div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Variant>
       </>
     ),
   },
   {
-    group: 'domain',
+    group: 'iconography',
     id: 'health-icons',
     name: 'Reading Health Icons',
+    usage: `import { BsIcon } from '@components/BsIcons/BsIcons'
+
+<BsIcon set="flags" name="speed" size={28} alt="Reading speed" />`,
     desc: (
       <>
         The four health-area icons from <code>SECTIONS</code> (Motivation, Integrity, Habits,
@@ -409,17 +434,19 @@ export const domainSections = [
     ),
     render: () => (
       <>
-        <div className="pt-icons">
-          {HEALTH_SECTIONS.map((s) => (
-            <div key={s.key} className="pt-icon-cell">
-              <div className="pt-icon-bg" style={{ '--c': s.color, '--bg': s.bg }}>
-                {s.icon}
+        <Variant label="The four reading-health areas">
+          <div className="pt-icons">
+            {HEALTH_SECTIONS.map((s) => (
+              <div key={s.key} className="pt-icon-cell">
+                <div className="pt-icon-bg" style={{ '--c': s.color, '--bg': s.bg }}>
+                  {s.icon}
+                </div>
+                <div className="pt-icon-name">{s.label}</div>
+                <div className="pt-icon-key">{s.key}</div>
               </div>
-              <div className="pt-icon-name">{s.label}</div>
-              <div className="pt-icon-key">{s.key}</div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </Variant>
       </>
     ),
   },
@@ -427,6 +454,10 @@ export const domainSections = [
     group: 'domain',
     id: 'partner-brand',
     name: 'Partner Brand',
+    usage: `import { PartnerBrand, PartnerMark } from '@components/PartnerBrand/PartnerBrand'
+
+<PartnerBrand id="comics-plus" size={28} />
+<PartnerMark id="scholastic" size={20} />`,
     desc: (
       <>
         Reading-partner identity. <code>PartnerBrand</code> is the full lockup (sizes{' '}
@@ -484,6 +515,9 @@ export const domainSections = [
     group: 'domain',
     id: 'partner-connect-banner',
     name: 'Connect Banner',
+    usage: `import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
+
+<ConnectBanner partners={['comics-plus', 'sora']} onLink={link} onDismiss={hide} />`,
     desc: (
       <>
         The dashboard prompt to link reading apps. Takes <strong>every</strong> partner that
@@ -522,6 +556,9 @@ export const domainSections = [
     group: 'domain',
     id: 'partner-connect-flow',
     name: 'Connect Flow',
+    usage: `import { ConnectFlow } from '@components/PartnerConnect/PartnerConnect'
+
+<ConnectFlow partner="comics-plus" reader={reader} onCancel={close} onLinked={done} />`,
     desc: (
       <>
         The full account handoff, rendered in the partner&apos;s own chrome: pick your school → sign
@@ -541,6 +578,9 @@ export const domainSections = [
     group: 'domain',
     id: 'partner-switcher',
     name: 'Partner Switcher',
+    usage: `import { PartnerSwitcher } from '@components/PartnerConnect/PartnerConnect'
+
+<PartnerSwitcher partners={partners} connections={connections} />`,
     desc: (
       <>
         The top-bar affordance the linked-accounts modal promises — &ldquo;swap between the two at
@@ -578,6 +618,9 @@ export const domainSections = [
     group: 'domain',
     id: 'partner-auto-logged',
     name: 'Auto-Logged Card',
+    usage: `import { AutoLoggedCard } from '@components/PartnerConnect/PartnerConnect'
+
+<AutoLoggedCard rows={importedSessions} />`,
     desc: (
       <>
         The payoff of a linked account: reading that arrived from a partner without the reader
@@ -597,6 +640,9 @@ export const domainSections = [
     group: 'domain',
     id: 'personalize-reader',
     name: 'Personalize Reader',
+    usage: `import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+
+<PersonalizeReader reader={reader} partners={partners} connections={connections} />`,
     desc: (
       <>
         The reader&apos;s settings page, and the home of <strong>App Integrations</strong> — where a
@@ -619,6 +665,16 @@ export const domainSections = [
     group: 'domain',
     id: 'daily-reading-tracker',
     name: 'DailyReadingTracker',
+    usage: `import { DailyReadingTracker } from '@components/DailyReadingTracker/DailyReadingTracker'
+
+<DailyReadingTracker
+  weekLabel="Mar 3 – Mar 9"
+  rows={rows}
+  average={22}
+  showGoal
+  onPrevWeek={prev}
+  onNextWeek={next}
+/>`,
     desc: (
       <>
         The class page&apos;s Daily Reading grid — who hit their daily goal, day by day. The table

@@ -1,9 +1,13 @@
-import { Fragment, useState, useEffect, useSyncExternalStore } from 'react'
+import { Fragment, useState, useEffect, useCallback, useSyncExternalStore } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
-import { BackBar } from '@components/BackBar/BackBar'
-import '@components/BackBar/BackBar.css'
 import { Icon } from '@components/Icon/Icon'
+import { Tabs } from '@components/Tabs/Tabs'
 import { GROUPS, SECTIONS, GroupHeader, BreakpointIndicator } from './catalog'
+import { SearchPalette } from './SearchPalette'
+import { CodeBlock } from './CodeBlock'
+
+const SHARED_GROUPS = GROUPS.filter((g) => g.kind !== 'prototype')
+const PROTOTYPE_GROUPS = GROUPS.filter((g) => g.kind === 'prototype')
 
 // True when this group is the first prototype-specific group — used to drop in
 // a "Prototype-specific" divider between the shared groups and the per-prototype ones.
@@ -12,11 +16,10 @@ function startsPrototypeSection(i) {
 }
 
 // ---------------------------------------------------------------------------
-// Tiny hash router. Only two real views:
-//   #/                       → home (browse every group + component cards)
+// Tiny hash router. Three views:
+//   #/                       → home (index of groups)
+//   #/<groupId>              → one group's component cards
 //   #/<groupId>/<sectionId>  → a single component page
-// Group-only paths (#/<groupId>) intentionally don't exist — they fall back
-// to home; groups are just collapsible sections in the sidebar.
 // ---------------------------------------------------------------------------
 function subscribeHash(cb) {
   window.addEventListener('hashchange', cb)
@@ -30,20 +33,33 @@ function useRoute() {
     () => '',
   )
   const path = hash.replace(/^#\/?/, '')
-  const segments = path.split('/').filter(Boolean)
+  const [groupId, sectionId] = path.split('/').filter(Boolean)
 
-  // #/ or a stray #/<group> → home
-  if (segments.length < 2) return { view: 'home' }
-
-  const [groupId, sectionId] = segments
-  const section = SECTIONS.find((s) => s.id === sectionId && s.group === groupId)
-  if (!section) return { view: 'home' }
   const group = GROUPS.find((g) => g.id === groupId)
+  if (!group) return { view: 'home' }
+  if (!sectionId) return { view: 'group', group }
+
+  const section = SECTIONS.find((s) => s.id === sectionId && s.group === groupId)
+  if (!section) return { view: 'group', group }
   return { view: 'component', group, section }
 }
 
 function sectionsForGroup(groupId) {
   return SECTIONS.filter((s) => s.group === groupId)
+}
+
+// ── Sidebar group expansion ───────────────────────────────────────────────
+// Several groups can stay open at once, and the set survives a reload — with
+// 19 groups, a one-at-a-time accordion kept throwing away where you were.
+const OPEN_GROUPS_KEY = 'pt-open-groups'
+
+function readOpenGroups() {
+  try {
+    const raw = JSON.parse(localStorage.getItem(OPEN_GROUPS_KEY))
+    return new Set(Array.isArray(raw) ? raw : [])
+  } catch {
+    return new Set()
+  }
 }
 
 // A light, demo-free card linking to a component page.
@@ -66,46 +82,201 @@ function CardGrid({ groupId }) {
   )
 }
 
+// ── Home: an index of groups, not of all 130-odd components ───────────────
+function GroupTile({ group }) {
+  const count = sectionsForGroup(group.id).length
+  return (
+    <a className="pt-group-tile" href={`#/${group.id}`} style={{ '--tile-color': group.color }}>
+      <div className="pt-group-tile-title">
+        {group.title}
+        <span className="pt-group-tile-count">{count}</span>
+      </div>
+      <div className="pt-group-tile-desc">{group.desc}</div>
+    </a>
+  )
+}
+
 function HomeView() {
   return (
     <>
       <div className="pt-home-intro">
         <h1 className="pt-home-title">Pattern Library</h1>
         <p className="pt-home-lede">
-          Shared components used across every prototype. Browse by group below, or jump straight to
-          a component from the sidebar.
+          {SECTIONS.length} components across {GROUPS.length} groups. Pick a group below, or press{' '}
+          <kbd>⌘K</kbd> to search for a component by name.
         </p>
       </div>
-      {GROUPS.map((g, i) => (
-        <Fragment key={g.id}>
-          {startsPrototypeSection(i) && (
-            <div className="pt-home-section-label">
-              Prototype-specific patterns
-              <span>Built for a single prototype, catalogued under its name</span>
-            </div>
-          )}
-          <div className="pt-group">
-            <GroupHeader title={g.title} desc={g.desc} />
-            <CardGrid groupId={g.id} />
-          </div>
-        </Fragment>
-      ))}
+
+      <div className="pt-home-section-label">
+        Shared system
+        <span>Used across every prototype — check here before building anything new</span>
+      </div>
+      <div className="pt-group-tiles">
+        {SHARED_GROUPS.map((g) => (
+          <GroupTile key={g.id} group={g} />
+        ))}
+      </div>
+
+      <div className="pt-home-section-label">
+        Prototype-specific patterns
+        <span>Built for a single prototype, catalogued under its name</span>
+      </div>
+      <div className="pt-group-tiles">
+        {PROTOTYPE_GROUPS.map((g) => (
+          <GroupTile key={g.id} group={g} />
+        ))}
+      </div>
     </>
   )
 }
 
-function ComponentView({ section }) {
+// The one bar at the top of every inner page: where you are, and every level
+// above it as a link back.
+function Crumbs({ group, section }) {
+  return (
+    <nav className="pt-crumbs" aria-label="Breadcrumb">
+      <a href="#/">Pattern Library</a>
+      <Icon name="chevron-right" size={12} stroke={2.2} />
+      {section ? (
+        <>
+          <a href={`#/${group.id}`}>{group.title}</a>
+          <Icon name="chevron-right" size={12} stroke={2.2} />
+          <span aria-current="page">{section.name}</span>
+        </>
+      ) : (
+        <span aria-current="page">{group.title}</span>
+      )}
+    </nav>
+  )
+}
+
+function GroupView({ group }) {
   return (
     <div className="pt-group">
-      <div className="pt-page-bar">
-        <BackBar fixed label="Pattern Library" href="#/" />
+      <Crumbs group={group} />
+      <GroupHeader title={group.title} desc={group.desc} />
+      <CardGrid groupId={group.id} />
+    </div>
+  )
+}
+
+// "How do I use this?" — the import line plus a minimal call, copyable.
+function UsageBlock({ usage }) {
+  const [copied, setCopied] = useState(false)
+
+  const copy = () => {
+    navigator.clipboard?.writeText(usage).then(
+      () => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 1400)
+      },
+      () => {},
+    )
+  }
+
+  return (
+    <div className="pt-usage">
+      <button type="button" className="pt-usage-copy" onClick={copy}>
+        <Icon name={copied ? 'check' : 'copy'} size={13} stroke={2.2} />
+        {copied ? 'Copied' : 'Copy'}
+      </button>
+      <CodeBlock code={usage} className="pt-usage-code" />
+    </div>
+  )
+}
+
+// The docs column: what it is, and how to call it — one at a time, so a long
+// description never pushes the snippet out of view. Sections without a `usage`
+// snippet skip the tabs entirely and just show the description.
+function SectionDocs({ section }) {
+  const [tab, setTab] = useState('about')
+
+  // Back to About whenever you land on a different component.
+  useEffect(() => setTab('about'), [section.id])
+
+  if (!section.usage) {
+    return section.desc ? <div className="pt-section-desc">{section.desc}</div> : null
+  }
+
+  return (
+    <div className="pt-docs">
+      <Tabs
+        variant="folder"
+        size="sm"
+        active={tab}
+        onChange={setTab}
+        collapse={false}
+        ariaLabel={`${section.name} documentation`}
+        items={[
+          { id: 'about', label: 'About' },
+          { id: 'usage', label: 'Usage' },
+        ]}
+      />
+      <div className="pt-docs-panel">
+        {tab === 'about' ? (
+          <div className="pt-section-desc">{section.desc}</div>
+        ) : (
+          <UsageBlock usage={section.usage} />
+        )}
       </div>
-      <section id={section.id} className="pt-section">
-        <div className="pt-section-head">
-          <h2>{section.name}</h2>
-          {section.desc && <div className="pt-section-desc">{section.desc}</div>}
+    </div>
+  )
+}
+
+// Move between components without going back out to the group — the catalog
+// order is the browsing order. A missing neighbour renders nothing at all; the
+// remaining button keeps its side (Next is held right by margin-left: auto).
+function PrevNextLink({ groupId, target, dir }) {
+  if (!target) return null
+
+  const isPrev = dir === 'prev'
+  return (
+    <a className={`pt-prevnext-link pt-prevnext-link--${dir}`} href={`#/${groupId}/${target.id}`}>
+      {isPrev && <Icon name="chevron-left" size={14} stroke={2.2} />}
+      <span>
+        <small>{isPrev ? 'Previous' : 'Next'}</small>
+        {target.name}
+      </span>
+      {!isPrev && <Icon name="chevron-right" size={14} stroke={2.2} />}
+    </a>
+  )
+}
+
+function PrevNext({ group, section }) {
+  const items = sectionsForGroup(group.id)
+  const i = items.findIndex((s) => s.id === section.id)
+
+  return (
+    <nav className="pt-prevnext" aria-label={`More in ${group.title}`}>
+      <PrevNextLink groupId={group.id} target={items[i - 1]} dir="prev" />
+      <PrevNextLink groupId={group.id} target={items[i + 1]} dir="next" />
+    </nav>
+  )
+}
+
+// The name, docs, and prev/next ride in a sticky full-height left column so
+// they stay put while you scroll a long set of examples on the right.
+function ComponentView({ group, section }) {
+  return (
+    <div className="pt-group">
+      <Crumbs group={group} section={section} />
+      <section id={section.id} className="pt-section pt-section--split">
+        <div className="pt-section-aside">
+          <div className="pt-section-head">
+            <h2>{section.name}</h2>
+          </div>
+          <SectionDocs section={section} />
+          <PrevNext group={group} section={section} />
         </div>
-        <div className="pt-section-body">{section.render()}</div>
+        <div className="pt-section-body">
+          {/* A section with a rail gets its rules from <Knobs>; one without has
+              only static examples, so it gets a plain "Examples" rule here.
+              CSS hides this when a rail is present. */}
+          <div className="pt-examples-rule pt-examples-rule--standalone">
+            <span>Examples</span>
+          </div>
+          {section.render()}
+        </div>
       </section>
     </div>
   )
@@ -115,21 +286,42 @@ export function App() {
   const route = useRoute()
   const [navOpen, setNavOpen] = useState(false)
   const [showTop, setShowTop] = useState(false)
-  // Which sidebar group is expanded — only one at a time. Starts with the active
-  // component's group.
-  const [openGroup, setOpenGroup] = useState(() => route.group?.id ?? null)
+  const [paletteOpen, setPaletteOpen] = useState(false)
+  // Which sidebar groups are expanded — any number at once, remembered across reloads.
+  const [openGroups, setOpenGroups] = useState(readOpenGroups)
+
+  const openPalette = useCallback(() => setPaletteOpen(true), [])
 
   // Close the mobile drawer + jump back to the top whenever the route changes.
   useEffect(() => {
     setNavOpen(false)
     document.querySelector('.pt-content')?.scrollTo({ top: 0 })
-  }, [route.view, route.section?.id])
+  }, [route.view, route.group?.id, route.section?.id])
 
-  // Keep the active component's group expanded when navigating to it.
+  // Keep the group you're inside expanded, and remember the set.
+  const routeGroupId = route.group?.id
   useEffect(() => {
-    if (!route.group) return
-    setOpenGroup(route.group.id)
-  }, [route.group?.id])
+    if (!routeGroupId) return
+    setOpenGroups((prev) => (prev.has(routeGroupId) ? prev : new Set(prev).add(routeGroupId)))
+  }, [routeGroupId])
+
+  useEffect(() => {
+    localStorage.setItem(OPEN_GROUPS_KEY, JSON.stringify([...openGroups]))
+  }, [openGroups])
+
+  // ⌘K / Ctrl-K anywhere, and "/" when you're not already typing into something.
+  useEffect(() => {
+    const onKey = (e) => {
+      const typing =
+        /^(input|textarea|select)$/i.test(e.target.tagName) || e.target.isContentEditable
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) {
+        e.preventDefault()
+        setPaletteOpen(true)
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [])
 
   // Reveal the back-to-top button once the content area is scrolled.
   useEffect(() => {
@@ -141,7 +333,12 @@ export function App() {
     return () => content.removeEventListener('scroll', onScroll)
   }, [])
 
-  const toggleGroup = (id) => setOpenGroup((prev) => (prev === id ? null : id))
+  const toggleGroup = (id) =>
+    setOpenGroups((prev) => {
+      const next = new Set(prev)
+      if (!next.delete(id)) next.add(id)
+      return next
+    })
 
   const activeGroupId = route.group?.id ?? null
   const activeSectionId = route.section?.id ?? null
@@ -160,6 +357,14 @@ export function App() {
             <Icon name="menu" size={18} />
           </button>
           <div className="pt-topbar-title">Pattern Library</div>
+          <button
+            type="button"
+            className="pt-topbar-toggle pt-topbar-search"
+            onClick={openPalette}
+            aria-label="Search components"
+          >
+            <Icon name="search" size={18} />
+          </button>
         </div>
 
         {navOpen && <div className="pt-sidebar-backdrop" onClick={() => setNavOpen(false)} />}
@@ -168,7 +373,9 @@ export function App() {
           <div className="pt-sidebar-head">
             <a className="pt-sidebar-brand" href="#/">
               <div className="pt-sidebar-title">Pattern Library</div>
-              <div className="pt-sidebar-sub">Shared components used across every prototype</div>
+              <div className="pt-sidebar-sub">
+                {SECTIONS.length} components, {GROUPS.length} groups
+              </div>
             </a>
             <button
               type="button"
@@ -179,9 +386,16 @@ export function App() {
               <Icon name="x" size={18} />
             </button>
           </div>
+
+          <button type="button" className="pt-sidebar-search" onClick={openPalette}>
+            <Icon name="search" size={15} />
+            Search
+            <kbd>⌘K</kbd>
+          </button>
+
           {GROUPS.map((group, i) => {
             const items = sectionsForGroup(group.id)
-            const isOpen = openGroup === group.id
+            const isOpen = openGroups.has(group.id)
             const isActiveGroup = activeGroupId === group.id
             return (
               <Fragment key={group.id}>
@@ -189,15 +403,22 @@ export function App() {
                   <div className="pt-nav-divider">Prototype-specific</div>
                 )}
                 <div className={`pt-nav-group${isOpen ? ' pt-nav-group--open' : ''}`}>
-                  <button
-                    type="button"
+                  <div
                     className={`pt-nav-group-label${isActiveGroup ? ' pt-nav-group-label--active' : ''}`}
-                    onClick={() => toggleGroup(group.id)}
-                    aria-expanded={isOpen}
                   >
-                    {group.title}
-                    <Icon name="chevron-down" size={10} className="pt-nav-group-caret" />
-                  </button>
+                    <a href={`#/${group.id}`} className="pt-nav-group-name">
+                      {group.title}
+                    </a>
+                    <button
+                      type="button"
+                      className="pt-nav-group-toggle"
+                      onClick={() => toggleGroup(group.id)}
+                      aria-expanded={isOpen}
+                      aria-label={`${isOpen ? 'Collapse' : 'Expand'} ${group.title}`}
+                    >
+                      <Icon name="chevron-down" size={10} className="pt-nav-group-caret" />
+                    </button>
+                  </div>
                   {isOpen &&
                     items.map((s) => (
                       <a
@@ -214,11 +435,15 @@ export function App() {
           })}
         </aside>
 
-        <main className="pt-content">
+        <main className={`pt-content${route.view === 'component' ? ' pt-content--panes' : ''}`}>
           {route.view === 'home' && <HomeView />}
-          {route.view === 'component' && <ComponentView section={route.section} />}
+          {route.view === 'group' && <GroupView group={route.group} />}
+          {route.view === 'component' && (
+            <ComponentView group={route.group} section={route.section} />
+          )}
         </main>
       </div>
+      {paletteOpen && <SearchPalette onClose={() => setPaletteOpen(false)} />}
       {showTop && (
         <button
           type="button"

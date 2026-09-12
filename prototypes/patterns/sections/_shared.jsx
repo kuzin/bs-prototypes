@@ -8,15 +8,32 @@ const isFlag = (field) => Children.toArray(field?.props?.children).some((c) => c
 // Knobs panel: dropdowns / inputs sit in a top "controls" zone; boolean
 // toggles drop into a compact "flags" cluster below, so the two read as
 // distinct zones instead of one big undifferentiated grid.
-export function Knobs({ children }) {
+//
+// It also emits the two labelled rules that structure the page: "Interactive
+// example" above the rail, and "Additional examples" between the knob-driven
+// preview and the static examples below it. It lives here rather than in each section because
+// every section with knobs wants the same break; pass `examples={false}` to
+// suppress it. A section that has *only* the preview hides the divider in CSS
+// (see .pt-examples-rule) — Knobs can't see what follows it.
+export function Knobs({ children, examples = 'Additional examples' }) {
   const kids = Children.toArray(children)
   const controls = kids.filter((k) => !isFlag(k))
   const flags = kids.filter(isFlag)
   return (
-    <div className="pt-knobs">
-      {controls.length > 0 && <div className="pt-knobs-controls">{controls}</div>}
-      {flags.length > 0 && <div className="pt-knobs-flags">{flags}</div>}
-    </div>
+    <>
+      <div className="pt-examples-rule pt-examples-rule--interactive">
+        <span>Interactive example</span>
+      </div>
+      <div className="pt-knobs">
+        {controls.length > 0 && <div className="pt-knobs-controls">{controls}</div>}
+        {flags.length > 0 && <div className="pt-knobs-flags">{flags}</div>}
+      </div>
+      {examples && (
+        <div className="pt-examples-rule">
+          <span>{examples}</span>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -34,6 +51,22 @@ export function Variant({ label, children, bare, full }) {
       <div className={className}>{children}</div>
     </div>
   )
+}
+
+// A single labelled example inside a card — the component above the prop value
+// that produced it. Use inside <Specimens> when a card shows a matrix of
+// variants, sizes or states side by side.
+export function Specimen({ label, children }) {
+  return (
+    <div className="pt-specimen">
+      <div className="pt-specimen-demo">{children}</div>
+      <code className="pt-specimen-label">{label}</code>
+    </div>
+  )
+}
+
+export function Specimens({ children }) {
+  return <div className="pt-specimens">{children}</div>
 }
 
 export const PlusIcon = () => <Icon name="plus" size={16} />

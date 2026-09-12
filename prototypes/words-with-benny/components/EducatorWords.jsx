@@ -182,32 +182,24 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
 
       {tab === 'class' ? (
         <>
-          {/* The tinted shape, not the centred one: these sit inside a page
+          {/* The shared stat tile — these sit inside a page
               that already has a heading and five cards under them, and a row
               of big centred numerals shouted over all of it. */}
           <div className="ew-stats">
             <StatCard
-              variant="tinted"
               value={totals.words.toLocaleString()}
               label="Words collected this year"
               trend={{ delta: totals.week, format: (n) => `${n} in the last 7 days` }}
               color={ACCENT}
             />
             <StatCard
-              variant="tinted"
               value={totals.collecting}
               unit={`/${ROSTER.length}`}
               label="Students collecting this week"
               color="#0DA7BC"
             />
+            <StatCard value={totals.median} label="Median words per student" color="#16A97A" />
             <StatCard
-              variant="tinted"
-              value={totals.median}
-              label="Median words per student"
-              color="#16A97A"
-            />
-            <StatCard
-              variant="tinted"
               value={totals.firstTry}
               unit="%"
               label="Used correctly first try"

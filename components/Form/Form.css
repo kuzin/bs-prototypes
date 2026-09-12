@@ -623,17 +623,19 @@
 }
 
 .finp--sm .finp-btn {
-  font-size: 12px;
-  padding: 5px 10px;
+  height: 36px;
+  font-size: 14px;
+  padding: 0 12px;
 }
 .finp--md .finp-btn {
-  font-size: 13px;
-  padding: 7px 12px;
+  height: 44px;
+  font-size: 16px;
+  padding: 0 16px;
 }
 .finp--lg .finp-btn {
-  font-size: 14px;
-  padding: 9px 14px;
-  border-radius: 10px;
+  height: 52px;
+  font-size: 16px;
+  padding: 0 20px;
 }
 
 .finp-name {
@@ -677,8 +679,8 @@
   box-sizing: border-box;
   font: inherit;
   background: #fff;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
   color: var(--c-text);
   cursor: pointer;
   text-align: left;
@@ -705,18 +707,23 @@
   cursor: not-allowed;
 }
 
+/* The one control ladder: 36 / 44 / 52 at 14 / 16 / 16, the rungs `.sel` and
+   `.inp` use. These four sat on a padding-based 13px scale of their own, so a
+   `md` of each came out 31–34px beside a 44px `md` Select. */
 .msel--sm .msel-trigger {
-  font-size: 13px;
-  padding: 6px 10px;
+  min-height: 36px;
+  font-size: 14px;
+  padding: 0 10px;
 }
 .msel--md .msel-trigger {
-  font-size: 13px;
-  padding: 8px 12px;
+  min-height: 44px;
+  font-size: 16px;
+  padding: 0 12px;
 }
 .msel--lg .msel-trigger {
-  font-size: 14px;
-  padding: 10px 14px;
-  border-radius: 10px;
+  min-height: 52px;
+  font-size: 16px;
+  padding: 0 14px;
 }
 
 .msel--error .msel-trigger {
@@ -899,8 +906,8 @@
   width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
   overflow: hidden;
   transition:
     border-color 0.12s,
@@ -973,16 +980,19 @@
 }
 
 .ninp--sm .ninp-inp {
-  font-size: 13px;
-  padding: 6px 4px;
+  height: 32px;
+  font-size: 14px;
+  padding: 0 4px;
 }
 .ninp--md .ninp-inp {
-  font-size: 13px;
-  padding: 8px 4px;
+  height: 40px;
+  font-size: 16px;
+  padding: 0 4px;
 }
 .ninp--lg .ninp-inp {
-  font-size: 14px;
-  padding: 10px 4px;
+  height: 48px;
+  font-size: 16px;
+  padding: 0 4px;
 }
 
 /* ── RangeSlider ────────────────────────────────────────────────────────── */

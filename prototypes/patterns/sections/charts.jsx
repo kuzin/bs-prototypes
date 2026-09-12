@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { ResponsiveLine } from '@nivo/line'
 import { ResponsiveBar } from '@nivo/bar'
 import { ResponsiveScatterPlot } from '@nivo/scatterplot'
+import { Icon } from '@components/Icon/Icon'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import { CardNote, ChartCard, StatCard } from '@components/Cards/Cards'
 import {
   AXIS_BOTTOM,
@@ -235,13 +237,157 @@ function BarListKnobs() {
   )
 }
 
+function StatCardShowcase() {
+  return (
+    <>
+      <Variant label="plain (default) — no icon, just the figure over its label">
+        <div className="rc-stats-row" style={{ '--rc-stats-cols': 2 }}>
+          <StatCard label="Minutes" value="3,252" color="var(--c-brand-coral)" />
+          <StatCard label="Active Readers" value="1,204" color="var(--c-amber-500)" />
+          <StatCard label="Lexile Average" value="665L" color="var(--c-violet-600)" />
+          <StatCard label="Logged Every Day" value={38} color="var(--c-brand-green)" />
+        </div>
+      </Variant>
+
+      <Variant label="action — a link at the foot, for the stats that lead somewhere">
+        <div className="rc-stats-row" style={{ '--rc-stats-cols': 2 }}>
+          <StatCard
+            label="Minutes"
+            value="3,252"
+            color="var(--c-brand-coral)"
+            action={{ label: 'Insights', href: '#/cards/stat-card' }}
+          />
+          <StatCard
+            label="Lexile Average"
+            value="665L"
+            color="var(--c-violet-600)"
+            action={{ label: 'Lexile Insights', href: '#/cards/stat-card' }}
+          />
+          <StatCard
+            label="Logged Every Day"
+            value={38}
+            color="var(--c-brand-green)"
+            action={{ label: 'Number Cruncher', href: '#/cards/stat-card' }}
+          />
+          <StatCard
+            label="Active Readers"
+            value="1,204"
+            color="var(--c-amber-500)"
+            action={{ label: 'Insights', href: '#/cards/stat-card' }}
+          />
+        </div>
+      </Variant>
+
+      <Variant label="icon — optional; the tile reads fine without one">
+        <div className="rc-stats-row" style={{ '--rc-stats-cols': 2 }}>
+          <StatCard
+            label="Completed titles"
+            value={12}
+            color="var(--c-violet-600)"
+            icon={<PlumpyIcon name="book" size={40} />}
+          />
+          <StatCard
+            label="Reading time"
+            value="3,043"
+            unit="Minutes"
+            color="var(--c-amber-500)"
+            icon={<PlumpyIcon name="clock" size={40} />}
+          />
+        </div>
+      </Variant>
+
+      <Variant label="trend — spread into a TrendChip, not a bare number">
+        <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
+          <StatCard
+            value={490}
+            label="Words collected"
+            color="var(--c-brand-teal)"
+            trend={{ delta: 101, format: (n) => `${n} in the last 7 days` }}
+          />
+          <StatCard
+            value={12}
+            label="Sessions flagged"
+            color="var(--c-brand-coral)"
+            trend={{ delta: -3, inverse: true, format: (n) => `${n} fewer` }}
+          />
+          <StatCard
+            value={68}
+            unit="%"
+            label="Logging weekly"
+            color="var(--c-brand-green)"
+            trend={{ delta: 7, format: (n) => `${n}%`, showValue: true }}
+          />
+        </div>
+      </Variant>
+    </>
+  )
+}
+
+function ChartCardShowcase() {
+  return (
+    <>
+      <Variant label="title, subtitle, icon and accent">
+        <ChartCard
+          title="Minutes by grade"
+          subtitle="This school year"
+          icon={<Icon name="chart-bar" size={18} />}
+          accent="var(--c-brand-teal)"
+        >
+          <CardNote icon="info">
+            The body is flush by default — children own their padding.
+          </CardNote>
+        </ChartCard>
+      </Variant>
+
+      <Variant label='bodyPad="padded" — the card supplies the padding'>
+        <ChartCard title="Reading health" bodyPad="padded" accent="var(--c-brand-green)">
+          Body content sits on the card&apos;s own padding.
+        </ChartCard>
+      </Variant>
+
+      <Variant label="info — the app’s own header affordance (hover the i)">
+        <ChartCard
+          title="Sessions to review"
+          subtitle="12 flagged this week"
+          info="Counts every session a reader flagged, plus anything the integrity rules caught."
+          footer="Updated nightly"
+          bodyPad="padded"
+        >
+          In the product the module title itself links to the detail view, and this slot holds the
+          tooltip.
+        </ChartCard>
+      </Variant>
+
+      <Variant label="action — for the cases that need a control instead">
+        <ChartCard
+          title="Sessions to review"
+          subtitle="12 flagged this week"
+          action={{ label: 'View all', href: '#/cards/chart-card' }}
+          bodyPad="padded"
+        >
+          Pass <code>{'{ label, href }'}</code> for the standard chevron link, or any node to put
+          your own control in the slot.
+        </ChartCard>
+      </Variant>
+    </>
+  )
+}
+
+const STAT_ICONS = ['none', 'book', 'reading', 'clock', 'calendar', 'fire', 'trophy', 'vocabulary']
+
 function StatCardKnobs() {
-  const [value, setValue] = useState('71')
+  const [value, setValue] = useState('3,252')
   const [unit, setUnit] = useState('')
-  const [label, setLabel] = useState('Reading Motivation Index')
-  const [footer, setFooter] = useState('↑ 7 pts since Sep 2024')
-  const [color, setColor] = useState('#0F172A')
-  const [footerColor, setFc] = useState('#94A3B8')
+  const [label, setLabel] = useState('Minutes')
+  const [color, setColor] = useState('#E8866A')
+  const [iconKey, setIconKey] = useState('clock')
+  const [actionLabel, setActionLabel] = useState('Insights')
+  const [showAction, setShowAction] = useState(true)
+  const [showTrend, setShowTrend] = useState(false)
+  const [trendDelta, setTrendDelta] = useState(7)
+  const [showValueOnTrend, setShowValueOnTrend] = useState(false)
+  const [footer, setFooter] = useState('')
+
   return (
     <>
       <Knobs>
@@ -249,13 +395,19 @@ function StatCardKnobs() {
           <Input value={value} onChange={(e) => setValue(e.target.value)} />
         </Field>
         <Field label="unit">
-          <Input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="/40" />
+          <Input value={unit} onChange={(e) => setUnit(e.target.value)} placeholder="Minutes" />
         </Field>
         <Field label="label">
           <Input value={label} onChange={(e) => setLabel(e.target.value)} />
         </Field>
-        <Field label="footer">
-          <Input value={footer} onChange={(e) => setFooter(e.target.value)} />
+        <Field label="icon">
+          <Select value={iconKey} onChange={(e) => setIconKey(e.target.value)}>
+            {STAT_ICONS.map((k) => (
+              <option key={k} value={k}>
+                {k}
+              </option>
+            ))}
+          </Select>
         </Field>
         <Field label="color">
           <input
@@ -265,24 +417,56 @@ function StatCardKnobs() {
             onChange={(e) => setColor(e.target.value)}
           />
         </Field>
-        <Field label="footerColor">
-          <input
-            className="pt-color"
-            type="color"
-            value={footerColor}
-            onChange={(e) => setFc(e.target.value)}
+        <Field label="action label">
+          <Input value={actionLabel} onChange={(e) => setActionLabel(e.target.value)} />
+        </Field>
+        <Field label="footer">
+          <Input
+            value={footer}
+            onChange={(e) => setFooter(e.target.value)}
+            placeholder="79% of the class"
           />
+        </Field>
+        <Field label="trend delta">
+          <Input
+            type="range"
+            min="-40"
+            max="40"
+            value={trendDelta}
+            onChange={(e) => setTrendDelta(Number(e.target.value))}
+          />
+        </Field>
+        <Field label="action">
+          <Toggle checked={showAction} onChange={setShowAction} />
+        </Field>
+        <Field label="trend">
+          <Toggle checked={showTrend} onChange={setShowTrend} />
+        </Field>
+        <Field label="trend showValue">
+          <Toggle checked={showValueOnTrend} onChange={setShowValueOnTrend} />
         </Field>
       </Knobs>
       <div className="pt-variant-frame">
-        <StatCard
-          value={value}
-          unit={unit || undefined}
-          label={label}
-          footer={footer}
-          color={color}
-          footerColor={footerColor}
-        />
+        <div className="rc-stats-row" style={{ '--rc-stats-cols': 2 }}>
+          <StatCard
+            value={value}
+            unit={unit || undefined}
+            label={label}
+            footer={footer || undefined}
+            color={color}
+            icon={iconKey === 'none' ? undefined : <PlumpyIcon name={iconKey} size={40} />}
+            action={
+              showAction && actionLabel
+                ? { label: actionLabel, href: '#/cards/stat-card' }
+                : undefined
+            }
+            trend={
+              showTrend
+                ? { delta: trendDelta, format: (n) => `${n}%`, showValue: showValueOnTrend }
+                : undefined
+            }
+          />
+        </div>
       </div>
     </>
   )
@@ -311,7 +495,8 @@ function ChartCardKnobs() {
   const [accent, setAccent] = useState('#E8866A')
   const [showIcon, setShowIcon] = useState(true)
   const [showFooter, setShowFooter] = useState(true)
-  const [showAction, setShowAction] = useState(true)
+  const [showAction, setShowAction] = useState(false)
+  const [showInfo, setShowInfo] = useState(true)
   const [bodyPad, setBodyPad] = useState('padded')
   const [span, setSpan] = useState('1')
   const [capHeight, setCapHeight] = useState(false)
@@ -352,6 +537,9 @@ function ChartCardKnobs() {
         <Field label="icon">
           <Toggle checked={showIcon} onChange={setShowIcon} />
         </Field>
+        <Field label="info">
+          <Toggle checked={showInfo} onChange={setShowInfo} />
+        </Field>
         <Field label="action">
           <Toggle checked={showAction} onChange={setShowAction} />
         </Field>
@@ -367,7 +555,8 @@ function ChartCardKnobs() {
           span={Number(span)}
           bodyMaxHeight={capHeight ? 120 : undefined}
           icon={showIcon ? icon : undefined}
-          action={showAction ? <button className="rc-card-drill">View →</button> : undefined}
+          action={showAction ? { label: 'View all', href: '#/cards/chart-card' } : undefined}
+          info={showInfo ? `What "${title}" counts, and over what window.` : undefined}
           bodyPad={bodyPad}
           footer={
             showFooter ? (
@@ -1160,8 +1349,56 @@ function ChartLegendKnobs() {
 
 // ── Breakpoint indicator (fixed corner pill) ─────────────────────────────
 
+// CardNote is meant to sit in a card body, and `accent` reads off the card's
+// --rc-accent — so the examples show it in one rather than free-floating.
+function CardNoteShowcase() {
+  return (
+    <>
+      <Variant label="tones — each one of the app’s own infoboxes">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
+          <CardNote>Averaged across the last 30 days.</CardNote>
+          <CardNote tone="info">
+            Readers who log three days running are <strong>2×</strong> as likely to finish.
+          </CardNote>
+          <CardNote tone="warning">
+            Two classes haven&apos;t logged since Friday — the figure above excludes them.
+          </CardNote>
+          <CardNote tone="success">Every class has logged this week.</CardNote>
+          <CardNote tone="error">Sync failed last night; this is Thursday&apos;s data.</CardNote>
+        </div>
+      </Variant>
+
+      <Variant label="icon — each tone brings its own, or pass one">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-12)' }}>
+          <CardNote tone="info" icon="bulb">
+            An overridden glyph, for a note that isn&apos;t quite &ldquo;information&rdquo;.
+          </CardNote>
+          <CardNote tone="info" icon={false}>
+            <code>icon={'{false}'}</code> drops it entirely.
+          </CardNote>
+          <CardNote icon="clock">
+            Neutral has no glyph by default — pass one when it earns its place.
+          </CardNote>
+        </div>
+      </Variant>
+
+      <Variant label="in a card — accent picks up the card’s --rc-accent">
+        <ChartCard title="Minutes by grade" accent="var(--c-brand-teal)">
+          <CardNote tone="accent">Up 12% on last month.</CardNote>
+        </ChartCard>
+      </Variant>
+    </>
+  )
+}
+
+// The glyphs a note actually reaches for: what this is, what to do about it,
+// what to watch out for, and when it updates.
+const NOTE_ICONS = ['default', 'none', 'info', 'bulb', 'alert-triangle', 'clock', 'check', 'flame']
+
 function CardNoteKnobs() {
   const [tone, setTone] = useState('neutral')
+  const [icon, setIcon] = useState('default')
+  const [bodyPad, setBodyPad] = useState('padded')
   const [text, setText] = useState(
     'Intrinsic subscore rose from 12.1 to 14.2 /20, outpacing extrinsic motivation.',
   )
@@ -1171,7 +1408,26 @@ function CardNoteKnobs() {
         <Field label="tone">
           <Select value={tone} onChange={(e) => setTone(e.target.value)}>
             <option value="neutral">neutral</option>
+            <option value="info">info</option>
+            <option value="warning">warning</option>
+            <option value="success">success</option>
+            <option value="error">error</option>
             <option value="accent">accent</option>
+          </Select>
+        </Field>
+        <Field label="icon">
+          <Select value={icon} onChange={(e) => setIcon(e.target.value)}>
+            {NOTE_ICONS.map((name) => (
+              <option key={name} value={name}>
+                {name}
+              </option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="card bodyPad">
+          <Select value={bodyPad} onChange={(e) => setBodyPad(e.target.value)}>
+            <option value="padded">padded</option>
+            <option value="flush">flush</option>
           </Select>
         </Field>
         <Field label="text" className="pt-knob-full">
@@ -1179,8 +1435,13 @@ function CardNoteKnobs() {
         </Field>
       </Knobs>
       <div className="pt-variant-frame pt-variant-frame--bare">
-        <ChartCard title="Note" accent="#E8866A" bodyPad="padded">
-          <CardNote tone={tone}>{text}</CardNote>
+        <ChartCard title="Note" accent="#E8866A" bodyPad={bodyPad}>
+          <CardNote
+            tone={tone}
+            icon={icon === 'default' ? undefined : icon === 'none' ? false : icon}
+          >
+            {text}
+          </CardNote>
         </ChartCard>
       </div>
     </>
@@ -1302,6 +1563,15 @@ export const chartsSections = [
     group: 'charts',
     id: 'trend-chart',
     name: 'TrendChart',
+    usage: `import { TrendChart } from '@components/TrendChart/TrendChart'
+
+<TrendChart
+  type="line"
+  data={data}
+  xKey="month"
+  series={[{ key: 'minutes', label: 'Minutes', color: 'var(--c-teal-500)' }]}
+  yUnit="m"
+/>`,
     desc: (
       <>
         The default reusable chart for area / line / bar visualizations. Wraps Nivo and locks in the
@@ -1327,6 +1597,11 @@ export const chartsSections = [
     group: 'charts',
     id: 'chart-line',
     name: 'Line Chart (Nivo)',
+    usage: `import { ResponsiveLine } from '@nivo/line'
+import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/charts/charts'
+
+/* Prefer <TrendChart type="line" /> — drop to raw nivo only for custom layers */
+<ResponsiveLine data={series} theme={NIVO_THEME} axisBottom={AXIS_BOTTOM} axisLeft={AXIS_LEFT} />`,
     desc: (
       <>
         Nivo <code>ResponsiveLine</code> + <code>SliceTooltip</code> wrapped in a{' '}
@@ -1344,6 +1619,14 @@ export const chartsSections = [
     group: 'charts',
     id: 'chart-bar-grouped',
     name: 'Grouped Bar Chart',
+    usage: `import { TrendChart } from '@components/TrendChart/TrendChart'
+
+<TrendChart
+  type="bar"
+  data={data}
+  xKey="grade"
+  series={[{ key: 'fall', label: 'Fall' }, { key: 'spring', label: 'Spring' }]}
+/>`,
     desc: (
       <>
         Nivo <code>ResponsiveBar</code> with <code>groupMode="grouped"</code> +{' '}
@@ -1361,6 +1644,9 @@ export const chartsSections = [
     group: 'charts',
     id: 'chart-bar-h',
     name: 'Horizontal Bar Chart',
+    usage: `import { TrendChart } from '@components/TrendChart/TrendChart'
+
+<TrendChart type="bar" layout="horizontal" data={data} xKey="title" series={series} />`,
     desc: (
       <>
         Nivo <code>ResponsiveBar</code> with <code>layout="horizontal"</code>. Use for ranked lists
@@ -1377,6 +1663,10 @@ export const chartsSections = [
     group: 'charts',
     id: 'chart-scatter',
     name: 'Scatter Chart',
+    usage: `import { ResponsiveScatterPlot } from '@nivo/scatterplot'
+import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/charts/charts'
+
+<ResponsiveScatterPlot data={points} theme={NIVO_THEME} axisBottom={AXIS_BOTTOM} axisLeft={AXIS_LEFT} />`,
     desc: (
       <>
         Nivo <code>ResponsiveScatterPlot</code> with a highlighted primary series and a reference
@@ -1390,42 +1680,109 @@ export const chartsSections = [
     ),
   },
   {
-    group: 'charts',
+    group: 'cards',
     id: 'stat-card',
     name: 'StatCard',
+    usage: `import { StatCard } from '@components/Cards/Cards'
+import '@components/Cards/Cards.css'
+
+/* One shape: the figure, bold, over its label on a tint of \`color\`. */
+<StatCard label="Minutes" value="3,252" color="var(--c-brand-coral)" />
+
+/* \`icon\` is optional, and takes a NODE */
+<StatCard
+  label="Completed titles"
+  value={12}
+  color="var(--c-violet-600)"
+  icon={<PlumpyIcon name="book" size={40} />}
+/>
+
+/* \`action\` — a link at the foot, for the stats that lead somewhere */
+<StatCard
+  label="Lexile Average"
+  value="665L"
+  color="var(--c-violet-600)"
+  action={{ label: 'Lexile Insights', href: '/insights/lexile' }}
+/>
+
+/* \`trend\` is spread into <TrendChip>, so it takes the chip's own props */
+<StatCard
+  label="Words collected"
+  value={490}
+  color="var(--c-brand-teal)"
+  trend={{ delta: 101, format: (n) => \`\${n} in the last 7 days\` }}
+/>`,
     desc: (
       <>
-        Small metric tile shown in a row at the top of a bucket page. Props: <code>value</code>,{' '}
-        <code>unit</code>, <code>label</code>, <code>footer</code>, <code>color</code>,{' '}
-        <code>footerColor</code>.
+        The reading-summary tile: a flat pastel card with the figure, bold, over its label. No
+        border and no shadow — the fill is the card. <code>color</code> supplies the hue: the fill
+        is a light tint of it, and the icon and action take it at full strength, so a caller still
+        states one colour. The <code>icon</code> is optional — without one the tile is just figure,
+        label and action.
+        <br />
+        <br />
+        <code>action</code> puts a link at the foot of the tile ({'{ label, href }'}), for the stats
+        that lead somewhere — Insights, Number Cruncher, a Lexile report.
+        <br />
+        <br />
+        <br />
+        <br />
+        <code>trend</code> is spread straight into a <code>{'<TrendChip>'}</code>, so it takes that
+        component&apos;s own props (<code>{'{ delta, format, suffix, inverse, showValue }'}</code>)
+        — not a bare number. Pass it instead of spelling a delta out in <code>footer</code>:
+        &ldquo;+101 in the last 7 days&rdquo; beside a 490 puts two numbers on the tile and makes
+        the eye pick between them. <code>footer</code> stays for the things that aren&apos;t trends.
       </>
     ),
     render: () => (
       <>
         <StatCardKnobs />
+        <StatCardShowcase />
       </>
     ),
   },
   {
-    group: 'charts',
+    group: 'cards',
     id: 'chart-card',
     name: 'ChartCard',
+    usage: `import { ChartCard } from '@components/Cards/Cards'
+
+<ChartCard title="Minutes by grade" subtitle="This school year" span={2}>
+  <TrendChart … />
+</ChartCard>`,
     desc: (
       <>
         Wide rectangle with a consistent header / body / footer used for every chart and panel.
         Props: <code>title</code>, <code>subtitle</code>, <code>icon</code>, <code>accent</code>,{' '}
-        <code>action</code>, <code>footer</code>, <code>bodyPad</code>, <code>bodyMaxHeight</code>{' '}
-        (px — caps body height and scrolls vertically while keeping sticky table / bar-list headers
-        visible). Knobs below to preview combinations.
+        <code>info</code>, <code>action</code>, <code>footer</code>, <code>bodyPad</code>,{' '}
+        <code>bodyMaxHeight</code> (px — caps body height and scrolls vertically while keeping
+        sticky table / bar-list headers visible).
+        <br />
+        <br />
+        The header is the app&apos;s <code>.insights-metric-label</code>: 12px 14px on a{' '}
+        <code>#f4f4f4</code> hairline, lighter than the card&apos;s own <code>$gray200</code>{' '}
+        outline so the division inside doesn&apos;t compete with the edge.
+        <br />
+        <br />
+        <code>info</code> is the affordance that actually sits at the right of a module header in
+        the product — a 15px disc with a white &ldquo;i&rdquo; carrying a tooltip. The title itself
+        is the link to the detail view there, so a &ldquo;View all&rdquo; control is the exception:{' '}
+        <code>action</code> covers it, and renders as the app&apos;s plain{' '}
+        <code>.detail_metric_link</code> rather than a button.
       </>
     ),
     render: () => (
       <>
         <ChartCardKnobs />
-        <div style={{ marginTop: 20 }}>
-          <div className="pt-variant-label">
-            Table inside ChartCard — <code>bodyPad="flush"</code> + <code>flush</code> on Table
-          </div>
+        <ChartCardShowcase />
+        <Variant
+          label={
+            <>
+              Table inside ChartCard — <code>bodyPad=&quot;flush&quot;</code> + <code>flush</code>{' '}
+              on Table
+            </>
+          }
+        >
           <ChartCard
             title="Schools by RMI"
             subtitle="Current year average"
@@ -1459,23 +1816,43 @@ export const chartsSections = [
               zebra
             />
           </ChartCard>
-        </div>
+        </Variant>
       </>
     ),
   },
   {
-    group: 'charts',
+    group: 'cards',
     id: 'card-note',
     name: 'CardNote',
+    usage: `import { CardNote } from '@components/Cards/Cards'
+
+<CardNote>Averaged across the last 30 days.</CardNote>
+<CardNote tone="warning">Two classes haven't logged since Friday.</CardNote>
+<CardNote tone="info" icon="bulb">Three days running doubles completion.</CardNote>`,
     desc: (
       <>
-        Inline note inside a card body. Two tones: <code>neutral</code> (slate) and{' '}
-        <code>accent</code> (uses the card's <code>--rc-accent</code>).
+        Inline note inside a card body — the app&apos;s own <code>.infobox</code>: 15px/1.5 on a
+        flat tint, <code>12px 16px</code>, radius 10, no border. The tone <em>is</em> the fill.
+        <br />
+        <br />
+        <code>tone</code> names the intent, and each maps to one of the app&apos;s boxes:{' '}
+        <code>neutral</code> (<code>.greybox</code>), <code>info</code> (<code>.helpbox</code>),{' '}
+        <code>warning</code> (<code>.alertbox</code>), <code>success</code> (
+        <code>.successbox</code>) and <code>error</code> (<code>.errorbox</code>).{' '}
+        <code>accent</code> isn&apos;t one of them — it takes the card&apos;s own{' '}
+        <code>--rc-accent</code>, for a note tied to the chart it sits under.
+        <br />
+        <br />
+        <code>icon</code> takes an <code>{'<Icon>'}</code> name. Every tone but <code>neutral</code>{' '}
+        and <code>accent</code> supplies its own by default, matching the app&apos;s{' '}
+        <code>*-icon</code> classes — pass <code>icon</code> to override it, or{' '}
+        <code>icon={'{false}'}</code> to drop it.
       </>
     ),
     render: () => (
       <>
         <CardNoteKnobs />
+        <CardNoteShowcase />
       </>
     ),
   },
@@ -1483,6 +1860,9 @@ export const chartsSections = [
     group: 'charts',
     id: 'chart-legend',
     name: 'ChartLegend',
+    usage: `import { ChartLegend } from '@components/charts/charts'
+
+<ChartLegend items={[{ label: 'Fall', color: 'var(--c-teal-500)' }]} />`,
     desc: (
       <>
         Footer legend rendered below the chart body. <code>items</code> is an array of{' '}
@@ -1499,6 +1879,11 @@ export const chartsSections = [
     group: 'charts',
     id: 'bar-list',
     name: 'BarList',
+    usage: `import { BarList } from '@components/BarList/BarList'
+import '@components/BarList/BarList.css'
+
+<BarList items={[{ label: 'Fiction', value: 320 }]} labelWidth={120} />
+<BarList variant="grouped" groups={groups} layout="columns" />`,
     desc: (
       <>
         Horizontal bar-list for ranked breakdowns, factor scores, and icon lists. Three variants:{' '}
@@ -1529,6 +1914,9 @@ export const chartsSections = [
     group: 'charts',
     id: 'word-cloud',
     name: 'WordCloud',
+    usage: `import { WordCloud } from '@components/WordCloud/WordCloud'
+
+<WordCloud words={[{ text: 'dragon', value: 42 }]} height={280} onWordClick={pick} />`,
     desc: (
       <>
         A real weighted word cloud — words are measured in the font they render in, then packed
@@ -1554,6 +1942,10 @@ export const chartsSections = [
     group: 'charts',
     id: 'funnel',
     name: 'Funnel',
+    usage: `import { Funnel } from '@components/Funnel/Funnel'
+import '@components/Funnel/Funnel.css'
+
+<Funnel items={[{ label: 'Enrolled', value: 820 }, { label: 'Logged', value: 540 }]} />`,
     desc: (
       <>
         Stage funnel for conversion / habit-depth flows. Each step shows the count, % of total,
@@ -1619,6 +2011,10 @@ export const chartsSections = [
     group: 'charts',
     id: 'tooltips',
     name: 'Tooltips',
+    usage: `import { SliceTooltip, BarTooltip } from '@components/charts/charts'
+
+/* nivo line charts take a sliceTooltip — not a per-point tooltip */
+<ResponsiveLine sliceTooltip={(p) => <SliceTooltip {...p} allData={data} />} />`,
     desc: (
       <>
         The rich Nivo tooltip pattern: colored accent stripe on the left, uppercase header,

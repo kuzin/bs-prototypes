@@ -1029,7 +1029,7 @@ function OverviewStats({ metrics, onOpen, range, onRangeChange }) {
   const hidden = metrics.filter((m) => m.more).length
 
   return (
-    <div className="pcard bp-card bp-statlist">
+    <div className="section-card bp-card bp-statlist">
       <div className="bp-statlist-head">
         <SectionHeading>At a glance</SectionHeading>
         <Tabs
@@ -1965,23 +1965,27 @@ function SkillsDetail({ sec, c }) {
           — and Y ticks every 50. Its period selector sits above the plot. */}
       <Card>
         {/* One header row, like every other card's: the title, and on the
-            right the period with the steppers that move it. The period used to
-            sit on a line of its own under the title, which left the arrows
-            floating in the card's corner beside nothing. */}
-        <div className="bp-lex-head">
-          <SectionHeading>Lexile trend</SectionHeading>
-          <div className="bp-lex-period-nav">
-            <span className="bp-lex-period">{lexilePeriod}</span>
-            <div className="bp-rl-month-arrows">
-              <button className="bp-heatmap-nav-btn" aria-label="Previous period">
-                <Icon name="chevron-left" size={16} stroke={2.4} />
-              </button>
-              <button className="bp-heatmap-nav-btn" aria-label="Next period" disabled>
-                <Icon name="chevron-right" size={16} stroke={2.4} />
-              </button>
+            right the period with the steppers that move it. This used to be a
+            hand-rolled bar, because wrapping the heading to fit the steppers
+            beside it took it out of the first-child slot that draws every other
+            card's header. SectionCard's `actions` is that slot. */}
+        <SectionHeading
+          actions={
+            <div className="bp-lex-period-nav">
+              <span className="bp-lex-period">{lexilePeriod}</span>
+              <div className="bp-rl-month-arrows">
+                <button className="bp-heatmap-nav-btn" aria-label="Previous period">
+                  <Icon name="chevron-left" size={16} stroke={2.4} />
+                </button>
+                <button className="bp-heatmap-nav-btn" aria-label="Next period" disabled>
+                  <Icon name="chevron-right" size={16} stroke={2.4} />
+                </button>
+              </div>
             </div>
-          </div>
-        </div>
+          }
+        >
+          Lexile trend
+        </SectionHeading>
         <div className="bp-chart-fit" style={{ '--chart-h': '180px' }}>
           <TrendChart
             type="line"

@@ -5,7 +5,7 @@
 import { useId, useState } from 'react'
 import { Ic, COVER_PALETTES } from '@components/ui'
 import { Icon } from '@components/Icon/Icon'
-import { ProfileCard, ProfileCardTitle } from '@components/ProfileCard/ProfileCard'
+import { SectionCard, SectionCardTitle } from '@components/SectionCard/SectionCard'
 
 // ─── Status badge ──────────────────────────────────────────────────────────────
 const STATUS_CONFIG = {
@@ -27,20 +27,29 @@ export function StatusBadge({ label, size = 11, accent }) {
 }
 
 // ─── Card ─────────────────────────────────────────────────────────────────────
-// The visuals live in the shared ProfileCard pattern; the `bp-` classes ride
+// The visuals live in the shared SectionCard pattern (which absorbed
+// ProfileCard); the `bp-` classes ride
 // along on the same elements because a lot of local CSS keys off them
 // (`.bp-card > .bp-tb-item`, heading rows, and so on).
 export function Card({ children, flush }) {
   return (
-    <ProfileCard flush={flush} className={`bp-card${flush ? ' bp-card--flush' : ''}`}>
+    <SectionCard
+      header="divider"
+      flush={flush}
+      className={`bp-card${flush ? ' bp-card--flush' : ''}`}
+    >
       {children}
-    </ProfileCard>
+    </SectionCard>
   )
 }
 
 // ─── Section heading ──────────────────────────────────────────────────────────
-export function SectionHeading({ children }) {
-  return <ProfileCardTitle className="bp-section-heading">{children}</ProfileCardTitle>
+export function SectionHeading({ children, actions }) {
+  return (
+    <SectionCardTitle className="bp-section-heading" actions={actions}>
+      {children}
+    </SectionCardTitle>
+  )
 }
 
 // ─── Goal ring ────────────────────────────────────────────────────────────────

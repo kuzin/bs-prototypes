@@ -889,6 +889,9 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'color-input',
     name: 'ColorInput',
+    usage: `import { ColorInput } from '@components/Form/Form'
+
+<ColorInput label="Badge color" value={color} onChange={setColor} />`,
     desc: (
       <>
         A styled color swatch + hex readout. Clicking anywhere opens the native color picker. The
@@ -905,6 +908,9 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'file-input',
     name: 'FileInput',
+    usage: `import { FileInput } from '@components/Form/Form'
+
+<FileInput label="Roster CSV" accept=".csv" onChange={setFile} />`,
     desc: (
       <>
         Custom file upload control. A styled button triggers the hidden native input; selected
@@ -922,6 +928,13 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'date-input',
     name: 'DatePicker / DateInput',
+    usage: `import { DatePicker } from '@components/DatePicker/DatePicker'
+
+<DatePicker label="Start date" value={start} onChange={setStart} clearable />
+
+/* Or the native field, when a popover would be overkill: */
+import { DateInput } from '@components/Form/Form'
+<DateInput label="Start date" />`,
     desc: (
       <>
         <code>DatePicker</code> — calendar popup via Radix Popover with month navigation, today
@@ -939,6 +952,9 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'time-input',
     name: 'TimePicker / TimeInput',
+    usage: `import { TimePicker } from '@components/TimePicker/TimePicker'
+
+<TimePicker label="Ends at" value={time} onChange={setTime} step={15} clearable />`,
     desc: (
       <>
         <code>TimePicker</code> — scrollable time-slot list (configurable step) in a Radix Popover.{' '}
@@ -956,6 +972,12 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'checkbox-group',
     name: 'CheckboxGroup',
+    usage: `import { CheckboxGroup, CheckboxGroupItem } from '@components/Form/Form'
+
+<CheckboxGroup value={picked} onChange={setPicked} layout="row">
+  <CheckboxGroupItem value="fiction">Fiction</CheckboxGroupItem>
+  <CheckboxGroupItem value="nonfiction">Nonfiction</CheckboxGroupItem>
+</CheckboxGroup>`,
     desc: (
       <>
         Multi-select group of checkboxes. <code>CheckboxGroup</code> holds <code>value</code>{' '}
@@ -973,6 +995,14 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'multi-select',
     name: 'MultiSelect',
+    usage: `import { MultiSelect } from '@components/Form/Form'
+
+<MultiSelect
+  label="Schools"
+  options={[{ value: 'ps1', label: 'PS 1' }, { value: 'ps2', label: 'PS 2' }]}
+  value={ids}
+  onChange={setIds}
+/>`,
     desc: (
       <>
         Dropdown that lets users pick multiple items from an <code>options</code> array. Displays a
@@ -989,6 +1019,14 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'custom-select',
     name: 'CustomSelect',
+    usage: `import { CustomSelect } from '@components/CustomSelect/CustomSelect'
+
+<CustomSelect
+  label="Grade"
+  options={[{ value: '3', label: '3rd' }, { value: '4', label: '4th' }]}
+  value={grade}
+  onChange={setGrade}
+/>`,
     desc: (
       <>
         Radix UI–powered select with consistent cross-browser styling, keyboard navigation, animated
@@ -1006,6 +1044,13 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'filter-bar',
     name: 'FilterBar',
+    usage: `import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
+import '@components/FilterBar/FilterBar.css'
+
+/* \`compact\` is the filter BAR; without it you get the filter FORM */
+<FilterBar compact action={<Button size="sm">Apply</Button>}>
+  <FilterItem label="Grade"><CustomSelect … /></FilterItem>
+</FilterBar>`,
     desc: (
       <>
         <code>FilterBar</code> is a horizontal row of controls (<code>FilterItem</code> children)
@@ -1049,6 +1094,12 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'field-form',
     name: 'Field / Form',
+    usage: `import { Field } from '@components/Form/Form'
+import '@components/Form/Form.css'
+
+<Field label="Challenge name" help="Readers see this" error={errors.name} required>
+  <Input value={name} onChange={(e) => setName(e.target.value)} />
+</Field>`,
     desc: (
       <>
         <code>Field</code> wraps any input with a label, optional <code>help</code> text, and an{' '}
@@ -1065,6 +1116,13 @@ export const formPatternsSections = [
     group: 'form-patterns',
     id: 'active-filters',
     name: 'ActiveFilters',
+    usage: `import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
+import '@components/ActiveFilters/ActiveFilters.css'
+
+<ActiveFilters
+  filters={[{ label: 'Grade: 4th', onRemove: () => clear('grade') }]}
+  onClearAll={clearAll}
+/>`,
     desc: (
       <>
         Active filter chips rendered below the filter bar. Each chip shows the filter label and a ×

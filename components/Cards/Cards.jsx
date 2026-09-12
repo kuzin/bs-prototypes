@@ -1,3 +1,5 @@
+import { Icon } from '@components/Icon/Icon'
+import { Tooltip } from '@components/Primitives/Primitives'
 import { TrendChip } from '@components/TrendChip/TrendChip'
 import '@components/Cards/Cards.css'
 
@@ -14,15 +16,15 @@ import '@components/Cards/Cards.css'
  *
  * Two shapes:
  *
- * **plain** (default) — a white card with the figure centred and large. It's
- * the row-of-four across the top of a report page, where the numbers are the
- * headline and there is nothing above them competing.
+ * One shape: a flat pastel card with the figure, bold, over its label. No
+ * border and no shadow — the fill is the card. `color` supplies the hue and
+ * everything else is derived from it, so a caller states one colour.
  *
- * **tinted** — the admin dashboard's own stat (`.adm-stat`): the whole card
- * washed in the accent, an icon chip, and a smaller figure ranged left over
- * its label. Use it where the stats sit *inside* a page that already has a
- * heading and other cards, and a row of big centred numerals would shout over
- * all of it. Takes an `icon`.
+ * `icon` is optional; without one the tile is just figure, label and action.
+ *
+ * `action` puts a link at the foot of the tile — `{ label, href, onClick }` —
+ * for the stats that lead somewhere (Insights, Number Cruncher, a Lexile
+ * report). It takes the card's own colour.
  *
  * `trend` puts a <TrendChip> beside the figure — the system's one trend
  * treatment, a pastel pill whose reading is in its tooltip. Pass it instead of
@@ -30,26 +32,16 @@ import '@components/Cards/Cards.css'
  * two numbers on the tile and made the eye pick between them. `footer` stays
  * for the things that aren't trends ("79% of the class").
  */
-export function StatCard({
-  value,
-  unit,
-  label,
-  footer,
-  footerColor,
-  color,
-  icon,
-  trend,
-  variant = 'plain',
-}) {
+export function StatCard({ value, unit, label, footer, footerColor, color, icon, trend, action }) {
   // Explicit `color` wins by setting --rc-stat-color inline. Otherwise the
   // card inherits --rc-accent from the page / enclosing ChartCard via the
-  // CSS variable cascade — see .rc-stat in Cards.css. The tinted shape derives
-  // its wash and border from that same one authored hex, the way ChartCard
-  // derives its accent background, so a caller still states one colour.
+  // CSS variable cascade — see .rc-stat in Cards.css. The tile's fill is a light
+  // tint of that same one authored hex, so a caller still states one colour.
   const style = color ? { '--rc-stat-color': color } : undefined
+
   return (
-    <div className={`rc-stat rc-stat--${variant}`} style={style}>
-      {variant === 'tinted' && icon && <span className="rc-stat-ico">{icon}</span>}
+    <div className="rc-stat" style={style}>
+      {icon && <span className="rc-stat-ico">{icon}</span>}
       <div className="rc-stat-main">
         <div className="rc-stat-val">
           {value}
@@ -61,6 +53,12 @@ export function StatCard({
           <div className="rc-stat-foot" style={footerColor ? { color: footerColor } : undefined}>
             {footer}
           </div>
+        )}
+        {action && (
+          <a className="rc-stat-action" href={action.href} onClick={action.onClick}>
+            {action.label}
+            <Icon name="chevron-right" size={16} stroke={2.6} />
+          </a>
         )}
       </div>
     </div>
@@ -77,11 +75,18 @@ export function StatCard({
  *   subtitle="Sep 2024 – May 2025"
  *   icon={<svg ... />}
  *   accent="#E8866A"
- *   action={<button>View →</button>}
+ *   info="Averaged across every logged session."
  *   footer={<ChartLegend items={...} />}
  * >
  *   <ResponsiveLine ... />
  * </ChartCard>
+ *
+ * `info` is the app's own header affordance — a 15px disc with a white "i"
+ * that carries a tooltip (`.info-icon` in `.insights-metric-label`). It's what
+ * sits at the right of a module header in the product; `action` is the escape
+ * hatch for the cases that genuinely need a control there instead. Pass it
+ * `{ label, href }` for the standard chevron link, or any node to render your
+ * own control in the slot.
  */
 export function ChartCard({
   title,
@@ -89,6 +94,7 @@ export function ChartCard({
   icon,
   accent,
   action,
+  info,
   footer,
   children,
   bodyPad = 'flush', // 'flush' | 'padded'
@@ -108,7 +114,22 @@ export function ChartCard({
           <span className="rc-card-title">{title}</span>
           {subtitle && <span className="rc-card-sub">{subtitle}</span>}
         </div>
-        {action && <div className="rc-card-action">{action}</div>}
+        {action &&
+          (action.label ? (
+            <a className="rc-card-action-link" href={action.href} onClick={action.onClick}>
+              {action.label}
+              <Icon name="chevron-right" size={18} stroke={2.6} />
+            </a>
+          ) : (
+            <div className="rc-card-action">{action}</div>
+          ))}
+        {info && (
+          <Tooltip content={info}>
+            <button type="button" className="rc-card-info" aria-label={info}>
+              i
+            </button>
+          </Tooltip>
+        )}
       </div>
       <div className={`rc-card-body rc-card-body--${bodyPad}`} style={bodyStyle}>
         {children}
@@ -119,6 +140,40 @@ export function ChartCard({
 }
 
 /** A simple text/JSX inline note that sits inside a ChartCard body. */
-export function CardNote({ tone = 'neutral', children }) {
-  return <div className={`rc-card-note rc-card-note--${tone}`}>{children}</div>
+// Each tone's default glyph, matching the app's own `*-icon` classes:
+// information / alarm / high-importance / checkmark.
+const NOTE_TONE_ICON = {
+  info: 'info',
+  warning: 'alert-triangle',
+  success: 'circle-check',
+  error: 'alert-hexagon',
+}
+
+/**
+ * Inline note inside a card body — the app's `.infobox` (lib/_infobox.scss):
+ * 15px/1.5 on a flat tint, `12px 16px`, radius 10, no border. The tone IS the
+ * fill.
+ *
+ * `tone` names the intent, and each maps to one of the app's boxes:
+ *   neutral  `.greybox`     $gray250   (default)
+ *   info     `.helpbox`     $blue50
+ *   warning  `.alertbox`    $yellow200
+ *   success  `.successbox`  $green50
+ *   error    `.errorbox`    $red50
+ *   accent   the card's own --rc-accent, for a note tied to its chart
+ *
+ * `icon` takes an <Icon> name. Every tone but `neutral` and `accent` supplies
+ * its own by default — pass `icon` to override, or `icon={false}` to drop it.
+ *
+ * @param {'neutral'|'info'|'warning'|'success'|'error'|'accent'} tone
+ * @param {string|false} icon  semantic Icon name; defaults per tone
+ */
+export function CardNote({ tone = 'neutral', icon, children }) {
+  const glyph = icon === undefined ? NOTE_TONE_ICON[tone] : icon
+  return (
+    <div className={`rc-card-note rc-card-note--${tone}${glyph ? ' rc-card-note--with-icon' : ''}`}>
+      {glyph && <Icon name={glyph} size={20} stroke={2} className="rc-card-note-icon" />}
+      <div className="rc-card-note-body">{children}</div>
+    </div>
+  )
 }

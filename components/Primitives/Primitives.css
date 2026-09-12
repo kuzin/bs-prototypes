@@ -467,7 +467,9 @@
   background: none;
   border: none;
   font: inherit;
-  font-size: 14px;
+  /* 15px, on the ladder's body rung — the question a reader is scanning is the
+     row's whole content, so at 14 it sat below the copy it reveals. */
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-text);
   cursor: pointer;
@@ -506,7 +508,7 @@
 .acd-content {
   padding: 0 16px 14px;
   color: var(--c-slate-600);
-  font-size: 13px;
+  font-size: 15px;
   line-height: 1.55;
 }
 
@@ -614,49 +616,4 @@
   display: flex;
   flex-direction: column;
   gap: 7px;
-}
-
-/* ── SectionHeading ─────────────────────────────────────────────────────── */
-.sct {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-}
-
-.sct-text {
-  min-width: 0;
-}
-
-.sct-title {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--c-text);
-  letter-spacing: -0.01em;
-  margin: 0;
-  line-height: 1.25;
-}
-
-/* Semantic level scaling */
-h2.sct-title {
-  font-size: 20px;
-  letter-spacing: -0.02em;
-}
-h3.sct-title {
-  font-size: 14px;
-}
-h4.sct-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-slate-700);
-}
-
-.sct-sub {
-  font-size: 13px;
-  color: var(--c-text-muted);
-  margin-top: 2px;
-}
-
-.sct-action {
-  flex-shrink: 0;
 }

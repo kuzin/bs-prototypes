@@ -422,7 +422,7 @@
 
 /* ─── Card ───────────────────────────────────────────────────────────────── */
 /* Card visuals + the promoted first title now come from the shared
-   ProfileCard pattern (components/ProfileCard). These class names stay on the
+   SectionCard pattern (components/SectionCard). These class names stay on the
    same elements for the local descendant rules further down this file. */
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
@@ -4635,10 +4635,10 @@
 
 /* The stat list's head and rows carry their own horizontal insets, so the card
    itself contributes only the top/bottom rhythm — no side padding, or the rows
-   end up inset twice. Written with both classes so it beats `.pcard`, whose
+   end up inset twice. Written with both classes so it beats `.section-card`, whose
    stylesheet loads after this one. */
 .rp-statlist,
-.pcard.rp-statlist {
+.section-card.rp-statlist {
   flex-shrink: 0;
   padding: 14px 0 4px;
 }
@@ -6002,11 +6002,11 @@
 }
 /* A stat row sitting directly under a card's header bar.
    `.rp-card:has(> .rp-statrow--static) > .rp-section-heading` already zeroes
-   the heading's bottom margin, but ProfileCard.css loads *after* this file and
-   its own `.pcard-title:first-child` margin wins — so the 14px comes back and
+   the heading's bottom margin, but SectionCard.css loads *after* this file and
+   its own `.section-card-title:first-child` margin wins — so the 14px comes back and
    stacks on the row's padding. Cancelling it here beats the order. The row's
    own inset is the list's, set with the bleed above. */
-.pcard > .pcard-title:first-child + .rp-statrow {
+.section-card > .section-card-title:first-child + .rp-statrow {
   margin-top: -14px;
 }
 

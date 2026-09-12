@@ -478,6 +478,10 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'toggle',
     name: 'Toggle',
+    usage: `import { Toggle } from '@components/Toggle/Toggle'
+import '@components/Toggle/Toggle.css'
+
+<Toggle checked={on} onChange={setOn}>Email me weekly</Toggle>`,
     desc: (
       <>
         iOS-style switch. Props: <code>checked</code>, <code>onChange</code>, <code>disabled</code>,{' '}
@@ -494,6 +498,10 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'input',
     name: 'Input',
+    usage: `import { Input } from '@components/Form/Form'
+
+<Input label="Challenge name" value={name} onChange={(e) => setName(e.target.value)} />
+<Input size="sm" icon="search" placeholder="Find a reader" />`,
     desc: (
       <>
         Text input. Sizes <code>sm</code> / <code>md</code> / <code>lg</code>. Optional{' '}
@@ -511,6 +519,12 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'select',
     name: 'Select',
+    usage: `import { Select } from '@components/Form/Form'
+
+<Select label="Grade" value={grade} onChange={(e) => setGrade(e.target.value)}>
+  <option value="3">3rd</option>
+  <option value="4">4th</option>
+</Select>`,
     desc: (
       <>
         Wrapped native <code>{'<select>'}</code> with a consistent caret + focus ring. Same size
@@ -527,6 +541,9 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'textarea',
     name: 'Textarea',
+    usage: `import { Textarea } from '@components/Form/Form'
+
+<Textarea label="Description" rows={4} value={text} onChange={(e) => setText(e.target.value)} />`,
     desc: <>Multi-line text input. Resizes vertically by default.</>,
     render: () => (
       <>
@@ -538,6 +555,9 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'checkbox',
     name: 'Checkbox',
+    usage: `import { Checkbox } from '@components/Form/Form'
+
+<Checkbox checked={on} onChange={setOn}>Include inactive readers</Checkbox>`,
     desc: <>Boolean control with a colored check icon when on. Use for non-exclusive options.</>,
     render: () => (
       <>
@@ -549,6 +569,12 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'radio',
     name: 'RadioGroup',
+    usage: `import { RadioGroup, Radio } from '@components/Form/Form'
+
+<RadioGroup name="scope" value={scope} onChange={setScope} layout="row">
+  <Radio value="school">This school</Radio>
+  <Radio value="district">Whole district</Radio>
+</RadioGroup>`,
     desc: (
       <>
         Mutually exclusive options. <code>RadioGroup</code> takes <code>name</code>,{' '}
@@ -566,6 +592,9 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'number-input',
     name: 'NumberInput',
+    usage: `import { NumberInput } from '@components/Form/Form'
+
+<NumberInput label="Minutes goal" min={0} max={240} step={5} value={goal} onChange={setGoal} />`,
     desc: (
       <>
         A number field with decrement/increment buttons. Respects <code>min</code>, <code>max</code>
@@ -582,6 +611,9 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'range-slider',
     name: 'RangeSlider',
+    usage: `import { RangeSlider } from '@components/Form/Form'
+
+<RangeSlider label="Difficulty" min={0} max={10} value={level} onChange={setLevel} showValue />`,
     desc: (
       <>
         Styled <code>{'<input type="range">'}</code> with a filled track that updates via a CSS
@@ -598,6 +630,10 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'rich-text',
     name: 'RichText',
+    usage: `import { RichText } from '@components/RichText/RichText'
+import '@components/RichText/RichText.css'
+
+<RichText value={html} onChange={setHtml} placeholder="Describe the challenge…" />`,
     desc: (
       <>
         Lightweight WYSIWYG editor that emits an HTML string. Toolbar: bold / italic / underline /
@@ -615,6 +651,16 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'image-dropzone',
     name: 'ImageDropzone',
+    usage: `import { ImageDropzone } from '@components/ImageDropzone/ImageDropzone'
+import '@components/ImageDropzone/ImageDropzone.css'
+
+<ImageDropzone
+  fileName={file?.name}
+  previewSrc={preview}
+  onFile={setFile}
+  onClear={() => setFile(null)}
+  hint="PNG or JPG, at least 600×600"
+/>`,
     desc: (
       <>
         Drag-and-drop (or click-to-browse) image upload. Props: <code>fileName</code>,{' '}
@@ -632,6 +678,9 @@ export const formFieldsSections = [
     group: 'form-fields',
     id: 'search-input',
     name: 'SearchInput',
+    usage: `import { SearchInput } from '@components/SearchInput/SearchInput'
+
+<SearchInput value={q} onChange={setQ} placeholder="Find a reader" ariaLabel="Search readers" />`,
     desc: (
       <>
         A search field — leading magnifier, text input, and a clear button that appears once there’s

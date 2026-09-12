@@ -7,7 +7,7 @@ import '@components/Primitives/Primitives.css'
  * Small reusable primitives that didn't warrant their own file each.
  * Export from here, import named:
  *   import { Divider, Spinner, IconButton, Tooltip, Banner,
- *            Breadcrumb, Accordion, EmptyState, Skeleton, SectionHeading } from '@components/Primitives/Primitives'
+ *            Breadcrumb, Accordion, EmptyState, Skeleton } from '@components/Primitives/Primitives'
  */
 
 // ── Divider ─────────────────────────────────────────────────────────────
@@ -373,7 +373,7 @@ export function Accordion({
               onClick={() => toggle(item.id)}
             >
               <span className="acd-title">{item.title}</span>
-              <Icon name="chevron-down" size={14} className="acd-caret" />
+              <Icon name="chevron-down" size={18} stroke={2.2} className="acd-caret" />
             </button>
             {isOpen && <div className="acd-content">{item.content}</div>}
           </div>
@@ -438,24 +438,5 @@ export function Skeleton({ width, height = 14, shape = 'rect', lines, className 
   }
   return (
     <span className={`skl skl--${shape} ${className}`.trim()} style={{ width, height, ...style }} />
-  )
-}
-
-// ── SectionHeading ──────────────────────────────────────────────────────
-/**
- * Recurring h2/h3 + optional subtitle + optional right-side action.
- *
- * <SectionHeading title="Students to Watch" subtitle="Last 30 days" action={<Button>View all</Button>} />
- */
-export function SectionHeading({ title, subtitle, action, level = 'h3', className = '' }) {
-  const Tag = level
-  return (
-    <div className={`sct ${className}`.trim()}>
-      <div className="sct-text">
-        <Tag className="sct-title">{title}</Tag>
-        {subtitle && <div className="sct-sub">{subtitle}</div>}
-      </div>
-      {action && <div className="sct-action">{action}</div>}
-    </div>
   )
 }

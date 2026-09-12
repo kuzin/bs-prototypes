@@ -1,14 +1,15 @@
 // Pattern-library catalog: GROUPS metadata + the assembled SECTIONS list.
 //
-// The showcase functions, fixtures, and per-group SECTION entries now live in
-// ./sections/<group>.jsx. This file stays slim: it keeps the four public
-// exports (GROUPS, SECTIONS, GroupHeader, BreakpointIndicator), wires together
-// the per-group section arrays, and owns the CSS imports so every component
-// renders correctly regardless of which section file pulls it in.
+// The showcase functions, fixtures, and SECTION entries live in ./sections/*.jsx.
+// A file is just *where the showcase code lives* — the `group:` field on each
+// entry is what decides which group it shows up under, so one file can feed
+// several groups (the shared primitives were re-sorted into purpose-named
+// groups without moving their demos around). This file stays slim: it keeps the
+// four public exports (GROUPS, SECTIONS, GroupHeader, BreakpointIndicator),
+// wires together the section arrays, and owns the CSS imports so every
+// component renders correctly regardless of which section file pulls it in.
 
 import { useSyncExternalStore } from 'react'
-
-import { Icon } from '@components/Icon/Icon'
 
 import { foundationsSections } from './sections/foundations'
 import { atomsSections } from './sections/atoms'
@@ -102,146 +103,157 @@ export const GROUPS = [
   {
     id: 'foundations',
     title: 'Foundations',
-    desc: 'Design tokens — the shared color palette every component and prototype draws from.',
-    color: '#0DA7BC',
-    icon: <Icon name="palette" size={22} />,
+    desc: 'Design tokens — the color, type, spacing, radius, and elevation scales everything else is built from.',
+    color: 'var(--c-brand-teal)',
   },
   {
-    id: 'atoms',
-    title: 'Atoms',
-    desc: 'The smallest, indivisible UI building blocks — single-purpose and stateless.',
-    color: '#2563EB',
-    icon: <Icon name="layout-grid" size={22} />,
+    id: 'iconography',
+    title: 'Iconography',
+    desc: 'Every glyph set in one place — the Tabler-backed Icon registry, the Plumpy duotone family, and the app’s own drawn art.',
+    color: 'var(--c-violet-600)',
   },
   {
-    id: 'molecules',
-    title: 'Molecules',
-    desc: 'Atoms combined into simple, behavior-driven components.',
-    color: '#7C3AED',
-    icon: <Icon name="atom" size={22} />,
+    id: 'actions',
+    title: 'Buttons & Actions',
+    desc: 'The controls you click to do something — page buttons and the two shapes a table-row action is allowed to take.',
+    color: 'var(--c-blue-700)',
+  },
+  {
+    id: 'badges',
+    title: 'Badges & Labels',
+    desc: 'Small read-only markers that annotate something else — status chips, avatars, and trend direction.',
+    color: 'var(--c-brand-coral)',
+  },
+  {
+    id: 'cards',
+    title: 'Cards & Sections',
+    desc: 'Every container content sits inside — stat and chart cards, titled sections, profile cards, notes, headings, dividers, and disclosure.',
+    color: 'var(--c-brand-green)',
+  },
+  {
+    id: 'tables',
+    title: 'Tables & Lists',
+    desc: 'The shared data table and the settings-row list, plus their pagination and scroll behavior.',
+    color: 'var(--c-slate-600)',
   },
   {
     id: 'form-fields',
     title: 'Form Fields',
     desc: 'Single-purpose input controls — the atoms of data entry.',
-    color: '#0891B2',
-    icon: <Icon name="forms" size={22} />,
+    color: 'var(--c-amber-600)',
   },
   {
     id: 'form-patterns',
     title: 'Form Patterns',
-    desc: 'Composed inputs and layout patterns for building complete forms.',
-    color: '#059669',
-    icon: <Icon name="forms" size={22} />,
+    desc: 'Composed inputs and layout patterns for building complete forms and filter bars.',
+    color: 'var(--c-brand-teal)',
+  },
+  {
+    id: 'overlays',
+    title: 'Overlays',
+    desc: 'Anything that floats above the page — modals, flyouts, and tooltips.',
+    color: 'var(--c-violet-600)',
+  },
+  {
+    id: 'feedback',
+    title: 'Feedback & Status',
+    desc: 'How the UI tells you what is happening — loading placeholders, banners, toasts, empty states, and celebration.',
+    color: 'var(--c-red-600)',
+  },
+  {
+    id: 'navigation',
+    title: 'Navigation & Chrome',
+    desc: 'Page headers, rails, and everything that moves you between views — heroes, sidebars, tabs, and back bars.',
+    color: 'var(--c-blue-700)',
   },
   {
     id: 'charts',
     title: 'Charts',
-    desc: 'Data visualization — stat cards, line, bar, scatter, funnels, and tooltips.',
-    color: '#D97706',
-    icon: <Icon name="chart-bar" size={22} />,
+    desc: 'Data visualization — line, bar, scatter, funnels, word clouds, bar lists, and chart tooltips.',
+    color: 'var(--c-brand-green)',
   },
   {
     id: 'domain',
     title: 'Domain',
-    desc: 'Beanstack-specific components — reading health, alerts, and RMI.',
-    color: '#E8866A',
-    icon: <Icon name="shield-check" size={22} />,
-  },
-  {
-    id: 'layout',
-    title: 'Layout',
-    desc: 'Page structure, navigation shells, sidebars, and chrome.',
-    color: '#475569',
-    icon: <Icon name="layout" size={22} />,
+    desc: 'Beanstack-specific components — reading health, RMI, integrity alerts, and partner connections.',
+    color: 'var(--c-brand-coral)',
   },
   {
     id: 'sfr',
     kind: 'prototype',
     title: 'Sessions for Review',
     desc: 'Components for the SfR prototype — overview highlight cards, sessions table, the session detail modal, and the safety-signal review view + settings.',
-    color: '#16A97A',
-    icon: <Icon name="message-check" size={22} />,
+    color: 'var(--c-brand-green)',
   },
   {
     id: 'insights',
     kind: 'prototype',
     title: 'Insights',
     desc: 'Components specific to the Insights prototype — production-styled metric tiles and detail panels with load / empty states.',
-    color: '#4F46E5',
-    icon: <Icon name="layout-grid" size={22} />,
+    color: 'var(--c-violet-600)',
   },
   {
     id: 'challenge-creator',
     kind: 'prototype',
     title: 'Challenge Creator',
     desc: 'Components specific to the Challenge Creator V2 prototype — starting with the shared color-chip picker.',
-    color: '#0DA7BC',
-    icon: <Icon name="trophy" size={22} />,
+    color: 'var(--c-brand-teal)',
   },
   {
     id: 'book-talks',
     kind: 'prototype',
     title: 'Benny Book Talks',
     desc: 'Components for the Benny Book Talks prototype — chat bubbles, the live Benny chat modal, and the teacher conversation review.',
-    color: '#14B8A6',
-    icon: <Icon name="message-chatbot" size={22} />,
+    color: 'var(--c-blue-700)',
   },
   {
     id: 'student-profile',
     kind: 'prototype',
     title: 'Student Profile',
     desc: 'Components for the Student Profile prototype — status badges, the daily goal ring, RMI donuts, the weekly goal tracker, and the reading-activity heatmap.',
-    color: '#E8866A',
-    icon: <Icon name="user" size={22} />,
+    color: 'var(--c-brand-coral)',
   },
   {
     id: 'books',
     kind: 'prototype',
     title: 'Book Discovery',
     desc: 'Components for the Book Discovery prototype — book covers with gradient fallbacks, the star-rating family, shelf cards, the horizontal shelf, and partner branding.',
-    color: '#0D9488',
-    icon: <Icon name="compass" size={22} />,
+    color: 'var(--c-brand-green)',
   },
   {
     id: 'admin-dashboard',
     kind: 'prototype',
     title: 'Admin Dashboard',
     desc: 'Components for the Admin Dashboard prototype — the anchored settings popover used by per-widget and rail-card settings.',
-    color: '#2563EB',
-    icon: <Icon name="layout-dashboard" size={22} />,
+    color: 'var(--c-slate-600)',
   },
   {
     id: 'gameboard',
     kind: 'prototype',
     title: 'Gameboard',
     desc: 'Components for the Gameboard: Admin View prototype — the drag-and-drop board readers travel as they read, and its illustrated theme picker.',
-    color: '#5FA052',
-    icon: <Icon name="dice-5" size={22} />,
+    color: 'var(--c-brand-green)',
   },
   {
     id: 'gameboard-reader',
     kind: 'prototype',
     title: 'Gameboard Reader',
     desc: 'Components for the Gameboard Reader View — the read-only board a reader travels, its earned/locked badge discs, and Benny mid-cheer.',
-    color: '#65A30D',
-    icon: <Icon name="route" size={22} />,
+    color: 'var(--c-amber-600)',
   },
   {
     id: 'words-with-benny',
     kind: 'prototype',
     title: 'Words with Benny',
     desc: 'Components for the Words with Benny prototype — the post-log word unlock, the reader\u2019s Collections tab (words, badges, achievements) and its rail card, and the educator roll-up with its per-student drill-down.',
-    color: '#7C3AED',
-    icon: <Icon name="vocabulary" size={22} />,
+    color: 'var(--c-violet-600)',
   },
   {
     id: 'engagement-signals',
     kind: 'prototype',
     title: 'Engagement Signals',
     desc: 'Components for Reading Engagement Signals — the Increasing / Consistent / Declining pill, the month-by-month trajectory, the six drivers behind a reading, and the two surfaces they appear on: the classroom Engagement tab and the profile\u2019s Engagement section.',
-    color: '#16A97A',
-    icon: <Icon name="activity-pulse" size={22} />,
+    color: 'var(--c-red-600)',
   },
 ]
 

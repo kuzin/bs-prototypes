@@ -43,8 +43,8 @@
 }
 
 /* ── Sizes ───────────────────────────────────────────────────────────────── */
-/* `.button--small` (36px / radius 8 / 14px). The app also has a
-   `.button--medium-small` at 40px / radius 10 between this and --md. */
+/* `.button--small` (36px / radius 8 / 14px) — a button inside a row. See
+   `.btn--msm` below for the 40px rung between this and `md`. */
 .btn--sm {
   height: 36px;
   font-size: 14px;
@@ -64,10 +64,17 @@
 }
 
 /* `.button--medium` — the default in the admin header: same 44px height and
-   `padding: 0 20px` as the base `.button`, but radius 10px and 15px text. */
+   `padding: 0 20px` as the base `.button`, radius 10px.
+
+   16px rather than the app's 15: a `md` button and a `md` select are both 44px
+   on a 10px radius and constantly sit next to each other (a settings row, a
+   filter bar), and one point of difference between them read as a mistake
+   rather than a distinction. The app is inconsistent here — `select` is 16px
+   and `.button--medium` 15 — so matching the control is the better of the
+   two. */
 .btn--md {
   height: 44px;
-  font-size: 15px;
+  font-size: 16px;
   padding: 0 20px;
   border-radius: 10px;
 }
@@ -102,7 +109,10 @@
 .btn--secondary {
   background: transparent;
   color: var(--c-text-real);
-  border-color: var(--c-gray-250);
+  /* $gray300, the same hairline `.sel` / `.inp` carry — at $gray250 a button
+     beside a select looked a shade lighter for no reason. Ground stays
+     transparent (identical on white, and these live on tinted headers too). */
+  border-color: var(--c-gray-300);
 }
 .btn--secondary:hover:not(:disabled) {
   background: var(--c-slate-50);

@@ -7,9 +7,12 @@
   box-sizing: border-box;
   font: inherit;
   background: #fff;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
-  color: var(--c-text);
+  /* Matched to `.sel` — a CustomSelect and a native Select are the same
+     control to a reader and sat on different borders and radii. */
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
+  color: var(--c-text-real);
+  font-weight: 700;
   cursor: pointer;
   gap: 8px;
   transition:
@@ -50,18 +53,23 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 18%, transparent);
 }
 
+/* The one control ladder: 36 / 44 / 52 at 14 / 16 / 16, the same rungs
+   `.sel` and `.inp` use. This was on a padding-based 13px scale of its own,
+   which put a `md` CustomSelect at 34px next to a 44px `md` Select. */
 .csel-trigger--sm {
-  font-size: 13px;
-  padding: 6px 10px;
+  height: 36px;
+  font-size: 14px;
+  padding: 0 10px;
 }
 .csel-trigger--md {
-  font-size: 13px;
-  padding: 8px 12px;
+  height: 44px;
+  font-size: 16px;
+  padding: 0 12px;
 }
 .csel-trigger--lg {
-  font-size: 14px;
-  padding: 10px 14px;
-  border-radius: 10px;
+  height: 52px;
+  font-size: 16px;
+  padding: 0 14px;
 }
 
 .csel-icon {
