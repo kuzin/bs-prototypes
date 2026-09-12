@@ -10,22 +10,26 @@
   width: 26px;
   height: 26px;
 }
+/* Lockups are normalised on the wordmark's *ink height*, which serves a long
+   logotype well and a squat one badly: "epic!" is barely twice as wide as it is
+   tall, so at the same height it reads a size smaller than "OverDrive". A brand
+   can scale its own box with `--pb-word-scale`. */
 .pb-brand-word {
-  height: 15px;
+  height: calc(15px * var(--pb-word-scale, 1));
 }
 .pb-brand--sm .pb-brand-mark {
   width: 20px;
   height: 20px;
 }
 .pb-brand--sm .pb-brand-word {
-  height: 12px;
+  height: calc(12px * var(--pb-word-scale, 1));
 }
 .pb-brand--lg .pb-brand-mark {
   width: 34px;
   height: 34px;
 }
 .pb-brand--lg .pb-brand-word {
-  height: 20px;
+  height: calc(20px * var(--pb-word-scale, 1));
 }
 
 /* A lockup wordmark draws its own mark, so its box has to be as tall as a mark
@@ -64,15 +68,26 @@
   font-size: 26px;
 }
 
+/* Every mark carries the same hairline, not just the plated one: a row of app
+   marks is read as a set, and with the ring on Beeverso alone the others looked
+   like they were missing an edge. */
 .pb-mark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 28%;
   flex-shrink: 0;
+  overflow: hidden;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 8%);
+}
+
+.pb-mark-art {
+  width: 100%;
+  height: 100%;
   /* Marks are squared off, but the source art isn't always exactly 1:1 —
      contain rather than stretch. */
   object-fit: contain;
+  box-sizing: border-box;
 }
 .pb-mark--glyph {
   color: #fff;
@@ -80,6 +95,3 @@
 /* Marks drawn as transparent line art (Beeverso's script "bee") need a plate to
    read on avatars, colored banners, and dark partner chrome. The plate color is
    the partner's own `soft` tint, set inline by PartnerMark. */
-.pb-mark--plate {
-  box-shadow: 0 0 0 1px rgb(15 23 42 / 8%);
-}

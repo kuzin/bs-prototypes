@@ -25,7 +25,7 @@
 }
 .setting-row-sub {
   font-size: 14px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .setting-row-control {
   display: flex;
@@ -39,7 +39,7 @@
 .setting-row-state {
   font-size: 16px;
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* Stack rows in a list to get hairline dividers between them. */

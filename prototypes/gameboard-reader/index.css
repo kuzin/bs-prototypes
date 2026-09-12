@@ -106,7 +106,7 @@ body {
   background: #fdeee7;
   font-weight: var(--fw-bold);
   font-size: var(--text-base);
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .gr-reader-pill--sm {
   font-size: var(--text-sm);
@@ -139,18 +139,18 @@ body {
   border: 0;
   border-radius: var(--radius-full);
   background: none;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
   cursor: pointer;
 }
 .gr-icon-btn:hover {
-  background: var(--c-slate-100);
-  color: var(--c-slate-800);
+  background: var(--c-gray-100);
+  color: var(--c-gray-900);
 }
 
 .gr-tabsbar {
   display: flex;
   justify-content: center;
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
 }
 .gr-tabsbar .tabs {
   border-bottom: 0;
@@ -255,7 +255,7 @@ body {
   align-items: baseline;
   gap: 6px;
   font-size: var(--text-md);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .gr-progress-line strong {
   font-size: 22px;
@@ -289,7 +289,7 @@ body {
   font-weight: var(--fw-bold);
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .gr-next-text strong {
   font-size: var(--text-md);
@@ -517,7 +517,7 @@ body {
   max-width: 190px;
   padding: 7px 11px;
   border-radius: var(--radius-md);
-  background: var(--c-slate-900);
+  background: var(--c-gray-900);
   color: #fff;
   text-align: center;
   font-size: var(--text-xs);
@@ -535,7 +535,7 @@ body {
   left: 50%;
   translate: -50% 0;
   border: 6px solid transparent;
-  border-top-color: var(--c-slate-900);
+  border-top-color: var(--c-gray-900);
 }
 
 .gr-space.is-tipped .gr-tip {
@@ -550,7 +550,7 @@ body {
   font-weight: var(--fw-extrabold);
 }
 .gr-tip span {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
 }
 .gr-tip-reward {
   color: #fbbf24 !important;
@@ -586,12 +586,12 @@ body {
 .gr-badges-count {
   font-size: var(--text-md);
   font-weight: var(--fw-bold);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .gr-badges-note {
   margin: 4px 0 18px;
   font-size: var(--text-md);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* Reading badges — the board's spaces, read as a plain grid. */
@@ -633,7 +633,7 @@ body {
 }
 .gr-badge-cell-req {
   font-size: var(--text-sm);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .gr-badge-cell.is-earned .gr-badge-cell-req {
   color: #017841;
@@ -693,7 +693,7 @@ body {
 .gr-act-progress {
   margin: 0;
   font-size: var(--text-base);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .gr-act-done-tag {
   display: inline-flex;
@@ -707,7 +707,7 @@ body {
   margin: 0;
   padding: 0;
   list-style: none;
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
 }
 .gr-act-item {
   display: flex;
@@ -716,7 +716,7 @@ body {
   padding: 12px 20px;
 }
 .gr-act-item + .gr-act-item {
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
 }
 
 .gr-act-icon {
@@ -726,8 +726,8 @@ body {
   width: 32px;
   height: 32px;
   border-radius: var(--radius-full);
-  background: var(--c-slate-100);
-  color: var(--c-slate-600);
+  background: var(--c-gray-100);
+  color: var(--c-gray-750);
 }
 .gr-act-item.is-done .gr-act-icon {
   background: #d1fae5;
@@ -746,12 +746,12 @@ body {
   color: var(--c-text);
 }
 .gr-act-item.is-done .gr-act-title {
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   text-decoration: line-through;
 }
 .gr-act-desc {
   font-size: var(--text-base);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .gr-act-type {
   margin-top: 3px;
@@ -759,7 +759,7 @@ body {
   font-weight: var(--fw-bold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gr-act-btn {
@@ -775,10 +775,10 @@ body {
   cursor: pointer;
 }
 .gr-act-btn:hover {
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 .gr-act-item.is-done .gr-act-btn {
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* ── Below the board ─────────────────────────────────────────────────────── */
@@ -798,7 +798,7 @@ body {
   padding: 64px 24px;
   border: 1px dashed var(--c-border-strong);
   border-radius: var(--radius-2xl);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   text-align: center;
 }
 .gr-placeholder p {
@@ -812,7 +812,7 @@ body {
   border-top: 1px solid var(--c-border);
   background: var(--c-surface);
   font-size: var(--text-sm);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .gr-footer-row {
   display: flex;
@@ -824,7 +824,7 @@ body {
   padding: 18px 24px;
 }
 .gr-footer-row--legal {
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
 }
 .gr-footer-links {
   display: flex;
@@ -875,13 +875,13 @@ body {
   height: 32px;
   border: 0;
   border-radius: var(--radius-md);
-  background: var(--c-slate-100);
-  color: var(--c-slate-700);
+  background: var(--c-gray-100);
+  color: var(--c-gray-800);
   cursor: pointer;
   z-index: 2;
 }
 .gr-sheet-btn:hover {
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
 }
 .gr-sheet-back {
   left: 18px;
@@ -911,7 +911,7 @@ body {
   gap: 8px;
   margin: 0;
   font-size: var(--text-md);
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 .gr-logging-sep {
   width: 1px;
@@ -923,7 +923,7 @@ body {
   margin-top: 22px;
   padding: 18px;
   border-radius: var(--radius-xl);
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 
 .gr-log-methods {
@@ -939,15 +939,15 @@ body {
   padding: 14px 8px;
   border: 0;
   border-radius: var(--radius-lg);
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   font-family: inherit;
   font-size: var(--text-base);
   font-weight: var(--fw-bold);
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   cursor: pointer;
 }
 .gr-method:hover {
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
 }
 .gr-method-emoji {
   font-size: 20px;
@@ -979,7 +979,7 @@ body {
 }
 .gr-log-none {
   margin: 0;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-size: var(--text-base);
 }
 
@@ -1041,7 +1041,7 @@ body {
   gap: 3px;
   align-content: start;
   font-size: var(--text-base);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .gr-log-book-meta strong {
   font-size: var(--text-lg);
@@ -1069,11 +1069,11 @@ body {
   display: block;
   font-size: var(--text-base);
   font-weight: var(--fw-extrabold);
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .gr-log-value {
   font-size: var(--text-base);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gr-log-time {
@@ -1111,7 +1111,7 @@ body {
   justify-content: flex-end;
   padding: 14px 20px;
   border-top: 1px solid var(--c-border);
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 /* ── Buttons (Figma's own reader button, not the shared Button) ───────────── */
@@ -1368,7 +1368,7 @@ body {
   background: #9e9e9e;
 }
 .gr-strip-dot.is-earned::after {
-  background: var(--c-brand-green);
+  background: var(--c-green);
 }
 /* The unlock modal is 480 wide in the Figma and its close button hangs off the
    corner — the shared Modal caps at 520 and clips. Reached via :has() because

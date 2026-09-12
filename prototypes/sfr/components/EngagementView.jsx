@@ -1,30 +1,29 @@
 import { useState, useEffect } from 'react'
-import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
-import { Select } from '@components/Form/Form'
 import { SessionsTable } from './SessionsTable'
 import { ReaderGroupedView } from './ReaderGroupedView'
-import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
-import { Icon } from '@components/Icon/Icon'
-import '@components/FilterBar/FilterBar.css'
-import '@components/Form/Form.css'
+import { SessionsFilters } from './SessionsFilters'
 import './ListView.css'
 
+// Engagement Sessions — the shipped tab. `FlaggedEntriesFilters` with
+// `kind: 'challenge'`: challenges, the positive flags, classes, grades, the
+// finished/unfinished conversation switch, and List by.
 export function EngagementView({
   sessions,
+  search = '',
   onSelectSession,
   onApproveRequest,
   onViewProfile,
-  groupBy,
+  listBy = 'date',
+  onListBy,
   defaultFilters = {},
 }) {
-  const [search, setSearch] = useState('')
   const [rating, setRating] = useState(defaultFilters.rating ?? 'all')
   const [posFlags, setPosFlags] = useState(defaultFilters.posFlags ?? 'all')
   const [classFilter, setClassFilter] = useState(defaultFilters.classFilter ?? 'all')
+  const [kindId, setKindId] = useState('all')
   const [grade, setGrade] = useState(defaultFilters.grade ?? 'all')
   const [challenge, setChallenge] = useState(defaultFilters.challenge ?? 'all')
-  const [status, setStatus] = useState(defaultFilters.status ?? 'all')
-  const [hasFlags, setHasFlags] = useState(defaultFilters.hasFlags ?? 'all')
+  const [chatStatus, setChatStatus] = useState('ended')
 
   useEffect(() => {
     setRating(defaultFilters.rating ?? 'all')
@@ -32,16 +31,12 @@ export function EngagementView({
     setClassFilter(defaultFilters.classFilter ?? 'all')
     setGrade(defaultFilters.grade ?? 'all')
     setChallenge(defaultFilters.challenge ?? 'all')
-    setStatus(defaultFilters.status ?? 'all')
-    setHasFlags(defaultFilters.hasFlags ?? 'all')
   }, [
     defaultFilters.rating,
     defaultFilters.posFlags,
     defaultFilters.classFilter,
     defaultFilters.grade,
     defaultFilters.challenge,
-    defaultFilters.status,
-    defaultFilters.hasFlags,
   ])
 
   const engagement = sessions.filter((s) => s.type === 'engagement' || s.type === 'both')
@@ -51,30 +46,27 @@ export function EngagementView({
       posFlags === 'all' ||
       (posFlags === 'has' ? s.positiveFlags?.length > 0 : s.positiveFlags?.length === 0)
     const matchClassFilter = classFilter === 'all' || s.student.class === classFilter
+    const matchKind = kindId === 'all' || s.kindId === kindId
     const matchGrade = grade === 'all' || s.student.grade === grade
     const matchChallenge = challenge === 'all' || s.challenge === challenge
-    const matchStatus = status === 'all' || s.status === status
-    const matchHasFlags =
-      hasFlags === 'all' || (hasFlags === 'has' ? s.flags?.length > 0 : s.flags?.length === 0)
-    const matchSearch =
-      !search ||
-      s.student.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.book.title.toLowerCase().includes(search.toLowerCase())
+    // 'ended' is the default: an unfinished conversation has nothing to read
+    // yet, so the app keeps them out until you ask for them.
+    const matchChat = chatStatus === 'ended' ? s.status !== 'unfinished' : s.status === 'unfinished'
+    const matchSearch = !search || s.student.name.toLowerCase().includes(search.toLowerCase())
     return (
+      matchKind &&
       matchRating &&
       matchPosFlags &&
       matchClassFilter &&
       matchGrade &&
       matchChallenge &&
-      matchStatus &&
-      matchHasFlags &&
+      matchChat &&
       matchSearch
     )
   })
 
   const RATING_LABELS = { green: 'Positive', yellow: 'Mixed', red: 'Disengaged' }
   const activeFilters = [
-    ...(search ? [{ key: 'search', label: `"${search}"`, onClear: () => setSearch('') }] : []),
     ...(rating !== 'all'
       ? [
           {
@@ -108,130 +100,120 @@ export function EngagementView({
     ...(challenge !== 'all'
       ? [{ key: 'challenge', label: `Challenge: ${challenge}`, onClear: () => setChallenge('all') }]
       : []),
-    ...(status !== 'all'
-      ? [
-          {
-            key: 'status',
-            label: status === 'completed' ? 'Finished' : 'Unfinished',
-            onClear: () => setStatus('all'),
-          },
-        ]
-      : []),
-    ...(hasFlags !== 'all'
-      ? [
-          {
-            key: 'hasFlags',
-            label: hasFlags === 'has' ? 'Has integrity flags' : 'No integrity flags',
-            onClear: () => setHasFlags('all'),
-          },
-        ]
-      : []),
   ]
+
+  function clearAll() {
+    setKindId('all')
+    setRating('all')
+    setPosFlags('all')
+    setClassFilter('all')
+    setGrade('all')
+    setChallenge('all')
+    setChatStatus('ended')
+  }
 
   return (
     <div className="lv-shell">
-      <div className="lv-toolbar">
-        <div className="lv-count">
-          {engagement.length} Engagement {engagement.length === 1 ? 'Session' : 'Sessions'}
-        </div>
-        <div className="lv-search-wrap">
-          <Icon name="search" size={14} className="lv-search-icon" />
-          <input
-            className="lv-search"
-            type="search"
-            placeholder="Search student or book…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className="lv-filters">
-        <FilterBar>
-          <FilterItem label="Engagement Rating">
-            <Select value={rating} onChange={(e) => setRating(e.target.value)}>
-              <option value="all">All ratings</option>
-              <option value="green">Positive</option>
-              <option value="yellow">Mixed</option>
-              <option value="red">Disengaged</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Positive Flags">
-            <Select value={posFlags} onChange={(e) => setPosFlags(e.target.value)}>
-              <option value="all">All sessions</option>
-              <option value="has">Has positive flags</option>
-              <option value="none">No positive flags</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Status">
-            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="all">All statuses</option>
-              <option value="completed">Finished</option>
-              <option value="unfinished">Unfinished</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Flags">
-            <Select value={hasFlags} onChange={(e) => setHasFlags(e.target.value)}>
-              <option value="all">All sessions</option>
-              <option value="has">Has flags</option>
-              <option value="none">No flags</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Class">
-            <Select value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
-              <option value="all">All classes</option>
-              <option value="Mrs. Johnson">Mrs. Johnson</option>
-              <option value="Mr. Okafor">Mr. Okafor</option>
-              <option value="Mr. Kim">Mr. Kim</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Grade">
-            <Select value={grade} onChange={(e) => setGrade(e.target.value)}>
-              <option value="all">All grades</option>
-              <option value="3rd">3rd grade</option>
-              <option value="4th">4th grade</option>
-              <option value="5th">5th grade</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Challenge">
-            <Select value={challenge} onChange={(e) => setChallenge(e.target.value)}>
-              <option value="all">All challenges</option>
-              <option value="Genre Explorer">Genre Explorer</option>
-              <option value="Chapter Book Challenge">Chapter Book Challenge</option>
-              <option value="Summer Reading">Summer Reading</option>
-            </Select>
-          </FilterItem>
-        </FilterBar>
-        <ActiveFilters
-          filters={activeFilters}
-          onClearAll={() => {
-            setSearch('')
-            setRating('all')
-            setPosFlags('all')
-            setClassFilter('all')
-            setGrade('all')
-            setChallenge('all')
-            setStatus('all')
-            setHasFlags('all')
-          }}
-        />
-      </div>
-      {groupBy === 'reader' ? (
+      <SessionsFilters
+        activeFilters={activeFilters}
+        onClearAll={clearAll}
+        listBy={listBy}
+        onListBy={onListBy}
+        filters={[
+          {
+            key: 'challenge',
+            label: 'Challenges',
+            value: challenge,
+            onChange: setChallenge,
+            options: [
+              ['all', 'All Challenges'],
+              ['Genre Explorer', 'Genre Explorer'],
+              ['Chapter Book Challenge', 'Chapter Book Challenge'],
+              ['Summer Reading', 'Summer Reading'],
+            ],
+          },
+          {
+            key: 'flags',
+            label: 'Flags',
+            value: posFlags,
+            onChange: setPosFlags,
+            options: [
+              ['all', 'All Flags'],
+              ['has', 'Has positive flags'],
+              ['none', 'No positive flags'],
+            ],
+          },
+          {
+            key: 'talk',
+            label: 'Talks',
+            secondary: true,
+            value: kindId,
+            onChange: setKindId,
+            options: [
+              ['all', 'All Talks'],
+              ['engagement', 'Engagement'],
+              ['comprehension', 'Comprehension'],
+              ['integrity', 'Integrity'],
+            ],
+          },
+          {
+            key: 'class',
+            label: 'Classes',
+            value: classFilter,
+            onChange: setClassFilter,
+            options: [
+              ['all', 'All Classes'],
+              ['Mrs. Johnson', 'Mrs. Johnson'],
+              ['Mr. Okafor', 'Mr. Okafor'],
+              ['Mr. Kim', 'Mr. Kim'],
+            ],
+          },
+          {
+            key: 'grade',
+            label: 'Grades',
+            value: grade,
+            onChange: setGrade,
+            options: [
+              ['all', 'All Grades'],
+              ['3rd', '3rd'],
+              ['4th', '4th'],
+              ['5th', '5th'],
+            ],
+          },
+          {
+            key: 'chatStatus',
+            label: 'Conversations',
+            secondary: true,
+            value: chatStatus,
+            onChange: setChatStatus,
+            options: [
+              ['ended', 'Finished Conversations Only'],
+              ['started', 'Show Unfinished Conversations'],
+            ],
+          },
+          {
+            key: 'rating',
+            label: 'Ratings',
+            secondary: true,
+            value: rating,
+            onChange: setRating,
+            options: [
+              ['all', 'All Ratings'],
+              ['green', 'Positive'],
+              ['yellow', 'Mixed'],
+              ['red', 'Disengaged'],
+            ],
+          },
+        ]}
+      />
+      {listBy === 'reader' ? (
         <ReaderGroupedView
           sessions={filtered}
+          countLabel="Engagement Sessions"
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
-          showFlagIcons
-          onClearFilters={() => {
-            setSearch('')
-            setRating('all')
-            setPosFlags('all')
-            setClassFilter('all')
-            setGrade('all')
-            setChallenge('all')
-            setStatus('all')
-            setHasFlags('all')
-          }}
+          onClearFilters={clearAll}
         />
       ) : (
         <SessionsTable
@@ -239,17 +221,9 @@ export function EngagementView({
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
+          showTypeColumn={false}
           showFlagIcons
-          onClearFilters={() => {
-            setSearch('')
-            setRating('all')
-            setPosFlags('all')
-            setClassFilter('all')
-            setGrade('all')
-            setChallenge('all')
-            setStatus('all')
-            setHasFlags('all')
-          }}
+          onClearFilters={clearAll}
         />
       )}
     </div>

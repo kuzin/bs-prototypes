@@ -8,8 +8,8 @@ export const USER = {
 // The readers this account can switch between, for the topbar's reader menu.
 export const OTHER_READERS = [
   { id: 'noah', name: 'Noah Martinez', initials: 'NM', color: '#7C5CFA' },
-  { id: 'mia', name: 'Mia Chen', initials: 'MC', color: '#0DA7BC' },
-  { id: 'liam', name: 'Liam Park', initials: 'LP', color: '#16A97A' },
+  { id: 'mia', name: 'Mia Chen', initials: 'MC', color: '#0CA7BC' },
+  { id: 'liam', name: 'Liam Park', initials: 'LP', color: '#0BA85F' },
 ]
 
 export const STREAK = {
@@ -50,13 +50,13 @@ export const CHALLENGES = [
 ]
 
 export const TOP_SCHOOLS = [
-  { rank: 1, name: 'Magnolia Middle', value: 198, color: '#F59E0B' },
-  { rank: 2, name: 'Oak Elementary', value: 157, color: '#94A3B8' },
+  { rank: 1, name: 'Magnolia Middle', value: 198, color: '#FFBC42' },
+  { rank: 2, name: 'Oak Elementary', value: 157, color: '#ACACAC' },
   { rank: 3, name: 'Hickory Middle School', value: 104, color: '#C2884F' },
 ]
 
 export const TOP_GRADES = [
-  { rank: 1, name: '6th grade', value: 412, color: '#F59E0B' },
-  { rank: 2, name: '5th grade', value: 388, color: '#94A3B8' },
+  { rank: 1, name: '6th grade', value: 412, color: '#FFBC42' },
+  { rank: 2, name: '5th grade', value: 388, color: '#ACACAC' },
   { rank: 3, name: '7th grade', value: 271, color: '#C2884F' },
 ]

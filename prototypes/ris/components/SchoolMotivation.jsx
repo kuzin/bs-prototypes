@@ -23,7 +23,7 @@ import { BarList } from '@components/BarList/BarList'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 
-const INTRINSIC_COLOR = '#E8866A'
+const INTRINSIC_COLOR = '#F26430'
 const EXTRINSIC_COLOR = '#7CB5F5'
 const MOT_ICON = SECTIONS.find((s) => s.key === 'motivation')?.icon
 const FACTOR_BY_NAME = Object.fromEntries(RMI_FACTORS.map((f) => [f.name, f]))
@@ -47,7 +47,7 @@ export function SchoolMotivation({ schoolId }) {
     { id: shortName, color: school.color, data: trend.map((d) => ({ x: d.month, y: d.school })) },
     {
       id: 'District avg',
-      color: '#CBD5E1',
+      color: '#D0D0D0',
       data: trend.map((d) => ({ x: d.month, y: d.district })),
     },
   ]
@@ -90,7 +90,7 @@ export function SchoolMotivation({ schoolId }) {
             <ChartLegend
               items={[
                 { color: school.color, label: shortName },
-                { color: '#CBD5E1', label: `District avg (${districtNow})`, dashed: true },
+                { color: '#D0D0D0', label: `District avg (${districtNow})`, dashed: true },
               ]}
             />
           }
@@ -160,7 +160,7 @@ export function SchoolMotivation({ schoolId }) {
             <ChartLegend
               items={[
                 { color: INTRINSIC_COLOR, label: 'Intrinsic' },
-                { color: '#CBD5E1', label: 'Extrinsic' },
+                { color: '#D0D0D0', label: 'Extrinsic' },
               ]}
             />
           }
@@ -175,7 +175,7 @@ export function SchoolMotivation({ schoolId }) {
             xPadding={{ left: 12, right: 12 }}
             series={[
               { key: 'intrinsic', name: 'Intrinsic', color: INTRINSIC_COLOR },
-              { key: 'extrinsic', name: 'Extrinsic', color: '#CBD5E1' },
+              { key: 'extrinsic', name: 'Extrinsic', color: '#D0D0D0' },
             ]}
           />
           <CardNote tone="accent">
@@ -199,7 +199,7 @@ export function SchoolMotivation({ schoolId }) {
             groups={[
               {
                 label: 'Intrinsic',
-                labelColor: '#E8866A',
+                labelColor: '#F26430',
                 items: intrinsicFactors.map((f) => ({
                   icon: RMI_ICONS[f.iconKey],
                   iconColor: f.color,
@@ -250,7 +250,7 @@ export function SchoolMotivation({ schoolId }) {
             layout="columns"
             groups={MOTIVATION_BY_GRADE.map((g) => ({
               label: `Grade ${g.band}`,
-              labelColor: '#475569',
+              labelColor: '#656565',
               items: [
                 {
                   label: 'Intrinsic',

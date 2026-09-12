@@ -10,7 +10,7 @@ import { TEMPLATE_PRESETS, badgeImage } from '../data'
 export function StepHead({ title, sub }) {
   return (
     <div className="cc-step-head">
-      <Hero title={title} subtitle={sub} accent="#0DA7BC" />
+      <Hero title={title} subtitle={sub} accent="#0CA7BC" />
     </div>
   )
 }

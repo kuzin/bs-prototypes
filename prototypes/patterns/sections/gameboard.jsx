@@ -74,7 +74,11 @@ function BoardDemo({ theme = 'meadow', spaces = 8, showRewards = true, showHalfw
 
 export const gameboardSections = [
   {
-    group: 'gameboard',
+    // Challenge Creator's group: the gameboard is one of its challenge types
+    // (gameboardCells / gameboardTheme / gameboardColor on a challenge), so the
+    // board and its themes are Challenge Creator components that the Gameboard
+    // prototype narrows down to.
+    group: 'challenge-creator',
     id: 'gb-board',
     name: 'Gameboard',
     desc: (
@@ -99,7 +103,7 @@ export const gameboardSections = [
     ),
   },
   {
-    group: 'gameboard',
+    group: 'challenge-creator',
     id: 'gb-themes',
     name: 'Board Theme Picker',
     desc: (

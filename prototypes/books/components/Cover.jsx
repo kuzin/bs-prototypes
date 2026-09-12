@@ -20,7 +20,7 @@ const FALLBACK_ICON = { xs: 16, sm: 20, md: 26, lg: 34 }
 // magazine may set `masthead` for the short logo name its real cover shows.
 export function Cover({ book, size = 'md', square = false, className = '' }) {
   const [err, setErr] = useState(false)
-  const { cover, title, masthead, color = '#0DA7BC', formats = [], issue } = book
+  const { cover, title, masthead, color = '#0CA7BC', formats = [], issue } = book
   const showImg = cover && !err
   const isMag = formats.includes('magazine') && !formats.includes('print')
 

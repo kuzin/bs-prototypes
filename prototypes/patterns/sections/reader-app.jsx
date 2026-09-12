@@ -94,7 +94,7 @@ function ScopeDemo() {
 
 export const readerAppSections = [
   {
-    group: 'navigation',
+    group: 'web-app',
     id: 'reader-top-bar',
     name: 'ReaderTopBar',
     usage: `import { ReaderTopBar } from '@components/ReaderApp/ReaderApp'
@@ -172,7 +172,7 @@ export const readerAppSections = [
     ),
   },
   {
-    group: 'navigation',
+    group: 'web-app',
     id: 'reader-pill',
     name: 'ReaderPill',
     usage: `import { ReaderPill } from '@components/ReaderApp/ReaderApp'
@@ -198,7 +198,7 @@ export const readerAppSections = [
     ),
   },
   {
-    group: 'feedback',
+    group: 'web-app',
     id: 'reader-streak-banner',
     name: 'StreakBanner',
     usage: `import { StreakBanner } from '@components/ReaderApp/ReaderApp'
@@ -237,7 +237,7 @@ export const readerAppSections = [
     ),
   },
   {
-    group: 'domain',
+    group: 'web-app',
     id: 'reader-challenge-card',
     name: 'ChallengeCard',
     usage: `import { ChallengeCard, CHALLENGE_ART } from '@components/ReaderApp/ReaderApp'
@@ -263,7 +263,7 @@ export const readerAppSections = [
     ),
   },
   {
-    group: 'domain',
+    group: 'web-app',
     id: 'reader-challenge-scope',
     name: 'ChallengeScope',
     usage: `import { ChallengeScope } from '@components/ReaderApp/ReaderApp'
@@ -283,7 +283,7 @@ export const readerAppSections = [
     ),
   },
   {
-    group: 'domain',
+    group: 'web-app',
     id: 'reader-goal-card',
     name: 'GoalCard',
     usage: `import { GoalCard } from '@components/ReaderApp/ReaderApp'
@@ -318,7 +318,7 @@ export const readerAppSections = [
     ),
   },
   {
-    group: 'domain',
+    group: 'web-app',
     id: 'reader-leaderboard-card',
     name: 'LeaderboardCard',
     usage: `import { LeaderboardCard } from '@components/ReaderApp/ReaderApp'

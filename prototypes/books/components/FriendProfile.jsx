@@ -39,20 +39,20 @@ function StatGrid({ friend, reviews }) {
       />
       <StatCell
         icon="clock"
-        color="#1D4ED8"
+        color="#196DD5"
         value={friend.minutesLogged.toLocaleString()}
         label="minutes logged"
       />
       <StatCell
         icon="calendar"
-        color="#7C3AED"
+        color="#B43DD0"
         value={fmtMins(totalLogged)}
         label="last 5 sessions"
       />
       <StatCell icon="award" color="#DB2777" value={friend.badges.length} label="badges earned" />
       <StatCell
         icon="star-filled"
-        color="#F59E0B"
+        color="#FFBC42"
         value={avg ? avg.toFixed(1) : '—'}
         label={`avg of ${reviews.length} reviews`}
       />
@@ -212,7 +212,7 @@ function Reviews({ reviews, onOpenBook }) {
           <span className="bk-fp-revfoot">
             {r.verified && (
               <span className="bk-fp-revverified">
-                <Icon name="circle-check-filled" size={13} color="#16A97A" /> Verified read
+                <Icon name="circle-check-filled" size={13} color="#0BA85F" /> Verified read
               </span>
             )}
             <span className="bk-fp-revhelpful">
@@ -264,7 +264,7 @@ export function FriendProfile({ friend, onClose, onOpenBook }) {
             variant="underline"
             size="sm"
             active={tab}
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             onChange={setTab}
             items={[
               { id: 'overview', label: 'Overview' },

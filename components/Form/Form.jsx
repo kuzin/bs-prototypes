@@ -57,9 +57,17 @@ export function Field({
         )}
         <div className="fld-control">{children}</div>
         {error ? (
-          <div className="fld-error">{error}</div>
+          <div className="fld-error">
+            <Icon name="alert-circle" size={15} className="fld-note-icon" />
+            <span>{error}</span>
+          </div>
         ) : (
-          help && <div className="fld-help">{help}</div>
+          help && (
+            <div className="fld-help">
+              <Icon name="info" size={15} className="fld-note-icon" />
+              <span>{help}</span>
+            </div>
+          )
         )}
       </div>
     </FieldContext.Provider>
@@ -161,9 +169,14 @@ export function Textarea({ size = 'md', label, className = '', ...rest }) {
 }
 
 // ── Checkbox ─────────────────────────────────────────────────────────────
-export function Checkbox({ checked, onChange, disabled, children, className = '' }) {
+// Box sizes ride the control ladder: an 18 / 20 / 24px box beside a 36 / 44 /
+// 52px field. The glyph is sized here rather than in CSS because <Icon> writes
+// width/height attributes on the svg.
+const CHECK_GLYPH = { sm: 12, md: 14, lg: 16 }
+
+export function Checkbox({ size = 'md', checked, onChange, disabled, children, className = '' }) {
   return (
-    <label className={`chk${disabled ? ' chk--disabled' : ''} ${className}`.trim()}>
+    <label className={`chk chk--${size}${disabled ? ' chk--disabled' : ''} ${className}`.trim()}>
       <input
         type="checkbox"
         className="chk-input"
@@ -172,7 +185,7 @@ export function Checkbox({ checked, onChange, disabled, children, className = ''
         onChange={(e) => onChange?.(e.target.checked)}
       />
       <span className="chk-box" aria-hidden="true">
-        <Icon name="check" size={12} stroke={2} />
+        <Icon name="check" size={CHECK_GLYPH[size] ?? CHECK_GLYPH.md} stroke={2.4} />
       </span>
       {children && <span className="chk-label">{children}</span>}
     </label>
@@ -182,9 +195,17 @@ export function Checkbox({ checked, onChange, disabled, children, className = ''
 // ── Radio group ──────────────────────────────────────────────────────────
 const RadioContext = createContext({ name: '', value: undefined, onChange: () => {} })
 
-export function RadioGroup({ name, value, onChange, layout = 'row', children, className = '' }) {
+export function RadioGroup({
+  name,
+  value,
+  onChange,
+  size = 'md',
+  layout = 'row',
+  children,
+  className = '',
+}) {
   return (
-    <RadioContext.Provider value={{ name, value, onChange }}>
+    <RadioContext.Provider value={{ name, value, onChange, size }}>
       <div className={`rdg rdg--${layout} ${className}`.trim()} role="radiogroup">
         {children}
       </div>
@@ -194,8 +215,9 @@ export function RadioGroup({ name, value, onChange, layout = 'row', children, cl
 
 export function Radio({ value, disabled, children, className = '' }) {
   const ctx = useContext(RadioContext)
+  const size = ctx.size ?? 'md'
   return (
-    <label className={`rdo${disabled ? ' rdo--disabled' : ''} ${className}`.trim()}>
+    <label className={`rdo rdo--${size}${disabled ? ' rdo--disabled' : ''} ${className}`.trim()}>
       <input
         type="radio"
         className="rdo-input"
@@ -280,9 +302,10 @@ export function TimeInput({ size = 'md', label, className = '', ...rest }) {
 // ── ColorInput ───────────────────────────────────────────────────────────
 export function ColorInput({
   size = 'md',
-  value = '#1D4ED8',
+  value = '#196DD5',
   onChange,
   label,
+  chip = false,
   className = '',
   ...rest
 }) {
@@ -290,16 +313,25 @@ export function ColorInput({
   const selfId = useId()
   const inputId = rest.id || fieldId || selfId
 
-  const el = (
+  const swatch = (
+    <input
+      id={inputId}
+      type="color"
+      className={chip ? `cinp-chip cinp-chip--${size}` : 'cinp-swatch'}
+      value={value}
+      onChange={(e) => onChange?.(e.target.value)}
+      {...rest}
+    />
+  )
+
+  // `chip` is the swatch on its own — no frame, no hex readout. It's what a
+  // dense row of controls wants, and what the Pattern Library's own knob rail
+  // had hand-rolled as `.pt-color`.
+  const el = chip ? (
+    <span className={`cinp-chip-wrap${!label && className ? ` ${className}` : ''}`}>{swatch}</span>
+  ) : (
     <div className={`cinp cinp--${size}${!label && className ? ` ${className}` : ''}`}>
-      <input
-        id={inputId}
-        type="color"
-        className="cinp-swatch"
-        value={value}
-        onChange={(e) => onChange?.(e.target.value)}
-        {...rest}
-      />
+      {swatch}
       <span className="cinp-hex">{value}</span>
     </div>
   )
@@ -388,12 +420,13 @@ const CheckboxGroupContext = createContext({ value: [], onChange: () => {} })
 export function CheckboxGroup({
   value = [],
   onChange,
+  size = 'md',
   layout = 'column',
   children,
   className = '',
 }) {
   return (
-    <CheckboxGroupContext.Provider value={{ value, onChange }}>
+    <CheckboxGroupContext.Provider value={{ value, onChange, size }}>
       <div className={`chkg chkg--${layout} ${className}`.trim()}>{children}</div>
     </CheckboxGroupContext.Provider>
   )
@@ -407,7 +440,13 @@ export function CheckboxGroupItem({ value, disabled, children, className = '' })
     else ctx.onChange?.(ctx.value.filter((v) => v !== value))
   }
   return (
-    <Checkbox checked={checked} onChange={handleChange} disabled={disabled} className={className}>
+    <Checkbox
+      size={ctx.size ?? 'md'}
+      checked={checked}
+      onChange={handleChange}
+      disabled={disabled}
+      className={className}
+    >
       {children}
     </Checkbox>
   )
@@ -571,7 +610,7 @@ export function MultiSelect({
                       onChange={() => toggle(opt.value)}
                     />
                     <span className="chk-box" aria-hidden="true">
-                      <Icon name="check" size={12} stroke={2} />
+                      <Icon name="check" size={CHECK_GLYPH.md} stroke={2.4} />
                     </span>
                     {opt.image !== undefined && (
                       <span className="msel-opt-art">
@@ -683,6 +722,7 @@ export function RangeSlider({
   max = 100,
   step = 1,
   value = 50,
+  size = 'md',
   onChange,
   showValue = true,
   label,
@@ -693,7 +733,7 @@ export function RangeSlider({
   const rangeEl = (
     <input
       type="range"
-      className="rng-input"
+      className={`rng-input rng-input--${size}`}
       min={min}
       max={max}
       step={step}
@@ -705,14 +745,14 @@ export function RangeSlider({
 
   if (!label) {
     return (
-      <div className={`rng${className ? ` ${className}` : ''}`}>
+      <div className={`rng rng--${size}${className ? ` ${className}` : ''}`}>
         {rangeEl}
         {showValue && <span className="rng-value">{value}</span>}
       </div>
     )
   }
   return (
-    <div className={`frm-labeled${className ? ` ${className}` : ''}`}>
+    <div className={`frm-labeled rng--${size}${className ? ` ${className}` : ''}`}>
       <div className="rng-header">
         <label className="frm-self-label">{label}</label>
         {showValue && <span className="rng-value">{value}</span>}

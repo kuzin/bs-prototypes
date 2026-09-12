@@ -15,12 +15,12 @@
   --rost-accent-soft: #eeeafe;
   --rost-accent-deep: #5b3fc8;
 
-  --rost-green: var(--c-brand-green);
+  --rost-green: var(--c-green);
   --rost-green-soft: #e7f6ef;
   --rost-red: #dc2a4e;
   --rost-red-soft: #fbe9ee;
   --rost-amber: #b45309;
-  --rost-amber-soft: #fef3c7;
+  --rost-amber-soft: #ffecc8;
   --rost-blue: #2563eb;
   --rost-blue-soft: #e0e9fe;
   --rost-gray: #6b7280;
@@ -665,7 +665,7 @@
   color: var(--rost-amber);
 }
 .rost-status--unsorted .rost-status-dot {
-  background: var(--c-amber-600);
+  background: var(--c-yellow-ink);
 }
 .rost-status--via {
   background: var(--rost-accent-soft);
@@ -767,7 +767,7 @@
   justify-content: space-between;
   gap: 16px;
   padding: 14px 20px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
 }
 .rost-ls-li:last-child {
   border-bottom: none;
@@ -845,7 +845,7 @@
 }
 .rost-ls-drill-table td {
   padding: 11px 14px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
   font-size: 13.5px;
   color: #4b5563;
   font-variant-numeric: tabular-nums;

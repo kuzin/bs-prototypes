@@ -25,8 +25,8 @@ import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT, CHART_H } from '@components/charts/
  *     yUnit="%"
  *     height="lg"
  *     series={[
- *       { key: 'school',   name: 'School',       color: '#16A97A' },
- *       { key: 'district', name: 'District avg', color: '#CBD5E1' },
+ *       { key: 'school',   name: 'School',       color: '#0BA85F' },
+ *       { key: 'district', name: 'District avg', color: '#D0D0D0' },
  *     ]}
  *   />
  *
@@ -40,7 +40,7 @@ import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT, CHART_H } from '@components/charts/
  *     yUnit="%"
  *     leftMargin={128}          // room for long category labels
  *     series={[
- *       { key: 'completionRate', name: 'Completion', color: '#1D4ED8', colorFn: r => r.isThis ? school.color : '#CBD5E1' },
+ *       { key: 'completionRate', name: 'Completion', color: '#196DD5', colorFn: r => r.isThis ? school.color : '#D0D0D0' },
  *     ]}
  *   />
  *
@@ -461,7 +461,7 @@ function makeRightAxis(domain, unit) {
             y={y(t)}
             textAnchor="start"
             dominantBaseline="central"
-            style={{ fontSize: 13, fill: '#64748B', fontFamily: 'inherit' }}
+            style={{ fontSize: 13, fill: '#707070', fontFamily: 'inherit' }}
           >
             {t}
             {unit ?? ''}

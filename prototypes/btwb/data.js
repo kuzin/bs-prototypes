@@ -26,45 +26,11 @@ export const SITE = {
 // that fit a finished book. The warning threshold stays the integrity check-in
 // it runs today: it exists to tell you whether a log looks authentic, which is
 // the one thing the other two types can't report.
-export const TALK_KINDS = {
-  engagement: {
-    id: 'engagement',
-    label: 'Engagement talk',
-    short: 'Engagement',
-    color: '#0D9488',
-    tint: '#EFFBF9',
-    icon: 'heart',
-    // Challenge-triggered talks can award a challenge badge; the site-wide
-    // completion and warning-level talks don't.
-    badge: 'Book Chatter',
-    blurb: 'A warm chat about how the book landed — what they thought, how it made them feel.',
-    measures: 'Whether the student had a positive reading experience.',
-  },
-  comprehension: {
-    id: 'comprehension',
-    label: 'Comprehension talk',
-    short: 'Comprehension',
-    color: '#4F46E5',
-    tint: '#EEF2FF',
-    icon: 'bulb',
-    // Engagement and integrity talks exist today; comprehension is the new type.
-    isNew: true,
-    blurb:
-      'A chat about what actually happened in the book — the characters, the events, the ideas behind them.',
-    measures: 'How well the student understood what they read.',
-  },
-  integrity: {
-    id: 'integrity',
-    label: 'Integrity talk',
-    short: 'Integrity',
-    color: '#B45309',
-    tint: '#FFFBEB',
-    icon: 'shield-check',
-    blurb:
-      'A light check-in on the reading itself. Benny never grades correctness — he only flags concerning patterns.',
-    measures: 'Whether the log looks like reading the student actually did.',
-  },
-}
+// Sessions for Review owns this vocabulary — it's the surface every talk ends
+// up on — so the kinds and the Reading Confidence come from there rather than
+// being declared twice.
+export { TALK_KINDS, CONFIDENCE_META, CONFIDENCE_BLURB } from '../sfr/data'
+import { TALK_KINDS } from '../sfr/data'
 
 // What an admin can actually choose, wherever a trigger offers a choice — book
 // completions site-wide and title completions in a challenge. Both fire on a
@@ -105,41 +71,16 @@ export const DEFAULT_SETTINGS = {
 export const CONFIDENCE_LEVELS = [
   { id: 'high', label: 'High', color: '#0D9488' },
   { id: 'moderate', label: 'Moderate', color: '#B45309' },
-  { id: 'low', label: 'Low', color: '#DC2626' },
+  { id: 'low', label: 'Low', color: '#E85648' },
 ]
-
-// Reading Confidence as an SFR review card — same shape as its RATING_META.
-export const CONFIDENCE_META = {
-  high: {
-    label: 'High confidence',
-    color: '#16A97A',
-    bg: '#F0FDF4',
-    border: '#BBF7D0',
-    icon: 'mood-happy',
-  },
-  moderate: {
-    label: 'Moderate confidence',
-    color: '#D97706',
-    bg: '#FFFBEB',
-    border: '#FDE68A',
-    icon: 'mood-neutral',
-  },
-  low: {
-    label: 'Low confidence',
-    color: '#DC2626',
-    bg: '#FEF2F2',
-    border: '#FECACA',
-    icon: 'mood-sad',
-  },
-}
 
 // ─── Flags ───────────────────────────────────────────────────────────────────
 // Same catalogs, palette and card language Sessions for Review uses, so a book
 // talk's flags read identically to the ones on a post-logging session. Benny
 // raises both kinds: positive flags are the signals worth celebrating, negative
 // flags the ones worth a closer look. He still never grades correctness.
-export const NEG_FLAG_COLORS = { color: '#DC2626', bg: '#FEF2F2', border: '#FECACA' }
-export const POS_FLAG_COLORS = { color: '#16A97A', bg: '#F0FDF4', border: '#BBF7D0' }
+export const NEG_FLAG_COLORS = { color: '#E85648', bg: '#FEF2F2', border: '#FECACA' }
+export const POS_FLAG_COLORS = { color: '#0BA85F', bg: '#F0FDF4', border: '#BBF7D0' }
 
 export const FLAG_DESCS = {
   'copy-paste': {
@@ -229,9 +170,6 @@ export const flagMeta = (flag) => {
     color: pos ? POS_FLAG_COLORS.color : NEG_FLAG_COLORS.color,
   }
 }
-
-export const CONFIDENCE_BLURB =
-  'Benny’s confidence that the student demonstrated authentic knowledge of the book.'
 
 // Keyed by talk kind. Only the comprehension talk carries a confidence — it's
 // the talk that actually probes what the reader took from the book, so it's the
@@ -464,7 +402,7 @@ export const SESSIONS = [
         id: 'e1',
         label: 'Book talk completed',
         icon: 'circle-check',
-        color: '#16A97A',
+        color: '#0BA85F',
         by: 'Benny',
         at: 'Sep 14, 9:12 AM',
       },
@@ -490,7 +428,7 @@ export const SESSIONS = [
         id: 'e1',
         label: 'Book talk completed',
         icon: 'circle-check',
-        color: '#16A97A',
+        color: '#0BA85F',
         by: 'Benny',
         at: 'Sep 14, 1:48 PM',
       },
@@ -551,7 +489,7 @@ export const SESSIONS = [
         id: 'e2',
         label: 'Flagged for review',
         icon: 'flag',
-        color: '#DC2626',
+        color: '#E85648',
         by: 'Benny',
         at: 'Sep 13, 4:31 PM',
         note: 'Two answers matched concerning patterns.',
@@ -560,7 +498,7 @@ export const SESSIONS = [
         id: 'e1',
         label: 'Book talk completed',
         icon: 'circle-check',
-        color: '#16A97A',
+        color: '#0BA85F',
         by: 'Benny',
         at: 'Sep 13, 4:30 PM',
       },
@@ -609,7 +547,7 @@ export const SESSIONS = [
         id: 'e2',
         label: 'Flagged for review',
         icon: 'flag',
-        color: '#DC2626',
+        color: '#E85648',
         by: 'Benny',
         at: 'Sep 12, 10:22 AM',
         note: 'Theme offered without support from the text.',
@@ -618,7 +556,7 @@ export const SESSIONS = [
         id: 'e1',
         label: 'Book talk completed',
         icon: 'circle-check',
-        color: '#16A97A',
+        color: '#0BA85F',
         by: 'Benny',
         at: 'Sep 12, 10:21 AM',
       },

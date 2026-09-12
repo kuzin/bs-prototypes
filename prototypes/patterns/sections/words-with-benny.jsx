@@ -30,7 +30,7 @@ function WordUnlockDemo() {
   const [open, setOpen] = useState(false)
   const [count, setCount] = useState(SEED_COLLECTION.length)
   return (
-    <div style={{ padding: 20 }}>
+    <div>
       <Button variant="primary" size="sm" onClick={() => setOpen(true)}>
         Open the unlock moment →
       </Button>
@@ -53,15 +53,7 @@ function ActivityDemo({ type }) {
   const [done, setDone] = useState(false)
   return (
     <div style={{ padding: 20, background: '#f3f4f6' }}>
-      <div
-        style={{
-          maxWidth: 520,
-          margin: '0 auto',
-          padding: '20px 22px',
-          background: '#fff',
-          borderRadius: 20,
-        }}
-      >
+      <div style={{ padding: '20px 22px', background: '#fff', borderRadius: 20 }}>
         <Activity
           type={type}
           word={WORDS_BY_BOOK.matilda[1]}
@@ -145,7 +137,7 @@ export const wordsWithBennySections = [
       </>
     ),
     render: () => (
-      <Variant label="word → round → collected" bare>
+      <Variant label="word → round → collected">
         <WordUnlockDemo />
       </Variant>
     ),
@@ -187,28 +179,13 @@ export const wordsWithBennySections = [
       </>
     ),
     render: () => (
-      <Variant label={ACTIVITY_TYPES.map((t) => t.short).join(' · ')} full>
-        <div>
-          {ACTIVITY_TYPES.map((t) => (
-            <div key={t.id}>
-              <p
-                style={{
-                  padding: '14px 20px 0',
-                  fontSize: 12,
-                  fontWeight: 800,
-                  letterSpacing: '0.05em',
-                  textTransform: 'uppercase',
-                  color: '#7c3aed',
-                  background: '#f3f4f6',
-                }}
-              >
-                {t.rung} — {t.label}
-              </p>
-              <ActivityDemo type={t.id} />
-            </div>
-          ))}
-        </div>
-      </Variant>
+      <>
+        {ACTIVITY_TYPES.map((t) => (
+          <Variant key={t.id} label={`${t.rung} — ${t.label}`} full>
+            <ActivityDemo type={t.id} />
+          </Variant>
+        ))}
+      </>
     ),
   },
   {
@@ -290,7 +267,7 @@ export const wordsWithBennySections = [
     ),
     render: () => (
       <Variant label="words · badges · achievements" full>
-        <div style={{ padding: '0 20px 20px', background: '#f3f4f6' }}>
+        <div style={{ padding: '24px 20px 20px', background: '#f3f4f6' }}>
           <Collections collection={SEED_COLLECTION} newestWord="suspicion" />
         </div>
       </Variant>
@@ -318,31 +295,6 @@ export const wordsWithBennySections = [
   },
   {
     group: 'words-with-benny',
-    id: 'wb-classroom-page',
-    name: 'Vocabulary tab (ClassroomView)',
-    desc: (
-      <>
-        Vocabulary is a <strong>tab on the real classroom page</strong>, not a destination of its
-        own — that&apos;s where a teacher already goes to look at this class. The page is the
-        Student Profile prototype&apos;s own <code>ClassroomView</code> (People rail, class header,
-        Daily Reading / Students / Earned Rewards), which grew additive <code>extraTabs</code> /{' '}
-        <code>renderExtra</code> slots so another prototype can hang a tab off it instead of cloning
-        it. Vocabulary is <strong>appended as a fourth tab</strong>; the three real ones are there
-        to place it.
-      </>
-    ),
-    render: () => (
-      <Variant label="the real classroom page with a Vocabulary tab" full>
-        <ClassroomView
-          onStudentClick={noop}
-          extraTabs={[{ id: 'vocabulary', label: 'Vocabulary' }]}
-          renderExtra={() => <EducatorWordsTab onOpenStudent={noop} />}
-        />
-      </Variant>
-    ),
-  },
-  {
-    group: 'words-with-benny',
     id: 'wb-student-vocabulary',
     name: 'StudentVocabulary',
     desc: (
@@ -363,7 +315,7 @@ export const wordsWithBennySections = [
     ),
     render: () => (
       <Variant label="a strong collector" full>
-        <div style={{ padding: 20, background: '#fff' }}>
+        <div style={{ background: '#fff' }}>
           <StudentVocabulary studentId="marcus" />
         </div>
       </Variant>
@@ -384,11 +336,21 @@ export const wordsWithBennySections = [
         <strong>By student</strong> is the sortable roster that drills into{' '}
         <code>StudentWords</code> — named that way because the classroom page above already has its
         own Readers tab. Props: <code>onOpenStudent</code>.
+        <br />
+        <br />
+        It isn&apos;t a destination: Vocabulary is{' '}
+        <strong>a fourth tab on the real classroom page</strong>, where a teacher already goes to
+        look at this class. The page is the Student Profile prototype&apos;s own{' '}
+        <code>ClassroomView</code>, which grew additive <code>extraTabs</code> /{' '}
+        <code>renderExtra</code> slots so another prototype can hang a tab off it instead of cloning
+        it.
       </>
     ),
     render: () => (
       <Variant label="the tab's content on its own" full>
-        <EducatorWords onOpenStudent={noop} />
+        <div style={{ padding: 24 }}>
+          <EducatorWords onOpenStudent={noop} />
+        </div>
       </Variant>
     ),
   },

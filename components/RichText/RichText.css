@@ -5,8 +5,8 @@
   background: #fff;
 }
 .rtx:focus-within {
-  border-color: var(--c-brand-teal);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-brand-teal) 18%, transparent);
+  border-color: var(--c-teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-teal) 18%, transparent);
 }
 .rtx-toolbar {
   display: flex;
@@ -14,7 +14,7 @@
   gap: 2px;
   padding: 6px;
   border-bottom: 1px solid var(--c-border);
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 .rtx-tool {
   min-width: 30px;
@@ -25,20 +25,20 @@
   border-radius: 6px;
   cursor: pointer;
   font-size: 14px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   display: grid;
   place-items: center;
   font-family: inherit;
 }
 .rtx-tool:hover {
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
   color: var(--c-text);
 }
 .rtx-sep {
   width: 1px;
   height: 18px;
   margin: 0 4px;
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
 }
 /* Personalization token chips (opt-in via the `tokens` prop). */
 .rtx-tokens {
@@ -53,7 +53,7 @@
 .rtx-tokens-label {
   font-size: 12px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-right: 2px;
 }
 .rtx-token {
@@ -72,7 +72,7 @@
 }
 .rtx-token:hover {
   background: #e6f6f8;
-  border-color: var(--c-brand-teal);
+  border-color: var(--c-teal);
   color: #0b7a89;
 }
 .rtx-html-toggle {
@@ -82,12 +82,25 @@
   letter-spacing: 0.02em;
 }
 .rtx-html-toggle.is-on {
-  background: var(--c-slate-900);
+  background: var(--c-gray-900);
   color: #fff;
 }
+/* Body size is the control ladder's, and it cascades: the headings and the
+   inline code below are sized in `em` off it, so one prop moves the whole
+   document rather than just its paragraphs. */
+.rtx--sm {
+  --rtx-size: 14px;
+}
+.rtx--md {
+  --rtx-size: 16px;
+}
+.rtx--lg {
+  --rtx-size: 18px;
+}
+
 .rtx-editor {
   padding: 10px 12px;
-  font-size: 14px;
+  font-size: var(--rtx-size, 16px);
   line-height: 1.5;
   color: var(--c-text);
   outline: none;
@@ -96,7 +109,7 @@
 }
 .rtx-editor:empty::before {
   content: attr(data-placeholder);
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .rtx-editor > :first-child {
   margin-top: 0;
@@ -105,12 +118,12 @@
   margin: 0 0 0.6em;
 }
 .rtx-editor h2 {
-  font-size: 18px;
+  font-size: 1.3em;
   font-weight: 700;
   margin: 8px 0 4px;
 }
 .rtx-editor h3 {
-  font-size: 15px;
+  font-size: 1.1em;
   font-weight: 700;
   margin: 8px 0 4px;
 }
@@ -118,7 +131,7 @@
 .rtx-color {
   position: relative;
   font-weight: 700;
-  border-bottom: 3px solid var(--c-slate-900);
+  border-bottom: 3px solid var(--c-gray-900);
   border-radius: 6px 6px 2px 2px;
   line-height: 1;
 }
@@ -138,19 +151,19 @@
   padding-left: 22px;
 }
 .rtx-editor a {
-  color: var(--c-brand-teal);
+  color: var(--c-teal);
 }
 .rtx-editor blockquote {
   margin: 8px 0;
   padding: 2px 0 2px 12px;
   border-left: 3px solid var(--c-border-strong);
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 .rtx-editor pre {
   margin: 8px 0;
   padding: 8px 10px;
   border-radius: 6px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   font-family: var(--font-mono);
   font-size: 13px;
   white-space: pre-wrap;
@@ -159,7 +172,7 @@
 .rtx-editor code {
   padding: 1px 5px;
   border-radius: 4px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   font-family: var(--font-mono);
   font-size: 0.9em;
 }
@@ -176,10 +189,10 @@
   font-size: 13px;
   line-height: 1.6;
   tab-size: 2;
-  color: var(--c-slate-200);
-  background: var(--c-slate-900);
+  color: var(--c-gray-200);
+  background: var(--c-gray-900);
   caret-color: #38bdf8;
 }
 .rtx-html::selection {
-  background: var(--c-slate-700);
+  background: var(--c-gray-800);
 }

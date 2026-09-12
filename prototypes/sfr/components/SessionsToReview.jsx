@@ -2,12 +2,8 @@ import { useState } from 'react'
 import { Tabs } from '@components/Tabs/Tabs'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
-import {
-  SafetySeverityTag,
-  FlagIconBadge,
-  FLAG_TYPE_CONFIG,
-  POS_FLAG_CONFIG,
-} from './SessionsTable'
+import { SafetySeverityTag, FLAG_TYPE_CONFIG, POS_FLAG_CONFIG } from './SessionsTable'
+import { FlagIcon } from '@components/BsIcons/BsIcons'
 import { isSafety, isSafetyOpen, isIntegrityFlagged, SEV_ORDER } from '../data'
 import './SessionsToReview.css'
 
@@ -20,14 +16,9 @@ import './SessionsToReview.css'
 
 const ROW_CAP = 6
 
-// Fallback badge for a green session with no specific positive flags, so every
-// Celebrate row still reads as positive (mirrors POS_FLAG_CONFIG styling).
-const POSITIVE_FALLBACK = {
-  label: 'Positively Engaged',
-  color: '#16A97A',
-  bg: '#F0FDF4',
-  icon: <Icon name="flame" size={12} />,
-}
+// A green session with no specific positive flags still reads as positive: the
+// app's generic positive drawing stands in.
+const POSITIVE_FALLBACK = 'Positively Engaged'
 
 const EMPTY = {
   all: {
@@ -64,17 +55,27 @@ function RowBadges({ session, seg }) {
   // has no specific positive flags, show a single fallback "positive" badge.
   if (seg === 'celebrate') {
     const pos = session.positiveFlags || []
-    if (!pos.length) return <FlagIconBadge type="positive" cfg={POSITIVE_FALLBACK} />
-    return pos.map((pf) => {
-      const cfg = POS_FLAG_CONFIG[pf.type]
-      return cfg ? <FlagIconBadge key={pf.id} type={pf.type} cfg={cfg} /> : null
-    })
+    if (!pos.length) return <FlagIcon type="positive" size={20} label={POSITIVE_FALLBACK} />
+    return pos.map((pf) => (
+      <FlagIcon
+        key={pf.id}
+        type={pf.type}
+        fallback="positive"
+        size={20}
+        label={POS_FLAG_CONFIG[pf.type]?.label ?? pf.type}
+      />
+    ))
   }
   if (isSafety(session)) return <SafetySeverityTag severity={session.safety.severity} />
-  return (session.flags || []).map((f) => {
-    const cfg = FLAG_TYPE_CONFIG[f.type]
-    return cfg ? <FlagIconBadge key={f.id} type={f.type} cfg={cfg} /> : null
-  })
+  return (session.flags || []).map((f) => (
+    <FlagIcon
+      key={f.id}
+      type={f.type}
+      fallback="negative"
+      size={20}
+      label={FLAG_TYPE_CONFIG[f.type]?.label ?? f.type}
+    />
+  ))
 }
 
 // Rendered inside each Tab's label rather than via Tabs' built-in `count` prop,
@@ -174,7 +175,7 @@ export function SessionsToReview({ sessions = [], onGoToSfr }) {
       {/* Alert summary, worked into the card: the four counts ARE the segment
           badges, and selecting a segment filters the list below in place. */}
       <div className="sfr-seg-bar">
-        <Tabs variant="pill" block accent="#16A97A" active={seg} onChange={setSeg} items={items} />
+        <Tabs variant="pill" block accent="#0BA85F" active={seg} onChange={setSeg} items={items} />
       </div>
 
       {shown.length === 0 ? (

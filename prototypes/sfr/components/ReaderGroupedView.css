@@ -1,76 +1,8 @@
-.rgv-table {
-  width: 100%;
-}
+/* The by-reader roll-up is the shared <Table>; all that's left is the shell
+   and its empty state. */
 
-.rgv-group-cell {
-  padding: 0 !important;
-  background: var(--c-slate-50);
-  border-top: 1px solid var(--c-gray-200) !important;
-}
-
-/* First group header gets no top border */
-.rgv-table tbody tr.rgv-group-row:first-child .rgv-group-cell {
-  border-top: none !important;
-}
-
-.rgv-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 6px 10px;
-}
-
-.rgv-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 7px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 10px;
-  font-weight: 800;
-  color: #fff;
-  flex-shrink: 0;
-}
-
-.rgv-name {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text);
-}
-
-.rgv-name--link {
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: inherit;
-  cursor: pointer;
-  color: var(--c-blue-700);
-}
-.rgv-name--link:hover {
-  text-decoration: underline;
-}
-
-.rgv-grade {
-  font-size: 12px;
-  color: var(--c-text-subtle);
-}
-
-.rgv-count {
-  margin-left: auto;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--c-text-muted);
-  background: var(--c-slate-100);
-  padding: 2px 9px;
-  border-radius: 99px;
-}
-
-.rgv-empty-wrap {
-  border: 1px solid var(--c-gray-200);
-  border-radius: 8px;
-  background: #fff;
-  overflow: hidden;
+.rgv-shell {
+  min-width: 0;
 }
 
 .rgv-empty {
@@ -78,9 +10,4 @@
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  font-size: 13px;
-  font-style: italic;
-  color: var(--c-text-subtle);
-  padding: 32px;
-  text-align: center;
 }

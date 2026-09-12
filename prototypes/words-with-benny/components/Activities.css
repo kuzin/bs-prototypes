@@ -24,8 +24,8 @@
   font-size: 16px;
   font-weight: 600;
   line-height: 1.75;
-  color: #334155;
-  background: #f8fafc;
+  color: #424242;
+  background: #f8f8f8;
   border: 1px solid #e8eef5;
   border-radius: 13px;
 }
@@ -39,7 +39,7 @@
   min-width: 104px;
   padding: 1px 10px;
   font-weight: 800;
-  color: #7c3aed;
+  color: #b43dd0;
   vertical-align: baseline;
   background: #f3e8ff;
   border-radius: 7px;
@@ -77,7 +77,7 @@
   padding: 9px 14px;
   font-size: 14.5px;
   font-weight: 700;
-  color: #334155;
+  color: #424242;
   background: #fff;
   border: 1.5px solid #dbe4ee;
   border-radius: 999px;
@@ -114,16 +114,16 @@
 /* Held: the word is in the reader's hand and every open gap is lit for it. */
 .wb-chip--drag.is-held {
   color: #fff;
-  background: #7c3aed;
-  border-color: #7c3aed;
+  background: #b43dd0;
+  border-color: #b43dd0;
   transform: translateY(-1px);
 }
 .wb-chip--drag.is-held .tabler-icon {
   color: rgba(255, 255, 255, 0.6);
 }
 .wb-chip--drag.is-held .wb-chip--drag.is-used .wb-chip--drag.is-used {
-  color: #cbd5e1;
-  background: #f8fafc;
+  color: #d0d0d0;
+  background: #f8f8f8;
   border-color: #eef2f7;
   border-style: dashed;
 }
@@ -136,8 +136,8 @@
   font-size: 15.5px;
   font-weight: 600;
   line-height: 2.05;
-  color: #334155;
-  background: #f8fafc;
+  color: #424242;
+  background: #f8f8f8;
   border: 1px solid #e8eef5;
   border-radius: 13px;
 }
@@ -154,7 +154,7 @@
   padding: 2px 10px;
   font-size: 15px;
   font-weight: 800;
-  color: #7c3aed;
+  color: #b43dd0;
   vertical-align: baseline;
   background: #f3e8ff;
   border: 1.5px dashed #c4b5fd;
@@ -170,7 +170,7 @@
 /* An open gap while a word is held — the only thing on screen worth tapping. */
 .wb-gap.is-open {
   background: #ede9fe;
-  border-color: #7c3aed;
+  border-color: #b43dd0;
   animation: wb-gap-pulse 1.4s ease-in-out infinite;
 }
 @keyframes wb-gap-pulse {
@@ -210,7 +210,7 @@
   font-size: 15px;
   font-weight: 600;
   line-height: 1.5;
-  color: #1e293b;
+  color: #2a2a2a;
   resize: none;
   background: #fff;
   border: 1.5px solid #dbe4ee;
@@ -222,8 +222,8 @@
   box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.13);
 }
 .wb-write.is-settled {
-  color: #475569;
-  background: #f8fafc;
+  color: #656565;
+  background: #f8f8f8;
 }
 .wb-write::placeholder {
   font-weight: 600;
@@ -299,7 +299,7 @@
   display: grid;
   place-items: center;
   height: 164px;
-  color: var(--face, #7c3aed);
+  color: var(--face, #b43dd0);
   background: var(--face-wash, #f5f3ff);
   border: 1.5px solid var(--face-line, #ddd6fe);
   border-radius: 14px;
@@ -346,9 +346,9 @@
   font-size: 16.5px;
   font-weight: 600;
   line-height: 1.5;
-  color: #334155;
+  color: #424242;
   text-align: center;
-  background: #f8fafc;
+  background: #f8f8f8;
   border: 1.5px solid #e8eef5;
   border-radius: 14px;
   animation: wb-act-in 220ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
@@ -402,7 +402,7 @@
   font-size: 13.5px;
   font-weight: 600;
   line-height: 1.4;
-  color: #475569;
+  color: #656565;
   text-align: left;
   background: #fff;
   border: 1.5px solid #dbe4ee;
@@ -428,8 +428,8 @@
 /* Picked and waiting for its other half. */
 .wb-pair.is-picked {
   color: #fff;
-  background: #7c3aed;
-  border-color: #7c3aed;
+  background: #b43dd0;
+  border-color: #b43dd0;
 }
 .wb-pair.is-matched {
   color: #047857;
@@ -457,7 +457,7 @@
    marks the word everywhere else in the round. */
 .wb-marked {
   font-weight: 800;
-  color: #7c3aed;
+  color: #b43dd0;
 }
 /* Once the drawn card is judged it carries its own green or red, and a purple
    word inside it belonged to neither. */

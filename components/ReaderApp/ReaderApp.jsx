@@ -5,6 +5,7 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { Flyout } from '@components/Flyout/Flyout'
+import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
 
 import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
@@ -27,17 +28,9 @@ import './ReaderApp.css'
  */
 
 // The reader app's accent. The dashboard is blue, not the teal the admin
-// surfaces use — see bs-product's microsite theme.
-export const READER_ACCENT = '#1A6DD5'
-
-export function BeanstackLogo() {
-  return (
-    <div className="wa-logo">
-      <img src="/bs-prototypes/bs.svg" alt="" className="wa-logo-mark" />
-      <span className="wa-logo-word">beanstack</span>
-    </div>
-  )
-}
+// surfaces use — see bs-product's microsite theme. A token rather than the
+// #1A6DD5 the four copies each carried, which was a near-miss of --c-blue.
+export const READER_ACCENT = 'var(--c-blue)'
 
 // ─── Top bar ────────────────────────────────────────────────────────────────
 
@@ -286,7 +279,7 @@ export function StreakBanner({ streak, onLog, message }) {
             </>
           ))}
       </div>
-      <Button variant="accent" accent="#DC2626" size="sm" onClick={onLog}>
+      <Button variant="accent" accent="var(--c-red)" size="sm" onClick={onLog}>
         {has ? 'Log Today' : 'View Streaks'}
       </Button>
     </div>

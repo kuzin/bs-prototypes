@@ -6,7 +6,7 @@ import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT, ChartLegend } from '@components/cha
 import { StatCard, ChartCard } from '@components/Cards/Cards'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 
-const SKILLS_COLOR = '#7C3AED'
+const SKILLS_COLOR = '#B43DD0'
 const EXPECTED_GROWTH = 65
 const SKILLS_ICON = SECTIONS.find((s) => s.key === 'skills')?.icon
 
@@ -57,8 +57,8 @@ export function SchoolLexile({ schoolId }) {
           unit="L"
           label="YTD Lexile growth"
           footer={lexile.aboveExpected ? 'Above expected +65L' : 'Below expected +65L'}
-          color={lexile.aboveExpected ? '#16A97A' : '#DC2626'}
-          footerColor={lexile.aboveExpected ? '#16A34A' : '#DC2626'}
+          color={lexile.aboveExpected ? '#0BA85F' : '#E85648'}
+          footerColor={lexile.aboveExpected ? '#16A34A' : '#E85648'}
         />
         <StatCard value={lexile.volume} label="Avg books / month" footer="School reading volume" />
         <StatCard
@@ -79,8 +79,8 @@ export function SchoolLexile({ schoolId }) {
             <ChartLegend
               items={[
                 { color: school.color, label: shortName },
-                { color: '#CBD5E1', label: 'Other schools' },
-                { color: '#D97706', label: 'Expected (+65L)', dashed: true },
+                { color: '#D0D0D0', label: 'Other schools' },
+                { color: '#AB720A', label: 'Expected (+65L)', dashed: true },
               ]}
             />
           }
@@ -92,7 +92,7 @@ export function SchoolLexile({ schoolId }) {
               margin={{ top: 16, right: 28, bottom: 50, left: 64 }}
               xScale={{ type: 'linear', min: 15, max: 50 }}
               yScale={{ type: 'linear', min: 0, max: 130 }}
-              colors={({ serieId }) => (serieId === 'This school' ? school.color : '#CBD5E1')}
+              colors={({ serieId }) => (serieId === 'This school' ? school.color : '#D0D0D0')}
               nodeSize={(d) => Math.sqrt(d.data.students / 5)}
               axisBottom={{
                 ...AXIS_BOTTOM,
@@ -115,16 +115,16 @@ export function SchoolLexile({ schoolId }) {
                 {
                   axis: 'y',
                   value: EXPECTED_GROWTH,
-                  lineStyle: { stroke: '#D97706', strokeDasharray: '4 3', strokeWidth: 1.5 },
+                  lineStyle: { stroke: '#AB720A', strokeDasharray: '4 3', strokeWidth: 1.5 },
                   legend: 'Expected (+65L)',
                   legendOrientation: 'horizontal',
                   legendPosition: 'top-right',
-                  textStyle: { fontSize: 13, fill: '#D97706', fontWeight: 600 },
+                  textStyle: { fontSize: 13, fill: '#AB720A', fontWeight: 600 },
                 },
               ]}
               tooltip={({ node }) => {
                 const isThis = node.data.id === schoolId
-                const accent = isThis ? school.color : '#475569'
+                const accent = isThis ? school.color : '#656565'
                 return (
                   <div className="sdb-tooltip" style={{ '--tip-accent': accent }}>
                     <div className="sdb-tooltip-header">{node.data.school}</div>
@@ -135,7 +135,7 @@ export function SchoolLexile({ schoolId }) {
                         <span className="sdb-tooltip-val">+{node.data.y}L</span>
                       </div>
                     </div>
-                    <div className="sdb-tooltip-series" style={{ '--series-color': '#94A3B8' }}>
+                    <div className="sdb-tooltip-series" style={{ '--series-color': '#ACACAC' }}>
                       <div className="sdb-tooltip-row">
                         <span className="sdb-tooltip-dot" />
                         <span className="sdb-tooltip-label">Books / mo</span>
@@ -162,7 +162,7 @@ export function SchoolLexile({ schoolId }) {
             <ChartLegend
               items={[
                 { color: school.color, label: 'Actual growth' },
-                { color: '#E2E8F0', label: 'Expected growth' },
+                { color: '#EAEAEA', label: 'Expected growth' },
               ]}
             />
           }
@@ -176,7 +176,7 @@ export function SchoolLexile({ schoolId }) {
             tooltipFormatter={(v) => `+${v}L`}
             xPadding={{ left: 12, right: 12 }}
             series={[
-              { key: 'expected', name: 'Expected', color: '#E2E8F0' },
+              { key: 'expected', name: 'Expected', color: '#EAEAEA' },
               { key: 'growth', name: 'Actual', color: school.color },
             ]}
           />

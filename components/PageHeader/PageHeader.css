@@ -45,15 +45,16 @@
   font-size: 30px;
   line-height: 1.25;
   font-weight: 800;
-  color: var(--c-text-real-dark);
+  color: var(--c-text-dark);
   margin: 0;
 }
 
-/* `.page-title-search` — the subtitle slot: 500 / $gray750. The app sets 22px;
-   20px sits better under our 30px title, so this is a deliberate 2px trim. */
+/* `.page-title-search` — the subtitle slot: 500 / $gray750. The app sets 22px,
+   which competes with the title rather than sitting under it; 18px is the
+   ladder's modal rung and reads as a subtitle at a glance. */
 .page-title-search {
   display: block;
-  font-size: 20px;
+  font-size: var(--text-modal);
   line-height: 1.25;
   font-weight: 500;
   color: var(--c-gray-750);

@@ -6,8 +6,8 @@
 .an-sis-badge {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-text-subtle);
-  background: var(--c-slate-50);
+  color: var(--c-gray-600);
+  background: var(--c-gray-0);
   border: 1px solid var(--c-border);
   border-radius: 6px;
   padding: 3px 8px;

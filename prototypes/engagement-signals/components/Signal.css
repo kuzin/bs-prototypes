@@ -54,6 +54,12 @@
 .es-group + .bp-statrow {
   border-top: 0;
 }
+/* A full-bleed band has to start at the card's edge. When the drivers open a
+   card with no heading above them, `.bp-statlist`'s own 14px top padding showed
+   as a white sliver over the band. */
+.bp-statlist:has(> .es-group:first-child) {
+  padding-top: 0;
+}
 
 /* ─── Driver row ────────────────────────────────────────────────────────── */
 /* The row itself is the profile's `.bp-statrow`; the only thing this adds is

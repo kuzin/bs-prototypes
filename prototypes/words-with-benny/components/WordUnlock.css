@@ -127,7 +127,7 @@
 
 .wb-card {
   padding: 26px 22px 24px;
-  color: #1e293b;
+  color: #2a2a2a;
   text-align: left;
   background: #fff;
   border-radius: 20px;
@@ -163,24 +163,24 @@
   font-weight: 900;
   line-height: 1.08;
   letter-spacing: -0.015em;
-  color: #0f172a;
+  color: #2a2a2a;
 }
 .wb-word-say {
   margin-top: 5px;
   font-size: 13.5px;
   font-weight: 700;
-  color: #7c3aed;
+  color: #b43dd0;
 }
 .wb-word-part {
   font-weight: 600;
-  color: #94a3b8;
+  color: #acacac;
 }
 .wb-word-meaning {
   margin-top: 10px;
   font-size: 16.5px;
   font-weight: 600;
   line-height: 1.45;
-  color: #334155;
+  color: #424242;
 }
 
 /* Benny's line tying the word back to the book — the whole premise of the
@@ -191,7 +191,7 @@
   align-items: flex-start;
   margin-top: 16px;
   padding: 12px 13px;
-  background: #f8fafc;
+  background: #f8f8f8;
   border: 1px solid #e8eef5;
   border-radius: 13px;
 }
@@ -204,7 +204,7 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 1.45;
-  color: #475569;
+  color: #656565;
 }
 
 /* The meter, under the card on the dark ground — the review deck's footer,
@@ -248,10 +248,10 @@
   font-size: 16px;
   font-weight: 800;
   line-height: 1.4;
-  color: #0f172a;
+  color: #2a2a2a;
 }
 .wb-check-prompt strong {
-  color: #7c3aed;
+  color: #b43dd0;
 }
 .wb-check-options {
   display: flex;
@@ -268,7 +268,7 @@
   font-size: 14.5px;
   font-weight: 600;
   line-height: 1.4;
-  color: #334155;
+  color: #424242;
   text-align: left;
   background: #fff;
   border: 1.5px solid #dbe4ee;
@@ -302,7 +302,7 @@
   width: 20px;
   height: 20px;
   margin-top: 1px;
-  border: 1.5px solid #cbd5e1;
+  border: 1.5px solid #d0d0d0;
   border-radius: 999px;
 }
 .wb-option.is-right .wb-option-mark {
@@ -332,10 +332,10 @@
   font-weight: 700;
   line-height: 1.45;
   color: #92400e;
-  background: #fef3c7;
+  background: #ffecc8;
 }
 .wb-nudge .benny-bubble::before {
-  border-right-color: #fef3c7;
+  border-right-color: #ffecc8;
 }
 
 .wb-card > .btn {
@@ -365,7 +365,7 @@
   padding: 0;
   font-size: 13px;
   font-weight: 800;
-  color: #7c3aed;
+  color: #b43dd0;
   background: #f3e8ff;
   border: 0;
   border-radius: 999px;
@@ -373,7 +373,7 @@
 .wb-pin-help:hover,
 .wb-pin-help:focus-visible {
   color: #fff;
-  background: #7c3aed;
+  background: #b43dd0;
 }
 .wb-pin-word {
   display: flex;
@@ -384,7 +384,7 @@
   font-size: 26px;
   font-weight: 900;
   letter-spacing: -0.015em;
-  color: #0f172a;
+  color: #2a2a2a;
 }
 .wb-pin-part {
   font-size: 12.5px;

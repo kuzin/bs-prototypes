@@ -49,6 +49,7 @@ export function RichText({
   onChange,
   placeholder = '',
   minHeight = 140,
+  size = 'md',
   className = '',
   tokens = [],
 }) {
@@ -110,7 +111,7 @@ export function RichText({
   }
 
   return (
-    <div className={`rtx${mode === 'html' ? ' rtx--html' : ''} ${className}`.trim()}>
+    <div className={`rtx rtx--${size}${mode === 'html' ? ' rtx--html' : ''} ${className}`.trim()}>
       <div className="rtx-toolbar">
         {mode === 'rich' &&
           TOOLS.map((t, i) =>
@@ -138,7 +139,7 @@ export function RichText({
             <input
               type="color"
               className="rtx-color-input"
-              defaultValue="#0f172a"
+              defaultValue="#2a2a2a"
               onInput={(e) => applyColor(e.target.value)}
             />
           </label>

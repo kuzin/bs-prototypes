@@ -16,8 +16,8 @@ export const READER = {
 export const OTHER_READERS = [
   { id: 'olivia', name: 'Olivia Martinez', initials: 'OM', color: '#F09A77', grade: '6th Grade' },
   { id: 'noah', name: 'Noah Martinez', initials: 'NM', color: '#7C5CFA', grade: '3rd Grade' },
-  { id: 'mia', name: 'Mia Chen', initials: 'MC', color: '#0DA7BC', grade: '6th Grade' },
-  { id: 'liam', name: 'Liam Park', initials: 'LP', color: '#16A97A', grade: '5th Grade' },
+  { id: 'mia', name: 'Mia Chen', initials: 'MC', color: '#0CA7BC', grade: '6th Grade' },
+  { id: 'liam', name: 'Liam Park', initials: 'LP', color: '#0BA85F', grade: '5th Grade' },
 ]
 
 // ─── Books ───────────────────────────────────────────────────────────────────
@@ -216,14 +216,14 @@ export const CHALLENGES = [
 ]
 
 export const TOP_SCHOOLS = [
-  { rank: 1, name: 'Magnolia Middle', value: 198, color: '#F59E0B' },
-  { rank: 2, name: 'Oak Elementary', value: 157, color: '#94A3B8' },
+  { rank: 1, name: 'Magnolia Middle', value: 198, color: '#FFBC42' },
+  { rank: 2, name: 'Oak Elementary', value: 157, color: '#ACACAC' },
   { rank: 3, name: 'Hickory Middle School', value: 104, color: '#C2884F' },
 ]
 
 export const TOP_GRADES = [
-  { rank: 1, name: '6th grade', value: 412, color: '#F59E0B' },
-  { rank: 2, name: '5th grade', value: 388, color: '#94A3B8' },
+  { rank: 1, name: '6th grade', value: 412, color: '#FFBC42' },
+  { rank: 2, name: '5th grade', value: 388, color: '#ACACAC' },
   { rank: 3, name: '7th grade', value: 271, color: '#C2884F' },
 ]
 

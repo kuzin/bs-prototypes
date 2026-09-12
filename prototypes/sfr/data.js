@@ -13,7 +13,7 @@ export const STUDENTS = [
     grade: '4th',
     class: 'Mrs. Johnson',
     initials: 'TW',
-    color: '#E8866A',
+    color: '#F26430',
   },
   {
     id: 'stu-2',
@@ -21,7 +21,7 @@ export const STUDENTS = [
     grade: '5th',
     class: 'Mr. Okafor',
     initials: 'MC',
-    color: '#0DA7BC',
+    color: '#0CA7BC',
   },
   {
     id: 'stu-3',
@@ -29,7 +29,7 @@ export const STUDENTS = [
     grade: '3rd',
     class: 'Mrs. Johnson',
     initials: 'MD',
-    color: '#7C3AED',
+    color: '#B43DD0',
   },
   {
     id: 'stu-4',
@@ -37,7 +37,7 @@ export const STUDENTS = [
     grade: '3rd',
     class: 'Mr. Kim',
     initials: 'SR',
-    color: '#16A97A',
+    color: '#0BA85F',
   },
   {
     id: 'stu-5',
@@ -45,7 +45,7 @@ export const STUDENTS = [
     grade: '5th',
     class: 'Mr. Okafor',
     initials: 'JB',
-    color: '#F59E0B',
+    color: '#FFBC42',
   },
   {
     id: 'stu-6',
@@ -61,7 +61,7 @@ export const STUDENTS = [
     grade: '5th',
     class: 'Mr. Kim',
     initials: 'LT',
-    color: '#64748B',
+    color: '#707070',
   },
   {
     id: 'stu-8',
@@ -69,7 +69,7 @@ export const STUDENTS = [
     grade: '4th',
     class: 'Mrs. Johnson',
     initials: 'NK',
-    color: '#1D4ED8',
+    color: '#196DD5',
   },
   {
     id: 'stu-9',
@@ -77,7 +77,7 @@ export const STUDENTS = [
     grade: '3rd',
     class: 'Mr. Okafor',
     initials: 'ZA',
-    color: '#D97706',
+    color: '#AB720A',
   },
   {
     id: 'stu-10',
@@ -93,7 +93,7 @@ const BOOKS = {
   charlottes_web: {
     title: "Charlotte's Web",
     author: 'E.B. White',
-    color: '#E8866A',
+    color: '#F26430',
     lexile: '680L',
     isbn: '978-0-06-440055-3',
     published: 1952,
@@ -105,7 +105,7 @@ const BOOKS = {
   wonder: {
     title: 'Wonder',
     author: 'R.J. Palacio',
-    color: '#7C3AED',
+    color: '#B43DD0',
     lexile: '790L',
     isbn: '978-0-375-86902-0',
     published: 2012,
@@ -117,7 +117,7 @@ const BOOKS = {
   holes: {
     title: 'Holes',
     author: 'Louis Sachar',
-    color: '#D97706',
+    color: '#AB720A',
     lexile: '660L',
     isbn: '978-0-440-41480-5',
     published: 1998,
@@ -129,7 +129,7 @@ const BOOKS = {
   the_giver: {
     title: 'The Giver',
     author: 'Lois Lowry',
-    color: '#1D4ED8',
+    color: '#196DD5',
     lexile: '760L',
     isbn: '978-0-544-33649-5',
     published: 1993,
@@ -141,7 +141,7 @@ const BOOKS = {
   hatchet: {
     title: 'Hatchet',
     author: 'Gary Paulsen',
-    color: '#16A97A',
+    color: '#0BA85F',
     lexile: '1020L',
     isbn: '978-1-4169-3647-7',
     published: 1987,
@@ -165,7 +165,7 @@ const BOOKS = {
   ivan: {
     title: 'The One and Only Ivan',
     author: 'Katherine Applegate',
-    color: '#0DA7BC',
+    color: '#0CA7BC',
     lexile: '570L',
     isbn: '978-0-06-199255-6',
     published: 2012,
@@ -177,7 +177,7 @@ const BOOKS = {
   wimpy_kid: {
     title: 'Diary of a Wimpy Kid',
     author: 'Jeff Kinney',
-    color: '#F59E0B',
+    color: '#FFBC42',
     lexile: '950L',
     isbn: '978-0-8109-9313-6',
     published: 2007,
@@ -811,7 +811,15 @@ const CONV_ZARA = [
 
 let _id = 1
 function sess(studentId, bookKey, overrides) {
-  return { id: `sess-${_id++}`, student: student(studentId), book: BOOKS[bookKey], ...overrides }
+  return {
+    id: `sess-${_id++}`,
+    student: student(studentId),
+    book: BOOKS[bookKey],
+    // A session that hasn't said otherwise is the kind its flags imply: an
+    // integrity check-in when it was flagged, a warm chat when it was rated.
+    kindId: overrides.kindId ?? (overrides.type === 'flagged' ? 'integrity' : 'engagement'),
+    ...overrides,
+  }
 }
 
 function notif(role, name, channel, at, status) {
@@ -825,6 +833,7 @@ function safetySess(studentId, bookKey, o) {
     id: `sess-${_id++}`,
     student: student(studentId),
     book: BOOKS[bookKey],
+    kindId: 'engagement',
     type: 'engagement',
     status: 'completed',
     challenge: 'Summer Reading',
@@ -839,7 +848,282 @@ function safetySess(studentId, bookKey, o) {
   }
 }
 
+// ─── Talk kinds ──────────────────────────────────────────────────────────────
+// What Benny was actually doing in the conversation. Engagement and integrity
+// talks ship today; **comprehension** is the new one — the talk that probes what
+// the reader took from the book rather than how they felt about it or whether
+// the log looks honest. Ported from the Book Talks: Comprehension prototype
+// (`btwb`), which re-exports these so there's one vocabulary.
+export const TALK_KINDS = {
+  engagement: {
+    id: 'engagement',
+    label: 'Engagement talk',
+    short: 'Engagement',
+    color: '#0D9488',
+    tint: '#EFFBF9',
+    icon: 'heart',
+    blurb: 'A warm chat about how the book landed — what they thought, how it made them feel.',
+    measures: 'Whether the student had a positive reading experience.',
+  },
+  comprehension: {
+    id: 'comprehension',
+    label: 'Comprehension talk',
+    short: 'Comprehension',
+    color: '#4F46E5',
+    tint: '#EEF2FF',
+    icon: 'bulb',
+    isNew: true,
+    blurb:
+      'A chat about what actually happened in the book — the characters, the events, the ideas behind them.',
+    measures: 'How well the student understood what they read.',
+  },
+  integrity: {
+    id: 'integrity',
+    label: 'Integrity talk',
+    short: 'Integrity',
+    color: '#B45309',
+    tint: '#FFFBEB',
+    icon: 'shield-check',
+    blurb:
+      'A light check-in on the reading itself. Benny never grades correctness — he only flags concerning patterns.',
+    measures: 'Whether the log looks like reading the student actually did.',
+  },
+}
+
+// ─── Reading Confidence ──────────────────────────────────────────────────────
+// Deliberately not another score: how confident Benny is that the reader
+// actually knew the book. Only a comprehension talk can report one — it's the
+// only talk that probes what they took from it.
+export const CONFIDENCE_BLURB =
+  'Benny’s confidence that the student demonstrated authentic knowledge of the book.'
+
+export const CONFIDENCE_META = {
+  high: {
+    label: 'High confidence',
+    color: '#0BA85F',
+    bg: '#F0FDF4',
+    border: '#BBF7D0',
+    icon: 'mood-happy',
+  },
+  moderate: {
+    label: 'Moderate confidence',
+    color: '#AB720A',
+    bg: '#FFFBEB',
+    border: '#FDE68A',
+    icon: 'mood-neutral',
+  },
+  low: {
+    label: 'Low confidence',
+    color: '#E85648',
+    bg: '#FEF2F2',
+    border: '#FECACA',
+    icon: 'mood-sad',
+  },
+}
+
+// A session states its own confidence; anything that isn't a comprehension talk
+// has none to state.
+export const sessionConfidence = (s) =>
+  s.kindId === 'comprehension' ? (s.confidence ?? 'high') : undefined
+
+export const talkKind = (s) => TALK_KINDS[s.kindId] ?? null
+
+// ─── Comprehension talks ─────────────────────────────────────────────────────
+// A comprehension talk asks what actually happened and why — the events, the
+// characters, the idea behind them — where an engagement talk asks how the book
+// landed. What Benny annotates is whether the answer shows knowledge of *this*
+// book, which is what the Reading Confidence is built from.
+const CONV_COMP_HIGH = [
+  {
+    role: 'benny',
+    text: 'Hi Maya! You just finished Wonder. Can you tell me what happens at the end, in your own words?',
+  },
+  {
+    role: 'student',
+    text: "At graduation Mr. Tushman gives Auggie the Henry Ward Beecher medal for being a quiet hero, and everyone stands up and claps for him. His mom whispers that he's a wonder. It's the first time the whole school sees him the way his family does.",
+  },
+  {
+    role: 'annotation',
+    sentiment: 'positive',
+    label: 'Accurate Plot Detail',
+    why: 'Maya names the Henry Ward Beecher medal, Mr. Tushman as the one who awards it, and her mother’s line at the end. These are specific to Wonder and appear in the closing chapters — not details that could be guessed from the cover or a summary.',
+  },
+  { role: 'benny', text: 'Why do you think the school reacted that way by the end?' },
+  {
+    role: 'student',
+    text: "Because they'd spent a whole year with him instead of just looking at him. Jack and Summer stuck with him, and after the nature retreat when the older kids went after him, everybody kind of picked a side. By graduation the side that picked him was bigger.",
+  },
+  {
+    role: 'annotation',
+    sentiment: 'positive',
+    label: 'Draws Connections',
+    why: 'She links the graduation reaction back to the nature-retreat incident and to Jack and Summer’s friendship — three separate parts of the book held together as cause and effect, which is knowledge of the whole story rather than of one scene.',
+  },
+  { role: 'benny', text: 'Is there an idea the book left you with?' },
+  {
+    role: 'student',
+    text: "That being kind isn't the same as being nice. Lots of people were nice to Auggie's face. Being kind meant Jack losing Julian as a friend over it.",
+  },
+  {
+    role: 'annotation',
+    sentiment: 'positive',
+    label: 'Accurate Key Idea',
+    why: 'The distinction she draws between being nice and being kind is the book’s own argument, and she grounds it in what it cost Jack. Framing an answer as the idea behind the events is the move a comprehension talk is looking for.',
+  },
+]
+
+const CONV_COMP_MODERATE = [
+  {
+    role: 'benny',
+    text: 'Hi Jaylen! You finished Holes. What happens to Stanley at the end?',
+  },
+  {
+    role: 'student',
+    text: 'He finds the treasure and gets out of the camp and everything works out for him.',
+  },
+  {
+    role: 'annotation',
+    sentiment: 'negative',
+    label: 'Lacking Detail',
+    why: 'The answer is true of the ending but contains nothing only a reader would know: no character names, no place names, and no account of how Stanley gets from the camp to the treasure.',
+  },
+  { role: 'benny', text: 'Who is with him when he finds it, and how did they get there?' },
+  {
+    role: 'student',
+    text: 'His friend from the camp. They went up the mountain because they had to, and then they came back and dug in the right spot.',
+  },
+  {
+    role: 'annotation',
+    sentiment: 'negative',
+    label: 'Lacking Detail',
+    why: 'Asked directly who was with him and how they got there, Jaylen answers “his friend from the camp” and “up the mountain.” Zero and God’s Thumb are named repeatedly in the last third of the book.',
+  },
+  { role: 'benny', text: 'Why was that the right spot?' },
+  {
+    role: 'student',
+    text: 'Because that\u2019s where the treasure was buried from before.',
+  },
+  {
+    role: 'annotation',
+    sentiment: 'negative',
+    label: 'Unsupported Inference',
+    why: '“That’s where the treasure was buried” restates the question. The book answers it through Kissin’ Kate Barlow’s story, which runs alongside Stanley’s throughout — a reader who followed it would have that to reach for.',
+  },
+]
+
+const CONV_COMP_LOW = [
+  {
+    role: 'benny',
+    text: "Hi Noah! You logged Charlotte's Web. Who are the main characters?",
+  },
+  { role: 'student', text: 'a girl and some animals' },
+  {
+    role: 'annotation',
+    sentiment: 'negative',
+    label: 'Inaccurate Key Idea',
+    why: '“A girl and some animals” fits a large share of children’s fiction. Charlotte’s Web’s central pair is a pig and a spider, and neither is named.',
+  },
+  { role: 'benny', text: 'What does Charlotte do to help Wilbur?' },
+  { role: 'student', text: 'she helps him' },
+  {
+    role: 'annotation',
+    sentiment: 'negative',
+    label: 'Minimal Engagement',
+    why: '“She helps him” repeats the verb in the question without adding anything. Charlotte’s help is the plot of the book — writing words in her web to save Wilbur from slaughter.',
+  },
+  { role: 'benny', text: 'Can you tell me one thing that happens in the story?' },
+  { role: 'student', text: 'idk stuff happens at the farm' },
+  {
+    role: 'annotation',
+    sentiment: 'negative',
+    label: 'Unable to Recall',
+    why: 'Asked for any one thing that happens, the answer names no event, character, or outcome. Across three questions nothing specific to Charlotte’s Web has appeared.',
+  },
+]
+
 export const SESSIONS = [
+  // ── Comprehension talks — the new kind. Only these report a Reading
+  //    Confidence: they're the talk that probes what the reader took from the
+  //    book rather than how they felt about it.
+  sess('stu-2', 'wonder', {
+    date: '2026-05-21',
+    kindId: 'comprehension',
+    type: 'engagement',
+    status: 'completed',
+    challenge: 'Genre Explorer',
+    engagementRating: 'green',
+    confidence: 'high',
+    minutesLogged: 42,
+    summary:
+      'Maya walked through the ending in her own words and reached past it for why Auggie’s year mattered — she knew this book.',
+    conversation: CONV_COMP_HIGH,
+    flags: [],
+    positiveFlags: [
+      {
+        id: 'cpf1',
+        type: 'references-details',
+        label: 'References details',
+        description: 'Named specific events and characters without prompting.',
+      },
+      {
+        id: 'cpf2',
+        type: 'answer-length',
+        label: 'In-depth response',
+        description: 'Answered in full sentences with supporting detail.',
+      },
+    ],
+  }),
+  sess('stu-5', 'holes', {
+    date: '2026-05-20',
+    kindId: 'comprehension',
+    type: 'engagement',
+    status: 'completed',
+    challenge: 'Chapter Book Challenge',
+    engagementRating: 'yellow',
+    confidence: 'moderate',
+    minutesLogged: 38,
+    summary:
+      'Jaylen had the shape of the plot but not the detail — he described what happens without naming who it happens to.',
+    conversation: CONV_COMP_MODERATE,
+    flags: [],
+    positiveFlags: [
+      {
+        id: 'cpf3',
+        type: 'positive-sentiment',
+        label: 'Positive sentiment',
+        description: 'Said he enjoyed the book.',
+      },
+    ],
+  }),
+  sess('stu-8', 'charlottes_web', {
+    date: '2026-05-18',
+    kindId: 'comprehension',
+    type: 'both',
+    status: 'completed',
+    challenge: 'Summer Reading',
+    engagementRating: 'red',
+    confidence: 'low',
+    minutesLogged: 55,
+    summary:
+      'Noah answered in a few words at a time and none of them were about this book — nothing here shows he read it.',
+    conversation: CONV_COMP_LOW,
+    flags: [
+      {
+        id: 'cnf1',
+        type: 'minimal',
+        label: 'Minimal engagement',
+        description: 'Answered in a few words at a time.',
+      },
+      {
+        id: 'cnf2',
+        type: 'no-recall',
+        label: 'Unable to recall',
+        description: "Couldn't describe events or characters in their own words.",
+      },
+    ],
+    positiveFlags: [],
+  }),
+
   // Flagged sessions
   sess('stu-1', 'charlottes_web', {
     date: '2026-05-20',

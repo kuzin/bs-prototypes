@@ -5,16 +5,12 @@ import {
   LEADERBOARDS,
   LINKS,
   QUESTIONS,
-  FLAGGED_SESSIONS,
-  TOP_BOOKS,
-  TOP_BADGES,
-  coverUrl,
+  SESSIONS_FOR_REVIEW,
 } from '../data'
 import { useState } from 'react'
-import Tippy from '@tippyjs/react'
-import 'tippy.js/dist/tippy.css'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import { Tabs } from '@components/Tabs/Tabs'
 
 // ─── Empty-state plumbing ────────────────────────────────────────────────
@@ -280,8 +276,11 @@ export function AdmDailyTracker({ settings = {}, role = 'teacher' }) {
               <th className="adm-drt-th adm-drt-th--student">Student</th>
               <th className="adm-drt-th adm-drt-th--goal">Goal</th>
               <th className="adm-drt-th adm-drt-th--center">Average</th>
-              {t.days.map((d) => (
-                <th key={d} className="adm-drt-th adm-drt-th--center">
+              {t.days.map((d, i) => (
+                <th
+                  key={d}
+                  className={`adm-drt-th adm-drt-th--center${i % 2 ? ' adm-drt-cell--band' : ''}`}
+                >
                   {d}
                 </th>
               ))}
@@ -292,7 +291,11 @@ export function AdmDailyTracker({ settings = {}, role = 'teacher' }) {
               <tr key={s.id} className="adm-drt-row">
                 <td className="adm-drt-td">
                   <div className="adm-drt-student">
-                    <span className="adm-drt-rank-num">{s.rank}.</span>
+                    <span
+                      className={`adm-drt-rank${s.rank <= 3 ? ` adm-drt-rank--m${s.rank}` : ''}`}
+                    >
+                      {s.rank}
+                    </span>
                     <span className="adm-drt-student-name">{s.name}</span>
                   </div>
                 </td>
@@ -312,7 +315,10 @@ export function AdmDailyTracker({ settings = {}, role = 'teacher' }) {
                   <span className={`adm-drt-pct adm-drt-pct--${s.ac}`}>{s.avg}%</span>
                 </td>
                 {s.days.map((d, i) => (
-                  <td key={i} className="adm-drt-td adm-drt-td--center">
+                  <td
+                    key={i}
+                    className={`adm-drt-td adm-drt-td--center${i % 2 ? ' adm-drt-cell--band' : ''}`}
+                  >
                     {d === null ? (
                       <span className="adm-drt-dash">–</span>
                     ) : d === true ? (
@@ -333,13 +339,16 @@ export function AdmDailyTracker({ settings = {}, role = 'teacher' }) {
             <tr className="adm-drt-avg-row">
               <td className="adm-drt-td">
                 <div className="adm-drt-student">
-                  <span>Average</span>
+                  <span>Class Average</span>
                 </div>
               </td>
               <td className="adm-drt-td adm-drt-td--goal" />
               <td className="adm-drt-td adm-drt-td--center">{t.classAverage.avg}%</td>
               {t.classAverage.days.map((v, i) => (
-                <td key={i} className="adm-drt-td adm-drt-td--center">
+                <td
+                  key={i}
+                  className={`adm-drt-td adm-drt-td--center${i % 2 ? ' adm-drt-cell--band' : ''}`}
+                >
                   {v === null ? '–' : v}
                 </td>
               ))}
@@ -564,14 +573,30 @@ export function AdmLeaderboardCombo({ settings = {}, role = 'teacher' }) {
 }
 const LB_COMBO_DEFAULTS = { entity: 'classes' }
 
-// ─── Flagged sessions (Reading Integrity Suite priority card) ─────────────
-const FlagIcon = () => <Icon name="flag" size={22} />
+// ─── Sessions for Review ──────────────────────────────────────────────────
+// The dashboard's window onto the review queue. Two tabs, because Benny reports
+// two things about a talk: what's worth celebrating and what's worth a look.
+// The row carries a count per sentiment rather than one glyph per flag — four
+// glyphs in a rail-width row is a puzzle, and the number is what you'd have
+// counted anyway.
+function FlagCountChip({ n, tone }) {
+  if (!n) return null
+  return (
+    <span className={`adm-sfr-chip adm-sfr-chip--${tone}`}>
+      <Icon name="flag-filled" size={14} />
+      {n}
+    </span>
+  )
+}
+
 export function AdmFlaggedSessions({ role = 'teacher' } = {}) {
+  const [tab, setTab] = useState('engagement')
+
   if (role === 'empty')
     return (
       <WidgetEmpty
-        title="Flagged Sessions"
-        action="Review All"
+        title="Sessions for Review"
+        action="View All"
         empty={{
           title: 'Nothing to review',
           description:
@@ -579,158 +604,46 @@ export function AdmFlaggedSessions({ role = 'teacher' } = {}) {
         }}
       />
     )
-  const f = FLAGGED_SESSIONS
-  const sessions = f.sessions || []
+
+  const f = SESSIONS_FOR_REVIEW
+  const rows = f[tab] ?? []
+
   return (
     <div className="adm-w">
       <div className="adm-w-head">
         <div className="adm-w-title">
-          Flagged Sessions
-          <span className="adm-w-meta">
-            {sessions.length} to review · {f.range}
-          </span>
+          Sessions for Review
+          <span className="adm-w-meta">{f.range}</span>
         </div>
-        <button className="adm-w-action">Review All</button>
+        <button className="adm-w-action">View All</button>
       </div>
-      <div className="adm-w-body adm-flagged">
-        <ul className="adm-flagged-list">
-          {sessions.map((s) => (
-            <li key={s.id} className="adm-flagged-row">
-              <div className="adm-flagged-info">
-                <div className="adm-flagged-reader">{s.reader}</div>
-                <div className="adm-flagged-book">{s.title}</div>
+      <div className="adm-w-body adm-sfr">
+        <div className="adm-sfr-tabs">
+          <Tabs
+            variant="pill"
+            block
+            active={tab}
+            onChange={setTab}
+            items={[
+              { id: 'engagement', label: 'Engagement' },
+              { id: 'flagged', label: 'Flagged' },
+            ]}
+          />
+        </div>
+        <ul className="adm-sfr-list">
+          {rows.map((s) => (
+            <li key={s.id} className="adm-sfr-row">
+              <div className="adm-sfr-info">
+                <div className="adm-sfr-reader">{s.reader}</div>
+                <div className="adm-sfr-book">{s.title}</div>
               </div>
-              <span className="adm-flagged-flags">
-                {s.flags.map((fl, i) => (
-                  <Tippy key={i} content={fl.label}>
-                    <span className={`adm-flag adm-flag--${fl.tone}`}>
-                      <FlagIcon />
-                    </span>
-                  </Tippy>
-                ))}
+              <span className="adm-sfr-chips">
+                <FlagCountChip n={s.pos} tone="pos" />
+                <FlagCountChip n={s.neg} tone="neg" />
               </span>
             </li>
           ))}
         </ul>
-      </div>
-    </div>
-  )
-}
-
-// ─── Top Books + Top Badges (visual, Insights-style) ──────────────
-const TB_RANGE_META = { week: 'This Week', month: 'This Month', year: 'This Year' }
-const TB_RANGE_MULT = { week: 1, month: 4, year: 48 }
-const TB_DEFAULTS = { range: 'week', limit: 5 }
-const TB_FIELDS = [
-  {
-    key: 'range',
-    label: 'Time range',
-    type: 'select',
-    options: [
-      { value: 'week', label: 'Weekly' },
-      { value: 'month', label: 'Monthly' },
-      { value: 'year', label: 'Yearly' },
-    ],
-  },
-  { key: 'limit', label: 'Show top', type: 'range', min: 5, max: 15, step: 1 },
-]
-const BadgeStar = () => <Icon name="star-filled" size={26} />
-
-// Real Open Library cover by ISBN; on load failure (offline, missing edition)
-// fall back to a colored block with the title overlaid.
-function BookCover({ book, rank }) {
-  const [failed, setFailed] = useState(false)
-  const showFallback = failed || !book.isbn
-  return (
-    <div className="adm-book-cover" style={showFallback ? { background: book.color } : undefined}>
-      <span className="adm-book-rank">{rank}</span>
-      {showFallback ? (
-        <span className="adm-book-fallback">{book.name}</span>
-      ) : (
-        <img src={coverUrl(book.isbn, 'M')} alt="" loading="lazy" onError={() => setFailed(true)} />
-      )}
-    </div>
-  )
-}
-
-export function AdmTopBooks({ settings = {}, role = 'teacher' }) {
-  if (role === 'empty')
-    return (
-      <WidgetEmpty
-        title="Top Books"
-        action="View Report"
-        empty={{
-          title: 'No books logged yet',
-          description: 'As your readers log titles, the most-read books will rank here.',
-        }}
-      />
-    )
-  const range = settings.range || 'week'
-  const mult = TB_RANGE_MULT[range] || 1
-  const limit = Number(settings.limit) || 5
-  return (
-    <div className="adm-w">
-      <div className="adm-w-head">
-        <div className="adm-w-title">
-          Top Books
-          <span className="adm-w-meta">{TB_RANGE_META[range]}</span>
-        </div>
-        <button className="adm-w-action">View Report</button>
-      </div>
-      <div className="adm-w-body adm-shelf">
-        {TOP_BOOKS.slice(0, limit).map((b, i) => (
-          <Tippy key={b.id} content={b.name}>
-            <div className="adm-shelf-item">
-              <BookCover book={b} rank={i + 1} />
-              <div className="adm-shelf-meta">
-                {Math.round(b.count * mult).toLocaleString()} reads
-              </div>
-            </div>
-          </Tippy>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-export function AdmTopBadges({ settings = {}, role = 'teacher' }) {
-  if (role === 'empty')
-    return (
-      <WidgetEmpty
-        title="Top Badges"
-        action="View Report"
-        empty={{
-          title: 'No badges earned yet',
-          description:
-            'Once students hit reading milestones, the badges they earn most will land here.',
-        }}
-      />
-    )
-  const range = settings.range || 'week'
-  const mult = TB_RANGE_MULT[range] || 1
-  const limit = Number(settings.limit) || 5
-  return (
-    <div className="adm-w">
-      <div className="adm-w-head">
-        <div className="adm-w-title">
-          Top Badges
-          <span className="adm-w-meta">{TB_RANGE_META[range]}</span>
-        </div>
-        <button className="adm-w-action">View Report</button>
-      </div>
-      <div className="adm-w-body adm-badges">
-        {TOP_BADGES.slice(0, limit).map((b) => (
-          <Tippy key={b.id} content={b.name}>
-            <div className="adm-badge-item">
-              <span className={`adm-badge-medal adm-badge-medal--${b.color}`}>
-                <BadgeStar />
-              </span>
-              <div className="adm-shelf-meta">
-                {Math.round(b.count * mult).toLocaleString()} earned
-              </div>
-            </div>
-          </Tippy>
-        ))}
       </div>
     </div>
   )
@@ -772,7 +685,7 @@ export function AdmQuickLinks({ settings = {} }) {
             </a>
           ))}
           {visible.length === 0 && (
-            <div style={{ padding: 16, color: '#94A3B8', fontSize: 13 }}>
+            <div style={{ padding: 16, color: '#ACACAC', fontSize: 13 }}>
               Pick at least one link in widget settings.
             </div>
           )}
@@ -793,15 +706,18 @@ const QUICK_LINKS_FIELDS = [
 ]
 
 // ─── Quick questions ──────────────────────────────────────────────────
+// The tiles cycle four hues so four near-identical rows stay scannable.
+const Q_HUES = ['green', 'salmon', 'yellow', 'blue']
+
 const Q_ICONS = {
-  clock: <Icon name="clock" size={18} />,
-  calendar: <Icon name="calendar" size={18} />,
-  check: <Icon name="circle-check" size={18} />,
-  target: <Icon name="target" size={18} />,
-  book: <Icon name="book-2" size={18} />,
-  warning: <Icon name="alert-triangle" size={18} />,
-  trending: <Icon name="trending-up" size={18} />,
-  people: <Icon name="users" size={18} />,
+  clock: <PlumpyIcon name="clock" size={22} />,
+  calendar: <PlumpyIcon name="calendar" size={22} />,
+  check: <PlumpyIcon name="log" size={22} />,
+  target: <PlumpyIcon name="challenges" size={22} />,
+  book: <PlumpyIcon name="book" size={22} />,
+  warning: <PlumpyIcon name="alert" size={22} />,
+  trending: <PlumpyIcon name="insights" size={22} />,
+  people: <PlumpyIcon name="people" size={22} />,
 }
 
 export function AdmQuestions({ settings = {}, role = 'teacher' }) {
@@ -841,17 +757,20 @@ export function AdmQuestions({ settings = {}, role = 'teacher' }) {
         </div>
         <button className="adm-w-action">More Questions</button>
       </div>
-      <div className="adm-w-body">
+      <div className="adm-w-body adm-w-body--flush">
         <div className="adm-questions">
-          {list.map((q) => (
-            <button key={q.id} className="adm-question">
+          {list.map((q, i) => (
+            <button
+              key={q.id}
+              className={`adm-question adm-question--${Q_HUES[i % Q_HUES.length]}`}
+            >
               <span className="adm-question-ico">{Q_ICONS[q.icon] || Q_ICONS.target}</span>
               <span className="adm-question-text">{q.text}</span>
               <span className="adm-question-arrow">›</span>
             </button>
           ))}
           {list.length === 0 && (
-            <div style={{ padding: 16, color: '#94A3B8', fontSize: 13 }}>
+            <div style={{ padding: 16, color: '#ACACAC', fontSize: 13 }}>
               Pick at least one question in widget settings.
             </div>
           )}
@@ -888,8 +807,8 @@ export const WIDGET_CATALOG = {
     settingsFields: STAT_FIELDS,
   },
   'flagged-sessions': {
-    name: 'Flagged Sessions',
-    desc: 'Reading sessions auto-flagged for review this week',
+    name: 'Sessions for Review',
+    desc: 'Book talks worth celebrating, and the ones worth a closer look',
     min: { w: 1, h: 4 },
     component: AdmFlaggedSessions,
     scrollable: true,
@@ -971,21 +890,5 @@ export const WIDGET_CATALOG = {
     defaults: QUESTIONS_DEFAULTS,
     settingsFields: QUESTIONS_FIELDS,
     scrollable: true,
-  },
-  'top-badges': {
-    name: 'Top Badges',
-    desc: 'Badges earned most this week',
-    min: { w: 1, h: 6 },
-    component: AdmTopBadges,
-    defaults: TB_DEFAULTS,
-    settingsFields: TB_FIELDS,
-  },
-  'top-books': {
-    name: 'Top Books',
-    desc: 'Most-read titles this week',
-    min: { w: 1, h: 6 },
-    component: AdmTopBooks,
-    defaults: TB_DEFAULTS,
-    settingsFields: TB_FIELDS,
   },
 }

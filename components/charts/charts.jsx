@@ -6,13 +6,13 @@ export const NIVO_THEME = {
   axis: {
     ticks: {
       line: { stroke: 'transparent' },
-      text: { fontSize: 13, fill: '#64748B', fontFamily: 'inherit' },
+      text: { fontSize: 13, fill: '#707070', fontFamily: 'inherit' },
     },
     legend: {
       text: {
         fontSize: 11,
         fontWeight: 700,
-        fill: '#64748B',
+        fill: '#707070',
         fontFamily: 'inherit',
         letterSpacing: '0.06em',
         textTransform: 'uppercase',
@@ -121,7 +121,7 @@ export function GradeTooltip({ data, accent }) {
           <span className="sdb-tooltip-val">+{data.growth}L</span>
         </div>
       </div>
-      <div className="sdb-tooltip-series" style={{ '--series-color': '#CBD5E1' }}>
+      <div className="sdb-tooltip-series" style={{ '--series-color': '#D0D0D0' }}>
         <div className="sdb-tooltip-row">
           <span className="sdb-tooltip-dot" />
           <span className="sdb-tooltip-label">Expected</span>
@@ -130,7 +130,7 @@ export function GradeTooltip({ data, accent }) {
       </div>
       <div
         className={`sdb-tooltip-delta sdb-tooltip-delta--${cls}`}
-        style={{ marginLeft: 0, marginTop: 8, paddingTop: 8, borderTop: '1px solid #F1F5F9' }}
+        style={{ marginLeft: 0, marginTop: 8, paddingTop: 8, borderTop: '1px solid #F5F5F5' }}
       >
         <span className="sdb-tooltip-arrow">{arrow}</span>
         <span>

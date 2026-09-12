@@ -13,8 +13,8 @@ import {
 import { StatCard, ChartCard } from '@components/Cards/Cards'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 
-const COMPLETION_COLOR = '#1D4ED8'
-const FLAG_COLOR = '#E8866A'
+const COMPLETION_COLOR = '#196DD5'
+const FLAG_COLOR = '#F26430'
 const INT_ICON = SECTIONS.find((s) => s.key === 'integrity')?.icon
 
 export function SchoolIntegrity({ schoolId }) {
@@ -47,7 +47,7 @@ export function SchoolIntegrity({ schoolId }) {
           label="Book Talk completion"
           footer={`${stats.trend > 0 ? '↑' : '↓'}${Math.abs(stats.trend)}pp vs last month`}
           color={COMPLETION_COLOR}
-          footerColor={stats.trend > 0 ? '#16A34A' : '#DC2626'}
+          footerColor={stats.trend > 0 ? '#16A34A' : '#E85648'}
         />
         <StatCard
           value={stats.flagRate}
@@ -55,7 +55,7 @@ export function SchoolIntegrity({ schoolId }) {
           label="Flag rate"
           footer={`${latest.flagRate - trend[0].flagRate > 0 ? '↑' : '↓'}${Math.abs(latest.flagRate - trend[0].flagRate)}pp since Sep`}
           color={FLAG_COLOR}
-          footerColor={latest.flagRate - trend[0].flagRate <= 0 ? '#16A34A' : '#DC2626'}
+          footerColor={latest.flagRate - trend[0].flagRate <= 0 ? '#16A34A' : '#E85648'}
         />
         <StatCard
           value={stats.totalTalks}
@@ -143,8 +143,8 @@ export function SchoolIntegrity({ schoolId }) {
               {
                 key: 'completionRate',
                 name: 'Completion rate',
-                color: '#CBD5E1',
-                colorFn: (d) => (d.isThis ? school.color : '#CBD5E1'),
+                color: '#D0D0D0',
+                colorFn: (d) => (d.isThis ? school.color : '#D0D0D0'),
               },
             ]}
           />

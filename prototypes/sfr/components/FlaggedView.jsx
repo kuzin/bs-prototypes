@@ -1,42 +1,32 @@
 import { useState, useEffect } from 'react'
-import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
-import { Select } from '@components/Form/Form'
 import { SessionsTable } from './SessionsTable'
 import { ReaderGroupedView } from './ReaderGroupedView'
-import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
-import { Icon } from '@components/Icon/Icon'
-import '@components/FilterBar/FilterBar.css'
-import '@components/Form/Form.css'
+import { SessionsFilters } from './SessionsFilters'
 import './ListView.css'
 
+// Flagged Sessions — the shipped tab. Its filter set is
+// `FlaggedEntriesFilters` with `kind: 'logged_book_analysis'`: a Book Talks
+// filter, the negative flags, classes, grades, and List by.
 export function FlaggedView({
   sessions,
+  search = '',
   onSelectSession,
   onApproveRequest,
   onViewProfile,
-  groupBy,
+  listBy = 'date',
+  onListBy,
   defaultFilters = {},
 }) {
-  const [search, setSearch] = useState('')
+  const [bookTalks, setBookTalks] = useState('all')
   const [grade, setGrade] = useState(defaultFilters.grade ?? 'all')
   const [classFilter, setClassFilter] = useState(defaultFilters.classFilter ?? 'all')
   const [flagType, setFlagType] = useState(defaultFilters.flagType ?? 'all')
-  const [status, setStatus] = useState(defaultFilters.status ?? 'all')
-  const [challenge, setChallenge] = useState(defaultFilters.challenge ?? 'all')
 
   useEffect(() => {
     setGrade(defaultFilters.grade ?? 'all')
     setClassFilter(defaultFilters.classFilter ?? 'all')
     setFlagType(defaultFilters.flagType ?? 'all')
-    setStatus(defaultFilters.status ?? 'all')
-    setChallenge(defaultFilters.challenge ?? 'all')
-  }, [
-    defaultFilters.grade,
-    defaultFilters.classFilter,
-    defaultFilters.flagType,
-    defaultFilters.status,
-    defaultFilters.challenge,
-  ])
+  }, [defaultFilters.grade, defaultFilters.classFilter, defaultFilters.flagType])
 
   const flagged = sessions.filter(
     (s) => (s.type === 'flagged' || s.type === 'both') && (s.flags?.length ?? 0) > 0,
@@ -46,13 +36,15 @@ export function FlaggedView({
     const matchGrade = grade === 'all' || s.student.grade === grade
     const matchClass = classFilter === 'all' || s.student.class === classFilter
     const matchFlagType = flagType === 'all' || s.flags?.some((f) => f.type === flagType)
-    const matchStatus = status === 'all' || s.status === status
-    const matchChallenge = challenge === 'all' || s.challenge === challenge
-    const matchSearch =
-      !search ||
-      s.student.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.book.title.toLowerCase().includes(search.toLowerCase())
-    return matchGrade && matchClass && matchFlagType && matchStatus && matchChallenge && matchSearch
+    // "All Book Talks" / "No Book Talks": whether the flags came out of a talk
+    // with Benny or out of the log itself.
+    const matchBookTalks =
+      bookTalks === 'all' ||
+      (bookTalks === 'with' ? s.conversation != null : s.conversation == null)
+    // The page's one search, matched the way the app matches it — on the
+    // student's name.
+    const matchSearch = !search || s.student.name.toLowerCase().includes(search.toLowerCase())
+    return matchGrade && matchClass && matchFlagType && matchBookTalks && matchSearch
   })
 
   const FLAG_TYPE_LABELS = {
@@ -63,8 +55,14 @@ export function FlaggedView({
     'quit-early': 'Did Not Complete',
   }
 
+  function clearAll() {
+    setBookTalks('all')
+    setGrade('all')
+    setClassFilter('all')
+    setFlagType('all')
+  }
+
   const activeFilters = [
-    ...(search ? [{ key: 'search', label: `"${search}"`, onClear: () => setSearch('') }] : []),
     ...(grade !== 'all'
       ? [{ key: 'grade', label: `Grade: ${grade}`, onClear: () => setGrade('all') }]
       : []),
@@ -80,108 +78,68 @@ export function FlaggedView({
           },
         ]
       : []),
-    ...(status !== 'all'
-      ? [
-          {
-            key: 'status',
-            label: status === 'completed' ? 'Finished' : 'Unfinished',
-            onClear: () => setStatus('all'),
-          },
-        ]
-      : []),
-    ...(challenge !== 'all'
-      ? [{ key: 'challenge', label: `Challenge: ${challenge}`, onClear: () => setChallenge('all') }]
-      : []),
   ]
 
   return (
     <div className="lv-shell">
-      <div className="lv-toolbar">
-        <div className="lv-count">
-          {flagged.length} Flagged {flagged.length === 1 ? 'Session' : 'Sessions'}
-        </div>
-        <div className="lv-search-wrap">
-          <Icon name="search" size={14} className="lv-search-icon" />
-          <input
-            className="lv-search"
-            type="search"
-            placeholder="Search student or book…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className="lv-filters">
-        <FilterBar>
-          <FilterItem label="Flag Type">
-            <Select value={flagType} onChange={(e) => setFlagType(e.target.value)}>
-              <option value="all">All flag types</option>
-              <option value="copy-paste">Copied Response</option>
-              <option value="no-recall">Unable to Recall</option>
-              <option value="minimal">Minimal Engagement</option>
-              <option value="unintelligible">Unintelligible</option>
-              <option value="quit-early">Did Not Complete</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Status">
-            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="all">All statuses</option>
-              <option value="completed">Finished</option>
-              <option value="unfinished">Unfinished</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Grade">
-            <Select value={grade} onChange={(e) => setGrade(e.target.value)}>
-              <option value="all">All grades</option>
-              <option value="3rd">3rd grade</option>
-              <option value="4th">4th grade</option>
-              <option value="5th">5th grade</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Class">
-            <Select value={classFilter} onChange={(e) => setClassFilter(e.target.value)}>
-              <option value="all">All classes</option>
-              <option value="Mrs. Johnson">Mrs. Johnson</option>
-              <option value="Mr. Okafor">Mr. Okafor</option>
-              <option value="Mr. Kim">Mr. Kim</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Challenge">
-            <Select value={challenge} onChange={(e) => setChallenge(e.target.value)}>
-              <option value="all">All challenges</option>
-              <option value="Genre Explorer">Genre Explorer</option>
-              <option value="Chapter Book Challenge">Chapter Book Challenge</option>
-              <option value="Summer Reading">Summer Reading</option>
-            </Select>
-          </FilterItem>
-        </FilterBar>
-        <ActiveFilters
-          filters={activeFilters}
-          onClearAll={() => {
-            setSearch('')
-            setGrade('all')
-            setClassFilter('all')
-            setFlagType('all')
-            setStatus('all')
-            setChallenge('all')
-          }}
-        />
-      </div>
-      {groupBy === 'reader' ? (
+      <SessionsFilters
+        activeFilters={activeFilters}
+        onClearAll={clearAll}
+        listBy={listBy}
+        onListBy={onListBy}
+        filters={[
+          {
+            key: 'bookTalks',
+            label: 'Book Talks',
+            value: bookTalks,
+            onChange: setBookTalks,
+            options: [
+              ['all', 'All'],
+              ['with', 'All Book Talks'],
+              ['without', 'No Book Talks'],
+            ],
+          },
+          {
+            key: 'flags',
+            label: 'Flags',
+            value: flagType,
+            onChange: setFlagType,
+            options: [['all', 'All Flags'], ...Object.entries(FLAG_TYPE_LABELS)],
+          },
+          {
+            key: 'class',
+            label: 'Classes',
+            value: classFilter,
+            onChange: setClassFilter,
+            options: [
+              ['all', 'All Classes'],
+              ['Mrs. Johnson', 'Mrs. Johnson'],
+              ['Mr. Okafor', 'Mr. Okafor'],
+              ['Mr. Kim', 'Mr. Kim'],
+            ],
+          },
+          {
+            key: 'grade',
+            label: 'Grades',
+            value: grade,
+            onChange: setGrade,
+            options: [
+              ['all', 'All Grades'],
+              ['3rd', '3rd'],
+              ['4th', '4th'],
+              ['5th', '5th'],
+            ],
+          },
+        ]}
+      />
+      {listBy === 'reader' ? (
         <ReaderGroupedView
           sessions={filtered}
+          countLabel="Flagged Entries"
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
-          showFlagIcons
-          onClearFilters={() => {
-            setSearch('')
-            setGrade('all')
-            setClassFilter('all')
-            setFlagType('all')
-            setStatus('all')
-            setChallenge('all')
-          }}
+          onClearFilters={clearAll}
         />
       ) : (
         <SessionsTable
@@ -189,15 +147,13 @@ export function FlaggedView({
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
+          dateLabel="Flagged On"
+          showUnitColumn
+          showTypeColumn={false}
+          showEngagementColumn={false}
+          showPosFlags={false}
           showFlagIcons
-          onClearFilters={() => {
-            setSearch('')
-            setGrade('all')
-            setClassFilter('all')
-            setFlagType('all')
-            setStatus('all')
-            setChallenge('all')
-          }}
+          onClearFilters={clearAll}
         />
       )}
     </div>

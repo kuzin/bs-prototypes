@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Button } from '@components/Button/Button'
-import { Toggle } from '@components/Toggle/Toggle'
+import { Toggle, ToggleGroup, ToggleGroupItem } from '@components/Toggle/Toggle'
 import {
   Checkbox,
   CheckboxGroup,
@@ -27,14 +27,19 @@ import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
 import { Knobs, Variant } from './_shared'
 
 function ColorInputKnobs() {
-  const [value, setValue] = useState('#1D4ED8')
+  const [value, setValue] = useState('#196DD5')
   const [size, setSize] = useState('md')
   const [label] = useState('Accent color')
   const [showLabel, setShowLabel] = useState(true)
   const [disabled, setDisabled] = useState(false)
+  const [chip, setChip] = useState(false)
+  const [dot, setDot] = useState('#0CA7BC')
   return (
     <>
       <Knobs>
+        <Field label="chip">
+          <Toggle checked={chip} onChange={setChip} />
+        </Field>
         <Field label="size">
           <Select value={size} onChange={(e) => setSize(e.target.value)}>
             <option>sm</option>
@@ -54,10 +59,34 @@ function ColorInputKnobs() {
           value={value}
           onChange={setValue}
           size={size}
+          chip={chip}
           disabled={disabled}
-          label={showLabel ? label : undefined}
+          label={chip ? undefined : showLabel ? label : undefined}
         />
       </div>
+      <Variant label="chip — the swatch on its own, at all three rungs">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          <ColorInput chip size="sm" value={dot} onChange={setDot} />
+          <ColorInput chip size="md" value={dot} onChange={setDot} />
+          <ColorInput chip size="lg" value={dot} onChange={setDot} />
+        </div>
+      </Variant>
+      <Variant label="chip in a row of controls — what the knob rails on this site use">
+        <div style={{ display: 'flex', alignItems: 'flex-end', gap: 14, flexWrap: 'wrap' }}>
+          <Field label="Accent">
+            <ColorInput chip size="sm" value={dot} onChange={setDot} />
+          </Field>
+          <Field label="Label">
+            <Input size="sm" value="Top readers" readOnly />
+          </Field>
+          <Field label="Scale">
+            <Select size="sm" defaultValue="linear">
+              <option value="linear">Linear</option>
+              <option value="log">Log</option>
+            </Select>
+          </Field>
+        </div>
+      </Variant>
     </>
   )
 }
@@ -109,37 +138,10 @@ function FileInputKnobs() {
   )
 }
 
-function DateInputKnobs() {
-  const [value, setValue] = useState(null)
-  const [size, setSize] = useState('md')
-  const [showLabel, setShowLabel] = useState(true)
-  return (
-    <>
-      <Knobs>
-        <Field label="size">
-          <Select value={size} onChange={(e) => setSize(e.target.value)}>
-            <option>sm</option>
-            <option>md</option>
-            <option>lg</option>
-          </Select>
-        </Field>
-        <Field label="label">
-          <Toggle checked={showLabel} onChange={setShowLabel} />
-        </Field>
-      </Knobs>
-      <div className="pt-variant-frame">
-        <DatePicker
-          value={value}
-          onChange={setValue}
-          size={size}
-          label={showLabel ? 'Deadline' : undefined}
-          placeholder="Pick a date"
-        />
-      </div>
-    </>
-  )
-}
-
+// Both picker pages used to render a thin knobs block that only exercised size
+// and label, while the fuller showcase below it — the one matching what the
+// page documents — was defined and never mounted. These are that showcase, plus
+// the native `DateInput` / `TimeInput` the descriptions promise.
 function DatePickerKnobs() {
   const [date, setDate] = useState(null)
   const [size, setSize] = useState('md')
@@ -160,111 +162,66 @@ function DatePickerKnobs() {
         <Field label="clearable">
           <Toggle checked={clearable} onChange={setClear} />
         </Field>
-        <Field label="error">
-          <Toggle checked={hasError} onChange={setErr} />
-        </Field>
         <Field label="disabled">
           <Toggle checked={disabled} onChange={setDis} />
+        </Field>
+        <Field label="error">
+          <Toggle checked={hasError} onChange={setErr} />
         </Field>
         <Field label="label">
           <Toggle checked={showLabel} onChange={setLbl} />
         </Field>
       </Knobs>
-      <div
-        className="pt-variant-frame"
-        style={{ display: 'flex', flexDirection: 'column', gap: 24 }}
-      >
-        <div>
-          <span
-            style={{
-              fontSize: 12,
-              color: '#94A3B8',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            Default
-          </span>
-          <div style={{ marginTop: 8 }}>
-            <Field error={hasError ? 'Please select a date' : undefined}>
-              <DatePicker
-                value={date}
-                onChange={setDate}
-                size={size}
-                disabled={disabled}
-                clearable={clearable}
-              />
-            </Field>
-          </div>
-        </div>
-        <div>
-          <span
-            style={{
-              fontSize: 12,
-              color: '#94A3B8',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            With label
-          </span>
-          <div style={{ marginTop: 8 }}>
+      <Variant label="default">
+        <Field error={hasError ? 'Please select a date' : undefined}>
+          <DatePicker
+            value={date}
+            onChange={setDate}
+            size={size}
+            disabled={disabled}
+            clearable={clearable}
+            label={showLabel ? 'Due date' : undefined}
+          />
+        </Field>
+      </Variant>
+      <Variant label="in a field row">
+        <div className="pt-form-row">
+          <Field label="Start date" error={hasError ? 'Required' : undefined}>
             <DatePicker
               value={date}
               onChange={setDate}
               size={size}
               disabled={disabled}
               clearable={clearable}
-              label={showLabel ? 'Due date' : undefined}
             />
-          </div>
+          </Field>
+          <Field label="End date">
+            <DatePicker
+              value={null}
+              onChange={() => {}}
+              size={size}
+              disabled={disabled}
+              clearable={clearable}
+              placeholder="Pick an end date"
+            />
+          </Field>
         </div>
-        <div>
-          <span
-            style={{
-              fontSize: 12,
-              color: '#94A3B8',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            In a field row
-          </span>
-          <div className="pt-form-row" style={{ marginTop: 8 }}>
-            <Field label="Start date" error={hasError ? 'Required' : undefined}>
-              <DatePicker
-                value={date}
-                onChange={setDate}
-                size={size}
-                disabled={disabled}
-                clearable={clearable}
-              />
-            </Field>
-            <Field label="End date">
-              <DatePicker
-                value={null}
-                onChange={() => {}}
-                size={size}
-                disabled={disabled}
-                clearable={clearable}
-                placeholder="Pick an end date"
-              />
-            </Field>
-          </div>
-        </div>
-      </div>
+      </Variant>
+      <Variant label="DateInput — the native field, when a popover would be overkill">
+        <DateInput label="Start date" size={size} disabled={disabled} />
+      </Variant>
     </>
   )
 }
 
-function TimeInputKnobs() {
-  const [value, setValue] = useState(null)
+function TimePickerKnobs() {
+  const [time, setTime] = useState(null)
   const [size, setSize] = useState('md')
-  const [step, setStep] = useState(30)
-  const [showLabel, setShowLabel] = useState(true)
+  const [step, setStep] = useState(15)
+  const [disabled, setDis] = useState(false)
+  const [showLabel, setLbl] = useState(true)
+  const [hasError, setErr] = useState(false)
+  const [clearable, setClear] = useState(true)
   return (
     <>
       <Knobs>
@@ -282,32 +239,66 @@ function TimeInputKnobs() {
             <option value={60}>60 min</option>
           </Select>
         </Field>
+        <Field label="clearable">
+          <Toggle checked={clearable} onChange={setClear} />
+        </Field>
+        <Field label="disabled">
+          <Toggle checked={disabled} onChange={setDis} />
+        </Field>
+        <Field label="error">
+          <Toggle checked={hasError} onChange={setErr} />
+        </Field>
         <Field label="label">
-          <Toggle checked={showLabel} onChange={setShowLabel} />
+          <Toggle checked={showLabel} onChange={setLbl} />
         </Field>
       </Knobs>
-      <div className="pt-variant-frame">
-        <TimePicker
-          value={value}
-          onChange={setValue}
-          size={size}
-          step={step}
-          label={showLabel ? 'Start time' : undefined}
-          placeholder="Pick a time"
-        />
-      </div>
+      <Variant label="default">
+        <Field error={hasError ? 'Please select a time' : undefined}>
+          <TimePicker
+            value={time}
+            onChange={setTime}
+            size={size}
+            step={step}
+            disabled={disabled}
+            clearable={clearable}
+            label={showLabel ? 'Start time' : undefined}
+          />
+        </Field>
+      </Variant>
+      <Variant label="date + time together">
+        <div className="pt-form-row">
+          <Field label="Date">
+            <DatePicker
+              value={null}
+              onChange={() => {}}
+              size={size}
+              disabled={disabled}
+              placeholder="Pick a date"
+            />
+          </Field>
+          <Field label="Time" error={hasError ? 'Required' : undefined}>
+            <TimePicker
+              value={time}
+              onChange={setTime}
+              size={size}
+              step={step}
+              disabled={disabled}
+              clearable={clearable}
+            />
+          </Field>
+        </div>
+      </Variant>
+      <Variant label="TimeInput — the native field">
+        <TimeInput label="Ends at" size={size} disabled={disabled} />
+      </Variant>
     </>
   )
 }
 
-function TimePickerKnobs() {
-  const [time, setTime] = useState(null)
+function CheckboxGroupKnobs() {
+  const [value, setValue] = useState(['motivation', 'habits'])
   const [size, setSize] = useState('md')
-  const [step, setStep] = useState(30)
-  const [disabled, setDis] = useState(false)
-  const [showLabel, setLbl] = useState(true)
-  const [hasError, setErr] = useState(false)
-  const [clearable, setClearable] = useState(true)
+  const [layout, setLayout] = useState('column')
   return (
     <>
       <Knobs>
@@ -318,124 +309,6 @@ function TimePickerKnobs() {
             <option>lg</option>
           </Select>
         </Field>
-        <Field label="step (min)">
-          <Select value={step} onChange={(e) => setStep(Number(e.target.value))}>
-            <option value={15}>15</option>
-            <option value={30}>30</option>
-            <option value={60}>60</option>
-          </Select>
-        </Field>
-        <Field label="clearable">
-          <Toggle checked={clearable} onChange={setClearable} />
-        </Field>
-        <Field label="error">
-          <Toggle checked={hasError} onChange={setErr} />
-        </Field>
-        <Field label="disabled">
-          <Toggle checked={disabled} onChange={setDis} />
-        </Field>
-        <Field label="label">
-          <Toggle checked={showLabel} onChange={setLbl} />
-        </Field>
-      </Knobs>
-      <div
-        className="pt-variant-frame"
-        style={{ display: 'flex', flexDirection: 'column', gap: 24 }}
-      >
-        <div>
-          <span
-            style={{
-              fontSize: 12,
-              color: '#94A3B8',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            Default
-          </span>
-          <div style={{ marginTop: 8 }}>
-            <Field error={hasError ? 'Please select a time' : undefined}>
-              <TimePicker
-                value={time}
-                onChange={setTime}
-                size={size}
-                step={step}
-                disabled={disabled}
-                clearable={clearable}
-              />
-            </Field>
-          </div>
-        </div>
-        <div>
-          <span
-            style={{
-              fontSize: 12,
-              color: '#94A3B8',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            With label
-          </span>
-          <div style={{ marginTop: 8 }}>
-            <TimePicker
-              value={time}
-              onChange={setTime}
-              size={size}
-              step={step}
-              disabled={disabled}
-              clearable={clearable}
-              label={showLabel ? 'Start time' : undefined}
-            />
-          </div>
-        </div>
-        <div>
-          <span
-            style={{
-              fontSize: 12,
-              color: '#94A3B8',
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.06em',
-            }}
-          >
-            Date + time together
-          </span>
-          <div className="pt-form-row" style={{ marginTop: 8 }}>
-            <Field label="Date">
-              <DatePicker
-                value={null}
-                onChange={() => {}}
-                size={size}
-                disabled={disabled}
-                placeholder="Pick a date"
-              />
-            </Field>
-            <Field label="Time" error={hasError ? 'Required' : undefined}>
-              <TimePicker
-                value={time}
-                onChange={setTime}
-                size={size}
-                step={step}
-                disabled={disabled}
-                clearable={clearable}
-              />
-            </Field>
-          </div>
-        </div>
-      </div>
-    </>
-  )
-}
-
-function CheckboxGroupKnobs() {
-  const [value, setValue] = useState(['motivation', 'habits'])
-  const [layout, setLayout] = useState('column')
-  return (
-    <>
-      <Knobs>
         <Field label="layout">
           <Select value={layout} onChange={(e) => setLayout(e.target.value)}>
             <option>column</option>
@@ -447,12 +320,100 @@ function CheckboxGroupKnobs() {
         </Field>
       </Knobs>
       <div className="pt-variant-frame">
-        <CheckboxGroup value={value} onChange={setValue} layout={layout}>
+        <CheckboxGroup value={value} onChange={setValue} size={size} layout={layout}>
           <CheckboxGroupItem value="motivation">Motivation</CheckboxGroupItem>
           <CheckboxGroupItem value="habits">Habits</CheckboxGroupItem>
           <CheckboxGroupItem value="skills">Skills</CheckboxGroupItem>
           <CheckboxGroupItem value="integrity">Integrity</CheckboxGroupItem>
         </CheckboxGroup>
+      </div>
+    </>
+  )
+}
+
+function ToggleGroupKnobs() {
+  const [value, setValue] = useState(['log'])
+  const [size, setSize] = useState('md')
+  const [layout, setLayout] = useState('column')
+  const [inset, setInset] = useState(false)
+  return (
+    <>
+      <Knobs>
+        <Field label="layout">
+          <Select value={layout} onChange={(e) => setLayout(e.target.value)}>
+            <option>column</option>
+            <option>row</option>
+            <option>grid</option>
+          </Select>
+        </Field>
+        <Field label="size">
+          <Select value={size} onChange={(e) => setSize(e.target.value)}>
+            <option>sm</option>
+            <option>md</option>
+            <option>lg</option>
+          </Select>
+        </Field>
+        <Field label="inset">
+          <Toggle checked={inset} onChange={setInset} />
+        </Field>
+        <Field label="selection">
+          <Input value={value.join(', ') || '(none)'} readOnly />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <ToggleGroup value={value} onChange={setValue} size={size} layout={layout} inset={inset}>
+          <ToggleGroupItem value="log">Separate logging badges</ToggleGroupItem>
+          <ToggleGroupItem value="reviews">Separate review badges</ToggleGroupItem>
+          <ToggleGroupItem value="activities">Activity badges</ToggleGroupItem>
+        </ToggleGroup>
+      </div>
+      <Variant label="uncontrolled — plain <Toggle> children, group owns only layout + size">
+        <ToggleGroup layout="row">
+          <Toggle checked onChange={() => {}}>
+            Minutes
+          </Toggle>
+          <Toggle checked={false} onChange={() => {}}>
+            Books
+          </Toggle>
+          <Toggle checked={false} onChange={() => {}}>
+            Pages
+          </Toggle>
+        </ToggleGroup>
+      </Variant>
+    </>
+  )
+}
+
+function RadioKnobs() {
+  const [value, setValue] = useState('md')
+  const [size, setSize] = useState('md')
+  const [layout, setLayout] = useState('row')
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={(e) => setSize(e.target.value)}>
+            <option>sm</option>
+            <option>md</option>
+            <option>lg</option>
+          </Select>
+        </Field>
+        <Field label="layout">
+          <Select value={layout} onChange={(e) => setLayout(e.target.value)}>
+            <option>row</option>
+            <option>column</option>
+          </Select>
+        </Field>
+        <Field label="value">
+          <Input value={value} onChange={(e) => setValue(e.target.value)} />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <RadioGroup name="rs-knob" size={size} layout={layout} value={value} onChange={setValue}>
+          <Radio value="sm">Small</Radio>
+          <Radio value="md">Medium</Radio>
+          <Radio value="lg">Large</Radio>
+        </RadioGroup>
       </div>
     </>
   )
@@ -634,7 +595,6 @@ function CustomSelectKnobs() {
 function FilterBarKnobs() {
   const [showAction, setShowAction] = useState(true)
   const [compact, setCompact] = useState(false)
-  const [summary, setSummary] = useState(false)
   const [view, setView] = useState('goal')
   const [logType, setLogType] = useState('minutes')
   const [showAs, setShowAs] = useState('pct')
@@ -645,18 +605,15 @@ function FilterBarKnobs() {
         <Field label="compact (the bar, not the form)">
           <Toggle checked={compact} onChange={setCompact} />
         </Field>
-        <Field label="count + Clear">
-          <Toggle checked={summary} onChange={setSummary} />
-        </Field>
         <Field label="action button">
           <Toggle checked={showAction} onChange={setShowAction} />
         </Field>
       </Knobs>
-      <div className="pt-variant-frame">
+      {/* FilterBar draws its own white card, so the frame here is bare — a
+          second card around it doubled the padding you see against the edge. */}
+      <div className="pt-variant-frame pt-variant-frame--bare">
         <FilterBar
           compact={compact}
-          count={summary ? '12 of 40' : undefined}
-          onClear={summary ? () => {} : undefined}
           action={
             showAction ? (
               <Button variant="primary" size="sm">
@@ -891,11 +848,22 @@ export const formPatternsSections = [
     name: 'ColorInput',
     usage: `import { ColorInput } from '@components/Form/Form'
 
-<ColorInput label="Badge color" value={color} onChange={setColor} />`,
+<ColorInput label="Badge color" value={color} onChange={setColor} />
+
+/* Just the swatch, for a dense row of controls: */
+<ColorInput chip size="sm" value={color} onChange={setColor} />`,
     desc: (
       <>
         A styled color swatch + hex readout. Clicking anywhere opens the native color picker. The
-        swatch uses <code>{'<input type="color">'}</code> with vendor-prefixed chrome removed.
+        swatch uses <code>{'<input type="color">'}</code> with vendor-prefixed chrome removed, and
+        is a circle like the app&apos;s own picker (<code>.color-picker span</code>).
+        <br />
+        <br />
+        <code>chip</code> drops the frame and the hex and leaves the swatch on its own — 22 / 26 /
+        30px across the rungs. It&apos;s what a row of small controls wants, and what this
+        site&apos;s own knob rails use; they had a hand-rolled <code>.pt-color</code> before this
+        prop existed. A chip carries its own ring and hover/focus states, since there&apos;s no
+        frame to hold them.
       </>
     ),
     render: () => (
@@ -944,7 +912,7 @@ import { DateInput } from '@components/Form/Form'
     ),
     render: () => (
       <>
-        <DateInputKnobs />
+        <DatePickerKnobs />
       </>
     ),
   },
@@ -964,7 +932,37 @@ import { DateInput } from '@components/Form/Form'
     ),
     render: () => (
       <>
-        <TimeInputKnobs />
+        <TimePickerKnobs />
+      </>
+    ),
+  },
+  {
+    /* The three group components sit together here; the single controls they
+       compose (Checkbox / Radio / Toggle) stay in Form Fields. */
+    group: 'form-patterns',
+    id: 'radio-group',
+    name: 'RadioGroup',
+    usage: `import { RadioGroup, Radio } from '@components/Form/Form'
+
+<RadioGroup name="scope" value={scope} onChange={setScope} layout="row">
+  <Radio value="school">This school</Radio>
+  <Radio value="district">Whole district</Radio>
+</RadioGroup>`,
+    desc: (
+      <>
+        Mutually exclusive options — pick exactly one. <code>RadioGroup</code> takes{' '}
+        <code>name</code>, <code>value</code>, <code>onChange</code>, <code>size</code>, and{' '}
+        <code>layout</code> (row/column); children are <code>Radio</code> with a <code>value</code>.
+        It owns the layout and hands <code>size</code> down through context, the same way{' '}
+        <code>CheckboxGroup</code> and <code>ToggleGroup</code> do.
+        <br />
+        <br />A row lays out with <code>gap: 10px 24px</code> — wider across than down, because side
+        by side a long label runs into the next box.
+      </>
+    ),
+    render: () => (
+      <>
+        <RadioKnobs />
       </>
     ),
   },
@@ -988,6 +986,51 @@ import { DateInput } from '@components/Form/Form'
     render: () => (
       <>
         <CheckboxGroupKnobs />
+      </>
+    ),
+  },
+  {
+    group: 'form-patterns',
+    id: 'toggle-group',
+    name: 'ToggleGroup',
+    usage: `import { Toggle, ToggleGroup, ToggleGroupItem } from '@components/Toggle/Toggle'
+
+/* Group owns only the layout + the shared size: */
+<ToggleGroup layout="row">
+  <Toggle checked={a} onChange={setA}>Minutes</Toggle>
+  <Toggle checked={b} onChange={setB}>Books</Toggle>
+</ToggleGroup>
+
+/* Or let it own the set, like CheckboxGroup: */
+<ToggleGroup value={on} onChange={setOn} layout="column" inset>
+  <ToggleGroupItem value="log">Separate logging badges</ToggleGroupItem>
+  <ToggleGroupItem value="reviews">Separate review badges</ToggleGroupItem>
+</ToggleGroup>`,
+    desc: (
+      <>
+        A set of related switches — the <code>Toggle</code> sibling of <code>RadioGroup</code> and{' '}
+        <code>CheckboxGroup</code>. It owns the layout (<code>column</code> / <code>row</code> /{' '}
+        <code>grid</code>) and hands <code>size</code> down through context, so a cluster of
+        switches can&apos;t drift apart one call site at a time. <code>inset</code> frames it as the
+        tinted nested card used for an &ldquo;advanced&rdquo; cluster revealed by the switch above
+        it.
+        <br />
+        <br />
+        Children are normally plain <code>&lt;Toggle&gt;</code>s, each bound to its own piece of
+        state — that&apos;s how the challenge steps use it. Pass <code>value</code> (string[]) +{' '}
+        <code>onChange</code> instead and the group owns the set, with <code>ToggleGroupItem</code>{' '}
+        children keyed by <code>value</code>.
+        <br />
+        <br />
+        Gaps run wider than a checkbox group&apos;s: a switch is a broader, heavier mark and crowds
+        its neighbour sooner. For a <em>labelled</em> switch on its own row — label left, switch
+        right, hairline between — use <code>SettingRow</code> instead; this is for switches that
+        carry their own label.
+      </>
+    ),
+    render: () => (
+      <>
+        <ToggleGroupKnobs />
       </>
     ),
   },
@@ -1078,10 +1121,12 @@ import '@components/FilterBar/FilterBar.css'
         filter rather than a form, and it costs one row instead of two.
         <br />
         <br />
-        <code>count</code> and <code>onClear</code> add a reading of what the filter is hiding and a
-        way out of it. The app doesn&apos;t print a count, but the app&apos;s filters run against a
-        paginated server response where the count lives in the pager; these filter a list in place,
-        and without a reading there&apos;s no telling a narrow filter from an empty tab.
+        There is deliberately <strong>no result count and no Clear</strong>: the controls already
+        say what they&apos;re set to, and a bar that reports on itself as well is one more thing to
+        read on the way to the list. The props are <code>children</code>, <code>action</code>,{' '}
+        <code>compact</code> and <code>className</code> — that&apos;s the whole surface. If a
+        surface does need a &ldquo;12 of 40 · Clear&rdquo; reading, that belongs above the list it
+        describes, not inside the filter.
       </>
     ),
     render: () => (

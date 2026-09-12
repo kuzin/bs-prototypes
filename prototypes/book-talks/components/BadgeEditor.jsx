@@ -156,7 +156,7 @@ export function BadgeEditor({ open, initial, onSave, onCancel }) {
             <Button
               variant="primary"
               size="md"
-              accent="#0DA7BC"
+              accent="#0CA7BC"
               disabled={!valid}
               onClick={() => onSave({ ...draft, name: draft.name.trim() })}
             >

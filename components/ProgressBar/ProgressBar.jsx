@@ -3,9 +3,9 @@ import '@components/ProgressBar/ProgressBar.css'
 /**
  * Horizontal progress bar with optional label + value rows.
  *
- * <ProgressBar value={62} color="#E8866A" />
- * <ProgressBar value={62} max={100} color="#E8866A" label="Engagement" valueLabel="62%" />
- * <ProgressBar value={3.1} max={4} color="#E8866A" label="Enjoyment" valueLabel="3.1" subLabel="Reading for fun" />
+ * <ProgressBar value={62} color="#F26430" />
+ * <ProgressBar value={62} max={100} color="#F26430" label="Engagement" valueLabel="62%" />
+ * <ProgressBar value={3.1} max={4} color="#F26430" label="Enjoyment" valueLabel="3.1" subLabel="Reading for fun" />
  *
  * Pass `inline` to render the value beside the bar on a single line — best
  * inside narrow table cells where the default stacked layout wraps:
@@ -16,7 +16,7 @@ import '@components/ProgressBar/ProgressBar.css'
 export function ProgressBar({
   value,
   max = 100,
-  color = '#1D4ED8',
+  color = '#196DD5',
   label,
   valueLabel,
   subLabel,

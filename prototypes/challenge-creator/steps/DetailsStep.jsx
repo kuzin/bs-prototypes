@@ -9,7 +9,7 @@ import {
   DateInput,
   RangeSlider,
 } from '@components/Form/Form'
-import { Toggle } from '@components/Toggle/Toggle'
+import { Toggle, ToggleGroup } from '@components/Toggle/Toggle'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
 import { Tabs } from '@components/Tabs/Tabs'
 import { RichText } from '@components/RichText/RichText'
@@ -144,7 +144,7 @@ export function DetailsStep({ screen, challenge, role, updateDetails, onTemplate
               >
                 <span
                   className="cc-gallery-thumb"
-                  style={t.id === 'scratch' ? { background: '#f1f5f9' } : thumbStyle(t.id)}
+                  style={t.id === 'scratch' ? { background: '#f5f5f5' } : thumbStyle(t.id)}
                 >
                   {t.id === 'scratch' && <span className="cc-gallery-plus">+</span>}
                 </span>
@@ -245,7 +245,7 @@ export function DetailsStep({ screen, challenge, role, updateDetails, onTemplate
         <div className="cc-panel cc-panel--lookfeel">
           <div className="cc-lookfeel-tabs">
             <Tabs
-              accent="#0DA7BC"
+              accent="#0CA7BC"
               active={bgUploaded ? 'upload' : 'theme'}
               onChange={(id) => {
                 if (id === 'theme' && bgUploaded) {
@@ -428,7 +428,7 @@ export function DetailsStep({ screen, challenge, role, updateDetails, onTemplate
                             <ColorPicker
                               value={d.accent}
                               presets={themeVariants.map((v) => v.color)}
-                              fallback={d.accent || '#0DA7BC'}
+                              fallback={d.accent || '#0CA7BC'}
                               onColor={(c) => updateDetails({ accent: c })}
                             />
                           </div>
@@ -436,7 +436,7 @@ export function DetailsStep({ screen, challenge, role, updateDetails, onTemplate
                             <span className="cc-color-field-label">Title</span>
                             <ColorPicker
                               value={d.fontColor}
-                              presets={['#FFFFFF', '#0F172A', d.accent || '#0DA7BC']}
+                              presets={['#FFFFFF', '#2A2A2A', d.accent || '#0CA7BC']}
                               fallback="#FFFFFF"
                               onColor={(c) => updateDetails({ fontColor: c })}
                             />
@@ -507,7 +507,7 @@ export function DetailsStep({ screen, challenge, role, updateDetails, onTemplate
                       <ColorPicker
                         value={d.subheader?.color}
                         presets={themeVariants.map((v) => v.color)}
-                        fallback={d.accent || '#0DA7BC'}
+                        fallback={d.accent || '#0CA7BC'}
                         onColor={(c) => updateDetails({ subheader: { ...d.subheader, color: c } })}
                       />
                     </Field>
@@ -734,7 +734,7 @@ function PointsEarning({ methods, setMethod }) {
         {advanced ? '−' : '+'} Advanced: use separate logging &amp; review badges
       </button>
       {advanced && (
-        <div className="cc-method-toggles cc-method-toggles--nested">
+        <ToggleGroup layout="column" inset>
           <p className="cc-method-note cc-method-note--sm">
             Most points challenges don't need these — reading and reviews already earn points. Turn
             these on only if you also want stand-alone badges for them.
@@ -745,7 +745,7 @@ function PointsEarning({ methods, setMethod }) {
           <Toggle checked={!!methods.reviews} onChange={(v) => setMethod('reviews', v)} size="md">
             Separate review badges
           </Toggle>
-        </div>
+        </ToggleGroup>
       )}
     </>
   )

@@ -9,12 +9,12 @@ import { ChartLegend } from '@components/charts/charts'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 
-const ACCENT = '#1D4ED8'
-const FLAG_COLOR = '#E8866A'
+const ACCENT = '#196DD5'
+const FLAG_COLOR = '#F26430'
 const INT_ICON = SECTIONS.find((s) => s.key === 'integrity')?.icon
 
 function schoolColor(id) {
-  return SCHOOLS.find((s) => s.id === id)?.color ?? '#94A3B8'
+  return SCHOOLS.find((s) => s.id === id)?.color ?? '#ACACAC'
 }
 
 const REVIEW_COLUMNS = [
@@ -28,7 +28,7 @@ const REVIEW_COLUMNS = [
     label: 'Flag rate',
     align: 'center',
     render: (_, r) => (
-      <Pill color={r.flagRate >= 15 ? '#DC2626' : '#475569'} size="sm">
+      <Pill color={r.flagRate >= 15 ? '#E85648' : '#656565'} size="sm">
         {r.flagRate}% flagged
       </Pill>
     ),
@@ -38,7 +38,7 @@ const REVIEW_COLUMNS = [
     label: 'Trend',
     align: 'center',
     render: (_, r) => (
-      <Pill color={r.trend < 0 ? '#DC2626' : '#16A97A'} size="sm">
+      <Pill color={r.trend < 0 ? '#E85648' : '#0BA85F'} size="sm">
         {r.trend < 0 ? `↓${Math.abs(r.trend)}pp` : `↑${r.trend}pp`}
       </Pill>
     ),
@@ -85,7 +85,7 @@ export function DistrictIntegrity() {
           value={`${avgFlagRate}%`}
           label="Avg conversation flag rate"
           footer="↓2pp improvement YTD"
-          color={avgFlagRate > 15 ? '#DC2626' : '#D97706'}
+          color={avgFlagRate > 15 ? '#E85648' : '#AB720A'}
         />
         <StatCard
           value={highFlagSchools.length}

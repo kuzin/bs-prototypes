@@ -1,12 +1,8 @@
-import {
-  FlagIconBadge,
-  FLAG_TYPE_CONFIG,
-  POS_FLAG_CONFIG,
-  SafetySeverityTag,
-} from './SessionsTable'
+import { FLAG_TYPE_CONFIG, POS_FLAG_CONFIG } from './SessionsTable'
+import { FlagIcon } from '@components/BsIcons/BsIcons'
 import { Icon } from '@components/Icon/Icon'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
-import { SEV_ORDER } from '../data'
+import { SEV_ORDER, SITE } from '../data'
 import '@components/BennyBubble/BennyBubble.css'
 import './Overview.css'
 
@@ -15,15 +11,27 @@ export function HighlightCard({
   title,
   description,
   sessions = [],
-  viewAllLabel,
+  viewAllLabel = 'View All',
   onViewAll,
   onSelectSession,
+  // Reader roll-up mode: the row stands for a reader rather than a session, and
+  // the right-hand slot carries how many Book Talks are behind them. This is
+  // the app's `by_reader` shape (Student / Grade / count) read as a card.
+  countOf,
+  countLabel = 'Book Talks',
 }) {
   return (
     <div className={`ov-card ov-card--${variant}`}>
-      <div className="ov-card-titles">
-        <div className="ov-card-title">{title}</div>
-        <div className="ov-card-desc">{description}</div>
+      <div className="ov-card-head">
+        <div className="ov-card-titles">
+          <div className="ov-card-title">{title}</div>
+          <div className="ov-card-desc">{description}</div>
+        </div>
+        {onViewAll && (
+          <button className={`ov-view-all ov-view-all--${variant}`} onClick={onViewAll}>
+            {viewAllLabel}
+          </button>
+        )}
       </div>
       <div className="ov-student-list">
         {sessions.slice(0, 3).map((s, i) => (
@@ -37,23 +45,41 @@ export function HighlightCard({
               <span className="ov-student-book">{s.book.title}</span>
             </div>
             <div className="ov-student-flags">
-              {s.safety && <SafetySeverityTag severity={s.safety.severity} />}
-              {s.flags?.map((f) => {
-                const cfg = FLAG_TYPE_CONFIG[f.type]
-                return cfg ? <FlagIconBadge key={f.id} type={f.type} cfg={cfg} /> : null
-              })}
-              {s.positiveFlags?.map((pf) => {
-                const cfg = POS_FLAG_CONFIG[pf.type]
-                return cfg ? <FlagIconBadge key={pf.id} type={pf.type} cfg={cfg} /> : null
-              })}
+              {countOf ? (
+                <span className={`ov-count-pill ov-count-pill--${variant}`}>
+                  {countOf(s)} {countLabel}
+                </span>
+              ) : (
+                <>
+                  {/* The app's own flag drawings, not a tinted glyph: these
+                      rows are the same signals the session detail shows, and
+                      the reviewer should recognise them by the same art.
+                      `fallback` keeps an unmapped type from rendering blank. */}
+                  {s.flags?.map((f) => (
+                    <FlagIcon
+                      key={f.id}
+                      type={f.type}
+                      fallback="negative"
+                      size={24}
+                      label={FLAG_TYPE_CONFIG[f.type]?.label ?? f.type}
+                    />
+                  ))}
+                  {s.positiveFlags?.map((pf) => (
+                    <FlagIcon
+                      key={pf.id}
+                      type={pf.type}
+                      fallback="positive"
+                      size={24}
+                      label={POS_FLAG_CONFIG[pf.type]?.label ?? pf.type}
+                    />
+                  ))}
+                </>
+              )}
             </div>
-            <Icon name="chevron-right" size={14} className="ov-row-chevron" />
+            <Icon name="chevron-right" size={18} className="ov-row-chevron" />
           </button>
         ))}
       </div>
-      <button className={`ov-view-all ov-view-all--${variant}`} onClick={onViewAll}>
-        {viewAllLabel} →
-      </button>
     </div>
   )
 }
@@ -69,7 +95,7 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
 
   const totalBTWB = sessions.length
   const completedBTWB = sessions.filter((s) => s.status === 'completed').length
-  const overThreshold = sessions.filter((s) => s.minutesLogged > 50).length
+  const overThreshold = sessions.filter((s) => s.minutesLogged > SITE.warningThreshold).length
 
   // Safety signals are additive + orthogonal — only the Safety Signals prototype
   // attaches them, so this card/summary line stays hidden in SFR's own prototype.
@@ -78,22 +104,50 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
     .filter((s) => s.safety.status !== 'resolved')
     .sort((a, b) => SEV_ORDER[a.safety.severity] - SEV_ORDER[b.safety.severity])
 
+  // The last two cards count *readers*, not sessions: the question they answer
+  // is "who keeps turning up", which is the app's `by_reader` roll-up. One row
+  // per reader, their most recent title, and how many are behind them.
+  const byReader = (list) => {
+    const seen = new Map()
+    for (const s of list) {
+      const key = s.student.id ?? s.student.name
+      const at = seen.get(key)
+      if (!at) seen.set(key, { session: s, count: 1 })
+      else {
+        at.count += 1
+        if (s.date > at.session.date) at.session = s
+      }
+    }
+    return [...seen.values()]
+      .sort((a, b) => b.count - a.count)
+      .map(({ session, count }) => ({ ...session, talkCount: count }))
+  }
+
+  const repeatFlags = byReader(flaggedSessions)
+  const unfinishedByReader = byReader(unfinished)
+
   return (
     <div className="ov-shell">
-      {/* Benny summary */}
+      {/* Benny summary — the headline, then the three things worth acting on as
+          a list rather than one long sentence you have to parse. */}
       <div className="ov-summary">
         <BennyBubble>
-          {safetyOpen.length > 0 && (
-            <>
-              <strong>{safetyOpen.length}</strong> Book{' '}
-              {safetyOpen.length === 1 ? 'Talk needs' : 'Talks need'} a safety review this week —
-              see Safety Signals below.{' '}
-            </>
-          )}
           Students started <strong>{totalBTWB}</strong> Book Talks with Benny and completed{' '}
-          <strong>{completedBTWB}</strong> so far this week. Most students are positively engaged in
-          the books they finished, while Beanstack detected <strong>{overThreshold}</strong> logs
-          over your site's 50-minute warning. Check out the highlights below to take action.
+          <strong>{completedBTWB}</strong> so far this week. Check out the highlights below to take
+          action:
+          <ul className="ov-summary-list">
+            <li>
+              Beanstack detected <strong>{overThreshold}</strong> logs over {SITE.warningThreshold}{' '}
+              minutes
+            </li>
+            <li>Most students were positively engaged in their book talks</li>
+            {safetyOpen.length > 0 && (
+              <li>
+                <strong>{safetyOpen.length}</strong> book{' '}
+                {safetyOpen.length === 1 ? 'talk needs' : 'talks need'} a safety review this week
+              </li>
+            )}
+          </ul>
         </BennyBubble>
       </div>
 
@@ -102,61 +156,52 @@ export function Overview({ sessions, onGoToTab, onSelectSession }) {
         {safetySessions.length > 0 && (
           <HighlightCard
             variant="danger"
-            title="Safety Signals"
-            description="Students who may be at risk — review and respond"
+            title="Safety Risk"
+            description="Students who may be at risk"
             sessions={safetyOpen.length ? safetyOpen : safetySessions}
-            viewAllLabel="View all safety signals"
             onViewAll={() => onGoToTab('safety', {})}
             onSelectSession={onSelectSession}
           />
         )}
         <HighlightCard
-          variant="danger"
-          title="Validate / Intercede"
-          description="Students with multiple flagged integrity sessions"
-          sessions={flaggedSessions}
-          totalCount={flaggedSessions.length}
-          viewAllLabel="View all flagged sessions"
-          onViewAll={() => onGoToTab('flagged', {})}
-          onSelectSession={onSelectSession}
-        />
-        <HighlightCard
           variant="success"
-          title="Celebrate"
+          title="Reading Wins"
           description="Students with positive engagement Book Talks"
           sessions={greenSessions}
-          totalCount={greenSessions.length}
-          viewAllLabel="View all engagement sessions"
           onViewAll={() => onGoToTab('engagement', { rating: 'green' })}
           onSelectSession={onSelectSession}
         />
         <HighlightCard
           variant="warning"
-          title="Review / Assess"
+          title="Take a Closer Look"
           description="Students with mixed engagement Book Talks"
           sessions={yellowSessions}
-          totalCount={yellowSessions.length}
-          viewAllLabel="View all mixed sessions"
           onViewAll={() => onGoToTab('engagement', { rating: 'yellow' })}
           onSelectSession={onSelectSession}
         />
         <HighlightCard
           variant="intercede"
-          title="Intercede"
-          description="Students showing disengagement in their Book Talks"
+          title="Needs Support"
+          description="Students with disengagement in their Book Talks"
           sessions={redSessions}
-          totalCount={redSessions.length}
-          viewAllLabel="View all disengaged sessions"
           onViewAll={() => onGoToTab('engagement', { rating: 'red' })}
           onSelectSession={onSelectSession}
         />
         <HighlightCard
+          variant="danger"
+          title="Repeat Flags"
+          description="Students with the most flagged Book Talks"
+          sessions={repeatFlags}
+          countOf={(s) => s.talkCount}
+          onViewAll={() => onGoToTab('flagged', {})}
+          onSelectSession={onSelectSession}
+        />
+        <HighlightCard
           variant="neutral"
-          title="Give Students Time"
-          description="Students with unfinished Benny conversations"
-          sessions={unfinished}
-          totalCount={unfinished.length}
-          viewAllLabel="View all unfinished conversations"
+          title="Unfinished Book Talks"
+          description="Students with the most in-progress Book Talks"
+          sessions={unfinishedByReader}
+          countOf={(s) => s.talkCount}
           onViewAll={() => onGoToTab('all', { status: 'unfinished' })}
           onSelectSession={onSelectSession}
         />

@@ -1,170 +1,112 @@
-import React from 'react'
-import { Icon } from '@components/Icon/Icon'
-import {
-  DotsButton,
-  RatingDot,
-  FlagCount,
-  PosFlagCount,
-  FlagTypeIcons,
-  TypePill,
-} from './SessionsTable'
+import { Table } from '@components/Table/Table'
+import { Pill } from '@components/Pill/Pill'
+import { DotsButton } from './SessionsTable'
 import '@components/Table/Table.css'
 import '@components/Pill/Pill.css'
 import './SessionsTable.css'
 import './ReaderGroupedView.css'
 
-// Session-badge helpers (RatingDot, FlagCount, PosFlagCount, FlagTypeIcons,
-// TypePill) are shared from ./SessionsTable — imported above.
-
+// "List by: By Reader" — the app's `FlaggedEntriesByReader` roll-up.
+//
+// One row per reader with how many sessions are behind them, not a grouped
+// version of the session table: the question this view answers is *who* keeps
+// turning up, and a list of readers answers it in one screen where an expanded
+// tree answers it in several. Columns are the app's — Student / Grade / count
+// — plus the same row menu the session table carries.
+//
+// It's the shared `<Table>` like every other list here; the grouped markup this
+// replaced was the only hand-rolled `<table>` left in the prototype.
 export function ReaderGroupedView({
   sessions,
+  countLabel = 'Sessions',
   onSelectSession,
   onApproveRequest,
   onViewProfile,
-  showTypeColumn = true,
-  showFlagIcons = false,
-  showPosFlags = true,
-  showEngagementColumn = true,
   onClearFilters,
 }) {
-  const groups = []
-  const seen = {}
+  const seen = new Map()
   for (const s of sessions) {
-    const id = s.student.id
-    if (!seen[id]) {
-      seen[id] = { student: s.student, sessions: [] }
-      groups.push(seen[id])
-    }
-    seen[id].sessions.push(s)
+    const key = s.student.id ?? s.student.name
+    const at = seen.get(key)
+    if (!at) seen.set(key, { id: key, student: s.student, sessions: [s] })
+    else at.sessions.push(s)
   }
+  // Most first: the reader with six flagged sessions is the reason to open the
+  // tab at all.
+  const readers = [...seen.values()]
+    .map((r) => ({ ...r, count: r.sessions.length }))
+    .sort((a, b) => b.count - a.count)
 
-  if (groups.length === 0)
-    return (
-      <div className="rgv-empty-wrap">
-        <div className="rgv-empty">
-          <span>No sessions match your filters.</span>
-          {onClearFilters && (
-            <button className="tbl-clear-filters-btn" onClick={onClearFilters}>
-              Clear filters
-            </button>
-          )}
-        </div>
-      </div>
-    )
+  const columns = [
+    {
+      key: 'student',
+      label: 'Student',
+      render: (_, row) =>
+        onViewProfile ? (
+          <button
+            className="sess-student-name sess-student-name--link"
+            onClick={(e) => {
+              e.stopPropagation()
+              onViewProfile(row.student)
+            }}
+          >
+            {row.student.name}
+          </button>
+        ) : (
+          <span className="sess-student-name">{row.student.name}</span>
+        ),
+    },
+    {
+      key: 'grade',
+      label: 'Grade',
+      render: (_, row) => <span className="sess-grade">{row.student.grade}</span>,
+    },
+    {
+      key: 'count',
+      label: countLabel,
+      sortable: true,
+      render: (_, row) => (
+        <Pill color="#E85648" variant="soft" size="sm">
+          {row.count}
+        </Pill>
+      ),
+    },
+    {
+      key: 'action',
+      label: '',
+      render: (_, row) => (
+        <DotsButton
+          session={row.sessions[0]}
+          onSelectSession={onSelectSession}
+          onApproveRequest={onApproveRequest}
+          onViewProfile={onViewProfile}
+        />
+      ),
+    },
+  ]
 
-  const colCount =
-    (showTypeColumn ? 1 : 0) + (showEngagementColumn ? 1 : 0) + (showPosFlags ? 1 : 0) + 4 // date, title, [type], [engagement], [pos-flags], int-flags, action
+  const empty = onClearFilters ? (
+    <span className="rgv-empty">
+      <span>No sessions match your filters.</span>
+      <button className="tbl-clear-filters-btn" onClick={onClearFilters}>
+        Clear filters
+      </button>
+    </span>
+  ) : (
+    'No sessions match your filters.'
+  )
 
   return (
     <div className="rgv-shell">
-      <div style={{ overflowX: 'auto' }}>
-        <table className="tbl rgv-table">
-          <colgroup>
-            <col style={{ width: 90 }} />
-            <col />
-            {showTypeColumn && <col style={{ width: 120 }} />}
-            {showEngagementColumn && <col style={{ width: 130 }} />}
-            {showPosFlags && <col style={{ width: showFlagIcons ? 80 : 52 }} />}
-            <col style={{ width: showFlagIcons ? 80 : 52 }} />
-            <col style={{ width: 52 }} />
-          </colgroup>
-          <thead>
-            <tr>
-              <th className="tbl-th">DATE</th>
-              <th className="tbl-th">TITLE</th>
-              {showTypeColumn && <th className="tbl-th">TYPE</th>}
-              {showEngagementColumn && <th className="tbl-th">ENGAGEMENT</th>}
-              {showPosFlags && (
-                <th className="tbl-th">
-                  <Icon name="flag" size={13} color="#16A97A" />
-                </th>
-              )}
-              <th className="tbl-th">
-                <Icon name="flag" size={13} color="#DC2626" />
-              </th>
-              <th className="tbl-th" />
-            </tr>
-          </thead>
-          <tbody>
-            {groups.map(({ student, sessions: gs }) => (
-              <React.Fragment key={student.id}>
-                <tr className="rgv-group-row">
-                  <td colSpan={colCount} className="rgv-group-cell">
-                    <div className="rgv-header">
-                      {onViewProfile ? (
-                        <button
-                          className="rgv-name rgv-name--link"
-                          onClick={() => onViewProfile(student)}
-                        >
-                          {student.name}
-                        </button>
-                      ) : (
-                        <span className="rgv-name">{student.name}</span>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-                {gs.map((s) => {
-                  const date = new Date(s.date)
-                  const dateStr = date.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                  })
-                  return (
-                    <tr
-                      key={s.id}
-                      className="tbl-row tbl-row--clickable"
-                      onClick={() => onSelectSession(s)}
-                    >
-                      <td className="tbl-td">
-                        <span className="sess-date">{dateStr}</span>
-                      </td>
-                      <td className="tbl-td">
-                        <span className="sess-title-cell">
-                          <span className="sess-book-title">{s.book.title}</span>
-                          {s.status === 'unfinished' && (
-                            <span className="sess-unfinished-badge">Unfinished</span>
-                          )}
-                        </span>
-                      </td>
-                      {showTypeColumn && (
-                        <td className="tbl-td">
-                          <TypePill session={s} type={s.type} />
-                        </td>
-                      )}
-                      {showEngagementColumn && (
-                        <td className="tbl-td">
-                          <RatingDot rating={s.engagementRating} />
-                        </td>
-                      )}
-                      {showPosFlags && (
-                        <td className="tbl-td">
-                          <PosFlagCount positiveFlags={s.positiveFlags} />
-                        </td>
-                      )}
-                      <td className="tbl-td">
-                        {showFlagIcons ? (
-                          <FlagTypeIcons flags={s.flags} />
-                        ) : (
-                          <FlagCount flags={s.flags} />
-                        )}
-                      </td>
-                      <td className="tbl-td tbl-td--action" onClick={(e) => e.stopPropagation()}>
-                        <DotsButton
-                          session={s}
-                          onSelectSession={onSelectSession}
-                          onApproveRequest={onApproveRequest}
-                          onViewProfile={onViewProfile}
-                        />
-                      </td>
-                    </tr>
-                  )
-                })}
-              </React.Fragment>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <Table
+        columns={columns}
+        rows={readers}
+        getRowKey={(r) => r.id}
+        onRowClick={(r) => onSelectSession(r.sessions[0])}
+        pageSize={12}
+        scrollX
+        empty={empty}
+      />
     </div>
   )
 }

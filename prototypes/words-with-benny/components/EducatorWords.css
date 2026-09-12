@@ -98,7 +98,7 @@
   overflow: hidden;
   font-size: var(--text-cell);
   font-weight: 700;
-  color: #1e293b;
+  color: #2a2a2a;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -112,7 +112,7 @@
   font-weight: 500;
   font-style: italic;
   line-height: 1.5;
-  color: #334155;
+  color: #424242;
 }
 .ew-queue-text strong {
   font-weight: 800;
@@ -147,7 +147,7 @@
   align-items: center;
   font-size: 12px;
   font-weight: 700;
-  color: #64748b;
+  color: #707070;
 }
 .ew-legend-dot {
   width: 12px;
@@ -167,14 +167,14 @@
 }
 .ew-student-name {
   font-weight: 700;
-  color: #0f172a;
+  color: #2a2a2a;
 }
 .ew-zero {
-  color: #cbd5e1;
+  color: #d0d0d0;
 }
 .ew-logs {
   font-weight: 600;
-  color: #64748b;
+  color: #707070;
 }
 .ew-lastword {
   font-weight: 700;

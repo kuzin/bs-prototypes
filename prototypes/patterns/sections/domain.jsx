@@ -187,13 +187,15 @@ function AlertRowKnobs() {
           </Field>
         )}
       </Knobs>
-      <AlertRow
-        level={level}
-        title={title}
-        description={description}
-        action={hasAction ? action : undefined}
-        onAction={hasAction ? () => {} : undefined}
-      />
+      <div className="pt-variant-frame">
+        <AlertRow
+          level={level}
+          title={title}
+          description={description}
+          action={hasAction ? action : undefined}
+          onAction={hasAction ? () => {} : undefined}
+        />
+      </div>
     </>
   )
 }
@@ -213,7 +215,7 @@ function ReadingHealthKnobs() {
           </Field>
         )}
       </Knobs>
-      <div className="pt-variant-frame pt-variant-frame--bare">
+      <div className="pt-variant-frame">
         <ReadingHealth
           title={showTitle ? title : null}
           data={SAMPLE_HEALTH}
@@ -296,9 +298,76 @@ function PersonalizeReaderDemo() {
   )
 }
 
+function PartnerBrandKnobs() {
+  const ids = Object.keys(PARTNER_BRANDS)
+  const [id, setId] = useState(ids[0])
+  const [size, setSize] = useState('md')
+  const [markSize, setMarkSize] = useState(30)
+  const [invert, setInvert] = useState(false)
+  const [shape, setShape] = useState('logo')
+  const dark = PARTNER_BRANDS[id]?.accent ?? '#1B0C26'
+  return (
+    <>
+      <Knobs>
+        <Field label="partner">
+          <Select value={id} onChange={(e) => setId(e.target.value)}>
+            {ids.map((k) => (
+              <option key={k} value={k}>
+                {PARTNER_BRANDS[k].name}
+              </option>
+            ))}
+          </Select>
+        </Field>
+        <Field label="shape">
+          <Select value={shape} onChange={(e) => setShape(e.target.value)}>
+            <option value="logo">logo (wordmark)</option>
+            <option value="mark">mark (square)</option>
+          </Select>
+        </Field>
+        {shape === 'logo' ? (
+          <Field label="size">
+            <Select value={size} onChange={(e) => setSize(e.target.value)}>
+              <option>sm</option>
+              <option>md</option>
+              <option>lg</option>
+            </Select>
+          </Field>
+        ) : (
+          <Field label="size">
+            <Select value={markSize} onChange={(e) => setMarkSize(Number(e.target.value))}>
+              <option value={20}>20</option>
+              <option value={30}>30</option>
+              <option value={44}>44</option>
+            </Select>
+          </Field>
+        )}
+        <Field label="invert">
+          <Toggle checked={invert} onChange={setInvert} />
+        </Field>
+      </Knobs>
+      <div
+        className="pt-variant-frame"
+        style={{
+          display: 'flex',
+          gap: 24,
+          alignItems: 'center',
+          flexWrap: 'wrap',
+          background: invert ? dark : undefined,
+        }}
+      >
+        {shape === 'logo' ? (
+          <PartnerBrand id={id} size={size} invert={invert} />
+        ) : (
+          <PartnerMark id={id} size={markSize} invert={invert} />
+        )}
+      </div>
+    </>
+  )
+}
+
 export const domainSections = [
   {
-    group: 'domain',
+    group: 'ris',
     id: 'health-stat',
     name: 'HealthStat',
     usage: `import { HealthStat } from '@components/ReadingHealth/ReadingHealth'
@@ -319,7 +388,7 @@ import '@components/ReadingHealth/ReadingHealth.css'
     ),
   },
   {
-    group: 'domain',
+    group: 'ris',
     id: 'reading-health',
     name: 'ReadingHealth',
     usage: `import { ReadingHealth } from '@components/ReadingHealth/ReadingHealth'
@@ -339,7 +408,7 @@ import '@components/ReadingHealth/ReadingHealth.css'
     ),
   },
   {
-    group: 'domain',
+    group: 'ris',
     id: 'alert-row',
     name: 'AlertRow',
     usage: `import { AlertRow } from '@components/AlertsBanner/AlertsBanner'
@@ -360,7 +429,7 @@ import '@components/AlertsBanner/AlertsBanner.css'
     ),
   },
   {
-    group: 'domain',
+    group: 'ris',
     id: 'alerts-banner',
     name: 'AlertsBanner',
     usage: `import { AlertsBanner } from '@components/AlertsBanner/AlertsBanner'
@@ -375,7 +444,7 @@ import '@components/AlertsBanner/AlertsBanner.css'
     ),
     render: () => (
       <>
-        <Variant label="multiple alerts" bare>
+        <Variant label="multiple alerts">
           <AlertsBanner alerts={SAMPLE_ALERTS} onNavigate={() => {}} />
         </Variant>
       </>
@@ -421,37 +490,6 @@ import '@components/AlertsBanner/AlertsBanner.css'
   },
   {
     group: 'iconography',
-    id: 'health-icons',
-    name: 'Reading Health Icons',
-    usage: `import { BsIcon } from '@components/BsIcons/BsIcons'
-
-<BsIcon set="flags" name="speed" size={28} alt="Reading speed" />`,
-    desc: (
-      <>
-        The four health-area icons from <code>SECTIONS</code> (Motivation, Integrity, Habits,
-        Skills). Used in dashboard cards and bucket page heroes.
-      </>
-    ),
-    render: () => (
-      <>
-        <Variant label="The four reading-health areas">
-          <div className="pt-icons">
-            {HEALTH_SECTIONS.map((s) => (
-              <div key={s.key} className="pt-icon-cell">
-                <div className="pt-icon-bg" style={{ '--c': s.color, '--bg': s.bg }}>
-                  {s.icon}
-                </div>
-                <div className="pt-icon-name">{s.label}</div>
-                <div className="pt-icon-key">{s.key}</div>
-              </div>
-            ))}
-          </div>
-        </Variant>
-      </>
-    ),
-  },
-  {
-    group: 'domain',
     id: 'partner-brand',
     name: 'Partner Brand',
     usage: `import { PartnerBrand, PartnerMark } from '@components/PartnerBrand/PartnerBrand'
@@ -467,52 +505,80 @@ import '@components/AlertsBanner/AlertsBanner.css'
         approximations. <code>PARTNER_BRANDS</code> carries each partner&apos;s name and accent, and
         Beeverso adds <code>wordmarkInvert</code> — a purpose-made light-on-dark lockup used instead
         of a white plate.
+        <br />
+        <br />
+        Every mark carries the same hairline ring and the same 28% radius, whatever the source art
+        is: a row of app marks reads as a set, and the ring used to be on the plated one alone.
       </>
     ),
     render: () => (
       <>
-        <Variant label="PartnerBrand — lockups">
-          <div
-            style={{
-              display: 'flex',
-              gap: 24,
-              alignItems: 'center',
-              padding: 16,
-              flexWrap: 'wrap',
-            }}
-          >
+        <PartnerBrandKnobs />
+        <Variant label="every partner, one size — the set as it reads together">
+          <div style={{ display: 'flex', gap: 24, alignItems: 'center', flexWrap: 'wrap' }}>
             {Object.keys(PARTNER_BRANDS).map((id) => (
               <PartnerBrand key={id} id={id} />
             ))}
           </div>
         </Variant>
-        <Variant label="sizes + invert (on dark partner chrome)">
-          <div style={{ display: 'flex', gap: 20, alignItems: 'center', padding: 16 }}>
-            <PartnerBrand id="comicsplus" size="sm" />
-            <PartnerBrand id="comicsplus" size="lg" />
-            <span style={{ background: '#1B0C26', padding: '12px 16px', borderRadius: 10 }}>
-              <PartnerBrand id="comicsplus" invert />
-            </span>
-            {/* Beeverso ships its own light-on-dark lockup, so no plate. */}
-            <span style={{ background: '#3C0458', padding: '12px 16px', borderRadius: 10 }}>
-              <PartnerBrand id="beeverso" invert />
-            </span>
-          </div>
-        </Variant>
-        <Variant label="PartnerMark — square app marks">
-          <div style={{ display: 'flex', gap: 14, alignItems: 'center', padding: 16 }}>
+        <Variant label="PartnerMark — the same square mark at one size">
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
             {Object.keys(PARTNER_BRANDS).map((id) => (
               <PartnerMark key={id} id={id} size={30} />
             ))}
+          </div>
+        </Variant>
+        <Variant label="mark sizes — 20 / 30 / 44">
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
             <PartnerMark id="comicsplus" size={20} />
-            <PartnerMark id="scholastic" size={44} />
+            <PartnerMark id="comicsplus" size={30} />
+            <PartnerMark id="comicsplus" size={44} />
+          </div>
+        </Variant>
+        <Variant label="marks on invert — the tile and the art trade places">
+          <div
+            style={{
+              display: 'flex',
+              gap: 14,
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              background: 'var(--c-gray-900)',
+              padding: 14,
+              borderRadius: 10,
+            }}
+          >
+            {Object.keys(PARTNER_BRANDS).map((id) => (
+              <PartnerMark key={id} id={id} size={30} invert />
+            ))}
+          </div>
+        </Variant>
+        <Variant label="invert — every lockup on its partner's own dark chrome">
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap' }}>
+            {Object.entries(PARTNER_BRANDS).map(([id, p]) => (
+              <span
+                key={id}
+                style={{
+                  // One height for every chip: the lockups themselves vary (a
+                  // lockup wordmark renders at mark height, a plain one at word
+                  // height), and a ragged row of chrome reads as a mistake.
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  height: 60,
+                  background: p.dark,
+                  padding: '0 16px',
+                  borderRadius: 10,
+                }}
+              >
+                <PartnerBrand id={id} invert />
+              </span>
+            ))}
           </div>
         </Variant>
       </>
     ),
   },
   {
-    group: 'domain',
+    group: 'web-app',
     id: 'partner-connect-banner',
     name: 'Connect Banner',
     usage: `import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
@@ -523,8 +589,14 @@ import '@components/AlertsBanner/AlertsBanner.css'
         The dashboard prompt to link reading apps. Takes <strong>every</strong> partner that
         isn&apos;t connected yet, not one at a time — a reader with two apps left to link sees one
         banner, not a stack. With a single partner it wears that partner&apos;s brand and speaks in
-        their voice; with more than one it goes neutral and offers a button each. Renders nothing
-        when everything is linked.
+        their voice; with more than one it goes neutral and the links collapse into a single
+        &ldquo;Link an app&rdquo; flyout — a button per partner turned the banner into a toolbar and
+        wrapped on anything narrow. Renders nothing when everything is linked.
+        <br />
+        <br />
+        Same chrome as the shared <code>Banner</code> (the app&apos;s <code>.infobox</code>): a
+        tinted block with no outline, so it doesn&apos;t read as a different species of banner from
+        the ones above and below it.
       </>
     ),
     render: () => (
@@ -535,7 +607,7 @@ import '@components/AlertsBanner/AlertsBanner.css'
             <ConnectBanner partners={[BEEVERSO]} onLink={noop} onDismiss={noop} />
           </div>
         </Variant>
-        <Variant label="two or three left — neutral, a button each" full>
+        <Variant label="two or three left — neutral, one flyout" full>
           <div style={{ padding: 16 }}>
             <ConnectBanner
               partners={[BEEVERSO, CONNECTIONS.comicsplus]}
@@ -553,7 +625,7 @@ import '@components/AlertsBanner/AlertsBanner.css'
     ),
   },
   {
-    group: 'domain',
+    group: 'web-app',
     id: 'partner-connect-flow',
     name: 'Connect Flow',
     usage: `import { ConnectFlow } from '@components/PartnerConnect/PartnerConnect'
@@ -575,7 +647,7 @@ import '@components/AlertsBanner/AlertsBanner.css'
     ),
   },
   {
-    group: 'domain',
+    group: 'web-app',
     id: 'partner-switcher',
     name: 'Partner Switcher',
     usage: `import { PartnerSwitcher } from '@components/PartnerConnect/PartnerConnect'
@@ -615,7 +687,7 @@ import '@components/AlertsBanner/AlertsBanner.css'
     ),
   },
   {
-    group: 'domain',
+    group: 'web-app',
     id: 'partner-auto-logged',
     name: 'Auto-Logged Card',
     usage: `import { AutoLoggedCard } from '@components/PartnerConnect/PartnerConnect'
@@ -629,15 +701,15 @@ import '@components/AlertsBanner/AlertsBanner.css'
       </>
     ),
     render: () => (
-      <Variant label="three partners contributing">
-        <div style={{ maxWidth: 320, padding: 16 }}>
+      <Variant label="three partners contributing" full>
+        <div style={{ padding: 16 }}>
           <AutoLoggedCard className="wa-card" rows={AUTO_LOGGED_ROWS} />
         </div>
       </Variant>
     ),
   },
   {
-    group: 'domain',
+    group: 'web-app',
     id: 'personalize-reader',
     name: 'Personalize Reader',
     usage: `import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
@@ -662,7 +734,7 @@ import '@components/AlertsBanner/AlertsBanner.css'
     ),
   },
   {
-    group: 'domain',
+    group: 'student-profile',
     id: 'daily-reading-tracker',
     name: 'DailyReadingTracker',
     usage: `import { DailyReadingTracker } from '@components/DailyReadingTracker/DailyReadingTracker'
@@ -683,19 +755,17 @@ import '@components/AlertsBanner/AlertsBanner.css'
         check disc), <code>null</code> (a dash) or a percentage. Ten columns don&apos;t fit a phone
         and the app only wraps them in an <code>overflow: auto</code> box, so at{' '}
         <strong>&le;&nbsp;699px</strong> the same rows re-render as one card per reader with the
-        week as a seven-day strip — resize the window to see it. Both trees stay in the DOM and swap
+        week as a seven-day strip — narrow the window to see it. Both trees stay in the DOM and swap
         in CSS, so there&apos;s no resize flash and print always gets the table.
       </>
     ),
     render: () => (
       <Variant label="a week of the class tracker" full>
-        <div style={{ padding: '0 24px' }}>
-          <DailyReadingTracker
-            weekLabel="5/11 – 5/17 (This Week)"
-            rows={SAMPLE_TRACKER}
-            average={SAMPLE_TRACKER_AVG}
-          />
-        </div>
+        <DailyReadingTracker
+          weekLabel="5/11 – 5/17 (This Week)"
+          rows={SAMPLE_TRACKER}
+          average={SAMPLE_TRACKER_AVG}
+        />
       </Variant>
     ),
   },

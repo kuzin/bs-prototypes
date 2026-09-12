@@ -19,7 +19,7 @@ function BooksArt() {
   return (
     <Disc from="#3B2A6B" to="#241a45">
       <circle cx="47" cy="16" r="7" fill="#FDE68A" opacity="0.9" />
-      <rect x="15" y="40" width="34" height="5" rx="1.5" fill="#F59E0B" />
+      <rect x="15" y="40" width="34" height="5" rx="1.5" fill="#FFBC42" />
       <rect x="17" y="32" width="30" height="8" rx="1.5" fill="#34D399" />
       <rect x="20" y="24" width="24" height="8" rx="1.5" fill="#60A5FA" />
       <rect x="23" y="18" width="18" height="6" rx="1.5" fill="#F87171" />
@@ -52,7 +52,7 @@ function ReviewsArt() {
         d="M16 20h32a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4H30l-8 7v-7h-6a4 4 0 0 1-4-4V24a4 4 0 0 1 4-4z"
         fill="#E0F2FE"
       />
-      <g fill="#F59E0B">
+      <g fill="#FFBC42">
         <path d="M23 28l1.4 3 3.2.4-2.3 2.2.6 3.1-2.9-1.6-2.9 1.6.6-3.1-2.3-2.2 3.2-.4z" />
         <path d="M32 28l1.4 3 3.2.4-2.3 2.2.6 3.1-2.9-1.6-2.9 1.6.6-3.1-2.3-2.2 3.2-.4z" />
         <path d="M41 28l1.4 3 3.2.4-2.3 2.2.6 3.1-2.9-1.6-2.9 1.6.6-3.1-2.3-2.2 3.2-.4z" />
@@ -78,10 +78,10 @@ function TopArt() {
   return (
     <Disc from="#78350F" to="#451a03">
       <path d="M22 16h20v8a10 10 0 0 1-20 0z" fill="#FBBF24" />
-      <path d="M22 18h-5a6 6 0 0 0 6 6zM42 18h5a6 6 0 0 1-6 6z" fill="#F59E0B" />
-      <rect x="29" y="34" width="6" height="8" fill="#F59E0B" />
+      <path d="M22 18h-5a6 6 0 0 0 6 6zM42 18h5a6 6 0 0 1-6 6z" fill="#FFBC42" />
+      <rect x="29" y="34" width="6" height="8" fill="#FFBC42" />
       <rect x="23" y="42" width="18" height="5" rx="1.5" fill="#FBBF24" />
-      <circle cx="32" cy="24" r="3" fill="#FEF3C7" opacity="0.8" />
+      <circle cx="32" cy="24" r="3" fill="#FFECC8" opacity="0.8" />
     </Disc>
   )
 }
@@ -106,7 +106,7 @@ function MagazineArt() {
     <Disc from="#7F1D1D" to="#450a0a">
       <rect x="16" y="18" width="30" height="30" rx="2" fill="#FEE2E2" />
       <rect x="44" y="20" width="6" height="28" rx="3" fill="#FCA5A5" />
-      <rect x="20" y="23" width="22" height="5" rx="1" fill="#DC2626" />
+      <rect x="20" y="23" width="22" height="5" rx="1" fill="#E85648" />
       <g fill="#B91C1C" opacity="0.65">
         <rect x="20" y="32" width="22" height="2" rx="1" />
         <rect x="20" y="37" width="22" height="2" rx="1" />

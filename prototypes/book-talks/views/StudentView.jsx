@@ -60,7 +60,7 @@ function BadgeCard({ name, sublabel, img, reqLabel, completed, footer, onClick }
         </div>
         {completed && (
           <span className="bt-rcard-check">
-            <Icon name="circle-check-filled" size={20} color="#16A97A" />
+            <Icon name="circle-check-filled" size={20} color="#0BA85F" />
           </span>
         )}
       </div>
@@ -97,7 +97,7 @@ function BadgeDetailModal({ detail, open, onClose, onReplay }) {
             <img src={detail.img} alt="" />
           </div>
           <span className="bt-detail-check">
-            <Icon name="circle-check-filled" size={26} color="#16A97A" />
+            <Icon name="circle-check-filled" size={26} color="#0BA85F" />
           </span>
         </div>
         <div className="bt-detail-type">Book Talk Badge · Earned</div>
@@ -156,7 +156,7 @@ export function StudentView({ badge, selfStart = true }) {
       name: 'Book Buddy',
       sublabel: 'Talk with Benny',
       img: sampleImg,
-      color: '#0DA7BC',
+      color: '#0CA7BC',
       promptId: 'favorites',
       talks: 2,
       booktalk: true,
@@ -168,7 +168,7 @@ export function StudentView({ badge, selfStart = true }) {
       name: 'Deep Reader',
       sublabel: 'Talk with Benny',
       img: deepImg,
-      color: '#7C3AED',
+      color: '#B43DD0',
       promptId: 'why-reading',
       talks: 3,
       booktalk: true,
@@ -241,7 +241,7 @@ export function StudentView({ badge, selfStart = true }) {
         accountMenu={false}
         tabs={NAV_TABS}
         active="challenges"
-        accent="#0DA7BC"
+        accent="var(--c-teal)"
         actions={
           <>
             <Button variant="primary" size="sm" onClick={() => setLogOpen(true)}>
@@ -267,7 +267,7 @@ export function StudentView({ badge, selfStart = true }) {
             variant="underline"
             size="md"
             active="badges"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             items={CHALLENGE_TABS}
           />
         </div>
@@ -286,7 +286,7 @@ export function StudentView({ badge, selfStart = true }) {
               variant="underline"
               size="md"
               active="booktalk"
-              accent="#0DA7BC"
+              accent="#0CA7BC"
               items={BADGE_TYPE_TABS}
             />
           </div>

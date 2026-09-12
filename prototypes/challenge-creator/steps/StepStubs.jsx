@@ -56,7 +56,7 @@ import {
 
 // ─── Badge builder bits (create-a-badge) ────────────────────────────────────
 const BUILDER_BGS = [
-  '#0DA7BC',
+  '#0CA7BC',
   '#3B82F6',
   '#6366F1',
   '#8B5CF6',
@@ -64,10 +64,10 @@ const BUILDER_BGS = [
   '#FB7185',
   '#EF4444',
   '#F97316',
-  '#F59E0B',
+  '#FFBC42',
   '#84CC16',
-  '#16A97A',
-  '#0F172A',
+  '#0BA85F',
+  '#2A2A2A',
 ]
 // Clean 24×24 icon paths (Lucide/Feather geometry). Stroke icons draw as
 // outlines; fill icons as solids — both centered in the 24-unit box.
@@ -167,7 +167,7 @@ function builderText(hex) {
     c /= 255
     return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
   }
-  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) > 0.6 ? '#0f172a' : '#ffffff'
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) > 0.6 ? '#2a2a2a' : '#ffffff'
 }
 
 function loadImage(src) {
@@ -231,11 +231,11 @@ async function composeBadge(bg, content, font) {
       ctx.fillStyle = 'rgba(15,23,42,0.18)' // light scrim for legibility (kept subtle)
       ctx.fillRect(0, 0, size, size)
     } else {
-      ctx.fillStyle = bg.color || '#0DA7BC'
+      ctx.fillStyle = bg.color || '#0CA7BC'
       ctx.fillRect(0, 0, size, size)
     }
   } else {
-    ctx.fillStyle = bg.color || '#0DA7BC'
+    ctx.fillStyle = bg.color || '#0CA7BC'
     ctx.fillRect(0, 0, size, size)
   }
   ctx.restore()
@@ -373,7 +373,7 @@ const bgRadial = (inner, outer) =>
     ctx.fillStyle = g
     ctx.fillRect(0, 0, s, s)
   })
-const bgConfetti = (cols, base = ['#1E293B', '#0F172A']) =>
+const bgConfetti = (cols, base = ['#2A2A2A', '#2A2A2A']) =>
   makeBgImage((ctx, s) => {
     const g = ctx.createLinearGradient(0, 0, s, s)
     g.addColorStop(0, base[0])
@@ -423,7 +423,7 @@ function getDefaultBgImages() {
     bgGrad('#C084FC', '#6D28D9'),
     bgRadial('#0EA5C4', '#0C4A6E'),
     bgConfetti(['#F472B6', '#FBBF24', '#34D399', '#60A5FA', '#C084FC']),
-    bgStripes('#334155', '#1E293B'),
+    bgStripes('#424242', '#2A2A2A'),
   ]
   return _defaultBgImages
 }
@@ -651,7 +651,7 @@ export function BadgeGallery({ onPick, extraGroups = [], defaultGroupId, selecte
 const UPLOAD_BGS = [
   'transparent',
   '#FFFFFF',
-  '#0DA7BC',
+  '#0CA7BC',
   '#3B82F6',
   '#6366F1',
   '#8B5CF6',
@@ -659,17 +659,17 @@ const UPLOAD_BGS = [
   '#FB7185',
   '#EF4444',
   '#F97316',
-  '#F59E0B',
+  '#FFBC42',
   '#84CC16',
-  '#16A97A',
+  '#0BA85F',
   '#06B6D4',
-  '#0F172A',
+  '#2A2A2A',
 ]
 // Recolor tints offered for uploaded SVGs.
 const TINT_COLORS = [
-  '#0F172A',
+  '#2A2A2A',
   '#FFFFFF',
-  '#0DA7BC',
+  '#0CA7BC',
   '#3B82F6',
   '#6366F1',
   '#8B5CF6',
@@ -677,14 +677,14 @@ const TINT_COLORS = [
   '#FB7185',
   '#EF4444',
   '#F97316',
-  '#F59E0B',
+  '#FFBC42',
   '#84CC16',
-  '#16A97A',
+  '#0BA85F',
   '#06B6D4',
 ]
 // Multicolor (gradient) recolor options for SVGs — [from, to] stops.
 const GRADIENT_TINTS = [
-  ['#F59E0B', '#EC4899'],
+  ['#FFBC42', '#EC4899'],
   ['#06B6D4', '#3B82F6'],
   ['#8B5CF6', '#EC4899'],
   ['#22C55E', '#06B6D4'],
@@ -842,7 +842,7 @@ function BadgeUpload({ onPick, bgImages = [], bgLabel, initial }) {
         <Field>
           <Tabs
             className="cc-builder-seg"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             active={panel}
             onChange={selectPanel}
             items={[
@@ -941,7 +941,7 @@ function BadgeUpload({ onPick, bgImages = [], bgLabel, initial }) {
           <Button
             variant="primary"
             size="lg"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             onClick={async () =>
               onPick({
                 img: await composeUpload({
@@ -1047,7 +1047,7 @@ function BadgeBuilder({ onPick, bgImages = [], bgLabel, initial }) {
         <Field>
           <Tabs
             className="cc-builder-seg"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             active={bgMode}
             onChange={setBgMode}
             items={[
@@ -1076,7 +1076,7 @@ function BadgeBuilder({ onPick, bgImages = [], bgLabel, initial }) {
         <Field>
           <Tabs
             className="cc-builder-seg"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             active={mode}
             onChange={setMode}
             items={[
@@ -1097,7 +1097,7 @@ function BadgeBuilder({ onPick, bgImages = [], bgLabel, initial }) {
                   onClick={() => setIconId(ic.id)}
                   aria-label={ic.id}
                 >
-                  <BuilderIcon icon={ic} color="#475569" size={20} />
+                  <BuilderIcon icon={ic} color="#656565" size={20} />
                 </button>
               ))}
             </div>
@@ -1128,7 +1128,7 @@ function BadgeBuilder({ onPick, bgImages = [], bgLabel, initial }) {
             </Field>
           </div>
         )}
-        <Button variant="primary" size="lg" accent="#0DA7BC" onClick={save}>
+        <Button variant="primary" size="lg" accent="#0CA7BC" onClick={save}>
           Use this badge
         </Button>
       </div>
@@ -1155,7 +1155,7 @@ function BadgePicker({
     <div className="cc-badgepick">
       <Tabs
         className="cc-badgepick-tabs"
-        accent="#0DA7BC"
+        accent="#0CA7BC"
         active={tab}
         onChange={setTab}
         items={[
@@ -1374,7 +1374,7 @@ function BadgeEditor({
           <Button variant="secondary" size="md" onClick={onCancel}>
             Cancel
           </Button>
-          <Button variant="primary" size="md" accent="#0DA7BC" disabled={!valid} onClick={save}>
+          <Button variant="primary" size="md" accent="#0CA7BC" disabled={!valid} onClick={save}>
             {editing ? 'Save badge' : 'Save & add'}
           </Button>
         </footer>
@@ -1649,7 +1649,7 @@ function ActivityBadgeEditor({
           <>
             <Tabs
               className="cc-ab-tabs"
-              accent="#0DA7BC"
+              accent="#0CA7BC"
               active={tab}
               onChange={setTab}
               items={[
@@ -1849,7 +1849,7 @@ function ActivityBadgeEditor({
                       <Button variant="secondary" size="sm" onClick={() => setActForm(null)}>
                         Cancel
                       </Button>
-                      <Button variant="primary" size="sm" accent="#0DA7BC" onClick={saveActForm}>
+                      <Button variant="primary" size="sm" accent="#0CA7BC" onClick={saveActForm}>
                         {actForm.index == null ? 'Add activity' : 'Save activity'}
                       </Button>
                     </div>
@@ -1880,7 +1880,7 @@ function ActivityBadgeEditor({
           <Button variant="secondary" size="md" onClick={onCancel}>
             Cancel
           </Button>
-          <Button variant="primary" size="md" accent="#0DA7BC" disabled={!valid} onClick={save}>
+          <Button variant="primary" size="md" accent="#0CA7BC" disabled={!valid} onClick={save}>
             {editing ? 'Save badge' : 'Create badge'}
           </Button>
         </footer>
@@ -2038,7 +2038,7 @@ export function BadgeRow({
   )
 }
 
-const QUICK_COLORS = ['#0DA7BC', '#7C5CFA', '#E8866A', '#16A97A', '#F0C050', '#E8456B']
+const QUICK_COLORS = ['#0CA7BC', '#7C5CFA', '#F26430', '#0BA85F', '#F0C050', '#E8456B']
 // Build one numbered badge from a background ({ image } or { color }) + a number.
 const composeQuickBadge = (bg, num) =>
   composeBadge(bg, { type: 'number', value: String(num) }, 'Poppins')
@@ -2183,7 +2183,7 @@ function QuickBadgeCreator({ bgImages = [], onCreate, onCancel }) {
         <Button variant="secondary" size="md" onClick={onCancel}>
           Cancel
         </Button>
-        <Button variant="primary" size="md" accent="#0DA7BC" disabled={!valid} onClick={make}>
+        <Button variant="primary" size="md" accent="#0CA7BC" disabled={!valid} onClick={make}>
           Create {items.length} {items.length === 1 ? 'badge' : 'badges'}
         </Button>
       </footer>
@@ -3324,7 +3324,7 @@ function RewardEditor({ initial, badges = [], usedBadgeIds = [], onSave, onCance
         <Button
           variant="primary"
           size="md"
-          accent="#0DA7BC"
+          accent="#0CA7BC"
           disabled={!title.trim()}
           onClick={() => onSave({ id: initial?.id, title: title.trim(), description, badgeIds })}
         >
@@ -3493,7 +3493,7 @@ function SavedItemPicker({
           <Button
             variant="primary"
             size="md"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             disabled={!picked.length}
             onClick={() => setStep('badges')}
           >
@@ -3503,7 +3503,7 @@ function SavedItemPicker({
           <Button
             variant="primary"
             size="md"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             disabled={!picked.length}
             onClick={finish}
           >
@@ -3595,7 +3595,7 @@ function TicketRewardEditor({ initial, onSave, onCancel }) {
         <Button
           variant="primary"
           size="md"
-          accent="#0DA7BC"
+          accent="#0CA7BC"
           disabled={!name.trim() || !(cost >= 1)}
           onClick={() =>
             onSave({
@@ -3693,7 +3693,7 @@ function CertificateEditor({ initial, badges = [], onSave, onCancel }) {
         <Button
           variant="primary"
           size="md"
-          accent="#0DA7BC"
+          accent="#0CA7BC"
           disabled={!title.trim()}
           onClick={() =>
             onSave({
@@ -3965,7 +3965,7 @@ export function RewardsStep({ screen, challenge, update }) {
                           onClick={() => setR({ ticketSource: o.value })}
                         >
                           <span className="cc-optcard-ic" aria-hidden="true">
-                            <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#64748b'} />
+                            <Icon name={o.icon} size={19} color={on ? '#ffffff' : '#707070'} />
                           </span>
                           <span className="cc-optcard-text">
                             <strong>{o.label}</strong>

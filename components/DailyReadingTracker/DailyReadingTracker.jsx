@@ -41,7 +41,7 @@ export const DR_DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
 
 export const DR_LEGEND = [
   { color: '#EF4444', label: '● 0–33%' },
-  { color: '#F59E0B', label: '● 34–66%' },
+  { color: '#FFBC42', label: '● 34–66%' },
   { color: '#3B82F6', label: '● 66–99%' },
   { color: '#10B981', label: '✓ 100%' },
 ]

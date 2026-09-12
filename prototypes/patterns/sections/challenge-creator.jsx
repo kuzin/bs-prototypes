@@ -5,18 +5,18 @@ import { ColorPicker, BadgeMultiSelect } from '../../challenge-creator/steps/Ste
 import { Knobs, Variant } from './_shared'
 
 const PRESETS = [
-  '#0DA7BC',
-  '#16A97A',
-  '#7C3AED',
+  '#0CA7BC',
+  '#0BA85F',
+  '#B43DD0',
   '#DB2777',
   '#E8453A',
-  '#F59E0B',
+  '#FFBC42',
   '#0EA5B7',
-  '#0F172A',
+  '#2A2A2A',
 ]
 
 function ColorPickerKnobs() {
-  const [value, setValue] = useState('#0DA7BC')
+  const [value, setValue] = useState('#0CA7BC')
   const [withPresets, setWithPresets] = useState(true)
   const [chips, setChips] = useState(6)
   return (
@@ -40,11 +40,11 @@ function ColorPickerKnobs() {
       </Knobs>
       {/* ColorPicker's selected-chip ring uses the challenge-creator --teal token,
           which is scoped to .cc-root; provide it on the demo frame. */}
-      <div className="pt-variant-frame" style={{ '--teal': '#0DA7BC' }}>
+      <div className="pt-variant-frame" style={{ '--teal': '#0CA7BC' }}>
         <ColorPicker
           value={value}
           presets={withPresets ? PRESETS.slice(0, chips) : []}
-          fallback="#0DA7BC"
+          fallback="#0CA7BC"
           onColor={setValue}
         />
       </div>
@@ -57,9 +57,9 @@ const circleBadge = (c) =>
     `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="${c}"/></svg>`,
   )}`
 const SAMPLE_BADGES = [
-  { id: 'b1', name: 'First Book', img: circleBadge('#0DA7BC') },
-  { id: 'b2', name: 'Bookworm', img: circleBadge('#16A97A') },
-  { id: 'b3', name: '5-Day Streak', img: circleBadge('#7C3AED') },
+  { id: 'b1', name: 'First Book', img: circleBadge('#0CA7BC') },
+  { id: 'b2', name: 'Bookworm', img: circleBadge('#0BA85F') },
+  { id: 'b3', name: '5-Day Streak', img: circleBadge('#B43DD0') },
   { id: 'b4', name: 'Top Reviewer', img: circleBadge('#DB2777') },
 ]
 
@@ -119,8 +119,8 @@ export const challengeCreatorSections = [
       <>
         <ColorPickerKnobs />
         <Variant label="no presets (hex input only)">
-          <div style={{ '--teal': '#0DA7BC' }}>
-            <ColorPicker value="#16A97A" presets={[]} fallback="#0DA7BC" onColor={() => {}} />
+          <div style={{ '--teal': '#0CA7BC' }}>
+            <ColorPicker value="#0BA85F" presets={[]} fallback="#0CA7BC" onColor={() => {}} />
           </div>
         </Variant>
       </>

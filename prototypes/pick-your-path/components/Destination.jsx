@@ -91,7 +91,7 @@ function ActivityCard({ activity, path, done, response, onOpen }) {
       <span className={`pyp-actcard-foot${done ? ' is-done' : ''}`}>
         {done ? (
           <>
-            <Icon name="circle-check-filled" size={15} color="#16A97A" /> Completed
+            <Icon name="circle-check-filled" size={15} color="#0BA85F" /> Completed
           </>
         ) : (
           <>
@@ -168,7 +168,7 @@ export function Destination({
         icon: a.icon,
         text: `Completed ${a.name}`,
         note: responses[a.id],
-        color: '#7C3AED',
+        color: '#B43DD0',
       })),
   ]
 
@@ -226,7 +226,7 @@ export function Destination({
               icon="sparkles"
               value={`${doneCount}/${path.activities.length}`}
               label="activities"
-              color="#7C3AED"
+              color="#B43DD0"
               tint="#F3EEFE"
             />
             <StatChip
@@ -309,7 +309,7 @@ export function Destination({
                 <ProgressBar
                   value={doneCount}
                   max={path.activities.length}
-                  color="#7C3AED"
+                  color="#B43DD0"
                   size="md"
                 />
                 <div className="pyp-actgrid">
@@ -363,7 +363,7 @@ export function Destination({
                     <span className={`pyp-reward-status${r.earned ? ' is-earned' : ''}`}>
                       {r.earned ? (
                         <>
-                          <Icon name="circle-check-filled" size={14} color="#16A97A" /> Unlocked
+                          <Icon name="circle-check-filled" size={14} color="#0BA85F" /> Unlocked
                         </>
                       ) : (
                         <>
@@ -406,7 +406,7 @@ export function Destination({
                         <div className="pyp-log-text">{e.text}</div>
                         {e.note && <div className="pyp-log-note">“{e.note}”</div>}
                       </div>
-                      <Icon name="circle-check-filled" size={16} color="#16A97A" />
+                      <Icon name="circle-check-filled" size={16} color="#0BA85F" />
                     </li>
                   ))}
                 </ul>

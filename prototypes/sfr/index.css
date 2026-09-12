@@ -8,7 +8,7 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   background: #f3f4f6;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   -webkit-font-smoothing: antialiased;
 }
 

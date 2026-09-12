@@ -38,6 +38,7 @@ export function PersonalizeReader({
               <Icon name="pencil" size={13} />
             </span>
           </span>
+          <span className="st-avatar-name">{reader.name}</span>
         </div>
 
         <div className="st-main">

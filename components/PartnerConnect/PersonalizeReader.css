@@ -2,6 +2,11 @@
 
 .st-page {
   padding: 40px 0 64px;
+  /* The page is dropped into frames far narrower than the window — the pattern
+     library renders it around 560px, and the reader prototypes put it in a
+     content column — so the layout answers to its container. The viewport
+     media query this replaced never fired in any of them. */
+  container-type: inline-size;
 }
 
 .st-title {
@@ -16,11 +21,6 @@
   grid-template-columns: 260px minmax(0, 1fr);
   gap: 24px;
   align-items: start;
-}
-@media (max-width: 900px) {
-  .st-layout {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 /* ─── Avatar ──────────────────────────────────────────────────────────────── */
@@ -38,6 +38,17 @@
   font-weight: 800;
   color: #b1281f;
 }
+/* Only ever shown in the inline (stacked) layout — beside a circle that has
+   left its column, the name is what makes the row an identity row rather than
+   a stray avatar. */
+.st-avatar-name {
+  display: none;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--c-text);
+  overflow-wrap: anywhere;
+}
 .st-avatar-edit {
   position: absolute;
   right: 12px;
@@ -45,8 +56,8 @@
   width: 28px;
   height: 28px;
   border-radius: 999px;
-  background: #f1f5f9;
-  color: var(--c-text-muted);
+  background: #f5f5f5;
+  color: var(--c-text-light);
   display: grid;
   place-items: center;
 }
@@ -71,7 +82,7 @@
 .st-hint {
   font-size: 14px;
   line-height: 1.5;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-bottom: 14px;
 }
 
@@ -83,7 +94,7 @@
   padding: 18px 20px;
   border: 0;
   border-radius: 10px;
-  background: #f1f5f9;
+  background: #f5f5f5;
   color: var(--c-text);
   font-family: inherit;
   cursor: pointer;
@@ -125,7 +136,7 @@
   font-family: inherit;
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   cursor: pointer;
 }
 .st-yesno-btn:first-child {
@@ -169,7 +180,7 @@
 }
 .st-integration-acct {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* ─── Share / delete ──────────────────────────────────────────────────────── */
@@ -194,7 +205,7 @@
   color: var(--c-text);
 }
 .st-input::placeholder {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .st-warn {
@@ -226,10 +237,81 @@
   padding: 0 22px;
   border: 0;
   border-radius: 8px;
-  background: #f1f5f9;
-  color: var(--c-text-subtle);
+  background: #f5f5f5;
+  color: var(--c-gray-600);
   font-family: inherit;
   font-size: 14px;
   font-weight: 700;
   cursor: not-allowed;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────────
+   Keyed to `.st-page`'s container, not the viewport, and kept at the bottom of
+   the file: every rule below overrides a base rule of equal specificity, so
+   source order is what makes them win. */
+
+/* First the avatar column pays for the squeeze, not the form: a 140px circle
+   in a 260px column is mostly air, and the form is what has work to do. */
+@container (max-width: 900px) {
+  .st-layout {
+    grid-template-columns: 170px minmax(0, 1fr);
+  }
+  .st-avatar {
+    width: 110px;
+    height: 110px;
+  }
+  .st-avatar-initials {
+    font-size: 24px;
+  }
+}
+
+/* Past that there's no column width left to give, so the avatar stops being a
+   column at all — it goes inline above the sections, beside the reader's name,
+   with a rule under it. The shipped page breaks to a stack here too. */
+@container (max-width: 720px) {
+  .st-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .st-avatar-col {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .st-avatar {
+    width: 76px;
+    height: 76px;
+    flex: none;
+  }
+  .st-avatar-initials {
+    font-size: 20px;
+  }
+  .st-avatar-edit {
+    right: 0;
+    bottom: 2px;
+    width: 26px;
+    height: 26px;
+  }
+  .st-avatar-name {
+    display: block;
+  }
+}
+
+/* Phone width: the two-up rows have nothing left to trade. */
+@container (max-width: 460px) {
+  .st-title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+  .st-integration {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .st-row {
+    gap: 14px;
+  }
 }

@@ -36,7 +36,7 @@ import './EducatorWords.css'
 // instructional work — so this page leads with the outcome (words their class
 // picked up by reading) and says out loud that nothing here was assigned.
 
-const ACCENT = '#7C3AED'
+const ACCENT = '#B43DD0'
 
 /** Words collected per student, bucketed — the shape of the class, not a mean. */
 function distribution(roster) {
@@ -44,7 +44,7 @@ function distribution(roster) {
     { label: '25+ words', min: 25, color: '#6D28D9' },
     { label: '15–24', min: 15, color: '#8B5CF6' },
     { label: '5–14', min: 5, color: '#C4B5FD' },
-    { label: 'Under 5', min: 0, color: '#E2E8F0' },
+    { label: 'Under 5', min: 0, color: '#EAEAEA' },
   ]
   return buckets.map((b, i) => {
     const max = i === 0 ? Infinity : buckets[i - 1].min
@@ -73,14 +73,14 @@ function byActivity() {
       label: type.label,
       value: a.firstTry,
       valueLabel: `${a.firstTry}%`,
-      color: a.firstTry >= 85 ? '#16A34A' : a.firstTry >= 70 ? '#8B5CF6' : '#D97706',
+      color: a.firstTry >= 85 ? '#16A34A' : a.firstTry >= 70 ? '#8B5CF6' : '#AB720A',
       max: 100,
     }
   })
 }
 
 function AccuracyPill({ value }) {
-  const color = value >= 85 ? '#16A34A' : value >= 70 ? '#D97706' : '#DC2626'
+  const color = value >= 85 ? '#16A34A' : value >= 70 ? '#AB720A' : '#E85648'
   return (
     <Pill color={color} size="sm">
       {value}%
@@ -196,14 +196,14 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
               value={totals.collecting}
               unit={`/${ROSTER.length}`}
               label="Students collecting this week"
-              color="#0DA7BC"
+              color="#0CA7BC"
             />
-            <StatCard value={totals.median} label="Median words per student" color="#16A97A" />
+            <StatCard value={totals.median} label="Median words per student" color="#0BA85F" />
             <StatCard
               value={totals.firstTry}
               unit="%"
               label="Used correctly first try"
-              color="#D97706"
+              color="#AB720A"
             />
           </div>
 
@@ -241,7 +241,7 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
                 <div className="ew-legend">
                   {[
                     { label: 'Words collected', color: ACCENT },
-                    { label: 'Reading logs', color: '#94A3B8', dashed: true },
+                    { label: 'Reading logs', color: '#ACACAC', dashed: true },
                   ].map((l) => (
                     <span key={l.label} className="ew-legend-item">
                       <span
@@ -271,7 +271,7 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
                   {
                     key: 'logs',
                     name: 'Reading logs',
-                    color: '#94A3B8',
+                    color: '#ACACAC',
                     dashed: true,
                     fillOpacity: 0,
                   },
@@ -309,7 +309,7 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
                           )}
                       </p>
                       <div className="ew-queue-meta">
-                        <Pill color={row.status === 'flagged' ? '#D97706' : '#16A34A'} size="sm">
+                        <Pill color={row.status === 'flagged' ? '#AB720A' : '#16A34A'} size="sm">
                           {row.status === 'flagged' ? 'Needs a look' : 'Accepted'}
                         </Pill>
                       </div>

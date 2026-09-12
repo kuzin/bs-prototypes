@@ -1,0 +1,161 @@
+/* Search + filter chrome for Sessions for Review, in the shipped page's shape.
+   See SessionsFilters.jsx for what moved up here and why. */
+
+/* ─── Search ──────────────────────────────────────────────────────────────── */
+/* `SearchForm`'s `.section.search-form`: a card holding the field and its two
+   buttons, shown only when the header's toggle is on. */
+.sfr-search {
+  /* The page's own gap runs between the tab strip and the first block; the
+     search card is an extra block ahead of the filters, so it carries its own
+     space below it. */
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+.sfr-search-input {
+  flex: 1 1 260px;
+  min-width: 0;
+  height: 44px;
+  box-sizing: border-box;
+  padding: 0 14px;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
+  background: #fff;
+  font-family: inherit;
+  font-size: var(--text-cell);
+  color: var(--c-text);
+  outline: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+.sfr-search-input:hover {
+  border-color: var(--c-gray-400);
+}
+.sfr-search-input:focus {
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
+}
+.sfr-search-input::placeholder {
+  color: var(--c-gray-500);
+}
+
+.sfr-search-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ─── Filters ─────────────────────────────────────────────────────────────── */
+/* The card is this wrapper, not the bar inside it: the "Filtered by" row hangs
+   off the bottom of the same card under a rule, because it reports on the
+   controls above it. */
+.sfr-filters {
+  min-width: 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  container-type: inline-size;
+  container-name: sfr-filters;
+}
+
+.sfr-filters .fltr {
+  background: none;
+  border-radius: 0;
+}
+
+.sfr-active {
+  padding: 12px 14px;
+  border-top: 1px solid var(--c-gray-150);
+}
+
+/* These controls hug their own text rather than dividing the row. The shared
+   compact bar divides (two or three pills in a wide bar look stranded at
+   content width) but this page runs four to six of them, and evenly-divided
+   would make "All Types" as wide as "Finished Conversations Only". The app
+   agrees: `.ms-parent.filter button.ms-choice` is padding-sized. */
+.sfr-filters .fltr--compact .fltr-item {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+.sfr-filters .fltr--compact .fltr-ctl,
+.sfr-filters .fltr--compact .fltr-ctl .sel-wrap,
+.sfr-filters .fltr--compact .fltr-ctl .sel {
+  width: auto;
+  min-width: 0;
+}
+
+/* "List by:" holds its own column on the right. The filters wrap among
+   themselves in the space left of it, so adding a fifth control reflows the
+   left side and never moves the one thing whose position you learn. */
+.sfr-filters .fltr--compact {
+  flex-wrap: nowrap;
+  align-items: flex-start;
+}
+.sfr-filters .fltr--compact .fltr-items {
+  flex: 1 1 auto;
+}
+.sfr-filters .fltr--compact .fltr-action {
+  flex: 0 0 auto;
+  margin-left: 16px;
+  align-self: flex-start;
+}
+
+/* Too narrow for two columns: the filters take the row and List by goes under
+   them, which is the app's own second `.filter-row`. */
+@container sfr-filters (max-width: 720px) {
+  .sfr-filters .fltr--compact {
+    flex-wrap: wrap;
+  }
+  .sfr-filters .fltr--compact .fltr-action {
+    margin-left: 0;
+  }
+}
+
+/* The More filters toggle sits in the bar as one more pill-shaped control, so
+   the row reads as one set rather than controls plus a link. */
+.sfr-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  height: 44px;
+  padding: 0 14px;
+  border: none;
+  border-radius: 12px;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-label);
+  font-weight: 700;
+  color: var(--c-blue);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.12s;
+}
+.sfr-more:hover {
+  background: var(--c-gray-150);
+}
+
+/* "List by:" — the trailing control. */
+.sfr-listby {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  /* A fixed slot, so the control doesn't resize with its own value. */
+  min-width: 188px;
+  height: 44px;
+}
+.sfr-listby-label {
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: var(--c-text);
+  white-space: nowrap;
+}

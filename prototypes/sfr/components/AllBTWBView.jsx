@@ -1,16 +1,16 @@
 import { useState, useEffect } from 'react'
-import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
-import { Select } from '@components/Form/Form'
 import { SessionsTable } from './SessionsTable'
 import { ReaderGroupedView } from './ReaderGroupedView'
-import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
-import { Icon } from '@components/Icon/Icon'
-import '@components/FilterBar/FilterBar.css'
-import '@components/Form/Form.css'
+import { SessionsFilters } from './SessionsFilters'
 import './ListView.css'
 
+// All Book Talks — not a shipped tab, so its filters follow the mock: types,
+// flags, classes, grades, conversations, ratings. `listBy` isn't offered
+// (there's no reader roll-up behind this one), and `groupBy` stays for the
+// Book Talks prototype, which drives the grouping from its own header.
 export function AllBTWBView({
   sessions,
+  search = '',
   onSelectSession,
   onApproveRequest,
   onViewProfile,
@@ -18,12 +18,15 @@ export function AllBTWBView({
   defaultFilters = {},
   allowSourceFilter = false,
 }) {
-  const [search, setSearch] = useState('')
   const [type, setType] = useState(defaultFilters.type ?? 'all')
   const [rating, setRating] = useState(defaultFilters.rating ?? 'all')
   const [status, setStatus] = useState(defaultFilters.status ?? 'all')
   const [posFlags, setPosFlags] = useState(defaultFilters.posFlags ?? 'all')
   const [source, setSource] = useState(defaultFilters.source ?? 'all')
+  const [posOrNegFlags, setPosOrNegFlags] = useState('all')
+  const [classFilter, setClassFilter] = useState('all')
+  const [kindId, setKindId] = useState('all')
+  const [grade, setGrade] = useState('all')
 
   useEffect(() => {
     setType(defaultFilters.type ?? 'all')
@@ -62,19 +65,44 @@ export function AllBTWBView({
       posFlags === 'all' ||
       (posFlags === 'has' ? s.positiveFlags?.length > 0 : s.positiveFlags?.length === 0)
     const matchSource = source === 'all' || s.source === source
-    const matchSearch =
-      !search ||
-      s.student.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.book.title.toLowerCase().includes(search.toLowerCase())
-    return matchType && matchRating && matchStatus && matchPosFlags && matchSource && matchSearch
+    const matchClass = classFilter === 'all' || s.student.class === classFilter
+    const matchKind = kindId === 'all' || s.kindId === kindId
+    const matchGrade = grade === 'all' || s.student.grade === grade
+    const matchFlags =
+      posOrNegFlags === 'all' ||
+      (posOrNegFlags === 'has' ? s.flags?.length > 0 : s.flags?.length === 0)
+    const matchSearch = !search || s.student.name.toLowerCase().includes(search.toLowerCase())
+    return (
+      matchKind &&
+      matchType &&
+      matchRating &&
+      matchStatus &&
+      matchPosFlags &&
+      matchSource &&
+      matchClass &&
+      matchGrade &&
+      matchFlags &&
+      matchSearch
+    )
   })
 
   const TYPE_LABELS = { flagged: 'Flagged', engagement: 'Engagement', approved: 'Approved' }
   const RATING_LABELS = { green: 'Positive', yellow: 'Mixed', red: 'Disengaged' }
   const STATUS_LABELS = { completed: 'Completed', unfinished: 'Unfinished' }
   const SOURCE_LABELS = { self: 'Self-Started', title: 'Title Completion' }
+  function clearAll() {
+    setKindId('all')
+    setType('all')
+    setRating('all')
+    setStatus('all')
+    setPosFlags('all')
+    setSource('all')
+    setPosOrNegFlags('all')
+    setClassFilter('all')
+    setGrade('all')
+  }
+
   const activeFilters = [
-    ...(search ? [{ key: 'search', label: `"${search}"`, onClear: () => setSearch('') }] : []),
     ...(type !== 'all'
       ? [{ key: 'type', label: `Type: ${TYPE_LABELS[type]}`, onClear: () => setType('all') }]
       : []),
@@ -118,89 +146,106 @@ export function AllBTWBView({
 
   return (
     <div className="lv-shell">
-      <div className="lv-toolbar">
-        <div className="lv-count">{sessions.length} Book Talks Total</div>
-        <div className="lv-search-wrap">
-          <Icon name="search" size={14} className="lv-search-icon" />
-          <input
-            className="lv-search"
-            type="search"
-            placeholder="Search student or book…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className="lv-filters">
-        <FilterBar>
-          <FilterItem label="Type">
-            <Select value={type} onChange={(e) => setType(e.target.value)}>
-              <option value="all">All types</option>
-              <option value="flagged">Flagged</option>
-              <option value="engagement">Engagement</option>
-              <option value="approved">Approved</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Engagement Rating">
-            <Select value={rating} onChange={(e) => setRating(e.target.value)}>
-              <option value="all">All ratings</option>
-              <option value="green">Positive</option>
-              <option value="yellow">Mixed</option>
-              <option value="red">Disengaged</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Status">
-            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="all">All statuses</option>
-              <option value="completed">Completed</option>
-              <option value="unfinished">Unfinished</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Positive Flags">
-            <Select value={posFlags} onChange={(e) => setPosFlags(e.target.value)}>
-              <option value="all">All sessions</option>
-              <option value="has">Has positive flags</option>
-              <option value="none">No positive flags</option>
-            </Select>
-          </FilterItem>
-          {allowSourceFilter && hasSource && (
-            <FilterItem label="Source">
-              <Select value={source} onChange={(e) => setSource(e.target.value)}>
-                <option value="all">All sources</option>
-                <option value="self">Self-Started</option>
-                <option value="title">Title Completion</option>
-              </Select>
-            </FilterItem>
-          )}
-        </FilterBar>
-        <ActiveFilters
-          filters={activeFilters}
-          onClearAll={() => {
-            setSearch('')
-            setType('all')
-            setRating('all')
-            setStatus('all')
-            setPosFlags('all')
-            setSource('all')
-          }}
-        />
-      </div>
+      <SessionsFilters
+        activeFilters={activeFilters}
+        onClearAll={clearAll}
+        filters={[
+          {
+            key: 'type',
+            label: 'Types',
+            value: type,
+            onChange: setType,
+            options: [['all', 'All Types'], ...Object.entries(TYPE_LABELS)],
+          },
+          {
+            key: 'flags',
+            label: 'Flags',
+            value: posOrNegFlags,
+            onChange: setPosOrNegFlags,
+            options: [
+              ['all', 'All Flags'],
+              ['has', 'Has flags'],
+              ['none', 'No flags'],
+            ],
+          },
+          {
+            key: 'talk',
+            label: 'Talks',
+            value: kindId,
+            onChange: setKindId,
+            options: [
+              ['all', 'All Talks'],
+              ['engagement', 'Engagement'],
+              ['comprehension', 'Comprehension'],
+              ['integrity', 'Integrity'],
+            ],
+          },
+          {
+            key: 'class',
+            label: 'Classes',
+            value: classFilter,
+            onChange: setClassFilter,
+            options: [
+              ['all', 'All Classes'],
+              ['Mrs. Johnson', 'Mrs. Johnson'],
+              ['Mr. Okafor', 'Mr. Okafor'],
+              ['Mr. Kim', 'Mr. Kim'],
+            ],
+          },
+          {
+            key: 'grade',
+            label: 'Grades',
+            value: grade,
+            onChange: setGrade,
+            options: [
+              ['all', 'All Grades'],
+              ['3rd', '3rd'],
+              ['4th', '4th'],
+              ['5th', '5th'],
+            ],
+          },
+          {
+            key: 'status',
+            label: 'Conversations',
+            secondary: true,
+            value: status,
+            onChange: setStatus,
+            options: [
+              ['all', 'All conversations'],
+              ['completed', 'Finished'],
+              ['unfinished', 'Unfinished'],
+            ],
+          },
+          {
+            key: 'rating',
+            label: 'Ratings',
+            secondary: true,
+            value: rating,
+            onChange: setRating,
+            options: [['all', 'All Ratings'], ...Object.entries(RATING_LABELS)],
+          },
+          ...(allowSourceFilter && hasSource
+            ? [
+                {
+                  key: 'source',
+                  label: 'Sources',
+                  secondary: true,
+                  value: source,
+                  onChange: setSource,
+                  options: [['all', 'All Sources'], ...Object.entries(SOURCE_LABELS)],
+                },
+              ]
+            : []),
+        ]}
+      />
       {groupBy === 'reader' ? (
         <ReaderGroupedView
           sessions={filtered}
+          countLabel="Book Talks"
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
-          showTypeColumn
-          showFlagIcons
-          onClearFilters={() => {
-            setSearch('')
-            setType('all')
-            setRating('all')
-            setStatus('all')
-            setPosFlags('all')
-            setSource('all')
-          }}
+          onClearFilters={clearAll}
         />
       ) : (
         <SessionsTable
@@ -208,16 +253,7 @@ export function AllBTWBView({
           onSelectSession={(s) => onSelectSession(s, filtered)}
           onApproveRequest={onApproveRequest}
           onViewProfile={onViewProfile}
-          showTypeColumn
-          showFlagIcons
-          onClearFilters={() => {
-            setSearch('')
-            setType('all')
-            setRating('all')
-            setStatus('all')
-            setPosFlags('all')
-            setSource('all')
-          }}
+          onClearFilters={clearAll}
         />
       )}
     </div>

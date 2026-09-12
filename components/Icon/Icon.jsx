@@ -7,7 +7,7 @@
 //   import { Icon } from '@components/Icon/Icon'
 //   <Icon name="chevron-down" />              // default size 18, stroke 1.8
 //   <Icon name="flame" size={20} />
-//   <Icon name="flag" size={16} color="#DC2626" />
+//   <Icon name="flag" size={16} color="#E85648" />
 //
 // Color: omit `color` to inherit `currentColor` (the usual case). Stroke width
 // and size can be overridden per call site.
@@ -17,6 +17,8 @@ import {
   // ── navigation / controls ──
   IconChevronDown,
   IconChevronUp,
+  IconChevronsDown,
+  IconChevronsUp,
   IconChevronLeft,
   IconChevronRight,
   IconArrowRight,
@@ -64,6 +66,7 @@ import {
   IconUserOff,
   IconUsers,
   IconFlag,
+  IconFlagFilled,
   IconTrophy,
   IconAward,
   IconBadge,
@@ -230,6 +233,8 @@ const REGISTRY = {
   // navigation / controls
   'chevron-down': IconChevronDown,
   'chevron-up': IconChevronUp,
+  'chevrons-down': IconChevronsDown,
+  'chevrons-up': IconChevronsUp,
   'chevron-left': IconChevronLeft,
   'chevron-right': IconChevronRight,
   'arrow-right': IconArrowRight,
@@ -283,6 +288,7 @@ const REGISTRY = {
   'user-off': IconUserOff,
   users: IconUsers,
   flag: IconFlag,
+  'flag-filled': IconFlagFilled,
   trophy: IconTrophy,
   award: IconAward,
   badge: IconBadge,

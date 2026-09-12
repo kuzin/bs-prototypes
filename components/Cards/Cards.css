@@ -8,7 +8,7 @@
    or an enclosing ChartCard, and falls back to a neutral. One authored hex
    drives the fill (a light tint), the icon and the action. */
 .rc-stat {
-  --rc-stat-color: var(--rc-accent, var(--c-slate-900));
+  --rc-stat-color: var(--rc-accent, var(--c-gray-900));
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -45,7 +45,7 @@
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.01em;
-  color: var(--c-text-real, var(--c-text));
+  color: var(--c-text, var(--c-text));
 }
 
 /* The chip sits on the tile's own tint, so its pastel fill has little left to
@@ -73,13 +73,13 @@
   margin-top: 2px;
   font-size: 15px;
   font-weight: 500;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .rc-stat-foot {
   margin-top: 4px;
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* `action` — the link at the foot of a tile, in the tile's own hue. */
@@ -151,9 +151,9 @@
   width: 34px;
   height: 34px;
   border-radius: 9px;
-  background: var(--rc-accent-bg, var(--c-slate-50));
-  color: var(--rc-accent, var(--c-slate-600));
-  border: 1px solid color-mix(in srgb, var(--rc-accent, var(--c-slate-400)) 20%, transparent);
+  background: var(--rc-accent-bg, var(--c-gray-0));
+  color: var(--rc-accent, var(--c-gray-750));
+  border: 1px solid color-mix(in srgb, var(--rc-accent, var(--c-gray-500)) 20%, transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -180,13 +180,13 @@
   font-size: var(--text-lg);
   font-weight: 800;
   letter-spacing: -0.01em;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 
 .rc-card-sub {
   font-size: var(--text-label);
   font-weight: 500;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* `.detail_metric_link` — the module's action is a plain $dark-gray link, not a
@@ -255,7 +255,7 @@
 .rc-card-drill {
   font-size: 13px;
   font-weight: 600;
-  color: var(--rc-accent, var(--c-slate-600));
+  color: var(--rc-accent, var(--c-gray-750));
   background: none;
   border: none;
   cursor: pointer;
@@ -317,7 +317,7 @@
 
 .rc-card-foot {
   padding: 10px 16px 12px;
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
 }
 
 /* ── Inline note inside a card body ────────────────────────────────────── */
@@ -421,7 +421,7 @@
 }
 .rc-card-note--accent .rc-card-note-icon,
 .rc-card-note--accent strong {
-  color: var(--rc-accent, var(--c-brand-coral));
+  color: var(--rc-accent, var(--c-orange));
 }
 
 /* ── Page root — flex column with 16px gap. Used by every district view

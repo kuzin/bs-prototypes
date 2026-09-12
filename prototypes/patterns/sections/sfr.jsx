@@ -43,10 +43,7 @@ function BennyBubbleKnobs() {
           </Field>
         )}
       </Knobs>
-      <div
-        className="pt-variant-frame"
-        style={variant === 'centered' ? { maxWidth: 460, margin: '0 auto' } : undefined}
-      >
+      <div className="pt-variant-frame">
         <BennyBubble variant={variant} timestamp={withTimestamp ? timestamp : undefined}>
           {text}
         </BennyBubble>
@@ -58,8 +55,8 @@ function BennyBubbleKnobs() {
 const DEMO_SESSIONS = [
   {
     id: 'dm-1',
-    student: { id: 's1', name: 'Tyler Williams', grade: '5th', initials: 'TW', color: '#7C3AED' },
-    book: { title: "Charlotte's Web", author: 'E.B. White', color: '#7C3AED' },
+    student: { id: 's1', name: 'Tyler Williams', grade: '5th', initials: 'TW', color: '#B43DD0' },
+    book: { title: "Charlotte's Web", author: 'E.B. White', color: '#B43DD0' },
     date: '2025-05-12',
     type: 'both',
     status: 'completed',
@@ -106,8 +103,8 @@ const DEMO_SESSIONS = [
   },
   {
     id: 'dm-2',
-    student: { id: 's2', name: 'Caleb Brown', grade: '4th', initials: 'CB', color: '#16A97A' },
-    book: { title: 'Wonder', author: 'R.J. Palacio', color: '#16A97A' },
+    student: { id: 's2', name: 'Caleb Brown', grade: '4th', initials: 'CB', color: '#0BA85F' },
+    book: { title: 'Wonder', author: 'R.J. Palacio', color: '#0BA85F' },
     date: '2025-05-13',
     type: 'engagement',
     status: 'completed',
@@ -143,13 +140,13 @@ function SessionModalDemo() {
       <Button
         variant="primary"
         size="sm"
-        accent="#16A97A"
+        accent="#0BA85F"
         onClick={() => setActiveSession(sessions[0])}
       >
         Open SessionModal →
       </Button>
       {activeSession && (
-        <span style={{ fontSize: 13, color: '#64748B' }}>
+        <span style={{ fontSize: 13, color: '#707070' }}>
           Modal open — click Done or × to close
         </span>
       )}
@@ -167,7 +164,7 @@ function SessionModalDemo() {
 const SESSIONS_TABLE_DEMO = [
   {
     id: 'demo-1',
-    student: { id: 's1', name: 'Tyler Williams', grade: '5th', initials: 'TW', color: '#7C3AED' },
+    student: { id: 's1', name: 'Tyler Williams', grade: '5th', initials: 'TW', color: '#B43DD0' },
     book: { title: "Charlotte's Web", author: 'E.B. White' },
     date: '2025-05-12',
     type: 'flagged',
@@ -186,7 +183,7 @@ const SESSIONS_TABLE_DEMO = [
   },
   {
     id: 'demo-2',
-    student: { id: 's2', name: 'Caleb Brown', grade: '4th', initials: 'CB', color: '#16A97A' },
+    student: { id: 's2', name: 'Caleb Brown', grade: '4th', initials: 'CB', color: '#0BA85F' },
     book: { title: 'Wonder', author: 'R.J. Palacio' },
     date: '2025-05-13',
     type: 'engagement',
@@ -198,7 +195,7 @@ const SESSIONS_TABLE_DEMO = [
   },
   {
     id: 'demo-3',
-    student: { id: 's3', name: 'Emma Parker', grade: '6th', initials: 'EP', color: '#7C3AED' },
+    student: { id: 's3', name: 'Emma Parker', grade: '6th', initials: 'EP', color: '#B43DD0' },
     book: { title: 'The Giver', author: 'Lois Lowry' },
     date: '2025-05-14',
     type: 'both',
@@ -217,7 +214,7 @@ const SESSIONS_TABLE_DEMO = [
   },
   {
     id: 'demo-4',
-    student: { id: 's4', name: 'Lily Martinez', grade: '3rd', initials: 'LM', color: '#E8866A' },
+    student: { id: 's4', name: 'Lily Martinez', grade: '3rd', initials: 'LM', color: '#F26430' },
     book: { title: 'Diary of a Wimpy Kid', author: 'Jeff Kinney' },
     date: '2025-05-14',
     type: 'engagement',
@@ -251,7 +248,9 @@ function SessionsTableKnobs() {
 
 function SessionsToReviewDemo() {
   return (
-    <div className="adm" style={{ padding: 16, maxWidth: 460 }}>
+    // `.adm` is the dashboard page shell and brings its own page gutters; here
+    // it is only wanted for the CSS vars the card reads off it.
+    <div className="adm" style={{ padding: 0 }}>
       <div className="adm-grid-card">
         <div className="adm-cell adm-cell--scroll">
           <SessionsToReview sessions={SESSIONS} onGoToSfr={() => {}} />
@@ -263,7 +262,11 @@ function SessionsToReviewDemo() {
 
 export const sfrSections = [
   {
-    group: 'sfr',
+    // Not an SfR component: Benny speaks in six prototypes (book-talks,
+    // engagement-signals, logging-flow, sfr, student-profile,
+    // words-with-benny) and the code has lived in @components since it was
+    // built. Feedback & Status is where the UI's own voice belongs.
+    group: 'feedback',
     id: 'sfr-benny-bubble',
     name: 'BennyBubble',
     desc: (
@@ -315,14 +318,14 @@ export const sfrSections = [
             students={[
               {
                 initials: 'TW',
-                color: '#7C3AED',
+                color: '#B43DD0',
                 name: 'Tyler Williams',
                 count: 2,
                 countLabel: 'flags',
               },
               {
                 initials: 'MJ',
-                color: '#0DA7BC',
+                color: '#0CA7BC',
                 name: 'Marcus Johnson',
                 count: 1,
                 countLabel: 'flags',
@@ -341,21 +344,21 @@ export const sfrSections = [
             students={[
               {
                 initials: 'CB',
-                color: '#16A97A',
+                color: '#0BA85F',
                 name: 'Caleb Brown',
                 count: 3,
                 countLabel: 'green talks',
               },
               {
                 initials: 'ML',
-                color: '#E8866A',
+                color: '#F26430',
                 name: 'Maya Lee',
                 count: 2,
                 countLabel: 'green talks',
               },
               {
                 initials: 'SC',
-                color: '#D97706',
+                color: '#AB720A',
                 name: 'Sofia Chen',
                 count: 1,
                 countLabel: 'green talks',
@@ -374,7 +377,7 @@ export const sfrSections = [
             students={[
               {
                 initials: 'EP',
-                color: '#7C3AED',
+                color: '#B43DD0',
                 name: 'Emma Parker',
                 count: 2,
                 countLabel: 'yellow talks',
@@ -393,14 +396,14 @@ export const sfrSections = [
             students={[
               {
                 initials: 'ZA',
-                color: '#0DA7BC',
+                color: '#0CA7BC',
                 name: 'Zara Ahmed',
                 count: 1,
                 countLabel: 'unfinished',
               },
               {
                 initials: 'NH',
-                color: '#475569',
+                color: '#656565',
                 name: 'Noah Harris',
                 count: 1,
                 countLabel: 'unfinished',
@@ -446,7 +449,7 @@ export const sfrSections = [
     ),
     render: () => (
       <>
-        <Variant label="open / closed toggle" bare>
+        <Variant label="open / closed toggle">
           <SessionModalDemo />
         </Variant>
       </>
@@ -465,9 +468,9 @@ export const sfrSections = [
       </>
     ),
     render: () => (
-      <div className="pt-variant-frame pt-variant-frame--full">
+      <Variant label="filters + severity table" ground>
         <SafetyView sessions={SESSIONS} onSelectSession={() => {}} />
-      </div>
+      </Variant>
     ),
   },
   {
@@ -488,7 +491,7 @@ export const sfrSections = [
       </>
     ),
     render: () => (
-      <Variant label="segmented alert hub" bare>
+      <Variant label="segmented alert hub" ground>
         <SessionsToReviewDemo />
       </Variant>
     ),

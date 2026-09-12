@@ -28,7 +28,7 @@ const prettyDate = (iso) => {
 }
 
 const CLASS_MEDIAN = 22
-const ACCENT = '#7C3AED'
+const ACCENT = '#B43DD0'
 const ACCENT_BG = '#F3E8FF'
 // StatRow's icon chip takes the same {bg, text} shape the profile's own
 // SECTION_ACCENT entries use.
@@ -111,7 +111,7 @@ export function StudentVocabulary({ studentId }) {
         <div className="svo-compare">
           <div className="svo-compare-head">
             <span className="svo-compare-lbl">{person.words} words collected</span>
-            <Pill color={ahead ? '#16A34A' : '#D97706'} size="sm" variant="soft">
+            <Pill color={ahead ? '#16A34A' : '#AB720A'} size="sm" variant="soft">
               {ahead ? '+' : ''}
               {person.words - CLASS_MEDIAN} vs. median
             </Pill>

@@ -8,7 +8,7 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   background: #f3f4f6;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   -webkit-font-smoothing: antialiased;
 }
 h1,
@@ -35,7 +35,7 @@ body,
   --accent: #6366f1;
   --accent-tint: #eef2ff;
   --border: var(--c-gray-200);
-  --muted: var(--c-slate-500);
+  --muted: var(--c-gray-700);
   --max-w: 1280px;
 
   position: fixed;
@@ -122,7 +122,7 @@ body,
   background: #fff;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   border-radius: 999px;
   white-space: nowrap;
   cursor: pointer;
@@ -132,7 +132,7 @@ body,
     border-color 0.12s;
 }
 .ins-tab:hover {
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   color: var(--c-text);
 }
 .ins-tab--active,
@@ -249,7 +249,7 @@ body,
 }
 .ins-qmeter-bar {
   height: 4px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   border-radius: 999px;
   overflow: hidden;
 }
@@ -306,11 +306,11 @@ body,
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   border: 1px solid transparent;
   min-width: 0;
 }
@@ -325,7 +325,7 @@ body,
   white-space: nowrap;
 }
 .ins-filter--muted {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .ins-filter-dot {
   flex-shrink: 0;
@@ -361,7 +361,7 @@ body,
   flex-shrink: 0;
 }
 .ins-cache-banner--baseline {
-  background: #fef3c7;
+  background: #ffecc8;
   border-color: #fcd34d;
   color: #92400e;
 }
@@ -429,7 +429,7 @@ button.ins-metric {
   position: absolute;
   top: 14px;
   right: 14px;
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
   transition:
     color 0.12s,
     transform 0.12s;
@@ -444,12 +444,12 @@ button.ins-metric {
   gap: 2px;
   padding-bottom: 10px;
   margin-bottom: 10px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
 }
 .ins-metric-label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .ins-metric-note {
   font-size: 11px;
@@ -469,7 +469,7 @@ button.ins-metric {
 }
 .ins-metric-empty {
   font-size: 28px;
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
   font-weight: 300;
 }
 .ins-metric--empty {
@@ -477,14 +477,14 @@ button.ins-metric {
     135deg,
     #fff,
     #fff 6px,
-    var(--c-slate-50) 6px,
-    var(--c-slate-50) 12px
+    var(--c-gray-0) 6px,
+    var(--c-gray-0) 12px
   );
   border-style: dashed;
   border-color: var(--c-border-strong);
 }
 .ins-metric--loading .ins-metric-value {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 /* ─── Panels (top books / badges / ages) ───────────────────────────────── */
@@ -504,7 +504,7 @@ button.ins-metric {
 .ins-panel-title {
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .ins-panel-open {
   display: inline-flex;
@@ -532,8 +532,8 @@ button.ins-metric {
     135deg,
     #fff,
     #fff 6px,
-    var(--c-slate-50) 6px,
-    var(--c-slate-50) 12px
+    var(--c-gray-0) 6px,
+    var(--c-gray-0) 12px
   );
   border-style: dashed;
   border-color: var(--c-border-strong);
@@ -572,9 +572,9 @@ button.ins-metric {
 .ins-book.ins-book--skel {
   background: linear-gradient(
     110deg,
-    var(--c-slate-200) 30%,
-    var(--c-slate-100) 50%,
-    var(--c-slate-200) 70%
+    var(--c-gray-200) 30%,
+    var(--c-gray-100) 50%,
+    var(--c-gray-200) 70%
   );
   background-size: 200% 100%;
   animation: ins-skel-shimmer 1.4s linear infinite;
@@ -594,9 +594,9 @@ button.ins-metric {
   border-radius: 999px;
   background: linear-gradient(
     110deg,
-    var(--c-slate-200) 30%,
-    var(--c-slate-100) 50%,
-    var(--c-slate-200) 70%
+    var(--c-gray-200) 30%,
+    var(--c-gray-100) 50%,
+    var(--c-gray-200) 70%
   );
   background-size: 200% 100%;
   animation: ins-skel-shimmer 1.4s linear infinite;
@@ -605,7 +605,7 @@ button.ins-metric {
   width: 48px;
   height: 10px;
   border-radius: 4px;
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
   animation: ins-skel-pulse 1.4s ease-in-out infinite;
 }
 /* Doubled class: this modifier is declared above `.ins-age-bar`, whose own
@@ -614,9 +614,9 @@ button.ins-metric {
 .ins-age-bar.ins-age-bar--skel {
   background: linear-gradient(
     110deg,
-    var(--c-slate-200) 30%,
-    var(--c-slate-100) 50%,
-    var(--c-slate-200) 70%
+    var(--c-gray-200) 30%,
+    var(--c-gray-100) 50%,
+    var(--c-gray-200) 70%
   );
   background-size: 200% 100%;
   animation: ins-skel-shimmer 1.4s linear infinite;
@@ -625,7 +625,7 @@ button.ins-metric {
   width: 14px;
   height: 8px;
   border-radius: 3px;
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
   animation: ins-skel-pulse 1.4s ease-in-out infinite;
 }
 
@@ -670,7 +670,7 @@ button.ins-metric {
   overflow: hidden;
   position: relative;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-  background: var(--c-slate-800);
+  background: var(--c-gray-900);
 }
 .ins-book img {
   width: 100%;
@@ -714,7 +714,7 @@ button.ins-metric {
 }
 .ins-badge-label {
   font-size: 12px;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   font-weight: 700;
 }
 .ins-badge-count {
@@ -747,7 +747,7 @@ button.ins-metric {
 }
 .ins-age-bar {
   width: 100%;
-  background: var(--c-slate-400);
+  background: var(--c-gray-500);
   border-radius: 3px 3px 0 0;
   min-height: 2px;
 }
@@ -766,8 +766,8 @@ button.ins-metric {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  background: var(--c-slate-100);
-  color: var(--c-slate-600);
+  background: var(--c-gray-100);
+  color: var(--c-gray-750);
 }
 .ins-pill--cost {
   background: #eef2ff;
@@ -781,7 +781,7 @@ button.ins-metric {
   justify-content: space-between;
   gap: 16px;
   padding: 14px 18px;
-  background: linear-gradient(180deg, #fafafe, var(--c-slate-100));
+  background: linear-gradient(180deg, #fafafe, var(--c-gray-100));
   border: 1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   border-radius: 12px;
 }
@@ -800,7 +800,7 @@ button.ins-metric {
 }
 .ins-edit-bar-hint {
   font-size: 13px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 .ins-edit-bar-r {
   display: flex;
@@ -858,7 +858,7 @@ button.ins-metric {
   font: inherit;
   font-size: 11.5px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   letter-spacing: 0.02em;
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(15, 23, 42, 0.08);
@@ -932,7 +932,7 @@ button.ins-metric {
 .ins-cust-section-label {
   font-size: 11px;
   font-weight: 800;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   text-transform: uppercase;
   letter-spacing: 0.08em;
 }
@@ -974,7 +974,7 @@ button.ins-metric {
     transform 0.08s;
 }
 .ins-cust-card:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-500);
 }
 .ins-cust-card:active {
   transform: scale(0.995);
@@ -992,7 +992,7 @@ button.ins-metric {
   align-items: center;
   justify-content: center;
   padding: 14px 14px 12px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   border-bottom: 1px solid var(--c-border);
   min-height: 70px;
   transition: background 0.14s;
@@ -1013,7 +1013,7 @@ button.ins-metric {
 .ins-cust-card-label {
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   line-height: 1.25;
   min-width: 0;
   overflow: hidden;
@@ -1026,7 +1026,7 @@ button.ins-metric {
   width: 28px;
   height: 16px;
   border-radius: 999px;
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
   position: relative;
   transition: background 0.14s;
 }
@@ -1066,7 +1066,7 @@ button.ins-metric {
 .ins-cust-thumb-num {
   font-size: 22px;
   font-weight: 600;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   line-height: 1;
 }
 .ins-cust-card--on .ins-cust-thumb-num {
@@ -1075,7 +1075,7 @@ button.ins-metric {
 .ins-cust-thumb-line {
   width: 56%;
   height: 4px;
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
   border-radius: 2px;
 }
 .ins-cust-card--on .ins-cust-thumb-line {
@@ -1091,7 +1091,7 @@ button.ins-metric {
 }
 .ins-cust-thumb--books > span {
   aspect-ratio: 2 / 3;
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
   border-radius: 2px;
 }
 .ins-cust-card--on .ins-cust-thumb--books > span {
@@ -1105,8 +1105,8 @@ button.ins-metric {
   width: 26px;
   height: 26px;
   border-radius: 999px;
-  background: var(--c-slate-300);
-  border: 2px solid var(--c-slate-400);
+  background: var(--c-gray-350);
+  border: 2px solid var(--c-gray-500);
 }
 .ins-cust-card--on .ins-cust-thumb--badges > span {
   background: color-mix(in srgb, var(--accent) 35%, #fff);
@@ -1123,7 +1123,7 @@ button.ins-metric {
 }
 .ins-cust-thumb--bars > span {
   flex: 1;
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
   border-radius: 2px 2px 0 0;
   min-height: 4px;
 }
@@ -1139,7 +1139,7 @@ button.ins-metric {
   border-radius: 8px;
   border: 1px solid var(--border);
   background: #fff;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -1193,8 +1193,8 @@ button.ins-metric {
     135deg,
     #fff,
     #fff 6px,
-    var(--c-slate-50) 6px,
-    var(--c-slate-50) 12px
+    var(--c-gray-0) 6px,
+    var(--c-gray-0) 12px
   );
   border-style: dashed;
   border-color: var(--c-border-strong);
@@ -1213,7 +1213,7 @@ button.ins-metric {
   gap: 6px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -1233,7 +1233,7 @@ button.ins-metric {
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
   transition:
     border-color 0.14s,
@@ -1311,7 +1311,7 @@ button.ins-metric {
   align-items: center;
   gap: 10px;
   padding: 10px 14px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   border: 1.5px solid var(--c-border);
   border-radius: 10px;
   transition:
@@ -1332,7 +1332,7 @@ button.ins-metric {
   outline: none;
 }
 .ins-palette-input input::placeholder {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .ins-palette-matches {
@@ -1353,7 +1353,7 @@ button.ins-metric {
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   cursor: pointer;
   text-align: left;
 }
@@ -1368,7 +1368,7 @@ button.ins-metric {
   text-transform: uppercase;
   color: var(--muted);
   padding: 2px 8px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   border-radius: 999px;
 }
 
@@ -1386,14 +1386,14 @@ button.ins-metric {
   color: var(--muted);
 }
 .ins-palette-chip {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   border: 1px solid transparent;
   padding: 6px 12px;
   border-radius: 999px;
   font: inherit;
   font-size: 12.5px;
   font-weight: 600;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -1457,7 +1457,7 @@ button.ins-metric {
   transition: background 0.12s;
 }
 .ins-consol-metric:hover {
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 .ins-consol-metric:disabled {
   cursor: default;

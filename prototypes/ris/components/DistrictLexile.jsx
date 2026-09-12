@@ -9,11 +9,11 @@ import { ChartLegend, NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/cha
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 
-const ACCENT = '#7C3AED'
-const ABOVE_COLOR = '#0DA7BC'
-const BELOW_COLOR = '#E8866A'
-const GROWTH_COLOR = '#16A97A'
-const DECLINE_COLOR = '#E8866A'
+const ACCENT = '#B43DD0'
+const ABOVE_COLOR = '#0CA7BC'
+const BELOW_COLOR = '#F26430'
+const GROWTH_COLOR = '#0BA85F'
+const DECLINE_COLOR = '#F26430'
 const SKL_ICON = SECTIONS.find((s) => s.key === 'skills')?.icon
 
 const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
@@ -26,7 +26,7 @@ const STUCK_COLUMNS = [
     label: 'YTD Growth',
     align: 'center',
     render: (v) => (
-      <Pill color={v < 0 ? '#DC2626' : '#D97706'} size="sm">
+      <Pill color={v < 0 ? '#E85648' : '#AB720A'} size="sm">
         {signedL(v)}
       </Pill>
     ),
@@ -61,14 +61,14 @@ export function DistrictLexile() {
           label="Schools declining"
           value={`${stuckSchools.length} of 6`}
           footer="negative Lexile growth"
-          color="#DC2626"
+          color="#E85648"
         />
         <StatCard label="Top-growth school" value="Adams High" footer="+112L YTD" color="#15803D" />
         <StatCard
           label="Students flagged (stuck)"
           value="~1,490"
           footer="12% of total enrollment"
-          color="#D97706"
+          color="#AB720A"
         />
       </div>
 
@@ -141,7 +141,7 @@ export function DistrictLexile() {
                 {
                   axis: 'y',
                   value: 0,
-                  lineStyle: { stroke: '#94A3B8', strokeWidth: 1, strokeDasharray: '5 4' },
+                  lineStyle: { stroke: '#ACACAC', strokeWidth: 1, strokeDasharray: '5 4' },
                 },
               ]}
               layers={[
@@ -160,7 +160,7 @@ export function DistrictLexile() {
                         style={{
                           fontSize: 10,
                           fontWeight: 600,
-                          fill: '#475569',
+                          fill: '#656565',
                           pointerEvents: 'none',
                         }}
                       >
@@ -187,7 +187,7 @@ export function DistrictLexile() {
                       <span className="sdb-tooltip-val">{signedL(node.data.y)}</span>
                     </div>
                   </div>
-                  <div className="sdb-tooltip-series" style={{ '--series-color': '#94A3B8' }}>
+                  <div className="sdb-tooltip-series" style={{ '--series-color': '#ACACAC' }}>
                     <div className="sdb-tooltip-row">
                       <span className="sdb-tooltip-dot" />
                       <span className="sdb-tooltip-label">Avg books/mo</span>
@@ -235,7 +235,7 @@ export function DistrictLexile() {
               items={[
                 { color: ABOVE_COLOR, label: 'Met/exceeded expected' },
                 { color: BELOW_COLOR, label: 'Below expected' },
-                { color: '#64748B', label: 'Expected baseline' },
+                { color: '#707070', label: 'Expected baseline' },
               ]}
             />
           }
@@ -256,7 +256,7 @@ export function DistrictLexile() {
                 color: ABOVE_COLOR,
                 colorFn: (d) => (d.growth >= d.expected ? ABOVE_COLOR : BELOW_COLOR),
               },
-              { key: 'expected', name: 'Expected growth', color: '#E2E8F0' },
+              { key: 'expected', name: 'Expected growth', color: '#EAEAEA' },
             ]}
           />
         </ChartCard>
