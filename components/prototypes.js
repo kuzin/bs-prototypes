@@ -14,7 +14,7 @@ export const PROTOTYPES = [
     section: 'Prototypes',
     category: 'Profiles',
     href: '/bs-prototypes/student-profile/',
-    accent: '#E8866A',
+    accent: '#F26430',
     description: 'Single-student habits, skills, motivation & integrity.',
   },
   {
@@ -23,7 +23,7 @@ export const PROTOTYPES = [
     section: 'Prototypes',
     category: 'Profiles',
     href: '/bs-prototypes/reader-profile/',
-    accent: '#0DA7BC',
+    accent: '#0CA7BC',
     description: 'Library reader profile — one account, many readers.',
   },
   {
@@ -32,7 +32,7 @@ export const PROTOTYPES = [
     section: 'Prototypes',
     category: 'Analytics',
     href: '/bs-prototypes/ris/',
-    accent: '#1D4ED8',
+    accent: '#196DD5',
     description: 'School analytics for principals & coaches.',
   },
   {
@@ -41,7 +41,7 @@ export const PROTOTYPES = [
     section: 'Prototypes',
     category: 'Analytics',
     href: '/bs-prototypes/ris-district/',
-    accent: '#0DA7BC',
+    accent: '#0CA7BC',
     description: 'District analytics for curriculum & superintendents.',
   },
   {
@@ -50,7 +50,7 @@ export const PROTOTYPES = [
     section: 'Completed',
     category: 'Reading integrity',
     href: '/bs-prototypes/sfr/',
-    accent: '#16A97A',
+    accent: '#0BA85F',
     description: 'Review Book Talks for integrity, engagement, and student-safety signals.',
   },
   {
@@ -95,7 +95,7 @@ export const PROTOTYPES = [
     section: 'Experiments',
     category: 'Reader experience',
     href: '/bs-prototypes/web-app/',
-    accent: '#0DA7BC',
+    accent: '#0CA7BC',
     description: 'Student-facing dashboard, challenges, reading log.',
   },
   {
@@ -112,7 +112,7 @@ export const PROTOTYPES = [
     name: 'Pattern Library',
     section: 'Prototypes',
     href: '/bs-prototypes/patterns/',
-    accent: '#7C3AED',
+    accent: '#B43DD0',
     description: 'Shared RIS components — cards, charts, tooltips, icons.',
   },
   {
@@ -197,7 +197,7 @@ export const PROTOTYPES = [
     section: 'Prototypes',
     category: 'Reader experience',
     href: '/bs-prototypes/words-with-benny/',
-    accent: '#7C3AED',
+    accent: '#B43DD0',
     description:
       'Log reading, unlock a word from the book — collect them, and educators see the growth.',
   },
@@ -207,7 +207,7 @@ export const PROTOTYPES = [
     section: 'Prototypes',
     category: 'Profiles',
     href: '/bs-prototypes/engagement-signals/',
-    accent: '#16A97A',
+    accent: '#0BA85F',
     description: 'Increasing, consistent or declining — and what is driving it.',
   },
 ]

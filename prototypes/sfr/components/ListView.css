@@ -21,7 +21,7 @@
 .lv-count {
   font-size: 16px;
   font-weight: 700;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   white-space: nowrap;
 }
 
@@ -35,7 +35,7 @@
   left: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   pointer-events: none;
 }
 
@@ -46,14 +46,14 @@
   border-radius: 8px;
   font-size: 13px;
   font-family: inherit;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   background: #fff;
   outline: none;
   transition: border-color 0.15s;
 }
 .lv-search:focus {
-  border-color: var(--c-blue-700);
+  border-color: var(--c-blue);
 }
 .lv-search::placeholder {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
 }

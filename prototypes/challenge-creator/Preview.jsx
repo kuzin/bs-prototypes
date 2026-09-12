@@ -46,7 +46,7 @@ function luminance([r, g, b]) {
 }
 // Dark text on light backgrounds, white on dark — so a white/pale accent reverses.
 function readableOn(rgb) {
-  return rgb && luminance(rgb) > 0.6 ? '#0f172a' : '#ffffff'
+  return rgb && luminance(rgb) > 0.6 ? '#2a2a2a' : '#ffffff'
 }
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
@@ -77,7 +77,7 @@ function dateRange(start, end) {
  */
 export function Preview({ challenge }) {
   const d = challenge.details
-  const accent = d.accent || '#0DA7BC'
+  const accent = d.accent || '#0CA7BC'
   // Ribbon color defaults to the accent; the ribbon settings can override it.
   const ribbonColor = d.subheader?.color || accent
   // The ribbon background is the color mixed 84% with white; pick readable text.

@@ -8,22 +8,22 @@
   gap: 6px;
   text-align: center;
   cursor: pointer;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   transition:
     border-color 0.12s ease,
     background 0.12s ease;
 }
 .idz:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-500);
 }
 .idz:focus-visible {
   outline: none;
-  border-color: var(--c-brand-teal);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-brand-teal) 18%, transparent);
+  border-color: var(--c-teal);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-teal) 18%, transparent);
 }
 .idz--over {
-  border-color: var(--c-brand-teal);
-  background: color-mix(in srgb, var(--c-brand-teal) 8%, #fff);
+  border-color: var(--c-teal);
+  background: color-mix(in srgb, var(--c-teal) 8%, #fff);
 }
 .idz--has {
   border-style: solid;
@@ -32,7 +32,7 @@
   display: none;
 }
 .idz-icon {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .idz-preview {
   /* Size to the image (not the full box) so the rounded corners land on the
@@ -45,7 +45,7 @@
 }
 .idz-prompt {
   font-size: 14px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 .idz-prompt strong {
   color: var(--c-text);
@@ -57,7 +57,7 @@
 }
 .idz-hint {
   font-size: 12px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   line-height: 1.5;
   white-space: pre-line;
 }

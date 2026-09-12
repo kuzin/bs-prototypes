@@ -11,7 +11,7 @@
      control to a reader and sat on different borders and radii. */
   border: 2px solid var(--c-gray-300);
   border-radius: 10px;
-  color: var(--c-text-real);
+  color: var(--c-text);
   font-weight: 700;
   cursor: pointer;
   gap: 8px;
@@ -29,51 +29,51 @@
 }
 
 .csel-trigger:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-500);
 }
 
 .csel-trigger:focus-visible,
 .csel-trigger[data-state='open'] {
   outline: none;
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .csel-trigger[data-disabled] {
-  background: var(--c-slate-50);
-  color: var(--c-text-subtle);
+  background: var(--c-gray-0);
+  color: var(--c-gray-600);
   cursor: not-allowed;
 }
 
 .csel-trigger--error {
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 .csel-trigger--error:focus-visible,
 .csel-trigger--error[data-state='open'] {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red) 18%, transparent);
 }
 
-/* The one control ladder: 36 / 44 / 52 at 14 / 16 / 16, the same rungs
+/* The one control ladder: 36 / 44 / 52 at 14 / 15 / 16, the same rungs
    `.sel` and `.inp` use. This was on a padding-based 13px scale of its own,
    which put a `md` CustomSelect at 34px next to a 44px `md` Select. */
 .csel-trigger--sm {
   height: 36px;
-  font-size: 14px;
+  font-size: var(--text-label);
   padding: 0 10px;
 }
 .csel-trigger--md {
   height: 44px;
-  font-size: 16px;
+  font-size: var(--text-cell);
   padding: 0 12px;
 }
 .csel-trigger--lg {
   height: 52px;
-  font-size: 16px;
+  font-size: var(--text-body);
   padding: 0 14px;
 }
 
 .csel-icon {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   flex-shrink: 0;
   transition: transform 0.15s;
 }
@@ -113,6 +113,10 @@
 }
 
 /* ── Options ─────────────────────────────────────────────────────────────── */
+/* Overlay lists — every dropdown a control opens — read at the table-cell rung
+   (15px), the same size the value has in the trigger. They were 12–13px, so
+   opening a 44px field dropped a list of small type underneath it. Section
+   labels and secondary text sit a rung down at 13px. */
 .csel-item {
   display: flex;
   align-items: center;
@@ -120,7 +124,7 @@
   gap: 8px;
   padding: 4px 10px;
   border-radius: 6px;
-  font-size: 13px;
+  font-size: var(--text-cell);
   color: var(--c-text);
   cursor: pointer;
   outline: none;
@@ -131,12 +135,12 @@
 }
 
 .csel-item[data-highlighted] {
-  background: #eff6ff;
-  color: var(--c-blue-700);
+  background: var(--c-blue-wash);
+  color: var(--c-blue);
 }
 .csel-item[data-state='checked'] {
   font-weight: 700;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 .csel-item[data-disabled] {
   opacity: 0.45;
@@ -144,7 +148,7 @@
 }
 
 .csel-item-indicator {
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   flex-shrink: 0;
   width: 16px;
   display: flex;
@@ -155,9 +159,9 @@
 /* ── Group label ─────────────────────────────────────────────────────────── */
 .csel-group-label {
   padding: 8px 10px 4px;
-  font-size: 12px;
+  font-size: var(--text-tag);
   font-weight: 700;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -168,7 +172,7 @@
   align-items: center;
   justify-content: center;
   height: 24px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   cursor: default;
   background: #fff;
 }

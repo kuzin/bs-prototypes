@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { Icon, ICON_NAMES } from '@components/Icon/Icon'
 import { PlumpyIcon, PLUMPY_NAMES, PLUMPY_SOURCES } from '@components/PlumpyIcon/PlumpyIcon'
-import { BsIcon, FLAG_ICON_FILE, RMI_FACTOR_FILES, ACTION_ICONS } from '@components/BsIcons/BsIcons'
+import { BsIcon, FLAG_ICON_FILE, RMI_FACTOR_FILES } from '@components/BsIcons/BsIcons'
+import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
 import { TrendChip } from '@components/TrendChip/TrendChip'
 import { CompleteToggle } from '@components/CompleteToggle/CompleteToggle'
 import { RowAction, RowActions } from '@components/RowAction/RowAction'
@@ -10,7 +11,7 @@ import { Avatar } from '@components/Avatar/Avatar'
 import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { Toggle } from '@components/Toggle/Toggle'
-import { Field, Input, Radio, RadioGroup, Select } from '@components/Form/Form'
+import { ColorInput, Field, Input, Radio, RadioGroup, Select } from '@components/Form/Form'
 import { Divider, IconButton, Skeleton, Spinner, Tooltip } from '@components/Primitives/Primitives'
 import {
   Knobs,
@@ -91,7 +92,7 @@ function PlumpyShowcase() {
 function IconShowcase() {
   const [size, setSize] = useState(24)
   const [stroke, setStroke] = useState(1.8)
-  const [color, setColor] = useState('#1D4ED8')
+  const [color, setColor] = useState('#196DD5')
   return (
     <>
       <Knobs>
@@ -115,12 +116,7 @@ function IconShowcase() {
           />
         </Field>
         <Field label="color">
-          <input
-            className="pt-color"
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={color} onChange={setColor} />
         </Field>
       </Knobs>
       <GlyphGrid
@@ -150,8 +146,8 @@ function ButtonShowcase() {
           <Specimen label="danger">
             <Button variant="danger">Delete</Button>
           </Specimen>
-          <Specimen label='accent + accent="#7C3AED"'>
-            <Button variant="accent" accent="#7C3AED">
+          <Specimen label='accent + accent="#B43DD0"'>
+            <Button variant="accent" accent="#B43DD0">
               Open Skills
             </Button>
           </Specimen>
@@ -282,7 +278,7 @@ function ButtonKnobs() {
   const [label, setLabel] = useState('Log for Class')
   const [variant, setVariant] = useState('primary')
   const [size, setSize] = useState('md')
-  const [accent, setAccent] = useState('#7C3AED')
+  const [accent, setAccent] = useState('#B43DD0')
   const [withIcon, setIcon] = useState(false)
   const [withCaret, setCaret] = useState(false)
   const [disabled, setDisabled] = useState(false)
@@ -312,12 +308,7 @@ function ButtonKnobs() {
         </Field>
         {variant === 'accent' && (
           <Field label="accent">
-            <input
-              className="pt-color"
-              type="color"
-              value={accent}
-              onChange={(e) => setAccent(e.target.value)}
-            />
+            <ColorInput chip size="sm" value={accent} onChange={setAccent} />
           </Field>
         )}
         <Field label="left icon">
@@ -532,17 +523,17 @@ function PillShowcase() {
       <Variant label="variants">
         <Specimens>
           <Specimen label="soft (default)">
-            <Pill color="#7C3AED" variant="soft">
+            <Pill color="#B43DD0" variant="soft">
               Skills
             </Pill>
           </Specimen>
           <Specimen label="filled">
-            <Pill color="#7C3AED" variant="filled">
+            <Pill color="#B43DD0" variant="filled">
               Skills
             </Pill>
           </Specimen>
           <Specimen label="outline">
-            <Pill color="#7C3AED" variant="outline">
+            <Pill color="#B43DD0" variant="outline">
               Skills
             </Pill>
           </Specimen>
@@ -552,17 +543,17 @@ function PillShowcase() {
       <Variant label="sizes">
         <Specimens>
           <Specimen label='size="sm"'>
-            <Pill color="var(--c-brand-teal)" size="sm">
+            <Pill color="var(--c-teal)" size="sm">
               Active
             </Pill>
           </Specimen>
           <Specimen label='size="md" (default)'>
-            <Pill color="var(--c-brand-teal)" size="md">
+            <Pill color="var(--c-teal)" size="md">
               Active
             </Pill>
           </Specimen>
           <Specimen label='size="lg"'>
-            <Pill color="var(--c-brand-teal)" size="lg">
+            <Pill color="var(--c-teal)" size="lg">
               Active
             </Pill>
           </Specimen>
@@ -572,12 +563,12 @@ function PillShowcase() {
       <Variant label="with an icon">
         <Specimens>
           <Specimen label="icon">
-            <Pill color="var(--c-brand-green)" icon={<CheckIcon />}>
+            <Pill color="var(--c-green)" icon={<CheckIcon />}>
               Verified
             </Pill>
           </Specimen>
           <Specimen label="icon + filled">
-            <Pill color="var(--c-amber-600)" variant="filled" icon={<StarIcon />}>
+            <Pill color="var(--c-yellow-ink)" variant="filled" icon={<StarIcon />}>
               Featured
             </Pill>
           </Specimen>
@@ -586,17 +577,17 @@ function PillShowcase() {
 
       <Variant label="the colours a status pill actually takes">
         <Specimens>
-          <Specimen label="--c-brand-green">
-            <Pill color="var(--c-brand-green)">Verified</Pill>
+          <Specimen label="--c-green">
+            <Pill color="var(--c-green)">Verified</Pill>
           </Specimen>
-          <Specimen label="--c-amber-600">
-            <Pill color="var(--c-amber-600)">Needs review</Pill>
+          <Specimen label="--c-yellow-ink">
+            <Pill color="var(--c-yellow-ink)">Needs review</Pill>
           </Specimen>
-          <Specimen label="--c-red-600">
-            <Pill color="var(--c-red-600)">Flagged</Pill>
+          <Specimen label="--c-red">
+            <Pill color="var(--c-red)">Flagged</Pill>
           </Specimen>
-          <Specimen label="--c-slate-500">
-            <Pill color="var(--c-slate-500)">Draft</Pill>
+          <Specimen label="--c-gray-700">
+            <Pill color="var(--c-gray-700)">Draft</Pill>
           </Specimen>
         </Specimens>
       </Variant>
@@ -611,7 +602,7 @@ function AvatarShowcase() {
         <Specimens>
           {['xs', 'sm', 'md', 'lg', 'xl'].map((size) => (
             <Specimen key={size} label={`size="${size}"`}>
-              <Avatar initials="MC" color="#E8866A" size={size} />
+              <Avatar initials="MC" color="#F26430" size={size} />
             </Specimen>
           ))}
         </Specimens>
@@ -620,10 +611,10 @@ function AvatarShowcase() {
       <Variant label="shapes">
         <Specimens>
           <Specimen label='shape="circle" (default)'>
-            <Avatar initials="AB" color="var(--c-brand-teal)" shape="circle" />
+            <Avatar initials="AB" color="var(--c-teal)" shape="circle" />
           </Specimen>
           <Specimen label='shape="square"'>
-            <Avatar initials="AB" color="var(--c-brand-teal)" shape="square" />
+            <Avatar initials="AB" color="var(--c-teal)" shape="square" />
           </Specimen>
         </Specimens>
       </Variant>
@@ -637,10 +628,10 @@ function AvatarShowcase() {
             <Avatar src={facePath('jayden')} initials="JA" size="lg" shape="square" />
           </Specimen>
           <Specimen label="no src — initials">
-            <Avatar initials="NO" color="var(--c-brand-teal)" size="lg" />
+            <Avatar initials="NO" color="var(--c-teal)" size="lg" />
           </Specimen>
           <Specimen label="broken src — falls back">
-            <Avatar src="/nope.jpg" initials="BR" color="var(--c-brand-coral)" size="lg" />
+            <Avatar src="/nope.jpg" initials="BR" color="var(--c-orange)" size="lg" />
           </Specimen>
         </Specimens>
       </Variant>
@@ -650,10 +641,10 @@ function AvatarShowcase() {
           <Specimen label="the same silhouette either way">
             <div style={{ display: 'flex', gap: 'var(--space-6)' }}>
               <Avatar src={facePath('emma')} initials="EM" />
-              <Avatar initials="MC" color="var(--c-brand-coral)" />
+              <Avatar initials="MC" color="var(--c-orange)" />
               <Avatar src={facePath('noah')} initials="NO" />
               <Avatar src={facePath('priya')} initials="PS" />
-              <Avatar initials="TV" color="var(--c-violet-600)" />
+              <Avatar initials="TV" color="var(--c-purple)" />
             </div>
           </Specimen>
         </Specimens>
@@ -673,10 +664,10 @@ function AvatarShowcase() {
         <Specimens>
           <Specimen label="one per reader, coloured by name">
             <div style={{ display: 'flex', gap: 'var(--space-6)' }}>
-              <Avatar initials="MC" color="var(--c-brand-coral)" />
-              <Avatar initials="AB" color="var(--c-brand-teal)" />
-              <Avatar initials="TV" color="var(--c-violet-600)" />
-              <Avatar initials="PS" color="var(--c-brand-green)" />
+              <Avatar initials="MC" color="var(--c-orange)" />
+              <Avatar initials="AB" color="var(--c-teal)" />
+              <Avatar initials="TV" color="var(--c-purple)" />
+              <Avatar initials="PS" color="var(--c-green)" />
             </div>
           </Specimen>
         </Specimens>
@@ -689,7 +680,7 @@ function PillKnobs() {
   const [text, setText] = useState('Skills')
   const [variant, setVariant] = useState('soft')
   const [size, setSize] = useState('md')
-  const [color, setColor] = useState('#7C3AED')
+  const [color, setColor] = useState('#B43DD0')
   const [iconKey, setIconKey] = useState('none')
   const ICONS = { none: null, plus: <PlusIcon />, check: <CheckIcon />, star: <StarIcon /> }
   return (
@@ -721,12 +712,7 @@ function PillKnobs() {
           </Select>
         </Field>
         <Field label="color">
-          <input
-            className="pt-color"
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={color} onChange={setColor} />
         </Field>
       </Knobs>
       <div className="pt-variant-frame pt-variant-frame--row">
@@ -746,7 +732,7 @@ const facePath = (name) => `/bs-prototypes/avatars/${name}.jpg`
 function AvatarKnobs() {
   const [initials, setInitials] = useState('MC')
   const [face, setFace] = useState('none')
-  const [color, setColor] = useState('#E8866A')
+  const [color, setColor] = useState('#F26430')
   const [size, setSize] = useState('md')
   const [shape, setShape] = useState('circle')
   return (
@@ -756,12 +742,7 @@ function AvatarKnobs() {
           <Input value={initials} onChange={(e) => setInitials(e.target.value.slice(0, 2))} />
         </Field>
         <Field label="color">
-          <input
-            className="pt-color"
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={color} onChange={setColor} />
         </Field>
         <Field label="size">
           <Select value={size} onChange={(e) => setSize(e.target.value)}>
@@ -853,7 +834,7 @@ function DividerKnobs() {
               alignItems: 'center',
               gap: 12,
               fontSize: 13,
-              color: '#475569',
+              color: '#656565',
             }}
           >
             <span>Left</span>
@@ -870,7 +851,7 @@ function DividerKnobs() {
 
 function SpinnerKnobs() {
   const [size, setSize] = useState('md')
-  const [color, setColor] = useState('#1D4ED8')
+  const [color, setColor] = useState('#196DD5')
   return (
     <>
       <Knobs>
@@ -884,12 +865,7 @@ function SpinnerKnobs() {
           </Select>
         </Field>
         <Field label="color">
-          <input
-            className="pt-color"
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={color} onChange={setColor} />
         </Field>
       </Knobs>
       <div className="pt-variant-frame">
@@ -952,7 +928,7 @@ function ProgressBarKnobs() {
   const [value, setValue] = useState(62)
   const [max, setMax] = useState(100)
   const [inline, setInline] = useState(false)
-  const [color, setColor] = useState('#E8866A')
+  const [color, setColor] = useState('#F26430')
   const [size, setSize] = useState('md')
   const [label, setLabel] = useState('Engagement')
   const [valueLabel, setVl] = useState('62%')
@@ -982,12 +958,7 @@ function ProgressBarKnobs() {
           <Toggle checked={inline} onChange={setInline} />
         </Field>
         <Field label="color">
-          <input
-            className="pt-color"
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={color} onChange={setColor} />
         </Field>
         <Field label="size">
           <Select value={size} onChange={(e) => setSize(e.target.value)}>
@@ -1153,7 +1124,7 @@ export const atomsSections = [
 
 <Icon name="flame" />                        // size 18, stroke 1.8, currentColor
 <Icon name="chevron-down" size={11} stroke={2} />
-<Icon name="flag" size={16} color="#DC2626" />`,
+<Icon name="flag" size={16} color="#E85648" />`,
     desc: (
       <>
         The single icon system for every prototype — a house-styled wrapper over{' '}
@@ -1283,7 +1254,7 @@ import { Icon } from '@components/Icon/Icon'
     name: 'Avatar',
     usage: `import { Avatar } from '@components/Avatar/Avatar'
 
-<Avatar initials="MC" color="#0DA7BC" />
+<Avatar initials="MC" color="#0CA7BC" />
 <Avatar initials="AB" size="lg" shape="square" />
 
 /* a reader who has uploaded a picture — initials stay the fallback */
@@ -1338,7 +1309,7 @@ import { Icon } from '@components/Icon/Icon'
     usage: `import { Spinner } from '@components/Primitives/Primitives'
 
 <Spinner />
-<Spinner size="sm" color="var(--c-teal-500)" />`,
+<Spinner size="sm" color="var(--c-teal)" />`,
     desc: (
       <>
         Animated loading indicator. Sizes <code>xs / sm / md / lg / xl</code>. Inherits current
@@ -1446,7 +1417,7 @@ import { Icon } from '@components/Icon/Icon'
                     alignItems: 'center',
                     gap: 12,
                     padding: '10px 14px',
-                    borderBottom: i < 3 ? '1px solid #F1F5F9' : 'none',
+                    borderBottom: i < 3 ? '1px solid #F5F5F5' : 'none',
                   }}
                 >
                   <Skeleton shape="circle" width={28} height={28} />
@@ -1543,9 +1514,12 @@ import { Icon } from '@components/Icon/Icon'
     desc: (
       <>
         The product&apos;s own illustrated icons, copied verbatim out of the shipped app (bs-product{' '}
-        <code>app/assets/images/icons/</code>) and served from <code>public/bs-icons/</code>. Three
-        sets: <code>flags</code> (the Book Talks integrity flags), <code>rmi-factors</code> (the ten
-        motivation factors) and <code>actions</code> (the admin&apos;s row-action glyphs).
+        <code>app/assets/images/icons/</code>) and served from <code>public/bs-icons/</code>. Two
+        sets are gallery-worthy: <code>flags</code> (the Book Talks integrity flags) and{' '}
+        <code>rmi-factors</code> (the ten motivation factors). A third, <code>actions</code>, holds
+        the admin&apos;s two row-action glyphs (<code>reward</code>, <code>ticket</code>) — plain
+        single-colour marks in the Plumpy manner rather than drawings, so they aren&apos;t shown
+        here; the profiles use them directly.
         <br />
         <br />
         These are deliberately <strong>not</strong> in the <code>&lt;Icon&gt;</code> registry.{' '}
@@ -1581,16 +1555,6 @@ import { Icon } from '@components/Icon/Icon'
             {RMI_FACTOR_FILES.map((name) => (
               <div key={name} className="pt-bsicon">
                 <BsIcon set="rmi-factors" name={name} size={32} />
-                <code>{name}</code>
-              </div>
-            ))}
-          </div>
-        </Variant>
-        <Variant label="actions — the row actions on a claim table">
-          <div className="pt-bsicon-grid">
-            {ACTION_ICONS.map((name) => (
-              <div key={name} className="pt-bsicon">
-                <BsIcon set="actions" name={name} size={32} />
                 <code>{name}</code>
               </div>
             ))}
@@ -1751,6 +1715,81 @@ import { Icon } from '@components/Icon/Icon'
       <>
         <TrendChipKnobs />
         <TrendChipShowcase />
+      </>
+    ),
+  },
+  {
+    group: 'iconography',
+    id: 'beanstack-logo',
+    name: 'Beanstack Logo',
+    usage: `import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
+
+<BeanstackLogo />
+<BeanstackLogo variant="mark" size={40} />
+<BeanstackLogo invert />`,
+    desc: (
+      <>
+        Our own mark, the way the partners have theirs. <code>variant="lockup"</code> (the default)
+        is the bean beside the wordmark; <code>variant="mark"</code> is the bean alone, for a tab,
+        an avatar or a favicon-sized slot. Sizes are <code>sm/md/lg</code>, or a number — the
+        mark&apos;s pixel height, with the wordmark and the gap scaled off it, so a one-off size
+        can&apos;t drift the two halves apart.
+        <br />
+        <br />
+        The art is <code>public/bs.svg</code> inlined rather than an <code>&lt;img&gt;</code>: the
+        bean draws from <code>--accent</code> where a surface sets one (the footers tint a whole
+        chrome that way) and falls back to brand teal, and the wordmark&apos;s ink comes from{' '}
+        <code>--bsl-word</code>. <code>invert</code> is for dark chrome and only moves the wordmark
+        — the teal bean reads fine on navy and it&apos;s the brand colour.
+        <br />
+        <br />
+        <code>word</code> + <code>upper</code> put a sub-brand on the same mark: RMI&apos;s footer
+        lockup is this component, not a second drawing. <strong>Five</strong> surfaces had each
+        drawn the lockup themselves — the web app&apos;s top bar, logging-flow, beeverso,
+        book-talks, and the footers — and had drifted to two weights and three trackings. The admin
+        rail is the one deliberate holdout: the shipped app puts the <code>bs-heart</code> symbol
+        there, not the bean.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="lockup — sm / md / lg">
+          <div style={{ display: 'flex', gap: 28, alignItems: 'center', flexWrap: 'wrap' }}>
+            <BeanstackLogo size="sm" />
+            <BeanstackLogo size="md" />
+            <BeanstackLogo size="lg" />
+          </div>
+        </Variant>
+        <Variant label="mark — the bean alone, 20 / 30 / 44">
+          <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+            <BeanstackLogo variant="mark" size={20} />
+            <BeanstackLogo variant="mark" size={30} />
+            <BeanstackLogo variant="mark" size={44} />
+          </div>
+        </Variant>
+        <Variant label="invert — on dark chrome">
+          <div
+            style={{
+              display: 'flex',
+              gap: 28,
+              alignItems: 'center',
+              flexWrap: 'wrap',
+              background: 'var(--c-gray-900)',
+              padding: '16px 18px',
+              borderRadius: 10,
+            }}
+          >
+            <BeanstackLogo invert />
+            <BeanstackLogo variant="mark" size={30} />
+            <BeanstackLogo word="RMI" upper invert />
+          </div>
+        </Variant>
+        <Variant label="a sub-brand on the same mark">
+          <div style={{ display: 'flex', gap: 28, alignItems: 'center', flexWrap: 'wrap' }}>
+            <BeanstackLogo />
+            <BeanstackLogo word="RMI" upper />
+          </div>
+        </Variant>
       </>
     ),
   },

@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
-import { ChatBubble, AnnotationBlock } from '../../book-talks/components/ChatBubble'
+import { ChatBubble, AnnotationBlock, TypingBubble } from '@components/ChatBubble/ChatBubble'
 import { BennyChat } from '../../book-talks/components/BennyChat'
-import { ConversationReview } from '../../book-talks/components/ConversationReview'
 import { BadgeEditor } from '../../book-talks/components/BadgeEditor'
 import { DEFAULT_BADGE, STUDENTS } from '../../book-talks/data'
 import { Variant } from './_shared'
@@ -15,7 +14,7 @@ function BennyChatDemo() {
       <Button variant="primary" size="sm" onClick={() => setOpen(true)}>
         Open BennyChat →
       </Button>
-      <span style={{ fontSize: 13, color: '#64748B' }}>
+      <span style={{ fontSize: 13, color: '#707070' }}>
         Tap the suggested replies to reach the badge award.
       </span>
       <BennyChat
@@ -53,55 +52,101 @@ function BadgeEditorDemo() {
   )
 }
 
-function ConversationReviewDemo() {
-  const [active, setActive] = useState(null)
-  // s2 = Tyler, a flagged/disengaged conversation with annotations.
-  const flagged = STUDENTS.find((s) => s.id === 's2')
-  return (
-    <div style={{ padding: 16, display: 'flex', gap: 12, alignItems: 'center' }}>
-      <Button variant="primary" size="sm" onClick={() => setActive(flagged)}>
-        Open ConversationReview →
-      </Button>
-      <ConversationReview
-        student={active}
-        badge={DEFAULT_BADGE}
-        open={!!active}
-        onClose={() => setActive(null)}
-      />
-    </div>
-  )
-}
-
 export const bookTalksSections = [
   {
-    group: 'book-talks',
+    // Three prototypes render this conversation — the live reader chat, SFR's
+    // session modal and BTWB's transcript — so it lives in @components and is
+    // catalogued with the rest of the shared feedback surfaces.
+    group: 'feedback',
     id: 'bt-chat-bubble',
     name: 'ChatBubble',
+    usage: `import { ChatBubble, AnnotationBlock, TypingBubble } from '@components/ChatBubble/ChatBubble'
+
+<ChatBubble msg={{ role: 'benny', text: 'Did you like *Wonder*?' }} />
+<ChatBubble msg={reply} initials="MC" />
+<AnnotationBlock msg={{ sentiment: 'warning', label: 'Minimal Response', why: '…' }} />
+<TypingBubble />`,
     desc: (
       <>
-        One chat row, used by both the live student chat and the teacher review transcript.{' '}
-        <code>msg.role</code> is <code>benny</code> (left, with avatar) or <code>student</code>{' '}
-        (right). <code>msg.flagged</code> outlines a concerning student turn.{' '}
-        <code>AnnotationBlock</code> renders Benny's inline signal — green positive or amber
-        warning. Light <code>*emphasis*</code> in the text renders as italics.
+        One turn of a Book Talk — Benny on the left behind his avatar, the reader on the right. The
+        same row serves the live chat and the teacher&apos;s transcript. <code>msg.flagged</code>{' '}
+        tints a concerning turn and <code>msg.trigger</code> marks the message a safety signal fired
+        on; <code>initials</code> adds the reader&apos;s monogram (the transcript does this because
+        a teacher is reading someone else&apos;s conversation), <code>avatar</code> overrides
+        Benny&apos;s face per emotion, and <code>onSpeak</code> adds read-aloud. Light{' '}
+        <code>*emphasis*</code> renders as italics.
+        <br />
+        <br />
+        <code>AnnotationBlock</code> is Benny&apos;s note on the turn above it — a tinted band
+        naming the flag, with the reasoning folded behind <strong>Show reasoning</strong>, because
+        &ldquo;Inaccurate Plot Detail&rdquo; is an accusation and a teacher about to act on it is
+        owed what the model compared. Consecutive notes stack into one band. A{' '}
+        <code>tone: &apos;safety&apos;</code> note is one line with no disclosure — a wellbeing
+        signal is not something to fold away. The reader bubble&apos;s colour is a token (
+        <code>--cht-student-bg</code>): teal in the live chat, the app&apos;s quiet blue in the
+        transcript.
       </>
     ),
     render: () => (
-      <div className="bt-root">
-        <Variant label="conversation with annotations">
-          <div style={{ padding: 16, maxWidth: 460 }}>
-            <ChatBubble msg={{ role: 'benny', text: 'Did you like reading *Wonder*?' }} />
-            <ChatBubble msg={{ role: 'student', text: "Yes! I couldn't put it down." }} />
-            <AnnotationBlock
-              msg={{ sentiment: 'positive', text: 'Benny noted positive sentiment.' }}
-            />
-            <ChatBubble msg={{ role: 'student', text: 'idk he did stuff', flagged: true }} />
-            <AnnotationBlock
-              msg={{ sentiment: 'warning', text: 'Benny flagged a minimal response.' }}
-            />
-          </div>
+      <>
+        <Variant label="transcript — annotated, with reasoning">
+          <ChatBubble msg={{ role: 'benny', text: 'What did you like about *Wonder*?' }} />
+          <ChatBubble
+            msg={{ role: 'student', text: "Auggie's helmet stuff was my favorite part." }}
+            initials="MC"
+          />
+          <AnnotationBlock
+            msg={{
+              sentiment: 'positive',
+              label: 'Specific Detail',
+              why: 'The answer names an object and a scene from the book rather than restating the question, which is the signal we treat as evidence the reader finished it.',
+            }}
+          />
+          <ChatBubble
+            msg={{ role: 'student', text: 'idk he did stuff', flagged: true }}
+            initials="MC"
+          />
+          <AnnotationBlock
+            msg={{
+              sentiment: 'warning',
+              label: 'Minimal Response',
+              why: 'Four words, no detail from the text, and no answer to what was asked — below the length and specificity thresholds for a scored answer.',
+            }}
+          />
+          <AnnotationBlock
+            msg={{
+              sentiment: 'warning',
+              label: 'Inaccurate Plot Detail',
+              why: 'No character in Wonder does what this answer describes.',
+            }}
+          />
         </Variant>
-      </div>
+        <Variant label="safety signal — the turn it fired on">
+          <ChatBubble
+            msg={{
+              role: 'student',
+              text: 'sometimes i wish i could just disappear',
+              trigger: true,
+            }}
+            initials="TW"
+          />
+          <AnnotationBlock
+            msg={{ tone: 'safety', text: 'Benny flagged this for wellbeing review.' }}
+          />
+        </Variant>
+        <div className="bt-root">
+          <Variant label="live chat — teal reader bubble, read-aloud, typing">
+            <div className="bt-chat-scroll">
+              <ChatBubble
+                msg={{ role: 'benny', text: 'Did you like reading *Wonder*?' }}
+                onSpeak={() => {}}
+              />
+              <ChatBubble msg={{ role: 'student', text: "Yes! I couldn't put it down." }} />
+              <TypingBubble />
+            </div>
+          </Variant>
+        </div>
+      </>
     ),
   },
   {
@@ -119,44 +164,30 @@ export const bookTalksSections = [
       </>
     ),
     render: () => (
-      <Variant label="open / award flow" bare>
+      <Variant label="open / award flow">
         <BennyChatDemo />
       </Variant>
     ),
   },
   {
-    group: 'book-talks',
+    // The Challenge Creator's group: this is that editor's twin (same chrome,
+    // same disc-opens-gallery flow) and it belongs beside it, not off in the
+    // prototype whose folder happens to hold the file.
+    group: 'challenge-creator',
     id: 'bt-badge-editor',
     name: 'BadgeEditor',
     desc: (
       <>
-        The full "AI Chat Activity" badge editor in a modal — the Book Talks twin of the Challenge
-        Creator's badge editor (same chrome, disc-opens-gallery flow). Holds everything that defines
-        the badge: art, name, a chosen Benny prompt, and the completion bar. Props:{' '}
-        <code>open</code>, <code>initial</code> (null = create mode), <code>onSave</code>,{' '}
-        <code>onCancel</code>.
+        The badge editor in a modal — same chrome and the same disc-opens-gallery flow as the
+        Challenge Creator's, which is why it's catalogued here; the file itself lives in Book Talks,
+        where the "AI Chat Activity" badge type it edits belongs. Holds everything that defines the
+        badge: art, name, a chosen Benny prompt, and the completion bar. Props: <code>open</code>,{' '}
+        <code>initial</code> (null = create mode), <code>onSave</code>, <code>onCancel</code>.
       </>
     ),
     render: () => (
-      <Variant label="create / edit modes" bare>
+      <Variant label="create / edit modes">
         <BadgeEditorDemo />
-      </Variant>
-    ),
-  },
-  {
-    group: 'book-talks',
-    id: 'bt-conversation-review',
-    name: 'ConversationReview',
-    desc: (
-      <>
-        Teacher's read of one Book Talk — transcript on the right, Benny's breakdown (status,
-        engagement rating, positive signals, and flags) on the left. Read-only. Props:{' '}
-        <code>student</code>, <code>badge</code>, <code>open</code>, <code>onClose</code>.
-      </>
-    ),
-    render: () => (
-      <Variant label="open (flagged conversation)" bare>
-        <ConversationReviewDemo />
       </Variant>
     ),
   },

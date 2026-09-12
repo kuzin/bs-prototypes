@@ -23,7 +23,7 @@ import { BarList } from '@components/BarList/BarList'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import './SchoolHabits.css'
 
-const HABITS_COLOR = '#16A97A'
+const HABITS_COLOR = '#0BA85F'
 const HABITS_ICON = SECTIONS.find((s) => s.key === 'habits')?.icon
 
 export function SchoolHabits({ schoolId }) {
@@ -55,7 +55,7 @@ export function SchoolHabits({ schoolId }) {
     },
     {
       id: 'District avg',
-      color: '#CBD5E1',
+      color: '#D0D0D0',
       data: sessionData.map((d) => ({ x: d.month, y: d.district })),
     },
   ]
@@ -63,12 +63,12 @@ export function SchoolHabits({ schoolId }) {
   const velocityNivo = [
     {
       id: 'Elementary',
-      color: '#0DA7BC',
+      color: '#0CA7BC',
       data: VELOCITY_TRENDS.map((d) => ({ x: d.month, y: d.elementary })),
     },
     {
       id: 'Middle',
-      color: '#16A97A',
+      color: '#0BA85F',
       data: VELOCITY_TRENDS.map((d) => ({ x: d.month, y: d.middle })),
     },
     { id: 'High', color: '#C084FC', data: VELOCITY_TRENDS.map((d) => ({ x: d.month, y: d.high })) },
@@ -85,7 +85,7 @@ export function SchoolHabits({ schoolId }) {
           label="Avg session length"
           footer={stats.avgSession >= 20 ? '↑ Above district avg' : '↓ Below district avg (20 min)'}
           color={HABITS_COLOR}
-          footerColor={stats.avgSession >= 20 ? '#16A34A' : '#DC2626'}
+          footerColor={stats.avgSession >= 20 ? '#16A34A' : '#E85648'}
         />
         <StatCard value={stats.streakPct} label="Active streaks" footer="of enrolled students" />
         <StatCard value="3.1" label="Avg reading days / week" footer="School average" />
@@ -103,7 +103,7 @@ export function SchoolHabits({ schoolId }) {
             <ChartLegend
               items={[
                 { color: school.color, label: shortName },
-                { color: '#CBD5E1', label: 'District avg', dashed: true },
+                { color: '#D0D0D0', label: 'District avg', dashed: true },
               ]}
             />
           }
@@ -173,7 +173,7 @@ export function SchoolHabits({ schoolId }) {
             <ChartLegend
               items={[
                 { color: school.color, label: shortName },
-                { color: '#CBD5E1', label: 'District avg' },
+                { color: '#D0D0D0', label: 'District avg' },
               ]}
             />
           }
@@ -190,7 +190,7 @@ export function SchoolHabits({ schoolId }) {
             xPadding={{ left: 12, right: 12 }}
             series={[
               { key: 'school', name: shortName, color: school.color },
-              { key: 'district', name: 'District avg', color: '#CBD5E1' },
+              { key: 'district', name: 'District avg', color: '#D0D0D0' },
             ]}
           />
         </ChartCard>
@@ -203,8 +203,8 @@ export function SchoolHabits({ schoolId }) {
           footer={
             <ChartLegend
               items={[
-                { color: '#0DA7BC', label: 'Elementary' },
-                { color: '#16A97A', label: 'Middle' },
+                { color: '#0CA7BC', label: 'Elementary' },
+                { color: '#0BA85F', label: 'Middle' },
                 { color: '#C084FC', label: 'High' },
               ]}
             />

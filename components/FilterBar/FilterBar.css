@@ -2,8 +2,11 @@
    The shipped app's filter card: `.daily-reading__filters { padding: 20px }`
    holding a `.filter-row { align-items: flex-end; gap: 20px; flex-wrap: wrap }`
    of `.daily-reading-filters__input { flex: 1; min-width: 150px }`, with the
-   action sharing the row's baseline. Labels are the app's form labels —
-   16px / 900, 8px above the control. No border on the card. */
+   action sharing the row's baseline. No border on the card.
+
+   Padding and gap run one step under the app's 20px. The app's card is a full
+   page-width form; ours is usually three short selects, and 20px on every side
+   of them left the card mostly air. */
 /* A container, so the controls inside can respond to the width the bar
    actually has. One of these sits in a ~300px profile flyout at desktop
    viewport widths, where a media query would tell you nothing. */
@@ -12,11 +15,11 @@
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  gap: 20px;
+  gap: 16px;
   background: #fff;
   border: none;
   border-radius: 12px;
-  padding: 20px;
+  padding: 16px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -24,7 +27,7 @@
 .fltr-items {
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
+  gap: 16px;
   flex: 1;
   min-width: 0;
   align-items: flex-end;
@@ -35,14 +38,13 @@
   min-width: 150px;
 }
 
-/* The app's form label is 16px / 900, but that was calibrated for a full-width
-   page form — in a filter card, and especially inside the profile panel's
-   narrower column, it out-weighed the control underneath it. One step down to
-   the theme's body size, keeping the label's own weight. */
+/* The same label as every other control's: `.fld-label` / `.frm-self-label`.
+   It was 15px here and 16px there, which is the sort of difference you only
+   notice once a filter card sits next to a form. */
 .fltr-lbl {
-  font-size: 15px;
+  font-size: var(--text-label);
   font-weight: 800;
-  color: var(--c-text-real);
+  color: var(--c-text);
   margin-bottom: 6px;
   line-height: 1.4;
 }
@@ -166,7 +168,7 @@
   border: none;
   border-radius: 12px;
   background: var(--c-gray-150);
-  color: var(--c-text-real);
+  color: var(--c-text);
   font-size: 14px;
   font-weight: 600;
   line-height: 20px;
@@ -186,7 +188,7 @@
   right: 13px;
   width: 20px;
   height: 20px;
-  color: var(--c-text-real-dark);
+  color: var(--c-text-dark);
 }
 
 /* The bar keeps its shape on a phone by stacking, which is what the app's own

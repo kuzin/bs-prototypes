@@ -261,22 +261,22 @@ const NOTE = (sentiment, text) => ({ role: 'annotation', sentiment, text })
 // books — giving the teacher a varied roster. Each student's conversation is
 // about their own book.
 const BOOKS = {
-  wonder: { title: 'Wonder', author: 'R. J. Palacio', color: '#7C3AED', lexile: '790L' },
+  wonder: { title: 'Wonder', author: 'R. J. Palacio', color: '#B43DD0', lexile: '790L' },
   dogMan: {
     title: 'Dog Man: Lord of the Fleas',
     author: 'Dav Pilkey',
-    color: '#0DA7BC',
+    color: '#0CA7BC',
     lexile: '390L',
   },
-  wildRobot: { title: 'The Wild Robot', author: 'Peter Brown', color: '#16A97A', lexile: '740L' },
+  wildRobot: { title: 'The Wild Robot', author: 'Peter Brown', color: '#0BA85F', lexile: '740L' },
   percyJackson: {
     title: 'Percy Jackson & the Lightning Thief',
     author: 'Rick Riordan',
-    color: '#1D4ED8',
+    color: '#196DD5',
     lexile: '680L',
   },
   smile: { title: 'Smile', author: 'Raina Telgemeier', color: '#EC4899', lexile: 'GN410L' },
-  frontDesk: { title: 'Front Desk', author: 'Kelly Yang', color: '#D97706', lexile: '640L' },
+  frontDesk: { title: 'Front Desk', author: 'Kelly Yang', color: '#AB720A', lexile: '640L' },
 }
 
 // Maya — strong, engaged (Wonder).
@@ -374,7 +374,7 @@ export const STUDENTS = [
     id: 's1',
     name: 'Maya Chen',
     initials: 'MC',
-    color: '#0DA7BC',
+    color: '#0CA7BC',
     status: 'completed',
     rating: 'green',
     exchanges: 4,
@@ -388,7 +388,7 @@ export const STUDENTS = [
     id: 's2',
     name: 'Tyler Williams',
     initials: 'TW',
-    color: '#E8866A',
+    color: '#F26430',
     status: 'completed',
     rating: 'red',
     exchanges: 3,
@@ -402,7 +402,7 @@ export const STUDENTS = [
     id: 's3',
     name: 'Sofia Rodriguez',
     initials: 'SR',
-    color: '#16A97A',
+    color: '#0BA85F',
     status: 'in-progress',
     rating: null,
     exchanges: 1,
@@ -416,7 +416,7 @@ export const STUDENTS = [
     id: 's4',
     name: 'Jaylen Brooks',
     initials: 'JB',
-    color: '#F59E0B',
+    color: '#FFBC42',
     status: 'completed',
     rating: 'green',
     exchanges: 5,
@@ -430,7 +430,7 @@ export const STUDENTS = [
     id: 's5',
     name: 'Noah Kim',
     initials: 'NK',
-    color: '#1D4ED8',
+    color: '#196DD5',
     status: 'completed',
     rating: 'yellow',
     exchanges: 3,
@@ -458,7 +458,7 @@ export const STUDENTS = [
     id: 's7',
     name: 'Marcus Davis',
     initials: 'MD',
-    color: '#7C3AED',
+    color: '#B43DD0',
     status: 'not-started',
     rating: null,
     exchanges: 0,
@@ -471,7 +471,7 @@ export const STUDENTS = [
     id: 's8',
     name: 'Lily Thompson',
     initials: 'LT',
-    color: '#64748B',
+    color: '#707070',
     status: 'not-started',
     rating: null,
     exchanges: 0,
@@ -548,6 +548,14 @@ const SESSION_SOURCE = {
   s6: 'self',
 }
 
+// Which kind of talk Benny ran — the same three SFR lists (Engagement /
+// Comprehension / Integrity). A self-started talk about a finished title is
+// where a comprehension check makes sense, so two of those carry one along
+// with the Reading Confidence it produced; the rest follow SFR's own default
+// (a flagged talk is an integrity check, everything else engagement).
+const SESSION_KIND = { s3: 'comprehension', s5: 'comprehension' }
+const SESSION_CONFIDENCE = { s3: 'high', s5: 'moderate' }
+
 // SFR session.type = engagement | flagged | both (engagement/integrity lens).
 const sessionType = (s) => {
   const hasFlags = s.flags.length > 0
@@ -582,6 +590,8 @@ export const buildReviewSessions = (badge = DEFAULT_BADGE) => {
       book: s.book,
       date: SESSION_DATES[s.id] || '2026-06-12',
       type: sessionType(s),
+      kindId: SESSION_KIND[s.id] ?? (sessionType(s) === 'flagged' ? 'integrity' : 'engagement'),
+      confidence: SESSION_CONFIDENCE[s.id],
       status: s.status === 'in-progress' ? 'unfinished' : 'completed',
       engagementRating: s.rating,
       minutesLogged: source === 'title' ? 58 : 0,

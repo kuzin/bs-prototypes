@@ -6,7 +6,7 @@
      (bs-product admin/_admin_tables.scss). 13px was the old prototype scale and
      read as fine print against the rest of the theme. */
   font-size: 15px;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   background: #fff;
   border: 1px solid var(--c-gray-200);
   border-radius: 10px;
@@ -36,10 +36,10 @@
   transition: color 0.1s;
 }
 .tbl-th--sortable:hover {
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 .tbl-th--sorted {
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 
 /* `font-size` here sizes a glyph (⇅ / ↑ / ↓), not copy — it's off the type
@@ -58,13 +58,13 @@
 }
 .tbl-sort-icon--active {
   opacity: 1;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 
 /* `tbody td`: `padding: 16px 18px`, white, middle-aligned. */
 .tbl-td {
   padding: 16px 18px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
   vertical-align: middle;
   background: #fff;
 }
@@ -79,7 +79,7 @@
 }
 
 .tbl-row--clickable:hover .tbl-td {
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 
 .tbl-cell--right {
@@ -105,7 +105,7 @@
 
 .tbl--bordered .tbl-td,
 .tbl--bordered .tbl-th {
-  border-right: 1px solid var(--c-slate-100);
+  border-right: 1px solid var(--c-gray-100);
 }
 .tbl--bordered .tbl-td:last-child,
 .tbl--bordered .tbl-th:last-child {
@@ -121,7 +121,7 @@
 .tbl-state {
   padding: 22px 12px;
   text-align: center;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-size: 13px;
   font-style: italic;
   background: #fff;
@@ -149,7 +149,7 @@
 .tbl-pagination {
   padding: 8px 12px;
   border-top: 1px solid var(--c-gray-200);
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   text-align: right;
 }
 
@@ -162,7 +162,7 @@
   border-radius: 6px;
   border: 1px solid var(--c-gray-200);
   background: #fff;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
@@ -171,7 +171,7 @@
     border-color 0.1s;
 }
 .tbl-pg-btn:hover:not(:disabled) {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   border-color: var(--c-border-strong);
 }
 .tbl-pg-btn:disabled {
@@ -183,13 +183,13 @@
   display: inline-block;
   font-size: 12px;
   font-weight: 600;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   margin: 0 8px;
   min-width: 48px;
   text-align: center;
 }
 .tbl-pg-sep {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
 }
 
 /* `hideHeader` — the row goes, but the cells keep laying the columns out, so

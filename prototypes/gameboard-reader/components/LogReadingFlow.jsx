@@ -180,7 +180,7 @@ export function LogReadingFlow({ open, onClose, onLogged }) {
                 title: 'Untitled',
                 author: 'No title logged',
                 pages: null,
-                cover: ['#CBD5E1', '#94A3B8'],
+                cover: ['#D0D0D0', '#ACACAC'],
               })
             }
           >
@@ -275,7 +275,7 @@ function BarcodeGlyph() {
   const bars = [
     ['#E8456B', 2],
     ['#1A6DD5', 3],
-    ['#16A97A', 2],
+    ['#0BA85F', 2],
     ['#F0A024', 4],
     ['#7C5CFA', 2],
     ['#E8453A', 3],

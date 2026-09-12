@@ -69,7 +69,7 @@ export function GameboardStep({ challenge, update }) {
   // picked, so the grid still shows Custom as the selected one.
   const [picking, setPicking] = useState(theme !== 'custom')
   const themeObj = resolveGameboardTheme(theme, {
-    custom: s.gameboardColor || '#16A97A',
+    custom: s.gameboardColor || '#0BA85F',
     uploadedBg: s.gameboardBg,
   })
 
@@ -141,7 +141,7 @@ export function GameboardStep({ challenge, update }) {
                   value={s.gameboardColor}
                   presets={THEME_COLOR_PRESETS}
                   maxPresets={12}
-                  fallback="#16A97A"
+                  fallback="#0BA85F"
                   onColor={(c) => setSetup({ gameboardColor: c })}
                 />
               </Field>

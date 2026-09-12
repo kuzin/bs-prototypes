@@ -7,11 +7,14 @@
   position: absolute;
   z-index: 100;
   background: #fff;
-  border: 1px solid var(--c-gray-200);
-  border-radius: 10px;
+  border-radius: 16px;
+  /* One flyout panel across the app: the shipped `.dropdown-items-list`
+     (radius 16, `0 3px 10px 0 rgba(0,0,0,0.06)`), plus a hairline ring — the
+     app's menu always sits against the rail, ours float over white cards where
+     that shadow alone leaves no edge. */
   box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 8px 24px rgba(15, 23, 42, 0.12);
+    0 3px 10px 0 rgba(0, 0, 0, 0.06),
+    0 0 0 1px var(--c-gray-200);
   min-width: 200px;
   padding: 6px;
   animation: flyout-in 0.12s cubic-bezier(0.16, 1, 0.3, 1);
@@ -71,7 +74,7 @@
   font: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   text-align: left;
   cursor: pointer;
   width: 100%;
@@ -79,13 +82,14 @@
 }
 
 .flyout-menu-item:hover {
-  background: var(--c-slate-100);
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
 }
 
 .flyout-menu-item--active {
-  background: #eff6ff;
-  color: var(--c-blue-700);
-  font-weight: 600;
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
+  font-weight: 700;
 }
 
 .flyout-menu-icon {
@@ -94,7 +98,7 @@
   justify-content: center;
   width: 16px;
   height: 16px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   flex-shrink: 0;
 }
 
@@ -104,17 +108,17 @@
 }
 
 .flyout-menu-item--active .flyout-menu-icon {
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 
 .flyout-menu-item--danger {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .flyout-menu-item--danger:hover {
   background: #fef2f2;
 }
 .flyout-menu-item--danger .flyout-menu-icon {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 .flyout-menu-sep {

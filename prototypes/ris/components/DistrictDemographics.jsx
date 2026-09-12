@@ -10,7 +10,7 @@ import { ChartLegend } from '@components/charts/charts'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { Icon } from '@components/Icon/Icon'
 
-const ACCENT = '#7C3AED'
+const ACCENT = '#B43DD0'
 // AA-safe (≥4.5:1 on white) — used as bar fills, legend dots, and label text
 const T1_COLOR = '#C2410C'
 const N1_COLOR = '#0E7490'
@@ -115,9 +115,9 @@ const EQUITY_ROWS = [
 
 // RMI total (0–40) thresholds
 function rmiColor(rmi) {
-  if (rmi >= 22) return '#0DA7BC'
-  if (rmi >= 18) return '#D97706'
-  return '#E8866A'
+  if (rmi >= 22) return '#0CA7BC'
+  if (rmi >= 18) return '#AB720A'
+  return '#F26430'
 }
 
 const ACTIONS = [
@@ -150,7 +150,7 @@ const EQUITY_COLUMNS = [
     key: 'rmi',
     label: 'RMI total',
     align: 'right',
-    render: (v) => <span style={{ color: '#1E293B', fontWeight: 800 }}>{v.toFixed(1)}</span>,
+    render: (v) => <span style={{ color: '#2A2A2A', fontWeight: 800 }}>{v.toFixed(1)}</span>,
   },
   {
     key: 'rmiBar',
@@ -169,7 +169,7 @@ const EQUITY_COLUMNS = [
     label: 'FRL %',
     align: 'center',
     render: (v) => (
-      <Pill color={v >= 50 ? '#DC2626' : v >= 30 ? '#D97706' : '#475569'} variant="soft" size="sm">
+      <Pill color={v >= 50 ? '#E85648' : v >= 30 ? '#AB720A' : '#656565'} variant="soft" size="sm">
         {v}%
       </Pill>
     ),
@@ -180,11 +180,11 @@ const EQUITY_COLUMNS = [
     align: 'center',
     render: (v) =>
       v ? (
-        <Pill color="#1D4ED8" variant="soft" size="sm">
+        <Pill color="#196DD5" variant="soft" size="sm">
           Title I
         </Pill>
       ) : (
-        <span style={{ color: '#64748B' }}>—</span>
+        <span style={{ color: '#707070' }}>—</span>
       ),
   },
 ]
@@ -199,7 +199,7 @@ const ACTION_COLUMNS = [
     key: 'priority',
     label: 'Priority',
     render: (v) => (
-      <Pill color={v === 'critical' ? '#DC2626' : '#B45309'} variant="filled" size="sm">
+      <Pill color={v === 'critical' ? '#E85648' : '#B45309'} variant="filled" size="sm">
         {v === 'critical' ? 'High Priority' : 'Monitor'}
       </Pill>
     ),
@@ -267,7 +267,7 @@ export function DistrictDemographics() {
           footer={
             <ChartLegend
               items={[
-                { color: '#0DA7BC', label: 'RMI total' },
+                { color: '#0CA7BC', label: 'RMI total' },
                 { color: '#7CB5F5', label: 'Engagement %' },
               ]}
             />
@@ -285,7 +285,7 @@ export function DistrictDemographics() {
             }
             xPadding={{ left: 12, right: 12 }}
             series={[
-              { key: 'rmiTotal', name: 'RMI total', color: '#0DA7BC', yAxisId: 'left' },
+              { key: 'rmiTotal', name: 'RMI total', color: '#0CA7BC', yAxisId: 'left' },
               { key: 'engagement', name: 'Engagement %', color: '#7CB5F5', yAxisId: 'right' },
             ]}
           />
@@ -310,7 +310,7 @@ export function DistrictDemographics() {
           <BarList
             groups={titleIData.map((row) => ({
               label: row.metric,
-              labelColor: '#475569',
+              labelColor: '#656565',
               items: [
                 {
                   label: 'Title I',

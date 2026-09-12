@@ -2,100 +2,274 @@ import { useEffect, useState } from 'react'
 import '@components/ui/tokens.css'
 import { Variant } from './_shared'
 
-// Token groups mirror components/ui/tokens.css. The hex values are NOT duplicated
-// here — they're read from the live :root vars so this gallery can never drift
-// from the source of truth.
-const TOKEN_GROUPS = [
-  {
-    label: 'Neutrals — Tailwind slate',
-    tokens: [
-      '--c-slate-50',
-      '--c-slate-100',
-      '--c-slate-200',
-      '--c-slate-300',
-      '--c-slate-400',
-      '--c-slate-500',
-      '--c-slate-600',
-      '--c-slate-700',
-      '--c-slate-800',
-      '--c-slate-900',
-      '--c-gray-200',
-    ],
-  },
-  {
-    label: 'Accent / status',
-    tokens: ['--c-red-600', '--c-amber-600', '--c-blue-700', '--c-violet-600'],
-  },
-  {
-    label: 'Brand — Beanstack',
-    tokens: ['--c-brand-teal', '--c-brand-green', '--c-brand-coral'],
-  },
+// The color page mirrors components/ui/tokens.css, which in turn mirrors
+// bs-product's `lib/_colors.scss`. No hex is duplicated here — every value is
+// read back out of the live :root vars, so this gallery can't drift from the
+// tokens, and the tokens can't drift from the app without it showing up here.
+
+const GRAYS = [
+  '--c-gray-0',
+  '--c-gray-100',
+  '--c-gray-150',
+  '--c-gray-200',
+  '--c-gray-250',
+  '--c-gray-300',
+  '--c-gray-350',
+  '--c-gray-400',
+  '--c-gray-500',
+  '--c-gray-600',
+  '--c-gray-700',
+  '--c-gray-750',
+  '--c-gray-800',
+  '--c-gray-900',
 ]
 
-const ALL_TOKENS = TOKEN_GROUPS.flatMap((g) => g.tokens)
+// Three tokens per hue, and the app's own name for the middle one.
+const HUES = [
+  ['red', '$brick — $danger-color'],
+  ['orange', '$flamingo'],
+  ['yellow', '$saffron — $important-color'],
+  ['green', '$jade — $success-color'],
+  ['teal', '$teal600 — the Beanstack mark'],
+  ['blue', '$denim'],
+  ['purple', '$orchid'],
+  ['pink', '$coral'],
+]
 
-function ColorSwatches() {
-  const [hexes, setHexes] = useState({})
-  useEffect(() => {
-    const cs = getComputedStyle(document.documentElement)
-    setHexes(Object.fromEntries(ALL_TOKENS.map((t) => [t, cs.getPropertyValue(t).trim()])))
-  }, [])
+const ACTION = [
+  ['--c-accent', '$primary-color — tenant-themable'],
+  ['--c-accent-hover', 'lighten 10%'],
+  ['--c-accent-active', 'darken 10%'],
+  ['--c-accent-wash', 'lighten 45% — rail hover + active fill'],
+  ['--c-focus-blue', '$focusBlue — focus rings'],
+]
 
+const INK = [
+  ['--c-text', '$textColor — body copy'],
+  ['--c-text-dark', '$textColorDark — headings'],
+  ['--c-text-light', '$textColorLight — secondary'],
+]
+
+const ROLES = [
+  ['--c-surface', 'card / panel'],
+  ['--c-bg', 'page ground'],
+  ['--c-bg-muted', 'a sunken band'],
+  ['--c-border', 'every hairline'],
+  ['--c-border-strong', 'a border that has to be seen'],
+  ['--c-brand', 'Beanstack teal'],
+  ['--c-danger', 'destructive / error'],
+  ['--c-warning', 'needs attention'],
+  ['--c-success', 'done / healthy'],
+  ['--c-info', 'neutral notice'],
+]
+
+const COLOR_TOKENS = [
+  ...GRAYS,
+  ...HUES.flatMap(([h]) => [`--c-${h}-wash`, `--c-${h}`, `--c-${h}-ink`]),
+  ...ACTION.map(([t]) => t),
+  ...INK.map(([t]) => t),
+  ...ROLES.map(([t]) => t),
+]
+
+// Pick readable ink for a label sitting on the swatch itself. Relative
+// luminance, not lightness: #ffe091 and #65a6f6 are the same L* and want
+// opposite ink.
+function isDark(hex) {
+  const m = /^#?([0-9a-f]{6})$/i.exec(hex ?? '')
+  if (!m) return false
+  const n = parseInt(m[1], 16)
+  const lin = (c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4)
+  const [r, g, b] = [(n >> 16) & 255, (n >> 8) & 255, n & 255].map((c) => lin(c / 255))
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b < 0.42
+}
+
+const MONO = { fontFamily: 'var(--font-mono)', fontSize: 'var(--text-micro)' }
+
+// The gray ramp reads as one strip, not fourteen cards: the whole point is the
+// step from one rung to the next, and cards put a border between every step.
+// 10px on the hex because fourteen cells leaves ~48px each.
+function GrayRamp({ hexes }) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-      {TOKEN_GROUPS.map((g) => (
-        <Variant key={g.label} label={g.label}>
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(${GRAYS.length}, 1fr)`,
+        borderRadius: 8,
+        overflow: 'hidden',
+        border: '1px solid var(--c-border)',
+      }}
+    >
+      {GRAYS.map((token) => {
+        const hex = hexes[token]
+        return (
           <div
+            key={token}
+            title={`${token} — ${hex ?? ''}`}
             style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))',
-              gap: 10,
+              background: `var(${token})`,
+              color: isDark(hex) ? 'rgba(255,255,255,0.92)' : 'var(--c-text)',
+              padding: '18px 0 7px',
+              textAlign: 'center',
+              fontSize: 'var(--text-micro)',
+              fontWeight: 'var(--fw-bold)',
+              lineHeight: 1.2,
             }}
           >
-            {g.tokens.map((t) => (
-              <div
-                key={t}
-                style={{
-                  border: '1px solid var(--c-slate-200)',
-                  borderRadius: 10,
-                  overflow: 'hidden',
-                  background: '#fff',
-                }}
-              >
-                <div style={{ height: 56, background: `var(${t})` }} />
-                <div style={{ padding: '8px 10px' }}>
-                  <div
-                    style={{
-                      fontSize: 'var(--text-micro)',
-                      fontWeight: 'var(--fw-bold)',
-                      color: 'var(--c-slate-800)',
-                      fontFamily: 'monospace',
-                    }}
-                  >
-                    {t}
-                  </div>
-                  <div
-                    style={{
-                      fontSize: 'var(--text-micro)',
-                      color: 'var(--c-slate-500)',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    {hexes[t] || ' '}
-                  </div>
-                </div>
-              </div>
-            ))}
+            {token.slice('--c-gray-'.length)}
+            <div
+              style={{
+                fontFamily: 'var(--font-mono)',
+                fontSize: 10,
+                fontWeight: 'var(--fw-normal)',
+                opacity: 0.75,
+              }}
+            >
+              {(hex ?? '').replace('#', '')}
+            </div>
           </div>
-        </Variant>
+        )
+      })}
+    </div>
+  )
+}
+
+// A hue is one row: the wash carrying its own ink, then the solid, then the ink
+// alone — shown doing the job each token exists for rather than as three
+// unrelated chips.
+function HueRow({ hue, note, hexes }) {
+  const wash = `--c-${hue}-wash`
+  const solid = `--c-${hue}`
+  const ink = `--c-${hue}-ink`
+  const cell = {
+    borderRadius: 8,
+    border: '1px solid var(--c-border)',
+    padding: '10px 12px',
+    minWidth: 0,
+  }
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+        <div
+          style={{
+            fontSize: 'var(--text-label)',
+            fontWeight: 'var(--fw-bold)',
+            color: 'var(--c-text)',
+            textTransform: 'capitalize',
+          }}
+        >
+          {hue}
+        </div>
+        <div style={{ ...MONO, color: 'var(--c-gray-600)' }}>{note}</div>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 8 }}>
+        <div style={{ ...cell, background: `var(${wash})`, color: `var(${ink})` }}>
+          <div style={{ ...MONO, fontWeight: 'var(--fw-bold)' }}>-wash</div>
+          <div style={{ ...MONO, opacity: 0.8 }}>{hexes[wash]}</div>
+        </div>
+        <div
+          style={{
+            ...cell,
+            background: `var(${solid})`,
+            borderColor: `var(${solid})`,
+            color: isDark(hexes[solid]) ? '#fff' : 'var(--c-text-dark)',
+          }}
+        >
+          <div style={{ ...MONO, fontWeight: 'var(--fw-bold)' }}>(bare)</div>
+          <div style={{ ...MONO, opacity: 0.85 }}>{hexes[solid]}</div>
+        </div>
+        <div style={{ ...cell, background: `var(${ink})`, color: '#fff' }}>
+          <div style={{ ...MONO, fontWeight: 'var(--fw-bold)' }}>-ink</div>
+          <div style={{ ...MONO, opacity: 0.85 }}>{hexes[ink]}</div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function Swatch({ token, label, hex }) {
+  return (
+    <div
+      style={{
+        border: '1px solid var(--c-border)',
+        borderRadius: 10,
+        overflow: 'hidden',
+        background: '#fff',
+      }}
+    >
+      <div style={{ height: 40, background: `var(${token})` }} />
+      <div style={{ padding: '7px 9px' }}>
+        <div style={{ ...MONO, fontWeight: 'var(--fw-bold)', color: 'var(--c-text)' }}>{token}</div>
+        <div style={{ ...MONO, color: 'var(--c-gray-600)', textTransform: 'uppercase' }}>
+          {hex || ' '}
+        </div>
+        {label && (
+          <div
+            style={{
+              fontSize: 'var(--text-micro)',
+              color: 'var(--c-gray-600)',
+              marginTop: 2,
+              lineHeight: 1.3,
+            }}
+          >
+            {label}
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function SwatchGrid({ items, hexes, min = 170 }) {
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: `repeat(auto-fill, minmax(${min}px, 1fr))`,
+        gap: 10,
+      }}
+    >
+      {items.map(([token, label]) => (
+        <Swatch key={token} token={token} label={label} hex={hexes[token]} />
       ))}
     </div>
   )
 }
 
+function ColorSwatches() {
+  const hexes = useTokenValues(COLOR_TOKENS)
+
+  return (
+    <>
+      <Variant label="Grays — the only neutral ramp">
+        <GrayRamp hexes={hexes} />
+      </Variant>
+
+      <Variant label="Action blue — the app's primary">
+        <SwatchGrid items={ACTION} hexes={hexes} min={190} />
+      </Variant>
+
+      <Variant label="Hues — a wash, a solid, an ink">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {HUES.map(([hue, note]) => (
+            <HueRow key={hue} hue={hue} note={note} hexes={hexes} />
+          ))}
+        </div>
+      </Variant>
+
+      <Variant label="Ink — the three text roles">
+        <SwatchGrid items={INK} hexes={hexes} min={190} />
+      </Variant>
+
+      <Variant label="Roles — prefer these in new code">
+        <SwatchGrid items={ROLES} hexes={hexes} min={190} />
+      </Variant>
+    </>
+  )
+}
+
 const META = {
   fontSize: 'var(--text-micro)',
-  color: 'var(--c-slate-400)',
+  color: 'var(--c-gray-500)',
   fontFamily: 'var(--font-mono)',
 }
 
@@ -193,7 +367,7 @@ function Typography() {
               }}
             >
               <code style={META}>{token}</code>
-              <span style={{ color: 'var(--c-slate-900)', lineHeight: 1.15, ...style }}>
+              <span style={{ color: 'var(--c-gray-900)', lineHeight: 1.15, ...style }}>
                 {sample}
               </span>
             </div>
@@ -221,9 +395,7 @@ function Typography() {
             >
               <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
                 <code style={META}>{t}</code>
-                <span
-                  style={{ ...META, fontWeight: 'var(--fw-bold)', color: 'var(--c-slate-600)' }}
-                >
+                <span style={{ ...META, fontWeight: 'var(--fw-bold)', color: 'var(--c-gray-750)' }}>
                   {vals[t]}
                 </span>
                 <span style={META}>· {role}</span>
@@ -232,7 +404,7 @@ function Typography() {
                 style={{
                   fontSize: `var(${t})`,
                   fontWeight: 'var(--fw-bold)',
-                  color: 'var(--c-slate-900)',
+                  color: 'var(--c-gray-900)',
                   lineHeight: 1.15,
                 }}
               >
@@ -253,7 +425,7 @@ function Typography() {
                 style={{
                   fontSize: 'var(--text-body)',
                   fontWeight: `var(${w})`,
-                  color: 'var(--c-slate-900)',
+                  color: 'var(--c-gray-900)',
                 }}
               >
                 {label} — Reading Motivation Index
@@ -286,8 +458,8 @@ function Radii() {
               style={{
                 width: 76,
                 height: 76,
-                background: 'var(--c-slate-100)',
-                border: '2px solid var(--c-brand-teal)',
+                background: 'var(--c-gray-100)',
+                border: '2px solid var(--c-teal)',
                 borderRadius: `var(${t})`,
               }}
             />
@@ -296,7 +468,7 @@ function Radii() {
                 style={{
                   fontSize: 'var(--text-micro)',
                   fontWeight: 'var(--fw-bold)',
-                  color: 'var(--c-slate-800)',
+                  color: 'var(--c-gray-900)',
                   fontFamily: 'var(--font-mono)',
                 }}
               >
@@ -334,7 +506,7 @@ function Shadows() {
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
           gap: 20,
-          background: 'var(--c-slate-50)',
+          background: 'var(--c-gray-0)',
           padding: 24,
           borderRadius: 'var(--radius-xl)',
         }}
@@ -354,7 +526,7 @@ function Shadows() {
                 style={{
                   fontSize: 'var(--text-micro)',
                   fontWeight: 'var(--fw-bold)',
-                  color: 'var(--c-slate-800)',
+                  color: 'var(--c-gray-900)',
                   fontFamily: 'var(--font-mono)',
                 }}
               >
@@ -382,7 +554,7 @@ function Spacing() {
               style={{
                 height: 16,
                 width: `var(${t})`,
-                background: 'var(--c-brand-teal)',
+                background: 'var(--c-teal)',
                 borderRadius: 'var(--radius-xs)',
               }}
             />
@@ -397,34 +569,34 @@ const SEMANTIC = [
   {
     label: 'Text',
     rows: [
-      ['--c-text', '--c-slate-900'],
-      ['--c-text-muted', '--c-slate-500'],
-      ['--c-text-subtle', '--c-slate-400'],
+      ['--c-text', '--c-gray-900'],
+      ['--c-text-light', '--c-gray-700'],
+      ['--c-gray-600', '--c-gray-500'],
     ],
   },
   {
     label: 'Surfaces',
     rows: [
       ['--c-surface', '#fff'],
-      ['--c-bg', '--c-slate-50'],
-      ['--c-bg-muted', '--c-slate-100'],
+      ['--c-bg', '--c-gray-0'],
+      ['--c-bg-muted', '--c-gray-100'],
     ],
   },
   {
     label: 'Borders',
     rows: [
-      ['--c-border', '--c-slate-200'],
-      ['--c-border-strong', '--c-slate-300'],
+      ['--c-border', '--c-gray-200'],
+      ['--c-border-strong', '--c-gray-350'],
     ],
   },
   {
     label: 'Intent',
     rows: [
-      ['--c-brand', '--c-brand-teal'],
-      ['--c-danger', '--c-red-600'],
-      ['--c-warning', '--c-amber-600'],
-      ['--c-success', '--c-brand-green'],
-      ['--c-info', '--c-blue-700'],
+      ['--c-brand', '--c-teal'],
+      ['--c-danger', '--c-red'],
+      ['--c-warning', '--c-yellow-ink'],
+      ['--c-success', '--c-green'],
+      ['--c-info', '--c-blue'],
     ],
   },
 ]
@@ -472,9 +644,22 @@ export const foundationsSections = [
       <>
         The shared color palette, defined as <code>:root</code> custom properties in{' '}
         <code>components/ui/tokens.css</code> and imported once per entry <code>main.jsx</code> so
-        the tokens are available on every page. Neutrals are the Tailwind <strong>slate</strong>{' '}
-        scale; accents and Beanstack brand colors round it out. In CSS, use <code>var(--c-…)</code>{' '}
-        instead of hardcoding hex — change a token once and it updates everywhere.
+        the tokens are available on every page. In CSS use <code>var(--c-…)</code> rather than a hex
+        — change a token once and it updates everywhere.
+        <br />
+        <br />
+        Every value is the product's, lifted from bs-product's <code>lib/_colors.scss</code>, and
+        every hex on this page is read back out of the live <code>:root</code> vars, so the gallery
+        can&apos;t drift from the tokens. The set is deliberately small: one gray ramp, one action
+        blue, and <strong>three tokens per hue</strong> — a <code>-wash</code> to fill with, the
+        bare name to draw with, and an <code>-ink</code> to set type in. The app defines far more
+        (full 0–1000 ramps for all eight hues); the rungs between these were either unused or too
+        close to tell apart, and a token you can&apos;t distinguish from its neighbour is a token
+        people guess at.
+        <br />
+        <br />
+        The Tailwind slate / amber / violet scales the prototypes started on are gone — every call
+        site now points at the real palette.
       </>
     ),
     render: () => <ColorSwatches />,

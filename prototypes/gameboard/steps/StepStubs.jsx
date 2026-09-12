@@ -49,7 +49,7 @@ import {
 
 // ─── Badge builder bits (create-a-badge) ────────────────────────────────────
 const BUILDER_BGS = [
-  '#0DA7BC',
+  '#0CA7BC',
   '#3B82F6',
   '#6366F1',
   '#8B5CF6',
@@ -57,10 +57,10 @@ const BUILDER_BGS = [
   '#FB7185',
   '#EF4444',
   '#F97316',
-  '#F59E0B',
+  '#FFBC42',
   '#84CC16',
-  '#16A97A',
-  '#0F172A',
+  '#0BA85F',
+  '#2A2A2A',
 ]
 // Clean 24×24 icon paths (Lucide/Feather geometry). Stroke icons draw as
 // outlines; fill icons as solids — both centered in the 24-unit box.
@@ -160,7 +160,7 @@ function builderText(hex) {
     c /= 255
     return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4)
   }
-  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) > 0.6 ? '#0f172a' : '#ffffff'
+  return 0.2126 * f(r) + 0.7152 * f(g) + 0.0722 * f(b) > 0.6 ? '#2a2a2a' : '#ffffff'
 }
 
 function loadImage(src) {
@@ -196,11 +196,11 @@ async function composeBadge(bg, content, font) {
       ctx.fillStyle = 'rgba(15,23,42,0.18)' // light scrim for legibility (kept subtle)
       ctx.fillRect(0, 0, size, size)
     } else {
-      ctx.fillStyle = bg.color || '#0DA7BC'
+      ctx.fillStyle = bg.color || '#0CA7BC'
       ctx.fillRect(0, 0, size, size)
     }
   } else {
-    ctx.fillStyle = bg.color || '#0DA7BC'
+    ctx.fillStyle = bg.color || '#0CA7BC'
     ctx.fillRect(0, 0, size, size)
   }
   ctx.restore()
@@ -279,7 +279,7 @@ const bgRadial = (inner, outer) =>
     ctx.fillStyle = g
     ctx.fillRect(0, 0, s, s)
   })
-const bgConfetti = (cols, base = ['#1E293B', '#0F172A']) =>
+const bgConfetti = (cols, base = ['#2A2A2A', '#2A2A2A']) =>
   makeBgImage((ctx, s) => {
     const g = ctx.createLinearGradient(0, 0, s, s)
     g.addColorStop(0, base[0])
@@ -329,7 +329,7 @@ function getDefaultBgImages() {
     bgGrad('#C084FC', '#6D28D9'),
     bgRadial('#0EA5C4', '#0C4A6E'),
     bgConfetti(['#F472B6', '#FBBF24', '#34D399', '#60A5FA', '#C084FC']),
-    bgStripes('#334155', '#1E293B'),
+    bgStripes('#424242', '#2A2A2A'),
   ]
   return _defaultBgImages
 }
@@ -762,7 +762,7 @@ function BadgeEditor({
           <Button variant="secondary" size="md" onClick={onCancel}>
             Cancel
           </Button>
-          <Button variant="primary" size="md" accent="#0DA7BC" disabled={!valid} onClick={save}>
+          <Button variant="primary" size="md" accent="#0CA7BC" disabled={!valid} onClick={save}>
             {editing ? 'Save badge' : 'Save & add'}
           </Button>
         </footer>
@@ -1033,7 +1033,7 @@ function ActivityBadgeEditor({
           <>
             <Tabs
               className="gb-ab-tabs"
-              accent="#0DA7BC"
+              accent="#0CA7BC"
               active={tab}
               onChange={setTab}
               items={[
@@ -1234,7 +1234,7 @@ function ActivityBadgeEditor({
                       <Button variant="secondary" size="sm" onClick={() => setActForm(null)}>
                         Cancel
                       </Button>
-                      <Button variant="primary" size="sm" accent="#0DA7BC" onClick={saveActForm}>
+                      <Button variant="primary" size="sm" accent="#0CA7BC" onClick={saveActForm}>
                         {actForm.index == null ? 'Add activity' : 'Save activity'}
                       </Button>
                     </div>
@@ -1265,7 +1265,7 @@ function ActivityBadgeEditor({
           <Button variant="secondary" size="md" onClick={onCancel}>
             Cancel
           </Button>
-          <Button variant="primary" size="md" accent="#0DA7BC" disabled={!valid} onClick={save}>
+          <Button variant="primary" size="md" accent="#0CA7BC" disabled={!valid} onClick={save}>
             {editing ? 'Save badge' : 'Create badge'}
           </Button>
         </footer>
@@ -1423,7 +1423,7 @@ export function BadgeRow({
   )
 }
 
-const QUICK_COLORS = ['#0DA7BC', '#7C5CFA', '#E8866A', '#16A97A', '#F0C050', '#E8456B']
+const QUICK_COLORS = ['#0CA7BC', '#7C5CFA', '#F26430', '#0BA85F', '#F0C050', '#E8456B']
 // Build one numbered badge from a background ({ image } or { color }) + a number.
 const composeQuickBadge = (bg, num) =>
   composeBadge(bg, { type: 'number', value: String(num) }, 'Poppins')
@@ -1568,7 +1568,7 @@ function QuickBadgeCreator({ bgImages = [], onCreate, onCancel }) {
         <Button variant="secondary" size="md" onClick={onCancel}>
           Cancel
         </Button>
-        <Button variant="primary" size="md" accent="#0DA7BC" disabled={!valid} onClick={make}>
+        <Button variant="primary" size="md" accent="#0CA7BC" disabled={!valid} onClick={make}>
           Create {items.length} {items.length === 1 ? 'badge' : 'badges'}
         </Button>
       </footer>

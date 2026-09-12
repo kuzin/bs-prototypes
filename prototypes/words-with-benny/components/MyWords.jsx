@@ -144,7 +144,7 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
           block
           active={band}
           onChange={setBand}
-          accent="#7C3AED"
+          accent="#B43DD0"
           ariaLabel="Filter words by how well they're known"
           className="mw-filters"
           items={tabs}

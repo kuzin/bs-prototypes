@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Field, Input, Textarea, MultiSelect, NumberInput, DateInput } from '@components/Form/Form'
-import { Toggle } from '@components/Toggle/Toggle'
+import { Toggle, ToggleGroup } from '@components/Toggle/Toggle'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
 import { RichText } from '@components/RichText/RichText'
 import { ImageDropzone } from '@components/ImageDropzone/ImageDropzone'
@@ -363,7 +363,7 @@ function PointsEarning({ methods, setMethod }) {
         {advanced ? '−' : '+'} Advanced: use separate logging &amp; review badges
       </button>
       {advanced && (
-        <div className="gb-method-toggles gb-method-toggles--nested">
+        <ToggleGroup layout="column" inset>
           <p className="gb-method-note gb-method-note--sm">
             Most points challenges don't need these — reading and reviews already earn points. Turn
             these on only if you also want stand-alone badges for them.
@@ -374,7 +374,7 @@ function PointsEarning({ methods, setMethod }) {
           <Toggle checked={!!methods.reviews} onChange={(v) => setMethod('reviews', v)} size="md">
             Separate review badges
           </Toggle>
-        </div>
+        </ToggleGroup>
       )}
     </>
   )

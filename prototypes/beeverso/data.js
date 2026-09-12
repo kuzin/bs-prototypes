@@ -201,6 +201,6 @@ export const CHALLENGES = [
     progress: 312,
     total: 600,
     unit: 'minutes',
-    color: '#0DA7BC',
+    color: '#0CA7BC',
   },
 ]

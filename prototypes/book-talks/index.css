@@ -7,8 +7,8 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: var(--c-slate-100);
-  color: var(--c-slate-800);
+  background: var(--c-gray-100);
+  color: var(--c-gray-900);
   -webkit-font-smoothing: antialiased;
 }
 h1,
@@ -37,7 +37,7 @@ button {
   letter-spacing: -0.01em;
 }
 .bt-muted {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .bt-panel {
@@ -69,10 +69,10 @@ button {
 .cc-badge-editor {
   --teal: #14b8a6;
   --teal-dk: #0d8a82;
-  --ink: var(--c-slate-900);
-  --muted: var(--c-slate-500);
-  --line: var(--c-slate-200);
-  --bg: var(--c-slate-100);
+  --ink: var(--c-gray-900);
+  --muted: var(--c-gray-700);
+  --line: var(--c-gray-200);
+  --bg: var(--c-gray-100);
   --panel: #ffffff;
 }
 /* `.cc-root` is `position: fixed; inset: 0 0 48px` in the creator, where it IS
@@ -99,7 +99,7 @@ button {
 .bt-panel-sub {
   margin: 4px 0 0;
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   max-width: 60ch;
   line-height: 1.45;
 }
@@ -128,7 +128,7 @@ button {
 }
 .bt-exchanges-hint {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* ─── Student reader (challenge page) ───────────────────────────────────── */
@@ -162,12 +162,12 @@ button {
 .bt-reader-title {
   font-size: 28px;
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   letter-spacing: -0.01em;
 }
 .bt-reader-dates {
   font-size: 15px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-weight: 600;
   margin-top: 8px;
 }
@@ -194,11 +194,11 @@ button {
 .bt-reader-h2 {
   font-size: 24px;
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .bt-reader-badgecount {
   font-size: 14px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-weight: 600;
   margin-top: 4px;
 }
@@ -285,12 +285,12 @@ button {
 .bt-rcard-name {
   font-size: 16px;
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   margin-top: 14px;
 }
 .bt-rcard-sub {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-top: 2px;
 }
 .bt-rcard-foot {
@@ -309,7 +309,7 @@ button {
   color: #16a34a;
 }
 .bt-rcard-foot.is-todo {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .bt-rcard-foot.is-cta {
   color: #0d8a82;
@@ -334,14 +334,14 @@ button {
   height: 30px;
   border: 0;
   border-radius: 8px;
-  background: var(--c-slate-100);
-  color: var(--c-text-muted);
+  background: var(--c-gray-100);
+  color: var(--c-text-light);
   display: grid;
   place-items: center;
   cursor: pointer;
 }
 .bt-detail-close:hover {
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
 }
 .bt-detail-ring {
   position: relative;
@@ -395,12 +395,12 @@ button {
   margin-top: 8px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .bt-detail-desc {
   margin: 14px 0 20px;
   font-size: 14px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   line-height: 1.5;
 }
 
@@ -412,10 +412,11 @@ button {
 
 /* ─── Teacher review = Sessions for Review (full-bleed) ─────────────────── */
 .bt-reviewx {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   min-height: calc(100vh - 48px);
 }
-/* Content area below the reused SFR header/tabs bars. */
+/* The page itself — header, tabs and list all scroll inside it, the way
+   SfrPage is built. It used to sit under a pinned header/tabs band. */
 .bt-reviewx-body {
   padding: 28px max(24px, calc((100% - 1440px) / 2)) 80px;
 }
@@ -471,7 +472,7 @@ button {
 }
 .bt-stat-label {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-weight: 600;
 }
 .bt-stat--good .bt-stat-icon {
@@ -484,11 +485,11 @@ button {
 }
 .bt-stat--warn .bt-stat-icon {
   background: #fee2e2;
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .bt-stat--neutral .bt-stat-icon {
-  background: var(--c-slate-200);
-  color: var(--c-text-muted);
+  background: var(--c-gray-200);
+  color: var(--c-text-light);
 }
 
 .bt-roster {
@@ -508,17 +509,17 @@ button {
 }
 .bt-roster-head {
   height: 44px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   border-bottom: 1px solid #eef2f6;
   font-size: 11.5px;
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .bt-roster-row {
   height: 60px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
 }
 .bt-roster-row:last-child {
   border-bottom: 0;
@@ -534,7 +535,7 @@ button {
 .bt-roster-name {
   font-weight: 700;
   font-size: 14px;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .bt-view-btn {
   display: inline-flex;
@@ -556,7 +557,7 @@ button {
 .bt-view-btn:disabled {
   border-color: transparent;
   background: transparent;
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
   cursor: default;
 }
 .bt-flag-count {
@@ -574,7 +575,7 @@ button {
 }
 .bt-flag-count--neg {
   background: #fef2f2;
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 /* status + rating chips (shared by roster + review modal) */
@@ -600,13 +601,13 @@ button {
   color: #b45309;
 }
 .bt-status--in-progress .bt-status-dot {
-  background: #f59e0b;
+  background: #ffbc42;
 }
 .bt-status--not-started {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .bt-status--not-started .bt-status-dot {
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
 }
 .bt-rating {
   display: inline-flex;
@@ -630,110 +631,13 @@ button {
   color: #b45309;
 }
 .bt-rating--yellow .bt-rating-dot {
-  background: #f59e0b;
+  background: #ffbc42;
 }
 .bt-rating--red {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .bt-rating--red .bt-rating-dot {
   background: #ef4444;
-}
-
-/* ─── Chat bubbles (shared: live chat + review transcript) ──────────────── */
-.bt-bubble-wrap {
-  display: flex;
-  gap: 9px;
-  margin-bottom: 12px;
-  align-items: flex-start;
-}
-.bt-bubble-wrap--benny {
-  justify-content: flex-start;
-}
-.bt-bubble-wrap:not(.bt-bubble-wrap--benny) {
-  justify-content: flex-end;
-}
-.bt-bubble-avatar {
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  border: 1px solid rgba(15, 23, 42, 0.06);
-}
-.bt-bubble {
-  max-width: 78%;
-  padding: 10px 14px;
-  border-radius: 16px;
-  font-size: 14.5px;
-  line-height: 1.45;
-}
-.bt-bubble--benny {
-  background: var(--c-slate-100);
-  color: var(--c-slate-800);
-  border-top-left-radius: 5px;
-}
-.bt-bubble--student {
-  background: #0d8a82;
-  color: #fff;
-  border-bottom-right-radius: 5px;
-}
-.bt-bubble--flagged {
-  outline: 2px solid #fca5a5;
-  outline-offset: 1px;
-}
-.bt-bubble em {
-  font-style: italic;
-}
-
-.bt-annotation {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 12.5px;
-  font-weight: 600;
-  margin: -2px 0 12px 39px;
-  padding: 5px 11px;
-  border-radius: 8px;
-  width: fit-content;
-}
-.bt-annotation--positive {
-  background: #ecfdf5;
-  color: #059669;
-}
-.bt-annotation--warning {
-  background: #fffbeb;
-  color: #b45309;
-}
-
-.bt-bubble--typing {
-  display: flex;
-  gap: 4px;
-  padding: 13px 14px;
-}
-.bt-typing-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--c-slate-400);
-  animation: bt-typing 1.2s infinite ease-in-out;
-}
-.bt-typing-dot:nth-child(2) {
-  animation-delay: 0.18s;
-}
-.bt-typing-dot:nth-child(3) {
-  animation-delay: 0.36s;
-}
-@keyframes bt-typing {
-  0%,
-  60%,
-  100% {
-    transform: translateY(0);
-    opacity: 0.4;
-  }
-  30% {
-    transform: translateY(-4px);
-    opacity: 1;
-  }
 }
 
 /* ─── Live chat modal ───────────────────────────────────────────────────── */
@@ -790,6 +694,14 @@ button {
 .bt-chat-close:hover {
   background: rgba(255, 255, 255, 0.28);
 }
+.bt-chat-scroll .cht-row {
+  --cht-student-bg: #0d8a82;
+  --cht-student-ink: #fff;
+  --cht-student-border: #0d8a82;
+  --cht-accent: #0d8a82;
+  margin-bottom: 12px;
+}
+
 .bt-chat-scroll {
   flex: 1;
   overflow-y: auto;
@@ -825,12 +737,12 @@ button {
 /* The dimmed low-effort chip — tapping it gives Benny a minimal answer (the
    off-track path). Muted so it reads as the half-hearted option. */
 .bt-chip--weak {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   border-color: var(--c-border);
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .bt-chip--weak:hover {
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
   border-color: var(--c-border-strong);
 }
 .bt-chat-composer {
@@ -857,7 +769,7 @@ button {
   border-radius: 50%;
   border: 1.5px solid var(--c-border);
   background: #fff;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -865,8 +777,8 @@ button {
   flex-shrink: 0;
 }
 .bt-chat-mic:hover {
-  color: var(--c-text-muted);
-  background: var(--c-slate-50);
+  color: var(--c-text-light);
+  background: var(--c-gray-0);
 }
 /* Recording — the transcript types straight into the input. */
 .bt-chat-mic.is-listening {
@@ -876,7 +788,7 @@ button {
   animation: bt-mic-pulse 1.3s ease-in-out infinite;
 }
 .bt-chat-mic.is-listening:hover {
-  background: var(--c-red-600);
+  background: var(--c-red);
   color: #fff;
 }
 @keyframes bt-mic-pulse {
@@ -950,74 +862,10 @@ button {
   color: #0d8a82;
 }
 
-/* Per-message read-aloud control — a small inline icon trailing the text, so
-   it stays quiet (no dedicated row). Brighter on hover / while speaking. */
-.bt-tts-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  vertical-align: middle;
-  margin-left: 5px;
-  width: 18px;
-  height: 16px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #9aa7b4;
-  cursor: pointer;
-  opacity: 0.55;
-  transition:
-    opacity 0.12s,
-    color 0.12s;
-}
-.bt-bubble-wrap:hover .bt-tts-btn {
-  opacity: 1;
-}
-.bt-tts-btn:hover {
-  color: #0d8a82;
-}
-.bt-tts-btn.is-speaking {
-  opacity: 1;
-  color: #0d8a82;
-}
-
-/* Equalizer bars — shown in the speaker button while a message "plays". */
-.bt-eq {
-  display: inline-flex;
-  align-items: center;
-  gap: 1.5px;
-  height: 13px;
-}
-.bt-eq span {
-  width: 2px;
-  height: 100%;
-  border-radius: 1px;
-  background: currentColor;
-  animation: bt-eq 0.9s ease-in-out infinite;
-}
-.bt-eq span:nth-child(2) {
-  animation-delay: 0.15s;
-}
-.bt-eq span:nth-child(3) {
-  animation-delay: 0.3s;
-}
-.bt-eq span:nth-child(4) {
-  animation-delay: 0.45s;
-}
-@keyframes bt-eq {
-  0%,
-  100% {
-    transform: scaleY(0.35);
-  }
-  50% {
-    transform: scaleY(1);
-  }
-}
-
 .bt-chat-done-btn {
   width: 100%;
   border: 0;
-  background: var(--c-brand-green);
+  background: var(--c-green);
   color: #fff;
   font-weight: 800;
   font-size: 15px;
@@ -1075,7 +923,7 @@ button {
   border: 0;
   border-radius: 50%;
   background: rgba(15, 23, 42, 0.06);
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1161,7 +1009,7 @@ button {
 }
 .bt-award-name {
   font-size: 14px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-top: 2px;
 }
 /* Lift the celebration modal (+ its backdrop) above the chat modal it pops
@@ -1194,11 +1042,11 @@ button {
   border-bottom: 1px solid #eef2f6;
 }
 .bt-review-head .bt-chat-close {
-  background: var(--c-slate-100);
-  color: var(--c-text-muted);
+  background: var(--c-gray-100);
+  color: var(--c-text-light);
 }
 .bt-review-head .bt-chat-close:hover {
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
 }
 .bt-review-head-left {
   display: flex;
@@ -1212,7 +1060,7 @@ button {
 }
 .bt-review-sub {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .bt-review-cols {
   flex: 1;
@@ -1234,23 +1082,23 @@ button {
   font-weight: 800;
   letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   margin-bottom: 8px;
 }
 .bt-side-label--pos {
   color: #059669;
 }
 .bt-side-label--neg {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .bt-side-meta {
   font-size: 12.5px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-top: 6px;
 }
 .bt-side-note {
   font-size: 12px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   margin-top: 7px;
   line-height: 1.4;
 }
@@ -1275,16 +1123,16 @@ button {
   color: #059669;
 }
 .bt-flag-row--neg .bt-flag-icon {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .bt-flag-label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .bt-flag-desc {
   font-size: 12px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   line-height: 1.35;
   margin-top: 1px;
 }
@@ -1300,7 +1148,7 @@ button {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   text-align: center;
 }
 .bt-review-unfinished {
@@ -1408,8 +1256,8 @@ button {
   margin-top: 9px;
   padding: 3px 9px;
   border-radius: 999px;
-  background: var(--c-slate-100);
-  color: var(--c-text-muted);
+  background: var(--c-gray-100);
+  color: var(--c-text-light);
   font-size: 12px;
   font-weight: 700;
 }
@@ -1435,7 +1283,7 @@ button {
   border: 0;
   border-radius: 50%;
   background: rgba(15, 23, 42, 0.06);
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1447,7 +1295,7 @@ button {
 .bt-log-title {
   font-size: 20px;
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .bt-log-fields {
   display: grid;
@@ -1477,7 +1325,7 @@ button {
 .bt-log-sub {
   font-size: 14px;
   line-height: 1.55;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin: 8px 0 20px;
 }
 .bt-log .btn {
@@ -1489,13 +1337,13 @@ button {
   margin: 12px auto 0;
   border: 0;
   background: none;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   font-size: 13.5px;
   font-weight: 700;
   cursor: pointer;
 }
 .bt-log-skip:hover {
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   text-decoration: underline;
 }
 
@@ -1512,7 +1360,7 @@ button {
   margin: 10px auto 0;
   border: 0;
   background: none;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   font-size: 13px;
   font-weight: 700;
   cursor: pointer;

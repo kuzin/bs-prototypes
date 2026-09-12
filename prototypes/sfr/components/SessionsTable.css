@@ -1,26 +1,18 @@
-/* ── Tighter, cleaner SFR sessions table (scoped to .sess-table) ──
-   The shared <Table> default is roomy; the review tables are dense lists, so
-   trim the header + row padding and keep every row to a single line. */
-.sess-table .tbl-th {
-  padding: 8px 12px;
-  letter-spacing: 0.04em;
-  background: #fff;
-  border-top: none;
-}
-.sess-table .tbl-td {
-  padding: 6px 12px;
-}
+/* The review tables are the shared <Table>, and they take its chrome: the
+   grey `.tbl-th` band, 14px/900 labels, and its row rhythm. This file used to
+   override the header to white and halve the padding, which is what made these
+   read as a different table from every other list in the app. */
 
 .sess-date {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   white-space: nowrap;
 }
 
 .sess-student-name {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   white-space: nowrap;
   cursor: pointer;
 }
@@ -39,41 +31,44 @@
 
 .sess-grade {
   font-size: 13px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   white-space: nowrap;
 }
 
-.sess-title-cell {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-}
-
 .sess-book-title {
-  font-size: 13px;
+  font-size: var(--text-cell);
   font-weight: 500;
-  color: var(--c-slate-800);
-  max-width: 200px;
+  color: var(--c-gray-900);
+  max-width: 240px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+/* The app's title cell is a link — it opens the session's detail. */
+.sess-book-title--link {
+  display: inline-block;
+  vertical-align: bottom;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  text-align: left;
+  color: var(--c-blue);
+  cursor: pointer;
+}
+.sess-book-title--link:hover {
+  text-decoration: underline;
+}
+
+.sess-unit {
+  font-size: var(--text-cell);
+  color: var(--c-text);
+  white-space: nowrap;
+}
+
 /* Table pills share one geometry (matches the shared <Pill size="sm">):
    11px / weight 600 / 3px 8px / pill radius / subtle tinted border. */
-.sess-unfinished-badge {
-  display: inline-flex;
-  align-items: center;
-  font-size: 11px;
-  font-weight: 600;
-  padding: 3px 8px;
-  border-radius: 99px;
-  background: #fff7ed;
-  color: var(--c-amber-600);
-  border: 1px solid color-mix(in srgb, var(--c-amber-600) 20%, transparent);
-  white-space: nowrap;
-  flex-shrink: 0;
-}
 
 /* Source of the Benny conversation — "Self-Started" book talks (a reader-
    contained AI chat) vs the default post-logging check-in. */
@@ -93,48 +88,14 @@
 }
 /* Post-logging title-completion check-ins (the existing BTWB trigger). */
 .sess-source-tag--title {
-  background: var(--c-slate-100);
-  color: var(--c-slate-600);
-  border-color: color-mix(in srgb, var(--c-slate-600) 20%, transparent);
+  background: var(--c-gray-100);
+  color: var(--c-gray-750);
+  border-color: color-mix(in srgb, var(--c-gray-750) 20%, transparent);
 }
 
 /* Engagement rating badge → shared <Pill variant="soft" size="sm"> */
 
 /* Safety severity tag (Safety Signals prototype only) */
-.sess-safety-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 99px;
-  font-size: 11px;
-  font-weight: 700;
-  border: 1px solid;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
-
-.sess-flags {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-red-600);
-}
-
-.sess-flags--pos {
-  color: var(--c-brand-green);
-}
-
-.sess-flags--neg {
-  color: var(--c-red-600);
-}
-
-.sess-na {
-  color: var(--c-slate-300);
-  font-size: 13px;
-}
 
 .tbl-clear-filters-btn {
   display: inline-flex;
@@ -159,23 +120,6 @@
   border-color: #9ca3af;
 }
 
-.sess-flag-icons {
-  display: flex;
-  flex-wrap: nowrap;
-  gap: 4px;
-}
-
-.sess-flag-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 19px;
-  height: 19px;
-  border-radius: 6px;
-  flex-shrink: 0;
-  position: relative;
-}
-
 .sess-flag-badge {
   display: inline-block;
   font-size: 11px;
@@ -196,11 +140,11 @@
 }
 .sess-status--done {
   background: #f0fdf4;
-  color: var(--c-brand-green);
+  color: var(--c-green);
 }
 .sess-status--partial {
   background: #fff7ed;
-  color: var(--c-amber-600);
+  color: var(--c-yellow-ink);
 }
 
 /* Action column — right-aligned and vertically centered. Scoped like the rest
@@ -257,7 +201,7 @@
   border-radius: 7px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   cursor: pointer;
   font-family: inherit;
   text-align: left;
@@ -266,11 +210,11 @@
     color 0.1s;
 }
 .sess-flyout-item:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--c-text);
 }
 .sess-flyout-item--danger {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .sess-flyout-item--danger:hover {
   background: #fef2f2;
@@ -279,7 +223,7 @@
 
 .sess-flyout-divider {
   height: 1px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   margin: 3px 4px;
 }
 
@@ -299,15 +243,67 @@
   vertical-align: middle;
 }
 .sess-dots:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 .sess-dots span {
   display: block;
   width: 3.5px;
   height: 3.5px;
   border-radius: 50%;
-  background: var(--c-slate-500);
+  background: var(--c-gray-700);
 }
 .sess-dots:hover span {
-  background: var(--c-slate-700);
+  background: var(--c-gray-800);
+}
+
+/* ── Flags cell ──
+   `.flagged-entry__analysis` from the shipped row
+   (`admin/_admin_flagged_entries.scss`): a 32px box per flag holding the app's
+   own 24px drawing, and past two flags a single 68×35 chip with the count.
+   Empty is a grey "N/A" chip, not a dash — the cell always occupies its
+   column, so a row with no flags lines up with the rows that have them. */
+.fe-analysis {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.fe-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+}
+
+.fe-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 35px;
+  border-radius: 12px;
+  font-size: var(--text-tag);
+  font-weight: 800;
+  line-height: 18px;
+}
+.fe-chip--negative {
+  color: #e03e31;
+  background: #fcd3ce;
+}
+.fe-chip--positive {
+  color: #05914f;
+  background: #cbfde5;
+}
+.fe-chip--none {
+  color: var(--c-gray-350);
+  background: var(--c-gray-150);
+}
+
+/* The em dash the non-flag cells use when there's nothing to show. */
+.sess-na {
+  color: var(--c-gray-350);
 }

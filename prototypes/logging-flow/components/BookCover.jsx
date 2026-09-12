@@ -15,7 +15,7 @@ import './BookCover.css'
  */
 export function BookCover({ book, size = 'md', className = '' }) {
   const [err, setErr] = useState(false)
-  const [from, to] = book.cover || ['#94A3B8', '#475569']
+  const [from, to] = book.cover || ['#ACACAC', '#656565']
   const src = coverIdUrl(book.coverId) ?? coverUrl(book.isbn)
   const showImg = src && !err
   const isMag = !showImg && book.kind === 'magazine'

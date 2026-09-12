@@ -4,11 +4,12 @@ import { Pill } from '@components/Pill/Pill'
 import { Tabs } from '@components/Tabs/Tabs'
 import { ToastStack, useToasts } from '@components/Toast/Toast'
 import { Flyout } from '@components/Flyout/Flyout'
-import { Modal } from '@components/Modal/Modal'
+import { Modal, ModalClose } from '@components/Modal/Modal'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import { Table } from '@components/Table/Table'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Toggle } from '@components/Toggle/Toggle'
-import { Field, Input, Select, Textarea } from '@components/Form/Form'
+import { ColorInput, Field, Input, Select, Textarea } from '@components/Form/Form'
 import { SettingRow, SettingList } from '@components/SettingRow/SettingRow'
 import {
   Accordion,
@@ -86,6 +87,7 @@ function TabsShowcase() {
       <Variant label="pill variant">
         <Tabs
           variant="pill"
+          block
           active={b}
           onChange={setB}
           items={[
@@ -96,40 +98,62 @@ function TabsShowcase() {
         />
       </Variant>
       <Variant label="folder variant — tabs on top of a panel">
-        <div style={{ width: 'min(320px, 100%)' }}>
-          <Tabs
-            variant="folder"
-            size="sm"
-            block
-            active={folder}
-            onChange={setFolder}
-            items={[
-              { id: 'schools', label: 'Top Schools' },
-              { id: 'grades', label: 'Top Grades' },
-            ]}
-          />
+        {/* On a grey ground, because the whole point of the variant is that the
+            active tab is white — on a white card there's nothing to read it against. */}
+        <div
+          style={{
+            width: '100%',
+            background: 'var(--c-gray-200)',
+            padding: 16,
+            borderRadius: 10,
+          }}
+        >
+          {/* Inset by the panel's border width: the panel's *interior* is what
+              the active tab has to be flush with, and its 2px outline sits
+              outside that. Without this the tabs overhang the panel by 2px at
+              each end. */}
+          <div style={{ padding: '0 2px' }}>
+            <Tabs
+              variant="folder"
+              size="sm"
+              block
+              active={folder}
+              onChange={setFolder}
+              items={[
+                { id: 'schools', label: 'Top Schools' },
+                { id: 'grades', label: 'Top Grades' },
+              ]}
+            />
+          </div>
+          {/* White, and with no top edge, so the active tab flows straight into
+              it as one surface — the same trick the About/Usage tabs use. */}
           <div
             style={{
               padding: '17px 21px',
-              fontSize: 14,
-              color: 'var(--c-text-real-light)',
+              fontSize: 'var(--text-body)',
+              color: 'var(--c-text-light)',
+              background: '#fff',
               border: '2px solid var(--c-gray-150)',
+              borderTop: 'none',
               borderRadius: '0 0 8px 8px',
             }}
           >
-            The panel the tabs belong to. The active tab is filled with the same grey, so the two
-            read as one surface.
+            The panel the tabs belong to. The active tab is white and the panel is white, so the two
+            read as one surface and the inactive tab reads as cut away from it.
           </div>
         </div>
       </Variant>
       <Variant label="underline + center — a short strip inside a card">
         <div
           style={{
-            width: 'min(320px, 100%)',
+            width: '100%',
             background: '#fff',
             border: '1px solid var(--c-border)',
             borderRadius: 12,
-            padding: '12px 14px',
+            /* No top padding: the tab's own 9px then sits above the label and
+               9px below it, so the text is halfway between the card's top edge
+               and the rule instead of riding high. */
+            padding: '0 14px 12px',
           }}
         >
           <Tabs
@@ -150,6 +174,7 @@ function TabsShowcase() {
         <Tabs
           variant="pill"
           size="xs"
+          block
           ariaLabel="Overview time range"
           active={c}
           onChange={setC}
@@ -200,14 +225,15 @@ function TabsShowcase() {
       <Variant label="in a modal — full-bleed header tabs + count pill">
         <div
           style={{
-            width: 'min(440px, 100%)',
-            border: '1px solid #e2e8f0',
+            position: 'relative',
+            width: '100%',
+            border: '1px solid #eaeaea',
             borderRadius: 14,
-            overflow: 'hidden',
             background: '#fff',
             boxShadow: '0 12px 32px rgba(15, 23, 42, 0.12)',
           }}
         >
+          <ModalClose onClick={() => {}} />
           <div
             style={{
               display: 'flex',
@@ -216,17 +242,14 @@ function TabsShowcase() {
               padding: '14px 18px',
             }}
           >
-            <strong style={{ fontSize: 16, fontWeight: 800, color: '#0f172a' }}>
+            <strong style={{ fontSize: 18, fontWeight: 800, color: '#2a2a2a' }}>
               Edit activity badge
             </strong>
-            <span aria-hidden="true" style={{ color: '#94a3b8', fontSize: 20, lineHeight: 1 }}>
-              ×
-            </span>
           </div>
           {/* Negative side margin cancels the body padding so the underline runs edge to edge. */}
           <div style={{ padding: '0 14px' }}>
             <Tabs
-              accent="#0DA7BC"
+              accent="#0CA7BC"
               active={c}
               onChange={setC}
               items={[
@@ -235,7 +258,7 @@ function TabsShowcase() {
               ]}
             />
           </div>
-          <div style={{ padding: 18, fontSize: 14, color: '#64748b' }}>
+          <div style={{ padding: 18, fontSize: 14, color: '#707070' }}>
             {c === 'details'
               ? 'Details panel — badge art, title, description…'
               : 'Activities panel — the activities readers complete.'}
@@ -252,7 +275,7 @@ function TabsKnobs() {
   const [variant, setVariant] = useState('underline')
   const [size, setSize] = useState('md')
   const [active, setActive] = useState('daily')
-  const [accent, setAccent] = useState('#1D4ED8')
+  const [accent, setAccent] = useState('#196DD5')
   const [showCount, setCount] = useState(true)
   const [showIcon, setIcon] = useState(false)
   const [withDisabled, setDis] = useState(false)
@@ -279,12 +302,7 @@ function TabsKnobs() {
           </Select>
         </Field>
         <Field label="accent">
-          <input
-            className="pt-color"
-            type="color"
-            value={accent}
-            onChange={(e) => setAccent(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={accent} onChange={setAccent} />
         </Field>
         <Field label="active">
           <Select value={active} onChange={(e) => setActive(e.target.value)}>
@@ -518,8 +536,7 @@ function CloseIcon() {
 
 function CenteredModalKnobs() {
   const [open, setOpen] = useState(false)
-  const [variant, setVariant] = useState('center')
-  const [withClose, setClose] = useState(true)
+  const [closeStyle, setCloseStyle] = useState('badge')
   const [withImage, setImage] = useState(false)
   const [withFooter, setFooter] = useState(true)
   const [destructive, setDest] = useState(false)
@@ -528,18 +545,16 @@ function CenteredModalKnobs() {
 
   return (
     <>
-      <Knobs>
-        <Field label="variant">
-          <Select value={variant} onChange={(e) => setVariant(e.target.value)}>
-            <option value="center">center</option>
-            <option value="side">side</option>
-          </Select>
-        </Field>
+      <Knobs examples={false}>
         <Field label="title">
           <Input value={title} onChange={(e) => setTitle(e.target.value)} />
         </Field>
-        <Field label="close btn">
-          <Toggle checked={withClose} onChange={setClose} />
+        <Field label="close">
+          <Select value={closeStyle} onChange={(e) => setCloseStyle(e.target.value)}>
+            <option value="badge">badge (the app&apos;s)</option>
+            <option value="inline">inline</option>
+            <option value="none">none</option>
+          </Select>
         </Field>
         <Field label="banner image">
           <Toggle checked={withImage} onChange={setImage} />
@@ -555,11 +570,18 @@ function CenteredModalKnobs() {
         </Field>
       </Knobs>
       <div className="pt-variant-frame">
-        <Button onClick={() => setOpen(true)}>Open {variant} modal</Button>
+        <Button onClick={() => setOpen(true)}>Open modal</Button>
       </div>
-      <Modal open={open} onClose={() => setOpen(false)} variant={variant} ariaLabel={title}>
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        variant="center"
+        ariaLabel={title}
+        closeBadge={closeStyle === 'badge'}
+      >
         {({ close }) => (
           <>
+            {closeStyle === 'badge' && <ModalClose onClick={close} />}
             {withImage && (
               <img
                 className="modal-image"
@@ -567,7 +589,7 @@ function CenteredModalKnobs() {
                 src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1040&q=70"
               />
             )}
-            {withImage && withClose && (
+            {withImage && closeStyle === 'inline' && (
               <IconButton
                 variant="secondary"
                 size="sm"
@@ -582,7 +604,7 @@ function CenteredModalKnobs() {
               <div className="modal-header-text">
                 <h3 className="modal-title">{title}</h3>
               </div>
-              {!withImage && withClose && (
+              {!withImage && closeStyle === 'inline' && (
                 <IconButton
                   variant="ghost"
                   size="sm"
@@ -616,170 +638,8 @@ function CenteredModalKnobs() {
   )
 }
 
-const SP_SECTIONS = [
-  { id: 'overview', label: 'Overview', icon: 'overview', color: '#475569' },
-  { id: 'motivation', label: 'Motivation', icon: 'flame', color: '#E8866A' },
-  { id: 'integrity', label: 'Integrity', icon: 'shield', color: '#1D4ED8' },
-  { id: 'habits', label: 'Habits', icon: 'habits', color: '#16A97A' },
-  { id: 'skills', label: 'Skills', icon: 'book', color: '#7C3AED' },
-]
-
-const SP_EMPTY = {
-  overview: {
-    title: 'No data yet',
-    description: 'Once this student logs reading sessions, their overview will appear here.',
-  },
-  motivation: {
-    title: 'No motivation data',
-    description: "Complete the RMI survey to see this student's intrinsic and extrinsic scores.",
-  },
-  integrity: {
-    title: 'No Book Talks logged',
-    description: 'Verification activity for this student will show up after their first Book Talk.',
-  },
-  habits: {
-    title: 'No reading sessions',
-    description:
-      'Session length, streaks, and frequency populate after this student starts logging.',
-  },
-  skills: {
-    title: 'No Lexile scores yet',
-    description: 'Lexile growth requires at least two assessment data points.',
-  },
-}
-
-function EmptyIcon() {
-  return <Icon name="search" />
-}
-
-function SpNavIcon({ name }) {
-  switch (name) {
-    case 'overview':
-      return <Icon name="user" size={20} />
-    case 'flame':
-      return <Icon name="flame" size={20} />
-    case 'shield':
-      return <Icon name="shield-check" size={20} />
-    case 'habits':
-      return <Icon name="calendar-event" size={20} />
-    case 'book':
-      return <Icon name="book" size={20} />
-    default:
-      return null
-  }
-}
-
-function SideModalShowcase() {
-  const [open, setOpen] = useState(false)
-  const [section, setSection] = useState('overview')
-  const [variant, setVariant] = useState('side')
-  const [withActions, setActions] = useState(true)
-  const empty = SP_EMPTY[section]
-  return (
-    <>
-      <Knobs>
-        <Field label="variant">
-          <Select value={variant} onChange={(e) => setVariant(e.target.value)}>
-            <option value="side">side</option>
-            <option value="center">center</option>
-          </Select>
-        </Field>
-        <Field label="section">
-          <Select value={section} onChange={(e) => setSection(e.target.value)}>
-            {SP_SECTIONS.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.label}
-              </option>
-            ))}
-          </Select>
-        </Field>
-        <Field label="header actions">
-          <Toggle checked={withActions} onChange={setActions} />
-        </Field>
-      </Knobs>
-      <div className="pt-variant-frame">
-        <Button onClick={() => setOpen(true)}>Open student panel</Button>
-        <Modal
-          open={open}
-          onClose={() => setOpen(false)}
-          variant={variant}
-          ariaLabel="Marcus Chen — student profile"
-        >
-          {({ close }) => (
-            <div className="sp-shell">
-              {/* Left vertical nav (BeanstackProfile-style) */}
-              <nav className="sp-nav">
-                {SP_SECTIONS.map((s, i) => {
-                  const active = section === s.id
-                  return (
-                    <Fragment key={s.id}>
-                      <button
-                        type="button"
-                        className={`sp-nav-item${active ? ' sp-nav-item--active' : ''}`}
-                        style={
-                          active
-                            ? {
-                                '--nav-active-color': s.color,
-                                '--nav-active-bg': `color-mix(in srgb, ${s.color} 12%, white)`,
-                              }
-                            : undefined
-                        }
-                        onClick={() => setSection(s.id)}
-                        title={s.label}
-                      >
-                        <span className="sp-nav-icon">
-                          <SpNavIcon name={s.icon} />
-                        </span>
-                        <span className="sp-nav-label">{s.label}</span>
-                      </button>
-                      {i === 0 && <div className="sp-nav-divider" />}
-                    </Fragment>
-                  )
-                })}
-              </nav>
-
-              {/* Main pane */}
-              <div className="sp-pane">
-                <div className="sp-pane-header">
-                  <div className="sp-pane-identity">
-                    <Avatar initials="MC" color="#7C3AED" size="md" />
-                    <div className="sp-pane-identity-text">
-                      <div className="sp-pane-name">Marcus Chen</div>
-                      <div className="sp-pane-meta">Grade 5 · Lincoln Elementary</div>
-                    </div>
-                  </div>
-                  <div className="sp-pane-actions">
-                    {withActions && (
-                      <Button variant="secondary" size="sm">
-                        Log reading
-                      </Button>
-                    )}
-                    <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close">
-                      <CloseIcon />
-                    </IconButton>
-                  </div>
-                </div>
-
-                <div className="sp-pane-body">
-                  <EmptyState
-                    icon={<EmptyIcon />}
-                    title={empty.title}
-                    description={empty.description}
-                    action={
-                      <Button variant="secondary" size="sm">
-                        Get started
-                      </Button>
-                    }
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-        </Modal>
-      </div>
-    </>
-  )
-}
+// No rail of its own — the page has one, above. The section nav inside the
+// panel is the control here, which is truer to how it's actually driven.
 
 function BannerKnobs() {
   const [level, setLevel] = useState('info')
@@ -861,7 +721,7 @@ function AccordionShowcase() {
       </Variant>
 
       <Variant label="accent — tints the open row">
-        <Accordion items={FAQ} accent="var(--c-brand-teal)" defaultOpen={['streaks']} />
+        <Accordion items={FAQ} accent="var(--c-teal)" defaultOpen={['streaks']} />
       </Variant>
 
       <Variant label="all closed — no defaultOpen">
@@ -872,7 +732,7 @@ function AccordionShowcase() {
 }
 
 function AccordionKnobs() {
-  const [accent, setAccent] = useState('#1D4ED8')
+  const [accent, setAccent] = useState('#196DD5')
   const [multi, setMulti] = useState(false)
   const [count, setCount] = useState('3')
   const ITEMS = [
@@ -911,12 +771,7 @@ function AccordionKnobs() {
     <>
       <Knobs>
         <Field label="accent">
-          <input
-            className="pt-color"
-            type="color"
-            value={accent}
-            onChange={(e) => setAccent(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={accent} onChange={setAccent} />
         </Field>
         <Field label="allow multiple">
           <Toggle checked={multi} onChange={setMulti} />
@@ -942,15 +797,20 @@ function EmptyStateKnobs() {
   const [desc, setDesc] = useState(
     'Students appear here when they trip a habit, integrity, or skill alert. Adjust your thresholds to see more.',
   )
-  const [iconKey, setIcon] = useState('search')
+  const [iconKey, setIcon] = useState('filter')
   const [actionText, setActionText] = useState('Set thresholds')
   const [hasAction, setHas] = useState(true)
   const [variant, setVariant] = useState('plain')
+  // Plumpy rather than the stroked registry: an empty state's icon is the only
+  // art on the surface, and a hairline glyph in a 52px tile reads as a loading
+  // placeholder.
   const ICONS = {
-    search: <Icon name="search" />,
-    inbox: <Icon name="inbox" />,
-    book: <Icon name="book" />,
-    chart: <Icon name="chart-bar" />,
+    filter: <PlumpyIcon name="filter" />,
+    log: <PlumpyIcon name="log" />,
+    book: <PlumpyIcon name="book" />,
+    insights: <PlumpyIcon name="insights" />,
+    chat: <PlumpyIcon name="chat" />,
+    trophy: <PlumpyIcon name="trophy" />,
   }
   return (
     <>
@@ -960,10 +820,12 @@ function EmptyStateKnobs() {
         </Field>
         <Field label="icon">
           <Select value={iconKey} onChange={(e) => setIcon(e.target.value)}>
-            <option value="search">search</option>
-            <option value="inbox">inbox</option>
+            <option value="filter">filter</option>
+            <option value="log">log</option>
             <option value="book">book</option>
-            <option value="chart">chart</option>
+            <option value="insights">insights</option>
+            <option value="chat">chat</option>
+            <option value="trophy">trophy</option>
           </Select>
         </Field>
         <Field label="variant">
@@ -1013,7 +875,7 @@ function TableKnobs() {
   const [state, setState] = useState('data') // data | empty | loading
 
   const renderDelta = (v) => (
-    <span style={{ color: v >= 0 ? '#16A34A' : '#DC2626', fontWeight: 700 }}>
+    <span style={{ color: v >= 0 ? '#16A34A' : '#E85648', fontWeight: 700 }}>
       {v >= 0 ? '↑' : '↓'} {Math.abs(v)} pts
     </span>
   )
@@ -1135,7 +997,7 @@ function SettingRowKnobs() {
       </Select>
     ),
     button: <Button variant="secondary">Manage</Button>,
-    badge: <Pill color="var(--c-brand-green)">3 rules</Pill>,
+    badge: <Pill color="var(--c-green)">3 rules</Pill>,
   }
 
   return (
@@ -1252,7 +1114,7 @@ function ConfettiShowcase() {
           height: 200,
           borderRadius: 14,
           border: '1px solid var(--c-border)',
-          background: 'var(--c-surface-sunken, #f8fafc)',
+          background: 'var(--c-bg)',
           display: 'grid',
           placeItems: 'center',
         }}
@@ -1288,11 +1150,16 @@ export const moleculesSections = [
         in-modal example below).
         <br />
         <br />
-        <code>folder</code> is for tabs that sit on top of a panel: the active one is filled with
-        the panel&apos;s own grey so tab and panel read as a single surface, and the strip carries
-        no rule of its own — the panel supplies the edge. Ported from the shipped leaderboard
-        widget, which is where it&apos;s used. Pair it with <code>block</code> for the app&apos;s
-        50/50 split.
+        <code>folder</code> is for tabs that sit on top of a panel: the active one is white so it
+        merges with the panel below, the inactive ones carry the grey so they read as cut away from
+        it, and the strip has no rule of its own — the panel supplies the edge. The geometry comes
+        from the shipped leaderboard widget, which fills the other way round (its active tab matches
+        its own grey action band); <code>web-app</code> keeps that look with a local override. Pair
+        it with <code>block</code> for a 50/50 split.
+        <br />
+        <br />
+        If the panel carries a border, inset the strip by that border width — the active tab has to
+        line up with the panel&apos;s <em>interior</em>, and the outline sits outside it.
         <br />
         <br />
         <code>plain</code> drops the pill variant&apos;s track and gives the active pill a grey fill
@@ -1362,17 +1229,21 @@ export const moleculesSections = [
         Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both
         close on backdrop click + Escape and animate in/out. The centered modal composes from{' '}
         <code>.modal-image</code>, <code>.modal-header</code>, <code>.modal-body</code>,{' '}
-        <code>.modal-footer</code> — toggle each below.
+        <code>.modal-footer</code> — toggle each below. The title is 18px/800 and the body 16px,
+        matching the app&apos;s <code>.modal__title</code> / <code>.modal__content</code>.
+        <br />
+        <br />
+        <code>ModalClose</code> is the app&apos;s own close control — a floating white disc pinned
+        just outside the top-right corner (<code>.mfp-close-badge-modal</code>). It needs{' '}
+        <code>closeBadge</code> on the Modal so the overhang isn&apos;t clipped, and it&apos;s the
+        default in the rail below. It isn&apos;t catalogued on its own because it positions against{' '}
+        <code>.modal</code> and has no meaning outside one; the alternative is a plain{' '}
+        <code>IconButton</code> in the header, which is the <code>inline</code> option.
       </>
     ),
     render: () => (
       <>
-        <Variant label="variant='center' (overlay)">
-          <CenteredModalKnobs />
-        </Variant>
-        <Variant label="variant='side' (slide-in)">
-          <SideModalShowcase />
-        </Variant>
+        <CenteredModalKnobs />
       </>
     ),
   },
@@ -1456,7 +1327,7 @@ export const moleculesSections = [
     usage: `import { EmptyState } from '@components/Primitives/Primitives'
 
 <EmptyState
-  icon="book"
+  icon={<PlumpyIcon name="log" />}
   title="No sessions yet"
   description="Logged reading will show up here."
   variant="dashed"
@@ -1553,8 +1424,9 @@ push({ level: 'success', title: 'Session verified' })
         (bs-product <code>lib/_toastr.scss</code>): radius 12, 15px, a flat pastel ground per tone
         with the matching dark text — <code>$pastelGreen</code>/<code>$darkGreen</code>,{' '}
         <code>$pastelDenim</code>/<code>$darkDenim</code>, <code>$pastelYellow</code>/
-        <code>$darkYellow</code> — capped at 500px on a 6px gap. Lifted clear of the PrototypeNav
-        bar, which the real app doesn&apos;t have.
+        <code>$darkYellow</code> — on a 6px gap. The app caps at 500px; the stack here is a uniform
+        340px, which fits the short confirmations these carry without stretching one across half the
+        screen. Lifted clear of the PrototypeNav bar, which the real app doesn&apos;t have.
         <br />
         <br />
         For the thing that just happened and needs acknowledging but not deciding about: an activity

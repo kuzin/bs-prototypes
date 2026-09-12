@@ -8,7 +8,7 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   background: #f3f4f6;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   -webkit-font-smoothing: antialiased;
 }
 h1,
@@ -31,7 +31,7 @@ button {
    instead of the old one-off #1a6dd5. Defined on :root, not .adm, so the
    portaled settings popover + Add-Widget modal (rendered at <body>) resolve it. */
 :root {
-  --adm-accent: var(--c-blue-700);
+  --adm-accent: var(--c-blue);
 }
 .adm {
   --col-gap: 16px;
@@ -58,7 +58,7 @@ button {
   --teal-fg: #0f766e;
   --blue-bg: #dbeafe;
   --blue-bd: #93c5fd;
-  --blue-fg: var(--c-blue-700);
+  --blue-fg: var(--c-blue);
   --purple-bg: #ede9fe;
   --purple-bd: #c4b5fd;
   --purple-fg: #6d28d9;
@@ -136,7 +136,7 @@ button {
   font-size: 13px;
   border: 1px solid var(--c-border-strong);
   background: #fff;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 .adm-edit-pill.is-on {
   background: var(--adm-accent);
@@ -230,8 +230,8 @@ button {
 .adm-alert--info {
   background: #eff6ff;
   border-color: #bfdbfe;
-  color: var(--c-blue-700);
-  --alert-tone: var(--c-blue-700);
+  color: var(--c-blue);
+  --alert-tone: var(--c-blue);
 }
 .adm-alert--good {
   background: #ecfdf5;
@@ -252,108 +252,20 @@ button {
   --alert-tone: #b91c1c;
 }
 
-/* ─── Feature announcement bar (above main row) ─────────────────────── */
-.adm-feature-bar {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 18px;
-  margin-bottom: 16px;
-  background: linear-gradient(135deg, #eef2ff 0%, #dbeafe 60%, #bae6fd 100%);
-  border: 1px solid #c7d2fe;
-  border-radius: 14px;
+/* ─── Announcement banner ──
+   The shipped dashboard's `BeanstackAd` is the shared <Banner level="info">:
+   `.bnr--info` is already `#CFE4FE` with a `#196DD5` icon and no border, which
+   is exactly what this is. All the dashboard adds is the space under it and the
+   CTA's blue outline. */
+.adm-ad {
+  margin-bottom: 20px;
+  align-items: flex-start;
 }
 
-/* Non-dismissible promo bar — white background, blue border, icon-in-box */
-.adm-feature-badge {
-  flex-shrink: 0;
-  background: var(--adm-accent);
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-.adm-feature-text {
-  flex: 1;
-  min-width: 0;
-}
-.adm-feature-title {
-  font-weight: 800;
-  color: var(--c-text);
-  font-size: 14px;
-  line-height: 1.3;
-}
-.adm-feature-body {
-  font-size: 13px;
-  color: var(--c-slate-700);
+.adm-ad .bnr-icon {
+  /* Optical: the glyph centres on the two-line message, not on the title. */
   margin-top: 2px;
-  line-height: 1.4;
-}
-.adm-feature-cta {
-  flex-shrink: 0;
-  background: var(--adm-accent);
-  color: #fff;
-  border: 0;
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-weight: 800;
-  font-size: 13px;
-  text-decoration: none;
-  cursor: pointer;
-  transition: filter 0.15s;
-}
-.adm-feature-cta:hover {
-  filter: brightness(0.92);
-}
-.adm-feature-close {
-  flex-shrink: 0;
-  width: 28px;
-  height: 28px;
-  background: transparent;
-  border: 0;
-  border-radius: 7px;
-  color: var(--c-slate-600);
-  font-size: 13px;
-  cursor: pointer;
-}
-.adm-feature-close:hover {
-  background: rgba(15, 23, 42, 0.06);
-  color: var(--c-text);
-}
-
-@media (max-width: 720px) {
-  .adm-feature-bar {
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 12px 14px;
-    margin-bottom: 12px;
-  }
-  /* Order: badge + close on top row, text full width, CTA full width below */
-  .adm-feature-badge {
-    order: 1;
-  }
-  .adm-feature-close {
-    order: 2;
-    margin-left: auto;
-  }
-  .adm-feature-text {
-    order: 3;
-    flex: 1 0 100%;
-  }
-  .adm-feature-cta {
-    order: 4;
-    flex: 1 0 100%;
-    text-align: center;
-  }
-  .adm-feature-title {
-    font-size: 13px;
-  }
-  .adm-feature-body {
-    font-size: 12px;
-  }
+  display: inline-flex;
 }
 
 /* ─── Engagement / RCA-level widget ─────────────────────────────────── */
@@ -374,7 +286,7 @@ button {
   font-weight: 800;
 }
 .adm-rca-level--orange {
-  color: var(--c-amber-600);
+  color: var(--c-yellow-ink);
 }
 .adm-rca-level--green {
   color: #059669;
@@ -383,7 +295,7 @@ button {
   color: #2563eb;
 }
 .adm-rca-level--purple {
-  color: var(--c-violet-600);
+  color: var(--c-purple);
 }
 
 /* Same height as .adm-goal-bar so Engagement + Community Goal align visually
@@ -393,14 +305,23 @@ button {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 6px;
-  height: 10px;
+  height: 14px;
 }
 .adm-rca-seg {
-  border-radius: 999px;
-  opacity: 0.55;
+  border-radius: 4px;
 }
-.adm-rca-seg.is-active {
-  opacity: 1;
+/* The active segment points down into the band below it — the notch is what
+   ties "you are here" on the ladder to the number under it. */
+.adm-rca-seg.is-active::after {
+  content: '';
+  position: absolute;
+  bottom: -7px;
+  left: calc((var(--active, 0) + 0.5) * 25%);
+  width: 18px;
+  height: 9px;
+  transform: translateX(-50%);
+  background: inherit;
+  clip-path: polygon(50% 100%, 0 0, 100% 0);
 }
 .adm-rca-seg--orange {
   background: #f59e0b;
@@ -423,12 +344,12 @@ button {
   gap: 8px;
 }
 .adm-rca-val {
-  font-size: 22px;
+  font-size: var(--text-subhead);
   font-weight: 800;
   line-height: 1.1;
 }
 .adm-rca-val--orange {
-  color: var(--c-amber-600);
+  color: var(--c-yellow-ink);
 }
 .adm-rca-val--green {
   color: #059669;
@@ -437,20 +358,28 @@ button {
   color: #2563eb;
 }
 .adm-rca-val--purple {
-  color: var(--c-violet-600);
+  color: var(--c-purple);
 }
 .adm-rca-meta {
-  color: var(--c-text-muted);
-  font-size: 13px;
+  color: var(--c-text-light);
+  font-size: var(--text-label);
   font-weight: 600;
 }
+/* Next level reads as the band's unlit twin: same row, grey ground. */
 .adm-rca-foot {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--c-slate-600);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: 8px;
+  background: var(--c-gray-150);
+  font-size: var(--text-cell);
+  font-weight: 400;
+  color: var(--c-text);
 }
 .adm-rca-foot strong {
-  font-weight: 800;
+  font-weight: 400;
   color: var(--c-text);
 }
 
@@ -467,44 +396,18 @@ button {
   gap: 1px;
 }
 .adm-rca-level-caption {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--c-text-muted);
+  font-size: var(--text-cell);
+  font-weight: 400;
+  color: var(--c-text);
 }
 .adm-rca-level-name {
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1.1;
+  font-size: var(--text-subhead);
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
 }
 .adm-rca-level--gray {
-  color: var(--c-slate-400);
-}
-
-/* Level shape badges (circle/diamond/pentagon/hex) */
-.adm-rca-badge {
-  width: 34px;
-  height: 34px;
-  flex-shrink: 0;
-}
-.adm-rca-badge--newcomer {
-  background: #94a3b8;
-  border-radius: 50%;
-}
-.adm-rca-badge--spark {
-  background: #f59e0b;
-  border-radius: 50%;
-}
-.adm-rca-badge--igniter {
-  background: #10b981;
-  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
-}
-.adm-rca-badge--pathfinder {
-  background: #3b82f6;
-  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
-}
-.adm-rca-badge--trailblazer {
-  background: #8b5cf6;
-  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+  color: var(--c-gray-500);
 }
 
 /* Colored "Engagement X%" pill band */
@@ -512,9 +415,9 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 7px 14px;
+  padding: 14px 18px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: var(--text-cell);
   font-weight: 700;
   color: #fff;
 }
@@ -537,12 +440,12 @@ button {
 /* Gift-card promo card */
 .adm-rca-promo {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-start;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  border-radius: 10px;
-  padding: 10px 12px;
+  background: #cff3df;
+  border: none;
+  border-radius: 12px;
+  padding: 16px;
 }
 .adm-rca-promo-ico {
   font-size: 22px;
@@ -551,25 +454,25 @@ button {
   margin-top: 1px;
 }
 .adm-rca-promo-body p {
-  margin: 0 0 8px;
-  font-size: 12.5px;
+  margin: 0 0 12px;
+  font-size: var(--text-body);
   line-height: 1.45;
-  color: var(--c-text);
+  color: var(--c-text-dark);
 }
 .adm-rca-promo-hl {
-  color: #059669;
+  color: #0a6b3f;
   font-weight: 800;
 }
 .adm-rca-promo-action {
   display: block;
   width: 100%;
-  padding: 6px 12px;
+  padding: 11px 12px;
   background: transparent;
-  border: 1.5px solid #10b981;
-  border-radius: 7px;
-  color: #059669;
+  border: 1.5px solid #6fd6a2;
+  border-radius: 9px;
+  color: #0a6b3f;
   font-weight: 700;
-  font-size: 12.5px;
+  font-size: var(--text-body);
   cursor: pointer;
   text-align: center;
   font-family: inherit;
@@ -581,12 +484,12 @@ button {
 /* "Get your badge and learn more" link */
 .adm-rca-learn {
   display: block;
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--c-text-muted);
+  font-size: var(--text-body);
+  font-weight: 700;
+  color: var(--c-text-dark);
   text-decoration: none;
-  text-align: right;
-  padding-top: 2px;
+  text-align: center;
+  padding-top: 4px;
 }
 .adm-rca-learn:hover {
   color: var(--c-text);
@@ -671,14 +574,14 @@ button {
   margin: 0;
   font-size: 12px;
   line-height: 1.4;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 .adm-rca-shipped-dismiss {
   margin-top: 4px;
   background: none;
   border: none;
   padding: 0;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
@@ -749,26 +652,43 @@ button {
   border: var(--border);
   border-radius: var(--radius);
   box-shadow: var(--shadow-sm);
-  padding: 16px 18px;
+  padding: 0;
+  overflow: hidden;
 }
+
+/* Same band as `.adm-w-head`, so a rail card and a grid card read as the same
+   kind of object. */
 .adm-rail-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 12px;
+  /* One row of text, so it sits shorter than the grid cards' heads — those
+     reserve room for a title *and* a meta line under it. */
+  padding: 12px 20px;
+  min-height: 52px;
+  background: var(--c-gray-0);
+  border-bottom: 1px solid var(--c-gray-200);
 }
+
 .adm-rail-title {
-  font-size: 15px;
+  font-size: var(--text-body);
   font-weight: 800;
-  color: var(--c-text);
+  color: var(--c-text-dark);
+  margin: 0;
+}
+
+/* The body carries the inset the card gave up. */
+.adm-rail-card > :not(.adm-rail-head) {
+  padding: 16px 20px;
 }
 .adm-rail-action {
   display: inline-flex;
   align-items: center;
-  height: 28px;
-  font-size: 13px;
+  font-size: var(--text-body);
   font-weight: 700;
-  color: var(--adm-accent);
+  white-space: nowrap;
+  color: var(--c-blue);
   background: transparent;
   border: 0;
   padding: 0;
@@ -789,7 +709,7 @@ button {
   background: #fff;
   border: 1px solid var(--c-border);
   border-radius: 7px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   padding: 0;
   line-height: 0;
   cursor: pointer;
@@ -799,7 +719,7 @@ button {
     color 0.15s;
 }
 .adm-rail-cog:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--c-text);
   border-color: var(--c-border-strong);
 }
@@ -831,7 +751,7 @@ button {
   color: var(--adm-accent);
 }
 .adm-rail-goal-meta {
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-size: 13px;
   font-weight: 600;
 }
@@ -891,7 +811,7 @@ button {
   font-size: 20px;
 }
 .adm-news-event-edu {
-  color: var(--c-amber-600);
+  color: var(--c-yellow-ink);
 }
 .adm-news-event-sub {
   font-weight: 800;
@@ -950,7 +870,7 @@ button {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 .adm-news-badge--gold {
-  background: linear-gradient(135deg, #f59e0b, var(--c-amber-600));
+  background: linear-gradient(135deg, #f59e0b, var(--c-yellow-ink));
 }
 .adm-news-badge--green {
   background: linear-gradient(135deg, #10b981, #047857);
@@ -994,7 +914,7 @@ button {
 }
 .adm-news-cat {
   font-size: 11px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-weight: 700;
   text-transform: capitalize;
   letter-spacing: 0.02em;
@@ -1151,7 +1071,7 @@ button {
    blue "will split" ring. */
 .adm-grid-card.is-drop-locked > .adm-cell {
   box-shadow:
-    0 0 0 2px var(--c-amber-600),
+    0 0 0 2px var(--c-yellow-ink),
     var(--shadow-md);
 }
 /* Hover hint badge centered on the target card during a drag. */
@@ -1349,7 +1269,7 @@ button {
   border-color: var(--c-border-strong);
 }
 .adm-cell--editing:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-500);
   box-shadow: var(--shadow-md);
 }
 /* In edit mode, the chrome row replaces the widget's own header. */
@@ -1368,7 +1288,7 @@ button {
 .adm-cell--required .adm-cell-handle {
   background: #eff6ff;
   border-color: #bfdbfe;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   cursor: default;
 }
 
@@ -1391,7 +1311,7 @@ button {
   align-items: center;
   justify-content: space-between;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
 }
 .adm-set-title {
   font-weight: 800;
@@ -1404,11 +1324,11 @@ button {
   border: 0;
   background: transparent;
   border-radius: 6px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-size: 12px;
 }
 .adm-set-close:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--c-text);
 }
 .adm-set-body {
@@ -1427,7 +1347,7 @@ button {
 .adm-set-label {
   font-size: 11px;
   font-weight: 800;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -1459,14 +1379,14 @@ button {
   padding: 6px 8px;
   border: 1px solid var(--c-border);
   border-radius: 8px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 .adm-set-multi-row {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   font-weight: 600;
   cursor: pointer;
   padding: 3px 0;
@@ -1481,7 +1401,7 @@ button {
 
 .adm-set-help {
   font-size: 11px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-500);
 }
 
 .adm-set-foot {
@@ -1489,15 +1409,15 @@ button {
   align-items: center;
   justify-content: flex-end;
   padding: 10px 12px;
-  border-top: 1px solid var(--c-slate-100);
-  background: var(--c-slate-50);
+  border-top: 1px solid var(--c-gray-100);
+  background: var(--c-gray-0);
 }
 
 /* ─── Edit-mode hint banner ───────────────────────────────────────────── */
 .adm-edit-hint {
   background: #eff6ff;
   border: 1px solid #bfdbfe;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   padding: 10px 14px;
   border-radius: 10px;
   font-size: 13px;
@@ -1538,7 +1458,7 @@ button {
   justify-content: space-between;
   gap: 10px;
   padding: 8px 12px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   border-bottom: 1px solid var(--c-gray-200);
   min-height: 56px;
   flex-shrink: 0;
@@ -1549,7 +1469,7 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   font-size: 15px;
   font-weight: 800;
   user-select: none;
@@ -1571,7 +1491,7 @@ button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-500);
   width: 20px;
   flex-shrink: 0;
 }
@@ -1602,7 +1522,7 @@ button {
   background: #fff;
   border: 1px solid var(--c-border);
   border-radius: 9px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
   padding: 0;
   line-height: 0;
@@ -1615,7 +1535,7 @@ button {
   display: block;
 }
 .adm-cell-action:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--c-text);
   border-color: var(--c-border-strong);
 }
@@ -1632,7 +1552,7 @@ button {
   justify-content: center;
   gap: 10px;
   padding: 8px 12px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   border-top: 1px solid var(--c-gray-200);
   min-height: 48px;
   flex-shrink: 0;
@@ -1642,7 +1562,7 @@ button {
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-500);
 }
 
 /* ─── Segmented width control ───────────────────────────────────────── */
@@ -1662,7 +1582,7 @@ button {
   background: transparent;
   font-weight: 800;
   font-size: 12px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
   border-right: 1px solid var(--c-border);
   min-width: 32px;
@@ -1674,7 +1594,7 @@ button {
   border-right: 0;
 }
 .adm-cell-width button:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--c-text);
 }
 .adm-cell-width button.is-active {
@@ -1682,7 +1602,7 @@ button {
   color: #fff;
 }
 .adm-cell-action:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--c-text);
 }
 .adm-cell-action.is-on {
@@ -1715,21 +1635,19 @@ button {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 11px 16px;
-  background: var(--c-slate-50);
+  padding: 14px 20px;
+  background: var(--c-gray-0);
   border-bottom: 1px solid var(--c-gray-200);
   flex-shrink: 0;
-  /* Match the height of a head WITH a button (30px) so head-less widgets
-     line up across the row: 11px padding × 2 + 30px = 52px. */
-  min-height: 52px;
+  min-height: 62px;
 }
 .adm-w-title {
-  font-size: 14px;
+  font-size: var(--text-body);
   font-weight: 800;
-  color: var(--c-text);
+  color: var(--c-text-dark);
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 2px;
   min-width: 0;
   line-height: 1.25;
 }
@@ -1741,8 +1659,8 @@ button {
   min-width: 0;
 }
 .adm-nc-benny {
-  width: 32px;
-  height: 32px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -1750,15 +1668,14 @@ button {
   background: #e0f2fe;
 }
 .adm-w-action {
-  height: 30px;
-  font-size: 12.5px;
+  font-size: var(--text-cell);
   font-weight: 700;
-  color: var(--adm-accent);
-  background: #fff;
-  border: 1px solid #dbeafe;
-  padding: 0 10px 0 12px;
-  border-radius: 8px;
+  color: var(--c-blue);
+  background: none;
+  border: none;
+  padding: 0;
   flex-shrink: 0;
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1769,17 +1686,7 @@ button {
     color 0.15s;
 }
 .adm-w-action:hover {
-  background: #eff6ff;
-  border-color: #93c5fd;
-  color: #1559b7;
-}
-.adm-w-action::after {
-  content: '›';
-  font-size: 18px;
-  line-height: 1;
-  font-weight: 700;
-  display: inline-block;
-  margin-top: -2px;
+  text-decoration: underline;
 }
 /* ─── Per-block settings button (always visible, view-only dashboard) ─────── */
 .adm-w-settings {
@@ -1799,7 +1706,7 @@ button {
   background: #fff;
   border: 1px solid var(--c-border);
   border-radius: 8px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
   transition:
     background 0.15s,
@@ -1807,7 +1714,7 @@ button {
     color 0.15s;
 }
 .adm-w-settings:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--c-text);
   border-color: var(--c-border-strong);
 }
@@ -1821,15 +1728,21 @@ button {
 }
 /* Reserve room at the right of the widget header so the gear never overlaps the
    header's own action link (View Report ›, View All Classes ›, …). */
-.adm-cell--has-settings .adm-w-head {
-  padding-right: 50px;
-}
+/* The head used to reserve 50px on the right for a settings cog; the cog is
+   gone, so the title row gets its own gutter back. */
 /* Subtitle / meta sits below the title text — stays in title case */
 .adm-w-meta {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--c-text-muted);
+  font-size: var(--text-label);
+  font-weight: 400;
+  color: var(--c-text-light);
 }
+/* Widgets whose rows are full-bleed (a list with its own row padding) opt out
+   of the body's inset rather than being padded twice. */
+.adm-w-body.adm-sfr,
+.adm-w-body--flush {
+  padding: 0;
+}
+
 .adm-w-body {
   flex: 1;
   min-height: 0;
@@ -1862,10 +1775,10 @@ button {
 .adm-w-footer {
   flex-shrink: 0;
   padding: 10px 16px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   border-top: 1px solid var(--c-gray-200);
   font-size: 13px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   font-weight: 600;
 }
 
@@ -1920,7 +1833,7 @@ button {
 .adm-banner--info {
   background: #eff6ff;
   border-color: #bfdbfe;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 .adm-banner--info .adm-banner-ico {
   background: #dbeafe;
@@ -1981,23 +1894,31 @@ button {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 14px 16px;
-  border-radius: 12px;
-  border: 1px solid;
+  padding: 18px 20px;
+  border-radius: 14px;
+  /* No outline: the fill is the tile. An outline in the same hue just thickens
+     its edge, and four of them in a 2×2 read as a grid of boxes. */
+  border: none;
 }
 .adm-stat:last-child:nth-child(odd) {
   flex-basis: 100%;
   max-width: 100%;
 }
 
-@container (max-width: 620px) {
-  .adm-w-body:has(> .adm-stats) {
-    max-height: 272px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
+/* The four tiles are the whole widget — they fill the body rather than
+   scrolling inside a capped box. */
+.adm-w-body:has(> .adm-stats) {
+  overflow: visible;
+}
+.adm-w-body > .adm-stats {
+  height: 100%;
+  align-content: stretch;
+}
+.adm-stats > .adm-stat {
+  align-items: stretch;
+}
+.adm-stat-ico {
+  align-self: flex-start;
 }
 
 @media (max-width: 720px) {
@@ -2015,7 +1936,7 @@ button {
   padding: 24px;
   text-align: center;
   font-size: 13px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-500);
 }
 .adm-stat-ico {
   width: 36px;
@@ -2028,51 +1949,62 @@ button {
   font-size: 18px;
 }
 .adm-stat-val {
-  font-size: 22px;
+  font-size: var(--text-subhead);
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--c-text-dark);
 }
 .adm-stat-lbl {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--text-cell);
+  font-weight: 400;
   margin-top: 4px;
+  color: var(--c-text-dark);
 }
 .adm-stat--red {
+  --stat-ink: #b3271a;
   background: #fee2e2;
   border-color: #fca5a5;
   color: #b91c1c;
 }
 .adm-stat--yellow {
+  --stat-ink: #8a5e0c;
   background: #fef3c7;
   border-color: #fde68a;
   color: #92400e;
 }
 .adm-stat--green {
+  --stat-ink: #0a6b3f;
   background: #d1fae5;
   border-color: #6ee7b7;
   color: #047857;
 }
 .adm-stat--teal {
+  --stat-ink: #0f766e;
   background: #ccfbf1;
   border-color: #5eead4;
   color: #0f766e;
 }
 .adm-stat--blue {
+  --stat-ink: #1a4fa0;
   background: #dbeafe;
   border-color: #93c5fd;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 .adm-stat--purple {
+  --stat-ink: #7d1b95;
   background: #ede9fe;
   border-color: #c4b5fd;
   color: #6d28d9;
 }
 .adm-stat--pink {
+  --stat-ink: #9d174d;
   background: #fce7f3;
   border-color: #f9a8d4;
   color: #9d174d;
 }
 .adm-stat--orange {
+  --stat-ink: #9a3412;
   background: #ffe4d3;
   border-color: #fba181;
   color: #9a3412;
@@ -2133,12 +2065,12 @@ button {
   color: var(--adm-accent);
 }
 .adm-goal .adm-goal-meta {
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-size: 13px;
   font-weight: 600;
 }
 .adm-goal-bar {
-  height: 10px;
+  height: 8px;
   background: var(--c-gray-200);
   border-radius: 999px;
   position: relative;
@@ -2158,29 +2090,19 @@ button {
 .adm-bar-thumb {
   position: absolute;
   top: 50%;
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   border-radius: 50%;
   background: #fff;
-  border: 3px solid var(--adm-accent);
+  border: 5px solid var(--adm-accent);
   transform: translate(-50%, -50%);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.15);
   pointer-events: none;
 }
-.adm-bar-thumb::after {
-  content: '';
-  display: block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--adm-accent);
-  margin: 3px auto 0;
-}
 .adm-bar-thumb--orange {
-  border-color: var(--c-amber-600);
+  border-color: var(--c-yellow-ink);
 }
 .adm-bar-thumb--orange::after {
-  background: var(--c-amber-600);
+  background: var(--c-yellow-ink);
 }
 .adm-bar-thumb--green {
   border-color: #059669;
@@ -2195,10 +2117,10 @@ button {
   background: #2563eb;
 }
 .adm-bar-thumb--purple {
-  border-color: var(--c-violet-600);
+  border-color: var(--c-purple);
 }
 .adm-bar-thumb--purple::after {
-  background: var(--c-violet-600);
+  background: var(--c-purple);
 }
 /* Engagement bar: thumb centered over the active 4-segment slot. */
 .adm-rca-bar .adm-bar-thumb {
@@ -2210,7 +2132,7 @@ button {
   border-radius: 12px;
   padding: 20px;
   text-align: center;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 .adm-goal-empty h4 {
   font-weight: 800;
@@ -2218,7 +2140,7 @@ button {
 }
 .adm-goal-empty p {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-bottom: 12px;
 }
 
@@ -2246,18 +2168,18 @@ button {
 .adm-drt-week-label {
   flex: 1;
   text-align: center;
-  font-size: 14px;
+  font-size: var(--text-cell);
   font-weight: 800;
-  color: var(--c-text);
+  color: var(--c-text-dark);
 }
 .adm-drt-nav-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
   background: #f3f4f6;
   border: none;
   color: #374151;
-  font-size: 16px;
+  font-size: var(--text-body);
   font-weight: 700;
   line-height: 1;
   display: inline-flex;
@@ -2278,24 +2200,45 @@ button {
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  font-size: 13px;
+  font-size: var(--text-cell);
 }
 .adm-drt-th,
 .adm-drt-td {
   padding: 10px 8px;
-  border-bottom: 1px solid var(--c-slate-100);
   text-align: left;
 }
 .adm-drt-th {
-  font-size: 11px;
-  font-weight: 800;
-  color: var(--c-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  background: var(--c-slate-50);
+  border-bottom: 1px solid var(--c-gray-200);
+}
+.adm-drt-cell--band {
+  background: var(--c-gray-100);
+}
+/* `.adm-drt-th` paints its own ground (`--c-gray-0`), so the banded header
+   cells both need to outrank it and go a shade darker — the same tint over
+   grey reads as no band at all where it reads clearly over the white rows. */
+.adm-drt-th.adm-drt-cell--band {
+  background: var(--c-gray-150);
+}
+/* The reader's name is the table's stub, not one of its data columns. */
+.adm-drt-th--student,
+.adm-drt-row .adm-drt-td:first-child,
+.adm-drt-avg-row .adm-drt-td:first-child {
+  border-right: 1px solid var(--c-gray-200);
+}
+/* The day names are read as days, not as a table eyebrow — no small caps, no
+   tracking. */
+.adm-drt-th {
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--c-text-light);
+  background: var(--c-gray-0);
+}
+.adm-drt-th--student,
+.adm-drt-row .adm-drt-td:first-child,
+.adm-drt-avg-row .adm-drt-td:first-child {
+  padding-left: 20px;
 }
 .adm-drt-th--student {
-  padding-left: 16px;
   width: 160px;
 }
 .adm-drt-th--center,
@@ -2305,6 +2248,7 @@ button {
 .adm-drt-th--goal {
   background: #eff6ff;
   text-align: center;
+  color: var(--c-text-dark);
 }
 .adm-drt-td--goal {
   background: #f5f9ff;
@@ -2312,25 +2256,42 @@ button {
 }
 .adm-drt-row .adm-drt-td {
   font-weight: 600;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .adm-drt-student {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding-left: 8px;
 }
-.adm-drt-rank-num {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-text-muted);
+.adm-drt-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
-  min-width: 18px;
+  border-radius: 50%;
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: var(--c-text-light);
   font-variant-numeric: tabular-nums;
 }
+.adm-drt-rank--m1 {
+  background: #fcd34d;
+  color: #92400e;
+}
+.adm-drt-rank--m2 {
+  background: var(--c-gray-200);
+  color: #374151;
+}
+.adm-drt-rank--m3 {
+  background: #f0c9a4;
+  color: #8a4b1e;
+}
 .adm-drt-student-name {
-  font-weight: 700;
-  color: var(--adm-accent);
+  font-size: var(--text-cell);
+  font-weight: 500;
+  color: var(--c-blue);
   cursor: pointer;
 }
 .adm-drt-student-name:hover {
@@ -2344,8 +2305,8 @@ button {
   font-weight: 700;
 }
 .adm-drt-goal-val {
-  font-size: 13px;
-  color: var(--c-slate-800);
+  font-size: var(--text-label);
+  color: var(--c-gray-900);
 }
 .adm-drt-edit-btn {
   display: inline-flex;
@@ -2355,8 +2316,8 @@ button {
   height: 22px;
   border-radius: 6px;
   border: 1px solid var(--c-border);
-  background: var(--c-slate-50);
-  color: var(--c-text-muted);
+  background: var(--c-gray-0);
+  color: var(--c-text-light);
   cursor: pointer;
   padding: 0;
   flex-shrink: 0;
@@ -2368,48 +2329,52 @@ button {
 .adm-drt-edit-btn:hover {
   background: #eff6ff;
   border-color: #bfdbfe;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 .adm-drt-pct {
   display: inline-block;
   padding: 3px 9px;
   border-radius: 6px;
-  font-size: 12px;
+  font-size: var(--text-tag);
   font-weight: 800;
 }
 .adm-drt-pct--blue {
   background: #dbeafe;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 .adm-drt-pct--orange {
   background: #fef3c7;
-  color: var(--c-amber-600);
+  color: var(--c-yellow-ink);
 }
 .adm-drt-pct--red {
   background: #fee2e2;
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .adm-drt-check {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: #10b981;
   color: #fff;
   flex-shrink: 0;
 }
 .adm-drt-dash {
-  color: var(--c-slate-300);
-  font-size: 15px;
+  color: var(--c-gray-350);
+  font-size: var(--text-cell);
 }
 .adm-drt-avg-row .adm-drt-td {
-  font-size: 13px;
-  font-weight: 700;
-  color: #374151;
-  background: #f9fafb;
-  border-bottom: none;
+  font-size: var(--text-label);
+  font-weight: 600;
+  color: var(--c-text-dark);
+  border-top: 1px solid var(--c-gray-200);
+}
+/* The band keeps running through the average row, so its columns still line
+   up with the days above — the row is set apart by its rule, not a fill. */
+.adm-drt-avg-row .adm-drt-td:not(.adm-drt-cell--band):not(.adm-drt-td--goal) {
+  background: #fff;
 }
 /* Snap the body to fit the table exactly so the legend footer sits right
    below the Class Average row instead of leaving body flex-slack between. */
@@ -2418,31 +2383,33 @@ button {
 }
 .adm-drt-legend {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   justify-content: center;
-  font-size: 13px;
+  font-size: var(--text-tag);
 }
 .adm-drt-legend .lg-red {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .adm-drt-legend .lg-yellow {
-  color: var(--c-amber-600);
+  color: var(--c-yellow-ink);
 }
 .adm-drt-legend .lg-blue {
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 .adm-drt-legend .lg-green {
   color: #10b981;
 }
 
 /* ─── Compact tracker (narrow widget — e.g. half-width) ───────────────── */
-/* When the cell is narrower than ~620px the table drops the Goal and Average
-   columns and renders the partial-day percentages as colored dots instead of
-   numeric pills. Everything else (check / dash, day labels, class avg row)
-   stays. The Goal/Average info is still available at full width. */
+/* A narrow cell shows *less*, not *smaller*: the Goal and Average columns and
+   the first three days drop out, leaving the reader and the last four days at
+   exactly the sizes the full-width table uses. Shrinking the type instead put
+   a second, tinier tracker on the same page — same rows, same marks, half the
+   legibility — and the week's earlier days are the ones you're least likely
+   to be acting on. */
 @container (max-width: 620px) {
   /* Fill the cell vertically (e.g. when paired with a taller widget like
-     Flagged Sessions) — the body grows AND the inner content distributes
+     Sessions for Review) — the body grows AND the inner content distributes
      itself so the legend pins to the cell bottom and the table fills the
      remaining space evenly. */
   .adm-w-body.adm-drt {
@@ -2454,134 +2421,59 @@ button {
     flex: 1;
   }
 
-  /* Hide Goal (col 2) + Average (col 3) for every row in the table. */
-  .adm-drt-table tr > :nth-child(2),
-  .adm-drt-table tr > :nth-child(3) {
+  /* Hide Goal (col 2), Average (col 3) and the first three days (cols 4–6).
+     Columns 7–10 are the last four days of whatever week is in view. */
+  .adm-drt-table tr > :nth-child(n + 2):nth-child(-n + 6) {
     display: none;
   }
 
-  /* Tight cell padding so the date table compresses more. */
   .adm-drt-table {
     table-layout: fixed;
     width: 100%;
   }
   .adm-drt-th,
   .adm-drt-td {
-    padding: 6px 3px;
+    padding: 10px 4px;
     vertical-align: middle;
   }
-  .adm-drt-th--student {
-    padding-left: 16px;
-    width: 104px;
-  }
+  .adm-drt-th--student,
   .adm-drt-row .adm-drt-td:first-child,
   .adm-drt-avg-row .adm-drt-td:first-child {
-    padding-left: 16px;
+    padding-left: 20px;
   }
-
-  /* Smaller rank text gives the student name a bit more room. */
-  .adm-drt-rank-num {
-    font-size: 11px;
-    min-width: 12px;
+  /* `table-layout: fixed` divides the width evenly unless told otherwise, and
+     four 44px day columns leave the rest to the reader's name. */
+  .adm-drt-th--center {
+    width: 44px;
   }
-  .adm-drt-student {
-    padding-left: 0;
-    gap: 6px;
-    align-items: center;
+  .adm-drt-th--student {
+    width: auto;
   }
   .adm-drt-student-name {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 1.1;
-    font-size: 12.5px;
   }
 
-  /* Day-cell content (dash / dot / check) — matched sizes and a shared
-     vertical baseline so they line up cleanly across all rows. */
-  .adm-drt-pct {
-    display: inline-flex;
-    width: 14px;
-    height: 14px;
-    padding: 0;
-    border-radius: 50%;
-    font-size: 0;
-    vertical-align: middle;
-  }
-  .adm-drt-pct--blue {
-    background: #2563eb;
-  }
-  .adm-drt-pct--orange {
-    background: #f59e0b;
-  }
-  .adm-drt-pct--red {
-    background: #ef4444;
-  }
+  /* The marks shrink even though the type doesn't: a 26px disc in a 44px
+     column is nearly touching its neighbours, and the percentage pill has to
+     lose its side padding to fit at all. The figures inside stay full size. */
   .adm-drt-check {
-    width: 16px;
-    height: 16px;
-    vertical-align: middle;
+    width: 22px;
+    height: 22px;
   }
-  .adm-drt-check svg {
-    width: 8px;
-    height: 8px;
-  }
-  .adm-drt-dash {
-    vertical-align: middle;
-    font-size: 13px;
-    line-height: 16px;
-    color: var(--c-slate-300);
+  .adm-drt-pct {
+    padding: 3px 6px;
   }
 
-  /* Class Average row percentages: tone down to muted small text. */
-  .adm-drt-avg-row .adm-drt-td--center:not(:nth-child(2)):not(:nth-child(3)) {
-    color: var(--c-text-subtle);
-    font-size: 11px;
-  }
-  .adm-drt-avg-row .adm-drt-td {
-    font-size: 12px;
-    padding-top: 8px;
-    padding-bottom: 8px;
-  }
-
-  /* Compact week-nav: smaller arrows, smaller label, less padding. */
-  .adm-drt-week-nav {
-    padding: 6px 8px;
-    gap: 6px;
-  }
-  .adm-drt-week-label {
-    font-size: 11px;
-    font-weight: 700;
-  }
-  .adm-drt-nav-btn {
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-  }
-
-  /* Smaller day-column headers. */
-  .adm-drt-th--center {
-    font-size: 9px;
-    letter-spacing: 0.2px;
-  }
-  .adm-drt-th {
-    padding-top: 6px;
-    padding-bottom: 6px;
-  }
-
-  /* Shrink the percent-bucket legend so it stays a single row instead of
-     wrapping into 2-line entries. */
+  /* The legend still has to stay on one line in a narrow cell. */
   .adm-drt-legend {
-    font-size: 10.5px;
-    gap: 8px;
+    gap: 10px;
     flex-wrap: nowrap;
   }
   .adm-drt-legend > span {
     white-space: nowrap;
-  }
-  .adm-w-footer.adm-drt-legend {
-    padding: 6px 10px;
   }
 }
 
@@ -2607,7 +2499,7 @@ button {
   justify-content: space-between;
   padding: 8px 16px;
   border-bottom: 1px dashed var(--c-gray-200);
-  font-size: 13px;
+  font-size: var(--text-label);
 }
 .adm-lb-row:last-child {
   border-bottom: 0;
@@ -2615,9 +2507,10 @@ button {
 .adm-lb-name {
   color: var(--adm-accent);
   font-weight: 700;
+  font-size: var(--text-cell);
 }
 .adm-lb-val {
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   font-weight: 600;
 }
 .adm-lb-empty {
@@ -2631,12 +2524,12 @@ button {
   padding: 20px;
 }
 .adm-lb-empty h4 {
-  font-size: 14px;
+  font-size: var(--text-cell);
   font-weight: 800;
 }
 .adm-lb-empty p {
-  font-size: 12px;
-  color: var(--c-text-muted);
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
 }
 
 /* ─── Checklist ──────────────────────────────────────────────────────── */
@@ -2650,7 +2543,7 @@ button {
   align-items: center;
   gap: 8px;
   font-size: 12px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   font-weight: 700;
 }
 .adm-check-prog-bar {
@@ -2679,7 +2572,7 @@ button {
   align-items: center;
   gap: 10px;
   padding: 10px 12px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   border-radius: 10px;
   border: 1px solid transparent;
 }
@@ -2711,7 +2604,7 @@ button {
 .adm-check-label {
   font-weight: 700;
   font-size: 13px;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 .adm-check-action {
   font-size: 12px;
@@ -2819,7 +2712,7 @@ button {
 }
 .adm-com-cat {
   font-size: 11px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -2852,10 +2745,10 @@ button {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
   background: #fff;
   text-decoration: none;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   font-weight: 600;
   font-size: 14px;
   transition: background 0.12s;
@@ -2864,7 +2757,7 @@ button {
   border-bottom: 0;
 }
 .adm-link:hover {
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 .adm-link-ico {
   width: 32px;
@@ -2878,7 +2771,7 @@ button {
 }
 .adm-link-arrow {
   margin-left: auto;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-500);
   font-size: 18px;
   line-height: 1;
 }
@@ -2892,7 +2785,7 @@ button {
 }
 .adm-link--blue .adm-link-ico {
   background: #dbeafe;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 .adm-link--green .adm-link-ico {
   background: #d1fae5;
@@ -2919,14 +2812,14 @@ button {
 .adm-question {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
+  gap: 14px;
+  padding: 14px 20px;
   border: 0;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-200);
   background: #fff;
-  font-weight: 600;
-  font-size: 14px;
-  color: var(--c-slate-800);
+  font-weight: 400;
+  font-size: var(--text-cell);
+  color: var(--c-text-dark);
   text-align: left;
   line-height: 1.35;
   cursor: pointer;
@@ -2936,18 +2829,38 @@ button {
   border-bottom: 0;
 }
 .adm-question:hover {
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
+/* A rounded-square tile per question, each in its own hue under a soft glow of
+   the same colour — the mock's treatment, and what keeps four near-identical
+   question rows scannable. */
 .adm-question-ico {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: #eff6ff;
-  color: var(--c-blue-700);
+  background: var(--q-bg);
+  color: var(--q-ink);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--q-bg) 70%, transparent);
   flex-shrink: 0;
+}
+.adm-question--green {
+  --q-bg: #7fe3b0;
+  --q-ink: #0a5c37;
+}
+.adm-question--salmon {
+  --q-bg: #f6a087;
+  --q-ink: #7a2c14;
+}
+.adm-question--yellow {
+  --q-bg: #fbd071;
+  --q-ink: #7a5406;
+}
+.adm-question--blue {
+  --q-bg: #8fb8f5;
+  --q-ink: #17407e;
 }
 .adm-question-text {
   flex: 1;
@@ -2955,75 +2868,13 @@ button {
 }
 .adm-question-arrow {
   margin-left: auto;
-  color: var(--c-text-subtle);
-  font-size: 18px;
+  color: var(--c-gray-500);
+  font-size: 22px;
   line-height: 1;
   flex-shrink: 0;
 }
 
-/* ─── Ads ────────────────────────────────────────────────────────────── */
-.adm-ads {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  height: 100%;
-  overflow: auto;
-}
-.adm-ad {
-  border-radius: 12px;
-  overflow: hidden;
-  border: 1px solid;
-  display: flex;
-  flex-direction: column;
-}
-.adm-ad-top {
-  flex: 1;
-  min-height: 60px;
-}
-.adm-ad-body {
-  padding: 10px 14px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-.adm-ad-title {
-  font-weight: 800;
-  font-size: 14px;
-}
-.adm-ad-cta {
-  padding: 6px 12px;
-  border-radius: 8px;
-  background: transparent;
-  border: 1px solid currentColor;
-  font-weight: 700;
-  font-size: 12px;
-}
-.adm-ad--purple {
-  background: #f5e6ff;
-  border-color: #c4b5fd;
-  color: #6d28d9;
-}
-.adm-ad--purple .adm-ad-top {
-  background: #faf0ff;
-}
-.adm-ad--teal {
-  background: #ccfbf1;
-  border-color: #5eead4;
-  color: #0f766e;
-}
-.adm-ad--teal .adm-ad-top {
-  background: #e6fff9;
-}
-.adm-ad--blue {
-  background: #dbeafe;
-  border-color: #93c5fd;
-  color: var(--c-blue-700);
-}
-.adm-ad--blue .adm-ad-top {
-  background: #eff6ff;
-}
-
+/* ─── Ad cards (legacy widget; kept for the catalog) ─────────────────── */
 /* ─── Add widget panel ──────────────────────────────────────────────── */
 .adm-fab {
   /* sit above the 48px PrototypeNav at the bottom */
@@ -3082,13 +2933,13 @@ button {
 }
 .adm-side-sub {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .adm-side-body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   padding: 16px;
 }
 .adm-side-body--empty {
@@ -3136,7 +2987,7 @@ button {
   flex-shrink: 0;
   width: 64px;
   height: 56px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   border: 1px solid var(--c-gray-200);
   border-radius: 8px;
   padding: 7px;
@@ -3177,13 +3028,13 @@ button {
 }
 .adm-card-desc {
   font-size: 12.5px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   line-height: 1.45;
   margin: 0;
 }
 .adm-card-meta {
   font-size: 11.5px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-500);
   font-weight: 600;
   margin-top: 2px;
 }
@@ -3299,13 +3150,13 @@ button {
   border-radius: 1.5px;
   /* shrink slightly so neighboring bars have a visible gap */
   padding: 0;
-  box-shadow: inset 0 0 0 0.5px var(--c-slate-50);
+  box-shadow: inset 0 0 0 0.5px var(--c-gray-0);
 }
 .adm-card.is-current .thumb-layout > span {
   background: var(--adm-accent);
 }
 .thumb-empty {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-500);
   font-size: 9px;
   font-weight: 800;
   text-transform: uppercase;
@@ -3373,7 +3224,7 @@ button {
 }
 .adm-action-sub {
   font-size: 12px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   line-height: 1.35;
 }
 .adm-action-btn {
@@ -3407,7 +3258,7 @@ button {
 }
 .adm-action-btn--warn:hover {
   background: #fffbeb;
-  border-color: var(--c-amber-600);
+  border-color: var(--c-yellow-ink);
 }
 
 /* Condense on narrow viewports: hide subtitle, shrink padding, stack to a
@@ -3457,25 +3308,49 @@ button {
 .adm-goal-widget > * {
   flex-shrink: 0;
 }
+.adm-goal-widget .adm-goal-bar {
+  margin: 6px 0;
+}
 .adm-goal-row {
   display: flex;
   align-items: baseline;
   gap: 6px;
 }
 .adm-goal-val {
-  font-size: 22px;
+  font-size: var(--text-head);
   font-weight: 800;
-  color: var(--adm-accent);
+  letter-spacing: -0.02em;
+  color: var(--c-blue);
 }
 .adm-goal-widget .adm-goal-meta {
-  color: var(--c-text-muted);
-  font-size: 13px;
-  font-weight: 600;
+  color: var(--c-text-light);
+  font-size: var(--text-body);
+  font-weight: 400;
 }
+
+/* The caption sits under the bar: what the number means on the left, and —
+   once the goal is met — the congratulation on the right. */
 .adm-goal-pct {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--c-slate-600);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-cell);
+  font-weight: 400;
+  color: var(--c-text);
+}
+
+.adm-goal-pct-icon {
+  flex-shrink: 0;
+  color: var(--c-gray-800);
+}
+
+.adm-goal-congrats {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+  font-weight: 600;
+  color: #0a6b3f;
 }
 
 /* ─── Clickable stat tiles (destination hint) ─────────────────────────── */
@@ -3483,6 +3358,7 @@ button {
   display: flex;
   flex-direction: column;
   min-width: 0;
+  flex: 1 1 auto;
 }
 .adm-stat--link {
   text-decoration: none;
@@ -3501,17 +3377,19 @@ button {
 /* Hint reads as a text link in the tile's tone — no pill background, no
    underline, with a → arrow that nudges right on hover. */
 .adm-stat-hint {
-  margin-top: 10px;
+  margin-top: auto;
+  padding-top: 12px;
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11.5px;
+  gap: 5px;
+  font-size: var(--text-label);
   font-weight: 700;
-  color: inherit; /* picks up the stat tile's tone */
-  letter-spacing: 0.01em;
+  /* The tile's own dark ink, not the body colour — `inherit` was picking up
+     the link reset on the `<a>` wrapper and coming out near-black. */
+  color: var(--stat-ink);
 }
 .adm-stat-hint-arrow {
-  font-size: 12px;
+  font-size: var(--text-body);
   font-weight: 800;
   line-height: 1;
   transition: transform 0.15s;
@@ -3534,7 +3412,7 @@ button {
   align-items: center;
   gap: 10px;
   padding: 9px 16px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
 }
 .adm-flagged-row:last-child {
   border-bottom: 0;
@@ -3551,7 +3429,7 @@ button {
 }
 .adm-flagged-book {
   font-size: 12px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-top: 1px;
   white-space: nowrap;
   overflow: hidden;
@@ -3638,14 +3516,14 @@ button {
   border-bottom: 0;
 }
 .adm-lbc-rank {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
+  font-size: var(--text-label);
   font-weight: 800;
 }
 .adm-lbc-rank--gold {
@@ -3657,17 +3535,17 @@ button {
   color: #374151;
 }
 .adm-lbc-rank--bronze {
-  background: var(--c-amber-600);
+  background: var(--c-yellow-ink);
   color: #fff;
 }
 .adm-lbc-rank--plain {
-  background: var(--c-slate-100);
-  color: var(--c-text-muted);
+  background: var(--c-gray-100);
+  color: var(--c-text-light);
 }
 .adm-lbc-name {
   flex: 1;
   min-width: 0;
-  font-size: 14px;
+  font-size: var(--text-cell);
   font-weight: 700;
   color: var(--adm-accent);
   white-space: nowrap;
@@ -3676,165 +3554,9 @@ button {
 }
 .adm-lbc-val {
   font-weight: 700;
-  color: var(--c-slate-600);
-  font-size: 13px;
+  color: var(--c-gray-750);
+  font-size: var(--text-label);
   flex-shrink: 0;
-}
-
-/* ─── Top Books shelf + Top Badges (visual) ───────────────────────────── */
-/* Items wrap and center so partial rows sit balanced under the title. Item
-   widths are fixed so the covers/medals don't squeeze when the container
-   is narrower than (count × item + gaps). */
-.adm-w-body.adm-shelf,
-.adm-w-body.adm-badges {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-  align-items: flex-start;
-}
-/* Compact-mode (half-width pair): cap the body height to match the
-   shared scrollable height so books/badges line up with their partner
-   widget instead of dragging the row taller. `safe center` centers the
-   content when it fits AND falls back to flex-start when it overflows,
-   so the scroll can still reach the first item. */
-@container (max-width: 620px) {
-  .adm-w-body.adm-shelf,
-  .adm-w-body.adm-badges {
-    max-height: 272px;
-    overflow-y: auto;
-    align-content: safe center;
-    padding-top: 16px;
-  }
-}
-/* Mobile: drop the books/badges max-height so the widget renders at its
-   natural content height (no in-card scroll on a phone). */
-@media (max-width: 720px) {
-  .adm-w-body.adm-shelf,
-  .adm-w-body.adm-badges {
-    max-height: none;
-    overflow-y: visible;
-  }
-}
-.adm-shelf-item {
-  flex: 0 0 96px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 7px;
-  text-align: center;
-}
-.adm-book-cover {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  border-radius: 8px;
-  color: #fff;
-  background: var(--c-slate-200);
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.16);
-  overflow: hidden;
-}
-.adm-book-cover img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-/* Shown only when the cover image is missing / fails to load. */
-.adm-book-fallback {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 700;
-  line-height: 1.25;
-  color: #fff;
-}
-.adm-book-rank {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  z-index: 1;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.92);
-  color: var(--c-text);
-  font-size: 12px;
-  font-weight: 800;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.adm-shelf-meta {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--c-text-muted);
-}
-
-.adm-badge-item {
-  flex: 0 0 80px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  text-align: center;
-}
-.adm-badge-medal {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  box-shadow: 0 6px 14px rgba(15, 23, 42, 0.18);
-}
-.adm-badge-medal--green {
-  background: linear-gradient(135deg, #34d399, #047857);
-}
-.adm-badge-medal--yellow {
-  background: linear-gradient(135deg, #fcd34d, var(--c-amber-600));
-}
-.adm-badge-medal--blue {
-  background: linear-gradient(135deg, #60a5fa, var(--c-blue-700));
-}
-.adm-badge-medal--purple {
-  background: linear-gradient(135deg, #a78bfa, #6d28d9);
-}
-.adm-badge-medal--orange {
-  background: linear-gradient(135deg, #fba181, #c2410c);
-}
-.adm-badge-medal--teal {
-  background: linear-gradient(135deg, #5eead4, #0f766e);
-}
-/* Half-width pair: shrink the books + medals so a row caps at ~3 items
-   even on the widest 50% slot. Sits after the base sizing so the override
-   wins despite same-specificity selectors. */
-@container (max-width: 620px) {
-  .adm-shelf-item {
-    flex: 0 0 80px;
-  }
-  .adm-book-rank {
-    width: 18px;
-    height: 18px;
-    font-size: 11px;
-  }
-  .adm-badge-item {
-    flex: 0 0 72px;
-  }
-  .adm-badge-medal {
-    width: 56px;
-    height: 56px;
-  }
-  .adm-badge-medal svg {
-    width: 22px;
-    height: 22px;
-  }
 }
 
 /* ─── Flagged Sessions rail card (top of the rail, both roles) ────────── */
@@ -3906,67 +3628,159 @@ button {
 }
 
 /* ─── Quick Actions rail card ─────────────────────────────────────────── */
+/* A two-column grid of filled pills, one hue each — the dashboard mock's
+   launcher. The shipped rail runs the same destinations as full-width grey
+   rows (`admin/components/_dashboard-link.scss`); this compacts them, and the
+   hues are the app's own `200`-tint / `1000`-ink pairs. */
 .adm-quick-actions {
-  /* Two-column grid keeps the launcher compact so Engagement and the
-     Community/District Goal stay above the fold. minmax(0, 1fr) lets columns
-     shrink below content width so long labels ellipsis instead of widening
-     the card. */
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 10px;
 }
+
 .adm-quick-action {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
   min-width: 0;
-  padding: 8px 9px;
+  padding: 15px 18px;
   border-radius: 10px;
-  border: 1px solid var(--c-gray-200);
-  background: var(--c-slate-50);
   text-decoration: none;
-  color: var(--c-slate-800);
-  font-weight: 700;
-  font-size: 12.5px;
-  transition:
-    background 0.12s,
-    border-color 0.12s;
+  background: var(--qa-bg);
+  color: var(--qa-ink);
+  transition: filter 0.12s;
 }
 .adm-quick-action:hover {
-  background: #eff6ff;
-  border-color: #bfdbfe;
+  filter: brightness(0.96);
 }
-.adm-quick-action:active {
-  background: #dbeafe;
-  border-color: #93c5fd;
-  transform: scale(0.98);
-}
-.adm-quick-action-ico {
-  width: 26px;
-  height: 26px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #dbeafe;
-  color: var(--c-blue-700);
-  flex-shrink: 0;
-}
-.adm-quick-action-ico svg {
-  width: 15px;
-  height: 15px;
-}
+
 .adm-quick-action-label {
   flex: 1;
   min-width: 0;
+  font-size: var(--text-body);
+  font-weight: 700;
   line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-/* The chevron is redundant in the compact two-column launcher and would steal
-   label room, forcing long labels to ellipsis. Hide it here; the hover/active
-   states already signal the tiles are tappable. */
+
 .adm-quick-action-chev {
-  display: none;
+  flex-shrink: 0;
+}
+
+.adm-quick-action--blue {
+  --qa-bg: #d6f0fa;
+  --qa-ink: #14548c;
+}
+.adm-quick-action--red {
+  --qa-bg: #fbdcd2;
+  --qa-ink: #b3271a;
+}
+.adm-quick-action--purple {
+  --qa-bg: #f8ddfb;
+  --qa-ink: #8b1ca3;
+}
+.adm-quick-action--yellow {
+  --qa-bg: #fce8b2;
+  --qa-ink: #8a5e0c;
+}
+.adm-quick-action--green {
+  --qa-bg: #cff3df;
+  --qa-ink: #0a6b3f;
+}
+/* The mock's sixth destination sits on a second blue — a rail of six pills
+   where two share a tint reads as a mistake. */
+.adm-quick-action--indigo {
+  --qa-bg: #cfe0fa;
+  --qa-ink: #1a4fa0;
+}
+
+/* ─── Sessions for Review widget ──────────────────────────────────────── */
+/* Two tabs and a list of readers, each with a count per sentiment. */
+.adm-sfr {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.adm-sfr-tabs {
+  padding: 14px 20px 8px;
+  flex-shrink: 0;
+}
+.adm-sfr-tabs .tabs {
+  width: 100%;
+}
+.adm-sfr-tabs .tab {
+  flex: 1 1 0;
+  justify-content: center;
+}
+
+.adm-sfr-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  /* Takes the body's remaining height so the list scrolls against the cell's
+     own floor — without the flex basis it sized to its rows and left a band
+     of dead white under the last one. */
+  flex: 1 1 0;
+  min-height: 0;
+}
+
+.adm-sfr-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 20px;
+  border-top: 1px solid var(--c-gray-200);
+}
+.adm-sfr-row:first-child {
+  border-top: none;
+}
+
+.adm-sfr-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.adm-sfr-reader {
+  font-size: var(--text-cell);
+  font-weight: 500;
+  color: var(--c-blue);
+  line-height: 1.3;
+}
+
+.adm-sfr-book {
+  font-size: var(--text-label);
+  color: var(--c-text);
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.adm-sfr-chips {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.adm-sfr-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: var(--radius-pill);
+  font-size: var(--text-tag);
+  font-weight: 700;
+}
+.adm-sfr-chip--pos {
+  background: #cff5df;
+  color: #0a6b3f;
+}
+.adm-sfr-chip--neg {
+  background: #fcdcd6;
+  color: #b3271a;
 }

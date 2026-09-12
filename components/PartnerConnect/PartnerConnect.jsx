@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Avatar } from '@components/Avatar/Avatar'
 import { PartnerBrand, PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
+import { Flyout } from '@components/Flyout/Flyout'
+import '@components/Flyout/Flyout.css'
 import '@components/PartnerConnect/PartnerConnect.css'
 
 import '@components/Avatar/Avatar.css'
@@ -514,7 +516,7 @@ export function ConnectBanner({ partners = [], onLink, onDismiss }) {
 function SinglePartnerBanner({ partner: p, onLink, onDismiss }) {
   const brand = PARTNER_BRANDS[p.id]
   return (
-    <div className="cn-banner" style={{ background: brand.soft, borderColor: brand.accent }}>
+    <div className="cn-banner" style={{ background: brand.soft }}>
       <PartnerMark id={p.id} size={30} />
       <div className="cn-banner-msg">
         <strong>{p.bannerText}</strong>
@@ -523,7 +525,7 @@ function SinglePartnerBanner({ partner: p, onLink, onDismiss }) {
       <div className="cn-banner-actions">
         <button
           className="cn-banner-cta"
-          style={{ color: brand.accent, borderColor: brand.accent }}
+          style={{ color: brand.accent }}
           onClick={() => onLink?.(p.id)}
         >
           Link Accounts
@@ -557,21 +559,36 @@ function MultiPartnerBanner({ partners, onLink, onDismiss }) {
         </span>
       </div>
       <div className="cn-banner-actions">
-        <div className="cn-banner-ctas">
-          {partners.map((p) => {
-            const brand = PARTNER_BRANDS[p.id]
-            return (
-              <button
-                key={p.id}
-                className="cn-banner-cta"
-                style={{ color: brand.accent, borderColor: brand.accent }}
-                onClick={() => onLink?.(p.id)}
-              >
-                Link {p.name}
-              </button>
-            )
-          })}
-        </div>
+        {/* One control, not a button per partner: three "Link X" buttons made the
+            banner a toolbar, and the row wrapped on anything narrow. The picking
+            happens in the menu, where each partner gets its own mark. */}
+        <Flyout
+          placement="bottom-end"
+          trigger={({ toggle }) => (
+            <button className="cn-banner-cta" onClick={toggle}>
+              Link an app
+              <Icon name="chevron-down" size={14} stroke={2.4} />
+            </button>
+          )}
+        >
+          {({ close }) => (
+            <div className="flyout-menu">
+              {partners.map((p) => (
+                <button
+                  key={p.id}
+                  className="flyout-menu-item"
+                  onClick={() => {
+                    onLink?.(p.id)
+                    close()
+                  }}
+                >
+                  <PartnerMark id={p.id} size={20} />
+                  {p.name}
+                </button>
+              ))}
+            </div>
+          )}
+        </Flyout>
         <BannerDismiss onDismiss={onDismiss} />
       </div>
     </div>

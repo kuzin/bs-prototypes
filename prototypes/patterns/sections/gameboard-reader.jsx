@@ -29,7 +29,6 @@ function DiscRow() {
         gap: 22,
         alignItems: 'center',
         padding: '10px 4px',
-        background: 'var(--gr-green)',
         borderRadius: 12,
       }}
     >
@@ -38,7 +37,9 @@ function DiscRow() {
           <div style={{ width: 100 }}>
             <BadgeDisc space={space} earned={earned} bare={i === 4} />
           </div>
-          <span style={{ fontSize: 11, fontWeight: 700, color: '#4a5a20' }}>{label}</span>
+          <span style={{ fontSize: 11, fontWeight: 700, color: 'var(--c-text-light)' }}>
+            {label}
+          </span>
         </div>
       ))}
     </div>
@@ -87,13 +88,13 @@ export const gameboardReaderSections = [
     ),
     render: () => (
       <>
-        <Variant label="3 of 10 cleared — badge 4 is the next target" full>
+        <Variant label="3 of 10 cleared — badge 4 is the next target">
           <ReaderBoard booksFinished={3} onSpace={noop} />
         </Variant>
-        <Variant label="8 of 10 cleared — most of the route earned" full>
+        <Variant label="8 of 10 cleared — most of the route earned">
           <ReaderBoard booksFinished={8} onSpace={noop} />
         </Variant>
-        <Variant label="reflowed — the same board in a 360px column" full>
+        <Variant label="reflowed — the same board in a 360px column">
           <div style={{ width: 360 }}>
             <ReaderBoard booksFinished={3} onSpace={noop} />
           </div>
@@ -116,7 +117,7 @@ export const gameboardReaderSections = [
       </>
     ),
     render: () => (
-      <Variant label="earned · locked · bare — shown on the board green" full>
+      <Variant label="earned · locked · bare">
         <DiscRow />
       </Variant>
     ),

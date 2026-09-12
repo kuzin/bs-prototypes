@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react'
 import '@components/Avatar/Avatar.css'
 
 /**
- * <Avatar initials="MC" color="#E8866A" size="md" />
- * <Avatar initials="LE" color="#1D4ED8" size="lg" shape="square" />
+ * <Avatar initials="MC" color="#F26430" size="md" />
+ * <Avatar initials="LE" color="#196DD5" size="lg" shape="square" />
  *
  * `src` renders a real picture instead — a reader who has uploaded one. The
  * initials stay the fallback: they show while there's no `src`, and again if
@@ -18,7 +18,7 @@ import '@components/Avatar/Avatar.css'
 export function Avatar({
   initials,
   src,
-  color = '#94A3B8',
+  color = '#ACACAC',
   size = 'md',
   shape = 'circle',
   className = '',

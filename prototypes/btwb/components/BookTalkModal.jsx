@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Modal } from '@components/Modal/Modal'
 import { Icon } from '@components/Icon/Icon'
-import { ChatBubble, TypingBubble } from '../../book-talks/components/ChatBubble'
+import { ChatBubble, TypingBubble } from '@components/ChatBubble/ChatBubble'
 import {
   synthesizeVoice,
   stripForSpeech,
@@ -521,7 +521,7 @@ export function BookTalkModal({ open, kindId, session, onSession, onClose, onFin
                 <Icon name="sparkles" size={16} color={kind.color} />
               </span>
               <span className="bt-award-spark bt-award-spark--2">
-                <Icon name="star-filled" size={12} color="#F59E0B" />
+                <Icon name="star-filled" size={12} color="#FFBC42" />
               </span>
             </div>
             <div className="bt-award-title">Badge earned!</div>

@@ -37,11 +37,14 @@ export function Knobs({ children, examples = 'Additional examples' }) {
   )
 }
 
-export function Variant({ label, children, bare, full }) {
+export function Variant({ label, children, bare, full, ground }) {
   const className = [
     'pt-variant-frame',
     bare && 'pt-variant-frame--bare',
     full && 'pt-variant-frame--full',
+    // `ground` for a component that draws its own white card or page surface:
+    // on the example card's own white it has no edge at all.
+    ground && 'pt-variant-frame--ground',
   ]
     .filter(Boolean)
     .join(' ')

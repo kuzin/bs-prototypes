@@ -21,7 +21,7 @@ import { Funnel } from '@components/Funnel/Funnel'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { WordCloud } from '@components/WordCloud/WordCloud'
 import { Toggle } from '@components/Toggle/Toggle'
-import { Field, Input, RangeSlider, Select } from '@components/Form/Form'
+import { ColorInput, Field, Input, RangeSlider, Select } from '@components/Form/Form'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 import { RMI_FACTORS } from '../../ris/data'
 import { Knobs, Variant, TABLE_ROWS } from './_shared'
@@ -44,12 +44,12 @@ const RMI_TREND_FIXTURE = [
 ]
 
 const BL_DIET_DATA = [
-  { label: 'Sci-Fi & Fantasy', value: 28, color: '#7C3AED' },
-  { label: 'Sports & Adventure', value: 19, color: '#0DA7BC' },
-  { label: 'Realistic Fiction', value: 17, color: '#16A97A' },
-  { label: 'Graphic & Manga', value: 14, color: '#E8866A' },
+  { label: 'Sci-Fi & Fantasy', value: 28, color: '#B43DD0' },
+  { label: 'Sports & Adventure', value: 19, color: '#0CA7BC' },
+  { label: 'Realistic Fiction', value: 17, color: '#0BA85F' },
+  { label: 'Graphic & Manga', value: 14, color: '#F26430' },
   { label: 'Mystery & Thriller', value: 11, color: '#F0C050' },
-  { label: 'Other', value: 11, color: '#CBD5E1' },
+  { label: 'Other', value: 11, color: '#D0D0D0' },
 ]
 
 const BL_GRADE_BANDS = ['K–2', '3–5', '6–8', '9–12']
@@ -114,7 +114,7 @@ function BarListKnobs() {
         {...sharedBarProps}
         layout={layout}
         groups={[
-          { label: 'Intrinsic', labelColor: '#E8866A', items: intrinsic.map(factorItem) },
+          { label: 'Intrinsic', labelColor: '#F26430', items: intrinsic.map(factorItem) },
           { label: 'Extrinsic', labelColor: '#7CB5F5', items: extrinsic.map(factorItem) },
         ]}
       />
@@ -226,7 +226,7 @@ function BarListKnobs() {
                 ? 'All 10 factors · scored 1–4'
                 : 'What drives readers most'
           }
-          accent={variant === 'simple' ? '#7C3AED' : '#E8866A'}
+          accent={variant === 'simple' ? '#B43DD0' : '#F26430'}
           bodyPad="padded"
           span={variant === 'iconList' ? 1 : 2}
         >
@@ -242,10 +242,10 @@ function StatCardShowcase() {
     <>
       <Variant label="plain (default) — no icon, just the figure over its label">
         <div className="rc-stats-row" style={{ '--rc-stats-cols': 2 }}>
-          <StatCard label="Minutes" value="3,252" color="var(--c-brand-coral)" />
-          <StatCard label="Active Readers" value="1,204" color="var(--c-amber-500)" />
-          <StatCard label="Lexile Average" value="665L" color="var(--c-violet-600)" />
-          <StatCard label="Logged Every Day" value={38} color="var(--c-brand-green)" />
+          <StatCard label="Minutes" value="3,252" color="var(--c-orange)" />
+          <StatCard label="Active Readers" value="1,204" color="var(--c-yellow)" />
+          <StatCard label="Lexile Average" value="665L" color="var(--c-purple)" />
+          <StatCard label="Logged Every Day" value={38} color="var(--c-green)" />
         </div>
       </Variant>
 
@@ -254,25 +254,25 @@ function StatCardShowcase() {
           <StatCard
             label="Minutes"
             value="3,252"
-            color="var(--c-brand-coral)"
+            color="var(--c-orange)"
             action={{ label: 'Insights', href: '#/cards/stat-card' }}
           />
           <StatCard
             label="Lexile Average"
             value="665L"
-            color="var(--c-violet-600)"
+            color="var(--c-purple)"
             action={{ label: 'Lexile Insights', href: '#/cards/stat-card' }}
           />
           <StatCard
             label="Logged Every Day"
             value={38}
-            color="var(--c-brand-green)"
+            color="var(--c-green)"
             action={{ label: 'Number Cruncher', href: '#/cards/stat-card' }}
           />
           <StatCard
             label="Active Readers"
             value="1,204"
-            color="var(--c-amber-500)"
+            color="var(--c-yellow)"
             action={{ label: 'Insights', href: '#/cards/stat-card' }}
           />
         </div>
@@ -283,14 +283,14 @@ function StatCardShowcase() {
           <StatCard
             label="Completed titles"
             value={12}
-            color="var(--c-violet-600)"
+            color="var(--c-purple)"
             icon={<PlumpyIcon name="book" size={40} />}
           />
           <StatCard
             label="Reading time"
             value="3,043"
             unit="Minutes"
-            color="var(--c-amber-500)"
+            color="var(--c-yellow)"
             icon={<PlumpyIcon name="clock" size={40} />}
           />
         </div>
@@ -301,20 +301,20 @@ function StatCardShowcase() {
           <StatCard
             value={490}
             label="Words collected"
-            color="var(--c-brand-teal)"
+            color="var(--c-teal)"
             trend={{ delta: 101, format: (n) => `${n} in the last 7 days` }}
           />
           <StatCard
             value={12}
             label="Sessions flagged"
-            color="var(--c-brand-coral)"
+            color="var(--c-orange)"
             trend={{ delta: -3, inverse: true, format: (n) => `${n} fewer` }}
           />
           <StatCard
             value={68}
             unit="%"
             label="Logging weekly"
-            color="var(--c-brand-green)"
+            color="var(--c-green)"
             trend={{ delta: 7, format: (n) => `${n}%`, showValue: true }}
           />
         </div>
@@ -331,7 +331,7 @@ function ChartCardShowcase() {
           title="Minutes by grade"
           subtitle="This school year"
           icon={<Icon name="chart-bar" size={18} />}
-          accent="var(--c-brand-teal)"
+          accent="var(--c-teal)"
         >
           <CardNote icon="info">
             The body is flush by default — children own their padding.
@@ -340,7 +340,7 @@ function ChartCardShowcase() {
       </Variant>
 
       <Variant label='bodyPad="padded" — the card supplies the padding'>
-        <ChartCard title="Reading health" bodyPad="padded" accent="var(--c-brand-green)">
+        <ChartCard title="Reading health" bodyPad="padded" accent="var(--c-green)">
           Body content sits on the card&apos;s own padding.
         </ChartCard>
       </Variant>
@@ -379,7 +379,7 @@ function StatCardKnobs() {
   const [value, setValue] = useState('3,252')
   const [unit, setUnit] = useState('')
   const [label, setLabel] = useState('Minutes')
-  const [color, setColor] = useState('#E8866A')
+  const [color, setColor] = useState('#F26430')
   const [iconKey, setIconKey] = useState('clock')
   const [actionLabel, setActionLabel] = useState('Insights')
   const [showAction, setShowAction] = useState(true)
@@ -410,12 +410,7 @@ function StatCardKnobs() {
           </Select>
         </Field>
         <Field label="color">
-          <input
-            className="pt-color"
-            type="color"
-            value={color}
-            onChange={(e) => setColor(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={color} onChange={setColor} />
         </Field>
         <Field label="action label">
           <Input value={actionLabel} onChange={(e) => setActionLabel(e.target.value)} />
@@ -492,7 +487,7 @@ const CHART_TREND = [
 function ChartCardKnobs() {
   const [title, setTitle] = useState('Reading Motivation Index')
   const [subtitle, setSubtitle] = useState('Sep 2024 – May 2025')
-  const [accent, setAccent] = useState('#E8866A')
+  const [accent, setAccent] = useState('#F26430')
   const [showIcon, setShowIcon] = useState(true)
   const [showFooter, setShowFooter] = useState(true)
   const [showAction, setShowAction] = useState(false)
@@ -512,12 +507,7 @@ function ChartCardKnobs() {
           <Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} />
         </Field>
         <Field label="accent" className="pt-knob-color">
-          <input
-            className="pt-color"
-            type="color"
-            value={accent}
-            onChange={(e) => setAccent(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={accent} onChange={setAccent} />
         </Field>
         <Field label="bodyPad">
           <Select value={bodyPad} onChange={(e) => setBodyPad(e.target.value)}>
@@ -563,13 +553,13 @@ function ChartCardKnobs() {
               <ChartLegend
                 items={[
                   { color: accent, label: 'This school' },
-                  { color: '#CBD5E1', label: 'District avg', dashed: true },
+                  { color: '#D0D0D0', label: 'District avg', dashed: true },
                 ]}
               />
             ) : undefined
           }
         >
-          <div style={{ color: '#94A3B8', textAlign: 'center', padding: '32px 0' }}>
+          <div style={{ color: '#ACACAC', textAlign: 'center', padding: '32px 0' }}>
             {bodyPad === 'flush' ? 'Chart goes here (flush)' : 'Padded content goes here'}
             {capHeight && (
               <div style={{ marginTop: 16 }}>
@@ -616,7 +606,7 @@ function TrendChartKnobs() {
   const [layout, setLayout] = useState('vertical')
   const [height, setHeight] = useState('md')
   const [dualAxis, setDualAxis] = useState(false)
-  const [accent, setAccent] = useState('#0DA7BC')
+  const [accent, setAccent] = useState('#0CA7BC')
   const [yUnit, setYUnit] = useState('')
   const [yMin, setYMin] = useState(60)
   const [yMax, setYMax] = useState(90)
@@ -656,12 +646,7 @@ function TrendChartKnobs() {
           </Select>
         </Field>
         <Field label="accent">
-          <input
-            className="pt-color"
-            type="color"
-            value={accent}
-            onChange={(e) => setAccent(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={accent} onChange={setAccent} />
         </Field>
         <Field label="yUnit">
           <Select value={yUnit} onChange={(e) => setYUnit(e.target.value)}>
@@ -755,8 +740,8 @@ function TrendChartKnobs() {
                 {
                   key: 'completionRate',
                   name: 'Completion',
-                  color: '#CBD5E1',
-                  colorFn: (d) => (d.isThis ? accent : '#CBD5E1'),
+                  color: '#D0D0D0',
+                  colorFn: (d) => (d.isThis ? accent : '#D0D0D0'),
                 },
               ]}
             />
@@ -779,13 +764,13 @@ function TrendChartKnobs() {
                   strokeWidth,
                   fillOpacity,
                 },
-                { key: 'school', name: 'School', color: '#1D4ED8', dashed },
+                { key: 'school', name: 'School', color: '#196DD5', dashed },
                 ...(dualAxis
                   ? [
                       {
                         key: 'secondary',
                         name: 'Incidents',
-                        color: '#E8866A',
+                        color: '#F26430',
                         yAxisId: 'right',
                         dashed: true,
                         strokeWidth: 2,
@@ -807,7 +792,7 @@ function LineChartKnobs() {
   const [showPoints, setPoints] = useState(false)
   const [showLegend, setLegend] = useState(true)
   const [showAxes, setAxes] = useState(false)
-  const [accent, setAccent] = useState('#E8866A')
+  const [accent, setAccent] = useState('#F26430')
 
   const xLegend = showAxes ? 'Month' : undefined
   const yLegend = showAxes ? 'RMI score' : undefined
@@ -823,12 +808,7 @@ function LineChartKnobs() {
           </Select>
         </Field>
         <Field label="accent">
-          <input
-            className="pt-color"
-            type="color"
-            value={accent}
-            onChange={(e) => setAccent(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={accent} onChange={setAccent} />
         </Field>
         <Field label="area fill">
           <Toggle checked={showArea} onChange={setArea} />
@@ -854,7 +834,7 @@ function LineChartKnobs() {
               <ChartLegend
                 items={[
                   { color: accent, label: 'Lincoln' },
-                  { color: '#CBD5E1', label: 'District avg', dashed: true },
+                  { color: '#D0D0D0', label: 'District avg', dashed: true },
                 ]}
               />
             ) : undefined
@@ -870,7 +850,7 @@ function LineChartKnobs() {
                 },
                 {
                   id: 'District avg',
-                  color: '#CBD5E1',
+                  color: '#D0D0D0',
                   data: CHART_TREND.map((d) => ({ x: d.month, y: d.district })),
                 },
               ]}
@@ -935,7 +915,7 @@ function GroupedBarKnobs() {
   const [showLegend, setLegend] = useState(true)
   const [decimals, setDecimals] = useState('1')
   const [showAxes, setAxes] = useState(false)
-  const [accent, setAccent] = useState('#E8866A')
+  const [accent, setAccent] = useState('#F26430')
 
   const dec = Number(decimals) || 0
   const formatVal = (v) => v.toFixed(dec)
@@ -963,12 +943,7 @@ function GroupedBarKnobs() {
           </Select>
         </Field>
         <Field label="accent">
-          <input
-            className="pt-color"
-            type="color"
-            value={accent}
-            onChange={(e) => setAccent(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={accent} onChange={setAccent} />
         </Field>
         <Field label="axis legends">
           <Toggle checked={showAxes} onChange={setAxes} />
@@ -988,7 +963,7 @@ function GroupedBarKnobs() {
               <ChartLegend
                 items={[
                   { color: accent, label: 'Intrinsic' },
-                  { color: '#CBD5E1', label: 'Extrinsic' },
+                  { color: '#D0D0D0', label: 'Extrinsic' },
                 ]}
               />
             ) : undefined
@@ -1004,7 +979,7 @@ function GroupedBarKnobs() {
               margin={{ top: 12, right: 20, bottom: showAxes ? 48 : 32, left: leftMargin }}
               padding={0.3}
               innerPadding={2}
-              colors={({ id }) => (id === 'intrinsic' ? accent : '#CBD5E1')}
+              colors={({ id }) => (id === 'intrinsic' ? accent : '#D0D0D0')}
               borderRadius={3}
               axisBottom={{
                 ...AXIS_BOTTOM,
@@ -1033,7 +1008,7 @@ function GroupedBarKnobs() {
                   keys={['intrinsic', 'extrinsic']}
                   labels={{
                     intrinsic: { label: 'Intrinsic', color: accent },
-                    extrinsic: { label: 'Extrinsic', color: '#CBD5E1' },
+                    extrinsic: { label: 'Extrinsic', color: '#D0D0D0' },
                   }}
                 />
               )}
@@ -1058,7 +1033,7 @@ function HorizontalBarKnobs() {
   const [showValueLabel, setVL] = useState(false)
   const [showAxes, setAxes] = useState(false)
   const [showLegend, setLegend] = useState(true)
-  const [accent, setAccent] = useState('#E8866A')
+  const [accent, setAccent] = useState('#F26430')
 
   // Derive left margin from the widest y-axis label (school name)
   const widestLabel = H_BAR_DATA.reduce((m, d) => Math.max(m, d.name.length), 0)
@@ -1074,12 +1049,7 @@ function HorizontalBarKnobs() {
     <>
       <Knobs>
         <Field label="accent">
-          <input
-            className="pt-color"
-            type="color"
-            value={accent}
-            onChange={(e) => setAccent(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={accent} onChange={setAccent} />
         </Field>
         <Field label="value labels">
           <Toggle checked={showValueLabel} onChange={setVL} />
@@ -1096,13 +1066,13 @@ function HorizontalBarKnobs() {
           title="District integrity ranking"
           subtitle="Book Talk completion rate · May 2025"
           icon={HEALTH_SECTIONS.find((s) => s.key === 'integrity')?.icon}
-          accent="#1D4ED8"
+          accent="#196DD5"
           footer={
             showLegend ? (
               <ChartLegend
                 items={[
                   { color: accent, label: 'This school' },
-                  { color: '#CBD5E1', label: 'Other schools' },
+                  { color: '#D0D0D0', label: 'Other schools' },
                 ]}
               />
             ) : undefined
@@ -1116,7 +1086,7 @@ function HorizontalBarKnobs() {
               layout="horizontal"
               theme={NIVO_THEME}
               margin={{ top: 12, right: rightMargin, bottom: showAxes ? 48 : 32, left: leftMargin }}
-              colors={({ data }) => (data.isThis ? accent : '#CBD5E1')}
+              colors={({ data }) => (data.isThis ? accent : '#D0D0D0')}
               borderRadius={4}
               axisBottom={{
                 ...AXIS_BOTTOM,
@@ -1136,17 +1106,17 @@ function HorizontalBarKnobs() {
               enableGridY={false}
               enableLabel={showValueLabel}
               label={(d) => `${d.value}%`}
-              labelTextColor="#1E293B"
+              labelTextColor="#2A2A2A"
               maxValue={100}
               tooltip={({ data }) => (
                 <div
                   className="sdb-tooltip"
-                  style={{ '--tip-accent': data.isThis ? accent : '#1D4ED8' }}
+                  style={{ '--tip-accent': data.isThis ? accent : '#196DD5' }}
                 >
                   <div className="sdb-tooltip-header">{data.name}</div>
                   <div
                     className="sdb-tooltip-series"
-                    style={{ '--series-color': data.isThis ? accent : '#94A3B8' }}
+                    style={{ '--series-color': data.isThis ? accent : '#ACACAC' }}
                   >
                     <div className="sdb-tooltip-row">
                       <span className="sdb-tooltip-dot" />
@@ -1165,7 +1135,7 @@ function HorizontalBarKnobs() {
 }
 
 function ScatterKnobs() {
-  const [accent, setAccent] = useState('#E8866A')
+  const [accent, setAccent] = useState('#F26430')
   const [yTicks, setYTicks] = useState('5')
   const [showRef, setRef] = useState(true)
   const [showAxes, setAxes] = useState(true)
@@ -1177,12 +1147,7 @@ function ScatterKnobs() {
     <>
       <Knobs>
         <Field label="accent">
-          <input
-            className="pt-color"
-            type="color"
-            value={accent}
-            onChange={(e) => setAccent(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={accent} onChange={setAccent} />
         </Field>
         <Field label="y ticks">
           <Select value={yTicks} onChange={(e) => setYTicks(e.target.value)}>
@@ -1207,15 +1172,15 @@ function ScatterKnobs() {
           title="Lexile Growth vs. Reading Volume"
           subtitle="Lincoln highlighted against district peers"
           icon={HEALTH_SECTIONS.find((s) => s.key === 'skills')?.icon}
-          accent="#7C3AED"
+          accent="#B43DD0"
           footer={
             showLegend ? (
               <ChartLegend
                 items={[
                   { color: accent, label: 'This school' },
-                  { color: '#CBD5E1', label: 'Other schools' },
+                  { color: '#D0D0D0', label: 'Other schools' },
                   ...(showRef
-                    ? [{ color: '#D97706', label: 'Expected (+65L)', dashed: true }]
+                    ? [{ color: '#AB720A', label: 'Expected (+65L)', dashed: true }]
                     : []),
                 ]}
               />
@@ -1244,7 +1209,7 @@ function ScatterKnobs() {
               margin={{ top: 16, right: 28, bottom: showAxes ? 52 : 32, left: showAxes ? 76 : 44 }}
               xScale={{ type: 'linear', min: 15, max: 50 }}
               yScale={{ type: 'linear', min: 0, max: 130 }}
-              colors={({ serieId }) => (serieId === 'This school' ? accent : '#CBD5E1')}
+              colors={({ serieId }) => (serieId === 'This school' ? accent : '#D0D0D0')}
               nodeSize={(d) => Math.sqrt(d.data.students / 5)}
               axisBottom={{
                 ...AXIS_BOTTOM,
@@ -1268,7 +1233,7 @@ function ScatterKnobs() {
                       {
                         axis: 'y',
                         value: 65,
-                        lineStyle: { stroke: '#D97706', strokeDasharray: '4 3', strokeWidth: 1.5 },
+                        lineStyle: { stroke: '#AB720A', strokeDasharray: '4 3', strokeWidth: 1.5 },
                       },
                     ]
                   : []
@@ -1276,12 +1241,12 @@ function ScatterKnobs() {
               tooltip={({ node }) => (
                 <div
                   className="sdb-tooltip"
-                  style={{ '--tip-accent': node.data.sid === 'lincoln' ? accent : '#475569' }}
+                  style={{ '--tip-accent': node.data.sid === 'lincoln' ? accent : '#656565' }}
                 >
                   <div className="sdb-tooltip-header">{node.data.school}</div>
                   <div
                     className="sdb-tooltip-series"
-                    style={{ '--series-color': node.data.sid === 'lincoln' ? accent : '#94A3B8' }}
+                    style={{ '--series-color': node.data.sid === 'lincoln' ? accent : '#ACACAC' }}
                   >
                     <div className="sdb-tooltip-row">
                       <span className="sdb-tooltip-dot" />
@@ -1306,11 +1271,11 @@ function ChartLegendKnobs() {
   const [layout, setLayout] = useState('row')
   const [items, setItems] = useState('3')
   const palette = [
-    { color: '#E8866A', label: 'Lincoln' },
-    { color: '#CBD5E1', label: 'District avg', dashed: true },
-    { color: '#16A97A', label: 'Target' },
-    { color: '#7C3AED', label: 'Top quartile' },
-    { color: '#0DA7BC', label: 'Elementary' },
+    { color: '#F26430', label: 'Lincoln' },
+    { color: '#D0D0D0', label: 'District avg', dashed: true },
+    { color: '#0BA85F', label: 'Target' },
+    { color: '#B43DD0', label: 'Top quartile' },
+    { color: '#0CA7BC', label: 'Elementary' },
   ]
   const visible = palette.slice(0, Number(items) || 2)
   return (
@@ -1383,7 +1348,7 @@ function CardNoteShowcase() {
       </Variant>
 
       <Variant label="in a card — accent picks up the card’s --rc-accent">
-        <ChartCard title="Minutes by grade" accent="var(--c-brand-teal)">
+        <ChartCard title="Minutes by grade" accent="var(--c-teal)">
           <CardNote tone="accent">Up 12% on last month.</CardNote>
         </ChartCard>
       </Variant>
@@ -1435,7 +1400,7 @@ function CardNoteKnobs() {
         </Field>
       </Knobs>
       <div className="pt-variant-frame pt-variant-frame--bare">
-        <ChartCard title="Note" accent="#E8866A" bodyPad={bodyPad}>
+        <ChartCard title="Note" accent="#F26430" bodyPad={bodyPad}>
           <CardNote
             tone={tone}
             icon={icon === 'default' ? undefined : icon === 'none' ? false : icon}
@@ -1490,7 +1455,7 @@ const WC_WORDS = [
 ].map(([text, value]) => ({ text, value }))
 
 function WordCloudKnobs() {
-  const [accent, setAccent] = useState('#7C3AED')
+  const [accent, setAccent] = useState('#B43DD0')
   const [height, setHeight] = useState('lg')
   const [maxSize, setMaxSize] = useState(48)
   const [count, setCount] = useState(WC_WORDS.length)
@@ -1505,10 +1470,10 @@ function WordCloudKnobs() {
       <Knobs>
         <Field label="Accent">
           <Select value={accent} onChange={(e) => setAccent(e.target.value)}>
-            <option value="#7C3AED">Violet</option>
-            <option value="#0DA7BC">Turquoise</option>
-            <option value="#16A97A">Green</option>
-            <option value="#1D4ED8">Blue</option>
+            <option value="#B43DD0">Violet</option>
+            <option value="#0CA7BC">Turquoise</option>
+            <option value="#0BA85F">Green</option>
+            <option value="#196DD5">Blue</option>
           </Select>
         </Field>
         <Field label="Height">
@@ -1569,7 +1534,7 @@ export const chartsSections = [
   type="line"
   data={data}
   xKey="month"
-  series={[{ key: 'minutes', label: 'Minutes', color: 'var(--c-teal-500)' }]}
+  series={[{ key: 'minutes', label: 'Minutes', color: 'var(--c-teal)' }]}
   yUnit="m"
 />`,
     desc: (
@@ -1687,13 +1652,13 @@ import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/charts/charts'
 import '@components/Cards/Cards.css'
 
 /* One shape: the figure, bold, over its label on a tint of \`color\`. */
-<StatCard label="Minutes" value="3,252" color="var(--c-brand-coral)" />
+<StatCard label="Minutes" value="3,252" color="var(--c-orange)" />
 
 /* \`icon\` is optional, and takes a NODE */
 <StatCard
   label="Completed titles"
   value={12}
-  color="var(--c-violet-600)"
+  color="var(--c-purple)"
   icon={<PlumpyIcon name="book" size={40} />}
 />
 
@@ -1701,7 +1666,7 @@ import '@components/Cards/Cards.css'
 <StatCard
   label="Lexile Average"
   value="665L"
-  color="var(--c-violet-600)"
+  color="var(--c-purple)"
   action={{ label: 'Lexile Insights', href: '/insights/lexile' }}
 />
 
@@ -1709,7 +1674,7 @@ import '@components/Cards/Cards.css'
 <StatCard
   label="Words collected"
   value={490}
-  color="var(--c-brand-teal)"
+  color="var(--c-teal)"
   trend={{ delta: 101, format: (n) => \`\${n} in the last 7 days\` }}
 />`,
     desc: (
@@ -1786,7 +1751,7 @@ import '@components/Cards/Cards.css'
           <ChartCard
             title="Schools by RMI"
             subtitle="Current year average"
-            accent="#E8866A"
+            accent="#F26430"
             bodyPad="flush"
           >
             <Table
@@ -1805,7 +1770,7 @@ import '@components/Cards/Cards.css'
                   label: 'YoY',
                   align: 'right',
                   render: (v) => (
-                    <span style={{ color: v >= 0 ? '#16A34A' : '#DC2626', fontWeight: 700 }}>
+                    <span style={{ color: v >= 0 ? '#16A34A' : '#E85648', fontWeight: 700 }}>
                       {v >= 0 ? '↑' : '↓'}
                       {Math.abs(v)} pts
                     </span>
@@ -1862,7 +1827,7 @@ import '@components/Cards/Cards.css'
     name: 'ChartLegend',
     usage: `import { ChartLegend } from '@components/charts/charts'
 
-<ChartLegend items={[{ label: 'Fall', color: 'var(--c-teal-500)' }]} />`,
+<ChartLegend items={[{ label: 'Fall', color: 'var(--c-teal)' }]} />`,
     desc: (
       <>
         Footer legend rendered below the chart body. <code>items</code> is an array of{' '}
@@ -1960,7 +1925,7 @@ import '@components/Funnel/Funnel.css'
           <ChartCard
             title="Student Engagement Funnel"
             subtitle="Habit depth across 1,650 students"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             bodyPad="padded"
             span={2}
           >
@@ -2027,10 +1992,10 @@ import '@components/Funnel/Funnel.css'
           <Variant label="SliceTooltip — line chart">
             <SliceTooltip
               slice={fakeSlicePoints([
-                { seriesId: 'Lincoln', color: '#E8866A', x: 'Jan', y: 68 },
-                { seriesId: 'District avg', color: '#CBD5E1', x: 'Jan', y: 72 },
+                { seriesId: 'Lincoln', color: '#F26430', x: 'Jan', y: 68 },
+                { seriesId: 'District avg', color: '#D0D0D0', x: 'Jan', y: 72 },
               ])}
-              accent="#E8866A"
+              accent="#F26430"
               allData={RMI_TREND_FIXTURE}
               seriesMap={{ Lincoln: 'school', 'District avg': 'district' }}
               formatDelta={(d) => `${d > 0 ? '+' : ''}${d} pts`}
@@ -2045,12 +2010,12 @@ import '@components/Funnel/Funnel.css'
             <BarTooltip
               data={{ intrinsic: 14.2, extrinsic: 11.8 }}
               indexValue="May"
-              accent="#E8866A"
+              accent="#F26430"
               format={(v) => `${v.toFixed(1)} /20`}
               keys={['intrinsic', 'extrinsic']}
               labels={{
-                intrinsic: { label: 'Intrinsic', color: '#E8866A' },
-                extrinsic: { label: 'Extrinsic', color: '#CBD5E1' },
+                intrinsic: { label: 'Intrinsic', color: '#F26430' },
+                extrinsic: { label: 'Extrinsic', color: '#D0D0D0' },
               }}
               context={(d) => (
                 <>
@@ -2061,7 +2026,7 @@ import '@components/Funnel/Funnel.css'
             />
           </Variant>
           <Variant label="GradeTooltip — Lexile bars">
-            <GradeTooltip data={{ grade: '4th', growth: 78, expected: 55 }} accent="#7C3AED" />
+            <GradeTooltip data={{ grade: '4th', growth: 78, expected: 55 }} accent="#B43DD0" />
           </Variant>
         </div>
       </>

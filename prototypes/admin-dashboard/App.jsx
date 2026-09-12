@@ -38,9 +38,11 @@ const widgetAllowed = (cat, role) =>
     cat.roles.includes(role))
 const ROLE_KEY = 'adm-user-role'
 
-function greeting() {
-  const day = new Date().toLocaleDateString('en-US', { weekday: 'long' })
-  return `👋 Happy ${day}, Ellen!`
+// The shipped dashboard's own heading: "Welcome back, {first_name}!" on a
+// rostered school, "Welcome to Beanstack Admin!" otherwise (bs-product
+// `new_admin/dashboards/index.html.haml`). It isn't a day-of-the-week greeting.
+function greeting(role) {
+  return role === 'library' ? 'Welcome to Beanstack Admin!' : 'Welcome back, Ellen!'
 }
 
 // Small icon helpers (use SVG so they scale with the Button)
@@ -99,8 +101,6 @@ function WidgetThumb({ id }) {
     'leaderboard-staff': rows,
     'leaderboard-patrons': rows,
     'leaderboard-branches': rows,
-    'top-books': rows,
-    'top-badges': rows,
     'quick-links': grid,
     questions: lines,
   }
@@ -288,23 +288,6 @@ export function App() {
             onClose={() => setOpenSettings(null)}
           />
         )}
-        {/* Per-block settings — always visible (no edit mode); opens this widget's
-            settings popover. Layout editing (drag / add / remove) stays hidden. */}
-        {hasSettings && (
-          <button
-            type="button"
-            className={`adm-w-settings ${isSettingsOpen ? 'is-on' : ''}`}
-            onClick={(e) =>
-              setOpenSettings(
-                isSettingsOpen ? null : { id, anchorRect: e.currentTarget.getBoundingClientRect() },
-              )
-            }
-            title="Widget settings"
-            aria-label="Widget settings"
-          >
-            <Cog />
-          </button>
-        )}
         <Comp settings={{ ...(cat.defaults || {}), ...widgetSettings }} role={role} />
       </div>
     )
@@ -320,7 +303,7 @@ export function App() {
         <MainRail activeIndex={4} />
         <div className="adm">
           <header className="adm-topbar">
-            <h1 className="adm-h1">{greeting()}</h1>
+            <h1 className="adm-h1">{greeting(role)}</h1>
             <div className="adm-topbar-r">
               <CustomSelect
                 options={ROLES}

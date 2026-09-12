@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Modal } from '@components/Modal/Modal'
 import { Icon } from '@components/Icon/Icon'
-import { ChatBubble, TypingBubble } from './ChatBubble'
+import { ChatBubble, TypingBubble } from '@components/ChatBubble/ChatBubble'
 import {
   BENNY_OPENER,
   BENNY_CLOSER,
@@ -549,11 +549,12 @@ export function BennyChat({ badge, open, onClose, onComplete, selfStart = false 
               <ChatBubble
                 key={i}
                 msg={m}
+                avatar={faceFor(m.emotion)}
                 onSpeak={m.role === 'benny' ? () => speak(i, m.text) : undefined}
                 speaking={speakingIdx === i}
               />
             ))}
-            {typing && <TypingBubble />}
+            {typing && <TypingBubble avatar={faceFor('thinking')} />}
           </div>
 
           {/* Composer (hidden once the chat is complete — the award modal takes over) */}
@@ -668,7 +669,7 @@ export function BennyChat({ badge, open, onClose, onComplete, selfStart = false 
                       <Icon name="sparkles" size={16} color={accent} />
                     </span>
                     <span className="bt-award-spark bt-award-spark--2">
-                      <Icon name="star-filled" size={12} color="#F59E0B" />
+                      <Icon name="star-filled" size={12} color="#FFBC42" />
                     </span>
                   </>
                 )}

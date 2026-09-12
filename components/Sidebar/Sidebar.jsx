@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { Fragment, useState, useEffect } from 'react'
 import { MainRail } from '@components/MainRail/MainRail'
 import { Icon } from '@components/Icon/Icon'
 import '@components/MainRail/MainRail.css'
@@ -55,14 +55,15 @@ function NavIcon({ name }) {
  * The icon here is kept for the collapsed icon-rail mode, which the real app
  * doesn't have.
  */
-function NavItem({ item, isActive, badge, expanded, onClick }) {
+function NavItem({ item, isActive, badge, ownsGroup, onClick }) {
   return (
     <button
       type="button"
-      className={`sb-nav-item${isActive ? ' sb-nav-item--active' : ''}`}
+      className={`sb-nav-item${isActive ? ' sb-nav-item--active' : ''}${
+        ownsGroup ? ' sb-nav-item--owns-group' : ''
+      }`}
       onClick={onClick}
       title={item.label}
-      aria-expanded={expanded === undefined ? undefined : expanded}
     >
       <span className="sb-nav-icon">
         <NavIcon name={item.icon} />
@@ -72,15 +73,29 @@ function NavItem({ item, isActive, badge, expanded, onClick }) {
         {item.desc && <span className="sb-nav-desc">{item.desc}</span>}
       </span>
       {badge > 0 && <span className="sb-nav-badge">{badge}</span>}
-      {/* `.expand-section` — a 32px translucent disc holding a 16px arrow, on
-          rows that own a nested group. The app swaps `subnav-expand-icon` for
-          `subnav-collapse-icon` when the group opens; children are always
-          rendered here, so it shows the collapse (up) arrow. */}
-      {expanded !== undefined && (
-        <span className="sb-nav-expand" aria-hidden="true">
-          <Icon name={expanded ? 'chevron-up' : 'chevron-down'} size={16} stroke={2.4} />
-        </span>
-      )}
+    </button>
+  )
+}
+
+/**
+ * `.expand-section` — the 32px translucent disc holding a 16px arrow, on rows
+ * that own a nested group. The app swaps `subnav-expand-icon` for
+ * `subnav-collapse-icon` when the group opens.
+ *
+ * It's a button of its own, laid over the row rather than nested inside it: a
+ * button can't contain a button, and as a decorative `<span>` the only way to
+ * collapse a group was a mouse.
+ */
+function NavExpand({ open, label, onClick }) {
+  return (
+    <button
+      type="button"
+      className="sb-nav-expand"
+      onClick={onClick}
+      aria-expanded={open}
+      aria-label={`${open ? 'Collapse' : 'Expand'} ${label}`}
+    >
+      <Icon name={open ? 'chevron-up' : 'chevron-down'} size={16} stroke={2.4} />
     </button>
   )
 }
@@ -150,6 +165,8 @@ export function Sidebar({
   // a labelled full-height menu), 'icon' (64px rail), 'full' (240px panel).
   const defaultMode = tier === 'mobile' ? 'closed' : tier === 'tablet' ? 'icon' : 'full'
   const [mode, setMode] = useState(defaultMode)
+  // Which nested groups the reader has collapsed. Open unless listed.
+  const [closedGroups, setClosedGroups] = useState(() => new Set())
 
   // When the viewport tier changes, snap back to its default.
   useEffect(() => {
@@ -187,12 +204,21 @@ export function Sidebar({
     }
   }
   // A plain row immediately followed by a subgroup owns it, so it shows the
-  // caret. Children are always rendered here, so the group is always expanded.
+  // caret — and the caret collapses it. Open by default; the set holds the ids
+  // the reader has closed.
   const ownsSubgroup = new Set(
     groups
       .map((g, i) => (g.kind === 'item' && groups[i + 1]?.kind === 'subgroup' ? g.item.id : null))
       .filter(Boolean),
   )
+  // The owner of the subgroup at index `i`, so a group knows whether it's shut.
+  const ownerOf = (i) => (groups[i - 1]?.kind === 'item' ? groups[i - 1].item.id : null)
+  const toggleGroup = (id) =>
+    setClosedGroups((prev) => {
+      const next = new Set(prev)
+      if (!next.delete(id)) next.add(id)
+      return next
+    })
 
   // Overlay = full mode on tablet (sidebar floats; rail stays) or mobile (the
   // section menu stepped into from the app menu). On desktop, full mode is just
@@ -242,17 +268,29 @@ export function Sidebar({
               )
             }
             if (g.kind === 'item') {
-              return (
+              const owns = ownsSubgroup.has(g.item.id)
+              const row = (
                 <NavItem
-                  key={g.item.id}
                   item={g.item}
                   isActive={active === g.item.id}
                   badge={badges[g.item.id]}
-                  expanded={ownsSubgroup.has(g.item.id) ? true : undefined}
+                  ownsGroup={owns}
                   onClick={() => onNavigate?.(g.item.id)}
                 />
               )
+              if (!owns) return <Fragment key={g.item.id}>{row}</Fragment>
+              return (
+                <div key={g.item.id} className="sb-nav-row">
+                  {row}
+                  <NavExpand
+                    open={!closedGroups.has(g.item.id)}
+                    label={g.item.label}
+                    onClick={() => toggleGroup(g.item.id)}
+                  />
+                </div>
+              )
             }
+            if (closedGroups.has(ownerOf(idx))) return null
             return (
               <div key={`sg-${idx}`} className="sb-nav-subgroup">
                 {g.items.map((item) => (
@@ -388,7 +426,6 @@ export function SchoolPicker({ schools = [], schoolId, onSchoolId, onAfterChange
         <>
           <div className="sb-picker-backdrop" onClick={() => setOpen(false)} />
           <div className="sb-picker-dropdown">
-            <div className="sb-picker-dropdown-label">Switch school</div>
             {schools.map((s) => (
               <button
                 key={s.id}
@@ -400,7 +437,6 @@ export function SchoolPicker({ schools = [], schoolId, onSchoolId, onAfterChange
                   setOpen(false)
                 }}
               >
-                <span className="sb-picker-opt-dot" style={{ background: s.color }} />
                 <span className="sb-picker-opt-name">{s.name}</span>
                 <span className="sb-picker-opt-grades">{s.grades}</span>
               </button>

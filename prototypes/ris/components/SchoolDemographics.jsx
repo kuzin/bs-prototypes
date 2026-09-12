@@ -17,7 +17,7 @@ import { TrendChart } from '@components/TrendChart/TrendChart'
 import { Icon } from '@components/Icon/Icon'
 import './SchoolDemographics.css'
 
-const DEMO_COLOR = '#7C3AED'
+const DEMO_COLOR = '#B43DD0'
 
 const DemographicsIcon = () => <Icon name="users" />
 
@@ -27,34 +27,34 @@ function buildCohorts(details) {
     {
       label: 'Free/Reduced Lunch',
       pct: frl,
-      color: '#7C3AED',
+      color: '#B43DD0',
       desc: 'Federal lunch program eligibility',
     },
     {
       label: 'English Learner',
       pct: Math.round(frl * 0.45),
-      color: '#0DA7BC',
+      color: '#0CA7BC',
       desc: 'EL services / multilingual learners',
     },
     {
       label: 'IEP / 504 Plan',
       pct: Math.round(frl * 0.28 + 8),
-      color: '#E8866A',
+      color: '#F26430',
       desc: 'Active learning support plan',
     },
     {
       label: 'Gifted / Advanced',
       pct: Math.round(28 - frl * 0.25),
-      color: '#16A97A',
+      color: '#0BA85F',
       desc: 'In gifted or honors track',
     },
   ].map((c) => ({ ...c, pct: Math.max(2, c.pct) }))
 }
 
 function rmiColor(rmi) {
-  if (rmi >= 78) return '#0DA7BC'
-  if (rmi >= 70) return '#D97706'
-  return '#E8866A'
+  if (rmi >= 78) return '#0CA7BC'
+  if (rmi >= 70) return '#AB720A'
+  return '#F26430'
 }
 
 export function SchoolDemographics({ schoolId }) {
@@ -108,7 +108,7 @@ export function SchoolDemographics({ schoolId }) {
           value={details.titleI ? 'Yes' : 'No'}
           label="Title I eligible"
           footer={details.titleI ? 'Federal funding active' : 'Not Title I'}
-          color={details.titleI ? '#1D4ED8' : '#94A3B8'}
+          color={details.titleI ? '#196DD5' : '#ACACAC'}
         />
         <StatCard
           value={stats.rmi}
@@ -184,7 +184,7 @@ export function SchoolDemographics({ schoolId }) {
                 align: 'center',
                 render: (v) => (
                   <Pill
-                    color={v >= 50 ? '#DC2626' : v >= 30 ? '#D97706' : '#16A97A'}
+                    color={v >= 50 ? '#E85648' : v >= 30 ? '#AB720A' : '#0BA85F'}
                     variant="soft"
                     size="sm"
                   >
@@ -243,7 +243,7 @@ export function SchoolDemographics({ schoolId }) {
                     High-FRL cohort support
                     <span className="dm-action-frl"> · {details.frl}% FRL</span>
                   </div>
-                  <Pill color="#DC2626" variant="soft" size="sm">
+                  <Pill color="#E85648" variant="soft" size="sm">
                     High Priority
                   </Pill>
                 </div>
@@ -258,7 +258,7 @@ export function SchoolDemographics({ schoolId }) {
               <div className="dm-action-row dm-action-row--warning">
                 <div className="dm-action-head">
                   <div className="dm-action-school">RMI below district average</div>
-                  <Pill color="#D97706" variant="soft" size="sm">
+                  <Pill color="#AB720A" variant="soft" size="sm">
                     Monitor
                   </Pill>
                 </div>
@@ -271,7 +271,7 @@ export function SchoolDemographics({ schoolId }) {
             <div className="dm-action-row">
               <div className="dm-action-head">
                 <div className="dm-action-school">Cross-cohort equity review</div>
-                <Pill color="#D97706" variant="soft" size="sm">
+                <Pill color="#AB720A" variant="soft" size="sm">
                   Monitor
                 </Pill>
               </div>

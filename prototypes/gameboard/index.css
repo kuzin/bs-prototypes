@@ -2,12 +2,12 @@
 /* ─── Challenge Creator V2 ─────────────────────────────────────────────────── */
 
 .gb-root {
-  --teal: var(--c-brand-teal);
+  --teal: var(--c-teal);
   --teal-dk: #0b7a89;
-  --ink: var(--c-slate-900);
-  --muted: var(--c-slate-500);
-  --line: var(--c-slate-200);
-  --bg: var(--c-slate-100);
+  --ink: var(--c-gray-900);
+  --muted: var(--c-gray-700);
+  --line: var(--c-gray-200);
+  --bg: var(--c-gray-100);
   --panel: #ffffff;
   position: fixed;
   top: 0;
@@ -89,7 +89,7 @@
 .gb-root .fld-help,
 .gb-root .fld-hint,
 .gb-root .csel-group-label {
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* ── Top bar ── */
@@ -129,14 +129,14 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: var(--c-slate-100);
-  color: var(--c-slate-600);
+  background: var(--c-gray-100);
+  color: var(--c-gray-750);
   text-decoration: none;
   font-size: 19px;
 }
 
 .gb-exit:hover {
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
 }
 
 .gb-title {
@@ -167,7 +167,7 @@
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: #92400e;
-  background: #fef3c7;
+  background: #ffecc8;
   padding: 3px 8px;
   border-radius: 999px;
 }
@@ -180,7 +180,7 @@
   gap: 5px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gb-save--saved {
@@ -192,7 +192,7 @@
   height: 12px;
   border-radius: 50%;
   border: 2px solid var(--c-border-strong);
-  border-top-color: var(--c-slate-500);
+  border-top-color: var(--c-gray-700);
   animation: gb-spin 0.7s linear infinite;
 }
 
@@ -214,16 +214,16 @@
   gap: 6px;
   height: 30px;
   padding: 0 10px;
-  border: 1px dashed var(--c-slate-400);
+  border: 1px dashed var(--c-gray-500);
   border-radius: 8px;
   background: repeating-linear-gradient(
     45deg,
     #fff,
     #fff 6px,
-    var(--c-slate-50) 6px,
-    var(--c-slate-50) 12px
+    var(--c-gray-0) 6px,
+    var(--c-gray-0) 12px
   );
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   font: inherit;
   font-size: 14px;
   font-weight: 800;
@@ -233,8 +233,8 @@
 
 .gb-dev-btn.is-open,
 .gb-dev-btn:hover {
-  border-color: var(--c-slate-500);
-  color: var(--c-slate-800);
+  border-color: var(--c-gray-700);
+  color: var(--c-gray-900);
 }
 
 .gb-dev-backdrop {
@@ -270,7 +270,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gb-dev-select {
@@ -281,7 +281,7 @@
   font: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   cursor: pointer;
   padding: 7px 9px;
 }
@@ -310,7 +310,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   white-space: nowrap;
 }
 
@@ -379,7 +379,7 @@
   margin-left: auto;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 .gb-footer-warn + .gb-footer-right {
@@ -482,7 +482,7 @@
   margin-top: 6px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* ── Panels & fields ── */
@@ -700,7 +700,7 @@
 .gb-gallery-plus {
   font-size: 26px;
   font-weight: 300;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gb-gallery-name {
@@ -901,7 +901,7 @@
   width: 1px;
   min-height: 22px;
   margin: 0 6px;
-  background: var(--line, var(--c-slate-200));
+  background: var(--line, var(--c-gray-200));
 }
 
 /* "Look & feel" is a dense form — tighten the gaps between its fields. */
@@ -1044,7 +1044,7 @@
   border: 1px solid var(--c-border-strong);
   border-radius: 9px;
   background: #fff;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   font-size: 15px;
   cursor: pointer;
   transition:
@@ -1053,7 +1053,7 @@
 }
 
 .gb-font-chip:hover {
-  border-color: var(--c-slate-500);
+  border-color: var(--c-gray-700);
 }
 
 .gb-font-chip.is-on {
@@ -1082,7 +1082,7 @@
 .gb-wordcount {
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gb-wordcount.is-over {
@@ -1194,7 +1194,7 @@
 }
 
 .gb-code-help.is-error {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 /* ── Alternative challenge cards ── */
@@ -1226,8 +1226,8 @@
 }
 
 .gb-alt-card.is-on {
-  border-color: var(--c-brand-green);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-brand-green) 18%, transparent);
+  border-color: var(--c-green);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-green) 18%, transparent);
 }
 
 .gb-alt-name {
@@ -1350,7 +1350,7 @@
 
 .gb-badge-goal--missing {
   font-weight: 700;
-  color: var(--c-red-600);
+  color: var(--c-red);
   text-transform: none;
 }
 
@@ -1360,7 +1360,7 @@
   margin: 0 0 12px;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 /* Inline remove (×) for badge cards and activity rows. */
@@ -1370,7 +1370,7 @@
   border: 0;
   background: none;
   cursor: pointer;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-size: 20px;
   line-height: 1;
   padding: 0 4px;
@@ -1378,7 +1378,7 @@
 }
 
 .gb-row-remove:hover {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 /* Edit + remove controls, pinned to the right of the badge card. */
@@ -1399,7 +1399,7 @@
   border: 0;
   background: none;
   border-radius: 7px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   cursor: pointer;
 }
 
@@ -1417,23 +1417,16 @@
   height: 28px;
   padding: 0;
   border-radius: 7px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-badge-card-actions .gb-row-remove:hover {
-  background: color-mix(in srgb, var(--c-red-600) 12%, #fff);
-  color: var(--c-red-600);
+  background: color-mix(in srgb, var(--c-red) 12%, #fff);
+  color: var(--c-red);
 }
 
 .gb-activity-row .gb-activity-name {
   margin-right: auto;
-}
-
-.gb-inline-toggles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-  margin-top: 4px;
 }
 
 /* ── Tip ── */
@@ -1444,17 +1437,11 @@
 
 /* ── Badges step ── */
 
-.gb-method-toggles {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 18px;
-}
-
 .gb-method-note {
   margin: 0 0 14px;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 
 .gb-method-note--sm {
@@ -1480,18 +1467,8 @@
   text-decoration: underline;
 }
 
-.gb-method-toggles--nested {
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 10px;
-  padding: 14px;
-  background: var(--c-slate-50);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-}
-
 .gb-muted {
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-weight: 500;
 }
 
@@ -1543,7 +1520,7 @@
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 /* Hovering the slot highlights its edit icon like the badge-card edit icon. */
@@ -1567,8 +1544,8 @@
   flex: none;
   display: grid;
   place-items: center;
-  background: var(--c-slate-100);
-  color: var(--c-text-muted);
+  background: var(--c-gray-100);
+  color: var(--c-text-light);
   font-size: 22px;
   line-height: 1;
 }
@@ -1584,7 +1561,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gb-badge-pin-name {
@@ -1605,8 +1582,8 @@
 /* One shared error state: both date inputs go red, with a single message below. */
 
 .gb-badge-window.has-error .inp-wrap {
-  border-color: var(--c-red-600);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 14%, transparent);
+  border-color: var(--c-red);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red) 14%, transparent);
 }
 
 .gb-badge-window-wrap {
@@ -1716,12 +1693,12 @@
   border: 0;
   border-radius: 8px;
   background: none;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   cursor: pointer;
 }
 
 .gb-badge-editor-close:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--ink);
 }
 
@@ -1768,7 +1745,7 @@
 }
 
 .gb-req {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 /* Badge editor form — badge art on the left, fields on the right, split by a
@@ -1830,9 +1807,9 @@
 
 .gb-badge-disc.is-empty {
   border: 1.5px dashed var(--c-border-strong);
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   box-shadow: none;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* Edit affordance overlaid at the badge's lower-right. */
@@ -1907,7 +1884,7 @@
   margin: 2px 0 0;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* Color filter — single-select swatch chips, right of the search. */
@@ -1988,7 +1965,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-badgepick-grouphead:first-child {
@@ -2008,7 +1985,7 @@
   font: inherit;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
 }
 
@@ -2026,7 +2003,7 @@
   padding: 0 7px;
   border-radius: 999px;
   background: #eef2f6;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-size: 13px;
   font-weight: 700;
   display: inline-flex;
@@ -2035,7 +2012,7 @@
 }
 
 .gb-badgepick-group:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 .gb-badgepick-group.is-on {
@@ -2074,20 +2051,20 @@
 
 .gb-badgepick-groups::-webkit-scrollbar-track,
 .gb-badgepick-grid::-webkit-scrollbar-track {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   border-radius: 999px;
 }
 
 .gb-badgepick-groups::-webkit-scrollbar-thumb,
 .gb-badgepick-grid::-webkit-scrollbar-thumb {
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
   border-radius: 999px;
-  border: 2px solid var(--c-slate-100);
+  border: 2px solid var(--c-gray-100);
 }
 
 .gb-badgepick-groups::-webkit-scrollbar-thumb:hover,
 .gb-badgepick-grid::-webkit-scrollbar-thumb:hover {
-  background: var(--c-slate-400);
+  background: var(--c-gray-500);
 }
 
 /* Bigger modal for the badge editor; drop the inner card. */
@@ -2158,7 +2135,7 @@
   justify-content: center;
   gap: 10px;
   padding: 16px 14px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   border: 1px solid var(--line);
   border-radius: 12px;
 }
@@ -2182,10 +2159,10 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(45deg, var(--c-slate-200) 25%, transparent 25%),
-    linear-gradient(-45deg, var(--c-slate-200) 25%, transparent 25%),
-    linear-gradient(45deg, transparent 75%, var(--c-slate-200) 75%),
-    linear-gradient(-45deg, transparent 75%, var(--c-slate-200) 75%);
+    linear-gradient(45deg, var(--c-gray-200) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--c-gray-200) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--c-gray-200) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--c-gray-200) 75%);
   background-size: 16px 16px;
   background-position:
     0 0,
@@ -2222,7 +2199,7 @@
 /* "Original colors" swatch — a little rainbow to signal "no recolor". */
 
 .gb-tint-orig {
-  background: conic-gradient(#ef4444, #f59e0b, #22c55e, #0ea5e9, #6366f1, #ec4899, #ef4444);
+  background: conic-gradient(#ef4444, #ffbc42, #22c55e, #0ea5e9, #6366f1, #ec4899, #ef4444);
 }
 
 /* Recolor panel: flatten swatches on top, then a per-color editor list. */
@@ -2241,7 +2218,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-recolor-list {
@@ -2295,7 +2272,7 @@
 
 .gb-upload-scale-ic {
   flex: 0 0 auto;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-upload-scale .rng {
@@ -2321,10 +2298,10 @@
 .gb-accent-dot--none {
   background: linear-gradient(
       45deg,
-      var(--c-slate-200) 25%,
+      var(--c-gray-200) 25%,
       #fff 25%,
       #fff 75%,
-      var(--c-slate-200) 75%
+      var(--c-gray-200) 75%
     )
     0 0 / 10px 10px;
 }
@@ -2337,7 +2314,7 @@
   place-items: center;
   border: 1.5px dashed var(--c-border-strong);
   border-radius: 12px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   cursor: pointer;
   transition:
     border-color 0.15s ease,
@@ -2469,7 +2446,7 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-bggrid .gb-builder-bgimgs {
@@ -2555,7 +2532,7 @@
   font-size: 13px;
   font-weight: 600;
   text-align: center;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 
 /* Favorite star — always faintly visible (discoverable), bold amber when on. */
@@ -2571,7 +2548,7 @@
   border-radius: 50%;
   display: grid;
   place-items: center;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   cursor: pointer;
   opacity: 0.55;
   transition:
@@ -2588,13 +2565,13 @@
 
 .gb-badgepick-fav.is-on {
   opacity: 1;
-  color: #f59e0b;
+  color: #ffbc42;
   filter: drop-shadow(0 1px 1px rgba(245, 158, 11, 0.35));
 }
 
 .gb-badgepick-fav:hover {
-  color: #f59e0b;
-  background: color-mix(in srgb, #f59e0b 18%, #fff);
+  color: #ffbc42;
+  background: color-mix(in srgb, #ffbc42 18%, #fff);
   transform: scale(1.08);
 }
 
@@ -2626,7 +2603,7 @@
 .gb-badgepick-item-set {
   font-size: 12px;
   font-weight: 600;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   line-height: 1.2;
 }
 
@@ -2686,7 +2663,7 @@
 }
 
 .gb-bingo-size:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-500);
 }
 
 .gb-bingo-size.is-active {
@@ -2705,7 +2682,7 @@
 
 .gb-bingo-size-grid i {
   border-radius: 2px;
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
   transition: background 0.12s;
 }
 
@@ -2716,7 +2693,7 @@
 .gb-bingo-size-label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 
 .gb-bingo-size.is-active .gb-bingo-size-label {
@@ -2744,7 +2721,10 @@
 .gb-tray {
   border: 1.5px dashed var(--line);
   border-radius: 14px;
-  background: var(--c-slate-50);
+  /* White, not a tinted well — the dashed edge already says "drop here", and a
+     grey ground behind white chips made the tray read as the disabled half of
+     the editor. */
+  background: #fff;
   transition:
     border-color 0.12s,
     background 0.12s;
@@ -2772,7 +2752,7 @@
 .gb-tray-title {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 
 /* A single round badge ghost used as the drag image in both directions, so the
@@ -2816,9 +2796,10 @@
 }
 
 .gb-tray-list {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
   gap: 6px;
+  align-content: start;
   max-height: 216px;
   overflow-y: auto;
   margin: -2px -4px -2px -2px;
@@ -2829,6 +2810,7 @@
   display: flex;
   align-items: center;
   gap: 9px;
+  min-width: 0;
   padding: 5px 10px 5px 5px;
   background: #fff;
   border: 1px solid var(--line);
@@ -2875,7 +2857,7 @@
 }
 
 .gb-bingo-art-fallback {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-chip-text {
@@ -2888,7 +2870,10 @@
 .gb-chip-name {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-800);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--c-gray-900);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -2897,7 +2882,7 @@
 .gb-chip-meta {
   font-size: 11px;
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   white-space: nowrap;
 }
 
@@ -2909,7 +2894,7 @@
   width: 100%;
   align-self: stretch;
   padding: 12px;
-  background: linear-gradient(135deg, var(--c-slate-50), #e9eef5);
+  background: linear-gradient(135deg, var(--c-gray-0), #e9eef5);
   border: 1px solid var(--line);
   border-radius: 16px;
   box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.05);
@@ -2990,7 +2975,7 @@
   flex: none;
   border: 2px solid #fff;
   border-radius: 50%;
-  background: var(--c-slate-900);
+  background: var(--c-gray-900);
   color: #fff;
   display: inline-flex;
   align-items: center;
@@ -3017,7 +3002,7 @@
 }
 
 .gb-remove:hover {
-  background: var(--red, var(--c-red-600));
+  background: var(--red, var(--c-red));
   transform: translate(-50%, -50%) scale(1.1);
 }
 
@@ -3033,7 +3018,7 @@
   max-width: 190px;
   padding: 7px 11px;
   border-radius: 9px;
-  background: var(--c-slate-900);
+  background: var(--c-gray-900);
   color: #fff;
   display: flex;
   flex-direction: column;
@@ -3054,7 +3039,7 @@
   left: 50%;
   transform: translateX(-50%);
   border: 6px solid transparent;
-  border-top-color: var(--c-slate-900);
+  border-top-color: var(--c-gray-900);
 }
 
 .gb-badge-tip strong {
@@ -3065,7 +3050,7 @@
 
 .gb-badge-tip-req {
   font-size: 12px;
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
 }
 
 .gb-bingo-placed:hover .gb-badge-tip,
@@ -3150,8 +3135,8 @@
 .gb-bookcover--ph {
   display: grid;
   place-items: center;
-  color: var(--c-text-subtle);
-  background: linear-gradient(135deg, var(--c-slate-200), var(--c-slate-300));
+  color: var(--c-gray-600);
+  background: linear-gradient(135deg, var(--c-gray-200), var(--c-gray-350));
 }
 
 .gb-title-cover {
@@ -3326,7 +3311,7 @@
 }
 
 .gb-tm-result:hover:not(:disabled) {
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 
 .gb-tm-result.is-selected {
@@ -3483,14 +3468,14 @@
   border: 1px solid var(--line);
   border-radius: 7px;
   background: #fff;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-size: 13px;
   line-height: 1;
   cursor: pointer;
 }
 
 .gb-ab-move:hover:not(:disabled) {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-500);
   color: var(--ink);
 }
 
@@ -3507,13 +3492,13 @@
   border: 1px solid var(--line);
   border-radius: 8px;
   background: #fff;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   cursor: pointer;
 }
 
 .gb-ab-iconbtn:hover {
   border-color: #fca5a5;
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 /* Edit (pencil) + remove (trash) reuse the logging-badge icon-button look. */
@@ -3526,13 +3511,13 @@
   height: 28px;
   padding: 0;
   border-radius: 7px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-ab-listactions .gb-row-remove:hover,
 .gb-ab-actactions .gb-row-remove:hover {
-  background: color-mix(in srgb, var(--c-red-600) 12%, #fff);
-  color: var(--c-red-600);
+  background: color-mix(in srgb, var(--c-red) 12%, #fff);
+  color: var(--c-red);
 }
 
 /* Inactive activity badges read dimmer in the list. */
@@ -3608,7 +3593,7 @@
   flex: 0 0 auto;
   display: grid;
   place-items: center;
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
   cursor: grab;
 }
 
@@ -3639,7 +3624,7 @@
   display: grid;
   place-items: center;
   background: #eef2f6;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* Non-badge art (rewards, ticket prizes, certificates) reads as a rounded square. */
@@ -3686,7 +3671,7 @@
 }
 
 .gb-badgerow-meta.is-missing {
-  color: var(--c-red-600);
+  color: var(--c-red);
   font-weight: 600;
 }
 
@@ -3721,11 +3706,11 @@
 }
 
 .gb-badgerow-eye.is-off {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-badgerow-eye.is-off:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 .gb-badgerow-actions .gb-row-remove {
@@ -3735,12 +3720,12 @@
   height: 28px;
   padding: 0;
   border-radius: 7px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-badgerow-actions .gb-row-remove:hover {
-  background: color-mix(in srgb, var(--c-red-600) 12%, #fff);
-  color: var(--c-red-600);
+  background: color-mix(in srgb, var(--c-red) 12%, #fff);
+  color: var(--c-red);
 }
 
 .gb-ab-actrow.is-dragging {
@@ -3864,7 +3849,7 @@
   width: 200px;
   font-size: 15px;
   font-weight: 600;
-  color: var(--ink, var(--c-slate-800));
+  color: var(--ink, var(--c-gray-900));
 }
 
 /* Inputs share one height so the two rows line up. */
@@ -3904,7 +3889,7 @@
 .gb-quick-bglabel {
   font-size: 14px;
   font-weight: 700;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 
 .gb-quick-swatches {
@@ -3946,7 +3931,7 @@
   align-self: stretch;
   min-height: 22px;
   margin: 0 2px;
-  background: var(--line, var(--c-slate-200));
+  background: var(--line, var(--c-gray-200));
 }
 
 /* Result strip — the badges as they'll be created. */
@@ -3958,7 +3943,7 @@
   gap: 10px;
   padding: 18px 16px;
   border-radius: 12px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 .gb-quick-strip {
@@ -3989,14 +3974,14 @@
 .gb-quick-badge-ph {
   font-size: 15px;
   font-weight: 800;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gb-quick-result-note {
   margin: 0;
   font-size: 13px;
   font-weight: 600;
-  color: var(--muted, var(--c-slate-500));
+  color: var(--muted, var(--c-gray-700));
 }
 
 .gb-actpicker-list {
@@ -4265,7 +4250,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .gb-ab-actactions {
@@ -4308,7 +4293,7 @@
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 14px;
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 
 .gb-ab-actform-row {
@@ -4516,7 +4501,7 @@
   border-radius: 50%;
   /* Tied to the board theme: the gift sits in the theme's deep "ink" color with
      a white ring so it lifts off the road. */
-  background: var(--ink, var(--c-slate-600));
+  background: var(--ink, var(--c-gray-750));
   display: grid;
   place-items: center;
   color: #fff;
@@ -4546,7 +4531,7 @@
   color: #fff;
   font: inherit;
   overflow: hidden;
-  background-color: var(--c-slate-200);
+  background-color: var(--c-gray-200);
   background-size: cover;
   background-position: center;
 }
@@ -4582,9 +4567,9 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   border: 2px dashed var(--c-border-strong);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gb-theme--custom .gb-theme-name {
@@ -4663,11 +4648,11 @@
   place-items: center;
   padding: 0;
   text-align: center;
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
 }
 
 .gb-pv-banner.is-image {
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
 }
 
 .gb-pv-headtext {
@@ -4700,7 +4685,7 @@
   height: 34px;
   border-radius: 50%;
   border: 4px solid var(--c-border-strong);
-  border-top-color: var(--c-slate-500);
+  border-top-color: var(--c-gray-700);
   animation: gb-spin 0.8s linear infinite;
 }
 
@@ -4757,7 +4742,7 @@
 }
 
 .gb-pv-sk {
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
   border-radius: 8px;
 }
 
@@ -4821,7 +4806,7 @@
   font: inherit;
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   cursor: pointer;
   padding: 7px 8px;
   border-radius: 8px;
@@ -4836,7 +4821,7 @@
 }
 
 .gb-pv-seg-btn:hover:not(.is-active) {
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 
 .gb-pv-seg-btn.is-active {
@@ -4871,7 +4856,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--c, var(--c-slate-300));
+  background: var(--c, var(--c-gray-350));
   overflow: hidden;
   display: grid;
   place-items: center;
@@ -4901,7 +4886,7 @@
 }
 
 .gb-pv-reward-art {
-  --c: var(--c-brand-teal);
+  --c: var(--c-teal);
   flex: none;
   width: 38px;
   height: 38px;
@@ -4936,7 +4921,7 @@
 
 .gb-pv-reward-info span {
   font-size: 12.5px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* Challenge dates + description in the preview body */
@@ -4947,13 +4932,13 @@
   text-align: left;
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gb-pv-desc {
   font-size: 14px;
   line-height: 1.5;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 
 .gb-pv-desc :is(p, ul, ol) {
@@ -4987,14 +4972,14 @@
   margin: 8px 0;
   padding: 2px 0 2px 10px;
   border-left: 3px solid var(--c-border-strong);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .gb-pv-desc pre {
   margin: 8px 0;
   padding: 8px 10px;
   border-radius: 6px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   font-family: var(--font-mono);
   font-size: 14px;
   white-space: pre-wrap;
@@ -5004,7 +4989,7 @@
 .gb-pv-desc code {
   padding: 1px 5px;
   border-radius: 4px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   font-family: var(--font-mono);
   font-size: 0.9em;
 }
@@ -5150,7 +5135,7 @@
 }
 
 .gb-pv-badge-tag.is-lock {
-  background: var(--c-slate-400);
+  background: var(--c-gray-500);
 }
 
 /* Prize ribbon sits top-left so it never collides with the status chip. */
@@ -5165,7 +5150,7 @@
   display: grid;
   place-items: center;
   color: #fff;
-  background: #f59e0b;
+  background: #ffbc42;
   border: 2px solid #fff;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.25);
 }
@@ -5289,7 +5274,7 @@
   overflow: hidden;
   display: grid;
   place-items: center;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 .gb-savedreward-art img {
@@ -5385,7 +5370,7 @@
   height: 38px;
   border-radius: 50%;
   background: #eef2f6;
-  color: var(--slate, var(--c-slate-500));
+  color: var(--slate, var(--c-gray-700));
   transition:
     background 0.12s,
     color 0.12s,
@@ -5415,7 +5400,7 @@
 .gb-optcard-text span {
   font-size: 12px;
   line-height: 1.35;
-  color: var(--slate, var(--c-slate-500));
+  color: var(--slate, var(--c-gray-700));
 }
 
 .gb-optcard-dot {
@@ -5521,7 +5506,7 @@
 .gb-bsrow-art-ph {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, var(--c-slate-200), var(--c-slate-300));
+  background: linear-gradient(135deg, var(--c-gray-200), var(--c-gray-350));
 }
 
 .gb-bsrow-name {
@@ -5602,7 +5587,7 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--ink);
-  background: color-mix(in srgb, var(--teal) 6%, var(--c-slate-50));
+  background: color-mix(in srgb, var(--teal) 6%, var(--c-gray-0));
   border: 1px solid color-mix(in srgb, var(--teal) 28%, var(--line));
   border-radius: 12px;
   padding: 12px 16px;
@@ -5647,7 +5632,7 @@
 }
 
 .gb-savedreward:hover:not(:disabled) {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-500);
 }
 
 .gb-savedreward.is-selected {

@@ -17,16 +17,16 @@ export const insightsSections = [
     ),
     render: () => (
       <div className="pt-variants pt-insights-cards">
-        <Variant label="value" bare>
+        <Variant label="value" ground>
           <MetricCard label="Active readers" note="this month" value={1284} />
         </Variant>
-        <Variant label="value — clickable" bare>
+        <Variant label="value — clickable" ground>
           <MetricCard label="Books finished" note="this month" value={3271} onClick={() => {}} />
         </Variant>
-        <Variant label="loading" bare>
+        <Variant label="loading" ground>
           <MetricCard label="Minutes logged" note="this month" state="loading" />
         </Variant>
-        <Variant label="empty — load" bare>
+        <Variant label="empty — load" ground>
           <MetricCard label="Avg session" note="not yet loaded" state="empty" onLoad={() => {}} />
         </Variant>
       </div>
@@ -48,17 +48,17 @@ export const insightsSections = [
     ),
     render: () => (
       <div className="pt-variants pt-insights-cards">
-        <Variant label="value (+ clickable header)" bare>
+        <Variant label="value (+ clickable header)" ground>
           <PanelCard title="Top Books" onClick={() => {}}>
-            <div style={{ padding: '6px 2px', color: '#64748b', fontSize: 13 }}>
+            <div style={{ padding: '6px 2px', color: '#707070', fontSize: 13 }}>
               Panel body content goes here.
             </div>
           </PanelCard>
         </Variant>
-        <Variant label="loading — kind='books'" bare>
+        <Variant label="loading — kind='books'" ground>
           <PanelCard title="Top Books" state="loading" kind="books" />
         </Variant>
-        <Variant label="empty — load" bare>
+        <Variant label="empty — load" ground>
           <PanelCard title="Top Badges" state="empty" kind="badges" onLoad={() => {}} />
         </Variant>
       </div>

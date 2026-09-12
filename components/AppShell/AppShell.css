@@ -75,14 +75,14 @@
 .app-shell-header-name {
   font-size: 18px;
   font-weight: 700;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   letter-spacing: -0.02em;
   white-space: nowrap;
 }
 
 .app-shell-header-meta {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 /* ── Mobile: stack the sidebar (its topbar) above content instead of beside

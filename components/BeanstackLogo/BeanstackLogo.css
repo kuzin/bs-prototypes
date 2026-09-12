@@ -1,0 +1,91 @@
+/* The Beanstack logo — the bean mark, alone or beside the wordmark.
+   Three surfaces drew this themselves and had drifted on weight, tracking and
+   gap; this is the one copy. */
+
+.bsl {
+  display: inline-flex;
+  align-items: center;
+}
+
+.bsl-mark {
+  display: inline-flex;
+  line-height: 0;
+  flex: none;
+}
+.bsl-mark svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* The bean takes the surrounding accent when a prototype sets one — the
+   footers tint their whole chrome that way — and the brand teal otherwise. */
+.bsl-bean {
+  fill: var(--bsl-bean, var(--accent, #0da7bc));
+}
+.bsl-sprout {
+  fill: var(--bsl-sprout, #ffffff);
+}
+
+/* `--bsl-word` rather than plain inheritance: the footers tint their whole
+   chrome light or dark, and a specificity fight over `color` is how the three
+   hand-rolled copies drifted in the first place. */
+.bsl-word {
+  color: var(--bsl-word, var(--c-text));
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  /* The wordmark is set lowercase whatever the caller passes; "beanstack" is
+     never capitalised. A sub-brand wordmark (RMI) opts out. */
+  text-transform: lowercase;
+}
+.bsl--upper .bsl-word {
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 900;
+}
+
+/* ─── Sizes ─────────────────────────────────────────────────────────────────
+   mark / word: the mark stays a touch taller than the cap-height so the bean
+   and the word read as one object. */
+
+.bsl--sm {
+  gap: 7px;
+}
+.bsl--sm .bsl-mark {
+  width: 20px;
+  height: 20px;
+}
+.bsl--sm .bsl-word {
+  font-size: 16px;
+}
+
+.bsl--md {
+  gap: 6px;
+}
+.bsl--md .bsl-mark {
+  width: 22px;
+  height: 22px;
+}
+.bsl--md .bsl-word {
+  font-size: 18px;
+}
+
+.bsl--lg {
+  gap: 9px;
+}
+.bsl--lg .bsl-mark {
+  width: 30px;
+  height: 30px;
+}
+.bsl--lg .bsl-word {
+  font-size: 24px;
+}
+
+/* ─── On dark ───────────────────────────────────────────────────────────────
+   The bean keeps its teal — it reads on navy and it's the brand colour; only
+   the wordmark has to move. */
+
+.bsl--invert .bsl-word {
+  color: #ffffff;
+}

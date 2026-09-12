@@ -52,7 +52,7 @@
   height: 38px;
   border: 0;
   background: #ffffff;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -110,7 +110,7 @@
   color: #0f7a8a;
 }
 .rl-importnote svg {
-  color: #f59e0b;
+  color: #ffbc42;
   flex-shrink: 0;
 }
 
@@ -137,13 +137,13 @@
   border: 1px solid var(--c-border);
   border-radius: 8px;
   background: #ffffff;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 .rl-navbtn:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 /* ─── Entry chip (shared by both views) ───────────────────────────────────── */
@@ -160,7 +160,7 @@
   color: var(--rl-c);
 }
 .rl-entry--blue {
-  --rl-c: #1d4ed8;
+  --rl-c: #196dd5;
   --rl-bg: #e8f0fe;
 }
 .rl-entry--pink {
@@ -277,7 +277,7 @@
   padding: 9px 10px;
   font-size: 12px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   border-bottom: 1px solid var(--c-border);
   background: #fafbfc;
 }
@@ -302,12 +302,12 @@
   background: #fafbfc;
 }
 .rl-cal-cell.is-outside .rl-cal-date {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .rl-cal-date {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .rl-cal-streak {
   display: flex;
@@ -339,7 +339,7 @@
 }
 .rl-week-range {
   font-size: 13.5px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-bottom: 14px;
 }
 .rl-day {
@@ -356,7 +356,7 @@
 }
 .rl-day-name {
   font-size: 12.5px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .rl-day-streak {
   display: inline-flex;
@@ -412,7 +412,7 @@
   background: #fafbfc;
   font-size: 12px;
   font-weight: 800;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .rl-titles-title {
   display: flex;
@@ -424,7 +424,7 @@
 .rl-titles-author {
   font-size: 12.5px;
   font-weight: 400;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .rl-titles-source {
   display: flex;
@@ -440,7 +440,7 @@
 }
 .rl-titles-manual {
   font-size: 12.5px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 @media (max-width: 860px) {

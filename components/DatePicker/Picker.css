@@ -7,8 +7,9 @@
   box-sizing: border-box;
   font: inherit;
   background: #fff;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
+  /* Matched to `.inp` / `.sel` — a date field sits in a row beside them. */
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
   color: var(--c-text);
   cursor: pointer;
   gap: 8px;
@@ -21,47 +22,52 @@
 }
 
 .pck-trigger:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-400);
 }
 
 .pck-trigger:focus-visible {
   outline: none;
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .pck-trigger[disabled] {
-  background: var(--c-slate-50);
-  color: var(--c-text-subtle);
+  background: var(--c-gray-0);
+  color: var(--c-gray-600);
   cursor: not-allowed;
 }
 
 .pck-trigger--error {
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 .pck-trigger--error:focus-visible {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red) 18%, transparent);
 }
 
+/* The one control ladder: 36 / 44 / 52 at 14 / 15 / 16. These were
+   padding-derived at 13 / 13 / 14px and came out a whole rung short, so a
+   DatePicker beside a Select read as a different size of control. */
 .pck-trigger--sm {
-  font-size: 13px;
-  padding: 6px 10px;
+  height: 36px;
+  font-size: var(--text-label);
+  padding: 0 10px;
 }
 .pck-trigger--md {
-  font-size: 13px;
-  padding: 8px 12px;
+  height: 44px;
+  font-size: var(--text-cell);
+  padding: 0 12px;
 }
 .pck-trigger--lg {
-  font-size: 14px;
-  padding: 10px 14px;
-  border-radius: 10px;
+  height: 52px;
+  font-size: var(--text-body);
+  padding: 0 14px;
 }
 
 .pck-placeholder {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .pck-icon {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   flex-shrink: 0;
 }
 
@@ -86,7 +92,7 @@
   background: #fff;
   border: 1px solid var(--c-border);
   border-radius: 12px;
-  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--shadow-lg);
   padding: 14px;
   /* 7 × 36px cells + 2 × 14px padding = 280px — exact fit, no cell overflow */
   width: 280px;
@@ -112,19 +118,19 @@
   background: none;
   border-radius: 6px;
   cursor: pointer;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font: inherit;
   transition:
     background 0.1s,
     color 0.1s;
 }
 .dpk-nav-btn:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--c-text);
 }
 
 .dpk-month-label {
-  font-size: 14px;
+  font-size: var(--text-body);
   font-weight: 700;
   color: var(--c-text);
   letter-spacing: 0.01em;
@@ -138,9 +144,9 @@
 }
 
 .dpk-day-hdr {
-  font-size: 12px;
+  font-size: var(--text-tag);
   font-weight: 700;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   text-align: center;
   padding: 4px 0 6px;
   text-transform: uppercase;
@@ -157,7 +163,8 @@
   background: none;
   border-radius: 50%;
   font: inherit;
-  font-size: 13px;
+  /* The popup sits on the same type ladder as the trigger that opened it. */
+  font-size: var(--text-cell);
   color: var(--c-text);
   cursor: pointer;
   transition:
@@ -165,29 +172,29 @@
     color 0.08s;
 }
 .dpk-day:hover {
-  background: #eff6ff;
-  color: var(--c-blue-700);
+  background: var(--c-blue-wash);
+  color: var(--c-blue);
 }
 .dpk-day--today {
-  box-shadow: inset 0 0 0 1.5px var(--c-blue-700);
-  color: var(--c-blue-700);
+  box-shadow: inset 0 0 0 1.5px var(--c-blue);
+  color: var(--c-blue);
   font-weight: 700;
 }
 .dpk-day--sel {
-  background: var(--c-blue-700);
+  background: var(--c-blue);
   color: #fff;
   font-weight: 700;
   box-shadow: none;
 }
 .dpk-day--sel:hover {
-  background: #1e40af;
+  background: var(--c-blue-ink);
 }
 .dpk-day--outside {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
 }
 .dpk-day--outside:hover {
-  background: var(--c-slate-50);
-  color: var(--c-text-subtle);
+  background: var(--c-gray-0);
+  color: var(--c-gray-600);
 }
 
 /* Year selector row (shown when clicking month label) */
@@ -200,7 +207,7 @@
 .dpk-year-inp {
   flex: 1;
   font: inherit;
-  font-size: 14px;
+  font-size: var(--text-cell);
   font-weight: 700;
   border: 1px solid var(--c-border-strong);
   border-radius: 6px;
@@ -209,21 +216,21 @@
 }
 .dpk-year-inp:focus {
   outline: none;
-  border-color: var(--c-blue-700);
+  border-color: var(--c-blue);
 }
 
 /* Clear link */
 .dpk-footer {
   margin-top: 10px;
   padding-top: 10px;
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
   display: flex;
   justify-content: flex-end;
 }
 .dpk-clear {
   font: inherit;
-  font-size: 12px;
-  color: var(--c-text-muted);
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
   background: none;
   border: none;
   cursor: pointer;
@@ -231,8 +238,8 @@
   border-radius: 4px;
 }
 .dpk-clear:hover {
-  color: var(--c-red-600);
-  background: #fef2f2;
+  color: var(--c-red);
+  background: var(--c-red-wash);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════ */
@@ -244,9 +251,13 @@
   background: #fff;
   border: 1px solid var(--c-border);
   border-radius: 10px;
-  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.14);
+  box-shadow: var(--shadow-lg);
   z-index: 200;
-  width: 136px;
+  /* Matches the trigger it dropped out of (Radix exposes the width), with a
+     floor for the rare narrow call site — a 136px list hanging under a
+     full-width field read as a different control. */
+  width: var(--radix-popover-trigger-width);
+  min-width: 152px;
   animation: pck-in 0.12s ease;
   overflow: hidden;
 }
@@ -256,7 +267,7 @@
   overflow-y: auto;
   padding: 4px;
   scrollbar-width: thin;
-  scrollbar-color: var(--c-slate-300) transparent;
+  scrollbar-color: var(--c-gray-350) transparent;
 }
 .tpk-list::-webkit-scrollbar {
   width: 4px;
@@ -265,18 +276,18 @@
   background: transparent;
 }
 .tpk-list::-webkit-scrollbar-thumb {
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
   border-radius: 4px;
 }
 
 .tpk-item {
   display: block;
   width: 100%;
-  padding: 7px 12px;
+  padding: 8px 12px;
   border: none;
   background: none;
   font: inherit;
-  font-size: 13px;
+  font-size: var(--text-cell);
   color: var(--c-text);
   cursor: pointer;
   text-align: left;
@@ -284,11 +295,11 @@
   transition: background 0.08s;
 }
 .tpk-item:hover {
-  background: #eff6ff;
-  color: var(--c-blue-700);
+  background: var(--c-blue-wash);
+  color: var(--c-blue);
 }
 .tpk-item--sel {
   font-weight: 700;
-  color: var(--c-blue-700);
-  background: #eff6ff;
+  color: var(--c-blue);
+  background: var(--c-blue-wash);
 }

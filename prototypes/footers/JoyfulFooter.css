@@ -222,7 +222,7 @@
 
 .jf-mark {
   display: inline-flex;
-  color: var(--c-brand-teal);
+  color: var(--c-teal);
 }
 
 .jf-footer-bottom-right {
@@ -276,12 +276,18 @@
 
 /* ── Logos ─────────────────────────────────────────────────────────────── */
 
-.cp-logo,
-.bs-logo {
+.cp-logo {
   display: inline-flex;
   align-items: center;
   gap: 8px;
   color: var(--jf-ink, var(--page-ink));
+}
+
+/* The shared <BeanstackLogo> draws the bean from `--accent` and takes its
+   wordmark ink from `--bsl-word`, so the footer tints it the same way it tints
+   everything else instead of restyling the logo's own classes. */
+.ft-logo {
+  --bsl-word: var(--jf-ink, var(--page-ink));
 }
 
 .cp-logo-mark,
@@ -298,22 +304,6 @@
 
 .ft-chrome .cp-logo-wordmark svg {
   height: 11px;
-}
-
-.bs-logo-mark {
-  display: inline-flex;
-  color: var(--accent, #0da7bc);
-}
-
-.bs-logo-text {
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: -0.015em;
-  color: var(--jf-ink, var(--page-ink));
-}
-
-.ft-chrome .bs-logo-text {
-  color: inherit;
 }
 
 /* ── Mobile ──────────────────────────────────────────────────────────── */

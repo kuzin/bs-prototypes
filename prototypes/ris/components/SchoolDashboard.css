@@ -1,18 +1,39 @@
+/* A container, so the card grid below can respond to the width it actually
+   has. This dashboard sits inside a two-rail layout, so it can be 500px wide at
+   a 1400px viewport — a media query would be measuring the wrong thing. */
 .sdb {
   display: flex;
   flex-direction: column;
+  gap: 18px;
+  container-type: inline-size;
+}
+
+/* Every shared block used to carry its own trailing margin, so a column of
+   them stacked at whatever each one happened to pick (18 / 18 / 16). The page
+   owns the rhythm; the blocks own nothing outside themselves. */
+.sdb > .hero,
+.sdb > .stw-section,
+.sdb > .stw-empty {
+  margin-bottom: 0;
 }
 
 /* ── 2×2 area card grid ───────────────────────────────────────────────────── */
+/* `minmax(0, 1fr)`, not `1fr`: a bare `1fr` is `minmax(auto, 1fr)`, so each
+   column refused to go under its content's min-content width and the cards ran
+   straight out of the container.
+   Two columns, capped — `auto-fit` packs as many as fit and gave three at a
+   wide container, which leaves the fourth card stranded on its own row. The
+   drop to one column is a container query rather than the old 699px media
+   query, which never fired at the width this actually breaks at. */
 .sdb-areas {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
 }
 
-@media (max-width: 699px) {
+@container (max-width: 640px) {
   .sdb-areas {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
@@ -27,7 +48,7 @@
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .sdb-legend-swatch {
@@ -67,7 +88,7 @@
   top: 0;
   bottom: 0;
   width: 3px;
-  background: var(--tip-accent, var(--c-slate-300));
+  background: var(--tip-accent, var(--c-gray-350));
 }
 
 @keyframes sdb-tip-in {
@@ -84,12 +105,12 @@
 .sdb-tooltip-header {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   text-transform: uppercase;
   letter-spacing: 0.06em;
   padding-bottom: 8px;
   margin-bottom: 8px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
 }
 
 .sdb-tooltip-series + .sdb-tooltip-series {
@@ -107,14 +128,14 @@
   height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: var(--series-color, var(--c-slate-400));
+  background: var(--series-color, var(--c-gray-500));
   align-self: center;
 }
 
 .sdb-tooltip-label {
   flex: 1;
   font-size: 13px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   font-weight: 500;
 }
 
@@ -139,10 +160,10 @@
   color: #16a34a;
 }
 .sdb-tooltip-delta--down {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .sdb-tooltip-delta--neutral {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .sdb-tooltip-arrow {
@@ -153,9 +174,9 @@
 .sdb-tooltip-context {
   margin-top: 8px;
   padding-top: 8px;
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-weight: 500;
 }
 

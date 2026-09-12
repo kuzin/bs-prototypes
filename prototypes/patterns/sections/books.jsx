@@ -73,10 +73,8 @@ export const booksSections = [
             <RatingInline value={4.8} count={1247} size={16} />
           </div>
         </Variant>
-        <Variant label="StarInput (interactive)" bare>
-          <div style={{ padding: 16 }}>
-            <StarInputDemo />
-          </div>
+        <Variant label="StarInput (interactive)">
+          <StarInputDemo />
         </Variant>
       </div>
     ),
@@ -88,28 +86,18 @@ export const booksSections = [
     desc: (
       <>
         The cover-forward card used on every Discover shelf. A bookmark toggles "want to read"; a
-        Comics Plus mark appears when the title is available there. Variants: <code>default</code>,{' '}
-        <code>reason</code> (adds Benny's "why" line), and <code>rank</code> (trending number +
-        reader count).
+        Comics Plus mark appears when the title is available there. Variants: <code>default</code>{' '}
+        and <code>rank</code> (trending number + reader count).
       </>
     ),
     render: () => {
       const wild = getBook('wild-robot')
-      const amari = getBook('amari')
       const dogman = getBook('dog-man')
       return (
         <div className="bk-catalog">
-          <Variant label="default / reason / rank">
+          <Variant label="default / rank">
             <div style={{ display: 'flex', gap: 18, padding: 16, alignItems: 'flex-start' }}>
               <BookCard book={wild} onOpen={noop} onWish={noop} wished={false} />
-              <BookCard
-                book={amari}
-                onOpen={noop}
-                onWish={noop}
-                wished
-                variant="reason"
-                reason={amari.bennyReason}
-              />
               <BookCard
                 book={dogman}
                 onOpen={noop}

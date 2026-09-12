@@ -27,7 +27,7 @@ function StudentRow({ student, onOpen }) {
     >
       <Avatar
         initials={initials(student.name)}
-        color={school?.color || '#94A3B8'}
+        color={school?.color || '#ACACAC'}
         shape="rounded"
       />
       <span className="stw-name">{student.name}</span>

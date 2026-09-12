@@ -17,7 +17,7 @@ export function BadgeEarnedModal({ open, onClose, book }) {
 
   return (
     <Modal open={open} onClose={onClose} variant="center" ariaLabel="Badge earned">
-      <div className="bk-badge-modal" style={{ '--c': '#F59E0B' }}>
+      <div className="bk-badge-modal" style={{ '--c': '#FFBC42' }}>
         <button className="bk-settings-close" onClick={onClose} aria-label="Close">
           <Icon name="x" size={18} />
         </button>

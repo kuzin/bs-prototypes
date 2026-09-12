@@ -22,12 +22,12 @@
 .pgb-label {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 
 .pgb-sub {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -42,7 +42,7 @@
 }
 
 .pgb-track {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   border-radius: 4px;
   overflow: hidden;
 }

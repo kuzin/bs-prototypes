@@ -78,14 +78,14 @@ export function CreateView({ badges, onChange, bookTalkOn, onBookTalkOn, siteSel
           <Button variant="ghost" size="sm">
             Save &amp; exit
           </Button>
-          <Button variant="primary" size="sm" accent="#0DA7BC">
+          <Button variant="primary" size="sm" accent="#0CA7BC">
             Publish
           </Button>
         </div>
       </header>
 
       <div className="cc-stepbar">
-        <Stepper steps={WIZARD_STEPS} current="badges" accent="#0DA7BC" />
+        <Stepper steps={WIZARD_STEPS} current="badges" accent="#0CA7BC" />
       </div>
 
       <div className="cc-main">
@@ -211,7 +211,7 @@ export function CreateView({ badges, onChange, bookTalkOn, onBookTalkOn, siteSel
           <div className="cc-form-footer">
             <Button variant="secondary">Back</Button>
             <div className="cc-footer-right">
-              <Button variant="primary" accent="#0DA7BC">
+              <Button variant="primary" accent="#0CA7BC">
                 Next: Rewards
               </Button>
             </div>

@@ -8,7 +8,7 @@
 
 .dm-action-row {
   padding: 12px 0;
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
 }
 .dm-action-row:first-child {
   border-top: none;
@@ -35,11 +35,11 @@
 
 .dm-action-frl {
   font-weight: 500;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .dm-action-text {
   font-size: 13px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   line-height: 1.5;
 }

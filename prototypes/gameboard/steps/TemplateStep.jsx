@@ -34,7 +34,7 @@ export function TemplateStep({ challenge, onTemplate }) {
             >
               <span
                 className="gb-gallery-thumb"
-                style={t.id === 'scratch' ? { background: '#f1f5f9' } : thumbStyle(t.id)}
+                style={t.id === 'scratch' ? { background: '#f5f5f5' } : thumbStyle(t.id)}
               >
                 {t.id === 'scratch' && <span className="gb-gallery-plus">+</span>}
               </span>

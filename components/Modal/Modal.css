@@ -132,7 +132,9 @@
   width: 100%;
   max-height: 200px;
   object-fit: cover;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
 
 .modal-header {
@@ -140,7 +142,7 @@
   align-items: center;
   gap: 12px;
   padding: 16px 22px 14px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
 }
 
 .modal-header--flush {
@@ -153,10 +155,13 @@
   min-width: 0;
 }
 
+/* `.modal__title` in bs-product lib/_modals.scss: 18px / 800 / $gray900 at
+   line-height 1.25. 16px here sat a rung under the app and under the type
+   ladder's own `--text-modal`, which exists for exactly this. */
 .modal-title {
-  font-size: 16px;
+  font-size: var(--text-modal);
   font-weight: 800;
-  color: var(--c-text);
+  color: var(--c-text-dark);
   letter-spacing: -0.01em;
   line-height: 1.25;
   margin: 0;
@@ -237,10 +242,17 @@
   background: #fff;
 }
 
+/* The app's `.modal__content` is body copy — it inherits the 16px body size
+   rather than shrinking. Prose, so `--text-body`, not the 15px controls in it. */
+.modal-body:last-child {
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
 .modal-body {
   padding: 14px 22px 18px;
-  font-size: 13px;
-  color: var(--c-slate-700);
+  font-size: var(--text-body);
+  color: var(--c-text);
   line-height: 1.55;
   overflow-y: auto;
   max-height: calc(100vh - 240px);
@@ -253,6 +265,11 @@
   margin-bottom: 0;
 }
 
+/* The footer and the banner image carry the modal's corners themselves. The
+   modal clips its overflow normally, but `closeBadge` has to turn that off so
+   the disc can overhang — and the moment it does, the footer's grey square
+   corners show through the rounded edge. `inherit` picks up whichever radius
+   the variant set (14px centred, 0 on the side panel). */
 .modal-footer {
   display: flex;
   align-items: center;
@@ -260,7 +277,9 @@
   gap: 8px;
   padding: 14px 22px 16px;
   border-top: 1px solid var(--c-border);
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
 }
 
 .modal-footer--start {

@@ -40,7 +40,7 @@ export function PathPickerModal({ open, offered, chosenPathId, onChoose, onClose
                     <h4 className="pyp-pickrow-name">{path.name}</h4>
                     {current && (
                       <span className="pyp-pickrow-current">
-                        <Icon name="circle-check-filled" size={13} color="#16A97A" /> Your path
+                        <Icon name="circle-check-filled" size={13} color="#0BA85F" /> Your path
                       </span>
                     )}
                   </div>

@@ -8,7 +8,7 @@
      dashboard is a content column plus a rail, and letting it run the full
      width of a monitor pushed the two ends of every row apart.
 
-     The admin surfaces hold to --admin-content-max (1280px); this is the
+     The admin surfaces hold to --admin-content-max; this is the
      reader-facing equivalent, a little tighter because these pages are cards
      and covers rather than tables. */
   --wa-content-max: 1200px;
@@ -28,7 +28,7 @@
      this a scroll container and kill the sticky top bar. */
   overflow-x: clip;
   background: #ffffff;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 
 /* ── Top bar ─────────────────────────────────────────────────────────────── */
@@ -57,22 +57,6 @@
   gap: 14px;
 }
 
-.wa-logo {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.wa-logo-mark {
-  width: 22px;
-  height: 22px;
-}
-.wa-logo-word {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--c-text);
-  letter-spacing: -0.02em;
-}
-
 .wa-topbar-actions {
   display: flex;
   align-items: center;
@@ -80,7 +64,7 @@
   margin-left: 8px;
 }
 .wa-topbar-actions .btn--ghost {
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 
 /* The reader top bar is chrome, not a page CTA row. The admin default (44px /
@@ -147,16 +131,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
 }
 .wa-icon-btn:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 /* Tabs bar */
 .wa-tabsbar {
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
 }
 .wa-tabsbar .tabs {
   max-width: var(--wa-content-max);
@@ -262,7 +246,7 @@
 
 .wa-scope {
   display: inline-flex;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   padding: 3px;
   border-radius: 999px;
 }
@@ -272,7 +256,7 @@
   font: inherit;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   padding: 6px 14px;
   border-radius: 999px;
   cursor: pointer;
@@ -294,7 +278,7 @@
 }
 .wa-group-sub {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-bottom: 14px;
 }
 
@@ -376,7 +360,7 @@
 }
 .wa-chcard-dates {
   font-size: 12px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-top: 2px;
 }
 
@@ -384,20 +368,20 @@
 .wa-chcard--add {
   border-style: dashed;
   border-color: var(--c-border-strong);
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
   min-height: 220px;
   align-items: center;
   justify-content: center;
 }
 .wa-chcard--add:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 .wa-chcard-add-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 .wa-chcard-add-plus {
   width: 44px;
@@ -407,7 +391,7 @@
   border: 1px solid var(--c-border-strong);
   font-size: 24px;
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -445,7 +429,7 @@
 }
 .wa-goalcard-sub {
   font-size: 12.5px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-top: 2px;
   line-height: 1.4;
 }
@@ -462,7 +446,7 @@
 }
 .wa-goalcard-denom {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-weight: 600;
 }
 
@@ -480,6 +464,22 @@
 .wa-leadcard-body {
   border: 2px solid var(--c-gray-150);
   border-radius: 0 0 8px 8px;
+}
+
+/* The shipped widget inverts the shared folder variant: its active tab is
+   filled with the same grey as the meta band directly below it, so tab and
+   band read as one surface and the inactive tab is the one cut away. The
+   shared component defaults to the other (white-active) folder idiom, so the
+   fidelity lives here, next to the band it has to match. */
+.wa-leadcard .tabs--folder .tab {
+  background: transparent;
+}
+.wa-leadcard .tabs--folder .tab:hover:not(.tab--active) {
+  background: var(--c-gray-0);
+}
+.wa-leadcard .tabs--folder .tab--active,
+.wa-leadcard .tabs--folder .tab--active:hover {
+  background: var(--c-gray-150);
 }
 
 /* The two range pickers, on the same grey band as the active tab. Dark text at
@@ -501,7 +501,7 @@
   font-size: 15px;
   font-weight: 800;
   line-height: 1.2;
-  color: var(--c-text-real);
+  color: var(--c-text);
   cursor: pointer;
   background: transparent;
   border: 0;
@@ -537,11 +537,11 @@
 .wa-leadcard-name {
   flex: 1;
   font-weight: 600;
-  color: var(--c-text-real);
+  color: var(--c-text);
 }
 .wa-leadcard-val {
   font-weight: 700;
-  color: var(--c-text-real-light);
+  color: var(--c-text-light);
 }
 
 /* Behind a rule of its own — the rows carry no dividers in the app, so this is
@@ -556,7 +556,7 @@
   font-size: 14px;
   font-weight: 800;
   line-height: 1.25;
-  color: var(--c-brand-teal);
+  color: var(--c-teal);
   text-decoration: none;
 }
 .wa-leadcard-more:hover {
@@ -583,7 +583,7 @@
 }
 .wa-footer-links a {
   font-size: 13px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   text-decoration: none;
   font-weight: 600;
 }
@@ -595,7 +595,7 @@
   border: 0;
   font: inherit;
   font-size: 13px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
@@ -629,20 +629,20 @@
 }
 .wa-footer-copy {
   font-size: 12.5px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
 .wa-footer-copy a {
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   text-decoration: none;
 }
 .wa-footer-copy a:hover {
   text-decoration: underline;
 }
 .wa-footer-copy span {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
 }
 
 /* ─── Reader switcher + account menu (the topbar pill and gear) ───────────── */
@@ -662,7 +662,7 @@
   align-items: center;
   gap: 11px;
   padding: 12px 16px 14px;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
 }
 .wa-readers-name {
   flex: 1 1 auto;
@@ -685,7 +685,7 @@
 }
 .wa-readers-others {
   padding: 6px 0;
-  border-bottom: 1px solid var(--c-slate-100);
+  border-bottom: 1px solid var(--c-gray-100);
 }
 .wa-readers-row,
 .wa-readers-add {
@@ -704,7 +704,7 @@
 }
 .wa-readers-row:hover,
 .wa-readers-add:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 .wa-readers-add {
   padding: 12px 16px;
@@ -728,5 +728,5 @@
   border-radius: 8px;
 }
 .wa-acct-item:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }

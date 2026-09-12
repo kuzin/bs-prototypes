@@ -38,11 +38,13 @@ export const GOAL_OPTIONS = {
 export const COMMUNITY_GOAL = GOAL_OPTIONS.community
 
 // ─── Fixed top — feature announcement bar ─────────────────────────────────────
+// A `BeanstackAd` — the shipped dashboard's own announcement slot, which the
+// team fills per microsite. Title, message, button text; the ad's `ad_type`
+// picks the hue.
 export const FEATURE_BAR = {
-  badge: 'New',
-  title: 'Daily Reading Tracker is now available',
-  body: 'See per-student weekly progress at a glance and spot gaps before they grow.',
-  cta: 'Take a Tour',
+  title: '[Webinar] What’s New for Back to School',
+  body: 'Discover the latest Beanstack features — Book Talks with Benny, daily reading tracking, rewards, editable badges & more! Join us Aug 12 at 2 PM ET and get ready to supercharge student engagement this year!',
+  cta: 'Learn more',
   href: '#',
 }
 
@@ -309,69 +311,30 @@ export const LEADERBOARDS = {
 // or more `flags` from the "Take a Closer Look" categories; `tone` drives the
 // flag-icon color (red = exceeded / inappropriate, orange = title/content,
 // yellow = approaching a limit). `label` is the icon's hover tooltip.
-export const FLAGGED_SESSIONS = {
+// ─── Sessions for Review ─────────────────────────────────────────────────────
+// The dashboard's window onto Sessions for Review: two tabs for the two things
+// Benny reports — the positive signals worth celebrating and the flags worth a
+// closer look — and a count per reader rather than a row of flag glyphs.
+export const SESSIONS_FOR_REVIEW = {
   range: 'This Week',
-  sessions: [
-    {
-      id: 1,
-      reader: 'Tyler Voss',
-      title: 'The Hobbit',
-      flags: [{ label: 'Exceeds warning threshold', tone: 'red' }],
-    },
-    {
-      id: 2,
-      reader: 'Mei Lin',
-      title: 'Diary of a Wimpy Kid',
-      flags: [{ label: 'Approaching warning threshold', tone: 'yellow' }],
-    },
-    {
-      id: 3,
-      reader: 'Diego Hernandez',
-      title: 'Percy Jackson & the Lightning Thief',
-      flags: [
-        { label: 'Exceeds warning threshold', tone: 'red' },
-        { label: 'Inappropriate language', tone: 'red' },
-      ],
-    },
-    {
-      id: 4,
-      reader: 'Layla Mansour',
-      title: 'Wonder',
-      flags: [{ label: 'Approaching logging limit', tone: 'yellow' }],
-    },
-    {
-      id: 5,
-      reader: 'Kofi Adjei',
-      title: 'Dog Man: Mothering Heights',
-      flags: [{ label: 'Approaching warning threshold', tone: 'yellow' }],
-    },
-    {
-      id: 6,
-      reader: 'Aria Patel',
-      title: 'Wings of Fire: The Dragonet Prophecy',
-      flags: [
-        { label: 'Unusually long title', tone: 'orange' },
-        { label: 'Exceeds warning threshold', tone: 'red' },
-      ],
-    },
-    {
-      id: 7,
-      reader: 'Zoë Becker',
-      title: 'Front Desk',
-      flags: [
-        { label: 'Exceeds warning threshold', tone: 'red' },
-        { label: 'Approaching logging limit', tone: 'yellow' },
-      ],
-    },
+  engagement: [
+    { id: 1, reader: 'Britney', title: 'The Hobbit', pos: 2, neg: 0 },
+    { id: 2, reader: 'Sam', title: 'Diary of a Wimpy Kid', pos: 3, neg: 1 },
+    { id: 3, reader: 'Clover', title: 'Percy Jackson & the Lightning Thief', pos: 0, neg: 3 },
+    { id: 4, reader: 'Alex', title: 'Wonder', pos: 4, neg: 0 },
+    { id: 5, reader: 'Mei Lin', title: 'Holes', pos: 2, neg: 1 },
+  ],
+  flagged: [
+    { id: 6, reader: 'Tyler Voss', title: 'The Hobbit', pos: 0, neg: 2 },
+    { id: 7, reader: 'Diego Hernandez', title: 'Island of the Blue Dolphins', pos: 0, neg: 3 },
+    { id: 8, reader: 'Layla Mansour', title: 'Charlotte’s Web', pos: 1, neg: 1 },
+    { id: 9, reader: 'Kofi Adjei', title: 'Dog Man: Mothering Heights', pos: 0, neg: 1 },
+    { id: 10, reader: 'Aria Patel', title: 'The Giver', pos: 0, neg: 4 },
   ],
 }
 
-// ─── Top books + most-earned badges (optional widgets) ────────────────────────
-// `count` is the weekly figure; the widget's range setting scales it (×~4 month,
-// ×~48 year). Covers come from Open Library by ISBN; `color` is the fallback
-// block shown when a cover image fails to load.
 export const TOP_BOOKS = [
-  { id: 1, name: 'Dog Man: Mothering Heights', count: 142, isbn: '1338680455', color: '#1D4ED8' },
+  { id: 1, name: 'Dog Man: Mothering Heights', count: 142, isbn: '1338680455', color: '#196DD5' },
   { id: 2, name: 'The Hobbit', count: 98, isbn: '0345339681', color: '#6D28D9' },
   {
     id: 3,
@@ -396,7 +359,7 @@ export const TOP_BOOKS = [
     name: "Harry Potter and the Sorcerer's Stone",
     count: 41,
     isbn: '0590353403',
-    color: '#7C3AED',
+    color: '#B43DD0',
   },
   { id: 10, name: 'Holes', count: 36, isbn: '0440414806', color: '#B45309' },
   { id: 11, name: "Charlotte's Web", count: 32, isbn: '0064400557', color: '#15803D' },
@@ -507,28 +470,34 @@ export const ACTION_ROW_CAP = { teacher: 4, media: 3 }
 // Flagged Sessions block in the rail. `icon` keys into ACTION_ICONS in
 // FixedRegions.jsx. The first three are the same for both roles so they land
 // above the fold.
+// ─── Quick Actions (the rail) ────────────────────────────────────────────────
+// The dashboard mock's rail: a two-column grid of filled pills, each in its own
+// hue with a chevron. The shipped dashboard's equivalent is `ul.dashboard-links`
+// — the same destinations as full-width grey rows — and the redesign keeps the
+// destinations while making them a compact grid.
 export const QUICK_ACTIONS = {
   teacher: [
-    { id: 'qa-reader', label: 'Find a Reader', icon: 'user' },
-    { id: 'qa-class', label: 'Find a Class', icon: 'classes' },
-    { id: 'qa-challenge', label: 'Create a Challenge', icon: 'trophy' },
-    { id: 'qa-reports', label: 'View Reports', icon: 'chart' },
-    { id: 'qa-library', label: 'Classroom Library', icon: 'book' },
+    { id: 'qa-reader', label: 'Find a Reader', hue: 'blue' },
+    { id: 'qa-class', label: 'Find a Class', hue: 'red' },
+    { id: 'qa-challenge', label: 'Create a Challenge', hue: 'purple' },
+    { id: 'qa-reports', label: 'View Reports', hue: 'yellow' },
+    { id: 'qa-library', label: 'Classroom Library', hue: 'green' },
   ],
   media: [
-    { id: 'qa-reader', label: 'Find a Reader', icon: 'user' },
-    { id: 'qa-class', label: 'Find a Class', icon: 'classes' },
-    { id: 'qa-challenge', label: 'Create a Challenge', icon: 'trophy' },
-    { id: 'qa-rewards', label: 'Manage Rewards', icon: 'reward' },
-    { id: 'qa-reports', label: 'Reports', icon: 'chart' },
-    { id: 'qa-library', label: 'Classroom Library', icon: 'book' },
+    { id: 'qa-reader', label: 'Find a Reader', hue: 'blue' },
+    { id: 'qa-class', label: 'Find a Class', hue: 'red' },
+    { id: 'qa-challenge', label: 'Create a Challenge', hue: 'purple' },
+    { id: 'qa-reports', label: 'View Reports', hue: 'yellow' },
+    { id: 'qa-library', label: 'Classroom Library', hue: 'green' },
+    { id: 'qa-leaderboards', label: 'View Leaderboards', hue: 'indigo' },
   ],
+  // A public library has no classes and no classroom library.
   library: [
-    { id: 'qa-reader', label: 'Find a Reader', icon: 'user' },
-    { id: 'qa-challenge', label: 'Create a Challenge', icon: 'trophy' },
-    { id: 'qa-rewards', label: 'Manage Rewards', icon: 'reward' },
-    { id: 'qa-reports', label: 'View Reports', icon: 'chart' },
-    { id: 'qa-branches', label: 'Branches', icon: 'classes' },
+    { id: 'qa-reader', label: 'Find a Reader', hue: 'blue' },
+    { id: 'qa-challenge', label: 'Create a Challenge', hue: 'purple' },
+    { id: 'qa-rewards', label: 'Manage Rewards', hue: 'indigo' },
+    { id: 'qa-reports', label: 'View Reports', hue: 'yellow' },
+    { id: 'qa-branches', label: 'Branches', hue: 'red' },
   ],
 }
 
@@ -658,7 +627,6 @@ export const KITCHEN_DEFAULT_ROWS = [
   ['leaderboard-students', 'leaderboard-classes'],
   ['leaderboard-staff', 'leaderboard-patrons'],
   ['leaderboard-branches', 'questions'],
-  ['top-badges', 'top-books'],
 ]
 // Kitchen Sink (full width): same catalog, but every widget occupies its
 // own row at 100% width — useful for reviewing the spacious rendering of
@@ -674,8 +642,6 @@ export const KITCHEN_FULL_DEFAULT_ROWS = [
   ['leaderboard-patrons'],
   ['leaderboard-branches'],
   ['questions'],
-  ['top-badges'],
-  ['top-books'],
 ]
 // Empty Sink uses the same row layout as Kitchen so the empty states sit
 // in the same positions as the populated demo.

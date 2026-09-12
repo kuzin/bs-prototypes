@@ -235,7 +235,7 @@
 }
 .lfr-end p {
   font-size: 14.5px;
-  color: #64748b;
+  color: #707070;
   margin-bottom: 8px;
   line-height: 1.5;
 }
@@ -253,7 +253,7 @@
   font-weight: 800;
   font-size: 15px;
   color: #fff;
-  background: linear-gradient(120deg, #1a6dd5, #0da7bc);
+  background: linear-gradient(120deg, #1a6dd5, #0ca7bc);
   cursor: pointer;
 }
 .lfr-finish:hover {
@@ -262,7 +262,7 @@
 .lfr-backbtn {
   border: 0;
   background: none;
-  color: #64748b;
+  color: #707070;
   font: inherit;
   font-weight: 700;
   font-size: 13.5px;
@@ -315,7 +315,7 @@
   font-weight: 800;
   font-size: 13px;
   color: #fff;
-  background: linear-gradient(120deg, #1a6dd5, #0da7bc);
+  background: linear-gradient(120deg, #1a6dd5, #0ca7bc);
   white-space: nowrap;
   cursor: pointer;
 }

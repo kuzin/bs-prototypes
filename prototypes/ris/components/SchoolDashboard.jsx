@@ -33,19 +33,19 @@ function schoolInitials(name) {
 
 const AREA_CONFIG = {
   motivation: {
-    color: '#E8866A',
+    color: '#F26430',
     title: 'Reading Motivation Index',
     nav: 'motivation',
     navLabel: 'motivation',
   },
   integrity: {
-    color: '#1D4ED8',
+    color: '#196DD5',
     title: 'Book Talk completion & flag rate',
     nav: 'integrity',
     navLabel: 'integrity',
   },
-  habits: { color: '#16A97A', title: 'Goal completion rate', nav: 'habits', navLabel: 'habits' },
-  skills: { color: '#7C3AED', title: 'Lexile growth by grade', nav: 'skills', navLabel: 'skills' },
+  habits: { color: '#0BA85F', title: 'Goal completion rate', nav: 'habits', navLabel: 'habits' },
+  skills: { color: '#B43DD0', title: 'Lexile growth by grade', nav: 'skills', navLabel: 'skills' },
 }
 
 function DashCard({ area, onNavigate, footer, height = 180, children }) {
@@ -96,7 +96,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
     { id: shortName, color: school.color, data: rmiData.map((d) => ({ x: d.month, y: d.school })) },
     {
       id: 'District avg',
-      color: '#CBD5E1',
+      color: '#D0D0D0',
       data: rmiData.map((d) => ({ x: d.month, y: d.district })),
     },
   ]
@@ -104,21 +104,21 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
   const integrityNivo = [
     {
       id: 'Book Talk completion',
-      color: '#1D4ED8',
+      color: '#196DD5',
       data: integrityData.map((d) => ({ x: d.month, y: d.completionRate })),
     },
     {
       id: 'Flag rate',
-      color: '#E8866A',
+      color: '#F26430',
       data: integrityData.map((d) => ({ x: d.month, y: d.flagRate })),
     },
   ]
 
   const goalsNivo = [
-    { id: shortName, color: '#16A97A', data: goalsData.map((d) => ({ x: d.month, y: d.school })) },
+    { id: shortName, color: '#0BA85F', data: goalsData.map((d) => ({ x: d.month, y: d.school })) },
     {
       id: 'District avg',
-      color: '#CBD5E1',
+      color: '#D0D0D0',
       data: goalsData.map((d) => ({ x: d.month, y: d.district })),
     },
   ]
@@ -147,7 +147,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             <ChartLegend
               items={[
                 { color: school.color, label: shortName },
-                { color: '#CBD5E1', label: 'District avg', dashed: true },
+                { color: '#D0D0D0', label: 'District avg', dashed: true },
               ]}
             />
           }
@@ -212,8 +212,8 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
           footer={
             <ChartLegend
               items={[
-                { color: '#1D4ED8', label: 'Book Talk completion' },
-                { color: '#E8866A', label: 'Flag rate', dashed: true },
+                { color: '#196DD5', label: 'Book Talk completion' },
+                { color: '#F26430', label: 'Flag rate', dashed: true },
               ]}
             />
           }
@@ -235,7 +235,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             sliceTooltip={({ slice }) => (
               <SliceTooltip
                 slice={slice}
-                accent="#1D4ED8"
+                accent="#196DD5"
                 allData={integrityData}
                 seriesMap={{ 'Book Talk completion': 'completionRate', 'Flag rate': 'flagRate' }}
                 inverseSeries={['Flag rate']}
@@ -253,8 +253,8 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
           footer={
             <ChartLegend
               items={[
-                { color: '#16A97A', label: shortName },
-                { color: '#CBD5E1', label: 'District avg', dashed: true },
+                { color: '#0BA85F', label: shortName },
+                { color: '#D0D0D0', label: 'District avg', dashed: true },
               ]}
             />
           }
@@ -279,8 +279,8 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
                 id: 'habGrad',
                 type: 'linearGradient',
                 colors: [
-                  { offset: 0, color: '#16A97A', opacity: 0.25 },
-                  { offset: 100, color: '#16A97A', opacity: 0 },
+                  { offset: 0, color: '#0BA85F', opacity: 0.25 },
+                  { offset: 100, color: '#0BA85F', opacity: 0 },
                 ],
               },
             ]}
@@ -289,7 +289,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             sliceTooltip={({ slice }) => (
               <SliceTooltip
                 slice={slice}
-                accent="#16A97A"
+                accent="#0BA85F"
                 allData={goalsData}
                 seriesMap={{ [shortName]: 'school', 'District avg': 'district' }}
                 formatY={(v) => `${v}%`}
@@ -321,7 +321,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             <ChartLegend
               items={[
                 { color: school.color, label: 'Actual growth' },
-                { color: '#E2E8F0', label: `Expected (~${avgExpected}L)` },
+                { color: '#EAEAEA', label: `Expected (~${avgExpected}L)` },
               ]}
             />
           }
@@ -336,7 +336,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
             leftMargin={36}
             tooltipFormatter={(v) => `+${v}L`}
             series={[
-              { key: 'expected', name: 'Expected', color: '#E2E8F0' },
+              { key: 'expected', name: 'Expected', color: '#EAEAEA' },
               { key: 'growth', name: 'Actual', color: school.color },
             ]}
           />

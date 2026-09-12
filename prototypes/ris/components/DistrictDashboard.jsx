@@ -26,16 +26,16 @@ import { ChartLegend, NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/cha
 import { TrendChart } from '@components/TrendChart/TrendChart'
 
 const SEC = Object.fromEntries(SECTIONS.map((s) => [s.key, s]))
-const GROWTH_COLOR = '#16A97A'
-const DECLINE_COLOR = '#E8866A'
+const GROWTH_COLOR = '#0BA85F'
+const DECLINE_COLOR = '#F26430'
 
 // AA-safe text shade per section (the raw SECTIONS colors fail 4.5:1 on white
 // for the small eyebrow / "View more" text — icon + border keep the brand hue).
 const SEC_TEXT = {
   motivation: '#C2410C',
-  integrity: '#1D4ED8',
+  integrity: '#196DD5',
   habits: '#15803D',
-  skills: '#7C3AED',
+  skills: '#B43DD0',
 }
 
 const signedL = (v) => `${v >= 0 ? '+' : ''}${v}L`
@@ -131,7 +131,7 @@ const STW_COLUMNS = [
     key: 'status',
     label: 'Status',
     render: (_, r) => (
-      <Pill color={r.concernType === 'critical' ? '#DC2626' : '#D97706'} size="sm">
+      <Pill color={r.concernType === 'critical' ? '#E85648' : '#AB720A'} size="sm">
         {r.concernType === 'critical' ? 'Action needed' : 'Watch'}
       </Pill>
     ),
@@ -172,7 +172,7 @@ export function DistrictDashboard({ onNavigate }) {
         <ChartCard
           title="Reading Motivation Index (RMI)"
           subtitle="Avg RMI total (0–40) by grade band"
-          accent="#0DA7BC"
+          accent="#0CA7BC"
           bodyPad="padded"
           action={
             <button className="rc-card-drill" onClick={() => onNavigate('motivation')}>
@@ -182,7 +182,7 @@ export function DistrictDashboard({ onNavigate }) {
           footer={
             <ChartLegend
               items={[
-                { color: '#0DA7BC', label: 'District avg' },
+                { color: '#0CA7BC', label: 'District avg' },
                 ...RMI_GRADE_BANDS.map((b) => ({ color: b.color, label: b.key, dashed: true })),
               ]}
             />
@@ -195,7 +195,7 @@ export function DistrictDashboard({ onNavigate }) {
             height="md"
             tooltipFormatter={(v) => v.toFixed(1)}
             series={[
-              { key: 'district', name: 'District avg', color: '#0DA7BC' },
+              { key: 'district', name: 'District avg', color: '#0CA7BC' },
               ...RMI_GRADE_BANDS.map((b) => ({
                 key: b.key,
                 name: b.key,
@@ -210,7 +210,7 @@ export function DistrictDashboard({ onNavigate }) {
         {/* Reading Habits — avg session length */}
         <ChartCard
           title="Reading Habits"
-          accent="#16A97A"
+          accent="#0BA85F"
           bodyPad="padded"
           action={
             <button className="rc-card-drill" onClick={() => onNavigate('habits')}>
@@ -246,7 +246,7 @@ export function DistrictDashboard({ onNavigate }) {
         {/* Book Talks */}
         <ChartCard
           title="Book Talks Engagement"
-          accent="#1D4ED8"
+          accent="#196DD5"
           bodyPad="padded"
           action={
             <button className="rc-card-drill" onClick={() => onNavigate('integrity')}>
@@ -256,8 +256,8 @@ export function DistrictDashboard({ onNavigate }) {
           footer={
             <ChartLegend
               items={[
-                { color: '#1D4ED8', label: 'Completion rate' },
-                { color: '#E8866A', label: 'Flag rate', dashed: true },
+                { color: '#196DD5', label: 'Completion rate' },
+                { color: '#F26430', label: 'Flag rate', dashed: true },
               ]}
             />
           }
@@ -270,8 +270,8 @@ export function DistrictDashboard({ onNavigate }) {
             height="md"
             tooltipFormatter={(v) => `${v}%`}
             series={[
-              { key: 'completionRate', name: 'Completion Rate', color: '#1D4ED8' },
-              { key: 'flagRate', name: 'Flag Rate', color: '#E8866A', dashed: true },
+              { key: 'completionRate', name: 'Completion Rate', color: '#196DD5' },
+              { key: 'flagRate', name: 'Flag Rate', color: '#F26430', dashed: true },
             ]}
           />
         </ChartCard>
@@ -279,7 +279,7 @@ export function DistrictDashboard({ onNavigate }) {
         {/* Lexile scatter — growth vs. decline */}
         <ChartCard
           title="Lexile Growth vs. Reading Volume"
-          accent="#7C3AED"
+          accent="#B43DD0"
           bodyPad="padded"
           action={
             <button className="rc-card-drill" onClick={() => onNavigate('skills')}>
@@ -362,7 +362,7 @@ export function DistrictDashboard({ onNavigate }) {
                       <span className="sdb-tooltip-val">{signedL(node.data.y)}</span>
                     </div>
                   </div>
-                  <div className="sdb-tooltip-series" style={{ '--series-color': '#94A3B8' }}>
+                  <div className="sdb-tooltip-series" style={{ '--series-color': '#ACACAC' }}>
                     <div className="sdb-tooltip-row">
                       <span className="sdb-tooltip-dot" />
                       <span className="sdb-tooltip-label">Books / mo</span>

@@ -14,14 +14,14 @@ import { ChartLegend } from '@components/charts/charts'
 import { TrendChart } from '@components/TrendChart/TrendChart'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 
-const ACCENT = '#16A97A'
+const ACCENT = '#0BA85F'
 const HAB_ICON = SECTIONS.find((s) => s.key === 'habits')?.icon
 
 const DISTRICT_AVG_SESSION = 20
 
 const VELOCITY_LEVELS = [
-  { key: 'elementary', label: 'Elementary', color: '#0DA7BC', gradId: 'velElGrad' },
-  { key: 'middle', label: 'Middle', color: '#16A97A', gradId: 'velMidGrad' },
+  { key: 'elementary', label: 'Elementary', color: '#0CA7BC', gradId: 'velElGrad' },
+  { key: 'middle', label: 'Middle', color: '#0BA85F', gradId: 'velMidGrad' },
   { key: 'high', label: 'High', color: '#C084FC', gradId: 'velHiGrad' },
 ]
 
@@ -83,8 +83,8 @@ export function DistrictHabits() {
           footer={
             <ChartLegend
               items={[
-                { color: '#0DA7BC', label: `At/above ${DISTRICT_AVG_SESSION} min` },
-                { color: '#E8866A', label: 'Below district avg' },
+                { color: '#0CA7BC', label: `At/above ${DISTRICT_AVG_SESSION} min` },
+                { color: '#F26430', label: 'Below district avg' },
               ]}
             />
           }
@@ -96,7 +96,7 @@ export function DistrictHabits() {
               label: s.name,
               value: s.avgSession,
               max: 30,
-              color: s.avgSession >= DISTRICT_AVG_SESSION ? '#0DA7BC' : '#E8866A',
+              color: s.avgSession >= DISTRICT_AVG_SESSION ? '#0CA7BC' : '#F26430',
               valueLabel: `${s.avgSession} min`,
             }))}
           />

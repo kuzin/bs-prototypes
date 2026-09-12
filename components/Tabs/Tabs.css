@@ -129,11 +129,11 @@
    sitting above a table reads as part of the same chrome rather than as the
    one blue-grey thing on the page. */
 .tabs--pill {
-  gap: 4px;
+  gap: 0;
   background: var(--c-gray-150);
-  border: 1px solid var(--c-gray-250);
-  border-radius: 10px;
-  padding: 4px;
+  border: none;
+  border-radius: 12px;
+  padding: 0;
   display: inline-flex;
 }
 
@@ -149,8 +149,8 @@
   font-weight: 600;
   color: var(--c-gray-750);
   cursor: pointer;
-  padding: 9px 14px;
-  border-radius: 7px;
+  padding: 11px 20px;
+  border-radius: 12px;
   white-space: nowrap;
   /* neutral grey, matching a table header's own ink */
   flex-shrink: 0;
@@ -160,13 +160,13 @@
 }
 
 .tabs--pill .tab:hover {
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 
 .tabs--pill .tab--active {
-  background: #fff;
-  color: var(--tab-accent, var(--c-slate-800));
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.08);
+  background: var(--tab-fill, #b9d6fa);
+  color: var(--tab-accent, var(--c-blue));
+  font-weight: 700;
 }
 
 /* A pill group sitting on a band of its own — the sub-tab bar under the reader's
@@ -214,43 +214,50 @@
 }
 
 /* ── Folder variant ──────────────────────────────────────────────────────────
-   The shipped leaderboard widget's tabs
-   (bs-product microsite/components/_leaderboard_widget.scss): they sit on top
-   of a panel, and the active one is filled with the same $lightestGray as the
-   panel's action band, so tab and panel read as one surface with the inactive
-   tab cut away from it. Unlike the underline variant these carry no rule of
-   their own — the panel below supplies the edge.
+   Tabs that sit on top of a panel, with the geometry of the shipped
+   leaderboard widget (bs-product microsite/components/_leaderboard_widget.scss):
      tab      16px 32px, 17px/1.2, $mediumGray, radius 8px 8px 0 0
-     hover    $ghostWhite fill, $textColor
-     active   $lightestGray fill, $textColor, 800
-   Pair with `block` for the app's own 50/50 split. */
+   The fills are the folder idiom rather than the widget's: the active tab is
+   white so it merges with the panel below it, and the inactive tabs carry the
+   grey so they read as cut away from it. Unlike the underline variant these
+   carry no rule of their own — the panel supplies the edge.
+   Pair with `block` for a 50/50 split.
+
+   The shipped widget inverts this (grey active, filled to match its own grey
+   action band); `web-app`'s leaderboard keeps that look with a local override
+   in prototypes/web-app/index.css. */
+/* A few pixels between them: butted together the strip reads as one segmented
+   control rather than as tabs sitting on a panel. */
 .tabs--folder {
   display: flex;
-  column-gap: 0;
+  column-gap: 4px;
 }
 .tabs--folder .tab {
   padding: 16px 32px;
   font-size: 17px;
   font-weight: 700;
   line-height: 1.2;
-  color: var(--c-text-real-light);
+  color: var(--c-text-light);
   white-space: nowrap;
-  background: transparent;
+  /* A clear step under the white active tab without competing with it — the
+     ladder reads ground → inactive → active. */
+  background: var(--c-gray-100);
   border: 0;
   border-radius: 8px 8px 0 0;
   transition:
     color 130ms ease,
     background-color 130ms ease;
 }
-.tabs--folder .tab:hover:not(.tab--disabled) {
-  color: var(--c-text-real);
+.tabs--folder .tab:hover:not(.tab--disabled):not(.tab--active) {
+  color: var(--c-text);
+  /* toward the active white, not away from it */
   background: var(--c-gray-0);
 }
 .tabs--folder .tab--active,
 .tabs--folder .tab--active:hover {
   font-weight: 800;
-  color: var(--c-text-real);
-  background: var(--c-gray-150);
+  color: var(--c-text);
+  background: #fff;
 }
 .tabs--folder.tabs--sm .tab {
   padding: 12px 16px;
@@ -287,8 +294,8 @@
 .tab-count {
   font-size: 13px;
   font-weight: 700;
-  background: var(--c-slate-200);
-  color: var(--c-slate-600);
+  background: var(--c-gray-200);
+  color: var(--c-gray-750);
   border-radius: 99px;
   padding: 1px 7px;
   min-width: 20px;

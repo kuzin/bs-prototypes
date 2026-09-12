@@ -624,8 +624,8 @@
   height: 34px;
   border-radius: 8px;
   border: 1px solid var(--c-gray-200);
-  background: var(--c-slate-50);
-  color: var(--c-text-muted);
+  background: var(--c-gray-0);
+  color: var(--c-text-light);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -637,8 +637,8 @@
 }
 
 .bp-header-close:hover {
-  background: var(--c-slate-100);
-  color: var(--c-slate-800);
+  background: var(--c-gray-100);
+  color: var(--c-gray-900);
 }
 
 /* ─── Snapshot tiles ─────────────────────────────────────────────────────── */
@@ -993,7 +993,7 @@
 .bp-action-title {
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-text-real-dark);
+  color: var(--c-text-dark);
   margin-bottom: 4px;
 }
 
@@ -1175,7 +1175,7 @@
   gap: 5px;
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
 }
 
 .bp-goal-hero-status--met {
@@ -1240,7 +1240,7 @@
 .bp-goal-mins {
   font-size: 15px;
   font-weight: 800;
-  color: var(--c-amber-600);
+  color: var(--c-yellow-ink);
 }
 
 /* Logged but short of goal — still stated, just not celebrated */
@@ -1273,7 +1273,7 @@
 }
 
 .bp-goal-conn--lit {
-  background: var(--c-amber-500);
+  background: var(--c-yellow);
 }
 
 .bp-goal-circle {
@@ -1290,12 +1290,12 @@
 }
 
 .bp-goal-circle--met {
-  background: var(--c-amber-500);
+  background: var(--c-yellow);
   color: #fff;
 }
 .bp-goal-circle--partial {
-  background: var(--c-amber-100);
-  color: var(--c-amber-600);
+  background: var(--c-yellow-wash);
+  color: var(--c-yellow-ink);
 }
 .bp-goal-circle--missed {
   background: var(--c-gray-200);
@@ -1317,7 +1317,7 @@
   color: #9ca3af;
 }
 .bp-goal-day-label--today {
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   font-weight: 800;
 }
 
@@ -1573,7 +1573,7 @@
   justify-content: center;
   font-size: 18px;
   line-height: 1;
-  color: var(--c-text-real);
+  color: var(--c-text);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -1582,7 +1582,7 @@
 }
 .bp-heatmap-nav-btn:hover:not(:disabled) {
   background: var(--c-gray-250);
-  color: var(--c-text-real);
+  color: var(--c-text);
 }
 /* The app's disabled icon button: a paler ground, not a faded whole. */
 .bp-heatmap-nav-btn:disabled {
@@ -1607,7 +1607,7 @@
 .bp-heatmap-wd {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   text-align: center;
   line-height: 1.4;
 }
@@ -1656,12 +1656,12 @@
      looked better but only cleared ~3:1 against the accent, and the fill
      already carries the state — the date just has to be readable on all
      three of them (grey, tint, accent), which this is. */
-  color: var(--c-slate-900);
+  color: var(--c-gray-900);
 }
 
 /* Days the month hasn't reached yet — placeheld, not scored. */
 .bp-heatmap-cell--future .bp-heatmap-daynum {
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
   font-weight: 600;
 }
 
@@ -2034,21 +2034,21 @@
 .bp-donut-val {
   font-size: 24px;
   font-weight: 900;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   line-height: 1;
 }
 
 .bp-donut-max {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   line-height: 1;
 }
 
 .bp-donut-label {
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   text-align: center;
 }
 
@@ -2125,7 +2125,7 @@
   color: #059669;
 }
 .bp-rmi-delta--down {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 .bp-rmi-label {
@@ -2278,7 +2278,7 @@
   color: #059669;
 }
 .bp-motivator-delta--down {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 
 /* ─── Session flag chips (Integrity detail) ──────────────────────────────────── */
@@ -2403,7 +2403,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--c-blue-700);
+  background: var(--c-blue);
   color: #fff;
   font-size: 15px;
   font-weight: 800;
@@ -2417,7 +2417,7 @@
 /* People sidebar — matches the RIS prototype sidebar pattern */
 .bp-adm-people {
   width: 240px;
-  background: linear-gradient(160deg, #1e40af 0%, var(--c-blue-700) 60%, #2563eb 100%);
+  background: linear-gradient(160deg, #1e40af 0%, var(--c-blue) 60%, #2563eb 100%);
   color: rgba(255, 255, 255, 0.92);
   display: flex;
   flex-direction: column;
@@ -2624,13 +2624,13 @@
 .bp-adm-class-title {
   font-size: 22px;
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   letter-spacing: -0.02em;
 }
 
 .bp-adm-class-meta {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   margin-top: 2px;
 }
 
@@ -2655,7 +2655,7 @@
 .bp-adm-btn-primary {
   height: 36px;
   padding: 0 16px;
-  background: var(--c-blue-700);
+  background: var(--c-blue);
   border: none;
   border-radius: 8px;
   font-family: inherit;
@@ -2796,7 +2796,7 @@
 
 .bp-rl-seg-btn--active {
   background: #fff;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -2854,7 +2854,7 @@
   font-family: inherit;
   font-size: inherit;
   font-weight: 800;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   background: none;
   border: 0;
   padding: 0;
@@ -2873,7 +2873,7 @@
 .bp-rl-tbl-author {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
 }
 
 .bp-rl-tbl-tags {
@@ -2979,7 +2979,7 @@
 .bp-rl-entry {
   --rl-bg: #e8f1fe;
   --rl-bar: #2563eb;
-  --rl-title: #1d4ed8;
+  --rl-title: #196dd5;
 
   background: var(--rl-bg);
   border-left: 4px solid var(--rl-bar);
@@ -2989,13 +2989,13 @@
 
 .bp-rl-entry--flagged {
   --rl-bg: #fef6e7;
-  --rl-bar: #d97706;
+  --rl-bar: #ab720a;
   --rl-title: #92400e;
 }
 
 .bp-rl-entry--completed {
   --rl-bg: #fdeceb;
-  --rl-bar: #dc2626;
+  --rl-bar: #e85648;
   --rl-title: #b91c1c;
 }
 
@@ -3071,11 +3071,11 @@
 }
 
 .bp-rl-mark--neg {
-  color: #dc2626;
+  color: #e85648;
 }
 
 .bp-rl-mark--pos {
-  color: #16a97a;
+  color: #0ba85f;
 }
 
 .bp-rl-mark--talk {
@@ -3200,7 +3200,7 @@
 }
 
 .bp-rl-cal-cell--today .bp-rl-cal-date {
-  background: var(--c-blue-700);
+  background: var(--c-blue);
   color: #fff;
 }
 
@@ -3219,7 +3219,7 @@
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--c-blue-700);
+  background: var(--c-blue);
   display: block;
 }
 
@@ -3656,7 +3656,7 @@
   font-family: inherit;
   font-size: 15px;
   font-weight: 800;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   cursor: pointer;
 }
 
@@ -3792,7 +3792,7 @@
 .bp-tb-prompt {
   font-size: 15px;
   font-weight: 800;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   line-height: 1.4;
 }
 
@@ -3800,7 +3800,7 @@
   flex-shrink: 0;
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
   white-space: nowrap;
 }
 
@@ -3808,7 +3808,7 @@
   margin-top: 5px;
   font-size: 15px;
   font-weight: 500;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   line-height: 1.55;
 }
 
@@ -3857,7 +3857,7 @@
   gap: 3px;
   padding: 16px 12px 14px;
   background: #fff;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-gray-200);
   border-radius: 12px;
   font: inherit;
   cursor: pointer;
@@ -3867,7 +3867,7 @@
 }
 
 .bp-medal-card:hover {
-  border-color: var(--c-slate-300);
+  border-color: var(--c-gray-350);
   box-shadow: 0 1px 6px rgb(15 23 42 / 8%);
 }
 
@@ -3877,7 +3877,7 @@
   margin-top: 6px;
   font-size: 15px;
   font-weight: 800;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   line-height: 1.3;
 }
 
@@ -3998,7 +3998,7 @@
   gap: 6px;
   padding: 8px;
   background: #fff;
-  border-top: 1px solid var(--c-slate-200);
+  border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-pager-btn {
@@ -4008,20 +4008,20 @@
   justify-content: center;
   height: 32px;
   background: none;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-gray-200);
   border-radius: 8px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
 }
 
 .bp-pager-btn:hover:not(:disabled) {
-  background: var(--c-slate-100);
-  color: var(--c-slate-800);
+  background: var(--c-gray-100);
+  color: var(--c-gray-900);
 }
 
 .bp-pager-btn:disabled {
-  color: var(--c-slate-300);
-  border-color: var(--c-slate-100);
+  color: var(--c-gray-350);
+  border-color: var(--c-gray-100);
   cursor: default;
 }
 
@@ -4048,14 +4048,14 @@
 .bp-act-name {
   font-size: 15px;
   font-weight: 800;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 
 .bp-act-count {
   margin-top: 1px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
 }
 
 /* ── Challenge cell ──────────────────────────────────────────────────────────
@@ -4091,7 +4091,7 @@
 
 .bp-chal-totals span {
   font-weight: 700;
-  color: var(--c-text-real-dark);
+  color: var(--c-text-dark);
 }
 
 /* The app renders this as an `<a>` in the cell, not a button in its own
@@ -4190,7 +4190,7 @@
   font-size: 18px;
   font-weight: 800;
   line-height: 1.25;
-  color: var(--c-text-real-dark);
+  color: var(--c-text-dark);
 }
 
 .bp-act-modal-cols {
@@ -4203,7 +4203,7 @@
   border-bottom: 1px solid var(--c-gray-200);
   font-size: 13px;
   font-weight: 800;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
 }
 
 .bp-act-modal-body {
@@ -4228,7 +4228,7 @@
   min-width: 0;
   font-size: 15px;
   font-weight: 500;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   line-height: 1.55;
 }
 
@@ -4248,14 +4248,14 @@
 .bp-medal-modal-label {
   font-size: 15px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
 }
 
 .bp-medal-modal-headline {
   margin-top: 3px;
   font-size: 22px;
   font-weight: 900;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   letter-spacing: -0.01em;
 }
 
@@ -4270,7 +4270,7 @@
 .bp-medal-modal-foot {
   margin-top: 22px;
   padding: 18px 0 22px;
-  border-top: 1px solid var(--c-slate-200);
+  border-top: 1px solid var(--c-gray-200);
 }
 
 .bp-medal-modal-btn {
@@ -4298,7 +4298,7 @@
 }
 
 .bp-medal-modal-btn--primary:hover {
-  background: #1d4ed8;
+  background: #196dd5;
 }
 
 /* The product's amber "this won't change the log" caveat */
@@ -4329,7 +4329,7 @@
 .bp-review-title {
   font-size: 16px;
   font-weight: 800;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   line-height: 1.3;
 }
 
@@ -4337,7 +4337,7 @@
   margin-top: 7px;
   font-size: 15px;
   font-weight: 500;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   line-height: 1.55;
 }
 
@@ -4360,16 +4360,16 @@
   margin: 14px -18px -16px;
   padding: 8px 12px;
   border-top: 1px solid var(--c-gray-200);
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
 }
 
 .row-actions.bp-card-actions .icnb:hover {
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 
 /* Em dash for a book talk with no flags */
 .bp-talk-noflag {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
   font-weight: 700;
 }
 
@@ -4399,7 +4399,7 @@
      under it made this column look shrunken beside every other table. */
   font-size: inherit;
   font-weight: 700;
-  color: var(--c-fig-blue-600);
+  color: var(--c-blue);
   background: none;
   border: 0;
   padding: 0;
@@ -4432,7 +4432,7 @@
   gap: 5px;
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   white-space: nowrap;
 }
 
@@ -4469,7 +4469,7 @@
 .bp-statlist-note {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   white-space: nowrap;
 }
 
@@ -4492,7 +4492,7 @@
      the control on both grounds this button stands on: the profile's grey page
      and a card's white. `lighten($accent, 45%)`, which this had before, is
      within a few percent of that grey and disappeared into it. */
-  background: var(--c-accent-pastel);
+  background: var(--c-blue-wash);
   border: 0;
   border-radius: 999px;
   font: inherit;
@@ -4632,7 +4632,7 @@
 }
 
 .bp-statrow:hover {
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 
 .bp-statrow-icon {
@@ -4650,13 +4650,13 @@
   min-width: 0;
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 
 .bp-statrow-value {
   font-size: 22px;
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   line-height: 1.1;
   white-space: nowrap;
 }
@@ -4664,13 +4664,13 @@
 .bp-statrow-unit {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
 }
 
 .bp-statrow-empty {
   font-size: 13px;
   font-weight: 600;
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
 }
 
 .bp-statrow-motivators {
@@ -4733,7 +4733,7 @@
   font-size: 13px;
   font-weight: 600;
   white-space: nowrap;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   flex-shrink: 0;
 }
 
@@ -4808,7 +4808,7 @@
 .bp-status--verified {
   border-color: #bfdbfe;
   background: #eff6ff;
-  color: #1d4ed8;
+  color: #196dd5;
 }
 
 .bp-status--bad {
@@ -4871,7 +4871,7 @@
    Tabular figures so the dates line up as a column of numbers. */
 .bp-rl-tbl-dim {
   font-size: 13px;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
@@ -4880,8 +4880,8 @@
    so it takes the row's accent instead of the Lexile's neutral grey. */
 .bp-rl-entry-unit {
   margin-left: 0;
-  background: color-mix(in srgb, var(--c-blue-700) 9%, #fff);
-  color: var(--c-blue-700);
+  background: color-mix(in srgb, var(--c-blue) 9%, #fff);
+  color: var(--c-blue);
 }
 
 /* The Lexile the table always had, now on the calendar card too. Every pill on
@@ -4899,7 +4899,7 @@
   background: rgb(15 23 42 / 12%);
   font-size: 13px;
   font-weight: 800;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
 }
 
 /* A day with nothing logged. It takes the same column as a day's entries so
@@ -4918,7 +4918,7 @@
   min-height: 40px;
   padding: 0 14px;
   border-radius: 8px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   font-size: 14px;
   font-weight: 700;
   color: var(--c-gray-500);
@@ -4936,12 +4936,12 @@
 .bp-goal-preset {
   padding: 6px 12px;
   border-radius: 999px;
-  border: 1px solid var(--c-slate-300);
+  border: 1px solid var(--c-gray-350);
   background: #fff;
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -4950,13 +4950,13 @@
 }
 
 .bp-goal-preset:hover {
-  border-color: var(--c-blue-700);
-  color: var(--c-blue-700);
+  border-color: var(--c-blue);
+  color: var(--c-blue);
 }
 
 .bp-goal-preset--on {
-  border-color: var(--c-blue-700);
-  background: var(--c-blue-700);
+  border-color: var(--c-blue);
+  background: var(--c-blue);
   color: #fff;
 }
 
@@ -4979,7 +4979,7 @@
   display: flex;
   flex-direction: column;
   max-height: var(--clog-h);
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 /* Screen-only chrome. */
@@ -4990,13 +4990,13 @@
   gap: 12px;
   padding: 11px 14px;
   background: #fff;
-  border-bottom: 1px solid var(--c-slate-200);
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .bp-clog-bar-title {
   font-size: 15px;
   font-weight: 800;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
@@ -5013,20 +5013,20 @@
   justify-content: space-between;
   gap: 20px;
   padding-bottom: 16px;
-  border-bottom: 2px solid var(--c-slate-800);
+  border-bottom: 2px solid var(--c-gray-900);
 }
 
 .bp-clog-title {
   margin: 0 0 2px;
   font-size: 24px;
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 
 .bp-clog-dates {
   font-size: 15px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
 }
 
 .bp-clog-benny {
@@ -5035,7 +5035,7 @@
   gap: 8px;
   font-size: 15px;
   font-weight: 800;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
   flex-shrink: 0;
 }
 
@@ -5046,7 +5046,7 @@
   grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 14px 20px;
   padding: 16px 0;
-  border-bottom: 1px solid var(--c-slate-200);
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .bp-clog-field {
@@ -5061,13 +5061,13 @@
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
 }
 
 .bp-clog-field-value {
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 
 .bp-clog-totals {
@@ -5082,21 +5082,21 @@
   flex-direction: column;
   gap: 1px;
   padding: 12px 14px;
-  border: 1px solid var(--c-slate-200);
+  border: 1px solid var(--c-gray-200);
   border-radius: 10px;
 }
 
 .bp-clog-total-num {
   font-size: 22px;
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   font-variant-numeric: tabular-nums;
 }
 
 .bp-clog-total-label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
 }
 
 .bp-clog-table {
@@ -5106,12 +5106,12 @@
 
 .bp-clog-th {
   padding: 8px 10px;
-  border-bottom: 1.5px solid var(--c-slate-300);
+  border-bottom: 1.5px solid var(--c-gray-350);
   font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
   text-align: left;
 }
 
@@ -5129,7 +5129,7 @@
   padding: 9px 10px;
   border-bottom: 1px solid var(--c-gray-200);
   font-size: 15px;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   vertical-align: top;
 }
 
@@ -5141,13 +5141,13 @@
 .bp-clog-book {
   display: block;
   font-weight: 700;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 
 .bp-clog-by {
   display: block;
   font-size: 13px;
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
 }
 
 /* Somewhere to sign — the reason a log gets printed at all. */
@@ -5170,7 +5170,7 @@
 
 .bp-clog-sign-line {
   height: 1px;
-  background: var(--c-slate-400);
+  background: var(--c-gray-500);
 }
 
 /* It really prints. Everything on the page is hidden by visibility rather than
@@ -5412,7 +5412,7 @@
   border-left: 3px solid var(--c-gray-250);
   font-size: 14px;
   line-height: 1.45;
-  color: var(--c-text-real);
+  color: var(--c-text);
 }
 
 .bp-act-answer--empty {
@@ -5595,7 +5595,7 @@
   font-size: 15px;
   line-height: 1.55;
   font-weight: 500;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
 }
 
 /* The stepper is the whole point of the second step, so it gets the middle of
@@ -5636,7 +5636,7 @@
   font-size: 16px;
   font-weight: 800;
   line-height: 1.35;
-  color: var(--c-text-real);
+  color: var(--c-text);
 }
 
 /* A reference value folded under the row's subject — the challenge a reward
@@ -5647,7 +5647,7 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 1.35;
-  color: var(--c-slate-400);
+  color: var(--c-gray-500);
 }
 
 .bp-tbl-sub {
@@ -5755,7 +5755,7 @@
 /* Plain in the rows; the Total below overrides it. */
 .bp-pts-value {
   font-variant-numeric: tabular-nums;
-  color: var(--c-text-real);
+  color: var(--c-text);
 }
 
 /* The total under the table's last row — inside the card, past the table's
@@ -5868,7 +5868,7 @@
   font-family: inherit;
   font-size: 15px;
   font-weight: 700;
-  color: var(--c-fig-blue-600);
+  color: var(--c-blue);
   background: none;
   border: 0;
   padding: 0;
@@ -5905,7 +5905,7 @@
 .bp-lex-period {
   font-size: 14px;
   font-weight: 600;
-  color: var(--c-slate-500);
+  color: var(--c-gray-700);
   white-space: nowrap;
 }
 

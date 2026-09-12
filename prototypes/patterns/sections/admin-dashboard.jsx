@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { SettingsPopover } from '../../admin-dashboard/components/SettingsPopover'
+import { RcaLevelGlyph } from '../../admin-dashboard/components/RcaLevelGlyph'
 import { Variant } from './_shared'
 
 function SettingsPopoverDemo({ fields, defaults }) {
@@ -17,12 +18,12 @@ function SettingsPopoverDemo({ fields, defaults }) {
           gap: 6,
           padding: '6px 12px',
           borderRadius: 6,
-          border: '1px solid #e2e8f0',
+          border: '1px solid #eaeaea',
           background: '#fff',
           fontSize: 13,
           fontWeight: 600,
           cursor: 'pointer',
-          color: '#334155',
+          color: '#424242',
         }}
         onClick={(e) => {
           setAnchorRect(e.currentTarget.getBoundingClientRect())
@@ -87,6 +88,34 @@ const RANGE_FIELDS = [
 ]
 
 export const adminDashboardSections = [
+  {
+    group: 'admin-dashboard',
+    id: 'admin-dashboard-rca-level-glyph',
+    name: 'RcaLevelGlyph',
+    usage: `import { RcaLevelGlyph } from './RcaLevelGlyph'
+
+<RcaLevelGlyph level="igniter" />
+<RcaLevelGlyph level="trailblazer" size={44} />`,
+    desc: (
+      <>
+        The engagement-level badge on the dashboard&rsquo;s Engagement card — circle, diamond,
+        pentagon, hexagon, one per level, on a tile tinted from the shape&rsquo;s own colour. The
+        four silhouettes and their fills are the shipped app&rsquo;s, lifted from{' '}
+        <code>district_schools_table/Trailblazer-rct.svg</code> (the level-progress pill on the
+        district Schools table) and re-centred on a 24&times;24 box. Admin Dashboard–specific —
+        lives in <code>prototypes/admin-dashboard/components/</code>.
+      </>
+    ),
+    render: () => (
+      <div className="pt-variants pt-variants--4">
+        {['spark', 'igniter', 'pathfinder', 'trailblazer'].map((level) => (
+          <Variant key={level} label={level}>
+            <RcaLevelGlyph level={level} />
+          </Variant>
+        ))}
+      </div>
+    ),
+  },
   {
     group: 'admin-dashboard',
     id: 'admin-dashboard-settings-popover',

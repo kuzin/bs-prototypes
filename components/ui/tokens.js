@@ -6,22 +6,22 @@
 // name the reader profile's rail and Heroes use, so the profile chrome runs
 // the same duotone family as the rest of the admin.
 export const C = {
-  motivation: { bg: '#FDEEE6', text: '#993C1D', bar: '#E8866A', icon: 'ti-flame', plumpy: 'fire' },
+  motivation: { bg: '#FDEEE6', text: '#993C1D', bar: '#F26430', icon: 'ti-flame', plumpy: 'fire' },
   integrity: {
     bg: '#E8EFFE',
     text: '#1E40AF',
-    bar: '#1D4ED8',
+    bar: '#196DD5',
     icon: 'ti-shield-check',
     plumpy: 'chat',
   },
   habits: {
     bg: '#E6F8EF',
     text: '#0F6E56',
-    bar: '#16A97A',
+    bar: '#0BA85F',
     icon: 'ti-calendar-stats',
     plumpy: 'calendar',
   },
-  skills: { bg: '#F1EBFF', text: '#5B21B6', bar: '#7C3AED', icon: 'ti-book-2', plumpy: 'book' },
+  skills: { bg: '#F1EBFF', text: '#5B21B6', bar: '#B43DD0', icon: 'ti-book-2', plumpy: 'book' },
 }
 
 // Display names for the four analysis sections. The keys stay as the original
@@ -36,7 +36,7 @@ export const LABEL = {
 
 // ─── Genre color palette ──────────────────────────────────────────────────────
 export const GENRE_COLORS = {
-  Survival: { bg: '#FEF3C7', color: '#92400E', border: '#FCD34D' },
+  Survival: { bg: '#FFECC8', color: '#92400E', border: '#FCD34D' },
   Historical: { bg: '#DBEAFE', color: '#1E40AF', border: '#93C5FD' },
   Dystopian: { bg: '#EDE9FE', color: '#5B21B6', border: '#C4B5FD' },
   Adventure: { bg: '#D1FAE5', color: '#065F46', border: '#6EE7B7' },
@@ -88,7 +88,7 @@ export const COVER_PALETTES = [
   ['#DBEAFE', '#1E40AF'],
   ['#FCE7F3', '#9D174D'],
   ['#D1FAE5', '#065F46'],
-  ['#FEF3C7', '#92400E'],
+  ['#FFECC8', '#92400E'],
   ['#EDE9FE', '#5B21B6'],
   ['#FFEDD5', '#9A3412'],
 ]

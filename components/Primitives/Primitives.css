@@ -31,7 +31,7 @@
 .dvd-label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   text-transform: uppercase;
   letter-spacing: 0.06em;
 }
@@ -43,7 +43,7 @@
   border-right-color: transparent;
   border-radius: 50%;
   animation: spn-spin 0.6s linear infinite;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 
 .spn--xs {
@@ -140,9 +140,9 @@
 
 /* Variants */
 .icnb--primary {
-  background: var(--c-blue-700);
+  background: var(--c-blue);
   color: #fff;
-  border-color: var(--c-blue-700);
+  border-color: var(--c-blue);
 }
 .icnb--primary:hover:not(:disabled) {
   background: #1e40af;
@@ -154,29 +154,29 @@
    border, a #e5e5e5 hover/active, and a #424242 glyph. */
 .icnb--secondary {
   background: var(--c-gray-150);
-  color: var(--c-text-real);
+  color: var(--c-text);
   border-color: transparent;
 }
 .icnb--secondary:hover:not(:disabled),
 .icnb--secondary:active:not(:disabled) {
   background: var(--c-gray-250);
   border-color: transparent;
-  color: var(--c-text-real);
+  color: var(--c-text);
 }
 
 .icnb--ghost {
   background: transparent;
-  color: var(--c-text-real);
+  color: var(--c-text);
 }
 .icnb--ghost:hover:not(:disabled) {
   background: var(--c-gray-150);
-  color: var(--c-text-real);
+  color: var(--c-text);
 }
 
 .icnb--danger {
-  background: var(--c-red-600);
+  background: var(--c-red);
   color: #fff;
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 .icnb--danger:hover:not(:disabled) {
   background: #b91c1c;
@@ -197,7 +197,7 @@
 .ttp-pop {
   position: fixed;
   z-index: 1000;
-  background: var(--c-slate-900);
+  background: var(--c-gray-900);
   color: #fff;
   font-size: 13px;
   font-weight: 500;
@@ -207,9 +207,10 @@
      it wraps instead of stretching into a 700px hairline across the screen —
      which is what a status flag's explanation used to do. `max-content` keeps
      the short ones ("Reading Log", "Up 26%") on the single line they've always
-     had; only the ones that need it grow to a block. */
+     had; only the ones that need it grow to a block. 200px is about 30 characters
+     a line — a tooltip you take in at a glance rather than read across. */
   width: max-content;
-  max-width: 240px;
+  max-width: 200px;
   white-space: normal;
   line-height: 1.35;
   pointer-events: none;
@@ -419,19 +420,19 @@
 
 .bcb-link {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   text-decoration: none;
   font-weight: 500;
   transition: color 0.1s;
 }
 
 .bcb-link:hover {
-  color: var(--c-blue-700);
+  color: var(--c-blue);
 }
 
 .bcb-current {
   font-size: 13px;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   font-weight: 500;
 }
 
@@ -441,7 +442,7 @@
 }
 
 .bcb-sep {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
   flex-shrink: 0;
 }
 
@@ -454,7 +455,7 @@
 }
 
 .acd-item + .acd-item {
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
 }
 
 .acd-trigger {
@@ -478,14 +479,14 @@
 }
 
 .acd-trigger:hover {
-  color: var(--acd-accent, var(--c-blue-700));
+  color: var(--acd-accent, var(--c-blue));
 }
 .acd-trigger:hover .acd-caret {
-  color: var(--acd-accent, var(--c-blue-700));
+  color: var(--acd-accent, var(--c-blue));
 }
 
 .acd-item--open .acd-trigger {
-  color: var(--acd-accent, var(--c-blue-700));
+  color: var(--acd-accent, var(--c-blue));
 }
 
 .acd-title {
@@ -493,7 +494,7 @@
 }
 
 .acd-caret {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   transition:
     transform 0.18s,
     color 0.12s;
@@ -502,12 +503,12 @@
 
 .acd-item--open .acd-caret {
   transform: rotate(180deg);
-  color: var(--acd-accent, var(--c-blue-700));
+  color: var(--acd-accent, var(--c-blue));
 }
 
 .acd-content {
   padding: 0 16px 14px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   font-size: 15px;
   line-height: 1.55;
 }
@@ -526,8 +527,8 @@
   width: 52px;
   height: 52px;
   border-radius: 13px;
-  background: var(--c-slate-100);
-  color: var(--c-text-subtle);
+  background: var(--c-gray-100);
+  color: var(--c-gray-600);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -539,17 +540,21 @@
   height: 26px;
 }
 
+/* An empty state is the only thing on the surface when it shows, so it reads at
+   full size: the title on the card-head rung and the sentence under it as body
+   copy. 14/13 made the one thing on screen look like a footnote. */
 .emp-title {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text);
+  font-size: var(--text-subhead);
+  font-weight: 800;
+  color: var(--c-text-dark);
+  line-height: 1.3;
 }
 
 .emp-desc {
-  font-size: 13px;
-  color: var(--c-text-muted);
+  font-size: var(--text-body);
+  color: var(--c-text-light);
   line-height: 1.5;
-  max-width: 360px;
+  max-width: 420px;
 }
 
 .emp-action {
@@ -593,12 +598,12 @@
 
 .skl {
   display: inline-block;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   background-image: linear-gradient(
     90deg,
-    var(--c-slate-100) 0%,
-    var(--c-slate-200) 40%,
-    var(--c-slate-100) 80%
+    var(--c-gray-100) 0%,
+    var(--c-gray-200) 40%,
+    var(--c-gray-100) 80%
   );
   background-size: 200px 100%;
   background-repeat: no-repeat;

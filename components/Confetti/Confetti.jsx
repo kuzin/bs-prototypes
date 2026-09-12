@@ -1,7 +1,7 @@
 import '@components/Confetti/Confetti.css'
 
 // Celebration palette — Beanstack teal/turquoise first, with warm accents.
-const COLORS = ['#0DA7BC', '#14B8A6', '#F0A024', '#0F766E', '#EA580C', '#2563EB', '#16A34A']
+const COLORS = ['#0CA7BC', '#14B8A6', '#F0A024', '#0F766E', '#EA580C', '#2563EB', '#16A34A']
 
 // Deterministic pseudo-random in [0,1) — no RNG, so a re-render never reshuffles
 // a burst mid-fall and the same piece count always looks the same.

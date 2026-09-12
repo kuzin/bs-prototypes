@@ -8,13 +8,13 @@ import '@components/Hero/Hero.css'
  * Three call shapes:
  *
  *   // OverviewHero style — avatar + title/subtitle
- *   <Hero initials="LE" title="Lincoln Elementary" subtitle="K–5 · 1,650 students" accent="#E8866A" />
+ *   <Hero initials="LE" title="Lincoln Elementary" subtitle="K–5 · 1,650 students" accent="#F26430" />
  *
  *   // BucketHero style — icon + title + right-side score/delta
  *   <Hero bucket="motivation" score={71} delta={7} />
  *
  *   // PageHero style — icon + title/subtitle
- *   <Hero icon={<svg/>} title="Analytics" subtitle="…" accent="#0DA7BC" accentBg="#ECFEFF" />
+ *   <Hero icon={<svg/>} title="Analytics" subtitle="…" accent="#0CA7BC" accentBg="#ECFEFF" />
  *
  * Props:
  *   bucket    — auto-derives icon/title/accent/accentBg from SECTIONS
@@ -73,16 +73,18 @@ export function Hero({
   accentBg,
   action,
 }) {
-  // Auto-derive from a section bucket key
+  // Auto-derive from a section bucket key. `icon={false}` opts out: with a
+  // `bucket` the section's icon would otherwise always win, and there was no
+  // way to ask for a bare title.
   let resolvedTitle = title
-  let resolvedIcon = icon
+  let resolvedIcon = icon === false ? null : icon
   let resolvedAccent = accent
   let resolvedAccentBg = accentBg
   if (bucket) {
     const section = SECTIONS.find((s) => s.key === bucket)
     if (section) {
       resolvedTitle = title ?? section.label
-      resolvedIcon = icon ?? section.icon
+      if (icon !== false) resolvedIcon = icon ?? section.icon
       resolvedAccent = accent ?? section.color
       resolvedAccentBg = accentBg ?? section.bg
     }

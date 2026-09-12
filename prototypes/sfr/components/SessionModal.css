@@ -16,9 +16,11 @@
   max-height: calc(100vh - 180px);
 }
 
-/* Widen + shift the centered modal to clear the 48px PrototypeNav */
+/* Widen + shift the centered modal to clear the 48px PrototypeNav. It carries
+   a reader column, a transcript, and annotation bands that run the transcript's
+   full width — 680px left the conversation reading as a narrow ribbon. */
 .modal--center:has(.sm2-shell) {
-  width: min(680px, calc(100vw - 96px));
+  width: min(980px, calc(100vw - 96px));
   max-height: calc(100vh - 180px);
   top: calc(50% - 24px);
 }
@@ -42,16 +44,15 @@
 .sm2-view-profile {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 6px;
-  padding: 4px 10px;
-  margin-top: 10px;
+  gap: 2px;
+  background: none;
+  border: none;
+  padding: 0;
+  margin-top: 8px;
   font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  color: #1d4ed8;
+  font-size: var(--text-body);
+  font-weight: 700;
+  color: var(--c-blue);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -59,9 +60,7 @@
     color 0.12s;
 }
 .sm2-view-profile:hover {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: #1e40af;
+  text-decoration: underline;
 }
 
 .sm2-nav {
@@ -69,7 +68,7 @@
   align-items: stretch;
   gap: 6px;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #eaeaea;
   border-radius: 9px;
   padding: 3px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
@@ -83,8 +82,8 @@
   padding: 0 10px;
   border-radius: 6px;
   border: none;
-  background: #f8fafc;
-  color: #334155;
+  background: #f8f8f8;
+  color: #424242;
   font-size: 14px;
   font-weight: 600;
   font-family: inherit;
@@ -95,15 +94,15 @@
     transform 0.08s;
 }
 .sm2-nav-btn:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: #196dd5;
   color: #fff;
 }
 .sm2-nav-btn:active:not(:disabled) {
   transform: scale(0.96);
 }
 .sm2-nav-btn:disabled {
-  color: #cbd5e1;
-  background: #f8fafc;
+  color: #d0d0d0;
+  background: #f8f8f8;
   cursor: default;
 }
 .sm2-nav-label {
@@ -115,7 +114,7 @@
   align-items: center;
   gap: 5px;
   font-size: 14px;
-  color: #64748b;
+  color: #707070;
   padding: 0 4px;
   white-space: nowrap;
   font-variant-numeric: tabular-nums;
@@ -123,10 +122,10 @@
 .sm2-nav-count strong {
   font-size: 15px;
   font-weight: 700;
-  color: #0f172a;
+  color: #2a2a2a;
 }
 .sm2-nav-count-sep {
-  color: #cbd5e1;
+  color: #d0d0d0;
   font-weight: 500;
 }
 
@@ -151,9 +150,9 @@
 /* Segmented control */
 .sm2-rating-segment {
   display: flex;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #eaeaea;
   border-radius: 10px;
-  background: #f8fafc;
+  background: #f8f8f8;
   padding: 4px;
   gap: 0;
   width: 100%;
@@ -171,7 +170,7 @@
   border-radius: 7px;
   border: none;
   background: transparent;
-  color: #64748b;
+  color: #707070;
   cursor: pointer;
   font-family: inherit;
   transition:
@@ -181,7 +180,7 @@
 }
 .sm2-rating-seg:hover:not(:disabled):not(.sm2-rating-seg--active) {
   background: #fff;
-  color: #334155;
+  color: #424242;
 }
 .sm2-rating-seg:disabled {
   cursor: default;
@@ -195,13 +194,13 @@
   flex-shrink: 0;
 }
 .sm2-rating-seg-dot--green {
-  background: #16a97a;
+  background: #0ba85f;
 }
 .sm2-rating-seg-dot--yellow {
-  background: #d97706;
+  background: #ab720a;
 }
 .sm2-rating-seg-dot--red {
-  background: #dc2626;
+  background: #e85648;
 }
 
 .sm2-rating-seg--active {
@@ -210,26 +209,26 @@
 .sm2-rating-seg--green.sm2-rating-seg--active {
   background: #dcfce7;
   color: #14532d;
-  border: 1px solid #16a97a;
+  border: 1px solid #0ba85f;
 }
 .sm2-rating-seg--yellow.sm2-rating-seg--active {
-  background: #fef3c7;
+  background: #ffecc8;
   color: #78350f;
-  border: 1px solid #d97706;
+  border: 1px solid #ab720a;
 }
 .sm2-rating-seg--red.sm2-rating-seg--active {
   background: #fee2e2;
   color: #991b1b;
-  border: 1px solid #dc2626;
+  border: 1px solid #e85648;
 }
 .sm2-rating-seg--active .sm2-rating-seg-dot--green {
-  background: #16a97a;
+  background: #0ba85f;
 }
 .sm2-rating-seg--active .sm2-rating-seg-dot--yellow {
-  background: #d97706;
+  background: #ab720a;
 }
 .sm2-rating-seg--active .sm2-rating-seg-dot--red {
-  background: #dc2626;
+  background: #e85648;
 }
 
 /* ── Approve confirm modal ── */
@@ -247,7 +246,7 @@
   height: 56px;
   border-radius: 50%;
   background: #dcfce7;
-  color: #16a97a;
+  color: #0ba85f;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -255,25 +254,25 @@
 }
 .sm2-approve-icon--danger {
   background: #fee2e2;
-  color: #dc2626;
+  color: #e85648;
 }
 
 .sm2-approve-title {
   font-size: 18px;
   font-weight: 800;
-  color: #0f172a;
+  color: #2a2a2a;
   letter-spacing: -0.01em;
   margin-bottom: 8px;
 }
 
 .sm2-approve-body {
   font-size: 15px;
-  color: #475569;
+  color: #656565;
   line-height: 1.5;
   margin-bottom: 22px;
 }
 .sm2-approve-body strong {
-  color: #0f172a;
+  color: #2a2a2a;
   font-weight: 700;
 }
 
@@ -283,9 +282,9 @@
   box-sizing: border-box;
   font-family: inherit;
   font-size: 15px;
-  color: #1e293b;
+  color: #2a2a2a;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #eaeaea;
   border-radius: 9px;
   padding: 11px 13px;
   resize: vertical;
@@ -295,7 +294,7 @@
     box-shadow 0.12s;
 }
 .sm2-modal-note::placeholder {
-  color: #94a3b8;
+  color: #acacac;
 }
 .sm2-modal-note:focus {
   outline: none;
@@ -339,36 +338,38 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  margin-bottom: 18px;
+  padding-bottom: 22px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--c-gray-200);
   flex-shrink: 0;
 }
 
 .sm2-reader-avatar {
-  width: 52px;
-  height: 52px;
+  width: 78px;
+  height: 78px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
-  font-size: 17px;
+  font-size: 24px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   flex-shrink: 0;
 }
 
 .sm2-reader-name {
-  font-size: 16px;
+  font-size: var(--text-subhead);
   font-weight: 800;
-  color: #0f172a;
+  color: #2a2a2a;
   text-align: center;
   line-height: 1.3;
 }
 
 .sm2-reader-meta {
-  font-size: 14px;
-  color: #64748b;
+  font-size: var(--text-body);
+  color: #707070;
   text-align: center;
   margin-top: 2px;
 }
@@ -378,9 +379,16 @@
 .sm2-details-card {
   display: flex;
   gap: 16px;
-  border: 1.5px solid #e2e8f0;
+  border: 1.5px solid #eaeaea;
   border-radius: 12px;
   padding: 16px 18px;
+}
+
+/* The jacket art fills the same 72px slot the colour block did, cropped to it
+   — covers come in every aspect ratio and a row of ragged heights reads worse
+   than a crop. */
+.sm2-book-cover--art {
+  object-fit: cover;
 }
 
 .sm2-book-cover {
@@ -402,14 +410,14 @@
 .sm2-book-title {
   font-size: 16px;
   font-weight: 800;
-  color: #0f172a;
+  color: #2a2a2a;
   line-height: 1.3;
   margin-bottom: 2px;
 }
 
 .sm2-book-author {
   font-size: 14px;
-  color: #64748b;
+  color: #707070;
   margin-bottom: 8px;
 }
 
@@ -449,12 +457,12 @@
 .sm2-section-title {
   font-size: 18px;
   font-weight: 800;
-  color: #0f172a;
+  color: #2a2a2a;
 }
 
 .sm2-section-aside {
   font-size: 14px;
-  color: #94a3b8;
+  color: #acacac;
 }
 
 /* ── Date Read / Unit rows — folded into the Session Details book card ── */
@@ -469,7 +477,7 @@
   justify-content: space-between;
   align-items: baseline;
   padding: 8px 0;
-  border-bottom: 1px solid #f1f5f9;
+  border-bottom: 1px solid #f5f5f5;
   gap: 8px;
 }
 .sm2-detail-row:last-child {
@@ -479,7 +487,7 @@
 .sm2-detail-row span:first-child {
   font-size: 13px;
   font-weight: 700;
-  color: #94a3b8;
+  color: #acacac;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   flex-shrink: 0;
@@ -488,7 +496,7 @@
 .sm2-detail-row span:last-child {
   font-size: 14px;
   font-weight: 600;
-  color: #334155;
+  color: #424242;
   text-align: right;
 }
 
@@ -503,7 +511,7 @@
 .sm2-prompt-text {
   margin: 0;
   font-size: 15px;
-  color: #334155;
+  color: #424242;
   line-height: 1.5;
 }
 
@@ -528,78 +536,10 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  background: #f8fafc;
+  background: #f8f8f8;
   border: 1px solid #eef2f6;
   border-radius: 12px;
   padding: 18px;
-}
-
-.sm2-bubble-wrap {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  justify-content: flex-end;
-}
-
-.sm2-bubble-wrap--benny {
-  justify-content: flex-start;
-}
-
-.sm2-bubble-avatar {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  object-fit: cover;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.sm2-student-dot {
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: #dbeafe;
-  color: #1d4ed8;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-.sm2-bubble {
-  max-width: 88%;
-  padding: 11px 15px;
-  border-radius: 12px;
-  font-size: 15px;
-  line-height: 1.55;
-  color: #1e293b;
-}
-
-.sm2-bubble-text {
-  display: block;
-}
-
-.sm2-bubble--benny {
-  background: #fff;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px 12px 12px 12px;
-}
-
-.sm2-bubble--student {
-  background: #eff6ff;
-  border: 1px solid #bfdbfe;
-  border-radius: 12px 4px 12px 12px;
-  color: #1e3a5f;
-}
-
-.sm2-bubble--flagged {
-  background: #fef2f2;
-  border-color: #fecaca;
-  color: #7f1d1d;
 }
 
 /* ── Footer ── */
@@ -610,7 +550,7 @@
   gap: 8px;
   padding: 16px 20px;
   border-top: 1px solid #e5e7eb;
-  background: #f8fafc;
+  background: #f8f8f8;
   flex-shrink: 0;
 }
 
@@ -637,7 +577,7 @@
 .sm2-btn--danger {
   background: #fff;
   border: 1.5px solid #fecaca;
-  color: #dc2626;
+  color: #e85648;
 }
 .sm2-btn--danger:hover {
   background: #fef2f2;
@@ -648,14 +588,11 @@
 .sm2-reader-sessions-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   width: 100%;
-  padding: 0 2px 8px;
-  font-size: 12px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: #94a3b8;
+  padding: 0 10px 10px;
+  font-size: var(--text-body);
+  font-weight: 800;
+  color: var(--c-text-dark);
   flex-shrink: 0;
 }
 
@@ -680,11 +617,11 @@
 .sm2-reader-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 7px 8px;
+  gap: 10px;
+  padding: 11px 10px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 6px;
+  border: none;
+  border-radius: 8px;
   font-family: inherit;
   text-align: left;
   cursor: pointer;
@@ -693,13 +630,16 @@
   min-width: 0;
 }
 .sm2-reader-row:hover:not(:disabled) {
-  background: #f1f5f9;
+  background: var(--c-gray-150);
 }
 
 .sm2-reader-row--current {
-  background: #eff6ff;
-  border-color: #bfdbfe;
+  background: #dbeafe;
   cursor: default;
+}
+.sm2-reader-row--current .sm2-reader-row-book,
+.sm2-reader-row--current .sm2-reader-row-date {
+  color: var(--c-blue);
 }
 
 .sm2-reader-row-icon {
@@ -720,7 +660,7 @@
   min-width: 0;
   font-size: 14px;
   font-weight: 600;
-  color: #1e293b;
+  color: #2a2a2a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -728,7 +668,7 @@
 
 .sm2-reader-row-date {
   font-size: 13px;
-  color: #94a3b8;
+  color: #acacac;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -754,7 +694,7 @@
   cursor: pointer;
 }
 .sm2-log-row:hover {
-  background: #f8fafc;
+  background: #f8f8f8;
 }
 .sm2-log-row--active {
   background: #eff6ff;
@@ -766,13 +706,13 @@
 .sm2-log-date {
   font-size: 14px;
   font-weight: 600;
-  color: #334155;
+  color: #424242;
   min-width: 52px;
 }
 
 .sm2-log-mins {
   font-size: 14px;
-  color: #94a3b8;
+  color: #acacac;
   flex: 1;
 }
 
@@ -781,39 +721,20 @@
   font-weight: 600;
   padding: 3px 8px;
   border-radius: 99px;
-  background: #f1f5f9;
-  color: #64748b;
+  background: #f5f5f5;
+  color: #707070;
   white-space: nowrap;
 }
 
 .sm2-log-badge--btwb {
   background: #dbeafe;
-  color: #1d4ed8;
+  color: #196dd5;
 }
 
-.sm2-annotation {
-  display: flex;
-  align-items: flex-start;
-  gap: 7px;
-  padding: 9px 13px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 500;
-  line-height: 1.45;
-  /* Pull up toward the preceding bubble, push down before the next. */
-  margin-top: -5px;
-  margin-bottom: 4px;
-}
-.sm2-annotation--positive {
-  background: #f0fdf4;
-  color: #16a97a;
-  border: 1px solid #d1fae5;
-}
-.sm2-annotation--warning {
-  background: #fffbeb;
-  color: #b45309;
-  border: 1px solid #fde68a;
-}
+/* Benny's note on the turn above it: a full-width tinted band naming the flag,
+   with the reasoning folded behind a toggle on the right. Consecutive notes are
+   one stack — a hairline between them, rounded as a group — because they're all
+   read on the same answer. */
 
 /* ════════════════════════════════════════════════════════════════════════
    Safety signals (Safety Signals prototype — additive, gated on session.safety)
@@ -822,10 +743,55 @@
 /* ── Unified review card — Safety signal, Engagement rating, and each Flag all
    share this one design language: colored icon badge + colored bold label +
    muted description + optional trailing action. ── */
+/* The flag stack is one tinted panel of hairline-separated rows, the way the
+   shipped detail shows them — not a tinted, outlined card per flag. */
 .sm2-review-stack {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  margin-top: 10px;
+  background: var(--c-gray-0);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sm2-flag-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--c-gray-200);
+}
+.sm2-flag-row:last-child {
+  border-bottom: none;
+}
+
+.sm2-flag-art {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  flex-shrink: 0;
+  /* Optical: the art's own bounding box sits a touch high against a bold
+     label's cap-height. */
+  margin-top: 1px;
+}
+
+.sm2-flag-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.sm2-flag-label {
+  font-size: var(--text-cell);
+  font-weight: 800;
+  color: var(--c-text-dark);
+  margin-bottom: 2px;
+}
+
+.sm2-flag-desc {
+  font-size: var(--text-label);
+  line-height: 1.45;
+  color: var(--c-text);
 }
 .sm2-review-card {
   margin-top: 10px;
@@ -868,7 +834,7 @@
 .sm2-review-card-desc {
   font-size: 15px;
   line-height: 1.45;
-  color: #475569;
+  color: #656565;
 }
 .sm2-review-card-action {
   flex-shrink: 0;
@@ -884,7 +850,7 @@
   border-radius: 8px;
   border: 1px solid #fecaca;
   background: #fff;
-  color: #dc2626;
+  color: #e85648;
   cursor: pointer;
   transition:
     background 0.12s,
@@ -896,7 +862,7 @@
 }
 .sm2-review-card--pos .sm2-review-remove {
   border-color: #bbf7d0;
-  color: #16a97a;
+  color: #0ba85f;
 }
 .sm2-review-card--pos .sm2-review-remove:hover {
   background: #dcfce7;
@@ -907,7 +873,7 @@
 .sm2-review-by {
   font-size: 14px;
   font-weight: 600;
-  color: #64748b;
+  color: #707070;
   white-space: nowrap;
 }
 
@@ -928,7 +894,7 @@
 .sm2-res-name {
   font-size: 15px;
   font-weight: 800;
-  color: #1e293b;
+  color: #2a2a2a;
 }
 .sm2-res-contact {
   font-size: 14px;
@@ -937,7 +903,7 @@
 }
 .sm2-res-blurb {
   font-size: 14px;
-  color: #64748b;
+  color: #707070;
   line-height: 1.4;
   margin-top: 1px;
 }
@@ -953,23 +919,6 @@
 }
 .sm2-res-link:hover {
   text-decoration: underline;
-}
-
-/* ── Triggering message + signal tag ── */
-.sm2-bubble--trigger {
-  background: #fef2f2;
-  border: 1.5px solid #fca5a5;
-  color: #991b1b;
-  font-weight: 600;
-}
-
-/* ── Safety annotation in transcript ── */
-.sm2-annotation--safety {
-  background: #fef2f2;
-  color: #b91c1c;
-  border: 1px solid #fecaca;
-  align-items: flex-start;
-  font-weight: 600;
 }
 
 /* ── Footer safety bits ── */
@@ -1018,9 +967,9 @@
   min-width: 0;
   font-family: inherit;
   font-size: 15px;
-  color: #1e293b;
+  color: #2a2a2a;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #eaeaea;
   border-radius: 9px;
   padding: 11px 13px;
   line-height: 1.45;
@@ -1031,7 +980,7 @@
     box-shadow 0.12s;
 }
 .sm2-note-input::placeholder {
-  color: #94a3b8;
+  color: #acacac;
 }
 .sm2-note-input:focus {
   outline: none;
@@ -1046,7 +995,7 @@
   padding: 30px 16px;
   text-align: center;
   font-size: 15px;
-  color: #94a3b8;
+  color: #acacac;
 }
 
 /* Activity timeline */
@@ -1099,7 +1048,7 @@
 .sm2-tl-label {
   font-size: 15px;
   font-weight: 700;
-  color: #1e293b;
+  color: #2a2a2a;
 }
 .sm2-tl-right {
   display: flex;
@@ -1109,7 +1058,7 @@
 }
 .sm2-tl-meta {
   font-size: 13px;
-  color: #94a3b8;
+  color: #acacac;
   white-space: nowrap;
   flex-shrink: 0;
 }
@@ -1120,9 +1069,9 @@
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
-  color: #475569;
+  color: #656565;
   background: #fff;
-  border: 1px solid #e2e8f0;
+  border: 1px solid #eaeaea;
   border-radius: 6px;
   padding: 3px 9px;
   cursor: pointer;
@@ -1132,15 +1081,15 @@
     color 0.12s;
 }
 .sm2-tl-undo:hover {
-  background: #f8fafc;
-  border-color: #cbd5e1;
-  color: #0f172a;
+  background: #f8f8f8;
+  border-color: #d0d0d0;
+  color: #2a2a2a;
 }
 .sm2-tl-note {
   font-size: 14px;
-  color: #475569;
+  color: #656565;
   line-height: 1.45;
-  background: #f8fafc;
+  background: #f8f8f8;
   border: 1px solid #eef2f6;
   border-radius: 8px;
   padding: 9px 12px;
@@ -1152,4 +1101,19 @@
   display: flex;
   align-items: center;
   gap: 8px;
+}
+
+/* ── Benny's Read ──
+   His written take on the talk, with his face beside it so it reads as
+   something he said rather than a field on the record. */
+.sm2-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.sm2-summary-benny {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
 }

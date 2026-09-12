@@ -42,7 +42,7 @@ if (!id || flags.help) {
       '  <id>              kebab-case folder/url slug (e.g. reading-streaks)',
       '  --name="…"        display name        (default: Title Case of <id>)',
       '  --section=…       Prototypes | Experiments   (default: Prototypes)',
-      '  --accent=#hex     landing-card accent color   (default: #0DA7BC)',
+      '  --accent=#hex     landing-card accent color   (default: #0CA7BC)',
       '  --icon=<name>     <Icon> registry name        (default: layout-grid)',
       '  --desc="…"        one-line description',
     ].join('\n'),
@@ -71,7 +71,7 @@ const name =
     .map((w) => w[0].toUpperCase() + w.slice(1))
     .join(' ')
 const section = flags.section === 'Experiments' ? 'Experiments' : 'Prototypes'
-const accent = flags.accent || '#0DA7BC'
+const accent = flags.accent || '#0CA7BC'
 const icon = flags.icon || 'layout-grid'
 const description = flags.desc || `TODO: describe the ${name} prototype.`
 const href = `${BASE}${id}/`
@@ -125,7 +125,7 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   background: #f3f4f6;
-  color: #1e293b;
+  color: #2a2a2a;
   -webkit-font-smoothing: antialiased;
 }
 h1,
@@ -164,7 +164,7 @@ body,
   color: #0f766e;
 }
 .proto p {
-  color: #64748b;
+  color: #707070;
   font-size: 15px;
 }
 `,

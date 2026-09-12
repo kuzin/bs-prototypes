@@ -108,35 +108,35 @@
    Hover is `$whiteSmoke`. */
 .btn--secondary {
   background: transparent;
-  color: var(--c-text-real);
+  color: var(--c-text);
   /* $gray300, the same hairline `.sel` / `.inp` carry — at $gray250 a button
      beside a select looked a shade lighter for no reason. Ground stays
      transparent (identical on white, and these live on tinted headers too). */
   border-color: var(--c-gray-300);
 }
 .btn--secondary:hover:not(:disabled) {
-  background: var(--c-slate-50);
-  border-color: var(--c-slate-400);
+  background: var(--c-gray-0);
+  border-color: var(--c-gray-500);
 }
 
 /* Ghost — the app's `.button--text`: transparent, $textColor, and a
    $lightestGray hover. */
 .btn--ghost {
   background: transparent;
-  color: var(--c-text-real);
+  color: var(--c-text);
   border-color: transparent;
 }
 .btn--ghost:hover:not(:disabled) {
   background: var(--c-gray-150);
-  color: var(--c-text-real);
+  color: var(--c-text);
   border-color: var(--c-gray-150);
 }
 
 /* Danger — red */
 .btn--danger {
-  background: var(--c-red-600);
+  background: var(--c-red);
   color: #fff;
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 .btn--danger:hover:not(:disabled) {
   background: #b91c1c;
@@ -145,13 +145,13 @@
 
 /* Accent — uses --btn-accent (defaults to slate) */
 .btn--accent {
-  background: var(--btn-accent, var(--c-slate-600));
+  background: var(--btn-accent, var(--c-gray-750));
   color: #fff;
-  border-color: var(--btn-accent, var(--c-slate-600));
+  border-color: var(--btn-accent, var(--c-gray-750));
 }
 .btn--accent:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--btn-accent, var(--c-slate-600)) 88%, black);
-  border-color: color-mix(in srgb, var(--btn-accent, var(--c-slate-600)) 88%, black);
+  background: color-mix(in srgb, var(--btn-accent, var(--c-gray-750)) 88%, black);
+  border-color: color-mix(in srgb, var(--btn-accent, var(--c-gray-750)) 88%, black);
 }
 
 /* ── Icon slot ───────────────────────────────────────────────────────────── */

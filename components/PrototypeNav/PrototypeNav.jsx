@@ -24,7 +24,7 @@ const NAV_SECTIONS = (() => {
     .map(([title, items]) => ({ title, items }))
 })()
 
-export function PrototypeNav({ currentHref }) {
+export function PrototypeNav({ currentHref, center }) {
   const [open, setOpen] = useState(false)
   const [usageOpen, setUsageOpen] = useState(false)
   const currentIdx = NAV_PROTOTYPES.findIndex((p) => p.href === currentHref)
@@ -83,6 +83,8 @@ export function PrototypeNav({ currentHref }) {
           <Icon name="layout-grid" size={14} />
         </button>
       </div>
+
+      {center && <div className="proto-nav-center">{center}</div>}
 
       {usageOpen && <ComponentUsage onClose={() => setUsageOpen(false)} />}
 
