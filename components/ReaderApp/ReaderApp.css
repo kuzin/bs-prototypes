@@ -1,4 +1,16 @@
-/* ── Beanstack Web App prototype ─────────────────────────────────────────── */
+/* ── Beanstack reader app ────────────────────────────────────────────────── */
+/*
+   The reader-facing Beanstack: top bar, tab strip, challenge grid, and the
+   rail cards beside it. Four prototypes render this chrome — web-app,
+   logging-flow (and Words with Benny through it), beeverso, and book-talks —
+   so it lives here with the components in ReaderApp.jsx rather than inside any
+   one of them. It used to be prototypes/web-app/index.css, which the other
+   three reached across into; the markup stayed hand-rolled in each, and the
+   web-app copy fell a year behind the stylesheet it owned.
+
+   `wa-` is kept as the class prefix: it is what all four already spell, and
+   renaming it buys nothing.
+*/
 
 :root {
   /* One cap for every page-level container here — top bar, tab strip, main
@@ -78,6 +90,72 @@
   align-items: center;
   gap: 6px;
   margin-left: 8px;
+}
+
+/* The topbar logo doubles as "back to Challenges" once the reader can navigate
+   away from it. */
+.wa-logo-btn {
+  background: none;
+  border: 0;
+  padding: 0;
+  display: inline-flex;
+}
+
+/* Log Reading always stays put; the secondary actions fold into a flyout once
+   the bar runs out of room. */
+.wa-actions-wide {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.wa-actions-narrow {
+  display: none;
+}
+@media (max-width: 1120px) {
+  .wa-actions-wide {
+    display: none;
+  }
+  .wa-actions-narrow {
+    display: block;
+  }
+}
+
+.wa-more-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  background: #ffffff;
+  color: var(--c-text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.wa-more-btn:hover {
+  background: var(--c-slate-100);
+}
+
+.wa-more-menu {
+  min-width: 200px;
+  padding: 6px;
+}
+.wa-more-item {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 9px 10px;
+  border: 0;
+  border-radius: 8px;
+  background: none;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text);
+  text-align: left;
+}
+.wa-more-item:hover {
+  background: var(--c-slate-100);
 }
 .wa-topbar-actions .btn--ghost {
   color: var(--c-slate-800);
@@ -165,7 +243,10 @@
   justify-content: center;
   gap: 0;
 }
-.wa-tabsbar .tab {
+/* `.wa-tabsbar .tabs .tab`, not `.wa-tabsbar .tab`: the shorter selector ties
+   `.tabs--underline .tab` on specificity, so the strip's padding came down to
+   whichever stylesheet the bundler happened to put last. */
+.wa-tabsbar .tabs .tab {
   padding: 14px 20px;
   font-size: 15px;
 }
@@ -337,13 +418,6 @@
   padding: 14px;
   overflow: hidden;
 }
-.wa-chcard-emoji {
-  position: absolute;
-  left: 14px;
-  bottom: 8px;
-  font-size: 38px;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.18));
-}
 .wa-chcard-arttitle {
   font-size: 22px;
   font-weight: 900;
@@ -378,43 +452,6 @@
   font-size: 12px;
   color: var(--c-text-muted);
   margin-top: 2px;
-}
-
-/* Add tile */
-.wa-chcard--add {
-  border-style: dashed;
-  border-color: var(--c-border-strong);
-  background: var(--c-slate-50);
-  min-height: 220px;
-  align-items: center;
-  justify-content: center;
-}
-.wa-chcard--add:hover {
-  background: var(--c-slate-100);
-}
-.wa-chcard-add-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  color: var(--c-slate-600);
-}
-.wa-chcard-add-plus {
-  width: 44px;
-  height: 44px;
-  border-radius: 999px;
-  background: #ffffff;
-  border: 1px solid var(--c-border-strong);
-  font-size: 24px;
-  font-weight: 600;
-  color: var(--c-text-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.wa-chcard-add-label {
-  font-size: 13px;
-  font-weight: 700;
 }
 
 /* ── Rail ────────────────────────────────────────────────────────────────── */
@@ -561,88 +598,6 @@
 }
 .wa-leadcard-more:hover {
   text-decoration: none;
-}
-
-/* ── Footer ──────────────────────────────────────────────────────────────── */
-
-.wa-footer-thin {
-  border-top: 1px solid var(--c-gray-200);
-  background: #ffffff;
-}
-.wa-footer-thin-inner {
-  max-width: var(--wa-content-max);
-  margin: 0 auto;
-  padding: 12px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.wa-footer-links {
-  display: flex;
-  gap: 24px;
-}
-.wa-footer-links a {
-  font-size: 13px;
-  color: var(--c-slate-600);
-  text-decoration: none;
-  font-weight: 600;
-}
-.wa-footer-links a:hover {
-  color: var(--c-text);
-}
-.wa-footer-lang {
-  background: transparent;
-  border: 0;
-  font: inherit;
-  font-size: 13px;
-  color: var(--c-slate-600);
-  font-weight: 600;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.wa-footer-lang-g {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #4285f4 0, #34a853 50%, #fbbc05 75%, #ea4335 100%);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 900;
-}
-
-.wa-footer {
-  background: #ffffff;
-}
-.wa-footer-inner {
-  max-width: var(--wa-content-max);
-  margin: 0 auto;
-  padding: 18px 24px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.wa-footer-copy {
-  font-size: 12.5px;
-  color: var(--c-text-subtle);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.wa-footer-copy a {
-  color: var(--c-text-muted);
-  text-decoration: none;
-}
-.wa-footer-copy a:hover {
-  text-decoration: underline;
-}
-.wa-footer-copy span {
-  color: var(--c-slate-300);
 }
 
 /* ─── Reader switcher + account menu (the topbar pill and gear) ───────────── */

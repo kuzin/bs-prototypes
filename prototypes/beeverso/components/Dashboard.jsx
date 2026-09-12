@@ -1,8 +1,6 @@
 import { useState } from 'react'
-import { Icon } from '@components/Icon/Icon'
-import { Button } from '@components/Button/Button'
-import { Tabs } from '@components/Tabs/Tabs'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
+import { GoalCard, ReaderTopBar, StreakBanner } from '@components/ReaderApp/ReaderApp'
 import {
   ConnectBanner,
   PartnerSwitcher,
@@ -13,100 +11,14 @@ import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
 import { PARTNERS, PARTNER_BY_ID } from '../connections'
 import { READER, CHALLENGES, TITLE_BY_ID, importedSessions } from '../data'
 import { ReadingLog } from './ReadingLog'
+import { JoyfulFooter, APPS } from '../../footers/JoyfulFooter'
 import './Dashboard.css'
 
-// The reader-facing Beanstack the integration lands in. Borrows the consumer
-// web-app dashboard styling so the Beeverso pieces read in their real context.
-import '../../web-app/index.css'
-import '@components/Button/Button.css'
-import '@components/Tabs/Tabs.css'
 import '@components/ProgressBar/ProgressBar.css'
 
-function BeanstackLogo() {
-  return (
-    <div className="wa-logo">
-      <img src="/bs-prototypes/bs.svg" alt="" className="wa-logo-mark" />
-      <span className="wa-logo-word">beanstack</span>
-    </div>
-  )
-}
-
-function TopBar({ connections, onManageConnections, onHome, onVisitPartner, view, onView }) {
-  return (
-    <header className="wa-topbar">
-      <div className="wa-topbar-inner">
-        <button className="wa-logo-btn" onClick={onHome} aria-label="Beanstack home">
-          <BeanstackLogo />
-        </button>
-        <div className="wa-topbar-actions">
-          <Button variant="primary" size="sm" icon={<Icon name="book" size={16} />}>
-            Log Reading
-          </Button>
-        </div>
-        <div className="wa-topbar-user">
-          {/* "Swap between the two at any time using the logo in the top right." */}
-          <PartnerSwitcher
-            partners={PARTNERS}
-            connections={connections}
-            onManage={onManageConnections}
-            onVisit={onVisitPartner}
-          />
-          <div className="wa-user-pill">
-            <span className="wa-user-avatar">{READER.initials}</span>
-            <span className="wa-user-name">{READER.name.split(' ')[0]}</span>
-          </div>
-          <button className="wa-icon-btn" aria-label="Settings" onClick={onManageConnections}>
-            <Icon name="settings" size={20} />
-          </button>
-        </div>
-      </div>
-
-      <div className="wa-tabsbar">
-        <Tabs
-          variant="underline"
-          size="md"
-          active={view === 'log' ? 'log' : 'challenges'}
-          accent="#1A6DD5"
-          onChange={onView}
-          items={[
-            { id: 'challenges', label: 'Challenges' },
-            { id: 'friends', label: 'Friends' },
-            { id: 'leaderboards', label: 'Leaderboards' },
-            { id: 'badges', label: 'All Badges' },
-            { id: 'log', label: 'Reading Log' },
-          ]}
-        />
-      </div>
-    </header>
-  )
-}
-
-function StreakBanner({ streak, linkedCount }) {
-  const has = streak.current > 0
-  return (
-    <div className="wa-streak">
-      <div className="wa-streak-flame">
-        <Icon name="flame-filled" size={18} />
-        <span className="wa-streak-num">{streak.current}</span>
-      </div>
-      <div className="wa-streak-msg">
-        {has ? (
-          <>
-            <strong>{streak.current}-day streak!</strong> Reading in{' '}
-            {linkedCount > 1 ? 'your linked apps counts' : 'your linked app counts'} toward it too.
-          </>
-        ) : (
-          <>
-            <strong>No current streak.</strong> Log reading every day to get your streak going!
-          </>
-        )}
-      </div>
-      <Button variant="secondary" size="sm">
-        {has ? 'View Streaks' : 'Log Today'}
-      </Button>
-    </div>
-  )
-}
+// Beeverso's own challenge card — a progress meter rather than the cover art
+// the Beanstack challenges carry, because these track a linked app's minutes
+// and titles. The chrome around it is the shared reader app.
 
 function ChallengeCard({ challenge }) {
   const pct = Math.round((challenge.progress / challenge.total) * 100)
@@ -123,48 +35,6 @@ function ChallengeCard({ challenge }) {
         </span>
       </span>
     </button>
-  )
-}
-
-function GoalCard({ dailyGoal }) {
-  const { minutes, goal } = dailyGoal
-  const met = minutes >= goal
-  return (
-    <aside className="wa-card wa-goalcard">
-      <div className="wa-goalcard-head">
-        <div className="wa-goalcard-title">
-          {met ? 'Well done!' : minutes > 0 ? 'Almost there!' : "Today's Goal"}
-        </div>
-        <div className="wa-goalcard-sub">
-          {met
-            ? "You've reached your reading goal for the day."
-            : `Read ${goal - minutes} more minute${goal - minutes === 1 ? '' : 's'} to hit your daily goal.`}
-        </div>
-      </div>
-      <div className="wa-goalcard-meter">
-        <div className="wa-goalcard-amount">
-          <span className="wa-goalcard-num" style={{ color: met ? '#10B981' : '#1A6DD5' }}>
-            {minutes}
-          </span>
-          <span className="wa-goalcard-denom"> / {goal} minutes</span>
-        </div>
-        <ProgressBar value={minutes} max={goal} color={met ? '#10B981' : '#1A6DD5'} size="lg" />
-      </div>
-    </aside>
-  )
-}
-
-function Footer() {
-  return (
-    <footer className="wa-footer">
-      <div className="wa-footer-inner">
-        <BeanstackLogo />
-        <div className="wa-footer-copy">
-          © 2026 Zoobean, Inc. <span>•</span> <a href="#">Terms</a> <span>•</span>{' '}
-          <a href="#">Privacy</a>
-        </div>
-      </div>
-    </footer>
   )
 }
 
@@ -201,13 +71,25 @@ export function Dashboard({
 
   return (
     <div className="wa-shell">
-      <TopBar
-        connections={connections}
-        onManageConnections={() => setView('settings')}
+      {/* One reader, one action, and no Reviews tab — this prototype is about
+          what a linked app puts into Beanstack, not the whole site. */}
+      <ReaderTopBar
+        reader={{ ...READER, name: READER.name.split(' ')[0] }}
+        secondaryActions={false}
+        accountMenu={false}
+        onAccount={() => setView('settings')}
         onHome={() => setView('challenges')}
-        onVisitPartner={onVisitPartner}
-        view={view}
-        onView={(id) => setView(id === 'log' ? 'log' : 'challenges')}
+        beforeUser={
+          <PartnerSwitcher
+            partners={PARTNERS}
+            connections={connections}
+            onManage={() => setView('settings')}
+            onVisit={onVisitPartner}
+          />
+        }
+        hideTabs={['reviews']}
+        active={view === 'log' ? 'log' : 'challenges'}
+        onTabChange={(id) => setView(id === 'log' ? 'log' : 'challenges')}
       />
       <main className="wa-main">
         <div className="wa-main-inner">
@@ -228,7 +110,18 @@ export function Dashboard({
                 onLink={onLinkPartner}
                 onDismiss={() => setDismissed(true)}
               />
-              <StreakBanner streak={streak} linkedCount={linkedCount} />
+              <StreakBanner
+                streak={streak}
+                message={
+                  streak.current > 0 ? (
+                    <>
+                      <strong>{streak.current}-day streak!</strong> Reading in{' '}
+                      {linkedCount > 1 ? 'your linked apps counts' : 'your linked app counts'}{' '}
+                      toward it too.
+                    </>
+                  ) : undefined
+                }
+              />
               <div className="wa-layout">
                 <section className="wa-content">
                   <div className="wa-section-head">
@@ -255,7 +148,7 @@ export function Dashboard({
           )}
         </div>
       </main>
-      <Footer />
+      <JoyfulFooter app={APPS.find((a) => a.id === 'beanstack')} />
     </div>
   )
 }

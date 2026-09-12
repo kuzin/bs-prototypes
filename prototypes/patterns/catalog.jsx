@@ -19,6 +19,7 @@ import { formPatternsSections } from './sections/form-patterns'
 import { chartsSections } from './sections/charts'
 import { domainSections } from './sections/domain'
 import { layoutSections } from './sections/layout'
+import { readerAppSections } from './sections/reader-app'
 import { sfrSections } from './sections/sfr'
 import { insightsSections } from './sections/insights'
 import { challengeCreatorSections } from './sections/challenge-creator'
@@ -163,7 +164,7 @@ export const GROUPS = [
   {
     id: 'navigation',
     title: 'Navigation & Chrome',
-    desc: 'Page headers, rails, and everything that moves you between views — heroes, sidebars, tabs, and back bars.',
+    desc: 'Page headers, rails, and everything that moves you between views — heroes, sidebars, tabs, back bars, and the reader app bar.',
     color: 'var(--c-blue-700)',
   },
   {
@@ -175,7 +176,7 @@ export const GROUPS = [
   {
     id: 'domain',
     title: 'Domain',
-    desc: 'Beanstack-specific components — reading health, RMI, integrity alerts, and partner connections.',
+    desc: 'Beanstack-specific components — reading health, RMI, integrity alerts, partner connections, and the reader dashboard’s challenge, goal and leaderboard cards.',
     color: 'var(--c-brand-coral)',
   },
   {
@@ -266,6 +267,7 @@ export const SECTIONS = [
   ...chartsSections,
   ...domainSections,
   ...layoutSections,
+  ...readerAppSections,
   ...sfrSections,
   ...insightsSections,
   ...challengeCreatorSections,

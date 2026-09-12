@@ -1,21 +1,16 @@
 import { useState } from 'react'
-import { Icon } from '@components/Icon/Icon'
-import { Button } from '@components/Button/Button'
-import { Tabs } from '@components/Tabs/Tabs'
-import { Pill } from '@components/Pill/Pill'
-import { ProgressBar } from '@components/ProgressBar/ProgressBar'
-import { IconButton } from '@components/Primitives/Primitives'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
-import { Flyout } from '@components/Flyout/Flyout'
+import {
+  ChallengeCard,
+  ChallengeScope,
+  GoalCard,
+  LeaderboardCard,
+  ReaderTopBar,
+  StreakBanner,
+} from '@components/ReaderApp/ReaderApp'
 import { JoyfulFooter, APPS } from '../footers/JoyfulFooter'
 
 import '../ris/index.css'
-import '@components/Button/Button.css'
-import '@components/Tabs/Tabs.css'
-import '@components/Flyout/Flyout.css'
-import '@components/Pill/Pill.css'
-import '@components/ProgressBar/ProgressBar.css'
-import '@components/Primitives/Primitives.css'
 import '@components/PrototypeNav/PrototypeNav.css'
 
 import {
@@ -27,349 +22,54 @@ import {
   TOP_SCHOOLS,
   TOP_GRADES,
 } from './data'
-import './index.css'
 
-// ─── Iconography ────────────────────────────────────────────────────────────
-
-const IconBook = () => <Icon name="book" size={16} aria-hidden />
-const IconCheck = () => <Icon name="check" size={15} aria-hidden />
-const IconPencil = () => <Icon name="writing" size={15} aria-hidden />
-const IconGear = () => <Icon name="settings" size={20} aria-hidden />
-const IconFlame = () => <Icon name="flame-filled" size={18} aria-hidden />
-const IconClose = () => <Icon name="x" size={14} aria-hidden />
-const IconCaret = () => <Icon name="chevron-down" size={11} aria-hidden />
-
-function BeanstackLogo() {
-  return (
-    <div className="wa-logo">
-      <img src="/bs-prototypes/bs.svg" alt="" className="wa-logo-mark" />
-      <span className="wa-logo-word">beanstack</span>
-    </div>
-  )
-}
-
-// ─── Top app bar ────────────────────────────────────────────────────────────
-
-function TopBar() {
-  return (
-    <header className="wa-topbar">
-      <div className="wa-topbar-inner">
-        <BeanstackLogo />
-        <div className="wa-topbar-actions">
-          <Button variant="primary" size="md" icon={<IconBook />}>
-            Log Reading
-          </Button>
-          <Button variant="ghost" size="md" icon={<IconCheck />}>
-            Complete Activity
-          </Button>
-          <Button variant="ghost" size="md" icon={<IconPencil />}>
-            Write a Review
-          </Button>
-        </div>
-        <div className="wa-topbar-user">
-          {/* The reader pill switches reader; the gear is the account menu. */}
-          <Flyout
-            placement="bottom-end"
-            trigger={({ toggle }) => (
-              <button className="wa-user-pill" onClick={toggle} aria-label="Switch reader">
-                <span className="wa-user-avatar">{USER.initials}</span>
-                <span className="wa-user-name">{USER.firstName}</span>
-              </button>
-            )}
-          >
-            {({ close }) => (
-              <div className="wa-readers">
-                <div className="wa-readers-me">
-                  <span className="wa-user-avatar wa-user-avatar--lg">{USER.initials}</span>
-                  <span className="wa-readers-name">{USER.firstName}</span>
-                  <button className="wa-readers-edit" onClick={close}>
-                    Edit
-                  </button>
-                </div>
-                <div className="wa-readers-others">
-                  {OTHER_READERS.map((r) => (
-                    <button key={r.id} className="wa-readers-row" onClick={close}>
-                      <span className="wa-user-avatar" style={{ background: r.color }}>
-                        {r.initials}
-                      </span>
-                      {r.name}
-                    </button>
-                  ))}
-                </div>
-                <button className="wa-readers-add" onClick={close}>
-                  Add a Reader
-                </button>
-              </div>
-            )}
-          </Flyout>
-          <Flyout
-            placement="bottom-end"
-            trigger={({ toggle }) => (
-              <button className="wa-icon-btn" onClick={toggle} aria-label="Account settings">
-                <IconGear />
-              </button>
-            )}
-          >
-            {({ close }) => (
-              <div className="wa-acct">
-                <button className="wa-acct-item" onClick={close}>
-                  Edit Account
-                </button>
-                <button className="wa-acct-item" onClick={close}>
-                  Sign Out
-                </button>
-              </div>
-            )}
-          </Flyout>
-        </div>
-      </div>
-
-      <div className="wa-tabsbar">
-        <Tabs
-          variant="underline"
-          size="md"
-          active="challenges"
-          accent="#0DA7BC"
-          onChange={() => {
-            /* prototype */
-          }}
-          items={[
-            { id: 'challenges', label: 'Challenges' },
-            { id: 'friends', label: 'Friends' },
-            { id: 'leaderboards', label: 'Leaderboards' },
-            { id: 'reviews', label: 'Reviews' },
-            { id: 'badges', label: 'All Badges' },
-            { id: 'log', label: 'Reading Log' },
-          ]}
-        />
-      </div>
-    </header>
-  )
-}
-
-// ─── Streak banner ──────────────────────────────────────────────────────────
-
-function StreakBanner({ onDismiss }) {
-  return (
-    <div className="wa-streak">
-      <div className="wa-streak-flame">
-        <IconFlame />
-        <span className="wa-streak-num">{STREAK.current}</span>
-      </div>
-      <div className="wa-streak-msg">
-        <strong>No current streak.</strong> Log reading every day to get your streak going!
-      </div>
-      <Button variant="secondary" size="sm">
-        View Streaks
-      </Button>
-      <IconButton variant="ghost" size="sm" onClick={onDismiss} aria-label="Dismiss">
-        <IconClose />
-      </IconButton>
-    </div>
-  )
-}
-
-// ─── Challenge card ─────────────────────────────────────────────────────────
-
-const ILLUSTRATIONS = {
-  spring: {
-    bg: 'linear-gradient(180deg, #BFE3FA 0%, #B6F0C9 100%)',
-    emoji: '🚲',
-    title: 'SPRING\nINTO\nREADING',
-    titleColor: '#23806C',
-  },
-  'love-hurts': {
-    bg: 'linear-gradient(180deg, #8B4424 0%, #5D2A14 100%)',
-    emoji: '💔',
-    title: 'LOVE\nHURTS',
-    titleColor: '#FAD5BC',
-  },
-  arresting: {
-    bg: 'linear-gradient(180deg, #FFE8A8 0%, #C8E6B8 100%)',
-    emoji: '🔍',
-    title: 'ARRESTING\nSTRANGENESS',
-    titleColor: '#3D2A18',
-  },
-}
-
-function ChallengeCard({ challenge }) {
-  const art = ILLUSTRATIONS[challenge.illustration] ?? ILLUSTRATIONS.spring
-  return (
-    <button className="wa-chcard" type="button">
-      <div className="wa-chcard-hero" style={{ background: art.bg }}>
-        <span className="wa-chcard-emoji" aria-hidden>
-          {art.emoji}
-        </span>
-        <span className="wa-chcard-arttitle" style={{ color: art.titleColor }}>
-          {art.title}
-        </span>
-      </div>
-      <div className="wa-chcard-body">
-        {/* Beside the name, not floated over the artwork — this card shares its
-            stylesheet with logging-flow's, so the two have to agree. */}
-        <div className="wa-chcard-titlerow">
-          <div className="wa-chcard-title">{challenge.title}</div>
-          <Pill color="#0DA7BC" variant="filled" size="sm">
-            {challenge.badge}
-          </Pill>
-        </div>
-        <div className="wa-chcard-dates">{challenge.dates}</div>
-      </div>
-    </button>
-  )
-}
-
-function AddChallengeCard() {
-  return (
-    <button className="wa-chcard wa-chcard--add" type="button">
-      <div className="wa-chcard-add-inner">
-        <span className="wa-chcard-add-plus" aria-hidden>
-          +
-        </span>
-        <span className="wa-chcard-add-label">Find a Challenge</span>
-      </div>
-    </button>
-  )
-}
-
-// ─── Sidebar widgets ────────────────────────────────────────────────────────
-
-function GoalCard() {
-  const { minutes, goal } = DAILY_GOAL
-  const met = minutes >= goal
-  return (
-    <aside className="wa-card wa-goalcard">
-      <div className="wa-goalcard-head">
-        <div className="wa-goalcard-title">Well done!</div>
-        <div className="wa-goalcard-sub">You've reached your reading goal for the day.</div>
-      </div>
-      <div className="wa-goalcard-meter">
-        <div className="wa-goalcard-amount">
-          <span className="wa-goalcard-num">{minutes}</span>
-          <span className="wa-goalcard-denom"> / {goal} minutes</span>
-        </div>
-        <ProgressBar value={minutes} max={goal} color={met ? '#10B981' : '#0DA7BC'} size="lg" />
-      </div>
-    </aside>
-  )
-}
-
-function LeaderboardCard() {
-  const [tab, setTab] = useState('schools')
-  const rows = tab === 'schools' ? TOP_SCHOOLS : TOP_GRADES
-  return (
-    <aside className="wa-card wa-leadcard">
-      <div className="wa-leadcard-tabs">
-        <Tabs
-          variant="underline"
-          size="sm"
-          center
-          active={tab}
-          onChange={setTab}
-          accent="#0DA7BC"
-          items={[
-            { id: 'schools', label: 'Top Schools' },
-            { id: 'grades', label: 'Top Grades' },
-          ]}
-        />
-      </div>
-
-      <div className="wa-leadcard-meta">
-        <button className="wa-leadcard-meta-btn" type="button">
-          This Week <IconCaret />
-        </button>
-        <button className="wa-leadcard-meta-btn" type="button">
-          By Minutes <IconCaret />
-        </button>
-      </div>
-
-      <ul className="wa-leadcard-list">
-        {rows.map((row) => (
-          <li key={row.rank} className="wa-leadcard-row">
-            <span className="wa-leadcard-rank" style={{ background: row.color }}>
-              {row.rank}
-            </span>
-            <span className="wa-leadcard-name">{row.name}</span>
-            <span className="wa-leadcard-val">{row.value}</span>
-          </li>
-        ))}
-      </ul>
-
-      <a href="#" className="wa-leadcard-more">
-        View All Schools
-      </a>
-    </aside>
-  )
-}
-
-// ─── Footer ─────────────────────────────────────────────────────────────────
-
-// The current Beanstack footer lives in the `footers` prototype — rendered from
-// there rather than kept as a second, stale copy here.
-function Footer() {
-  return <JoyfulFooter app={APPS.find((a) => a.id === 'beanstack')} />
-}
-
-// ─── Page ───────────────────────────────────────────────────────────────────
+// This is the plain reader dashboard — the same chrome and rail cards the
+// integration prototypes build on, with none of their additions. Every piece
+// comes from @components/ReaderApp, so the page can't fall behind the way it
+// did while it kept its own copy of the markup.
 
 export function App() {
   const [scope, setScope] = useState('current')
-  const [streakOpen, setStreakOpen] = useState(true)
 
   return (
     <div className="wa-shell">
-      <TopBar />
+      {/* Challenges is the only view here — the rest of the site nav is chrome,
+          so the strip shows where you are and stays put, the way it did before
+          this page moved onto the shared bar. */}
+      <ReaderTopBar reader={USER} otherReaders={OTHER_READERS} active="challenges" />
 
       <main className="wa-main">
         <div className="wa-main-inner">
-          {streakOpen && <StreakBanner onDismiss={() => setStreakOpen(false)} />}
+          <StreakBanner streak={STREAK} />
 
           <div className="wa-layout">
             <section className="wa-content">
               <div className="wa-section-head">
                 <h2 className="wa-h2">Challenges</h2>
-                <div className="wa-scope">
-                  {[
-                    { id: 'current', label: 'Current' },
-                    { id: 'past', label: 'Past' },
-                    { id: 'ignored', label: 'Ignored' },
-                  ].map((o) => (
-                    <button
-                      key={o.id}
-                      type="button"
-                      className={`wa-scope-btn${scope === o.id ? ' wa-scope-btn--active' : ''}`}
-                      onClick={() => setScope(o.id)}
-                    >
-                      {o.label}
-                    </button>
-                  ))}
-                </div>
+                <ChallengeScope value={scope} onChange={setScope} />
               </div>
 
               <div className="wa-group">
-                <div className="wa-group-title">{USER.firstName}'s Challenges</div>
-                <div className="wa-group-sub">
-                  Challenges that {USER.firstName} is participating in.
-                </div>
+                <div className="wa-group-title">{USER.name}&apos;s Challenges</div>
+                <div className="wa-group-sub">Challenges that {USER.name} is participating in.</div>
 
                 <div className="wa-chgrid">
                   {CHALLENGES.map((c) => (
                     <ChallengeCard key={c.id} challenge={c} />
                   ))}
-                  <AddChallengeCard />
                 </div>
               </div>
             </section>
 
             <div className="wa-rail">
-              <GoalCard />
-              <LeaderboardCard />
+              <GoalCard dailyGoal={DAILY_GOAL} />
+              <LeaderboardCard schools={TOP_SCHOOLS} grades={TOP_GRADES} />
             </div>
           </div>
         </div>
       </main>
 
-      <Footer />
+      <JoyfulFooter app={APPS.find((a) => a.id === 'beanstack')} />
 
       <PrototypeNav currentHref="/bs-prototypes/web-app/" />
     </div>
