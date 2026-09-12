@@ -4,8 +4,7 @@ import {
   SignalOverviewCard,
 } from '../../engagement-signals/components/StudentSignal'
 import { ClassEngagement } from '../../engagement-signals/components/ClassEngagement'
-import { ClassroomView } from '../../student-profile/BeanstackProfile'
-import { STUDENT_SIGNALS, SIGNAL_ORDER } from '../../engagement-signals/data'
+import { STUDENT_SIGNALS, SIGNAL_ORDER, currentPeriod } from '../../engagement-signals/data'
 import { Variant } from './_shared'
 
 const noop = () => {}
@@ -19,6 +18,11 @@ const TYLER = STUDENT_SIGNALS.tyler
 // `StudentSignal` and `SignalOverviewCard` are handed the profile's student
 // object, which they join to the signal on name.
 const asStudent = (sig) => ({ name: sig.name })
+
+// The six drivers belong to a *window*, not to the reader — each entry in
+// `trajectory` carries its own reading. `currentPeriod` is the live one, which
+// is the reading the reader is said to "have".
+const driversOf = (sig) => currentPeriod(sig).drivers
 
 export const engagementSignalsSections = [
   {
@@ -78,7 +82,8 @@ export const engagementSignalsSections = [
         red, whatever the figure happens to be, because whether the move is good news is the group
         heading&rsquo;s job. A move the signal treats as noise draws the same chip in the neutral
         pair, holding a dash — three states in one box, so the column reads as a column rather than
-        a scatter of arrows with gaps in it. A Consistent reader is a page of them.
+        a scatter of arrows with gaps in it. A reader&rsquo;s opening window, with no earlier period
+        behind it to compare against, is a page of them.
         <br />
         <br />
         Words with Benny is site-level — a site either has it or it doesn&rsquo;t, so it can never
@@ -90,12 +95,12 @@ export const engagementSignalsSections = [
       <>
         <Variant label="all six, on a Declining reader (Tyler)">
           <div className="section-card bp-card bp-statlist">
-            <DriverList drivers={TYLER.drivers} />
+            <DriverList drivers={driversOf(TYLER)} />
           </div>
         </Variant>
-        <Variant label="a Consistent reader — no arrows, because nothing moved (Marcus)">
+        <Variant label="an opening window — nothing behind it yet, so six neutral chips (Marcus)">
           <div className="section-card bp-card bp-statlist">
-            <DriverList drivers={MARCUS.drivers} />
+            <DriverList drivers={MARCUS.trajectory[0].drivers} />
           </div>
         </Variant>
       </>
@@ -186,19 +191,11 @@ export const engagementSignalsSections = [
       </>
     ),
     render: () => (
-      <>
-        <Variant label="the tab's content on its own" full>
+      <Variant label="the tab's content on its own" full>
+        <div style={{ padding: '24px 24px 0' }}>
           <ClassEngagement onOpenStudent={noop} />
-        </Variant>
-        <Variant label="in place, as a tab on the real classroom page" full>
-          <ClassroomView
-            onStudentClick={noop}
-            extraTabs={[{ id: 'engagement', label: 'Engagement' }]}
-            initialTab="engagement"
-            renderExtra={() => <ClassEngagement onOpenStudent={noop} />}
-          />
-        </Variant>
-      </>
+        </div>
+      </Variant>
     ),
   },
 ]

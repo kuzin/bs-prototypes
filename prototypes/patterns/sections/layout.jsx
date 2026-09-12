@@ -9,7 +9,7 @@ import { BackBar } from '@components/BackBar/BackBar'
 import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Toggle } from '@components/Toggle/Toggle'
 import { SectionCard, SectionCardTitle } from '@components/SectionCard/SectionCard'
-import { Field, Input, Select } from '@components/Form/Form'
+import { ColorInput, Field, Input, Select } from '@components/Form/Form'
 import { SCHOOLS } from '../../ris/data'
 import { Icon } from '@components/Icon/Icon'
 import { Knobs, Variant } from './_shared'
@@ -218,9 +218,10 @@ function HeroKnobs() {
   const [title, setTitle] = useState('Lincoln Elementary')
   const [subtitle, setSubtitle] = useState('K–5 · 1,650 students')
   const [initials, setInitials] = useState('LE')
-  const [accent, setAccent] = useState('#E8866A')
+  const [accent, setAccent] = useState('#F26430')
   const [accentBg, setAccentBg] = useState('#FDF1ED')
   const [withAction, setAction] = useState(true)
+  const [showIcon, setShowIcon] = useState(true)
 
   const modeSelect = (
     <Field label="mode">
@@ -264,16 +265,21 @@ function HeroKnobs() {
             </Select>
           </Field>
           <Field label="accentBg">
-            <input
-              className="pt-color"
-              type="color"
-              value={accentBg}
-              onChange={(e) => setAccentBg(e.target.value)}
-            />
+            <ColorInput chip size="sm" value={accentBg} onChange={setAccentBg} />
+          </Field>
+          <Field label="icon">
+            <Toggle checked={showIcon} onChange={setShowIcon} />
           </Field>
           {actionToggle}
         </Knobs>
-        <Hero bucket={bucket} accentBg={accentBg} action={actionNode} />
+        <div className="pt-variant-frame">
+          <Hero
+            bucket={bucket}
+            accentBg={accentBg}
+            icon={showIcon ? undefined : false}
+            action={actionNode}
+          />
+        </div>
       </>
     )
   }
@@ -292,22 +298,19 @@ function HeroKnobs() {
             <Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} />
           </Field>
           <Field label="accent">
-            <input
-              className="pt-color"
-              type="color"
-              value={accent}
-              onChange={(e) => setAccent(e.target.value)}
-            />
+            <ColorInput chip size="sm" value={accent} onChange={setAccent} />
           </Field>
           {actionToggle}
         </Knobs>
-        <Hero
-          initials={initials}
-          title={title}
-          subtitle={subtitle}
-          accent={accent}
-          action={actionNode}
-        />
+        <div className="pt-variant-frame">
+          <Hero
+            initials={initials}
+            title={title}
+            subtitle={subtitle}
+            accent={accent}
+            action={actionNode}
+          />
+        </div>
       </>
     )
   }
@@ -324,16 +327,19 @@ function HeroKnobs() {
           <Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} />
         </Field>
         <Field label="accent">
-          <input
-            className="pt-color"
-            type="color"
-            value={accent}
-            onChange={(e) => setAccent(e.target.value)}
-          />
+          <ColorInput chip size="sm" value={accent} onChange={setAccent} />
         </Field>
         {actionToggle}
       </Knobs>
-      <Hero icon={motIcon} title={title} subtitle={subtitle} accent={accent} action={actionNode} />
+      <div className="pt-variant-frame">
+        <Hero
+          icon={showIcon ? motIcon : false}
+          title={title}
+          subtitle={subtitle}
+          accent={accent}
+          action={actionNode}
+        />
+      </div>
     </>
   )
 }
@@ -469,9 +475,11 @@ import '@components/Hero/Hero.css'
 <Hero mode="icon" icon="chart-bar" title="Insights" subtitle="This school year" />`,
     desc: (
       <>
-        One unified page header. <code>mode</code> picks between the three shapes:{' '}
-        <code>bucket</code> (auto-derive icon/title/accent from SECTIONS), <code>avatar</code>{' '}
-        (overview-style), and <code>icon</code> (analytics-style with subtitle).
+        One unified page header. <code>icon={'{false}'}</code> drops the leading mark for a bare
+        title — with a <code>bucket</code> the section&apos;s own icon wins otherwise, so this is
+        the opt-out. <code>mode</code> picks between the three shapes: <code>bucket</code>{' '}
+        (auto-derive icon/title/accent from SECTIONS), <code>avatar</code> (overview-style), and{' '}
+        <code>icon</code> (analytics-style with subtitle).
         <br />
         <br />
         The <code>action</code> slot takes <strong>small</strong> buttons. The title is 22px, so a{' '}
@@ -511,23 +519,29 @@ import '@components/Hero/Hero.css'
       </>
     ),
     render: () => (
-      <div style={{ background: 'var(--c-bg)', padding: 20, borderRadius: 10 }}>
-        <PageHeader
-          title="Find a Person"
-          subtitle="Search fields must contain at least two characters."
-        />
-        <PageHeader
-          title="Class A"
-          subtitle="24 students · 2024–25 School Year"
-          actions={
-            <>
-              <Button variant="ghost">Set Classroom Goal</Button>
-              <Button variant="primary">Log for Class</Button>
-            </>
-          }
-        />
-        <PageHeader title="Account Merges" subtitle="Review queued merges." border />
-      </div>
+      <>
+        <Variant label="title + subtitle">
+          <PageHeader
+            title="Find a Person"
+            subtitle="Search fields must contain at least two characters."
+          />
+        </Variant>
+        <Variant label="actions — a right-aligned button row">
+          <PageHeader
+            title="Class A"
+            subtitle="24 students · 2024–25 School Year"
+            actions={
+              <>
+                <Button variant="ghost">Set Classroom Goal</Button>
+                <Button variant="primary">Log for Class</Button>
+              </>
+            }
+          />
+        </Variant>
+        <Variant label="border — the app's --with-border rule">
+          <PageHeader title="Account Merges" subtitle="Review queued merges." border />
+        </Variant>
+      </>
     ),
   },
   {
@@ -674,10 +688,10 @@ import '@components/BackBar/BackBar.css'
     ),
     render: () => (
       <>
-        <Variant label="three views — the common case" bare>
+        <Variant label="three views — the common case">
           <PreviewBarShowcase />
         </Variant>
-        <Variant label="a subtitle + a right-side action" bare>
+        <Variant label="a subtitle + a right-side action">
           <PreviewBar
             title="Book Talks: Comprehension"
             subtitle="Site-wide completion setting"

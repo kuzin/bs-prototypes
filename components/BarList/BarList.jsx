@@ -11,7 +11,7 @@ function BarListRow({
   tooltip, // string — rendered as a native `title` tooltip on the label
   value,
   max = 100,
-  color = '#94A3B8',
+  color = '#ACACAC',
   valueLabel,
   subValue,
   delta,

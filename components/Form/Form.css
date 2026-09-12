@@ -16,14 +16,20 @@
   min-width: 100px;
 }
 
-/* The shipped app has `label, .label { font-weight: 900; font-size: 16px;
+/* One label, whichever API drew it. `<Field label>` and `<Input label>` are the
+   same thing to a reader and were rendering at 16px/800 and 13px/700 — the size
+   of a form's labels depended on which of two equivalent APIs you reached for.
+   The shipped app has `label, .label { font-weight: 900; font-size: 16px;
    margin-bottom: 8px }` (bs-product lib/_forms.scss). We run it a step lighter
-   at 800 and tuck it 6px above the control instead of 8px. */
-.fld-label {
-  font-size: 16px;
+   at 800, tuck it 6px above the control instead of 8px, and sit it on the type
+   ladder's label rung (14px) — 16px next to a 16px control read as a heading
+   rather than as the control's name. */
+.fld-label,
+.frm-self-label {
+  font-size: var(--text-label);
   font-weight: 800;
   line-height: 1.5;
-  color: var(--c-text-real);
+  color: var(--c-text);
 }
 
 /* Self-label: rendered by Input/Select/Textarea when label prop is passed directly */
@@ -35,21 +41,14 @@
   min-width: 0;
 }
 
-.frm-self-label {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--c-slate-700);
-  line-height: 1.3;
-}
-
 .fld-hint {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   font-weight: 500;
 }
 
 /* Required marker — a small red asterisk after the label text. */
 .fld-req {
-  color: var(--c-red-600);
+  color: var(--c-red);
   font-weight: 700;
 }
 
@@ -59,17 +58,29 @@
   min-width: 0;
 }
 
+/* Help and error sit under the control with a small mark in front, so a note
+   reads as attached to the field rather than as a stray line of grey. 12px was
+   below the type ladder's floor for anything you're meant to read. */
 .fld-help,
 .fld-error {
-  font-size: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: var(--text-tag);
   line-height: 1.45;
 }
 
+.fld-note-icon {
+  flex-shrink: 0;
+  /* nudged to sit on the first line's cap height, not its box */
+  margin-top: 1px;
+}
+
 .fld-help {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .fld-error {
-  color: var(--c-red-600);
+  color: var(--c-red);
   font-weight: 600;
 }
 
@@ -83,7 +94,7 @@
   background: #fff;
   border: 2px solid var(--c-gray-300);
   border-radius: 10px;
-  color: var(--c-text-real);
+  color: var(--c-text);
   transition: all 0.13s ease;
 }
 
@@ -93,44 +104,44 @@
 
 .inp:focus {
   outline: none;
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .inp::placeholder {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .inp:disabled {
-  background: var(--c-slate-50);
-  color: var(--c-text-subtle);
+  background: var(--c-gray-0);
+  color: var(--c-gray-600);
   cursor: not-allowed;
 }
 
 .inp--sm {
   height: 36px;
-  font-size: 14px;
+  font-size: var(--text-label);
   padding: 0 10px;
 }
 /* the app's default control */
 .inp--md {
   height: 44px;
-  font-size: 16px;
+  font-size: var(--text-cell);
   padding: 0 12px;
 }
 .inp--lg {
   height: 52px;
-  font-size: 16px;
+  font-size: var(--text-body);
   padding: 0 14px;
 }
 
 .inp--error,
 .inp--error:focus {
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 
 .inp--error:focus {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red) 18%, transparent);
 }
 
 /* Input wrap (with icon) */
@@ -139,45 +150,49 @@
   display: flex;
   align-items: center;
   background: #fff;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
   transition:
     border-color 0.12s,
     box-shadow 0.12s;
 }
 
 .inp-wrap:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-400);
 }
 
 .inp-wrap:focus-within {
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .inp-wrap--error {
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 .inp-wrap--error:focus-within {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red) 18%, transparent);
 }
 
+/* The wrap owns the height so an input with an icon is exactly as tall as one
+   without: it was padding-derived and came out ~4px short at every rung. */
 .inp-wrap--sm {
+  height: 36px;
   padding: 0 8px;
 }
 .inp-wrap--md {
+  height: 44px;
   padding: 0 10px;
 }
 .inp-wrap--lg {
+  height: 52px;
   padding: 0 12px;
-  border-radius: 10px;
 }
 
 .inp-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   flex-shrink: 0;
 }
 
@@ -196,7 +211,8 @@
 .inp--bare {
   border: none;
   background: transparent;
-  padding: 8px 0;
+  padding: 0;
+  height: 100%;
   flex: 1;
   min-width: 0;
 }
@@ -206,16 +222,13 @@
 }
 
 .inp-wrap--sm .inp--bare {
-  padding: 6px 0;
-  font-size: 13px;
+  font-size: var(--text-label);
 }
 .inp-wrap--md .inp--bare {
-  padding: 8px 0;
-  font-size: 13px;
+  font-size: var(--text-cell);
 }
 .inp-wrap--lg .inp--bare {
-  padding: 10px 0;
-  font-size: 14px;
+  font-size: var(--text-body);
 }
 
 /* ── Select ─────────────────────────────────────────────────────────────── */
@@ -234,7 +247,7 @@
   background: #fff;
   border: 2px solid var(--c-gray-300);
   border-radius: 10px;
-  color: var(--c-text-real);
+  color: var(--c-text);
   font-weight: 700;
   padding-right: 32px;
   cursor: pointer;
@@ -250,38 +263,38 @@
 
 .sel:focus {
   outline: none;
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .sel:disabled {
-  background: var(--c-slate-50);
-  color: var(--c-text-subtle);
+  background: var(--c-gray-0);
+  color: var(--c-gray-600);
   cursor: not-allowed;
 }
 
 .sel-wrap--sm .sel {
   height: 36px;
-  font-size: 14px;
+  font-size: var(--text-label);
   padding: 0 10px;
   padding-right: 28px;
 }
 /* the app's default control */
 .sel-wrap--md .sel {
   height: 44px;
-  font-size: 16px;
+  font-size: var(--text-cell);
   padding: 0 12px;
   padding-right: 32px;
 }
 .sel-wrap--lg .sel {
   height: 52px;
-  font-size: 16px;
+  font-size: var(--text-body);
   padding: 0 14px;
   padding-right: 36px;
 }
 
 .sel-wrap--error .sel {
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 
 .sel-caret {
@@ -289,7 +302,7 @@
   right: 10px;
   top: 50%;
   transform: translateY(-50%);
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   pointer-events: none;
 }
 
@@ -300,13 +313,13 @@
   max-width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
   color: var(--c-text);
-  padding: 8px 12px;
-  font-size: 13px;
+  padding: 10px 12px;
+  font-size: var(--text-cell);
   resize: vertical;
-  min-height: 70px;
+  min-height: 88px;
   line-height: 1.55;
   transition:
     border-color 0.12s,
@@ -314,29 +327,65 @@
 }
 
 .txt:hover {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-400);
+}
+
+/* Textarea has no fixed height, so its rungs are the ladder's type sizes and
+   the matching horizontal padding. `size` used to emit a class nothing styled. */
+.txt--sm {
+  font-size: var(--text-label);
+  padding: 8px 10px;
+  min-height: 72px;
+}
+.txt--md {
+  font-size: var(--text-cell);
+  padding: 10px 12px;
+  min-height: 88px;
+}
+.txt--lg {
+  font-size: var(--text-body);
+  padding: 12px 14px;
+  min-height: 104px;
 }
 
 .txt:focus {
   outline: none;
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .txt--error {
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 
 /* ── Checkbox ───────────────────────────────────────────────────────────── */
+/* Checkbox and radio are a port of the app's own custom control
+   (bs-product lib/_forms.scss `.checkbox-faux-control`): a 24px box with a 2px
+   border and a 6px radius, 12px from a 16px/700 label. That's the `lg` rung
+   here. They carry the same sm / md / lg ladder as the fields do, so a
+   checkbox next to a `sm` control doesn't tower over it, and `md` is the
+   default — the app's own 24px box is right for a standalone consent
+   checkbox and heavy for a list of six options. */
 .chk {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-  font-size: 13px;
-  color: var(--c-slate-700);
+  color: var(--c-text);
+}
+
+.chk--sm {
+  gap: 8px;
+  font-size: var(--text-label);
+}
+.chk--md {
+  gap: 10px;
+  font-size: var(--text-cell);
+}
+.chk--lg {
+  gap: 12px;
+  font-size: var(--text-body);
 }
 
 .chk--disabled {
@@ -352,15 +401,18 @@
   height: 0;
 }
 
+/* The md rung is the base, because the box markup is reused without a `.chk`
+   wrapper (MultiSelect's option rows) and must still come out the right size. */
 .chk-box {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
   background: #fff;
-  border: 1.5px solid var(--c-border-strong);
-  border-radius: 5px;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 6px;
   color: transparent;
   transition:
     background 0.12s,
@@ -369,29 +421,56 @@
   flex-shrink: 0;
 }
 
+.chk--sm .chk-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+}
+.chk--md .chk-box {
+  width: 20px;
+  height: 20px;
+}
+.chk--lg .chk-box {
+  width: 24px;
+  height: 24px;
+}
+
 .chk:hover .chk-box {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-400);
 }
 
 .chk-input:checked + .chk-box {
-  background: var(--c-blue-700);
-  border-color: var(--c-blue-700);
+  background: var(--c-blue);
+  border-color: var(--c-blue);
   color: #fff;
 }
 
 .chk-input:focus-visible + .chk-box {
-  outline: 2px solid var(--c-blue-700);
+  outline: 2px solid var(--c-blue);
   outline-offset: 2px;
 }
 
+/* Flex centring lines up the label's *box* with the checkbox, but the ink
+   inside that box sits high: measured on Museo at bold 16px, the cap-height
+   centre lands 0.78px above the box's centre, because the font's 14/4
+   ascent/descent split is asymmetric. Nudge it back down in em so it holds at
+   every rung. */
+.chk-label,
+.rdo-label {
+  transform: translateY(0.05em);
+}
+
 .chk-label {
-  font-weight: 500;
+  font-weight: 700;
 }
 
 /* ── Radio group ────────────────────────────────────────────────────────── */
+/* A row needs more air than a column: stacked, the 10px gap is the only thing
+   separating two rows and reads as a list; side by side, 10px between a long
+   label and the next box let "Grade 4 Grade 5" run together. */
 .rdg {
   display: flex;
-  gap: 12px;
+  gap: 10px;
 }
 
 .rdg--column {
@@ -400,17 +479,29 @@
 .rdg--row {
   flex-direction: row;
   flex-wrap: wrap;
+  gap: 10px 24px;
 }
 
 .rdo {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-  font-size: 13px;
-  color: var(--c-slate-700);
+  color: var(--c-text);
+}
+
+.rdo--sm {
+  gap: 8px;
+  font-size: var(--text-label);
+}
+.rdo--md {
+  gap: 10px;
+  font-size: var(--text-cell);
+}
+.rdo--lg {
+  gap: 12px;
+  font-size: var(--text-body);
 }
 
 .rdo--disabled {
@@ -430,10 +521,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 18px;
-  height: 18px;
   background: #fff;
-  border: 1.5px solid var(--c-border-strong);
+  border: 2px solid var(--c-gray-300);
   border-radius: 50%;
   position: relative;
   transition:
@@ -443,23 +532,46 @@
   box-sizing: border-box;
 }
 
+.rdo--sm .rdo-box {
+  width: 18px;
+  height: 18px;
+}
+.rdo--md .rdo-box {
+  width: 20px;
+  height: 20px;
+}
+.rdo--lg .rdo-box {
+  width: 24px;
+  height: 24px;
+}
+
 .rdo-box::after {
   content: '';
-  width: 8px;
-  height: 8px;
   border-radius: 50%;
   background: #fff;
   transform: scale(0);
   transition: transform 0.12s;
 }
+.rdo--sm .rdo-box::after {
+  width: 8px;
+  height: 8px;
+}
+.rdo--md .rdo-box::after {
+  width: 8px;
+  height: 8px;
+}
+.rdo--lg .rdo-box::after {
+  width: 10px;
+  height: 10px;
+}
 
 .rdo:hover .rdo-box {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-400);
 }
 
 .rdo-input:checked + .rdo-box {
-  background: var(--c-blue-700);
-  border-color: var(--c-blue-700);
+  background: var(--c-blue);
+  border-color: var(--c-blue);
 }
 
 .rdo-input:checked + .rdo-box::after {
@@ -467,18 +579,18 @@
 }
 
 .rdo-input:focus-visible + .rdo-box {
-  outline: 2px solid var(--c-blue-700);
+  outline: 2px solid var(--c-blue);
   outline-offset: 2px;
 }
 
 .rdo-input:checked ~ .rdo-label,
 .rdo-input:checked + .rdo-box + .rdo-label {
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   font-weight: 700;
 }
 
 .rdo-label {
-  font-weight: 500;
+  font-weight: 700;
 }
 
 /* ── Date / Time inputs ─────────────────────────────────────────────────── */
@@ -501,8 +613,8 @@
   width: 100%;
   box-sizing: border-box;
   background: #fff;
-  border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 10px;
   transition:
     border-color 0.12s,
     box-shadow 0.12s;
@@ -510,19 +622,21 @@
 }
 
 .cinp:focus-within {
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .cinp--sm {
-  padding: 5px 10px;
+  height: 36px;
+  padding: 0 10px;
 }
 .cinp--md {
-  padding: 7px 12px;
+  height: 44px;
+  padding: 0 12px;
 }
 .cinp--lg {
-  padding: 9px 14px;
-  border-radius: 10px;
+  height: 52px;
+  padding: 0 14px;
 }
 
 .cinp-swatch {
@@ -534,7 +648,10 @@
   background: transparent;
   padding: 0;
   cursor: pointer;
-  border-radius: 5px;
+  /* A circle, like the app's own picker (`.color-picker span`, radius 30px in
+     admin/_admin_colors.scss) — a rounded square next to a rounded field read
+     as a second, smaller input. */
+  border-radius: 50%;
   overflow: hidden;
 }
 
@@ -556,18 +673,79 @@
   border: none;
 }
 .cinp-swatch::-webkit-color-swatch {
-  border: 1px solid rgba(15, 23, 42, 0.16);
-  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 50%;
 }
 .cinp-swatch::-moz-color-swatch {
-  border: 1px solid rgba(15, 23, 42, 0.16);
-  border-radius: 4px;
+  border: 1px solid rgba(0, 0, 0, 0.16);
+  border-radius: 50%;
+}
+
+/* ── ColorInput chip ──────────────────────────────────────────────────────
+   The swatch on its own: no frame, no hex. Same circle and same rung sizes as
+   the swatch inside a full ColorInput, so the two read as one control shown two
+   ways. Because there's no frame to carry them, the chip owns the ring and the
+   hover/focus states itself. */
+.cinp-chip-wrap {
+  display: inline-flex;
+}
+
+.cinp-chip {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  flex-shrink: 0;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 50%;
+  overflow: hidden;
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+
+.cinp-chip:hover {
+  border-color: var(--c-gray-400);
+}
+
+.cinp-chip:focus-visible {
+  outline: none;
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
+}
+
+.cinp-chip--sm {
+  width: 22px;
+  height: 22px;
+}
+.cinp-chip--md {
+  width: 26px;
+  height: 26px;
+}
+.cinp-chip--lg {
+  width: 30px;
+  height: 30px;
+}
+
+.cinp-chip::-webkit-color-swatch-wrapper {
+  padding: 0;
+  border: none;
+}
+.cinp-chip::-webkit-color-swatch {
+  border: none;
+  border-radius: 50%;
+}
+.cinp-chip::-moz-color-swatch {
+  border: none;
+  border-radius: 50%;
 }
 
 .cinp-hex {
-  font-size: 13px;
+  font-size: var(--text-cell);
   font-weight: 600;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   font-family: var(--font-mono);
   letter-spacing: 0.03em;
 }
@@ -603,7 +781,7 @@
   background: #fff;
   border: 1px solid var(--c-border-strong);
   border-radius: 8px;
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   cursor: pointer;
   transition:
     background 0.12s,
@@ -613,34 +791,34 @@
 }
 
 .finp-btn:hover:not(:disabled) {
-  background: var(--c-slate-50);
-  border-color: var(--c-slate-400);
+  background: var(--c-gray-0);
+  border-color: var(--c-gray-500);
 }
 .finp-btn:focus-visible {
   outline: none;
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .finp--sm .finp-btn {
   height: 36px;
-  font-size: 14px;
+  font-size: var(--text-label);
   padding: 0 12px;
 }
 .finp--md .finp-btn {
   height: 44px;
-  font-size: 16px;
+  font-size: var(--text-cell);
   padding: 0 16px;
 }
 .finp--lg .finp-btn {
   height: 52px;
-  font-size: 16px;
+  font-size: var(--text-body);
   padding: 0 20px;
 }
 
 .finp-name {
-  font-size: 13px;
-  color: var(--c-slate-700);
+  font-size: var(--text-cell);
+  color: var(--c-gray-800);
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -648,7 +826,7 @@
 }
 
 .finp-name--placeholder {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 /* ── CheckboxGroup ──────────────────────────────────────────────────────── */
@@ -663,6 +841,7 @@
 .chkg--row {
   flex-direction: row;
   flex-wrap: wrap;
+  gap: 10px 24px;
 }
 
 /* ── MultiSelect ────────────────────────────────────────────────────────── */
@@ -691,46 +870,46 @@
 }
 
 .msel-trigger:hover:not(:disabled) {
-  border-color: var(--c-slate-400);
+  border-color: var(--c-gray-400);
 }
 
 .msel-trigger--open,
 .msel-trigger:focus-visible {
   outline: none;
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .msel-trigger:disabled {
-  background: var(--c-slate-50);
-  color: var(--c-text-subtle);
+  background: var(--c-gray-0);
+  color: var(--c-gray-600);
   cursor: not-allowed;
 }
 
-/* The one control ladder: 36 / 44 / 52 at 14 / 16 / 16, the rungs `.sel` and
+/* The one control ladder: 36 / 44 / 52 at 14 / 15 / 16, the rungs `.sel` and
    `.inp` use. These four sat on a padding-based 13px scale of their own, so a
    `md` of each came out 31–34px beside a 44px `md` Select. */
 .msel--sm .msel-trigger {
   min-height: 36px;
-  font-size: 14px;
+  font-size: var(--text-label);
   padding: 0 10px;
 }
 .msel--md .msel-trigger {
   min-height: 44px;
-  font-size: 16px;
+  font-size: var(--text-cell);
   padding: 0 12px;
 }
 .msel--lg .msel-trigger {
   min-height: 52px;
-  font-size: 16px;
+  font-size: var(--text-body);
   padding: 0 14px;
 }
 
 .msel--error .msel-trigger {
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 .msel--error .msel-trigger--open {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red) 18%, transparent);
 }
 
 .msel-display {
@@ -762,7 +941,7 @@
   display: inline-grid;
   place-items: center;
   border: 1.5px solid #fff;
-  box-shadow: 0 0 0 1px var(--c-slate-200);
+  box-shadow: 0 0 0 1px var(--c-gray-200);
 }
 .msel-display-av:not(:first-child) {
   margin-left: -7px;
@@ -774,12 +953,12 @@
 }
 
 .msel-display--placeholder {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .msel-caret {
   flex-shrink: 0;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   transition: transform 0.15s;
 }
 
@@ -812,24 +991,26 @@
   flex: none;
   display: flex;
   justify-content: flex-end;
-  padding: 6px;
+  padding: 8px;
   border-top: 1px solid var(--c-border);
   background: #fff;
 }
+/* Sized like a real `sm` button (36px at 14px/700), not the 12px pill it was. */
 .msel-done {
   font: inherit;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--text-label);
+  font-weight: 700;
   color: #fff;
-  background: var(--c-blue-700);
+  background: var(--c-blue);
   border: 0;
-  border-radius: 6px;
-  padding: 6px 16px;
+  border-radius: 8px;
+  height: 36px;
+  padding: 0 18px;
   cursor: pointer;
   transition: background 0.12s;
 }
 .msel-done:hover {
-  background: #1641a8;
+  background: var(--c-blue-ink);
 }
 /* Portaled to <body> with fixed coords — must clear the absolute `right` and
    sit above modals (z-index 200). */
@@ -838,13 +1019,15 @@
   z-index: 1000;
 }
 
+/* Same rung as every other overlay list (see .csel-item): the row reads at the
+   table-cell size, matching the value shown in the trigger above it. */
 .msel-opt {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: var(--text-cell);
   color: var(--c-text);
   transition: background 0.1s;
 }
@@ -854,7 +1037,7 @@
   height: 24px;
   border-radius: 50%;
   overflow: hidden;
-  background: #eef2f6;
+  background: var(--c-gray-100);
   display: grid;
   place-items: center;
 }
@@ -865,7 +1048,7 @@
 }
 
 .msel-opt:hover {
-  background: var(--c-slate-50);
+  background: var(--c-gray-0);
 }
 .msel-opt--disabled {
   opacity: 0.55;
@@ -874,7 +1057,7 @@
 }
 
 .msel-opt-label {
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .msel-empty {
@@ -886,25 +1069,31 @@
   text-align: center;
 }
 .msel-empty-ic {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
 }
 .msel-empty-text {
-  font-size: 13px;
+  font-size: var(--text-cell);
   font-weight: 600;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .msel-empty-hint {
-  font-size: 12px;
-  color: var(--c-text-subtle);
+  font-size: var(--text-tag);
+  color: var(--c-gray-600);
   line-height: 1.4;
 }
 
 /* ── NumberInput ────────────────────────────────────────────────────────── */
+/* A stepper hugs its number: it holds at most a few digits between two
+   buttons, and stretched to a field's width it read as a text input someone
+   had bolted arrows onto. Pass a width on the call site for the rare case that
+   wants one. */
 .ninp {
-  display: flex;
+  display: inline-flex;
   align-items: stretch;
-  width: 100%;
+  width: fit-content;
   box-sizing: border-box;
+  /* The rung is the frame's outer height — putting it on the inner input let
+     the 2px border push the whole control 4px past every other one. */
   background: #fff;
   border: 2px solid var(--c-gray-300);
   border-radius: 10px;
@@ -915,15 +1104,15 @@
 }
 
 .ninp:focus-within {
-  border-color: var(--c-blue-700);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue-700) 18%, transparent);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
 .ninp--error {
-  border-color: var(--c-red-600);
+  border-color: var(--c-red);
 }
 .ninp--error:focus-within {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red-600) 18%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-red) 18%, transparent);
 }
 
 .ninp-btn {
@@ -933,7 +1122,7 @@
   flex-shrink: 0;
   background: transparent;
   border: none;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   cursor: pointer;
   transition:
     background 0.1s,
@@ -943,11 +1132,11 @@
 }
 
 .ninp-btn:hover:not(:disabled) {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   color: var(--c-text);
 }
 .ninp-btn:disabled {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
   cursor: not-allowed;
 }
 
@@ -962,7 +1151,9 @@
 }
 
 .ninp-inp {
-  flex: 1;
+  /* The per-rung `width` below is a basis, not a cap: the stepper shrink-wraps
+     to it by default and still fills a call site that pins a wider frame. */
+  flex: 1 1 auto;
   min-width: 0;
   font: inherit;
   border: none;
@@ -979,19 +1170,28 @@
   margin: 0;
 }
 
+.ninp--sm {
+  height: 36px;
+}
 .ninp--sm .ninp-inp {
-  height: 32px;
-  font-size: 14px;
+  width: 48px;
+  font-size: var(--text-label);
   padding: 0 4px;
+}
+.ninp--md {
+  height: 44px;
 }
 .ninp--md .ninp-inp {
-  height: 40px;
-  font-size: 16px;
+  width: 56px;
+  font-size: var(--text-cell);
   padding: 0 4px;
 }
+.ninp--lg {
+  height: 52px;
+}
 .ninp--lg .ninp-inp {
-  height: 48px;
-  font-size: 16px;
+  width: 64px;
+  font-size: var(--text-body);
   padding: 0 4px;
 }
 
@@ -1016,14 +1216,14 @@
   appearance: none;
   flex: 1;
   width: 100%;
-  height: 4px;
+  height: var(--rng-track, 4px);
   border-radius: 99px;
   background: linear-gradient(
     to right,
-    var(--c-blue-700) 0%,
-    var(--c-blue-700) var(--rng-pct, 0%),
-    var(--c-slate-200) var(--rng-pct, 0%),
-    var(--c-slate-200) 100%
+    var(--c-blue) 0%,
+    var(--c-blue) var(--rng-pct, 0%),
+    var(--c-gray-200) var(--rng-pct, 0%),
+    var(--c-gray-200) 100%
   );
   outline: none;
   cursor: pointer;
@@ -1031,12 +1231,30 @@
   margin: 8px 0;
 }
 
+/* One ladder for the track and the thumb, matched to the box sizes on
+   checkbox and radio: an 18 / 20 / 24px thumb on a 4 / 5 / 6px track. */
+.rng--sm,
+.rng-input--sm {
+  --rng-track: 4px;
+  --rng-thumb: 18px;
+}
+.rng--md,
+.rng-input--md {
+  --rng-track: 5px;
+  --rng-thumb: 20px;
+}
+.rng--lg,
+.rng-input--lg {
+  --rng-track: 6px;
+  --rng-thumb: 24px;
+}
+
 .rng-input::-webkit-slider-thumb {
   -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
+  width: var(--rng-thumb, 20px);
+  height: var(--rng-thumb, 20px);
   background: #fff;
-  border: 2px solid var(--c-blue-700);
+  border: 2px solid var(--c-blue);
   border-radius: 50%;
   box-shadow: 0 1px 4px rgba(15, 23, 42, 0.15);
   cursor: pointer;
@@ -1044,23 +1262,23 @@
 }
 
 .rng-input::-webkit-slider-thumb:hover {
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-blue-700) 15%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-blue) 15%, transparent);
 }
 
 .rng-input::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
+  width: var(--rng-thumb, 20px);
+  height: var(--rng-thumb, 20px);
   background: #fff;
-  border: 2px solid var(--c-blue-700);
+  border: 2px solid var(--c-blue);
   border-radius: 50%;
   box-shadow: 0 1px 4px rgba(15, 23, 42, 0.15);
   cursor: pointer;
 }
 
 .rng-value {
-  font-size: 13px;
+  font-size: var(--text-label);
   font-weight: 700;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   min-width: 2.5em;
   text-align: right;
   flex-shrink: 0;

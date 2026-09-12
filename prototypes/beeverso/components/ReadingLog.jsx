@@ -40,7 +40,7 @@ export function ReadingLog({ connections }) {
 
   const own = OWN_SESSIONS.map((s) => ({
     ...s,
-    cover: { title: s.title, author: s.author, kind: 'book', cover: ['#94A3B8', '#475569'] },
+    cover: { title: s.title, author: s.author, kind: 'book', cover: ['#ACACAC', '#656565'] },
   }))
 
   const rows = [...imported, ...own].sort((a, b) => rank(a.when) - rank(b.when))
@@ -121,7 +121,7 @@ export function ReadingLog({ connections }) {
                   </Pill>
                 )}
                 {r.finished && (
-                  <Pill color="#16A97A" variant="soft" size="sm">
+                  <Pill color="#0BA85F" variant="soft" size="sm">
                     Finished
                   </Pill>
                 )}

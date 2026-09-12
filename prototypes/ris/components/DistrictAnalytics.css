@@ -27,12 +27,12 @@
   font-size: 16px;
   font-weight: 800;
   letter-spacing: -0.02em;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }
 
 .da-callout-lbl {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   line-height: 1.3;
 }
 

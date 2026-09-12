@@ -9,6 +9,7 @@ import {
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
 import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
 
 import { PARTNERS, PARTNER_BY_ID } from '../connections'
 import { READER, CHALLENGES, TITLE_BY_ID, importedSessions } from '../data'
@@ -21,15 +22,6 @@ import '../../web-app/index.css'
 import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
 import '@components/ProgressBar/ProgressBar.css'
-
-function BeanstackLogo() {
-  return (
-    <div className="wa-logo">
-      <img src="/bs-prototypes/bs.svg" alt="" className="wa-logo-mark" />
-      <span className="wa-logo-word">beanstack</span>
-    </div>
-  )
-}
 
 function TopBar({ connections, onManageConnections, onHome, onVisitPartner, view, onView }) {
   return (

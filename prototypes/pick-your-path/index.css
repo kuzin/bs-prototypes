@@ -8,7 +8,7 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   background: #eef1f4;
-  color: #1e293b;
+  color: #2a2a2a;
   -webkit-font-smoothing: antialiased;
 }
 h1,
@@ -33,8 +33,8 @@ body,
 .pyp-app {
   --pyp-teal: #0f766e;
   --pyp-ink: #14312e;
-  --pyp-muted: #64748b;
-  --pyp-line: #e2e8f0;
+  --pyp-muted: #707070;
+  --pyp-line: #eaeaea;
   --pyp-bg: #eef1f4;
   --pyp-panel: #ffffff;
   /* Spacing system — one source of truth so page rhythm stays consistent. */
@@ -46,7 +46,7 @@ body,
   min-height: 100%;
 }
 .pyp-dot {
-  color: #cbd5e1;
+  color: #d0d0d0;
   margin: 0 2px;
 }
 
@@ -197,7 +197,7 @@ body,
   width: 40px;
   height: 40px;
   border-radius: 11px;
-  background: #f1f5f9;
+  background: #f5f5f5;
   color: #0f766e;
   display: grid;
   place-items: center;
@@ -302,7 +302,7 @@ body,
   width: 26px;
   height: 26px;
   border-radius: 8px;
-  background: #f1f5f9;
+  background: #f5f5f5;
   color: var(--pyp-muted);
   transition:
     transform 0.16s ease,
@@ -339,7 +339,7 @@ body,
     color 0.14s ease;
 }
 .pyp-pathoffer.is-off .pyp-pathoffer-thumb {
-  background: #f1f5f9;
+  background: #f5f5f5;
   color: var(--pyp-muted);
 }
 .pyp-pathoffer-text {
@@ -361,7 +361,7 @@ body,
 .pyp-pathoffer-tag {
   font-size: 13.5px;
   line-height: 1.4;
-  color: #475569;
+  color: #656565;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -432,7 +432,7 @@ body,
   gap: 8px;
   padding: 4px 12px 4px 4px;
   border-radius: 999px;
-  background: #f1f5f9;
+  background: #f5f5f5;
   font-size: 14px;
   font-weight: 700;
   color: var(--pyp-ink);
@@ -459,7 +459,7 @@ body,
   place-items: center;
 }
 .pyp-icon-btn:hover {
-  background: #f1f5f9;
+  background: #f5f5f5;
   color: var(--pyp-ink);
 }
 .pyp-tabsbar {
@@ -677,7 +677,7 @@ body,
 }
 .pyp-title-blurb {
   font-size: 13px;
-  color: #475569;
+  color: #656565;
   margin-top: 5px;
   line-height: 1.4;
 }
@@ -826,7 +826,7 @@ body,
   box-shadow: 0 6px 16px rgba(15, 23, 42, 0.07);
 }
 .pyp-actcard.is-done {
-  background: #f8fafc;
+  background: #f8f8f8;
 }
 .pyp-actcard-icon {
   width: 42px;
@@ -850,7 +850,7 @@ body,
 }
 .pyp-actcard-prompt {
   font-size: 12.5px;
-  color: #475569;
+  color: #656565;
   line-height: 1.45;
   display: -webkit-box;
   -webkit-line-clamp: 3;
@@ -859,7 +859,7 @@ body,
 }
 .pyp-actcard.is-done .pyp-actcard-prompt {
   font-style: italic;
-  color: #334155;
+  color: #424242;
 }
 .pyp-actcard-foot {
   display: inline-flex;
@@ -870,7 +870,7 @@ body,
   color: var(--path-color);
 }
 .pyp-actcard-foot.is-done {
-  color: #16a97a;
+  color: #0ba85f;
 }
 
 /* Rewards tab */
@@ -890,7 +890,7 @@ body,
   background: #fff;
 }
 .pyp-reward.is-earned {
-  border-color: color-mix(in srgb, #16a97a 40%, #fff);
+  border-color: color-mix(in srgb, #0ba85f 40%, #fff);
   background: #f0fdf7;
 }
 .pyp-reward-icon {
@@ -900,12 +900,12 @@ body,
   border-radius: 11px;
   display: grid;
   place-items: center;
-  background: #f1f5f9;
-  color: #94a3b8;
+  background: #f5f5f5;
+  color: #acacac;
 }
 .pyp-reward.is-earned .pyp-reward-icon {
   background: #dcfce7;
-  color: #16a97a;
+  color: #0ba85f;
 }
 .pyp-reward-text {
   flex: 1;
@@ -932,7 +932,7 @@ body,
   color: var(--pyp-muted);
 }
 .pyp-reward-status.is-earned {
-  color: #16a97a;
+  color: #0ba85f;
 }
 
 /* Challenge Log tab */
@@ -969,7 +969,7 @@ body,
 }
 .pyp-log-note {
   font-size: 13px;
-  color: #475569;
+  color: #656565;
   font-style: italic;
   margin-top: 2px;
 }
@@ -1038,10 +1038,10 @@ body,
   color: var(--badge-color);
 }
 .pyp-badge.is-locked .pyp-badge-art--icon {
-  border-color: #cbd5e1;
+  border-color: #d0d0d0;
   border-style: dashed;
-  background: #f1f5f9;
-  color: #94a3b8;
+  background: #f5f5f5;
+  color: #acacac;
 }
 .pyp-badge-face {
   display: grid;
@@ -1061,7 +1061,7 @@ body,
 .pyp-badge-status--lock {
   width: 22px;
   height: 22px;
-  color: #94a3b8;
+  color: #acacac;
 }
 .pyp-badge-name {
   font-size: 12.5px;
@@ -1070,7 +1070,7 @@ body,
   line-height: 1.2;
 }
 .pyp-badge.is-locked .pyp-badge-name {
-  color: #94a3b8;
+  color: #acacac;
 }
 .pyp-badge-sub {
   font-size: 11px;
@@ -1091,13 +1091,13 @@ body,
   height: 30px;
   border: none;
   border-radius: 50%;
-  background: #f1f5f9;
-  color: #64748b;
+  background: #f5f5f5;
+  color: #707070;
   display: grid;
   place-items: center;
 }
 .pyp-activity-close:hover {
-  background: #e2e8f0;
+  background: #eaeaea;
 }
 .pyp-activity-head {
   display: flex;
@@ -1140,13 +1140,13 @@ body,
 .pyp-activity-prompt {
   padding: 14px 16px;
   border-radius: 12px;
-  background: #f8fafc;
+  background: #f8f8f8;
   border: 1px solid #eef2f6;
   margin-bottom: 16px;
 }
 .pyp-activity-prompt p {
   font-size: 14px;
-  color: #334155;
+  color: #424242;
   line-height: 1.55;
 }
 .pyp-activity-req {
@@ -1182,7 +1182,7 @@ body,
   border-radius: 11px;
   background: color-mix(in srgb, var(--path-color) 6%, #fff);
   border: 1px solid color-mix(in srgb, var(--path-color) 20%, #fff);
-  color: #334155;
+  color: #424242;
 }
 .pyp-activity-answer svg {
   flex: 0 0 auto;
@@ -1205,7 +1205,7 @@ body,
   align-items: center;
   gap: 8px;
   font-size: 14px;
-  color: #16a97a;
+  color: #0ba85f;
   font-weight: 700;
   margin-right: auto;
 }
@@ -1663,7 +1663,7 @@ body,
   cursor: pointer;
 }
 .pyp-pickmodal-close:hover {
-  background: #e2e8f0;
+  background: #eaeaea;
 }
 .pyp-pickmodal-head {
   margin-bottom: 20px;
@@ -2099,7 +2099,7 @@ body,
 .pyp-paneltable .tbl-td {
   vertical-align: middle;
   line-height: 1.5;
-  color: #475569;
+  color: #656565;
 }
 /* Column widths per panel — the shared Table sizes columns to content, which
    squeezes a name column next to a paragraph of prompt text. */

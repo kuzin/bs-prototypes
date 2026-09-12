@@ -35,7 +35,7 @@ export function Divider({ label, orientation = 'horizontal', className = '' }) {
 // ── Spinner ─────────────────────────────────────────────────────────────
 /**
  * <Spinner />            // md size, current color
- * <Spinner size="sm" color="#1D4ED8" />
+ * <Spinner size="sm" color="#196DD5" />
  */
 export function Spinner({ size = 'md', color, className = '' }) {
   return (

@@ -3,10 +3,13 @@
  * elevation and spacing shared across every prototype. Loaded once per entry
  * (imported at the top of each main.jsx).
  *
- * Color (--c-*): the neutral + accent values are exactly Tailwind's slate / red /
- * amber / blue / violet scales; the brand colors are Beanstack's teal / green /
- * coral. Primitive — one token per hex — so the color migration is mechanical and
- * value-preserving.
+ * Color (--c-*): the product palette from bs-product `lib/_colors.scss`, kept
+ * small on purpose. One gray ramp, one action blue with its states, and eight
+ * hues that each get exactly three tokens — a wash to fill with, a solid to
+ * draw with, and an ink to set type in. Everything else the app defines (the
+ * full 0…1000 ramps, the Tailwind scales the prototypes started on) was either
+ * unused or a near-duplicate of one of these, so it isn't here: a token you
+ * can't tell apart from its neighbour is a token people guess at.
  *
  * Typography (--font-*, --text-*, --fw-*), radii (--radius-*), elevation
  * (--shadow-*) and spacing (--space-*) capture the scales already in use as the
@@ -20,74 +23,9 @@
  * documented standard to adopt incrementally.
  */
 :root {
-  /* Neutrals — Tailwind slate */
-  --c-slate-50: #f8fafc;
-  --c-slate-100: #f1f5f9;
-  --c-slate-200: #e2e8f0;
-  --c-slate-300: #cbd5e1;
-  --c-slate-400: #94a3b8;
-  --c-slate-500: #64748b;
-  --c-slate-600: #475569;
-  --c-slate-700: #334155;
-  --c-slate-800: #1e293b;
-  --c-slate-900: #0f172a;
-  --c-gray-200: #e5e7eb;
-
-  /* Accent / status — Tailwind */
-  --c-red-600: #dc2626;
-  --c-amber-100: #fef3c7;
-  --c-amber-500: #f59e0b;
-  --c-amber-600: #d97706;
-  --c-blue-700: #1d4ed8;
-  --c-violet-600: #7c3aed;
-
-  /* Brand — Beanstack */
-  --c-brand-teal: #0da7bc;
-  --c-brand-green: #16a97a;
-  --c-brand-coral: #e8866a;
-
-  /* ── Real-app values (bs-product) ───────────────────────────────────────
-     Exact values lifted from the production Beanstack Rails app so
-     prototypes can serve as pixel references. Sources:
-       app/assets/stylesheets/lib/_colors.scss
-       app/assets/stylesheets/variables.scss
-       app/assets/stylesheets/admin/_admin_navigation.scss
-     The real neutrals are pure gray (NOT Tailwind's blue-tinted slate) and
-     the real action color is blue, not teal — teal is a brand accent. */
-
-  /* Accent — `$primary-color` / `$accent-color` from the shipped app
-     (bs-product `lib/_colors.scss`). Tenant-themable in production; this is the
-     default. The `-active` / `-hover` / `-dark-5` / `-wash` values are the Sass
-     darken()/lighten() results the app actually renders:
-       darken 10% #2858a5 · lighten 10% #5b8bd8
-       darken 5%  #2c63ba (section-header rule)
-       lighten 45% #ebf1fa (rail hover + active fill) */
-  --c-accent: #326ece;
-  --c-accent-active: #2858a5;
-  --c-accent-hover: #5b8bd8;
-  --c-accent-dark-5: #2c63ba;
-  --c-accent-wash: #ebf1fa;
-  /* `$pastelDenim` — the app's own light blue, and a real pair: it's the fill
-     behind `#326ece` text on a selected multiselect row and in the denim tag.
-     `--c-accent-wash` above is a `lighten()` result and only a few percent off
-     the page's grey ground, so it can't carry a control on its own. */
-  --c-accent-pastel: #dde9f9;
-  --c-focus-blue: #6dafff;
-
-  /* The Figma design system's Blue ramp. Newer than the shipped Sass above and
-     kept here for reference — the components deliberately track the shipped
-     app, so these are NOT wired into the chrome. */
-  --c-fig-blue-0: #e6f1ff;
-  --c-fig-blue-200: #8cbefa;
-  --c-fig-blue-b3: #65a5f6;
-  --c-fig-blue-600: #1a6dd5;
-  --c-fig-blue-700: #0c5dbe;
-  --c-fig-blue-800: #064a9f;
-
-  /* $light-gray — lighten(black, 88%); the rail avatar's ground */
-  --c-light-gray: #e0e0e0;
-
-  /* Real grays — $gray0…$gray900 */
+  /* ── Neutrals ─────────────────────────────────────────────────────────────
+     $gray0…$gray900. Pure gray, not a tinted one — the app has no blue in its
+     neutrals, and a slate ramp next to a real screenshot reads cold. */
   --c-gray-0: #f8f8f8;
   --c-gray-100: #f5f5f5;
   --c-gray-150: #f2f2f2;
@@ -103,10 +41,70 @@
   --c-gray-800: #424242;
   --c-gray-900: #2a2a2a;
 
-  /* Real text roles — $textColorDark / $textColor / $textColorLight */
-  --c-text-real: #424242;
-  --c-text-real-dark: #2a2a2a;
-  --c-text-real-light: #656565;
+  /* ── Action blue ──────────────────────────────────────────────────────────
+     `$primary-color` / `$accent-color`, tenant-themable in production; this is
+     the default. The state values are the Sass darken()/lighten() results the
+     app actually renders: darken 10% · lighten 10% · lighten 45%. */
+  --c-accent: #326ece;
+  --c-accent-hover: #5b8bd8;
+  --c-accent-active: #2858a5;
+  --c-accent-wash: #ebf1fa;
+  --c-focus-blue: #6dafff;
+
+  /* ── The eight hues ───────────────────────────────────────────────────────
+     Three tokens each, and they are the app's own values, not rungs picked off
+     a ladder:
+       -wash  `$pastelX` — the fill behind a tag, a pill or an .infobox
+       (bare)  the app's name for the hue — what you draw an icon or a chart
+               series in ($brick, $flamingo, $saffron, $jade, $denim, $orchid,
+               $coral; teal is $teal600, the Beanstack mark)
+       -ink   `$darkX` — type set on the wash, and the colour of warning or
+               success copy on white
+     `$pastelBlue`/`$darkBlue` are the app's *teal* pair (its blue pair is
+     denim), so they're filed under teal here. */
+  --c-red-wash: #fce6e4;
+  --c-red: #e85648;
+  --c-red-ink: #ab3f35;
+
+  --c-orange-wash: #fce0d6;
+  --c-orange: #f26430;
+  --c-orange-ink: #a34320;
+
+  --c-yellow-wash: #ffecc8;
+  --c-yellow: #ffbc42;
+  /* $yellow700, not `$darkYellow` (#826022). The app pairs pastelYellow with
+     darkYellow for tags, but #826022 is olive-brown the moment you use it for
+     anything else — warning text, a dot, a border — and a warning has to read
+     yellow. 4.1:1 on white, so it's AA for the bold 13–14px this is set in, not
+     for body copy. */
+  --c-yellow-ink: #ab720a;
+
+  --c-green-wash: #dbf2e7;
+  --c-green: #0ba85f;
+  --c-green-ink: #087542;
+
+  --c-teal-wash: #ddf6f9;
+  --c-teal: #0ca7bc;
+  --c-teal-ink: #0f7280;
+
+  --c-blue-wash: #dde9f9;
+  --c-blue: #196dd5;
+  --c-blue-ink: #154887;
+
+  --c-purple-wash: #f4e2f8;
+  --c-purple: #b43dd0;
+  --c-purple-ink: #822c95;
+
+  --c-pink-wash: #ffd2dc;
+  --c-pink: #ef6582;
+  --c-pink-ink: #a10829;
+
+  /* ── Ink ──────────────────────────────────────────────────────────────────
+     $textColor / $textColorDark / $textColorLight. Body copy is #424242, not
+     black — the app never sets pure black on white. */
+  --c-text: #424242;
+  --c-text-dark: #2a2a2a;
+  --c-text-light: #656565;
 
   /* Font families.
      Museo Sans Rounded is Beanstack's real typeface, served from the Adobe
@@ -206,16 +204,14 @@
      so content sprawls on wide monitors; --admin-content-max is a prototype
      guard the real app lacks.
 
-     It was 1280px, which only ever bound above a ~1420px viewport: on a laptop
-     the gutter won first and the column ran the better part of 1200px, which
-     is not what the design intends and did not read as capped. 1100 bites at
-     the widths these prototypes are actually reviewed at, while still leaving
-     the wide-monitor guard doing its job. Surfaces with two rails (the
-     classroom page, RIS) land nearer Figma's 900px column as a result.
+     The cap is a wide-monitor guard, not a layout width: it only bites past a
+     ~1540px viewport, and below that the 70px gutters set the column. 1100 was
+     tried and bound too early — it squeezed the two-rail surfaces (the
+     classroom page, RIS) well under what the design intends.
 
      Top padding is Figma's y=56 (the app composes 58px of body padding with
      `.page-wrap { margin-top: 56px }`); bottom is the app's 50px. */
-  --admin-content-max: 1100px;
+  --admin-content-max: 1400px;
   --admin-gutter: 70px;
   --admin-pad-top: 56px;
   --admin-pad-bottom: 50px;
@@ -236,25 +232,22 @@
   --space-24: 24px;
   --space-32: 32px;
 
-  /* ── Semantic aliases — roles mapped onto the primitives above. Prefer these in
-     new code: the indirection lets a role restyle in one place. ─────────────── */
-  /* Text */
-  --c-text: var(--c-slate-900);
-  --c-text-muted: var(--c-slate-500);
-  --c-text-subtle: var(--c-slate-400);
-  /* Surfaces */
+  /* ── Semantic aliases — roles mapped onto the values above. Prefer these in
+     new code: the indirection lets a role restyle in one place. ───────────── */
   --c-surface: #fff;
-  --c-bg: var(--c-slate-50);
-  --c-bg-muted: var(--c-slate-100);
-  /* Borders */
-  --c-border: var(--c-slate-200);
-  --c-border-strong: var(--c-slate-300);
-  /* Intent */
-  --c-brand: var(--c-brand-teal);
-  --c-danger: var(--c-red-600);
-  --c-warning: var(--c-amber-600);
-  --c-success: var(--c-brand-green);
-  --c-info: var(--c-blue-700);
+  --c-bg: var(--c-gray-0);
+  --c-bg-muted: var(--c-gray-100);
+  --c-border: var(--c-gray-200);
+  --c-border-strong: var(--c-gray-300);
+  --c-brand: var(--c-teal);
+  --c-danger: var(--c-red);
+  --c-success: var(--c-green);
+  --c-info: var(--c-blue);
+  /* The app's own `$warning-color` is `$coral` — a pink — which reads as an
+     error everywhere outside the one banner it was written for. Warnings here
+     use the yellow family, which is what `$important-color` ($saffron) is for
+     and what every warning surface in these prototypes already looked like. */
+  --c-warning: var(--c-yellow-ink);
 }
 
 /* ── Admin page frame on a phone ────────────────────────────────────────────

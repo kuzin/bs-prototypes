@@ -64,7 +64,7 @@ export function Collections({ collection, newestWord, cards, onReview }) {
           size="md"
           active={pane}
           onChange={setPane}
-          accent="#7C3AED"
+          accent="#B43DD0"
           ariaLabel="Which collection"
           className="co-panes"
           items={[

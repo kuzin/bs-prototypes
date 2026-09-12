@@ -29,7 +29,7 @@ export const PARTNERS = {
   comicsplus: {
     id: 'comicsplus',
     name: 'Comics Plus',
-    accent: '#0DA7BC',
+    accent: '#0CA7BC',
     soft: '#E6F7FA',
     kind: 'Read now',
     blurb: 'Unlimited comics, graphic novels & magazines — no holds, no waitlists.',
@@ -63,7 +63,7 @@ export const PARTNERS = {
   library: {
     id: 'library',
     name: 'School Library',
-    accent: '#16A97A',
+    accent: '#0BA85F',
     soft: '#E6F8EF',
     kind: 'On the shelf',
     blurb: 'Find it on the shelf at the Lincoln Elementary library.',
@@ -76,9 +76,9 @@ export const GENRES = {
   Adventure: { bg: '#D1FAE5', color: '#065F46' },
   Fantasy: { bg: '#FCE7F3', color: '#9D174D' },
   'Sci-Fi': { bg: '#E0F2FE', color: '#0369A1' },
-  Mystery: { bg: '#F1F5F9', color: '#334155' },
+  Mystery: { bg: '#F5F5F5', color: '#424242' },
   Humor: { bg: '#FEF9C3', color: '#854D0E' },
-  Survival: { bg: '#FEF3C7', color: '#92400E' },
+  Survival: { bg: '#FFECC8', color: '#92400E' },
   Historical: { bg: '#DBEAFE', color: '#1E40AF' },
   Dystopian: { bg: '#EDE9FE', color: '#5B21B6' },
   'Realistic Fiction': { bg: '#FFE4E6', color: '#9F1239' },
@@ -90,7 +90,7 @@ export const GENRES = {
   Nonfiction: { bg: '#ECFCCB', color: '#3F6212' },
   Magazine: { bg: '#FEE2E2', color: '#B91C1C' },
   Science: { bg: '#CFFAFE', color: '#0E7490' },
-  'Current Events': { bg: '#FEF3C7', color: '#92400E' },
+  'Current Events': { bg: '#FFECC8', color: '#92400E' },
 }
 
 // ─── Format metadata (icon + label) ───────────────────────────────────────────
@@ -106,11 +106,11 @@ export const FORMATS = {
 
 const P = {
   maya: { name: 'Maya C.', initials: 'MC', grade: 'Grade 4', color: '#F0966F' },
-  jayden: { name: 'Jayden P.', initials: 'JP', grade: 'Grade 5', color: '#1D4ED8' },
+  jayden: { name: 'Jayden P.', initials: 'JP', grade: 'Grade 5', color: '#196DD5' },
   sofia: { name: 'Sofia R.', initials: 'SR', grade: 'Grade 4', color: '#DB2777' },
-  noah: { name: 'Noah K.', initials: 'NK', grade: 'Grade 5', color: '#0DA7BC' },
-  emma: { name: 'Emma L.', initials: 'EL', grade: 'Grade 4', color: '#16A97A' },
-  liam: { name: 'Liam T.', initials: 'LT', grade: 'Grade 6', color: '#7C3AED' },
+  noah: { name: 'Noah K.', initials: 'NK', grade: 'Grade 5', color: '#0CA7BC' },
+  emma: { name: 'Emma L.', initials: 'EL', grade: 'Grade 4', color: '#0BA85F' },
+  liam: { name: 'Liam T.', initials: 'LT', grade: 'Grade 6', color: '#B43DD0' },
   ava: { name: 'Ava M.', initials: 'AM', grade: 'Grade 3', color: '#EA580C' },
   diego: { name: 'Diego H.', initials: 'DH', grade: 'Grade 5', color: '#0891B2' },
   priya: { name: 'Priya S.', initials: 'PS', grade: 'Grade 4', color: '#9333EA' },
@@ -119,7 +119,7 @@ const P = {
     name: 'Mr. Reyes',
     initials: 'MR',
     grade: 'Teacher · Grade 4',
-    color: '#475569',
+    color: '#656565',
     educator: true,
   },
   patel: {
@@ -225,7 +225,7 @@ const RAW = [
     title: 'The Wild Robot',
     author: 'Peter Brown',
     series: { name: 'The Wild Robot', number: 1 },
-    color: '#16A97A',
+    color: '#0BA85F',
     genres: ['Adventure', 'Sci-Fi', 'Animals'],
     formats: ['print', 'ebook', 'audiobook'],
     availability: [
@@ -339,7 +339,7 @@ const RAW = [
     isbn: '9780062691200',
     title: 'New Kid',
     author: 'Jerry Craft',
-    color: '#0DA7BC',
+    color: '#0CA7BC',
     genres: ['Graphic Novel', 'Realistic Fiction'],
     formats: ['print', 'ebook'],
     availability: [
@@ -451,7 +451,7 @@ const RAW = [
     title: 'The Lightning Thief',
     author: 'Rick Riordan',
     series: { name: 'Percy Jackson & the Olympians', number: 1 },
-    color: '#1D4ED8',
+    color: '#196DD5',
     genres: ['Fantasy', 'Adventure'],
     formats: ['print', 'ebook', 'audiobook'],
     availability: [
@@ -509,7 +509,7 @@ const RAW = [
     title: 'Front Desk',
     author: 'Kelly Yang',
     series: { name: 'Front Desk', number: 1 },
-    color: '#D97706',
+    color: '#AB720A',
     genres: ['Realistic Fiction', 'Historical'],
     formats: ['print', 'ebook', 'audiobook'],
     availability: [
@@ -558,7 +558,7 @@ const RAW = [
     isbn: '9780544107717',
     title: 'The Crossover',
     author: 'Kwame Alexander',
-    color: '#E8866A',
+    color: '#F26430',
     genres: ['Sports', 'Novel in Verse', 'Realistic Fiction'],
     formats: ['print', 'ebook', 'audiobook'],
     availability: [
@@ -929,7 +929,7 @@ const RAW = [
     isbn: '9780375869020',
     title: 'Wonder',
     author: 'R. J. Palacio',
-    color: '#7C3AED',
+    color: '#B43DD0',
     genres: ['Realistic Fiction'],
     formats: ['print', 'ebook', 'audiobook'],
     availability: [
@@ -1059,7 +1059,7 @@ const RAW = [
     isbn: '9780544336261',
     title: 'The Giver',
     author: 'Lois Lowry',
-    color: '#475569',
+    color: '#656565',
     genres: ['Dystopian', 'Sci-Fi'],
     formats: ['print', 'ebook', 'audiobook'],
     availability: [
@@ -1275,7 +1275,7 @@ const RAW = [
     isbn: '9780142410370',
     title: 'Matilda',
     author: 'Roald Dahl',
-    color: '#7C3AED',
+    color: '#B43DD0',
     genres: ['Humor', 'Fantasy'],
     formats: ['print', 'ebook', 'audiobook'],
     availability: [
@@ -1316,7 +1316,7 @@ const RAW = [
     isbn: '9780064410939',
     title: "Charlotte's Web",
     author: 'E. B. White',
-    color: '#DC2626',
+    color: '#E85648',
     genres: ['Animals', 'Fantasy'],
     formats: ['print', 'ebook', 'audiobook'],
     availability: [
@@ -1717,7 +1717,7 @@ const RAW = [
     title: 'Cat Kid Comic Club',
     author: 'Dav Pilkey',
     series: { name: 'Cat Kid Comic Club', number: 1 },
-    color: '#16A97A',
+    color: '#0BA85F',
     genres: ['Graphic Novel', 'Humor'],
     formats: ['print', 'ebook'],
     availability: [
@@ -1861,7 +1861,7 @@ const RAW = [
     isbn: null,
     title: 'Storyworks',
     author: 'Scholastic',
-    color: '#7C3AED',
+    color: '#B43DD0',
     genres: ['Magazine', 'Realistic Fiction'],
     formats: ['magazine', 'ebook'],
     availability: [{ partner: 'scholastic', format: 'magazine', action: 'Read issue' }],
@@ -2065,8 +2065,8 @@ export const BENNY_PICKS = [
 export const SHELVES = [
   {
     id: 'reyes-picks',
-    curator: { name: 'Mr. Reyes', role: 'Grade 4 Teacher', initials: 'MR', color: '#475569' },
-    accent: '#7C3AED',
+    curator: { name: 'Mr. Reyes', role: 'Grade 4 Teacher', initials: 'MR', color: '#656565' },
+    accent: '#B43DD0',
     title: 'Mr. Reyes’s Class Picks',
     books: [
       'wonder',
@@ -2145,13 +2145,13 @@ export const SHELVES = [
 
 // Browse-by tiles → each opens the Browse page with one filter pre-applied.
 export const BROWSE = [
-  { label: 'Graphic Novels', icon: 'book', color: '#0DA7BC', filter: { genre: 'Graphic Novel' } },
-  { label: 'Adventure', icon: 'rocket', color: '#16A97A', filter: { genre: 'Adventure' } },
+  { label: 'Graphic Novels', icon: 'book', color: '#0CA7BC', filter: { genre: 'Graphic Novel' } },
+  { label: 'Adventure', icon: 'rocket', color: '#0BA85F', filter: { genre: 'Adventure' } },
   { label: 'Fantasy', icon: 'sparkles', color: '#9D174D', filter: { genre: 'Fantasy' } },
   { label: 'Animals', icon: 'leaf', color: '#166534', filter: { genre: 'Animals' } },
   { label: 'Audiobooks', icon: 'headphones', color: '#2C6BED', filter: { format: 'audiobook' } },
   { label: 'Funny', icon: 'mood-happy', color: '#854D0E', filter: { genre: 'Humor' } },
-  { label: 'Mystery', icon: 'search', color: '#334155', filter: { genre: 'Mystery' } },
+  { label: 'Mystery', icon: 'search', color: '#424242', filter: { genre: 'Mystery' } },
   { label: 'Magazines', icon: 'news', color: '#C2410C', filter: { format: 'magazine' } },
 ]
 
@@ -2217,7 +2217,7 @@ export const SHELF_SEED = {
 export const SHELF_STATUS = {
   reading: { label: 'Currently reading', icon: 'book-2', color: '#0D9488' },
   want: { label: 'Want to read', icon: 'bookmark', color: '#2C6BED' },
-  finished: { label: 'Finished', icon: 'circle-check-filled', color: '#16A97A' },
+  finished: { label: 'Finished', icon: 'circle-check-filled', color: '#0BA85F' },
 }
 export const SHELF_ORDER = ['reading', 'want', 'finished']
 
@@ -2371,8 +2371,8 @@ export const FRIENDS = [
     ],
     badges: [
       badge('3-Week Streak', 'May 9, 2026', '#F0A024', 'flame'),
-      badge('Mythology Master', 'May 4, 2026', '#7C3AED', 'award'),
-      badge('Comic Collector', 'Apr 30, 2026', '#0DA7BC', 'book-2'),
+      badge('Mythology Master', 'May 4, 2026', '#B43DD0', 'award'),
+      badge('Comic Collector', 'Apr 30, 2026', '#0CA7BC', 'book-2'),
     ],
     achievements: [
       achievement('Read 30 books', 'May 6, 2026', 'Grade 5 goal was 25', 'books'),
@@ -2436,7 +2436,7 @@ export const FRIENDS = [
       { book: 'holes', date: 'Mar 27, 2026', minutes: 45 },
     ],
     badges: [
-      badge('Graphic Novel Fan', 'May 9, 2026', '#0DA7BC', 'book-2'),
+      badge('Graphic Novel Fan', 'May 9, 2026', '#0CA7BC', 'book-2'),
       badge('Volcano Explorer', 'Apr 27, 2026', '#2563EB', 'sparkles'),
     ],
     achievements: [
@@ -2468,8 +2468,8 @@ export const FRIENDS = [
     ],
     badges: [
       badge('Month-Long Streak', 'May 9, 2026', '#F0A024', 'flame'),
-      badge('Poetry in Motion', 'May 9, 2026', '#16A97A', 'sparkles'),
-      badge('40 Books Club', 'May 5, 2026', '#7C3AED', 'award'),
+      badge('Poetry in Motion', 'May 9, 2026', '#0BA85F', 'sparkles'),
+      badge('40 Books Club', 'May 5, 2026', '#B43DD0', 'award'),
     ],
     achievements: [
       achievement('Top reader at school', 'May 9, 2026', '240 minutes this week', 'top'),

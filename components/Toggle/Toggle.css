@@ -1,12 +1,26 @@
+/* The label rides the same ladder as every other control — 14 / 15 / 16px at
+   700 — so a switch, a checkbox and the input above them read as one family.
+   It was 13px/500 at every size, a rung under everything around it. */
 .tgl {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
   cursor: pointer;
   -webkit-user-select: none;
   user-select: none;
-  font-size: 13px;
-  color: var(--c-slate-700);
+  color: var(--c-text);
+}
+
+.tgl--sm {
+  gap: 8px;
+  font-size: var(--text-label);
+}
+.tgl--md {
+  gap: 10px;
+  font-size: var(--text-cell);
+}
+.tgl--lg {
+  gap: 12px;
+  font-size: var(--text-body);
 }
 
 .tgl--disabled {
@@ -25,7 +39,7 @@
 .tgl-track {
   position: relative;
   display: inline-block;
-  background: var(--c-slate-300);
+  background: var(--c-gray-350);
   border-radius: 999px;
   transition: background 0.16s ease;
   flex-shrink: 0;
@@ -37,7 +51,7 @@
   left: 2px;
   background: #fff;
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.18);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
   transition: transform 0.16s ease;
 }
 
@@ -77,28 +91,68 @@
 .tgl--lg .tgl-input:checked + .tgl-track .tgl-thumb {
   transform: translateX(18px);
 }
-.tgl--lg .tgl-label {
-  font-size: 14px;
-}
-
 /* Checked state */
 .tgl-input:checked + .tgl-track {
-  background: var(--c-blue-700);
+  background: var(--c-blue);
 }
 
 .tgl:hover .tgl-track {
-  background: var(--c-slate-400);
+  background: var(--c-gray-500);
 }
 
 .tgl:hover .tgl-input:checked + .tgl-track {
-  background: #1e40af;
+  background: var(--c-blue-ink);
 }
 
 .tgl-input:focus-visible + .tgl-track {
-  outline: 2px solid var(--c-blue-700);
+  outline: 2px solid var(--c-blue);
   outline-offset: 2px;
 }
 
 .tgl-label {
-  font-weight: 500;
+  font-weight: 700;
+}
+
+/* ── ToggleGroup ──────────────────────────────────────────────────────────
+   Layout for a set of related switches. The three shapes are the ones the
+   prototypes had each hand-rolled: a wrapping row for two or three short
+   labels, a column when the labels are sentences, and a two-column grid for a
+   longer list. Gaps are larger than a checkbox group's because a switch is a
+   wider, heavier mark and crowds its neighbour sooner. */
+.tglg {
+  display: flex;
+  min-width: 0;
+}
+
+.tglg--column {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tglg--row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+
+.tglg--grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 24px;
+}
+
+/* A group nested under the switch that revealed it — the same tinted inset the
+   challenge steps used for their "advanced" clusters. */
+.tglg--inset {
+  margin-top: 10px;
+  padding: 14px;
+  background: var(--c-gray-0);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+}
+
+@media (max-width: 560px) {
+  .tglg--grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

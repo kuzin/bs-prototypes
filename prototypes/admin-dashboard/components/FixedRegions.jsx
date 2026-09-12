@@ -8,59 +8,65 @@ import {
   RCA_TEACHER,
 } from '../data'
 import { SettingsPopover } from './SettingsPopover'
+import { RcaLevelGlyph } from './RcaLevelGlyph'
 import { Icon } from '@components/Icon/Icon'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
+import { Banner } from '@components/Primitives/Primitives'
+import { Button } from '@components/Button/Button'
+import '@components/Primitives/Primitives.css'
+import '@components/Button/Button.css'
 
 // ─── Feature announcement bar (admin-controlled, not editable) ───────────
+// The shipped dashboard's `BeanstackAd` — its announcement slot. It's the
+// shared <Banner> at `level="info"` with an action: `.bnr--info` is already
+// `#CFE4FE` with a `#196DD5` icon and no border, which is what this is. The
+// only thing the dashboard adds is the blue outline on the CTA.
 export function FeatureBar({ onClose }) {
   if (!FEATURE_BAR) return null
   return (
-    <div className="adm-feature-bar">
-      <span className="adm-feature-badge">{FEATURE_BAR.badge}</span>
-      <div className="adm-feature-text">
-        <div className="adm-feature-title">{FEATURE_BAR.title}</div>
-        <div className="adm-feature-body">{FEATURE_BAR.body}</div>
-      </div>
-      <a className="adm-feature-cta" href={FEATURE_BAR.href}>
-        {FEATURE_BAR.cta}
-      </a>
-    </div>
+    <Banner
+      level="info"
+      className="adm-ad"
+      icon={<PlumpyIcon name="announcement" size={26} />}
+      title={FEATURE_BAR.title}
+      action={
+        <Button as="a" href={FEATURE_BAR.href} variant="primary" size="md" className="adm-ad-cta">
+          {FEATURE_BAR.cta}
+        </Button>
+      }
+    >
+      {FEATURE_BAR.body}
+    </Banner>
   )
 }
 
-// ─── Rail icons (shared by Quick Actions) ────────────────────────────────
-const ACTION_ICONS = {
-  flag: <Icon name="flag" size={18} />,
-  reward: <Icon name="award" size={18} />,
-  trophy: <Icon name="trophy" size={18} />,
-  chart: <Icon name="chart-bar" size={18} />,
-  lexile: <Icon name="book-2" size={18} />,
-  target: <Icon name="target" size={18} />,
-  user: <Icon name="user" size={18} />,
-  classes: <Icon name="users" size={18} />,
-  book: <Icon name="book-2" size={18} />,
-}
+// ─── Engagement card (rail-fixed; no settings) ───────────────────────────
 
+// Splits promo text around the highlighted phrase and wraps it in <strong>.
 const CogIcon = () => <Icon name="settings" size={14} />
 
-// ─── Quick Actions card ──────────────────────────────────────────────────
-// A compact launcher of the most common jumps, keyed by role.
+// ─── Quick Actions ───────────────────────────────────────────────────────
+// The rail's launcher, as the dashboard mock draws it: a two-column grid of
+// filled pills, one hue each, chevron on the right. The shipped dashboard runs
+// the same destinations down the rail as full-width grey rows
+// (`ul.dashboard-links`); the redesign compacts them.
 function QuickActionsCard({ role = 'teacher' }) {
   const actions = QUICK_ACTIONS[role] || QUICK_ACTIONS.teacher
   return (
-    <div className="adm-rail-card adm-rail-card--quick">
+    <div className="adm-rail-card">
       <div className="adm-rail-head">
         <h3 className="adm-rail-title">Quick Actions</h3>
       </div>
       <div className="adm-quick-actions">
         {actions.map((a) => (
-          <a key={a.id} href="#" className="adm-quick-action" onClick={(e) => e.preventDefault()}>
-            <span className="adm-quick-action-ico">
-              {ACTION_ICONS[a.icon] || ACTION_ICONS.target}
-            </span>
+          <a
+            key={a.id}
+            href="#"
+            className={`adm-quick-action adm-quick-action--${a.hue}`}
+            onClick={(e) => e.preventDefault()}
+          >
             <span className="adm-quick-action-label">{a.label}</span>
-            <span className="adm-quick-action-chev" aria-hidden="true">
-              ›
-            </span>
+            <Icon name="chevron-right" size={15} className="adm-quick-action-chev" />
           </a>
         ))}
       </div>
@@ -70,7 +76,6 @@ function QuickActionsCard({ role = 'teacher' }) {
 
 // ─── Engagement card (rail-fixed; no settings) ───────────────────────────
 
-// Splits promo text around the highlighted phrase and wraps it in <strong>.
 function PromoText({ text, highlight }) {
   if (!highlight || !text.includes(highlight)) return <p>{text}</p>
   const [before, after] = text.split(highlight)
@@ -127,6 +132,7 @@ function EngagementCard({ role = 'teacher' }) {
                 {levelNameT}
               </span>
             </div>
+            <RcaLevelGlyph level={levelIdT} />
           </div>
           {segBar}
           <div className={`adm-rca-band adm-rca-band--${levelIdT}`}>
@@ -135,7 +141,10 @@ function EngagementCard({ role = 'teacher' }) {
           </div>
           {next && (
             <div className="adm-rca-foot">
-              Next Level: <strong>{next.name}</strong> · {next.min}%
+              <span>
+                Next Level: <strong>{next.name}</strong>
+              </span>
+              <span>{next.min}%</span>
             </div>
           )}
         </div>
@@ -165,6 +174,7 @@ function EngagementCard({ role = 'teacher' }) {
               {levelName}
             </span>
           </div>
+          <RcaLevelGlyph level={levelId} />
         </div>
         {segBar}
         <div className={`adm-rca-band adm-rca-band--${levelId}`}>
@@ -173,7 +183,10 @@ function EngagementCard({ role = 'teacher' }) {
         </div>
         {next && (
           <div className="adm-rca-foot">
-            Next Level: <strong>{next.name}</strong> · {next.min}%
+            <span>
+              Next Level: <strong>{next.name}</strong>
+            </span>
+            <span>{next.min}%</span>
           </div>
         )}
         {promo && (
@@ -238,21 +251,6 @@ function CommunityGoalCard({ settings, openSettings, setOpenSettings, onChange, 
               Update Goal
             </button>
           )}
-          <button
-            type="button"
-            className={`adm-rail-cog ${isSettingsOpen ? 'is-on' : ''}`}
-            onClick={(e) =>
-              setOpenSettings(
-                isSettingsOpen
-                  ? null
-                  : { id: 'community-goal', anchorRect: e.currentTarget.getBoundingClientRect() },
-              )
-            }
-            title="Goal settings"
-            aria-label="Goal settings"
-          >
-            <CogIcon />
-          </button>
         </div>
       </div>
       <div className="adm-goal-widget">
@@ -270,7 +268,24 @@ function CommunityGoalCard({ settings, openSettings, setOpenSettings, onChange, 
             aria-hidden="true"
           />
         </div>
-        <div className="adm-goal-pct">{pct}% of goal</div>
+        {/* What the number means. At 100% the caption makes way for the
+            congratulation — the point of a goal is the moment it's met. */}
+        <div className="adm-goal-pct">
+          {pct >= 100 ? (
+            <>
+              <span>100% of goal.</span>
+              <span className="adm-goal-congrats">
+                <Icon name="check" size={16} stroke={2.6} />
+                Congrats!
+              </span>
+            </>
+          ) : (
+            <>
+              <Icon name="bell" size={17} className="adm-goal-pct-icon" />
+              <span>{pct}% of goal achieved.</span>
+            </>
+          )}
+        </div>
       </div>
       {isSettingsOpen && (
         <SettingsPopover
@@ -288,7 +303,7 @@ function CommunityGoalCard({ settings, openSettings, setOpenSettings, onChange, 
 }
 
 // ─── Right rail ──────────────────────────────────────────────────────────
-// Quick Actions launcher, then Engagement (teacher/media only) and the
+// Quick Actions, then Engagement (teacher/media only) and the
 // Community/District Goal card. Both rail blocks are fixed (not draggable
 // widgets) but their settings are still editable via the cog in edit mode.
 export function FixedRail({

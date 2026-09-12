@@ -1,14 +1,17 @@
+/* The bar sits directly under the filter controls, so it reads at the same
+   size they do — `--text-label`, not the 12px it was, which made the one line
+   that says what you've narrowed to the smallest thing on the page. */
 .af-bar {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
 }
 
 .af-label {
-  font-size: 12px;
+  font-size: var(--text-label);
   font-weight: 600;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   margin-right: 2px;
   white-space: nowrap;
 }
@@ -17,13 +20,13 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 4px 10px 4px 11px;
+  padding: 5px 12px 5px 13px;
   background: #eff6ff;
   border: 1.5px solid #bfdbfe;
   border-radius: 99px;
-  font-size: 12px;
+  font-size: var(--text-label);
   font-weight: 600;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   cursor: pointer;
   font-family: inherit;
   transition:
@@ -36,10 +39,13 @@
   border-color: #93c5fd;
 }
 
+/* Clear all ends the row rather than trailing the last chip: it acts on the
+   whole set, and after the chips it reads as one more of them. */
 .af-clear-all {
-  font-size: 12px;
+  margin-left: auto;
+  font-size: var(--text-label);
   font-weight: 600;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   background: none;
   border: none;
   cursor: pointer;
@@ -51,6 +57,6 @@
     background 0.1s;
 }
 .af-clear-all:hover {
-  color: var(--c-slate-600);
-  background: var(--c-slate-100);
+  color: var(--c-gray-750);
+  background: var(--c-gray-100);
 }

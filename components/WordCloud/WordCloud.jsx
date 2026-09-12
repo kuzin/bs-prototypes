@@ -17,7 +17,7 @@ import '@components/WordCloud/WordCloud.css'
  *
  *   <WordCloud
  *     words={[{ text: 'mischievous', value: 21 }, …]}
- *     accent="#7C3AED"
+ *     accent="#B43DD0"
  *     height="lg"
  *     valueLabel={(w) => `${w.value} students`}
  *   />
@@ -62,7 +62,7 @@ const PALE = '#7C8BA1' // slate — still readable at the smallest size
 
 function rampColor(accent, t) {
   // t: 0 = lightest word, 1 = heaviest.
-  if (t >= 0.5) return mix(accent, '#0F172A', (t - 0.5) * 0.5)
+  if (t >= 0.5) return mix(accent, '#2A2A2A', (t - 0.5) * 0.5)
   return mix(PALE, accent, t * 2)
 }
 
@@ -171,7 +171,7 @@ function packCloud(words, { family, minSize, maxSize, rotate, aspect }) {
 
 export function WordCloud({
   words = [],
-  accent = '#0DA7BC',
+  accent = '#0CA7BC',
   height = 'md',
   minSize = 13,
   maxSize = 46,

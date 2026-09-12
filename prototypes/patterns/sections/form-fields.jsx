@@ -20,25 +20,35 @@ import { Knobs } from './_shared'
 
 function RichTextKnobs() {
   const [html, setHtml] = useState('<p>Tell readers <strong>all about</strong> your challenge!</p>')
+  const [size, setSize] = useState('md')
   return (
-    <div className="pt-variant-frame">
-      <div>
-        <RichText value={html} onChange={setHtml} placeholder="Write a description…" />
+    <>
+      <Knobs examples={false}>
+        <Field label="size">
+          <Select value={size} onChange={(e) => setSize(e.target.value)}>
+            <option>sm</option>
+            <option>md</option>
+            <option>lg</option>
+          </Select>
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <RichText value={html} onChange={setHtml} size={size} placeholder="Write a description…" />
         <pre
           style={{
             marginTop: 10,
             fontSize: 11,
-            background: '#f8fafc',
+            background: '#f8f8f8',
             padding: 8,
             borderRadius: 8,
             whiteSpace: 'pre-wrap',
-            color: '#475569',
+            color: '#656565',
           }}
         >
           {html}
         </pre>
       </div>
-    </div>
+    </>
   )
 }
 
@@ -311,10 +321,18 @@ function TextareaKnobs() {
 function CheckboxKnobs() {
   const [checked, setChecked] = useState(true)
   const [disabled, setDisabled] = useState(false)
+  const [size, setSize] = useState('md')
   const [label, setLabel] = useState('Include FRL data')
   return (
     <>
       <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={(e) => setSize(e.target.value)}>
+            <option>sm</option>
+            <option>md</option>
+            <option>lg</option>
+          </Select>
+        </Field>
         <Field label="checked">
           <Toggle checked={checked} onChange={setChecked} />
         </Field>
@@ -326,36 +344,9 @@ function CheckboxKnobs() {
         </Field>
       </Knobs>
       <div className="pt-variant-frame pt-variant-frame--row">
-        <Checkbox checked={checked} onChange={setChecked} disabled={disabled}>
+        <Checkbox size={size} checked={checked} onChange={setChecked} disabled={disabled}>
           {label || undefined}
         </Checkbox>
-      </div>
-    </>
-  )
-}
-
-function RadioKnobs() {
-  const [value, setValue] = useState('md')
-  const [layout, setLayout] = useState('row')
-  return (
-    <>
-      <Knobs>
-        <Field label="layout">
-          <Select value={layout} onChange={(e) => setLayout(e.target.value)}>
-            <option>row</option>
-            <option>column</option>
-          </Select>
-        </Field>
-        <Field label="value">
-          <Input value={value} onChange={(e) => setValue(e.target.value)} />
-        </Field>
-      </Knobs>
-      <div className="pt-variant-frame">
-        <RadioGroup name="rs-knob" layout={layout} value={value} onChange={setValue}>
-          <Radio value="sm">Small</Radio>
-          <Radio value="md">Medium</Radio>
-          <Radio value="lg">Large</Radio>
-        </RadioGroup>
       </div>
     </>
   )
@@ -411,17 +402,68 @@ function NumberInputKnobs() {
   )
 }
 
+// `Radio` reads name / value / onChange / size off RadioContext, so a lone one
+// is only meaningful inside a RadioGroup — this knobs block is a group of one.
+function SingleRadioKnobs() {
+  const [on, setOn] = useState(true)
+  const [size, setSize] = useState('md')
+  const [disabled, setDisabled] = useState(false)
+  const [label, setLabel] = useState('This school')
+  return (
+    <>
+      <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={(e) => setSize(e.target.value)}>
+            <option>sm</option>
+            <option>md</option>
+            <option>lg</option>
+          </Select>
+        </Field>
+        <Field label="selected">
+          <Toggle checked={on} onChange={setOn} />
+        </Field>
+        <Field label="disabled">
+          <Toggle checked={disabled} onChange={setDisabled} />
+        </Field>
+        <Field label="label">
+          <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="(none)" />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--row">
+        <RadioGroup
+          name="single-radio-knob"
+          size={size}
+          value={on ? 'one' : 'other'}
+          onChange={(v) => setOn(v === 'one')}
+        >
+          <Radio value="one" disabled={disabled}>
+            {label || undefined}
+          </Radio>
+        </RadioGroup>
+      </div>
+    </>
+  )
+}
+
 function RangeSliderKnobs() {
   const [value, setValue] = useState(45)
   const [min, setMin] = useState(0)
   const [max, setMax] = useState(100)
   const [step, setStep] = useState(1)
+  const [size, setSize] = useState('md')
   const [showValue, setShow] = useState(true)
   const [showLabel, setShowLabel] = useState(false)
   const [labelText, setLabelText] = useState('Target score')
   return (
     <>
       <Knobs>
+        <Field label="size">
+          <Select value={size} onChange={(e) => setSize(e.target.value)}>
+            <option>sm</option>
+            <option>md</option>
+            <option>lg</option>
+          </Select>
+        </Field>
         <Field label="show value">
           <Toggle checked={showValue} onChange={setShow} />
         </Field>
@@ -456,6 +498,7 @@ function RangeSliderKnobs() {
           min={min}
           max={max}
           step={step}
+          size={size}
           showValue={showValue}
           label={showLabel ? labelText : undefined}
         />
@@ -467,7 +510,7 @@ function RangeSliderKnobs() {
 function SearchInputKnobs() {
   const [value, setValue] = useState('')
   return (
-    <div style={{ maxWidth: 360 }}>
+    <div className="pt-variant-frame">
       <SearchInput value={value} onChange={setValue} placeholder="Search all badges" />
     </div>
   )
@@ -558,7 +601,13 @@ import '@components/Toggle/Toggle.css'
     usage: `import { Checkbox } from '@components/Form/Form'
 
 <Checkbox checked={on} onChange={setOn}>Include inactive readers</Checkbox>`,
-    desc: <>Boolean control with a colored check icon when on. Use for non-exclusive options.</>,
+    desc: (
+      <>
+        Boolean control with a colored check icon when on. Use for non-exclusive options. Sizes{' '}
+        <code>sm</code> / <code>md</code> / <code>lg</code> put an 18 / 20 / 24px box beside the 36
+        / 44 / 52px field ladder.
+      </>
+    ),
     render: () => (
       <>
         <CheckboxKnobs />
@@ -568,23 +617,32 @@ import '@components/Toggle/Toggle.css'
   {
     group: 'form-fields',
     id: 'radio',
-    name: 'RadioGroup',
+    name: 'Radio',
     usage: `import { RadioGroup, Radio } from '@components/Form/Form'
 
-<RadioGroup name="scope" value={scope} onChange={setScope} layout="row">
+<RadioGroup name="scope" value={scope} onChange={setScope}>
   <Radio value="school">This school</Radio>
-  <Radio value="district">Whole district</Radio>
 </RadioGroup>`,
     desc: (
       <>
-        Mutually exclusive options. <code>RadioGroup</code> takes <code>name</code>,{' '}
-        <code>value</code>, <code>onChange</code>, optional <code>layout</code> (row/column).
-        Children are <code>Radio</code> with a <code>value</code>.
+        One mutually-exclusive option. Props: <code>value</code> (its key in the group),{' '}
+        <code>disabled</code>, and the label as children.
+        <br />
+        <br />A <code>Radio</code> has <strong>no standalone use</strong> — it reads{' '}
+        <code>name</code>, <code>value</code>, <code>onChange</code> and <code>size</code> off the
+        surrounding <code>RadioGroup</code>&apos;s context, which is why the example below is a
+        group of one. Reach for <code>Checkbox</code> when the options aren&apos;t exclusive, and
+        for <code>Toggle</code> when the control applies a setting immediately rather than being
+        part of a choice.
+        <br />
+        <br />
+        The box is 18 / 20 / 24px across the <code>sm</code> / <code>md</code> / <code>lg</code>{' '}
+        rungs, beside the 36 / 44 / 52px field ladder; the size comes from the group, not from here.
       </>
     ),
     render: () => (
       <>
-        <RadioKnobs />
+        <SingleRadioKnobs />
       </>
     ),
   },
@@ -618,6 +676,8 @@ import '@components/Toggle/Toggle.css'
       <>
         Styled <code>{'<input type="range">'}</code> with a filled track that updates via a CSS
         variable and a value readout. Pass <code>showValue={'{false}'}</code> to hide the label.
+        Sizes <code>sm</code> / <code>md</code> / <code>lg</code> ride the control ladder — an 18 /
+        20 / 24px thumb on a 4 / 5 / 6px track.
       </>
     ),
     render: () => (
@@ -633,12 +693,14 @@ import '@components/Toggle/Toggle.css'
     usage: `import { RichText } from '@components/RichText/RichText'
 import '@components/RichText/RichText.css'
 
-<RichText value={html} onChange={setHtml} placeholder="Describe the challenge…" />`,
+<RichText value={html} onChange={setHtml} size="md" placeholder="Describe the challenge…" />`,
     desc: (
       <>
         Lightweight WYSIWYG editor that emits an HTML string. Toolbar: bold / italic / underline /
         bullet list / link. Props: <code>value</code>, <code>onChange(html)</code>,{' '}
-        <code>placeholder</code>, <code>minHeight</code>.
+        <code>placeholder</code>, <code>minHeight</code>, <code>size</code>. <code>size</code> sets
+        the body size on the ladder (14 / 16 / 18px) and the document scales with it — the headings
+        and inline code inside are sized in <code>em</code>, so one prop moves the whole thing.
       </>
     ),
     render: () => (
@@ -685,8 +747,9 @@ import '@components/ImageDropzone/ImageDropzone.css'
       <>
         A search field — leading magnifier, text input, and a clear button that appears once there’s
         a value. Controlled via <code>value</code> + <code>onChange(next)</code> (gets the new
-        string, and <code>&apos;&apos;</code> on clear). Defaults to <code>flex: 1</code>; pass{' '}
-        <code>className</code> for layout overrides.
+        string, and <code>&apos;&apos;</code> on clear). It sits on the control ladder’s{' '}
+        <code>md</code> rung (44px) so it lines up with a Select beside it in a filter row, and
+        defaults to <code>flex: 1</code>; pass <code>className</code> for layout overrides.
       </>
     ),
     render: () => (

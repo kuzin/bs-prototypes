@@ -27,6 +27,22 @@
   z-index: 300;
 }
 
+/* Centre slot — absolutely placed rather than a third flex child, so it centres
+   on the bar itself instead of on whatever space the two clusters leave over
+   (they're different widths, and the switcher's width changes with the name). */
+.proto-nav-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  pointer-events: none;
+}
+.proto-nav-center > * {
+  pointer-events: auto;
+}
+
 /* Left cluster of icon-only buttons (Prototypes / Patterns / Components). */
 .proto-nav-left {
   display: flex;
@@ -43,7 +59,7 @@
   border-radius: 7px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.5);
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   cursor: pointer;
   text-decoration: none;
   transition:
@@ -75,7 +91,7 @@
   border-radius: 7px;
   border: 1px solid rgba(0, 0, 0, 0.1);
   background: rgba(255, 255, 255, 0.5);
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   font-family: inherit;
   font-size: 13px;
   font-weight: 700;
@@ -106,7 +122,7 @@
   width: 26px;
   height: 26px;
   border-radius: 99px;
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   background: rgba(0, 0, 0, 0.04);
   border: 1px solid rgba(0, 0, 0, 0.08);
   text-decoration: none;
@@ -123,7 +139,7 @@
 }
 
 .proto-nav-arrow--disabled {
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
   background: transparent;
   border-color: rgba(0, 0, 0, 0.04);
   cursor: not-allowed;
@@ -131,7 +147,7 @@
 
 .proto-nav-arrow--disabled:hover {
   background: transparent;
-  color: var(--c-slate-300);
+  color: var(--c-gray-350);
   border-color: rgba(0, 0, 0, 0.04);
 }
 
@@ -152,7 +168,7 @@
   font-weight: 600;
   /* dark label (not the raw accent) so light accents like teal clear 4.5:1 on
      the accent-tinted background; the dot + border keep the brand color */
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
   cursor: pointer;
@@ -168,7 +184,7 @@
 }
 
 .proto-nav-select--empty {
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   background: rgba(0, 0, 0, 0.04);
   border-color: rgba(0, 0, 0, 0.08);
 }
@@ -233,14 +249,14 @@
   border-radius: 8px;
   font-size: 13px;
   font-weight: 500;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   text-decoration: none;
   cursor: pointer;
   transition: background 0.1s;
 }
 
 .proto-nav-option:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 .proto-nav-option--active {
@@ -270,7 +286,7 @@
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   /* Stays put while the list scrolls under it. The negative margins bleed the
      label out to the dropdown's edges and `top` cancels its 6px padding —
      otherwise rows show through the gutters beside and above the label. */

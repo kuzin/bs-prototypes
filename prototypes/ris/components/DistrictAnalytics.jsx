@@ -19,7 +19,7 @@ import { TrendChart } from '@components/TrendChart/TrendChart'
 import { Icon } from '@components/Icon/Icon'
 import './DistrictAnalytics.css'
 
-const ACCENT = '#0DA7BC'
+const ACCENT = '#0CA7BC'
 
 const ANALYTICS_ICON = <Icon name="chart-bar" />
 
@@ -49,7 +49,7 @@ const SCORECARD_COLUMNS = [
     label: 'Flag rate',
     align: 'center',
     render: (v) => (
-      <Pill color={v >= 15 ? '#DC2626' : '#475569'} variant="soft" size="sm">
+      <Pill color={v >= 15 ? '#E85648' : '#656565'} variant="soft" size="sm">
         {v}%
       </Pill>
     ),
@@ -65,14 +65,14 @@ const SCORECARD_COLUMNS = [
     label: 'Lexile Δ',
     align: 'center',
     render: (v) => (
-      <span style={{ color: v >= 0 ? '#15803D' : '#DC2626', fontWeight: 700 }}>{signedL(v)}</span>
+      <span style={{ color: v >= 0 ? '#15803D' : '#E85648', fontWeight: 700 }}>{signedL(v)}</span>
     ),
   },
   {
     key: 'engagement',
     label: 'Engagement',
     align: 'center',
-    render: (v) => <span style={{ color: '#1E293B', fontWeight: 700 }}>{v}%</span>,
+    render: (v) => <span style={{ color: '#2A2A2A', fontWeight: 700 }}>{v}%</span>,
   },
   {
     key: 'action',
@@ -123,7 +123,7 @@ const ADOPTION_COLUMNS = [
           inline
           value={v}
           max={40}
-          color={high ? '#E8866A' : '#CBD5E1'}
+          color={high ? '#F26430' : '#D0D0D0'}
           size="sm"
           valueLabel={`${v}%`}
         />
@@ -231,9 +231,9 @@ export function DistrictAnalytics() {
           footer={
             <ChartLegend
               items={[
-                { color: '#0DA7BC', label: 'Reading Engagement %' },
-                { color: '#16A97A', label: 'Attendance Rate %', dashed: true },
-                { color: '#E8866A', label: 'Behavioral Incidents', dashed: true },
+                { color: '#0CA7BC', label: 'Reading Engagement %' },
+                { color: '#0BA85F', label: 'Attendance Rate %', dashed: true },
+                { color: '#F26430', label: 'Behavioral Incidents', dashed: true },
               ]}
             />
           }
@@ -249,13 +249,13 @@ export function DistrictAnalytics() {
               {
                 key: 'engagement',
                 name: 'Reading Engagement %',
-                color: '#0DA7BC',
+                color: '#0CA7BC',
                 yAxisId: 'left',
               },
               {
                 key: 'attendance',
                 name: 'Attendance Rate %',
-                color: '#16A97A',
+                color: '#0BA85F',
                 yAxisId: 'left',
                 dashed: true,
                 strokeWidth: 2,
@@ -263,7 +263,7 @@ export function DistrictAnalytics() {
               {
                 key: 'incidents',
                 name: 'Behavioral Incidents',
-                color: '#E8866A',
+                color: '#F26430',
                 yAxisId: 'right',
                 dashed: true,
                 strokeWidth: 2,

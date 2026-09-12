@@ -327,7 +327,7 @@ export function App() {
     challenge.details.name?.trim() || (screenId !== 'type' && type ? type.name : titleVerb)
   // Preview backdrop = the challenge accent, a touch darker, so the mock pops;
   // the header bar sits a shade darker still.
-  const accent = challenge.details.accent || '#0DA7BC'
+  const accent = challenge.details.accent || '#0CA7BC'
   const previewBg = `color-mix(in srgb, ${accent} 85%, #000)`
 
   return (
@@ -350,7 +350,7 @@ export function App() {
           <Button variant="ghost" size="sm">
             Save &amp; exit
           </Button>
-          <Button variant="primary" size="sm" accent="#0DA7BC" onClick={publish}>
+          <Button variant="primary" size="sm" accent="#0CA7BC" onClick={publish}>
             Publish
           </Button>
         </div>
@@ -429,11 +429,11 @@ export function App() {
                 </IconButton>
               )}
               {isLast ? (
-                <Button variant="primary" accent="#0DA7BC" onClick={publish}>
+                <Button variant="primary" accent="#0CA7BC" onClick={publish}>
                   Publish challenge
                 </Button>
               ) : (
-                <Button variant="primary" accent={type?.accent || '#0DA7BC'} onClick={goNext}>
+                <Button variant="primary" accent={type?.accent || '#0CA7BC'} onClick={goNext}>
                   Next: {screens[idx + 1]?.name}
                 </Button>
               )}
@@ -525,7 +525,7 @@ export function App() {
               <Button variant="secondary" onClick={close}>
                 Keep editing
               </Button>
-              <Button variant="primary" accent="#0DA7BC" onClick={doPublish}>
+              <Button variant="primary" accent="#0CA7BC" onClick={doPublish}>
                 Yes, publish
               </Button>
             </div>
@@ -558,7 +558,7 @@ export function App() {
                 <Button variant="secondary" onClick={close}>
                   Keep editing
                 </Button>
-                <Button variant="primary" accent="#0DA7BC" onClick={close}>
+                <Button variant="primary" accent="#0CA7BC" onClick={close}>
                   View challenge
                 </Button>
               </div>

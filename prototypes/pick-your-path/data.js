@@ -491,14 +491,14 @@ export const CHALLENGES = [
 ]
 
 export const TOP_READERS = [
-  { rank: 1, name: 'Diego H.', value: 214, color: '#F59E0B' },
-  { rank: 2, name: 'Maya C.', value: 198, color: '#94A3B8', isMe: true },
+  { rank: 1, name: 'Diego H.', value: 214, color: '#FFBC42' },
+  { rank: 2, name: 'Maya C.', value: 198, color: '#ACACAC', isMe: true },
   { rank: 3, name: 'Priya S.', value: 165, color: '#C2884F' },
 ]
 
 export const TOP_CLASSES = [
-  { rank: 1, name: 'Room 14 · Grade 4', value: 1840, color: '#F59E0B' },
-  { rank: 2, name: 'Room 9 · Grade 4', value: 1610, color: '#94A3B8' },
+  { rank: 1, name: 'Room 14 · Grade 4', value: 1840, color: '#FFBC42' },
+  { rank: 2, name: 'Room 9 · Grade 4', value: 1610, color: '#ACACAC' },
   { rank: 3, name: 'Room 21 · Grade 5', value: 1275, color: '#C2884F' },
 ]
 

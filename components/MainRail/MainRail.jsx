@@ -107,6 +107,45 @@ export function MainRail({
   const [visibleCount, setVisibleCount] = useState(RAIL_ITEMS.length)
   const [open, setOpen] = useState(false)
 
+  // ── Edge detection ────────────────────────────────────────────────────
+  // The menu is anchored to the trigger and grows *upward* (`bottom: 0`), which
+  // the product can afford because its rail is the full viewport height. Ours
+  // sits wherever the host puts it — in a short card, in a preview frame — so a
+  // long list runs off the top. Measure once it's open and slide it back inside,
+  // then keep up with scroll and resize the way Tooltip does.
+  const menuRef = useRef(null)
+  const [shiftY, setShiftY] = useState(0)
+
+  const place = useCallback(() => {
+    const el = menuRef.current
+    if (!el) return
+    const r = el.getBoundingClientRect()
+    // Undo the shift already applied so the maths is always against the
+    // menu's natural position, not its corrected one.
+    setShiftY((prev) => {
+      const top = r.top - prev
+      const bottom = r.bottom - prev
+      const margin = 12
+      if (top < margin) return margin - top
+      if (bottom > window.innerHeight - margin) return window.innerHeight - margin - bottom
+      return 0
+    })
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setShiftY(0)
+      return
+    }
+    place()
+    window.addEventListener('scroll', place, true)
+    window.addEventListener('resize', place)
+    return () => {
+      window.removeEventListener('scroll', place, true)
+      window.removeEventListener('resize', place)
+    }
+  }, [open, place])
+
   const measure = useCallback(() => {
     const nav = navRef.current
     if (!nav) return
@@ -293,7 +332,12 @@ export function MainRail({
             </button>
 
             {open && (
-              <div className="main-rail-overflow-menu" role="menu">
+              <div
+                className="main-rail-overflow-menu"
+                role="menu"
+                ref={menuRef}
+                style={shiftY ? { transform: `translateY(${shiftY}px)` } : undefined}
+              >
                 <ul>
                   {overflow.map((item) => (
                     <li key={item.id} role="none">

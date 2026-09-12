@@ -113,10 +113,10 @@ function GoalCard() {
           : `Read ${goal - minutes} more minutes to hit your daily goal.`}
       </p>
       <div className="pyp-goal-amount">
-        <strong style={{ color: met ? '#16A97A' : '#0F766E' }}>{minutes}</strong>
+        <strong style={{ color: met ? '#0BA85F' : '#0F766E' }}>{minutes}</strong>
         <span> / {goal} minutes</span>
       </div>
-      <ProgressBar value={minutes} max={goal} color={met ? '#16A97A' : '#0F766E'} size="lg" />
+      <ProgressBar value={minutes} max={goal} color={met ? '#0BA85F' : '#0F766E'} size="lg" />
     </aside>
   )
 }

@@ -72,7 +72,7 @@ export function ActivityModal({ activity, path, open, done, response, onClose, o
         <div className="pyp-activity-foot">
           {done ? (
             <div className="pyp-activity-earned">
-              <Icon name="circle-check-filled" size={18} color="#16A97A" />
+              <Icon name="circle-check-filled" size={18} color="#0BA85F" />
               <span>
                 Badge earned — <strong>{activity.name}</strong>
               </span>

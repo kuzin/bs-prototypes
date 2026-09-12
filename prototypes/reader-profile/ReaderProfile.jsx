@@ -495,17 +495,17 @@ function ReaderHeader({ student, onClose, onOpenAccount }) {
 // page's Hero — they were drifting apart when each page hardcoded its own.
 // The four analysis sections keep the shared `C` palette.
 const SECTION_ACCENT = {
-  overview: { bg: '#F1F5F9', text: '#64748B' },
+  overview: { bg: '#F5F5F5', text: '#707070' },
   readinglog: { bg: '#E0F2FE', text: '#0284C7' },
-  challenges: { bg: '#FEF3C7', text: '#B45309' },
+  challenges: { bg: '#FFECC8', text: '#B45309' },
   rewards: { bg: '#FCE7F3', text: '#9D174D' },
   drawings: { bg: '#EEF2FF', text: '#4F46E5' },
-  activities: { bg: '#F1EBFF', text: '#7C3AED' },
+  activities: { bg: '#F1EBFF', text: '#B43DD0' },
   badges: { bg: '#EFFBF9', text: '#0D9488' },
   achievements: { bg: '#FFEDD5', text: '#C2410C' },
   reviews: { bg: '#FFE4E6', text: '#BE123C' },
   points: { bg: '#FEF9C3', text: '#A16207' },
-  recofilters: { bg: '#F1F5F9', text: '#475569' },
+  recofilters: { bg: '#F5F5F5', text: '#656565' },
   recommended: { bg: '#FFE4E6', text: '#9F1239' },
   wishlist: { bg: '#F5F3FF', text: '#6D28D9' },
 }
@@ -627,10 +627,10 @@ function MobileSectionNav({ activeSection, onNavigate }) {
 // gold for streaks (matching the gold goal stars), teal for the brand's own
 // accent, slate for elapsed time, violet for books.
 const STAT_TINTS = {
-  current: { bg: '#FEF3C7', text: '#92400E', bar: '#D97706' },
+  current: { bg: '#FFECC8', text: '#92400E', bar: '#AB720A' },
   longest: { bg: '#DFF4F7', text: '#0B6B78', bar: '#0E9AAB' },
-  minutes: { bg: '#EEF2F7', text: '#334155', bar: '#64748B' },
-  books: { bg: '#EDE9FE', text: '#5B21B6', bar: '#7C3AED' },
+  minutes: { bg: '#EEF2F7', text: '#424242', bar: '#707070' },
+  books: { bg: '#EDE9FE', text: '#5B21B6', bar: '#B43DD0' },
 }
 
 // ─── Overview stats ───────────────────────────────────────────────────────────
@@ -1281,7 +1281,7 @@ const READERS = {
       {
         name: 'Museums',
         icon: 'building-arch',
-        color: '#7C3AED',
+        color: '#B43DD0',
         challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
@@ -1358,14 +1358,14 @@ const READERS = {
         category: 'literacy',
         date: 'Nov 29, 2025',
         icon: 'writing',
-        color: '#7C3AED',
+        color: '#B43DD0',
       },
       {
         name: 'National Cookbook Month 2025',
         category: 'us',
         date: 'Oct 1, 2025',
         icon: 'apple',
-        color: '#D97706',
+        color: '#AB720A',
       },
       {
         name: 'Dear Diary Day 2025',
@@ -1386,7 +1386,7 @@ const READERS = {
         category: 'us',
         date: 'Sep 1, 2025',
         icon: 'barcode',
-        color: '#DC2626',
+        color: '#E85648',
       },
     ],
     // Logging milestones and challenge badges. `earned` splits the two tabs;
@@ -1576,7 +1576,7 @@ const READERS = {
     groups: ['Storytime Club'],
     lastLogged: 'May 14',
     name: 'Sofía Torres',
-    avatarColor: '#7C3AED',
+    avatarColor: '#B43DD0',
     status: ['tandem', 'comicsplus'],
     // Libraries identify readers by age, not grade, and every reader sits on a
     // login account that can hold several of them.
@@ -1765,7 +1765,7 @@ const READERS = {
       {
         name: 'Museums',
         icon: 'building-arch',
-        color: '#7C3AED',
+        color: '#B43DD0',
         challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
@@ -1819,7 +1819,7 @@ const READERS = {
         category: 'us',
         date: 'Sep 1, 2025',
         icon: 'barcode',
-        color: '#DC2626',
+        color: '#E85648',
       },
     ],
     badges: [
@@ -1995,7 +1995,7 @@ const READERS = {
     groups: [],
     lastLogged: 'Mar 2',
     name: 'Elena Torres',
-    avatarColor: '#1D4ED8',
+    avatarColor: '#196DD5',
     status: ['offline'],
     // Libraries identify readers by age, not grade, and every reader sits on a
     // login account that can hold several of them.
@@ -2135,7 +2135,7 @@ const READERS = {
       {
         name: 'Museums',
         icon: 'building-arch',
-        color: '#7C3AED',
+        color: '#B43DD0',
         challenge: 'Benny the Bean Reading Challenge',
         activities: [
           {
@@ -2175,7 +2175,7 @@ const READERS = {
         category: 'us',
         date: 'Sep 1, 2025',
         icon: 'barcode',
-        color: '#DC2626',
+        color: '#E85648',
       },
     ],
     badges: [
@@ -2353,7 +2353,7 @@ const RL_SESSIONS = {
         id: 'rc1',
         label: 'Session flagged',
         icon: 'flag',
-        color: '#DC2626',
+        color: '#E85648',
         by: 'Benny',
         at: 'Jul 16, 8:02 PM',
       },
@@ -2367,7 +2367,7 @@ const RL_SESSIONS = {
     challenge: 'Summer Reading 2026',
     minutesLogged: 512,
     engagementRating: null,
-    book: { title: 'Snapdragon', author: 'Kat Leyh', color: '#7C3AED', isbn: '9781250312846' },
+    book: { title: 'Snapdragon', author: 'Kat Leyh', color: '#B43DD0', isbn: '9781250312846' },
     flags: [
       {
         id: 'rf2',
@@ -2389,7 +2389,7 @@ const RL_SESSIONS = {
         id: 'rc2',
         label: 'Session flagged',
         icon: 'flag',
-        color: '#DC2626',
+        color: '#E85648',
         by: 'Benny',
         at: 'Jul 11, 7:41 PM',
       },

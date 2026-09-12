@@ -1,11 +1,7 @@
-.rh-wrap {
-  margin-bottom: 18px;
-}
-
 .rh-title {
   font-size: 14px;
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   letter-spacing: -0.01em;
   margin: 0 0 10px;
 }
@@ -88,7 +84,7 @@
 .rh-stat-label {
   font-size: 13px;
   font-weight: 700;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   margin-top: 4px;
 }
 
@@ -102,7 +98,7 @@
 
 .rh-stat-desc {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -119,10 +115,10 @@
   color: #16a34a;
 }
 .rh-delta--down {
-  color: var(--c-red-600);
+  color: var(--c-red);
 }
 .rh-delta--flat {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 .rh-stat-more {

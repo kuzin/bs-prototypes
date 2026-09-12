@@ -4,15 +4,17 @@ import { Table } from '@components/Table/Table'
 import { Pill } from '@components/Pill/Pill'
 import { Tooltip } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
+import { FlagIcon } from '@components/BsIcons/BsIcons'
+import { talkKind, sessionConfidence, CONFIDENCE_META, CONFIDENCE_BLURB } from '../data'
 import '@components/Table/Table.css'
 import '@components/Pill/Pill.css'
 import '@components/Primitives/Primitives.css'
 import './SessionsTable.css'
 
 const RATING_CONFIG = {
-  green: { color: '#16A97A', label: 'Positive' },
-  yellow: { color: '#D97706', label: 'Mixed' },
-  red: { color: '#DC2626', label: 'Disengaged' },
+  green: { color: '#0BA85F', label: 'Positive' },
+  yellow: { color: '#AB720A', label: 'Mixed' },
+  red: { color: '#E85648', label: 'Disengaged' },
 }
 
 export function RatingDot({ rating }) {
@@ -28,31 +30,31 @@ export function RatingDot({ rating }) {
 const FLAG_TYPE_CONFIG = {
   'copy-paste': {
     label: 'Copied Response',
-    color: '#DC2626',
+    color: '#E85648',
     bg: '#FEF2F2',
     icon: <Icon name="copy" size={12} />,
   },
   'no-recall': {
     label: 'Unable to Recall',
-    color: '#DC2626',
+    color: '#E85648',
     bg: '#FEF2F2',
     icon: <Icon name="help" size={12} />,
   },
   minimal: {
     label: 'Minimal Engagement',
-    color: '#DC2626',
+    color: '#E85648',
     bg: '#FEF2F2',
     icon: <Icon name="align-left" size={12} />,
   },
   unintelligible: {
     label: 'Unintelligible',
-    color: '#DC2626',
+    color: '#E85648',
     bg: '#FEF2F2',
     icon: <Icon name="wave" size={12} />,
   },
   'quit-early': {
     label: 'Did Not Complete',
-    color: '#DC2626',
+    color: '#E85648',
     bg: '#FEF2F2',
     icon: <Icon name="circle-x" size={12} />,
   },
@@ -61,25 +63,25 @@ const FLAG_TYPE_CONFIG = {
 const POS_FLAG_CONFIG = {
   'positive-sentiment': {
     label: 'Positive Sentiment',
-    color: '#16A97A',
+    color: '#0BA85F',
     bg: '#F0FDF4',
     icon: <Icon name="smile" size={12} />,
   },
   'answer-length': {
     label: 'Long Answer',
-    color: '#16A97A',
+    color: '#0BA85F',
     bg: '#F0FDF4',
     icon: <Icon name="list" size={12} />,
   },
   'references-details': {
     label: 'References Details',
-    color: '#16A97A',
+    color: '#0BA85F',
     bg: '#F0FDF4',
     icon: <Icon name="search" size={12} />,
   },
   'makes-connection': {
     label: 'Made a Connection',
-    color: '#16A97A',
+    color: '#0BA85F',
     bg: '#F0FDF4',
     icon: <Icon name="link" size={12} />,
   },
@@ -94,7 +96,7 @@ export const SAFETY_SEVERITY = {
   critical: {
     label: 'Critical',
     sub: 'Imminent risk',
-    color: '#DC2626',
+    color: '#E85648',
     bg: '#FEF2F2',
     border: '#FECACA',
     icon: 'alert-hexagon',
@@ -103,7 +105,7 @@ export const SAFETY_SEVERITY = {
   warning: {
     label: 'Warning',
     sub: 'Concerning',
-    color: '#D97706',
+    color: '#AB720A',
     bg: '#FFFBEB',
     border: '#FDE68A',
     icon: 'alert-triangle',
@@ -131,118 +133,129 @@ export const SAFETY_CATEGORY = {
 export function safetyStatusMeta(safety) {
   if (safety.status === 'resolved') {
     return safety.resolution === 'dismissed'
-      ? { label: 'Dismissed', color: '#64748B', bg: '#F1F5F9' }
-      : { label: 'Resolved', color: '#16A97A', bg: '#F0FDF4' }
+      ? { label: 'Dismissed', color: '#707070', bg: '#F5F5F5' }
+      : { label: 'Resolved', color: '#0BA85F', bg: '#F0FDF4' }
   }
-  return { label: 'Unresolved', color: '#DC2626', bg: '#FEF2F2' }
+  return { label: 'Unresolved', color: '#E85648', bg: '#FEF2F2' }
 }
 
+/** What kind of talk it was — engagement, comprehension, or integrity. */
+export function TalkKindPill({ session }) {
+  const kind = talkKind(session)
+  if (!kind) return <span className="sess-na">—</span>
+  return (
+    <Tooltip content={`${kind.label} — ${kind.measures}`}>
+      <Pill color={kind.color} variant="soft" size="sm">
+        {kind.short}
+      </Pill>
+    </Tooltip>
+  )
+}
+
+/** Reading Confidence — a comprehension talk's own read, and only its own. */
+export function ConfidencePill({ session }) {
+  const key = sessionConfidence(session)
+  if (!key) return <span className="sess-na">—</span>
+  const cfg = CONFIDENCE_META[key]
+  return (
+    <Tooltip content={CONFIDENCE_BLURB}>
+      <Pill color={cfg.color} variant="soft" size="sm">
+        {cfg.label.replace(' confidence', '')}
+      </Pill>
+    </Tooltip>
+  )
+}
+
+// The same `Pill` every other tag in these tables is — it used to be a
+// bespoke outlined tag, which made the one column that matters most the only
+// one drawn differently from its neighbours.
 export function SafetySeverityTag({ severity }) {
   const cfg = SAFETY_SEVERITY[severity]
   if (!cfg) return null
   return (
     <Tooltip content={`${cfg.label} — ${cfg.sub}. ${cfg.blurb}`}>
-      <span
-        className="sess-safety-tag"
-        style={{
-          color: cfg.color,
-          background: cfg.bg,
-          borderColor: `${cfg.color}40`,
-        }}
-      >
+      <Pill color={cfg.color} variant="soft" size="sm">
         {cfg.label}
-      </span>
+      </Pill>
     </Tooltip>
   )
 }
 
-export function FlagIconBadge({ cfg }) {
+/**
+ * The flags cell, the way the shipped row draws it
+ * (`FlaggedEntryAnalysis` + `_admin_flagged_entries.scss`):
+ *
+ *   0 flags   → a grey "N/A" chip, not an em dash
+ *   1–2       → the app's own drawing per flag, 24px in a 32px box
+ *   3 or more → one chip carrying the count, in the sentiment's pair
+ *
+ * The threshold is the app's: past two icons a row stops being readable at a
+ * glance, and the number is the thing you'd have counted anyway.
+ */
+function FlagCell({ flags, sentiment }) {
+  const list = flags ?? []
+  const cfg = sentiment === 'positive' ? POS_FLAG_CONFIG : FLAG_TYPE_CONFIG
+
+  if (list.length === 0) return <span className="fe-chip fe-chip--none">N/A</span>
+
+  if (list.length > 2) {
+    return <span className={`fe-chip fe-chip--${sentiment}`}>{list.length}</span>
+  }
+
   return (
-    <Tooltip content={cfg.label}>
-      <span className="sess-flag-icon" style={{ background: cfg.bg, color: cfg.color }}>
-        {cfg.icon}
-      </span>
-    </Tooltip>
+    <span className="fe-analysis">
+      {list.map((f, i) => (
+        <Tooltip key={f.id ?? i} content={cfg[f.type]?.label ?? f.type}>
+          <span className="fe-icon">
+            <FlagIcon
+              type={f.type}
+              fallback={sentiment === 'positive' ? 'positive' : 'negative'}
+              size={24}
+              label={cfg[f.type]?.label ?? f.type}
+            />
+          </span>
+        </Tooltip>
+      ))}
+    </span>
   )
 }
 
 export function PosFlagCount({ positiveFlags }) {
-  if (!positiveFlags || positiveFlags.length === 0) return <span className="sess-na">—</span>
-  if (positiveFlags.length >= 3) {
-    return (
-      <span className="sess-flags sess-flags--pos">
-        <Icon name="flag" size={13} color="#16A97A" />
-        {positiveFlags.length}
-      </span>
-    )
-  }
-  return (
-    <span className="sess-flag-icons">
-      {positiveFlags.map((f, i) => {
-        const cfg = POS_FLAG_CONFIG[f.type] ?? {
-          label: f.type,
-          color: '#16A97A',
-          bg: '#F0FDF4',
-          icon: null,
-        }
-        return <FlagIconBadge key={i} type={f.type} cfg={cfg} />
-      })}
-    </span>
-  )
+  return <FlagCell flags={positiveFlags} sentiment="positive" />
 }
 
 export function FlagCount({ flags }) {
-  if (!flags || flags.length === 0) return <span className="sess-na">—</span>
-  return (
-    <span className="sess-flags sess-flags--neg">
-      <Icon name="flag" size={13} color="#DC2626" />
-      {flags.length}
-    </span>
-  )
+  return <FlagCell flags={flags} sentiment="negative" />
 }
 
 export function FlagTypeIcons({ flags }) {
-  if (!flags || flags.length === 0) return <span className="sess-na">—</span>
-  if (flags.length >= 3) return <FlagCount flags={flags} />
-  return (
-    <span className="sess-flag-icons">
-      {flags.map((f, i) => {
-        const cfg = FLAG_TYPE_CONFIG[f.type] ?? {
-          label: f.type,
-          color: '#DC2626',
-          bg: '#FEF2F2',
-          icon: null,
-        }
-        return <FlagIconBadge key={i} type={f.type} cfg={cfg} />
-      })}
-    </span>
-  )
+  return <FlagCell flags={flags} sentiment="negative" />
 }
 
 export function TypePill({ session, type }) {
   const wasApproved = session?.changeLog?.some((e) => e.kind === 'approved')
   if (wasApproved) {
     return (
-      <Pill color="#16A97A" variant="soft" size="sm">
+      <Pill color="#0BA85F" variant="soft" size="sm">
         Approved
       </Pill>
     )
   }
   if (type === 'flagged')
     return (
-      <Pill color="#DC2626" variant="soft" size="sm">
+      <Pill color="#E85648" variant="soft" size="sm">
         Flagged
       </Pill>
     )
   if (type === 'engagement')
     return (
-      <Pill color="#0DA7BC" variant="soft" size="sm">
+      <Pill color="#0CA7BC" variant="soft" size="sm">
         Engagement
       </Pill>
     )
   if (type === 'both')
     return (
-      <Pill color="#7C3AED" variant="soft" size="sm">
+      <Pill color="#B43DD0" variant="soft" size="sm">
         Both
       </Pill>
     )
@@ -386,10 +399,16 @@ export function DotsButton({ session, onSelectSession, onApproveRequest, onViewP
 
 export function SessionsTable({
   sessions,
+  // The app names the date column for what happened on it — "Logged On"
+  // everywhere, "Flagged On" on the flagged tab.
+  dateLabel = 'Logged On',
+  showUnitColumn = false,
+  showSafetyColumn,
   onSelectSession,
   onApproveRequest,
   onViewProfile,
   showTypeColumn = true,
+  showTalkColumn = true,
   showFlagIcons = false,
   showPosFlags = true,
   showEngagementColumn = true,
@@ -403,11 +422,11 @@ export function SessionsTable({
   const showSource = sessions.some((s) => s.source)
   // Show a Safety column when any session carries a safety signal (Safety
   // Signals prototype). SFR's own sessions have none, so this stays off there.
-  const showSafety = sessions.some((s) => s.safety)
+  const showSafety = showSafetyColumn ?? sessions.some((s) => s.safety)
   const columns = [
     {
       key: 'date',
-      label: 'Date',
+      label: dateLabel,
       sortable: true,
       render: (_, row) => {
         const d = new Date(row.date)
@@ -449,12 +468,35 @@ export function SessionsTable({
       key: 'book',
       label: 'Title',
       render: (_, row) => (
-        <span className="sess-title-cell">
-          <span className="sess-book-title">{row.book.title}</span>
-          {row.status === 'unfinished' && <span className="sess-unfinished-badge">Unfinished</span>}
-        </span>
+        // Unfinished is a filter and a column of its own; a badge in the
+        // title cell said it a third time, in the one cell you read first.
+        <button
+          className="sess-book-title sess-book-title--link"
+          onClick={(e) => {
+            e.stopPropagation()
+            onSelectSession?.(row)
+          }}
+        >
+          {row.book.title}
+        </button>
       ),
     },
+    // "Unit" is how much was logged — the flagged tab's own column, since a
+    // flag is usually about the amount.
+    ...(showUnitColumn
+      ? [
+          {
+            key: 'unit',
+            label: 'Unit',
+            render: (_, row) =>
+              row.minutesLogged ? (
+                <span className="sess-unit">{row.minutesLogged} minutes</span>
+              ) : (
+                <span className="sess-na">—</span>
+              ),
+          },
+        ]
+      : []),
     ...(showSafety
       ? [
           {
@@ -502,6 +544,26 @@ export function SessionsTable({
           },
         ]
       : []),
+    ...(showTalkColumn
+      ? [
+          {
+            key: 'talk',
+            label: 'Talk',
+            render: (_, row) => <TalkKindPill session={row} />,
+          },
+        ]
+      : []),
+    // Only shown when something in view actually reports one — a column of
+    // dashes for every engagement talk isn't a column.
+    ...(sessions.some((s) => sessionConfidence(s))
+      ? [
+          {
+            key: 'confidence',
+            label: 'Confidence',
+            render: (_, row) => <ConfidencePill session={row} />,
+          },
+        ]
+      : []),
     ...(showTypeColumn
       ? [
           {
@@ -524,7 +586,7 @@ export function SessionsTable({
       ? [
           {
             key: 'positiveFlags',
-            label: <Icon name="flag" size={13} color="#16A97A" />,
+            label: <Icon name="flag" size={13} color="#0BA85F" />,
             render: (_, row) => <PosFlagCount positiveFlags={row.positiveFlags} />,
           },
         ]
@@ -533,7 +595,7 @@ export function SessionsTable({
       ? [
           {
             key: 'flags',
-            label: <Icon name="flag" size={13} color="#DC2626" />,
+            label: <Icon name="flag" size={13} color="#E85648" />,
             render: (_, row) =>
               showFlagIcons ? <FlagTypeIcons flags={row.flags} /> : <FlagCount flags={row.flags} />,
           },

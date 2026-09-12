@@ -28,7 +28,7 @@ export function TypeStep({ types, value, onSelect, selectableIds }) {
           icon={<Icon name="layout-grid" size={22} />}
           title="Choose a challenge type"
           subtitle="Pick the main way readers earn badges — you can layer on more in the Badges step."
-          accent="#0DA7BC"
+          accent="#0CA7BC"
         />
       </div>
       <div className="gb-type-grid">

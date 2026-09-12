@@ -220,7 +220,7 @@ export function App() {
           <Button variant="ghost" size="sm">
             Save &amp; exit
           </Button>
-          <Button variant="primary" size="sm" accent="#0DA7BC" onClick={publish}>
+          <Button variant="primary" size="sm" accent="#0CA7BC" onClick={publish}>
             Publish
           </Button>
         </div>
@@ -274,11 +274,11 @@ export function App() {
             </Button>
             <div className="gb-footer-right">
               {isLast ? (
-                <Button variant="primary" accent="#0DA7BC" onClick={publish}>
+                <Button variant="primary" accent="#0CA7BC" onClick={publish}>
                   Publish challenge
                 </Button>
               ) : (
-                <Button variant="primary" accent={type?.accent || '#0DA7BC'} onClick={goNext}>
+                <Button variant="primary" accent={type?.accent || '#0CA7BC'} onClick={goNext}>
                   Next: {steps[idx + 1]?.name}
                 </Button>
               )}
@@ -338,7 +338,7 @@ export function App() {
               </Button>
               <Button
                 variant="primary"
-                accent="#0DA7BC"
+                accent="#0CA7BC"
                 onClick={() => {
                   setConfirmPublish(false)
                   window.alert('Prototype: the challenge would publish now. ✅')

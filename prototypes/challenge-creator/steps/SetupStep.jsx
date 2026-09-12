@@ -91,7 +91,7 @@ function ReadingListTitleModal({ existing = [], onAdd, onClose }) {
         <div className="cc-titlemodal-side">
           <Tabs
             className="cc-titlemodal-tabs"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             active="web"
             items={[{ id: 'web', label: 'Web' }]}
           />
@@ -421,10 +421,10 @@ export function resolveGameboardTheme(theme, { custom, templateBanner } = {}) {
     return {
       board: `linear-gradient(165deg, ${custom}, ${custom})`,
       track: '#ffffff',
-      ink: '#0f172a',
+      ink: '#2a2a2a',
     }
   if (theme === 'template' && templateBanner)
-    return { bgImg: templateBanner, track: '#ffffff', ink: '#0f172a' }
+    return { bgImg: templateBanner, track: '#ffffff', ink: '#2a2a2a' }
   return gameboardTheme(theme)
 }
 
@@ -873,11 +873,11 @@ export function SetupStep({ challenge, type, update }) {
     // Default to the template's own theme when one's applied; else the first generic.
     const theme = s.gameboardTheme || (templateBg ? 'template' : 'meadow')
     let themeObj = resolveGameboardTheme(theme, {
-      custom: s.gameboardColor || '#16A97A',
+      custom: s.gameboardColor || '#0BA85F',
       templateBanner: templateBg,
     })
     if (theme === 'custom' && s.gameboardBg)
-      themeObj = { bgImg: s.gameboardBg, track: '#ffffff', ink: '#0f172a' }
+      themeObj = { bgImg: s.gameboardBg, track: '#ffffff', ink: '#2a2a2a' }
     return (
       <section className="cc-step">
         <StepHead
@@ -943,21 +943,21 @@ export function SetupStep({ challenge, type, update }) {
                 <ColorPicker
                   value={s.gameboardColor}
                   presets={[
-                    '#16A97A',
-                    '#0DA7BC',
+                    '#0BA85F',
+                    '#0CA7BC',
                     '#0E7490',
                     '#2563EB',
                     '#1E3A8A',
                     '#6366F1',
-                    '#7C3AED',
+                    '#B43DD0',
                     '#DB2777',
                     '#E8453A',
                     '#EA580C',
-                    '#F59E0B',
+                    '#FFBC42',
                     '#65A30D',
                   ]}
                   maxPresets={12}
-                  fallback="#16A97A"
+                  fallback="#0BA85F"
                   onColor={(c) => setSetup({ gameboardColor: c })}
                 />
               </Field>

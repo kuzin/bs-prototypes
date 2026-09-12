@@ -18,7 +18,7 @@ export const STEP_ICONS = {
 export function StepHead({ title, sub }) {
   return (
     <div className="gb-step-head">
-      <Hero title={title} subtitle={sub} accent="#0DA7BC" />
+      <Hero title={title} subtitle={sub} accent="#0CA7BC" />
     </div>
   )
 }

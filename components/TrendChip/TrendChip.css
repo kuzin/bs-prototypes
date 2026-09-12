@@ -52,6 +52,6 @@
    rather than as a good or bad one, and present so a flat row still lines up
    with the rows around it. */
 .trend-chip--flat {
-  background: var(--c-slate-100);
-  color: var(--c-slate-500);
+  background: var(--c-gray-100);
+  color: var(--c-gray-700);
 }

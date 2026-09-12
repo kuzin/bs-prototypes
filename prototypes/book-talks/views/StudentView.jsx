@@ -3,6 +3,7 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Modal } from '@components/Modal/Modal'
+import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
 import { BennyChat } from '../components/BennyChat'
 // Entry point 4 uses the REAL logging flow, reused from the Logging Flow
 // prototype — Benny's hand-off is an additive prop on its success step.
@@ -58,7 +59,7 @@ function BadgeCard({ name, sublabel, img, reqLabel, completed, footer, onClick }
         </div>
         {completed && (
           <span className="bt-rcard-check">
-            <Icon name="circle-check-filled" size={20} color="#16A97A" />
+            <Icon name="circle-check-filled" size={20} color="#0BA85F" />
           </span>
         )}
       </div>
@@ -95,7 +96,7 @@ function BadgeDetailModal({ detail, open, onClose, onReplay }) {
             <img src={detail.img} alt="" />
           </div>
           <span className="bt-detail-check">
-            <Icon name="circle-check-filled" size={26} color="#16A97A" />
+            <Icon name="circle-check-filled" size={26} color="#0BA85F" />
           </span>
         </div>
         <div className="bt-detail-type">Book Talk Badge · Earned</div>
@@ -154,7 +155,7 @@ export function StudentView({ badge, selfStart = true }) {
       name: 'Book Buddy',
       sublabel: 'Talk with Benny',
       img: sampleImg,
-      color: '#0DA7BC',
+      color: '#0CA7BC',
       promptId: 'favorites',
       talks: 2,
       booktalk: true,
@@ -166,7 +167,7 @@ export function StudentView({ badge, selfStart = true }) {
       name: 'Deep Reader',
       sublabel: 'Talk with Benny',
       img: deepImg,
-      color: '#7C3AED',
+      color: '#B43DD0',
       promptId: 'why-reading',
       talks: 3,
       booktalk: true,
@@ -234,10 +235,7 @@ export function StudentView({ badge, selfStart = true }) {
       {/* App top bar */}
       <header className="wa-topbar">
         <div className="wa-topbar-inner">
-          <div className="wa-logo">
-            <img src="/bs-prototypes/bs.svg" alt="" className="wa-logo-mark" />
-            <span className="wa-logo-word">beanstack</span>
-          </div>
+          <BeanstackLogo />
           <div className="wa-topbar-actions">
             <Button variant="primary" size="sm" onClick={() => setLogOpen(true)}>
               Log Reading and Activities
@@ -261,7 +259,7 @@ export function StudentView({ badge, selfStart = true }) {
             variant="underline"
             size="md"
             active="challenges"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             items={NAV_TABS}
           />
         </div>
@@ -280,7 +278,7 @@ export function StudentView({ badge, selfStart = true }) {
             variant="underline"
             size="md"
             active="badges"
-            accent="#0DA7BC"
+            accent="#0CA7BC"
             items={CHALLENGE_TABS}
           />
         </div>
@@ -299,7 +297,7 @@ export function StudentView({ badge, selfStart = true }) {
               variant="underline"
               size="md"
               active="booktalk"
-              accent="#0DA7BC"
+              accent="#0CA7BC"
               items={BADGE_TYPE_TABS}
             />
           </div>

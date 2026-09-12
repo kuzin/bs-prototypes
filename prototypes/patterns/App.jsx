@@ -231,12 +231,13 @@ function PrevNextLink({ groupId, target, dir }) {
 
   const isPrev = dir === 'prev'
   return (
-    <a className={`pt-prevnext-link pt-prevnext-link--${dir}`} href={`#/${groupId}/${target.id}`}>
+    <a
+      className={`pt-prevnext-link pt-prevnext-link--${dir}`}
+      href={`#/${groupId}/${target.id}`}
+      aria-label={`${isPrev ? 'Previous' : 'Next'}: ${target.name}`}
+    >
       {isPrev && <Icon name="chevron-left" size={14} stroke={2.2} />}
-      <span>
-        <small>{isPrev ? 'Previous' : 'Next'}</small>
-        {target.name}
-      </span>
+      <span>{target.name}</span>
       {!isPrev && <Icon name="chevron-right" size={14} stroke={2.2} />}
     </a>
   )
@@ -340,6 +341,14 @@ export function App() {
       return next
     })
 
+  // One switch for the whole tree: with 24 groups, closing them one at a time to
+  // get back to a readable list was the tedious part. Collapsing everything
+  // includes the group you're currently inside — the effect above only re-opens
+  // it when the route *changes*, so the sidebar stays shut until you navigate.
+  const allCollapsed = openGroups.size === 0
+  const toggleAllGroups = () =>
+    setOpenGroups(allCollapsed ? new Set(GROUPS.map((g) => g.id)) : new Set())
+
   const activeGroupId = route.group?.id ?? null
   const activeSectionId = route.section?.id ?? null
 
@@ -373,10 +382,16 @@ export function App() {
           <div className="pt-sidebar-head">
             <a className="pt-sidebar-brand" href="#/">
               <div className="pt-sidebar-title">Pattern Library</div>
-              <div className="pt-sidebar-sub">
-                {SECTIONS.length} components, {GROUPS.length} groups
-              </div>
             </a>
+            <button
+              type="button"
+              className="pt-nav-collapse"
+              onClick={toggleAllGroups}
+              title={allCollapsed ? 'Expand all groups' : 'Collapse all groups'}
+              aria-label={allCollapsed ? 'Expand all groups' : 'Collapse all groups'}
+            >
+              <Icon name={allCollapsed ? 'chevrons-down' : 'chevrons-up'} size={15} stroke={2} />
+            </button>
             <button
               type="button"
               className="pt-sidebar-close"
@@ -399,9 +414,7 @@ export function App() {
             const isActiveGroup = activeGroupId === group.id
             return (
               <Fragment key={group.id}>
-                {startsPrototypeSection(i) && (
-                  <div className="pt-nav-divider">Prototype-specific</div>
-                )}
+                {startsPrototypeSection(i) && <div className="pt-nav-divider" aria-hidden="true" />}
                 <div className={`pt-nav-group${isOpen ? ' pt-nav-group--open' : ''}`}>
                   <div
                     className={`pt-nav-group-label${isActiveGroup ? ' pt-nav-group-label--active' : ''}`}
@@ -457,8 +470,7 @@ export function App() {
           Top
         </button>
       )}
-      <PrototypeNav currentHref="/bs-prototypes/patterns/" />
-      <BreakpointIndicator />
+      <PrototypeNav currentHref="/bs-prototypes/patterns/" center={<BreakpointIndicator />} />
     </>
   )
 }

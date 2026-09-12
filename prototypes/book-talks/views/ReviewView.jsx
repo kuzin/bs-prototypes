@@ -1,14 +1,16 @@
 import { useState } from 'react'
 import { Tabs } from '@components/Tabs/Tabs'
-import { BackBar } from '@components/BackBar/BackBar'
+import { Button } from '@components/Button/Button'
+import { PageHeader } from '@components/PageHeader/PageHeader'
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { AllBTWBView } from '../../sfr/components/AllBTWBView'
+import { SessionsSearch } from '../../sfr/components/SessionsFilters'
 import { SessionModal } from '../../sfr/components/SessionModal'
 import { HighlightCard } from '../../sfr/components/Overview'
 import { buildReviewSessions, SITE } from '../data'
 
 import '@components/Tabs/Tabs.css'
-import '@components/BackBar/BackBar.css'
+import '@components/Button/Button.css'
 import '@components/AppShell/AppShell.css'
 import '@components/BennyBubble/BennyBubble.css'
 import '../../sfr/components/SfrPage.css'
@@ -32,6 +34,10 @@ export function ReviewView({ badge }) {
   // Sessions-for-Review tabs are shown for context but left non-interactive.
   const [tab, setTab] = useState('self')
   const [groupBy, setGroupBy] = useState('session')
+  // Search is the page's, not a tab's — the same shape SfrPage uses, so the two
+  // surfaces stay one page.
+  const [search, setSearch] = useState('')
+  const [showSearch, setShowSearch] = useState(false)
   const [sessions, setSessions] = useState(() => buildReviewSessions(badge))
 
   const flagged = sessions.filter(
@@ -75,43 +81,35 @@ export function ReviewView({ badge }) {
 
   return (
     <div className="bt-reviewx">
-      <BackBar label="Dashboard" href="#dashboard" />
-
-      {/* Page header — mirrors Sessions for Review */}
-      <div className="app-shell-header">
-        <div className="app-shell-header-identity">
-          <div className="app-shell-header-text">
-            <div className="app-shell-header-name-row">
-              <span className="app-shell-header-name">Sessions for Review</span>
-            </div>
-            <div className="app-shell-header-meta">{SITE.school} · June 2026</div>
+      <div className="app-shell-page bt-reviewx-body">
+        <PageHeader
+          className="sfr-header"
+          title="Sessions for Review"
+          subtitle={`${SITE.school} · June 2026`}
+          actions={
+            <>
+              <Tabs
+                variant="pill"
+                active={groupBy}
+                onChange={setGroupBy}
+                items={[
+                  { id: 'session', label: 'By Session' },
+                  { id: 'reader', label: 'By Reader' },
+                ]}
+              />
+              <Button variant="secondary" size="md" onClick={() => setShowSearch((v) => !v)}>
+                {showSearch ? 'Hide Search' : 'Show Search'}
+              </Button>
+            </>
+          }
+        >
+          <div className="sfr-tabs-bar">
+            <Tabs items={tabItems} active={tab} onChange={setTab} accent="#0BA85F" />
           </div>
-        </div>
-        <div className="sfr-header-actions">
-          <Tabs
-            variant="pill"
-            active={groupBy}
-            onChange={setGroupBy}
-            items={[
-              { id: 'session', label: 'By Session' },
-              { id: 'reader', label: 'By Reader' },
-            ]}
-          />
-        </div>
-      </div>
+        </PageHeader>
 
-      <div className="sfr-tabs-bar">
-        <Tabs
-          variant="underline"
-          size="md"
-          items={tabItems}
-          active={tab}
-          onChange={setTab}
-          accent="#16A97A"
-        />
-      </div>
+        {showSearch && tab !== 'overview' && <SessionsSearch value={search} onSearch={setSearch} />}
 
-      <div className="bt-reviewx-body">
         {tab === 'overview' ? (
           <div className="ov-shell">
             <div className="ov-summary">
@@ -175,6 +173,7 @@ export function ReviewView({ badge }) {
           <AllBTWBView
             key={tab}
             sessions={tab === 'self' ? selfSessions : sessions}
+            search={search}
             groupBy={groupBy}
             defaultFilters={tabDefaultFilters}
             allowSourceFilter={tab === 'all'}

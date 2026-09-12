@@ -91,7 +91,7 @@ export function FilterFirst({ onMeterChange, onOpenDetail, onCustomize, visibleT
       {!loaded && !loading ? (
         <EmptyState
           variant="dashed"
-          icon={<Icon name="chart-bar" size={48} color="#94A3B8" />}
+          icon={<Icon name="chart-bar" size={48} color="#ACACAC" />}
           title="Pick your filters, then load"
           description={
             <>

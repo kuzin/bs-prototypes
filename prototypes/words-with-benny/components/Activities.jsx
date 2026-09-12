@@ -499,10 +499,10 @@ export function OddOneOut({ word, onPass }) {
  * backs made the choice look decorative; three different ones make it a pick.
  */
 const CARD_FACES = [
-  { icon: 'star', color: '#7c3aed', wash: '#f5f3ff', line: '#ddd6fe' },
+  { icon: 'star', color: '#b43dd0', wash: '#f5f3ff', line: '#ddd6fe' },
   { icon: 'flame', color: '#c2410c', wash: '#fff7ed', line: '#fed7aa' },
   { icon: 'leaf', color: '#0f766e', wash: '#f0fdfa', line: '#99f6e4' },
-  { icon: 'moon', color: '#1d4ed8', wash: '#eff6ff', line: '#bfdbfe' },
+  { icon: 'moon', color: '#196dd5', wash: '#eff6ff', line: '#bfdbfe' },
   { icon: 'bolt', color: '#a16207', wash: '#fefce8', line: '#fde68a' },
   { icon: 'heart', color: '#be185d', wash: '#fdf2f8', line: '#fbcfe8' },
 ]

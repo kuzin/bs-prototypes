@@ -8,7 +8,7 @@ body {
   margin: 0;
   font-family: var(--font-sans);
   background: #f0f4f8;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -71,15 +71,15 @@ body {
    the 3:1 large-text threshold). Cards that pass an explicit semantic `color`
    set --rc-stat-color inline, which still wins. */
 .ris-district .rc-stat {
-  --rc-stat-color: var(--c-slate-800);
+  --rc-stat-color: var(--c-gray-900);
 }
 
 /* "View details / Review / View" links — one readable slate instead of the
    per-card brand accent (teal/coral/green fail at 13px). */
 .ris-district .rc-card-drill {
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   opacity: 1;
 }
 .ris-district .rc-card-drill:hover:not(:disabled) {
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
 }

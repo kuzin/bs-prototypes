@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { AppShell } from '@components/AppShell/AppShell'
 import { Tabs } from '@components/Tabs/Tabs'
+import { Icon } from '@components/Icon/Icon'
+import { Button } from '@components/Button/Button'
+import { PageHeader } from '@components/PageHeader/PageHeader'
+import { SessionsSearch } from './SessionsFilters'
 import { Overview } from './Overview'
 import { SafetyView } from './SafetyView'
 import { FlaggedView } from './FlaggedView'
@@ -18,6 +22,12 @@ import './SfrPage.css'
 // `_students.html.erb`) it's used verbatim.
 function buildNav() {
   return [
+    {
+      id: 'dashboard',
+      label: 'Dashboard',
+      icon: 'overview',
+      desc: 'Back to the admin dashboard.',
+    },
     {
       id: 'classes',
       label: 'Classes',
@@ -61,7 +71,7 @@ function buildNav() {
     },
     {
       id: 'safety',
-      label: 'Safety Signals',
+      label: 'Safety Risk',
       icon: 'shield',
       subgroup: true,
       desc: 'Review sessions flagged for a safety risk.',
@@ -104,7 +114,7 @@ function buildBadges(sessions) {
 const TAB_ITEMS = [
   { id: 'overview', label: 'Overview' },
   { id: 'all', label: 'All Book Talks' },
-  { id: 'safety', label: 'Safety Signals', danger: true },
+  { id: 'safety', label: 'Safety Risk', danger: true },
   { id: 'flagged', label: 'Flagged Sessions' },
   { id: 'engagement', label: 'Engagement Sessions' },
 ]
@@ -118,7 +128,13 @@ export function SfrPage({
   onUpdateSession,
   onBack,
 }) {
-  const [groupBy, setGroupBy] = useState('session') // 'session' | 'reader'
+  // Search and List by belong to the page, not to a tab: one search form
+  // serves every tab (the shipped `SessionsForReview` owns `search` /
+  // `showSearch` and hands them down), and switching tabs resets both along
+  // with the filters — the app's own `resetFilters`.
+  const [search, setSearch] = useState('')
+  const [showSearch, setShowSearch] = useState(false)
+  const [listBy, setListBy] = useState('date') // 'date' | 'reader'
   const [tabFilters, setTabFilters] = useState({})
   const [sessionList, setSessionList] = useState([])
   const [approveTarget, setApproveTarget] = useState(null)
@@ -155,6 +171,15 @@ export function SfrPage({
   function goToTabWithFilters(tabId, filters = {}) {
     onActiveTab(tabId)
     setTabFilters(filters)
+    setListBy('date')
+    setSearch('')
+  }
+
+  function handleTabChange(tabId) {
+    onActiveTab(tabId)
+    setTabFilters({})
+    setListBy('date')
+    setSearch('')
   }
 
   function handleSelectSession(session, list) {
@@ -185,6 +210,7 @@ export function SfrPage({
           active: activeTab,
           badges,
           onNavigate: (id) => {
+            if (id === 'dashboard') return onBack?.()
             if (id === 'classes') return
             if (id === 'book-talks') {
               onActiveTab('overview')
@@ -198,43 +224,33 @@ export function SfrPage({
           },
           mainRailIndex: 3,
         }}
-        backBar={{ label: 'Dashboard', onClick: onBack }}
       >
-        {/* Page header */}
-        <div className="app-shell-header">
-          <div className="app-shell-header-identity">
-            <div className="app-shell-header-text">
-              <div className="app-shell-header-name-row">
-                <span className="app-shell-header-name">Sessions for Review</span>
-              </div>
-              <div className="app-shell-header-meta">Classic and Readers · May 2026</div>
-            </div>
-          </div>
-          <div className="sfr-header-actions">
-            {/* By Session / By Reader toggle */}
-            <Tabs
-              variant="pill"
-              active={groupBy}
-              onChange={setGroupBy}
-              items={[
-                { id: 'session', label: 'By Session' },
-                { id: 'reader', label: 'By Reader' },
-              ]}
-            />
-          </div>
-        </div>
-
-        {/* Tabs */}
-        <div className="sfr-tabs-bar">
-          <Tabs
-            items={TAB_ITEMS.map((t) => ({ ...t, count: badges[t.id] }))}
-            active={activeTab}
-            onChange={onActiveTab}
-            accent="#16A97A"
-          />
-        </div>
-
         <div className="app-shell-page">
+          {/* Title and tabs live in the page, on the page's own ground — not a
+              pinned white band above it. The shipped page also carries Export
+              CSV and Reading Integrity Settings; the new design drops both, so
+              the header is a title and a search toggle.
+
+              No counts on the tabs: five tabs each carrying a number is five
+              numbers to read before you reach the one you came for, and the
+              Overview already says where the work is. */}
+          <PageHeader
+            className="sfr-header"
+            title="Sessions for Review"
+            actions={
+              <Button variant="secondary" size="md" onClick={() => setShowSearch((v) => !v)}>
+                {showSearch ? 'Hide Search' : 'Show Search'}
+              </Button>
+            }
+          >
+            <div className="sfr-tabs-bar">
+              <Tabs items={TAB_ITEMS} active={activeTab} onChange={handleTabChange} />
+            </div>
+          </PageHeader>
+
+          {showSearch && activeTab !== 'overview' && (
+            <SessionsSearch value={search} onSearch={setSearch} />
+          )}
           {activeTab === 'overview' && (
             <Overview
               sessions={sessions}
@@ -245,6 +261,7 @@ export function SfrPage({
           {activeTab === 'safety' && (
             <SafetyView
               sessions={sessions}
+              search={search}
               onSelectSession={handleSelectSession}
               defaultFilters={tabFilters}
             />
@@ -252,30 +269,34 @@ export function SfrPage({
           {activeTab === 'flagged' && (
             <FlaggedView
               sessions={sessions}
+              search={search}
               onSelectSession={handleSelectSession}
               onApproveRequest={setApproveTarget}
               onViewProfile={setProfileStudent}
-              groupBy={groupBy}
+              listBy={listBy}
+              onListBy={setListBy}
               defaultFilters={tabFilters}
             />
           )}
           {activeTab === 'engagement' && (
             <EngagementView
               sessions={sessions}
+              search={search}
               onSelectSession={handleSelectSession}
               onApproveRequest={setApproveTarget}
               onViewProfile={setProfileStudent}
-              groupBy={groupBy}
+              listBy={listBy}
+              onListBy={setListBy}
               defaultFilters={tabFilters}
             />
           )}
           {activeTab === 'all' && (
             <AllBTWBView
               sessions={sessions}
+              search={search}
               onSelectSession={handleSelectSession}
               onApproveRequest={setApproveTarget}
               onViewProfile={setProfileStudent}
-              groupBy={groupBy}
               defaultFilters={tabFilters}
             />
           )}

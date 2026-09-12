@@ -37,13 +37,13 @@
   border: 1px solid var(--c-border);
   border-radius: 8px;
   background: #ffffff;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   display: inline-flex;
   align-items: center;
   justify-content: center;
 }
 .wa-more-btn:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 .wa-more-menu {
@@ -66,5 +66,5 @@
   text-align: left;
 }
 .wa-more-item:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }

@@ -7,6 +7,7 @@ import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { IconButton } from '@components/Primitives/Primitives'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { Flyout } from '@components/Flyout/Flyout'
+import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
 import { JoyfulFooter, APPS } from '../footers/JoyfulFooter'
 
 import '../ris/index.css'
@@ -38,15 +39,6 @@ const IconGear = () => <Icon name="settings" size={20} aria-hidden />
 const IconFlame = () => <Icon name="flame-filled" size={18} aria-hidden />
 const IconClose = () => <Icon name="x" size={14} aria-hidden />
 const IconCaret = () => <Icon name="chevron-down" size={11} aria-hidden />
-
-function BeanstackLogo() {
-  return (
-    <div className="wa-logo">
-      <img src="/bs-prototypes/bs.svg" alt="" className="wa-logo-mark" />
-      <span className="wa-logo-word">beanstack</span>
-    </div>
-  )
-}
 
 // ─── Top app bar ────────────────────────────────────────────────────────────
 
@@ -129,7 +121,7 @@ function TopBar() {
           variant="underline"
           size="md"
           active="challenges"
-          accent="#0DA7BC"
+          accent="#0CA7BC"
           onChange={() => {
             /* prototype */
           }}
@@ -209,7 +201,7 @@ function ChallengeCard({ challenge }) {
             stylesheet with logging-flow's, so the two have to agree. */}
         <div className="wa-chcard-titlerow">
           <div className="wa-chcard-title">{challenge.title}</div>
-          <Pill color="#0DA7BC" variant="filled" size="sm">
+          <Pill color="#0CA7BC" variant="filled" size="sm">
             {challenge.badge}
           </Pill>
         </div>
@@ -248,7 +240,7 @@ function GoalCard() {
           <span className="wa-goalcard-num">{minutes}</span>
           <span className="wa-goalcard-denom"> / {goal} minutes</span>
         </div>
-        <ProgressBar value={minutes} max={goal} color={met ? '#10B981' : '#0DA7BC'} size="lg" />
+        <ProgressBar value={minutes} max={goal} color={met ? '#10B981' : '#0CA7BC'} size="lg" />
       </div>
     </aside>
   )
@@ -266,7 +258,7 @@ function LeaderboardCard() {
           center
           active={tab}
           onChange={setTab}
-          accent="#0DA7BC"
+          accent="#0CA7BC"
           items={[
             { id: 'schools', label: 'Top Schools' },
             { id: 'grades', label: 'Top Grades' },

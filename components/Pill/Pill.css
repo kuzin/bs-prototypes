@@ -39,23 +39,23 @@
    the text is the colour itself rather than a muddied blend of it — which is
    what made these read as washed-out next to the real thing. */
 .pill--soft {
-  color: var(--pill-color, var(--c-slate-600));
-  background: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 22%, white);
+  color: var(--pill-color, var(--c-gray-750));
+  background: color-mix(in srgb, var(--pill-color, var(--c-gray-750)) 22%, white);
   border-color: transparent;
 }
 
 /* ── Filled — solid background, white text ───────────────────────────────── */
 .pill--filled {
   color: #fff;
-  background: var(--pill-color, var(--c-slate-600));
-  border-color: var(--pill-color, var(--c-slate-600));
+  background: var(--pill-color, var(--c-gray-750));
+  border-color: var(--pill-color, var(--c-gray-750));
 }
 
 /* ── Outline — transparent, colored text + border ────────────────────────── */
 .pill--outline {
-  color: var(--pill-color, var(--c-slate-600));
+  color: var(--pill-color, var(--c-gray-750));
   background: transparent;
-  border-color: color-mix(in srgb, var(--pill-color, var(--c-slate-600)) 45%, transparent);
+  border-color: color-mix(in srgb, var(--pill-color, var(--c-gray-750)) 45%, transparent);
 }
 
 /* Optical centering: nudge label text down slightly so cap-height aligns

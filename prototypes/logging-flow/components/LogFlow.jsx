@@ -210,7 +210,7 @@ export function LogFlow({
       id: 'manual',
       title: '',
       author: '',
-      cover: ['#64748B', '#334155'],
+      cover: ['#707070', '#424242'],
       measure: 'minutes',
       manual: true,
     })
@@ -220,7 +220,7 @@ export function LogFlow({
       id: 'untitled',
       title: 'Reading (no title)',
       author: '',
-      cover: ['#94A3B8', '#64748B'],
+      cover: ['#ACACAC', '#707070'],
       measure: 'minutes',
       untitled: true,
     })

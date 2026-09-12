@@ -3,20 +3,21 @@
   padding-bottom: 68px;
 }
 
-.sfr-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
+/* The shared <PageHeader> carries the title and the search toggle, and its
+   `children` slot — the one the component documents for a tab strip — carries
+   the tabs. Both sit inside the scrolling page on the page's own ground; they
+   used to be a pinned white band above it, which is neither how this page is
+   drawn nor how any other admin page here is built. */
+.sfr-header {
+  margin-bottom: 6px;
 }
 
-/* By Session / By Reader toggle → shared <Tabs variant="pill"> */
-
+/* The tab strip is the header's second row, so it claims the full width under
+   the title rather than sharing the row with the actions. */
 .sfr-tabs-bar {
-  background: #fff;
-  border-bottom: 1px solid var(--c-gray-200);
-  padding: 0 max(24px, calc((100% - 1440px) / 2));
-  flex-shrink: 0;
+  flex: 1 1 100%;
+  min-width: 0;
+  margin-bottom: 20px;
 }
 
 .sfr-stub {
@@ -27,7 +28,7 @@
   gap: 8px;
   padding: 80px 40px;
   text-align: center;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font-size: 15px;
   font-weight: 600;
 }
@@ -40,7 +41,7 @@
 .sfr-stub-sub {
   font-size: 13px;
   font-weight: 400;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   max-width: 360px;
   line-height: 1.5;
 }

@@ -385,7 +385,7 @@
   width: 30px;
   height: 30px;
   border-radius: 999px;
-  background: var(--c-red-600);
+  background: var(--c-red);
   color: #ffffff;
   display: grid;
   place-items: center;
@@ -446,7 +446,7 @@
   text-align: center;
   line-height: 1.45;
   background: rgba(15, 23, 42, 0.9);
-  color: #e2e8f0;
+  color: #eaeaea;
   font-size: 12px;
   box-shadow: 0 6px 20px rgba(15, 23, 42, 0.3);
 }
@@ -545,14 +545,18 @@
 
 /* ─── Link-your-account banner ─────────────────────────────────────────────── */
 
+/* Same chrome as the shared Banner (`.bnr`, the app's `.infobox`): a tinted
+   block with no border and a 10px radius. The outline made it the only banner
+   on the page wearing one. */
 .cn-banner {
   display: flex;
   align-items: center;
   gap: 14px;
   padding: 12px 16px;
-  border-radius: 12px;
-  border: 1px solid;
+  border-radius: 10px;
+  border: none;
   margin-bottom: 12px;
+  box-sizing: border-box;
 }
 .cn-banner-msg {
   flex: 1;
@@ -560,7 +564,7 @@
   display: flex;
   flex-direction: column;
   gap: 1px;
-  font-size: 14px;
+  font-size: var(--text-cell);
   color: var(--c-text);
 }
 .cn-banner-msg strong {
@@ -568,19 +572,25 @@
 }
 .cn-banner-pitch {
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
+/* A white chip on the banner's tint — no outline, matching the banner. */
 .cn-banner-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   flex-shrink: 0;
-  height: 34px;
-  padding: 0 16px;
-  border: 1px solid;
+  height: 36px;
+  padding: 0 14px;
+  border: none;
   border-radius: 8px;
   background: #ffffff;
   font-family: inherit;
-  font-size: 13px;
+  font-size: var(--text-label);
   font-weight: 800;
+  color: var(--c-text);
   cursor: pointer;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 6%);
 }
 .cn-banner-cta:hover {
   filter: brightness(0.97);
@@ -588,9 +598,10 @@
 
 /* More than one app left to link: no partner owns the tint, so the banner goes
    neutral and each app gets its own button. */
+/* The neutral one still needs a ground to read as a banner: #f8f8f8 was a
+   hair off white and vanished inside a white card once the outline went. */
 .cn-banner--multi {
-  background: var(--c-slate-50, #f8fafc);
-  border-color: var(--c-border);
+  background: var(--c-gray-150);
 }
 .cn-banner-marks {
   display: inline-flex;
@@ -601,7 +612,7 @@
    unrelated logos. Each sits on a ring of the banner's own background. */
 .cn-banner-marks > * {
   margin-right: -9px;
-  box-shadow: 0 0 0 2px var(--c-slate-50, #f8fafc);
+  box-shadow: 0 0 0 2px var(--c-gray-150);
 }
 .cn-banner-marks > *:last-child {
   margin-right: 0;
@@ -643,7 +654,7 @@
   border-radius: 7px;
   border: 0;
   background: rgba(255, 255, 255, 0.75);
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -670,7 +681,7 @@
   cursor: pointer;
 }
 .cn-switch-btn:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 .cn-switch-menu {
@@ -691,7 +702,7 @@
   font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 .cn-switch-item {
   display: flex;
@@ -707,7 +718,7 @@
   cursor: pointer;
 }
 .cn-switch-item:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 .cn-switch-item-main {
   flex: 1;
@@ -722,13 +733,13 @@
 }
 .cn-switch-item-acct {
   font-size: 12px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 .cn-switch-item-go {
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   flex-shrink: 0;
 }
 .cn-switch-manage {
@@ -739,7 +750,7 @@
   margin-top: 4px;
   padding: 9px 10px;
   border: 0;
-  border-top: 1px solid var(--c-slate-100);
+  border-top: 1px solid var(--c-gray-100);
   border-radius: 0 0 8px 8px;
   background: none;
   font-family: inherit;
@@ -749,7 +760,7 @@
   cursor: pointer;
 }
 .cn-switch-manage:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 
 /* ─── Connections modal ───────────────────────────────────────────────────── */
@@ -774,8 +785,8 @@
   height: 30px;
   border: 0;
   border-radius: 8px;
-  background: var(--c-slate-100);
-  color: var(--c-text-muted);
+  background: var(--c-gray-100);
+  color: var(--c-text-light);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -785,7 +796,7 @@
   margin: 6px 0 16px;
   font-size: 14px;
   line-height: 1.5;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 
 .cn-list {
@@ -810,10 +821,10 @@
   gap: 4px;
   padding: 3px 9px;
   border-radius: 999px;
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
   font-size: 12px;
   font-weight: 800;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .cn-chip--on {
   background: #e6f8ef;
@@ -822,7 +833,7 @@
 .cn-row-acct {
   margin-top: 8px;
   font-size: 13px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .cn-row-acct strong {
   font-weight: 800;
@@ -852,7 +863,7 @@
   margin-bottom: 12px;
 }
 .cn-auto-bolt {
-  color: #f59e0b;
+  color: #ffbc42;
 }
 .cn-auto-title {
   flex: 1;
@@ -863,7 +874,7 @@
 .cn-auto-total {
   font-size: 12px;
   font-weight: 800;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .cn-auto-list {
   list-style: none;
@@ -894,7 +905,7 @@
 }
 .cn-auto-row-meta {
   font-size: 12px;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
 }
 .cn-auto-row-min {
   font-size: 13px;
@@ -905,7 +916,7 @@
   margin: 12px 0 0;
   font-size: 12px;
   line-height: 1.45;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
 }
 
 /* ─── District SSO, below the sign-in form ─────────────────────────────────── */
@@ -917,7 +928,7 @@
   margin: 4px 0 2px;
   font-size: 13px;
   font-weight: 700;
-  color: #94a3b8;
+  color: #acacac;
 }
 .cf-or::before,
 .cf-or::after {

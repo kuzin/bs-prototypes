@@ -33,7 +33,7 @@ export const SIGNALS = {
   consistent: {
     avatar: '/bs-prototypes/benny-happy.svg',
     label: 'Consistent',
-    color: '#1D4ED8',
+    color: '#196DD5',
     bg: '#E8EFFE',
     icon: 'arrow-right',
     short: 'Holding steady — no meaningful move either way.',
@@ -52,8 +52,8 @@ export const SIGNALS = {
   pending: {
     avatar: '/bs-prototypes/benny-thinking.svg',
     label: 'Not enough data',
-    color: '#64748B',
-    bg: '#F1F5F9',
+    color: '#707070',
+    bg: '#F5F5F5',
     icon: 'minus',
     short: 'Needs about three weeks of logging before a signal appears.',
   },
@@ -71,37 +71,37 @@ export const DRIVERS = [
     key: 'frequency',
     label: 'Reading frequency and consistency',
     icon: 'calendar-stats',
-    accent: { bg: '#E6F8EF', text: '#16A97A' },
+    accent: { bg: '#E6F8EF', text: '#0BA85F' },
   },
   {
     key: 'volume',
     label: 'Reading volume',
     icon: 'clock',
-    accent: { bg: '#E4F6F9', text: '#0DA7BC' },
+    accent: { bg: '#E4F6F9', text: '#0CA7BC' },
   },
   {
     key: 'logging',
     label: 'Logging behaviors',
     icon: 'shield-check',
-    accent: { bg: '#E8EFFE', text: '#1D4ED8' },
+    accent: { bg: '#E8EFFE', text: '#196DD5' },
   },
   {
     key: 'talks',
     label: 'Book Talks with Benny',
     icon: 'chat',
-    accent: { bg: '#F1EBFF', text: '#7C3AED' },
+    accent: { bg: '#F1EBFF', text: '#B43DD0' },
   },
   {
     key: 'rmi',
     label: 'RMI insights and growth',
     icon: 'fire',
-    accent: { bg: '#FDEEE6', text: '#E8866A' },
+    accent: { bg: '#FDEEE6', text: '#F26430' },
   },
   {
     key: 'words',
     label: 'Words with Benny',
     icon: 'vocabulary',
-    accent: { bg: '#FEF3C7', text: '#B45309' },
+    accent: { bg: '#FFECC8', text: '#B45309' },
   },
 ]
 

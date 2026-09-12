@@ -1,0 +1,16 @@
+/* The glyph sits on a tile tinted from its own colour — the shipped app draws
+   the shapes on a grey progress pill, but on a card they need their own
+   ground to read as a badge rather than as loose art. */
+.rca-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--rca-glyph-fill) 22%, #fff);
+}
+.rca-glyph svg {
+  width: 68%;
+  height: 68%;
+  display: block;
+}

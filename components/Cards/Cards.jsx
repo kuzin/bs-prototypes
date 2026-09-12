@@ -11,7 +11,7 @@ import '@components/Cards/Cards.css'
  *   unit="/40"
  *   label="School RMI score"
  *   footer="↑ 7 pts since Sep 2024"
- *   color="#E8866A"
+ *   color="#F26430"
  * />
  *
  * Two shapes:
@@ -74,7 +74,7 @@ export function StatCard({ value, unit, label, footer, footerColor, color, icon,
  *   title="RMI Trend — Lincoln vs. District"
  *   subtitle="Sep 2024 – May 2025"
  *   icon={<svg ... />}
- *   accent="#E8866A"
+ *   accent="#F26430"
  *   info="Averaged across every logged session."
  *   footer={<ChartLegend items={...} />}
  * >

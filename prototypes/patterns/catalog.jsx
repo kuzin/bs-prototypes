@@ -40,6 +40,7 @@ import '../ris/components/SchoolDashboard.css'
 import '@components/ReadingHealth/ReadingHealth.css'
 import '@components/AlertsBanner/AlertsBanner.css'
 import '@components/Hero/Hero.css'
+import '@components/BeanstackLogo/BeanstackLogo.css'
 import '@components/BackBar/BackBar.css'
 import '@components/Toggle/Toggle.css'
 import '@components/Form/Form.css'
@@ -86,9 +87,9 @@ export function BreakpointIndicator() {
   )
   const tier =
     width <= 699
-      ? { label: 'mobile', color: '#DC2626' }
+      ? { label: 'mobile', color: '#E85648' }
       : width <= 1099
-        ? { label: 'tablet', color: '#D97706' }
+        ? { label: 'tablet', color: '#AB720A' }
         : { label: 'desktop', color: '#16A34A' }
   return (
     <div className="pt-breakpoint" style={{ '--bp-color': tier.color }}>
@@ -104,156 +105,157 @@ export const GROUPS = [
     id: 'foundations',
     title: 'Foundations',
     desc: 'Design tokens — the color, type, spacing, radius, and elevation scales everything else is built from.',
-    color: 'var(--c-brand-teal)',
+    color: 'var(--c-teal)',
   },
   {
     id: 'iconography',
     title: 'Iconography',
-    desc: 'Every glyph set in one place — the Tabler-backed Icon registry, the Plumpy duotone family, and the app’s own drawn art.',
-    color: 'var(--c-violet-600)',
+    desc: 'Every named art set in one place — the Tabler-backed Icon registry, the Plumpy duotone family, the app’s own drawn art, and the reading partners’ logos.',
+    color: 'var(--c-purple)',
   },
   {
     id: 'actions',
     title: 'Buttons & Actions',
     desc: 'The controls you click to do something — page buttons and the two shapes a table-row action is allowed to take.',
-    color: 'var(--c-blue-700)',
+    color: 'var(--c-blue)',
   },
   {
     id: 'badges',
     title: 'Badges & Labels',
     desc: 'Small read-only markers that annotate something else — status chips, avatars, and trend direction.',
-    color: 'var(--c-brand-coral)',
+    color: 'var(--c-orange)',
   },
   {
     id: 'cards',
     title: 'Cards & Sections',
     desc: 'Every container content sits inside — stat and chart cards, titled sections, profile cards, notes, headings, dividers, and disclosure.',
-    color: 'var(--c-brand-green)',
+    color: 'var(--c-green)',
   },
   {
     id: 'tables',
     title: 'Tables & Lists',
     desc: 'The shared data table and the settings-row list, plus their pagination and scroll behavior.',
-    color: 'var(--c-slate-600)',
+    color: 'var(--c-gray-750)',
   },
   {
     id: 'form-fields',
     title: 'Form Fields',
     desc: 'Single-purpose input controls — the atoms of data entry.',
-    color: 'var(--c-amber-600)',
+    color: 'var(--c-yellow-ink)',
   },
   {
     id: 'form-patterns',
     title: 'Form Patterns',
     desc: 'Composed inputs and layout patterns for building complete forms and filter bars.',
-    color: 'var(--c-brand-teal)',
+    color: 'var(--c-teal)',
   },
   {
     id: 'overlays',
     title: 'Overlays',
     desc: 'Anything that floats above the page — modals, flyouts, and tooltips.',
-    color: 'var(--c-violet-600)',
+    color: 'var(--c-purple)',
   },
   {
     id: 'feedback',
     title: 'Feedback & Status',
-    desc: 'How the UI tells you what is happening — loading placeholders, banners, toasts, empty states, and celebration.',
-    color: 'var(--c-red-600)',
+    desc: 'How the UI tells you what is happening — loading placeholders, banners, toasts, empty states, celebration, and Benny’s own voice.',
+    color: 'var(--c-red)',
   },
   {
     id: 'navigation',
     title: 'Navigation & Chrome',
     desc: 'Page headers, rails, and everything that moves you between views — heroes, sidebars, tabs, and back bars.',
-    color: 'var(--c-blue-700)',
+    color: 'var(--c-blue)',
   },
   {
     id: 'charts',
     title: 'Charts',
     desc: 'Data visualization — line, bar, scatter, funnels, word clouds, bar lists, and chart tooltips.',
-    color: 'var(--c-brand-green)',
+    color: 'var(--c-green)',
   },
   {
-    id: 'domain',
-    title: 'Domain',
-    desc: 'Beanstack-specific components — reading health, RMI, integrity alerts, and partner connections.',
-    color: 'var(--c-brand-coral)',
+    id: 'web-app',
+    kind: 'prototype',
+    title: 'Web App',
+    desc: 'The reader-facing chrome — the partner-connection kit every integration prototype mounts: the connect banner, the linking flow, the partner switcher, imported sessions, and reader personalisation.',
+    color: 'var(--c-orange)',
+  },
+  {
+    id: 'ris',
+    kind: 'prototype',
+    title: 'Reading Information System',
+    desc: 'Components for the RIS prototype — the four reading-health tiles and the integrity alert banner that opens the school view.',
+    color: 'var(--c-blue)',
   },
   {
     id: 'sfr',
     kind: 'prototype',
     title: 'Sessions for Review',
     desc: 'Components for the SfR prototype — overview highlight cards, sessions table, the session detail modal, and the safety-signal review view + settings.',
-    color: 'var(--c-brand-green)',
+    color: 'var(--c-green)',
   },
   {
     id: 'insights',
     kind: 'prototype',
     title: 'Insights',
     desc: 'Components specific to the Insights prototype — production-styled metric tiles and detail panels with load / empty states.',
-    color: 'var(--c-violet-600)',
+    color: 'var(--c-purple)',
   },
   {
     id: 'challenge-creator',
     kind: 'prototype',
     title: 'Challenge Creator',
-    desc: 'Components specific to the Challenge Creator V2 prototype — starting with the shared color-chip picker.',
-    color: 'var(--c-brand-teal)',
+    desc: 'Components for the Challenge Creator — the badge pickers and editor, the color-chip picker, and the gameboard challenge type: the drag-and-drop board readers travel and its illustrated theme picker.',
+    color: 'var(--c-teal)',
   },
   {
     id: 'book-talks',
     kind: 'prototype',
     title: 'Benny Book Talks',
     desc: 'Components for the Benny Book Talks prototype — chat bubbles, the live Benny chat modal, and the teacher conversation review.',
-    color: 'var(--c-blue-700)',
+    color: 'var(--c-blue)',
   },
   {
     id: 'student-profile',
     kind: 'prototype',
     title: 'Student Profile',
-    desc: 'Components for the Student Profile prototype — status badges, the daily goal ring, RMI donuts, the weekly goal tracker, and the reading-activity heatmap.',
-    color: 'var(--c-brand-coral)',
+    desc: 'Components for the Student Profile prototype — the side panel the other prototypes open a reader in, the daily-reading grid, status badges, the daily goal ring, RMI donuts, the weekly goal tracker, and the reading-activity heatmap.',
+    color: 'var(--c-orange)',
   },
   {
     id: 'books',
     kind: 'prototype',
     title: 'Book Discovery',
     desc: 'Components for the Book Discovery prototype — book covers with gradient fallbacks, the star-rating family, shelf cards, the horizontal shelf, and partner branding.',
-    color: 'var(--c-brand-green)',
+    color: 'var(--c-green)',
   },
   {
     id: 'admin-dashboard',
     kind: 'prototype',
     title: 'Admin Dashboard',
     desc: 'Components for the Admin Dashboard prototype — the anchored settings popover used by per-widget and rail-card settings.',
-    color: 'var(--c-slate-600)',
-  },
-  {
-    id: 'gameboard',
-    kind: 'prototype',
-    title: 'Gameboard',
-    desc: 'Components for the Gameboard: Admin View prototype — the drag-and-drop board readers travel as they read, and its illustrated theme picker.',
-    color: 'var(--c-brand-green)',
+    color: 'var(--c-gray-750)',
   },
   {
     id: 'gameboard-reader',
     kind: 'prototype',
     title: 'Gameboard Reader',
     desc: 'Components for the Gameboard Reader View — the read-only board a reader travels, its earned/locked badge discs, and Benny mid-cheer.',
-    color: 'var(--c-amber-600)',
+    color: 'var(--c-yellow-ink)',
   },
   {
     id: 'words-with-benny',
     kind: 'prototype',
     title: 'Words with Benny',
     desc: 'Components for the Words with Benny prototype — the post-log word unlock, the reader\u2019s Collections tab (words, badges, achievements) and its rail card, and the educator roll-up with its per-student drill-down.',
-    color: 'var(--c-violet-600)',
+    color: 'var(--c-purple)',
   },
   {
     id: 'engagement-signals',
     kind: 'prototype',
     title: 'Engagement Signals',
     desc: 'Components for Reading Engagement Signals — the Increasing / Consistent / Declining pill, the month-by-month trajectory, the six drivers behind a reading, and the two surfaces they appear on: the classroom Engagement tab and the profile\u2019s Engagement section.',
-    color: 'var(--c-red-600)',
+    color: 'var(--c-red)',
   },
 ]
 

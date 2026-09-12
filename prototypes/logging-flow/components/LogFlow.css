@@ -936,7 +936,7 @@
   width: 104px;
   height: 104px;
   border-radius: 999px;
-  background: linear-gradient(150deg, #1a6dd5 0%, #0da7bc 100%);
+  background: linear-gradient(150deg, #1a6dd5 0%, #0ca7bc 100%);
   color: #fff;
   display: inline-flex;
   align-items: center;
@@ -983,15 +983,15 @@
   padding: 7px 14px;
   font-size: 13px;
   font-weight: 700;
-  color: #16a97a;
+  color: #0ba85f;
   background: #eafaf4;
   border-radius: 999px;
 }
 
 /* Search-result badge for a partner-catalog title. */
 .lf-resultbadge--partner {
-  background: #f1f5f9;
-  color: #475569;
+  background: #f5f5f5;
+  color: #656565;
 }
 .lf-resultbadge--partner.is-linked {
   background: #e6f7fa;
@@ -1023,11 +1023,11 @@
   margin-top: 12px;
   border: 0;
   background: none;
-  color: var(--c-text-subtle);
+  color: var(--c-gray-600);
   font-size: 14px;
   font-weight: 700;
 }
 .lf-benny-skip:hover {
-  color: var(--c-slate-600);
+  color: var(--c-gray-750);
   text-decoration: underline;
 }

@@ -4,6 +4,7 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
+import { ChatBubble } from '@components/ChatBubble/ChatBubble'
 import {
   SESSIONS,
   TALK_KINDS,
@@ -79,7 +80,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
             id: `${session.id}-n${mine.length}`,
             label: 'Note added',
             icon: 'message',
-            color: '#0DA7BC',
+            color: '#0CA7BC',
             by: 'You',
             at: 'Just now',
             note: text,
@@ -282,7 +283,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
                         <Icon
                           name="flag"
                           size={13}
-                          color="#16A97A"
+                          color="#0BA85F"
                           style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
                         />
                         Flags
@@ -303,7 +304,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
                         <Icon
                           name="flag"
                           size={13}
-                          color="#DC2626"
+                          color="#E85648"
                           style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
                         />
                         Flags
@@ -462,41 +463,20 @@ function FlagCard({ flag, polarity }) {
   )
 }
 
-// Render the light *emphasis* the scripts use for book titles as <em>, the same
-// way the reader-facing bubble does — SFR's own bubble prints raw text, so
-// without this the asterisks show through.
-function renderText(text) {
-  return String(text)
-    .split(/(\*[^*]+\*)/g)
-    .map((part, i) =>
-      part.startsWith('*') && part.endsWith('*') ? <em key={i}>{part.slice(1, -1)}</em> : part,
-    )
-}
-
 // Sessions for Review's own transcript bubble — Benny left with his avatar, the
 // reader right with an initials dot. Reader answers carry the model's rationale
 // for how it read the answer, folded into the bubble itself.
 function SessionBubble({ msg, initials }) {
-  const isBenny = msg.role === 'benny'
   return (
-    <div className={`sm2-bubble-wrap${isBenny ? ' sm2-bubble-wrap--benny' : ''}`}>
-      {isBenny && <img className="sm2-bubble-avatar" src="/bs-prototypes/benny.png" alt="Benny" />}
-      <div
-        className={`sm2-bubble${isBenny ? ' sm2-bubble--benny' : ' sm2-bubble--student'}${
-          msg.flagged ? ' sm2-bubble--flagged' : ''
-        }${msg.praised ? ' bw-bubble--praised' : ''}${
-          msg.flags?.length ? ' bw-bubble--reasoned' : ''
-        }`}
-      >
-        <span className="sm2-bubble-text">{renderText(msg.text)}</span>
-        {msg.flags?.length > 0 && <Reasoning text={msg.reasoning} flags={msg.flags} />}
-      </div>
-      {!isBenny && (
-        <div className="sm2-student-dot" aria-hidden="true">
-          {initials}
-        </div>
-      )}
-    </div>
+    <ChatBubble
+      msg={msg}
+      initials={initials}
+      className={[msg.praised && 'bw-bubble--praised', msg.flags?.length && 'bw-bubble--reasoned']
+        .filter(Boolean)
+        .join(' ')}
+    >
+      {msg.flags?.length > 0 && <Reasoning text={msg.reasoning} flags={msg.flags} />}
+    </ChatBubble>
   )
 }
 

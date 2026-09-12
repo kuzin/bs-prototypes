@@ -3,11 +3,16 @@ import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Icon } from '@components/Icon/Icon'
+import { Pill } from '@components/Pill/Pill'
+import { FlagIcon } from '@components/BsIcons/BsIcons'
+import { ChatBubble, AnnotationBlock } from '@components/ChatBubble/ChatBubble'
 import { SAFETY_SEVERITY } from './SessionsTable'
+import { talkKind, sessionConfidence, CONFIDENCE_META, CONFIDENCE_BLURB } from '../data'
 import '@components/Modal/Modal.css'
 import '@components/Button/Button.css'
 import '@components/Form/Form.css'
 import '@components/Tabs/Tabs.css'
+import '@components/Pill/Pill.css'
 import '@components/Primitives/Primitives.css'
 import './SessionModal.css'
 
@@ -91,119 +96,69 @@ function ReviewCard({ icon, color, bg, border, label, desc, action, className = 
   )
 }
 
+/**
+ * One flag in the modal's stack, drawn the way the shipped detail draws it: the
+ * app's own art beside the flag's name and what raised it, on a plain row. It
+ * used to be a tinted, outlined card per flag — a stack of five of those is
+ * five boxes competing with the conversation underneath them.
+ */
 function FlagCard({ flag, polarity, onRequestRemove }) {
   const isPos = polarity === 'positive'
   const descs = isPos ? POS_FLAG_DESCS : FLAG_DESCS
-  const meta = descs[flag.type] ?? {
-    label: flag.label || flag.type,
-    desc: flag.description,
-    icon: 'flag',
-  }
-  const colors = isPos ? POS_FLAG_COLORS : NEG_FLAG_COLORS
+  const meta = descs[flag.type] ?? { label: flag.label || flag.type, desc: flag.description }
   return (
-    <ReviewCard
-      icon={meta.icon}
-      color={colors.color}
-      bg={colors.bg}
-      border={colors.border}
-      label={meta.label}
-      desc={flag.description || meta.desc}
-      className={isPos ? 'sm2-review-card--pos' : ''}
-      action={
-        onRequestRemove ? (
-          <button className="sm2-review-remove" onClick={onRequestRemove} title="Remove flag">
-            <Icon name="trash" size={15} />
-          </button>
-        ) : null
-      }
-    />
-  )
-}
-
-function ChatBubble({ msg, initials }) {
-  const isBenny = msg.role === 'benny'
-  return (
-    <div className={`sm2-bubble-wrap${isBenny ? ' sm2-bubble-wrap--benny' : ''}`}>
-      {isBenny && <img className="sm2-bubble-avatar" src="/bs-prototypes/benny.png" alt="Benny" />}
-      <div
-        className={`sm2-bubble${isBenny ? ' sm2-bubble--benny' : ' sm2-bubble--student'}${msg.flagged ? ' sm2-bubble--flagged' : ''}${msg.trigger ? ' sm2-bubble--trigger' : ''}`}
-      >
-        <span className="sm2-bubble-text">{msg.text}</span>
+    <div className="sm2-flag-row">
+      <span className="sm2-flag-art">
+        <FlagIcon
+          type={flag.type}
+          fallback={isPos ? 'positive' : 'negative'}
+          size={28}
+          label={meta.label}
+        />
+      </span>
+      <div className="sm2-flag-body">
+        <div className="sm2-flag-label">{meta.label}</div>
+        <div className="sm2-flag-desc">{flag.description || meta.desc}</div>
       </div>
-      {!isBenny && (
-        <div className="sm2-student-dot" aria-hidden="true">
-          {initials}
-        </div>
+      {onRequestRemove && (
+        <button className="sm2-review-remove" onClick={onRequestRemove} title="Remove flag">
+          <Icon name="trash" size={15} />
+        </button>
       )}
     </div>
   )
 }
 
-function AnnotationBlock({ msg }) {
-  if (msg.tone === 'safety') {
+// The book's real jacket where Open Library has one, the colour block where it
+// doesn't. `naturalWidth <= 1` is Open Library's "no cover" answer — it serves
+// a 1px image rather than a 404.
+function BookCover({ book }) {
+  const [failed, setFailed] = useState(false)
+  if (!book.isbn || failed) {
     return (
-      <div className="sm2-annotation sm2-annotation--safety">
-        <Icon name="shield-heart" size={14} />
-        <span>{msg.text}</span>
+      <div className="sm2-book-cover" style={{ background: book.color }}>
+        <Icon name="book" size={28} color="rgba(255,255,255,0.65)" />
       </div>
     )
   }
-  const isPositive = msg.sentiment === 'positive'
   return (
-    <div
-      className={`sm2-annotation${isPositive ? ' sm2-annotation--positive' : ' sm2-annotation--warning'}`}
-    >
-      {isPositive ? <Icon name="check" size={13} /> : <Icon name="alert-circle" size={13} />}
-      <span>{msg.text}</span>
-    </div>
+    <img
+      className="sm2-book-cover sm2-book-cover--art"
+      src={`https://covers.openlibrary.org/b/isbn/${book.isbn.replace(/-/g, '')}-M.jpg`}
+      alt=""
+      onLoad={(e) => {
+        if (e.target.naturalWidth <= 1) setFailed(true)
+      }}
+      onError={() => setFailed(true)}
+    />
   )
 }
 
 // Describe a change-log entry for the Activity-tab timeline (covers every kind,
 // since Activity is now shown for all sessions, not just safety signals).
-function describeEntry(e) {
-  switch (e.kind) {
-    case 'note':
-      return { icon: 'message', label: 'Note', color: '#64748b' }
-    case 'rating':
-      return {
-        icon: 'arrow-right',
-        label: `Rating → ${RATING_LABELS[e.to] ?? e.to}`,
-        color: '#0DA7BC',
-      }
-    case 'flag-removed':
-      return {
-        icon: 'trash',
-        label: `${e.polarity === 'positive' ? 'Positive flag' : 'Flag'} removed: ${e.flagLabel}`,
-        color: '#DC2626',
-      }
-    case 'approved':
-      return {
-        icon: 'circle-check',
-        label: `Session approved${
-          e.removedCount
-            ? ` · ${e.removedCount} flag${e.removedCount === 1 ? '' : 's'} cleared`
-            : ''
-        }`,
-        color: '#16a97a',
-      }
-    case 'safety-resolved':
-      return e.resolution === 'dismissed'
-        ? { icon: 'circle-x', label: 'Resolved · Not a concern', color: '#64748b' }
-        : { icon: 'circle-check', label: 'Resolved · Student supported', color: '#16a97a' }
-    case 'safety-status':
-    case 'status':
-      return {
-        icon: 'point-filled',
-        label: `Status → ${STATUS_WORD[e.to] ?? e.to}`,
-        color: '#64748b',
-      }
-    default:
-      return { icon: 'point-filled', label: 'Updated', color: '#64748b' }
-  }
-}
 
 const RATING_LABELS = { green: 'Positive', yellow: 'Mixed', red: 'Disengaged' }
+
 const RATING_META = {
   green: {
     label: 'Positive',
@@ -232,21 +187,6 @@ const RATING_META = {
 }
 // Compact type indicator for the sidebar's reader-session list — one icon per
 // row standing in for type/rating/safety, in priority order (most notable wins).
-const SESSION_TYPE_META = {
-  engagement: { icon: 'message-circle', color: '#0DA7BC', bg: '#E0F7FA' },
-  flagged: { icon: 'flag', color: '#DC2626', bg: '#FEF2F2' },
-  both: { icon: 'flag', color: '#7C3AED', bg: '#F5F3FF' },
-}
-function sessionRowMeta(s) {
-  if (s.changeLog?.some((e) => e.kind === 'approved'))
-    return { icon: 'circle-check', color: '#16A97A', bg: '#F0FDF4' }
-  if (s.safety) {
-    const sevMeta = SAFETY_SEVERITY[s.safety.severity]
-    return { icon: sevMeta.icon, color: sevMeta.color, bg: sevMeta.bg }
-  }
-  return SESSION_TYPE_META[s.type] ?? SESSION_TYPE_META.engagement
-}
-
 const CURRENT_USER = 'Mr. Garcia'
 
 function newLogEntry(extra) {
@@ -281,22 +221,18 @@ export function SessionModal({
   const [editingRating, setEditingRating] = useState(false)
   const [confirmingFlagRemoval, setConfirmingFlagRemoval] = useState(null)
   const [confirmingResolve, setConfirmingResolve] = useState(false)
-  const [noteDraft, setNoteDraft] = useState('')
-  const [mainTab, setMainTab] = useState('conversation') // 'conversation' | 'activity'
   const mainRef = useRef(null)
   // Keep local state in sync on every change (incl. in-place updates from actions).
   useEffect(() => {
     if (session) setLocal(session)
   }, [session])
   // Reset the UI only when a *different* session opens (prev/next nav) — not on
-  // in-place updates, so an action (escalate/resolve/note) keeps your tab + scroll.
+  // in-place updates, so an action (escalate/resolve) keeps your scroll.
   useEffect(() => {
     if (!session) return
     setEditingRating(false)
     setConfirmingFlagRemoval(null)
     setConfirmingResolve(false)
-    setNoteDraft('')
-    setMainTab('conversation')
     if (mainRef.current) mainRef.current.scrollTop = 0
   }, [session?.id])
 
@@ -354,23 +290,6 @@ export function SessionModal({
     })
   }
 
-  function undoChange(entry) {
-    const remaining = (d.changeLog || []).filter((e) => e.id !== entry.id)
-    const base = { ...d, changeLog: remaining }
-    if (entry.kind === 'rating') {
-      onUpdateSession?.({ ...base, engagementRating: entry.from })
-    } else if (entry.kind === 'flag-removed') {
-      const key = entry.polarity === 'positive' ? 'positiveFlags' : 'flags'
-      onUpdateSession?.({ ...base, [key]: [...(d[key] || []), entry.flag] })
-    } else if (entry.kind === 'approved') {
-      onUpdateSession?.({
-        ...base,
-        flags: [...(d.flags || []), ...(entry.clearedFlags || [])],
-        type: entry.previousType ?? d.type,
-      })
-    }
-  }
-
   const dateStr = new Date(d.date).toLocaleDateString('en-US', {
     month: '2-digit',
     day: '2-digit',
@@ -382,6 +301,10 @@ export function SessionModal({
   const hasPosFlags = d.positiveFlags && d.positiveFlags.length > 0
 
   // ── Safety signal (additive; only present in the Safety Signals prototype) ──
+  const kind = talkKind(d)
+  // Only a comprehension talk reports one.
+  const confidenceKey = sessionConfidence(d)
+  const confidence = confidenceKey ? CONFIDENCE_META[confidenceKey] : null
   const safety = d.safety
   const sev = safety ? SAFETY_SEVERITY[safety.severity] : null
   const safetyResolved = safety?.status === 'resolved'
@@ -428,15 +351,6 @@ export function SessionModal({
     })
     setConfirmingResolve(false)
   }
-  function addNote() {
-    if (!noteDraft.trim()) return
-    onUpdateSession?.({
-      ...d,
-      changeLog: [...(d.changeLog || []), safetyLog({ kind: 'note', note: noteDraft.trim() })],
-    })
-    setNoteDraft('')
-  }
-
   const readerSessions = allSessions
     .filter((s) => s.student.id === d.student.id)
     .sort((a, b) => new Date(b.date) - new Date(a.date))
@@ -450,9 +364,7 @@ export function SessionModal({
         <span className="sm2-section-title">Session Details</span>
       </div>
       <div className="sm2-details-card">
-        <div className="sm2-book-cover" style={{ background: d.book.color }}>
-          <Icon name="book" size={28} color="rgba(255,255,255,0.65)" />
-        </div>
+        <BookCover book={d.book} />
         <div className="sm2-details-card-body">
           <div className="sm2-book-title">{d.book.title}</div>
           <div className="sm2-book-author">{d.book.author}</div>
@@ -506,56 +418,6 @@ export function SessionModal({
             ),
           )}
       </div>
-    </div>
-  )
-
-  const activityFeed = d.changeLog?.length ? (
-    <div className="sm2-tl">
-      {[...d.changeLog]
-        .sort((a, b) => new Date(b.at) - new Date(a.at))
-        .map((e, idx) => {
-          const m = describeEntry(e)
-          const canUndo = idx === 0 && UNDOABLE_KINDS.has(e.kind) && !!onUpdateSession
-          return (
-            <div key={e.id} className="sm2-tl-item">
-              <span className="sm2-tl-dot" style={{ color: m.color }}>
-                <Icon name={m.icon} size={12} stroke={2.2} />
-              </span>
-              <div className="sm2-tl-body">
-                <div className="sm2-tl-head">
-                  <span className="sm2-tl-label">{m.label}</span>
-                  <span className="sm2-tl-right">
-                    <span className="sm2-tl-meta">
-                      {e.by} ·{' '}
-                      {new Date(e.at).toLocaleString('en-US', {
-                        month: 'short',
-                        day: 'numeric',
-                        hour: 'numeric',
-                        minute: '2-digit',
-                      })}
-                    </span>
-                    {canUndo && (
-                      <button
-                        className="sm2-tl-undo"
-                        onClick={() => undoChange(e)}
-                        title="Undo this change"
-                      >
-                        <Icon name="undo" size={11} />
-                        Undo
-                      </button>
-                    )}
-                  </span>
-                </div>
-                {e.note && <div className="sm2-tl-note">{e.note}</div>}
-              </div>
-            </div>
-          )
-        })}
-    </div>
-  ) : (
-    <div className="sm2-notes-empty">
-      <Icon name="message" size={20} />
-      <span>No notes or activity yet — add the first note above.</span>
     </div>
   )
 
@@ -623,15 +485,14 @@ export function SessionModal({
                   )}
                   {onViewProfile && (
                     <button className="sm2-view-profile" onClick={() => onViewProfile(d.student)}>
-                      <Icon name="user" size={13} />
-                      View profile
+                      View Profile
+                      <Icon name="chevron-right" size={14} stroke={2.4} />
                     </button>
                   )}
                 </div>
 
                 <div className="sm2-reader-sessions-head">
                   <span>All Sessions</span>
-                  <span className="sm2-sidebar-tab-count">{readerSessions.length}</span>
                 </div>
 
                 <div className="sm2-reader-sessions">
@@ -641,7 +502,6 @@ export function SessionModal({
                       month: 'short',
                       day: 'numeric',
                     })
-                    const meta = sessionRowMeta(s)
                     return (
                       <button
                         key={s.id}
@@ -652,12 +512,6 @@ export function SessionModal({
                         disabled={isCurrent}
                         title={s.book.title}
                       >
-                        <span
-                          className="sm2-reader-row-icon"
-                          style={{ color: meta.color, background: meta.bg }}
-                        >
-                          <Icon name={meta.icon} size={13} stroke={2.2} />
-                        </span>
                         <span className="sm2-reader-row-book">{s.book.title}</span>
                         <span className="sm2-reader-row-date">{sDate}</span>
                       </button>
@@ -670,204 +524,206 @@ export function SessionModal({
 
           {/* Right: session content */}
           <div className="sm2-main" ref={mainRef}>
-            {showReaderList && (
-              <div className="sm2-maintabs">
-                <Tabs
-                  items={[
-                    { id: 'conversation', label: 'Logged Session' },
-                    { id: 'activity', label: 'Activity', count: d.changeLog?.length || undefined },
-                  ]}
-                  active={mainTab}
-                  onChange={setMainTab}
-                  accent={safety ? sev.color : '#0DA7BC'}
-                />
-              </div>
-            )}
+            <>
+              {sessionDetailsSection}
 
-            {(mainTab === 'conversation' || !showReaderList) && (
-              <>
-                {sessionDetailsSection}
-
-                {/* Safety signal — flag-style card. Active = severity-colored; once
+              {/* Safety signal — flag-style card. Active = severity-colored; once
                     resolved the card adopts the outcome color with the resolver as a caption. */}
-                {safety && (
-                  <div className="sm2-section">
-                    <div className="sm2-section-head">
-                      <span className="sm2-section-title">Safety Signal</span>
-                      <div className="sm2-section-actions">
-                        {safetyResolved ? (
-                          <Button
-                            variant="secondary"
-                            size="sm"
-                            onClick={() => setSafetyStatus('new')}
-                          >
-                            Reopen
-                          </Button>
-                        ) : (
-                          <Button
-                            variant="primary"
-                            size="sm"
-                            accent="#DC2626"
-                            onClick={() => setConfirmingResolve(true)}
-                            icon={<Icon name="check" size={13} stroke={2.2} />}
-                          >
-                            Resolve
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                    {safetyResolved ? (
-                      <ReviewCard
-                        icon={resolvedMeta.icon}
-                        color={resolvedMeta.color}
-                        bg={resolvedMeta.bg}
-                        border={resolvedMeta.border}
-                        label={resolvedMeta.label}
-                        desc={safety.summary}
-                        action={<span className="sm2-review-by">by {lastChangeBy}</span>}
-                      />
-                    ) : (
-                      <ReviewCard
-                        icon={sev.icon}
-                        color={sev.color}
-                        bg={sev.bg}
-                        border={sev.border}
-                        label={`${sev.label} safety signal`}
-                        desc={safety.summary}
-                      />
-                    )}
-                  </div>
-                )}
-
-                {/* A self-started Book Talk runs from one of the conversation
-                starters — show it so the teacher knows what Benny worked from. */}
-                {d.source === 'self' && d.promptText && (
-                  <div className="sm2-section">
-                    <div className="sm2-section-head">
-                      <span className="sm2-section-title">Conversation Prompt</span>
-                    </div>
-                    <div className="sm2-prompt">
-                      <p className="sm2-prompt-text">{d.promptText}</p>
-                    </div>
-                  </div>
-                )}
-
-                {d.engagementRating && (
-                  <div className="sm2-section">
-                    <div className="sm2-section-head">
-                      <span className="sm2-section-title">Engagement Rating</span>
-                      <div className="sm2-section-actions">
-                        {d.changeLog?.some((e) => e.kind === 'rating') && (
-                          <span className="sm2-rating-overridden-pill">
-                            <Icon name="point-filled" size={10} />
-                            Overridden
-                          </span>
-                        )}
+              {safety && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title">Safety Signal</span>
+                    <div className="sm2-section-actions">
+                      {safetyResolved ? (
                         <Button
                           variant="secondary"
                           size="sm"
-                          onClick={() => setEditingRating(true)}
-                          icon={<Icon name="pencil" size={13} />}
+                          onClick={() => setSafetyStatus('new')}
                         >
-                          Override
+                          Reopen
                         </Button>
-                      </div>
+                      ) : (
+                        <Button
+                          variant="primary"
+                          size="sm"
+                          accent="#DC2626"
+                          onClick={() => setConfirmingResolve(true)}
+                          icon={<Icon name="check" size={13} stroke={2.2} />}
+                        >
+                          Resolve
+                        </Button>
+                      )}
                     </div>
+                  </div>
+                  {safetyResolved ? (
                     <ReviewCard
-                      icon={RATING_META[d.engagementRating].icon}
-                      color={RATING_META[d.engagementRating].color}
-                      bg={RATING_META[d.engagementRating].bg}
-                      border={RATING_META[d.engagementRating].border}
-                      label={RATING_META[d.engagementRating].label}
-                      desc={RATING_META[d.engagementRating].desc}
+                      icon={resolvedMeta.icon}
+                      color={resolvedMeta.color}
+                      bg={resolvedMeta.bg}
+                      border={resolvedMeta.border}
+                      label={resolvedMeta.label}
+                      desc={safety.summary}
+                      action={<span className="sm2-review-by">by {lastChangeBy}</span>}
                     />
-                  </div>
-                )}
-
-                {hasPosFlags && (
-                  <div className="sm2-section">
-                    <div className="sm2-section-head">
-                      <span className="sm2-section-title sm2-section-title--pos">
-                        <Icon
-                          name="flag"
-                          size={13}
-                          color="#16A97A"
-                          style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
-                        />
-                        Flags
-                      </span>
-                    </div>
-                    <div className="sm2-review-stack">
-                      {d.positiveFlags.map((f) => (
-                        <FlagCard
-                          key={f.id}
-                          flag={f}
-                          polarity="positive"
-                          onRequestRemove={
-                            onUpdateSession
-                              ? () => setConfirmingFlagRemoval({ flag: f, polarity: 'positive' })
-                              : null
-                          }
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {hasFlags && (
-                  <div className="sm2-section">
-                    <div className="sm2-section-head">
-                      <span className="sm2-section-title sm2-section-title--neg">
-                        <Icon
-                          name="flag"
-                          size={13}
-                          color="#DC2626"
-                          style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
-                        />
-                        Flags
-                      </span>
-                    </div>
-                    <div className="sm2-review-stack">
-                      {d.flags.map((f) => (
-                        <FlagCard
-                          key={f.id}
-                          flag={f}
-                          polarity="negative"
-                          onRequestRemove={
-                            onUpdateSession
-                              ? () => setConfirmingFlagRemoval({ flag: f, polarity: 'negative' })
-                              : null
-                          }
-                        />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {conversationSection}
-              </>
-            )}
-
-            {showReaderList && mainTab === 'activity' && (
-              <div className="sm2-notes">
-                <div className="sm2-note-row">
-                  <textarea
-                    className="sm2-note-input"
-                    placeholder="Add a note for the team…"
-                    value={noteDraft}
-                    rows={2}
-                    onChange={(e) => setNoteDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) addNote()
-                    }}
-                  />
-                  <Button variant="primary" disabled={!noteDraft.trim()} onClick={addNote}>
-                    Add note
-                  </Button>
+                  ) : (
+                    <ReviewCard
+                      icon={sev.icon}
+                      color={sev.color}
+                      bg={sev.bg}
+                      border={sev.border}
+                      label={`${sev.label} safety signal`}
+                      desc={safety.summary}
+                    />
+                  )}
                 </div>
-                {activityFeed}
-              </div>
-            )}
+              )}
+
+              {/* What Benny took from the talk, in words — the thing a
+                    teacher would otherwise have had to read the whole
+                    transcript to get. */}
+              {d.summary && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title">Benny&rsquo;s Read</span>
+                    {kind && (
+                      <div className="sm2-section-actions">
+                        <Pill color={kind.color} variant="soft" size="sm">
+                          {kind.short}
+                        </Pill>
+                      </div>
+                    )}
+                  </div>
+                  <div className="sm2-prompt sm2-summary">
+                    <img src="/bs-prototypes/benny.png" alt="" className="sm2-summary-benny" />
+                    <p className="sm2-prompt-text">{d.summary}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Reading Confidence — a comprehension talk's own read, and
+                    only its own: it's the one talk that probes what the reader
+                    took from the book, so it's the one that can say. */}
+              {confidence && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title">Reading Confidence</span>
+                    <div className="sm2-section-actions">
+                      <Button variant="secondary" size="sm" icon={<Icon name="pencil" size={13} />}>
+                        Override
+                      </Button>
+                    </div>
+                  </div>
+                  <ReviewCard {...confidence} desc={CONFIDENCE_BLURB} />
+                </div>
+              )}
+
+              {/* A self-started Book Talk runs from one of the conversation
+                starters — show it so the teacher knows what Benny worked from. */}
+              {d.source === 'self' && d.promptText && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title">Conversation Prompt</span>
+                  </div>
+                  <div className="sm2-prompt">
+                    <p className="sm2-prompt-text">{d.promptText}</p>
+                  </div>
+                </div>
+              )}
+
+              {d.engagementRating && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title">Engagement Rating</span>
+                    <div className="sm2-section-actions">
+                      {d.changeLog?.some((e) => e.kind === 'rating') && (
+                        <span className="sm2-rating-overridden-pill">
+                          <Icon name="point-filled" size={10} />
+                          Overridden
+                        </span>
+                      )}
+                      <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => setEditingRating(true)}
+                        icon={<Icon name="pencil" size={13} />}
+                      >
+                        Override
+                      </Button>
+                    </div>
+                  </div>
+                  <ReviewCard
+                    icon={RATING_META[d.engagementRating].icon}
+                    color={RATING_META[d.engagementRating].color}
+                    bg={RATING_META[d.engagementRating].bg}
+                    border={RATING_META[d.engagementRating].border}
+                    label={RATING_META[d.engagementRating].label}
+                    desc={RATING_META[d.engagementRating].desc}
+                  />
+                </div>
+              )}
+
+              {hasPosFlags && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title sm2-section-title--pos">
+                      <Icon
+                        name="flag"
+                        size={13}
+                        color="#16A97A"
+                        style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
+                      />
+                      Flags
+                    </span>
+                  </div>
+                  <div className="sm2-review-stack">
+                    {d.positiveFlags.map((f) => (
+                      <FlagCard
+                        key={f.id}
+                        flag={f}
+                        polarity="positive"
+                        onRequestRemove={
+                          onUpdateSession
+                            ? () => setConfirmingFlagRemoval({ flag: f, polarity: 'positive' })
+                            : null
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {hasFlags && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title sm2-section-title--neg">
+                      <Icon
+                        name="flag"
+                        size={13}
+                        color="#DC2626"
+                        style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
+                      />
+                      Flags
+                    </span>
+                  </div>
+                  <div className="sm2-review-stack">
+                    {d.flags.map((f) => (
+                      <FlagCard
+                        key={f.id}
+                        flag={f}
+                        polarity="negative"
+                        onRequestRemove={
+                          onUpdateSession
+                            ? () => setConfirmingFlagRemoval({ flag: f, polarity: 'negative' })
+                            : null
+                        }
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {conversationSection}
+            </>
           </div>
         </div>
 
@@ -880,12 +736,8 @@ export function SessionModal({
             <div className="sm2-footer-actions">
               <button className="sm2-btn sm2-btn--danger">Delete Session</button>
               {canApprove && (
-                <Button
-                  variant="primary"
-                  onClick={() => onApproveRequest?.(d)}
-                  icon={<Icon name="check" size={13} stroke={2.2} />}
-                >
-                  Approve Session
+                <Button variant="primary" onClick={() => onApproveRequest?.(d)}>
+                  Unflag Session
                 </Button>
               )}
             </div>

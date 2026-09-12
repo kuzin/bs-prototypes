@@ -51,8 +51,8 @@ import badgeTrophy from './assets/badges/trophy.webp'
 import badgeGift from './assets/badges/gift.webp'
 
 export const THEME = {
-  teal: '#0DA7BC', // Beanstack primary
-  ink: '#0F172A',
+  teal: '#0CA7BC', // Beanstack primary
+  ink: '#2A2A2A',
 }
 
 // ─── Modes (dev toolbar — level 1) ────────────────────────────────────────────
@@ -97,7 +97,7 @@ export const CHALLENGE_TYPES = [
     id: 'logging',
     name: 'Logging Challenge',
     tagline: 'Earn badges for logging minutes, books, days, or pages.',
-    accent: '#0DA7BC',
+    accent: '#0CA7BC',
     primaryMethod: 'log',
     addOns: ['activities', 'reviews'],
     setup: false,
@@ -140,7 +140,7 @@ export const CHALLENGE_TYPES = [
     id: 'reading-list',
     name: 'Reading List Challenge',
     tagline: 'Read specific titles from a curated list.',
-    accent: '#1D4ED8',
+    accent: '#196DD5',
     primaryMethod: 'readingList',
     addOns: ['activities'],
     setup: true,
@@ -151,7 +151,7 @@ export const CHALLENGE_TYPES = [
     id: 'reviews',
     name: 'Reviews Challenge',
     tagline: 'Earn badges by writing book reviews.',
-    accent: '#16A97A',
+    accent: '#0BA85F',
     primaryMethod: 'reviews',
     addOns: ['log'],
     setup: false,
@@ -336,7 +336,7 @@ export const BANNER_THEMES = [
     id: 'autumn',
     name: 'Autumn',
     variants: [
-      { id: 'autumn-1', color: '#D97706' },
+      { id: 'autumn-1', color: '#AB720A' },
       { id: 'autumn-2', color: '#EA580C' },
       { id: 'autumn-3', color: '#CA8A04' },
     ],
@@ -345,7 +345,7 @@ export const BANNER_THEMES = [
     id: 'space',
     name: 'Space',
     variants: [
-      { id: 'space-1', color: '#1E293B' },
+      { id: 'space-1', color: '#2A2A2A' },
       { id: 'space-2', color: '#6D28D9' },
       { id: 'space-3', color: '#0C4A6E' },
     ],
@@ -364,8 +364,8 @@ export const BANNER_THEMES = [
     name: 'Celebration',
     variants: [
       { id: 'celebration-1', color: '#E11D48' },
-      { id: 'celebration-2', color: '#7C3AED' },
-      { id: 'celebration-3', color: '#D97706' },
+      { id: 'celebration-2', color: '#B43DD0' },
+      { id: 'celebration-3', color: '#AB720A' },
     ],
   },
   {
@@ -399,7 +399,7 @@ export const BANNER_THEMES = [
     id: 'fantasy',
     name: 'Fantasy',
     variants: [
-      { id: 'fantasy-1', color: '#7C3AED' },
+      { id: 'fantasy-1', color: '#B43DD0' },
       { id: 'fantasy-2', color: '#8B5CF6' },
       { id: 'fantasy-3', color: '#6366F1' },
     ],
@@ -450,7 +450,7 @@ export const BADGE_ICONS = [
   'ti-reading-log',
   'ti-rating',
 ]
-export const BADGE_COLORS = ['#0DA7BC', '#E8866A', '#7C5CFA', '#16A97A', '#F0C050', '#E8456B']
+export const BADGE_COLORS = ['#0CA7BC', '#F26430', '#7C5CFA', '#0BA85F', '#F0C050', '#E8456B']
 
 // AI-generated badge medallions, keyed by icon name. Badges whose icon maps
 // here render the illustration; others fall back to the Ic glyph.
@@ -665,7 +665,7 @@ export const COLOR_BUCKETS = [
   { id: 'blue', name: 'Blue', hex: '#3b82f6' },
   { id: 'purple', name: 'Purple', hex: '#8b5cf6' },
   { id: 'pink', name: 'Pink', hex: '#ec4899' },
-  { id: 'neutral', name: 'Neutral', hex: '#94a3b8' },
+  { id: 'neutral', name: 'Neutral', hex: '#acacac' },
 ]
 function _hueBucket(r, g, b) {
   r /= 255
@@ -864,7 +864,7 @@ export function blankChallenge(typeId) {
       description: '',
       previewDescription: '',
       position: 1,
-      accent: type?.accent || '#0DA7BC',
+      accent: type?.accent || '#0CA7BC',
       accentOverride: false, // accent follows the banner variation unless overridden
       // Header art is uploaded — the banner-theme picker is gone from this fork.
       background: { kind: 'upload', name: '' },
@@ -904,7 +904,7 @@ export function blankChallenge(typeId) {
       // Gameboard
       gameboardCells: [], // logging-badge ids placed along the board (in order)
       gameboardTheme: 'meadow',
-      gameboardColor: '#16A97A', // custom-theme color scheme
+      gameboardColor: '#0BA85F', // custom-theme color scheme
       gbShowRewards: true, // show reward/gift markers on the board
       gbShowHalfway: true, // show a halfway marker
       gbBadges: 8, // number of badge spaces on the board
@@ -1073,7 +1073,7 @@ const tplRewards = (id, { prizes = [], certificate, tickets = [] }) => ({
 export const TEMPLATE_PRESETS = {
   benny: {
     name: 'Have You Seen Benny?',
-    accent: '#16A97A',
+    accent: '#0BA85F',
     theme: 'forest',
     banner: tplAsset('benny', 'banner.webp'),
     badges: tplBadges('benny'),
@@ -1117,7 +1117,7 @@ export const TEMPLATE_PRESETS = {
   },
   glow: {
     name: 'Glow Party',
-    accent: '#7C3AED',
+    accent: '#B43DD0',
     theme: 'celebration',
     banner: tplAsset('glow', 'banner.webp'),
     badges: tplBadges('glow'),
@@ -1389,28 +1389,28 @@ export const gameboardTheme = (id) =>
 // either an uploaded background or a flat color scheme.
 export function resolveGameboardTheme(theme, { custom, uploadedBg } = {}) {
   if (theme === 'custom') {
-    if (uploadedBg) return { bgImg: uploadedBg, track: '#ffffff', ink: '#0f172a' }
+    if (uploadedBg) return { bgImg: uploadedBg, track: '#ffffff', ink: '#2a2a2a' }
     return {
       board: `linear-gradient(165deg, ${custom}, ${custom})`,
       track: '#ffffff',
-      ink: '#0f172a',
+      ink: '#2a2a2a',
     }
   }
   return gameboardTheme(theme)
 }
 
 export const THEME_COLOR_PRESETS = [
-  '#16A97A',
-  '#0DA7BC',
+  '#0BA85F',
+  '#0CA7BC',
   '#0E7490',
   '#2563EB',
   '#1E3A8A',
   '#6366F1',
-  '#7C3AED',
+  '#B43DD0',
   '#DB2777',
   '#E8453A',
   '#EA580C',
-  '#F59E0B',
+  '#FFBC42',
   '#65A30D',
 ]
 

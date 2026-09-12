@@ -13,11 +13,11 @@ export const SCHOOLS = [
     name: 'Jefferson Elementary',
     students: 1820,
     grades: 'K–5',
-    color: '#0DA7BC',
+    color: '#0CA7BC',
   },
-  { id: 'lincoln', name: 'Lincoln Elementary', students: 1650, grades: 'K–5', color: '#E8866A' },
+  { id: 'lincoln', name: 'Lincoln Elementary', students: 1650, grades: 'K–5', color: '#F26430' },
   { id: 'kennedy', name: 'Kennedy K-8', students: 2340, grades: 'K–8', color: '#7CB5F5' },
-  { id: 'roosevelt', name: 'Roosevelt Middle', students: 2100, grades: '6–8', color: '#16A97A' },
+  { id: 'roosevelt', name: 'Roosevelt Middle', students: 2100, grades: '6–8', color: '#0BA85F' },
   { id: 'washington', name: 'Washington Middle', students: 1980, grades: '6–8', color: '#F0C050' },
   { id: 'adams', name: 'Adams High', students: 2510, grades: '9–12', color: '#C084FC' },
 ]
@@ -659,7 +659,7 @@ export const RMI_FACTORS = [
     score: 3.1,
     max: 4,
     delta: 0.2,
-    color: '#E8866A',
+    color: '#F26430',
     desc: 'Reading for personal pleasure and fun',
   },
   {
@@ -689,7 +689,7 @@ export const RMI_FACTORS = [
     score: 2.6,
     max: 4,
     delta: 0.1,
-    color: '#16A97A',
+    color: '#0BA85F',
     desc: 'Belief in oneself as a capable reader',
   },
   {
@@ -699,7 +699,7 @@ export const RMI_FACTORS = [
     score: 2.4,
     max: 4,
     delta: 0.1,
-    color: '#0DA7BC',
+    color: '#0CA7BC',
     desc: 'Seeking complex or difficult texts',
   },
   // Extrinsic
@@ -730,7 +730,7 @@ export const RMI_FACTORS = [
     score: 2.4,
     max: 4,
     delta: 0.0,
-    color: '#94A3B8',
+    color: '#ACACAC',
     desc: 'Reading for academic performance',
   },
   {
@@ -740,7 +740,7 @@ export const RMI_FACTORS = [
     score: 2.0,
     max: 4,
     delta: -0.1,
-    color: '#CBD5E1',
+    color: '#D0D0D0',
     desc: 'Reading to outperform or beat peers',
   },
   {
@@ -750,7 +750,7 @@ export const RMI_FACTORS = [
     score: 1.8,
     max: 4,
     delta: -0.2,
-    color: '#E2E8F0',
+    color: '#EAEAEA',
     desc: 'Reading because required by teacher or parent',
   },
 ]
@@ -839,12 +839,12 @@ export const GRADE_PERFORMANCE = [
 
 // ── Future state: Reading diet mock data ──────────────────────────────────
 export const READING_DIET = [
-  { genre: 'Sci-Fi & Fantasy', pct: 28, color: '#7C3AED' },
-  { genre: 'Sports & Adventure', pct: 19, color: '#0DA7BC' },
-  { genre: 'Realistic Fiction', pct: 17, color: '#16A97A' },
-  { genre: 'Graphic & Manga', pct: 14, color: '#E8866A' },
+  { genre: 'Sci-Fi & Fantasy', pct: 28, color: '#B43DD0' },
+  { genre: 'Sports & Adventure', pct: 19, color: '#0CA7BC' },
+  { genre: 'Realistic Fiction', pct: 17, color: '#0BA85F' },
+  { genre: 'Graphic & Manga', pct: 14, color: '#F26430' },
   { genre: 'Mystery & Thriller', pct: 11, color: '#F0C050' },
-  { genre: 'Other', pct: 11, color: '#CBD5E1' },
+  { genre: 'Other', pct: 11, color: '#D0D0D0' },
 ]
 
 // ── Future state: ROI correlations ────────────────────────────────────────
@@ -906,7 +906,7 @@ export const RMI_TOTAL_BAND_TRENDS = MONTHS.map((month, i) => ({
 
 export const RMI_GRADE_BANDS = [
   { key: 'K–2', color: '#7CB5F5' },
-  { key: '3–5', color: '#16A97A' },
+  { key: '3–5', color: '#0BA85F' },
   { key: '6–8', color: '#F0C050' },
   { key: '9–12', color: '#C084FC' },
 ]
@@ -939,8 +939,8 @@ export const SESSION_BAND_TRENDS = MONTHS.map((month, i) => ({
 }))
 
 export const SESSION_BANDS = [
-  { key: 'elementary', label: 'Elementary', color: '#0DA7BC' },
-  { key: 'middle', label: 'Middle', color: '#16A97A' },
+  { key: 'elementary', label: 'Elementary', color: '#0CA7BC' },
+  { key: 'middle', label: 'Middle', color: '#0BA85F' },
   { key: 'high', label: 'High', color: '#C084FC' },
 ]
 

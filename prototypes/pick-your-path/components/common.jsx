@@ -129,7 +129,7 @@ export function BadgeDisc({ badge, size = 74, onClick, showLabel = true, showSta
         {showStatus &&
           (badge.earned ? (
             <span className="pyp-badge-status pyp-badge-status--done">
-              <Icon name="circle-check-filled" size={Math.round(size * 0.28)} color="#16A97A" />
+              <Icon name="circle-check-filled" size={Math.round(size * 0.28)} color="#0BA85F" />
             </span>
           ) : (
             <span className="pyp-badge-status pyp-badge-status--lock">

@@ -31,7 +31,7 @@ const THEME_COLORS = [
   { bg: '#FFE7DE', color: '#C2410C' },
   { bg: '#EDE9FE', color: '#6D28D9' },
   { bg: '#E0F2FE', color: '#0369A1' },
-  { bg: '#FEF3C7', color: '#B45309' },
+  { bg: '#FFECC8', color: '#B45309' },
   { bg: '#DCFCE7', color: '#15803D' },
 ]
 
@@ -199,7 +199,7 @@ function OverviewTab({ book, sessions, onViewReading }) {
         <h3 className="bk-section-h">Genres + Themes</h3>
         <div className="bk-themes">
           {book.genres.map((g) => {
-            const c = GENRES[g] || { bg: '#E2E8F0', color: '#334155' }
+            const c = GENRES[g] || { bg: '#EAEAEA', color: '#424242' }
             return (
               <span
                 key={`g-${g}`}

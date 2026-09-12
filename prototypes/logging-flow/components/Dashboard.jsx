@@ -12,6 +12,7 @@ import {
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
 import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
 
 import { READER, OTHER_READERS, CHALLENGES, TOP_SCHOOLS, TOP_GRADES, BOOKS } from '../data'
 import { CONNECTION_LIST, autoLoggedRows } from '../connections'
@@ -28,15 +29,6 @@ import '@components/Tabs/Tabs.css'
 import '@components/Pill/Pill.css'
 import '@components/ProgressBar/ProgressBar.css'
 import '@components/Flyout/Flyout.css'
-
-function BeanstackLogo() {
-  return (
-    <div className="wa-logo">
-      <img src="/bs-prototypes/bs.svg" alt="" className="wa-logo-mark" />
-      <span className="wa-logo-word">beanstack</span>
-    </div>
-  )
-}
 
 function TopBar({
   onLog,
@@ -209,7 +201,7 @@ function StreakBanner({ streak, onLog }) {
           is destructive and a red button that means "delete" everywhere else
           shouldn't also mean "view my streaks". The accent variant takes the
           colour and leaves the semantics alone. */}
-      <Button variant="accent" accent="#DC2626" size="sm" onClick={onLog}>
+      <Button variant="accent" accent="#E85648" size="sm" onClick={onLog}>
         {has ? 'Log Today' : 'View Streaks'}
       </Button>
     </div>

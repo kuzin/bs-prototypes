@@ -26,14 +26,14 @@
   border: 0;
   padding: 6px 10px;
   cursor: pointer;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   font: inherit;
   border-radius: 9px;
   white-space: nowrap;
   transition: background 0.12s ease;
 }
 .stepper-btn:hover {
-  background: var(--c-slate-100);
+  background: var(--c-gray-100);
 }
 .stepper-dot {
   display: grid;
@@ -41,8 +41,8 @@
   width: 25px;
   height: 25px;
   border-radius: 999px;
-  background: var(--c-slate-200);
-  color: var(--c-slate-600);
+  background: var(--c-gray-200);
+  color: var(--c-gray-750);
   font-size: 12px;
   font-weight: 700;
   flex: 0 0 auto;
@@ -55,20 +55,19 @@
   font-weight: 600;
 }
 .stepper-item.is-current .stepper-dot {
-  background: var(--stepper-accent, var(--c-brand-teal));
+  background: var(--stepper-accent, var(--c-teal));
   color: #fff;
-  box-shadow: 0 0 0 4px
-    color-mix(in srgb, var(--stepper-accent, var(--c-brand-teal)) 18%, transparent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--stepper-accent, var(--c-teal)) 18%, transparent);
 }
 .stepper-item.is-current .stepper-name {
   color: var(--c-text);
 }
 .stepper-item.is-done .stepper-dot {
-  background: var(--stepper-accent, var(--c-brand-teal));
+  background: var(--stepper-accent, var(--c-teal));
   color: #fff;
 }
 .stepper-item.is-done .stepper-name {
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
 }
 /* The connector doubles as the progress track: completed steps fill it solid,
    and the current step fills it proportionally when `progress` is supplied. */
@@ -76,7 +75,7 @@
   position: relative;
   flex: 1 1 auto;
   height: 4px;
-  background: var(--c-slate-200);
+  background: var(--c-gray-200);
   margin: 0 6px;
   min-width: 14px;
   border-radius: 2px;
@@ -86,11 +85,11 @@
   position: absolute;
   inset: 0 auto 0 0;
   border-radius: 2px;
-  background: var(--stepper-accent, var(--c-brand-teal));
+  background: var(--stepper-accent, var(--c-teal));
   transition: width 0.35s ease;
 }
 .stepper-item.is-done .stepper-line {
-  background: var(--stepper-accent, var(--c-brand-teal));
+  background: var(--stepper-accent, var(--c-teal));
 }
 
 /* ── Vertical orientation (left rail) ── */
@@ -111,5 +110,5 @@
   padding: 9px 12px;
 }
 .stepper--vertical .stepper-item.is-current .stepper-btn {
-  background: color-mix(in srgb, var(--stepper-accent, var(--c-brand-teal)) 12%, transparent);
+  background: color-mix(in srgb, var(--stepper-accent, var(--c-teal)) 12%, transparent);
 }

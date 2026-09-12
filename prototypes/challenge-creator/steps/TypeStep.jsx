@@ -25,7 +25,7 @@ export function TypeStep({ types, value, onSelect }) {
         <Hero
           title="Choose a challenge type"
           subtitle="Pick the main way readers earn badges — you can layer on more in the Badges step."
-          accent="#0DA7BC"
+          accent="#0CA7BC"
         />
       </div>
       <div className="cc-type-grid">

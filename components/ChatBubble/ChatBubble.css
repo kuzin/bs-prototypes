@@ -1,0 +1,288 @@
+/* Book Talk chat — one row component for the live reader chat and the
+   teacher's review transcript.
+ *
+ * The geometry is the session modal's (bs-product's review panel): 30px
+ * avatar, 12px radius with a 4px notch on the speaker's side, 15px/1.55 text.
+ * The reader bubble's colour is a token, because the two surfaces disagree on
+ * purpose — the live chat is Beanstack teal at the reader, the transcript is
+ * the app's quiet blue at a teacher reading someone else's conversation. */
+
+.cht-row {
+  --cht-student-bg: #eff6ff;
+  --cht-student-ink: #1e3a5f;
+  --cht-student-border: #bfdbfe;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.cht-row--benny {
+  justify-content: flex-start;
+}
+
+.cht-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* The reader's monogram, opposite Benny's face. */
+.cht-initials {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #dbeafe;
+  color: #196dd5;
+  font-size: var(--text-xs);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.cht-bubble {
+  max-width: 88%;
+  padding: 11px 15px;
+  border-radius: 12px;
+  font-size: var(--text-cell);
+  line-height: 1.55;
+  color: var(--c-text);
+}
+
+.cht-text {
+  display: block;
+}
+
+.cht-bubble em {
+  font-style: italic;
+}
+
+/* The notch sits on the speaker's side, so a run of turns reads as one voice. */
+.cht-bubble--benny {
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 4px 12px 12px 12px;
+}
+
+.cht-bubble--student {
+  background: var(--cht-student-bg);
+  border: 1px solid var(--cht-student-border);
+  border-radius: 12px 4px 12px 12px;
+  color: var(--cht-student-ink);
+}
+
+/* A turn Benny flagged. */
+.cht-bubble--flagged {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #7f1d1d;
+}
+
+/* The turn a safety signal fired on — heavier than a flag, because this is the
+   message a reviewer opened the session to find. */
+.cht-bubble--trigger {
+  background: #fef2f2;
+  border: 1.5px solid #fca5a5;
+  color: #991b1b;
+  font-weight: 600;
+}
+
+/* ─── Benny's note on the turn above ─────────────────────────────────────── */
+/* Consecutive notes stack into one band: only the run's ends are rounded, and
+   only its top clears the bubble. */
+.cht-note {
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-cell);
+  line-height: 1.45;
+  margin: 0;
+}
+.cht-note:not(.cht-note + .cht-note) {
+  margin-top: 2px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.cht-note:not(:has(+ .cht-note)) {
+  margin-bottom: 8px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+.cht-note + .cht-note .cht-note-head {
+  border-top: 1px solid var(--cht-note-rule);
+}
+
+.cht-note-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 16px;
+}
+
+.cht-note-flag {
+  flex-shrink: 0;
+}
+
+.cht-note-label {
+  flex: 1;
+  min-width: 0;
+  font-weight: 500;
+}
+
+.cht-note-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: var(--text-cell);
+  font-weight: 700;
+  color: inherit;
+  cursor: pointer;
+}
+.cht-note-toggle:hover {
+  text-decoration: underline;
+}
+
+/* The reasoning is a paragraph to read, so it drops onto a lighter ground in
+   body ink rather than carrying the band's own colour. */
+.cht-note-why {
+  margin: 0;
+  padding: 14px 16px 16px;
+  background: var(--cht-note-why-bg);
+  font-size: var(--text-cell);
+  line-height: 1.55;
+  color: var(--c-text-dark);
+}
+
+.cht-note--positive {
+  --cht-note-rule: #a9e8c6;
+  --cht-note-why-bg: #edfbf3;
+  background: #cff5df;
+  color: #0a6b3f;
+}
+.cht-note--warning {
+  --cht-note-rule: #f5b5ab;
+  --cht-note-why-bg: #fef1ef;
+  background: #fcdcd6;
+  color: #b3271a;
+}
+
+/* A wellbeing note is one line with no disclosure — it is not something to
+   fold away. */
+.cht-note--safety {
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 11px 16px;
+  border-radius: 10px;
+  margin: 2px 0 8px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+/* ─── Typing indicator (live chat) ───────────────────────────────────────── */
+.cht-bubble--typing {
+  display: flex;
+  gap: 4px;
+  padding: 13px 14px;
+}
+.cht-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--c-gray-500);
+  animation: cht-typing 1.2s infinite ease-in-out;
+}
+.cht-dot:nth-child(2) {
+  animation-delay: 0.18s;
+}
+.cht-dot:nth-child(3) {
+  animation-delay: 0.36s;
+}
+@keyframes cht-typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+/* ─── Read-aloud (live chat) ─────────────────────────────────────────────── */
+/* Dim until the row is hovered: it's an assist, not a control every reader is
+   reaching for. */
+.cht-tts {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-left: 5px;
+  width: 18px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #9aa7b4;
+  cursor: pointer;
+  opacity: 0.55;
+  transition:
+    opacity 0.15s,
+    color 0.15s;
+}
+.cht-row:hover .cht-tts {
+  opacity: 1;
+}
+.cht-tts:hover,
+.cht-tts.is-speaking {
+  opacity: 1;
+  color: var(--cht-accent, #0d8a82);
+}
+
+/* Equalizer bars — shown in the speaker button while a message "plays". */
+.cht-eq {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.5px;
+  height: 13px;
+}
+.cht-eq span {
+  width: 2px;
+  height: 100%;
+  border-radius: 1px;
+  background: currentColor;
+  animation: cht-eq 0.9s ease-in-out infinite;
+}
+.cht-eq span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.cht-eq span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.cht-eq span:nth-child(4) {
+  animation-delay: 0.45s;
+}
+@keyframes cht-eq {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}

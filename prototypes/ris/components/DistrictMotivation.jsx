@@ -17,7 +17,7 @@ import { TrendChart } from '@components/TrendChart/TrendChart'
 import { SECTIONS } from '@components/ReadingHealth/ReadingHealth'
 import { RMI_ICONS } from '@components/RmiIcons/RmiIcons'
 
-const ACCENT = '#E8866A'
+const ACCENT = '#F26430'
 const EXTRINSIC_COLOR = '#7CB5F5'
 const MOT_ICON = SECTIONS.find((s) => s.key === 'motivation')?.icon
 
@@ -127,7 +127,7 @@ export function DistrictMotivation() {
               },
               {
                 label: 'Extrinsic',
-                labelColor: '#1D4ED8',
+                labelColor: '#196DD5',
                 items: extrinsicFactors.map(factorToItem),
               },
             ]}

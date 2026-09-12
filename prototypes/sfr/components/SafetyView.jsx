@@ -1,12 +1,7 @@
 import { useState, useEffect } from 'react'
-import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
-import { Select } from '@components/Form/Form'
-import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
-import { Icon } from '@components/Icon/Icon'
+import { SessionsFilters } from './SessionsFilters'
 import { SessionsTable, SAFETY_SEVERITY, SAFETY_CATEGORY } from './SessionsTable'
 import { isSafety, isSafetyOpen } from '../data'
-import '@components/FilterBar/FilterBar.css'
-import '@components/Form/Form.css'
 import './ListView.css'
 
 const STATUS_LABELS = {
@@ -17,12 +12,16 @@ const STATUS_LABELS = {
   resolved: 'Resolved',
 }
 
-export function SafetyView({ sessions, onSelectSession, defaultFilters = {} }) {
-  const [search, setSearch] = useState('')
+// Safety Risk. There's no shipped tab behind this one, so the filter set is
+// the mock's three — Classes / Grades / Statuses — plus the two this page
+// can't do without: a severity and a concern. A safety queue you can't narrow
+// to "critical" is a list, not a queue.
+export function SafetyView({ sessions, search = '', onSelectSession, defaultFilters = {} }) {
   const [severity, setSeverity] = useState(defaultFilters.severity ?? 'all')
   const [category, setCategory] = useState(defaultFilters.category ?? 'all')
   const [status, setStatus] = useState(defaultFilters.status ?? 'all')
   const [grade, setGrade] = useState(defaultFilters.grade ?? 'all')
+  const [classFilter, setClassFilter] = useState(defaultFilters.classFilter ?? 'all')
 
   useEffect(() => {
     setSeverity(defaultFilters.severity ?? 'all')
@@ -48,16 +47,13 @@ export function SafetyView({ sessions, onSelectSession, defaultFilters = {} }) {
           ? !isSafetyOpen(s)
           : s.safety.status === status)
     const matchGrade = grade === 'all' || s.student.grade === grade
-    const matchSearch =
-      !search ||
-      s.student.name.toLowerCase().includes(search.toLowerCase()) ||
-      s.safety.excerpt.toLowerCase().includes(search.toLowerCase()) ||
-      s.book.title.toLowerCase().includes(search.toLowerCase())
-    return matchSev && matchCat && matchStatus && matchGrade && matchSearch
+    const matchClass = classFilter === 'all' || s.student.class === classFilter
+    const matchSearch = !search || s.student.name.toLowerCase().includes(search.toLowerCase())
+    return matchSev && matchCat && matchStatus && matchGrade && matchClass && matchSearch
   })
 
   function clearAll() {
-    setSearch('')
+    setClassFilter('all')
     setSeverity('all')
     setCategory('all')
     setStatus('all')
@@ -65,7 +61,6 @@ export function SafetyView({ sessions, onSelectSession, defaultFilters = {} }) {
   }
 
   const activeFilters = [
-    ...(search ? [{ key: 'search', label: `"${search}"`, onClear: () => setSearch('') }] : []),
     ...(severity !== 'all'
       ? [
           {
@@ -96,71 +91,97 @@ export function SafetyView({ sessions, onSelectSession, defaultFilters = {} }) {
     ...(grade !== 'all'
       ? [{ key: 'grade', label: `Grade: ${grade}`, onClear: () => setGrade('all') }]
       : []),
+    ...(classFilter !== 'all'
+      ? [{ key: 'class', label: `Class: ${classFilter}`, onClear: () => setClassFilter('all') }]
+      : []),
   ]
 
   return (
     <div className="lv-shell">
-      <div className="lv-toolbar">
-        <div className="lv-count">
-          {filtered.length} Safety {filtered.length === 1 ? 'Signal' : 'Signals'}
-        </div>
-        <div className="lv-search-wrap">
-          <Icon name="search" size={14} className="lv-search-icon" />
-          <input
-            className="lv-search"
-            type="search"
-            placeholder="Search student, signal, or book…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      </div>
-      <div className="lv-filters">
-        <FilterBar>
-          <FilterItem label="Severity">
-            <Select value={severity} onChange={(e) => setSeverity(e.target.value)}>
-              <option value="all">All severities</option>
-              <option value="critical">Critical</option>
-              <option value="warning">Warning</option>
-              <option value="possible">Possible</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Concern">
-            <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-              <option value="all">All concerns</option>
-              <option value="self-harm">Self-Harm</option>
-              <option value="harm-others">Harm to Others</option>
-              <option value="abuse">Possible Abuse</option>
-              <option value="bullying">Bullying</option>
-              <option value="distress">Emotional Distress</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Status">
-            <Select value={status} onChange={(e) => setStatus(e.target.value)}>
-              <option value="all">All statuses</option>
-              <option value="open">Open</option>
-              <option value="new">New</option>
-              <option value="acknowledged">Acknowledged</option>
-              <option value="escalated">Escalated</option>
-              <option value="resolved">Resolved</option>
-            </Select>
-          </FilterItem>
-          <FilterItem label="Grade">
-            <Select value={grade} onChange={(e) => setGrade(e.target.value)}>
-              <option value="all">All grades</option>
-              <option value="3rd">3rd grade</option>
-              <option value="4th">4th grade</option>
-              <option value="5th">5th grade</option>
-            </Select>
-          </FilterItem>
-        </FilterBar>
-        <ActiveFilters filters={activeFilters} onClearAll={clearAll} />
-      </div>
+      <SessionsFilters
+        activeFilters={activeFilters}
+        onClearAll={clearAll}
+        filters={[
+          {
+            key: 'class',
+            label: 'Classes',
+            value: classFilter,
+            onChange: setClassFilter,
+            options: [
+              ['all', 'All Classes'],
+              ['Mrs. Johnson', 'Mrs. Johnson'],
+              ['Mr. Okafor', 'Mr. Okafor'],
+              ['Mr. Kim', 'Mr. Kim'],
+            ],
+          },
+          {
+            key: 'grade',
+            label: 'Grades',
+            value: grade,
+            onChange: setGrade,
+            options: [
+              ['all', 'All Grades'],
+              ['3rd', '3rd'],
+              ['4th', '4th'],
+              ['5th', '5th'],
+            ],
+          },
+          {
+            key: 'status',
+            label: 'Statuses',
+            value: status,
+            onChange: setStatus,
+            options: [
+              ['all', 'All Statuses'],
+              ['open', 'Open'],
+              ['new', 'New'],
+              ['acknowledged', 'Acknowledged'],
+              ['escalated', 'Escalated'],
+              ['resolved', 'Resolved'],
+            ],
+          },
+          {
+            key: 'severity',
+            label: 'Severities',
+            secondary: true,
+            value: severity,
+            onChange: setSeverity,
+            options: [
+              ['all', 'All Severities'],
+              ['critical', 'Critical'],
+              ['warning', 'Warning'],
+              ['possible', 'Possible'],
+            ],
+          },
+          {
+            key: 'category',
+            label: 'Concerns',
+            secondary: true,
+            value: category,
+            onChange: setCategory,
+            options: [
+              ['all', 'All Concerns'],
+              ['self-harm', 'Self-Harm'],
+              ['harm-others', 'Harm to Others'],
+              ['abuse', 'Possible Abuse'],
+              ['bullying', 'Bullying'],
+              ['distress', 'Emotional Distress'],
+            ],
+          },
+        ]}
+      />
+      {/* Logged On · Student · Grade · Title · Status · ⋯ — the queue's own
+          six. Severity lives in the filter above and in the row detail; a
+          column for every attribute is what made this table scroll. */}
       <SessionsTable
         sessions={filtered}
         onSelectSession={(s) => onSelectSession(s, filtered)}
-        showFlagIcons
         safetyDetail
+        showSafetyColumn={false}
+        showTypeColumn={false}
+        showEngagementColumn={false}
+        showPosFlags={false}
+        showFlagsColumn={false}
         onClearFilters={clearAll}
       />
     </div>

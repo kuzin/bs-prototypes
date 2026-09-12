@@ -2,8 +2,8 @@
    `.sub-navigation` from the shipped app
    (bs-product app/assets/stylesheets/admin/_admin_navigation.scss).
    The Figma redesign of this rail differs (56px items on a 6px gap, a
-   #1A6DD5 accent, #E6F1FF fill, no radius); those values live in tokens.css as
-   --c-fig-blue-* but are deliberately NOT wired up here. */
+   #196DD5 accent, #E6F1FF fill, no radius) — i.e. --c-blue on --c-blue-0
+   — but is deliberately NOT wired up here; the shipped look wins. */
 
 /* Buttons don't inherit font-family; the avatar initials need the real face. */
 .main-rail button {
@@ -156,7 +156,7 @@
   height: 40px;
   margin: 20px;
   border-radius: 100%;
-  background: var(--c-light-gray);
+  background: var(--c-gray-300);
   color: var(--c-gray-900);
   font-size: 12px;
   font-weight: 900;
@@ -197,8 +197,13 @@
 }
 
 /* `.dropdown-items-list { min-width: 200px; background: white;
-   border-radius: 16px; box-shadow: 0 3px 10px 0 rgba(0,0,0,0.06);
-   ul { padding: 15px 0 } }`, anchored just right of the rail. */
+   border-radius: 16px; box-shadow: 0 3px 10px 0 rgba(0,0,0,0.06) }`, anchored
+   just right of the rail.
+
+   The rows deliberately diverge from the app's `ul { padding: 15px 0 }` +
+   `li a { padding: 4px 25px }`: every flyout here — this, the school picker,
+   the shared Flyout — uses one inset row (9px 12px on a 6px radius), so a menu
+   reads the same wherever it opens. */
 .main-rail-overflow-menu {
   position: absolute;
   left: calc(100% - 7px);
@@ -206,14 +211,28 @@
   min-width: 200px;
   background: #fff;
   border-radius: 16px;
-  box-shadow: 0 3px 10px 0 rgba(0, 0, 0, 0.06);
+  /* One flyout panel across the app: the shipped `.dropdown-items-list`
+     (radius 16, `0 3px 10px 0 rgba(0,0,0,0.06)`), plus a hairline ring — the
+     app's menu always sits against the rail, ours float over white cards where
+     that shadow alone leaves no edge. */
+  box-shadow:
+    0 3px 10px 0 rgba(0, 0, 0, 0.06),
+    0 0 0 1px var(--c-gray-200);
   z-index: 999;
+  /* A last-resort guard for when the list is taller than the window and no
+     amount of sliding will fit it — the component clamps position, this clamps
+     height. */
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
 }
 
 .main-rail-overflow-menu ul {
   list-style: none;
   margin: 0;
-  padding: 15px 0;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 /* `#overflow-dropdown li a { padding: 4px 25px; justify-content: flex-start }`
@@ -221,14 +240,15 @@
 .main-rail-overflow-item {
   display: flex;
   align-items: center;
+  gap: 8px;
   width: 100%;
-  padding: 4px 25px;
+  padding: 9px 12px;
   border: none;
-  border-radius: 0;
+  border-radius: 6px;
   background: transparent;
   font: inherit;
   font-size: 14px;
-  line-height: 17px;
+  font-weight: 600;
   color: var(--c-gray-900);
   white-space: nowrap;
   cursor: pointer;
@@ -236,7 +256,7 @@
 }
 
 .main-rail-overflow-item span {
-  margin-left: 15px;
+  min-width: 0;
 }
 
 /* `&.active, &:hover { background-color: lighten($accent-color, 45%) }` and the
@@ -345,7 +365,7 @@
   font: inherit;
   font-size: 17px;
   font-weight: 700;
-  color: var(--c-text-real);
+  color: var(--c-text);
   text-align: left;
   cursor: pointer;
   flex-shrink: 0;
@@ -435,7 +455,7 @@
   font: inherit;
   font-size: 16px;
   font-weight: 700;
-  color: var(--c-text-real);
+  color: var(--c-text);
   text-align: left;
   cursor: pointer;
   transition: background 0.13s ease;

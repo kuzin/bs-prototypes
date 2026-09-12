@@ -27,7 +27,7 @@ import { TrendChart } from '@components/TrendChart/TrendChart'
 import { Icon } from '@components/Icon/Icon'
 import './SchoolAnalytics.css'
 
-const ANALYTICS_COLOR = '#0DA7BC'
+const ANALYTICS_COLOR = '#0CA7BC'
 
 const AnalyticsIcon = () => <Icon name="chart-bar" />
 
@@ -71,7 +71,7 @@ function buildEngagementDistribution(school, stats) {
       tier: 'Inactive',
       pct: inactive,
       count: Math.round((total * inactive) / 100),
-      color: '#E2E8F0',
+      color: '#EAEAEA',
       desc: 'No log in 14+ days',
     },
     {
@@ -92,7 +92,7 @@ function buildEngagementDistribution(school, stats) {
       tier: 'Daily habit',
       pct: dailyPct,
       count: Math.round((total * dailyPct) / 100),
-      color: '#0DA7BC',
+      color: '#0CA7BC',
       desc: '5+ logs/week',
     },
   ]
@@ -121,7 +121,7 @@ export function SchoolAnalytics({ schoolId }) {
     { id: shortName, color: school.color, data: rmiData.map((d) => ({ x: d.month, y: d.school })) },
     {
       id: 'District avg',
-      color: '#CBD5E1',
+      color: '#D0D0D0',
       data: rmiData.map((d) => ({ x: d.month, y: d.district })),
     },
   ]
@@ -134,12 +134,12 @@ export function SchoolAnalytics({ schoolId }) {
     },
     {
       id: 'Attendance %',
-      color: '#16A97A',
+      color: '#0BA85F',
       data: ROI_TRENDS.map((d) => ({ x: d.month, y: d.attendance })),
     },
     {
       id: 'Incidents',
-      color: '#E8866A',
+      color: '#F26430',
       data: ROI_TRENDS.map((d) => ({ x: d.month, y: d.incidents })),
     },
   ]
@@ -177,7 +177,7 @@ export function SchoolAnalytics({ schoolId }) {
           value={health.motivation}
           label="RMI score"
           footer={`+${health.dM} pts vs. Sep`}
-          color="#16A97A"
+          color="#0BA85F"
           footerColor="#16A34A"
         />
       </div>
@@ -227,7 +227,7 @@ export function SchoolAnalytics({ schoolId }) {
             <ChartLegend
               items={[
                 { color: school.color, label: shortName },
-                { color: '#CBD5E1', label: 'District avg', dashed: true },
+                { color: '#D0D0D0', label: 'District avg', dashed: true },
               ]}
             />
           }
@@ -270,7 +270,7 @@ export function SchoolAnalytics({ schoolId }) {
             <ChartLegend
               items={[
                 { color: school.color, label: 'Active %' },
-                { color: '#94A3B8', label: 'RMI' },
+                { color: '#ACACAC', label: 'RMI' },
               ]}
             />
           }
@@ -285,7 +285,7 @@ export function SchoolAnalytics({ schoolId }) {
             xPadding={{ left: 12, right: 12 }}
             series={[
               { key: 'engagement', name: 'Active %', color: school.color },
-              { key: 'rmi', name: 'RMI score', color: '#94A3B8' },
+              { key: 'rmi', name: 'RMI score', color: '#ACACAC' },
             ]}
           />
         </ChartCard>
@@ -301,8 +301,8 @@ export function SchoolAnalytics({ schoolId }) {
             <ChartLegend
               items={[
                 { color: school.color, label: 'Engagement %' },
-                { color: '#16A97A', label: 'Attendance %', dashed: true },
-                { color: '#E8866A', label: 'Incidents', dashed: true },
+                { color: '#0BA85F', label: 'Attendance %', dashed: true },
+                { color: '#F26430', label: 'Incidents', dashed: true },
               ]}
             />
           }

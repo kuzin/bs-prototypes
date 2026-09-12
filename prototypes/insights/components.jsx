@@ -190,7 +190,7 @@ function BadgeArt({ name }) {
         <defs>
           <linearGradient id="bs-ring" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#FCD34D" />
-            <stop offset="100%" stopColor="#F59E0B" />
+            <stop offset="100%" stopColor="#FFBC42" />
           </linearGradient>
         </defs>
         <circle cx="32" cy="32" r="30" fill="url(#bs-ring)" stroke="#92400E" strokeWidth="2" />
@@ -202,7 +202,7 @@ function BadgeArt({ name }) {
           height="6"
           rx="1.5"
           fill="#1F2937"
-          stroke="#0F172A"
+          stroke="#2A2A2A"
           strokeWidth="1"
         />
         <rect x="14" y="38" width="6" height="6" fill="#FCA5A5" />
@@ -213,7 +213,7 @@ function BadgeArt({ name }) {
           height="6"
           rx="1.5"
           fill="#1F2937"
-          stroke="#0F172A"
+          stroke="#2A2A2A"
           strokeWidth="1"
         />
         <rect x="16" y="30" width="6" height="6" fill="#FDBA74" />
@@ -224,7 +224,7 @@ function BadgeArt({ name }) {
           height="6"
           rx="1.5"
           fill="#1F2937"
-          stroke="#0F172A"
+          stroke="#2A2A2A"
           strokeWidth="1"
         />
         <rect x="18" y="22" width="6" height="6" fill="#86EFAC" />
@@ -235,7 +235,7 @@ function BadgeArt({ name }) {
           height="6"
           rx="1.5"
           fill="#1F2937"
-          stroke="#0F172A"
+          stroke="#2A2A2A"
           strokeWidth="1"
         />
         <rect x="20" y="14" width="6" height="6" fill="#93C5FD" />
@@ -248,14 +248,14 @@ function BadgeArt({ name }) {
         <defs>
           <linearGradient id="bs-ring2" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#FBBF24" />
-            <stop offset="100%" stopColor="#D97706" />
+            <stop offset="100%" stopColor="#AB720A" />
           </linearGradient>
         </defs>
         <circle cx="32" cy="32" r="30" fill="url(#bs-ring2)" stroke="#92400E" strokeWidth="2" />
         {/* ribbon banner */}
         <path
           d="M14 18 L32 14 L50 18 L50 24 L32 20 L14 24 Z"
-          fill="#1D4ED8"
+          fill="#196DD5"
           stroke="#1E3A8A"
           strokeWidth="1.2"
         />
@@ -274,7 +274,7 @@ function BadgeArt({ name }) {
         <polygon
           points="32,28 35,38 45,38 37,44 40,54 32,48 24,54 27,44 19,38 29,38"
           fill="#fff"
-          stroke="#0F172A"
+          stroke="#2A2A2A"
           strokeWidth="0.8"
         />
       </svg>

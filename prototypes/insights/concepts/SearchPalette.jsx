@@ -83,7 +83,7 @@ export function SearchPalette({ onMeterChange, onOpenDetail, onCustomize, visibl
 
       <div className="ins-palette">
         <div className="ins-palette-input">
-          <Icon name="search" size={20} color="#94A3B8" />
+          <Icon name="search" size={20} color="#ACACAC" />
           <input
             ref={inputRef}
             type="text"
@@ -135,7 +135,7 @@ export function SearchPalette({ onMeterChange, onOpenDetail, onCustomize, visibl
       {openedIds.length === 0 ? (
         <EmptyState
           variant="dashed"
-          icon={<Icon name="search" size={48} color="#94A3B8" />}
+          icon={<Icon name="search" size={48} color="#ACACAC" />}
           title="Nothing loaded yet"
           description="Pick a metric or panel to load just that one — perfect for ad-hoc lookups."
         />

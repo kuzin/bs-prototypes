@@ -37,32 +37,34 @@
 }
 
 /* ── Highlight card ──
-   White cards with a subtle category-colored border (toned down — the icon chip
-   and tinted fill were removed). Category color now reads from the border, the
-   "View all" link, and the per-row badges. */
+   One card shape for all six: white, the same neutral hairline, the same blue
+   "View All". The variant survives only where it still carries meaning — the
+   reader-count pill on Repeat Flags / Unfinished. */
 .ov-card {
   background: #fff;
   border: 1px solid var(--c-gray-200);
   border-radius: 14px;
-  padding: 14px 16px;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  overflow: hidden;
 }
-.ov-card--danger {
-  border-color: #fecaca;
-}
-.ov-card--success {
-  border-color: #bbf7d0;
-}
-.ov-card--warning {
-  border-color: #fde68a;
-}
-.ov-card--neutral {
-  border-color: #bae6fd;
-}
-.ov-card--intercede {
-  border-color: #fecdd3;
+
+/* Title + description on the left, "View All" on the right, ruled off from the
+   rows under it. */
+/* Same shape as the shipped `.dashboard-table-header` — title left, "View
+   All" right, list below — but set a rung larger throughout, which is what the
+   design calls for: that module is a dense table header, this is a card you
+   read three names off. The link is centred against the title+description pair
+   (the app's header is one line and centres on its own). */
+.ov-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: var(--c-gray-0);
+  border-bottom: 1px solid var(--c-gray-150);
 }
 
 .ov-card-titles {
@@ -71,16 +73,18 @@
 }
 
 .ov-card-title {
-  font-size: 13px;
+  font-size: var(--text-body);
   font-weight: 800;
-  color: var(--c-slate-800);
+  color: var(--c-gray-900);
   margin-bottom: 2px;
   letter-spacing: -0.01em;
 }
 
+/* The app's header is the title alone; this line is ours, so it sits two rungs
+   under the title rather than competing with it. */
 .ov-card-desc {
-  font-size: 12px;
-  color: var(--c-text-muted);
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
   line-height: 1.35;
 }
 
@@ -97,21 +101,27 @@
 .ov-student-list {
   display: flex;
   flex-direction: column;
-  gap: 6px;
 }
 
 .ov-student-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 8px;
-  background: var(--c-slate-50);
-  border-radius: 8px;
+  gap: 12px;
+  padding: 14px 20px;
+  background: #fff;
+  border-bottom: 1px solid var(--c-gray-150);
+}
+.ov-student-row:last-child {
+  border-bottom: none;
 }
 
 .ov-student-row--clickable {
   width: 100%;
-  border: none;
+  /* Only the button's own sides — a blanket `border: none` here killed the
+     row's hairline, which is set on `.ov-student-row` above. */
+  border-top: none;
+  border-left: none;
+  border-right: none;
   font-family: inherit;
   text-align: left;
   cursor: pointer;
@@ -122,13 +132,11 @@
 }
 
 .ov-student-row--clickable:hover {
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  transform: translateY(-1px);
+  background: var(--c-gray-0);
 }
 
 .ov-student-row--clickable:hover .ov-row-chevron {
-  color: var(--c-slate-700);
+  color: var(--c-gray-800);
   transform: translateX(2px);
 }
 
@@ -137,22 +145,25 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 1px;
+  gap: 3px;
 }
 
+/* `.dashboard-table td` is 15px / 500; the name keeps that weight and takes
+   the next rung up, so the pair reads as a name over its title rather than as
+   two labels. */
 .ov-student-name {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--c-slate-800);
+  font-size: var(--text-cell);
+  font-weight: 500;
+  color: var(--c-gray-900);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .ov-student-book {
-  font-size: 11px;
+  font-size: var(--text-tag);
   font-weight: 400;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -161,45 +172,61 @@
 .ov-student-flags {
   display: flex;
   align-items: center;
-  gap: 3px;
+  gap: 10px;
   flex-shrink: 0;
 }
 
 .ov-row-chevron {
   flex-shrink: 0;
-  color: var(--c-text-muted);
+  color: var(--c-text-light);
   transition: transform 0.12s;
   margin-left: 2px;
 }
 
 .ov-view-all {
-  font-size: 12.5px;
+  flex-shrink: 0;
+  font-size: var(--text-label);
   font-weight: 700;
-  color: var(--c-blue-700);
+  color: var(--c-blue);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px 0;
+  padding: 0;
   font-family: inherit;
-  text-align: left;
+  white-space: nowrap;
   transition: opacity 0.12s;
 }
 .ov-view-all:hover {
   opacity: 0.7;
 }
 
-.ov-view-all--danger {
-  color: #b91c1c;
+/* ── Reader roll-up count ──
+   The right-hand slot on the two cards that count readers rather than
+   sessions ("12 Book Talks"). Same tag shape as the flag badges beside it. */
+.ov-count-pill {
+  font-size: var(--text-tag);
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  color: var(--c-gray-750);
+  background: var(--c-gray-100);
 }
-.ov-view-all--success {
-  color: #14803f;
+.ov-count-pill--danger {
+  color: var(--c-red-ink);
+  background: var(--c-red-wash);
 }
-.ov-view-all--warning {
-  color: #b45309;
+.ov-count-pill--neutral {
+  color: var(--c-blue-ink);
+  background: var(--c-blue-wash);
 }
-.ov-view-all--intercede {
-  color: #be123c;
-}
-.ov-view-all--neutral {
-  color: #0369a1;
+
+/* The summary's three call-outs. A bulleted list because they're three
+   separate things to act on, not one sentence. */
+.ov-summary-list {
+  margin: 8px 0 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
 }

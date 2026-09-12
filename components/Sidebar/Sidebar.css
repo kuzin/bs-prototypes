@@ -51,7 +51,7 @@
   gap: 12px;
   height: 56px;
   padding: 0 14px;
-  background: linear-gradient(160deg, #1e40af 0%, var(--c-blue-700) 60%, #2563eb 100%);
+  background: linear-gradient(160deg, #1e40af 0%, var(--c-blue) 60%, #2563eb 100%);
   color: #fff;
   flex-shrink: 0;
   width: 100%;
@@ -125,6 +125,11 @@
 }
 .sb-sidebar--icon .sb-nav {
   padding: 8px 6px;
+  /* No reserved gutter here. The stable gutter earns its keep in the full
+     sidebar, where it stops labels shifting as sections expand — but on a 64px
+     rail it eats 11px off one side and knocks every glyph off centre, and
+     there's no label to shift anyway. */
+  scrollbar-gutter: auto;
 }
 .sb-sidebar--icon .sb-nav-item {
   justify-content: center;
@@ -167,7 +172,10 @@
   display: none;
 }
 .sb-sidebar--icon .sb-picker {
-  padding: 10px 0;
+  /* The same 6px side inset `.sb-nav` gives its rows, so the picker's hover
+     target is the same width as the nav glyphs above it instead of running the
+     full width of the rail. */
+  padding: 10px 6px;
 }
 .sb-sidebar--icon .sb-picker-btn {
   justify-content: center;
@@ -239,7 +247,7 @@
    bottom rule that `.section-menu-header-waves-bg` contributes. */
 .sb-sidebar-top {
   padding: 40px 30px;
-  border-bottom: 5px solid var(--c-accent-dark-5);
+  border-bottom: 5px solid var(--c-accent-active);
   display: block;
   position: relative;
   flex: none;
@@ -341,6 +349,29 @@
   flex-direction: column;
   gap: 10px;
   overflow-y: auto;
+  /* The native bar is a light OS chrome laid over the blue gradient, and it
+     appears and disappears as sections expand — which shunted every label a few
+     pixels sideways. A thin translucent bar in a reserved gutter instead. */
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.28) transparent;
+}
+
+.sb-nav::-webkit-scrollbar {
+  width: 8px;
+}
+.sb-nav::-webkit-scrollbar-track {
+  background: transparent;
+}
+.sb-nav::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.28);
+  border: 2px solid transparent;
+  background-clip: padding-box;
+  border-radius: 999px;
+}
+.sb-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.45);
+  background-clip: padding-box;
 }
 
 .sb-nav-item {
@@ -441,13 +472,28 @@
   padding-left: 50px;
 }
 
+/* A row that owns a nested group: the toggle is laid over its right end, so
+   the row stays one full-width button and the toggle is still tabbable. */
+.sb-nav-row {
+  position: relative;
+}
+
+.sb-nav-item--owns-group {
+  /* clears the 32px disc + its 10px margin, so a long label can't run under it */
+  padding-right: 62px;
+}
+
 /* `.expand-section { background: rgba(0,0,0,0.1); border-radius: 100%;
    min-width: 32px; height: 32px; margin: 0 10px }` with a 16px white arrow. */
 .sb-nav-expand {
-  min-width: 32px;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 32px;
   height: 32px;
-  margin: 0 10px;
+  padding: 0;
+  border: none;
   border-radius: 100%;
   background: rgba(0, 0, 0, 0.1);
   color: #fff;
@@ -455,11 +501,22 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  cursor: pointer;
+  transition: background 0.13s ease;
+}
+
+.sb-nav-expand:hover {
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.sb-nav-expand:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.9);
+  outline-offset: 2px;
 }
 
 .sb-nav-badge {
   margin-left: auto;
-  background: var(--c-red-600);
+  background: var(--c-red);
   color: #fff;
   font-size: 12px;
   font-weight: 800;
@@ -544,61 +601,67 @@
   left: 12px;
   right: 12px;
   background: #fff;
-  border: 1px solid var(--c-border);
-  border-radius: 10px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
+  border-radius: 16px;
+  /* One flyout panel across the app: the shipped `.dropdown-items-list`
+     (radius 16, `0 3px 10px 0 rgba(0,0,0,0.06)`), plus a hairline ring — the
+     app's menu always sits against the rail, ours float over white cards where
+     that shadow alone leaves no edge. */
+  box-shadow:
+    0 3px 10px 0 rgba(0, 0, 0, 0.06),
+    0 0 0 1px var(--c-gray-200);
   z-index: 50;
-  overflow: hidden;
   padding: 6px;
+  /* The dropdown spans the sidebar at desktop, but the sidebar collapses to a
+     64px rail on tablet — without a floor the school names wrapped to two
+     lines. Same 200px floor the rail menu uses, a little wider for the grades. */
+  min-width: 230px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
 }
 
-.sb-picker-dropdown-label {
-  font-size: 13px;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--c-text-subtle);
-  padding: 4px 8px 6px;
-}
-
+/* Rows are the shared Flyout's (`.flyout-menu-item`): 14px/600 on `9px 12px`
+   with a 6px radius, inset from the panel rather than running its full width.
+   The rail menu's `4px 25px` is for a list with a 24px glyph in front of every
+   row; without one, that side padding is just air. */
 .sb-picker-option {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 7px 8px;
-  border-radius: 7px;
+  padding: 9px 12px;
+  border-radius: 6px;
   border: none;
   background: none;
-  color: var(--c-slate-700);
-  font-size: 13px;
+  color: var(--c-gray-900);
+  font-size: var(--text-label);
+  font-weight: 600;
   cursor: pointer;
   text-align: left;
   transition: background 0.1s;
 }
 
 .sb-picker-option:hover {
-  background: var(--c-slate-100);
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
 }
 
+/* Matches the rail menu's active row — the accent wash, not a raw Tailwind tint. */
 .sb-picker-option--active {
-  background: #eff6ff;
-  color: var(--c-blue-700);
-  font-weight: 600;
-}
-
-.sb-picker-opt-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
+  background: var(--c-accent-wash);
+  color: var(--c-accent);
+  font-weight: 700;
 }
 
 .sb-picker-opt-name {
   flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .sb-picker-opt-grades {
-  font-size: 13px;
-  color: var(--c-text-subtle);
+  font-size: var(--text-tag);
+  color: var(--c-gray-600);
+  flex-shrink: 0;
 }
