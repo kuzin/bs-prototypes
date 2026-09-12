@@ -89,12 +89,12 @@ export const engagementSignalsSections = [
     render: () => (
       <>
         <Variant label="all six, on a Declining reader (Tyler)">
-          <div className="pcard bp-card bp-statlist">
+          <div className="section-card bp-card bp-statlist">
             <DriverList drivers={TYLER.drivers} />
           </div>
         </Variant>
         <Variant label="a Consistent reader — no arrows, because nothing moved (Marcus)">
-          <div className="pcard bp-card bp-statlist">
+          <div className="section-card bp-card bp-statlist">
             <DriverList drivers={MARCUS.drivers} />
           </div>
         </Variant>

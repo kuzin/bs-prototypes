@@ -1,24 +1,39 @@
+/* The one titled card — merged from SectionCard + ProfileCard.
+   Visuals are the production card's (`.rc-card`): white, a `$gray200` hairline,
+   12px radius, no shadow. SectionCard used to run 14px / --c-border / a small
+   shadow, which made two cards sitting in the same column not quite match. */
+
 .section-card {
-  background: #ffffff;
-  border: 1px solid var(--c-border);
-  border-radius: 14px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-  margin-bottom: 14px;
-  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 12px;
+  padding: 16px 18px;
 }
-.section-card-head {
+
+/* For content that owns its own edges — tables, full-width lists. */
+.section-card--flush {
+  padding: 0;
+}
+
+.section-card-title {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-}
-.section-card-title {
-  margin: 0;
-  font-size: 16px;
-  font-weight: 700;
+  /* One step down from 18: at 18/800 a card title carried more weight than the
+     section hero above it, which is the thing meant to lead. 16 still sits
+     clear of the 15px body under it. */
+  font-size: var(--text-body);
+  font-weight: var(--fw-extrabold);
   letter-spacing: -0.01em;
-  color: var(--c-text);
+  color: var(--c-text-real, var(--c-text));
+  margin-bottom: 12px;
 }
+
+.section-card-title-text {
+  min-width: 0;
+}
+
 .section-card-actions {
   display: flex;
   align-items: center;
@@ -26,20 +41,30 @@
   flex-shrink: 0;
 }
 
-/* plain — title above the body, no header rule (matches the legacy cc-panel) */
-.section-card--plain {
-  padding: 18px 20px;
-}
-.section-card--plain .section-card-head {
+/* ── header="plain" — the title sits inline above the body, no rule ───────── */
+.section-card--plain > .section-card-title:first-child {
   margin-bottom: 16px;
 }
 
-/* bar — tinted full-width header strip, body padded below */
-.section-card--bar .section-card-head {
-  padding: 14px 20px;
-  background: var(--c-slate-50);
-  border-bottom: 1px solid var(--c-border);
+/* ── header="divider" / "bar" — the title bleeds to the card's edges ───────
+   Negative margins pull it back out over the card's padding, and a hairline
+   separates it from the body. `bar` adds the tint on top. */
+.section-card--divider:not(.section-card--flush) > .section-card-title:first-child,
+.section-card--bar:not(.section-card--flush) > .section-card-title:first-child {
+  margin: -16px -18px 14px;
+  padding: 15px 18px 13px;
+  border-bottom: 1px solid var(--c-gray-200);
 }
-.section-card--bar .section-card-body {
-  padding: 18px 20px;
+
+/* In a flush card the title supplies the padding the card gave up. */
+.section-card--divider.section-card--flush > .section-card-title:first-child,
+.section-card--bar.section-card--flush > .section-card-title:first-child {
+  padding: 15px 18px 13px;
+  margin-bottom: 0;
+  border-bottom: 1px solid var(--c-gray-200);
+}
+
+.section-card--bar > .section-card-title:first-child {
+  background: var(--c-slate-50);
+  border-radius: 11px 11px 0 0;
 }

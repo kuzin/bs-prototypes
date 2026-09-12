@@ -123,7 +123,7 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
           exists is that reviewers pointed out one interaction doesn't stick. */}
       {onReview && <ReviewStrip cards={cards} onStart={onReview} />}
 
-      {/* The design system's tinted stat, not a hand-rolled copy of it — this
+      {/* The design system's stat tile, not a hand-rolled copy of it — this
           row was the same shape (wash, figure over label) written out locally,
           at its own smaller type. */}
       <div className="mw-stats">
@@ -133,7 +133,7 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
           { label: 'Books they came from', value: books, c: '#075985' },
           { label: 'Aced with no misses', value: `${firstTry}%`, c: '#166534' },
         ].map((s) => (
-          <StatCard key={s.label} variant="tinted" value={s.value} label={s.label} color={s.c} />
+          <StatCard key={s.label} value={s.value} label={s.label} color={s.c} />
         ))}
       </div>
 

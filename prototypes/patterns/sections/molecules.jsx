@@ -1,5 +1,6 @@
 import { Fragment, useState } from 'react'
 import { Button } from '@components/Button/Button'
+import { Pill } from '@components/Pill/Pill'
 import { Tabs } from '@components/Tabs/Tabs'
 import { ToastStack, useToasts } from '@components/Toast/Toast'
 import { Flyout } from '@components/Flyout/Flyout'
@@ -15,7 +16,6 @@ import {
   Breadcrumb,
   EmptyState,
   IconButton,
-  SectionHeading,
 } from '@components/Primitives/Primitives'
 import { Icon } from '@components/Icon/Icon'
 import { Confetti } from '@components/Confetti/Confetti'
@@ -835,6 +835,42 @@ function BannerKnobs() {
   )
 }
 
+const FAQ = [
+  {
+    id: 'streaks',
+    title: 'How do reading streaks work?',
+    content: <p>Log on consecutive days.</p>,
+  },
+  {
+    id: 'badges',
+    title: 'When are badges awarded?',
+    content: <p>Overnight, after a log lands.</p>,
+  },
+  { id: 'goals', title: 'Can a goal be changed mid-challenge?', content: <p>Yes, by an admin.</p> },
+]
+
+function AccordionShowcase() {
+  return (
+    <>
+      <Variant label="one open at a time (default)">
+        <Accordion items={FAQ} defaultOpen={['streaks']} />
+      </Variant>
+
+      <Variant label="allowMultiple — several open at once">
+        <Accordion items={FAQ} allowMultiple defaultOpen={['streaks', 'badges']} />
+      </Variant>
+
+      <Variant label="accent — tints the open row">
+        <Accordion items={FAQ} accent="var(--c-brand-teal)" defaultOpen={['streaks']} />
+      </Variant>
+
+      <Variant label="all closed — no defaultOpen">
+        <Accordion items={FAQ} />
+      </Variant>
+    </>
+  )
+}
+
 function AccordionKnobs() {
   const [accent, setAccent] = useState('#1D4ED8')
   const [multi, setMulti] = useState(false)
@@ -961,53 +997,6 @@ function EmptyStateKnobs() {
   )
 }
 
-function SectionHeadingKnobs() {
-  const [title, setTitle] = useState('Students to Watch')
-  const [subtitle, setSubtitle] = useState('Last 30 days · 4 students flagged')
-  const [level, setLevel] = useState('h3')
-  const [withAction, setAction] = useState(true)
-  const [withSub, setSub] = useState(true)
-  return (
-    <>
-      <Knobs>
-        <Field label="title">
-          <Input value={title} onChange={(e) => setTitle(e.target.value)} />
-        </Field>
-        <Field label="subtitle">
-          <Input value={subtitle} onChange={(e) => setSubtitle(e.target.value)} />
-        </Field>
-        <Field label="level">
-          <Select value={level} onChange={(e) => setLevel(e.target.value)}>
-            <option>h2</option>
-            <option>h3</option>
-            <option>h4</option>
-          </Select>
-        </Field>
-        <Field label="show subtitle">
-          <Toggle checked={withSub} onChange={setSub} />
-        </Field>
-        <Field label="show action">
-          <Toggle checked={withAction} onChange={setAction} />
-        </Field>
-      </Knobs>
-      <div className="pt-variant-frame">
-        <SectionHeading
-          title={title}
-          subtitle={withSub ? subtitle : undefined}
-          level={level}
-          action={
-            withAction ? (
-              <Button variant="ghost" size="sm">
-                View all →
-              </Button>
-            ) : undefined
-          }
-        />
-      </div>
-    </>
-  )
-}
-
 function TableKnobs() {
   const [zebra, setZebra] = useState(false)
   const [compact, setCompact] = useState(false)
@@ -1128,13 +1117,83 @@ function TableKnobs() {
 
 // ── Knobs panel wrapper ──────────────────────────────────────────────────
 
+function SettingRowKnobs() {
+  const [on, setOn] = useState(true)
+  const [label, setLabel] = useState('Require verification')
+  const [sub, setSub] = useState('Readers confirm each session before it counts')
+  const [control, setControl] = useState('toggle')
+  const [state, setState] = useState(true)
+  const [size, setSize] = useState('md')
+  const [disabled, setDisabled] = useState(false)
+
+  const CONTROLS = {
+    toggle: undefined,
+    select: (
+      <Select value="grade" onChange={() => {}}>
+        <option value="grade">By grade</option>
+        <option value="all">Everyone</option>
+      </Select>
+    ),
+    button: <Button variant="secondary">Manage</Button>,
+    badge: <Pill color="var(--c-brand-green)">3 rules</Pill>,
+  }
+
+  return (
+    <>
+      <Knobs>
+        <Field label="label">
+          <Input value={label} onChange={(e) => setLabel(e.target.value)} />
+        </Field>
+        <Field label="sub">
+          <Input value={sub} onChange={(e) => setSub(e.target.value)} />
+        </Field>
+        <Field label="control">
+          <Select value={control} onChange={(e) => setControl(e.target.value)}>
+            <option value="toggle">toggle (default)</option>
+            <option value="select">select</option>
+            <option value="button">button</option>
+            <option value="badge">badge</option>
+          </Select>
+        </Field>
+        <Field label="toggle size">
+          <Select value={size} onChange={(e) => setSize(e.target.value)}>
+            <option value="sm">sm</option>
+            <option value="md">md</option>
+          </Select>
+        </Field>
+        <Field label="state text">
+          <Toggle checked={state} onChange={setState} />
+        </Field>
+        <Field label="disabled">
+          <Toggle checked={disabled} onChange={setDisabled} />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame">
+        <SettingList>
+          <SettingRow
+            label={label}
+            sub={sub || undefined}
+            control={CONTROLS[control]}
+            state={control === 'toggle' && state ? (on ? 'Enabled' : 'Disabled') : undefined}
+            checked={on}
+            onChange={setOn}
+            size={size}
+            disabled={disabled}
+          />
+        </SettingList>
+      </div>
+    </>
+  )
+}
+
 function SettingRowShowcase() {
   const [a, setA] = useState(false)
   const [b, setB] = useState(true)
   const [c, setC] = useState('grade')
+  const [d, setD] = useState(true)
   return (
-    <Variant label="a SettingList of rows — toggle + state text, sub-text, custom control">
-      <div style={{ width: 'min(560px, 100%)' }}>
+    <>
+      <Variant label="a SettingList of rows — toggle + state text, sub-text, custom control">
         <SettingList>
           <SettingRow
             label="On Title Completions"
@@ -1157,9 +1216,26 @@ function SettingRowShowcase() {
               </Select>
             }
           />
+          <SettingRow
+            label="Reading validation"
+            sub="Three rules are active"
+            control={<Button variant="secondary">Manage</Button>}
+          />
         </SettingList>
-      </div>
-    </Variant>
+      </Variant>
+
+      <Variant label="disabled — the text dims, the control stays put">
+        <SettingList>
+          <SettingRow
+            label="Require verification"
+            sub="Turn logging validation on first"
+            checked={d}
+            onChange={setD}
+            disabled
+          />
+        </SettingList>
+      </Variant>
+    </>
   )
 }
 
@@ -1195,9 +1271,15 @@ function ConfettiShowcase() {
 
 export const moleculesSections = [
   {
-    group: 'molecules',
+    group: 'navigation',
     id: 'tabs',
     name: 'Tabs',
+    usage: `import { Tabs } from '@components/Tabs/Tabs'
+
+<Tabs active={tab} onChange={setTab} items={[{ id: 'overview', label: 'Overview' }]} />
+
+/* Segmented control / view switcher — never build a separate component */
+<Tabs variant="pill" block active={range} onChange={setRange} items={ranges} />`,
     desc: (
       <>
         Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>.
@@ -1243,9 +1325,14 @@ export const moleculesSections = [
     ),
   },
   {
-    group: 'molecules',
+    group: 'overlays',
     id: 'flyout',
     name: 'Flyout',
+    usage: `import { Flyout } from '@components/Flyout/Flyout'
+
+<Flyout placement="bottom-end" trigger={<IconButton aria-label="More"><Icon name="dots" /></IconButton>}>
+  {menu}
+</Flyout>`,
     desc: (
       <>
         Anchored popover triggered by a button. Closes on outside click + Escape. Children can be
@@ -1262,9 +1349,14 @@ export const moleculesSections = [
     ),
   },
   {
-    group: 'molecules',
+    group: 'overlays',
     id: 'modal',
     name: 'Modal',
+    usage: `import { Modal } from '@components/Modal/Modal'
+
+<Modal open={open} onClose={() => setOpen(false)} ariaLabel="Session detail">
+  {children}
+</Modal>`,
     desc: (
       <>
         Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both
@@ -1275,21 +1367,24 @@ export const moleculesSections = [
     ),
     render: () => (
       <>
-        <div className="pt-variant">
-          <div className="pt-variant-label">variant='center' (overlay)</div>
+        <Variant label="variant='center' (overlay)">
           <CenteredModalKnobs />
-        </div>
-        <div className="pt-variant">
-          <div className="pt-variant-label">variant='side' (slide-in)</div>
+        </Variant>
+        <Variant label="variant='side' (slide-in)">
           <SideModalShowcase />
-        </div>
+        </Variant>
       </>
     ),
   },
   {
-    group: 'molecules',
+    group: 'feedback',
     id: 'banner',
     name: 'Banner',
+    usage: `import { Banner } from '@components/Primitives/Primitives'
+
+<Banner level="info" title="Roster sync runs nightly" onDismiss={hide}>
+  Last run 2 hours ago.
+</Banner>`,
     desc: (
       <>
         Page-level alert / banner. Levels: <code>info</code>, <code>success</code>,{' '}
@@ -1304,9 +1399,16 @@ export const moleculesSections = [
     ),
   },
   {
-    group: 'molecules',
+    group: 'cards',
     id: 'accordion',
     name: 'Accordion',
+    usage: `import { Accordion } from '@components/Primitives/Primitives'
+
+<Accordion
+  items={[{ id: 'a', title: 'How streaks work', content: <p>…</p> }]}
+  allowMultiple
+  defaultOpen={['a']}
+/>`,
     desc: (
       <>
         Expand/collapse list. Pass <code>items</code> as <code>{'[{ id, title, content }]'}</code>.
@@ -1316,13 +1418,17 @@ export const moleculesSections = [
     render: () => (
       <>
         <AccordionKnobs />
+        <AccordionShowcase />
       </>
     ),
   },
   {
-    group: 'molecules',
+    group: 'navigation',
     id: 'breadcrumb',
     name: 'Breadcrumb',
+    usage: `import { Breadcrumb } from '@components/Primitives/Primitives'
+
+<Breadcrumb items={[{ label: 'Schools', href: '#/schools' }, { label: 'PS 118' }]} />`,
     desc: (
       <>
         Navigation crumbs. Pass <code>items</code> as <code>{'[{ label, href? }]'}</code> — the last
@@ -1344,9 +1450,18 @@ export const moleculesSections = [
     ),
   },
   {
-    group: 'molecules',
+    group: 'feedback',
     id: 'empty-state',
     name: 'EmptyState',
+    usage: `import { EmptyState } from '@components/Primitives/Primitives'
+
+<EmptyState
+  icon="book"
+  title="No sessions yet"
+  description="Logged reading will show up here."
+  variant="dashed"
+  action={<Button size="sm">Log reading</Button>}
+/>`,
     desc: (
       <>
         Empty-list placeholder. Props: <code>icon</code>, <code>title</code>,{' '}
@@ -1360,25 +1475,24 @@ export const moleculesSections = [
     ),
   },
   {
-    group: 'molecules',
-    id: 'section-heading',
-    name: 'SectionHeading',
-    desc: (
-      <>
-        Recurring h2/h3 + optional subtitle + optional right-side action. Used as the header inside
-        content sections / cards.
-      </>
-    ),
-    render: () => (
-      <>
-        <SectionHeadingKnobs />
-      </>
-    ),
-  },
-  {
-    group: 'molecules',
+    group: 'tables',
     id: 'table',
     name: 'Table',
+    usage: `import { Table } from '@components/Table/Table'
+
+<Table
+  columns={[
+    { key: 'name', label: 'Reader' },
+    { key: 'minutes', label: 'Minutes', align: 'right' },
+  ]}
+  rows={rows}
+  getRowKey={(r) => r.id}
+  onRowClick={(r) => open(r.id)}
+  stickyHeader
+  defaultSortKey="minutes"
+  defaultSortDir="desc"
+  empty="No sessions yet"
+/>`,
     desc: (
       <>
         Pass <code>columns</code> and <code>rows</code>. Each column can have <code>align</code>,{' '}
@@ -1394,9 +1508,19 @@ export const moleculesSections = [
     ),
   },
   {
-    group: 'molecules',
+    group: 'tables',
     id: 'setting-row',
     name: 'SettingRow',
+    usage: `import { SettingList, SettingRow } from '@components/SettingRow/SettingRow'
+
+<SettingList>
+  <SettingRow
+    label="Require verification"
+    sub="Readers confirm each session before it counts"
+    checked={on}
+    onChange={setOn}
+  />
+</SettingList>`,
     desc: (
       <>
         A labeled settings row: <code>label</code> (+ optional <code>sub</code>) on the left, a
@@ -1407,14 +1531,22 @@ export const moleculesSections = [
     ),
     render: () => (
       <>
+        <SettingRowKnobs />
         <SettingRowShowcase />
       </>
     ),
   },
   {
-    group: 'molecules',
+    group: 'feedback',
     id: 'toast',
     name: 'Toast',
+    usage: `import { ToastStack, useToasts } from '@components/Toast/Toast'
+
+const { toasts, push, dismiss } = useToasts()
+
+push({ level: 'success', title: 'Session verified' })
+
+<ToastStack toasts={toasts} onDismiss={dismiss} />`,
     desc: (
       <>
         A bottom-right stack of short confirmations, ported from the app&apos;s own toastr
@@ -1443,9 +1575,15 @@ export const moleculesSections = [
     ),
   },
   {
-    group: 'molecules',
+    group: 'feedback',
     id: 'confetti',
     name: 'Confetti',
+    usage: `import { Confetti } from '@components/Confetti/Confetti'
+
+/* Fills its nearest positioned ancestor — give that \`position: relative\` */
+<div style={{ position: 'relative' }}>
+  {won && <Confetti count={80} duration={2200} />}
+</div>`,
     desc: (
       <>
         A one-shot celebration burst that fills its nearest positioned ancestor — drop it into a

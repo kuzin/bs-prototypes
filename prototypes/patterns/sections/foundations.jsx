@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import '@components/ui/tokens.css'
+import { Variant } from './_shared'
 
 // Token groups mirror components/ui/tokens.css. The hex values are NOT duplicated
 // here — they're read from the live :root vars so this gallery can never drift
@@ -41,21 +42,9 @@ function ColorSwatches() {
   }, [])
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {TOKEN_GROUPS.map((g) => (
-        <div key={g.label}>
-          <div
-            style={{
-              fontSize: 12,
-              fontWeight: 700,
-              textTransform: 'uppercase',
-              letterSpacing: '0.05em',
-              color: 'var(--c-slate-500)',
-              marginBottom: 10,
-            }}
-          >
-            {g.label}
-          </div>
+        <Variant key={g.label} label={g.label}>
           <div
             style={{
               display: 'grid',
@@ -77,8 +66,8 @@ function ColorSwatches() {
                 <div style={{ padding: '8px 10px' }}>
                   <div
                     style={{
-                      fontSize: 12,
-                      fontWeight: 700,
+                      fontSize: 'var(--text-micro)',
+                      fontWeight: 'var(--fw-bold)',
                       color: 'var(--c-slate-800)',
                       fontFamily: 'monospace',
                     }}
@@ -87,7 +76,7 @@ function ColorSwatches() {
                   </div>
                   <div
                     style={{
-                      fontSize: 11,
+                      fontSize: 'var(--text-micro)',
                       color: 'var(--c-slate-500)',
                       textTransform: 'uppercase',
                     }}
@@ -98,21 +87,17 @@ function ColorSwatches() {
               </div>
             ))}
           </div>
-        </div>
+        </Variant>
       ))}
     </div>
   )
 }
 
-const SECTION_LABEL = {
-  fontSize: 12,
-  fontWeight: 700,
-  textTransform: 'uppercase',
-  letterSpacing: '0.05em',
-  color: 'var(--c-slate-500)',
-  marginBottom: 10,
+const META = {
+  fontSize: 'var(--text-micro)',
+  color: 'var(--c-slate-400)',
+  fontFamily: 'var(--font-mono)',
 }
-const META = { fontSize: 11, color: 'var(--c-slate-400)', fontFamily: 'var(--font-mono)' }
 
 /* The real ladder, named for the role the app renders each size in. */
 const TYPE_SCALE = [
@@ -140,6 +125,19 @@ const LEGACY_SCALE = [
   '--text-2xl',
   '--text-3xl',
 ]
+const FAMILIES = [
+  [
+    '--font-sans',
+    'Museo Sans Rounded — Beanstack\u2019s real typeface',
+    { fontFamily: 'var(--font-sans)', fontSize: 'var(--text-head)', fontWeight: 'var(--fw-bold)' },
+  ],
+  [
+    '--font-mono',
+    'const minutesRead = 1_204 // monospace for code + data',
+    { fontFamily: 'var(--font-mono)', fontSize: 'var(--text-label)' },
+  ],
+]
+
 const WEIGHTS = [
   ['--fw-normal', 'Normal'],
   ['--fw-medium', 'Medium'],
@@ -177,47 +175,65 @@ function Typography() {
     ...WEIGHTS.map((w) => w[0]),
   ])
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      <div>
-        <div style={SECTION_LABEL}>Font families</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 32 }}>
+      {/* Same shape as Type scale below: token above, specimen on its own line,
+          a hairline between entries — so the two cards read as one system. */}
+      <Variant label="Font families">
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {FAMILIES.map(([token, sample, style], i) => (
             <div
+              key={token}
               style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: 22,
-                fontWeight: 'var(--fw-bold)',
-                color: 'var(--c-slate-900)',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                paddingTop: i === 0 ? 0 : 14,
+                marginTop: i === 0 ? 0 : 14,
+                borderTop: i === 0 ? 'none' : '1px solid var(--c-gray-200)',
               }}
             >
-              Museo Sans Rounded — Beanstack's real typeface
+              <code style={META}>{token}</code>
+              <span style={{ color: 'var(--c-slate-900)', lineHeight: 1.15, ...style }}>
+                {sample}
+              </span>
             </div>
-            <code style={META}>--font-sans</code>
-          </div>
-          <div>
-            <div
-              style={{ fontFamily: 'var(--font-mono)', fontSize: 14, color: 'var(--c-slate-800)' }}
-            >
-              const minutesRead = 1_204 // monospace for code + data
-            </div>
-            <code style={META}>--font-mono</code>
-          </div>
+          ))}
         </div>
-      </div>
+      </Variant>
 
-      <div>
-        <div style={SECTION_LABEL}>Type scale</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {TYPE_SCALE.map(([t, role]) => (
-            <div key={t} style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
-              <code style={{ ...META, width: 104, flexShrink: 0 }}>{t}</code>
-              <span style={{ ...META, width: 44, flexShrink: 0 }}>{vals[t]}</span>
-              <span style={{ ...META, width: 210, flexShrink: 0 }}>{role}</span>
+      {/* Stacked, not a four-column row: the top rungs are 24-30px, and on one
+          line beside their metadata the specimen wrapped mid-phrase, which is
+          exactly what you can't judge a size by. Meta above, specimen below on
+          a line of its own. */}
+      <Variant label="Type scale">
+        <div style={{ display: 'flex', flexDirection: 'column' }}>
+          {TYPE_SCALE.map(([t, role], i) => (
+            <div
+              key={t}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 4,
+                paddingTop: i === 0 ? 0 : 14,
+                marginTop: i === 0 ? 0 : 14,
+                borderTop: i === 0 ? 'none' : '1px solid var(--c-gray-200)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, flexWrap: 'wrap' }}>
+                <code style={META}>{t}</code>
+                <span
+                  style={{ ...META, fontWeight: 'var(--fw-bold)', color: 'var(--c-slate-600)' }}
+                >
+                  {vals[t]}
+                </span>
+                <span style={META}>· {role}</span>
+              </div>
               <span
                 style={{
                   fontSize: `var(${t})`,
                   fontWeight: 'var(--fw-bold)',
                   color: 'var(--c-slate-900)',
+                  lineHeight: 1.15,
                 }}
               >
                 The quick brown fox
@@ -225,22 +241,27 @@ function Typography() {
             </div>
           ))}
         </div>
-      </div>
+      </Variant>
 
-      <div>
-        <div style={SECTION_LABEL}>Font weights</div>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+      <Variant label="Font weights">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           {WEIGHTS.map(([w, label]) => (
-            <div key={w} style={{ display: 'flex', alignItems: 'baseline', gap: 14 }}>
+            <div key={w} style={{ display: 'flex', alignItems: 'baseline', gap: 16 }}>
               <code style={{ ...META, width: 108, flexShrink: 0 }}>{w}</code>
               <span style={{ ...META, width: 36, flexShrink: 0 }}>{vals[w]}</span>
-              <span style={{ fontSize: 16, fontWeight: `var(${w})`, color: 'var(--c-slate-900)' }}>
+              <span
+                style={{
+                  fontSize: 'var(--text-body)',
+                  fontWeight: `var(${w})`,
+                  color: 'var(--c-slate-900)',
+                }}
+              >
                 {label} — Reading Motivation Index
               </span>
             </div>
           ))}
         </div>
-      </div>
+      </Variant>
     </div>
   )
 }
@@ -248,43 +269,45 @@ function Typography() {
 function Radii() {
   const vals = useTokenValues(RADII)
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(116px, 1fr))',
-        gap: 14,
-      }}
-    >
-      {RADII.map((t) => (
-        <div
-          key={t}
-          style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
-        >
+    <Variant label="Radius scale">
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(116px, 1fr))',
+          gap: 16,
+        }}
+      >
+        {RADII.map((t) => (
           <div
-            style={{
-              width: 76,
-              height: 76,
-              background: 'var(--c-slate-100)',
-              border: '2px solid var(--c-brand-teal)',
-              borderRadius: `var(${t})`,
-            }}
-          />
-          <div style={{ textAlign: 'center' }}>
+            key={t}
+            style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
+          >
             <div
               style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: 'var(--c-slate-800)',
-                fontFamily: 'var(--font-mono)',
+                width: 76,
+                height: 76,
+                background: 'var(--c-slate-100)',
+                border: '2px solid var(--c-brand-teal)',
+                borderRadius: `var(${t})`,
               }}
-            >
-              {t}
+            />
+            <div style={{ textAlign: 'center' }}>
+              <div
+                style={{
+                  fontSize: 'var(--text-micro)',
+                  fontWeight: 'var(--fw-bold)',
+                  color: 'var(--c-slate-800)',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                {t}
+              </div>
+              <div style={META}>{vals[t]}</div>
             </div>
-            <div style={META}>{vals[t]}</div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </Variant>
   )
 }
 
@@ -305,64 +328,68 @@ const SPACING = [
 function Shadows() {
   const vals = useTokenValues(SHADOWS)
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
-        gap: 20,
-        background: 'var(--c-slate-50)',
-        padding: 24,
-        borderRadius: 'var(--radius-xl)',
-      }}
-    >
-      {SHADOWS.map((t) => (
-        <div key={t} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-          <div
-            style={{
-              height: 72,
-              background: '#fff',
-              borderRadius: 'var(--radius-lg)',
-              boxShadow: `var(${t})`,
-            }}
-          />
-          <div>
+    <Variant label="Elevation scale">
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))',
+          gap: 20,
+          background: 'var(--c-slate-50)',
+          padding: 24,
+          borderRadius: 'var(--radius-xl)',
+        }}
+      >
+        {SHADOWS.map((t) => (
+          <div key={t} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div
               style={{
-                fontSize: 11,
-                fontWeight: 700,
-                color: 'var(--c-slate-800)',
-                fontFamily: 'var(--font-mono)',
+                height: 72,
+                background: '#fff',
+                borderRadius: 'var(--radius-lg)',
+                boxShadow: `var(${t})`,
               }}
-            >
-              {t}
+            />
+            <div>
+              <div
+                style={{
+                  fontSize: 'var(--text-micro)',
+                  fontWeight: 'var(--fw-bold)',
+                  color: 'var(--c-slate-800)',
+                  fontFamily: 'var(--font-mono)',
+                }}
+              >
+                {t}
+              </div>
+              <div style={{ ...META, fontSize: 'var(--text-micro)' }}>{vals[t]}</div>
             </div>
-            <div style={{ ...META, fontSize: 10 }}>{vals[t]}</div>
           </div>
-        </div>
-      ))}
-    </div>
+        ))}
+      </div>
+    </Variant>
   )
 }
 
 function Spacing() {
   const vals = useTokenValues(SPACING)
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-      {SPACING.map((t) => (
-        <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <code style={{ ...META, width: 80, flexShrink: 0 }}>{t}</code>
-          <span style={{ ...META, width: 40, flexShrink: 0 }}>{vals[t]}</span>
-          <div
-            style={{
-              height: 16,
-              width: `var(${t})`,
-              background: 'var(--c-brand-teal)',
-              borderRadius: 'var(--radius-xs)',
-            }}
-          />
-        </div>
-      ))}
-    </div>
+    <Variant label="Spacing scale">
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {SPACING.map((t) => (
+          <div key={t} style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+            <code style={{ ...META, width: 80, flexShrink: 0 }}>{t}</code>
+            <span style={{ ...META, width: 40, flexShrink: 0 }}>{vals[t]}</span>
+            <div
+              style={{
+                height: 16,
+                width: `var(${t})`,
+                background: 'var(--c-brand-teal)',
+                borderRadius: 'var(--radius-xs)',
+              }}
+            />
+          </div>
+        ))}
+      </div>
+    </Variant>
   )
 }
 
@@ -406,10 +433,9 @@ const SEMANTIC_TOKENS = SEMANTIC.flatMap((g) => g.rows.map((r) => r[0]))
 function Semantic() {
   const vals = useTokenValues(SEMANTIC_TOKENS)
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
       {SEMANTIC.map((g) => (
-        <div key={g.label}>
-          <div style={SECTION_LABEL}>{g.label}</div>
+        <Variant key={g.label} label={g.label}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
             {g.rows.map(([alias, maps]) => (
               <div key={alias} style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -431,7 +457,7 @@ function Semantic() {
               </div>
             ))}
           </div>
-        </div>
+        </Variant>
       ))}
     </div>
   )

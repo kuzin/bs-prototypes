@@ -856,7 +856,7 @@ function OverviewStats({ metrics, onOpen }) {
   const hidden = metrics.filter((m) => m.more).length
 
   return (
-    <div className="pcard rp-card rp-statlist">
+    <div className="section-card rp-card rp-statlist">
       <div className="rp-statlist-head">
         <SectionHeading>At a glance</SectionHeading>
       </div>

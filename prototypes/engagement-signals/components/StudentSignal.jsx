@@ -176,7 +176,7 @@ export function StudentSignal({ student }) {
       {/* The Overview's stat-list card, rather than a card of this section's
           own: these are at-a-glance figures with a trend beside them, which is
           the job that card already does. */}
-      <div className="pcard bp-card bp-statlist">
+      <div className="section-card bp-card bp-statlist">
         <div className="bp-statlist-head">
           <SectionHeading>What’s driving it</SectionHeading>
           {/* What every figure and arrow below is measured against, said once

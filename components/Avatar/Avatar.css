@@ -50,10 +50,27 @@
   /* uses size's border-radius */
 }
 
-/* Optical vertical centering: capital glyphs sit above the mathematical midline
-   of the em square. translateY nudges them down ~6% of font-size. */
+/* No optical nudge: measured against Museo's own ink bounds, "MC" sits within
+   0.2px of the tile's centre at every size once the line box is flex-centred —
+   the cap ink and the line box share a centre in this face. This used to carry
+   a `translateY(0.06em)`, which pushed the initials that far *below* centre at
+   every size, growing with the type. */
 .avatar-text {
   display: block;
-  transform: translateY(0.06em);
   line-height: 1;
+}
+
+/* ── Real picture ────────────────────────────────────────────────────────── */
+/* The image fills the tile and is clipped to whatever radius the size/shape
+   gave it, so a photo avatar and an initials avatar are the same silhouette in
+   a row. The colour stays underneath as the ground a transparent PNG sits on. */
+.avatar--photo {
+  overflow: hidden;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 }

@@ -10,10 +10,18 @@ There is **one** component system in `components/`, used everywhere via the `@co
 Before building any UI, look for something to reuse:
 
 - Browse the **Pattern Library** (`prototypes/patterns/`) — the live catalog of every shared
-  component — plus `components/` and existing prototypes (`ris`, `sfr`, …).
+  component — plus `components/` and existing prototypes (`ris`, `sfr`, …). It's a group index with
+  a **⌘K search** over all ~134 components; searching beats scrolling.
 - When you build a **new reusable component**, put it in `components/<Name>/<Name>.{jsx,css}` **and**
-  add a showcase to `prototypes/patterns/sections/<group>.jsx` (atoms / molecules / form-fields /
-  charts / domain / layout / …). The Pattern Library is the registry every prototype checks first.
+  add a showcase to a file under `prototypes/patterns/sections/`. The Pattern Library is the
+  registry every prototype checks first.
+- **Groups are purpose-named, not atomic-design-named** — foundations / iconography / actions /
+  badges / cards / tables / form-fields / form-patterns / overlays / feedback / navigation /
+  charts / domain. The `group:` field **on each section entry** is what decides where it appears;
+  the section _file_ is only where the showcase code lives, so one file may feed several groups.
+- Give each entry a **`usage:`** string — the import line plus a minimal call. It renders as the
+  copyable "Usage" tab beside the description, so keep it real: only props the component actually
+  takes.
 - A component used by only **one** prototype stays inside that prototype
   (`prototypes/<id>/components/`), but is still catalogued — under a **prototype-named** group
   (e.g. _Sessions for Review_, _Insights_) rather than a generic group.
@@ -35,7 +43,7 @@ import { Icon } from '@components/Icon/Icon'
   entries.** The old `Ic` (`<Ic name="ti-…">`) is a back-compat shim that already renders `<Icon>`
   underneath — prefer `<Icon>` in new code.
 - `name` is a **semantic kebab-case** string from the registry in `components/Icon/Icon.jsx`.
-  `ICON_NAMES` exports the full list; the Pattern Library's first Atom is a live gallery of them.
+  `ICON_NAMES` exports the full list; the Pattern Library's Iconography group is a live gallery.
 - **To add a glyph:** import the `IconX` from `@tabler/icons-react` in `components/Icon/Icon.jsx`
   and add a `'kebab-name': IconX` entry. Verify the name exists first:
   `ls node_modules/@tabler/icons-react/dist/esm/icons/IconX.mjs`. Don't invent names.

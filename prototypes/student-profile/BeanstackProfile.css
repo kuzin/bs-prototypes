@@ -392,7 +392,7 @@
 
 /* ─── Card ───────────────────────────────────────────────────────────────── */
 /* Card visuals + the promoted first title now come from the shared
-   ProfileCard pattern (components/ProfileCard). These class names stay on the
+   SectionCard pattern (components/SectionCard). These class names stay on the
    same elements for the local descendant rules further down this file. */
 
 /* ─── Buttons ────────────────────────────────────────────────────────────── */
@@ -4446,10 +4446,10 @@
 
 /* The stat list's head and rows carry their own horizontal insets, so the card
    itself contributes only the top/bottom rhythm — no side padding, or the rows
-   end up inset twice. Written with both classes so it beats `.pcard`, whose
+   end up inset twice. Written with both classes so it beats `.section-card`, whose
    stylesheet loads after this one. */
 .bp-statlist,
-.pcard.bp-statlist {
+.section-card.bp-statlist {
   flex-shrink: 0;
   padding: 14px 0 4px;
 }
@@ -5327,11 +5327,11 @@
 }
 /* A stat row sitting directly under a card's header bar.
    `.bp-card:has(> .bp-statrow--static) > .bp-section-heading` already zeroes
-   the heading's bottom margin, but ProfileCard.css loads *after* this file and
-   its own `.pcard-title:first-child` margin wins — so the 14px comes back and
+   the heading's bottom margin, but SectionCard.css loads *after* this file and
+   its own `.section-card-title:first-child` margin wins — so the 14px comes back and
    stacks on the row's padding. Cancelling it here beats the order. The row's
    own inset is the list's, set with the bleed above. */
-.pcard > .pcard-title:first-child + .bp-statrow {
+.section-card > .section-card-title:first-child + .bp-statrow {
   margin-top: -14px;
 }
 
@@ -5893,24 +5893,6 @@
    The shipped chart's chrome: the heading with the period steppers on its
    right, and the span it covers under them
    (`lexile-chart__weeks-selector` / `__current-period`). */
-/* The chart card's header bar. Wrapping the heading so the steppers could sit
-   beside it took the heading out of the `.pcard-title:first-child` slot that
-   draws every other card's header, so the wrapper takes that treatment
-   instead: bled to the card's edges, with the same hairline under it. */
-.bp-lex-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin: -16px -18px 12px;
-  padding: 8px 14px 8px 18px;
-  border-bottom: 1px solid var(--c-gray-200);
-}
-
-.bp-lex-head .bp-section-heading {
-  margin-bottom: 0;
-}
-
 /* The period and the arrows that step it are one control, so they travel
    together at the right of the bar. */
 .bp-lex-period-nav {

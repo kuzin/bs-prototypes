@@ -31,3 +31,27 @@
   align-items: center;
   flex-shrink: 0;
 }
+
+/* `showValue` — the magnitude printed in the chip beside the arrow ("3% ↑").
+   The chip stops being a square holding one glyph and becomes a tag holding a
+   reading, so it takes the tag's horizontal padding and an auto width. */
+.trend-chip--with-value {
+  width: auto;
+  gap: 4px;
+  padding: 0 8px;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+}
+
+.trend-chip-value {
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Flat — a real reading that didn't move. Grey so it reads as "no direction"
+   rather than as a good or bad one, and present so a flat row still lines up
+   with the rows around it. */
+.trend-chip--flat {
+  background: var(--c-slate-100);
+  color: var(--c-slate-500);
+}

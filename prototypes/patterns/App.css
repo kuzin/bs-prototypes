@@ -12,8 +12,8 @@
   background: var(--c-slate-900);
   color: #fff;
   font-family: var(--font-sans);
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
   border: none;
   cursor: pointer;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
@@ -39,8 +39,8 @@
   background: var(--c-slate-900);
   color: #fff;
   font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 600;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-semibold);
   padding: 6px 10px;
   border-radius: 999px;
   box-shadow: 0 4px 12px rgba(15, 23, 42, 0.25);
@@ -59,7 +59,7 @@
 .pt-breakpoint-tier {
   text-transform: uppercase;
   color: var(--bp-color, #16a34a);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .pt-breakpoint-px {
@@ -68,13 +68,22 @@
 
 /* ── Layout ────────────────────────────────────────────────────────────── */
 .pt-shell {
+  --pt-gutter: 44px;
+  /* height of the fixed PrototypeNav rail + the sticky breadcrumb bar */
+  --pt-rail-h: 48px;
+  --pt-crumbs-h: 44px;
+  --pt-crumbs-gap: 40px;
+  --pt-sidebar-w: 220px;
+  --pt-doc-w: 380px;
+  --pt-max-w: 1100px;
+  --pt-content-pad: max(var(--pt-gutter), (100vw - var(--pt-sidebar-w) - var(--pt-max-w)) / 2);
   position: fixed;
-  inset: 0 0 48px 0;
+  inset: 0 0 var(--pt-rail-h) 0;
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: var(--pt-sidebar-w) 1fr;
   grid-template-rows: 1fr;
   grid-template-areas: 'side content';
-  background: #f3f4f6;
+  background: #e4e7ec;
   font-family: var(--font-sans);
   color: var(--c-slate-800);
 }
@@ -172,14 +181,14 @@
 }
 
 .pt-topbar-title {
-  font-size: 14px;
-  font-weight: 800;
+  font-size: var(--text-label);
+  font-weight: var(--fw-bold);
   letter-spacing: -0.01em;
 }
 
 .pt-sidebar-title {
-  font-size: 15px;
-  font-weight: 800;
+  font-size: var(--text-cell);
+  font-weight: var(--fw-extrabold);
   letter-spacing: -0.02em;
   line-height: 1.15;
   color: #fff;
@@ -187,7 +196,7 @@
 
 .pt-sidebar-sub {
   color: rgba(255, 255, 255, 0.65);
-  font-size: 12px;
+  font-size: var(--text-micro);
   line-height: 1.3;
   margin-top: 2px;
 }
@@ -235,8 +244,8 @@
   width: 100%;
   padding: 10px 18px 6px;
   font: inherit;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.4);
@@ -276,7 +285,7 @@
 .pt-nav-link {
   display: block;
   padding: 7px 18px;
-  font-size: 13px;
+  font-size: var(--text-tag);
   color: rgba(255, 255, 255, 0.78);
   cursor: pointer;
   text-decoration: none;
@@ -295,63 +304,41 @@
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
   border-left-color: #fff;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .pt-content {
   overflow-y: auto;
-  padding: 0 32px 64px;
+  /* Cap the readable width and centre it. Done as padding, not max-width, so
+     the scroller still fills its grid area (a max-width here fights
+     .pt-shell's grid track). The identical max() drives the fixed docs
+     column's `left` below — same units both sides, so they can't drift. */
+  padding: 0 var(--pt-content-pad) 88px;
 }
 
 /* ── Group header (plain heading — not sticky, no background) ──────────────── */
 .pt-group-header {
-  margin: 48px 0 18px;
+  margin: 0 0 var(--space-20);
   padding: 0;
-}
-
-.pt-group:first-child .pt-group-header {
-  margin-top: 4px;
 }
 
 .pt-group .pt-section:last-child {
   margin-bottom: 0;
 }
 
-.pt-group-header-icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: var(--c-slate-100);
-  border: 1px solid var(--c-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  color: var(--c-slate-600);
-}
-
 .pt-group-header-title {
-  font-size: 20px;
-  font-weight: 900;
+  font-size: var(--text-head);
+  font-weight: var(--fw-extrabold);
   letter-spacing: -0.02em;
   color: var(--c-text);
   line-height: 1.1;
 }
 
 .pt-group-header-desc {
-  font-size: 13px;
+  font-size: var(--text-label);
   color: var(--c-text-muted);
   margin-top: 3px;
-  font-weight: 500;
-}
-
-/* ── Component page — sticky top bar (back link) ──────────────────────────── */
-/* Full-bleed to the content edges + pinned to the top of the scroll area so it
-   reads as a header bar, matching the chrome in the other prototype views. */
-/* Full-bleed to the content column's edges; the sticky, white, padded part is
-   the back bar's own `fixed` variant. */
-.pt-page-bar {
-  margin: 0 -32px 20px;
+  font-weight: var(--fw-medium);
 }
 
 /* ── Component page — flat, no card wrapper ───────────────────────────────── */
@@ -368,8 +355,8 @@
 }
 
 .pt-section-head h2 {
-  font-size: 16px;
-  font-weight: 800;
+  font-size: var(--text-body);
+  font-weight: var(--fw-bold);
   letter-spacing: -0.02em;
   margin-bottom: 2px;
   color: var(--c-text);
@@ -377,7 +364,7 @@
 }
 
 .pt-section-desc {
-  font-size: 13px;
+  font-size: var(--text-tag);
   color: var(--c-text-muted);
   line-height: 1.5;
   margin: 0;
@@ -385,7 +372,7 @@
 
 .pt-section-desc code {
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: var(--text-tag);
   padding: 1px 6px;
   background: var(--c-slate-100);
   border-radius: 4px;
@@ -413,19 +400,48 @@
   grid-template-columns: none;
 }
 
+/* A labelled example is a card: the label is its title bar, the frame its body.
+   `bare` is the exception — that content already brings its own card, so it
+   keeps a plain heading instead of getting wrapped in a second one. */
 .pt-variant {
+  min-width: 0;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 12px;
+  /* clips a `full` body to the card's corners */
+  overflow: hidden;
+}
+
+.pt-variant:has(> .pt-variant-frame--bare) {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  min-width: 0;
+  gap: 8px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
 }
 
 .pt-variant-label {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
   color: var(--c-text-subtle);
   text-transform: uppercase;
   letter-spacing: 0.06em;
+}
+
+/* …as a card title */
+.pt-variant > .pt-variant-label {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--c-gray-200);
+  background: var(--c-slate-50);
+}
+
+/* …and as a plain heading when the content is its own card */
+.pt-variant:has(> .pt-variant-frame--bare) > .pt-variant-label {
+  padding: 0;
+  border-bottom: none;
+  background: transparent;
 }
 
 /* When used as a standalone heading (not inside .pt-variant which already has gap) */
@@ -433,11 +449,19 @@
   margin-bottom: 6px;
 }
 
+/* A standalone frame (no label) is a card in its own right. Inside .pt-variant
+   the card is already drawn, so the frame is only the body. */
 .pt-variant-frame {
-  background: var(--c-slate-50);
-  border: 1px solid var(--c-border);
-  border-radius: 10px;
-  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.pt-variant > .pt-variant-frame {
+  background: transparent;
+  border: none;
+  border-radius: 0;
 }
 
 /* Forces the Table demo wide enough to overflow so the scrollX knob actually
@@ -458,6 +482,7 @@
   padding: 0;
   background: transparent;
   border: none;
+  border-radius: 0;
   min-height: 0;
 }
 
@@ -481,7 +506,7 @@
 }
 
 .pt-bsicon code {
-  font-size: 12px;
+  font-size: var(--text-micro);
   color: var(--c-text-muted);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -513,8 +538,8 @@
   background: #fff;
   border-radius: 12px;
   padding: 16px 18px;
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
   color: var(--c-text-real);
 }
 
@@ -555,7 +580,7 @@
 
 .pt-rail-note {
   align-self: center;
-  font-size: 13px;
+  font-size: var(--text-tag);
   color: var(--c-text-subtle);
   font-family: var(--font-mono);
 }
@@ -568,7 +593,7 @@
   padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  font-size: 13px;
+  font-size: var(--text-tag);
 }
 
 /* Zone 1 — dropdowns / inputs, laid out label-above and wrapping. */
@@ -619,9 +644,9 @@
 }
 
 .pt-knobs .fld-label {
-  font-size: 12px;
+  font-size: var(--text-micro);
   color: var(--c-text-muted);
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   height: 12px;
@@ -641,7 +666,7 @@
   height: 30px;
   padding: 0 10px;
   min-width: 150px;
-  font-size: 13px;
+  font-size: var(--text-tag);
   line-height: 30px;
 }
 
@@ -684,8 +709,11 @@
   appearance: none;
   width: 36px;
   height: 30px;
+  /* a form control doesn't inherit font — it was the one thing left off the ladder */
+  font: inherit;
+  font-size: var(--text-tag);
   border: 1px solid var(--c-border-strong);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   cursor: pointer;
   padding: 0;
   background: transparent;
@@ -748,7 +776,7 @@
   align-items: center;
   justify-content: center;
   background: #f3f4f6;
-  font-size: 13px;
+  font-size: var(--text-tag);
   min-width: 0;
 }
 
@@ -817,8 +845,8 @@
 }
 
 .sp-nav-label {
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
   text-align: center;
   letter-spacing: 0.02em;
   line-height: 1;
@@ -872,15 +900,15 @@
 }
 
 .sp-pane-name {
-  font-size: 16px;
-  font-weight: 800;
+  font-size: var(--text-body);
+  font-weight: var(--fw-bold);
   color: var(--c-text);
   letter-spacing: -0.01em;
   line-height: 1.2;
 }
 
 .sp-pane-meta {
-  font-size: 13px;
+  font-size: var(--text-tag);
   color: var(--c-text-muted);
   margin-top: 2px;
 }
@@ -957,13 +985,13 @@
 }
 
 .pt-icon-name {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-semibold);
   color: var(--c-slate-800);
 }
 
 .pt-icon-key {
-  font-size: 13px;
+  font-size: var(--text-tag);
   color: var(--c-text-subtle);
   font-family: var(--font-mono);
 }
@@ -972,21 +1000,31 @@
    Hash-routed catalog: home/group landing intro, card grids, component page
    --------------------------------------------------------------------------- */
 .pt-home-intro {
-  padding-top: 28px;
-  margin-bottom: 24px;
+  padding-top: var(--space-32);
+  margin-bottom: var(--space-32);
 }
 
 .pt-home-title {
-  font-size: 24px;
-  font-weight: 800;
+  font-size: var(--text-title);
+  font-weight: var(--fw-extrabold);
   letter-spacing: -0.02em;
   color: var(--c-text);
   line-height: 1.15;
-  margin: 0 0 6px;
+  margin: 0 0 var(--space-6);
+}
+
+.pt-home-lede kbd {
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  padding: 2px 6px;
+  border-radius: 5px;
+  background: var(--c-slate-100);
+  color: var(--c-text-subtle);
 }
 
 .pt-home-lede {
-  font-size: 14px;
+  font-size: var(--text-label);
   color: var(--c-text-muted);
   line-height: 1.55;
   max-width: 640px;
@@ -1012,15 +1050,15 @@
 .pt-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 12px;
-  margin-bottom: 8px;
+  gap: var(--space-12);
+  margin-bottom: 0;
 }
 
 .pt-comp-card {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  padding: 14px 16px;
+  gap: var(--space-4);
+  padding: var(--space-16);
   background: #fff;
   border: 1px solid var(--c-gray-200);
   border-radius: 10px;
@@ -1039,14 +1077,14 @@
 }
 
 .pt-comp-card-name {
-  font-size: 14px;
-  font-weight: 700;
+  font-size: var(--text-cell);
+  font-weight: var(--fw-bold);
   letter-spacing: -0.01em;
   color: var(--c-text);
 }
 
 .pt-comp-card-desc {
-  font-size: 13px;
+  font-size: var(--text-tag);
   color: var(--c-text-muted);
   line-height: 1.45;
   display: -webkit-box;
@@ -1057,7 +1095,7 @@
 
 .pt-comp-card-desc code {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: var(--text-micro);
   padding: 0 3px;
   background: var(--c-slate-100);
   border-radius: 3px;
@@ -1068,8 +1106,8 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-semibold);
   color: var(--c-text-muted);
   text-decoration: none;
   margin-bottom: 14px;
@@ -1094,8 +1132,8 @@ a.pt-nav-group-label {
   margin: 14px 18px 4px;
   padding-top: 12px;
   border-top: 1px solid rgba(255, 255, 255, 0.12);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.45);
@@ -1103,21 +1141,954 @@ a.pt-nav-group-label {
 
 /* Home-page section divider before the prototype-specific groups. */
 .pt-home-section-label {
-  margin: 36px 0 8px;
-  padding-top: 20px;
+  /* clears the band's subtitle before the cards start — a step above the 12px
+     gap between the cards themselves, so the band header reads as its own unit */
+  margin: var(--space-32) 0 var(--space-20);
+  padding-top: var(--space-24);
   border-top: 1px solid var(--c-border);
-  font-size: 13px;
-  font-weight: 800;
+  font-size: var(--text-subhead);
+  font-weight: var(--fw-bold);
   letter-spacing: -0.01em;
   color: var(--c-text);
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--space-4);
 }
 
 .pt-home-section-label span {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: var(--text-label);
+  font-weight: var(--fw-medium);
   color: var(--c-text-subtle);
   letter-spacing: 0;
+}
+
+/* ── Sidebar: group label is a link + a separate expand toggle ────────────── */
+/* The label used to be one button that only expanded. Now the title navigates
+   to the group page and the caret expands, so a group is reachable both ways. */
+.pt-nav-group-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  padding: 0;
+}
+
+.pt-nav-group-name {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 4px 6px 18px;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: inherit;
+  text-decoration: none;
+  transition: color 0.12s;
+}
+
+.pt-nav-group-name:hover {
+  color: #fff;
+}
+
+.pt-nav-group-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  align-self: stretch;
+  margin-right: 8px;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.pt-nav-group-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+/* ── Sidebar search launcher ─────────────────────────────────────────────── */
+.pt-sidebar-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: calc(100% - 28px);
+  margin: 0 14px 10px;
+  padding: 8px 10px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.75);
+  font: inherit;
+  font-size: var(--text-tag);
+  font-weight: var(--fw-semibold);
+  cursor: pointer;
+  text-align: left;
+  transition:
+    background 0.12s,
+    color 0.12s;
+}
+
+.pt-sidebar-search:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+}
+
+.pt-sidebar-search kbd,
+.pt-topbar-search {
+  margin-left: auto;
+}
+
+.pt-group-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--space-12);
+  margin-bottom: 0;
+}
+
+.pt-group-tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-16);
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 12px;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease;
+}
+
+.pt-group-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.09);
+  border-color: var(--tile-color, var(--c-border-strong));
+}
+
+.pt-group-tile-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-body);
+  font-weight: var(--fw-bold);
+  letter-spacing: -0.01em;
+  color: var(--c-text);
+}
+
+.pt-group-tile-count {
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  padding: 1px 7px;
+  border-radius: 99px;
+  background: var(--c-slate-100);
+  color: var(--c-text-subtle);
+}
+
+.pt-group-tile-desc {
+  font-size: var(--text-label);
+  color: var(--c-text-muted);
+  line-height: 1.45;
+  margin-top: 3px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* The home page's first section label shouldn't carry a top rule/gap. */
+.pt-home-intro + .pt-home-section-label {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* ── Component page: previous / next within the group ────────────────────── */
+.pt-prevnext {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--c-gray-200);
+}
+
+.pt-prevnext-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 10px;
+  text-decoration: none;
+  color: var(--c-text);
+  font-size: var(--text-label);
+  font-weight: var(--fw-bold);
+  transition:
+    border-color 0.12s,
+    box-shadow 0.12s;
+}
+
+.pt-prevnext-link:hover {
+  border-color: var(--c-border-strong);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.07);
+}
+
+.pt-prevnext-link--next {
+  text-align: right;
+}
+
+.pt-prevnext-link span {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.pt-prevnext-link small {
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--c-text-subtle);
+}
+
+.pt-prevnext-link svg {
+  flex-shrink: 0;
+  color: var(--c-text-subtle);
+}
+
+/* ── ⌘K search palette ───────────────────────────────────────────────────── */
+.pt-pal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 12vh 16px 16px;
+  animation: pt-backdrop-in 0.12s ease;
+}
+
+.pt-pal {
+  width: min(560px, 100%);
+  max-height: min(62vh, 520px);
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.3);
+  overflow: hidden;
+  font-family: var(--font-sans);
+}
+
+.pt-pal-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--c-gray-200);
+  flex-shrink: 0;
+}
+
+.pt-pal-field-icon {
+  color: var(--c-text-subtle);
+  flex-shrink: 0;
+}
+
+.pt-pal-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  font: inherit;
+  font-size: var(--text-body);
+  font-weight: var(--fw-semibold);
+  color: var(--c-text);
+  background: transparent;
+}
+
+.pt-pal-input::placeholder {
+  color: var(--c-text-subtle);
+  font-weight: var(--fw-medium);
+}
+
+.pt-pal-esc {
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  padding: 3px 7px;
+  border-radius: 5px;
+  background: var(--c-slate-100);
+  color: var(--c-text-subtle);
+  flex-shrink: 0;
+}
+
+.pt-pal-results {
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.pt-pal-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.pt-pal-row--active {
+  background: var(--c-slate-100);
+}
+
+.pt-pal-row-name {
+  font-size: var(--text-label);
+  font-weight: var(--fw-bold);
+  color: var(--c-text);
+}
+
+.pt-pal-row-group {
+  font-size: var(--text-micro);
+  font-weight: var(--fw-semibold);
+  color: var(--c-text-subtle);
+  flex-shrink: 0;
+}
+
+.pt-pal-empty {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 22px 14px;
+  text-align: center;
+  font-size: var(--text-label);
+  font-weight: var(--fw-semibold);
+  color: var(--c-text-muted);
+}
+
+.pt-pal-empty span {
+  font-size: var(--text-tag);
+  font-weight: var(--fw-medium);
+  color: var(--c-text-subtle);
+}
+
+.pt-pal-foot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 14px;
+  border-top: 1px solid var(--c-gray-200);
+  background: var(--c-slate-50);
+  font-size: var(--text-micro);
+  color: var(--c-text-subtle);
+  flex-shrink: 0;
+}
+
+.pt-pal-foot kbd {
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  padding: 1px 5px;
+  margin-right: 3px;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 4px;
+  background: #fff;
+}
+
+.pt-pal-foot-count {
+  margin-left: auto;
+  font-weight: var(--fw-semibold);
+}
+
+@media (max-width: 699px) {
+  .pt-pal-backdrop {
+    padding-top: 6vh;
+  }
+  .pt-prevnext-link {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
+/* ── Component page: docs on the left, live examples on the right ─────────── */
+.pt-section--split {
+  display: grid;
+  grid-template-columns: minmax(0, 380px) minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+/* The docs column fills the pane and never scrolls: heading on top, docs panel
+   taking whatever height is left, prev/next parked at the bottom. Only the
+   examples pane on the right scrolls — see .pt-content--panes. */
+.pt-section--split .pt-section-aside {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 16px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.pt-section--split .pt-section-head {
+  padding: 0;
+  border-bottom: none;
+}
+
+.pt-section--split .pt-section-head h2 {
+  font-size: var(--text-head);
+  font-weight: var(--fw-extrabold);
+}
+
+.pt-section--split .pt-section-body {
+  padding: 0;
+  min-width: 0;
+}
+
+/* One column once the two won't both fit. */
+@media (max-width: 1099px) {
+  .pt-section--split {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+  }
+  .pt-section--split .pt-section-aside {
+    position: static;
+  }
+}
+
+/* ── Usage snippet ───────────────────────────────────────────────────────── */
+.pt-usage {
+  border: 1px solid var(--c-gray-200);
+  border-radius: 10px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.pt-usage {
+  position: relative;
+}
+
+.pt-usage-copy {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 6px;
+  background: #fff;
+  color: var(--c-text-muted);
+  font: inherit;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  cursor: pointer;
+}
+
+.pt-usage-copy:hover {
+  color: var(--c-text);
+  border-color: var(--c-border-strong);
+}
+
+.pt-usage-code {
+  margin: 0;
+  padding: 12px;
+  max-height: 340px;
+  overflow-y: auto;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  line-height: 1.6;
+  color: var(--c-slate-700);
+  white-space: pre;
+  tab-size: 2;
+}
+
+/* ── Sidebar polish ──────────────────────────────────────────────────────── */
+/* Rows read as rows: a hover/active plate that spans the rail, a clearer
+   split between the group title and its expand affordance. */
+.pt-nav-group-label {
+  border-radius: 0;
+  transition: background 0.12s;
+}
+
+.pt-nav-group-label:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.pt-nav-group-label--active {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 3px 0 0 rgba(255, 255, 255, 0.85);
+}
+
+.pt-nav-group-label--active .pt-nav-group-name {
+  color: #fff;
+}
+
+.pt-nav-group--open .pt-nav-group-label {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Indent the component links so they read as children of the group above. */
+.pt-nav-group--open .pt-nav-link {
+  padding-left: 26px;
+  font-size: var(--text-tag);
+}
+
+.pt-nav-group--open + .pt-nav-group {
+  margin-top: 6px;
+}
+
+/* Keep the rail from feeling endless — a hairline under each open group's list. */
+.pt-nav-group--open {
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* ── Breadcrumb bar — the one header on every inner page ──────────────────── */
+.pt-crumbs {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  /* full-bleed to the content column's padding */
+  margin: 0 calc(var(--pt-content-pad) * -1) var(--pt-crumbs-gap);
+  padding: 14px var(--pt-content-pad);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid var(--c-gray-200);
+  font-size: var(--text-tag);
+  font-weight: var(--fw-bold);
+}
+
+.pt-crumbs a {
+  color: var(--c-text-muted);
+  text-decoration: none;
+  border-radius: 5px;
+  padding: 2px 4px;
+  margin: -2px -4px;
+  transition: color 0.12s;
+}
+
+.pt-crumbs a:hover {
+  color: var(--c-teal-600);
+  text-decoration: underline;
+}
+
+.pt-crumbs svg {
+  color: var(--c-text-subtle);
+  opacity: 0.7;
+  flex-shrink: 0;
+}
+
+.pt-crumbs [aria-current='page'] {
+  color: var(--c-text);
+}
+
+@media (max-width: 1099px) {
+  .pt-shell {
+    --pt-gutter: 28px;
+  }
+}
+
+@media (max-width: 699px) {
+  .pt-shell {
+    --pt-gutter: 16px;
+  }
+}
+
+/* ── Docs column: About / Usage tabs ─────────────────────────────────────── */
+.pt-docs {
+  min-width: 0;
+}
+
+/* Folder tabs: the strip IS the panel's top edge, so the active tab is filled
+   white to match and laid over the panel's border. */
+.pt-docs .tabs--folder {
+  position: relative;
+  z-index: 1;
+  margin-bottom: -1px;
+  /* the shipped folder variant butts tabs together; separate them slightly */
+  column-gap: 4px;
+}
+
+.pt-docs .tabs--folder .tab {
+  border: 1px solid transparent;
+  border-bottom: none;
+  font-size: var(--text-tag);
+  padding: 9px 16px;
+}
+
+.pt-docs .tabs--folder .tab--active,
+.pt-docs .tabs--folder .tab--active:hover {
+  background: #fff;
+  border-color: var(--c-gray-200);
+}
+
+.pt-docs-panel {
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 0 0 10px 10px;
+  padding: 16px;
+}
+
+/* The snippet fills the panel edge to edge — it brings no chrome of its own,
+   and it cancels the panel's padding so its scrollbars sit on the panel's own
+   edges rather than floating inset from them. The padding moves inside the
+   scroll area (onto the <pre>), and the Copy button's clearance onto the
+   <code>, so neither one shortens the scroll track. */
+.pt-docs-panel .pt-usage {
+  border: none;
+  border-radius: 0;
+  margin: -16px;
+}
+
+.pt-docs-panel .pt-usage-code {
+  padding: 16px;
+  max-height: none;
+}
+
+.pt-docs-panel .pt-usage-code > code {
+  display: inline-block;
+  padding-right: 56px;
+}
+
+.pt-docs-panel .pt-usage-copy {
+  top: 8px;
+  right: 8px;
+}
+
+/* ── Docs column fills its height ────────────────────────────────────────── */
+/* Packs from the top rather than filling the column: with the panel sized to
+   its content, a `flex: 1` here stranded prev/next at the bottom of an empty
+   column instead of sitting under the docs it belongs to. */
+.pt-section--split .pt-docs {
+  flex: 0 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sizes to its content, capped by whatever's left in the column — a short
+   description shouldn't leave a tall empty card under it, and a long one still
+   can't push prev/next off the bottom (it scrolls inside instead). */
+.pt-section--split .pt-docs-panel {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* A section with no `usage` has no tabs — the bare description still fills. */
+.pt-section--split .pt-section-aside > .pt-section-desc {
+  flex: 0 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 16px;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 12px;
+}
+
+/* Prev/next sits at the foot of the docs column, not across the whole page. */
+.pt-section--split .pt-prevnext {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: none;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.pt-section--split .pt-prevnext-link {
+  /* hug the component name rather than stretching across the column — the nav's
+     space-between still holds prev left and next right */
+  flex: 0 1 auto;
+  max-width: calc(50% - 4px);
+  min-width: 0;
+  padding: 8px 12px;
+  font-size: var(--text-tag);
+  border-radius: 9px;
+}
+
+.pt-section--split .pt-prevnext-link span {
+  min-width: 0;
+}
+
+.pt-section--split .pt-prevnext-link span:not(:has(small)) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pt-section--split .pt-prevnext-link small {
+  font-size: var(--text-micro);
+}
+
+/* ── Component page: the page scrolls, the docs column does not ──────────── */
+/* The column is `fixed`, not `sticky`: sticky still travelled the distance to
+   its own offset before catching, and came unstuck again once the section
+   ended. Fixed can't drift. It's placed from the layout tokens above, and the
+   grid keeps a same-width first column so the examples never slide under it. */
+/* The fixed aside is out of flow, so the grid's first track has nothing to size
+   itself from (it would collapse to 0) and the examples become the first
+   in-flow item (they would auto-place into column 1, under the aside). Pin
+   both: an explicit first track, and the body explicitly in column 2. */
+.pt-content--panes .pt-section--split {
+  grid-template-columns: var(--pt-doc-w) minmax(0, 1fr);
+}
+
+.pt-content--panes .pt-section-body {
+  grid-column: 2;
+}
+
+.pt-content--panes .pt-section-aside {
+  position: fixed;
+  top: calc(var(--pt-crumbs-h) + var(--pt-crumbs-gap));
+  /* the same max() the content padding uses, so the two can never drift */
+  left: calc(var(--pt-sidebar-w) + var(--pt-content-pad));
+  width: var(--pt-doc-w);
+  /* same gap above and below: --pt-crumbs-gap at the top, and again at the foot */
+  height: calc(100vh - var(--pt-rail-h) - var(--pt-crumbs-h) - var(--pt-crumbs-gap) * 2);
+}
+
+/* Below the split breakpoint it goes back to one ordinary scrolling column.
+   `display: contents` dissolves the docs column into the grid so its parts
+   become siblings of the examples — that's what lets prev/next be ordered
+   below ALL the content instead of being trapped above it inside the aside. */
+@media (max-width: 1099px) {
+  .pt-content--panes .pt-section--split {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .pt-content--panes .pt-section-body {
+    grid-column: auto;
+  }
+  .pt-content--panes .pt-section-aside {
+    display: contents;
+  }
+  /* heading, docs and examples keep source order (0); prev/next goes last.
+     No extra margin/padding/rule of its own — the grid's own gap already
+     separates it, same as every other block in the stack. */
+  .pt-content--panes .pt-prevnext {
+    order: 1;
+  }
+}
+
+/* ── Folder tabs: inactive tabs read as unselected grey ──────────────────── */
+.pt-docs .tabs--folder .tab:not(.tab--active) {
+  background: var(--c-slate-100);
+  color: var(--c-text-subtle);
+}
+
+.pt-docs .tabs--folder .tab:hover:not(.tab--active) {
+  background: var(--c-slate-200);
+  color: var(--c-text-muted);
+}
+
+/* ── Usage snippet fills the panel, so its scrollbar sits on the panel edge ─ */
+.pt-docs-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.pt-docs-panel .pt-usage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.pt-docs-panel .pt-usage-code {
+  flex: 1;
+  min-height: 0;
+  max-height: none;
+  overflow: auto;
+}
+
+/* ── Prev/next: both slots always present, Next hard right ───────────────── */
+.pt-section--split .pt-prevnext-link--next {
+  justify-content: flex-end;
+  text-align: right;
+  /* holds Next on the right even when Previous isn't rendered */
+  margin-left: auto;
+}
+
+/* ── Code syntax colours (see CodeBlock.jsx) ─────────────────────────────── */
+.pt-code {
+  font-family: var(--font-mono);
+  color: var(--c-slate-700);
+}
+
+.tok--comment {
+  color: var(--c-slate-400);
+  font-style: italic;
+}
+
+.tok--string {
+  color: var(--c-brand-green, #16a97a);
+}
+
+.tok--tag {
+  color: var(--c-violet-600);
+}
+
+.tok--keyword {
+  color: var(--c-blue-700);
+  font-weight: var(--fw-semibold);
+}
+
+.tok--attr {
+  color: var(--c-amber-600);
+}
+
+.tok--var {
+  color: var(--c-brand-teal, #0da7bc);
+}
+
+.tok--number {
+  color: var(--c-red-600);
+}
+
+/* ── "Additional examples" rule, after the knob-driven preview ──────────────
+   `Knobs` emits the rule directly after itself (it can't reach past its own
+   next sibling), but it belongs *after* the preview that the knobs drive. The
+   examples column is a flex column, so the preview is pulled one slot earlier
+   instead: knobs(-2), preview(-1), then the rule and every static example in
+   source order. Visual order only — the DOM order is unchanged. */
+/* Visual order: "Interactive example" (-3), the rail (-2), the preview the rail
+   drives (-1), then "Additional examples" and the static examples in source
+   order. The preview is pulled up because Knobs emits the second rule directly
+   after itself — it can't reach past its own next sibling. */
+.pt-section-body > .pt-examples-rule--interactive {
+  order: -3;
+}
+
+.pt-section-body > .pt-knobs {
+  order: -2;
+}
+
+/* Only the "Additional examples" rule pulls its next sibling up — the other two
+   sit above everything and must not reorder what follows them. */
+.pt-section-body
+  > .pt-examples-rule:not(.pt-examples-rule--interactive):not(.pt-examples-rule--standalone)
+  + * {
+  order: -1;
+}
+
+/* The standalone "Examples" rule only applies when there's no rail. */
+.pt-section-body:has(.pt-knobs) > .pt-examples-rule--standalone {
+  display: none;
+}
+
+.pt-examples-rule {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 10px 0 2px;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--c-text-subtle);
+}
+
+.pt-examples-rule::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--c-gray-200);
+}
+
+/* Hide "Additional examples" when nothing follows the knob-driven preview — its
+   following siblings are [preview, ...extras], so "two or more following
+   siblings" is exactly "there are additional examples". Must come after the
+   base rule above: same specificity, so source order decides. */
+.pt-examples-rule:not(.pt-examples-rule--interactive):not(.pt-examples-rule--standalone):not(
+    :has(~ * ~ *)
+  ) {
+  display: none;
+}
+
+/* The standalone rule heads the whole list, so one example is enough for it —
+   it only goes away if the section renders nothing at all. */
+.pt-examples-rule--standalone:not(:has(~ *)) {
+  display: none;
+}
+
+/* ── Glyph galleries (Icon, PlumpyIcon) ──────────────────────────────────── */
+/* Shared by every "grid of glyphs with their names" showcase — the two used to
+   hand-roll the same inline styles, with their own hex values. The cells sit on
+   a tinted ground rather than white so they read as chips inside the card
+   they're in, not as a second layer of cards. */
+.pt-glyph-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: var(--space-8);
+}
+
+.pt-glyph {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-16) var(--space-6);
+  background: var(--c-slate-50);
+  border: 1px solid var(--c-gray-200);
+  border-radius: var(--radius-md);
+}
+
+.pt-glyph-name {
+  font-size: var(--text-micro);
+  color: var(--c-text-muted);
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.25;
+}
+
+.pt-glyph-source {
+  opacity: 0.7;
+}
+
+/* ── Specimen matrices — a row of labelled variants inside a card ─────────── */
+.pt-specimens {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-20) var(--space-24);
+}
+
+.pt-specimen {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+  min-width: 0;
+}
+
+.pt-specimen-demo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  min-height: 32px;
+}
+
+.pt-specimen-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  color: var(--c-text-subtle);
 }

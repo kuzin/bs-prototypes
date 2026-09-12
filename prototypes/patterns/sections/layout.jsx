@@ -7,9 +7,8 @@ import { SchoolPicker, Sidebar } from '@components/Sidebar/Sidebar'
 import { Button } from '@components/Button/Button'
 import { BackBar } from '@components/BackBar/BackBar'
 import { PageHeader } from '@components/PageHeader/PageHeader'
-import { ProfileCard, ProfileCardTitle } from '@components/ProfileCard/ProfileCard'
 import { Toggle } from '@components/Toggle/Toggle'
-import { SectionCard } from '@components/SectionCard/SectionCard'
+import { SectionCard, SectionCardTitle } from '@components/SectionCard/SectionCard'
 import { Field, Input, Select } from '@components/Form/Form'
 import { SCHOOLS } from '../../ris/data'
 import { Icon } from '@components/Icon/Icon'
@@ -390,28 +389,69 @@ function BackBarKnobs() {
 }
 
 function SectionCardShowcase() {
+  // Card body copy is the app's 15px, not the 13px the docs column uses.
+  const body = (text) => (
+    <div style={{ fontSize: 'var(--text-cell)', color: 'var(--c-text)' }}>{text}</div>
+  )
   return (
     <>
-      <Variant label="plain (default) — bold title above the body">
+      <Variant label='header="plain" (default) — bold title above the body, no rule'>
         <SectionCard title="Availability">
-          <div className="pt-section-desc" style={{ margin: 0 }}>
-            Body content — fields, settings rows, anything.
-          </div>
+          {body('Body content — fields, settings rows, anything.')}
         </SectionCard>
       </Variant>
-      <Variant label="header='bar' — tinted full-width header strip">
+
+      <Variant label='header="divider" — full-bleed title with a hairline under it'>
+        <SectionCard header="divider" title="Goals and Streaks">
+          {body(
+            'What the profiles stack down their column: a hard edge between the block’s name and its contents.',
+          )}
+        </SectionCard>
+      </Variant>
+
+      <Variant label='header="bar" — the same, tinted'>
         <SectionCard header="bar" title="When should Benny engage students in a Book Talk?">
-          <div className="pt-section-desc" style={{ margin: 0 }}>
-            Body sits below the header bar.
+          {body('Body sits below the header bar.')}
+        </SectionCard>
+      </Variant>
+
+      <Variant label="actions — right-side controls in the header">
+        <SectionCard
+          header="divider"
+          title="Earnable badges"
+          actions={<Button size="sm">Add badge</Button>}
+        >
+          {body('Actions sit opposite the title.')}
+        </SectionCard>
+      </Variant>
+
+      <Variant label="flush — content owns its own edges">
+        <SectionCard header="divider" flush title="Recommended actions">
+          <div style={{ fontSize: 'var(--text-cell)', padding: '14px 18px' }}>
+            Rows bleed to the card&apos;s edges; the title supplies the padding the card gave up.
           </div>
         </SectionCard>
       </Variant>
-      <Variant label="with right-side actions">
-        <SectionCard title="Earnable badges" actions={<Button>Add badge</Button>}>
-          <div className="pt-section-desc" style={{ margin: 0 }}>
-            Actions sit opposite the title in the header.
-          </div>
+
+      <Variant label="composed title — for a heading that isn’t just a string">
+        <SectionCard header="divider">
+          <SectionCardTitle
+            actions={
+              <Button size="sm" variant="secondary">
+                Sep – May
+              </Button>
+            }
+          >
+            Lexile trend
+          </SectionCardTitle>
+          {body(
+            'Pass a SectionCardTitle as the first child when the heading needs its own markup.',
+          )}
         </SectionCard>
+      </Variant>
+
+      <Variant label="no title at all">
+        <SectionCard>{body('A card with no title at all.')}</SectionCard>
       </Variant>
     </>
   )
@@ -419,9 +459,14 @@ function SectionCardShowcase() {
 
 export const layoutSections = [
   {
-    group: 'layout',
+    group: 'navigation',
     id: 'hero',
     name: 'Hero',
+    usage: `import { Hero } from '@components/Hero/Hero'
+import '@components/Hero/Hero.css'
+
+<Hero mode="avatar" initials="MC" title="Marcus Chen" subtitle="4th grade · PS 118" />
+<Hero mode="icon" icon="chart-bar" title="Insights" subtitle="This school year" />`,
     desc: (
       <>
         One unified page header. <code>mode</code> picks between the three shapes:{' '}
@@ -442,55 +487,16 @@ export const layoutSections = [
     ),
   },
   {
-    group: 'layout',
-    id: 'profile-card',
-    name: 'ProfileCard',
-    desc: (
-      <>
-        The titled card the student / reader profiles stack down their content column — and the
-        pattern for any panel built from titled blocks. White, 12px radius, <code>16px 18px</code>{' '}
-        padding, with an <strong>18px/800</strong> title. What makes it different from{' '}
-        <code>SectionCard</code>: the <em>first</em> <code>ProfileCardTitle</code> in a padded card
-        promotes itself into a full-bleed header bar with a hairline under it, because these cards
-        sit shoulder-to-shoulder and need a hard edge between the block's name and its contents —
-        where <code>SectionCard</code> keeps its title inline unless you pass{' '}
-        <code>header="bar"</code>. Use <code>flush</code> for content that owns its own edges
-        (tables, full-width lists); the title then supplies the padding the card gave up.
-      </>
-    ),
-    render: () => (
-      <div
-        style={{
-          background: 'var(--c-bg)',
-          padding: 20,
-          borderRadius: 10,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 20,
-        }}
-      >
-        <ProfileCard>
-          <ProfileCardTitle>At a glance</ProfileCardTitle>
-          <div style={{ fontSize: 15 }}>
-            A padded card: the first title becomes a header bar, the body keeps the card's padding.
-          </div>
-        </ProfileCard>
-        <ProfileCard flush>
-          <ProfileCardTitle>Recommended actions</ProfileCardTitle>
-          <div style={{ fontSize: 15, padding: '14px 18px' }}>
-            A <code>flush</code> card: rows bleed to the card's edges and own their own padding.
-          </div>
-        </ProfileCard>
-        <ProfileCard>
-          <div style={{ fontSize: 15 }}>A card with no title at all.</div>
-        </ProfileCard>
-      </div>
-    ),
-  },
-  {
-    group: 'layout',
+    group: 'navigation',
     id: 'page-header',
     name: 'PageHeader',
+    usage: `import { PageHeader } from '@components/PageHeader/PageHeader'
+
+<PageHeader
+  title="Challenges"
+  subtitle="3 running"
+  actions={<Button size="sm">New challenge</Button>}
+/>`,
     desc: (
       <>
         The title / subtitle / actions block at the top of an admin page — a port of the shipped
@@ -525,9 +531,13 @@ export const layoutSections = [
     ),
   },
   {
-    group: 'layout',
+    group: 'navigation',
     id: 'back-bar',
     name: 'BackBar',
+    usage: `import { BackBar } from '@components/BackBar/BackBar'
+import '@components/BackBar/BackBar.css'
+
+<BackBar fixed label="All readers" href="#/readers" />`,
     desc: (
       <>
         "‹ Back to X" link styled like a breadcrumb. Renders as a button or anchor. Props:{' '}
@@ -567,9 +577,17 @@ export const layoutSections = [
     ),
   },
   {
-    group: 'layout',
+    group: 'navigation',
     id: 'sidebar',
     name: 'Sidebar',
+    usage: `import { Sidebar } from '@components/Sidebar/Sidebar'
+
+<Sidebar
+  title="PS 118"
+  nav={[{ id: 'home', label: 'Dashboard', icon: 'layout-dashboard' }]}
+  active={active}
+  onNavigate={setActive}
+/>`,
     desc: (
       <>
         The full navigation chrome used by every admin prototype — narrow Beanstack rail (MainRail)
@@ -596,9 +614,13 @@ export const layoutSections = [
     ),
   },
   {
-    group: 'layout',
+    group: 'navigation',
     id: 'prototype-nav',
     name: 'PrototypeNav',
+    usage: `import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
+
+/* The "Select prototype" switcher every prototype pins bottom-right */
+<PrototypeNav currentHref="/bs-prototypes/patterns/" />`,
     desc: (
       <>
         Fixed bar at the bottom of every prototype page. Shows the current prototype name with
@@ -617,9 +639,18 @@ export const layoutSections = [
     ),
   },
   {
-    group: 'layout',
+    group: 'navigation',
     id: 'preview-bar',
     name: 'PreviewBar',
+    usage: `import { PreviewBar } from '@components/PreviewBar/PreviewBar'
+
+<PreviewBar
+  title="Gameboard"
+  views={[{ id: 'admin', label: 'Admin' }, { id: 'reader', label: 'Reader' }]}
+  active={view}
+  onChange={setView}
+  sticky
+/>`,
     desc: (
       <>
         The dev/preview bar above a multi-persona prototype, switching between its views. Every
@@ -665,16 +696,51 @@ export const layoutSections = [
     ),
   },
   {
-    group: 'layout',
+    group: 'cards',
     id: 'section-card',
     name: 'SectionCard',
+    usage: `import { SectionCard, SectionCardTitle } from '@components/SectionCard/SectionCard'
+
+<SectionCard title="Availability">{fields}</SectionCard>
+
+<SectionCard header="divider" title="Goals and Streaks" actions={<Button size="sm">Edit</Button>}>
+  {rows}
+</SectionCard>
+
+/* flush, for content that owns its own edges */
+<SectionCard header="divider" flush title="Recommended actions">{rows}</SectionCard>
+
+/* composed, when the heading needs its own markup */
+<SectionCard header="divider">
+  <SectionCardTitle actions={<Steppers />}>Lexile trend</SectionCardTitle>
+  {rows}
+</SectionCard>`,
     desc: (
       <>
-        A titled card: optional header (<code>title</code> + right-side <code>actions</code>) over a
-        body. <code>header="plain"</code> (default) puts a bold title above the body;{' '}
-        <code>header="bar"</code> renders a tinted full-width header strip. Replaces the ad-hoc
-        panel / section-card markup hand-rolled across prototypes (e.g. challenge-creator’s{' '}
-        <code>cc-panel</code>).
+        The one titled card: a white bordered panel with a heading over a body — a settings panel, a
+        form section, or one of the blocks a profile stacks down its column.
+        <br />
+        <br />
+        It absorbed <code>ProfileCard</code>, which was the same card with different numbers (a 12px
+        radius against 14, <code>$gray200</code> against <code>--c-border</code>, no shadow) and a
+        title that promoted itself to a header bar. The two had complementary gaps — one had{' '}
+        <code>actions</code> and no <code>flush</code>, the other <code>flush</code> and no{' '}
+        <code>actions</code> — and the missing <code>actions</code> had already forced both profiles
+        to hand-roll their own header rows. The merged card takes the production{' '}
+        <code>.rc-card</code> visuals.
+        <br />
+        <br />
+        <code>header</code> picks the title treatment: <code>plain</code> (default) sits it inline
+        above the body with no rule, <code>divider</code> bleeds it to the card&apos;s edges with a
+        hairline under it, and <code>bar</code> is the same again with a tint. <code>actions</code>{' '}
+        puts controls opposite the title. <code>flush</code> drops the card&apos;s padding for
+        content that owns its own edges (tables, full-width lists) — the title then supplies the
+        padding the card gave up.
+        <br />
+        <br />
+        Pass <code>title</code> as a prop for the ordinary case; pass a{' '}
+        <code>{'<SectionCardTitle>'}</code> as the first child when the heading needs its own markup
+        (a title with steppers beside it, say).
       </>
     ),
     render: () => (

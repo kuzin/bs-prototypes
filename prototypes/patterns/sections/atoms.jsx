@@ -15,6 +15,8 @@ import { Divider, IconButton, Skeleton, Spinner, Tooltip } from '@components/Pri
 import {
   Knobs,
   Variant,
+  Specimen,
+  Specimens,
   PlusIcon,
   CaretIcon,
   EditIcon,
@@ -30,6 +32,25 @@ import {
  * Plumpy duotone gallery. The `active` knob mirrors the real app's behavior:
  * inactive icons sit at #2a2a2a, active ones repaint both layers in the accent.
  */
+// One grid for every glyph gallery: Icon and PlumpyIcon differ only in what
+// they draw per cell and what caption sits under it, so the layout, the chip
+// styling and the caption type all live in .pt-glyph-* rather than being
+// hand-rolled (with their own hex values) in each showcase.
+function GlyphGrid({ label, names, color, cellBackground, renderGlyph, renderCaption }) {
+  return (
+    <Variant label={label}>
+      <div className="pt-glyph-grid" style={{ color }}>
+        {names.map((name) => (
+          <div key={name} className="pt-glyph" title={name} style={{ background: cellBackground }}>
+            {renderGlyph(name)}
+            <span className="pt-glyph-name">{renderCaption ? renderCaption(name) : name}</span>
+          </div>
+        ))}
+      </div>
+    </Variant>
+  )
+}
+
 function PlumpyShowcase() {
   const [size, setSize] = useState(24)
   const [active, setActive] = useState(false)
@@ -49,46 +70,20 @@ function PlumpyShowcase() {
           <Toggle checked={active} onChange={setActive} />
         </Field>
       </Knobs>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(104px, 1fr))',
-          gap: 8,
-          color: active ? 'var(--c-accent)' : 'var(--c-gray-900)',
-        }}
-      >
-        {PLUMPY_NAMES.map((name) => (
-          <div
-            key={name}
-            title={name}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 8,
-              padding: '14px 6px',
-              background: active ? 'var(--c-accent-wash)' : '#fff',
-              border: '1px solid var(--c-border)',
-              borderRadius: 8,
-            }}
-          >
-            <PlumpyIcon name={name} size={size} />
-            <span
-              style={{
-                fontSize: 10,
-                color: 'var(--c-text-muted)',
-                textAlign: 'center',
-                wordBreak: 'break-word',
-                lineHeight: 1.25,
-              }}
-            >
-              {name}
-              <br />
-              <span style={{ opacity: 0.7 }}>{PLUMPY_SOURCES[name]}</span>
-            </span>
-          </div>
-        ))}
-      </div>
+      <GlyphGrid
+        label="Every Plumpy glyph in the registry"
+        names={PLUMPY_NAMES}
+        color={active ? 'var(--c-accent)' : 'var(--c-gray-900)'}
+        cellBackground={active ? 'var(--c-accent-wash)' : undefined}
+        renderGlyph={(name) => <PlumpyIcon name={name} size={size} />}
+        renderCaption={(name) => (
+          <>
+            {name}
+            <br />
+            <span className="pt-glyph-source">{PLUMPY_SOURCES[name]}</span>
+          </>
+        )}
+      />
     </>
   )
 }
@@ -128,44 +123,12 @@ function IconShowcase() {
           />
         </Field>
       </Knobs>
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(104px, 1fr))',
-          gap: 8,
-          color,
-        }}
-      >
-        {ICON_NAMES.map((name) => (
-          <div
-            key={name}
-            title={name}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              gap: 8,
-              padding: '14px 6px',
-              background: '#fff',
-              border: '1px solid #E5E7EB',
-              borderRadius: 8,
-            }}
-          >
-            <Icon name={name} size={size} stroke={stroke} />
-            <span
-              style={{
-                fontSize: 10,
-                color: '#64748B',
-                textAlign: 'center',
-                wordBreak: 'break-word',
-                lineHeight: 1.25,
-              }}
-            >
-              {name}
-            </span>
-          </div>
-        ))}
-      </div>
+      <GlyphGrid
+        label="Every name in the registry"
+        names={ICON_NAMES}
+        color={color}
+        renderGlyph={(name) => <Icon name={name} size={size} stroke={stroke} />}
+      />
     </>
   )
 }
@@ -173,65 +136,144 @@ function IconShowcase() {
 function ButtonShowcase() {
   return (
     <>
-      <div className="pt-variants pt-variants--4">
-        <Variant label="primary" bare>
-          <Button variant="primary">Log for Class</Button>
-        </Variant>
-        <Variant label="secondary" bare>
-          <Button variant="secondary">Set Classroom Goal</Button>
-        </Variant>
-        <Variant label="ghost" bare>
-          <Button variant="ghost">Cancel</Button>
-        </Variant>
-        <Variant label="danger" bare>
-          <Button variant="danger">Delete</Button>
-        </Variant>
-      </div>
-      <div className="pt-variants pt-variants--4" style={{ marginTop: 16 }}>
-        <Variant label="accent (custom color)" bare>
-          <Button variant="accent" accent="#7C3AED">
-            Open Skills
-          </Button>
-        </Variant>
-        <Variant label="with icon" bare>
-          <Button variant="primary" icon={<PlusIcon />}>
-            Add Student
-          </Button>
-        </Variant>
-        <Variant label="with right caret" bare>
-          <Button variant="secondary" iconRight={<CaretIcon />}>
-            Filter
-          </Button>
-        </Variant>
-        <Variant label="as link (a)" bare>
-          <Button as="a" href="#" variant="ghost">
-            Link button
-          </Button>
-        </Variant>
-      </div>
-      <div className="pt-variants pt-variants--4" style={{ marginTop: 16 }}>
-        <Variant label="size='sm'" bare>
-          <Button variant="primary" size="sm">
-            Small
-          </Button>
-        </Variant>
-        <Variant label="size='md'" bare>
-          <Button variant="primary" size="md">
-            Medium
-          </Button>
-        </Variant>
-        <Variant label="size='lg'" bare>
-          <Button variant="primary" size="lg">
-            Large
-          </Button>
-        </Variant>
-        <Variant label="disabled / loading" bare>
-          <div style={{ display: 'flex', gap: 8 }}>
+      <Variant label="variants">
+        <Specimens>
+          <Specimen label="primary">
+            <Button variant="primary">Log for Class</Button>
+          </Specimen>
+          <Specimen label="secondary">
+            <Button variant="secondary">Set Classroom Goal</Button>
+          </Specimen>
+          <Specimen label="ghost">
+            <Button variant="ghost">Cancel</Button>
+          </Specimen>
+          <Specimen label="danger">
+            <Button variant="danger">Delete</Button>
+          </Specimen>
+          <Specimen label='accent + accent="#7C3AED"'>
+            <Button variant="accent" accent="#7C3AED">
+              Open Skills
+            </Button>
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="sizes — four rungs, ported from the app's own ladder">
+        <Specimens>
+          <Specimen label='size="sm" — 36px, inside a row'>
+            <Button variant="primary" size="sm">
+              Small
+            </Button>
+          </Specimen>
+          <Specimen label='size="msm" — 40px, beside a 44px control'>
+            <Button variant="primary" size="msm">
+              Medium-small
+            </Button>
+          </Specimen>
+          <Specimen label='size="md" (default) — 44px'>
+            <Button variant="primary" size="md">
+              Medium
+            </Button>
+          </Specimen>
+          <Specimen label='size="lg" — 56px'>
+            <Button variant="primary" size="lg">
+              Large
+            </Button>
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="icons, and rendering as a link">
+        <Specimens>
+          <Specimen label="icon">
+            <Button variant="primary" icon={<PlusIcon />}>
+              Add Student
+            </Button>
+          </Specimen>
+          <Specimen label="iconRight">
+            <Button variant="secondary" iconRight={<CaretIcon />}>
+              Filter
+            </Button>
+          </Specimen>
+          <Specimen label='as="a"'>
+            <Button as="a" href="#" variant="ghost">
+              Link button
+            </Button>
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="states">
+        <Specimens>
+          <Specimen label="disabled">
             <Button disabled>Disabled</Button>
+          </Specimen>
+          <Specimen label="loading">
             <Button loading>Loading</Button>
-          </div>
-        </Variant>
-      </div>
+          </Specimen>
+        </Specimens>
+      </Variant>
+    </>
+  )
+}
+
+function IconButtonShowcase() {
+  return (
+    <>
+      <Variant label="variants">
+        <Specimens>
+          <Specimen label="primary">
+            <IconButton variant="primary" aria-label="Add">
+              <PlusIcon />
+            </IconButton>
+          </Specimen>
+          <Specimen label="secondary (default)">
+            <IconButton variant="secondary" aria-label="Edit">
+              <EditIcon />
+            </IconButton>
+          </Specimen>
+          <Specimen label="ghost">
+            <IconButton variant="ghost" aria-label="More actions">
+              <MoreIcon />
+            </IconButton>
+          </Specimen>
+          <Specimen label="danger">
+            <IconButton variant="danger" aria-label="Delete">
+              <TrashIcon />
+            </IconButton>
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="sizes">
+        <Specimens>
+          <Specimen label='size="sm"'>
+            <IconButton size="sm" aria-label="Edit">
+              <EditIcon />
+            </IconButton>
+          </Specimen>
+          <Specimen label='size="md" (default)'>
+            <IconButton size="md" aria-label="Edit">
+              <EditIcon />
+            </IconButton>
+          </Specimen>
+          <Specimen label='size="lg"'>
+            <IconButton size="lg" aria-label="Edit">
+              <EditIcon />
+            </IconButton>
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="states">
+        <Specimens>
+          <Specimen label="disabled">
+            <IconButton disabled aria-label="Archive">
+              <ArchiveIcon />
+            </IconButton>
+          </Specimen>
+        </Specimens>
+      </Variant>
     </>
   )
 }
@@ -263,6 +305,7 @@ function ButtonKnobs() {
         <Field label="size">
           <Select value={size} onChange={(e) => setSize(e.target.value)}>
             <option>sm</option>
+            <option>msm</option>
             <option>md</option>
             <option>lg</option>
           </Select>
@@ -367,6 +410,281 @@ function IconButtonKnobs() {
   )
 }
 
+// TrendChip draws an arrow and nothing else — the reading lives in the tooltip.
+// So the rail exposes what actually shapes that reading (format + suffix) and
+// echoes it beside the chip, rather than pretending there's a text variant.
+function TrendChipKnobs() {
+  const [delta, setDelta] = useState(26)
+  const [unit, setUnit] = useState('%')
+  const [suffix, setSuffix] = useState('vs Apr')
+  const [inverse, setInverse] = useState(false)
+  const [showValue, setShowValue] = useState(false)
+
+  const format = unit === 'none' ? undefined : (n) => `${n}${unit}`
+  const magnitude = Math.abs(delta)
+  const reading = `${delta > 0 ? 'Up' : 'Down'} ${format ? format(magnitude) : magnitude}${
+    suffix ? ` ${suffix}` : ''
+  }`
+
+  return (
+    <>
+      <Knobs>
+        <Field label="delta">
+          <Input
+            type="range"
+            min="-40"
+            max="40"
+            value={delta}
+            onChange={(e) => setDelta(Number(e.target.value))}
+          />
+        </Field>
+        <Field label="format (unit)">
+          <Select value={unit} onChange={(e) => setUnit(e.target.value)}>
+            <option value="%">%</option>
+            <option value="L">L</option>
+            <option value=" pts">pts</option>
+            <option value=" flags">flags</option>
+            <option value="none">none</option>
+          </Select>
+        </Field>
+        <Field label="suffix">
+          <Input value={suffix} onChange={(e) => setSuffix(e.target.value)} />
+        </Field>
+        <Field label="inverse (fewer is better)">
+          <Toggle checked={inverse} onChange={setInverse} />
+        </Field>
+        <Field label="showValue">
+          <Toggle checked={showValue} onChange={setShowValue} />
+        </Field>
+      </Knobs>
+      <div className="pt-variant-frame pt-variant-frame--row">
+        <TrendChip
+          delta={delta}
+          format={format}
+          suffix={suffix}
+          inverse={inverse}
+          showValue={showValue}
+        />
+        <code className="pt-specimen-label">
+          {delta === 0
+            ? 'delta 0 — flat: a grey dash, not a hole in the row'
+            : `hover reads: “${reading}”`}
+        </code>
+      </div>
+    </>
+  )
+}
+
+function TrendChipShowcase() {
+  return (
+    <>
+      <Variant label="direction">
+        <Specimens>
+          <Specimen label="delta={26}">
+            <TrendChip delta={26} format={(n) => `${n}%`} />
+          </Specimen>
+          <Specimen label="delta={-15}">
+            <TrendChip delta={-15} format={(n) => `${n}L`} suffix="vs Apr" />
+          </Specimen>
+          <Specimen label="delta={0} — flat">
+            <TrendChip delta={0} format={(n) => `${n}%`} />
+          </Specimen>
+          <Specimen label="delta={null} — nothing">
+            <TrendChip delta={null} />
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="showValue — the magnitude printed in the chip">
+        <Specimens>
+          <Specimen label="showValue">
+            <TrendChip delta={3} format={(n) => `${n}%`} showValue />
+          </Specimen>
+          <Specimen label="showValue, down">
+            <TrendChip delta={-12} format={(n) => `${n}%`} showValue />
+          </Specimen>
+          <Specimen label="showValue + inverse">
+            <TrendChip delta={-3} inverse format={(n) => `${n} flags`} showValue />
+          </Specimen>
+          <Specimen label="no format → bare number">
+            <TrendChip delta={8} showValue />
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="inverse — for metrics where fewer is better">
+        <Specimens>
+          <Specimen label="delta={2} inverse">
+            <TrendChip delta={2} inverse format={(n) => `${n} flags`} />
+          </Specimen>
+          <Specimen label="delta={-3} inverse">
+            <TrendChip delta={-3} inverse format={(n) => `${n} flags`} />
+          </Specimen>
+        </Specimens>
+      </Variant>
+    </>
+  )
+}
+
+function PillShowcase() {
+  return (
+    <>
+      <Variant label="variants">
+        <Specimens>
+          <Specimen label="soft (default)">
+            <Pill color="#7C3AED" variant="soft">
+              Skills
+            </Pill>
+          </Specimen>
+          <Specimen label="filled">
+            <Pill color="#7C3AED" variant="filled">
+              Skills
+            </Pill>
+          </Specimen>
+          <Specimen label="outline">
+            <Pill color="#7C3AED" variant="outline">
+              Skills
+            </Pill>
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="sizes">
+        <Specimens>
+          <Specimen label='size="sm"'>
+            <Pill color="var(--c-brand-teal)" size="sm">
+              Active
+            </Pill>
+          </Specimen>
+          <Specimen label='size="md" (default)'>
+            <Pill color="var(--c-brand-teal)" size="md">
+              Active
+            </Pill>
+          </Specimen>
+          <Specimen label='size="lg"'>
+            <Pill color="var(--c-brand-teal)" size="lg">
+              Active
+            </Pill>
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="with an icon">
+        <Specimens>
+          <Specimen label="icon">
+            <Pill color="var(--c-brand-green)" icon={<CheckIcon />}>
+              Verified
+            </Pill>
+          </Specimen>
+          <Specimen label="icon + filled">
+            <Pill color="var(--c-amber-600)" variant="filled" icon={<StarIcon />}>
+              Featured
+            </Pill>
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="the colours a status pill actually takes">
+        <Specimens>
+          <Specimen label="--c-brand-green">
+            <Pill color="var(--c-brand-green)">Verified</Pill>
+          </Specimen>
+          <Specimen label="--c-amber-600">
+            <Pill color="var(--c-amber-600)">Needs review</Pill>
+          </Specimen>
+          <Specimen label="--c-red-600">
+            <Pill color="var(--c-red-600)">Flagged</Pill>
+          </Specimen>
+          <Specimen label="--c-slate-500">
+            <Pill color="var(--c-slate-500)">Draft</Pill>
+          </Specimen>
+        </Specimens>
+      </Variant>
+    </>
+  )
+}
+
+function AvatarShowcase() {
+  return (
+    <>
+      <Variant label="sizes">
+        <Specimens>
+          {['xs', 'sm', 'md', 'lg', 'xl'].map((size) => (
+            <Specimen key={size} label={`size="${size}"`}>
+              <Avatar initials="MC" color="#E8866A" size={size} />
+            </Specimen>
+          ))}
+        </Specimens>
+      </Variant>
+
+      <Variant label="shapes">
+        <Specimens>
+          <Specimen label='shape="circle" (default)'>
+            <Avatar initials="AB" color="var(--c-brand-teal)" shape="circle" />
+          </Specimen>
+          <Specimen label='shape="square"'>
+            <Avatar initials="AB" color="var(--c-brand-teal)" shape="square" />
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="src — a real picture, initials as the fallback">
+        <Specimens>
+          <Specimen label="src">
+            <Avatar src={facePath('emma')} initials="EM" size="lg" />
+          </Specimen>
+          <Specimen label="src + square">
+            <Avatar src={facePath('jayden')} initials="JA" size="lg" shape="square" />
+          </Specimen>
+          <Specimen label="no src — initials">
+            <Avatar initials="NO" color="var(--c-brand-teal)" size="lg" />
+          </Specimen>
+          <Specimen label="broken src — falls back">
+            <Avatar src="/nope.jpg" initials="BR" color="var(--c-brand-coral)" size="lg" />
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="a roster mixes the two — some readers have uploaded one">
+        <Specimens>
+          <Specimen label="the same silhouette either way">
+            <div style={{ display: 'flex', gap: 'var(--space-6)' }}>
+              <Avatar src={facePath('emma')} initials="EM" />
+              <Avatar initials="MC" color="var(--c-brand-coral)" />
+              <Avatar src={facePath('noah')} initials="NO" />
+              <Avatar src={facePath('priya')} initials="PS" />
+              <Avatar initials="TV" color="var(--c-violet-600)" />
+            </div>
+          </Specimen>
+        </Specimens>
+      </Variant>
+
+      <Variant label="every size, with a picture">
+        <Specimens>
+          {['xs', 'sm', 'md', 'lg', 'xl'].map((size) => (
+            <Specimen key={size} label={`size="${size}"`}>
+              <Avatar src={facePath('sofia')} initials="SO" size={size} />
+            </Specimen>
+          ))}
+        </Specimens>
+      </Variant>
+
+      <Variant label="a roster reads as a row of them">
+        <Specimens>
+          <Specimen label="one per reader, coloured by name">
+            <div style={{ display: 'flex', gap: 'var(--space-6)' }}>
+              <Avatar initials="MC" color="var(--c-brand-coral)" />
+              <Avatar initials="AB" color="var(--c-brand-teal)" />
+              <Avatar initials="TV" color="var(--c-violet-600)" />
+              <Avatar initials="PS" color="var(--c-brand-green)" />
+            </div>
+          </Specimen>
+        </Specimens>
+      </Variant>
+    </>
+  )
+}
+
 function PillKnobs() {
   const [text, setText] = useState('Skills')
   const [variant, setVariant] = useState('soft')
@@ -420,8 +738,14 @@ function PillKnobs() {
   )
 }
 
+// The sample faces that ship in public/avatars — the same set the Book
+// Discovery prototype uses for its readers.
+const SAMPLE_FACES = ['emma', 'jayden', 'noah', 'priya', 'sofia', 'diego']
+const facePath = (name) => `/bs-prototypes/avatars/${name}.jpg`
+
 function AvatarKnobs() {
   const [initials, setInitials] = useState('MC')
+  const [face, setFace] = useState('none')
   const [color, setColor] = useState('#E8866A')
   const [size, setSize] = useState('md')
   const [shape, setShape] = useState('circle')
@@ -454,10 +778,51 @@ function AvatarKnobs() {
             <Radio value="square">square</Radio>
           </RadioGroup>
         </Field>
+        <Field label="picture">
+          <Select value={face} onChange={(e) => setFace(e.target.value)}>
+            <option value="none">none — initials</option>
+            {SAMPLE_FACES.map((f) => (
+              <option key={f} value={f}>
+                {f}
+              </option>
+            ))}
+            <option value="broken">broken URL — falls back</option>
+          </Select>
+        </Field>
       </Knobs>
       <div className="pt-variant-frame">
-        <Avatar initials={initials} color={color} size={size} shape={shape} />
+        <Avatar
+          initials={initials}
+          color={color}
+          size={size}
+          shape={shape}
+          src={face === 'none' ? undefined : face === 'broken' ? '/nope.jpg' : facePath(face)}
+        />
       </div>
+    </>
+  )
+}
+
+function DividerShowcase() {
+  return (
+    <>
+      <Variant label="plain rule">
+        <Divider />
+      </Variant>
+
+      <Variant label="label — an “OR” style separator">
+        <Divider label="OR" />
+      </Variant>
+
+      <Variant label='orientation="vertical" — stretches to its flex parent'>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-16)', height: 44 }}>
+          <span>Minutes</span>
+          <Divider orientation="vertical" />
+          <span>Books</span>
+          <Divider orientation="vertical" />
+          <span>Badges</span>
+        </div>
+      </Variant>
     </>
   )
 }
@@ -781,9 +1146,14 @@ function TooltipKnobs() {
 
 export const atomsSections = [
   {
-    group: 'atoms',
+    group: 'iconography',
     id: 'icon',
     name: 'Icon',
+    usage: `import { Icon } from '@components/Icon/Icon'
+
+<Icon name="flame" />                        // size 18, stroke 1.8, currentColor
+<Icon name="chevron-down" size={11} stroke={2} />
+<Icon name="flag" size={16} color="#DC2626" />`,
     desc: (
       <>
         The single icon system for every prototype — a house-styled wrapper over{' '}
@@ -801,9 +1171,13 @@ export const atomsSections = [
     ),
   },
   {
-    group: 'atoms',
+    group: 'iconography',
     id: 'plumpy-icon',
     name: 'PlumpyIcon',
+    usage: `import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
+
+<PlumpyIcon name="dashboard" size={22} />
+<PlumpyIcon name="badge" size={18} title="Badges" />`,
     desc: (
       <>
         The <strong>duotone</strong> family the real Beanstack admin chrome uses for its main rail —
@@ -824,27 +1198,48 @@ export const atomsSections = [
     render: () => <PlumpyShowcase />,
   },
   {
-    group: 'atoms',
+    group: 'actions',
     id: 'button',
     name: 'Button',
+    usage: `import { Button } from '@components/Button/Button'
+
+<Button variant="primary" onClick={save}>Log for Class</Button>
+<Button variant="ghost" size="sm" icon="plus">Add reader</Button>
+<Button variant="secondary" size="msm">Manage</Button>   // beside a 44px select
+<Button as="a" href="/readers" variant="secondary">All readers</Button>
+<Button variant="danger" loading={saving} disabled={saving}>Delete</Button>`,
     desc: (
       <>
         Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>,{' '}
         <code>danger</code>, <code>accent</code>. Sizes: <code>sm</code>, <code>md</code>,{' '}
-        <code>lg</code>. Optional <code>icon</code> / <code>iconRight</code>. Can render as a link
-        via <code>as="a"</code>.
+        <code>msm</code>, <code>lg</code>. Optional <code>icon</code> / <code>iconRight</code>. Can
+        render as a link via <code>as="a"</code>.
+        <br />
+        <br />
+        The four sizes are the app&apos;s own ladder (<code>lib/_buttons.scss</code>):{' '}
+        <strong>36</strong> / <strong>40</strong> / <strong>44</strong> / <strong>56</strong>px.{' '}
+        <code>sm</code> is for a button inside a row; <code>msm</code> is the rung to reach for when
+        a button sits beside a 44px control (a select, a filter bar) — at <code>sm</code> it reads
+        as a shrunken version of the thing next to it.
       </>
     ),
     render: () => (
       <>
         <ButtonKnobs />
+        <ButtonShowcase />
       </>
     ),
   },
   {
-    group: 'atoms',
+    group: 'actions',
     id: 'icon-button',
     name: 'IconButton',
+    usage: `import { IconButton } from '@components/Primitives/Primitives'
+import { Icon } from '@components/Icon/Icon'
+
+<IconButton aria-label="Edit" onClick={edit}>
+  <Icon name="pencil" size={16} />
+</IconButton>`,
     desc: (
       <>
         Square button with just an icon. Variants: <code>primary</code>, <code>secondary</code>,{' '}
@@ -855,13 +1250,19 @@ export const atomsSections = [
     render: () => (
       <>
         <IconButtonKnobs />
+        <IconButtonShowcase />
       </>
     ),
   },
   {
-    group: 'atoms',
+    group: 'badges',
     id: 'pill',
     name: 'Pill',
+    usage: `import { Pill } from '@components/Pill/Pill'
+
+<Pill color="teal">Active</Pill>
+<Pill color="amber" variant="filled" size="sm" icon="flame">Streak</Pill>
+<Pill color="slate" variant="outline">Draft</Pill>`,
     desc: (
       <>
         Colored badge / chip. Variants: <code>soft</code> (default, tinted bg + dark text),{' '}
@@ -872,30 +1273,50 @@ export const atomsSections = [
     render: () => (
       <>
         <PillKnobs />
+        <PillShowcase />
       </>
     ),
   },
   {
-    group: 'atoms',
+    group: 'badges',
     id: 'avatar',
     name: 'Avatar',
+    usage: `import { Avatar } from '@components/Avatar/Avatar'
+
+<Avatar initials="MC" color="#0DA7BC" />
+<Avatar initials="AB" size="lg" shape="square" />
+
+/* a reader who has uploaded a picture — initials stay the fallback */
+<Avatar src="/bs-prototypes/avatars/emma.jpg" initials="EM" />`,
     desc: (
       <>
         Initials in a colored shape. Props: <code>initials</code>, <code>color</code>,{' '}
         <code>size</code> (xs / sm / md / lg / xl), <code>shape</code> (<code>circle</code> /{' '}
-        <code>square</code> / <code>rounded</code>).
+        <code>square</code>).
+        <br />
+        <br />
+        <code>src</code> renders a real picture instead — a reader who has uploaded one. The
+        initials stay the fallback: they show while there&apos;s no <code>src</code>, and again if
+        the image fails to load, so a dead URL leaves the tile looking like every other avatar
+        rather than a broken image.
       </>
     ),
     render: () => (
       <>
         <AvatarKnobs />
+        <AvatarShowcase />
       </>
     ),
   },
   {
-    group: 'atoms',
+    group: 'cards',
     id: 'divider',
     name: 'Divider',
+    usage: `import { Divider } from '@components/Primitives/Primitives'
+
+<Divider />
+<Divider label="OR" />
+<Divider orientation="vertical" />`,
     desc: (
       <>
         Horizontal rule. Optional <code>label</code> to render an "OR" style separator.{' '}
@@ -906,13 +1327,18 @@ export const atomsSections = [
     render: () => (
       <>
         <DividerKnobs />
+        <DividerShowcase />
       </>
     ),
   },
   {
-    group: 'atoms',
+    group: 'feedback',
     id: 'spinner',
     name: 'Spinner',
+    usage: `import { Spinner } from '@components/Primitives/Primitives'
+
+<Spinner />
+<Spinner size="sm" color="var(--c-teal-500)" />`,
     desc: (
       <>
         Animated loading indicator. Sizes <code>xs / sm / md / lg / xl</code>. Inherits current
@@ -926,9 +1352,14 @@ export const atomsSections = [
     ),
   },
   {
-    group: 'atoms',
+    group: 'feedback',
     id: 'skeleton',
     name: 'Skeleton',
+    usage: `import { Skeleton } from '@components/Primitives/Primitives'
+
+<Skeleton width="60%" />
+<Skeleton lines={3} />
+<Skeleton shape="circle" width={40} height={40} />`,
     desc: (
       <>
         Animated loading placeholder. <code>width</code>, <code>height</code>, <code>shape</code>{' '}
@@ -1058,9 +1489,13 @@ export const atomsSections = [
     ),
   },
   {
-    group: 'atoms',
+    group: 'feedback',
     id: 'progress-bar',
     name: 'ProgressBar',
+    usage: `import { ProgressBar } from '@components/ProgressBar/ProgressBar'
+
+<ProgressBar value={18} max={30} label="Minutes today" valueLabel="18 / 30" />
+<ProgressBar value={62} size="sm" inline />`,
     desc: (
       <>
         Track + fill with optional <code>label</code>, <code>subLabel</code>, and{' '}
@@ -1075,9 +1510,15 @@ export const atomsSections = [
     ),
   },
   {
-    group: 'atoms',
+    group: 'overlays',
     id: 'tooltip',
     name: 'Tooltip',
+    usage: `import { Tooltip } from '@components/Primitives/Primitives'
+
+/* Portals to document.body, so a clipping ancestor can't cut it off */
+<Tooltip content="Up 12% on last month" placement="top">
+  <TrendChip delta={12} />
+</Tooltip>`,
     desc: (
       <>
         Lightweight hover tooltip for explaining icon buttons and labels — not for chart data.{' '}
@@ -1092,9 +1533,13 @@ export const atomsSections = [
     ),
   },
   {
-    group: 'atoms',
+    group: 'iconography',
     id: 'bs-icons',
     name: 'BsIcons',
+    usage: `import { BsIcon } from '@components/BsIcons/BsIcons'
+
+<BsIcon set="flags" name="speed" size={28} />
+<BsIcon set="rmiFactors" name="consistency" size={20} alt="Consistency" />`,
     desc: (
       <>
         The product&apos;s own illustrated icons, copied verbatim out of the shipped app (bs-product{' '}
@@ -1155,9 +1600,16 @@ export const atomsSections = [
     ),
   },
   {
-    group: 'atoms',
+    group: 'actions',
     id: 'row-action',
     name: 'RowAction',
+    usage: `import { RowAction, RowActions } from '@components/RowAction/RowAction'
+
+/* The two shapes a table-row action is allowed to take — icon, or text link */
+<RowActions>
+  <RowAction icon="gift" label="Redeem" onClick={redeem} />
+  <RowAction as="link" label="View" onClick={open} />
+</RowActions>`,
     desc: (
       <>
         The one control that sits at the end of a table row. The app has exactly two shapes for this
@@ -1214,9 +1666,13 @@ export const atomsSections = [
     ),
   },
   {
-    group: 'atoms',
+    group: 'actions',
     id: 'complete-toggle',
     name: 'CompleteToggle',
+    usage: `import { CompleteToggle } from '@components/CompleteToggle/CompleteToggle'
+
+<CompleteToggle done={row.done} onChange={(done) => setDone(row.id, done)} />
+<CompleteToggle done={row.done} repeatable count={row.count} wording="redeemed" />`,
     desc: (
       <>
         The admin&apos;s row-completion toggle — the one control that runs down the{' '}
@@ -1253,9 +1709,15 @@ export const atomsSections = [
     render: () => <CompleteToggleKnobs />,
   },
   {
-    group: 'atoms',
+    group: 'badges',
     id: 'trend-chip',
     name: 'TrendChip',
+    usage: `import { TrendChip } from '@components/TrendChip/TrendChip'
+
+/* Direction only — the figure belongs in the tooltip, never beside the arrow */
+<TrendChip delta={12} />
+<TrendChip delta={-4} inverse />                        // down is good (e.g. flag rate)
+<TrendChip delta={3} format={(n) => \`\${n}%\`} showValue />  // prints "3% ↑"`,
     desc: (
       <>
         The one way a trend is drawn: a pastel chip holding an arrow, and nothing else. The figure
@@ -1270,19 +1732,25 @@ export const atomsSections = [
         <br />
         <br />
         <code>inverse</code> flips which direction counts as good, for metrics where fewer is better
-        (flags, concerns). A null or zero delta renders nothing — a flat week isn&apos;t a trend.
+        (flags, concerns).
+        <br />
+        <br />A <strong>zero</strong> delta is flat, not absent: a grey chip holding a dash, so a
+        row that genuinely didn&apos;t move still lines up with the rows that did instead of leaving
+        a hole. A <strong>null</strong> delta is the different case — no reading at all — and
+        renders nothing.
+        <br />
+        <br />
+        <code>showValue</code> prints the magnitude in the chip beside the arrow (
+        <strong>3% ↑</strong>), for the places where the trend stands on its own with no value next
+        to it to read it against — a lone cell, a caption, a summary line. Don&apos;t reach for it
+        beside a figure: that&apos;s the two-numbers-per-line problem the default shape exists to
+        avoid.
       </>
     ),
     render: () => (
       <>
-        <Variant label="up / down, and inverse (fewer is better)" full>
-          <div className="pt-variant-frame--row" style={{ display: 'flex', gap: 16, padding: 14 }}>
-            <TrendChip delta={26} format={(n) => `${n}%`} />
-            <TrendChip delta={-15} format={(n) => `${n}L`} suffix="vs Apr" />
-            <TrendChip delta={2} inverse format={(n) => `${n} flags`} />
-            <TrendChip delta={-3} inverse format={(n) => `${n} flags`} />
-          </div>
-        </Variant>
+        <TrendChipKnobs />
+        <TrendChipShowcase />
       </>
     ),
   },

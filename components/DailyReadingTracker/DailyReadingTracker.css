@@ -46,6 +46,13 @@
   overflow-x: auto;
 }
 
+/* The tracker's table sits under the week nav, not at the card's own top edge,
+   so its flush corners would round against nothing — see the note on
+   `--tbl-flush-radius` in Table.css. */
+.drt-table {
+  --tbl-flush-radius: 0;
+}
+
 /* Fixed layout so the eight metric columns come out identical — otherwise a
    wide pill (or an empty Sat) sizes its own column. Student and Goal claim a
    width; the rest split what's left evenly. */
