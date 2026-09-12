@@ -30,7 +30,7 @@ export function DistrictHabits() {
 
   return (
     <div className="rc-page" style={{ '--rc-accent': ACCENT }}>
-      <Hero bucket="habits" />
+      <Hero variant="page" bucket="habits" />
 
       <div className="rc-stats-row">
         <StatCard label="District avg session" value="20 min" footer="↑6 min since Sep" />

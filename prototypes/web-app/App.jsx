@@ -1,77 +1,135 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
+import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
+
+import { Dashboard } from '../logging-flow/components/Dashboard'
+import { LogFlow } from '../logging-flow/components/LogFlow'
+import { BookCover } from '../logging-flow/components/BookCover'
+import { STREAK, DAILY_GOAL, READER, BOOKS, RECENTLY_LOGGED } from '../logging-flow/data'
 import {
-  ChallengeCard,
-  ChallengeScope,
-  GoalCard,
-  LeaderboardCard,
-  ReaderTopBar,
-  StreakBanner,
-} from '@components/ReaderApp/ReaderApp'
-import { JoyfulFooter, APPS } from '../footers/JoyfulFooter'
+  CONNECTIONS,
+  CONNECTION_LIST,
+  TAKEN_USERNAMES,
+  partnerMinutes,
+} from '../logging-flow/connections'
 
 import '../ris/index.css'
 import '@components/PrototypeNav/PrototypeNav.css'
 
-import {
-  USER,
-  OTHER_READERS,
-  STREAK,
-  DAILY_GOAL,
-  CHALLENGES,
-  TOP_SCHOOLS,
-  TOP_GRADES,
-} from './data'
+// The reader app as it stands today — the page a reader actually sees, so the
+// other prototypes have something current to be measured against.
+//
+// It is the real `Dashboard`, not a copy: Challenges, the Reading Log and
+// Personalize Reader (where App Integrations live) all come from logging-flow's
+// own component, and reading apps link through the same ConnectFlow. Logging is
+// the real `LogFlow`.
+//
+// What is deliberately *not* here is anything still in design. Each of these is
+// a prototype of its own, and putting it on this page would blur what has
+// shipped with what has been proposed:
+//
+//  * **The vocabulary round.** `LogFlow` offers it when handed `onOpenWord`,
+//    which is Words with Benny's hook; without that prop the success step is a
+//    plain "Done" — the logging flow on its own.
+//  * **Discover / My Shelf** (Book Discovery) and **the Gameboard** (Gameboard
+//    Reader) stay in their own prototypes.
+//  * **Reading in the app.** No title here is marked `readable`, so the flow
+//    never offers the read-or-log choice and the e-reader never opens.
+//  * **Scholastic.** The partner list and its titles are filtered out.
 
-// This is the plain reader dashboard — the same chrome and rail cards the
-// integration prototypes build on, with none of their additions. Every piece
-// comes from @components/ReaderApp, so the page can't fall behind the way it
-// did while it kept its own copy of the markup.
+// The reading apps this page offers, and the titles that go with them.
+const PARTNERS = CONNECTION_LIST.filter((p) => p.id !== 'scholastic')
+const PARTNER_BOOKS = Object.fromEntries(
+  Object.entries(BOOKS)
+    .filter(([, b]) => b.partner !== 'scholastic')
+    .map(([id, b]) => [id, { ...b, readable: false }]),
+)
+const RECENT = RECENTLY_LOGGED.filter((id) => BOOKS[id]?.partner !== 'scholastic')
 
 export function App() {
-  const [scope, setScope] = useState('current')
+  const [flowOpen, setFlowOpen] = useState(false)
+  const [streak, setStreak] = useState(STREAK)
+  const [dailyGoal, setDailyGoal] = useState(DAILY_GOAL)
+
+  // Linked reading apps, keyed by partner id — each is linked and unlinked on
+  // its own.
+  const [connections, setConnections] = useState({})
+  const [linking, setLinking] = useState(null) // partner id mid-handoff
+  const [visiting, setVisiting] = useState(null) // partner id whose catalog is open
+
+  function handleLogged(entry) {
+    setStreak((s) => ({ ...s, current: Math.max(s.current, 1) }))
+    if (entry.measure === 'minutes' && entry.minutes) {
+      setDailyGoal((g) => ({ ...g, minutes: g.minutes + entry.minutes }))
+    }
+  }
+
+  // A linked partner starts logging on the reader's behalf, so its minutes land
+  // on the daily goal (and start the streak) the moment the accounts connect.
+  function handleLinked({ partnerId, account, org }) {
+    setConnections((c) => ({ ...c, [partnerId]: { account, org } }))
+    setLinking(null)
+    const mins = partnerMinutes(partnerId)
+    if (mins > 0) {
+      setDailyGoal((g) => ({ ...g, minutes: g.minutes + mins }))
+      setStreak((s) => ({ ...s, current: Math.max(s.current, 1) }))
+    }
+  }
+
+  function handleDisconnect(partnerId) {
+    setConnections((c) => {
+      const next = { ...c }
+      delete next[partnerId]
+      return next
+    })
+    const mins = partnerMinutes(partnerId)
+    setDailyGoal((g) => ({ ...g, minutes: Math.max(0, g.minutes - mins) }))
+  }
 
   return (
-    <div className="wa-shell">
-      {/* Challenges is the only view here — the rest of the site nav is chrome,
-          so the strip shows where you are and stays put, the way it did before
-          this page moved onto the shared bar. */}
-      <ReaderTopBar reader={USER} otherReaders={OTHER_READERS} active="challenges" />
+    <>
+      <Dashboard
+        streak={streak}
+        dailyGoal={dailyGoal}
+        onLog={() => setFlowOpen(true)}
+        connections={connections}
+        onLinkPartner={setLinking}
+        onDisconnectPartner={handleDisconnect}
+        onVisitPartner={setVisiting}
+        partners={PARTNERS}
+      />
 
-      <main className="wa-main">
-        <div className="wa-main-inner">
-          <StreakBanner streak={STREAK} />
+      <LogFlow
+        open={flowOpen}
+        onClose={() => setFlowOpen(false)}
+        onLogged={handleLogged}
+        connections={connections}
+        partners={PARTNERS}
+        books={PARTNER_BOOKS}
+        recentlyLogged={RECENT}
+      />
 
-          <div className="wa-layout">
-            <section className="wa-content">
-              <div className="wa-section-head">
-                <h2 className="wa-h2">Challenges</h2>
-                <ChallengeScope value={scope} onChange={setScope} />
-              </div>
+      {visiting && connections[visiting] && (
+        <PartnerCatalog
+          partner={CONNECTIONS[visiting]}
+          account={connections[visiting].account}
+          titles={Object.values(PARTNER_BOOKS).filter((b) => b.partner === visiting)}
+          renderCover={(b) => <BookCover book={b} size="lg" />}
+          onBack={() => setVisiting(null)}
+        />
+      )}
 
-              <div className="wa-group">
-                <div className="wa-group-title">{USER.name}&apos;s Challenges</div>
-                <div className="wa-group-sub">Challenges that {USER.name} is participating in.</div>
-
-                <div className="wa-chgrid">
-                  {CHALLENGES.map((c) => (
-                    <ChallengeCard key={c.id} challenge={c} />
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            <div className="wa-rail">
-              <GoalCard dailyGoal={DAILY_GOAL} />
-              <LeaderboardCard schools={TOP_SCHOOLS} grades={TOP_GRADES} />
-            </div>
-          </div>
-        </div>
-      </main>
-
-      <JoyfulFooter app={APPS.find((a) => a.id === 'beanstack')} />
+      {linking && (
+        <ConnectFlow
+          partner={CONNECTIONS[linking]}
+          reader={READER}
+          takenUsernames={TAKEN_USERNAMES}
+          onCancel={() => setLinking(null)}
+          onLinked={handleLinked}
+        />
+      )}
 
       <PrototypeNav currentHref="/bs-prototypes/web-app/" />
-    </div>
+    </>
   )
 }

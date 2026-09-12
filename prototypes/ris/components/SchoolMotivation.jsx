@@ -53,8 +53,8 @@ export function SchoolMotivation({ schoolId }) {
   ]
 
   return (
-    <div className="mot-root">
-      <Hero bucket="motivation" />
+    <div className="mot-root" style={{ '--rc-accent': INTRINSIC_COLOR }}>
+      <Hero variant="page" bucket="motivation" />
 
       <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
         <StatCard

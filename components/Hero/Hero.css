@@ -11,6 +11,14 @@
   border-bottom: 1px solid var(--c-gray-200);
 }
 
+/* ── Page variant ────────────────────────────────────────────────────────────
+   `variant="page"` renders through the shared <PageHeader>; all it needs here
+   is the air a page title wants above it, which the panel version gets from
+   `.hero`'s own padding. */
+.hero-page {
+  padding-top: 12px;
+}
+
 /* ── Avatar variant ──────────────────────────────────────────────────────── */
 .hero-avatar {
   width: 48px;

@@ -152,7 +152,8 @@ function SessionModalDemo() {
       )}
       <SessionModal
         session={activeSession}
-        sessions={sessions}
+        allSessions={sessions}
+        onSelectSession={setActiveSession}
         onClose={() => setActiveSession(null)}
         onUpdateSession={handleUpdate}
         onDeleteSession={() => setActiveSession(null)}

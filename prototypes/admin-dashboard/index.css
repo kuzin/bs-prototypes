@@ -33,7 +33,13 @@ button {
 :root {
   --adm-accent: var(--c-blue);
 }
-.adm {
+/* The token half of `.adm`, shared with `.adm-catalog` — the Pattern Library's
+   scope for rendering one widget outside the dashboard page. The layout half
+   (the second `.adm` rule below) stays on the page only: it owns the admin
+   gutters and the scroll container, neither of which belongs around a single
+   catalog example. */
+.adm,
+.adm-catalog {
   --col-gap: 16px;
   --row-h: 130px;
   --radius: 14px;
@@ -259,13 +265,6 @@ button {
    CTA's blue outline. */
 .adm-ad {
   margin-bottom: 20px;
-  align-items: flex-start;
-}
-
-.adm-ad .bnr-icon {
-  /* Optical: the glyph centres on the two-line message, not on the title. */
-  margin-top: 2px;
-  display: inline-flex;
 }
 
 /* ─── Engagement / RCA-level widget ─────────────────────────────────── */
@@ -1037,6 +1036,17 @@ button {
   flex: 0 0 auto;
   overflow-y: visible;
 }
+/* Sessions for Review fills its cell instead of taking the fixed 272px: it is
+   a queue, so it should show as many rows as the row it shares is tall, and
+   the scroll belongs to the list inside (which already takes the remainder)
+   rather than to the body. The 272px body left a band of white under the last
+   row whenever a taller widget set the row height. */
+.adm-cell--scroll .adm-w-body.adm-sfr {
+  flex: 1 1 0;
+  height: auto;
+  min-height: 0;
+  overflow: hidden;
+}
 /* Small non-scrollable widgets (Community Goal, Engagement) share one compact
    body height so they line up too. */
 .adm-cell--small .adm-w-body {
@@ -1645,11 +1655,11 @@ button {
   font-size: var(--text-body);
   font-weight: 800;
   color: var(--c-text-dark);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
   min-width: 0;
   line-height: 1.25;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* Number Cruncher header — Benny mascot sits left of the title */
 .adm-nc-head-left {
@@ -1732,9 +1742,14 @@ button {
    gone, so the title row gets its own gutter back. */
 /* Subtitle / meta sits below the title text — stays in title case */
 .adm-w-meta {
+  display: block;
+  margin-top: 2px;
   font-size: var(--text-label);
   font-weight: 400;
   color: var(--c-text-light);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 /* Widgets whose rows are full-bleed (a list with its own row padding) opt out
    of the body's inset rather than being padded twice. */
@@ -2732,72 +2747,73 @@ button {
 
 /* ─── Quick links (vertical row list) ────────────────────────────────── */
 /* No body padding so links can go edge-to-edge inside the cell. */
-.adm-w-body:has(> .adm-links) {
-  padding: 0;
-}
+/* Quick Links is the same object as the rail's Quick Actions — a set of
+   destinations, each in its own hue — so it is drawn the same way: a tinted
+   pill carrying the label and a chevron, not a white row with a tinted icon
+   tile. The list keeps a two-up grid because it lives in a grid cell rather
+   than the 420px rail. */
 .adm-links {
-  display: flex;
-  flex-direction: column;
-  min-height: 220px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 10px;
+  align-content: start;
 }
 .adm-link {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-bottom: 1px solid var(--c-gray-100);
-  background: #fff;
+  gap: 10px;
+  min-width: 0;
+  padding: 15px 18px;
+  border-radius: 10px;
   text-decoration: none;
-  color: var(--c-gray-900);
-  font-weight: 600;
-  font-size: 14px;
-  transition: background 0.12s;
-}
-.adm-link:last-child {
-  border-bottom: 0;
+  background: var(--ql-bg);
+  color: var(--ql-ink);
+  transition: filter 0.12s;
 }
 .adm-link:hover {
-  background: var(--c-gray-0);
+  filter: brightness(0.96);
 }
 .adm-link-ico {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
   display: inline-flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
-  font-size: 15px;
 }
-.adm-link-arrow {
-  margin-left: auto;
-  color: var(--c-gray-500);
-  font-size: 18px;
-  line-height: 1;
+.adm-link-label {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-body);
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
-.adm-link--red .adm-link-ico {
-  background: #fee2e2;
-  color: #b91c1c;
+.adm-link-chev {
+  flex-shrink: 0;
 }
-.adm-link--yellow .adm-link-ico {
-  background: #fef3c7;
-  color: #92400e;
+/* The same hue pairs Quick Actions uses, so the two sets read as one family. */
+.adm-link--blue {
+  --ql-bg: #d6f0fa;
+  --ql-ink: #14548c;
 }
-.adm-link--blue .adm-link-ico {
-  background: #dbeafe;
-  color: var(--c-blue);
+.adm-link--red {
+  --ql-bg: #fbdcd2;
+  --ql-ink: #b3271a;
 }
-.adm-link--green .adm-link-ico {
-  background: #d1fae5;
-  color: #047857;
+.adm-link--purple {
+  --ql-bg: #f8ddfb;
+  --ql-ink: #8b1ca3;
 }
-.adm-link--purple .adm-link-ico {
-  background: #ede9fe;
-  color: #6d28d9;
+.adm-link--yellow {
+  --ql-bg: #fdeec3;
+  --ql-ink: #8a5a00;
 }
-.adm-link--pink .adm-link-ico {
-  background: #fce7f3;
-  color: #9d174d;
+.adm-link--green {
+  --ql-bg: #d2f3df;
+  --ql-ink: #0a6b3f;
+}
+.adm-link--pink {
+  --ql-bg: #fce7f3;
+  --ql-ink: #9d174d;
 }
 
 /* ─── Number Cruncher (row list, matches Quick Links shape) ─────────── */

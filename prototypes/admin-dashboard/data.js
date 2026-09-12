@@ -43,7 +43,7 @@ export const COMMUNITY_GOAL = GOAL_OPTIONS.community
 // picks the hue.
 export const FEATURE_BAR = {
   title: '[Webinar] What’s New for Back to School',
-  body: 'Discover the latest Beanstack features — Book Talks with Benny, daily reading tracking, rewards, editable badges & more! Join us Aug 12 at 2 PM ET and get ready to supercharge student engagement this year!',
+  body: 'Book Talks with Benny, daily reading tracking, rewards and editable badges — join us Aug 12 at 2 PM ET.',
   cta: 'Learn more',
   href: '#',
 }
@@ -654,96 +654,3 @@ export const DEFAULT_ROWS_BY_ROLE = {
   'kitchen-full': KITCHEN_FULL_DEFAULT_ROWS,
   empty: EMPTY_DEFAULT_ROWS,
 }
-
-// ─── Layout presets ───────────────────────────────────────────────────────────
-// Templates are organized by INTENT (what I'm trying to do) rather than by
-// data shape. Picking one replaces the editable grid's layout + settings.
-export const LAYOUT_PRESETS = [
-  {
-    id: 'blank',
-    name: 'Blank',
-    description: 'Start from scratch and add widgets one at a time.',
-    widgetNames: [],
-    roles: ['teacher', 'media'],
-    layout: [],
-    settings: {},
-  },
-  {
-    id: 'run-my-room',
-    name: 'Run my room',
-    description:
-      "What's Happened metric tiles beside Flagged Sessions up top, with the Daily Reading Tracker underneath.",
-    widgetNames: ["What's Happened", 'Flagged Sessions', 'Daily Reading Tracker'],
-    roles: ['teacher'],
-    layout: DEFAULT_LAYOUT,
-    settings: DEFAULT_SETTINGS,
-  },
-  {
-    id: 'run-classroom',
-    name: 'Run my classroom',
-    description:
-      'Daily Reading Tracker up top, with shortcuts and a student roster for quick lookups.',
-    widgetNames: ['Daily Reading Tracker', 'Quick Links', 'Students'],
-    roles: ['teacher', 'media'],
-    layout: [
-      { i: 'daily-tracker', x: 0, y: 0, w: 12, h: 20, minW: 4, minH: 6 },
-      { i: 'quick-links', x: 0, y: 20, w: 12, h: 14, minW: 4, minH: 14 },
-      { i: 'leaderboard-students', x: 0, y: 28, w: 12, h: 34, minW: 4, minH: 10 },
-    ],
-    settings: {},
-  },
-  {
-    id: 'manage-rewards',
-    name: 'Manage rewards & recognition',
-    description: "Surface who's earning, who's ready for a reward, and shortcuts to distribute.",
-    widgetNames: ['Students', 'Classes', 'Quick Links'],
-    roles: ['teacher', 'media'],
-    layout: [
-      { i: 'leaderboard-students', x: 0, y: 0, w: 4, h: 34, minW: 4, minH: 10 },
-      { i: 'leaderboard-classes', x: 4, y: 0, w: 8, h: 34, minW: 4, minH: 10 },
-      { i: 'quick-links', x: 0, y: 34, w: 12, h: 14, minW: 4, minH: 14 },
-    ],
-    settings: {
-      'leaderboard-students': { sort: 'active-desc', range: 'week', limit: '15' },
-      'leaderboard-classes': { sort: 'active-desc', range: 'week', limit: '15' },
-    },
-  },
-  {
-    id: 'engagement-health',
-    name: 'Engagement health',
-    description:
-      'Spot quiet readers and stalled classes with weekly tracking and at-a-glance metrics.',
-    widgetNames: ["What's Happened", 'Daily Reading Tracker'],
-    roles: ['teacher', 'media'],
-    layout: [
-      { i: 'stat-tiles', x: 0, y: 0, w: 12, h: 8, minW: 4, minH: 4 },
-      { i: 'daily-tracker', x: 0, y: 8, w: 12, h: 20, minW: 4, minH: 6 },
-    ],
-    settings: {},
-  },
-  {
-    id: 'media-overview',
-    name: 'Media specialist overview',
-    description:
-      'A top-3 leaderboard and key metrics — the at-a-glance view for media specialists. Flagged sessions live in the rail.',
-    widgetNames: ['Leaderboard', "What's Happened"],
-    roles: ['media'],
-    layout: MEDIA_DEFAULT_LAYOUT,
-    settings: MEDIA_DEFAULT_SETTINGS,
-  },
-  {
-    id: 'explore-data',
-    name: 'Explore the data',
-    description: 'Number Cruncher, stat tiles, and rosters for ad-hoc questions and digging in.',
-    widgetNames: ['Number Cruncher', "What's Happened", 'Students'],
-    roles: ['teacher', 'media'],
-    layout: [
-      { i: 'questions', x: 0, y: 0, w: 12, h: 14, minW: 4, minH: 14 },
-      { i: 'stat-tiles', x: 0, y: 8, w: 12, h: 8, minW: 4, minH: 4 },
-      { i: 'leaderboard-students', x: 0, y: 16, w: 12, h: 34, minW: 4, minH: 10 },
-    ],
-    settings: {
-      questions: { selected: ['q1', 'q2', 'q3', 'q4', 'q5', 'q6'] },
-    },
-  },
-]

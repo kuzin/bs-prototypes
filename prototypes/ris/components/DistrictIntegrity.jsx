@@ -73,7 +73,7 @@ export function DistrictIntegrity() {
 
   return (
     <div className="rc-page" style={{ '--rc-accent': ACCENT }}>
-      <Hero bucket="integrity" />
+      <Hero variant="page" bucket="integrity" />
 
       <div className="rc-stats-row">
         <StatCard

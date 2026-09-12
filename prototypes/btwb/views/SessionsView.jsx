@@ -78,7 +78,12 @@ export function SessionsView() {
         </ul>
       </div>
 
-      <SessionModal session={active} onSelectSession={setActive} onClose={() => setActive(null)} />
+      <SessionModal
+        session={active}
+        allSessions={SESSIONS}
+        onSelectSession={setActive}
+        onClose={() => setActive(null)}
+      />
     </div>
   )
 }

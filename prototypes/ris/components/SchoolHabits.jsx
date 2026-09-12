@@ -75,8 +75,8 @@ export function SchoolHabits({ schoolId }) {
   ]
 
   return (
-    <div className="mot-root">
-      <Hero bucket="habits" />
+    <div className="mot-root" style={{ '--rc-accent': HABITS_COLOR }}>
+      <Hero variant="page" bucket="habits" />
 
       <div className="rc-stats-row">
         <StatCard

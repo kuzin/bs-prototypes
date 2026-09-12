@@ -83,3 +83,29 @@ body {
 .ris-district .rc-card-drill:hover:not(:disabled) {
   color: var(--c-gray-900);
 }
+
+/* ─── Page rhythm ──────────────────────────────────────────────────────────
+   Every RIS section page is a column of blocks — the header, a stat row, then
+   charts and tables. Only the School dashboard owned that rhythm; the rest
+   were bare `div`s relying on whatever margin each block happened to carry, so
+   a stat row sat flush against the chart under it. The page owns the gap and
+   the blocks own nothing outside themselves, which is the rule `.sdb` already
+   set. */
+.mot-root,
+.dm-root,
+.an-root,
+.rc-page,
+.sv-root {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* The shared blocks each brought their own trailing margin, which stacks on
+   top of the gap above. */
+.mot-root > *,
+.dm-root > *,
+.an-root > *,
+.rc-page > * {
+  margin-bottom: 0;
+}

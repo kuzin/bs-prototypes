@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -236,22 +236,45 @@ export function SessionModal({
     if (mainRef.current) mainRef.current.scrollTop = 0
   }, [session?.id])
 
+  const navIdx = session ? allSessions.findIndex((s) => s.id === session.id) : -1
+  const canNav = !!onSelectSession && navIdx >= 0
+  const goPrev = useMemo(
+    () =>
+      onPrev !== undefined
+        ? onPrev
+        : canNav && navIdx > 0
+          ? () => onSelectSession(allSessions[navIdx - 1])
+          : null,
+    [onPrev, canNav, navIdx, allSessions, onSelectSession],
+  )
+  const goNext = useMemo(
+    () =>
+      onNext !== undefined
+        ? onNext
+        : canNav && navIdx < allSessions.length - 1
+          ? () => onSelectSession(allSessions[navIdx + 1])
+          : null,
+    [onNext, canNav, navIdx, allSessions, onSelectSession],
+  )
+  const navIndex = sessionIdx ?? navIdx
+  const navCount = sessionCount ?? allSessions.length
+
   useEffect(() => {
     if (!session) return
     function handleKey(e) {
       if (e.target.matches('input, textarea, select, [contenteditable]')) return
-      if (e.key === 'ArrowLeft' && onPrev) {
+      if (e.key === 'ArrowLeft' && goPrev) {
         e.preventDefault()
-        onPrev()
+        goPrev()
       }
-      if (e.key === 'ArrowRight' && onNext) {
+      if (e.key === 'ArrowRight' && goNext) {
         e.preventDefault()
-        onNext()
+        goNext()
       }
     }
     window.addEventListener('keydown', handleKey)
     return () => window.removeEventListener('keydown', handleKey)
-  }, [session, onPrev, onNext])
+  }, [session, goPrev, goNext])
 
   const d = local || session
   if (!session || !d) return null
@@ -435,26 +458,26 @@ export function SessionModal({
         <div className="sm2-topbar">
           <div className="sm2-topbar-left">
             {!showReaderList && <span className="sm2-section-title">Reading session</span>}
-            {showReaderList && sessionCount > 0 && (
+            {showReaderList && navCount > 0 && (
               <div className="sm2-nav">
                 <button
                   className="sm2-nav-btn"
-                  disabled={!onPrev}
-                  onClick={onPrev}
+                  disabled={!goPrev}
+                  onClick={goPrev}
                   title="Previous session (←)"
                 >
                   <Icon name="chevron-left" size={14} stroke={2.2} />
                   <span className="sm2-nav-label">Prev</span>
                 </button>
                 <span className="sm2-nav-count">
-                  <strong>{sessionIdx + 1}</strong>
+                  <strong>{navIndex + 1}</strong>
                   <span className="sm2-nav-count-sep">of</span>
-                  {sessionCount}
+                  {navCount}
                 </span>
                 <button
                   className="sm2-nav-btn"
-                  disabled={!onNext}
-                  onClick={onNext}
+                  disabled={!goNext}
+                  onClick={goNext}
                   title="Next session (→)"
                 >
                   <span className="sm2-nav-label">Next</span>

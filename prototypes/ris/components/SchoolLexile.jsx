@@ -41,8 +41,8 @@ export function SchoolLexile({ schoolId }) {
   ]
 
   return (
-    <div className="mot-root">
-      <Hero bucket="skills" />
+    <div className="mot-root" style={{ '--rc-accent': SKILLS_COLOR }}>
+      <Hero variant="page" bucket="skills" />
 
       <div className="rc-stats-row">
         <StatCard

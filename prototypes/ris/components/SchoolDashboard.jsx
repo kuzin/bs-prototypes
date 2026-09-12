@@ -126,6 +126,7 @@ export function SchoolDashboard({ schoolId, onNavigate, onOpenStudent, alerts = 
   return (
     <div className="sdb">
       <Hero
+        variant="page"
         title={school.name}
         subtitle={`${school.grades} · ${school.students.toLocaleString()} students`}
         accent={school.color}

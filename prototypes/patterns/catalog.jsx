@@ -206,7 +206,7 @@ export const GROUPS = [
     id: 'challenge-creator',
     kind: 'prototype',
     title: 'Challenge Creator',
-    desc: 'Components for the Challenge Creator — the badge pickers and editor, the color-chip picker, and the gameboard challenge type: the drag-and-drop board readers travel and its illustrated theme picker.',
+    desc: 'Components for the Challenge Creator — the type picker that decides what every later step asks, the badge ladder and the pickers that fill it, the disclosure that keeps one decision per screen, the reader-facing preview, and the gameboard type: the drag-and-drop board readers travel and its illustrated theme picker.',
     color: 'var(--c-teal)',
   },
   {
@@ -234,7 +234,7 @@ export const GROUPS = [
     id: 'admin-dashboard',
     kind: 'prototype',
     title: 'Admin Dashboard',
-    desc: 'Components for the Admin Dashboard prototype — the anchored settings popover used by per-widget and rail-card settings.',
+    desc: 'Components for the Admin Dashboard prototype — the draggable grid an admin rearranges, every widget that sits in it, the fixed rail of things to do next, and the chrome around them: the settings popover, the announcement bar, and the layout templates.',
     color: 'var(--c-gray-750)',
   },
   {

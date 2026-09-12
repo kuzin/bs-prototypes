@@ -52,7 +52,7 @@ export function DistrictMotivation() {
 
   return (
     <div className="rc-page" style={{ '--rc-accent': ACCENT }}>
-      <Hero bucket="motivation" />
+      <Hero variant="page" bucket="motivation" />
 
       <div className="rc-stats-row">
         <StatCard
