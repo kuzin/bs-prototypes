@@ -4,8 +4,13 @@ import './PreviewBar.css'
 /**
  * The dev/preview bar that sits above a multi-persona prototype and switches
  * between its views. Every prototype that has one uses this, so the bar reads
- * the same everywhere — Benny, the prototype's name, and a segmented strip of
- * views on the right.
+ * the same everywhere — the prototype's name, and a segmented strip of views
+ * on the right.
+ *
+ * Deliberately neutral: this is the reviewer's chrome, not part of the screen
+ * under review, so it carries no brand colour and no mascot. It used to be a
+ * teal gradient with Benny on it, which read as another Beanstack surface and
+ * fought whatever prototype was sitting underneath it.
  *
  * <PreviewBar
  *   title="Words with Benny"
@@ -35,12 +40,9 @@ export function PreviewBar({
   const cls = ['pvb', sticky && 'pvb--sticky', className].filter(Boolean).join(' ')
   return (
     <div className={cls}>
-      <div className="pvb-brand">
-        <img src="/bs-prototypes/benny.png" alt="" className="pvb-benny" />
-        <div className="pvb-titles">
-          <span className="pvb-title">{title}</span>
-          {subtitle && <span className="pvb-subtitle">{subtitle}</span>}
-        </div>
+      <div className="pvb-titles">
+        <span className="pvb-title">{title}</span>
+        {subtitle && <span className="pvb-subtitle">{subtitle}</span>}
       </div>
 
       {views.length > 0 && (

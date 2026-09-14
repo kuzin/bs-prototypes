@@ -9,6 +9,14 @@ import { BackBar } from '@components/BackBar/BackBar'
 import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Toggle } from '@components/Toggle/Toggle'
 import { SectionCard, SectionCardTitle } from '@components/SectionCard/SectionCard'
+import {
+  BadgeArt,
+  BadgeDisc,
+  CollectionCard,
+  ShelfGrid,
+  ShelfHead,
+} from '@components/CollectionShelf/CollectionShelf'
+import { badgeSrc } from '@components/ReaderApp/ReaderApp'
 import { ColorInput, Field, Input, Select } from '@components/Form/Form'
 import { SCHOOLS } from '../../ris/data'
 import { Icon } from '@components/Icon/Icon'
@@ -668,11 +676,17 @@ import '@components/BackBar/BackBar.css'
     desc: (
       <>
         The dev/preview bar above a multi-persona prototype, switching between its views. Every
-        prototype with one uses this, so the bars read the same everywhere — Benny, the
-        prototype&apos;s name, and a segmented strip of views on the right. Replaces four
-        hand-rolled bars (<code>bt-toolbar</code>, <code>bw-toolbar</code>, <code>pyp-devbar</code>,{' '}
+        prototype with one uses this, so the bars read the same everywhere — the prototype&apos;s
+        name, and a segmented strip of views on the right. Replaces four hand-rolled bars (
+        <code>bt-toolbar</code>, <code>bw-toolbar</code>, <code>pyp-devbar</code>,{' '}
         <code>wb-toolbar</code>) that had drifted onto three different grounds and two different
         active states.
+        <br />
+        <br />
+        The ground is a flat neutral gray, and there is no mascot: this bar is the reviewer&apos;s
+        chrome sitting on top of the screen under review, and the teal-and-Benny version it started
+        as read as one more Beanstack surface — clashing with every prototype whose own accent
+        wasn&apos;t teal.
         <br />
         <br />
         Props: <code>title</code>, optional <code>subtitle</code>, <code>views</code> (
@@ -707,6 +721,92 @@ import '@components/BackBar/BackBar.css'
           />
         </Variant>
       </>
+    ),
+  },
+  {
+    group: 'cards',
+    id: 'collection-shelf',
+    name: 'CollectionShelf',
+    usage: `import {
+  CollectionCard, BadgeArt, BadgeDisc, ShelfHead, ShelfGrid,
+} from '@components/CollectionShelf/CollectionShelf'
+
+<ShelfHead title="Badges" count="5 of 12" noun="earned" />
+<ShelfGrid>
+  <CollectionCard
+    art={<BadgeArt src={badgeSrc('spring-into-reading', 'butterfly')} />}
+    name="Butterfly"
+    blurb="Earned for logging 100 minutes!"
+    date="Completed on Apr 6, 2026"
+  />
+  <CollectionCard
+    art={<BadgeDisc color="#0B6B78"><Icon name="clock" size={38} /></BadgeDisc>}
+    name="1,000 Minutes"
+    blurb="Log 1,000 minutes of reading."
+    locked
+    progress={62}
+    date="620/1,000 Minutes Completed"
+  />
+</ShelfGrid>`,
+    desc: (
+      <>
+        The reader&apos;s shelf of earned things. Badges and achievements are the same card in the
+        product — circular art over a bold name and a line of copy, with the state on its own footer
+        strip — so this is one card used by both, plus the shelf head that counts them and the grid
+        they sit in.
+        <br />
+        <br />
+        <code>locked</code> is the not-yet-earned state: the art goes gray, a <code>progress</code>{' '}
+        ring shows how far along the reader is, and the footer carries the requirement (
+        <em>620/1,000 Minutes Completed</em>) where an earned badge carries its date. The
+        profile&apos;s &ldquo;Earned Badges&rdquo; page only lists what has been earned; the
+        unearned half comes from a challenge&apos;s Badges tab, which grays the whole set.
+        <br />
+        <br />
+        <code>art</code> is whatever goes in the circular slot. <code>BadgeArt</code> is the real
+        thing — the illustration Beanstack&apos;s design team draws for that challenge, out of{' '}
+        <code>Design/Projects/Challenges/&lt;name&gt;/Badges</code>; <code>BadgeDisc</code> puts a
+        glyph on a coloured disc where there is no illustration, and Book Discovery&apos;s{' '}
+        <code>AchievementArt</code> medallions drop straight in. <code>co-subtabs</code> ships with
+        it — the full-bleed band a pane switcher sits on, flush under the main nav.
+        <br />
+        <br />
+        Used by <strong>Words with Benny</strong> (the Badges and Achievements panes of My
+        Collections) and <strong>web-app</strong> (All Badges).
+      </>
+    ),
+    render: () => (
+      <Variant label="earned / not earned yet">
+        <div style={{ padding: 20, background: '#f3f4f6' }}>
+          <ShelfHead title="Badges" count="5 of 12" noun="earned" />
+          <ShelfGrid>
+            <CollectionCard
+              art={<BadgeArt src={badgeSrc('spring-into-reading', 'butterfly')} />}
+              name="Butterfly"
+              blurb="Earned for logging 100 minutes!"
+              date="Completed on Apr 6, 2026"
+            />
+            <CollectionCard
+              art={<BadgeArt src={badgeSrc('spring-into-reading', 'bees')} />}
+              name="Bees"
+              blurb="Log 1,000 minutes of reading."
+              locked
+              progress={62}
+              date="620/1,000 Minutes Completed"
+            />
+            <CollectionCard
+              art={
+                <BadgeDisc color="#0B6B78">
+                  <Icon name="clock" size={38} stroke={1.7} />
+                </BadgeDisc>
+              }
+              name="1,000 Minutes"
+              blurb="The fallback, where a badge has no illustration."
+              date="Completed on Jun 24, 2026"
+            />
+          </ShelfGrid>
+        </div>
+      </Variant>
     ),
   },
   {

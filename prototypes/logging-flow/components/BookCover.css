@@ -173,3 +173,27 @@
 .bkcov--lg .bkcov-author {
   font-size: 12px;
 }
+
+/* Fills its grid cell rather than taking a fixed size — the All Titles shelf.
+   Every tile holds the app's 1:1.5 cover ratio, real image or placeholder, so
+   the shelf stays a grid: letting a real cover keep its own ratio collapsed
+   the tile to nothing until the image came back from Open Library. */
+.bkcov--fill {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1.5;
+  border-radius: 10px;
+  padding: 12px;
+}
+.bkcov--fill .bkcov-title {
+  font-size: 15px;
+}
+.bkcov--fill .bkcov-author {
+  font-size: 11px;
+}
+.bkcov--fill .bkcov-magname {
+  font-size: 14px;
+}
+.bkcov--fill .bkcov-issue {
+  font-size: 10px;
+}

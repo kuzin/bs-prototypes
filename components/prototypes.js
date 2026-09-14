@@ -132,7 +132,7 @@ export const PROTOTYPES = [
     href: '/bs-prototypes/books/',
     accent: '#0D9488',
     description:
-      'Reader-facing book pages — discover, reviews, Benny recommendations, and partner shelves.',
+      'Discover and My Shelf on the reader app — the catalog, Benny recommendations and partner shelves, with the rest of the nav coming from Web App.',
   },
   {
     id: 'logging-flow',

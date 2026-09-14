@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { Button } from '@components/Button/Button'
+import { SearchInput } from '@components/SearchInput/SearchInput'
+import '@components/SearchInput/SearchInput.css'
 import { BookCard } from './BookCard'
 import { recommend } from '../data'
 
@@ -35,7 +38,7 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
   return (
     <section className={`bk-ask ${result || loading ? 'is-answered' : ''}`}>
       {!result && !loading && (
-        <>
+        <div className="bk-ask-prompt">
           <div className="bk-ask-head">
             <img src="/bs-prototypes/benny-excited.svg" alt="" className="bk-ask-avatar" />
             <div className="bk-ask-headtext">
@@ -55,19 +58,24 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
               ask()
             }}
           >
-            <Icon name="search" size={18} className="bk-ask-search-icon" />
-            <input
-              className="bk-ask-input"
+            <SearchInput
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={setQuery}
               placeholder="e.g. funny graphic novels, or something like The Wild Robot…"
-              aria-label="Ask Benny for a recommendation"
+              ariaLabel="Ask Benny for a recommendation"
             />
-            <button type="submit" className="bk-ask-btn">
-              <Icon name="sparkles" size={15} /> Ask Benny
-            </button>
+            {/* The brand's teal, not the page's action blue — this is Benny's
+                panel, and the button is the one thing on it that acts. */}
+            <Button
+              type="submit"
+              variant="accent"
+              accent="var(--c-teal)"
+              icon={<Icon name="sparkles" size={15} />}
+            >
+              Ask Benny
+            </Button>
           </form>
-        </>
+        </div>
       )}
 
       {loading && (

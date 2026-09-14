@@ -6,6 +6,8 @@ import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { Flyout } from '@components/Flyout/Flyout'
 import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
+// Re-exported so the pages that already reach for it here keep working.
+export { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 
 import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
@@ -40,8 +42,13 @@ export const READER_TABS = [
   { id: 'friends', label: 'Friends' },
   { id: 'leaderboards', label: 'Leaderboards' },
   { id: 'reviews', label: 'Reviews' },
-  { id: 'badges', label: 'All Badges' },
-  { id: 'log', label: 'Reading Log' },
+  // The app calls this "All Badges"; it holds achievements too, so the tab says
+  // what it is. Every tab in this nav is the reader's own, so none of them says
+  // "My" — it would be on all four or none.
+  { id: 'badges', label: 'Collections' },
+  // "Reading Log" in the app; it holds All Titles and (in web-app) Reviews
+  // alongside the log itself, so the tab is named for the whole of it.
+  { id: 'log', label: 'Reading' },
 ]
 
 /**
@@ -279,16 +286,35 @@ export function StreakBanner({ streak, onLog, message }) {
             </>
           ))}
       </div>
-      <Button variant="accent" accent="var(--c-red)" size="sm" onClick={onLog}>
+      {/* A white chip on the banner's own tint, the way the connect banner's
+          CTA is — a filled red button made this the loudest thing on a page it
+          is only a nudge on. */}
+      <button type="button" className="wa-streak-cta" onClick={onLog}>
         {has ? 'Log Today' : 'View Streaks'}
-      </Button>
+      </button>
     </div>
   )
 }
 
 // ─── Challenges ─────────────────────────────────────────────────────────────
 
-/** The illustrated challenge covers, keyed by a challenge's `art`. */
+/**
+ * Where a challenge's banner lives. A Program's `header_image` is the art staff
+ * upload when they build the challenge; these are Beanstack's own, out of
+ * `Design/Projects/Challenges/<name>/Banner` at 920×351 (or 1840×702 at 2×) and
+ * converted to 1200px webp.
+ */
+export const bannerSrc = (key) => (key ? `/bs-prototypes/challenge-banners/${key}.webp` : null)
+
+/** One of that challenge's badges, from `Design/.../<name>/Badges`. */
+export const badgeSrc = (set, name) =>
+  set && name ? `/bs-prototypes/challenge-badges/${set}/${name}.webp` : null
+
+/**
+ * The drawn covers, keyed by a challenge's `art`. The fallback for a challenge
+ * with no banner of its own — the app's is `no-challenge-image.png`, but a
+ * designed gradient beats a grey placeholder in a prototype.
+ */
 export const CHALLENGE_ART = {
   spring: {
     bg: 'linear-gradient(180deg, #BFE3FA 0%, #B6F0C9 100%)',
@@ -324,16 +350,33 @@ export const CHALLENGE_ART = {
  * What it measures sits beside the name rather than floated over the artwork:
  * the art is the challenge's identity, and the pill was covering whatever part
  * of it landed in that corner.
+ *
+ * `onOpen` is optional — the card has always been a `<button>`, it just never
+ * had anywhere to go. A prototype that has built the challenge page passes it;
+ * without it the card stays inert, as before.
  */
-export function ChallengeCard({ challenge, accent = READER_ACCENT }) {
+export function ChallengeCard({ challenge, accent = READER_ACCENT, onOpen }) {
+  const banner = bannerSrc(challenge.banner)
   const art = CHALLENGE_ART[challenge.art] ?? CHALLENGE_ART.spring
   return (
-    <button className="wa-chcard" type="button">
-      <div className="wa-chcard-hero" style={{ background: art.bg }}>
-        <span className="wa-chcard-arttitle" style={{ color: art.titleColor }}>
-          {art.title}
-        </span>
-      </div>
+    <button
+      className={`wa-chcard${onOpen ? ' wa-chcard--open' : ''}`}
+      type="button"
+      onClick={onOpen ? () => onOpen(challenge) : undefined}
+    >
+      {/* The real banner where the challenge has one — `img.challenge-image` in
+          the app's own card — and the drawn cover where it doesn't. */}
+      {banner ? (
+        <div className="wa-chcard-hero">
+          <img src={banner} alt="" className="wa-chcard-img" />
+        </div>
+      ) : (
+        <div className="wa-chcard-hero" style={{ background: art.bg }}>
+          <span className="wa-chcard-arttitle" style={{ color: art.titleColor }}>
+            {art.title}
+          </span>
+        </div>
+      )}
       <div className="wa-chcard-body">
         <div className="wa-chcard-titlerow">
           <div className="wa-chcard-title">{challenge.title}</div>
@@ -355,21 +398,24 @@ const SCOPES = [
   { id: 'ignored', label: 'Ignored' },
 ]
 
-/** Current / Past / Ignored, beside the "Challenges" heading. */
+/**
+ * Current / Past / Ignored, beside the "Challenges" heading.
+ *
+ * A segmented control is `Tabs variant="pill"` in this system — this was a
+ * hand-rolled one, on its own pink active state that matched nothing else on
+ * the page.
+ */
 export function ChallengeScope({ value, onChange, scopes = SCOPES }) {
   return (
-    <div className="wa-scope">
-      {scopes.map((o) => (
-        <button
-          key={o.id}
-          type="button"
-          className={`wa-scope-btn${value === o.id ? ' wa-scope-btn--active' : ''}`}
-          onClick={() => onChange(o.id)}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
+    <Tabs
+      variant="pill"
+      size="sm"
+      active={value}
+      onChange={onChange}
+      accent={READER_ACCENT}
+      ariaLabel="Which challenges"
+      items={scopes}
+    />
   )
 }
 

@@ -26,158 +26,97 @@ button {
   cursor: pointer;
 }
 
-.bk-app,
-.bk-catalog {
-  /* token aliases the book-discovery components read; .bk-catalog lets the
-     Pattern Library render these components outside the app shell */
+:root {
+  /* Token aliases the book-discovery components read. On `:root` rather than an
+     app wrapper: this prototype renders inside the shared reader shell now, so
+     there is no `.bk-app` to hang them off — and the Pattern Library renders
+     these components outside any shell at all. */
   --bk-bg: #f4f5f7;
   --bk-line: #e6e8ec;
   --bk-ink: #18324a;
   --bk-muted: #707070;
 }
-.bk-app {
-  min-height: 100vh;
-}
 
-/* ─── Top bar ──────────────────────────────────────────────────────────────── */
-
-.bk-topbar {
-  background: #fff;
-  border-bottom: 1px solid var(--bk-line);
-  position: sticky;
-  top: 0;
-  z-index: 30;
-}
-.bk-topbar-inner {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 11px 24px;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-.bk-logo {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-.bk-logo-mark {
-  width: 24px;
-  height: 24px;
-}
-.bk-logo-word {
-  font-size: 19px;
-  font-weight: 800;
-  color: var(--bk-ink);
-  letter-spacing: -0.02em;
-}
-.bk-topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-left: 10px;
-}
-.bk-topbar-actions .btn--ghost {
-  color: var(--c-gray-800);
-}
-.bk-topbar-user {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-.bk-user-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 13px 4px 4px;
-  border-radius: 999px;
-  background: #fdeae1;
-  font-weight: 700;
-  color: #2e2422;
-  font-size: 14px;
-}
-.bk-user-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 999px;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 800;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.bk-icon-btn {
-  background: transparent;
-  border: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--c-gray-700);
-}
-.bk-icon-btn:hover {
-  background: var(--c-gray-100);
-}
-.bk-tabsbar {
-  border-top: 1px solid #f1f3f5;
-}
-.bk-tabsbar .tabs {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 0 24px;
-  justify-content: center;
-  gap: 2px;
-}
-.bk-tabsbar .tab {
-  padding: 12px 18px;
-  font-size: 14px;
-}
-
-.bk-main {
-  min-height: calc(100vh - 160px);
+/* This shell carries both prototype bars, so the reader's sticky top bar stops
+   below the preview bar, and modals opened inside it scrim the demo rather than
+   the chrome around it. */
+.bk-root {
+  --chrome-top: var(--preview-bar-h);
+  --chrome-bottom: var(--proto-nav-h);
 }
 
 /* ─── Shared content frame ─────────────────────────────────────────────────── */
 
+/* The reader shell owns the page frame — `.wa-main-inner` is the one
+   max-width and the one gutter for every view in the web app, so these pages
+   only set their own vertical rhythm. */
 .bk-discover,
-.bk-detail {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 22px 24px 8px;
-}
-
-/* ─── Discover: page header (matches My Shelf) ─────────────────────────────── */
-
-.bk-discover-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 20px;
-  margin-bottom: 20px;
+.bk-detail,
+.bk-shelfpage,
+.bk-browse-page {
+  padding-bottom: 8px;
 }
 
 /* ─── Ask Benny — working recommendation prompt ────────────────────────────── */
 
+/* Benny's panel, on the brand's own teal rather than a colour of its own: the
+   wash to fill with, the solid for the rule, the ink for type. It is the one
+   place on Discover where Benny speaks, and plain white said nothing about
+   that — but the tokens keep it inside the system. */
 .bk-ask {
-  background: linear-gradient(135deg, #f0faf8, #eaf4ff);
-  border: 1px solid #d3ece6;
-  border-radius: 20px;
-  padding: 20px 22px;
-  margin-bottom: 26px;
+  padding: 16px 20px;
+  margin-bottom: 30px;
+  background: var(--c-teal-wash);
+  border: 1px solid color-mix(in srgb, var(--c-teal) 28%, #fff);
+  border-radius: 14px;
 }
+.bk-ask .bk-ask-title {
+  color: var(--c-teal-ink);
+}
+.bk-ask .bk-ask-title .bp-icon {
+  color: var(--c-teal);
+}
+.bk-ask .bk-ask-sub {
+  color: var(--c-teal-ink);
+}
+/* The field sits on the wash, so it keeps its white ground and loses the
+   border that would otherwise draw a second line around it. */
+.bk-ask .search-input {
+  background: #fff;
+  border-color: color-mix(in srgb, var(--c-teal) 22%, #fff);
+}
+
+/* Prompt state, one row: Benny introduces himself on the left and the field he
+   is asking you to fill sits on the right. Stacked, the panel was twice as tall
+   as the one thing it wants. */
+.bk-ask-prompt {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.bk-ask-prompt .bk-ask-head {
+  flex: 0 1 auto;
+  margin-bottom: 0;
+}
+/* The field takes the rest of the row and the button keeps its own width. */
+.bk-ask-prompt .bk-ask-form {
+  flex: 1 1 380px;
+  min-width: 0;
+}
+.bk-ask-prompt .bk-ask-form .search-input {
+  flex: 1;
+  min-width: 0;
+}
+
 .bk-ask-head {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: center;
   margin-bottom: 14px;
 }
 .bk-ask-avatar {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #fff;
   border: 1px solid #d3ece6;
@@ -191,7 +130,7 @@ button {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--bk-ink);
 }
@@ -201,55 +140,7 @@ button {
 .bk-ask-sub {
   font-size: 14px;
   color: var(--bk-muted);
-  margin: 2px 0 0;
-}
-.bk-ask-form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #fff;
-  border: 1.5px solid #cfe7e1;
-  border-radius: 14px;
-  padding: 7px 8px 7px 14px;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-}
-.bk-ask-form:focus-within {
-  border-color: #0d9488;
-  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
-}
-.bk-ask-search-icon {
-  color: var(--c-gray-500);
-  flex: 0 0 auto;
-}
-.bk-ask-input {
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  font-size: 15px;
-  font-family: inherit;
-  color: var(--c-gray-900);
-}
-.bk-ask-input::placeholder {
-  color: var(--c-gray-500);
-}
-.bk-ask-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 0;
-  border-radius: 10px;
-  padding: 9px 16px;
-  font-weight: 800;
-  font-size: 14px;
-  color: #fff;
-  background: linear-gradient(120deg, #0fb6a3, #0d9488);
-  flex: 0 0 auto;
-}
-.bk-ask-btn:hover {
-  filter: brightness(1.05);
+  margin: 1px 0 0;
 }
 .bk-ask-result {
   margin-top: 18px;
@@ -399,19 +290,19 @@ button {
 
 .bk-shelf {
   margin-bottom: 0;
-  padding-bottom: 24px;
+  padding-bottom: 36px;
 }
 /* Hairline divider between consecutive shelf rows */
 .bk-shelf + .bk-shelf {
+  padding-top: 36px;
   border-top: 1px solid var(--bk-line);
-  padding-top: 24px;
 }
 .bk-shelf-head {
   display: flex;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 }
 .bk-shelf-headmain {
   display: flex;
@@ -419,27 +310,15 @@ button {
   gap: 12px;
   min-width: 0;
 }
-.bk-shelf-badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 13px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  background: color-mix(in srgb, var(--accent) 14%, #fff);
-  color: var(--accent);
-  overflow: hidden;
-}
 .bk-shelf-title {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 900;
   color: var(--bk-ink);
   letter-spacing: -0.015em;
   line-height: 1.15;
 }
 .bk-shelf-sub {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--bk-muted);
   margin-top: 3px;
 }
@@ -452,13 +331,13 @@ button {
   gap: 8px;
   flex: 0 0 auto;
 }
+.bk-shelf-arrows {
+  display: flex;
+  gap: 8px;
+}
 .bk-shelf-viewall {
   margin-right: 2px;
   white-space: nowrap;
-}
-/* Curator avatar in a shelf header */
-.bk-shelf-headmain > .avatar {
-  flex: 0 0 auto;
 }
 .bk-shelf-sub--curator {
   display: inline-flex;
@@ -469,39 +348,6 @@ button {
 }
 .bk-shelf-sub--curator .bp-icon {
   color: #c2410c;
-}
-.bk-arrow {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: 1px solid var(--bk-line);
-  background: #fff;
-  color: var(--c-gray-750);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 0.14s,
-    border-color 0.14s,
-    color 0.14s,
-    transform 0.12s,
-    box-shadow 0.14s,
-    opacity 0.12s;
-}
-.bk-arrow:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 8%, #fff);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 11px color-mix(in srgb, var(--accent) 20%, transparent);
-}
-.bk-arrow:active:not(:disabled) {
-  transform: translateY(0) scale(0.93);
-  box-shadow: none;
-}
-.bk-arrow:disabled {
-  opacity: 0.34;
-  cursor: default;
 }
 
 .bk-shelf-trackwrap {
@@ -612,7 +458,7 @@ button {
   gap: 2px;
 }
 .bk-card-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--bk-ink);
   line-height: 1.25;
@@ -622,7 +468,7 @@ button {
   overflow: hidden;
 }
 .bk-card-author {
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: var(--bk-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -638,7 +484,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 12.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-gray-800);
 }
@@ -655,7 +501,7 @@ button {
   align-items: center;
   gap: 4px;
   margin-top: 4px;
-  font-size: 12.5px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-gray-700);
 }
@@ -925,132 +771,24 @@ button {
 }
 
 /* ── Discover catalog search (top-right of the header; launches Browse) ──────── */
+/* Layout only — the field and the button are the shared ones. Wide enough that
+   the field still reads as a field once the button sits beside it. */
 .bk-search-entry {
-  flex: 0 0 auto;
-  width: 340px;
-  max-width: 100%;
   display: flex;
+  flex: 0 0 auto;
+  gap: 8px;
   align-items: center;
-  gap: 9px;
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 12px;
-  padding: 5px 5px 5px 14px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  transition:
-    border-color 0.14s,
-    box-shadow 0.14s;
-}
-.bk-search-entry:focus-within {
-  border-color: #0d9488;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #0d9488 16%, transparent);
-}
-.bk-search-entry > .bp-icon {
-  color: var(--c-gray-500);
-  flex: 0 0 auto;
-}
-.bk-search-entry input {
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: none;
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--bk-ink);
-  min-width: 0;
-}
-.bk-search-go {
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 9px;
-  background: #0d9488;
-  color: #fff;
-  font-family: inherit;
-  font-weight: 800;
-  font-size: 13.5px;
-  padding: 8px 15px;
-  cursor: pointer;
-}
-.bk-search-go:hover {
-  filter: brightness(1.05);
+  width: 430px;
+  max-width: 100%;
 }
 
 /* ══ Browse / search page ════════════════════════════════════════════════════ */
-.bk-browse-page {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 22px 24px 8px;
-}
-/* List "view all" page header */
-.bk-listpage-head {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.bk-listpage-head > .avatar {
-  flex: 0 0 auto;
-}
-.bk-listpage-head .bk-shelfpage-title p {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.bk-listpage-head .bk-shelfpage-title p .bp-icon {
-  color: #c2410c;
-}
-.bk-listpage-count {
-  display: block;
-  margin-top: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--bk-muted);
-}
+/* Layout only — the field is the shared one. */
 .bk-searchbar {
   display: flex;
-  align-items: center;
-  gap: 11px;
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 14px;
-  padding: 13px 16px;
   margin-bottom: 22px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
-.bk-searchbar:focus-within {
-  border-color: #0d9488;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #0d9488 16%, transparent);
-}
-.bk-searchbar > .bp-icon {
-  color: var(--c-gray-500);
-  flex: 0 0 auto;
-}
-.bk-searchbar input {
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: none;
-  font-family: inherit;
-  font-size: 16px;
-  color: var(--bk-ink);
-  min-width: 0;
-}
-.bk-searchbar-clear {
-  flex: 0 0 auto;
-  border: 0;
-  background: var(--c-gray-100);
-  color: var(--c-gray-700);
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.bk-searchbar-clear:hover {
-  background: var(--c-gray-200);
-}
+
 .bk-browse-layout {
   display: grid;
   grid-template-columns: 232px minmax(0, 1fr);
@@ -1061,37 +799,9 @@ button {
 .bk-filters {
   position: sticky;
   top: 118px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
 }
-.bk-filters-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.bk-filters-head h2 {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 15px;
-  font-weight: 900;
-  color: var(--bk-ink);
-}
-.bk-filters-head h2 .bp-icon {
-  color: #0d9488;
-}
-.bk-filters-clear {
-  border: 0;
-  background: none;
-  color: #0f766e;
-  font-family: inherit;
-  font-weight: 800;
-  font-size: 13px;
-  cursor: pointer;
-}
-.bk-filters-clear:hover {
-  text-decoration: underline;
+.bk-filters .bk-filtergroup + .bk-filtergroup {
+  margin-top: 18px;
 }
 .bk-filtergroup-title {
   font-size: 12px;
@@ -1136,115 +846,29 @@ button {
   color: #0d9488;
 }
 /* Results */
-.bk-results-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
-.bk-results-count {
-  font-size: 14px;
-  color: var(--bk-muted);
-  font-weight: 600;
-}
-.bk-results-count strong {
-  font-size: 16px;
-  font-weight: 900;
-  color: var(--bk-ink);
-}
 .bk-results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 24px 18px;
 }
-.bk-results-empty {
-  text-align: center;
-  padding: 56px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-.bk-results-empty-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
-  background: #eef2f5;
-  color: var(--c-gray-500);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-}
-.bk-results-empty h3 {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--bk-ink);
-}
-.bk-results-empty p {
-  font-size: 14px;
-  color: var(--bk-muted);
-  margin-bottom: 8px;
-}
-
-/* ═══ Book detail ═══════════════════════════════════════════════════════════ */
-
-.bk-backbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-.bk-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid var(--bk-line);
-  background: #fff;
-  border-radius: 999px;
-  padding: 7px 15px 7px 12px;
-  font-weight: 800;
-  font-size: 14px;
-  color: var(--c-gray-800);
-}
-.bk-back:hover {
-  border-color: #0d9488;
-  color: #0d9488;
-}
-
 /* Detail hero */
 /* Soft, light hero — a gentle wash of the book's color instead of a heavy block */
+/* No tint behind the cover — the jacket is the colour on this page, and a
+   gradient sampled off it was competing with the thing it framed. */
+/* Opens the page the way a title row does elsewhere, so it takes the same gap
+   under the back link rather than a tighter one of its own. */
 .bk-dhero {
   position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent) 17%, #fff),
-    color-mix(in srgb, var(--accent) 6%, #fff)
-  );
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, #fff);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
-  margin-bottom: 24px;
-}
-.bk-dhero-glow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    480px 320px at 10% -20%,
-    color-mix(in srgb, var(--accent) 24%, transparent),
-    transparent 70%
-  );
-  pointer-events: none;
+  margin: var(--wa-page-top) 0 24px;
 }
 .bk-dhero-inner {
   position: relative;
   display: flex;
-  align-items: center;
   gap: 30px;
-  padding: 26px 32px;
+  align-items: center;
+  /* No side padding: there is no panel behind this any more, so the cover
+     should start at the page's own left edge like everything else. */
+  padding: 4px 0 26px;
 }
 .bk-dhero-coverwrap {
   position: relative;
@@ -1378,27 +1002,6 @@ button {
   flex-direction: column;
   gap: 16px;
 }
-.bk-rail-card {
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 16px;
-  padding: 16px 18px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-}
-.bk-rail-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--c-gray-700);
-  margin-bottom: 14px;
-}
-.bk-rail-title .bp-icon {
-  color: #0d9488;
-}
 .bk-rail-actions {
   display: flex;
   flex-direction: column;
@@ -1461,26 +1064,6 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-}
-.bk-statcell {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 11px 12px;
-  border-radius: 11px;
-  background: #f6faf9;
-  border: 1px solid #eef3f2;
-}
-.bk-statcell-val {
-  font-size: 18px;
-  font-weight: 900;
-  line-height: 1.1;
-  color: var(--bk-ink);
-}
-.bk-statcell-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--bk-muted);
 }
 .bk-dmain .tabs {
   border-bottom: 1px solid var(--bk-line);
@@ -2092,60 +1675,6 @@ button {
 .bk-readlog-viewlog:hover .bp-icon {
   transform: translateX(2px);
 }
-/* ─── My Shelf ─────────────────────────────────────────────────────────────── */
-
-.bk-shelfpage {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 22px 24px 8px;
-}
-.bk-shelfpage-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-bottom: 28px;
-}
-.bk-shelfpage-title h1 {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 27px;
-  font-weight: 800;
-  color: var(--bk-ink);
-  letter-spacing: -0.01em;
-}
-.bk-shelfpage-title h1 .bp-icon {
-  color: #0d9488;
-}
-.bk-shelfpage-title p {
-  margin-top: 4px;
-  color: var(--bk-muted);
-  font-size: 14.5px;
-}
-.bk-shelfpage-stats {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.bk-shelfstat {
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 12px;
-  padding: 9px 14px;
-  font-size: 13px;
-  color: var(--bk-muted);
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.bk-shelfstat strong {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--bk-ink);
-}
 .bk-shelfgroup {
   margin-bottom: 32px;
 }
@@ -2631,97 +2160,6 @@ button {
   white-space: nowrap;
 }
 
-/* ─── Footer (Beanstack web-app footer) ────────────────────────────────────── */
-
-.bk-footer-thin {
-  border-top: 1px solid var(--bk-line);
-  background: #fff;
-  margin-top: 44px;
-}
-.bk-footer-thin-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 11px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.bk-footer-links {
-  display: flex;
-  gap: 24px;
-}
-.bk-footer-links a {
-  font-size: 13px;
-  color: var(--c-gray-750);
-  text-decoration: none;
-  font-weight: 600;
-}
-.bk-footer-links a:hover {
-  color: var(--c-text);
-}
-.bk-footer-lang {
-  background: transparent;
-  border: 0;
-  font: inherit;
-  font-size: 13px;
-  color: var(--c-gray-750);
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.bk-footer-lang-g {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #4285f4 0, #34a853 50%, #fbbc05 75%, #ea4335 100%);
-  color: #fff;
-  font-size: 10px;
-  font-weight: 900;
-}
-.bk-footer {
-  background: #fff;
-  padding-bottom: 56px; /* fills behind the fixed PrototypeNav rail — no grey gap */
-}
-.bk-footer-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 12px 24px 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-}
-.bk-footer .bk-logo-mark {
-  width: 19px;
-  height: 19px;
-}
-.bk-footer .bk-logo-word {
-  font-size: 15px;
-  color: var(--c-gray-700);
-}
-.bk-footer-copy {
-  font-size: 12.5px;
-  color: var(--c-gray-600);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.bk-footer-copy a {
-  color: var(--c-text-light);
-  text-decoration: none;
-}
-.bk-footer-copy a:hover {
-  text-decoration: underline;
-}
-.bk-footer-copy span {
-  color: var(--c-gray-350);
-}
-
 /* ─── Settings modal ───────────────────────────────────────────────────────── */
 
 .bk-settings-head {
@@ -2833,9 +2271,6 @@ button {
   .bk-dhero-inner {
     flex-direction: column;
     align-items: flex-start;
-  }
-  .bk-topbar-actions {
-    display: none;
   }
 }
 
@@ -3127,655 +2562,8 @@ button {
 .bk-audio-finish:hover {
   background: rgba(255, 255, 255, 0.26) !important;
 }
-
-/* ─── Friends & Leaderboards ────────────────────────────────────────────────── */
-
-/* full-bleed chrome band that separates the switcher from the page below */
-.bk-friends-band {
-  display: flex;
-  justify-content: center;
-  padding: 14px 24px;
-  background: #fff;
-  border-bottom: 1px solid var(--bk-line);
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
-}
-
-/* friend tiles — banner + overlapping avatar + name beneath */
-.bk-ftile-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
-  gap: 26px 20px;
-}
-.bk-ftile {
-  position: relative;
-}
-/* the entire card is one button — banner, avatar and footer are all inside it */
-.bk-ftile-hit {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 0;
-  border: 1px solid var(--bk-line);
-  border-radius: 14px;
-  background: #fff;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  transition:
-    border-color 0.14s ease,
-    box-shadow 0.14s ease,
-    transform 0.14s ease;
-}
-.bk-ftile-hit:not(:disabled):hover {
-  border-color: #0d9488;
-  box-shadow: 0 10px 24px rgba(13, 148, 136, 0.15);
-  transform: translateY(-3px);
-}
-.bk-ftile-hit:disabled {
-  cursor: default;
-}
-/* a soft tint of the reader's color, so the full-strength avatar disc reads */
-.bk-ftile-banner {
-  display: block;
-  width: 100%;
-  height: 88px;
-  background: color-mix(in srgb, var(--tint, #acacac) 20%, #fff);
-}
-.bk-ftile.is-pending .bk-ftile-banner {
-  background: #eef0f3;
-}
-.bk-ftile-kebab {
-  position: absolute;
-  z-index: 2;
-  top: 8px;
-  right: 8px;
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.55);
-  color: #1f2933;
-}
-.bk-ftile-kebab:hover {
-  background: #fff;
-}
-.bk-ftile-menu {
-  position: absolute;
-  top: 42px;
-  right: 8px;
-  z-index: 5;
-  min-width: 172px;
-  padding: 6px;
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 12px;
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.16);
-}
-.bk-ftile-menu button {
-  display: block;
-  width: 100%;
-  padding: 9px 12px;
-  border: 0;
-  border-radius: 8px;
-  background: none;
-  text-align: left;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--bk-ink);
-}
-.bk-ftile-menu button:hover {
-  background: #e6f7fa;
-  color: #0f766e;
-}
-.bk-ftile-menu-danger:hover {
-  background: #fef2f2 !important;
-  color: #b91c1c !important;
-}
-.bk-ftile-avatar {
-  display: grid;
-  place-items: center;
-  width: 92px;
-  height: 92px;
-  margin-top: -46px;
-  border: 4px solid #fff;
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--c-gray-350);
-  color: #fff;
-  font-size: 30px;
-  font-weight: 800;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
-}
-.bk-ftile-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.bk-ftile.is-pending .bk-ftile-avatar {
-  background: #dfe3e8;
-  color: #98a2b3;
-}
-/* the white card foot */
-.bk-ftile-foot {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  width: 100%;
-  padding: 10px 10px 16px;
-  background: #fff;
-  text-align: center;
-}
-.bk-ftile-name {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--bk-ink);
-}
-.bk-ftile-meta {
-  font-size: 13px;
-  color: var(--bk-muted);
-}
-.bk-ftile-pending {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--bk-muted);
-}
-
-/* leaderboards */
-.bk-lb-head {
-  align-items: center;
-  margin-bottom: 10px;
-}
-.bk-lb-period {
-  min-width: 190px;
-}
-.bk-lb-boardtabs {
-  margin-bottom: 18px;
-  border-bottom: 1px solid var(--bk-line);
-}
-.bk-lbtable {
-  background: #fff;
-}
-.bk-lbmedal,
-.bk-lbrank {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 999px;
-  font-size: 13.5px;
-  font-weight: 900;
-  color: #fff;
-}
-.bk-lbrank {
-  color: var(--bk-muted);
-}
-.bk-lbmedal--1 {
-  background: linear-gradient(150deg, #fbbf24, #ab720a);
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
-}
-.bk-lbmedal--2 {
-  background: linear-gradient(150deg, #d0d0d0, #acacac);
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
-}
-.bk-lbmedal--3 {
-  background: linear-gradient(150deg, #d8a373, #b06e3b);
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.5);
-}
-.bk-lbreader {
-  display: inline-flex;
-  align-items: center;
-  gap: 11px;
-}
-.bk-lbavatar {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--c-gray-350);
-  color: #fff;
-  font-size: 12.5px;
-  font-weight: 800;
-  flex-shrink: 0;
-}
-.bk-lbavatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.bk-lbname {
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--bk-ink);
-}
-/* the local reset only sets font/cursor — bare buttons need the rest */
-.bk-lbname--link {
-  padding: 0;
-  border: 0;
-  background: none;
-  font-weight: 700;
-}
-.bk-lbname--link:hover {
-  color: #0d9488;
-  text-decoration: underline;
-}
-.bk-lbvalue {
-  font-size: 16px;
-  font-weight: 900;
-  color: var(--bk-ink);
-}
-
-/* ─── Invite a friend ───────────────────────────────────────────────────────── */
-
-.bk-invite {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-  padding: 40px 34px 34px;
-  text-align: center;
-}
-.bk-invite-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 999px;
-  background: var(--bk-bg);
-  color: var(--bk-ink);
-}
-.bk-invite-close:hover {
-  background: #e6f7fa;
-}
-.bk-invite h2 {
-  font-size: 25px;
-  font-weight: 900;
-  color: var(--bk-ink);
-}
-.bk-invite p {
-  max-width: 300px;
-  font-size: 15px;
-  color: var(--bk-muted);
-  line-height: 1.45;
-}
-.bk-invite-field {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-  width: 100%;
-  margin-top: 4px;
-  text-align: left;
-}
-.bk-invite-field span {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--bk-ink);
-}
-.bk-invite-field input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 1px solid var(--bk-line);
-  border-radius: 12px;
-  font-family: inherit;
-  font-size: 15px;
-  color: var(--bk-ink);
-}
-.bk-invite-field input:focus {
-  outline: none;
-  border-color: #0d9488;
-  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15);
-}
-.bk-invite .btn {
-  margin-top: 6px;
-  min-width: 160px;
-  justify-content: center;
-}
-.bk-invite-sentmark {
-  display: grid;
-  place-items: center;
-  width: 58px;
-  height: 58px;
-  border-radius: 999px;
-  background: #0ba85f;
-  color: #fff;
-}
-
-/* ─── Friend profile modal ──────────────────────────────────────────────────── */
-
-/* the shared center Modal is 520px — this one is a reader profile */
-.modal--center:has(.bk-fp) {
-  width: min(600px, calc(100vw - 32px));
-}
-
-.bk-fp {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  max-height: calc(100vh - 34px);
-  background: #fff;
-}
-.bk-fp-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border: 0;
-  border-radius: 999px;
-  background: #fff;
-  color: var(--bk-ink);
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.14);
-}
-.bk-fp-head {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  padding: 30px 26px 22px;
-  text-align: center;
-  background:
-    radial-gradient(
-      120% 90% at 18% 0%,
-      color-mix(in srgb, var(--accent) 26%, #fff),
-      transparent 62%
-    ),
-    color-mix(in srgb, var(--accent) 11%, #fff);
-}
-.bk-fp-avatar {
-  display: grid;
-  place-items: center;
-  width: 104px;
-  height: 104px;
-  margin-bottom: 8px;
-  border: 5px solid #fff;
-  border-radius: 999px;
-  overflow: hidden;
-  background: var(--c-gray-350);
-  color: #fff;
-  font-size: 34px;
-  font-weight: 800;
-  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.14);
-}
-.bk-fp-avatar img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-}
-.bk-fp-head h2 {
-  font-size: 25px;
-  font-weight: 900;
-  color: var(--bk-ink);
-  letter-spacing: -0.01em;
-}
-.bk-fp-head p {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--bk-muted);
-}
-/* the stat block sits between the header and the tabs */
-.bk-fp-stats {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 1px;
-  background: var(--bk-line);
-  border-top: 1px solid var(--bk-line);
-}
-.bk-fp-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1px;
-  padding: 12px 8px;
-  background: #fff;
-  text-align: center;
-}
-.bk-fp-stat strong {
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--bk-ink);
-  line-height: 1.2;
-}
-.bk-fp-stat span {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--bk-muted);
-  line-height: 1.25;
-}
-.bk-fp-stat .bp-icon {
-  margin-bottom: 3px;
-}
-
-/* top/side padding only — the underline indicator has to meet the bottom border */
-.bk-fp-tabs {
-  border-top: 1px solid var(--bk-line);
-  border-bottom: 1px solid var(--bk-line);
-  padding: 10px 26px 0;
-  background: var(--bk-bg);
-}
-/* every tab pane shares this gutter — panes must not add their own inset */
-.bk-fp-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 22px 24px;
-}
-.bk-fp-sec + .bk-fp-sec {
-  margin-top: 26px;
-}
-.bk-fp-sec-title {
-  padding-bottom: 9px;
-  margin-bottom: 14px;
-  border-bottom: 1px solid var(--bk-line);
-  font-size: 12.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--bk-ink);
-}
-.bk-fp-empty {
-  padding: 24px 0;
-  text-align: center;
-  font-size: 14.5px;
-  color: var(--bk-muted);
-}
-
-/* overview — earned badges + minutes */
-.bk-fp-badgerow {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(148px, 1fr));
-  gap: 12px;
-  /* the achievements variant is a <ul> — kill the default list indent */
-  padding: 0;
-  list-style: none;
-}
-/* each badge/achievement is its own card */
-.bk-fp-badge {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-  padding: 16px 12px 14px;
-  border: 1px solid var(--bk-line);
-  border-radius: 14px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  text-align: center;
-}
-.bk-fp-badgedetail {
-  font-size: 12px;
-  color: var(--bk-muted);
-  line-height: 1.35;
-}
-.bk-fp-badgeart {
-  display: grid;
-  place-items: center;
-  width: 62px;
-  height: 62px;
-  margin-bottom: 5px;
-  border-radius: 999px;
-  background: radial-gradient(
-    circle at 32% 26%,
-    color-mix(in srgb, var(--bc) 55%, #fff),
-    var(--bc)
-  );
-  color: #fff;
-  box-shadow: inset 0 0 0 3px rgba(255, 255, 255, 0.32);
-}
-.bk-fp-badgename {
-  font-size: 12.5px;
-  font-weight: 800;
-  color: var(--bk-ink);
-  line-height: 1.25;
-}
-.bk-fp-badgedate {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--c-gray-500);
-}
-.bk-fp-bigstat {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 20px 22px;
-  border-radius: 14px;
-  background: var(--bk-bg);
-}
-.bk-fp-bigstat strong {
-  font-size: 25px;
-  font-weight: 900;
-  color: var(--bk-ink);
-}
-
-/* challenges */
-.bk-fp-challenges {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.bk-fp-chcard {
-  border: 1px solid var(--bk-line);
-  border-radius: 14px;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
-}
-.bk-fp-chart {
-  display: grid;
-  place-items: center;
-  height: 118px;
-  padding: 16px;
-  text-align: center;
-}
-.bk-fp-chart span {
-  font-size: 22px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  line-height: 1.1;
-}
-.bk-fp-chmeta {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  padding: 13px 16px 15px;
-}
-.bk-fp-chmeta strong {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--bk-ink);
-}
-.bk-fp-chmeta span {
-  font-size: 13.5px;
-  color: var(--bk-muted);
-}
-
-/* reading log */
-.bk-fp-logged {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 0;
-  list-style: none;
-}
-.bk-fp-logrow {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: calc(100% + 20px);
-  /* negative margin lets the hover fill bleed while text stays on the gutter */
-  margin: 0 -10px;
-  padding: 8px 10px;
-  border: 0;
-  border-radius: 12px;
-  background: none;
-  text-align: left;
-  transition: background 0.12s ease;
-}
-.bk-fp-logrow:hover {
-  background: var(--bk-bg);
-}
-.bk-fp-logcover {
-  flex-shrink: 0;
-  width: 38px;
-}
 /* at this size the masthead can't be set legibly — keep the glyph, drop the text
    (`font-size: 0` hides the kicker's label; the Icon keeps its own px size) */
-.bk-fp-logcover .bk-cover-mag-inner {
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-}
-.bk-fp-logcover .bk-cover-mag-kicker {
-  gap: 0;
-  font-size: 0;
-  opacity: 1;
-}
-.bk-fp-logcover .bk-cover-mag-name,
-.bk-fp-logcover .bk-cover-mag-issue {
-  display: none;
-}
-.bk-fp-logcover .bk-cover-ph-title {
-  font-size: 7px;
-}
-.bk-fp-logcover .bk-cover-ph-inner {
-  gap: 3px;
-  padding: 4px;
-}
-.bk-fp-logmeta {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  min-width: 0;
-  flex: 1;
-}
-.bk-fp-logtitle {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--bk-ink);
-  line-height: 1.25;
-}
-.bk-fp-logsub {
-  font-size: 12.5px;
-  color: var(--bk-muted);
-  font-weight: 600;
-}
-.bk-fp-logchev {
-  flex-shrink: 0;
-  color: var(--c-gray-500);
-}
 
 /* ─── Friends who read this (book detail rail) ──────────────────────────────── */
 
@@ -3823,7 +2611,7 @@ button {
 
 /* ─── Friend profile: achievements, ratings & reviews ───────────────────────── */
 
-/* illustrated achievement medallions (used inside .bk-fp-badge tiles) */
+/* illustrated achievement medallions */
 .bk-ach-art {
   flex-shrink: 0;
   width: 58px;
@@ -3835,112 +2623,156 @@ button {
     inset 0 0 0 2px rgba(255, 255, 255, 0.28);
 }
 
-/* review list */
-.bk-fp-reviews {
+/* The stat row on My Shelf — the same three-up grid the other reader pages use
+   for their StatCards. */
+.bk-shelfpage-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+/* Ask Benny's prompt row — the shared field grows, the button sits beside it. */
+.bk-ask-form {
   display: flex;
-  flex-direction: column;
-  padding: 0;
-  list-style: none;
-}
-/* one rule owns the row rhythm — no gap + padding stacking */
-.bk-fp-review {
-  padding: 18px 0;
-}
-.bk-fp-review:first-child {
-  padding-top: 0;
-}
-.bk-fp-review:last-child {
-  padding-bottom: 0;
-}
-.bk-fp-review + .bk-fp-review {
-  border-top: 1px solid var(--bk-line);
-}
-.bk-fp-revbook {
-  display: flex;
+  gap: 10px;
   align-items: center;
-  gap: 11px;
-  width: 100%;
-  padding: 0;
-  border: 0;
-  background: none;
-  text-align: left;
-}
-.bk-fp-revbook:hover .bk-fp-logtitle {
-  color: #0d9488;
-  text-decoration: underline;
-}
-.bk-fp-revbookmeta {
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-.bk-fp-revstars {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.bk-fp-revbody {
-  margin-top: 9px;
-  font-size: 14px;
-  line-height: 1.5;
-  color: var(--bk-ink);
-}
-.bk-fp-revfoot {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-top: 8px;
-}
-.bk-fp-revverified,
-.bk-fp-revhelpful {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 11.5px;
-  font-weight: 700;
-  color: var(--bk-muted);
-}
-.bk-fp-revverified {
-  color: #0f766e;
 }
 
-@media (max-width: 560px) {
-  .bk-fp-stats {
-    grid-template-columns: repeat(2, 1fr);
+/* The applied-filters bar sits above the results head. */
+.bk-browse-results .af-bar {
+  margin-bottom: 14px;
+}
+
+/* A curated list says who picked it on the line under the title. */
+.bk-listpage-curator {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.bk-filters-toggle {
+  display: none;
+}
+
+/* ═══ Phone ═════════════════════════════════════════════════════════════════
+   Every narrow-screen rule lives here, at the end of the file. A media query
+   carries no specificity of its own, so a phone rule written above the desktop
+   one it means to override just loses the source-order tie and silently does
+   nothing — this is the one place it can't happen. */
+
+@media (max-width: 640px) {
+  .bk-shelfpage-stats {
+    grid-template-columns: minmax(0, 1fr);
   }
 }
 
-/* reading-log pager */
-.bk-fp-pager {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 14px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--bk-line);
-}
-.bk-fp-pagebtn {
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border: 1px solid var(--bk-line);
-  border-radius: 999px;
-  background: #fff;
-  color: var(--bk-ink);
-}
-.bk-fp-pagebtn:not(:disabled):hover {
-  border-color: #0d9488;
-  color: #0d9488;
-}
-.bk-fp-pagebtn:disabled {
-  cursor: default;
-  color: var(--c-gray-350);
-}
-.bk-fp-pagecount {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--bk-muted);
+@media (max-width: 560px) {
+  /* ── Discover's head ──────────────────────────────────────────────────── */
+  /* The page head gives its actions their own row here, and a fixed 430px made
+     that row wider than the screen. Side by side the field came out ~130px, so
+     the field and the button each take a full-width row instead — a phone has
+     the height to spare and not the width. */
+  .bk-search-entry {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    width: auto;
+    min-width: 0;
+  }
+  .bk-search-entry .search-input,
+  .bk-search-entry .btn {
+    flex: 1 0 100%;
+  }
+
+  /* ── Ask Benny ────────────────────────────────────────────────────────── */
+  /* No room for both halves of the panel, so Benny goes back above his field,
+     and the field above its button. */
+  .bk-ask-prompt {
+    flex-direction: column;
+    gap: 14px;
+    align-items: stretch;
+  }
+  /* In a column the basis is a height — the row's 380px would reserve 380px of
+     empty panel. */
+  .bk-ask-prompt .bk-ask-form {
+    flex: 0 0 auto;
+  }
+  .bk-ask-form {
+    flex-wrap: wrap;
+  }
+  .bk-ask-form .search-input,
+  .bk-ask-form .btn {
+    flex: 1 0 100%;
+  }
+
+  /* ── Find a book ──────────────────────────────────────────────────────── */
+  /* Open, the filter panel is a whole screen tall and every result starts
+     below the fold. It folds away behind its own Show/Hide here; the rail is
+     always open at desktop widths, where the toggle doesn't render. */
+  .bk-filters-toggle {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    padding: 0;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--c-teal-ink);
+    cursor: pointer;
+    background: none;
+    border: 0;
+  }
+  .bk-filters:not(.is-open) .bk-filters-body {
+    display: none;
+  }
+  /* Closed, the card is its header — the divider under it and the padding
+     below that would otherwise leave an empty strip. */
+  .bk-filters:not(.is-open) {
+    padding-bottom: 0;
+  }
+  .bk-filters:not(.is-open) > .section-card-title:first-child {
+    margin-bottom: 0;
+    border-bottom: 0;
+  }
+  .bk-filters.is-open .bk-filters-toggle .bp-icon {
+    transform: rotate(180deg);
+  }
+
+  /* ── Browse by category ───────────────────────────────────────────────── */
+  /* Two across left "Graphic Novels" wrapping over two lines beside a one-word
+     neighbour. One per row, and every label sits on its own line. */
+  .bk-browse-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* ── Shelves ──────────────────────────────────────────────────────────── */
+  /* A finger scrolls the track, so the arrows are 96px of nothing. */
+  .bk-shelf-arrows {
+    display: none;
+  }
+  /* "View More on Comics Plus" is most of a phone's width for a row's second
+     action. The chevron it already carries says the same thing — the label
+     stays in the accessible name. */
+  .bk-shelf-viewall .btn-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .bk-shelf-viewall {
+    padding: 0 10px;
+  }
+  .bk-shelf-viewall .btn-icon--right {
+    margin: 0;
+  }
+  .bk-shelf {
+    padding-bottom: 28px;
+  }
+  .bk-shelf + .bk-shelf {
+    padding-top: 28px;
+  }
+  .bk-shelf-title {
+    font-size: 18px;
+  }
 }

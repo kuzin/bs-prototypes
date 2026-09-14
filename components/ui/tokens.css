@@ -265,3 +265,53 @@
     --admin-section-gap: 16px;
   }
 }
+
+/* ── The page's own scrollbar ───────────────────────────────────────────────
+   Two problems, one rule. The gutter is reserved whether or not the page is
+   long enough to scroll, so nothing shifts sideways when a scrollbar appears —
+   opening a modal, switching to a shorter tab, or a chart finishing its
+   animation all used to nudge the whole layout by the bar's width. And the bar
+   itself is the thin translucent one the Sidebar and the admin page area
+   already use, rather than the OS chrome sitting proud of the design.
+
+   `overflow-y: scroll` rather than `scrollbar-gutter: stable` because Chromium
+   does not reserve a gutter against the *viewport* while the root's overflow is
+   `visible` — measured here: with `stable` set and the page short, clientWidth
+   is the full window; only `overflow-y: scroll` holds the 11px. The gutter
+   declaration stays for browsers that do honour it. The track is transparent,
+   so a page too short to scroll shows reserved space, not an empty groove.
+
+   The admin shells pin to the viewport and scroll an inner column instead, so
+   a permanent gutter there is dead width beside their own scrollbar — `:has()`
+   stands the rule down when one of those is on the page. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--c-gray-350) transparent;
+}
+html:not(:has(.app-shell)) {
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
+html::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
+/* The transparent border plus `background-clip` is what insets the thumb from
+   the track's edges — a plain narrower thumb would sit against the content. */
+html::-webkit-scrollbar-thumb {
+  background: var(--c-gray-350);
+  background-clip: padding-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+}
+html::-webkit-scrollbar-thumb:hover {
+  background: var(--c-gray-500);
+  background-clip: padding-box;
+}
+html::-webkit-scrollbar-corner {
+  background: transparent;
+}

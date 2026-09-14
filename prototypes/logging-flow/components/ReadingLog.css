@@ -5,113 +5,44 @@
   padding: 0 0 64px;
 }
 
-/* The sub-tab band sits flush under the main nav and bleeds to the container
-   edges (cancelling .wa-main's top padding and .wa-main-inner's side padding). */
+/* ─── Sub-tab band ───────────────────────────────────────────────────────
+   The pane switcher sits on a tinted band flush under the main nav, running
+   the full width of the window. */
+
 .rl-subtabs {
   display: flex;
   justify-content: center;
-  /* Full-bleed: the band belongs to the page chrome, like the nav above it, so
-     it runs edge to edge rather than stopping at the content column. `100vw`
-     counts the scrollbar, which would overflow by ~15px — `.wa-shell` carries
-     `overflow-x: clip` to absorb that (clip, not hidden, so it doesn't become
-     a scroll container and break sticky positioning). */
-  width: 100vw;
   padding: 16px 24px;
-  margin: -24px 0 8px;
-  margin-inline: calc(50% - 50vw);
+  margin-bottom: 8px;
   background: #f7f8fa;
   border-bottom: 1px solid var(--c-border);
 }
 
-.rl-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin: 26px 0 22px;
-}
-.rl-title {
-  font-size: 28px;
-  font-weight: 800;
-  color: var(--c-text);
-}
-.rl-head-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
+/* Full-bleed, but only inside the reader shell — the negative margins cancel
+   `.wa-main`'s top padding and `.wa-main-inner`'s sides, so anywhere else (the
+   Pattern Library's own frame, say) they just tear the band out of whatever is
+   holding it. `100vw` counts the scrollbar, which would overflow by ~15px:
+   `.wa-shell` carries `overflow-x: clip` to absorb that (clip, not hidden, so
+   it doesn't become a scroll container and break sticky positioning). */
+.wa-main .rl-subtabs {
+  width: 100vw;
+  margin-top: -24px;
+  margin-inline: calc(50% - 50vw);
 }
 
-.rl-viewtoggle {
-  display: inline-flex;
-  border: 1px solid var(--c-border);
-  border-radius: 8px;
-  overflow: hidden;
-}
-.rl-viewbtn {
-  width: 38px;
-  height: 38px;
-  border: 0;
-  background: #ffffff;
-  color: var(--c-text-light);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.rl-viewbtn + .rl-viewbtn {
-  border-left: 1px solid var(--c-border);
-}
-.rl-viewbtn.is-active {
-  background: #1a6dd5;
-  color: #ffffff;
-}
-
-/* ─── Streak cards ────────────────────────────────────────────────────────── */
+/* ─── Streak cards and the import note ───────────────────────────────────── */
+/* Both are shared components now — StatCard and InfoBox style themselves; this
+   is only where they sit. */
 
 .rl-streaks {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 20px;
-  margin-bottom: 18px;
-}
-.rl-streak {
-  display: flex;
-  align-items: center;
   gap: 14px;
-  padding: 18px 22px;
-  border-radius: 12px;
-}
-.rl-streak--current {
-  background: #fbdcd6;
-  color: #a13a22;
-}
-.rl-streak--longest {
-  background: #fdeec4;
-  color: #8a6410;
-}
-.rl-streak-num {
-  font-size: 17px;
-  font-weight: 800;
-}
-.rl-streak-lbl {
-  font-size: 13px;
-  opacity: 0.85;
+  margin-bottom: 14px;
 }
 
 .rl-importnote {
-  display: flex;
-  align-items: center;
-  gap: 7px;
   margin-bottom: 26px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: #f0fbfd;
-  border: 1px solid #cceff4;
-  font-size: 13px;
-  color: #0f7a8a;
-}
-.rl-importnote svg {
-  color: #ffbc42;
-  flex-shrink: 0;
 }
 
 /* ─── Month header ────────────────────────────────────────────────────────── */
@@ -391,64 +322,238 @@
 }
 
 /* ─── All Titles ─────────────────────────────────────────────────────────── */
+/* A shelf of covers grouped by month, not a table — `.reading-log-month-list`
+   in the app's microsite/_reading_log.scss, down to the 132px auto-fill track
+   and the 32px gap. */
 
-.rl-titles {
-  border: 1px solid var(--c-border);
-  border-radius: 12px;
-  overflow: hidden;
+.rl-titles-filter {
+  display: flex;
+  margin: 4px 0 8px;
 }
-.rl-titles-row {
+
+/* The stat strip over the shelf — `ul.reading-log-overview` in the app, laid
+   out on the design system's StatCard. Five fixed columns rather than auto-fit,
+   which drops to four and strands the fifth on a row of its own. */
+.rl-overview {
   display: grid;
-  grid-template-columns: minmax(0, 2.4fr) 90px 90px 80px minmax(0, 1.2fr);
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
-  align-items: center;
-  padding: 13px 18px;
-  border-top: 1px solid var(--c-border);
-  font-size: 13.5px;
+  margin-bottom: 18px;
+}
+@media (max-width: 1100px) {
+  .rl-overview {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.rl-titlemonth-label {
+  padding: 24px 0 12px;
+  font-size: 16px;
+  font-weight: 900;
   color: var(--c-text);
+  border-bottom: 1px solid var(--c-border);
 }
-.rl-titles-row--head {
-  border-top: 0;
-  background: #fafbfc;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--c-text-light);
+
+.rl-tilegrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(132px, 1fr));
+  align-items: end;
+  gap: 32px;
+  margin: 24px 0 40px;
+  padding: 0;
+  list-style: none;
 }
-.rl-titles-title {
+
+.rl-tile {
+  position: relative;
+}
+/* The shelf the covers sit on — the app draws it as a blurred bar under each
+   tile so the grid reads as books standing up rather than floating images. It
+   is the tile's own ::before so it paints under the button, which sits above
+   it; a negative z-index on the button would escape into the page. */
+.rl-tile::before {
+  content: '';
+  position: absolute;
+  right: 10px;
+  bottom: -6px;
+  left: 10px;
+  height: 20px;
+  background: rgba(0, 0, 0, 0.07);
+  border-radius: 20px;
+}
+.rl-tile-hit {
+  position: relative;
+  display: block;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.rl-tile-hit:hover {
+  opacity: 0.75;
+}
+.rl-tile-hit:focus-visible {
+  outline: 2px solid var(--c-blue);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+.rl-tile-marks {
+  position: absolute;
+  top: -8px;
+  right: -8px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  align-items: flex-start;
-  font-weight: 800;
+  gap: 6px;
+  align-items: center;
 }
-.rl-titles-author {
-  font-size: 12.5px;
-  font-weight: 400;
-  color: var(--c-text-light);
+.rl-tile-check {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: #fff;
+  background: #0f7a55;
+  border: 3px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.2);
 }
-.rl-titles-source {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-.rl-titles-src {
+/* The app marks an imported title with the partner's own roundel. */
+.rl-tile-src {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.18);
+}
+
+/* ─── One title's detail ─────────────────────────────────────────────────── */
+/* Where the old table's columns went: the app links a tile through to that
+   book's own log page, so the numbers live one click in rather than spread
+   across five columns nobody was reading. */
+
+/* The Modal's centered variant owns the width; this just sets the inset. */
+.rl-detail {
+  position: relative;
+  padding: 26px;
+}
+.rl-detail-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--c-text-light);
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.rl-detail-close:hover {
+  background: var(--c-gray-100);
+}
+.rl-detail-head {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+.rl-detail-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
+}
+.rl-detail-title {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--c-text-dark);
+}
+.rl-detail-author {
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+.rl-detail-nums {
+  display: flex;
+  gap: 22px;
+  margin-top: 4px;
+}
+.rl-detail-nums dt {
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--c-text-light);
+}
+.rl-detail-nums dd {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+
+.rl-detail-sessions {
+  margin-top: 22px;
+  border-top: 1px solid var(--c-border);
+}
+.rl-detail-sessions li {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) 90px minmax(0, 1.2fr);
+  gap: 12px;
+  align-items: center;
+  padding: 11px 0;
+  font-size: 13px;
+  color: var(--c-text);
+  border-bottom: 1px solid var(--c-border);
+}
+.rl-detail-date {
+  font-weight: 700;
+}
+.rl-detail-amount {
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.rl-detail-source {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
   font-size: 12.5px;
   font-weight: 700;
 }
-.rl-titles-manual {
-  font-size: 12.5px;
+.rl-detail-manual {
+  font-weight: 400;
   color: var(--c-gray-600);
 }
 
-@media (max-width: 860px) {
-  .rl-titles-row {
-    grid-template-columns: minmax(0, 1fr) 70px 70px;
+@media (max-width: 560px) {
+  /* Two across on a phone, and the stat strip pairs up rather than becoming
+     five full-width rows the shelf has to be scrolled past. */
+  .rl-tilegrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 22px;
   }
-  .rl-titles-row > :nth-child(4),
-  .rl-titles-row > :nth-child(5) {
-    display: none;
+  .rl-overview {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .rl-detail {
+    padding: 20px;
+  }
+  .rl-detail-head {
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 14px;
+  }
+  .rl-detail-sessions li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+  .rl-detail-source {
+    grid-column: 1 / -1;
   }
 }

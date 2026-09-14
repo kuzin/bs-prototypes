@@ -247,27 +247,33 @@
 }
 
 /* Streak banner */
+/* Same bar as the partner connect banner above it — 10px radius, no border,
+   a mark, one line of message, and a white chip at the end. The two sit
+   stacked at the top of the dashboard and were two different shapes. */
 .wa-streak {
   display: flex;
-  align-items: center;
+  box-sizing: border-box;
   gap: 14px;
+  align-items: center;
   padding: 12px 16px;
-  border-radius: 12px;
-  background: #ffe8de;
-  border: 1px solid #fbd4c2;
+  /* 12px between the two banners when they stack, but this is the last thing
+     before the page's own heading — that gap is the page's, not the stack's. */
   margin-bottom: 24px;
+  background: #ffe8de;
+  border: none;
+  border-radius: 10px;
 }
 .wa-streak-flame {
   position: relative;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  background: #ffffff;
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  width: 30px;
+  height: 30px;
   color: #e2825d;
-  flex-shrink: 0;
+  background: #fff;
+  border-radius: 999px;
 }
 .wa-streak-num {
   position: absolute;
@@ -276,7 +282,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 12px;
   color: #6b2a14;
 }
 .wa-streak-flame svg {
@@ -285,12 +291,35 @@
 }
 .wa-streak-msg {
   flex: 1;
-  font-size: 14px;
-  color: #5b2a18;
+  min-width: 0;
+  font-size: var(--text-cell);
+  color: var(--c-text);
 }
 .wa-streak-msg strong {
   font-weight: 800;
-  color: #3d1607;
+  color: var(--c-text);
+}
+
+/* The connect banner's chip, in the streak's own ink. */
+.wa-streak-cta {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 6px;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: #b3401a;
+  cursor: pointer;
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 6%);
+}
+.wa-streak-cta:hover {
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 14%);
 }
 
 /* Layout */
@@ -322,28 +351,6 @@
   font-weight: 800;
   color: var(--c-text);
   letter-spacing: -0.02em;
-}
-
-.wa-scope {
-  display: inline-flex;
-  background: var(--c-gray-100);
-  padding: 3px;
-  border-radius: 999px;
-}
-.wa-scope-btn {
-  border: 0;
-  background: transparent;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--c-gray-750);
-  padding: 6px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-.wa-scope-btn--active {
-  background: #fde7ec;
-  color: #b0304f;
 }
 
 /* Group */
@@ -400,6 +407,17 @@
   justify-content: center;
   padding: 14px;
   overflow: hidden;
+  background: var(--c-gray-150);
+}
+/* A real banner fills the slot. It is 2.62:1 against a 140px-tall card, so the
+   sides get cropped — the challenge's name sits in the middle of every one of
+   these, which is the part worth keeping. */
+.wa-chcard-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 .wa-chcard-arttitle {
   font-size: 22px;
@@ -683,4 +701,58 @@
 }
 .wa-acct-item:hover {
   background: var(--c-gray-100);
+}
+
+/* ── Phone ───────────────────────────────────────────────────────────────── */
+/* At 375px the top bar's four groups — logo, actions, the reader, settings —
+   wanted ~470px between them and the last of them fell off the screen. What
+   goes is whatever repeats something already on it: the wordmark (the bean is
+   the logo too) and the reader's name (their avatar is right beside it). The
+   gutter comes in to 16px at the same time, which is the phone one. */
+@media (max-width: 560px) {
+  .wa-topbar-inner {
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  .wa-logo-btn .bsl-word {
+    display: none;
+  }
+  .wa-topbar-actions {
+    margin-left: 0;
+  }
+  .wa-user-pill {
+    gap: 0;
+    padding: 4px;
+  }
+  .wa-user-name {
+    display: none;
+  }
+
+  .wa-tabsbar .tabs,
+  .wa-main-inner {
+    padding: 0 16px;
+  }
+  .wa-main {
+    padding: 18px 0 40px;
+  }
+
+  /* A section heading and its filter pills can't share a line here — the pills
+     alone are most of the width, and the heading came out clipped beside them.
+     The pills take their own row under it. */
+  .wa-section-head {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  .wa-section-head > * {
+    min-width: 0;
+  }
+  .wa-h2 {
+    font-size: 22px;
+  }
+
+  /* Two challenge cards across left each one 168px, which broke every title
+     over three lines and squeezed the badge pill against it. */
+  .wa-chgrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

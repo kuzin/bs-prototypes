@@ -1,6 +1,12 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
+import {
+  BadgeDisc,
+  CollectionCard,
+  ShelfGrid,
+  ShelfHead,
+} from '@components/CollectionShelf/CollectionShelf'
 import '@components/Tabs/Tabs.css'
 
 // The illustrated achievement medallions already exist in the Book Discovery
@@ -9,46 +15,11 @@ import { AchievementArt } from '../../books/components/AchievementArt'
 
 import { MyWords } from './MyWords'
 import { ACHIEVEMENTS, BADGES } from '../data'
-import './Collections.css'
 
 // Everything a reader has accumulated, in one place: the words Benny handed
 // over, the badges they earned, and their milestone achievements. Replaces the
 // dashboard's separate "All Badges" tab — three shelves of the same kind of
 // thing shouldn't be three top-level destinations.
-
-// Badges and achievements are the same card in the product — circular art over
-// a bold name and a line of copy, with the earned date on its own footer strip
-// in green. One component, used by both panes.
-function CollectionCard({ art, name, blurb, date }) {
-  return (
-    <article className="co-card">
-      <div className="co-card-art" aria-hidden="true">
-        {art}
-      </div>
-      <h3 className="co-card-name">{name}</h3>
-      <p className="co-card-blurb">{blurb}</p>
-      <div className="co-card-foot">{date}</div>
-    </article>
-  )
-}
-
-/**
- * Every pane gets the same head: what it holds and how much of it, over a
- * hairline. There's no separate page title — the tab strip above already says
- * you're in Collections.
- */
-function ShelfHead({ title, count, noun }) {
-  return (
-    <header className="co-shelf-head">
-      <div className="co-shelf-copy">
-        <h2 className="co-shelf-title">{title}</h2>
-        <p className="co-shelf-count">
-          {count} {noun}
-        </p>
-      </div>
-    </header>
-  )
-}
 
 export function Collections({ collection, newestWord, cards, onReview }) {
   const [pane, setPane] = useState('words')
@@ -90,28 +61,28 @@ export function Collections({ collection, newestWord, cards, onReview }) {
       {pane === 'badges' && (
         <>
           <ShelfHead title="Earned Badges" count={BADGES.length} noun="Badges" />
-          <div className="co-grid">
+          <ShelfGrid>
             {BADGES.map((b) => (
               <CollectionCard
                 key={b.name}
                 art={
-                  <span className="co-card-disc" style={{ '--badge-color': b.color }}>
+                  <BadgeDisc color={b.color}>
                     <Icon name={b.icon} size={38} stroke={1.7} />
-                  </span>
+                  </BadgeDisc>
                 }
                 name={b.name}
                 blurb={b.blurb}
                 date={b.date}
               />
             ))}
-          </div>
+          </ShelfGrid>
         </>
       )}
 
       {pane === 'achievements' && (
         <>
           <ShelfHead title="Achievements" count={ACHIEVEMENTS.length} noun="Achievements" />
-          <div className="co-grid">
+          <ShelfGrid>
             {ACHIEVEMENTS.map((a) => (
               <CollectionCard
                 key={a.name}
@@ -121,7 +92,7 @@ export function Collections({ collection, newestWord, cards, onReview }) {
                 date={a.date}
               />
             ))}
-          </div>
+          </ShelfGrid>
         </>
       )}
     </div>

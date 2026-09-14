@@ -6,7 +6,8 @@ import './BookCover.css'
 /**
  * Book cover: real Open Library image when available, gradient placeholder
  * otherwise. Either `coverId` (Open Library's numeric cover id — exact) or
- * `isbn` supplies the image; `coverId` wins when both are set. Sizes: sm | md | lg. Magazines (`kind: 'magazine'`) get a
+ * `isbn` supplies the image; `coverId` wins when both are set. Sizes: sm | md | lg | fill (fills its grid
+ * cell rather than taking a fixed size — the All Titles shelf). Magazines (`kind: 'magazine'`) get a
  * masthead-style placeholder — name + issue — so they read like a magazine
  * rack rather than a book with a missing cover.
  *

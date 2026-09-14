@@ -197,21 +197,43 @@ export const READING_LIST = {
 export const STREAK = { current: 0, longest: 12 }
 export const DAILY_GOAL = { minutes: 0, goal: 20 }
 
+// Three real Beanstack challenges, with the banner art the design team ships
+// for each (`Design/Projects/Challenges/<name>/Banner`, 920×351 — or 1840×702
+// at 2× — converted to 1200px webp in `public/challenge-banners/`). `banner` is
+// a Program's `header_image`; `badges` is the folder its badge art lives in,
+// under `public/challenge-badges/`.
+//
+// `tint` is the banner's dominant colour. The app samples it off the image at
+// runtime with ColorThief and blends it with white to paint the two bands
+// behind the header; here it is measured once at build time
+// (`magick … -colors 8 histogram:`) so the page needs no colour library.
 export const CHALLENGES = [
   {
     id: 'spring',
     title: 'Spring Into Reading',
     dates: 'Apr 1 — Apr 30',
     badge: 'Minutes',
-    art: 'spring',
+    banner: 'spring-into-reading',
+    tint: '#B4E0CC',
+    badges: 'spring-into-reading',
   },
-  { id: 'love-hurts', title: 'Love Hurts', dates: 'Ongoing', badge: 'Minutes', art: 'love-hurts' },
+  {
+    id: 'love-hurts',
+    title: 'For the Love of Reading',
+    dates: 'Ongoing',
+    badge: 'Minutes',
+    banner: 'for-the-love-of-reading',
+    tint: '#FA4856',
+    badges: 'for-the-love-of-reading',
+  },
   {
     id: 'arresting',
-    title: 'Arresting Strangeness',
+    title: 'Comics Choice',
     dates: 'Jun 1 — Jun 30',
-    badge: 'Minutes',
-    art: 'arresting',
+    badge: 'Bingo',
+    banner: 'comics-choice',
+    tint: '#61B2F1',
+    badges: 'comics-choice',
   },
 ]
 

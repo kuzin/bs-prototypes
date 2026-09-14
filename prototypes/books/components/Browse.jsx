@@ -1,6 +1,16 @@
 import { useState, useMemo } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { Tabs } from '@components/Tabs/Tabs'
+import { BackBar } from '@components/BackBar/BackBar'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
+import { SearchInput } from '@components/SearchInput/SearchInput'
+import { SectionCard } from '@components/SectionCard/SectionCard'
+import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
+import { Button } from '@components/Button/Button'
+import { EmptyState } from '@components/Primitives/Primitives'
+import '@components/SearchInput/SearchInput.css'
+import '@components/SectionCard/SectionCard.css'
+import '@components/ActiveFilters/ActiveFilters.css'
+import '@components/Primitives/Primitives.css'
 import { BookCard } from './BookCard'
 import {
   BOOKS,
@@ -81,7 +91,10 @@ export function Browse({
   onBack,
 }) {
   const [query, setQuery] = useState(initialQuery)
-  const [sort, setSort] = useState('popular')
+  // Only consulted on a phone, where the panel is a screen tall and would push
+  // every result below the fold. On desktop the rail is always open and the
+  // toggle that drives this is hidden.
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [filters, setFilters] = useState(() => {
     const f = emptyFilters()
     if (initialFilter?.genre) f.genres.add(initialFilter.genre)
@@ -109,6 +122,45 @@ export function Browse({
     filters.avail.size +
     (filters.minRating ? 1 : 0)
 
+  // Everything that is on, as `ActiveFilters` wants it: one chip each, and
+  // clicking a chip drops just that one.
+  const activeFilters = [
+    ...[...filters.genres].map((id) => ({
+      key: `g-${id}`,
+      label: id,
+      onClear: () => toggle('genres', id),
+    })),
+    ...[...filters.formats].map((id) => ({
+      key: `f-${id}`,
+      label: FORMATS[id].label,
+      onClear: () => toggle('formats', id),
+    })),
+    ...[...filters.levels].map((id) => ({
+      key: `l-${id}`,
+      label: LEVEL_BANDS.find((b) => b.id === id)?.label ?? id,
+      onClear: () => toggle('levels', id),
+    })),
+    ...[...filters.ages].map((id) => ({
+      key: `a-${id}`,
+      label: AGE_BANDS.find((b) => b.id === id)?.label ?? id,
+      onClear: () => toggle('ages', id),
+    })),
+    ...[...filters.avail].map((id) => ({
+      key: `v-${id}`,
+      label: AVAIL_FACETS.find((f) => f.id === id)?.label ?? id,
+      onClear: () => toggle('avail', id),
+    })),
+    ...(filters.minRating
+      ? [
+          {
+            key: 'rating',
+            label: `${filters.minRating}+ stars`,
+            onClear: () => setMinRating(0),
+          },
+        ]
+      : []),
+  ]
+
   // A library facet only counts when its feature toggle is on (ignores stale picks).
   const facetOptions = AVAIL_FACETS.filter((f) => !GATED_FACETS.includes(f.id) || settings[f.id])
 
@@ -128,137 +180,106 @@ export function Browse({
       if (filters.minRating && b.rating < filters.minRating) return false
       return true
     })
-    const sorters = {
-      popular: (a, b) => b.readersAtSchool - a.readersAtSchool,
-      rating: (a, b) => b.rating - a.rating,
-      title: (a, b) => a.title.localeCompare(b.title),
-    }
-    return [...list].sort(sorters[sort])
-  }, [query, filters, sort, settings])
+    // Most-read at this school first — the order the catalog is browsed in.
+    return [...list].sort((a, b) => b.readersAtSchool - a.readersAtSchool)
+  }, [query, filters, settings])
 
   return (
     <div className="bk-browse-page">
-      <div className="bk-backbar">
-        <button className="bk-back" onClick={onBack}>
-          <Icon name="arrow-left" size={16} /> Discover
-        </button>
-      </div>
+      <BackBar label="Discover" onClick={onBack} />
 
-      <div className="bk-shelfpage-title bk-discover-head">
-        <h1>
-          <Icon name="search" size={23} /> Find a book
-        </h1>
-        <p>Search the catalog and filter by genre, format, level, and where you can read it.</p>
-      </div>
+      <ReaderPageHead title="Find a book" />
 
       <div className="bk-searchbar">
-        <Icon name="search" size={18} />
-        <input
-          type="text"
+        <SearchInput
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={setQuery}
           placeholder="Search by title, author, or genre…"
-          aria-label="Search books, authors, and genres"
-          autoFocus
+          ariaLabel="Search books, authors, and genres"
         />
-        {query && (
-          <button
-            className="bk-searchbar-clear"
-            onClick={() => setQuery('')}
-            aria-label="Clear search"
-          >
-            <Icon name="x" size={16} />
-          </button>
-        )}
       </div>
 
       <div className="bk-browse-layout">
-        <aside className="bk-filters">
-          <div className="bk-filters-head">
-            <h2>
-              <Icon name="filter" size={16} /> Filters
-            </h2>
-            {activeCount > 0 && (
-              <button className="bk-filters-clear" onClick={clearAll}>
-                Clear all
-              </button>
-            )}
-          </div>
+        {/* No "Clear all" here: the ActiveFilters bar beside the results
+            carries it, and two of them on one screen is one too many. */}
+        <SectionCard
+          className={`bk-filters${filtersOpen ? ' is-open' : ''}`}
+          header="divider"
+          title="Filters"
+          actions={
+            <button
+              type="button"
+              className="bk-filters-toggle"
+              onClick={() => setFiltersOpen((o) => !o)}
+              aria-expanded={filtersOpen}
+            >
+              {filtersOpen ? 'Hide' : 'Show'}
+              <Icon name="chevron-down" size={14} stroke={2.4} />
+            </button>
+          }
+        >
+          <div className="bk-filters-body">
+            <FilterGroup
+              title="Genre"
+              options={GENRE_OPTIONS.map((g) => ({ id: g, label: g }))}
+              selected={filters.genres}
+              onToggle={(id) => toggle('genres', id)}
+            />
+            <FilterGroup
+              title="Format"
+              options={FORMAT_OPTIONS.map((f) => ({
+                id: f,
+                label: FORMATS[f].label,
+                icon: FORMATS[f].icon,
+              }))}
+              selected={filters.formats}
+              onToggle={(id) => toggle('formats', id)}
+            />
+            <FilterGroup
+              title="Reading level"
+              options={LEVEL_BANDS}
+              selected={filters.levels}
+              onToggle={(id) => toggle('levels', id)}
+            />
+            <FilterGroup
+              title="Best for ages"
+              options={AGE_BANDS}
+              selected={filters.ages}
+              onToggle={(id) => toggle('ages', id)}
+            />
+            <FilterGroup
+              title="Available on"
+              options={facetOptions}
+              selected={filters.avail}
+              onToggle={(id) => toggle('avail', id)}
+            />
 
-          <FilterGroup
-            title="Genre"
-            options={GENRE_OPTIONS.map((g) => ({ id: g, label: g }))}
-            selected={filters.genres}
-            onToggle={(id) => toggle('genres', id)}
-          />
-          <FilterGroup
-            title="Format"
-            options={FORMAT_OPTIONS.map((f) => ({
-              id: f,
-              label: FORMATS[f].label,
-              icon: FORMATS[f].icon,
-            }))}
-            selected={filters.formats}
-            onToggle={(id) => toggle('formats', id)}
-          />
-          <FilterGroup
-            title="Reading level"
-            options={LEVEL_BANDS}
-            selected={filters.levels}
-            onToggle={(id) => toggle('levels', id)}
-          />
-          <FilterGroup
-            title="Best for ages"
-            options={AGE_BANDS}
-            selected={filters.ages}
-            onToggle={(id) => toggle('ages', id)}
-          />
-          <FilterGroup
-            title="Available on"
-            options={facetOptions}
-            selected={filters.avail}
-            onToggle={(id) => toggle('avail', id)}
-          />
-
-          <div className="bk-filtergroup">
-            <h3 className="bk-filtergroup-title">Rating</h3>
-            <div className="bk-filterchips">
-              {[
-                { id: 0, label: 'Any' },
-                { id: 4, label: '4.0+' },
-                { id: 4.5, label: '4.5+' },
-              ].map((o) => (
-                <button
-                  key={o.id}
-                  className={`bk-filterchip ${filters.minRating === o.id ? 'is-on' : ''}`}
-                  onClick={() => setMinRating(o.id)}
-                >
-                  {o.id > 0 && <Icon name="star-filled" size={12} />}
-                  {o.label}
-                </button>
-              ))}
+            <div className="bk-filtergroup">
+              <h3 className="bk-filtergroup-title">Rating</h3>
+              <div className="bk-filterchips">
+                {[
+                  { id: 0, label: 'Any' },
+                  { id: 4, label: '4.0+' },
+                  { id: 4.5, label: '4.5+' },
+                ].map((o) => (
+                  <button
+                    key={o.id}
+                    className={`bk-filterchip ${filters.minRating === o.id ? 'is-on' : ''}`}
+                    onClick={() => setMinRating(o.id)}
+                  >
+                    {o.id > 0 && <Icon name="star-filled" size={12} />}
+                    {o.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
-        </aside>
+        </SectionCard>
 
         <div className="bk-browse-results">
-          <div className="bk-results-head">
-            <span className="bk-results-count">
-              <strong>{results.length}</strong> {results.length === 1 ? 'book' : 'books'}
-            </span>
-            <Tabs
-              variant="pill"
-              size="sm"
-              active={sort}
-              accent="#0D9488"
-              onChange={setSort}
-              items={[
-                { id: 'popular', label: 'Popular' },
-                { id: 'rating', label: 'Top Rated' },
-                { id: 'title', label: 'A–Z' },
-              ]}
-            />
-          </div>
+          {/* What's applied, and a way to drop any one of them — the shared bar
+              the admin lists use, so a filtered result set says so. */}
+          <ActiveFilters filters={activeFilters} onClearAll={clearAll} />
 
           {results.length > 0 ? (
             <div className="bk-results-grid">
@@ -273,18 +294,19 @@ export function Browse({
               ))}
             </div>
           ) : (
-            <div className="bk-results-empty">
-              <span className="bk-results-empty-icon">
-                <Icon name="search" size={28} />
-              </span>
-              <h3>No books match those filters</h3>
-              <p>Try removing a filter or searching for something else.</p>
-              {(activeCount > 0 || query.trim()) && (
-                <button className="bk-filters-clear" onClick={clearAll}>
-                  Clear search &amp; filters
-                </button>
-              )}
-            </div>
+            <EmptyState
+              variant="dashed"
+              icon={<Icon name="search" size={26} />}
+              title="No books match those filters"
+              description="Try removing a filter or searching for something else."
+              action={
+                (activeCount > 0 || query.trim()) && (
+                  <Button variant="secondary" size="sm" onClick={clearAll}>
+                    Clear search &amp; filters
+                  </Button>
+                )
+              }
+            />
           )}
         </div>
       </div>

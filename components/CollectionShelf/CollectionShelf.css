@@ -1,0 +1,154 @@
+/* ─── Sub-tab band ───────────────────────────────────────────────────────
+   The pane switcher sits on a tinted band flush under the main nav, running
+   the full width of the window. */
+
+.co-subtabs {
+  display: flex;
+  justify-content: center;
+  padding: 16px 24px;
+  margin-bottom: 8px;
+  background: #f7f8fa;
+  border-bottom: 1px solid var(--c-border);
+}
+
+/* Full-bleed, but only inside the reader shell — the negative margins cancel
+   `.wa-main`'s top padding and `.wa-main-inner`'s sides, so anywhere else (the
+   Pattern Library's own frame, say) they just tear the band out of whatever is
+   holding it. `100vw` counts the scrollbar, which would overflow by ~15px:
+   `.wa-shell` carries `overflow-x: clip` to absorb that (clip, not hidden, so
+   it doesn't become a scroll container and break sticky positioning). */
+.wa-main .co-subtabs {
+  width: 100vw;
+  margin-top: -24px;
+  margin-inline: calc(50% - 50vw);
+}
+
+.co-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));
+  gap: 20px;
+}
+
+/* No horizontal padding on the card itself — the footer's rule has to run the
+   full width, so the inset lives on the text instead. */
+.co-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 26px 0 0;
+  text-align: center;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+/* The medallions are square SVGs; the product shows them as circles. */
+.co-card-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 104px;
+  height: 104px;
+  border-radius: 999px;
+}
+.co-card-art > *:not(.co-card-ring, .co-card-img) {
+  overflow: hidden;
+  border-radius: 999px;
+}
+.co-card-art svg:not(.co-card-ring) {
+  width: 100%;
+  height: 100%;
+}
+/* No illustrated badge art in the repo, so a badge keeps its glyph — but in
+   the same circular slot the medallions sit in. */
+.co-card-disc {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: #fff;
+  background: var(--badge-color);
+  border-radius: 999px;
+}
+/* Real badge art is a square illustration with its own transparent ground, so
+   it fills the slot rather than being cropped to the circle the disc draws. */
+.co-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.co-card-name {
+  padding: 0 22px;
+  margin-top: 16px;
+  font-size: 16.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text);
+}
+.co-card-blurb {
+  flex: 1 1 auto;
+  padding: 0 22px;
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: var(--c-text-light);
+}
+.co-card-foot {
+  width: 100%;
+  padding: 15px 0;
+  margin-top: 22px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f7a55;
+  border-top: 1px solid var(--c-border);
+}
+
+/* ─── Not earned yet ──────────────────────────────────────────────────────
+   The challenge Badges tab shows the whole set, not just what's been earned:
+   the art goes gray, the ring empties to however far along the reader is, and
+   the footer carries the requirement instead of a completion date. */
+
+.co-card--locked {
+  background: var(--c-gray-0);
+}
+.co-card--locked .co-card-art > *:not(.co-card-ring) {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.co-card--locked .co-card-name,
+.co-card--locked .co-card-blurb {
+  color: var(--c-text-light);
+}
+.co-card--locked .co-card-foot {
+  color: var(--c-gray-700);
+}
+
+/* The progress ring sits proud of the art so a gray badge still reads as
+   something in motion rather than something switched off. */
+.co-card-ring {
+  position: absolute;
+  inset: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  transform: rotate(-90deg);
+  fill: none;
+}
+.co-card-ring-track {
+  stroke: var(--c-gray-250);
+  stroke-width: 5;
+}
+.co-card-ring-fill {
+  stroke: var(--c-blue);
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.3s ease;
+}
+
+@media (max-width: 560px) {
+  .co-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .co-shelf-head {
+    margin-top: 18px;
+  }
+}

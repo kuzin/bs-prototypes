@@ -36,13 +36,31 @@ function Footer() {
  * `hideTabs` drops built-in tabs by id, for when an extra tab supersedes one
  * (Words with Benny folds "All Badges" into its own Collections tab).
  *
+ * `ownTabs` is the other half of that: built-in tab ids the parent renders
+ * itself, through the same `renderExtra`. Four of the six tabs in the real nav
+ * (Friends, Leaderboards, Reviews, All Badges) have never had a page here, and
+ * `extraTabs` could only ever *add* a seventh — so web-app claims them by id
+ * rather than hiding them and appending look-alikes in the wrong order.
+ *
  * `partners` is the list of reading apps this prototype offers to link. It
  * defaults to logging-flow's own CONNECTION_LIST; pass `[]` and the entire
  * integration surface drops out — the connect banner, the topbar switcher, the
  * "logged for you" rail card, and the App Integrations settings section.
  *
  * `titlesView={false}` is passed straight through to the Reading Log: its
- * "All Titles" tab stays on the page but stops being reachable.
+ * "All Titles" tab stays on the page but stops being reachable. `logEntries`
+ * is too, for a prototype whose log isn't logging-flow's own — web-app has no
+ * Scholastic, so its log must not carry Scholastic sessions either.
+ *
+ * `onOpenChallenge` makes the challenge cards go somewhere. They have always
+ * been buttons; a prototype that has built the challenge page passes this and
+ * they open it. Left off, they stay inert. `page` is where what they open goes:
+ * a node that replaces the main column outright while the reader's nav stays
+ * put — a destination that isn't one of the tabs.
+ *
+ * `logTabs` / `renderLogTab` are the same additive pair one level down: an
+ * extra sub-tab on the Reading Log's own strip, between the log and "All
+ * Titles". web-app puts Reviews there.
  */
 export function Dashboard({
   streak,
@@ -58,8 +76,14 @@ export function Dashboard({
   view: viewProp,
   onView: onViewProp,
   hideTabs = [],
+  ownTabs = [],
   partners = CONNECTION_LIST,
   titlesView = true,
+  logEntries,
+  logTabs = [],
+  renderLogTab,
+  onOpenChallenge,
+  page,
 }) {
   const [scope, setScope] = useState('current')
   // 'challenges' | 'settings' | 'log' | any `extraTabs` id — the gear (and
@@ -70,6 +94,9 @@ export function Dashboard({
   const view = viewProp ?? viewState
   const setView = onViewProp ?? setViewState
   const extraIds = extraTabs.map((t) => t.id)
+  // A view the parent renders rather than this component: its own extra tabs,
+  // plus any built-in tab it has claimed.
+  const owned = (id) => extraIds.includes(id) || ownTabs.includes(id)
   // One banner covers every partner still to link, so waving it off is one
   // decision rather than one per app.
   const [dismissed, setDismissed] = useState(false)
@@ -95,16 +122,24 @@ export function Dashboard({
           />
         }
         active={view === 'challenges' || view === 'settings' ? 'challenges' : view}
-        onTabChange={(id) => setView(id === 'log' || extraIds.includes(id) ? id : 'challenges')}
+        onTabChange={(id) => setView(id === 'log' || owned(id) ? id : 'challenges')}
         extraTabs={extraTabs}
         hideTabs={hideTabs}
       />
       <main className="wa-main">
         <div className="wa-main-inner">
-          {extraIds.includes(view) ? (
+          {page ? (
+            page
+          ) : owned(view) ? (
             renderExtra?.(view)
           ) : view === 'log' ? (
-            <ReadingLog partners={partners} titlesView={titlesView} />
+            <ReadingLog
+              entries={logEntries}
+              partners={partners}
+              titlesView={titlesView}
+              extraTabs={logTabs}
+              renderExtra={renderLogTab}
+            />
           ) : view === 'settings' ? (
             <PersonalizeReader
               reader={READER}
@@ -134,7 +169,7 @@ export function Dashboard({
                     </div>
                     <div className="wa-chgrid">
                       {CHALLENGES.map((c) => (
-                        <ChallengeCard key={c.id} challenge={c} />
+                        <ChallengeCard key={c.id} challenge={c} onOpen={onOpenChallenge} />
                       ))}
                     </div>
                   </div>

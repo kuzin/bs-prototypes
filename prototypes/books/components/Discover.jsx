@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
+import { SearchInput } from '@components/SearchInput/SearchInput'
+import { Button } from '@components/Button/Button'
+import '@components/SearchInput/SearchInput.css'
 import { Shelf } from './Shelf'
 import { AskBenny } from './AskBenny'
 import { READER, BENNY_PICKS, SHELVES, BROWSE, getBooks } from '../data'
@@ -24,37 +28,38 @@ export function Discover({ onOpen, onWish, wishlist, settings, onBrowse, onPlay,
   const [q, setQ] = useState('')
   return (
     <div className="bk-discover">
-      <div className="bk-discover-head">
-        <div className="bk-shelfpage-title">
-          <h1>
-            <Icon name="compass" size={24} /> Discover
-          </h1>
-          <p>
-            Find your next favorite book — Benny’s picks, partners, and what your school is reading.
-          </p>
-        </div>
-
-        {/* Catalog search — opens the filterable Browse page */}
-        <form
-          className="bk-search-entry"
-          onSubmit={(e) => {
-            e.preventDefault()
-            onBrowse({ query: q })
-          }}
-        >
-          <Icon name="search" size={18} />
-          <input
-            type="text"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search books, authors…"
-            aria-label="Search books and authors"
-          />
-          <button type="submit" className="bk-search-go">
-            Search
-          </button>
-        </form>
-      </div>
+      {/* The one page header every view in the web app uses. */}
+      <ReaderPageHead
+        title="Discover"
+        actions={
+          /* Catalog search — opens the filterable Browse page. The shared field
+             and the shared button, not a composite of its own. */
+          <form
+            className="bk-search-entry"
+            onSubmit={(e) => {
+              e.preventDefault()
+              onBrowse({ query: q })
+            }}
+          >
+            <SearchInput
+              value={q}
+              onChange={setQ}
+              placeholder="Search books, authors…"
+              ariaLabel="Search books and authors"
+            />
+            {/* Submitting with an empty field opens the full catalog, which is
+                what "find a book" means when you don't know the title. */}
+            <Button
+              type="submit"
+              variant="secondary"
+              size="md"
+              icon={<Icon name="search" size={15} />}
+            >
+              Find a book
+            </Button>
+          </form>
+        }
+      />
 
       <AskBenny onOpen={onOpen} onWish={onWish} wishlist={wishlist} />
 

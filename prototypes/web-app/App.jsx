@@ -5,7 +5,18 @@ import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerC
 import { Dashboard } from '../logging-flow/components/Dashboard'
 import { LogFlow } from '../logging-flow/components/LogFlow'
 import { BookCover } from '../logging-flow/components/BookCover'
-import { STREAK, DAILY_GOAL, READER, BOOKS, RECENTLY_LOGGED } from '../logging-flow/data'
+import { AllBadges } from './components/AllBadges'
+import { Friends } from './components/Friends'
+import { Reviews } from './components/Reviews'
+import { ChallengePage } from './components/ChallengePage'
+import {
+  STREAK,
+  DAILY_GOAL,
+  READER,
+  BOOKS,
+  RECENTLY_LOGGED,
+  READING_LOG,
+} from '../logging-flow/data'
 import {
   CONNECTIONS,
   CONNECTION_LIST,
@@ -13,7 +24,7 @@ import {
   partnerMinutes,
 } from '../logging-flow/connections'
 
-import '../ris/index.css'
+import '../logging-flow/index.css'
 import '@components/PrototypeNav/PrototypeNav.css'
 
 // The reader app as it stands today — the page a reader actually sees, so the
@@ -45,6 +56,21 @@ const PARTNER_BOOKS = Object.fromEntries(
     .map(([id, b]) => [id, { ...b, readable: false }]),
 )
 const RECENT = RECENTLY_LOGGED.filter((id) => BOOKS[id]?.partner !== 'scholastic')
+// …and the log with it. Filtering the catalog but not the log left Scholastic
+// magazines sitting in the Reading Log of a page that says it has no Scholastic.
+const LOG = READING_LOG.filter((e) => e.source !== 'scholastic')
+
+// The tabs in the real nav that the dashboard has never had a page for. This
+// prototype builds them, so it claims them by id rather than letting the
+// dashboard bounce them back to Challenges.
+const OWN_TABS = ['badges', 'friends']
+
+// Two of the six aren't top-level destinations here. Leaderboards is a sub-tab
+// of Friends — the profile pairs the two on one page, and they're two views of
+// the same people. Reviews sits under Reading, beside the log and All
+// Titles, since it's another record of what this reader has read.
+const HIDE_TABS = ['leaderboards', 'reviews']
+const LOG_TABS = [{ id: 'reviews', label: 'Reviews' }]
 
 export function App() {
   const [flowOpen, setFlowOpen] = useState(false)
@@ -56,6 +82,18 @@ export function App() {
   const [connections, setConnections] = useState({})
   const [linking, setLinking] = useState(null) // partner id mid-handoff
   const [visiting, setVisiting] = useState(null) // partner id whose catalog is open
+  const [challenge, setChallenge] = useState(null) // the challenge whose page is open
+  // The dashboard's view is driven from here so that leaving for another tab
+  // also closes an open challenge — `page` replaces the main column, so
+  // without this the challenge stayed up under a nav tab that had moved on.
+  const [view, setView] = useState('challenges')
+
+  // The pages this prototype owns, by tab id.
+  function renderTab(id) {
+    if (id === 'badges') return <AllBadges />
+    if (id === 'friends') return <Friends />
+    return null
+  }
 
   function handleLogged(entry) {
     setStreak((s) => ({ ...s, current: Math.max(s.current, 1) }))
@@ -97,6 +135,23 @@ export function App() {
         onDisconnectPartner={handleDisconnect}
         onVisitPartner={setVisiting}
         partners={PARTNERS}
+        logEntries={LOG}
+        view={view}
+        onView={(v) => {
+          setView(v)
+          setChallenge(null)
+        }}
+        ownTabs={OWN_TABS}
+        hideTabs={HIDE_TABS}
+        renderExtra={renderTab}
+        logTabs={LOG_TABS}
+        renderLogTab={() => <Reviews />}
+        onOpenChallenge={setChallenge}
+        page={
+          challenge ? (
+            <ChallengePage challenge={challenge} entries={LOG} onBack={() => setChallenge(null)} />
+          ) : null
+        }
       />
 
       <LogFlow

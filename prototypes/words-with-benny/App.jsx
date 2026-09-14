@@ -56,7 +56,7 @@ const OWN_BOOKS = { books: BOOKS, recentlyLogged: RECENTLY_LOGGED }
 // `short` is what the preview bar's strip swaps to before it would overflow.
 const VIEWS = [
   { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
-  { id: 'words', label: 'Reader · My Collections', short: 'Collections', icon: 'vocabulary' },
+  { id: 'words', label: 'Reader · Collections', short: 'Collections', icon: 'vocabulary' },
   { id: 'educator', label: 'Educator · Classroom', short: 'Classroom', icon: 'chart-bar' },
   // The feature's own educator surface is a tab inside the classroom page, so
   // reaching it meant two clicks past the bar. This lands on it directly.
@@ -257,7 +257,7 @@ export function App() {
             }}
             // Collections supersedes the built-in "All Badges" tab — words,
             // badges and achievements are one destination, not three.
-            extraTabs={[{ id: 'collections', label: 'My Collections' }]}
+            extraTabs={[{ id: 'collections', label: 'Collections' }]}
             // Collections supersedes All Badges; the Reading Log is off because
             // this prototype is about what a log *unlocks*, and a second place
             // to read the log back only draws the eye away from that.
