@@ -1993,28 +1993,6 @@ button {
   color: var(--bk-muted);
   font-size: 14.5px;
 }
-.bk-shelfpage-stats {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.bk-shelfstat {
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 12px;
-  padding: 9px 14px;
-  font-size: 13px;
-  color: var(--bk-muted);
-  font-weight: 600;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.bk-shelfstat strong {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--bk-ink);
-}
 .bk-shelfgroup {
   margin-bottom: 32px;
 }
@@ -3005,4 +2983,18 @@ button {
 .bk-sources-btn:hover {
   color: var(--c-text);
   border-color: var(--c-border-strong);
+}
+
+/* The stat row on My Shelf — the same three-up grid the other reader pages use
+   for their StatCards. */
+.bk-shelfpage-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 22px;
+}
+@media (max-width: 640px) {
+  .bk-shelfpage-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

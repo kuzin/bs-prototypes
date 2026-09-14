@@ -1,6 +1,8 @@
 import { Icon } from '@components/Icon/Icon'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Button } from '@components/Button/Button'
+import { StatCard } from '@components/Cards/Cards'
+import '@components/Cards/Cards.css'
 import { BookCard } from './BookCard'
 import { getBook, getSessions, SHELF_STATUS, SHELF_ORDER } from '../data'
 
@@ -34,22 +36,31 @@ export function MyShelf({ shelf, onOpen, onWish, onDiscover }) {
 
   return (
     <div className="bk-shelfpage">
-      <ReaderPageHead
-        title="My Shelf"
-        actions={
-          <div className="bk-shelfpage-stats">
-            <span className="bk-shelfstat">
-              <strong>{ids.length}</strong> on your shelf
-            </span>
-            <span className="bk-shelfstat">
-              <strong>{reading}</strong> reading now
-            </span>
-            <span className="bk-shelfstat">
-              <strong>{finished}</strong> finished
-            </span>
-          </div>
-        }
-      />
+      <ReaderPageHead title="My Shelf" />
+
+      {/* The design system's stat tile, in the row every other reader page puts
+          its numbers in — these were three chips of their own shape, wedged
+          into the header's actions slot. */}
+      <div className="bk-shelfpage-stats">
+        <StatCard
+          value={ids.length}
+          label="On your shelf"
+          color="#0D9488"
+          icon={<Icon name="bookmark-filled" size={20} />}
+        />
+        <StatCard
+          value={reading}
+          label="Reading now"
+          color="#1A6DD5"
+          icon={<Icon name="book-2" size={20} />}
+        />
+        <StatCard
+          value={finished}
+          label="Finished"
+          color="#0F7A55"
+          icon={<Icon name="circle-check" size={20} />}
+        />
+      </div>
 
       {SHELF_ORDER.map((statusId) => {
         const books = ids
