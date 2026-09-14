@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Shelf } from './Shelf'
 import { AskBenny } from './AskBenny'
 import { READER, BENNY_PICKS, SHELVES, BROWSE, getBooks } from '../data'
@@ -20,41 +21,55 @@ const BENNY_SHELF = {
 // Each toggleable feature gates one Discover shelf.
 const SHELF_SETTING = { sora: 'sora', scholastic: 'scholastic', audio: 'audiobooks' }
 
-export function Discover({ onOpen, onWish, wishlist, settings, onBrowse, onPlay, onViewAll }) {
+export function Discover({
+  onOpen,
+  onWish,
+  wishlist,
+  settings,
+  onBrowse,
+  onPlay,
+  onViewAll,
+  onSettings,
+}) {
   const [q, setQ] = useState('')
   return (
     <div className="bk-discover">
-      <div className="bk-discover-head">
-        <div className="bk-shelfpage-title">
-          <h1>
-            <Icon name="compass" size={24} /> Discover
-          </h1>
-          <p>
-            Find your next favorite book — Benny’s picks, partners, and what your school is reading.
-          </p>
-        </div>
-
-        {/* Catalog search — opens the filterable Browse page */}
-        <form
-          className="bk-search-entry"
-          onSubmit={(e) => {
-            e.preventDefault()
-            onBrowse({ query: q })
-          }}
-        >
-          <Icon name="search" size={18} />
-          <input
-            type="text"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search books, authors…"
-            aria-label="Search books and authors"
-          />
-          <button type="submit" className="bk-search-go">
-            Search
-          </button>
-        </form>
-      </div>
+      {/* The one page header every view in the web app uses. */}
+      <ReaderPageHead
+        title="Discover"
+        actions={
+          <>
+            {/* Catalog search — opens the filterable Browse page */}
+            <form
+              className="bk-search-entry"
+              onSubmit={(e) => {
+                e.preventDefault()
+                onBrowse({ query: q })
+              }}
+            >
+              <Icon name="search" size={18} />
+              <input
+                type="text"
+                value={q}
+                onChange={(e) => setQ(e.target.value)}
+                placeholder="Search books, authors…"
+                aria-label="Search books and authors"
+              />
+              <button type="submit" className="bk-search-go">
+                Search
+              </button>
+            </form>
+            <button
+              type="button"
+              className="bk-sources-btn"
+              onClick={onSettings}
+              aria-label="Which reading apps to show"
+            >
+              <Icon name="settings" size={18} />
+            </button>
+          </>
+        }
+      />
 
       <AskBenny onOpen={onOpen} onWish={onWish} wishlist={wishlist} />
 

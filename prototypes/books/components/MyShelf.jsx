@@ -1,4 +1,5 @@
 import { Icon } from '@components/Icon/Icon'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Button } from '@components/Button/Button'
 import { BookCard } from './BookCard'
 import { getBook, getSessions, SHELF_STATUS, SHELF_ORDER } from '../data'
@@ -33,25 +34,22 @@ export function MyShelf({ shelf, onOpen, onWish, onDiscover }) {
 
   return (
     <div className="bk-shelfpage">
-      <header className="bk-shelfpage-head">
-        <div className="bk-shelfpage-title">
-          <h1>
-            <Icon name="bookmark-filled" size={24} /> My Shelf
-          </h1>
-          <p>Everything you’re reading, want to read, and have finished.</p>
-        </div>
-        <div className="bk-shelfpage-stats">
-          <span className="bk-shelfstat">
-            <strong>{ids.length}</strong> on your shelf
-          </span>
-          <span className="bk-shelfstat">
-            <strong>{reading}</strong> reading now
-          </span>
-          <span className="bk-shelfstat">
-            <strong>{finished}</strong> finished
-          </span>
-        </div>
-      </header>
+      <ReaderPageHead
+        title="My Shelf"
+        actions={
+          <div className="bk-shelfpage-stats">
+            <span className="bk-shelfstat">
+              <strong>{ids.length}</strong> on your shelf
+            </span>
+            <span className="bk-shelfstat">
+              <strong>{reading}</strong> reading now
+            </span>
+            <span className="bk-shelfstat">
+              <strong>{finished}</strong> finished
+            </span>
+          </div>
+        }
+      />
 
       {SHELF_ORDER.map((statusId) => {
         const books = ids

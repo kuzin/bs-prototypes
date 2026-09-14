@@ -1,8 +1,18 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
-import { Tabs } from '@components/Tabs/Tabs'
-import { Button } from '@components/Button/Button'
-import { Icon } from '@components/Icon/Icon'
+
+import { Dashboard } from '../logging-flow/components/Dashboard'
+import { LogFlow } from '../logging-flow/components/LogFlow'
+import { STREAK, DAILY_GOAL, READING_LOG } from '../logging-flow/data'
+
+// The reader pages this prototype doesn't own are web-app's — it is the
+// kitchen sink the reader prototypes build off, so Collections, Friends,
+// Reviews and the challenge page come from there rather than being drawn again.
+import { AllBadges } from '../web-app/components/AllBadges'
+import { Friends } from '../web-app/components/Friends'
+import { Reviews } from '../web-app/components/Reviews'
+import { ChallengePage } from '../web-app/components/ChallengePage'
+import { FriendProfile } from '../web-app/components/FriendProfile'
 
 import { Discover } from './components/Discover'
 import { Browse } from './components/Browse'
@@ -12,98 +22,17 @@ import { MyShelf } from './components/MyShelf'
 import { SettingsModal } from './components/SettingsModal'
 import { BadgeEarnedModal } from './components/BadgeEarnedModal'
 import { AudioPlayer } from './components/AudioPlayer'
-import { Friends } from './components/Friends'
-import { FriendProfile } from './components/FriendProfile'
-import { getBook, getSessions, getFriend, READER, SHELF_SEED } from './data'
+import { getBook, getSessions, READER, SHELF_SEED } from './data'
 import './index.css'
 
 let _uid = 0
 
-function TopBar({ active, onNav, shelfCount, onSettings }) {
-  const items = [
-    { id: 'challenges', label: 'Challenges' },
-    { id: 'log', label: 'Reading Log' },
-    { id: 'reviews', label: 'Reviews' },
-    { id: 'badges', label: 'Badges' },
-    { id: 'discover', label: 'Discover' },
-    { id: 'friends', label: 'Friends' },
-    { id: 'shelf', label: 'My Shelf', count: shelfCount || undefined },
-  ]
-  return (
-    <header className="bk-topbar">
-      <div className="bk-topbar-inner">
-        <div className="bk-logo">
-          <img src="/bs-prototypes/bs.svg" alt="" className="bk-logo-mark" />
-          <span className="bk-logo-word">beanstack</span>
-        </div>
-        <div className="bk-topbar-actions">
-          <Button variant="primary" size="sm" icon={<Icon name="reading-log" size={15} />}>
-            Log Reading
-          </Button>
-          <Button variant="ghost" size="sm" icon={<Icon name="writing" size={15} />}>
-            Write a Review
-          </Button>
-        </div>
-        <div className="bk-topbar-user">
-          <span className="bk-user-pill">
-            <span className="bk-user-avatar" style={{ background: READER.color }}>
-              {READER.initials}
-            </span>
-            <span className="bk-user-name">{READER.first}</span>
-          </span>
-          <button className="bk-icon-btn" aria-label="Settings" onClick={onSettings}>
-            <Icon name="settings" size={19} />
-          </button>
-        </div>
-      </div>
-      <div className="bk-tabsbar">
-        <Tabs
-          variant="underline"
-          size="md"
-          active={active}
-          accent="#0D9488"
-          onChange={onNav}
-          items={items}
-        />
-      </div>
-    </header>
-  )
-}
-
-function Footer() {
-  return (
-    <>
-      <div className="bk-footer-thin">
-        <div className="bk-footer-thin-inner">
-          <div className="bk-footer-links">
-            <a href="#">FAQ</a>
-            <a href="#">Contact Us</a>
-            <a href="#">Share Code</a>
-          </div>
-          <button className="bk-footer-lang" type="button">
-            <span className="bk-footer-lang-g">G</span>
-            Select Language
-          </button>
-        </div>
-      </div>
-      <footer className="bk-footer">
-        <div className="bk-footer-inner">
-          <div className="bk-logo">
-            <img src="/bs-prototypes/bs.svg" alt="" className="bk-logo-mark" />
-            <span className="bk-logo-word">beanstack</span>
-          </div>
-          <div className="bk-footer-copy">
-            © 2026 Zoobean, Inc. <span>•</span> <a href="#">Terms</a> <span>•</span>{' '}
-            <a href="#">Privacy</a>
-          </div>
-        </div>
-      </footer>
-    </>
-  )
-}
-
 export function App() {
-  const [view, setView] = useState({ name: 'discover' })
+  // `tab` is the nav tab; `sub` is a page layered over it (a book, the browse
+  // page, a list) that replaces the main column without leaving the tab.
+  const [tab, setTab] = useState('discover')
+  const [sub, setSub] = useState(null)
+  const [challenge, setChallenge] = useState(null)
   const [browseInit, setBrowseInit] = useState(null) // { query?, filter? } seeded into Browse
   const [list, setList] = useState(null) // a Discover list shown in full on its own page
   const [shelf, setShelf] = useState(() => ({ ...SHELF_SEED }))
@@ -111,7 +40,8 @@ export function App() {
   const [badge, setBadge] = useState(null) // { id } of the just-finished book | null
   const [nowPlaying, setNowPlaying] = useState(null) // bookId being listened to | null
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const [profileId, setProfileId] = useState(null) // friend id whose profile is open
+  const [flowOpen, setFlowOpen] = useState(false)
+  const [profileId, setProfileId] = useState(null) // friend whose profile is open
   const [settings, setSettings] = useState({
     sora: true,
     scholastic: true,
@@ -120,28 +50,41 @@ export function App() {
   })
   const toggleSetting = (key) => setSettings((s) => ({ ...s, [key]: !s[key] }))
 
+  const top = () => window.scrollTo({ top: 0 })
+
   const open = (id) => {
-    setView((v) => ({
-      name: 'book',
-      id,
-      from: v.name === 'book' ? v.from : v.name,
-    }))
-    window.scrollTo({ top: 0 })
+    setSub((v) => ({ name: 'book', id, from: v?.name === 'book' ? v.from : (v?.name ?? tab) }))
+    top()
   }
-  const back = () => setView((v) => ({ name: v.from || 'discover' }))
-  const goShelf = () => {
-    setView({ name: 'shelf' })
-    window.scrollTo({ top: 0 })
-  }
+  // Back out of a book to whatever opened it — another sub-view, or the tab.
+  const back = () =>
+    setSub((v) => {
+      if (v?.from === 'browse') return { name: 'browse' }
+      if (v?.from === 'list') return { name: 'list' }
+      return null
+    })
   const openBrowse = (init) => {
     setBrowseInit(init || null)
-    setView({ name: 'browse' })
-    window.scrollTo({ top: 0 })
+    setSub({ name: 'browse' })
+    top()
   }
-  const openList = (shelf, books) => {
-    setList({ title: shelf.title, subtitle: shelf.subtitle, curator: shelf.curator, books })
-    setView({ name: 'list' })
-    window.scrollTo({ top: 0 })
+  const openList = (shelfDef, books) => {
+    setList({
+      title: shelfDef.title,
+      subtitle: shelfDef.subtitle,
+      curator: shelfDef.curator,
+      books,
+    })
+    setSub({ name: 'list' })
+    top()
+  }
+
+  // Leaving for another tab drops whatever was layered over this one.
+  const goTab = (t) => {
+    setTab(t)
+    setSub(null)
+    setChallenge(null)
+    top()
   }
 
   // shelf: { [bookId]: 'want' | 'reading' | 'finished' }
@@ -184,108 +127,122 @@ export function App() {
       ],
     }))
 
-  const onNav = (id) => {
-    if (id === 'shelf') goShelf()
-    else if (id === 'discover') setView({ name: 'discover' })
-    else if (id === 'friends') {
-      setView({ name: 'friends' })
-      window.scrollTo({ top: 0 })
-    }
+  // ── What the shell renders ───────────────────────────────────────────────
+  // The two tabs this prototype owns; everything else on the nav is web-app's.
+  const EXTRA_TABS = [
+    { id: 'discover', label: 'Discover' },
+    { id: 'shelf', label: 'My Shelf', count: shelfIds.size || undefined },
+  ]
+
+  const renderTab = (id) => {
+    if (id === 'discover')
+      return (
+        <Discover
+          onOpen={open}
+          onWish={toggleWant}
+          wishlist={shelfIds}
+          settings={settings}
+          onBrowse={openBrowse}
+          onPlay={setNowPlaying}
+          onViewAll={openList}
+          onSettings={() => setSettingsOpen(true)}
+        />
+      )
+    if (id === 'shelf')
+      return (
+        <MyShelf
+          shelf={shelf}
+          onOpen={open}
+          onWish={toggleWant}
+          onDiscover={() => goTab('discover')}
+        />
+      )
+    if (id === 'badges') return <AllBadges />
+    if (id === 'friends') return <Friends />
+    return null
   }
 
-  // Only the built-out tabs light up; the rest of the bar is still scaffolding.
-  const active = ['shelf', 'friends'].includes(view.name) ? view.name : 'discover'
+  // A page layered over the current tab — it replaces the main column and the
+  // nav stays put, which is what the dashboard's `page` slot is for.
+  const page = challenge ? (
+    <ChallengePage challenge={challenge} entries={READING_LOG} />
+  ) : sub?.name === 'browse' ? (
+    <Browse
+      initialQuery={browseInit?.query || ''}
+      initialFilter={browseInit?.filter}
+      settings={settings}
+      onOpen={open}
+      onWish={toggleWant}
+      wishlist={shelfIds}
+      onBack={() => setSub(null)}
+    />
+  ) : sub?.name === 'list' ? (
+    <ListPage
+      list={list}
+      onOpen={open}
+      onWish={toggleWant}
+      wishlist={shelfIds}
+      onBack={() => setSub(null)}
+    />
+  ) : sub?.name === 'book' ? (
+    <BookDetail
+      book={getBook(sub.id)}
+      sessions={getSessions(sub.id)}
+      shelf={shelf}
+      onWish={toggleWant}
+      onFinish={finishBook}
+      onPlay={setNowPlaying}
+      onOpen={open}
+      onOpenProfile={setProfileId}
+      onBack={back}
+      backLabel={
+        sub.from === 'shelf'
+          ? 'My Shelf'
+          : sub.from === 'browse'
+            ? 'Search'
+            : sub.from === 'list'
+              ? list?.title || 'List'
+              : 'Discover'
+      }
+      userReviews={reviewsByBook[sub.id]}
+      onAddReview={addReview}
+      settings={settings}
+    />
+  ) : null
 
   return (
-    <div className="bk-app">
-      <TopBar
-        active={active}
-        onNav={onNav}
-        shelfCount={shelfIds.size}
-        onSettings={() => setSettingsOpen(true)}
+    <>
+      <Dashboard
+        streak={STREAK}
+        dailyGoal={DAILY_GOAL}
+        onLog={() => setFlowOpen(true)}
+        connections={{}}
+        /* No partner-linking surface here — this prototype is about the catalog,
+           and the connect banner belongs to the ones that are about linking. */
+        partners={[]}
+        view={tab}
+        onView={goTab}
+        extraTabs={EXTRA_TABS}
+        ownTabs={['badges', 'friends']}
+        /* Leaderboards lives under Friends and Reviews under Reading, exactly
+           as web-app arranges them. */
+        hideTabs={['leaderboards', 'reviews']}
+        logTabs={[{ id: 'reviews', label: 'Reviews' }]}
+        renderLogTab={() => <Reviews />}
+        renderExtra={renderTab}
+        onOpenChallenge={setChallenge}
+        page={page}
       />
-      <main className="bk-main">
-        {view.name === 'discover' && (
-          <Discover
-            onOpen={open}
-            onWish={toggleWant}
-            wishlist={shelfIds}
-            settings={settings}
-            onBrowse={openBrowse}
-            onPlay={setNowPlaying}
-            onViewAll={openList}
-          />
-        )}
-        {view.name === 'list' && (
-          <ListPage
-            list={list}
-            onOpen={open}
-            onWish={toggleWant}
-            wishlist={shelfIds}
-            onBack={() => setView({ name: 'discover' })}
-          />
-        )}
-        {view.name === 'browse' && (
-          <Browse
-            initialQuery={browseInit?.query || ''}
-            initialFilter={browseInit?.filter}
-            settings={settings}
-            onOpen={open}
-            onWish={toggleWant}
-            wishlist={shelfIds}
-            onBack={() => setView({ name: 'discover' })}
-          />
-        )}
-        {view.name === 'friends' && <Friends onOpenProfile={setProfileId} />}
-        {view.name === 'shelf' && (
-          <MyShelf
-            shelf={shelf}
-            onOpen={open}
-            onWish={toggleWant}
-            onDiscover={() => setView({ name: 'discover' })}
-          />
-        )}
-        {view.name === 'book' && (
-          <BookDetail
-            book={getBook(view.id)}
-            sessions={getSessions(view.id)}
-            shelf={shelf}
-            onWish={toggleWant}
-            onFinish={finishBook}
-            onPlay={setNowPlaying}
-            onOpen={open}
-            onOpenProfile={setProfileId}
-            onBack={back}
-            backLabel={
-              view.from === 'shelf'
-                ? 'My Shelf'
-                : view.from === 'browse'
-                  ? 'Search'
-                  : view.from === 'list'
-                    ? list?.title || 'List'
-                    : 'Discover'
-            }
-            userReviews={reviewsByBook[view.id]}
-            onAddReview={addReview}
-            settings={settings}
-          />
-        )}
-      </main>
-      <Footer />
+
+      <LogFlow open={flowOpen} onClose={() => setFlowOpen(false)} connections={{}} partners={[]} />
+
+      <FriendProfile friendId={profileId} onClose={() => setProfileId(null)} />
+
       <SettingsModal
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
         settings={settings}
         onToggle={toggleSetting}
-      />
-      <FriendProfile
-        key={profileId} /* remount per friend so it opens on Overview */
-        friend={profileId ? getFriend(profileId) : null}
-        onClose={() => setProfileId(null)}
-        onOpenBook={(id) => {
-          setProfileId(null)
-          open(id)
-        }}
       />
       <BadgeEarnedModal
         open={!!badge}
@@ -300,6 +257,6 @@ export function App() {
         />
       )}
       <PrototypeNav currentHref="/bs-prototypes/books/" />
-    </div>
+    </>
   )
 }
