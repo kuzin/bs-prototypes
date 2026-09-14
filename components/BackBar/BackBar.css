@@ -1,6 +1,10 @@
 /* Sits at the top left *inside* the page container, so it picks up the page's
    own top padding and left edge and needs neither of its own — no background,
-   no rule, just a gap before the PageHeader beneath it. */
+   no rule, just a gap before whatever is beneath it. The container supplies
+   that gap: its flex `gap` on the admin surfaces, the following element's
+   margin in the reader shell's block flow — where that margin is the shared
+   `--wa-page-top`, so every reader page opens the same distance under the
+   link whether a title row or a hero follows it. */
 .back-bar {
   display: flex;
   align-items: center;

@@ -7,8 +7,14 @@
      centred in it: bottom-aligned, a title with no sub-line left the heading
      and its button hugging the floor of an otherwise empty box. */
   --wa-pagehead-h: 50px;
-  --wa-pagehead-margin: 26px 0 20px;
+  --wa-pagehead-margin: var(--wa-page-top) 0 20px;
   --wa-pagehead-size: 26px;
+
+  /* The gap above whatever opens a reader page — the title row here, or the
+     hero on a page that leads with one. On a page with a back link it is the
+     gap under that link, which is why it's published rather than repeated:
+     two pages disagreeing by 8px is visible when you navigate between them. */
+  --wa-page-top: 26px;
 }
 
 .wa-pagehead {

@@ -855,9 +855,11 @@ button {
 /* Soft, light hero — a gentle wash of the book's color instead of a heavy block */
 /* No tint behind the cover — the jacket is the colour on this page, and a
    gradient sampled off it was competing with the thing it framed. */
+/* Opens the page the way a title row does elsewhere, so it takes the same gap
+   under the back link rather than a tighter one of its own. */
 .bk-dhero {
   position: relative;
-  margin: 18px 0 24px;
+  margin: var(--wa-page-top) 0 24px;
 }
 .bk-dhero-inner {
   position: relative;
