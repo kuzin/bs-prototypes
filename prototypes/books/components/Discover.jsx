@@ -58,8 +58,15 @@ export function Discover({
                 placeholder="Search books, authors…"
                 ariaLabel="Search books and authors"
               />
-              <Button type="submit" variant="secondary" size="md">
-                Search
+              {/* Submitting with an empty field opens the full catalog, which
+                  is what "find a book" means when you don't know the title. */}
+              <Button
+                type="submit"
+                variant="secondary"
+                size="md"
+                icon={<Icon name="search" size={15} />}
+              >
+                Find a book
               </Button>
             </form>
             <IconButton

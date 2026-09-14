@@ -2,6 +2,8 @@ import { useRef, useState, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Button } from '@components/Button/Button'
+import { IconButton } from '@components/Primitives/Primitives'
+import '@components/Primitives/Primitives.css'
 import { BookCard } from './BookCard'
 import { PARTNERS } from '../data'
 
@@ -68,22 +70,24 @@ export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAl
               {partner ? `View More on ${partner.name}` : 'View all'}
             </Button>
           )}
-          <button
-            className="bk-arrow"
+          <IconButton
+            variant="secondary"
+            size="md"
             onClick={() => scroll(-1)}
             disabled={edge.start}
             aria-label="Scroll left"
           >
             <Icon name="chevron-left" size={18} />
-          </button>
-          <button
-            className="bk-arrow"
+          </IconButton>
+          <IconButton
+            variant="secondary"
+            size="md"
             onClick={() => scroll(1)}
             disabled={edge.end}
             aria-label="Scroll right"
           >
             <Icon name="chevron-right" size={18} />
-          </button>
+          </IconButton>
         </div>
       </div>
 

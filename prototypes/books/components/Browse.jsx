@@ -1,6 +1,15 @@
 import { useState, useMemo } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
+import { BackBar } from '@components/BackBar/BackBar'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
+import { SearchInput } from '@components/SearchInput/SearchInput'
+import { SectionCard } from '@components/SectionCard/SectionCard'
+import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
+import { Button } from '@components/Button/Button'
+import '@components/SearchInput/SearchInput.css'
+import '@components/SectionCard/SectionCard.css'
+import '@components/ActiveFilters/ActiveFilters.css'
 import { BookCard } from './BookCard'
 import {
   BOOKS,
@@ -109,6 +118,45 @@ export function Browse({
     filters.avail.size +
     (filters.minRating ? 1 : 0)
 
+  // Everything that is on, as `ActiveFilters` wants it: one chip each, and
+  // clicking a chip drops just that one.
+  const activeFilters = [
+    ...[...filters.genres].map((id) => ({
+      key: `g-${id}`,
+      label: id,
+      onClear: () => toggle('genres', id),
+    })),
+    ...[...filters.formats].map((id) => ({
+      key: `f-${id}`,
+      label: FORMATS[id].label,
+      onClear: () => toggle('formats', id),
+    })),
+    ...[...filters.levels].map((id) => ({
+      key: `l-${id}`,
+      label: LEVEL_BANDS.find((b) => b.id === id)?.label ?? id,
+      onClear: () => toggle('levels', id),
+    })),
+    ...[...filters.ages].map((id) => ({
+      key: `a-${id}`,
+      label: AGE_BANDS.find((b) => b.id === id)?.label ?? id,
+      onClear: () => toggle('ages', id),
+    })),
+    ...[...filters.avail].map((id) => ({
+      key: `v-${id}`,
+      label: AVAIL_FACETS.find((f) => f.id === id)?.label ?? id,
+      onClear: () => toggle('avail', id),
+    })),
+    ...(filters.minRating
+      ? [
+          {
+            key: 'rating',
+            label: `${filters.minRating}+ stars`,
+            onClear: () => setMinRating(0),
+          },
+        ]
+      : []),
+  ]
+
   // A library facet only counts when its feature toggle is on (ignores stale picks).
   const facetOptions = AVAIL_FACETS.filter((f) => !GATED_FACETS.includes(f.id) || settings[f.id])
 
@@ -138,53 +186,23 @@ export function Browse({
 
   return (
     <div className="bk-browse-page">
-      <div className="bk-backbar">
-        <button className="bk-back" onClick={onBack}>
-          <Icon name="arrow-left" size={16} /> Discover
-        </button>
-      </div>
+      <BackBar label="Discover" onClick={onBack} />
 
-      <div className="bk-shelfpage-title bk-discover-head">
-        <h1>
-          <Icon name="search" size={23} /> Find a book
-        </h1>
-        <p>Search the catalog and filter by genre, format, level, and where you can read it.</p>
-      </div>
+      <ReaderPageHead title="Find a book" />
 
       <div className="bk-searchbar">
-        <Icon name="search" size={18} />
-        <input
-          type="text"
+        <SearchInput
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={setQuery}
           placeholder="Search by title, author, or genre…"
-          aria-label="Search books, authors, and genres"
-          autoFocus
+          ariaLabel="Search books, authors, and genres"
         />
-        {query && (
-          <button
-            className="bk-searchbar-clear"
-            onClick={() => setQuery('')}
-            aria-label="Clear search"
-          >
-            <Icon name="x" size={16} />
-          </button>
-        )}
       </div>
 
       <div className="bk-browse-layout">
-        <aside className="bk-filters">
-          <div className="bk-filters-head">
-            <h2>
-              <Icon name="filter" size={16} /> Filters
-            </h2>
-            {activeCount > 0 && (
-              <button className="bk-filters-clear" onClick={clearAll}>
-                Clear all
-              </button>
-            )}
-          </div>
-
+        {/* No "Clear all" here: the ActiveFilters bar beside the results
+            carries it, and two of them on one screen is one too many. */}
+        <SectionCard className="bk-filters" header="divider" title="Filters">
           <FilterGroup
             title="Genre"
             options={GENRE_OPTIONS.map((g) => ({ id: g, label: g }))}
@@ -239,13 +257,14 @@ export function Browse({
               ))}
             </div>
           </div>
-        </aside>
+        </SectionCard>
 
         <div className="bk-browse-results">
+          {/* What's applied, and a way to drop any one of them — the shared bar
+              the admin lists use, so a filtered result set says so. */}
+          <ActiveFilters filters={activeFilters} onClearAll={clearAll} />
+
           <div className="bk-results-head">
-            <span className="bk-results-count">
-              <strong>{results.length}</strong> {results.length === 1 ? 'book' : 'books'}
-            </span>
             <Tabs
               variant="pill"
               size="sm"

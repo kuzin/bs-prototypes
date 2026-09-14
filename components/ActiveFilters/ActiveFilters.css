@@ -1,11 +1,19 @@
 /* The bar sits directly under the filter controls, so it reads at the same
    size they do — `--text-label`, not the 12px it was, which made the one line
-   that says what you've narrowed to the smallest thing on the page. */
+   that says what you've narrowed to the smallest thing on the page.
+
+   And it is an actual bar: a tinted strip with the page's own border and
+   radius. Transparent, a label and some chips floating over the results read
+   as part of the list rather than as a statement about it. */
 .af-bar {
   display: flex;
-  align-items: center;
-  gap: 8px;
   flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 14px;
+  background: var(--c-gray-0);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
 }
 
 .af-label {

@@ -301,39 +301,6 @@ button {
 .bk-shelf-sub--curator .bp-icon {
   color: #c2410c;
 }
-.bk-arrow {
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  border: 1px solid var(--bk-line);
-  background: #fff;
-  color: var(--c-gray-750);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition:
-    background 0.14s,
-    border-color 0.14s,
-    color 0.14s,
-    transform 0.12s,
-    box-shadow 0.14s,
-    opacity 0.12s;
-}
-.bk-arrow:hover:not(:disabled) {
-  border-color: var(--accent);
-  color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 8%, #fff);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 11px color-mix(in srgb, var(--accent) 20%, transparent);
-}
-.bk-arrow:active:not(:disabled) {
-  transform: translateY(0) scale(0.93);
-  box-shadow: none;
-}
-.bk-arrow:disabled {
-  opacity: 0.34;
-  cursor: default;
-}
 
 .bk-shelf-trackwrap {
   position: relative;
@@ -792,51 +759,12 @@ button {
   font-weight: 700;
   color: var(--bk-muted);
 }
+/* Layout only — the field is the shared one. */
 .bk-searchbar {
   display: flex;
-  align-items: center;
-  gap: 11px;
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 14px;
-  padding: 13px 16px;
   margin-bottom: 22px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
-.bk-searchbar:focus-within {
-  border-color: #0d9488;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #0d9488 16%, transparent);
-}
-.bk-searchbar > .bp-icon {
-  color: var(--c-gray-500);
-  flex: 0 0 auto;
-}
-.bk-searchbar input {
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: none;
-  font-family: inherit;
-  font-size: 16px;
-  color: var(--bk-ink);
-  min-width: 0;
-}
-.bk-searchbar-clear {
-  flex: 0 0 auto;
-  border: 0;
-  background: var(--c-gray-100);
-  color: var(--c-gray-700);
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.bk-searchbar-clear:hover {
-  background: var(--c-gray-200);
-}
+
 .bk-browse-layout {
   display: grid;
   grid-template-columns: 232px minmax(0, 1fr);
@@ -847,37 +775,9 @@ button {
 .bk-filters {
   position: sticky;
   top: 118px;
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
 }
-.bk-filters-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.bk-filters-head h2 {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 15px;
-  font-weight: 900;
-  color: var(--bk-ink);
-}
-.bk-filters-head h2 .bp-icon {
-  color: #0d9488;
-}
-.bk-filters-clear {
-  border: 0;
-  background: none;
-  color: #0f766e;
-  font-family: inherit;
-  font-weight: 800;
-  font-size: 13px;
-  cursor: pointer;
-}
-.bk-filters-clear:hover {
-  text-decoration: underline;
+.bk-filters .bk-filtergroup + .bk-filtergroup {
+  margin-top: 18px;
 }
 .bk-filtergroup-title {
   font-size: 12px;
@@ -925,20 +825,10 @@ button {
 .bk-results-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 14px;
   margin-bottom: 18px;
   flex-wrap: wrap;
-}
-.bk-results-count {
-  font-size: 14px;
-  color: var(--bk-muted);
-  font-weight: 600;
-}
-.bk-results-count strong {
-  font-size: 16px;
-  font-weight: 900;
-  color: var(--bk-ink);
 }
 .bk-results-grid {
   display: grid;
@@ -986,7 +876,7 @@ button {
    gradient sampled off it was competing with the thing it framed. */
 .bk-dhero {
   position: relative;
-  margin-bottom: 24px;
+  margin: 18px 0 24px;
 }
 .bk-dhero-inner {
   position: relative;
@@ -2813,4 +2703,9 @@ button {
   display: flex;
   gap: 10px;
   align-items: center;
+}
+
+/* The applied-filters bar sits above the results head. */
+.bk-browse-results .af-bar {
+  margin-bottom: 14px;
 }
