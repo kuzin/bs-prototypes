@@ -3,15 +3,20 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
+import { Modal } from '@components/Modal/Modal'
+import { StatCard } from '@components/Cards/Cards'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 
-import { READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
+import { BOOKS, READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
 import { CONNECTIONS, CONNECTION_LIST } from '../connections'
+import { BookCover } from './BookCover'
 import './ReadingLog.css'
 
 import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
 import '@components/Pill/Pill.css'
+import '@components/Modal/Modal.css'
+import '@components/Cards/Cards.css'
 
 // Beanstack's Reading Log — calendar and list views over the same entries.
 // Sessions that arrived from a linked reading app are tagged with that app's
@@ -194,65 +199,282 @@ function ListView({ entries, showImported }) {
   )
 }
 
-/** "All Titles" — the same entries rolled up per book. */
-function TitlesView({ entries }) {
-  const byTitle = new Map()
+// ─── All Titles ─────────────────────────────────────────────────────────────
+// The real page is a shelf, not a table: covers grouped by the month they were
+// logged in (`reading_log/_content.html.haml`), with the title and its numbers
+// behind a click rather than spread across five columns.
+
+/** The colours the app cycles a coverless tile through — `.log-item-1..7`. */
+const NO_COVER_COLORS = [
+  '#dc493a',
+  '#f26430',
+  '#ffbc42',
+  '#03b5aa',
+  '#19bfd5',
+  '#1d70a2',
+  '#6761a8',
+]
+
+const BOOK_BY_TITLE = new Map(Object.values(BOOKS).map((b) => [b.title, b]))
+
+/**
+ * The record `BookCover` wants for one logged title. A title in the catalog
+ * brings its real cover; one that only exists in the log gets a tile in the
+ * next of the app's seven colours, so a miss still looks designed.
+ */
+function coverBook(title, author, i) {
+  const known = BOOK_BY_TITLE.get(title)
+  if (known) return known
+  const c = NO_COVER_COLORS[i % NO_COVER_COLORS.length]
+  return { title, author, cover: [c, c] }
+}
+
+const prettyMinutes = (n) => (n >= 60 ? `${Math.floor(n / 60)}h ${n % 60}m` : `${n}m`)
+
+/** `2026-06-16` → `June 2026`, without constructing a Date (and its timezone). */
+const monthLabel = (key) => {
+  const [y, m] = key.split('-')
+  return `${MONTHS[Number(m) - 1]} ${y}`
+}
+
+const longDate = (key) => {
+  const [y, m, d] = key.split('-')
+  return `${MONTHS[Number(m) - 1]} ${Number(d)}, ${y}`
+}
+
+/**
+ * Roll the log up per title *within each month*. The real grid is grouped by
+ * month, so a title read across two months belongs under both — rolling up
+ * globally would collapse exactly the thing the page is organised by.
+ */
+function titlesByMonth(entries) {
+  const months = new Map()
   for (const e of entries) {
     if (e.kind !== 'log') continue
+    const key = e.date.slice(0, 7)
+    if (!months.has(key)) months.set(key, new Map())
+    const byTitle = months.get(key)
     const row = byTitle.get(e.title) ?? {
       title: e.title,
       author: e.author,
       minutes: 0,
       pages: 0,
-      sessions: 0,
+      sessions: [],
       sources: new Set(),
       completed: false,
     }
     row.minutes += e.minutes ?? 0
     row.pages += e.pages ?? 0
-    row.sessions += 1
+    row.sessions.push(e)
     row.completed = row.completed || Boolean(e.completed)
     if (e.source) row.sources.add(e.source)
     byTitle.set(e.title, row)
   }
-  const rows = [...byTitle.values()].sort((a, b) => b.minutes - a.minutes)
+  return [...months.entries()]
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([key, byTitle]) => ({ key, label: monthLabel(key), rows: [...byTitle.values()] }))
+}
+
+/**
+ * The stat strip over the shelf — `ul.reading-log-overview` in the app, on the
+ * design system's own StatCard rather than a local copy of its shape.
+ */
+function TitleStats({ entries }) {
+  const logs = entries.filter((e) => e.kind === 'log')
+  const done = logs.filter((e) => e.completed)
+  const stats = [
+    { icon: 'circle-check', label: 'Total Completions', value: done.length, c: '#0F7A55' },
+    {
+      icon: 'book-2',
+      label: 'Completed Titles',
+      value: new Set(done.map((e) => e.title)).size,
+      c: '#1A6DD5',
+    },
+    {
+      icon: 'file-text',
+      label: 'Pages Read',
+      value: logs.reduce((n, e) => n + (e.pages ?? 0), 0),
+      c: '#5B21B6',
+    },
+    {
+      icon: 'clock',
+      label: 'Reading Time',
+      value: prettyMinutes(logs.reduce((n, e) => n + (e.minutes ?? 0), 0)),
+      c: '#0B6B78',
+    },
+    {
+      icon: 'calendar',
+      label: 'Days of Reading',
+      value: new Set(logs.map((e) => e.date)).size,
+      c: '#B45309',
+    },
+  ]
+  return (
+    <div className="rl-overview">
+      {stats.map((s) => (
+        <StatCard
+          key={s.label}
+          value={s.value}
+          label={s.label}
+          color={s.c}
+          icon={<Icon name={s.icon} size={20} />}
+        />
+      ))}
+    </div>
+  )
+}
+
+/** One shelf tile: the cover, a completed check, and the app it came from. */
+function TitleTile({ row, index, onOpen }) {
+  const [source] = [...row.sources]
+  return (
+    <li className="rl-tile">
+      <button
+        type="button"
+        className="rl-tile-hit"
+        onClick={onOpen}
+        aria-label={`${row.title}${row.completed ? ' — completed' : ''}`}
+      >
+        <BookCover book={coverBook(row.title, row.author, index)} size="fill" />
+        {/* Both marks stack in one corner rather than taking a corner each: a
+            magazine's masthead runs left-to-right across the top of its tile,
+            and a mark in the opposite corner cut the front off its name. */}
+        <span className="rl-tile-marks" aria-hidden="true">
+          {row.completed && (
+            <span className="rl-tile-check">
+              <Icon name="check" size={20} stroke={3} />
+            </span>
+          )}
+          {source && (
+            <span className="rl-tile-src">
+              <PartnerMark id={source} size={16} />
+            </span>
+          )}
+        </span>
+      </button>
+    </li>
+  )
+}
+
+/**
+ * What the five columns used to say, on the title you actually asked about —
+ * the app links a tile through to that book's own log page.
+ */
+function TitleDetail({ row, index, onClose }) {
+  return (
+    <Modal open={Boolean(row)} onClose={onClose} variant="center" ariaLabel="Title detail">
+      {row && (
+        <div className="rl-detail">
+          <button type="button" className="rl-detail-close" onClick={onClose} aria-label="Close">
+            <Icon name="x" size={17} />
+          </button>
+          <div className="rl-detail-head">
+            <div className="rl-detail-cover">
+              <BookCover book={coverBook(row.title, row.author, index)} size="fill" />
+            </div>
+            <div className="rl-detail-meta">
+              <h2 className="rl-detail-title">{row.title}</h2>
+              {row.author && <p className="rl-detail-author">by {row.author}</p>}
+              {row.completed && (
+                <Pill color="#0F7A55" variant="soft" size="sm">
+                  Completed
+                </Pill>
+              )}
+              <dl className="rl-detail-nums">
+                <div>
+                  <dt>Sessions</dt>
+                  <dd>{row.sessions.length}</dd>
+                </div>
+                <div>
+                  <dt>Minutes</dt>
+                  <dd>{row.minutes || '—'}</dd>
+                </div>
+                <div>
+                  <dt>Pages</dt>
+                  <dd>{row.pages || '—'}</dd>
+                </div>
+              </dl>
+            </div>
+          </div>
+
+          <ul className="rl-detail-sessions">
+            {row.sessions.map((e) => (
+              <li key={e.id}>
+                <span className="rl-detail-date">{longDate(e.date)}</span>
+                <span className="rl-detail-amount">
+                  {e.minutes ? `${e.minutes} min` : e.pages ? `${e.pages} pages` : 'Logged'}
+                </span>
+                <span className="rl-detail-source">
+                  {e.source ? (
+                    <>
+                      <PartnerMark id={e.source} size={15} /> {CONNECTIONS[e.source].name}
+                    </>
+                  ) : (
+                    <span className="rl-detail-manual">Logged by hand</span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </Modal>
+  )
+}
+
+/** "All Titles" — every logged title as a cover, grouped by month. */
+function TitlesView({ entries }) {
+  // The app's own pair of tabs on this page: everything, or just what's done.
+  const [filter, setFilter] = useState('all')
+  const [open, setOpen] = useState(null)
+
+  const months = titlesByMonth(entries)
+    .map((m) => ({ ...m, rows: filter === 'done' ? m.rows.filter((r) => r.completed) : m.rows }))
+    .filter((m) => m.rows.length)
+
+  // One running index across the whole shelf, so the coverless tiles cycle
+  // through the seven colours rather than restarting inside every month.
+  let i = -1
 
   return (
     <div className="rl-titles">
-      <div className="rl-titles-row rl-titles-row--head">
-        <span>Title</span>
-        <span>Sessions</span>
-        <span>Minutes</span>
-        <span>Pages</span>
-        <span>Source</span>
+      <TitleStats entries={entries} />
+
+      <div className="rl-titles-filter">
+        <Tabs
+          variant="pill"
+          size="md"
+          active={filter}
+          onChange={setFilter}
+          ariaLabel="Which titles"
+          items={[
+            { id: 'all', label: 'All Titles' },
+            { id: 'done', label: 'Completed' },
+          ]}
+        />
       </div>
-      {rows.map((r) => (
-        <div key={r.title} className="rl-titles-row">
-          <span className="rl-titles-title">
-            {r.title}
-            <span className="rl-titles-author">{r.author}</span>
-            {r.completed && (
-              <Pill color="#0F7A55" variant="soft" size="sm">
-                Completed
-              </Pill>
-            )}
-          </span>
-          <span>{r.sessions}</span>
-          <span>{r.minutes || '—'}</span>
-          <span>{r.pages || '—'}</span>
-          <span className="rl-titles-source">
-            {r.sources.size === 0 ? (
-              <span className="rl-titles-manual">Logged by hand</span>
-            ) : (
-              [...r.sources].map((s) => (
-                <span key={s} className="rl-titles-src">
-                  <PartnerMark id={s} size={16} /> {CONNECTIONS[s].name}
-                </span>
-              ))
-            )}
-          </span>
-        </div>
+
+      {months.map((m) => (
+        <section key={m.key} className="rl-titlemonth">
+          <p className="rl-titlemonth-label">{m.label}</p>
+          <ul className="rl-tilegrid">
+            {m.rows.map((row) => {
+              i += 1
+              const at = i
+              return (
+                <TitleTile
+                  key={row.title}
+                  row={row}
+                  index={at}
+                  onOpen={() => setOpen({ row, index: at })}
+                />
+              )
+            })}
+          </ul>
+        </section>
       ))}
+
+      <TitleDetail row={open?.row} index={open?.index ?? 0} onClose={() => setOpen(null)} />
     </div>
   )
 }
@@ -292,7 +514,7 @@ export function ReadingLog({
       </div>
 
       <div className="rl-head">
-        <h1 className="rl-title">Reading Log</h1>
+        <h1 className="rl-title">{tab === 'log' ? 'Reading Log' : 'All Titles'}</h1>
         <div className="rl-head-actions">
           <Button variant="secondary" size="md">
             Print log
@@ -318,29 +540,33 @@ export function ReadingLog({
         </div>
       </div>
 
-      <div className="rl-streaks">
-        <div className="rl-streak rl-streak--current">
-          <Icon name="flame-filled" size={20} />
-          <div>
-            <div className="rl-streak-num">{LOG_STREAK.current} Days</div>
-            <div className="rl-streak-lbl">Current streak</div>
+      {tab === 'log' && (
+        <>
+          <div className="rl-streaks">
+            <div className="rl-streak rl-streak--current">
+              <Icon name="flame-filled" size={20} />
+              <div>
+                <div className="rl-streak-num">{LOG_STREAK.current} Days</div>
+                <div className="rl-streak-lbl">Current streak</div>
+              </div>
+            </div>
+            <div className="rl-streak rl-streak--longest">
+              <Icon name="flame-filled" size={20} />
+              <div>
+                <div className="rl-streak-num">{LOG_STREAK.longest} Days</div>
+                <div className="rl-streak-lbl">Longest streak</div>
+              </div>
+            </div>
           </div>
-        </div>
-        <div className="rl-streak rl-streak--longest">
-          <Icon name="flame-filled" size={20} />
-          <div>
-            <div className="rl-streak-num">{LOG_STREAK.longest} Days</div>
-            <div className="rl-streak-lbl">Longest streak</div>
-          </div>
-        </div>
-      </div>
 
-      {imported > 0 && (
-        <p className="rl-importnote">
-          <Icon name="bolt" size={15} />
-          {imported} of these sessions came in from your linked reading apps — hover a logo to see
-          where and when.
-        </p>
+          {imported > 0 && (
+            <p className="rl-importnote">
+              <Icon name="bolt" size={15} />
+              {imported} of these sessions came in from your linked reading apps — hover a logo to
+              see where and when.
+            </p>
+          )}
+        </>
       )}
 
       {tab === 'log' ? (

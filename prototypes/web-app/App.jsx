@@ -5,7 +5,14 @@ import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerC
 import { Dashboard } from '../logging-flow/components/Dashboard'
 import { LogFlow } from '../logging-flow/components/LogFlow'
 import { BookCover } from '../logging-flow/components/BookCover'
-import { STREAK, DAILY_GOAL, READER, BOOKS, RECENTLY_LOGGED } from '../logging-flow/data'
+import {
+  STREAK,
+  DAILY_GOAL,
+  READER,
+  BOOKS,
+  RECENTLY_LOGGED,
+  READING_LOG,
+} from '../logging-flow/data'
 import {
   CONNECTIONS,
   CONNECTION_LIST,
@@ -13,7 +20,7 @@ import {
   partnerMinutes,
 } from '../logging-flow/connections'
 
-import '../ris/index.css'
+import '../logging-flow/index.css'
 import '@components/PrototypeNav/PrototypeNav.css'
 
 // The reader app as it stands today — the page a reader actually sees, so the
@@ -45,6 +52,9 @@ const PARTNER_BOOKS = Object.fromEntries(
     .map(([id, b]) => [id, { ...b, readable: false }]),
 )
 const RECENT = RECENTLY_LOGGED.filter((id) => BOOKS[id]?.partner !== 'scholastic')
+// …and the log with it. Filtering the catalog but not the log left Scholastic
+// magazines sitting in the Reading Log of a page that says it has no Scholastic.
+const LOG = READING_LOG.filter((e) => e.source !== 'scholastic')
 
 export function App() {
   const [flowOpen, setFlowOpen] = useState(false)
@@ -97,6 +107,7 @@ export function App() {
         onDisconnectPartner={handleDisconnect}
         onVisitPartner={setVisiting}
         partners={PARTNERS}
+        logEntries={LOG}
       />
 
       <LogFlow
