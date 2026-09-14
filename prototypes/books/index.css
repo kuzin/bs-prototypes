@@ -82,7 +82,7 @@ button {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--bk-ink);
 }
@@ -90,12 +90,9 @@ button {
   color: #0d9488;
 }
 .bk-ask-sub {
-  font-size: 14px;
+  font-size: 15px;
   color: var(--bk-muted);
   margin: 2px 0 0;
-}
-.bk-ask-input::placeholder {
-  color: var(--c-gray-500);
 }
 .bk-ask-result {
   margin-top: 18px;
@@ -266,14 +263,14 @@ button {
   min-width: 0;
 }
 .bk-shelf-title {
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 900;
   color: var(--bk-ink);
   letter-spacing: -0.015em;
   line-height: 1.15;
 }
 .bk-shelf-sub {
-  font-size: 13px;
+  font-size: 14px;
   color: var(--bk-muted);
   margin-top: 3px;
 }
@@ -446,7 +443,7 @@ button {
   gap: 2px;
 }
 .bk-card-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--bk-ink);
   line-height: 1.25;
@@ -456,7 +453,7 @@ button {
   overflow: hidden;
 }
 .bk-card-author {
-  font-size: 12.5px;
+  font-size: 13.5px;
   color: var(--bk-muted);
   white-space: nowrap;
   overflow: hidden;
@@ -472,7 +469,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 800;
   color: var(--c-gray-800);
 }
@@ -489,7 +486,7 @@ button {
   align-items: center;
   gap: 4px;
   margin-top: 4px;
-  font-size: 12.5px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--c-gray-700);
 }
@@ -1132,27 +1129,6 @@ button {
   flex-direction: column;
   gap: 16px;
 }
-.bk-rail-card {
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 16px;
-  padding: 16px 18px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-}
-.bk-rail-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
-  color: var(--c-gray-700);
-  margin-bottom: 14px;
-}
-.bk-rail-title .bp-icon {
-  color: #0d9488;
-}
 .bk-rail-actions {
   display: flex;
   flex-direction: column;
@@ -1215,26 +1191,6 @@ button {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 8px;
-}
-.bk-statcell {
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  padding: 11px 12px;
-  border-radius: 11px;
-  background: #f6faf9;
-  border: 1px solid #eef3f2;
-}
-.bk-statcell-val {
-  font-size: 18px;
-  font-weight: 900;
-  line-height: 1.1;
-  color: var(--bk-ink);
-}
-.bk-statcell-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--bk-muted);
 }
 .bk-dmain .tabs {
   border-bottom: 1px solid var(--bk-line);
@@ -2836,23 +2792,6 @@ button {
   .bk-fp-stats {
     grid-template-columns: repeat(2, 1fr);
   }
-}
-
-/* The reading-app toggles that gate the Discover shelves, reachable from the
-   page header now that the top bar's gear belongs to the shared chrome. */
-.bk-sources-btn {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  color: var(--c-text-light);
-  background: #fff;
-  border: 1px solid var(--c-border);
-  border-radius: 10px;
-}
-.bk-sources-btn:hover {
-  color: var(--c-text);
-  border-color: var(--c-border-strong);
 }
 
 /* The stat row on My Shelf — the same three-up grid the other reader pages use

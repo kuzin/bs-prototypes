@@ -93,6 +93,7 @@ export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAl
         <div className="bk-shelf-track" ref={trackRef} onScroll={updateEdges}>
           {books.map((book) => (
             <BookCard
+              captioned={false}
               key={book.id}
               book={book}
               onOpen={onOpen}

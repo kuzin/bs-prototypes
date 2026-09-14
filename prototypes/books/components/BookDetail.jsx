@@ -2,6 +2,10 @@ import { useState, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { BackBar } from '@components/BackBar/BackBar'
 import { Button } from '@components/Button/Button'
+import { SectionCard } from '@components/SectionCard/SectionCard'
+import { StatCard } from '@components/Cards/Cards'
+import '@components/SectionCard/SectionCard.css'
+import '@components/Cards/Cards.css'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Cover } from './Cover'
 import { RatingInline } from './Stars'
@@ -64,25 +68,23 @@ function FormatChips({ formats }) {
 function StatStrip({ book, sessions, status }) {
   const totalMin = sessions.reduce((a, s) => a + s.minutes, 0)
   const stats = [
-    { value: totalMin ? fmtMins(totalMin) : '0m', label: 'Minutes read' },
-    { value: status === 'finished' ? 1 : 0, label: 'Times read' },
-    { value: sessions.length, label: sessions.length === 1 ? 'Session' : 'Sessions' },
-    { value: book.readersAtSchool, label: 'Readers at school' },
+    { value: totalMin ? fmtMins(totalMin) : '0m', label: 'Minutes read', c: '#0B6B78' },
+    { value: status === 'finished' ? 1 : 0, label: 'Times read', c: '#0F7A55' },
+    {
+      value: sessions.length,
+      label: sessions.length === 1 ? 'Session' : 'Sessions',
+      c: '#1A6DD5',
+    },
+    { value: book.readersAtSchool, label: 'Readers at school', c: '#5B21B6' },
   ]
   return (
-    <div className="bk-rail-card">
-      <h3 className="bk-rail-title">
-        <Icon name="chart-bar" size={16} /> Your stats
-      </h3>
+    <SectionCard header="divider" title="Your stats">
       <div className="bk-statgrid">
         {stats.map((s) => (
-          <div key={s.label} className="bk-statcell">
-            <span className="bk-statcell-val">{s.value}</span>
-            <span className="bk-statcell-label">{s.label}</span>
-          </div>
+          <StatCard key={s.label} value={s.value} label={s.label} color={s.c} />
         ))}
       </div>
-    </div>
+    </SectionCard>
   )
 }
 
@@ -271,10 +273,7 @@ function FriendsWhoRead({ book, onOpenProfile }) {
   const friends = friendsWhoRead(book.id)
   if (!friends.length) return null
   return (
-    <div className="bk-rail-card">
-      <h3 className="bk-rail-title">
-        <Icon name="users" size={16} /> Friends who read this
-      </h3>
+    <SectionCard header="divider" title="Friends who read this">
       <div className="bk-fwr-list">
         {friends.map((f) => (
           <button key={f.id} className="bk-fwr-row" onClick={() => onOpenProfile?.(f.id)}>
@@ -287,17 +286,14 @@ function FriendsWhoRead({ book, onOpenProfile }) {
           </button>
         ))}
       </div>
-    </div>
+    </SectionCard>
   )
 }
 
 function WhereToRead({ availability, onRead }) {
   if (!availability.length) return null
   return (
-    <div className="bk-rail-card">
-      <h3 className="bk-rail-title">
-        <Icon name="bolt" size={16} /> Where to read
-      </h3>
+    <SectionCard header="divider" title="Where to read">
       <div className="bk-where-list">
         {availability.map((a, i) => {
           const p = PARTNERS[a.partner]
@@ -325,7 +321,7 @@ function WhereToRead({ availability, onRead }) {
           )
         })}
       </div>
-    </div>
+    </SectionCard>
   )
 }
 
@@ -468,7 +464,7 @@ export function BookDetail({
         </div>
 
         <aside className="bk-drail">
-          <div className="bk-rail-card bk-rail-actions">
+          <SectionCard className="bk-rail-actions">
             <Button
               variant={wished ? 'secondary' : 'primary'}
               size="md"
@@ -479,7 +475,7 @@ export function BookDetail({
             <Button variant="secondary" size="md">
               Log reading
             </Button>
-          </div>
+          </SectionCard>
           <StatStrip book={book} sessions={sessions} status={status} />
           <FriendsWhoRead book={book} onOpenProfile={onOpenProfile} />
           <WhereToRead availability={availability} onRead={setReaderVia} />

@@ -5,7 +5,21 @@ import { FORMATS } from '../data'
 // Cover-forward card used across every Discover shelf.
 //   'reason' → adds Benny's "why" line  |  'rank' → trending: readers count
 //   'audio'  → square (Audible-style) cover + play affordance + listening time
-export function BookCard({ book, onOpen, onWish, wished, variant = 'default', reason, onPlay }) {
+//
+// `captioned={false}` drops the title and author. A Discover rail is a wall of
+// jackets you scan — the covers carry the names already, and repeating them
+// under every one turned each row into a block of text. The grids keep theirs,
+// where a card is a search result rather than a shelf.
+export function BookCard({
+  book,
+  onOpen,
+  onWish,
+  wished,
+  variant = 'default',
+  reason,
+  onPlay,
+  captioned = true,
+}) {
   const isAudio = variant === 'audio'
 
   return (
@@ -46,8 +60,12 @@ export function BookCard({ book, onOpen, onWish, wished, variant = 'default', re
       </div>
 
       <div className="bk-card-body">
-        <span className="bk-card-title">{book.title}</span>
-        <span className="bk-card-author">{book.author}</span>
+        {captioned && (
+          <>
+            <span className="bk-card-title">{book.title}</span>
+            <span className="bk-card-author">{book.author}</span>
+          </>
+        )}
 
         {variant === 'rank' ? (
           <span className="bk-card-readers">
