@@ -1,6 +1,10 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
+import { SearchInput } from '@components/SearchInput/SearchInput'
+import { Button } from '@components/Button/Button'
+import { IconButton } from '@components/Primitives/Primitives'
+import '@components/SearchInput/SearchInput.css'
 import { Shelf } from './Shelf'
 import { AskBenny } from './AskBenny'
 import { READER, BENNY_PICKS, SHELVES, BROWSE, getBooks } from '../data'
@@ -39,7 +43,8 @@ export function Discover({
         title="Discover"
         actions={
           <>
-            {/* Catalog search — opens the filterable Browse page */}
+            {/* Catalog search — opens the filterable Browse page. The shared
+                field and the shared button, not a composite of its own. */}
             <form
               className="bk-search-entry"
               onSubmit={(e) => {
@@ -47,26 +52,24 @@ export function Discover({
                 onBrowse({ query: q })
               }}
             >
-              <Icon name="search" size={18} />
-              <input
-                type="text"
+              <SearchInput
                 value={q}
-                onChange={(e) => setQ(e.target.value)}
+                onChange={setQ}
                 placeholder="Search books, authors…"
-                aria-label="Search books and authors"
+                ariaLabel="Search books and authors"
               />
-              <button type="submit" className="bk-search-go">
+              <Button type="submit" variant="secondary" size="md">
                 Search
-              </button>
+              </Button>
             </form>
-            <button
-              type="button"
-              className="bk-sources-btn"
+            <IconButton
+              variant="secondary"
+              size="md"
               onClick={onSettings}
               aria-label="Which reading apps to show"
             >
-              <Icon name="settings" size={18} />
-            </button>
+              <Icon name="settings" size={17} />
+            </IconButton>
           </>
         }
       />

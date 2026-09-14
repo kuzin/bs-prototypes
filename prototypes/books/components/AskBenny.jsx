@@ -1,5 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { Button } from '@components/Button/Button'
+import { SearchInput } from '@components/SearchInput/SearchInput'
+import '@components/SearchInput/SearchInput.css'
 import { BookCard } from './BookCard'
 import { recommend } from '../data'
 
@@ -55,17 +58,15 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
               ask()
             }}
           >
-            <Icon name="search" size={18} className="bk-ask-search-icon" />
-            <input
-              className="bk-ask-input"
+            <SearchInput
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={setQuery}
               placeholder="e.g. funny graphic novels, or something like The Wild Robot…"
-              aria-label="Ask Benny for a recommendation"
+              ariaLabel="Ask Benny for a recommendation"
             />
-            <button type="submit" className="bk-ask-btn">
-              <Icon name="sparkles" size={15} /> Ask Benny
-            </button>
+            <Button type="submit" variant="primary" icon={<Icon name="sparkles" size={15} />}>
+              Ask Benny
+            </Button>
           </form>
         </>
       )}

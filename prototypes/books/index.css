@@ -51,12 +51,14 @@ button {
 
 /* ─── Ask Benny — working recommendation prompt ────────────────────────────── */
 
+/* The system's card, not a gradient panel of its own — white on the page
+   ground with the one border token, like every other block here. */
 .bk-ask {
-  background: linear-gradient(135deg, #f0faf8, #eaf4ff);
-  border: 1px solid #d3ece6;
-  border-radius: 20px;
   padding: 20px 22px;
-  margin-bottom: 26px;
+  margin-bottom: 30px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
 }
 .bk-ask-head {
   display: flex;
@@ -92,53 +94,8 @@ button {
   color: var(--bk-muted);
   margin: 2px 0 0;
 }
-.bk-ask-form {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: #fff;
-  border: 1.5px solid #cfe7e1;
-  border-radius: 14px;
-  padding: 7px 8px 7px 14px;
-  transition:
-    border-color 0.15s,
-    box-shadow 0.15s;
-}
-.bk-ask-form:focus-within {
-  border-color: #0d9488;
-  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
-}
-.bk-ask-search-icon {
-  color: var(--c-gray-500);
-  flex: 0 0 auto;
-}
-.bk-ask-input {
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  font-size: 15px;
-  font-family: inherit;
-  color: var(--c-gray-900);
-}
 .bk-ask-input::placeholder {
   color: var(--c-gray-500);
-}
-.bk-ask-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 0;
-  border-radius: 10px;
-  padding: 9px 16px;
-  font-weight: 800;
-  font-size: 14px;
-  color: #fff;
-  background: linear-gradient(120deg, #0fb6a3, #0d9488);
-  flex: 0 0 auto;
-}
-.bk-ask-btn:hover {
-  filter: brightness(1.05);
 }
 .bk-ask-result {
   margin-top: 18px;
@@ -288,37 +245,25 @@ button {
 
 .bk-shelf {
   margin-bottom: 0;
-  padding-bottom: 24px;
+  padding-bottom: 36px;
 }
 /* Hairline divider between consecutive shelf rows */
 .bk-shelf + .bk-shelf {
+  padding-top: 36px;
   border-top: 1px solid var(--bk-line);
-  padding-top: 24px;
 }
 .bk-shelf-head {
   display: flex;
+  gap: 16px;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 }
 .bk-shelf-headmain {
   display: flex;
   align-items: center;
   gap: 12px;
   min-width: 0;
-}
-.bk-shelf-badge {
-  width: 44px;
-  height: 44px;
-  border-radius: 13px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  background: color-mix(in srgb, var(--accent) 14%, #fff);
-  color: var(--accent);
-  overflow: hidden;
 }
 .bk-shelf-title {
   font-size: 19px;
@@ -814,54 +759,14 @@ button {
 }
 
 /* ── Discover catalog search (top-right of the header; launches Browse) ──────── */
+/* Layout only — the field and the button are the shared ones. */
 .bk-search-entry {
+  display: flex;
   flex: 0 0 auto;
+  gap: 8px;
+  align-items: center;
   width: 340px;
   max-width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  background: #fff;
-  border: 1px solid var(--bk-line);
-  border-radius: 12px;
-  padding: 5px 5px 5px 14px;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-  transition:
-    border-color 0.14s,
-    box-shadow 0.14s;
-}
-.bk-search-entry:focus-within {
-  border-color: #0d9488;
-  box-shadow: 0 0 0 3px color-mix(in srgb, #0d9488 16%, transparent);
-}
-.bk-search-entry > .bp-icon {
-  color: var(--c-gray-500);
-  flex: 0 0 auto;
-}
-.bk-search-entry input {
-  flex: 1;
-  border: 0;
-  outline: 0;
-  background: none;
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--bk-ink);
-  min-width: 0;
-}
-.bk-search-go {
-  flex: 0 0 auto;
-  border: 0;
-  border-radius: 9px;
-  background: #0d9488;
-  color: #fff;
-  font-family: inherit;
-  font-weight: 800;
-  font-size: 13.5px;
-  padding: 8px 15px;
-  cursor: pointer;
-}
-.bk-search-go:hover {
-  filter: brightness(1.05);
 }
 
 /* ══ Browse / search page ════════════════════════════════════════════════════ */
@@ -1073,26 +978,6 @@ button {
   margin-bottom: 8px;
 }
 
-/* ═══ Book detail ═══════════════════════════════════════════════════════════ */
-
-.bk-backbar {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 16px;
-}
-.bk-back {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  border: 1px solid var(--bk-line);
-  background: #fff;
-  border-radius: 999px;
-  padding: 7px 15px 7px 12px;
-  font-weight: 800;
-  font-size: 14px;
-  color: var(--c-gray-800);
-}
 .bk-back:hover {
   border-color: #0d9488;
   color: #0d9488;
@@ -1100,35 +985,20 @@ button {
 
 /* Detail hero */
 /* Soft, light hero — a gentle wash of the book's color instead of a heavy block */
+/* No tint behind the cover — the jacket is the colour on this page, and a
+   gradient sampled off it was competing with the thing it framed. */
 .bk-dhero {
   position: relative;
-  border-radius: 20px;
-  overflow: hidden;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--accent) 17%, #fff),
-    color-mix(in srgb, var(--accent) 6%, #fff)
-  );
-  border: 1px solid color-mix(in srgb, var(--accent) 20%, #fff);
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
   margin-bottom: 24px;
-}
-.bk-dhero-glow {
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    480px 320px at 10% -20%,
-    color-mix(in srgb, var(--accent) 24%, transparent),
-    transparent 70%
-  );
-  pointer-events: none;
 }
 .bk-dhero-inner {
   position: relative;
   display: flex;
-  align-items: center;
   gap: 30px;
-  padding: 26px 32px;
+  align-items: center;
+  /* No side padding: there is no panel behind this any more, so the cover
+     should start at the page's own left edge like everything else. */
+  padding: 4px 0 26px;
 }
 .bk-dhero-coverwrap {
   position: relative;
@@ -2997,4 +2867,11 @@ button {
   .bk-shelfpage-stats {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* Ask Benny's prompt row — the shared field grows, the button sits beside it. */
+.bk-ask-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }

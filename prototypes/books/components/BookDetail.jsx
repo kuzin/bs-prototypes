@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { BackBar } from '@components/BackBar/BackBar'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Cover } from './Cover'
@@ -375,15 +376,10 @@ export function BookDetail({
 
   return (
     <div className="bk-detail">
-      <div className="bk-backbar">
-        <button className="bk-back" onClick={onBack}>
-          <Icon name="arrow-left" size={16} /> {backLabel}
-        </button>
-      </div>
+      <BackBar label={backLabel} onClick={onBack} />
 
       {/* Hero — book identity */}
       <header className="bk-dhero" style={{ '--accent': book.color }}>
-        <div className="bk-dhero-glow" aria-hidden="true" />
         <div className="bk-dhero-inner">
           <div className="bk-dhero-coverwrap">
             <Cover book={book} size="lg" />

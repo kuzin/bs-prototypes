@@ -5,17 +5,10 @@ import { Button } from '@components/Button/Button'
 import { BookCard } from './BookCard'
 import { PARTNERS } from '../data'
 
-// Representative glyph per shelf so every badge uses the same line-icon style.
-const SHELF_GLYPH = {
-  comicsplus: 'book',
-  scholastic: 'news',
-  sora: 'device-tablet',
-  library: 'building-community',
-}
-
-// A titled horizontal row of books. Every shelf shares one header anatomy — a
-// 44px accent-tinted icon badge + title + subtitle + arrow controls — so the
-// page reads consistently top to bottom.
+// A titled horizontal row of books. Every shelf shares one header anatomy —
+// title + subtitle on the left, the controls on the right — so the page reads
+// consistently top to bottom. A curated shelf keeps its curator's avatar,
+// because that is who is speaking; the rest carry no glyph.
 export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAll }) {
   const trackRef = useRef(null)
   const [edge, setEdge] = useState({ start: true, end: false })
@@ -43,20 +36,13 @@ export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAl
     <section className="bk-shelf" style={{ '--accent': accent }}>
       <div className="bk-shelf-head">
         <div className="bk-shelf-headmain">
-          {shelf.curator ? (
+          {shelf.curator && (
             <Avatar
               initials={shelf.curator.initials}
               color={shelf.curator.color}
               size="md"
               aria-hidden="true"
             />
-          ) : (
-            <span className="bk-shelf-badge">
-              <Icon
-                name={partner ? SHELF_GLYPH[partner.id] || 'book' : shelf.icon || 'book-2'}
-                size={21}
-              />
-            </span>
           )}
           <div className="bk-shelf-titles">
             <h2 className="bk-shelf-title">{shelf.title}</h2>
