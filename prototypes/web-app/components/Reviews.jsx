@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
+import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
 import { Pill } from '@components/Pill/Pill'
 import { EmptyState } from '@components/Primitives/Primitives'
 
@@ -110,19 +111,21 @@ export function Reviews() {
 
   return (
     <div className="rv-page">
-      <header className="rv-head">
-        {/* Just "Reviews": the tab above already says whose page this is, and
-            the counts are on the type pills right below. */}
-        <h1 className="rv-title">Reviews</h1>
-        <div className="rv-actions">
-          <Button variant="secondary" size="md" icon={<Icon name="photo" size={15} />}>
-            Post a Picture Review
-          </Button>
-          <Button variant="primary" size="md" icon={<Icon name="writing" size={15} />}>
-            Write a Review
-          </Button>
-        </div>
-      </header>
+      {/* Just "Reviews": the tab above already says whose page this is, and
+          the counts are on the type pills right below. */}
+      <ReaderPageHead
+        title="Reviews"
+        actions={
+          <>
+            <Button variant="secondary" size="md" icon={<Icon name="photo" size={15} />}>
+              Post a Picture Review
+            </Button>
+            <Button variant="primary" size="md" icon={<Icon name="writing" size={15} />}>
+              Write a Review
+            </Button>
+          </>
+        }
+      />
 
       <div className="rv-types">
         <Tabs

@@ -7,33 +7,6 @@
   padding-bottom: 40px;
 }
 
-.rv-head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-end;
-  justify-content: space-between;
-  min-height: var(--wa-pagehead-h);
-  margin: var(--wa-pagehead-margin);
-}
-.rv-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--c-text-dark);
-}
-.rv-count {
-  margin-top: 3px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--c-text-light);
-}
-.rv-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
 .rv-types {
   display: flex;
   margin-bottom: 20px;
@@ -180,13 +153,6 @@
 }
 
 @media (max-width: 560px) {
-  .rv-actions {
-    width: 100%;
-  }
-  .rv-actions .btn {
-    flex: 1;
-    justify-content: center;
-  }
   .rv-picgrid {
     grid-template-columns: minmax(0, 1fr);
   }

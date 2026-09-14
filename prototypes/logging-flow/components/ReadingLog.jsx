@@ -5,6 +5,7 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { Modal } from '@components/Modal/Modal'
 import { StatCard } from '@components/Cards/Cards'
+import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
 import { Banner } from '@components/Primitives/Primitives'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 
@@ -546,38 +547,37 @@ export function ReadingLog({
 
       {!extraIds.includes(tab) && (
         <>
-          <div className="rl-head">
-            <h1 className="rl-title">
-              {heading ?? (tab === 'log' ? 'Reading Log' : 'All Titles')}
-            </h1>
-            <div className="rl-head-actions">
-              <Button variant="secondary" size="md">
-                Print log
-              </Button>
-              {tab === 'log' && (
-                /* Calendar or list is a segmented control, which in this
-                   system is a pill Tabs — it was a two-button toggle of its
-                   own, on its own active blue. */
-                <Tabs
-                  variant="pill"
-                  size="sm"
-                  active={view}
-                  accent="#1A6DD5"
-                  onChange={setView}
-                  ariaLabel="Calendar or list"
-                  className="rl-viewtoggle"
-                  items={[
-                    {
-                      id: 'calendar',
-                      label: 'Calendar',
-                      icon: <Icon name="layout-grid" size={15} />,
-                    },
-                    { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
-                  ]}
-                />
-              )}
-            </div>
-          </div>
+          <ReaderPageHead
+            title={heading ?? (tab === 'log' ? 'Reading Log' : 'All Titles')}
+            actions={
+              <>
+                <Button variant="secondary" size="md">
+                  Print log
+                </Button>
+                {/* Calendar or list is a segmented control, which in this
+                    system is a pill Tabs — it was a two-button toggle of its
+                    own, on its own active blue. */}
+                {tab === 'log' && (
+                  <Tabs
+                    variant="pill"
+                    size="sm"
+                    active={view}
+                    accent="#1A6DD5"
+                    onChange={setView}
+                    ariaLabel="Calendar or list"
+                    items={[
+                      {
+                        id: 'calendar',
+                        label: 'Calendar',
+                        icon: <Icon name="layout-grid" size={15} />,
+                      },
+                      { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
+                    ]}
+                  />
+                )}
+              </>
+            }
+          />
 
           {tab === 'log' && (
             <>

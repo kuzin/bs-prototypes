@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
+import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Button } from '@components/Button/Button'
 import { Pill } from '@components/Pill/Pill'
@@ -218,22 +219,20 @@ export function Friends() {
         <Leaderboards />
       ) : (
         <div className="fr-page">
-          <header className="fr-head">
-            <div>
-              <h1 className="fr-title">Friends</h1>
-              <p className="fr-count">
-                {friends.length} {friends.length === 1 ? 'Friend' : 'Friends'}
-              </p>
-            </div>
-            <Button
-              variant="secondary"
-              size="md"
-              icon={<Icon name="plus" size={15} />}
-              onClick={() => setInviteOpen(true)}
-            >
-              Invite Friends
-            </Button>
-          </header>
+          <ReaderPageHead
+            title="Friends"
+            count={`${friends.length} ${friends.length === 1 ? 'Friend' : 'Friends'}`}
+            actions={
+              <Button
+                variant="secondary"
+                size="md"
+                icon={<Icon name="plus" size={15} />}
+                onClick={() => setInviteOpen(true)}
+              >
+                Invite Friends
+              </Button>
+            }
+          />
 
           <FriendRequests
             requests={requests}

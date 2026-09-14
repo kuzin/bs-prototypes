@@ -1,3 +1,5 @@
+import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
+
 import './CollectionShelf.css'
 
 /**
@@ -76,17 +78,12 @@ export function BadgeDisc({ color, children }) {
  */
 export function ShelfHead({ title, count, noun, children }) {
   return (
-    <header className="co-shelf-head">
-      <div className="co-shelf-copy">
-        <h2 className="co-shelf-title">{title}</h2>
-        {count != null && (
-          <p className="co-shelf-count">
-            {count} {noun}
-          </p>
-        )}
-      </div>
-      {children}
-    </header>
+    <ReaderPageHead
+      as="h2"
+      title={title}
+      count={count == null ? undefined : `${count} ${noun}`}
+      actions={children}
+    />
   )
 }
 

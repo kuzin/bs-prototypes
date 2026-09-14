@@ -7,31 +7,6 @@
   padding-bottom: 40px;
 }
 
-.fr-head,
-.lb-head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-end;
-  justify-content: space-between;
-  min-height: var(--wa-pagehead-h);
-  margin: var(--wa-pagehead-margin);
-}
-.fr-title,
-.lb-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--c-text-dark);
-}
-.fr-count,
-.lb-sub {
-  margin-top: 3px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--c-text-light);
-}
-
 /* The app's own step-down: 4 across, then 3, 2, 1. */
 .fr-grid {
   display: grid;

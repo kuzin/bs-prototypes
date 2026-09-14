@@ -3,6 +3,7 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Table } from '@components/Table/Table'
 import { Avatar } from '@components/Avatar/Avatar'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
+import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
 
 import {
   LEADERBOARD_BOARDS,
@@ -80,18 +81,18 @@ export function Leaderboards() {
 
   return (
     <div className="lb-page">
-      <header className="lb-head">
-        <div>
-          {/* The title stays put while the board changes — the segmented
-              control below already says which board you're on, and a heading
-              that grows and shrinks pushes the whole page around. */}
-          <h1 className="lb-title">Leaderboards</h1>
-          <p className="lb-sub">See how you stack up against your friends, grade and school.</p>
-        </div>
-        <div className="lb-period">
-          <CustomSelect options={LEADERBOARD_PERIODS} value={period} onChange={setPeriod} />
-        </div>
-      </header>
+      {/* The title stays put while the board changes — the segmented control
+          below already says which board you're on, and a heading that grows and
+          shrinks pushes the whole page around. */}
+      <ReaderPageHead
+        title="Leaderboards"
+        count="See how you stack up against your friends, grade and school."
+        actions={
+          <div className="lb-period">
+            <CustomSelect options={LEADERBOARD_PERIODS} value={period} onChange={setPeriod} />
+          </div>
+        }
+      />
 
       {/* Which board and which log type are the same kind of choice — two
           segmented controls on one row, not a nav above a filter. */}

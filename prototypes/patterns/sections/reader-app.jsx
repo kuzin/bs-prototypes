@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
 import {
+  ReaderPageHead,
   ChallengeCard,
   ChallengeScope,
   GoalCard,
@@ -245,6 +246,70 @@ export const readerAppSections = [
               </>
             }
           />
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'reader-page-head',
+    name: 'ReaderPageHead',
+    usage: `import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
+
+<ReaderPageHead title="Friends" count="7 Friends" actions={<Button>Invite Friends</Button>} />
+
+/* a pane under a sub-tab strip owns an h2, not the page's h1 */
+<ReaderPageHead as="h2" title="Badges" count="7 of 14 earned" />`,
+    desc: (
+      <>
+        The row every page under the reader nav opens with: a title, an optional count or one-line
+        description under it, and optional actions opposite.
+        <br />
+        <br />
+        It exists because <strong>five pages had five copies of the same block</strong> and they had
+        drifted — different type sizes, different margins, and a couple bottom-aligned, which left a
+        heading with no sub-line hugging the floor of an otherwise empty box. One height (
+        <code>--wa-pagehead-h</code>) and one set of margins (<code>--wa-pagehead-margin</code>)
+        means the body doesn&apos;t jump as you move between tabs. On a phone the actions take their
+        own full-width row and share it evenly.
+        <br />
+        <br />
+        Not <code>@components/PageHeader</code> — that is the <em>admin</em> page header (28px over
+        a 22px subtitle, ported from <code>_page_header.scss</code>), and every one of its consumers
+        is an admin surface.
+        <br />
+        <br />
+        Used by the Reading Log, All Titles, Friends, Leaderboards, Reviews, the challenge log, and{' '}
+        <code>CollectionShelf</code>&apos;s <code>ShelfHead</code> — which is how Words with Benny
+        gets it too.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="title, count and an action">
+          <div style={{ padding: '0 20px' }}>
+            <ReaderPageHead
+              title="Friends"
+              count="7 Friends"
+              actions={
+                <Button variant="secondary" size="md" icon={<Icon name="plus" size={15} />}>
+                  Invite Friends
+                </Button>
+              }
+            />
+          </div>
+        </Variant>
+        <Variant label="title only — same height, so nothing jumps">
+          <div style={{ padding: '0 20px' }}>
+            <ReaderPageHead
+              title="Reviews"
+              actions={
+                <Button variant="primary" size="md" icon={<Icon name="writing" size={15} />}>
+                  Write a Review
+                </Button>
+              }
+            />
+          </div>
         </Variant>
       </>
     ),

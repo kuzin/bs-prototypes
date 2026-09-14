@@ -23,39 +23,6 @@
   margin-inline: calc(50% - 50vw);
 }
 
-/* ─── Badge + achievement shelves ────────────────────────────────────────
-   The product's one card for everything a reader has earned: circular art over
-   a bold name and a line of copy, with the state on its own footer strip. */
-
-/* Same breathing room the Reading Log gives its own header under the band. */
-/* The same page header Friends, Reviews and the Reading Log use — one height
-   and one set of margins, so the body doesn't jump between tabs. */
-.co-shelf-head {
-  display: flex;
-  gap: 20px;
-  align-items: flex-end;
-  justify-content: space-between;
-  min-height: var(--wa-pagehead-h, 50px);
-  margin: var(--wa-pagehead-margin, 26px 0 20px);
-}
-.co-shelf-copy {
-  min-width: 0;
-}
-/* The same type as every other reader page's header — Friends, Reviews and the
-   Reading Log are all 26/800 over 14/600, and this was 21 over 13.5. */
-.co-shelf-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--c-text-dark);
-}
-.co-shelf-count {
-  margin-top: 3px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--c-text-light);
-}
-
 .co-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(268px, 1fr));

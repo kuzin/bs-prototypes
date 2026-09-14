@@ -30,26 +30,6 @@
   margin-inline: calc(50% - 50vw);
 }
 
-.rl-head {
-  display: flex;
-  gap: 20px;
-  align-items: flex-end;
-  justify-content: space-between;
-  min-height: var(--wa-pagehead-h);
-  margin: var(--wa-pagehead-margin);
-}
-.rl-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--c-text-dark);
-}
-.rl-head-actions {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
 /* ─── Streak cards and the import note ───────────────────────────────────── */
 /* Both are shared components now — StatCard and InfoBox style themselves; this
    is only where they sit. */
