@@ -170,6 +170,7 @@ const log = (book, date, minutes) => ({ book, date, minutes })
 export const FRIENDS = [
   friend('jayden', 'Jayden P.', 'JP', '#196DD5', 'Grade 5', 21, 214, 34, true, {
     since: 'Friends since Sept 2025',
+    longestStreak: 48,
     minutesLogged: 1840,
     challenges: ['spring', 'arresting'],
     badges: [
@@ -191,6 +192,7 @@ export const FRIENDS = [
   }),
   friend('sofia', 'Sofia R.', 'SR', '#DB2777', 'Grade 4', 14, 186, 28, true, {
     since: 'Friends since Jan 2026',
+    longestStreak: 31,
     minutesLogged: 1420,
     challenges: ['love-hurts'],
     badges: [
@@ -207,6 +209,7 @@ export const FRIENDS = [
   }),
   friend('noah', 'Noah K.', 'NK', '#0CA7BC', 'Grade 5', 9, 152, 22, true, {
     since: 'Friends since Oct 2025',
+    longestStreak: 26,
     minutesLogged: 1105,
     challenges: ['arresting'],
     badges: [fbadge(COMICS, 'bam', 'BAM', 'Jun 6, 2026')],
@@ -221,6 +224,7 @@ export const FRIENDS = [
   }),
   friend('emma', 'Emma L.', 'EL', '#0BA85F', 'Grade 4', 0, 131, 19, true, {
     since: 'Friends since Feb 2026',
+    longestStreak: 17,
     minutesLogged: 890,
     challenges: ['spring'],
     badges: [fbadge(SPRING, 'butterfly', 'Butterfly', 'Apr 9, 2026')],
@@ -229,6 +233,7 @@ export const FRIENDS = [
   }),
   friend('diego', 'Diego H.', 'DH', '#0891B2', 'Grade 5', 6, 118, 17, true, {
     since: 'Friends since Nov 2025',
+    longestStreak: 19,
     minutesLogged: 760,
     challenges: ['arresting'],
     badges: [fbadge(COMICS, 'boom', 'BOOM', 'Jun 4, 2026')],
@@ -237,6 +242,7 @@ export const FRIENDS = [
   }),
   friend('priya', 'Priya S.', 'PS', '#9333EA', 'Grade 4', 31, 205, 30, true, {
     since: 'Friends since Sept 2025',
+    longestStreak: 54,
     minutesLogged: 1990,
     challenges: ['spring', 'love-hurts'],
     badges: [
@@ -256,6 +262,7 @@ export const FRIENDS = [
   }),
   friend('liam', 'Liam T.', 'LT', '#B43DD0', 'Grade 6', 3, 96, 12, false, {
     since: 'Friends since Mar 2026',
+    longestStreak: 11,
     minutesLogged: 430,
     challenges: [],
     badges: [],

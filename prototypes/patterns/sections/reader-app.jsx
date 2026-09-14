@@ -107,6 +107,19 @@ function ScopeDemo() {
   return <ChallengeScope value={scope} onChange={setScope} />
 }
 
+// It's a modal, so it opens from something — here a button, in the app a card
+// in the Friends grid or a leaderboard row. Showing it already open would both
+// cover the page on load and leave nothing to close it with.
+function FriendProfileDemo({ id = 'jayden', label = "Open a friend's profile" }) {
+  const [friendId, setFriendId] = useState(null)
+  return (
+    <>
+      <Button onClick={() => setFriendId(id)}>{label}</Button>
+      <FriendProfile friendId={friendId} onClose={() => setFriendId(null)} />
+    </>
+  )
+}
+
 export const readerAppSections = [
   {
     group: 'web-app',
@@ -550,24 +563,37 @@ export const readerAppSections = [
     desc: (
       <>
         A friend&apos;s profile, opened from the Friends grid or a leaderboard row. Read-only, and
-        structured the way the live friend view is: <strong>Overview</strong> (their badges and
-        achievements), <strong>Challenges</strong>, <strong>Reading Log</strong>. The header is the
-        same band-and-avatar shape their card in the grid has.
+        structured the way <code>friendships/_friend_modal.html.haml</code> is: a band in the
+        friend&apos;s colour running the modal&apos;s full width, the app&apos;s own scalloped curve
+        under it, the avatar hung over both, and the tabs — <strong>Overview</strong>,{' '}
+        <strong>Challenges</strong>, <strong>Reading Log</strong> — inside that header rather than
+        under it. The counters are part of Overview, under <em>Statistics</em>, the way the real
+        modal orders it: latest badges, latest achievements, then the numbers.
         <br />
         <br />
-        Book Discovery drew this first. This version is the same anatomy on the shared parts —{' '}
-        <code>StatCard</code> for the counters, <code>CollectionShelf</code> for the badges and
-        achievements (which were a smaller, earlier copy of that same card), the real challenge
-        banners, and <code>BookCover</code> for the log. It scales the page header down through{' '}
-        <code>--wa-pagehead-size</code> rather than restyling it: a modal is not a page.
+        Only the anatomy is the app&apos;s; the parts are ours. Badges and achievements are a
+        horizontal strip of <code>BadgeArt</code> with the detail on a <code>Tooltip</code> — the
+        app&apos;s <code>.badges-container</code> is a row of thumbnails, not a wall of cards —{' '}
+        <code>StatCard</code> stacked into the Statistics list, <code>ChallengeCard</code> (the same
+        card the reader sees on their own Challenges page) for the challenges,{' '}
+        <code>BookCover</code> for the log, and <code>EmptyState</code> where a section has nothing
+        in it. Only the curve is drawn here, because it&apos;s artwork rather than a glyph.
+        <br />
+        <br />
+        The modal has a <strong>defined height</strong>: Overview is a long tab and Challenges a
+        short one, and sizing to content moved the whole modal — and the tab you were aiming at — on
+        every switch.
       </>
     ),
     render: () => (
-      <Variant label="a friend with badges, challenges and a log">
-        <div style={{ padding: 20 }}>
-          <FriendProfile friendId="jayden" onClose={noop} />
-        </div>
-      </Variant>
+      <>
+        <Variant label="a friend with badges, challenges and a log">
+          <FriendProfileDemo />
+        </Variant>
+        <Variant label="a friend who has only just joined — every section empty">
+          <FriendProfileDemo id="liam" label="Open a quieter profile" />
+        </Variant>
+      </>
     ),
   },
   {
