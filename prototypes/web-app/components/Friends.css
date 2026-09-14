@@ -32,35 +32,6 @@
   color: var(--c-text-light);
 }
 
-/* Requests wait in a banner above the grid — they need a decision, not a card. */
-.fr-requests {
-  margin-bottom: 24px;
-}
-.fr-request-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 10px 0 0;
-  padding: 0;
-  list-style: none;
-}
-.fr-request-list li {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-.fr-request-name {
-  font-size: 14.5px;
-  font-weight: 800;
-  color: var(--c-text-dark);
-}
-.fr-request-grade {
-  flex: 1;
-  font-size: 13px;
-  color: var(--c-text-light);
-}
-
 /* The app's own step-down: 4 across, then 3, 2, 1. */
 .fr-grid {
   display: grid;

@@ -177,9 +177,11 @@ export const PENDING_INVITES = [
   { id: 'zoe', name: 'Zoe B.', initials: 'ZB', grade: 'Grade 3', pending: true },
 ]
 
-// One new request waiting, which is what puts the banner on the page.
+// Two waiting, so the bar's copy pluralises and the menu has a queue to work
+// through — the app keeps it open between answers for exactly that.
 export const FRIEND_REQUESTS = [
   { id: 'maya', name: 'Maya C.', initials: 'MC', color: '#F0966F', grade: 'Grade 4' },
+  { id: 'theo', name: 'Theo N.', initials: 'TN', color: '#0F766E', grade: 'Grade 6' },
 ]
 
 // ─── Leaderboards ────────────────────────────────────────────────────────────

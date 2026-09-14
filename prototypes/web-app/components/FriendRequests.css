@@ -1,0 +1,215 @@
+/* ─── Friend requests ───────────────────────────────────────────────────────
+   `profiles/_friend_requests.html.haml` + microsite/_friends.scss. An amber
+   bar that only announces, over a menu that holds the requests themselves. */
+
+.fq {
+  position: relative;
+  margin-bottom: 24px;
+}
+
+.fq-bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 16px;
+  overflow: hidden;
+  font-size: 15px;
+  font-weight: 700;
+  background: #ffedc8;
+  border-radius: 8px;
+}
+
+/* The swashes sit at the bar's right end and are clipped by it. */
+.fq-swash-wrap {
+  position: absolute;
+  top: -1rem;
+  right: 0;
+  display: flex;
+  justify-content: flex-end;
+}
+.fq-swash {
+  width: 300px;
+  height: 120px;
+}
+
+.fq-bar-content {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.fq-title {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  min-width: 0;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--c-text);
+}
+.fq-face-disc {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.06);
+}
+.fq-face {
+  width: 24px;
+  height: 24px;
+}
+
+/* The app's `.button-action-bar`: a white-bordered chip on the bar's own tint. */
+.fq-trigger {
+  display: inline-flex;
+  flex: none;
+  gap: 14px;
+  align-items: center;
+  padding: 5px 12px 5px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text);
+  cursor: pointer;
+  background: var(--c-gray-0);
+  border: 1px solid #fff;
+  border-radius: 999px;
+}
+.fq-trigger:hover {
+  background: #fff;
+}
+
+/* ─── The menu the requests live in ──────────────────────────────────────── */
+/* Scales open from its top edge, the way the app animates it. */
+.fq-menu {
+  position: absolute;
+  top: 60px;
+  right: 16px;
+  z-index: 10;
+  min-width: 340px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: var(--c-gray-0);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: all 0.13s ease-in-out;
+  pointer-events: none;
+}
+.fq-menu.is-open {
+  opacity: 1;
+  transform: scaleY(1);
+  pointer-events: auto;
+}
+
+.fq-item {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1rem;
+  border-bottom: 1px solid var(--c-border);
+}
+.fq-item:last-child {
+  border-bottom: 0;
+}
+.fq-item-friend {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+.fq-item-name {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.fq-item-buttons {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+/* The app's hollow buttons — an outline in the action colour, not a fill. */
+.fq-btn {
+  height: 30px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  background: transparent;
+  border-radius: 5px;
+}
+.fq-btn--accept {
+  color: var(--c-blue);
+  border: 1px solid var(--c-blue);
+}
+.fq-btn--accept:hover {
+  color: #fff;
+  background: var(--c-blue);
+}
+.fq-btn--decline,
+.fq-btn--cancel {
+  color: var(--c-text-light);
+  border: 1px solid var(--c-border-strong);
+}
+.fq-btn--decline:hover,
+.fq-btn--cancel:hover {
+  color: var(--c-text);
+  border-color: var(--c-gray-500);
+}
+
+/* ─── "Are you sure?" ────────────────────────────────────────────────────── */
+
+.fq-deny {
+  padding: 34px 30px 28px;
+  text-align: center;
+}
+.fq-deny-head {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.4;
+  color: var(--c-text-dark);
+}
+.fq-deny-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 22px;
+}
+.fq-deny-buttons .fq-btn {
+  height: 40px;
+  min-width: 110px;
+  font-size: 15px;
+}
+
+@media (max-width: 560px) {
+  .fq-face-disc {
+    display: none;
+  }
+  .fq-trigger-text {
+    display: none;
+  }
+  .fq-menu {
+    right: 0;
+    left: 0;
+    min-width: 0;
+  }
+  .fq-item-friend {
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start;
+  }
+}

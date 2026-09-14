@@ -15,6 +15,7 @@ import { AllBadges } from '../../web-app/components/AllBadges'
 import { Friends } from '../../web-app/components/Friends'
 import { Leaderboards } from '../../web-app/components/Leaderboards'
 import { Reviews } from '../../web-app/components/Reviews'
+import { FriendRequests } from '../../web-app/components/FriendRequests'
 import { ChallengePage } from '../../web-app/components/ChallengePage'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { Variant } from './_shared'
@@ -415,13 +416,60 @@ export const readerAppSections = [
         <br />
         Leaderboards is a sub-tab of this page rather than its own nav entry — the profile pairs
         them (<code>_friends_and_leaderboard_tabs</code>), and they are two views of the same
-        people.
+        people. Waiting requests sit in <code>FriendRequests</code> above the grid.
       </>
     ),
     render: () => (
       <Variant label="friends, a pending invite, and a waiting request" full>
         <div style={{ padding: '0 20px 20px', background: '#fff' }}>
           <Friends />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-friend-requests',
+    name: 'FriendRequests',
+    usage: `import { FriendRequests } from './components/FriendRequests'
+
+<FriendRequests
+  requests={FRIEND_REQUESTS}
+  onAccept={(person) => …}
+  onDecline={(person) => …}
+/>`,
+    desc: (
+      <>
+        Waiting friend requests — <code>profiles/_friend_requests.html.haml</code>, ported closely
+        because the shape is unusual. The bar only <em>announces</em>: the beaming-face emoji in a
+        white disc, &ldquo;You have N new friend request(s)!&rdquo;, and a{' '}
+        <strong>View Requests</strong> dropdown at the far right. The requests themselves live in
+        the menu that opens under it — a 44px avatar, the name, then Accept and Decline as hollow
+        buttons.
+        <br />
+        <br />
+        Declining asks first (&ldquo;Are you sure you want to decline the friend request from Maya
+        C.?&rdquo; → Decline / Cancel); accepting doesn&apos;t. Either way the app answers with a{' '}
+        <code>Toast</code> rather than changing the page underneath, and the menu stays open so a
+        reader can work through a queue.
+        <br />
+        <br />
+        The amber ground (<code>#FFEDC8</code>), the swashes behind it and the emoji are the
+        app&apos;s own, out of its <code>symbol-defs.svg</code> — this is the one cheerful bar in
+        the reader app, and it is cheerful on purpose.
+      </>
+    ),
+    render: () => (
+      <Variant label="two waiting — open the menu" full>
+        <div style={{ padding: '20px 20px 200px', background: '#fff' }}>
+          <FriendRequests
+            requests={[
+              { id: 'maya', name: 'Maya C.', initials: 'MC', color: '#F0966F' },
+              { id: 'theo', name: 'Theo N.', initials: 'TN', color: '#0F766E' },
+            ]}
+            onAccept={noop}
+            onDecline={noop}
+          />
         </div>
       </Variant>
     ),

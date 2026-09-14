@@ -7,7 +7,9 @@ import { Pill } from '@components/Pill/Pill'
 import { Modal } from '@components/Modal/Modal'
 import { Flyout } from '@components/Flyout/Flyout'
 import { Input } from '@components/Form/Form'
-import { InfoBox } from '@components/InfoBox/InfoBox'
+import { ToastStack, useToasts } from '@components/Toast/Toast'
+
+import { FriendRequests } from './FriendRequests'
 
 import { Leaderboards } from './Leaderboards'
 import { FRIENDS, FRIEND_REQUESTS, PENDING_INVITES } from '../data'
@@ -19,7 +21,7 @@ import '@components/Pill/Pill.css'
 import '@components/Modal/Modal.css'
 import '@components/Flyout/Flyout.css'
 import '@components/Form/Form.css'
-import '@components/InfoBox/InfoBox.css'
+import '@components/Toast/Toast.css'
 import '@components/Tabs/Tabs.css'
 
 /**
@@ -172,6 +174,21 @@ export function Friends() {
   const [removed, setRemoved] = useState([])
   const [inviteOpen, setInviteOpen] = useState(false)
   const [requests, setRequests] = useState(FRIEND_REQUESTS)
+  const { toasts, push, dismiss } = useToasts()
+
+  // The app answers either way with a toast rather than reloading the page —
+  // "Accepted friend request from Maya C." / "Declined …". The app appends the
+  // full stop unconditionally; these readers are "Maya C.", so it only goes on
+  // when the name hasn't already ended the sentence.
+  const answer = (person, accepted) => {
+    setRequests((q) => q.filter((x) => x.id !== person.id))
+    push({
+      tone: accepted ? 'success' : 'info',
+      title:
+        `${accepted ? 'Accepted' : 'Declined'} friend request from ${person.name}` +
+        (person.name.endsWith('.') ? '' : '.'),
+    })
+  }
 
   const friends = FRIENDS.filter((f) => !removed.includes(f.id))
   const pending = PENDING_INVITES.filter((p) => !removed.includes(p.id))
@@ -218,39 +235,11 @@ export function Friends() {
             </Button>
           </header>
 
-          {/* The app puts waiting requests in a banner above the grid rather than
-          mixing them into it — they need a decision, not a card. */}
-          {requests.length > 0 && (
-            <InfoBox
-              level="info"
-              icon="people"
-              className="fr-requests"
-              title={`You have ${requests.length} new friend request${requests.length === 1 ? '' : 's'}!`}
-            >
-              <ul className="fr-request-list">
-                {requests.map((r) => (
-                  <li key={r.id}>
-                    <Avatar initials={r.initials} color={r.color} size="sm" />
-                    <span className="fr-request-name">{r.name}</span>
-                    <span className="fr-request-grade">{r.grade}</span>
-                    <Button
-                      size="sm"
-                      onClick={() => setRequests((q) => q.filter((x) => x.id !== r.id))}
-                    >
-                      Accept
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setRequests((q) => q.filter((x) => x.id !== r.id))}
-                    >
-                      Decline
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            </InfoBox>
-          )}
+          <FriendRequests
+            requests={requests}
+            onAccept={(p) => answer(p, true)}
+            onDecline={(p) => answer(p, false)}
+          />
 
           <div className="fr-grid">
             {friends.map((f) => (
@@ -262,6 +251,7 @@ export function Friends() {
           </div>
 
           <InviteModal open={inviteOpen} onClose={() => setInviteOpen(false)} />
+          <ToastStack toasts={toasts} onDismiss={dismiss} />
         </div>
       )}
     </>
