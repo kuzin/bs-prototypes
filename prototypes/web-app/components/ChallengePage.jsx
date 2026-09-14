@@ -3,8 +3,8 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
-import { BadgeDisc, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
-import { CHALLENGE_ART } from '@components/ReaderApp/ReaderApp'
+import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
+import { badgeSrc, bannerSrc } from '@components/ReaderApp/ReaderApp'
 
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
 import { BADGES, getChallengeDetail } from '../data'
@@ -23,11 +23,9 @@ import '@components/Pill/Pill.css'
  * "Ongoing Challenge" where there isn't one. Under it the app's own tab strip;
  * the four built out here are the four a reader actually uses.
  *
- * The banner is the card's own art at the banner's ratio, not one of the real
- * uploaded banners in `public/challenge-banners/`: those are branded for the
- * specific Beanstack challenges they were drawn for, and "Guilford County
- * Schools" over "Spring Into Reading" reads as a mistake. This way the hero is
- * the same artwork as the card the reader just clicked.
+ * The banner is Beanstack's own art for this challenge — the three here are
+ * real ones, so each carries the banner its design team ships
+ * (`Design/Projects/Challenges/<name>/Banner`, 920×351).
  *
  * The real nav is longer — Reading List, Bingo Card, Ticket Drawings and
  * Certificates each appear when the challenge has them. They stay as furniture.
@@ -118,11 +116,7 @@ function Overview({ detail, challenge }) {
             {recent.map((b) => (
               <CollectionCard
                 key={b.name}
-                art={
-                  <BadgeDisc color={b.color}>
-                    <Icon name={b.icon} size={38} stroke={1.7} />
-                  </BadgeDisc>
-                }
+                art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
                 name={b.name}
                 blurb={b.blurb}
                 date={`Completed on ${b.date}`}
@@ -149,11 +143,7 @@ function Badges() {
         {ordered.map((b) => (
           <CollectionCard
             key={b.name}
-            art={
-              <BadgeDisc color={b.color}>
-                <Icon name={b.icon} size={38} stroke={1.7} />
-              </BadgeDisc>
-            }
+            art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
             name={b.name}
             blurb={b.blurb}
             locked={b.locked}
@@ -201,14 +191,12 @@ function Rewards({ detail }) {
 export function ChallengePage({ challenge, entries, onBack }) {
   const [tab, setTab] = useState('overview')
   const detail = getChallengeDetail(challenge.id)
-  const art = CHALLENGE_ART[challenge.art] ?? CHALLENGE_ART.spring
+  const banner = bannerSrc(challenge.banner)
 
   return (
     <div className="cp">
-      <div className="cp-banner" style={{ background: art.bg }}>
-        <span className="cp-banner-title" style={{ color: art.titleColor }}>
-          {art.title}
-        </span>
+      <div className="cp-banner">
+        <img src={banner} alt={challenge.title} />
       </div>
 
       <div className="cp-head">
@@ -250,17 +238,18 @@ export function ChallengePage({ challenge, entries, onBack }) {
         {tab === 'overview' && <Overview detail={detail} challenge={challenge} />}
         {tab === 'badges' && <Badges />}
         {tab === 'rewards' && <Rewards detail={detail} />}
-        {/* The challenge's own log is the reader's log scoped to it — the same
-            page, which is why the app titles it "{first_name}'s Log". Its own
-            sub-tabs go (this page has a strip already) and it opens on the
-            titles shelf: what belongs here is what was read toward this
-            challenge, not a month calendar of everything logged anywhere. */}
+        {/* The challenge's own log is the reader's log scoped to it. Its
+            sub-tabs go (this page has a strip already), it opens on the titles
+            shelf — what belongs here is what was read toward this challenge,
+            not a month calendar of everything logged anywhere — and the summary
+            row goes with them, since Overview already carries the totals. */}
         {tab === 'log' && (
           <ReadingLog
             entries={entries}
-            heading="Olivia's Log"
+            heading="Challenge Log"
             subtabs={false}
             defaultTab="titles"
+            stats={false}
           />
         )}
       </div>

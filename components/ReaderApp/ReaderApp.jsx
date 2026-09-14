@@ -293,7 +293,23 @@ export function StreakBanner({ streak, onLog, message }) {
 
 // ─── Challenges ─────────────────────────────────────────────────────────────
 
-/** The illustrated challenge covers, keyed by a challenge's `art`. */
+/**
+ * Where a challenge's banner lives. A Program's `header_image` is the art staff
+ * upload when they build the challenge; these are Beanstack's own, out of
+ * `Design/Projects/Challenges/<name>/Banner` at 920×351 (or 1840×702 at 2×) and
+ * converted to 1200px webp.
+ */
+export const bannerSrc = (key) => (key ? `/bs-prototypes/challenge-banners/${key}.webp` : null)
+
+/** One of that challenge's badges, from `Design/.../<name>/Badges`. */
+export const badgeSrc = (set, name) =>
+  set && name ? `/bs-prototypes/challenge-badges/${set}/${name}.webp` : null
+
+/**
+ * The drawn covers, keyed by a challenge's `art`. The fallback for a challenge
+ * with no banner of its own — the app's is `no-challenge-image.png`, but a
+ * designed gradient beats a grey placeholder in a prototype.
+ */
 export const CHALLENGE_ART = {
   spring: {
     bg: 'linear-gradient(180deg, #BFE3FA 0%, #B6F0C9 100%)',
@@ -335,6 +351,7 @@ export const CHALLENGE_ART = {
  * without it the card stays inert, as before.
  */
 export function ChallengeCard({ challenge, accent = READER_ACCENT, onOpen }) {
+  const banner = bannerSrc(challenge.banner)
   const art = CHALLENGE_ART[challenge.art] ?? CHALLENGE_ART.spring
   return (
     <button
@@ -342,11 +359,19 @@ export function ChallengeCard({ challenge, accent = READER_ACCENT, onOpen }) {
       type="button"
       onClick={onOpen ? () => onOpen(challenge) : undefined}
     >
-      <div className="wa-chcard-hero" style={{ background: art.bg }}>
-        <span className="wa-chcard-arttitle" style={{ color: art.titleColor }}>
-          {art.title}
-        </span>
-      </div>
+      {/* The real banner where the challenge has one — `img.challenge-image` in
+          the app's own card — and the drawn cover where it doesn't. */}
+      {banner ? (
+        <div className="wa-chcard-hero">
+          <img src={banner} alt="" className="wa-chcard-img" />
+        </div>
+      ) : (
+        <div className="wa-chcard-hero" style={{ background: art.bg }}>
+          <span className="wa-chcard-arttitle" style={{ color: art.titleColor }}>
+            {art.title}
+          </span>
+        </div>
+      )}
       <div className="wa-chcard-body">
         <div className="wa-chcard-titlerow">
           <div className="wa-chcard-title">{challenge.title}</div>

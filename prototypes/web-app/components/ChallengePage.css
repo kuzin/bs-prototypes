@@ -3,27 +3,24 @@
 
 /* The app's `.challenge-header` is a full-width band with the banner centred on
    it and colour bars either side (it samples those off the image). Same shape
-   here: the band is the challenge's own gradient, and the artwork sits on it at
-   the 2.62:1 ratio every real Beanstack banner ships at (920×351, or 1840×702
-   at 2×) — which is also what the challenge creator generates theme art at. */
+   here, on a neutral band. The banner is held at its native 920px rather than
+   stretched: it is 2.62:1 (920×351, or 1840×702 at 2×) and it carries the
+   challenge's name in its own artwork, so it is never cropped. */
 .cp-banner {
   /* Full-bleed, cancelling .wa-main's top padding and .wa-main-inner's sides. */
-  display: grid;
-  place-items: center;
+  display: flex;
+  justify-content: center;
   width: 100vw;
-  min-height: 190px;
   margin: -24px 0 0;
   margin-inline: calc(50% - 50vw);
-  aspect-ratio: 5 / 1;
-  max-height: 260px;
+  background: var(--c-gray-150);
 }
-.cp-banner-title {
-  font-size: clamp(28px, 4.4vw, 52px);
-  font-weight: 900;
-  line-height: 1.04;
-  text-align: center;
-  letter-spacing: -0.02em;
-  white-space: pre-line;
+.cp-banner img {
+  display: block;
+  width: 100%;
+  max-width: 920px;
+  aspect-ratio: 2.62 / 1;
+  object-fit: cover;
 }
 
 .cp-head {

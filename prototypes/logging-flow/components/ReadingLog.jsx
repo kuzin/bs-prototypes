@@ -425,7 +425,7 @@ function TitleDetail({ row, index, onClose }) {
 }
 
 /** "All Titles" — every logged title as a cover, grouped by month. */
-function TitlesView({ entries }) {
+function TitlesView({ entries, stats = true }) {
   // The app's own pair of tabs on this page: everything, or just what's done.
   const [filter, setFilter] = useState('all')
   const [open, setOpen] = useState(null)
@@ -440,7 +440,7 @@ function TitlesView({ entries }) {
 
   return (
     <div className="rl-titles">
-      <TitleStats entries={entries} />
+      {stats && <TitleStats entries={entries} />}
 
       <div className="rl-titles-filter">
         <Tabs
@@ -494,11 +494,12 @@ function TitlesView({ entries }) {
 // `Dashboard` lets a prototype hang one off the main nav — web-app puts its
 // Reviews page here.
 //
-// `heading` overrides the page title, `subtabs={false}` drops the strip, and
-// `defaultTab` picks which view opens — for when this log is embedded in a page
-// that already has a tab strip. A challenge's own log tab titles it
-// "{first_name}'s Log" and opens on the titles shelf: a month calendar of every
-// session the reader logged anywhere isn't that challenge's log. Left off, the page is exactly as it was.
+// `heading` overrides the page title, `subtabs={false}` drops the strip,
+// `defaultTab` picks which view opens, and `stats={false}` drops the shelf's
+// summary row — all for when this log is embedded in a page that already has
+// those. A challenge's log tab opens on the titles shelf (a month calendar of
+// every session the reader logged anywhere isn't that challenge's log) and
+// leaves the totals to the Overview tab's own "Overall Progress". Left off, the page is exactly as it was.
 export function ReadingLog({
   entries = READING_LOG,
   partners = CONNECTION_LIST,
@@ -508,6 +509,7 @@ export function ReadingLog({
   heading,
   subtabs = true,
   defaultTab = 'log',
+  stats = true,
 }) {
   const [tab, setTab] = useState(defaultTab)
   const [view, setView] = useState('calendar')
@@ -631,7 +633,7 @@ export function ReadingLog({
               )}
             </>
           ) : (
-            <TitlesView entries={entries} />
+            <TitlesView entries={entries} stats={stats} />
           )}
         </>
       )}

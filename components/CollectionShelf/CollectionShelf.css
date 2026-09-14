@@ -79,7 +79,7 @@
   height: 104px;
   border-radius: 999px;
 }
-.co-card-art > *:not(.co-card-ring) {
+.co-card-art > *:not(.co-card-ring, .co-card-img) {
   overflow: hidden;
   border-radius: 999px;
 }
@@ -97,6 +97,13 @@
   color: #fff;
   background: var(--badge-color);
   border-radius: 999px;
+}
+/* Real badge art is a square illustration with its own transparent ground, so
+   it fills the slot rather than being cropped to the circle the disc draws. */
+.co-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 .co-card-name {
   padding: 0 22px;

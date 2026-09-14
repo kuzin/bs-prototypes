@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
+import { badgeSrc } from '@components/ReaderApp/ReaderApp'
 import {
-  BadgeDisc,
+  BadgeArt,
   CollectionCard,
   ShelfGrid,
   ShelfHead,
@@ -59,11 +59,7 @@ export function AllBadges() {
             {badges.map((b) => (
               <CollectionCard
                 key={b.name}
-                art={
-                  <BadgeDisc color={b.color}>
-                    <Icon name={b.icon} size={38} stroke={1.7} />
-                  </BadgeDisc>
-                }
+                art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
                 name={b.name}
                 blurb={b.blurb}
                 locked={b.locked}

@@ -29,21 +29,28 @@ const OTHER_READERS = [
   { id: 'liam', name: 'Liam Park', initials: 'LP', color: '#16A97A' },
 ]
 
+// Two with a real banner, one on a drawn cover — the card does both.
 const CHALLENGES = [
   {
     id: 'spring',
     title: 'Spring Into Reading',
     dates: 'Apr 1 — Apr 30',
     badge: 'Minutes',
-    art: 'spring',
+    banner: 'spring-into-reading',
   },
-  { id: 'love-hurts', title: 'Love Hurts', dates: 'Ongoing', badge: 'Minutes', art: 'love-hurts' },
+  {
+    id: 'love-hurts',
+    title: 'For the Love of Reading',
+    dates: 'Ongoing',
+    badge: 'Minutes',
+    banner: 'for-the-love-of-reading',
+  },
   {
     id: 'arresting',
-    title: 'Arresting Strangeness',
+    title: 'Lectores del Mundo',
     dates: 'Jun 1 — Jun 30',
     badge: 'Books',
-    art: 'arresting',
+    art: 'lectores',
   },
 ]
 
@@ -245,20 +252,35 @@ export const readerAppSections = [
     group: 'web-app',
     id: 'reader-challenge-card',
     name: 'ChallengeCard',
-    usage: `import { ChallengeCard, CHALLENGE_ART } from '@components/ReaderApp/ReaderApp'
+    usage: `import { ChallengeCard } from '@components/ReaderApp/ReaderApp'
 
-<ChallengeCard challenge={{ title, dates, badge, art: 'spring' }} />`,
+/* a real challenge — its banner is in public/challenge-banners/ */
+<ChallengeCard challenge={{ title, dates, badge, banner: 'spring-into-reading' }} onOpen={open} />
+
+/* no banner — falls back to a drawn cover from CHALLENGE_ART */
+<ChallengeCard challenge={{ title, dates, badge, art: 'lectores' }} />`,
     desc: (
       <>
         One challenge in the reader&apos;s challenge grid — cover art over the name, the dates, and
-        what the challenge measures. <code>art</code> keys into <code>CHALLENGE_ART</code>, the
-        illustrated covers; an unknown key falls back to the first. What the challenge measures sits
-        beside the name rather than floated over the artwork: the art is the challenge&apos;s
-        identity, and the pill used to cover whatever part of it landed in that corner.
+        what the challenge measures.
+        <br />
+        <br />
+        <code>banner</code> names a file in <code>public/challenge-banners/</code> —
+        Beanstack&apos;s own art for that challenge, out of <code>Design/Projects/Challenges</code>{' '}
+        at 920×351 — and renders as <code>img.challenge-image</code> does in the app&apos;s own
+        card. <code>art</code> is the fallback for a challenge with no banner: a drawn cover from{' '}
+        <code>CHALLENGE_ART</code> (the app&apos;s own fallback is a grey{' '}
+        <code>no-challenge-image.png</code>, which a prototype can do better than).
+        <br />
+        <br />
+        What the challenge measures sits beside the name rather than floated over the artwork: the
+        art is the challenge&apos;s identity, and the pill used to cover whatever part of it landed
+        in that corner. <code>onOpen</code> makes the card go somewhere — it has always been a{' '}
+        <code>&lt;button&gt;</code>, it just had no handler.
       </>
     ),
     render: () => (
-      <Variant label="the three covers, in a grid" full>
+      <Variant label="two real banners and a drawn cover" full>
         <div className="wa-chgrid" style={{ padding: 16 }}>
           {CHALLENGES.map((c) => (
             <ChallengeCard key={c.id} challenge={c} />
@@ -492,9 +514,10 @@ export const readerAppSections = [
         <br />
         <br />
         Reading List, Ticket Drawings and Certificates stay as furniture, the way the repo treats
-        unbuilt tabs. The hero is the challenge&apos;s own <code>CHALLENGE_ART</code> rather than a
-        file from <code>public/challenge-banners/</code>: those are branded for the specific
-        Beanstack challenges they were drawn for.
+        unbuilt tabs. The hero is the challenge&apos;s own banner from{' '}
+        <code>public/challenge-banners/</code> — all three challenges here are real Beanstack ones,
+        so each carries the art its design team ships, and the badges are that challenge&apos;s own
+        illustrations rather than glyphs on coloured discs.
       </>
     ),
     render: () => (

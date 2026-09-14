@@ -10,11 +10,13 @@ import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Toggle } from '@components/Toggle/Toggle'
 import { SectionCard, SectionCardTitle } from '@components/SectionCard/SectionCard'
 import {
+  BadgeArt,
   BadgeDisc,
   CollectionCard,
   ShelfGrid,
   ShelfHead,
 } from '@components/CollectionShelf/CollectionShelf'
+import { badgeSrc } from '@components/ReaderApp/ReaderApp'
 import { ColorInput, Field, Input, Select } from '@components/Form/Form'
 import { SCHOOLS } from '../../ris/data'
 import { Icon } from '@components/Icon/Icon'
@@ -726,16 +728,16 @@ import '@components/BackBar/BackBar.css'
     id: 'collection-shelf',
     name: 'CollectionShelf',
     usage: `import {
-  CollectionCard, BadgeDisc, ShelfHead, ShelfGrid,
+  CollectionCard, BadgeArt, BadgeDisc, ShelfHead, ShelfGrid,
 } from '@components/CollectionShelf/CollectionShelf'
 
 <ShelfHead title="Badges" count="5 of 12" noun="earned" />
 <ShelfGrid>
   <CollectionCard
-    art={<BadgeDisc color="#F0A024"><Icon name="flame" size={38} /></BadgeDisc>}
-    name="2-Week Streak"
-    blurb="Earned for logging 14 days in a row!"
-    date="Completed on Jun 24, 2026"
+    art={<BadgeArt src={badgeSrc('spring-into-reading', 'butterfly')} />}
+    name="Butterfly"
+    blurb="Earned for logging 100 minutes!"
+    date="Completed on Apr 6, 2026"
   />
   <CollectionCard
     art={<BadgeDisc color="#0B6B78"><Icon name="clock" size={38} /></BadgeDisc>}
@@ -761,8 +763,10 @@ import '@components/BackBar/BackBar.css'
         unearned half comes from a challenge&apos;s Badges tab, which grays the whole set.
         <br />
         <br />
-        <code>art</code> is whatever goes in the circular slot: <code>BadgeDisc</code> puts a glyph
-        on a disc in the badge&apos;s own color, and Book Discovery&apos;s{' '}
+        <code>art</code> is whatever goes in the circular slot. <code>BadgeArt</code> is the real
+        thing — the illustration Beanstack&apos;s design team draws for that challenge, out of{' '}
+        <code>Design/Projects/Challenges/&lt;name&gt;/Badges</code>; <code>BadgeDisc</code> puts a
+        glyph on a coloured disc where there is no illustration, and Book Discovery&apos;s{' '}
         <code>AchievementArt</code> medallions drop straight in. <code>co-subtabs</code> ships with
         it — the full-bleed band a pane switcher sits on, flush under the main nav.
         <br />
@@ -777,14 +781,18 @@ import '@components/BackBar/BackBar.css'
           <ShelfHead title="Badges" count="5 of 12" noun="earned" />
           <ShelfGrid>
             <CollectionCard
-              art={
-                <BadgeDisc color="#F0A024">
-                  <Icon name="flame" size={38} stroke={1.7} />
-                </BadgeDisc>
-              }
-              name="2-Week Streak"
-              blurb="Earned for logging 14 days in a row!"
-              date="Completed on Jun 24, 2026"
+              art={<BadgeArt src={badgeSrc('spring-into-reading', 'butterfly')} />}
+              name="Butterfly"
+              blurb="Earned for logging 100 minutes!"
+              date="Completed on Apr 6, 2026"
+            />
+            <CollectionCard
+              art={<BadgeArt src={badgeSrc('spring-into-reading', 'bees')} />}
+              name="Bees"
+              blurb="Log 1,000 minutes of reading."
+              locked
+              progress={62}
+              date="620/1,000 Minutes Completed"
             />
             <CollectionCard
               art={
@@ -793,10 +801,8 @@ import '@components/BackBar/BackBar.css'
                 </BadgeDisc>
               }
               name="1,000 Minutes"
-              blurb="Log 1,000 minutes of reading."
-              locked
-              progress={62}
-              date="620/1,000 Minutes Completed"
+              blurb="The fallback, where a badge has no illustration."
+              date="Completed on Jun 24, 2026"
             />
           </ShelfGrid>
         </div>

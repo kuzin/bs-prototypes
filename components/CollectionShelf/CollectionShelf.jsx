@@ -48,6 +48,15 @@ export function CollectionCard({ art, name, blurb, date, locked = false, progres
 }
 
 /**
+ * A badge's illustration — the art Beanstack's design team draws per challenge
+ * (`Design/Projects/Challenges/<name>/Badges`, 500×500, here at 240 in webp).
+ * This is what a real badge looks like; `BadgeDisc` is the fallback.
+ */
+export function BadgeArt({ src, alt = '' }) {
+  return <img className="co-card-img" src={src} alt={alt} loading="lazy" />
+}
+
+/**
  * A badge's art when there is no illustration for it: its glyph on a disc in
  * the badge's own color. Pass the `<Icon>` — this only owns the disc, so the
  * caller keeps control of which glyph and how big.

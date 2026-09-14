@@ -13,25 +13,29 @@
 // (`earnables/grid/_earnable.html.haml`). This page does both, so a reader can
 // see what's next without opening a challenge.
 //
+// The art is Beanstack's own, per challenge — there is no generic badge set in
+// the product, because a badge belongs to the challenge that awards it. `set`
+// and `art` name a file under `public/challenge-badges/`.
+//
 // `type` is the app's own badge taxonomy — `appropriate_badges_title` yields
 // Reading/Logging, Activity, Review, Point, Challenge and Donation Badges.
 
-const earned = (name, date, blurb, color, icon, type = 'logging') => ({
+const earned = (set, art, name, date, blurb, type = 'logging') => ({
+  set,
+  art,
   name,
   date,
   blurb,
-  color,
-  icon,
   type,
 })
 
 // `have`/`need` drive the ring and the footer line the app writes as
 // "12/30 Minutes Completed".
-const locked = (name, blurb, color, icon, have, need, unit, type = 'logging') => ({
+const locked = (set, art, name, blurb, have, need, unit, type = 'logging') => ({
+  set,
+  art,
   name,
   blurb,
-  color,
-  icon,
   have,
   need,
   unit,
@@ -39,96 +43,89 @@ const locked = (name, blurb, color, icon, have, need, unit, type = 'logging') =>
   locked: true,
 })
 
+const SPRING = 'spring-into-reading'
+const LOVE = 'for-the-love-of-reading'
+const COMICS = 'comics-choice'
+
 export const BADGES = [
+  earned(SPRING, 'butterfly', 'Butterfly', 'Apr 6, 2026', 'Earned for logging 100 minutes!'),
+  earned(SPRING, 'rainbow', 'Rainbow', 'Apr 14, 2026', 'Earned for logging 7 days in a row!'),
   earned(
-    '2-Week Streak',
-    'Jun 24, 2026',
-    'Earned for logging 14 days in a row!',
-    '#F0A024',
-    'flame',
-  ),
-  earned(
+    SPRING,
+    'completed',
     'Spring Into Reading',
     'Apr 30, 2026',
     'Earned for completing Spring Into Reading!',
-    '#0CA7BC',
-    'trophy',
     'challenge',
   ),
+  earned(LOVE, 'heart-balloon', 'Heart Balloon', 'May 12, 2026', 'Earned for finishing 5 books!'),
   earned(
-    'First Review',
-    'Apr 18, 2026',
+    LOVE,
+    'writing-love-letter',
+    'Writing a Love Letter',
+    'May 30, 2026',
     'Earned for writing your first review!',
-    '#0BA85F',
-    'writing',
     'review',
   ),
-  earned('Ten Titles', 'Apr 6, 2026', 'Earned for finishing 10 books!', '#2563EB', 'book-2'),
   earned(
-    'Comic Collector',
-    'Mar 22, 2026',
-    'Earned for finishing 5 graphic novels!',
-    '#B43DD0',
-    'book-2',
-  ),
-  locked(
-    '1,000 Minutes',
-    'Log 1,000 minutes of reading.',
-    '#0B6B78',
-    'clock',
-    620,
-    1000,
-    'Minutes',
-  ),
-  locked(
-    'Arresting Strangeness',
-    'Complete the Arresting Strangeness challenge.',
-    '#5FA052',
-    'trophy',
-    2,
-    5,
-    'Activity',
+    COMICS,
+    'registered',
+    'Comics Choice',
+    'Jun 1, 2026',
+    'Earned for joining Comics Choice!',
     'challenge',
   ),
+  earned(COMICS, 'pow', 'POW', 'Jun 9, 2026', 'Earned for finishing 3 graphic novels!'),
+  locked(SPRING, 'bees', 'Bees', 'Log 1,000 minutes of reading.', 620, 1000, 'Minutes'),
   locked(
-    'Genre Explorer',
-    'Log a title from five different genres.',
-    '#B45309',
-    'compass',
-    3,
-    5,
-    'Books',
-  ),
-  locked(
-    'Three Reviews',
+    LOVE,
+    'rose',
+    'Rose',
     'Write reviews for three different titles.',
-    '#0BA85F',
-    'writing',
     1,
     3,
     'Reviews',
     'review',
   ),
   locked(
-    'Month of Reading',
+    LOVE,
+    'cupids-arrow',
+    "Cupid's Arrow",
+    'Log a title from five different genres.',
+    3,
+    5,
+    'Books',
+  ),
+  locked(
+    COMICS,
+    'bingo',
+    'Bingo!',
+    'Fill a whole row of the Comics Choice card.',
+    3,
+    5,
+    'Activity',
+    'activity',
+  ),
+  locked(
+    COMICS,
+    'full-card',
+    'Full Card',
+    'Fill every square on the Comics Choice card.',
+    7,
+    25,
+    'Activity',
+    'activity',
+  ),
+  locked(
+    SPRING,
+    'umbrella',
+    'Umbrella',
     'Log reading on 30 days in a single month.',
-    '#DC493A',
-    'calendar',
     11,
     30,
     'Days',
   ),
-  locked(
-    'Museum Hop',
-    'Finish every activity in the Museums badge.',
-    '#4F46E5',
-    'building-monument',
-    0,
-    3,
-    'Activity',
-    'activity',
-  ),
-  locked('Page Turner', 'Read 2,000 pages.', '#6761A8', 'file-text', 88, 2000, 'Pages'),
+  locked(SPRING, 'strawberries', 'Strawberries', 'Read 2,000 pages.', 88, 2000, 'Pages'),
 ]
 
 // ─── Achievements ────────────────────────────────────────────────────────────
@@ -324,8 +321,9 @@ export const REVIEWS = [
 // Rewards / Challenge Log. Fields follow the real Program — `date_span`,
 // `description`, `startedOn`, `program_types`.
 //
-// The hero art comes from the challenge's own `art` key in logging-flow's data,
-// the same artwork its card carries.
+// The banner and badge art come from the challenge's own `banner` / `badges`
+// keys in logging-flow's data — all three of these are real Beanstack
+// challenges, so each carries the art its design team ships.
 
 // The Overview's "Overall Progress" ring tiles, in the app's render order.
 const goal = (label, have, need, icon) => ({ label, have, need, icon })
@@ -376,11 +374,11 @@ export const CHALLENGE_DETAIL = {
   'love-hurts': {
     startedOn: 'February 2, 2026',
     description:
-      'An ongoing challenge for readers who like their stories with a little heartbreak. No end date — log whenever you read something that fits, and Benny will find you a badge for it.',
+      'For the Love of Reading is an ongoing challenge — no end date. Log whatever you are reading and collect the badge set as you go: a rose, a bouquet, a love letter, and eleven more. Write a review of something you loved and Benny will find you a badge for that too.',
     types: ['Minutes', 'Reviews'],
     goals: [
       goal('Minutes Completed', 310, 600, 'clock'),
-      goal('Badges Earned', 1, 4, 'award'),
+      goal('Badges Earned', 2, 17, 'award'),
       goal('Reviews', 2, 3, 'writing'),
     ],
     rewards: [
@@ -397,17 +395,23 @@ export const CHALLENGE_DETAIL = {
   arresting: {
     startedOn: 'June 2, 2026',
     description:
-      'Arresting Strangeness is about books that are a bit odd — the ones that do not sit neatly in a genre. Read five of them in June and tell us what made each one strange.',
-    types: ['Minutes', 'Activities'],
+      'Comics Choice is a bingo card. Every square is a different kind of comic or graphic novel — read one, log it, and the square is yours. Fill a row for a Bingo badge, fill the whole card for the Full Card badge, and everything you read on Comics Plus counts automatically.',
+    types: ['Bingo', 'Minutes', 'Activities'],
     goals: [
       goal('Minutes Completed', 88, 500, 'clock'),
-      goal('Badges Earned', 0, 5, 'award'),
-      goal('Completed Activities', 2, 5, 'circle-check'),
+      goal('Badges Earned', 2, 28, 'award'),
+      goal('Completed Activities', 7, 25, 'circle-check'),
     ],
     rewards: [
       {
-        name: 'Benny enamel pin',
-        detail: 'For finishing every activity.',
+        name: 'Comics Choice enamel pin',
+        detail: 'For filling a whole row.',
+        at: 250,
+        earned: false,
+      },
+      {
+        name: 'Graphic novel of your choice',
+        detail: 'For the full card — pick any title from the Comics Plus shelf.',
         at: 500,
         earned: false,
       },
