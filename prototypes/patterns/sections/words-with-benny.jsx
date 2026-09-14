@@ -259,10 +259,9 @@ export const wordsWithBennySections = [
         they earned, and their milestone achievements. It <strong>replaces</strong> the reader
         dashboard&apos;s built-in &ldquo;All Badges&rdquo; tab (via <code>Dashboard</code>&apos;s{' '}
         <code>hideTabs</code>) — three shelves of the same kind of thing shouldn&apos;t be three
-        top-level destinations. Owns the page header and a pill sub-tab strip, the same shape{' '}
-        <code>ReadingLog</code> uses for its own sub-tabs; each pane is a plain grid on the page
-        ground. The achievement medallions are Book Discovery&apos;s <code>AchievementArt</code>,
-        not a second set.
+        top-level destinations. Owns the pill sub-tab strip; the Badges and Achievements panes are
+        the shared <code>CollectionShelf</code>, and the achievement medallions are Book
+        Discovery&apos;s <code>AchievementArt</code> — neither is a second copy.
       </>
     ),
     render: () => (

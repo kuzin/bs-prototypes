@@ -9,6 +9,12 @@ import { BackBar } from '@components/BackBar/BackBar'
 import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Toggle } from '@components/Toggle/Toggle'
 import { SectionCard, SectionCardTitle } from '@components/SectionCard/SectionCard'
+import {
+  BadgeDisc,
+  CollectionCard,
+  ShelfGrid,
+  ShelfHead,
+} from '@components/CollectionShelf/CollectionShelf'
 import { ColorInput, Field, Input, Select } from '@components/Form/Form'
 import { SCHOOLS } from '../../ris/data'
 import { Icon } from '@components/Icon/Icon'
@@ -713,6 +719,88 @@ import '@components/BackBar/BackBar.css'
           />
         </Variant>
       </>
+    ),
+  },
+  {
+    group: 'cards',
+    id: 'collection-shelf',
+    name: 'CollectionShelf',
+    usage: `import {
+  CollectionCard, BadgeDisc, ShelfHead, ShelfGrid,
+} from '@components/CollectionShelf/CollectionShelf'
+
+<ShelfHead title="Badges" count="5 of 12" noun="earned" />
+<ShelfGrid>
+  <CollectionCard
+    art={<BadgeDisc color="#F0A024"><Icon name="flame" size={38} /></BadgeDisc>}
+    name="2-Week Streak"
+    blurb="Earned for logging 14 days in a row!"
+    date="Completed on Jun 24, 2026"
+  />
+  <CollectionCard
+    art={<BadgeDisc color="#0B6B78"><Icon name="clock" size={38} /></BadgeDisc>}
+    name="1,000 Minutes"
+    blurb="Log 1,000 minutes of reading."
+    locked
+    progress={62}
+    date="620/1,000 Minutes Completed"
+  />
+</ShelfGrid>`,
+    desc: (
+      <>
+        The reader&apos;s shelf of earned things. Badges and achievements are the same card in the
+        product — circular art over a bold name and a line of copy, with the state on its own footer
+        strip — so this is one card used by both, plus the shelf head that counts them and the grid
+        they sit in.
+        <br />
+        <br />
+        <code>locked</code> is the not-yet-earned state: the art goes gray, a <code>progress</code>{' '}
+        ring shows how far along the reader is, and the footer carries the requirement (
+        <em>620/1,000 Minutes Completed</em>) where an earned badge carries its date. The
+        profile&apos;s &ldquo;Earned Badges&rdquo; page only lists what has been earned; the
+        unearned half comes from a challenge&apos;s Badges tab, which grays the whole set.
+        <br />
+        <br />
+        <code>art</code> is whatever goes in the circular slot: <code>BadgeDisc</code> puts a glyph
+        on a disc in the badge&apos;s own color, and Book Discovery&apos;s{' '}
+        <code>AchievementArt</code> medallions drop straight in. <code>co-subtabs</code> ships with
+        it — the full-bleed band a pane switcher sits on, flush under the main nav.
+        <br />
+        <br />
+        Used by <strong>Words with Benny</strong> (the Badges and Achievements panes of My
+        Collections) and <strong>web-app</strong> (All Badges).
+      </>
+    ),
+    render: () => (
+      <Variant label="earned / not earned yet">
+        <div style={{ padding: 20, background: '#f3f4f6' }}>
+          <ShelfHead title="Badges" count="5 of 12" noun="earned" />
+          <ShelfGrid>
+            <CollectionCard
+              art={
+                <BadgeDisc color="#F0A024">
+                  <Icon name="flame" size={38} stroke={1.7} />
+                </BadgeDisc>
+              }
+              name="2-Week Streak"
+              blurb="Earned for logging 14 days in a row!"
+              date="Completed on Jun 24, 2026"
+            />
+            <CollectionCard
+              art={
+                <BadgeDisc color="#0B6B78">
+                  <Icon name="clock" size={38} stroke={1.7} />
+                </BadgeDisc>
+              }
+              name="1,000 Minutes"
+              blurb="Log 1,000 minutes of reading."
+              locked
+              progress={62}
+              date="620/1,000 Minutes Completed"
+            />
+          </ShelfGrid>
+        </div>
+      </Variant>
     ),
   },
   {

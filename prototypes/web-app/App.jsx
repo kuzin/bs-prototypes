@@ -5,6 +5,7 @@ import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerC
 import { Dashboard } from '../logging-flow/components/Dashboard'
 import { LogFlow } from '../logging-flow/components/LogFlow'
 import { BookCover } from '../logging-flow/components/BookCover'
+import { AllBadges } from './components/AllBadges'
 import {
   STREAK,
   DAILY_GOAL,
@@ -56,6 +57,11 @@ const RECENT = RECENTLY_LOGGED.filter((id) => BOOKS[id]?.partner !== 'scholastic
 // magazines sitting in the Reading Log of a page that says it has no Scholastic.
 const LOG = READING_LOG.filter((e) => e.source !== 'scholastic')
 
+// The tabs in the real nav that the dashboard has never had a page for. This
+// prototype builds them, so it claims them by id rather than letting the
+// dashboard bounce them back to Challenges.
+const OWN_TABS = ['badges']
+
 export function App() {
   const [flowOpen, setFlowOpen] = useState(false)
   const [streak, setStreak] = useState(STREAK)
@@ -66,6 +72,12 @@ export function App() {
   const [connections, setConnections] = useState({})
   const [linking, setLinking] = useState(null) // partner id mid-handoff
   const [visiting, setVisiting] = useState(null) // partner id whose catalog is open
+
+  // The pages this prototype owns, by tab id.
+  function renderTab(id) {
+    if (id === 'badges') return <AllBadges />
+    return null
+  }
 
   function handleLogged(entry) {
     setStreak((s) => ({ ...s, current: Math.max(s.current, 1) }))
@@ -108,6 +120,8 @@ export function App() {
         onVisitPartner={setVisiting}
         partners={PARTNERS}
         logEntries={LOG}
+        ownTabs={OWN_TABS}
+        renderExtra={renderTab}
       />
 
       <LogFlow

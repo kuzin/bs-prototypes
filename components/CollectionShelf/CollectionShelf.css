@@ -20,8 +20,8 @@
 }
 
 /* ─── Badge + achievement shelves ────────────────────────────────────────
-   Both use the product's one card: circular art over a bold name and a line of
-   copy, with the earned date on its own footer strip in green. */
+   The product's one card for everything a reader has earned: circular art over
+   a bold name and a line of copy, with the state on its own footer strip. */
 
 /* Same breathing room the Reading Log gives its own header under the band. */
 .co-shelf-head {
@@ -69,14 +69,18 @@
 }
 /* The medallions are square SVGs; the product shows them as circles. */
 .co-card-art {
+  position: relative;
   display: grid;
   place-items: center;
   width: 104px;
   height: 104px;
+  border-radius: 999px;
+}
+.co-card-art > *:not(.co-card-ring) {
   overflow: hidden;
   border-radius: 999px;
 }
-.co-card-art svg {
+.co-card-art svg:not(.co-card-ring) {
   width: 100%;
   height: 100%;
 }
@@ -116,4 +120,54 @@
   font-weight: 700;
   color: #0f7a55;
   border-top: 1px solid var(--c-border);
+}
+
+/* ─── Not earned yet ──────────────────────────────────────────────────────
+   The challenge Badges tab shows the whole set, not just what's been earned:
+   the art goes gray, the ring empties to however far along the reader is, and
+   the footer carries the requirement instead of a completion date. */
+
+.co-card--locked {
+  background: var(--c-gray-0);
+}
+.co-card--locked .co-card-art > *:not(.co-card-ring) {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.co-card--locked .co-card-name,
+.co-card--locked .co-card-blurb {
+  color: var(--c-text-light);
+}
+.co-card--locked .co-card-foot {
+  color: var(--c-gray-700);
+}
+
+/* The progress ring sits proud of the art so a gray badge still reads as
+   something in motion rather than something switched off. */
+.co-card-ring {
+  position: absolute;
+  inset: -5px;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  transform: rotate(-90deg);
+  fill: none;
+}
+.co-card-ring-track {
+  stroke: var(--c-gray-250);
+  stroke-width: 5;
+}
+.co-card-ring-fill {
+  stroke: var(--c-blue);
+  stroke-width: 5;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.3s ease;
+}
+
+@media (max-width: 560px) {
+  .co-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .co-shelf-head {
+    margin-top: 18px;
+  }
 }
