@@ -1,22 +1,26 @@
 /* ─── Sub-tab band ───────────────────────────────────────────────────────
    The pane switcher sits on a tinted band flush under the main nav, running
-   the full width of the window — same trick as ReadingLog's `.rl-subtabs`,
-   which sits in the tab next door and has to match. */
+   the full width of the window. */
 
 .co-subtabs {
   display: flex;
   justify-content: center;
-  /* Full-bleed: the band belongs to the page chrome, like the nav above it, so
-     it runs edge to edge rather than stopping at the content column. `100vw`
-     counts the scrollbar, which would overflow by ~15px — `.wa-shell` carries
-     `overflow-x: clip` to absorb that (clip, not hidden, so it doesn't become
-     a scroll container and break sticky positioning). */
-  width: 100vw;
   padding: 16px 24px;
-  margin: -24px 0 8px;
-  margin-inline: calc(50% - 50vw);
+  margin-bottom: 8px;
   background: #f7f8fa;
   border-bottom: 1px solid var(--c-border);
+}
+
+/* Full-bleed, but only inside the reader shell — the negative margins cancel
+   `.wa-main`'s top padding and `.wa-main-inner`'s sides, so anywhere else (the
+   Pattern Library's own frame, say) they just tear the band out of whatever is
+   holding it. `100vw` counts the scrollbar, which would overflow by ~15px:
+   `.wa-shell` carries `overflow-x: clip` to absorb that (clip, not hidden, so
+   it doesn't become a scroll container and break sticky positioning). */
+.wa-main .co-subtabs {
+  width: 100vw;
+  margin-top: -24px;
+  margin-inline: calc(50% - 50vw);
 }
 
 /* ─── Badge + achievement shelves ────────────────────────────────────────
@@ -24,17 +28,15 @@
    a bold name and a line of copy, with the state on its own footer strip. */
 
 /* Same breathing room the Reading Log gives its own header under the band. */
+/* The same page header Friends, Reviews and the Reading Log use — one height
+   and one set of margins, so the body doesn't jump between tabs. */
 .co-shelf-head {
   display: flex;
   gap: 20px;
   align-items: flex-end;
   justify-content: space-between;
-  /* Its hairline and the padding above it are part of the header's own box, so
-     they come out of the shared height rather than adding to it. */
-  min-height: calc(var(--wa-pagehead-h, 50px) - 8px);
-  padding-bottom: 7px;
+  min-height: var(--wa-pagehead-h, 50px);
   margin: var(--wa-pagehead-margin, 26px 0 20px);
-  border-bottom: 1px solid var(--c-border);
 }
 .co-shelf-copy {
   min-width: 0;
