@@ -1,15 +1,16 @@
 import { useState, useMemo } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { Tabs } from '@components/Tabs/Tabs'
 import { BackBar } from '@components/BackBar/BackBar'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { SectionCard } from '@components/SectionCard/SectionCard'
 import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
 import { Button } from '@components/Button/Button'
+import { EmptyState } from '@components/Primitives/Primitives'
 import '@components/SearchInput/SearchInput.css'
 import '@components/SectionCard/SectionCard.css'
 import '@components/ActiveFilters/ActiveFilters.css'
+import '@components/Primitives/Primitives.css'
 import { BookCard } from './BookCard'
 import {
   BOOKS,
@@ -90,7 +91,6 @@ export function Browse({
   onBack,
 }) {
   const [query, setQuery] = useState(initialQuery)
-  const [sort, setSort] = useState('popular')
   const [filters, setFilters] = useState(() => {
     const f = emptyFilters()
     if (initialFilter?.genre) f.genres.add(initialFilter.genre)
@@ -176,13 +176,9 @@ export function Browse({
       if (filters.minRating && b.rating < filters.minRating) return false
       return true
     })
-    const sorters = {
-      popular: (a, b) => b.readersAtSchool - a.readersAtSchool,
-      rating: (a, b) => b.rating - a.rating,
-      title: (a, b) => a.title.localeCompare(b.title),
-    }
-    return [...list].sort(sorters[sort])
-  }, [query, filters, sort, settings])
+    // Most-read at this school first — the order the catalog is browsed in.
+    return [...list].sort((a, b) => b.readersAtSchool - a.readersAtSchool)
+  }, [query, filters, settings])
 
   return (
     <div className="bk-browse-page">
@@ -264,21 +260,6 @@ export function Browse({
               the admin lists use, so a filtered result set says so. */}
           <ActiveFilters filters={activeFilters} onClearAll={clearAll} />
 
-          <div className="bk-results-head">
-            <Tabs
-              variant="pill"
-              size="sm"
-              active={sort}
-              accent="#0D9488"
-              onChange={setSort}
-              items={[
-                { id: 'popular', label: 'Popular' },
-                { id: 'rating', label: 'Top Rated' },
-                { id: 'title', label: 'A–Z' },
-              ]}
-            />
-          </div>
-
           {results.length > 0 ? (
             <div className="bk-results-grid">
               {results.map((b) => (
@@ -292,18 +273,19 @@ export function Browse({
               ))}
             </div>
           ) : (
-            <div className="bk-results-empty">
-              <span className="bk-results-empty-icon">
-                <Icon name="search" size={28} />
-              </span>
-              <h3>No books match those filters</h3>
-              <p>Try removing a filter or searching for something else.</p>
-              {(activeCount > 0 || query.trim()) && (
-                <button className="bk-filters-clear" onClick={clearAll}>
-                  Clear search &amp; filters
-                </button>
-              )}
-            </div>
+            <EmptyState
+              variant="dashed"
+              icon={<Icon name="search" size={26} />}
+              title="No books match those filters"
+              description="Try removing a filter or searching for something else."
+              action={
+                (activeCount > 0 || query.trim()) && (
+                  <Button variant="secondary" size="sm" onClick={clearAll}>
+                    Clear search &amp; filters
+                  </Button>
+                )
+              }
+            />
           )}
         </div>
       </div>

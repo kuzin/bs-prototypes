@@ -753,31 +753,6 @@ button {
 }
 
 /* ══ Browse / search page ════════════════════════════════════════════════════ */
-/* List "view all" page header */
-.bk-listpage-head {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
-}
-.bk-listpage-head > .avatar {
-  flex: 0 0 auto;
-}
-.bk-listpage-head .bk-shelfpage-title p {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-.bk-listpage-head .bk-shelfpage-title p .bp-icon {
-  color: #c2410c;
-}
-.bk-listpage-count {
-  display: block;
-  margin-top: 6px;
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--bk-muted);
-}
 /* Layout only — the field is the shared one. */
 .bk-searchbar {
   display: flex;
@@ -841,54 +816,11 @@ button {
   color: #0d9488;
 }
 /* Results */
-.bk-results-head {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 14px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
 .bk-results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
   gap: 24px 18px;
 }
-.bk-results-empty {
-  text-align: center;
-  padding: 56px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-}
-.bk-results-empty-icon {
-  width: 64px;
-  height: 64px;
-  border-radius: 999px;
-  background: #eef2f5;
-  color: var(--c-gray-500);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 8px;
-}
-.bk-results-empty h3 {
-  font-size: 18px;
-  font-weight: 800;
-  color: var(--bk-ink);
-}
-.bk-results-empty p {
-  font-size: 14px;
-  color: var(--bk-muted);
-  margin-bottom: 8px;
-}
-
-.bk-back:hover {
-  border-color: #0d9488;
-  color: #0d9488;
-}
-
 /* Detail hero */
 /* Soft, light hero — a gentle wash of the book's color instead of a heavy block */
 /* No tint behind the cover — the jacket is the colour on this page, and a
@@ -1710,23 +1642,6 @@ button {
 }
 .bk-readlog-viewlog:hover .bp-icon {
   transform: translateX(2px);
-}
-.bk-shelfpage-title h1 {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  font-size: 27px;
-  font-weight: 800;
-  color: var(--bk-ink);
-  letter-spacing: -0.01em;
-}
-.bk-shelfpage-title h1 .bp-icon {
-  color: #0d9488;
-}
-.bk-shelfpage-title p {
-  margin-top: 4px;
-  color: var(--bk-muted);
-  font-size: 14.5px;
 }
 .bk-shelfgroup {
   margin-bottom: 32px;
@@ -2617,27 +2532,6 @@ button {
 }
 /* at this size the masthead can't be set legibly — keep the glyph, drop the text
    (`font-size: 0` hides the kicker's label; the Icon keeps its own px size) */
-.bk-fp-logcover .bk-cover-mag-inner {
-  align-items: center;
-  justify-content: center;
-  padding: 4px;
-}
-.bk-fp-logcover .bk-cover-mag-kicker {
-  gap: 0;
-  font-size: 0;
-  opacity: 1;
-}
-.bk-fp-logcover .bk-cover-mag-name,
-.bk-fp-logcover .bk-cover-mag-issue {
-  display: none;
-}
-.bk-fp-logcover .bk-cover-ph-title {
-  font-size: 7px;
-}
-.bk-fp-logcover .bk-cover-ph-inner {
-  gap: 3px;
-  padding: 4px;
-}
 
 /* ─── Friends who read this (book detail rail) ──────────────────────────────── */
 
@@ -2685,7 +2579,7 @@ button {
 
 /* ─── Friend profile: achievements, ratings & reviews ───────────────────────── */
 
-/* illustrated achievement medallions (used inside .bk-fp-badge tiles) */
+/* illustrated achievement medallions */
 .bk-ach-art {
   flex-shrink: 0;
   width: 58px;
@@ -2695,12 +2589,6 @@ button {
   box-shadow:
     0 1px 3px rgba(15, 23, 42, 0.2),
     inset 0 0 0 2px rgba(255, 255, 255, 0.28);
-}
-
-@media (max-width: 560px) {
-  .bk-fp-stats {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 /* The stat row on My Shelf — the same three-up grid the other reader pages use
@@ -2727,4 +2615,11 @@ button {
 /* The applied-filters bar sits above the results head. */
 .bk-browse-results .af-bar {
   margin-bottom: 14px;
+}
+
+/* A curated list says who picked it on the line under the title. */
+.bk-listpage-curator {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
 }
