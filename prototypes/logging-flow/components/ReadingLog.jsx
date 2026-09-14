@@ -5,6 +5,7 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { Modal } from '@components/Modal/Modal'
 import { StatCard } from '@components/Cards/Cards'
+import { InfoBox } from '@components/InfoBox/InfoBox'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 
 import { BOOKS, READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
@@ -17,6 +18,7 @@ import '@components/Tabs/Tabs.css'
 import '@components/Pill/Pill.css'
 import '@components/Modal/Modal.css'
 import '@components/Cards/Cards.css'
+import '@components/InfoBox/InfoBox.css'
 
 // Beanstack's Reading Log — calendar and list views over the same entries.
 // Sessions that arrived from a linked reading app are tagged with that app's
@@ -551,51 +553,56 @@ export function ReadingLog({
                 Print log
               </Button>
               {tab === 'log' && (
-                <div className="rl-viewtoggle">
-                  {[
-                    { id: 'calendar', icon: 'layout-grid', label: 'Calendar view' },
-                    { id: 'list', icon: 'list', label: 'List view' },
-                  ].map((v) => (
-                    <button
-                      key={v.id}
-                      type="button"
-                      aria-label={v.label}
-                      className={`rl-viewbtn${view === v.id ? ' is-active' : ''}`}
-                      onClick={() => setView(v.id)}
-                    >
-                      <Icon name={v.icon} size={17} />
-                    </button>
-                  ))}
-                </div>
+                /* Calendar or list is a segmented control, which in this
+                   system is a pill Tabs — it was a two-button toggle of its
+                   own, on its own active blue. */
+                <Tabs
+                  variant="pill"
+                  size="sm"
+                  active={view}
+                  accent="#1A6DD5"
+                  onChange={setView}
+                  ariaLabel="Calendar or list"
+                  className="rl-viewtoggle"
+                  items={[
+                    {
+                      id: 'calendar',
+                      label: 'Calendar',
+                      icon: <Icon name="layout-grid" size={15} />,
+                    },
+                    { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
+                  ]}
+                />
               )}
             </div>
           </div>
 
           {tab === 'log' && (
             <>
+              {/* The design system's stat tile, not a local copy of its shape —
+                  the same tile the All Titles shelf puts its numbers on. */}
               <div className="rl-streaks">
-                <div className="rl-streak rl-streak--current">
-                  <Icon name="flame-filled" size={20} />
-                  <div>
-                    <div className="rl-streak-num">{LOG_STREAK.current} Days</div>
-                    <div className="rl-streak-lbl">Current streak</div>
-                  </div>
-                </div>
-                <div className="rl-streak rl-streak--longest">
-                  <Icon name="flame-filled" size={20} />
-                  <div>
-                    <div className="rl-streak-num">{LOG_STREAK.longest} Days</div>
-                    <div className="rl-streak-lbl">Longest streak</div>
-                  </div>
-                </div>
+                <StatCard
+                  value={LOG_STREAK.current}
+                  unit="Days"
+                  label="Current streak"
+                  color="#DC493A"
+                  icon={<Icon name="flame-filled" size={20} />}
+                />
+                <StatCard
+                  value={LOG_STREAK.longest}
+                  unit="Days"
+                  label="Longest streak"
+                  color="#F0A024"
+                  icon={<Icon name="flame-filled" size={20} />}
+                />
               </div>
 
               {imported > 0 && (
-                <p className="rl-importnote">
-                  <Icon name="bolt" size={15} />
+                <InfoBox level="info" icon="log" className="rl-importnote">
                   {imported} of these sessions came in from your linked reading apps — hover a logo
                   to see where and when.
-                </p>
+                </InfoBox>
               )}
             </>
           )}
