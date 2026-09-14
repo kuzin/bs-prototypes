@@ -702,3 +702,57 @@
 .wa-acct-item:hover {
   background: var(--c-gray-100);
 }
+
+/* ── Phone ───────────────────────────────────────────────────────────────── */
+/* At 375px the top bar's four groups — logo, actions, the reader, settings —
+   wanted ~470px between them and the last of them fell off the screen. What
+   goes is whatever repeats something already on it: the wordmark (the bean is
+   the logo too) and the reader's name (their avatar is right beside it). The
+   gutter comes in to 16px at the same time, which is the phone one. */
+@media (max-width: 560px) {
+  .wa-topbar-inner {
+    gap: 8px;
+    padding: 12px 16px;
+  }
+  .wa-logo-btn .bsl-word {
+    display: none;
+  }
+  .wa-topbar-actions {
+    margin-left: 0;
+  }
+  .wa-user-pill {
+    gap: 0;
+    padding: 4px;
+  }
+  .wa-user-name {
+    display: none;
+  }
+
+  .wa-tabsbar .tabs,
+  .wa-main-inner {
+    padding: 0 16px;
+  }
+  .wa-main {
+    padding: 18px 0 40px;
+  }
+
+  /* A section heading and its filter pills can't share a line here — the pills
+     alone are most of the width, and the heading came out clipped beside them.
+     The pills take their own row under it. */
+  .wa-section-head {
+    flex-wrap: wrap;
+    row-gap: 12px;
+  }
+  .wa-section-head > * {
+    min-width: 0;
+  }
+  .wa-h2 {
+    font-size: 22px;
+  }
+
+  /* Two challenge cards across left each one 168px, which broke every title
+     over three lines and squeezed the badge pill against it. */
+  .wa-chgrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

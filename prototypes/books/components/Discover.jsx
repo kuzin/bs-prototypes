@@ -3,7 +3,6 @@ import { Icon } from '@components/Icon/Icon'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { Button } from '@components/Button/Button'
-import { IconButton } from '@components/Primitives/Primitives'
 import '@components/SearchInput/SearchInput.css'
 import { Shelf } from './Shelf'
 import { AskBenny } from './AskBenny'
@@ -25,16 +24,7 @@ const BENNY_SHELF = {
 // Each toggleable feature gates one Discover shelf.
 const SHELF_SETTING = { sora: 'sora', scholastic: 'scholastic', audio: 'audiobooks' }
 
-export function Discover({
-  onOpen,
-  onWish,
-  wishlist,
-  settings,
-  onBrowse,
-  onPlay,
-  onViewAll,
-  onSettings,
-}) {
+export function Discover({ onOpen, onWish, wishlist, settings, onBrowse, onPlay, onViewAll }) {
   const [q, setQ] = useState('')
   return (
     <div className="bk-discover">
@@ -42,42 +32,32 @@ export function Discover({
       <ReaderPageHead
         title="Discover"
         actions={
-          <>
-            {/* Catalog search — opens the filterable Browse page. The shared
-                field and the shared button, not a composite of its own. */}
-            <form
-              className="bk-search-entry"
-              onSubmit={(e) => {
-                e.preventDefault()
-                onBrowse({ query: q })
-              }}
-            >
-              <SearchInput
-                value={q}
-                onChange={setQ}
-                placeholder="Search books, authors…"
-                ariaLabel="Search books and authors"
-              />
-              {/* Submitting with an empty field opens the full catalog, which
-                  is what "find a book" means when you don't know the title. */}
-              <Button
-                type="submit"
-                variant="secondary"
-                size="md"
-                icon={<Icon name="search" size={15} />}
-              >
-                Find a book
-              </Button>
-            </form>
-            <IconButton
+          /* Catalog search — opens the filterable Browse page. The shared field
+             and the shared button, not a composite of its own. */
+          <form
+            className="bk-search-entry"
+            onSubmit={(e) => {
+              e.preventDefault()
+              onBrowse({ query: q })
+            }}
+          >
+            <SearchInput
+              value={q}
+              onChange={setQ}
+              placeholder="Search books, authors…"
+              ariaLabel="Search books and authors"
+            />
+            {/* Submitting with an empty field opens the full catalog, which is
+                what "find a book" means when you don't know the title. */}
+            <Button
+              type="submit"
               variant="secondary"
               size="md"
-              onClick={onSettings}
-              aria-label="Which reading apps to show"
+              icon={<Icon name="search" size={15} />}
             >
-              <Icon name="settings" size={17} />
-            </IconButton>
-          </>
+              Find a book
+            </Button>
+          </form>
         }
       />
 

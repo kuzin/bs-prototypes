@@ -37,6 +37,14 @@ button {
   --bk-muted: #707070;
 }
 
+/* This shell carries both prototype bars, so the reader's sticky top bar stops
+   below the preview bar, and modals opened inside it scrim the demo rather than
+   the chrome around it. */
+.bk-root {
+  --chrome-top: var(--preview-bar-h);
+  --chrome-bottom: var(--proto-nav-h);
+}
+
 /* ─── Shared content frame ─────────────────────────────────────────────────── */
 
 /* The reader shell owns the page frame — `.wa-main-inner` is the one
@@ -56,7 +64,7 @@ button {
    place on Discover where Benny speaks, and plain white said nothing about
    that — but the tokens keep it inside the system. */
 .bk-ask {
-  padding: 20px 22px;
+  padding: 16px 20px;
   margin-bottom: 30px;
   background: var(--c-teal-wash);
   border: 1px solid color-mix(in srgb, var(--c-teal) 28%, #fff);
@@ -78,15 +86,37 @@ button {
   border-color: color-mix(in srgb, var(--c-teal) 22%, #fff);
 }
 
+/* Prompt state, one row: Benny introduces himself on the left and the field he
+   is asking you to fill sits on the right. Stacked, the panel was twice as tall
+   as the one thing it wants. */
+.bk-ask-prompt {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+}
+.bk-ask-prompt .bk-ask-head {
+  flex: 0 1 auto;
+  margin-bottom: 0;
+}
+/* The field takes the rest of the row and the button keeps its own width. */
+.bk-ask-prompt .bk-ask-form {
+  flex: 1 1 380px;
+  min-width: 0;
+}
+.bk-ask-prompt .bk-ask-form .search-input {
+  flex: 1;
+  min-width: 0;
+}
+
 .bk-ask-head {
   display: flex;
-  gap: 14px;
+  gap: 12px;
   align-items: center;
   margin-bottom: 14px;
 }
 .bk-ask-avatar {
-  width: 52px;
-  height: 52px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: #fff;
   border: 1px solid #d3ece6;
@@ -100,7 +130,7 @@ button {
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--bk-ink);
 }
@@ -108,9 +138,9 @@ button {
   color: #0d9488;
 }
 .bk-ask-sub {
-  font-size: 15px;
+  font-size: 14px;
   color: var(--bk-muted);
-  margin: 2px 0 0;
+  margin: 1px 0 0;
 }
 .bk-ask-result {
   margin-top: 18px;
@@ -301,13 +331,13 @@ button {
   gap: 8px;
   flex: 0 0 auto;
 }
+.bk-shelf-arrows {
+  display: flex;
+  gap: 8px;
+}
 .bk-shelf-viewall {
   margin-right: 2px;
   white-space: nowrap;
-}
-/* Curator avatar in a shelf header */
-.bk-shelf-headmain > .avatar {
-  flex: 0 0 auto;
 }
 .bk-shelf-sub--curator {
   display: inline-flex;
@@ -2599,12 +2629,6 @@ button {
   gap: 12px;
   margin-bottom: 22px;
 }
-@media (max-width: 640px) {
-  .bk-shelfpage-stats {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
 /* Ask Benny's prompt row — the shared field grows, the button sits beside it. */
 .bk-ask-form {
   display: flex;
@@ -2622,4 +2646,131 @@ button {
   display: inline-flex;
   gap: 6px;
   align-items: center;
+}
+
+.bk-filters-toggle {
+  display: none;
+}
+
+/* ═══ Phone ═════════════════════════════════════════════════════════════════
+   Every narrow-screen rule lives here, at the end of the file. A media query
+   carries no specificity of its own, so a phone rule written above the desktop
+   one it means to override just loses the source-order tie and silently does
+   nothing — this is the one place it can't happen. */
+
+@media (max-width: 640px) {
+  .bk-shelfpage-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 560px) {
+  /* ── Discover's head ──────────────────────────────────────────────────── */
+  /* The page head gives its actions their own row here, and a fixed 430px made
+     that row wider than the screen. Side by side the field came out ~130px, so
+     the field and the button each take a full-width row instead — a phone has
+     the height to spare and not the width. */
+  .bk-search-entry {
+    flex: 1 1 auto;
+    flex-wrap: wrap;
+    width: auto;
+    min-width: 0;
+  }
+  .bk-search-entry .search-input,
+  .bk-search-entry .btn {
+    flex: 1 0 100%;
+  }
+
+  /* ── Ask Benny ────────────────────────────────────────────────────────── */
+  /* No room for both halves of the panel, so Benny goes back above his field,
+     and the field above its button. */
+  .bk-ask-prompt {
+    flex-direction: column;
+    gap: 14px;
+    align-items: stretch;
+  }
+  /* In a column the basis is a height — the row's 380px would reserve 380px of
+     empty panel. */
+  .bk-ask-prompt .bk-ask-form {
+    flex: 0 0 auto;
+  }
+  .bk-ask-form {
+    flex-wrap: wrap;
+  }
+  .bk-ask-form .search-input,
+  .bk-ask-form .btn {
+    flex: 1 0 100%;
+  }
+
+  /* ── Find a book ──────────────────────────────────────────────────────── */
+  /* Open, the filter panel is a whole screen tall and every result starts
+     below the fold. It folds away behind its own Show/Hide here; the rail is
+     always open at desktop widths, where the toggle doesn't render. */
+  .bk-filters-toggle {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    padding: 0;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--c-teal-ink);
+    cursor: pointer;
+    background: none;
+    border: 0;
+  }
+  .bk-filters:not(.is-open) .bk-filters-body {
+    display: none;
+  }
+  /* Closed, the card is its header — the divider under it and the padding
+     below that would otherwise leave an empty strip. */
+  .bk-filters:not(.is-open) {
+    padding-bottom: 0;
+  }
+  .bk-filters:not(.is-open) > .section-card-title:first-child {
+    margin-bottom: 0;
+    border-bottom: 0;
+  }
+  .bk-filters.is-open .bk-filters-toggle .bp-icon {
+    transform: rotate(180deg);
+  }
+
+  /* ── Browse by category ───────────────────────────────────────────────── */
+  /* Two across left "Graphic Novels" wrapping over two lines beside a one-word
+     neighbour. One per row, and every label sits on its own line. */
+  .bk-browse-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* ── Shelves ──────────────────────────────────────────────────────────── */
+  /* A finger scrolls the track, so the arrows are 96px of nothing. */
+  .bk-shelf-arrows {
+    display: none;
+  }
+  /* "View More on Comics Plus" is most of a phone's width for a row's second
+     action. The chevron it already carries says the same thing — the label
+     stays in the accessible name. */
+  .bk-shelf-viewall .btn-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .bk-shelf-viewall {
+    padding: 0 10px;
+  }
+  .bk-shelf-viewall .btn-icon--right {
+    margin: 0;
+  }
+  .bk-shelf {
+    padding-bottom: 28px;
+  }
+  .bk-shelf + .bk-shelf {
+    padding-top: 28px;
+  }
+  .bk-shelf-title {
+    font-size: 18px;
+  }
 }

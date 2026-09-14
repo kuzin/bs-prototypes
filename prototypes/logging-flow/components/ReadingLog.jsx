@@ -513,7 +513,14 @@ export function ReadingLog({
   stats = true,
 }) {
   const [tab, setTab] = useState(defaultTab)
-  const [view, setView] = useState('calendar')
+  // A seven-column month gives each day ~43px on a phone, which can't carry a
+  // book title — so a phone opens on the list and leaves the calendar one tap
+  // away rather than showing a grid of clipped words.
+  const [view, setView] = useState(() =>
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 560px)').matches
+      ? 'list'
+      : 'calendar',
+  )
   const extraIds = extraTabs.map((t) => t.id)
 
   const imported = partners.length ? entries.filter((e) => e.source).length : 0

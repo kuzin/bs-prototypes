@@ -1,6 +1,5 @@
 import { useRef, useState, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { Avatar } from '@components/Avatar/Avatar'
 import { Button } from '@components/Button/Button'
 import { IconButton } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
@@ -38,14 +37,6 @@ export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAl
     <section className="bk-shelf" style={{ '--accent': accent }}>
       <div className="bk-shelf-head">
         <div className="bk-shelf-headmain">
-          {shelf.curator && (
-            <Avatar
-              initials={shelf.curator.initials}
-              color={shelf.curator.color}
-              size="md"
-              aria-hidden="true"
-            />
-          )}
           <div className="bk-shelf-titles">
             <h2 className="bk-shelf-title">{shelf.title}</h2>
             {shelf.curator ? (
@@ -70,24 +61,28 @@ export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAl
               {partner ? `View More on ${partner.name}` : 'View all'}
             </Button>
           )}
-          <IconButton
-            variant="secondary"
-            size="md"
-            onClick={() => scroll(-1)}
-            disabled={edge.start}
-            aria-label="Scroll left"
-          >
-            <Icon name="chevron-left" size={18} />
-          </IconButton>
-          <IconButton
-            variant="secondary"
-            size="md"
-            onClick={() => scroll(1)}
-            disabled={edge.end}
-            aria-label="Scroll right"
-          >
-            <Icon name="chevron-right" size={18} />
-          </IconButton>
+          {/* Grouped so a phone can drop the pair — a touch screen scrolls the
+              track with a finger and doesn't need buttons to do it. */}
+          <span className="bk-shelf-arrows">
+            <IconButton
+              variant="secondary"
+              size="md"
+              onClick={() => scroll(-1)}
+              disabled={edge.start}
+              aria-label="Scroll left"
+            >
+              <Icon name="chevron-left" size={18} />
+            </IconButton>
+            <IconButton
+              variant="secondary"
+              size="md"
+              onClick={() => scroll(1)}
+              disabled={edge.end}
+              aria-label="Scroll right"
+            >
+              <Icon name="chevron-right" size={18} />
+            </IconButton>
+          </span>
         </div>
       </div>
 

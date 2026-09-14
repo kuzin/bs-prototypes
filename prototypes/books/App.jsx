@@ -1,4 +1,6 @@
 import { useState } from 'react'
+import { Icon } from '@components/Icon/Icon'
+import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 
 import { Dashboard } from '../logging-flow/components/Dashboard'
@@ -145,7 +147,6 @@ export function App() {
           onBrowse={openBrowse}
           onPlay={setNowPlaying}
           onViewAll={openList}
-          onSettings={() => setSettingsOpen(true)}
         />
       )
     if (id === 'shelf')
@@ -211,7 +212,20 @@ export function App() {
   ) : null
 
   return (
-    <>
+    <div className="bk-root">
+      {/* Which reading apps this site has turned on is a reviewer's switch, not
+          a reader's — the real app has no such control. It sat as a cog beside
+          Discover's search, where it read as product; it belongs on the preview
+          bar with the rest of the demo chrome. */}
+      <PreviewBar
+        title="Book Discovery"
+        actions={
+          <button type="button" onClick={() => setSettingsOpen(true)}>
+            <Icon name="settings" size={15} /> Reading apps
+          </button>
+        }
+      />
+
       <Dashboard
         streak={STREAK}
         dailyGoal={DAILY_GOAL}
@@ -257,6 +271,6 @@ export function App() {
         />
       )}
       <PrototypeNav currentHref="/bs-prototypes/books/" />
-    </>
+    </div>
   )
 }

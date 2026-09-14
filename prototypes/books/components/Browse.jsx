@@ -91,6 +91,10 @@ export function Browse({
   onBack,
 }) {
   const [query, setQuery] = useState(initialQuery)
+  // Only consulted on a phone, where the panel is a screen tall and would push
+  // every result below the fold. On desktop the rail is always open and the
+  // toggle that drives this is hidden.
+  const [filtersOpen, setFiltersOpen] = useState(false)
   const [filters, setFilters] = useState(() => {
     const f = emptyFilters()
     if (initialFilter?.genre) f.genres.add(initialFilter.genre)
@@ -198,59 +202,76 @@ export function Browse({
       <div className="bk-browse-layout">
         {/* No "Clear all" here: the ActiveFilters bar beside the results
             carries it, and two of them on one screen is one too many. */}
-        <SectionCard className="bk-filters" header="divider" title="Filters">
-          <FilterGroup
-            title="Genre"
-            options={GENRE_OPTIONS.map((g) => ({ id: g, label: g }))}
-            selected={filters.genres}
-            onToggle={(id) => toggle('genres', id)}
-          />
-          <FilterGroup
-            title="Format"
-            options={FORMAT_OPTIONS.map((f) => ({
-              id: f,
-              label: FORMATS[f].label,
-              icon: FORMATS[f].icon,
-            }))}
-            selected={filters.formats}
-            onToggle={(id) => toggle('formats', id)}
-          />
-          <FilterGroup
-            title="Reading level"
-            options={LEVEL_BANDS}
-            selected={filters.levels}
-            onToggle={(id) => toggle('levels', id)}
-          />
-          <FilterGroup
-            title="Best for ages"
-            options={AGE_BANDS}
-            selected={filters.ages}
-            onToggle={(id) => toggle('ages', id)}
-          />
-          <FilterGroup
-            title="Available on"
-            options={facetOptions}
-            selected={filters.avail}
-            onToggle={(id) => toggle('avail', id)}
-          />
+        <SectionCard
+          className={`bk-filters${filtersOpen ? ' is-open' : ''}`}
+          header="divider"
+          title="Filters"
+          actions={
+            <button
+              type="button"
+              className="bk-filters-toggle"
+              onClick={() => setFiltersOpen((o) => !o)}
+              aria-expanded={filtersOpen}
+            >
+              {filtersOpen ? 'Hide' : 'Show'}
+              <Icon name="chevron-down" size={14} stroke={2.4} />
+            </button>
+          }
+        >
+          <div className="bk-filters-body">
+            <FilterGroup
+              title="Genre"
+              options={GENRE_OPTIONS.map((g) => ({ id: g, label: g }))}
+              selected={filters.genres}
+              onToggle={(id) => toggle('genres', id)}
+            />
+            <FilterGroup
+              title="Format"
+              options={FORMAT_OPTIONS.map((f) => ({
+                id: f,
+                label: FORMATS[f].label,
+                icon: FORMATS[f].icon,
+              }))}
+              selected={filters.formats}
+              onToggle={(id) => toggle('formats', id)}
+            />
+            <FilterGroup
+              title="Reading level"
+              options={LEVEL_BANDS}
+              selected={filters.levels}
+              onToggle={(id) => toggle('levels', id)}
+            />
+            <FilterGroup
+              title="Best for ages"
+              options={AGE_BANDS}
+              selected={filters.ages}
+              onToggle={(id) => toggle('ages', id)}
+            />
+            <FilterGroup
+              title="Available on"
+              options={facetOptions}
+              selected={filters.avail}
+              onToggle={(id) => toggle('avail', id)}
+            />
 
-          <div className="bk-filtergroup">
-            <h3 className="bk-filtergroup-title">Rating</h3>
-            <div className="bk-filterchips">
-              {[
-                { id: 0, label: 'Any' },
-                { id: 4, label: '4.0+' },
-                { id: 4.5, label: '4.5+' },
-              ].map((o) => (
-                <button
-                  key={o.id}
-                  className={`bk-filterchip ${filters.minRating === o.id ? 'is-on' : ''}`}
-                  onClick={() => setMinRating(o.id)}
-                >
-                  {o.id > 0 && <Icon name="star-filled" size={12} />}
-                  {o.label}
-                </button>
-              ))}
+            <div className="bk-filtergroup">
+              <h3 className="bk-filtergroup-title">Rating</h3>
+              <div className="bk-filterchips">
+                {[
+                  { id: 0, label: 'Any' },
+                  { id: 4, label: '4.0+' },
+                  { id: 4.5, label: '4.5+' },
+                ].map((o) => (
+                  <button
+                    key={o.id}
+                    className={`bk-filterchip ${filters.minRating === o.id ? 'is-on' : ''}`}
+                    onClick={() => setMinRating(o.id)}
+                  >
+                    {o.id > 0 && <Icon name="star-filled" size={12} />}
+                    {o.label}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
         </SectionCard>

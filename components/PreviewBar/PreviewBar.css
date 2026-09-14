@@ -118,6 +118,12 @@
   align-items: center;
 }
 
+/* A bar with no view strip has nothing pushing its tray over, and the controls
+   bunched up against the title. Title left, controls right, either way. */
+.pvb-titles + .pvb-actions {
+  margin-left: auto;
+}
+
 /* Where the bar's own controls are styled, so a prototype passing `actions`
    doesn't have to restyle them. */
 .pvb-actions button {

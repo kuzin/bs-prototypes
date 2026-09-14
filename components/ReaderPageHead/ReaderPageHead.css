@@ -46,8 +46,11 @@
 /* On a phone the actions take their own full-width row and share it evenly,
    rather than each shrinking to fit beside the title. */
 @media (max-width: 560px) {
+  /* `min-width: auto` let a wide action group push this row past the screen —
+     shrink-to-0 is what keeps the head inside the gutter. */
   .wa-pagehead-actions {
     flex: 1 0 100%;
+    min-width: 0;
   }
   .wa-pagehead-actions .btn {
     flex: 1;

@@ -40,8 +40,10 @@ export const APPS = [
     logo: <BeanstackLogo size="sm" className="ft-logo" />,
     hasLanguage: true,
     hasAppStores: true,
-    links: ['Share Code'],
-    legalLinks: ['FAQ', 'Contact'],
+    // `shared/_jrc_footer.html.erb` puts Contact Us in the top row beside Share
+    // Code, and leaves FAQ / Terms / Privacy to the legal row.
+    links: ['Share Code', 'Contact Us'],
+    legalLinks: ['FAQ'],
   },
   {
     id: 'rmi',

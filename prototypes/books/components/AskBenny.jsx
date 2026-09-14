@@ -38,7 +38,7 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
   return (
     <section className={`bk-ask ${result || loading ? 'is-answered' : ''}`}>
       {!result && !loading && (
-        <>
+        <div className="bk-ask-prompt">
           <div className="bk-ask-head">
             <img src="/bs-prototypes/benny-excited.svg" alt="" className="bk-ask-avatar" />
             <div className="bk-ask-headtext">
@@ -75,7 +75,7 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
               Ask Benny
             </Button>
           </form>
-        </>
+        </div>
       )}
 
       {loading && (
