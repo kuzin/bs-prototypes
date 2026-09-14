@@ -668,11 +668,17 @@ import '@components/BackBar/BackBar.css'
     desc: (
       <>
         The dev/preview bar above a multi-persona prototype, switching between its views. Every
-        prototype with one uses this, so the bars read the same everywhere — Benny, the
-        prototype&apos;s name, and a segmented strip of views on the right. Replaces four
-        hand-rolled bars (<code>bt-toolbar</code>, <code>bw-toolbar</code>, <code>pyp-devbar</code>,{' '}
+        prototype with one uses this, so the bars read the same everywhere — the prototype&apos;s
+        name, and a segmented strip of views on the right. Replaces four hand-rolled bars (
+        <code>bt-toolbar</code>, <code>bw-toolbar</code>, <code>pyp-devbar</code>,{' '}
         <code>wb-toolbar</code>) that had drifted onto three different grounds and two different
         active states.
+        <br />
+        <br />
+        The ground is a flat neutral gray, and there is no mascot: this bar is the reviewer&apos;s
+        chrome sitting on top of the screen under review, and the teal-and-Benny version it started
+        as read as one more Beanstack surface — clashing with every prototype whose own accent
+        wasn&apos;t teal.
         <br />
         <br />
         Props: <code>title</code>, optional <code>subtitle</code>, <code>views</code> (
