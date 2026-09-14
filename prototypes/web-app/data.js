@@ -150,7 +150,7 @@ export const ACHIEVEMENTS = [
 // The photographs are the same six readers Book Discovery uses, so a face here
 // is the same person there.
 
-const friend = (id, name, initials, color, grade, streak, minutes, books, avatar) => ({
+const friend = (id, name, initials, color, grade, streak, minutes, books, avatar, extra = {}) => ({
   id,
   name,
   initials,
@@ -160,17 +160,111 @@ const friend = (id, name, initials, color, grade, streak, minutes, books, avatar
   minutesThisWeek: minutes,
   booksThisYear: books,
   avatar: avatar ? `/bs-prototypes/avatars/${id}.jpg` : null,
+  ...extra,
 })
 
+// A friend's own badges, from the same three challenges the reader is in.
+const fbadge = (set, art, name, date) => ({ set, art, name, date })
+const log = (book, date, minutes) => ({ book, date, minutes })
+
 export const FRIENDS = [
-  friend('jayden', 'Jayden P.', 'JP', '#196DD5', 'Grade 5', 21, 214, 34, true),
-  friend('sofia', 'Sofia R.', 'SR', '#DB2777', 'Grade 4', 14, 186, 28, true),
-  friend('noah', 'Noah K.', 'NK', '#0CA7BC', 'Grade 5', 9, 152, 22, true),
-  friend('emma', 'Emma L.', 'EL', '#0BA85F', 'Grade 4', 0, 131, 19, true),
-  friend('diego', 'Diego H.', 'DH', '#0891B2', 'Grade 5', 6, 118, 17, true),
-  friend('priya', 'Priya S.', 'PS', '#9333EA', 'Grade 4', 31, 205, 30, true),
-  friend('liam', 'Liam T.', 'LT', '#B43DD0', 'Grade 6', 3, 96, 12, false),
+  friend('jayden', 'Jayden P.', 'JP', '#196DD5', 'Grade 5', 21, 214, 34, true, {
+    since: 'Friends since Sept 2025',
+    minutesLogged: 1840,
+    challenges: ['spring', 'arresting'],
+    badges: [
+      fbadge(SPRING, 'rainbow', 'Rainbow', 'Apr 14, 2026'),
+      fbadge(COMICS, 'pow', 'POW', 'Jun 2, 2026'),
+      fbadge(COMICS, 'zap', 'ZAP', 'Jun 9, 2026'),
+    ],
+    achievements: [
+      achievement('Read 30 books', 'May 6, 2026', 'Grade 5 goal was 25', 'books'),
+      achievement('Logged 100 days', 'Apr 22, 2026', 'Longest run in his class', 'streak'),
+    ],
+    logged: [
+      log('dog-man', 'Jun 9, 2026', 25),
+      log('amulet', 'Jun 7, 2026', 30),
+      log('rump', 'Jun 4, 2026', 45),
+      log('superscience', 'Jun 2, 2026', 15),
+      log('lucky-cap', 'May 28, 2026', 40),
+    ],
+  }),
+  friend('sofia', 'Sofia R.', 'SR', '#DB2777', 'Grade 4', 14, 186, 28, true, {
+    since: 'Friends since Jan 2026',
+    minutesLogged: 1420,
+    challenges: ['love-hurts'],
+    badges: [
+      fbadge(LOVE, 'rose', 'Rose', 'May 3, 2026'),
+      fbadge(LOVE, 'heart-balloon', 'Heart Balloon', 'May 18, 2026'),
+    ],
+    achievements: [achievement('Wrote 10 reviews', 'May 20, 2026', 'Most in Room 12', 'reviews')],
+    logged: [
+      log('telegraph-club', 'Jun 8, 2026', 35),
+      log('darius', 'Jun 5, 2026', 20),
+      log('storyworks', 'Jun 1, 2026', 15),
+      log('she-gets-the-girl', 'May 27, 2026', 50),
+    ],
+  }),
+  friend('noah', 'Noah K.', 'NK', '#0CA7BC', 'Grade 5', 9, 152, 22, true, {
+    since: 'Friends since Oct 2025',
+    minutesLogged: 1105,
+    challenges: ['arresting'],
+    badges: [fbadge(COMICS, 'bam', 'BAM', 'Jun 6, 2026')],
+    achievements: [
+      achievement('Finished a series', 'May 2, 2026', 'All nine Amulet books', 'series'),
+    ],
+    logged: [
+      log('amulet', 'Jun 6, 2026', 28),
+      log('dog-man', 'Jun 3, 2026', 22),
+      log('scope', 'May 30, 2026', 15),
+    ],
+  }),
+  friend('emma', 'Emma L.', 'EL', '#0BA85F', 'Grade 4', 0, 131, 19, true, {
+    since: 'Friends since Feb 2026',
+    minutesLogged: 890,
+    challenges: ['spring'],
+    badges: [fbadge(SPRING, 'butterfly', 'Butterfly', 'Apr 9, 2026')],
+    achievements: [],
+    logged: [log('lucky-cap', 'Jun 2, 2026', 30), log('scholastic-news', 'May 29, 2026', 12)],
+  }),
+  friend('diego', 'Diego H.', 'DH', '#0891B2', 'Grade 5', 6, 118, 17, true, {
+    since: 'Friends since Nov 2025',
+    minutesLogged: 760,
+    challenges: ['arresting'],
+    badges: [fbadge(COMICS, 'boom', 'BOOM', 'Jun 4, 2026')],
+    achievements: [],
+    logged: [log('dog-man', 'Jun 4, 2026', 20), log('rump', 'May 31, 2026', 25)],
+  }),
+  friend('priya', 'Priya S.', 'PS', '#9333EA', 'Grade 4', 31, 205, 30, true, {
+    since: 'Friends since Sept 2025',
+    minutesLogged: 1990,
+    challenges: ['spring', 'love-hurts'],
+    badges: [
+      fbadge(SPRING, 'bees', 'Bees', 'Apr 28, 2026'),
+      fbadge(LOVE, 'bouquet', 'Bouquet', 'May 14, 2026'),
+      fbadge(SPRING, 'cherry-blossom', 'Cherry Blossom', 'Apr 20, 2026'),
+    ],
+    achievements: [
+      achievement('Top of the class', 'May 1, 2026', 'Most minutes in Room 12 in April', 'top'),
+    ],
+    logged: [
+      log('telegraph-club', 'Jun 10, 2026', 45),
+      log('amulet', 'Jun 7, 2026', 35),
+      log('storyworks', 'Jun 3, 2026', 15),
+      log('darius', 'May 30, 2026', 40),
+    ],
+  }),
+  friend('liam', 'Liam T.', 'LT', '#B43DD0', 'Grade 6', 3, 96, 12, false, {
+    since: 'Friends since Mar 2026',
+    minutesLogged: 430,
+    challenges: [],
+    badges: [],
+    achievements: [],
+    logged: [log('scope', 'Jun 1, 2026', 15)],
+  }),
 ]
+
+export const getFriend = (id) => FRIENDS.find((f) => f.id === id)
 
 export const PENDING_INVITES = [
   { id: 'ava', name: 'Ava M.', initials: 'AM', grade: 'Grade 3', pending: true },

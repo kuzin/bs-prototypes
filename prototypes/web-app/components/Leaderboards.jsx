@@ -35,7 +35,7 @@ function Rank({ rank }) {
   return <span className={`lb-medal lb-medal--${rank}`}>{rank}</span>
 }
 
-export function Leaderboards() {
+export function Leaderboards({ onOpenFriend }) {
   const [board, setBoard] = useState('friends')
   const [type, setType] = useState('minutes')
   const [period, setPeriod] = useState('week')
@@ -67,7 +67,17 @@ export function Leaderboards() {
               shape="circle"
             />
           )}
-          <span className="lb-name">{row.isMe ? `${row.name} (You)` : row.name}</span>
+          {board === 'friends' && !row.isMe && onOpenFriend ? (
+            <button
+              type="button"
+              className="lb-name lb-name--link"
+              onClick={() => onOpenFriend(row.id)}
+            >
+              {row.name}
+            </button>
+          ) : (
+            <span className="lb-name">{row.isMe ? `${row.name} (You)` : row.name}</span>
+          )}
         </span>
       ),
     },

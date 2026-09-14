@@ -8,6 +8,7 @@
      and its button hugging the floor of an otherwise empty box. */
   --wa-pagehead-h: 50px;
   --wa-pagehead-margin: 26px 0 20px;
+  --wa-pagehead-size: 26px;
 }
 
 .wa-pagehead {
@@ -23,7 +24,7 @@
   min-width: 0;
 }
 .wa-pagehead-title {
-  font-size: 26px;
+  font-size: var(--wa-pagehead-size);
   font-weight: 800;
   letter-spacing: -0.01em;
   color: var(--c-text-dark);

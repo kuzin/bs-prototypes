@@ -76,10 +76,10 @@ export function BadgeDisc({ color, children }) {
  * hairline. There is no page title above it — the tab strip already says which
  * collection you are in.
  */
-export function ShelfHead({ title, count, noun, children }) {
+export function ShelfHead({ title, count, noun, children, as = 'h2' }) {
   return (
     <ReaderPageHead
-      as="h2"
+      as={as}
       title={title}
       count={count == null ? undefined : `${count} ${noun}`}
       actions={children}

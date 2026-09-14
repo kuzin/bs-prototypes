@@ -1,0 +1,227 @@
+/* ─── A friend's profile ────────────────────────────────────────────────────
+   A modal, opened from the Friends grid or a leaderboard row. Book Discovery
+   drew this first; this is the same anatomy on the shared parts. */
+
+/* The centered Modal is 520px — a profile with three stat tiles needs more. */
+.modal--center:has(.fp) {
+  width: min(640px, calc(100vw - 32px));
+}
+
+.fp {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: calc(100vh - 40px);
+  background: #fff;
+}
+.fp-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  cursor: pointer;
+  background: rgba(0, 0, 0, 0.25);
+  border: 0;
+  border-radius: 999px;
+}
+.fp-close:hover {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+/* The friend's own colour as a band, with the avatar hanging over it — the
+   same shape their card in the grid has. */
+.fp-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 24px 18px;
+  text-align: center;
+}
+.fp-band {
+  display: block;
+  width: 100%;
+  height: 84px;
+  margin-bottom: -44px;
+}
+.fp-avatar {
+  width: 88px;
+  height: 88px;
+  font-size: 29px;
+  border: 4px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
+}
+.fp-name {
+  margin-top: 10px;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.fp-sub {
+  margin-top: 3px;
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+
+.fp-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  padding: 0 24px;
+}
+
+.fp-tabs {
+  padding: 0 24px;
+  margin-top: 18px;
+  border-bottom: 1px solid var(--c-border);
+}
+.fp-body {
+  flex: 1;
+  padding: 0 24px 24px;
+  overflow-y: auto;
+}
+.fp-empty {
+  padding: 32px 0;
+  font-size: 14.5px;
+  color: var(--c-text-light);
+  text-align: center;
+}
+
+/* A modal is not a page: the shelf head scales down to a section heading, and
+   the cards go two across rather than taking the shelf's own 268px track. */
+.fp-body {
+  --wa-pagehead-h: 32px;
+  --wa-pagehead-margin: 20px 0 12px;
+  --wa-pagehead-size: 17px;
+}
+.fp-body .co-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.fp-body .co-card {
+  padding-top: 18px;
+}
+.fp-body .co-card-art {
+  width: 76px;
+  height: 76px;
+}
+.fp-body .co-card-name {
+  margin-top: 12px;
+  font-size: 15px;
+}
+.fp-body .co-card-blurb {
+  margin-top: 6px;
+  font-size: 13px;
+}
+.fp-body .co-card-foot {
+  padding: 11px 0;
+  margin-top: 16px;
+  font-size: 12.5px;
+}
+
+/* ─── Challenges ─────────────────────────────────────────────────────────── */
+
+.fp-challenges,
+.fp-log {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.fp-challenge {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+}
+.fp-challenge-art {
+  flex: none;
+  width: 120px;
+  height: 58px;
+  object-fit: cover;
+}
+.fp-challenge-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding-right: 14px;
+}
+.fp-challenge-meta strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.fp-challenge-meta span {
+  font-size: 13px;
+  color: var(--c-text-light);
+}
+
+/* ─── Their log ──────────────────────────────────────────────────────────── */
+
+.fp-log-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 14px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+}
+.fp-log-cover {
+  display: block;
+  flex: none;
+  width: 40px;
+}
+.fp-log-meta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.fp-log-title {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.fp-log-author {
+  font-size: 13px;
+  color: var(--c-text-light);
+}
+.fp-log-when {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12.5px;
+  color: var(--c-text-light);
+  text-align: right;
+}
+.fp-log-when strong {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+
+@media (max-width: 560px) {
+  .fp-stats {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fp-body .co-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fp-challenge-art {
+    width: 92px;
+  }
+}

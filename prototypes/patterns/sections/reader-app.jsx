@@ -17,6 +17,7 @@ import { Friends } from '../../web-app/components/Friends'
 import { Leaderboards } from '../../web-app/components/Leaderboards'
 import { Reviews } from '../../web-app/components/Reviews'
 import { FriendRequests } from '../../web-app/components/FriendRequests'
+import { FriendProfile } from '../../web-app/components/FriendProfile'
 import { ChallengePage } from '../../web-app/components/ChallengePage'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { Variant } from './_shared'
@@ -535,6 +536,36 @@ export const readerAppSections = [
             onAccept={noop}
             onDecline={noop}
           />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-friend-profile',
+    name: 'FriendProfile',
+    usage: `import { FriendProfile } from './components/FriendProfile'
+
+<FriendProfile friendId={id} onClose={() => setId(null)} />`,
+    desc: (
+      <>
+        A friend&apos;s profile, opened from the Friends grid or a leaderboard row. Read-only, and
+        structured the way the live friend view is: <strong>Overview</strong> (their badges and
+        achievements), <strong>Challenges</strong>, <strong>Reading Log</strong>. The header is the
+        same band-and-avatar shape their card in the grid has.
+        <br />
+        <br />
+        Book Discovery drew this first. This version is the same anatomy on the shared parts —{' '}
+        <code>StatCard</code> for the counters, <code>CollectionShelf</code> for the badges and
+        achievements (which were a smaller, earlier copy of that same card), the real challenge
+        banners, and <code>BookCover</code> for the log. It scales the page header down through{' '}
+        <code>--wa-pagehead-size</code> rather than restyling it: a modal is not a page.
+      </>
+    ),
+    render: () => (
+      <Variant label="a friend with badges, challenges and a log">
+        <div style={{ padding: 20 }}>
+          <FriendProfile friendId="jayden" onClose={noop} />
         </div>
       </Variant>
     ),

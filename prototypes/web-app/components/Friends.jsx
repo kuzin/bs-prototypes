@@ -11,6 +11,7 @@ import { Input } from '@components/Form/Form'
 import { ToastStack, useToasts } from '@components/Toast/Toast'
 
 import { FriendRequests } from './FriendRequests'
+import { FriendProfile } from './FriendProfile'
 
 import { Leaderboards } from './Leaderboards'
 import { FRIENDS, FRIEND_REQUESTS, PENDING_INVITES } from '../data'
@@ -42,7 +43,7 @@ import '@components/Tabs/Tabs.css'
  * "Friends" | "Leaderboard"), and they are two views of the same people.
  */
 
-function FriendCard({ person, onRemove }) {
+function FriendCard({ person, onRemove, onOpen }) {
   const pending = Boolean(person.pending)
 
   return (
@@ -68,7 +69,13 @@ function FriendCard({ person, onRemove }) {
           {({ close }) => (
             <div className="fr-menu">
               {!pending && (
-                <button type="button" onClick={close}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    close()
+                    onOpen(person.id)
+                  }}
+                >
                   View Friend
                 </button>
               )}
@@ -86,6 +93,16 @@ function FriendCard({ person, onRemove }) {
           )}
         </Flyout>
       </span>
+
+      {/* The whole card opens the profile, the way the app's does; a pending
+          invite has no profile to open yet. */}
+      <button
+        type="button"
+        className="fr-card-hit"
+        onClick={() => !pending && onOpen(person.id)}
+        disabled={pending}
+        aria-label={pending ? `${person.name} — pending invite` : `View ${person.name}`}
+      />
 
       <Avatar
         initials={person.initials}
@@ -175,6 +192,7 @@ export function Friends() {
   const [removed, setRemoved] = useState([])
   const [inviteOpen, setInviteOpen] = useState(false)
   const [requests, setRequests] = useState(FRIEND_REQUESTS)
+  const [profileId, setProfileId] = useState(null)
   const { toasts, push, dismiss } = useToasts()
 
   // The app answers either way with a toast rather than reloading the page —
@@ -216,7 +234,7 @@ export function Friends() {
       </div>
 
       {pane === 'leaderboards' ? (
-        <Leaderboards />
+        <Leaderboards onOpenFriend={setProfileId} />
       ) : (
         <div className="fr-page">
           <ReaderPageHead
@@ -242,14 +260,15 @@ export function Friends() {
 
           <div className="fr-grid">
             {friends.map((f) => (
-              <FriendCard key={f.id} person={f} onRemove={remove} />
+              <FriendCard key={f.id} person={f} onRemove={remove} onOpen={setProfileId} />
             ))}
             {pending.map((p) => (
-              <FriendCard key={p.id} person={p} onRemove={remove} />
+              <FriendCard key={p.id} person={p} onRemove={remove} onOpen={setProfileId} />
             ))}
           </div>
 
           <InviteModal open={inviteOpen} onClose={() => setInviteOpen(false)} />
+          <FriendProfile friendId={profileId} onClose={() => setProfileId(null)} />
           <ToastStack toasts={toasts} onDismiss={dismiss} />
         </div>
       )}

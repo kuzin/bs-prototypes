@@ -40,6 +40,9 @@
   border: 1px solid var(--c-border);
   border-radius: 14px;
   box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+  transition:
+    border-color 0.14s ease,
+    box-shadow 0.14s ease;
 }
 /* A soft tint of the reader's own colour, so the full-strength avatar disc in
    front of it still reads. */
@@ -260,4 +263,40 @@
   font-size: 16px;
   font-weight: 900;
   color: var(--c-text-dark);
+}
+
+/* The whole card is the hit target for opening a profile; it sits under the
+   kebab (which has its own z-index) and over the band. */
+.fr-card-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 14px;
+}
+.fr-card-hit:disabled {
+  cursor: default;
+}
+.fr-card:has(.fr-card-hit:not(:disabled):hover) {
+  border-color: var(--c-blue);
+  box-shadow: 0 8px 22px rgba(26, 109, 213, 0.14);
+}
+.fr-card-hit:focus-visible {
+  outline: 2px solid var(--c-blue);
+  outline-offset: 2px;
+}
+
+/* A leaderboard name that opens a profile. */
+.lb-name--link {
+  padding: 0;
+  font-family: inherit;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.lb-name--link:hover {
+  color: var(--c-blue);
+  text-decoration: underline;
 }
