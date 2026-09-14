@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
-import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Button } from '@components/Button/Button'
 import { Pill } from '@components/Pill/Pill'

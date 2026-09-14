@@ -1,4 +1,4 @@
-import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 
 import './CollectionShelf.css'
 

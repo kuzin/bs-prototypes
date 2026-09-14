@@ -254,7 +254,7 @@ export const readerAppSections = [
     group: 'web-app',
     id: 'reader-page-head',
     name: 'ReaderPageHead',
-    usage: `import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
+    usage: `import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 
 <ReaderPageHead title="Friends" count="7 Friends" actions={<Button>Invite Friends</Button>} />
 

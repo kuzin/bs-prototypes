@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
-import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Pill } from '@components/Pill/Pill'
 import { EmptyState } from '@components/Primitives/Primitives'
 

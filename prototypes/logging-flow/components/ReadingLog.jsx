@@ -5,7 +5,7 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { Modal } from '@components/Modal/Modal'
 import { StatCard } from '@components/Cards/Cards'
-import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Banner } from '@components/Primitives/Primitives'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 

@@ -3,7 +3,7 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Table } from '@components/Table/Table'
 import { Avatar } from '@components/Avatar/Avatar'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
-import { ReaderPageHead } from '@components/ReaderApp/ReaderApp'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 
 import {
   LEADERBOARD_BOARDS,

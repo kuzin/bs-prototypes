@@ -24,13 +24,6 @@
      reader-facing equivalent, a little tighter because these pages are cards
      and covers rather than tables. */
   --wa-content-max: 1200px;
-  /* Every page under the reader nav opens with a title row — some carry a
-     sub-line and some don't, which made the body jump as you moved between
-     tabs. One height and one set of margins for all of them, and the row is
-     centred in it: bottom-aligned, a title with no sub-line left the heading
-     and its button hugging the floor of an otherwise empty box. */
-  --wa-pagehead-h: 50px;
-  --wa-pagehead-margin: 26px 0 20px;
 }
 
 .wa-shell {
@@ -251,52 +244,6 @@
   max-width: var(--wa-content-max);
   margin: 0 auto;
   padding: 0 24px;
-}
-
-/* ── Page header ──
-   One row for every page under the reader nav — see ReaderPageHead. */
-.wa-pagehead {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
-  min-height: var(--wa-pagehead-h);
-  margin: var(--wa-pagehead-margin);
-}
-.wa-pagehead-copy {
-  min-width: 0;
-}
-.wa-pagehead-title {
-  font-size: 26px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
-  color: var(--c-text-dark);
-}
-.wa-pagehead-count {
-  margin-top: 3px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--c-text-light);
-}
-.wa-pagehead-actions {
-  display: flex;
-  flex: none;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-/* On a phone the actions take their own full-width row and share it evenly,
-   rather than each shrinking to fit beside the title. */
-@media (max-width: 560px) {
-  .wa-pagehead-actions {
-    flex: 1 0 100%;
-  }
-  .wa-pagehead-actions .btn {
-    flex: 1;
-    justify-content: center;
-  }
 }
 
 /* Streak banner */
