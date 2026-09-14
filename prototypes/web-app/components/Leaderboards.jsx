@@ -96,7 +96,6 @@ export function Leaderboards({ onOpenFriend }) {
           shrinks pushes the whole page around. */}
       <ReaderPageHead
         title="Leaderboards"
-        count="See how you stack up against your friends, grade and school."
         actions={
           <div className="lb-period">
             <CustomSelect options={LEADERBOARD_PERIODS} value={period} onChange={setPeriod} />

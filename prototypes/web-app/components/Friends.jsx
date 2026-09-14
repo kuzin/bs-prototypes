@@ -239,7 +239,6 @@ export function Friends() {
         <div className="fr-page">
           <ReaderPageHead
             title="Friends"
-            count={`${friends.length} ${friends.length === 1 ? 'Friend' : 'Friends'}`}
             actions={
               <Button
                 variant="secondary"

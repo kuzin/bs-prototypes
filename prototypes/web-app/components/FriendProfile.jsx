@@ -54,7 +54,7 @@ function Overview({ friend }) {
     <>
       {badges.length > 0 && (
         <>
-          <ShelfHead as="h3" title="Earned badges" count={badges.length} noun="Badges" />
+          <ShelfHead as="h3" title="Earned badges" />
           <ShelfGrid>
             {badges.map((b) => (
               <CollectionCard
@@ -71,7 +71,7 @@ function Overview({ friend }) {
 
       {achievements.length > 0 && (
         <>
-          <ShelfHead as="h3" title="Achievements" count={achievements.length} noun="Achievements" />
+          <ShelfHead as="h3" title="Achievements" />
           <ShelfGrid>
             {achievements.map((a) => (
               <CollectionCard

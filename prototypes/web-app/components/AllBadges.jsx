@@ -54,7 +54,7 @@ export function AllBadges() {
 
       {pane === 'badges' ? (
         <>
-          <ShelfHead title="Badges" count={`${earned.length} of ${BADGES.length}`} noun="earned" />
+          <ShelfHead title="Badges" />
           <ShelfGrid>
             {badges.map((b) => (
               <CollectionCard
@@ -77,7 +77,7 @@ export function AllBadges() {
         </>
       ) : (
         <>
-          <ShelfHead title="Achievements" count={ACHIEVEMENTS.length} noun="Achievements" />
+          <ShelfHead title="Achievements" />
           <ShelfGrid>
             {ACHIEVEMENTS.map((a) => (
               <CollectionCard
