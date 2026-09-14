@@ -14,6 +14,7 @@ import { PartnerSwitcher } from '@components/PartnerConnect/PartnerConnect'
 import { AllBadges } from '../../web-app/components/AllBadges'
 import { Friends } from '../../web-app/components/Friends'
 import { Leaderboards } from '../../web-app/components/Leaderboards'
+import { Reviews } from '../../web-app/components/Reviews'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { Variant } from './_shared'
 
@@ -387,6 +388,11 @@ export const readerAppSections = [
         where the streak sits, and its kebab offers &ldquo;Cancel this Invitation&rdquo; rather than
         &ldquo;Remove Friend&rdquo;. Waiting requests get a banner above the grid, because they need
         a decision rather than a card. Grid steps 4 → 3 → 2 → 1, the app&apos;s own breakpoints.
+        <br />
+        <br />
+        Leaderboards is a sub-tab of this page rather than its own nav entry — the profile pairs
+        them (<code>_friends_and_leaderboard_tabs</code>), and they are two views of the same
+        people.
       </>
     ),
     render: () => (
@@ -411,13 +417,47 @@ export const readerAppSections = [
         those against each other, which is why the second column&apos;s header changes with the
         board. Which board and which log type are the same kind of choice, so both are segmented
         controls on one row. The podium gets a coin instead of a number and the reader&apos;s own
-        row is highlighted and suffixed &ldquo;(You)&rdquo;, both from the app.
+        row is highlighted and suffixed &ldquo;(You)&rdquo;, both from the app. Reached through the
+        Friends page&apos;s own sub-tabs.
       </>
     ),
     render: () => (
       <Variant label="friends / grade / school over minutes or books" full>
         <div style={{ padding: '0 20px 20px', background: '#fff' }}>
           <Leaderboards />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-reviews',
+    name: 'Reviews',
+    usage: `import { Reviews } from './components/Reviews'
+
+/* hung off the Reading Log's own sub-tab strip */
+<Dashboard logTabs={[{ id: 'reviews', label: 'Reviews' }]} renderLogTab={() => <Reviews />} />`,
+    desc: (
+      <>
+        The reader&apos;s own reviews — <code>profiles/reviews.html.haml</code>, which titles itself
+        &ldquo;{'{First}'}&apos;s Reviews&rdquo; and tabs by the review types the site permits. A
+        Beanstack review carries <strong>no star rating</strong>: the app asks for words, and cuts a
+        long one at 200 characters behind a &ldquo;Read more...&rdquo;.
+        <br />
+        <br />
+        Picture reviews are a second type entirely — an image of the book rather than a paragraph
+        about it — and they sit behind a &ldquo;Waiting for approval&rdquo; tag until staff clear
+        them, after which they carry a heart count instead.
+        <br />
+        <br />
+        It lives under <strong>My Reading</strong> beside the log and All Titles rather than in the
+        main nav, since it is another record of what this reader has read.
+      </>
+    ),
+    render: () => (
+      <Variant label="written reviews, with one expanded past the cutoff" full>
+        <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+          <Reviews />
         </div>
       </Variant>
     ),

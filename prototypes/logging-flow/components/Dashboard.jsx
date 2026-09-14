@@ -51,6 +51,10 @@ function Footer() {
  * "All Titles" tab stays on the page but stops being reachable. `logEntries`
  * is too, for a prototype whose log isn't logging-flow's own — web-app has no
  * Scholastic, so its log must not carry Scholastic sessions either.
+ *
+ * `logTabs` / `renderLogTab` are the same additive pair one level down: an
+ * extra sub-tab on the Reading Log's own strip, between the log and "All
+ * Titles". web-app puts Reviews there.
  */
 export function Dashboard({
   streak,
@@ -70,6 +74,8 @@ export function Dashboard({
   partners = CONNECTION_LIST,
   titlesView = true,
   logEntries,
+  logTabs = [],
+  renderLogTab,
 }) {
   const [scope, setScope] = useState('current')
   // 'challenges' | 'settings' | 'log' | any `extraTabs` id — the gear (and
@@ -117,7 +123,13 @@ export function Dashboard({
           {owned(view) ? (
             renderExtra?.(view)
           ) : view === 'log' ? (
-            <ReadingLog entries={logEntries} partners={partners} titlesView={titlesView} />
+            <ReadingLog
+              entries={logEntries}
+              partners={partners}
+              titlesView={titlesView}
+              extraTabs={logTabs}
+              renderExtra={renderLogTab}
+            />
           ) : view === 'settings' ? (
             <PersonalizeReader
               reader={READER}

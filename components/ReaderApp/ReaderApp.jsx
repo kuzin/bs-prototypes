@@ -40,8 +40,13 @@ export const READER_TABS = [
   { id: 'friends', label: 'Friends' },
   { id: 'leaderboards', label: 'Leaderboards' },
   { id: 'reviews', label: 'Reviews' },
-  { id: 'badges', label: 'All Badges' },
-  { id: 'log', label: 'Reading Log' },
+  // The app calls this "All Badges"; it holds achievements too, so the tab says
+  // what it is. Words with Benny had already landed on the same name for its
+  // own version of this page.
+  { id: 'badges', label: 'My Collections' },
+  // "Reading Log" in the app; it holds All Titles and (in web-app) Reviews
+  // alongside the log itself, so the tab is named for the whole of it.
+  { id: 'log', label: 'My Reading' },
 ]
 
 /**

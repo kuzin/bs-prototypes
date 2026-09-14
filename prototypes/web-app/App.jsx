@@ -7,7 +7,7 @@ import { LogFlow } from '../logging-flow/components/LogFlow'
 import { BookCover } from '../logging-flow/components/BookCover'
 import { AllBadges } from './components/AllBadges'
 import { Friends } from './components/Friends'
-import { Leaderboards } from './components/Leaderboards'
+import { Reviews } from './components/Reviews'
 import {
   STREAK,
   DAILY_GOAL,
@@ -62,7 +62,14 @@ const LOG = READING_LOG.filter((e) => e.source !== 'scholastic')
 // The tabs in the real nav that the dashboard has never had a page for. This
 // prototype builds them, so it claims them by id rather than letting the
 // dashboard bounce them back to Challenges.
-const OWN_TABS = ['badges', 'friends', 'leaderboards']
+const OWN_TABS = ['badges', 'friends']
+
+// Two of the six aren't top-level destinations here. Leaderboards is a sub-tab
+// of Friends — the profile pairs the two on one page, and they're two views of
+// the same people. Reviews sits under My Reading, beside the log and All
+// Titles, since it's another record of what this reader has read.
+const HIDE_TABS = ['leaderboards', 'reviews']
+const LOG_TABS = [{ id: 'reviews', label: 'Reviews' }]
 
 export function App() {
   const [flowOpen, setFlowOpen] = useState(false)
@@ -79,7 +86,6 @@ export function App() {
   function renderTab(id) {
     if (id === 'badges') return <AllBadges />
     if (id === 'friends') return <Friends />
-    if (id === 'leaderboards') return <Leaderboards />
     return null
   }
 
@@ -125,7 +131,10 @@ export function App() {
         partners={PARTNERS}
         logEntries={LOG}
         ownTabs={OWN_TABS}
+        hideTabs={HIDE_TABS}
         renderExtra={renderTab}
+        logTabs={LOG_TABS}
+        renderLogTab={() => <Reviews />}
       />
 
       <LogFlow

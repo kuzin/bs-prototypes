@@ -1,0 +1,192 @@
+/* ─── Reviews ───────────────────────────────────────────────────────────────
+   `profiles/reviews.html.haml` + microsite/_reviews.scss. Written reviews are
+   a single column of items — the app gives them the page's full measure rather
+   than columns, because the point is the words. */
+
+.rv-page {
+  padding-bottom: 40px;
+}
+
+.rv-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin: 26px 0 20px;
+}
+.rv-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  color: var(--c-text-dark);
+}
+.rv-count {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--c-text-light);
+}
+.rv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rv-types {
+  display: flex;
+  margin-bottom: 20px;
+}
+
+/* ─── Written ────────────────────────────────────────────────────────────── */
+
+.rv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rv-item {
+  padding: 20px 22px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.rv-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  align-items: baseline;
+}
+.rv-booktitle {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+.rv-booktitle a {
+  color: inherit;
+  text-decoration: none;
+}
+.rv-booktitle a:hover {
+  color: var(--c-blue);
+  text-decoration: underline;
+}
+.rv-author {
+  font-size: 14px;
+  color: var(--c-text-light);
+}
+/* The byline goes on its own line under the title, the way the app sets it. */
+.rv-byline {
+  flex-basis: 100%;
+  margin-top: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-gray-600);
+}
+
+.rv-body {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+.rv-more {
+  padding: 0;
+  font: inherit;
+  font-weight: 800;
+  color: var(--c-blue);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.rv-more:hover {
+  text-decoration: underline;
+}
+.rv-edit {
+  margin-top: 16px;
+}
+
+/* ─── Picture reviews ────────────────────────────────────────────────────── */
+
+.rv-picgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.rv-pic {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.rv-pic-art {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  color: rgba(255, 255, 255, 0.85);
+}
+.rv-pic-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px 18px;
+}
+.rv-pic-title {
+  font-size: 16.5px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+.rv-pic-for {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+  align-items: baseline;
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+.rv-pic-for strong {
+  font-weight: 800;
+  color: var(--c-text);
+}
+.rv-pic-for em {
+  font-style: normal;
+}
+.rv-pic-by {
+  font-size: 13px;
+  color: var(--c-gray-600);
+}
+.rv-pic-foot {
+  margin-top: auto;
+  padding-top: 12px;
+}
+.rv-hearts {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #db2777;
+}
+
+@media (max-width: 560px) {
+  .rv-actions {
+    width: 100%;
+  }
+  .rv-actions .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .rv-picgrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

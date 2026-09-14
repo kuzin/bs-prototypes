@@ -487,13 +487,20 @@ function TitlesView({ entries }) {
 // `titlesView={false}` leaves the "All Titles" tab standing but inert — it is
 // part of the real page's furniture, so it stays visible, it just doesn't go
 // anywhere in a prototype that isn't about it.
+//
+// `extraTabs` / `renderExtra` hang another sub-tab off this strip, the same way
+// `Dashboard` lets a prototype hang one off the main nav — web-app puts its
+// Reviews page here. Left off, the page is exactly as it was.
 export function ReadingLog({
   entries = READING_LOG,
   partners = CONNECTION_LIST,
   titlesView = true,
+  extraTabs = [],
+  renderExtra,
 }) {
   const [tab, setTab] = useState('log')
   const [view, setView] = useState('calendar')
+  const extraIds = extraTabs.map((t) => t.id)
 
   const imported = partners.length ? entries.filter((e) => e.source).length : 0
 
@@ -506,90 +513,103 @@ export function ReadingLog({
           size="md"
           active={tab}
           onChange={(id) => (id !== 'titles' || titlesView) && setTab(id)}
+          // Extras go between the log and All Titles rather than after it:
+          // All Titles is the archive at the end of the strip, and what a
+          // prototype hangs here belongs beside the log itself.
           items={[
             { id: 'log', label: 'Reading Log' },
+            ...extraTabs,
             { id: 'titles', label: 'All Titles' },
           ]}
         />
       </div>
 
-      <div className="rl-head">
-        <h1 className="rl-title">{tab === 'log' ? 'Reading Log' : 'All Titles'}</h1>
-        <div className="rl-head-actions">
-          <Button variant="secondary" size="md">
-            Print log
-          </Button>
+      {/* An extra tab owns its whole page — its own header included — so the
+          log's header and streaks drop out entirely rather than sitting above
+          somebody else's content. */}
+      {extraIds.includes(tab) && renderExtra?.(tab)}
+
+      {!extraIds.includes(tab) && (
+        <>
+          <div className="rl-head">
+            <h1 className="rl-title">{tab === 'log' ? 'Reading Log' : 'All Titles'}</h1>
+            <div className="rl-head-actions">
+              <Button variant="secondary" size="md">
+                Print log
+              </Button>
+              {tab === 'log' && (
+                <div className="rl-viewtoggle">
+                  {[
+                    { id: 'calendar', icon: 'layout-grid', label: 'Calendar view' },
+                    { id: 'list', icon: 'list', label: 'List view' },
+                  ].map((v) => (
+                    <button
+                      key={v.id}
+                      type="button"
+                      aria-label={v.label}
+                      className={`rl-viewbtn${view === v.id ? ' is-active' : ''}`}
+                      onClick={() => setView(v.id)}
+                    >
+                      <Icon name={v.icon} size={17} />
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
           {tab === 'log' && (
-            <div className="rl-viewtoggle">
-              {[
-                { id: 'calendar', icon: 'layout-grid', label: 'Calendar view' },
-                { id: 'list', icon: 'list', label: 'List view' },
-              ].map((v) => (
-                <button
-                  key={v.id}
-                  type="button"
-                  aria-label={v.label}
-                  className={`rl-viewbtn${view === v.id ? ' is-active' : ''}`}
-                  onClick={() => setView(v.id)}
-                >
-                  <Icon name={v.icon} size={17} />
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      {tab === 'log' && (
-        <>
-          <div className="rl-streaks">
-            <div className="rl-streak rl-streak--current">
-              <Icon name="flame-filled" size={20} />
-              <div>
-                <div className="rl-streak-num">{LOG_STREAK.current} Days</div>
-                <div className="rl-streak-lbl">Current streak</div>
+            <>
+              <div className="rl-streaks">
+                <div className="rl-streak rl-streak--current">
+                  <Icon name="flame-filled" size={20} />
+                  <div>
+                    <div className="rl-streak-num">{LOG_STREAK.current} Days</div>
+                    <div className="rl-streak-lbl">Current streak</div>
+                  </div>
+                </div>
+                <div className="rl-streak rl-streak--longest">
+                  <Icon name="flame-filled" size={20} />
+                  <div>
+                    <div className="rl-streak-num">{LOG_STREAK.longest} Days</div>
+                    <div className="rl-streak-lbl">Longest streak</div>
+                  </div>
+                </div>
               </div>
-            </div>
-            <div className="rl-streak rl-streak--longest">
-              <Icon name="flame-filled" size={20} />
-              <div>
-                <div className="rl-streak-num">{LOG_STREAK.longest} Days</div>
-                <div className="rl-streak-lbl">Longest streak</div>
-              </div>
-            </div>
-          </div>
 
-          {imported > 0 && (
-            <p className="rl-importnote">
-              <Icon name="bolt" size={15} />
-              {imported} of these sessions came in from your linked reading apps — hover a logo to
-              see where and when.
-            </p>
+              {imported > 0 && (
+                <p className="rl-importnote">
+                  <Icon name="bolt" size={15} />
+                  {imported} of these sessions came in from your linked reading apps — hover a logo
+                  to see where and when.
+                </p>
+              )}
+            </>
           )}
-        </>
-      )}
 
-      {tab === 'log' ? (
-        <>
-          <div className="rl-month">
-            <h2 className="rl-month-label">{LOG_MONTH.label}</h2>
-            <div className="rl-month-nav">
-              <button type="button" className="rl-navbtn" aria-label="Previous month">
-                <Icon name="chevron-left" size={17} />
-              </button>
-              <button type="button" className="rl-navbtn" aria-label="Next month">
-                <Icon name="chevron-right" size={17} />
-              </button>
-            </div>
-          </div>
-          {view === 'calendar' ? (
-            <CalendarView entries={entries} showImported={imported > 0} />
+          {tab === 'log' ? (
+            <>
+              <div className="rl-month">
+                <h2 className="rl-month-label">{LOG_MONTH.label}</h2>
+                <div className="rl-month-nav">
+                  <button type="button" className="rl-navbtn" aria-label="Previous month">
+                    <Icon name="chevron-left" size={17} />
+                  </button>
+                  <button type="button" className="rl-navbtn" aria-label="Next month">
+                    <Icon name="chevron-right" size={17} />
+                  </button>
+                </div>
+              </div>
+              {view === 'calendar' ? (
+                <CalendarView entries={entries} showImported={imported > 0} />
+              ) : (
+                <ListView entries={entries} showImported={imported > 0} />
+              )}
+            </>
           ) : (
-            <ListView entries={entries} showImported={imported > 0} />
+            <TitlesView entries={entries} />
           )}
         </>
-      ) : (
-        <TitlesView entries={entries} />
       )}
     </div>
   )

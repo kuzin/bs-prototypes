@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { Tabs } from '@components/Tabs/Tabs'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Button } from '@components/Button/Button'
 import { Pill } from '@components/Pill/Pill'
@@ -8,6 +9,7 @@ import { Flyout } from '@components/Flyout/Flyout'
 import { Input } from '@components/Form/Form'
 import { InfoBox } from '@components/InfoBox/InfoBox'
 
+import { Leaderboards } from './Leaderboards'
 import { FRIENDS, FRIEND_REQUESTS, PENDING_INVITES } from '../data'
 import './Friends.css'
 
@@ -18,6 +20,7 @@ import '@components/Modal/Modal.css'
 import '@components/Flyout/Flyout.css'
 import '@components/Form/Form.css'
 import '@components/InfoBox/InfoBox.css'
+import '@components/Tabs/Tabs.css'
 
 /**
  * Friends — `profiles/friends.html.haml`.
@@ -30,6 +33,10 @@ import '@components/InfoBox/InfoBox.css'
  *
  * This is a school site, so the action reads "Invite Friends"; a library site
  * gets "Add Friends" over a friend-code dropdown instead.
+ *
+ * Leaderboards live under here rather than beside it in the main nav — the
+ * profile pairs them on one page (`_friends_and_leaderboard_tabs.html.haml`:
+ * "Friends" | "Leaderboard"), and they are two views of the same people.
  */
 
 function FriendCard({ person, onRemove }) {
@@ -161,6 +168,7 @@ function InviteModal({ open, onClose }) {
 }
 
 export function Friends() {
+  const [pane, setPane] = useState('friends')
   const [removed, setRemoved] = useState([])
   const [inviteOpen, setInviteOpen] = useState(false)
   const [requests, setRequests] = useState(FRIEND_REQUESTS)
@@ -170,68 +178,92 @@ export function Friends() {
   const remove = (id) => setRemoved((r) => [...r, id])
 
   return (
-    <div className="fr-page">
-      <header className="fr-head">
-        <div>
-          <h1 className="fr-title">Friends</h1>
-          <p className="fr-count">
-            {friends.length} {friends.length === 1 ? 'Friend' : 'Friends'}
-          </p>
-        </div>
-        <Button
-          variant="secondary"
+    <>
+      {/* The same full-bleed band the Reading Log and My Collections use for
+          their own sub-tabs, so all three sit in the same place. */}
+      <div className="co-subtabs">
+        <Tabs
+          variant="pill"
+          plain
           size="md"
-          icon={<Icon name="plus" size={15} />}
-          onClick={() => setInviteOpen(true)}
-        >
-          Invite Friends
-        </Button>
-      </header>
-
-      {/* The app puts waiting requests in a banner above the grid rather than
-          mixing them into it — they need a decision, not a card. */}
-      {requests.length > 0 && (
-        <InfoBox
-          level="info"
-          icon="people"
-          className="fr-requests"
-          title={`You have ${requests.length} new friend request${requests.length === 1 ? '' : 's'}!`}
-        >
-          <ul className="fr-request-list">
-            {requests.map((r) => (
-              <li key={r.id}>
-                <Avatar initials={r.initials} color={r.color} size="sm" />
-                <span className="fr-request-name">{r.name}</span>
-                <span className="fr-request-grade">{r.grade}</span>
-                <Button
-                  size="sm"
-                  onClick={() => setRequests((q) => q.filter((x) => x.id !== r.id))}
-                >
-                  Accept
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setRequests((q) => q.filter((x) => x.id !== r.id))}
-                >
-                  Decline
-                </Button>
-              </li>
-            ))}
-          </ul>
-        </InfoBox>
-      )}
-
-      <div className="fr-grid">
-        {friends.map((f) => (
-          <FriendCard key={f.id} person={f} onRemove={remove} />
-        ))}
-        {pending.map((p) => (
-          <FriendCard key={p.id} person={p} onRemove={remove} />
-        ))}
+          active={pane}
+          onChange={setPane}
+          accent="#1A6DD5"
+          ariaLabel="Friends or leaderboards"
+          items={[
+            { id: 'friends', label: 'Friends', count: friends.length },
+            { id: 'leaderboards', label: 'Leaderboards' },
+          ]}
+        />
       </div>
 
-      <InviteModal open={inviteOpen} onClose={() => setInviteOpen(false)} />
-    </div>
+      {pane === 'leaderboards' ? (
+        <Leaderboards />
+      ) : (
+        <div className="fr-page">
+          <header className="fr-head">
+            <div>
+              <h1 className="fr-title">Friends</h1>
+              <p className="fr-count">
+                {friends.length} {friends.length === 1 ? 'Friend' : 'Friends'}
+              </p>
+            </div>
+            <Button
+              variant="secondary"
+              size="md"
+              icon={<Icon name="plus" size={15} />}
+              onClick={() => setInviteOpen(true)}
+            >
+              Invite Friends
+            </Button>
+          </header>
+
+          {/* The app puts waiting requests in a banner above the grid rather than
+          mixing them into it — they need a decision, not a card. */}
+          {requests.length > 0 && (
+            <InfoBox
+              level="info"
+              icon="people"
+              className="fr-requests"
+              title={`You have ${requests.length} new friend request${requests.length === 1 ? '' : 's'}!`}
+            >
+              <ul className="fr-request-list">
+                {requests.map((r) => (
+                  <li key={r.id}>
+                    <Avatar initials={r.initials} color={r.color} size="sm" />
+                    <span className="fr-request-name">{r.name}</span>
+                    <span className="fr-request-grade">{r.grade}</span>
+                    <Button
+                      size="sm"
+                      onClick={() => setRequests((q) => q.filter((x) => x.id !== r.id))}
+                    >
+                      Accept
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setRequests((q) => q.filter((x) => x.id !== r.id))}
+                    >
+                      Decline
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            </InfoBox>
+          )}
+
+          <div className="fr-grid">
+            {friends.map((f) => (
+              <FriendCard key={f.id} person={f} onRemove={remove} />
+            ))}
+            {pending.map((p) => (
+              <FriendCard key={p.id} person={p} onRemove={remove} />
+            ))}
+          </div>
+
+          <InviteModal open={inviteOpen} onClose={() => setInviteOpen(false)} />
+        </div>
+      )}
+    </>
   )
 }

@@ -253,3 +253,67 @@ export function leaderboardRows(board, type, period) {
     .sort((a, b) => b.value - a.value)
     .map((row, i) => ({ ...row, rank: i + 1 }))
 }
+
+// ─── Reviews ─────────────────────────────────────────────────────────────────
+// `profiles/reviews.html.haml` → `reviews/_review.html.haml`. A written review
+// is the book's title as a link, "by {author}", who wrote it and when, the text
+// (truncated at 200 characters behind a "Read more..."), and an Edit button.
+// Picture reviews are their own type: an image, the book it's for, who made it,
+// a heart counter, and an approval state while staff look at it.
+//
+// There is no star rating on a Beanstack review — the app asks for words.
+
+const written = (id, title, author, date, body) => ({
+  id,
+  kind: 'written',
+  title,
+  author,
+  date,
+  body,
+})
+
+export const REVIEWS = [
+  written(
+    'rv-amulet',
+    'Amulet: The Stonekeeper',
+    'Kazu Kibuishi',
+    'Jun 12, 2026',
+    "I did not expect to care about the house. It's the kind of book where the scary part is not the monsters, it's that the grown-ups keep being wrong about what is safe. Emily figures things out faster than anyone believes she can, and the art does half the talking — there are pages with no words where you still know exactly how bad it is getting. I read it in two sittings and then went straight back to the beginning to look at the panels I had rushed past. If you like books where the world is bigger than the first chapter lets on, this one keeps opening.",
+  ),
+  written(
+    'rv-dogman',
+    'Dog Man',
+    'Dav Pilkey',
+    'May 28, 2026',
+    'Funny the whole way through. I read three chapters out loud to my little brother and he asked for more, which never happens. The drawings are messy on purpose and that is the point.',
+  ),
+  written(
+    'rv-percy',
+    'Percy Jackson and the Olympians #1: The Lightning Thief',
+    'Rick Riordan',
+    'May 3, 2026',
+    'Best part is that the gods are annoying. Not wise, not mysterious — annoying, like relatives who show up and rearrange your kitchen. Percy spends the whole book being told what he is and deciding he would rather find out himself. I have read a lot of books where the kid turns out to be special and this is the first one where being special mostly sounded exhausting. The bus scene had me genuinely nervous. Now I want to read the next four.',
+  ),
+  {
+    id: 'rv-snapdragon',
+    kind: 'picture',
+    title: 'Snapdragon, drawn with chalk',
+    book: 'Snapdragon',
+    author: 'Kat Leyh',
+    date: 'Jun 2, 2026',
+    hearts: 14,
+    status: 'approved',
+    art: ['#DC493A', '#F0A024'],
+  },
+  {
+    id: 'rv-forest',
+    kind: 'picture',
+    title: 'The Harvest Party, in marker',
+    book: 'Welcome to the Forest: The Harvest Party',
+    author: 'Katie Risor',
+    date: 'Jun 14, 2026',
+    hearts: 3,
+    status: 'pending',
+    art: ['#0CA7BC', '#0BA85F'],
+  },
+]

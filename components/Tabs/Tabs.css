@@ -170,8 +170,10 @@
 }
 
 /* A pill group sitting on a band of its own — the sub-tab bar under the reader's
-   main nav. No track (the band is the surface), and the active pill is a grey
-   fill rather than white-on-grey, which would vanish against it. */
+   main nav. No track: the band is the surface. The active pill takes a tint of
+   the strip's own accent, which is the one treatment that reads here — it was a
+   grey fill (--c-gray-150, #f2f2f2) on a #f7f8fa band, so which tab was active
+   was very nearly invisible. */
 .tabs--pill.tabs--plain {
   gap: 2px;
   padding: 0;
@@ -185,9 +187,13 @@
   border-radius: 999px;
 }
 .tabs--pill.tabs--plain .tab--active {
-  color: var(--c-text);
-  background: var(--c-gray-150);
+  color: var(--tab-accent, var(--c-blue));
+  background: color-mix(in srgb, var(--tab-accent, var(--c-blue)) 14%, #fff);
   box-shadow: none;
+}
+.tabs--pill.tabs--plain .tab--active .tab-count {
+  color: var(--tab-accent, var(--c-blue));
+  background: color-mix(in srgb, var(--tab-accent, var(--c-blue)) 18%, #fff);
 }
 
 /* `xs` — a pill group tucked into a card header or a settings row beside a
