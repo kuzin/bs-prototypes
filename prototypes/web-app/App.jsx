@@ -67,7 +67,7 @@ const OWN_TABS = ['badges', 'friends']
 
 // Two of the six aren't top-level destinations here. Leaderboards is a sub-tab
 // of Friends — the profile pairs the two on one page, and they're two views of
-// the same people. Reviews sits under My Reading, beside the log and All
+// the same people. Reviews sits under Reading, beside the log and All
 // Titles, since it's another record of what this reader has read.
 const HIDE_TABS = ['leaderboards', 'reviews']
 const LOG_TABS = [{ id: 'reviews', label: 'Reviews' }]
@@ -83,6 +83,10 @@ export function App() {
   const [linking, setLinking] = useState(null) // partner id mid-handoff
   const [visiting, setVisiting] = useState(null) // partner id whose catalog is open
   const [challenge, setChallenge] = useState(null) // the challenge whose page is open
+  // The dashboard's view is driven from here so that leaving for another tab
+  // also closes an open challenge — `page` replaces the main column, so
+  // without this the challenge stayed up under a nav tab that had moved on.
+  const [view, setView] = useState('challenges')
 
   // The pages this prototype owns, by tab id.
   function renderTab(id) {
@@ -132,6 +136,11 @@ export function App() {
         onVisitPartner={setVisiting}
         partners={PARTNERS}
         logEntries={LOG}
+        view={view}
+        onView={(v) => {
+          setView(v)
+          setChallenge(null)
+        }}
         ownTabs={OWN_TABS}
         hideTabs={HIDE_TABS}
         renderExtra={renderTab}

@@ -1,67 +1,106 @@
 /* ─── One challenge, from the reader's side ─────────────────────────────────
    `programs/_program_header.html.haml` + `_show.html.haml`. */
 
-/* The app's `.challenge-header` is a full-width band with the banner centred on
-   it and colour bars either side (it samples those off the image). Same shape
-   here, on a neutral band. The banner is held at its native 920px rather than
-   stretched: it is 2.62:1 (920×351, or 1840×702 at 2×) and it carries the
-   challenge's name in its own artwork, so it is never cropped. */
-.cp-banner {
-  /* Full-bleed, cancelling .wa-main's top padding and .wa-main-inner's sides. */
-  display: flex;
-  justify-content: center;
-  width: 100vw;
-  margin: -24px 0 0;
-  margin-inline: calc(50% - 50vw);
-  background: var(--c-gray-150);
+/* ─── The header ────────────────────────────────────────────────────────────
+   `_program_header.html.haml` in full. Two tinted bands, the taller one ending
+   in a downward curve; the banner floats over them on a rounded card, pulled
+   up into the bands; and the page ground curves back up behind the title. The
+   bands are the banner's own dominant colour blended with white (40% on the
+   tall one, 20% behind it) — the app samples that with ColorThief, we carry it
+   on the challenge as `tint`. */
+
+.cp-header {
+  position: relative;
 }
-.cp-banner img {
-  display: block;
-  width: 100%;
-  max-width: 920px;
-  aspect-ratio: 2.62 / 1;
-  object-fit: cover;
+/* Full-bleed, but only inside the reader shell — the negative margins cancel
+   `.wa-main`'s top padding and `.wa-main-inner`'s sides, and anywhere else (the
+   Pattern Library's frame) they would just tear the header out of it. */
+.wa-main .cp-header {
+  width: 100vw;
+  margin-top: -24px;
+  margin-inline: calc(50% - 50vw);
 }
 
-.cp-head {
-  padding-top: 18px;
+.cp-bar-strong {
+  position: relative;
+  width: 100%;
+  height: 157px;
 }
-.cp-back {
-  display: inline-flex;
-  gap: 4px;
-  align-items: center;
-  padding: 0;
-  margin-bottom: 12px;
-  font-family: inherit;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--c-text-light);
-  background: none;
-  border: 0;
-  cursor: pointer;
+/* The lip: a band of the same colour with its bottom corners rounded right
+   off, which is what gives the header its curve. */
+.cp-bar-strong::after {
+  content: '';
+  position: absolute;
+  top: 130px;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 40px;
+  background-color: inherit;
+  border-bottom-right-radius: 50%;
+  border-bottom-left-radius: 50%;
 }
-.cp-back:hover {
-  color: var(--c-blue);
+.cp-bar-pale {
+  position: absolute;
+  top: 150px;
+  z-index: 0;
+  width: 100%;
+  height: 60px;
 }
-.cp-headrow {
+
+.cp-header-info {
+  position: relative;
   display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-end;
-  justify-content: space-between;
-  margin-bottom: 18px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 480px;
+  padding: 0 50px;
+  margin: -100px auto 0;
+  text-align: center;
+}
+/* The page ground, curving up to meet the title. */
+.cp-header-info::before {
+  content: '';
+  position: absolute;
+  top: 185px;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 40px;
+  background: #fff;
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
+}
+.cp-header-info img {
+  position: relative;
+  z-index: 10;
+  width: auto;
+  max-width: 480px;
+  max-height: 280px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.07);
 }
 .cp-title {
-  font-size: 30px;
+  position: relative;
+  z-index: 10;
+  margin-top: 32px;
+  font-size: 28px;
   font-weight: 800;
-  letter-spacing: -0.015em;
+  line-height: 1.2;
   color: var(--c-text-dark);
 }
 .cp-dates {
-  margin-top: 4px;
-  font-size: 14.5px;
-  font-weight: 600;
+  position: relative;
+  z-index: 10;
+  margin-top: 8px;
+  font-size: 16px;
+  line-height: 1.5;
   color: var(--c-text-light);
+}
+
+.cp-head {
+  padding-top: 22px;
 }
 .cp-tabs {
   border-bottom: 1px solid var(--c-border);
@@ -248,6 +287,27 @@
 }
 
 @media (max-width: 560px) {
+  .cp-bar-strong {
+    height: 110px;
+  }
+  .cp-bar-strong::after {
+    top: 83px;
+  }
+  .cp-bar-pale {
+    top: 103px;
+    height: 40px;
+  }
+  .cp-header-info {
+    padding: 0 24px;
+    margin-top: -38px;
+  }
+  .cp-header-info::before {
+    top: 128px;
+  }
+  .cp-header-info img {
+    max-width: 100%;
+    max-height: 220px;
+  }
   .cp-title {
     font-size: 24px;
   }

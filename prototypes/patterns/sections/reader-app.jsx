@@ -521,7 +521,7 @@ export const readerAppSections = [
         them, after which they carry a heart count instead.
         <br />
         <br />
-        It lives under <strong>My Reading</strong> beside the log and All Titles rather than in the
+        It lives under <strong>Reading</strong> beside the log and All Titles rather than in the
         main nav, since it is another record of what this reader has read.
       </>
     ),
@@ -542,7 +542,9 @@ export const readerAppSections = [
 /* the dashboard's \`page\` slot replaces the main column, nav intact */
 <Dashboard
   onOpenChallenge={setChallenge}
-  page={challenge && <ChallengePage challenge={challenge} entries={LOG} onBack={close} />}
+  view={view}
+  onView={(v) => { setView(v); setChallenge(null) }}
+  page={challenge && <ChallengePage challenge={challenge} entries={LOG} />}
 />`,
     desc: (
       <>
@@ -557,8 +559,14 @@ export const readerAppSections = [
         <code>N/M Badges Earned</code>, on the shared <code>CollectionShelf</code> with its locked
         state. <strong>Rewards</strong> is <code>N/M Earned Rewards</code> and what each one takes.{' '}
         <strong>Challenge Log</strong> is the reader&apos;s own <code>ReadingLog</code> retitled
-        &ldquo;Olivia&apos;s Log&rdquo; with its sub-tabs dropped, since this page has a strip
-        already.
+        &ldquo;Challenge Log&rdquo; with its sub-tabs and summary row dropped, since this page has
+        both already.
+        <br />
+        <br />
+        There is no back link and no Print button in the header — the app has neither. Leaving is
+        the nav&apos;s Challenges tab, which is why the dashboard&apos;s view is driven from the
+        parent here: <code>page</code> replaces the main column, so without that the challenge
+        stayed up under a nav tab that had moved on.
         <br />
         <br />
         Reading List, Ticket Drawings and Certificates stay as furniture, the way the repo treats
@@ -570,8 +578,8 @@ export const readerAppSections = [
     ),
     render: () => (
       <Variant label="the Overview tab" full>
-        <div style={{ background: '#fff' }}>
-          <ChallengePage challenge={CHALLENGES[0]} onBack={noop} />
+        <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+          <ChallengePage challenge={CHALLENGES[0]} />
         </div>
       </Variant>
     ),

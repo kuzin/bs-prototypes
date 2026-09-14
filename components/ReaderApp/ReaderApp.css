@@ -252,27 +252,33 @@
 }
 
 /* Streak banner */
+/* Same bar as the partner connect banner above it — 10px radius, no border,
+   a mark, one line of message, and a white chip at the end. The two sit
+   stacked at the top of the dashboard and were two different shapes. */
 .wa-streak {
   display: flex;
-  align-items: center;
+  box-sizing: border-box;
   gap: 14px;
+  align-items: center;
   padding: 12px 16px;
-  border-radius: 12px;
-  background: #ffe8de;
-  border: 1px solid #fbd4c2;
+  /* 12px between the two banners when they stack, but this is the last thing
+     before the page's own heading — that gap is the page's, not the stack's. */
   margin-bottom: 24px;
+  background: #ffe8de;
+  border: none;
+  border-radius: 10px;
 }
 .wa-streak-flame {
   position: relative;
-  width: 40px;
-  height: 40px;
-  border-radius: 999px;
-  background: #ffffff;
   display: inline-flex;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
+  width: 30px;
+  height: 30px;
   color: #e2825d;
-  flex-shrink: 0;
+  background: #fff;
+  border-radius: 999px;
 }
 .wa-streak-num {
   position: absolute;
@@ -281,7 +287,7 @@
   align-items: center;
   justify-content: center;
   font-weight: 800;
-  font-size: 13px;
+  font-size: 12px;
   color: #6b2a14;
 }
 .wa-streak-flame svg {
@@ -290,12 +296,35 @@
 }
 .wa-streak-msg {
   flex: 1;
-  font-size: 14px;
-  color: #5b2a18;
+  min-width: 0;
+  font-size: var(--text-cell);
+  color: var(--c-text);
 }
 .wa-streak-msg strong {
   font-weight: 800;
-  color: #3d1607;
+  color: var(--c-text);
+}
+
+/* The connect banner's chip, in the streak's own ink. */
+.wa-streak-cta {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: 6px;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: #b3401a;
+  cursor: pointer;
+  background: #fff;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 6%);
+}
+.wa-streak-cta:hover {
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 14%);
 }
 
 /* Layout */

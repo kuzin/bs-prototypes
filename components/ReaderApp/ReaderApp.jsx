@@ -41,12 +41,12 @@ export const READER_TABS = [
   { id: 'leaderboards', label: 'Leaderboards' },
   { id: 'reviews', label: 'Reviews' },
   // The app calls this "All Badges"; it holds achievements too, so the tab says
-  // what it is. Words with Benny had already landed on the same name for its
-  // own version of this page.
-  { id: 'badges', label: 'My Collections' },
+  // what it is. Every tab in this nav is the reader's own, so none of them says
+  // "My" — it would be on all four or none.
+  { id: 'badges', label: 'Collections' },
   // "Reading Log" in the app; it holds All Titles and (in web-app) Reviews
   // alongside the log itself, so the tab is named for the whole of it.
-  { id: 'log', label: 'My Reading' },
+  { id: 'log', label: 'Reading' },
 ]
 
 /**
@@ -284,9 +284,12 @@ export function StreakBanner({ streak, onLog, message }) {
             </>
           ))}
       </div>
-      <Button variant="accent" accent="var(--c-red)" size="sm" onClick={onLog}>
+      {/* A white chip on the banner's own tint, the way the connect banner's
+          CTA is — a filled red button made this the loudest thing on a page it
+          is only a nudge on. */}
+      <button type="button" className="wa-streak-cta" onClick={onLog}>
         {has ? 'Log Today' : 'View Streaks'}
-      </Button>
+      </button>
     </div>
   )
 }

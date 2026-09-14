@@ -41,15 +41,17 @@
 .co-shelf-copy {
   min-width: 0;
 }
+/* The same type as every other reader page's header — Friends, Reviews and the
+   Reading Log are all 26/800 over 14/600, and this was 21 over 13.5. */
 .co-shelf-title {
-  font-size: 21px;
+  font-size: 26px;
   font-weight: 800;
   letter-spacing: -0.01em;
-  color: var(--c-text);
+  color: var(--c-text-dark);
 }
 .co-shelf-count {
   margin-top: 3px;
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--c-text-light);
 }

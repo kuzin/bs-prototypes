@@ -196,7 +196,7 @@ export function Friends() {
 
   return (
     <>
-      {/* The same full-bleed band the Reading Log and My Collections use for
+      {/* The same full-bleed band the Reading Log and Collections use for
           their own sub-tabs, so all three sit in the same place. */}
       <div className="co-subtabs">
         <Tabs

@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
@@ -10,7 +9,6 @@ import { ReadingLog } from '../../logging-flow/components/ReadingLog'
 import { BADGES, getChallengeDetail } from '../data'
 import './ChallengePage.css'
 
-import '@components/Button/Button.css'
 import '@components/Tabs/Tabs.css'
 import '@components/Pill/Pill.css'
 
@@ -18,14 +16,22 @@ import '@components/Pill/Pill.css'
  * One challenge, from the reader's side — `programs/_show.html.haml` and
  * `_program_header.html.haml`.
  *
- * The header is the challenge's banner (a Program's `header_image`, which the
- * real ones ship at 2.62:1), the name, and the date span — or the literal
- * "Ongoing Challenge" where there isn't one. Under it the app's own tab strip;
- * the four built out here are the four a reader actually uses.
+ * The header is `_program_header.html.haml` in full, because its shape is the
+ * page's whole character: two tinted bands with a curved lip, the banner
+ * floating over them on a rounded card, and the name and date span centred
+ * underneath — or the literal "Ongoing Challenge" where there is no date span.
+ * The page ground curves back up behind the title.
  *
- * The banner is Beanstack's own art for this challenge — the three here are
- * real ones, so each carries the banner its design team ships
- * (`Design/Projects/Challenges/<name>/Banner`, 920×351).
+ * The bands are tinted from the banner's own dominant colour, blended with
+ * white at 20% and 40%. The app samples that colour at runtime with ColorThief;
+ * it is measured at build time here and carried on the challenge as `tint`.
+ *
+ * Under the header, the app's own tab strip — the four built out here are the
+ * four a reader actually uses.
+ *
+ * No back link and no Print button up here: the app has neither. The nav's
+ * Challenges tab is the way out, and printing belongs to the log, which has its
+ * own Print button on the Challenge Log tab.
  *
  * The real nav is longer — Reading List, Bingo Card, Ticket Drawings and
  * Certificates each appear when the challenge has them. They stay as furniture.
@@ -188,39 +194,39 @@ function Rewards({ detail }) {
   )
 }
 
-export function ChallengePage({ challenge, entries, onBack }) {
+/** The dominant colour blended with white, the way the app's ColorThief does. */
+function wash(hex, alpha) {
+  const h = hex.replace('#', '')
+  const mix = (i) => Math.round(parseInt(h.slice(i, i + 2), 16) * alpha + 255 * (1 - alpha))
+  return `rgb(${mix(0)}, ${mix(2)}, ${mix(4)})`
+}
+
+export function ChallengePage({ challenge, entries }) {
   const [tab, setTab] = useState('overview')
   const detail = getChallengeDetail(challenge.id)
   const banner = bannerSrc(challenge.banner)
+  const tint = challenge.tint ?? '#ACACAC'
 
   return (
     <div className="cp">
-      <div className="cp-banner">
-        <img src={banner} alt={challenge.title} />
+      {/* The app names these the other way round — `-bar-light` takes the 40%
+          blend and `-bar-dark` the 20% — so the stronger band is the tall one
+          at the top and the paler one sits behind its curve. */}
+      <div className="cp-header">
+        <div className="cp-bar-strong" style={{ background: wash(tint, 0.4) }} />
+        <div className="cp-bar-pale" style={{ background: wash(tint, 0.2) }} />
+        <div className="cp-header-info">
+          <img src={banner} alt={challenge.title} />
+          <h1 className="cp-title">{challenge.title}</h1>
+          {/* `program.date_span`, or the literal the app writes when there
+              isn't one. */}
+          <span className="cp-dates">
+            {challenge.dates === 'Ongoing' ? 'Ongoing Challenge' : challenge.dates}
+          </span>
+        </div>
       </div>
 
       <div className="cp-head">
-        <button type="button" className="cp-back" onClick={onBack}>
-          <Icon name="chevron-left" size={15} stroke={2.4} />
-          All challenges
-        </button>
-        <div className="cp-headrow">
-          <div>
-            <h1 className="cp-title">{challenge.title}</h1>
-            {/* `program.date_span`, or the literal the app writes when there
-                isn't one. */}
-            <p className="cp-dates">
-              {challenge.dates === 'Ongoing' ? 'Ongoing Challenge' : challenge.dates}
-            </p>
-          </div>
-          {/* The log tab brings its own Print button, so this one steps aside
-              rather than putting two on the same screen. */}
-          {tab !== 'log' && (
-            <Button variant="secondary" size="md" icon={<Icon name="printer" size={15} />}>
-              Print log
-            </Button>
-          )}
-        </div>
         <div className="cp-tabs">
           <Tabs
             variant="underline"
