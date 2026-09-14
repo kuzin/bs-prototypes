@@ -5,7 +5,7 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { Modal } from '@components/Modal/Modal'
 import { StatCard } from '@components/Cards/Cards'
-import { InfoBox } from '@components/InfoBox/InfoBox'
+import { Banner } from '@components/Primitives/Primitives'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 
 import { BOOKS, READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
@@ -18,7 +18,7 @@ import '@components/Tabs/Tabs.css'
 import '@components/Pill/Pill.css'
 import '@components/Modal/Modal.css'
 import '@components/Cards/Cards.css'
-import '@components/InfoBox/InfoBox.css'
+import '@components/Primitives/Primitives.css'
 
 // Beanstack's Reading Log — calendar and list views over the same entries.
 // Sessions that arrived from a linked reading app are tagged with that app's
@@ -598,11 +598,15 @@ export function ReadingLog({
                 />
               </div>
 
+              {/* Banner, not InfoBox: InfoBox is the announcement shape — a 26px
+                  Plumpy glyph on its own 44px tile, with room for two actions.
+                  This is an inline notice, so it takes the plain info circle
+                  and the tighter bar. */}
               {imported > 0 && (
-                <InfoBox level="info" icon="log" className="rl-importnote">
+                <Banner level="info" className="rl-importnote">
                   {imported} of these sessions came in from your linked reading apps — hover a logo
                   to see where and when.
-                </InfoBox>
+                </Banner>
               )}
             </>
           )}
