@@ -64,7 +64,14 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
               placeholder="e.g. funny graphic novels, or something like The Wild Robot…"
               ariaLabel="Ask Benny for a recommendation"
             />
-            <Button type="submit" variant="primary" icon={<Icon name="sparkles" size={15} />}>
+            {/* The brand's teal, not the page's action blue — this is Benny's
+                panel, and the button is the one thing on it that acts. */}
+            <Button
+              type="submit"
+              variant="accent"
+              accent="var(--c-teal)"
+              icon={<Icon name="sparkles" size={15} />}
+            >
               Ask Benny
             </Button>
           </form>

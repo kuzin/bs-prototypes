@@ -51,15 +51,33 @@ button {
 
 /* ─── Ask Benny — working recommendation prompt ────────────────────────────── */
 
-/* The system's card, not a gradient panel of its own — white on the page
-   ground with the one border token, like every other block here. */
+/* Benny's panel, on the brand's own teal rather than a colour of its own: the
+   wash to fill with, the solid for the rule, the ink for type. It is the one
+   place on Discover where Benny speaks, and plain white said nothing about
+   that — but the tokens keep it inside the system. */
 .bk-ask {
   padding: 20px 22px;
   margin-bottom: 30px;
-  background: #fff;
-  border: 1px solid var(--c-border);
+  background: var(--c-teal-wash);
+  border: 1px solid color-mix(in srgb, var(--c-teal) 28%, #fff);
   border-radius: 14px;
 }
+.bk-ask .bk-ask-title {
+  color: var(--c-teal-ink);
+}
+.bk-ask .bk-ask-title .bp-icon {
+  color: var(--c-teal);
+}
+.bk-ask .bk-ask-sub {
+  color: var(--c-teal-ink);
+}
+/* The field sits on the wash, so it keeps its white ground and loses the
+   border that would otherwise draw a second line around it. */
+.bk-ask .search-input {
+  background: #fff;
+  border-color: color-mix(in srgb, var(--c-teal) 22%, #fff);
+}
+
 .bk-ask-head {
   display: flex;
   gap: 14px;
@@ -436,7 +454,7 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 3px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 800;
   color: var(--c-gray-800);
 }
@@ -453,7 +471,7 @@ button {
   align-items: center;
   gap: 4px;
   margin-top: 4px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-gray-700);
 }
@@ -723,13 +741,14 @@ button {
 }
 
 /* ── Discover catalog search (top-right of the header; launches Browse) ──────── */
-/* Layout only — the field and the button are the shared ones. */
+/* Layout only — the field and the button are the shared ones. Wide enough that
+   the field still reads as a field once the button sits beside it. */
 .bk-search-entry {
   display: flex;
   flex: 0 0 auto;
   gap: 8px;
   align-items: center;
-  width: 340px;
+  width: 430px;
   max-width: 100%;
 }
 

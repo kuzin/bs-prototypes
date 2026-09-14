@@ -69,24 +69,24 @@ export function BookCard({
 
         {variant === 'rank' ? (
           <span className="bk-card-readers">
-            <Icon name="users" size={13} />
+            <Icon name="users" size={15} />
             {book.readersAtSchool} readers
           </span>
         ) : (
           <span className="bk-card-meta">
             <span className="bk-card-rate">
-              <Icon name="star-filled" size={13} className="bk-card-star" />
+              <Icon name="star-filled" size={15} className="bk-card-star" />
               {book.rating.toFixed(1)}
             </span>
             {isAudio ? (
               <span className="bk-card-audiolen">
-                <Icon name="headphones" size={13} />
+                <Icon name="headphones" size={15} />
                 {book.audioLength}
               </span>
             ) : (
               <span className="bk-card-formats">
                 {book.formats.slice(0, 3).map((f) => (
-                  <Icon key={f} name={FORMATS[f].icon} size={13} title={FORMATS[f].label} />
+                  <Icon key={f} name={FORMATS[f].icon} size={15} title={FORMATS[f].label} />
                 ))}
               </span>
             )}
