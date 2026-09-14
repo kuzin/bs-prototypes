@@ -15,6 +15,7 @@ import { AllBadges } from '../../web-app/components/AllBadges'
 import { Friends } from '../../web-app/components/Friends'
 import { Leaderboards } from '../../web-app/components/Leaderboards'
 import { Reviews } from '../../web-app/components/Reviews'
+import { ChallengePage } from '../../web-app/components/ChallengePage'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { Variant } from './_shared'
 
@@ -458,6 +459,48 @@ export const readerAppSections = [
       <Variant label="written reviews, with one expanded past the cutoff" full>
         <div style={{ padding: '0 20px 20px', background: '#fff' }}>
           <Reviews />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-challenge-page',
+    name: 'ChallengePage',
+    usage: `import { ChallengePage } from './components/ChallengePage'
+
+/* the dashboard's \`page\` slot replaces the main column, nav intact */
+<Dashboard
+  onOpenChallenge={setChallenge}
+  page={challenge && <ChallengePage challenge={challenge} entries={LOG} onBack={close} />}
+/>`,
+    desc: (
+      <>
+        One challenge, from the reader&apos;s side — <code>programs/_show.html.haml</code> and{' '}
+        <code>_program_header.html.haml</code>. The hero, the name, the date span (or the literal
+        &ldquo;Ongoing Challenge&rdquo;), then the app&apos;s tab strip.
+        <br />
+        <br />
+        <strong>Overview</strong> is what the challenge measures, its description, and
+        &ldquo;Overall Progress&rdquo; — a ring tile per requirement, in the app&apos;s render order
+        — over &ldquo;Recently Earned Badges&rdquo;. <strong>Badges</strong> is the whole set,{' '}
+        <code>N/M Badges Earned</code>, on the shared <code>CollectionShelf</code> with its locked
+        state. <strong>Rewards</strong> is <code>N/M Earned Rewards</code> and what each one takes.{' '}
+        <strong>Challenge Log</strong> is the reader&apos;s own <code>ReadingLog</code> retitled
+        &ldquo;Olivia&apos;s Log&rdquo; with its sub-tabs dropped, since this page has a strip
+        already.
+        <br />
+        <br />
+        Reading List, Ticket Drawings and Certificates stay as furniture, the way the repo treats
+        unbuilt tabs. The hero is the challenge&apos;s own <code>CHALLENGE_ART</code> rather than a
+        file from <code>public/challenge-banners/</code>: those are branded for the specific
+        Beanstack challenges they were drawn for.
+      </>
+    ),
+    render: () => (
+      <Variant label="the Overview tab" full>
+        <div style={{ background: '#fff' }}>
+          <ChallengePage challenge={CHALLENGES[0]} onBack={noop} />
         </div>
       </Variant>
     ),

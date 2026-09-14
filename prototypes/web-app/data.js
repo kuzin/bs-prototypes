@@ -317,3 +317,102 @@ export const REVIEWS = [
     art: ['#0CA7BC', '#0BA85F'],
   },
 ]
+
+// ─── Challenge detail ────────────────────────────────────────────────────────
+// `programs/_show.html.haml` + `_program_header.html.haml`. The reader's page
+// for one challenge: a banner, the name and date span, then Overview / Badges /
+// Rewards / Challenge Log. Fields follow the real Program — `date_span`,
+// `description`, `startedOn`, `program_types`.
+//
+// The hero art comes from the challenge's own `art` key in logging-flow's data,
+// the same artwork its card carries.
+
+// The Overview's "Overall Progress" ring tiles, in the app's render order.
+const goal = (label, have, need, icon) => ({ label, have, need, icon })
+
+export const CHALLENGE_DETAIL = {
+  spring: {
+    startedOn: 'April 3, 2026',
+    description:
+      'Spring Into Reading runs the whole month of April. Log your minutes, earn a badge for every milestone, and help Magnolia Middle hit its school goal of 40,000 minutes. Every 250 minutes you log earns you a ticket for the end-of-month drawing.',
+    types: ['Minutes', 'Activities', 'Reviews'],
+    goals: [
+      goal('Minutes Completed', 620, 1000, 'clock'),
+      goal('Badges Earned', 3, 8, 'award'),
+      goal('Titles Completed', 5, 10, 'book-2'),
+      goal('Reviews', 1, 3, 'writing'),
+      goal('Completed Activities', 2, 5, 'circle-check'),
+      goal('Tickets Earned', 2, 4, 'ticket'),
+    ],
+    rewards: [
+      {
+        name: 'Bookmark set',
+        detail: 'A set of four Benny bookmarks, collected from the front office.',
+        at: 250,
+        earned: true,
+        on: 'April 12, 2026',
+      },
+      {
+        name: 'Free book from the cart',
+        detail: 'Pick any title from the reading cart outside the library.',
+        at: 500,
+        earned: true,
+        on: 'April 21, 2026',
+      },
+      {
+        name: 'Extra library period',
+        detail: 'One extra library period, arranged with your teacher.',
+        at: 750,
+        earned: false,
+      },
+      {
+        name: 'Spring Into Reading t-shirt',
+        detail: 'Handed out at the end-of-month assembly.',
+        at: 1000,
+        earned: false,
+      },
+    ],
+  },
+  'love-hurts': {
+    startedOn: 'February 2, 2026',
+    description:
+      'An ongoing challenge for readers who like their stories with a little heartbreak. No end date — log whenever you read something that fits, and Benny will find you a badge for it.',
+    types: ['Minutes', 'Reviews'],
+    goals: [
+      goal('Minutes Completed', 310, 600, 'clock'),
+      goal('Badges Earned', 1, 4, 'award'),
+      goal('Reviews', 2, 3, 'writing'),
+    ],
+    rewards: [
+      {
+        name: 'Sticker sheet',
+        detail: 'Collect from the library desk.',
+        at: 200,
+        earned: true,
+        on: 'March 9, 2026',
+      },
+      { name: 'Poster', detail: 'Chosen from this year’s four designs.', at: 600, earned: false },
+    ],
+  },
+  arresting: {
+    startedOn: 'June 2, 2026',
+    description:
+      'Arresting Strangeness is about books that are a bit odd — the ones that do not sit neatly in a genre. Read five of them in June and tell us what made each one strange.',
+    types: ['Minutes', 'Activities'],
+    goals: [
+      goal('Minutes Completed', 88, 500, 'clock'),
+      goal('Badges Earned', 0, 5, 'award'),
+      goal('Completed Activities', 2, 5, 'circle-check'),
+    ],
+    rewards: [
+      {
+        name: 'Benny enamel pin',
+        detail: 'For finishing every activity.',
+        at: 500,
+        earned: false,
+      },
+    ],
+  },
+}
+
+export const getChallengeDetail = (id) => CHALLENGE_DETAIL[id]

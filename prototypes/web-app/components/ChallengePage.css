@@ -1,0 +1,263 @@
+/* ─── One challenge, from the reader's side ─────────────────────────────────
+   `programs/_program_header.html.haml` + `_show.html.haml`. */
+
+/* The app's `.challenge-header` is a full-width band with the banner centred on
+   it and colour bars either side (it samples those off the image). Same shape
+   here: the band is the challenge's own gradient, and the artwork sits on it at
+   the 2.62:1 ratio every real Beanstack banner ships at (920×351, or 1840×702
+   at 2×) — which is also what the challenge creator generates theme art at. */
+.cp-banner {
+  /* Full-bleed, cancelling .wa-main's top padding and .wa-main-inner's sides. */
+  display: grid;
+  place-items: center;
+  width: 100vw;
+  min-height: 190px;
+  margin: -24px 0 0;
+  margin-inline: calc(50% - 50vw);
+  aspect-ratio: 5 / 1;
+  max-height: 260px;
+}
+.cp-banner-title {
+  font-size: clamp(28px, 4.4vw, 52px);
+  font-weight: 900;
+  line-height: 1.04;
+  text-align: center;
+  letter-spacing: -0.02em;
+  white-space: pre-line;
+}
+
+.cp-head {
+  padding-top: 18px;
+}
+.cp-back {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  padding: 0;
+  margin-bottom: 12px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text-light);
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.cp-back:hover {
+  color: var(--c-blue);
+}
+.cp-headrow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.cp-title {
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  color: var(--c-text-dark);
+}
+.cp-dates {
+  margin-top: 4px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--c-text-light);
+}
+.cp-tabs {
+  border-bottom: 1px solid var(--c-border);
+}
+
+.cp-body {
+  padding-bottom: 48px;
+}
+.cp-section {
+  margin-top: 30px;
+}
+.cp-h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+/* `p.challenge-subhead` — 14px bold grey under a section heading. */
+.cp-subhead {
+  margin-top: 3px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+.cp-empty {
+  padding: 24px 0;
+  font-size: 14.5px;
+  color: var(--c-text-light);
+}
+
+/* ─── Overview ───────────────────────────────────────────────────────────── */
+
+.cp-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+.cp-description {
+  max-width: 72ch;
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+.cp-started {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  margin-top: 14px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+
+.cp-goals {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
+  gap: 14px;
+  margin: 18px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.cp-goal {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.cp-goal-ring {
+  position: relative;
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+}
+.cp-goal-ring svg {
+  position: absolute;
+  inset: 0;
+  fill: none;
+  transform: rotate(-90deg);
+}
+.cp-goal-track {
+  stroke: var(--c-gray-200);
+  stroke-width: 9;
+}
+.cp-goal-fill {
+  stroke: var(--c-blue);
+  stroke-width: 9;
+  stroke-linecap: round;
+}
+.cp-goal.is-done .cp-goal-fill {
+  stroke: #0f7a55;
+}
+.cp-goal-pct {
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+.cp-goal-copy {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.cp-goal-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+.cp-goal-num {
+  font-size: 19px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+.cp-goal-num em {
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--c-gray-600);
+}
+
+/* ─── Rewards ────────────────────────────────────────────────────────────── */
+
+.cp-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.cp-reward {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.cp-reward-mark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: var(--c-gray-500);
+  background: var(--c-gray-100);
+  border-radius: 999px;
+}
+.cp-reward.is-earned .cp-reward-mark {
+  color: #0f7a55;
+  background: #e6f6ee;
+}
+.cp-reward-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.cp-reward-name {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.cp-reward-detail {
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+.cp-reward-at {
+  flex: none;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-gray-600);
+}
+.cp-reward.is-earned .cp-reward-at {
+  color: #0f7a55;
+}
+
+@media (max-width: 560px) {
+  .cp-title {
+    font-size: 24px;
+  }
+  .cp-goals {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .cp-reward-at {
+    flex-basis: 100%;
+  }
+}

@@ -329,11 +329,19 @@ export const CHALLENGE_ART = {
  * What it measures sits beside the name rather than floated over the artwork:
  * the art is the challenge's identity, and the pill was covering whatever part
  * of it landed in that corner.
+ *
+ * `onOpen` is optional — the card has always been a `<button>`, it just never
+ * had anywhere to go. A prototype that has built the challenge page passes it;
+ * without it the card stays inert, as before.
  */
-export function ChallengeCard({ challenge, accent = READER_ACCENT }) {
+export function ChallengeCard({ challenge, accent = READER_ACCENT, onOpen }) {
   const art = CHALLENGE_ART[challenge.art] ?? CHALLENGE_ART.spring
   return (
-    <button className="wa-chcard" type="button">
+    <button
+      className={`wa-chcard${onOpen ? ' wa-chcard--open' : ''}`}
+      type="button"
+      onClick={onOpen ? () => onOpen(challenge) : undefined}
+    >
       <div className="wa-chcard-hero" style={{ background: art.bg }}>
         <span className="wa-chcard-arttitle" style={{ color: art.titleColor }}>
           {art.title}

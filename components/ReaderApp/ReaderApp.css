@@ -24,6 +24,11 @@
      reader-facing equivalent, a little tighter because these pages are cards
      and covers rather than tables. */
   --wa-content-max: 1200px;
+  /* Every page under the reader nav opens with a title row — some carry a
+     sub-line and some don't, which made the body jump as you moved between
+     tabs. One height and one set of margins for all of them. */
+  --wa-pagehead-h: 50px;
+  --wa-pagehead-margin: 26px 0 20px;
 }
 
 .wa-shell {

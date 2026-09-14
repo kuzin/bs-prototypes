@@ -490,15 +490,24 @@ function TitlesView({ entries }) {
 //
 // `extraTabs` / `renderExtra` hang another sub-tab off this strip, the same way
 // `Dashboard` lets a prototype hang one off the main nav — web-app puts its
-// Reviews page here. Left off, the page is exactly as it was.
+// Reviews page here.
+//
+// `heading` overrides the page title, `subtabs={false}` drops the strip, and
+// `defaultTab` picks which view opens — for when this log is embedded in a page
+// that already has a tab strip. A challenge's own log tab titles it
+// "{first_name}'s Log" and opens on the titles shelf: a month calendar of every
+// session the reader logged anywhere isn't that challenge's log. Left off, the page is exactly as it was.
 export function ReadingLog({
   entries = READING_LOG,
   partners = CONNECTION_LIST,
   titlesView = true,
   extraTabs = [],
   renderExtra,
+  heading,
+  subtabs = true,
+  defaultTab = 'log',
 }) {
-  const [tab, setTab] = useState('log')
+  const [tab, setTab] = useState(defaultTab)
   const [view, setView] = useState('calendar')
   const extraIds = extraTabs.map((t) => t.id)
 
@@ -506,23 +515,25 @@ export function ReadingLog({
 
   return (
     <div className="rl-page">
-      <div className="rl-subtabs">
-        <Tabs
-          variant="pill"
-          plain
-          size="md"
-          active={tab}
-          onChange={(id) => (id !== 'titles' || titlesView) && setTab(id)}
-          // Extras go between the log and All Titles rather than after it:
-          // All Titles is the archive at the end of the strip, and what a
-          // prototype hangs here belongs beside the log itself.
-          items={[
-            { id: 'log', label: 'Reading Log' },
-            ...extraTabs,
-            { id: 'titles', label: 'All Titles' },
-          ]}
-        />
-      </div>
+      {subtabs && (
+        <div className="rl-subtabs">
+          <Tabs
+            variant="pill"
+            plain
+            size="md"
+            active={tab}
+            onChange={(id) => (id !== 'titles' || titlesView) && setTab(id)}
+            // Extras go between the log and All Titles rather than after it:
+            // All Titles is the archive at the end of the strip, and what a
+            // prototype hangs here belongs beside the log itself.
+            items={[
+              { id: 'log', label: 'Reading Log' },
+              ...extraTabs,
+              { id: 'titles', label: 'All Titles' },
+            ]}
+          />
+        </div>
+      )}
 
       {/* An extra tab owns its whole page — its own header included — so the
           log's header and streaks drop out entirely rather than sitting above
@@ -532,7 +543,9 @@ export function ReadingLog({
       {!extraIds.includes(tab) && (
         <>
           <div className="rl-head">
-            <h1 className="rl-title">{tab === 'log' ? 'Reading Log' : 'All Titles'}</h1>
+            <h1 className="rl-title">
+              {heading ?? (tab === 'log' ? 'Reading Log' : 'All Titles')}
+            </h1>
             <div className="rl-head-actions">
               <Button variant="secondary" size="md">
                 Print log

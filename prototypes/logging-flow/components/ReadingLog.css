@@ -25,15 +25,17 @@
 
 .rl-head {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
   gap: 20px;
-  margin: 26px 0 22px;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: var(--wa-pagehead-h);
+  margin: var(--wa-pagehead-margin);
 }
 .rl-title {
-  font-size: 28px;
+  font-size: 26px;
   font-weight: 800;
-  color: var(--c-text);
+  letter-spacing: -0.01em;
+  color: var(--c-text-dark);
 }
 .rl-head-actions {
   display: flex;

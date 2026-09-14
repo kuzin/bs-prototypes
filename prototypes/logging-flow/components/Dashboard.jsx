@@ -52,6 +52,12 @@ function Footer() {
  * is too, for a prototype whose log isn't logging-flow's own — web-app has no
  * Scholastic, so its log must not carry Scholastic sessions either.
  *
+ * `onOpenChallenge` makes the challenge cards go somewhere. They have always
+ * been buttons; a prototype that has built the challenge page passes this and
+ * they open it. Left off, they stay inert. `page` is where what they open goes:
+ * a node that replaces the main column outright while the reader's nav stays
+ * put — a destination that isn't one of the tabs.
+ *
  * `logTabs` / `renderLogTab` are the same additive pair one level down: an
  * extra sub-tab on the Reading Log's own strip, between the log and "All
  * Titles". web-app puts Reviews there.
@@ -76,6 +82,8 @@ export function Dashboard({
   logEntries,
   logTabs = [],
   renderLogTab,
+  onOpenChallenge,
+  page,
 }) {
   const [scope, setScope] = useState('current')
   // 'challenges' | 'settings' | 'log' | any `extraTabs` id — the gear (and
@@ -120,7 +128,9 @@ export function Dashboard({
       />
       <main className="wa-main">
         <div className="wa-main-inner">
-          {owned(view) ? (
+          {page ? (
+            page
+          ) : owned(view) ? (
             renderExtra?.(view)
           ) : view === 'log' ? (
             <ReadingLog
@@ -159,7 +169,7 @@ export function Dashboard({
                     </div>
                     <div className="wa-chgrid">
                       {CHALLENGES.map((c) => (
-                        <ChallengeCard key={c.id} challenge={c} />
+                        <ChallengeCard key={c.id} challenge={c} onOpen={onOpenChallenge} />
                       ))}
                     </div>
                   </div>

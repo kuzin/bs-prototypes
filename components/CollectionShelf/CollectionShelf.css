@@ -27,10 +27,13 @@
 .co-shelf-head {
   display: flex;
   gap: 20px;
-  align-items: center;
+  align-items: flex-end;
   justify-content: space-between;
-  padding-bottom: 14px;
-  margin: 26px 0 20px;
+  /* Its hairline and the padding above it are part of the header's own box, so
+     they come out of the shared height rather than adding to it. */
+  min-height: calc(var(--wa-pagehead-h, 50px) - 8px);
+  padding-bottom: 7px;
+  margin: var(--wa-pagehead-margin, 26px 0 20px);
   border-bottom: 1px solid var(--c-border);
 }
 .co-shelf-copy {

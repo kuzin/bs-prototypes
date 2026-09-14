@@ -8,6 +8,7 @@ import { BookCover } from '../logging-flow/components/BookCover'
 import { AllBadges } from './components/AllBadges'
 import { Friends } from './components/Friends'
 import { Reviews } from './components/Reviews'
+import { ChallengePage } from './components/ChallengePage'
 import {
   STREAK,
   DAILY_GOAL,
@@ -81,6 +82,7 @@ export function App() {
   const [connections, setConnections] = useState({})
   const [linking, setLinking] = useState(null) // partner id mid-handoff
   const [visiting, setVisiting] = useState(null) // partner id whose catalog is open
+  const [challenge, setChallenge] = useState(null) // the challenge whose page is open
 
   // The pages this prototype owns, by tab id.
   function renderTab(id) {
@@ -135,6 +137,12 @@ export function App() {
         renderExtra={renderTab}
         logTabs={LOG_TABS}
         renderLogTab={() => <Reviews />}
+        onOpenChallenge={setChallenge}
+        page={
+          challenge ? (
+            <ChallengePage challenge={challenge} entries={LOG} onBack={() => setChallenge(null)} />
+          ) : null
+        }
       />
 
       <LogFlow
