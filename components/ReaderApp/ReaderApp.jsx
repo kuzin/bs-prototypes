@@ -355,21 +355,24 @@ const SCOPES = [
   { id: 'ignored', label: 'Ignored' },
 ]
 
-/** Current / Past / Ignored, beside the "Challenges" heading. */
+/**
+ * Current / Past / Ignored, beside the "Challenges" heading.
+ *
+ * A segmented control is `Tabs variant="pill"` in this system — this was a
+ * hand-rolled one, on its own pink active state that matched nothing else on
+ * the page.
+ */
 export function ChallengeScope({ value, onChange, scopes = SCOPES }) {
   return (
-    <div className="wa-scope">
-      {scopes.map((o) => (
-        <button
-          key={o.id}
-          type="button"
-          className={`wa-scope-btn${value === o.id ? ' wa-scope-btn--active' : ''}`}
-          onClick={() => onChange(o.id)}
-        >
-          {o.label}
-        </button>
-      ))}
-    </div>
+    <Tabs
+      variant="pill"
+      size="sm"
+      active={value}
+      onChange={onChange}
+      accent={READER_ACCENT}
+      ariaLabel="Which challenges"
+      items={scopes}
+    />
   )
 }
 

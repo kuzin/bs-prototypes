@@ -324,28 +324,6 @@
   letter-spacing: -0.02em;
 }
 
-.wa-scope {
-  display: inline-flex;
-  background: var(--c-gray-100);
-  padding: 3px;
-  border-radius: 999px;
-}
-.wa-scope-btn {
-  border: 0;
-  background: transparent;
-  font: inherit;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--c-gray-750);
-  padding: 6px 14px;
-  border-radius: 999px;
-  cursor: pointer;
-}
-.wa-scope-btn--active {
-  background: #fde7ec;
-  color: #b0304f;
-}
-
 /* Group */
 .wa-group {
   margin-bottom: 24px;

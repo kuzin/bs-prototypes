@@ -518,9 +518,13 @@ function SinglePartnerBanner({ partner: p, onLink, onDismiss }) {
   return (
     <div className="cn-banner" style={{ background: brand.soft }}>
       <PartnerMark id={p.id} size={30} />
+      {/* No second line here: `bannerText` is already the partner's pitch in
+          their own voice ("Link your Comics Plus account today!"), and the
+          marketing line under it said the same thing again. The multi-partner
+          banner keeps its subline because that one explains what linking does
+          rather than selling it. */}
       <div className="cn-banner-msg">
         <strong>{p.bannerText}</strong>
-        <span className="cn-banner-pitch">{p.pitch}</span>
       </div>
       <div className="cn-banner-actions">
         <button
