@@ -143,3 +143,113 @@ export const ACHIEVEMENTS = [
   achievement('Finished a series', 'May 12, 2026', 'All nine Amulet books', 'series'),
   achievement('Top of the class', 'Apr 28, 2026', 'Most minutes in Room 14 in April', 'top'),
 ]
+
+// ─── Friends ─────────────────────────────────────────────────────────────────
+// The real card (`profiles/_friend.html.haml`) is a colour band, the reader's
+// avatar or initials over it, their name, and their current streak — or a
+// "Pending Invite" tag where the streak would be. The kebab offers "View
+// Friend" and "Remove Friend" (or "Cancel this Invitation" on a pending one).
+//
+// The photographs are the same six readers Book Discovery uses, so a face here
+// is the same person there.
+
+const friend = (id, name, initials, color, grade, streak, minutes, books, avatar) => ({
+  id,
+  name,
+  initials,
+  color,
+  grade,
+  streak,
+  minutesThisWeek: minutes,
+  booksThisYear: books,
+  avatar: avatar ? `/bs-prototypes/avatars/${id}.jpg` : null,
+})
+
+export const FRIENDS = [
+  friend('jayden', 'Jayden P.', 'JP', '#196DD5', 'Grade 5', 21, 214, 34, true),
+  friend('sofia', 'Sofia R.', 'SR', '#DB2777', 'Grade 4', 14, 186, 28, true),
+  friend('noah', 'Noah K.', 'NK', '#0CA7BC', 'Grade 5', 9, 152, 22, true),
+  friend('emma', 'Emma L.', 'EL', '#0BA85F', 'Grade 4', 0, 131, 19, true),
+  friend('diego', 'Diego H.', 'DH', '#0891B2', 'Grade 5', 6, 118, 17, true),
+  friend('priya', 'Priya S.', 'PS', '#9333EA', 'Grade 4', 31, 205, 30, true),
+  friend('liam', 'Liam T.', 'LT', '#B43DD0', 'Grade 6', 3, 96, 12, false),
+]
+
+export const PENDING_INVITES = [
+  { id: 'ava', name: 'Ava M.', initials: 'AM', grade: 'Grade 3', pending: true },
+  { id: 'zoe', name: 'Zoe B.', initials: 'ZB', grade: 'Grade 3', pending: true },
+]
+
+// One new request waiting, which is what puts the banner on the page.
+export const FRIEND_REQUESTS = [
+  { id: 'maya', name: 'Maya C.', initials: 'MC', color: '#F0966F', grade: 'Grade 4' },
+]
+
+// ─── Leaderboards ────────────────────────────────────────────────────────────
+// `leaderboards/index.html.haml` tabs three boards — Friends, Grade, School —
+// each over the same table: rank, reader, and the log type's total. The period
+// dropdown and the log-type tabs are the app's own wording.
+
+export const LEADERBOARD_BOARDS = [
+  { id: 'friends', label: 'Friends' },
+  { id: 'grade', label: 'Grade' },
+  { id: 'school', label: 'School' },
+]
+
+export const LEADERBOARD_PERIODS = [
+  { value: 'week', label: 'This Week (Since Monday)' },
+  { value: 'month', label: 'This Month (Since the 1st)' },
+]
+
+export const LEADERBOARD_TYPES = [
+  { id: 'minutes', label: 'Minutes', column: 'Minutes logged' },
+  { id: 'books', label: 'Books', column: 'Books read' },
+]
+
+// The three boards rank three different things — the app's own table header
+// says "Reader" on the friends board and "Grade" / "School" on the other two.
+
+const ME = {
+  id: 'olivia',
+  name: 'Olivia M.',
+  initials: 'OM',
+  color: '#F26430',
+  grade: 'Grade 6',
+  minutesThisWeek: 176,
+  booksThisYear: 27,
+  isMe: true,
+}
+
+const GRADES = [
+  { id: 'g6', name: '6th grade', minutesThisWeek: 412, booksThisYear: 388, isMe: true },
+  { id: 'g5', name: '5th grade', minutesThisWeek: 388, booksThisYear: 341 },
+  { id: 'g7', name: '7th grade', minutesThisWeek: 271, booksThisYear: 302 },
+  { id: 'g4', name: '4th grade', minutesThisWeek: 244, booksThisYear: 286 },
+  { id: 'g8', name: '8th grade', minutesThisWeek: 190, booksThisYear: 214 },
+]
+
+const SCHOOLS = [
+  { id: 'magnolia', name: 'Magnolia Middle', minutesThisWeek: 198, booksThisYear: 174, isMe: true },
+  { id: 'oak', name: 'Oak Elementary', minutesThisWeek: 157, booksThisYear: 168 },
+  { id: 'hickory', name: 'Hickory Middle School', minutesThisWeek: 104, booksThisYear: 131 },
+  { id: 'juniper', name: 'Juniper Elementary', minutesThisWeek: 92, booksThisYear: 118 },
+  { id: 'cedar', name: 'Cedar Ridge Middle', minutesThisWeek: 76, booksThisYear: 94 },
+]
+
+// A month is roughly four and a bit weeks of the same reading.
+const PERIOD_FACTOR = { week: 1, month: 4.3 }
+
+export function leaderboardRows(board, type, period) {
+  const pool = board === 'friends' ? [...FRIENDS, ME] : board === 'grade' ? GRADES : SCHOOLS
+  const factor = PERIOD_FACTOR[period] ?? 1
+  return pool
+    .map((p) => ({
+      ...p,
+      value:
+        type === 'minutes'
+          ? Math.round(p.minutesThisWeek * factor)
+          : Math.max(1, Math.round((p.booksThisYear / 34) * factor * 4)),
+    }))
+    .sort((a, b) => b.value - a.value)
+    .map((row, i) => ({ ...row, rank: i + 1 }))
+}

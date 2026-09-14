@@ -11,6 +11,9 @@ import {
   StreakBanner,
 } from '@components/ReaderApp/ReaderApp'
 import { PartnerSwitcher } from '@components/PartnerConnect/PartnerConnect'
+import { AllBadges } from '../../web-app/components/AllBadges'
+import { Friends } from '../../web-app/components/Friends'
+import { Leaderboards } from '../../web-app/components/Leaderboards'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { Variant } from './_shared'
 
@@ -338,6 +341,83 @@ export const readerAppSections = [
       <Variant label="switch between schools and grades">
         <div style={{ width: 320 }}>
           <LeaderboardCard schools={TOP_SCHOOLS} grades={TOP_GRADES} />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-all-badges',
+    name: 'AllBadges',
+    usage: `import { AllBadges } from './components/AllBadges'
+
+/* claimed off the shared Dashboard by tab id */
+<Dashboard ownTabs={['badges']} renderExtra={(id) => id === 'badges' && <AllBadges />} />`,
+    desc: (
+      <>
+        The All Badges page. Two shelves, the way the profile splits them (
+        <code>_badges_and_achievements_tabs</code>: &ldquo;Earned Badges&rdquo; |
+        &ldquo;Achievements&rdquo;) — but the Badges shelf carries the unearned half too, which the
+        product shows on a challenge&apos;s own Badges tab: gray art, a progress ring, and the
+        requirement in the footer where an earned badge has its date. Built on the shared{' '}
+        <code>CollectionShelf</code>; the achievement medallions are Book Discovery&apos;s{' '}
+        <code>AchievementArt</code>.
+      </>
+    ),
+    render: () => (
+      <Variant label="earned and not-yet-earned, plus achievements" full>
+        <div style={{ padding: '24px 20px 20px', background: '#fff' }}>
+          <AllBadges />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-friends',
+    name: 'Friends',
+    usage: `import { Friends } from './components/Friends'
+
+<Friends />`,
+    desc: (
+      <>
+        The Friends page — <code>profiles/friends.html.haml</code>. A card per friend: a band in
+        their own colour with their avatar hanging over it, their name and grade, and their current
+        streak. A pending invite is the same card gone gray with a &ldquo;Pending Invite&rdquo; tag
+        where the streak sits, and its kebab offers &ldquo;Cancel this Invitation&rdquo; rather than
+        &ldquo;Remove Friend&rdquo;. Waiting requests get a banner above the grid, because they need
+        a decision rather than a card. Grid steps 4 → 3 → 2 → 1, the app&apos;s own breakpoints.
+      </>
+    ),
+    render: () => (
+      <Variant label="friends, a pending invite, and a waiting request" full>
+        <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+          <Friends />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-leaderboards',
+    name: 'Leaderboards',
+    usage: `import { Leaderboards } from './components/Leaderboards'
+
+<Leaderboards />`,
+    desc: (
+      <>
+        The Leaderboards page — <code>leaderboards/index.html.haml</code>. Three boards over one
+        table, and they rank three different things: Friends ranks readers, Grade and School rank
+        those against each other, which is why the second column&apos;s header changes with the
+        board. Which board and which log type are the same kind of choice, so both are segmented
+        controls on one row. The podium gets a coin instead of a number and the reader&apos;s own
+        row is highlighted and suffixed &ldquo;(You)&rdquo;, both from the app.
+      </>
+    ),
+    render: () => (
+      <Variant label="friends / grade / school over minutes or books" full>
+        <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+          <Leaderboards />
         </div>
       </Variant>
     ),

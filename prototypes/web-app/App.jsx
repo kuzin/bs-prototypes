@@ -6,6 +6,8 @@ import { Dashboard } from '../logging-flow/components/Dashboard'
 import { LogFlow } from '../logging-flow/components/LogFlow'
 import { BookCover } from '../logging-flow/components/BookCover'
 import { AllBadges } from './components/AllBadges'
+import { Friends } from './components/Friends'
+import { Leaderboards } from './components/Leaderboards'
 import {
   STREAK,
   DAILY_GOAL,
@@ -60,7 +62,7 @@ const LOG = READING_LOG.filter((e) => e.source !== 'scholastic')
 // The tabs in the real nav that the dashboard has never had a page for. This
 // prototype builds them, so it claims them by id rather than letting the
 // dashboard bounce them back to Challenges.
-const OWN_TABS = ['badges']
+const OWN_TABS = ['badges', 'friends', 'leaderboards']
 
 export function App() {
   const [flowOpen, setFlowOpen] = useState(false)
@@ -76,6 +78,8 @@ export function App() {
   // The pages this prototype owns, by tab id.
   function renderTab(id) {
     if (id === 'badges') return <AllBadges />
+    if (id === 'friends') return <Friends />
+    if (id === 'leaderboards') return <Leaderboards />
     return null
   }
 
