@@ -104,6 +104,7 @@ function Overview({ detail, onTab }) {
             toward your current challenges instead.
           </InfoBox>
         )}
+        <h2 className="cp-h2">Description</h2>
         <p className="cp-description">{detail.description}</p>
       </section>
 
