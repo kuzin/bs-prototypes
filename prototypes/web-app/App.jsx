@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
+import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
 
 import { Dashboard } from '../logging-flow/components/Dashboard'
@@ -7,8 +8,9 @@ import { LogFlow } from '../logging-flow/components/LogFlow'
 import { BookCover } from '../logging-flow/components/BookCover'
 import { AllBadges } from './components/AllBadges'
 import { Friends } from './components/Friends'
-import { Reviews } from './components/Reviews'
+import { ReviewsPage } from './components/ReviewsPage'
 import { ChallengePage } from './components/ChallengePage'
+import { FRIEND_REQUESTS } from './data'
 import {
   STREAK,
   DAILY_GOAL,
@@ -26,6 +28,7 @@ import {
 
 import '../logging-flow/index.css'
 import '@components/PrototypeNav/PrototypeNav.css'
+import '@components/PreviewBar/PreviewBar.css'
 
 // The reader app as it stands today — the page a reader actually sees, so the
 // other prototypes have something current to be measured against.
@@ -63,14 +66,39 @@ const LOG = READING_LOG.filter((e) => e.source !== 'scholastic')
 // The tabs in the real nav that the dashboard has never had a page for. This
 // prototype builds them, so it claims them by id rather than letting the
 // dashboard bounce them back to Challenges.
-const OWN_TABS = ['badges', 'friends']
+const OWN_TABS = ['badges', 'friends', 'reviews']
 
-// Two of the six aren't top-level destinations here. Leaderboards is a sub-tab
-// of Friends — the profile pairs the two on one page, and they're two views of
-// the same people. Reviews sits under Reading, beside the log and All
-// Titles, since it's another record of what this reader has read.
-const HIDE_TABS = ['leaderboards', 'reviews']
-const LOG_TABS = [{ id: 'reviews', label: 'Reviews' }]
+// Leaderboards isn't a top-level destination here — it's a sub-tab of Friends,
+// since the profile pairs the two on one page and they're two views of the same
+// people.
+const HIDE_TABS = ['leaderboards']
+
+// Half of what a reader sees is decided by settings an admin holds, so this
+// page is really several pages. The preview bar switches between them rather
+// than freezing one configuration into the fixtures. Each id is the app's own
+// setting; `rmi` is the one that isn't a boolean — it has three states.
+const FEATURE_SWITCHES = [
+  { id: 'rmi', label: 'Motivation (RMI)', hint: 'rmi_enabled' },
+  { id: 'communityGoal', label: 'Community goal', hint: 'microsite.community_goal' },
+  { id: 'friendRequests', label: 'Friend requests', hint: '2 waiting' },
+  { id: 'readingGoals', label: 'Reading goals', hint: 'reading_goals_enabled' },
+  { id: 'leaderboards', label: 'Leaderboards', hint: 'show_school_leaderboards' },
+  { id: 'challengeCode', label: 'Challenge codes', hint: 'show_challenge_code' },
+  { id: 'connectedSite', label: 'Connected site', hint: 'is_connected_school?' },
+]
+
+// The site's own goal, and what it has read toward it so far.
+const COMMUNITY_GOAL = { total: 128_400, goal: 250_000, unit: 'minutes' }
+
+const FEATURE_DEFAULTS = {
+  rmi: true,
+  communityGoal: true,
+  friendRequests: true,
+  readingGoals: true,
+  leaderboards: true,
+  challengeCode: true,
+  connectedSite: true,
+}
 
 export function App() {
   const [flowOpen, setFlowOpen] = useState(false)
@@ -87,11 +115,17 @@ export function App() {
   // also closes an open challenge — `page` replaces the main column, so
   // without this the challenge stayed up under a nav tab that had moved on.
   const [view, setView] = useState('challenges')
+  const [features, setFeatures] = useState(FEATURE_DEFAULTS)
+  const [requests, setRequests] = useState(FRIEND_REQUESTS)
+  // The top bar can start a review from any page, so what it opens lives here
+  // and the Reviews page renders it.
+  const [composing, setComposing] = useState(null)
 
   // The pages this prototype owns, by tab id.
   function renderTab(id) {
     if (id === 'badges') return <AllBadges />
     if (id === 'friends') return <Friends />
+    if (id === 'reviews') return <ReviewsPage composing={composing} onCompose={setComposing} />
     return null
   }
 
@@ -126,10 +160,20 @@ export function App() {
 
   return (
     <>
+      <PreviewBar
+        title="Beanstack Web App"
+        toggles={FEATURE_SWITCHES.map((f) => ({ ...f, on: features[f.id] }))}
+        onToggle={(id, on) => setFeatures((f) => ({ ...f, [id]: on }))}
+      />
       <Dashboard
         streak={streak}
         dailyGoal={dailyGoal}
         onLog={() => setFlowOpen(true)}
+        onReview={() => {
+          setView('reviews')
+          setChallenge(null)
+          setComposing({ kind: 'written' })
+        }}
         connections={connections}
         onLinkPartner={setLinking}
         onDisconnectPartner={handleDisconnect}
@@ -144,9 +188,15 @@ export function App() {
         ownTabs={OWN_TABS}
         hideTabs={HIDE_TABS}
         renderExtra={renderTab}
-        logTabs={LOG_TABS}
-        renderLogTab={() => <Reviews />}
         onOpenChallenge={setChallenge}
+        motivation={features.rmi ? 'available' : undefined}
+        features={{
+          ...features,
+          communityGoal: features.communityGoal ? COMMUNITY_GOAL : null,
+        }}
+        friendRequests={features.friendRequests ? requests : []}
+        onAcceptFriend={(r) => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
+        onDeclineFriend={(r) => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
         page={
           challenge ? (
             <ChallengePage challenge={challenge} entries={LOG} onBack={() => setChallenge(null)} />

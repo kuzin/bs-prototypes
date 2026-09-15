@@ -27,7 +27,8 @@
   z-index: 300;
   display: flex;
   flex: none;
-  gap: 18px;
+  flex-wrap: wrap;
+  gap: 8px 18px;
   align-items: center;
   min-height: var(--preview-bar-h);
   padding: 10px 18px;
@@ -190,5 +191,86 @@
   .pvb-views {
     flex-wrap: wrap;
     overflow-x: visible;
+  }
+}
+
+/* ─── Feature switches ───────────────────────────────────────────────────
+   The settings the screen under review is gated on, behind a cog — there are
+   usually more of them than the bar has room for, and you set them once. */
+/* Flyout wraps its trigger, so the push comes from the wrapper. The cog holds
+   the far right of the bar whatever else is on it. */
+.pvb > .flyout {
+  margin-left: auto;
+}
+.pvb-cog {
+  display: inline-flex;
+  flex: none;
+  gap: 7px;
+  align-items: center;
+  padding: 6px 11px;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-gray-400);
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.08);
+  border: 0;
+  border-radius: 999px;
+}
+.pvb-cog:hover,
+.pvb-cog.is-open {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.16);
+}
+.pvb-cog-count {
+  padding: 1px 7px;
+  font-size: 11.5px;
+  color: var(--c-gray-900);
+  background: #fff;
+  border-radius: 999px;
+}
+
+.pvb-panel {
+  width: 272px;
+  padding: 6px;
+}
+.pvb-panel-head {
+  padding: 8px 10px 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--c-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.pvb-panel-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.pvb-panel-row:hover {
+  background: var(--c-gray-100);
+}
+.pvb-panel-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.pvb-panel-label {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.pvb-panel-hint {
+  font-size: 12px;
+  color: var(--c-text-light);
+}
+
+@media (max-width: 720px) {
+  .pvb-cog-label {
+    display: none;
   }
 }

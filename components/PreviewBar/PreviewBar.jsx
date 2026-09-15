@@ -1,4 +1,8 @@
 import { Icon } from '@components/Icon/Icon'
+import { Toggle } from '@components/Toggle/Toggle'
+import { Flyout } from '@components/Flyout/Flyout'
+import '@components/Toggle/Toggle.css'
+import '@components/Flyout/Flyout.css'
 import './PreviewBar.css'
 
 /**
@@ -18,9 +22,18 @@ import './PreviewBar.css'
  *   views={[{ id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' }]}
  *   active={view}
  *   onChange={setView}
+ *   toggles={[{ id: 'rmi', label: 'RMI', on: true }]}  // optional feature switches
+ *   onToggle={(id, on) => …}
  *   actions={<button …>Reset</button>}          // optional controls, far right
  *   sticky={false}                              // opt out inside a flex-column shell
  * />
+ *
+ * `toggles` is for the settings a screen is gated on — the things an admin
+ * turns on per site, which decide whether half a page is there at all. A
+ * prototype that has them can be read in every configuration instead of the
+ * one its fixtures happen to describe. They live behind a cog rather than
+ * along the bar: there are usually more of them than fit, and they are
+ * something you set once and then forget while you read the page.
  *
  * `short` is the label the strip swaps to before it would start overflowing;
  * it falls back to `label`. Deliberately no accent prop — the active pill is
@@ -32,12 +45,18 @@ export function PreviewBar({
   views = [],
   active,
   onChange,
+  toggles = [],
+  onToggle,
+  togglesLabel = 'Site settings',
   actions,
   sticky = true,
   ariaLabel = 'Preview view',
   className = '',
 }) {
   const cls = ['pvb', sticky && 'pvb--sticky', className].filter(Boolean).join(' ')
+  // What's been turned off is the interesting number — the cog says it so you
+  // aren't reading a half-empty page wondering why.
+  const offCount = toggles.filter((t) => !t.on).length
   return (
     <div className={cls}>
       <div className="pvb-titles">
@@ -63,6 +82,41 @@ export function PreviewBar({
             </button>
           ))}
         </div>
+      )}
+
+      {toggles.length > 0 && (
+        <Flyout
+          placement="bottom-end"
+          trigger={({ toggle, open }) => (
+            <button
+              type="button"
+              className={`pvb-cog${open ? ' is-open' : ''}`}
+              onClick={toggle}
+              aria-haspopup="dialog"
+              aria-expanded={open}
+              aria-label={togglesLabel}
+            >
+              <Icon name="settings" size={16} />
+              <span className="pvb-cog-label">{togglesLabel}</span>
+              {offCount > 0 && <span className="pvb-cog-count">{offCount} off</span>}
+            </button>
+          )}
+        >
+          {() => (
+            <div className="pvb-panel">
+              <div className="pvb-panel-head">{togglesLabel}</div>
+              {toggles.map((t) => (
+                <label key={t.id} className="pvb-panel-row">
+                  <span className="pvb-panel-text">
+                    <span className="pvb-panel-label">{t.label}</span>
+                    {t.hint && <span className="pvb-panel-hint">{t.hint}</span>}
+                  </span>
+                  <Toggle size="sm" checked={t.on} onChange={(on) => onToggle?.(t.id, on)} />
+                </label>
+              ))}
+            </div>
+          )}
+        </Flyout>
       )}
 
       {actions && <div className="pvb-actions">{actions}</div>}

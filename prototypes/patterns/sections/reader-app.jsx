@@ -2,11 +2,16 @@ import { useState } from 'react'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
 import {
+  BannerStack,
+  CommunityGoalBanner,
+  ReaderBanner,
+  ReaderBannerAction,
   ReaderPageHead,
   ChallengeCard,
   ChallengeScope,
   GoalCard,
   LeaderboardCard,
+  MotivationCard,
   ReaderPill,
   ReaderTopBar,
   StreakBanner,
@@ -16,10 +21,15 @@ import { AllBadges } from '../../web-app/components/AllBadges'
 import { Friends } from '../../web-app/components/Friends'
 import { Leaderboards } from '../../web-app/components/Leaderboards'
 import { Reviews } from '../../web-app/components/Reviews'
-import { FriendRequests } from '../../web-app/components/FriendRequests'
+import { PeerReviews } from '../../web-app/components/PeerReviews'
+import { WishList } from '../../web-app/components/WishList'
+import { BookLists } from '../../web-app/components/BookLists'
+import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from '../../web-app/components/FriendProfile'
 import { ChallengePage } from '../../web-app/components/ChallengePage'
+import { MORE_CHALLENGES } from '../../logging-flow/data'
 import { CONNECTIONS } from '../../logging-flow/connections'
+import { JoinChallenge, ConfirmUnenroll } from '../../logging-flow/components/Dashboard'
 import { Variant } from './_shared'
 
 const noop = () => {}
@@ -39,6 +49,8 @@ const CHALLENGES = [
     title: 'Spring Into Reading',
     dates: 'Apr 1 — Apr 30',
     badge: 'Minutes',
+    logTypes: ['minutes', 'books'],
+    types: ['activities'],
     banner: 'spring-into-reading',
   },
   {
@@ -46,6 +58,9 @@ const CHALLENGES = [
     title: 'For the Love of Reading',
     dates: 'Ongoing',
     badge: 'Minutes',
+    logTypes: ['minutes'],
+    types: ['reviews'],
+    canSelfUnenroll: true,
     banner: 'for-the-love-of-reading',
   },
   {
@@ -53,20 +68,59 @@ const CHALLENGES = [
     title: 'Lectores del Mundo',
     dates: 'Jun 1 — Jun 30',
     badge: 'Books',
+    logTypes: ['books'],
+    types: ['bingo'],
+    bookTalks: true,
     art: 'lectores',
   },
 ]
 
 const TOP_SCHOOLS = [
-  { rank: 1, name: 'Magnolia Middle', value: 198, color: '#F59E0B' },
-  { rank: 2, name: 'Oak Elementary', value: 157, color: '#94A3B8' },
-  { rank: 3, name: 'Hickory Middle School', value: 104, color: '#C2884F' },
+  {
+    rank: 1,
+    name: 'Magnolia Middle',
+    value: 198,
+    color: '#F59E0B',
+    stats: { week: { minutes: 198, books: 24 }, month: { minutes: 812, books: 97 } },
+  },
+  {
+    rank: 2,
+    name: 'Oak Elementary',
+    value: 157,
+    color: '#94A3B8',
+    stats: { week: { minutes: 157, books: 19 }, month: { minutes: 690, books: 81 } },
+  },
+  {
+    rank: 3,
+    name: 'Hickory Middle School',
+    value: 104,
+    color: '#C2884F',
+    stats: { week: { minutes: 104, books: 12 }, month: { minutes: 455, books: 58 } },
+  },
 ]
 
 const TOP_GRADES = [
-  { rank: 1, name: '6th grade', value: 412, color: '#F59E0B' },
-  { rank: 2, name: '5th grade', value: 388, color: '#94A3B8' },
-  { rank: 3, name: '7th grade', value: 271, color: '#C2884F' },
+  {
+    rank: 1,
+    name: '6th grade',
+    value: 412,
+    color: '#F59E0B',
+    stats: { week: { minutes: 412, books: 47 }, month: { minutes: 1680, books: 193 } },
+  },
+  {
+    rank: 2,
+    name: '5th grade',
+    value: 388,
+    color: '#94A3B8',
+    stats: { week: { minutes: 388, books: 51 }, month: { minutes: 1544, books: 205 } },
+  },
+  {
+    rank: 3,
+    name: '7th grade',
+    value: 271,
+    color: '#C2884F',
+    stats: { week: { minutes: 271, books: 33 }, month: { minutes: 1120, books: 141 } },
+  },
 ]
 
 // The bar is sticky and full-bleed; inside a showcase card it wants a plain
@@ -77,6 +131,13 @@ function BarFrame({ children }) {
       <div style={{ minWidth: 880 }}>{children}</div>
     </div>
   )
+}
+
+// The banner is not a full-bleed component — in the reader app it sits in
+// `.wa-main-inner`'s gutters and owns only its own bottom margin. `full` is
+// `padding: 0`, so the example has to stand in for the page's sides.
+function BannerFrame({ children }) {
+  return <div style={{ padding: '20px 20px 0', background: '#fff' }}>{children}</div>
 }
 
 function TopBarDemo() {
@@ -99,6 +160,40 @@ function TopBarDemo() {
         }
       />
     </BarFrame>
+  )
+}
+
+// Both modals open from something, so the examples give them the button they
+// open from rather than showing them already up.
+function JoinDemo({ challenge, ignored, label }) {
+  const [open, setOpen] = useState(null)
+  return (
+    <>
+      <Button onClick={() => setOpen(challenge)}>{label}</Button>
+      <JoinChallenge
+        challenge={open}
+        ignored={ignored}
+        onClose={() => setOpen(null)}
+        onJoin={() => setOpen(null)}
+        onDismiss={() => setOpen(null)}
+      />
+    </>
+  )
+}
+
+function UnenrollDemo() {
+  const [open, setOpen] = useState(null)
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(CHALLENGES[0])}>
+        Un-enroll from a challenge
+      </Button>
+      <ConfirmUnenroll
+        challenge={open}
+        onClose={() => setOpen(null)}
+        onConfirm={() => setOpen(null)}
+      />
+    </>
   )
 }
 
@@ -227,6 +322,94 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    id: 'reader-banner',
+    name: 'ReaderBanner',
+    usage: `import { ReaderBanner, ReaderBannerAction, BannerStack } from '@components/ReaderApp/ReaderApp'
+
+<BannerStack max={2}>
+  <ReaderBanner
+    tone="red"                       /* blue | amber | green | red — or \`tint\`/\`ink\` to override */
+    mark={<Icon name="flame-filled" size={22} />}
+    title={<><strong>No current streak.</strong> Log reading every day…</>}
+    sub="optional second line"
+    action={<ReaderBannerAction onClick={open}>View Streaks</ReaderBannerAction>}
+    onDismiss={dismiss}
+  />
+</BannerStack>`,
+    desc: (
+      <>
+        The bars the Challenges page opens with — link an app, friend requests waiting, the
+        community goal, your streak. They had drifted into four different bars:{' '}
+        <strong>
+          three disc sizes, three radii, three hand-rolled action chips and three margins
+        </strong>
+        . One anatomy now — a mark on a white disc, what it says, what you can do about it, and a
+        way to make it go away — with the tone supplying the ground and the ink, and nothing else
+        changing between them.
+        <br />
+        <br />
+        <code>ReaderBannerAction</code> is a real <code>Button</code>, not a chip: it was its own
+        hover, its own focus ring and its own press state, none of which matched the buttons
+        everywhere else. The banner only supplies the white ground it sits on and the ink it takes.{' '}
+        <code>tint</code>/<code>ink</code> override the tone for the case where the colour
+        isn&apos;t ours — a partner banner takes the partner&apos;s.
+        <br />
+        <br />
+        <code>BannerStack</code> is why they don&apos;t pile up: a reader with a lot going on could
+        land on five or six before reaching the page, so it shows two and folds the rest behind
+        &ldquo;View 3 more&rdquo;.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="the four tones, one anatomy" full>
+          <div style={{ padding: 20, background: '#fff' }}>
+            <ReaderBanner
+              tone="blue"
+              mark={<Icon name="link" size={20} />}
+              title={<strong>Link your Comics Plus account today!</strong>}
+              action={<ReaderBannerAction>Link Accounts</ReaderBannerAction>}
+              onDismiss={noop}
+            />
+            <div style={{ height: 10 }} />
+            <ReaderBanner
+              tone="amber"
+              mark={<Icon name="users" size={20} />}
+              title={<strong>You have 2 new friend requests!</strong>}
+              action={<ReaderBannerAction>View Requests</ReaderBannerAction>}
+            />
+            <div style={{ height: 10 }} />
+            <CommunityGoalBanner total={128400} goal={250000} onDismiss={noop} />
+            <div style={{ height: 10 }} />
+            <StreakBanner streak={{ current: 0 }} onLog={noop} />
+          </div>
+        </Variant>
+        <Variant label="BannerStack — two shown, the rest folded away" full>
+          <div style={{ padding: 20, background: '#fff' }}>
+            <BannerStack>
+              <ReaderBanner
+                tone="blue"
+                mark={<Icon name="link" size={20} />}
+                title={<strong>Link your Comics Plus account today!</strong>}
+                action={<ReaderBannerAction>Link Accounts</ReaderBannerAction>}
+                onDismiss={noop}
+              />
+              <ReaderBanner
+                tone="amber"
+                mark={<Icon name="users" size={20} />}
+                title={<strong>You have 2 new friend requests!</strong>}
+                action={<ReaderBannerAction>View Requests</ReaderBannerAction>}
+              />
+              <CommunityGoalBanner total={128400} goal={250000} onDismiss={noop} />
+              <StreakBanner streak={{ current: 12 }} onLog={noop} />
+            </BannerStack>
+          </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
     id: 'reader-streak-banner',
     name: 'StreakBanner',
     usage: `import { StreakBanner } from '@components/ReaderApp/ReaderApp'
@@ -245,21 +428,27 @@ export const readerAppSections = [
     render: () => (
       <>
         <Variant label="no streak yet" full>
-          <StreakBanner streak={{ current: 0 }} onLog={noop} />
+          <BannerFrame>
+            <StreakBanner streak={{ current: 0 }} onLog={noop} />
+          </BannerFrame>
         </Variant>
         <Variant label="a live streak" full>
-          <StreakBanner streak={{ current: 12 }} onLog={noop} />
+          <BannerFrame>
+            <StreakBanner streak={{ current: 12 }} onLog={noop} />
+          </BannerFrame>
         </Variant>
         <Variant label="message — beeverso names where the reading came from" full>
-          <StreakBanner
-            streak={{ current: 4 }}
-            onLog={noop}
-            message={
-              <>
-                <strong>4-day streak!</strong> Reading in your linked apps counts toward it too.
-              </>
-            }
-          />
+          <BannerFrame>
+            <StreakBanner
+              streak={{ current: 4 }}
+              onLog={noop}
+              message={
+                <>
+                  <strong>4-day streak!</strong> Reading in your linked apps counts toward it too.
+                </>
+              }
+            />
+          </BannerFrame>
         </Variant>
       </>
     ),
@@ -334,39 +523,80 @@ export const readerAppSections = [
     name: 'ChallengeCard',
     usage: `import { ChallengeCard } from '@components/ReaderApp/ReaderApp'
 
-/* a real challenge — its banner is in public/challenge-banners/ */
-<ChallengeCard challenge={{ title, dates, badge, banner: 'spring-into-reading' }} onOpen={open} />
-
-/* no banner — falls back to a drawn cover from CHALLENGE_ART */
-<ChallengeCard challenge={{ title, dates, badge, art: 'lectores' }} />`,
+<ChallengeCard
+  challenge={{
+    title, dates,
+    banner: 'spring-into-reading',   // public/challenge-banners/, or \`art\` for a drawn cover
+    logTypes: ['minutes', 'books'],  // minutes | books | pages
+    types: ['bingo'],                // bingo | book_list | activities | reviews
+    bookTalks: true,
+    upcoming: false,
+    connectedSite: 'Oak Elementary',
+    canSelfUnenroll: true,
+  }}
+  onOpen={open}
+  onUnenroll={leave}
+/>`,
     desc: (
       <>
-        One challenge in the reader&apos;s challenge grid — cover art over the name, the dates, and
-        what the challenge measures.
+        One challenge in the reader&apos;s grid —{' '}
+        <code>programs/_programs_list_item.html.haml</code>. Cover art, the name and the dates, with
+        the <strong>type chips straddling the seam</strong> between the two: what format the
+        challenge is (Reading List, Bingo, Book Talks) and what you log for it (Minutes, Books,
+        Pages), plus Activities and Reviews where it takes them, and Upcoming before it opens.
+        <br />
+        <br />
+        The app shows <strong>only the first two</strong> and cuts the rest — the row can&apos;t
+        wrap without covering the art — so that order is doing real work, and how many log types are
+        listed shrinks when Activities or Reviews are also on the card. A challenge joined from a
+        connected site names that site under the dates, and one you&apos;re allowed to leave carries
+        a kebab with &ldquo;Un-enroll&rdquo;.
         <br />
         <br />
         <code>banner</code> names a file in <code>public/challenge-banners/</code> —
         Beanstack&apos;s own art for that challenge, out of <code>Design/Projects/Challenges</code>{' '}
-        at 920×351 — and renders as <code>img.challenge-image</code> does in the app&apos;s own
-        card. <code>art</code> is the fallback for a challenge with no banner: a drawn cover from{' '}
-        <code>CHALLENGE_ART</code> (the app&apos;s own fallback is a grey{' '}
-        <code>no-challenge-image.png</code>, which a prototype can do better than).
+        at 920×351, which is the ratio the art slot holds. <code>art</code> is the fallback for a
+        challenge with no banner: a drawn cover from <code>CHALLENGE_ART</code> (the app&apos;s own
+        fallback is a grey <code>no-challenge-image.png</code>, which a prototype can do better
+        than). Hovering grows the art inside the card rather than lifting the card.
         <br />
         <br />
-        What the challenge measures sits beside the name rather than floated over the artwork: the
-        art is the challenge&apos;s identity, and the pill used to cover whatever part of it landed
-        in that corner. <code>onOpen</code> makes the card go somewhere — it has always been a{' '}
-        <code>&lt;button&gt;</code>, it just had no handler.
+        The chips are <code>Pill</code>s, pinned to the app&apos;s own <code>$pastelGreen</code>/
+        <code>$darkGreen</code> pair; the kebab is a <code>Flyout</code>. The card&apos;s click
+        target is its own layer rather than a wrapping <code>&lt;button&gt;</code>, because the
+        kebab is a button too and one can&apos;t nest inside the other.
       </>
     ),
     render: () => (
-      <Variant label="two real banners and a drawn cover" full>
-        <div className="wa-chgrid" style={{ padding: 16 }}>
-          {CHALLENGES.map((c) => (
-            <ChallengeCard key={c.id} challenge={c} />
-          ))}
-        </div>
-      </Variant>
+      <>
+        <Variant label="two real banners and a drawn cover — every chip combination" full>
+          <div className="wa-chgrid" style={{ padding: '26px 16px 16px' }}>
+            {CHALLENGES.map((c) => (
+              <ChallengeCard key={c.id} challenge={c} onOpen={noop} onUnenroll={noop} />
+            ))}
+          </div>
+        </Variant>
+        <Variant label="upcoming, and joined from a connected site" full>
+          <div className="wa-chgrid" style={{ padding: '26px 16px 16px' }}>
+            <ChallengeCard
+              challenge={{
+                ...CHALLENGES[0],
+                upcoming: true,
+                dates: 'Starts Apr 1',
+              }}
+              onOpen={noop}
+            />
+            <ChallengeCard
+              challenge={{
+                ...CHALLENGES[1],
+                connectedSite: 'Oak Elementary',
+              }}
+              onOpen={noop}
+              onUnenroll={noop}
+            />
+          </div>
+        </Variant>
+      </>
     ),
   },
   {
@@ -391,6 +621,96 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    id: 'reader-join-challenge',
+    name: 'JoinChallenge',
+    usage: `import { JoinChallenge, ConfirmUnenroll } from '../logging-flow/components/Dashboard'
+
+<JoinChallenge
+  challenge={joining}          /* null closes it */
+  ignored={isIgnored}          /* already ignored — drops "Not Interested" */
+  onClose={close} onJoin={join} onDismiss={ignore}
+/>
+
+<ConfirmUnenroll challenge={leaving} onClose={close} onConfirm={leave} />`,
+    desc: (
+      <>
+        What opens when you press a challenge you are <em>not</em> in —{' '}
+        <code>programs/_join_challenge.html.haml</code> and the JavaScript in{' '}
+        <code>_programs_list</code> that fills it. You can&apos;t read a challenge you haven&apos;t
+        joined, so the card opens this rather than the challenge page.
+        <br />
+        <br />
+        <strong>What it shows is conditional, and each condition is the app&apos;s.</strong> The
+        ground behind the art is taken from the artwork&apos;s own colour (ColorThief at 70% in the
+        app, the challenge&apos;s <code>tint</code> here), falling back to one of five pastels. The
+        range pill reads &ldquo;Ages: 5–12&rdquo; or &ldquo;Grades K–8&rdquo; depending on how the
+        challenge is scoped. A challenge offered as one of a set lists the{' '}
+        <strong>alternatives</strong>. A challenge that hasn&apos;t started and doesn&apos;t take
+        pre-registration shows <strong>no buttons at all</strong> — you may read about it, that is
+        all. And one you have already ignored loses &ldquo;Not Interested&rdquo;, because
+        you&apos;re only there to come back the other way.
+        <br />
+        <br />
+        <code>ConfirmUnenroll</code> is its counterpart —{' '}
+        <code>programs/_confirm_unenroll.html.haml</code>. Leaving a challenge throws away the
+        progress in it, so the app asks first rather than acting on the kebab.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="open to join">
+          <JoinDemo challenge={MORE_CHALLENGES[0]} label="Join a challenge" />
+        </Variant>
+        <Variant label="upcoming, no pre-registration — nothing to press, and it has alternatives">
+          <JoinDemo challenge={MORE_CHALLENGES[1]} label="Open an upcoming challenge" />
+        </Variant>
+        <Variant label="already ignored — no way to ignore it twice">
+          <JoinDemo challenge={MORE_CHALLENGES[2]} ignored label="Open an ignored challenge" />
+        </Variant>
+        <Variant label="leaving one you're in">
+          <UnenrollDemo />
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'reader-motivation-card',
+    name: 'MotivationCard',
+    usage: `import { MotivationCard } from '@components/ReaderApp/ReaderApp'
+
+<MotivationCard state="available" onOpen={startSurvey} />   /* available | in_progress | scored */`,
+    desc: (
+      <>
+        The RMI nudge at the top of the dashboard rail — the app&apos;s{' '}
+        <code>programs/_motivation_widget.html.erb</code>. Three states off where the reader is with
+        the survey, and only the last one changes the copy: before there is a result the widget is
+        selling the idea (&ldquo;What&apos;s your motivation type?&rdquo;), and after it there is
+        one to go and read.
+        <br />
+        <br />
+        The art is Beanstack&apos;s own <code>motivation_type.png</code>. The page renders this only
+        where RMI is switched on for the site, so the component has no empty state of its own —{' '}
+        <code>Dashboard</code> takes a <code>motivation</code> prop and leaves the rail alone
+        without it.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="not started — Let's Go">
+          <MotivationCard state="available" onOpen={noop} />
+        </Variant>
+        <Variant label="part-way — Continue">
+          <MotivationCard state="in_progress" onOpen={noop} />
+        </Variant>
+        <Variant label="scored — the only state whose copy changes">
+          <MotivationCard state="scored" onOpen={noop} />
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
     id: 'reader-goal-card',
     name: 'GoalCard',
     usage: `import { GoalCard } from '@components/ReaderApp/ReaderApp'
@@ -398,28 +718,31 @@ export const readerAppSections = [
 <GoalCard dailyGoal={{ minutes: 14, goal: 20 }} />`,
     desc: (
       <>
-        Today&apos;s reading against the reader&apos;s daily goal, in the dashboard rail. Three
-        states off one pair of numbers: nothing logged yet is &ldquo;Today&apos;s Goal&rdquo;,
-        part-way is &ldquo;Almost there!&rdquo;, and hitting it turns the meter green and says
-        &ldquo;Well done!&rdquo;. The remaining-minutes line pluralises itself.
+        Today&apos;s reading against the reader&apos;s daily goal, in the dashboard rail — the
+        app&apos;s <code>reading_goal_banner</code>. A chunky amber bar that{' '}
+        <strong>ends in a star</strong>, with a 12px curve pinching bar and star together; the star
+        is the goal, so it stays grey until you reach it and then the fill, the curve and its disc
+        go amber as one run with the star reversed out in white.
+        <br />
+        <br />
+        Three states off one pair of numbers, on the helper&apos;s own thresholds: under half is
+        &ldquo;Reach Your Goal!&rdquo;, from half it&apos;s &ldquo;Keep going!&rdquo;, and at the
+        goal &ldquo;Well done!&rdquo;. The count floors and caps at 100%, so an overshot goal shows
+        a full bar rather than an overrun one, and the fill keeps a 32px minimum so an untouched
+        goal still shows a dot. <code>ProgressBar</code> draws the track and fill; only the curve
+        and the star are the card&apos;s own.
       </>
     ),
     render: () => (
       <>
         <Variant label="nothing logged yet">
-          <div style={{ width: 320 }}>
-            <GoalCard dailyGoal={{ minutes: 0, goal: 20 }} />
-          </div>
+          <GoalCard dailyGoal={{ minutes: 0, goal: 20 }} />
         </Variant>
         <Variant label="part-way — one minute to go">
-          <div style={{ width: 320 }}>
-            <GoalCard dailyGoal={{ minutes: 19, goal: 20 }} />
-          </div>
+          <GoalCard dailyGoal={{ minutes: 19, goal: 20 }} />
         </Variant>
-        <Variant label="goal met">
-          <div style={{ width: 320 }}>
-            <GoalCard dailyGoal={{ minutes: 42, goal: 20 }} />
-          </div>
+        <Variant label="goal met — and overshot">
+          <GoalCard dailyGoal={{ minutes: 42, goal: 20 }} />
         </Variant>
       </>
     ),
@@ -443,9 +766,7 @@ export const readerAppSections = [
     ),
     render: () => (
       <Variant label="switch between schools and grades">
-        <div style={{ width: 320 }}>
-          <LeaderboardCard schools={TOP_SCHOOLS} grades={TOP_GRADES} />
-        </div>
+        <LeaderboardCard schools={TOP_SCHOOLS} grades={TOP_GRADES} />
       </Variant>
     ),
   },
@@ -618,6 +939,85 @@ export const readerAppSections = [
       <Variant label="friends / grade / school over minutes or books" full>
         <div style={{ padding: '0 20px 20px', background: '#fff' }}>
           <Leaderboards />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-wish-list',
+    name: 'WishList',
+    usage: `import { WishList } from './components/WishList'
+import { BookLists } from './components/BookLists'
+
+<WishList onFindBooks={openLists} onLog={openLogFlow} />
+<BookLists />`,
+    desc: (
+      <>
+        Books the reader means to get to — <code>profiles/wish_list.html.haml</code> — and{' '}
+        <code>BookLists</code>, the curated shelves its &ldquo;Find Books&rdquo; sends you to (
+        <code>reading_lists#index</code>).
+        <br />
+        <br />A wish-list row says <strong>who put the book there</strong>: a parent or a teacher
+        can add to a reader&apos;s list, so the app names whose idea it was rather than assuming the
+        reader&apos;s own. Three things you can do with a row — log it, get it from the library,
+        take it off — and the middle one only appears where the title actually has a library URL.
+        Empty, the page is the app&apos;s blank slate and its one way out.
+        <br />
+        <br />A book list carries its cover, its name and <strong>how many books are on it</strong>,
+        what it&apos;s for, who made it, and its genres. The app filters by grade level and genre
+        from an off-canvas drawer; the filters are chips on the page here, since there is no room to
+        hide a drawer in a prototype and the choice is small enough to show.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="a reader's wish list" full>
+          <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+            <WishList onFindBooks={noop} onLog={noop} />
+          </div>
+        </Variant>
+        <Variant label="the lists its “Find Books” goes to" full>
+          <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+            <BookLists />
+          </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-peer-reviews',
+    name: 'PeerReviews',
+    usage: `import { PeerReviews } from './components/PeerReviews'
+
+<PeerReviews allLibraries />   /* include_picture_review_from_other_microsites */`,
+    desc: (
+      <>
+        Other readers&apos; reviews — <code>microsite#peer_reviews</code>, rendered through{' '}
+        <code>profiles/reviews.html.haml</code>. Not the reader&apos;s own, and everything here is
+        approved: the page filters to <code>with_approved_review</code> before it shows one, so a
+        reader never sees somebody else&apos;s review waiting on staff.
+        <br />
+        <br />
+        <strong>Two levels of choice, and the second is picture-only.</strong> The type comes first
+        — Written or Picture, whichever the site permits. A picture review can then be scoped:{' '}
+        <em>My Library</em> is this site&apos;s, <em>All Libraries</em> is every Beanstack site (a
+        setting — <code>include_picture_review_from_other_microsites</code> — so{' '}
+        <code>allLibraries={'{false}'}</code> takes the strip away), and{' '}
+        <em>Community Favorites</em> is the most hearted across all of them. A written review is
+        only ever your own library&apos;s, which is why the strip isn&apos;t there for it.
+        <br />
+        <br />
+        The cards are the reader&apos;s own review cards plus the two things that make them somebody
+        else&apos;s: who wrote it and at which library, and the <strong>heart</strong> — the only
+        thing you can do to another reader&apos;s review, and picture-only in the app too.
+      </>
+    ),
+    render: () => (
+      <Variant label="written, picture, and the three scopes" full>
+        <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+          <PeerReviews />
         </div>
       </Variant>
     ),

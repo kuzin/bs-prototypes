@@ -431,9 +431,14 @@ function TitlesView({ entries, stats = true }) {
   const [filter, setFilter] = useState('all')
   const [open, setOpen] = useState(null)
 
-  const months = titlesByMonth(entries)
+  const all = titlesByMonth(entries)
+  const months = all
     .map((m) => ({ ...m, rows: filter === 'done' ? m.rows.filter((r) => r.completed) : m.rows }))
     .filter((m) => m.rows.length)
+
+  // What each tab would show, so the choice says how much is behind it.
+  const rows = all.flatMap((m) => m.rows)
+  const counts = { all: rows.length, done: rows.filter((r) => r.completed).length }
 
   // One running index across the whole shelf, so the coverless tiles cycle
   // through the seven colours rather than restarting inside every month.
@@ -451,8 +456,8 @@ function TitlesView({ entries, stats = true }) {
           onChange={setFilter}
           ariaLabel="Which titles"
           items={[
-            { id: 'all', label: 'All Titles' },
-            { id: 'done', label: 'Completed' },
+            { id: 'all', label: 'All Titles', count: counts.all },
+            { id: 'done', label: 'Completed', count: counts.done },
           ]}
         />
       </div>
@@ -567,7 +572,7 @@ export function ReadingLog({
                 {tab === 'log' && (
                   <Tabs
                     variant="pill"
-                    size="sm"
+                    size="md"
                     active={view}
                     accent="#1A6DD5"
                     onChange={setView}

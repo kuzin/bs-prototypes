@@ -161,6 +161,12 @@
   justify-content: center;
 }
 
+/* A trailing chevron reads as part of the word at the row's own gap — it is a
+   separate thing to press toward, so it gets its own air. */
+.btn-icon--right {
+  margin-left: 2px;
+}
+
 .btn-icon svg {
   width: 14px;
   height: 14px;

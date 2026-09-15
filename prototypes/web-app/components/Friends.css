@@ -7,26 +7,15 @@
   padding-bottom: 40px;
 }
 
-/* The app's own step-down: 4 across, then 3, 2, 1. */
+/* The app steps 4 → 3 → 2 → 1 on breakpoints, which squeezes the cards to
+   whatever the container leaves once it has picked a count. A floor and
+   `auto-fill` says the thing that actually matters — a card is never narrower
+   than 170px — and lets the count follow the room; `min()` keeps a container
+   narrower than the floor from overflowing. */
 .fr-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(170px, 100%), 1fr));
   gap: 26px 20px;
-}
-@media (max-width: 900px) {
-  .fr-grid {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-}
-@media (max-width: 640px) {
-  .fr-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-@media (max-width: 420px) {
-  .fr-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
 }
 
 .fr-card {

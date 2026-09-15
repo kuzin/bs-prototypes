@@ -1,0 +1,109 @@
+/* ─── Writing or editing a review ────────────────────────────────────────
+   `reviews/new.html.erb` and the two edit forms, in one modal. */
+
+.rc {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  background: #fff;
+  border-radius: 14px;
+}
+.rc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-height: 58vh;
+}
+
+/* `reviews_with_autocomplete` — the titles the site knows, under the field. */
+.rc-suggest {
+  margin: 6px 0 0;
+  padding: 4px;
+  overflow: hidden;
+  list-style: none;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+}
+.rc-suggest button {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  width: 100%;
+  padding: 7px 10px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 7px;
+}
+.rc-suggest button:hover {
+  background: var(--c-gray-100);
+}
+.rc-suggest-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.rc-suggest-author {
+  font-size: 12.5px;
+  color: var(--c-text-light);
+}
+
+/* The site's own bounds, said before you write rather than after a rejected
+   save. */
+.rc-bounds {
+  margin-bottom: 10px;
+}
+.rc-count {
+  margin-top: 6px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text-light);
+  text-align: right;
+}
+.rc-count.is-short {
+  color: #b3401a;
+}
+
+/* `.drop-area` — the real one takes a photo or video straight to S3. */
+.rc-drop {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 132px;
+  padding: 20px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--c-text-light);
+  text-align: center;
+  cursor: pointer;
+  background: var(--c-gray-0);
+  border: 2px dashed var(--c-border-strong);
+  border-radius: 12px;
+}
+.rc-drop:hover {
+  border-color: var(--c-gray-500);
+}
+.rc-drop.is-filled {
+  font-weight: 700;
+  color: var(--c-text);
+  background: #eef6ff;
+  border-style: solid;
+  border-color: #b9d6fa;
+}
+.rc-drop-clear {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--c-accent);
+}
+
+.rc-note {
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--c-text-light);
+}

@@ -1,0 +1,138 @@
+/* ─── Looking at a picture review ────────────────────────────────────────
+   The app's lightbox: the media large, and `slider_sub_html`'s four facts
+   beside it. Wide enough for the two to sit side by side, stacking when the
+   modal can't hold both. */
+
+.modal--center:has(.prv) {
+  width: min(880px, calc(100vw - 32px));
+}
+
+.prv {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 1fr);
+  overflow: hidden;
+  background: #fff;
+  border-radius: 14px;
+}
+
+.prv-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  background: var(--c-gray-900);
+}
+.prv-art {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  color: rgb(255 255 255 / 70%);
+}
+
+/* Stepping through the grid you opened it from. */
+.prv-step {
+  position: absolute;
+  top: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  color: var(--c-gray-900);
+  cursor: pointer;
+  background: rgb(255 255 255 / 88%);
+  border: 0;
+  border-radius: 999px;
+  transform: translateY(-50%);
+}
+.prv-step:hover {
+  background: #fff;
+}
+.prv-step--prev {
+  left: 12px;
+}
+.prv-step--next {
+  right: 12px;
+}
+
+.prv-info {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding: 26px 24px;
+}
+.prv-title {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+.prv-block h4 {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--c-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.prv-book {
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+.prv-author,
+.prv-date {
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+.prv-creator {
+  margin-top: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.prv-foot {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-top: auto;
+  padding-top: 8px;
+}
+.prv-count {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+
+.prv-heart {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  height: 36px;
+  padding: 0 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--c-text-light);
+  cursor: pointer;
+  background: var(--c-gray-0);
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+}
+.prv-heart:hover {
+  color: #dc493a;
+  border-color: #f0a79c;
+}
+.prv-heart.is-on {
+  color: #dc493a;
+  background: #fdecea;
+  border-color: #f0a79c;
+}
+
+@media (max-width: 720px) {
+  .prv {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

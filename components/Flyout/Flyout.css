@@ -126,3 +126,51 @@
   margin: 4px 4px;
   background: var(--c-gray-200);
 }
+
+/* ─── Rows ───────────────────────────────────────────────────────────────
+   The other shape a flyout takes: not a list of things to pick between, but a
+   queue of things to act on — a face, who it is, and the answers. The friend
+   requests menu is the one that drove it out; anything with a subject and more
+   than one verb per line wants this rather than `.flyout-menu`.
+
+   A row is not itself clickable, so it takes no hover: the buttons in it are
+   the controls, and lighting the whole row up implied a third thing to press. */
+.flyout-rows {
+  display: flex;
+  flex-direction: column;
+  min-width: 340px;
+}
+.flyout-row {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--c-gray-100);
+}
+.flyout-row:last-child {
+  border-bottom: 0;
+}
+.flyout-row-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.flyout-row-title {
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+.flyout-row-sub {
+  font-size: 13px;
+  color: var(--c-text-light);
+}
+/* The answers sit opposite the subject rather than under it — the row reads
+   left to right: who, then what you can do about them. */
+.flyout-row-actions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}

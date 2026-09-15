@@ -397,6 +397,7 @@ export const REVIEWS = [
   {
     id: 'rv-snapdragon',
     kind: 'picture',
+    image: 'snapdragon',
     title: 'Snapdragon, drawn with chalk',
     book: 'Snapdragon',
     author: 'Kat Leyh',
@@ -408,6 +409,7 @@ export const REVIEWS = [
   {
     id: 'rv-forest',
     kind: 'picture',
+    image: 'harvest',
     title: 'The Harvest Party, in marker',
     book: 'Welcome to the Forest: The Harvest Party',
     author: 'Katie Risor',
@@ -416,6 +418,241 @@ export const REVIEWS = [
     status: 'pending',
     art: ['#0CA7BC', '#0BA85F'],
   },
+]
+
+// ─── Wish list ───────────────────────────────────────────────────────────────
+// `profiles/wish_list.html.haml` — books the reader means to get to. A row is
+// a cover, the title, who put it there and when, and three things you can do
+// with it: log it, get it from the library, or take it off the list.
+//
+// `addedBy` matters: a parent or a teacher can add to a reader's list, so the
+// row says whose idea it was rather than assuming the reader's own.
+
+const wish = (book, addedBy, dateAdded, library = true) => ({
+  book,
+  addedBy,
+  dateAdded,
+  library,
+})
+
+export const WISH_LIST = [
+  wish('telegraph-club', 'Olivia M.', 'Jun 12, 2026'),
+  wish('darius', 'Mr. Reyes', 'Jun 8, 2026'),
+  wish('scope', 'Olivia M.', 'Jun 1, 2026', false),
+  wish('lucky-cap', 'Olivia M.', 'May 24, 2026'),
+  wish('superscience', 'Mr. Reyes', 'May 19, 2026', false),
+]
+
+// ─── Book lists ──────────────────────────────────────────────────────────────
+// `reading_lists#index` — "Book Lists", the curated shelves a site publishes
+// and where "Find Books" sends you from the Wish List. A row is the list's
+// cover, its name and how many books are on it, a description, who made it,
+// and the genres it covers. The page filters by grade level and genre.
+
+const bookList = (id, name, count, by, grades, genres, description, tint) => ({
+  id,
+  name,
+  count,
+  by,
+  grades,
+  genres,
+  description,
+  tint,
+})
+
+export const BOOK_LIST_GENRES = [
+  'Adventure',
+  'Fantasy',
+  'Graphic Novels',
+  'Historical Fiction',
+  'Humor',
+  'Mystery',
+  'Nonfiction',
+  'Realistic Fiction',
+]
+
+export const BOOK_LIST_GRADES = ['K–2', '3–5', '6–8', '9–12']
+
+export const BOOK_LISTS = [
+  bookList(
+    'bl-graphic',
+    'Start Here: Graphic Novels',
+    18,
+    'Magnolia Middle Library',
+    ['3–5', '6–8'],
+    ['Graphic Novels', 'Adventure'],
+    'If a wall of text puts you off, start here. Every one of these tells as much in its pictures as in its words.',
+    '#61B2F1',
+  ),
+  bookList(
+    'bl-scary',
+    'Scary, But Not Too Scary',
+    12,
+    'Mr. Reyes',
+    ['3–5'],
+    ['Mystery', 'Fantasy'],
+    'Spooky enough to be worth reading with the light on, and nothing in them that will keep you up.',
+    '#7C5CFA',
+  ),
+  bookList(
+    'bl-true',
+    'True Stories Worth Arguing About',
+    15,
+    'Magnolia Middle Library',
+    ['6–8', '9–12'],
+    ['Nonfiction', 'Historical Fiction'],
+    'Real people who did difficult things, told well enough that you will want to check whether they really happened that way.',
+    '#0B6B78',
+  ),
+  bookList(
+    'bl-funny',
+    'Books That Are Actually Funny',
+    21,
+    'Ms. Whitfield',
+    ['K–2', '3–5'],
+    ['Humor', 'Graphic Novels'],
+    'Tested on a room of nine-year-olds. These are the ones that got a laugh out loud, not a polite one.',
+    '#F0A024',
+  ),
+  bookList(
+    'bl-first',
+    'First Chapter Books',
+    24,
+    'Magnolia Middle Library',
+    ['K–2'],
+    ['Realistic Fiction', 'Adventure'],
+    'Short chapters, big type, and a story that finishes before anyone loses the thread.',
+    '#16A97A',
+  ),
+]
+
+// ─── Peer reviews ────────────────────────────────────────────────────────────
+// `microsite#peer_reviews` — other readers' approved reviews, not your own.
+// Three scopes for picture reviews: your own site, every library (when the site
+// opts in with `include_picture_review_from_other_microsites`), and the most
+// hearted. Written reviews only ever have the first.
+//
+// Every one here is approved: the page filters to `with_approved_review`, so a
+// reader never sees another reader's review waiting on staff.
+
+const peerWritten = (id, title, author, by, library, date, body, hearts) => ({
+  id,
+  kind: 'written',
+  title,
+  author,
+  by,
+  library,
+  date,
+  body,
+  hearts,
+})
+
+const peerPicture = (id, title, book, author, by, library, date, hearts, art, image) => ({
+  id,
+  kind: 'picture',
+  image,
+  title,
+  book,
+  author,
+  by,
+  library,
+  date,
+  hearts,
+  art,
+  status: 'approved',
+})
+
+export const PEER_REVIEWS = [
+  peerWritten(
+    'pr-wings',
+    'Wings of Fire: The Dragonet Prophecy',
+    'Tui T. Sutherland',
+    'Noah K.',
+    'Magnolia Middle',
+    'Jun 11, 2026',
+    'Five dragonets raised under a mountain because a scroll said they would stop a war. What I liked is that none of them wants the job. Clay keeps trying to feed everyone and Tsunami keeps trying to leave, and the prophecy never once asks what they want. The escape is good but the part I kept thinking about after is that the grown-ups who raised them are the villains and they still think they did the right thing.',
+    22,
+  ),
+  peerWritten(
+    'pr-newkid',
+    'New Kid',
+    'Jerry Craft',
+    'Sofia R.',
+    'Magnolia Middle',
+    'Jun 9, 2026',
+    'Jordan wants to go to art school and gets sent to a fancy private school instead. Everything he draws in his sketchbook is funnier and truer than what the adults say out loud. Teachers keep getting his name wrong, in a way the book lets you notice before it says anything about it.',
+    31,
+  ),
+  peerWritten(
+    'pr-frontdesk',
+    'Front Desk',
+    'Kelly Yang',
+    'Priya S.',
+    'Magnolia Middle',
+    'Jun 4, 2026',
+    'Mia is ten and running the front desk of a motel while her parents clean the rooms, and she decides she is going to be a writer in English even though everyone tells her to stick to maths. She hides people in empty rooms. She writes letters for other people and they work. It is funny more often than you expect for a book where the family has no money.',
+    18,
+  ),
+  peerPicture(
+    'pr-hatchet',
+    'The lake, in watercolour',
+    'Hatchet',
+    'Gary Paulsen',
+    'Diego H.',
+    'Magnolia Middle',
+    'Jun 10, 2026',
+    47,
+    ['#0B6B78', '#16A97A'],
+    'lake',
+  ),
+  peerPicture(
+    'pr-amulet',
+    'The house on the hill',
+    'Amulet: The Stonekeeper',
+    'Kazu Kibuishi',
+    'Jayden P.',
+    'Magnolia Middle',
+    'Jun 7, 2026',
+    29,
+    ['#3B2A6B', '#7C5CFA'],
+    'house',
+  ),
+  peerPicture(
+    'pr-onlyone',
+    'Ivan in his enclosure',
+    'The One and Only Ivan',
+    'Katherine Applegate',
+    'Emma L.',
+    'Oak Elementary',
+    'Jun 6, 2026',
+    63,
+    ['#B45309', '#F0A024'],
+    'gorilla',
+  ),
+  peerPicture(
+    'pr-wild',
+    'Where the wild things went',
+    'Where the Wild Things Are',
+    'Maurice Sendak',
+    'Theo N.',
+    'Hickory Middle School',
+    'Jun 2, 2026',
+    91,
+    ['#0891B2', '#61B2F1'],
+    'wild',
+  ),
+  peerPicture(
+    'pr-charlotte',
+    "Charlotte's web, in thread",
+    "Charlotte's Web",
+    'E. B. White',
+    'Maya C.',
+    'Oak Elementary',
+    'May 30, 2026',
+    12,
+    ['#DB2777', '#F0966F'],
+    'web',
+  ),
 ]
 
 // ─── Challenge detail ────────────────────────────────────────────────────────

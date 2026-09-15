@@ -1206,12 +1206,54 @@ export const moleculesSections = [
         JSX or a render function that receives <code>{'{ close }'}</code>.{' '}
         <strong>Overflow rule:</strong> when a button row has 3+ actions, collapse the secondary
         ones into a <code>More</code> (kebab) flyout.
+        <br />
+        <br />
+        <strong>Two shapes go inside it.</strong> <code>.flyout-menu</code> is a list of things to
+        pick between — one line, one verb, and the whole row is the control.{' '}
+        <code>.flyout-rows</code> is a queue of things to <em>act on</em>: a subject, who or what it
+        is, and more than one answer per line. The friend-requests queue is the second kind — each
+        row is a person, with Accept and Decline opposite. The row takes no hover, because the row
+        itself isn&apos;t clickable and lighting it up implied a third thing to press, and the
+        answers are <strong>primary and secondary</strong>: one of them is what the bar was asking
+        for.
       </>
     ),
     render: () => (
       <>
         <FlyoutKnobs />
         <FlyoutShowcase />
+        <Variant label=".flyout-rows — a subject and its answers, not a list to pick from">
+          <Flyout
+            placement="bottom-start"
+            trigger={({ toggle }) => (
+              <Button variant="secondary" onClick={toggle}>
+                View Requests
+              </Button>
+            )}
+          >
+            {() => (
+              <div className="flyout-rows" role="menu">
+                {[
+                  { id: 'maya', name: 'Maya C.', initials: 'MC', color: '#F0966F' },
+                  { id: 'theo', name: 'Theo N.', initials: 'TN', color: '#0F766E' },
+                ].map((r) => (
+                  <div className="flyout-row" key={r.id} role="menuitem">
+                    <Avatar initials={r.initials} color={r.color} size="lg" shape="circle" />
+                    <div className="flyout-row-body">
+                      <span className="flyout-row-title">{r.name}</span>
+                    </div>
+                    <div className="flyout-row-actions">
+                      <Button size="sm">Accept</Button>
+                      <Button variant="secondary" size="sm">
+                        Decline
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Flyout>
+        </Variant>
       </>
     ),
   },

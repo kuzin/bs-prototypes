@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import { Tabs } from '@components/Tabs/Tabs'
+import { Flyout } from '@components/Flyout/Flyout'
+import { Button } from '@components/Button/Button'
+import { Icon } from '@components/Icon/Icon'
 import { Table } from '@components/Table/Table'
 import { Avatar } from '@components/Avatar/Avatar'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
@@ -14,6 +17,9 @@ import {
 import './Friends.css'
 
 import '@components/Tabs/Tabs.css'
+import '@components/Flyout/Flyout.css'
+import '@components/Button/Button.css'
+import '@components/ReaderApp/ReaderApp.css'
 import '@components/Table/Table.css'
 import '@components/Avatar/Avatar.css'
 import '@components/CustomSelect/CustomSelect.css'
@@ -97,9 +103,41 @@ export function Leaderboards({ onOpenFriend }) {
       <ReaderPageHead
         title="Leaderboards"
         actions={
-          <div className="lb-period">
-            <CustomSelect options={LEADERBOARD_PERIODS} value={period} onChange={setPeriod} />
-          </div>
+          /* A menu of two, the way the rail's leaderboard widget picks its
+             range — not a form control. */
+          <Flyout
+            placement="bottom-end"
+            trigger={({ toggle, open }) => (
+              <Button
+                variant="secondary"
+                onClick={toggle}
+                aria-haspopup="menu"
+                aria-expanded={open}
+                iconRight={<Icon name="chevron-down" size={15} stroke={2.2} />}
+              >
+                {LEADERBOARD_PERIODS.find((p) => p.value === period)?.label}
+              </Button>
+            )}
+          >
+            {({ close }) => (
+              <div className="wa-more-menu" role="menu">
+                {LEADERBOARD_PERIODS.filter((p) => p.value !== period).map((p) => (
+                  <button
+                    key={p.value}
+                    type="button"
+                    role="menuitem"
+                    className="wa-more-item"
+                    onClick={() => {
+                      setPeriod(p.value)
+                      close()
+                    }}
+                  >
+                    {p.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </Flyout>
         }
       />
 

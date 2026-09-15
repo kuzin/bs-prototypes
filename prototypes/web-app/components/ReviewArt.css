@@ -1,0 +1,18 @@
+/* A picture review's artwork. The colour field is the ground behind an image
+   that hasn't loaded, and the whole slot a review that has no art at all. */
+.rvart {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  color: rgb(255 255 255 / 70%);
+}
+.rvart-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

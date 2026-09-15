@@ -10,7 +10,7 @@ import { Flyout } from '@components/Flyout/Flyout'
 import { Input } from '@components/Form/Form'
 import { ToastStack, useToasts } from '@components/Toast/Toast'
 
-import { FriendRequests } from './FriendRequests'
+import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from './FriendProfile'
 
 import { Leaderboards } from './Leaderboards'

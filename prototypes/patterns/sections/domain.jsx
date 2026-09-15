@@ -19,6 +19,7 @@ import {
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
 import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+import { BannerStack } from '@components/ReaderApp/ReaderApp'
 import { DailyReadingTracker } from '@components/DailyReadingTracker/DailyReadingTracker'
 import { RMI_FACTORS } from '../../ris/data'
 import { CONNECTIONS, CONNECTION_LIST, TAKEN_USERNAMES } from '../../logging-flow/connections'
@@ -257,25 +258,25 @@ const AUTO_LOGGED_ROWS = [
   },
 ]
 
-function ConnectFlowDemo() {
-  const [partner, setPartner] = useState(null)
+// One partner per example — the handoff wears each partner's own brand the
+// whole way through, so three buttons in one frame hid the thing worth seeing.
+function ConnectFlowDemo({ partner: p }) {
+  const [open, setOpen] = useState(false)
   return (
-    <div style={{ display: 'flex', gap: 10, padding: 16, flexWrap: 'wrap' }}>
-      {[CONNECTIONS.comicsplus, CONNECTIONS.scholastic, BEEVERSO].map((p) => (
-        <Button key={p.id} variant="secondary" size="sm" onClick={() => setPartner(p)}>
-          Link {p.name}
-        </Button>
-      ))}
-      {partner && (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Link {p.name}
+      </Button>
+      {open && (
         <ConnectFlow
-          partner={partner}
+          partner={p}
           reader={PARTNER_READER}
           takenUsernames={TAKEN_USERNAMES}
-          onCancel={() => setPartner(null)}
-          onLinked={() => setPartner(null)}
+          onCancel={() => setOpen(false)}
+          onLinked={() => setOpen(false)}
         />
       )}
-    </div>
+    </>
   )
 }
 
@@ -581,7 +582,8 @@ import '@components/AlertsBanner/AlertsBanner.css'
     group: 'web-app',
     id: 'partner-connect-banner',
     name: 'Connect Banner',
-    usage: `import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
+    usage: `import { BannerStack } from '@components/ReaderApp/ReaderApp'
+import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
 
 <ConnectBanner partners={['comics-plus', 'sora']} onLink={link} onDismiss={hide} />`,
     desc: (
@@ -594,31 +596,38 @@ import '@components/AlertsBanner/AlertsBanner.css'
         wrapped on anything narrow. Renders nothing when everything is linked.
         <br />
         <br />
-        Same chrome as the shared <code>Banner</code> (the app&apos;s <code>.infobox</code>): a
-        tinted block with no outline, so it doesn&apos;t read as a different species of banner from
-        the ones above and below it.
+        Built on <code>ReaderBanner</code>, the one bar the reader app&apos;s whole notification
+        stack uses — so it can&apos;t drift from the streak, community-goal and friend-request bars
+        it sits above and below. The partner supplies the ground and the ink through{' '}
+        <code>tint</code>/<code>ink</code>; everything else is the shared bar&apos;s.
       </>
     ),
     render: () => (
       <>
         <Variant label="one partner left — the partner's own brand" full>
           <div style={{ padding: 16 }}>
-            <ConnectBanner partners={[CONNECTIONS.comicsplus]} onLink={noop} onDismiss={noop} />
-            <ConnectBanner partners={[BEEVERSO]} onLink={noop} onDismiss={noop} />
+            {/* `BannerStack` is what spaces these on the page; without it two
+                banners sit flush against each other. */}
+            <BannerStack max={9}>
+              <ConnectBanner partners={[CONNECTIONS.comicsplus]} onLink={noop} onDismiss={noop} />
+              <ConnectBanner partners={[BEEVERSO]} onLink={noop} onDismiss={noop} />
+            </BannerStack>
           </div>
         </Variant>
         <Variant label="two or three left — neutral, one flyout" full>
           <div style={{ padding: 16 }}>
-            <ConnectBanner
-              partners={[BEEVERSO, CONNECTIONS.comicsplus]}
-              onLink={noop}
-              onDismiss={noop}
-            />
-            <ConnectBanner
-              partners={[BEEVERSO, CONNECTIONS.comicsplus, CONNECTIONS.scholastic]}
-              onLink={noop}
-              onDismiss={noop}
-            />
+            <BannerStack max={9}>
+              <ConnectBanner
+                partners={[BEEVERSO, CONNECTIONS.comicsplus]}
+                onLink={noop}
+                onDismiss={noop}
+              />
+              <ConnectBanner
+                partners={[BEEVERSO, CONNECTIONS.comicsplus, CONNECTIONS.scholastic]}
+                onLink={noop}
+                onDismiss={noop}
+              />
+            </BannerStack>
           </div>
         </Variant>
       </>
@@ -641,9 +650,17 @@ import '@components/AlertsBanner/AlertsBanner.css'
       </>
     ),
     render: () => (
-      <Variant label="launch the handoff (full-screen overlay)" full>
-        <ConnectFlowDemo />
-      </Variant>
+      <>
+        <Variant label="Comics Plus — the handoff in their brand">
+          <ConnectFlowDemo partner={CONNECTIONS.comicsplus} />
+        </Variant>
+        <Variant label="Scholastic">
+          <ConnectFlowDemo partner={CONNECTIONS.scholastic} />
+        </Variant>
+        <Variant label="Beeverso">
+          <ConnectFlowDemo partner={BEEVERSO} />
+        </Variant>
+      </>
     ),
   },
   {
@@ -713,6 +730,7 @@ import '@components/AlertsBanner/AlertsBanner.css'
     id: 'personalize-reader',
     name: 'Personalize Reader',
     usage: `import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+import { BannerStack } from '@components/ReaderApp/ReaderApp'
 
 <PersonalizeReader reader={reader} partners={partners} connections={connections} />`,
     desc: (
