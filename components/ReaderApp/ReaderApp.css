@@ -1146,3 +1146,39 @@
   color: var(--c-text-dark);
   background: var(--c-gray-100);
 }
+
+/* ─── Fundraiser bar ─────────────────────────────────────────────────────────
+   Two lines of money over the action, in the slot every other bar puts one
+   button in — the figure is the thing you read from across the page. */
+.wa-banner-actions:has(.wa-fund) {
+  flex: 0 1 260px;
+  min-width: 0;
+}
+.wa-fund {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.wa-fund-nums {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--wab-ink);
+  white-space: nowrap;
+}
+.wa-fund-nums strong {
+  font-size: 16px;
+  font-weight: 900;
+}
+.wa-fund .pgb-track {
+  height: 10px;
+  background: rgb(8 117 66 / 14%);
+  border-radius: 999px;
+}
+.wa-fund .pgb-fill {
+  border-radius: 999px;
+}
+.wa-fund .btn {
+  width: 100%;
+}

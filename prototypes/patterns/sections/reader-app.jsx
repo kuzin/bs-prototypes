@@ -8,6 +8,7 @@ import {
   ReaderBannerAction,
   ReaderPageHead,
   ReaderBack,
+  FundraiserBanner,
   ChallengeCard,
   ChallengeScope,
   GoalCard,
@@ -32,6 +33,8 @@ import { READING_LOG } from '../../logging-flow/data'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from '../../web-app/components/FriendProfile'
 import { ChallengePage } from '../../web-app/components/ChallengePage'
+import { FundraiserPage, FundraiserWelcome } from '../../web-app/components/FundraiserPage'
+import { FUNDRAISER } from '../../web-app/data'
 import { MORE_CHALLENGES, REGISTRATION_QUESTIONS } from '../../logging-flow/data'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { JoinChallenge, ConfirmUnenroll } from '../../logging-flow/components/Dashboard'
@@ -221,6 +224,16 @@ function FriendProfileDemo({ id = 'jayden', label = "Open a friend's profile" })
     <>
       <Button onClick={() => setFriendId(id)}>{label}</Button>
       <FriendProfile friendId={friendId} onClose={() => setFriendId(null)} />
+    </>
+  )
+}
+
+function FundraiserWelcomeDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Land on a site running a fundraiser</Button>
+      <FundraiserWelcome open={open} onClose={() => setOpen(false)} />
     </>
   )
 }
@@ -1050,6 +1063,70 @@ import { BookLists } from './components/BookLists'
           <div style={{ padding: '0 20px 20px', background: '#fff' }}>
             <BookLists onOpenList={noop} onFindBooks={noop} />
           </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-fundraiser',
+    name: 'FundraiserPage',
+    usage: `import { FundraiserPage, FundraiserWelcome } from './components/FundraiserPage'
+import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
+
+<FundraiserBanner raised={3180} goal={5000} onLearnMore={open} onDismiss={hide} />
+
+<FundraiserPage fundraiser={fundraiser} entries={log} onBack={close} />
+
+<FundraiserWelcome open={!seen} onClose={markSeen} />`,
+    desc: (
+      <>
+        A read-a-thon from the reader&apos;s side — <code>fundraisers#show</code>. It is a challenge
+        with money attached: the reader logs as they always do, and the people who sponsor them turn
+        that reading into funds for the site. So the page is the challenge page&apos;s furniture — a
+        nav, an Overall Progress strip, badges, prizes, a log — plus the two things a challenge
+        hasn&apos;t got.
+        <br />
+        <br />
+        The first is <strong>the two numbers</strong>: raised against the goal, for the site on the
+        banner and for this reader in the rail (<code>_total_donations</code>). The second is{' '}
+        <strong>the share card</strong> — &ldquo;Get Donations, Get Rewarded&rdquo; over the
+        reader&apos;s own donation page and a Copy. A read-a-thon nobody shares raises nothing,
+        which is why the app gives that card the whole of the right rail rather than a line in a
+        menu.
+        <br />
+        <br />
+        The donor list is <code>_donations</code>: what each person gave and what they wrote. A{' '}
+        <code>donation_sponsor</code> is a business the site lined up rather than somebody who knows
+        the reader, so it carries no message — it sponsored the fundraiser, not them.
+        <br />
+        <br />
+        <code>FundraiserBanner</code> is <code>_fundraiser_main_banner</code>, which a site running
+        one shows on every page; without a goal it reads &ldquo;$3,180 total raised&rdquo; and drops
+        the bar, since a bar with nothing to fill to can only ever look wrong.{' '}
+        <code>FundraiserWelcome</code> is the modal a reader gets once, the first time they land on
+        such a site — remembered in localStorage by the app, a flag here.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="the page a reader shares" full>
+          <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+            <FundraiserPage fundraiser={FUNDRAISER} entries={READING_LOG} />
+          </div>
+        </Variant>
+        <Variant label="the bar every page carries while one is running" full>
+          <BannerFrame>
+            <FundraiserBanner raised={3180} goal={5000} onLearnMore={noop} onDismiss={noop} />
+          </BannerFrame>
+        </Variant>
+        <Variant label="no goal — the figure, and no bar to misread">
+          <BannerFrame>
+            <FundraiserBanner raised={3180} onLearnMore={noop} />
+          </BannerFrame>
+        </Variant>
+        <Variant label="the welcome, once per reader">
+          <FundraiserWelcomeDemo />
         </Variant>
       </>
     ),

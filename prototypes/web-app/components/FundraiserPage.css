@@ -1,0 +1,290 @@
+/* ─── Fundraiser ─────────────────────────────────────────────────────────────
+   `fundraisers#show`. The challenge page's furniture with the two things a
+   challenge hasn't got: what has been raised, and the way to raise more. */
+
+.fnd-head {
+  padding: 22px 24px 24px;
+  margin-bottom: 18px;
+  text-align: center;
+  background: color-mix(in srgb, var(--fnd-tint) 16%, #fff);
+  border-radius: 16px;
+}
+.fnd-head-art {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.fnd-head-art img {
+  width: min(420px, 100%);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 10%);
+}
+.fnd-title {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--c-text-dark);
+}
+.fnd-dates {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+
+.fnd-tabs {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 18px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--c-border);
+}
+
+/* The rail is the point of the page, so it keeps its width down to a narrow
+   column rather than giving way to the prose. */
+.fnd-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: start;
+}
+.fnd-main {
+  min-width: 0;
+}
+.fnd-sub {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--c-text-dark);
+}
+.fnd-desc {
+  max-width: 68ch;
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--c-text);
+}
+.fnd-h2 {
+  margin-top: 26px;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+
+.fnd-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+.fnd-card {
+  padding: 18px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.fnd-card-h {
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+.fnd-total-nums {
+  margin: 8px 0 10px;
+  font-size: 15px;
+  color: var(--c-text-light);
+}
+.fnd-total-nums strong {
+  font-size: 28px;
+  font-weight: 900;
+  color: #0f7a55;
+}
+
+.fnd-share {
+  text-align: center;
+}
+.fnd-share-face {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 30px;
+  line-height: 1;
+}
+.fnd-share-text {
+  margin: 6px 0 14px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--c-text-light);
+}
+.fnd-share-icons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.fnd-share-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: var(--c-text);
+  cursor: pointer;
+  background: var(--c-gray-50);
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+}
+.fnd-share-icon:hover {
+  color: var(--c-blue);
+  background: #fff;
+  border-color: var(--c-blue);
+}
+/* The link and its Copy, which is the only control on this card that does
+   anything a reader can't do from their own address bar. */
+.fnd-share-link {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--c-border);
+}
+.fnd-share-url {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text-light);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Prizes ──────────────────────────────────────────────────────────────── */
+.fnd-prizes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.fnd-prize {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.fnd-prize-art {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  font-size: 26px;
+  background: var(--c-gray-50);
+  border-radius: 12px;
+}
+.fnd-prize-copy {
+  flex: 1;
+  min-width: 0;
+}
+.fnd-prize-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.fnd-prize-at {
+  margin-top: 2px;
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+
+/* ── Donations ───────────────────────────────────────────────────────────── */
+.fnd-donations-head {
+  margin-bottom: 14px;
+}
+.fnd-donations-head .fnd-h2 {
+  margin-top: 0;
+}
+.fnd-donations-count {
+  margin-top: 2px;
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+.fnd-donors {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.fnd-donor {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.fnd-donor-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: #b3401a;
+  background: #fdece5;
+  border-radius: 999px;
+}
+.fnd-donor-body {
+  min-width: 0;
+}
+.fnd-donor-text {
+  font-size: 15px;
+  color: var(--c-text);
+}
+.fnd-donor-text strong {
+  font-weight: 900;
+  color: #0f7a55;
+}
+/* What they wrote, set apart from what they gave — a donation message is the
+   half a reader actually reads. */
+.fnd-donor-message {
+  padding-left: 12px;
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--c-text-light);
+  border-left: 3px solid var(--c-gray-200);
+}
+
+/* ── The welcome modal ───────────────────────────────────────────────────── */
+.fnd-welcome-art {
+  display: grid;
+  place-items: center;
+  height: 120px;
+  font-size: 54px;
+  background: #dbf2e7;
+}
+.fnd-welcome {
+  text-align: center;
+}
+.fnd-welcome-title {
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.3;
+  color: var(--c-text-dark);
+}
+.fnd-welcome-text {
+  margin-top: 8px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--c-text-light);
+}
+
+@media (max-width: 900px) {
+  .fnd-overview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

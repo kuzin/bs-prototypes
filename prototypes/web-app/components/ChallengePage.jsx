@@ -3,6 +3,7 @@ import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
+import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
 import { badgeSrc, bannerSrc } from '@components/ReaderApp/ReaderApp'
 
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
@@ -47,40 +48,6 @@ const TABS = [
   { id: 'certificates', label: 'Certificates', disabled: true },
 ]
 
-/**
- * One of the Overview's "Overall Progress" tiles: a ring around the share
- * completed, the count under it. `_overview_list_goals.html.haml`.
- */
-function GoalRing({ goal }) {
-  const pct = Math.min(100, Math.round((goal.have / goal.need) * 100))
-  const done = goal.have >= goal.need
-  return (
-    <li className={`cp-goal${done ? ' is-done' : ''}`}>
-      <div className="cp-goal-ring">
-        <svg viewBox="0 0 100 100" aria-hidden="true">
-          <circle className="cp-goal-track" cx="50" cy="50" r="44" />
-          <circle
-            className="cp-goal-fill"
-            cx="50"
-            cy="50"
-            r="44"
-            pathLength="100"
-            strokeDasharray={`${pct} 100`}
-          />
-        </svg>
-        <span className="cp-goal-pct">{pct}%</span>
-      </div>
-      <div className="cp-goal-copy">
-        <span className="cp-goal-label">{goal.label}</span>
-        <span className="cp-goal-num">
-          {goal.have.toLocaleString()}
-          <em>/{goal.need.toLocaleString()}</em>
-        </span>
-      </div>
-    </li>
-  )
-}
-
 function Overview({ detail, challenge }) {
   // "Recently Earned Badges" is the first six, which is what the app shows.
   const recent = BADGES.filter((b) => !b.locked).slice(0, 6)
@@ -104,11 +71,11 @@ function Overview({ detail, challenge }) {
 
       <section className="cp-section">
         <h2 className="cp-h2">Overall Progress</h2>
-        <ul className="cp-goals">
+        <GoalTiles>
           {detail.goals.map((g) => (
-            <GoalRing key={g.label} goal={g} />
+            <GoalTile key={g.label} label={g.label} have={g.have} need={g.need} />
           ))}
-        </ul>
+        </GoalTiles>
       </section>
 
       <section className="cp-section">

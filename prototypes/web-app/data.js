@@ -1689,3 +1689,58 @@ export const SHARED_ACCESS = [
 ]
 
 export const SHARED_INVITES = [{ id: 'si-1', email: 'grandma.jo@example.com' }]
+
+// ─── Fundraisers ─────────────────────────────────────────────────────────────
+// A read-a-thon: the site runs one, readers log as usual, and the people who
+// sponsor them turn that reading into money. `Fundraiser` /
+// `ProfileFundraiser` / `Donation`.
+//
+// The reader's side is `fundraisers#show` and its nav — Overview, Badges,
+// Prizes, Donations, Challenge Log. What makes it a fundraiser rather than a
+// challenge is the two numbers at the top (raised against the goal) and the
+// share card: a reader's own donation page is the thing they're being asked to
+// send to their family.
+
+const donation = (id, name, amount, message, sponsor = false) => ({
+  id,
+  name,
+  amount,
+  message,
+  sponsor,
+})
+
+export const FUNDRAISER = {
+  id: 'read-a-thon',
+  name: 'Magnolia Read-a-thon',
+  banner: 'summer-reading',
+  tint: '#2AA5B8',
+  dates: 'May 1 — Jun 15',
+  shortDescription: 'Every minute Olivia reads this month raises money for the school library.',
+  description:
+    'Our library is short two thousand books and one librarian’s wish list. For six weeks, every reader in the school is asking family and friends to sponsor their reading — and everything raised goes straight into new titles for the shelves. Log as you always do; the rest takes care of itself.',
+  goal: 5000,
+  raised: 3180,
+  // What this reader has raised, and from whom.
+  myGoal: 150,
+  myRaised: 95,
+  // `_overall_progress` — the app's own tiles, in its own order. The ones with
+  // a `need` are `_progress_card`; the rest are `_total_card`.
+  progress: [
+    { id: 'raised', label: 'Total Raised', value: '$95', icon: 'coin', accent: '#0F7A55' },
+    { id: 'donations', label: 'Total Donations', value: 4, icon: 'users', accent: '#1A6DD5' },
+    { id: 'badges', label: 'Badges Earned', value: 3, icon: 'award', accent: '#B45309' },
+    { id: 'minutes', label: 'Minutes Logged', have: 240, need: 300 },
+    { id: 'activities', label: 'Activities Completed', have: 2, need: 3 },
+    { id: 'reviews', label: 'Reviews Written', have: 1, need: 2 },
+    { id: 'prizes', label: 'Prizes Earned', value: 1, icon: 'gift', accent: '#7C5CFA' },
+  ],
+  donations: [
+    donation('d1', 'Grandma Jo', 40, 'Read something with a dragon in it for me. xx'),
+    donation('d2', 'Dana Moore', 25, 'So proud of you, Liv!'),
+    // A `donation_sponsor` is a business the site lined up, so it has no
+    // message — it sponsored the fundraiser, not this reader.
+    donation('d3', 'Riverside Books', 20, null, true),
+    donation('d4', 'Mr. Reyes', 10, 'Room 14 is watching that minute count.'),
+  ],
+  shareUrl: 'https://magnolia.beanstack.org/f/olivia-m',
+}

@@ -14,6 +14,7 @@ import { BookLists, BookListPage } from './components/BookLists'
 import { FindBooks } from './components/FindBooks'
 import { BookPage } from './components/BookPage'
 import { ChallengePage } from './components/ChallengePage'
+import { FundraiserPage, FundraiserWelcome } from './components/FundraiserPage'
 import {
   FRIEND_REQUESTS,
   WISH_LIST,
@@ -30,6 +31,7 @@ import {
   READER_PREFERENCES,
   SHARED_ACCESS,
   SHARED_INVITES,
+  FUNDRAISER,
 } from './data'
 import {
   STREAK,
@@ -113,6 +115,7 @@ const FEATURE_SWITCHES = [
   { id: 'challengeCode', label: 'Challenge codes', hint: 'show_challenge_code' },
   { id: 'connectedSite', label: 'Connected site', hint: 'is_connected_school?' },
   { id: 'registrationQuestions', label: 'Registration questions', hint: '3 active, 2 required' },
+  { id: 'fundraiser', label: 'Fundraiser', hint: 'a read-a-thon is running' },
 ]
 
 // The site's own goal, and what it has read toward it so far.
@@ -151,6 +154,7 @@ const FEATURE_DEFAULTS = {
   challengeCode: true,
   connectedSite: true,
   registrationQuestions: true,
+  fundraiser: true,
 }
 
 export function App() {
@@ -213,6 +217,10 @@ export function App() {
   // The site's registration questions are asked once, on the first challenge
   // this reader joins — the answers are the profile's, not the challenge's.
   const [regAnswers, setRegAnswers] = useState({})
+  // The read-a-thon's own page, and the once-per-reader welcome the app pops
+  // the first time they land on a site running one.
+  const [fundraiser, setFundraiser] = useState(null)
+  const [welcomed, setWelcomed] = useState(false)
 
   const [stack, setStack] = useState([])
   const top = stack[stack.length - 1] ?? null
@@ -336,6 +344,7 @@ export function App() {
           setView(v)
           setChallenge(null)
           setStack([])
+          setFundraiser(null)
         }}
         ownTabs={OWN_TABS}
         hideTabs={HIDE_TABS}
@@ -374,6 +383,12 @@ export function App() {
             setPrefs((p) => (id === 'basic' ? p : { ...p, [id]: value })),
           features: { avatars: true, gradeLevels: true, recommendations: true },
         }}
+        fundraiser={features.fundraiser ? FUNDRAISER : null}
+        onOpenFundraiser={(f) => {
+          setChallenge(null)
+          setStack([])
+          setFundraiser(f)
+        }}
         registrationQuestions={features.registrationQuestions ? REGISTRATION_QUESTIONS : []}
         registrationAnswers={regAnswers}
         onRegistrationAnswers={setRegAnswers}
@@ -387,7 +402,13 @@ export function App() {
         onAcceptFriend={(r) => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
         onDeclineFriend={(r) => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
         page={
-          top ? (
+          fundraiser ? (
+            <FundraiserPage
+              fundraiser={fundraiser}
+              entries={log}
+              onBack={() => setFundraiser(null)}
+            />
+          ) : top ? (
             renderRoute()
           ) : challenge ? (
             <ChallengePage challenge={challenge} entries={log} onBack={() => setChallenge(null)} />
@@ -424,6 +445,12 @@ export function App() {
           onLinked={handleLinked}
         />
       )}
+
+      {/* Once per reader, the first time they see a site running one. */}
+      <FundraiserWelcome
+        open={features.fundraiser && !welcomed}
+        onClose={() => setWelcomed(true)}
+      />
 
       <PrototypeNav currentHref="/bs-prototypes/web-app/" />
     </>

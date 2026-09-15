@@ -36,7 +36,11 @@ import {
   IconMenu2,
   // ── status / feedback ──
   IconInfoCircle,
+  IconBrandFacebook,
+  IconBrandX,
+  IconBuildingStore,
   IconCircle,
+  IconCoin,
   IconCircleCheck,
   IconCircleCheckFilled,
   IconCircleX,
@@ -259,7 +263,11 @@ const REGISTRY = {
 
   // status / feedback
   info: IconInfoCircle,
+  'brand-facebook': IconBrandFacebook,
+  'brand-x': IconBrandX,
+  'building-store': IconBuildingStore,
   circle: IconCircle,
+  coin: IconCoin,
   'circle-check': IconCircleCheck,
   'circle-check-filled': IconCircleCheckFilled,
   'circle-x': IconCircleX,

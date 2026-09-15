@@ -954,3 +954,45 @@ export function LeaderboardCard({
     </aside>
   )
 }
+
+/**
+ * The fundraiser bar — `fundraisers/_fundraiser_main_banner.html.haml`. A site
+ * running a read-a-thon says so on every page, and says how it's going: the
+ * pitch and a Learn More on the left, the money on the right.
+ *
+ * The app's own two shapes: with a goal it reads "$3,180 of $5,000 Raised" over
+ * a bar, and without one just "$3,180 total raised" — a bar with nothing to
+ * fill to is a bar that can only ever look wrong.
+ */
+export function FundraiserBanner({ raised, goal, onLearnMore, onDismiss }) {
+  const money = (n) => `$${n.toLocaleString()}`
+  return (
+    <ReaderBanner
+      tone="green"
+      onDismiss={onDismiss}
+      mark={<Icon name="coin" size={20} />}
+      title={
+        <>
+          <strong>We&apos;re running a reading fundraiser!</strong> Support us by donating.
+        </>
+      }
+      action={
+        <span className="wa-fund">
+          <span className="wa-fund-nums">
+            {goal ? (
+              <>
+                <strong>{money(raised)}</strong> of {money(goal)} Raised
+              </>
+            ) : (
+              <>
+                <strong>{money(raised)}</strong> total raised
+              </>
+            )}
+          </span>
+          {goal ? <ProgressBar value={raised} max={goal} color="#087542" /> : null}
+          <ReaderBannerAction onClick={onLearnMore}>Learn More</ReaderBannerAction>
+        </span>
+      }
+    />
+  )
+}

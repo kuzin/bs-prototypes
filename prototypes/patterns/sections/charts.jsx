@@ -5,6 +5,7 @@ import { ResponsiveScatterPlot } from '@nivo/scatterplot'
 import { Icon } from '@components/Icon/Icon'
 import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 import { CardNote, ChartCard, StatCard } from '@components/Cards/Cards'
+import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
 import {
   AXIS_BOTTOM,
   AXIS_LEFT,
@@ -1642,6 +1643,69 @@ import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/charts/charts'
       <>
         <ScatterKnobs />
       </>
+    ),
+  },
+  {
+    group: 'cards',
+    id: 'goal-tile',
+    name: 'GoalTile',
+    usage: `import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
+
+<GoalTiles>
+  {/* a requirement with a denominator — a ring around the share done */}
+  <GoalTile label="Minutes Logged" have={240} need={300} />
+  {/* a total with nothing to reach — the number, and its icon in the ring's place */}
+  <GoalTile label="Total Raised" value="$95" accent="#0F7A55" icon={<Icon name="coin" size={24} />} />
+</GoalTiles>`,
+    desc: (
+      <>
+        One tile of an <strong>&ldquo;Overall Progress&rdquo;</strong> strip: how far along one
+        requirement is. The challenge page opens with these and so does a fundraiser, which is what
+        took the ring out of the challenge page and put it here.
+        <br />
+        <br />
+        The app has two of them and this is both. <strong>
+          A progress tile has a denominator
+        </strong>{' '}
+        (<code>fundraisers/overview/_progress_card</code>, <code>_overview_list_goals</code>), so it
+        draws a ring around the share completed and reads &ldquo;240 / 300&rdquo;; a{' '}
+        <strong>total tile has only a number</strong> (<code>_total_card</code>) — dollars raised,
+        badges earned — so it shows the figure and its icon in the ring&apos;s place, because a ring
+        around something with nothing to reach is a decoration pretending to be data. Both keep the
+        same 58px cell, so a mixed strip still lines up.
+        <br />
+        <br />A tile that is finished goes green on its own; <code>accent</code> colours the rest.
+        Pass <code>onClick</code> and the whole card becomes the hit area, not the four words in it.
+      </>
+    ),
+    render: () => (
+      <Variant label="a mixed strip — three totals and three with a ring" full>
+        <div style={{ padding: 20, background: 'var(--c-gray-50)' }}>
+          <GoalTiles>
+            <GoalTile
+              label="Total Raised"
+              value="$95"
+              accent="#0F7A55"
+              icon={<Icon name="coin" size={24} />}
+            />
+            <GoalTile
+              label="Total Donations"
+              value={4}
+              accent="#1A6DD5"
+              icon={<Icon name="users" size={24} />}
+            />
+            <GoalTile
+              label="Badges Earned"
+              value={3}
+              accent="#B45309"
+              icon={<Icon name="award" size={24} />}
+            />
+            <GoalTile label="Minutes Logged" have={240} need={300} />
+            <GoalTile label="Activities Completed" have={3} need={3} />
+            <GoalTile label="Reviews Written" have={1} need={2} />
+          </GoalTiles>
+        </div>
+      </Variant>
     ),
   },
   {

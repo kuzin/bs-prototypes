@@ -9,6 +9,7 @@ import { EmptyState } from '@components/Primitives/Primitives'
 import {
   BannerStack,
   ChallengeCard,
+  FundraiserBanner,
   ChallengeScope,
   GoalCard,
   CommunityGoalBanner,
@@ -445,6 +446,9 @@ export function Dashboard({
   registrationQuestions = [],
   registrationAnswers,
   onRegistrationAnswers,
+  /* The site's read-a-thon, if it is running one, and where Learn More goes. */
+  fundraiser,
+  onOpenFundraiser,
   onOpenChallenge,
   onUnenrollChallenge,
   motivation,
@@ -455,6 +459,7 @@ export function Dashboard({
   page,
 }) {
   const [scope, setScope] = useState('current')
+  const [showFundraiser, setShowFundraiser] = useState(true)
 
   // The page's four lists, the way the app splits them: what you're in, what
   // else is open to you, what has ended, what you've ignored. They move between
@@ -606,6 +611,15 @@ export function Dashboard({
                 )}
                 {communityGoal && showGoal && (
                   <CommunityGoalBanner {...communityGoal} onDismiss={() => setShowGoal(false)} />
+                )}
+                {/* A site running a read-a-thon says so on every page. */}
+                {fundraiser && showFundraiser && (
+                  <FundraiserBanner
+                    raised={fundraiser.raised}
+                    goal={fundraiser.goal}
+                    onLearnMore={() => onOpenFundraiser?.(fundraiser)}
+                    onDismiss={() => setShowFundraiser(false)}
+                  />
                 )}
                 <StreakBanner streak={streak} onLog={onLog} />
               </BannerStack>
