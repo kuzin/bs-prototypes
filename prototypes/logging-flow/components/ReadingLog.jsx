@@ -15,7 +15,7 @@ import { BOOKS, READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
    can't draw has to go the moment the window gets there, however it got there.
    Local on purpose: exporting anything but components from this module would
    cost it Fast Refresh. */
-function useNarrow(query = '(max-width: 560px)') {
+function useNarrow(query = '(max-width: 1024px)') {
   const [narrow, setNarrow] = useState(
     () => typeof window !== 'undefined' && window.matchMedia(query).matches,
   )
@@ -644,10 +644,12 @@ export function ReadingLog({
   // its own and read as a different page; it is the same entries, counted by
   // book instead of by day.
   const [ownView, setOwnView] = useState(defaultView ?? 'calendar')
-  // A seven-column month gives each day ~43px on a phone, which can't carry a
-  // book title. So there is no calendar there at all: it drops out of the
-  // switcher, and a reader who was on it when the window narrowed lands on the
-  // list rather than on a grid of clipped words.
+  // A seven-column month needs room for a book title in every cell, and it runs
+  // out well before a phone does: a tablet at 1024 breaks *Percy Jackson and the
+  // Olympians* over seven lines, and at 768 there is nothing left at all. So the
+  // calendar is a desktop view — below that it drops out of the switcher
+  // entirely, and a reader who was on it when the window narrowed lands on the
+  // list rather than on a grid of broken words.
   const narrow = useNarrow()
   const wanted = !viewSwitch
     ? (defaultView ?? 'calendar')

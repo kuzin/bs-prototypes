@@ -9,90 +9,114 @@
   container-type: inline-size;
 }
 
+/* Both pages behind the gear hold to one measure and sit in the middle of the
+   column. A settings page that runs the full 1,200px puts a Yes/No switch a
+   foot away from the sentence it answers.
+
+   On the inner blocks rather than on `.st-page` itself: that carries the
+   container, and a container is a containing block for a fixed-position
+   descendant — which the full-screen preference flow is. */
+.st-page > .st-title,
+.st-head,
+.st-main {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+}
+
+/* ─── Who you are editing ─────────────────────────────────────────────────── */
+
+.st-head {
+  margin-bottom: 24px;
+}
 .st-title {
   font-size: 28px;
   font-weight: 800;
   color: var(--c-text);
-  margin-bottom: 32px;
 }
 
-.st-layout {
-  display: grid;
-  grid-template-columns: 260px minmax(0, 1fr);
-  gap: 24px;
-  align-items: start;
+/* ─── Profile ─────────────────────────────────────────────────────────────── */
+
+/* The face, who it belongs to, and what you can do about it — one row, with
+   the actions at the far end where every other control on the page is. */
+.st-profile {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
 }
-
-/* ─── Avatar ──────────────────────────────────────────────────────────────── */
-
-.st-avatar {
-  position: relative;
-  width: 140px;
-  height: 140px;
-  border-radius: 999px;
+.st-profile-face {
   display: grid;
+  flex: none;
   place-items: center;
 }
-.st-avatar-initials {
-  font-size: 30px;
-  font-weight: 800;
-  color: #b1281f;
-}
-/* Only ever shown in the inline (stacked) layout — beside a circle that has
-   left its column, the name is what makes the row an identity row rather than
-   a stray avatar. */
-.st-avatar-name {
+/* The picker itself — the button in the row is what opens it. */
+.st-profile-file {
   display: none;
+}
+.st-profile-text {
+  flex: 1;
   min-width: 0;
+}
+.st-profile-name {
   font-size: 18px;
   font-weight: 800;
   color: var(--c-text);
   overflow-wrap: anywhere;
 }
-.st-avatar-edit {
-  position: absolute;
-  right: 12px;
-  bottom: 8px;
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  padding: 0;
+.st-profile-grade {
+  margin-top: 1px;
+  font-size: 14px;
+  font-weight: 700;
   color: var(--c-text-light);
-  cursor: pointer;
-  background: #f5f5f5;
-  border: 0;
-  border-radius: 999px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
 }
-.st-avatar-edit:hover {
-  color: var(--c-text-dark);
-  background: #fff;
+.st-profile-actions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  align-items: center;
+}
+/* What the app asks before it will take a picture, and the button that applies
+   it — the modal this replaced had them as its body and its footer. */
+.st-photo-ok {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  margin-top: 16px;
+  background: var(--c-gray-50, #fafafa);
+  border-radius: 10px;
+}
+/* The Basic Information row hangs off the bottom of the block it belongs to. */
+.st-profile-rows {
+  padding-top: 4px;
+  margin-top: 16px;
+  border-top: 1px solid var(--c-gray-200);
 }
 
 /* ─── Sections ────────────────────────────────────────────────────────────── */
 
-.st-section {
-  margin-bottom: 48px;
-}
-.st-h2 {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--c-text);
-  margin-bottom: 14px;
+/* Both settings pages are a stack of `SectionCard`s with a title row each. */
+.st-main {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
 }
 .st-body {
+  margin-bottom: 16px;
   font-size: 14px;
   line-height: 1.55;
   color: var(--c-text);
-  margin-bottom: 18px;
 }
 .st-hint {
+  margin-bottom: 14px;
   font-size: 14px;
   line-height: 1.5;
   color: var(--c-text-light);
-  margin-bottom: 14px;
 }
+
+/* ─── Preferences ─────────────────────────────────────────────────────────── */
 
 .st-linklist {
   display: flex;
@@ -107,16 +131,21 @@
   gap: 12px;
   align-items: center;
   width: 100%;
-  padding: 16px 20px;
+  padding: 14px 16px;
   font-family: inherit;
   color: var(--c-text);
   cursor: pointer;
-  background: #f5f5f5;
-  border: 0;
+  background: var(--c-gray-50, #fafafa);
+  border: 1px solid var(--c-gray-200);
   border-radius: 10px;
 }
 .st-linkrow:hover {
-  background: #e8eef5;
+  background: #fff;
+  border-color: var(--c-gray-500);
+}
+.st-linkrow:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px #5599e1;
 }
 .st-linkrow-label {
   font-size: 14px;
@@ -127,6 +156,7 @@
 .st-linkrow-state {
   display: inline-flex;
   flex: none;
+  width: 17px;
   color: var(--c-gray-500);
 }
 .st-linkrow-state.is-done {
@@ -141,99 +171,72 @@
   white-space: nowrap;
 }
 
-.st-rule {
-  border-top: 1px solid var(--c-border);
-  border-bottom: 1px solid var(--c-border);
-  margin-bottom: 20px;
-}
-.st-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 14px 0;
-}
-.st-row-label {
-  font-size: 14px;
-  color: var(--c-text);
-}
+/* ─── Share this reader ───────────────────────────────────────────────────── */
 
-/* ─── App Integrations ────────────────────────────────────────────────────── */
-
-.st-integrations {
+/* The address and the thing you do with it, on one line. Stacked, Send sat on
+   its own under a full-width field looking like the page's save button. */
+.st-invitefield {
   display: flex;
-  flex-direction: column;
+  gap: 10px;
+  align-items: flex-start;
 }
-.st-integration {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  padding: 18px 0;
-  border-bottom: 1px solid var(--c-border);
-}
-.st-integration:first-child {
-  border-top: 1px solid var(--c-border);
-}
-.st-integration-brand {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.st-invitefield .inp {
+  flex: 1;
   min-width: 0;
 }
-.st-integration-acct {
-  font-size: 13px;
-  color: var(--c-text-light);
+.st-invitefield .btn {
+  flex: none;
 }
-
-/* ─── Share / delete ──────────────────────────────────────────────────────── */
-
-.st-field {
-  margin-bottom: 16px;
+/* Each list of people is its own group under the form — enough air to read as
+   one, not as more of the field above it. */
+.st-viewers {
+  margin-top: 24px;
 }
-.st-label {
-  font-size: 13px;
+.st-h3 {
+  margin-bottom: 4px;
+  font-size: 12.5px;
   font-weight: 800;
-  color: var(--c-text);
-  margin-bottom: 7px;
+  color: var(--c-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
-.st-input {
-  width: 100%;
-  height: 42px;
-  padding: 0 14px;
-  border: 1px solid var(--c-border);
-  border-radius: 8px;
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--c-text);
-}
-.st-input::placeholder {
-  color: var(--c-gray-600);
-}
+
+/* ─── Deleting a reader ───────────────────────────────────────────────────── */
 
 .st-warn {
-  padding: 16px 20px;
-  border-radius: 10px;
-  background: #fdecec;
-  color: #b91c1c;
+  padding: 14px 16px;
+  margin-bottom: 18px;
   font-size: 14px;
   font-weight: 700;
   line-height: 1.5;
+  color: #b91c1c;
+  background: #fdecec;
+  border-radius: 10px;
+}
+.st-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   margin-bottom: 18px;
 }
-.st-check {
+.st-dangeractions {
   display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-bottom: 14px;
-  font-size: 14px;
-  color: var(--c-text);
+  gap: 16px;
+  align-items: center;
 }
-.st-check input {
-  width: 18px;
-  height: 18px;
-  margin: 1px 0 0;
-  flex-shrink: 0;
+.st-cancel {
+  padding: 0;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text-light);
+  text-decoration: underline;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.st-cancel:hover {
+  color: var(--c-text-dark);
 }
 /* Armed only once both boxes are ticked, and it still asks after that — the
    app's `.button--primary.reject` is a real red button, not a grey one you
@@ -260,140 +263,46 @@
 }
 
 /* ─── Responsive ──────────────────────────────────────────────────────────────
-   Keyed to `.st-page`'s container, not the viewport, and kept at the bottom of
-   the file: every rule below overrides a base rule of equal specificity, so
-   source order is what makes them win. */
+   Keyed to `.st-page`'s container, not the viewport, and kept with the blocks
+   they override: source order is what makes them win. */
 
-/* First the avatar column pays for the squeeze, not the form: a 140px circle
-   in a 260px column is mostly air, and the form is what has work to do. */
-@container (max-width: 900px) {
-  .st-layout {
-    grid-template-columns: 170px minmax(0, 1fr);
-  }
-  .st-avatar {
-    width: 110px;
-    height: 110px;
-  }
-  .st-avatar-initials {
-    font-size: 24px;
-  }
-}
-
-/* Past that there's no column width left to give, so the avatar stops being a
-   column at all — it goes inline above the sections, beside the reader's name,
-   with a rule under it. The shipped page breaks to a stack here too. */
-@container (max-width: 720px) {
-  .st-layout {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 0;
-  }
-  .st-avatar-col {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 32px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--c-border);
-  }
-  .st-avatar {
-    width: 76px;
-    height: 76px;
-    flex: none;
-  }
-  .st-avatar-initials {
-    font-size: 20px;
-  }
-  .st-avatar-edit {
-    right: 0;
-    bottom: 2px;
-    width: 26px;
-    height: 26px;
-  }
-  .st-avatar-name {
-    display: block;
-  }
-}
-
-/* Phone width: the two-up rows have nothing left to trade. */
 @container (max-width: 460px) {
   .st-title {
     font-size: 24px;
-    margin-bottom: 24px;
   }
-  .st-integration {
+  .st-profile-actions {
+    flex-basis: 100%;
+  }
+  /* Nothing left to trade on a phone: the field takes the line and the button
+     goes under it — at its own width, not stretched into a grey slab the size
+     of the field above it. */
+  .st-invitefield {
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
+    align-items: stretch;
   }
-  .st-row {
-    gap: 14px;
+  .st-invitefield .btn {
+    align-self: flex-start;
   }
-}
-
-/* ─── Shared access ─────────────────────────────────────────────────────────
-   `.viewers-wrap` — who has this reader, and who has been asked. */
-.st-viewers {
-  padding-top: 18px;
-  margin-top: 22px;
-  border-top: 1px solid var(--c-border);
-}
-.st-h3 {
-  margin-bottom: 10px;
-  font-size: 15px;
-  font-weight: 900;
-  color: var(--c-text-dark);
-}
-.st-invite {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid var(--c-border);
-}
-.st-invite:last-child {
-  border-bottom: 0;
-}
-.st-invite-who {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text);
-}
-.st-invite-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.st-checks {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 18px;
 }
 
 /* ─── The preference forms ──────────────────────────────────────────────────
    One pane of the funnel, on the full-screen surface. A column with the
    question at the top and the two buttons pinned at the bottom, which is what
    `.sign-up-funnel-pager-buttons` is. */
+/* Every pane is a modal over the settings page. It used to take the whole
+   window, which for "what grade is Olivia in?" is a lot of ceremony for one
+   dropdown — and even the longest of them, fifteen interest tiles, fits a
+   modal with room to spare. */
+.pf-modal {
+  width: min(660px, calc(100vw - 32px));
+}
 .pf {
   display: flex;
   flex-direction: column;
-  gap: 18px;
-  width: min(760px, 100%);
-  margin: 0 auto;
+  gap: 16px;
 }
-.pf-title {
-  font-size: 26px;
-  font-weight: 900;
-  line-height: 1.2;
-  color: var(--c-text-dark);
-}
-.pf-limit {
-  margin-top: 6px;
-  font-size: 15px;
-  color: var(--c-text-light);
-}
+/* The question sits on the modal's own header bar (`.modal-title` /
+   `.modal-sub`), so the pane has no title of its own any more. */
 /* `.filter-limit-notice.over-selected` */
 .pf-over {
   padding: 11px 14px;
@@ -411,38 +320,22 @@
   gap: 18px;
 }
 
-/* The app's own first option, on every one of these forms. */
-.pf-none {
-  display: inline-flex;
-  gap: 8px;
-  align-items: center;
-  align-self: flex-start;
-  padding: 10px 16px 10px 12px;
-  font: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text);
-  cursor: pointer;
-  background: var(--c-gray-50);
-  border: 1px solid var(--c-border);
-  border-radius: 999px;
-}
-.pf-none:hover {
-  border-color: var(--c-gray-500);
-}
-.pf-none.is-on {
-  color: var(--c-blue-ink);
-  background: var(--c-blue-wash);
-  border-color: var(--c-blue);
+/* Clear sits opposite Cancel and Save — it undoes the pane rather than
+   answering it. */
+.pf-clear {
+  margin-right: auto;
 }
 
 /* `list-icons.flip-wrap` — the app flips a tile over to a tick when you pick
    it. A tinted tile with its own tick says the same thing without the
    animation, and reads at a glance down a grid of fifteen. */
+/* Wide enough that the long names — Historical Fiction, Building & Inventing —
+   still land on one line; anything longer than the tile is cut rather than
+   wrapped, so a grid of tiles stays a grid of one-line tiles. */
 .pf-tiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(170px, 100%), 1fr));
-  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(min(190px, 100%), 1fr));
+  gap: 8px;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -452,8 +345,8 @@
   gap: 10px;
   align-items: center;
   width: 100%;
-  min-height: 62px;
-  padding: 12px 14px;
+  min-height: 48px;
+  padding: 10px 12px;
   font: inherit;
   font-size: 14px;
   font-weight: 700;
@@ -477,22 +370,56 @@
   font-size: 22px;
   line-height: 1;
 }
+.pf-tile-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
+/* A plain label, the same rung every other label on the page sits on — as
+   uppercase micro-caps it read as a system heading rather than the name of the
+   group of answers under it. */
 .pf-group-title {
   margin-bottom: 8px;
-  font-size: 13px;
-  font-weight: 900;
-  color: var(--c-text-light);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: var(--c-text);
 }
+/* Every answer in every pane is the same cell: a card you can click, in the
+   same grid the tiles use. Bare checkboxes in a column read as a form inside a
+   picker made of cards. */
 .pf-checks {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
-  gap: 8px 16px;
+  grid-template-columns: repeat(auto-fill, minmax(min(190px, 100%), 1fr));
+  gap: 8px;
 }
 .pf-checks--stack {
   grid-template-columns: minmax(0, 1fr);
+}
+.pf-checks > .chk {
+  min-height: 48px;
+  padding: 10px 12px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+}
+.pf-checks > .chk:hover {
+  border-color: var(--c-gray-500);
+}
+.pf-checks > .chk:has(.chk-input:checked) {
+  background: var(--c-blue-wash);
+  border-color: var(--c-blue);
+}
+.pf-checks > .chk:has(.chk-input:checked) .chk-label {
+  color: var(--c-blue-ink);
+}
+/* One line per cell, the same as the tiles — a "Deaf & Hard of Hearing" that
+   wraps makes its whole row taller than the two beside it. */
+.pf-checks > .chk .chk-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pf-levels {
@@ -530,8 +457,8 @@
    to the explanation. */
 .pf-doorways {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 12px;
   padding: 0;
   margin: 0;
   list-style: none;
@@ -585,21 +512,17 @@
   text-decoration: underline;
 }
 
-.pf-one,
+/* The fields take the modal. Capped at 340 they left half of it empty, which
+   read as a form that had failed to load the rest of itself. */
 .pf-basic {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  max-width: 340px;
 }
-
-.pf-foot {
+/* Every field in a pane takes the pane's width, dropdown included. */
+.pf-one {
   display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  padding-top: 20px;
-  margin-top: 6px;
-  border-top: 1px solid var(--c-border);
+  flex-direction: column;
 }
 
 .pf-phrases-head {
@@ -616,50 +539,14 @@
   color: var(--c-text);
 }
 
-/* ─── Edit avatar ───────────────────────────────────────────────────────── */
-.av-preview {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 18px;
-}
-.av-disc {
-  display: grid;
-  place-items: center;
-  width: 112px;
-  height: 112px;
-  color: #b4593a;
-  border-radius: 999px;
-}
-.av-picked {
-  color: rgb(0 0 0 / 45%);
-}
-.av-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-.av-notice {
-  padding-top: 16px;
-  margin-top: 16px;
-  border-top: 1px solid var(--c-border);
-}
-
-/* The avatar modal's own sub-line under its title. */
-.modal-sub {
-  margin-top: 6px;
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--c-text-light);
-}
-
 /* These two labels run to three lines, and the control centring itself against
    all of them leaves it floating beside the middle sentence. */
-.av-notice .chk,
+.st-photo-ok .chk,
 .st-checks .chk,
 .pf-level .chk {
   align-items: flex-start;
 }
-.av-notice .chk-box,
+.st-photo-ok .chk-box,
 .st-checks .chk-box,
 .pf-level .chk-box {
   margin-top: 1px;

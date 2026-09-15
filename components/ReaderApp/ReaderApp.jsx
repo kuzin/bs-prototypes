@@ -47,12 +47,13 @@ export const READER_TABS = [
   { id: 'leaderboards', label: 'Leaderboards' },
   { id: 'reviews', label: 'Reviews' },
   // The app calls this "All Badges"; it holds achievements too, so the tab says
-  // what it is. Every tab in this nav is the reader's own, so none of them says
-  // "My" — it would be on all four or none.
+  // what it is.
   { id: 'badges', label: 'Collections' },
-  // "Reading Log" in the app; it holds All Titles and (in web-app) Reviews
-  // alongside the log itself, so the tab is named for the whole of it.
-  { id: 'log', label: 'Reading' },
+  // "Reading Log" in the app; it holds All Titles, the Wish List and Book Lists
+  // alongside the log itself, so the tab is named for the whole of it — and
+  // "My", because beside Challenges and Leaderboards (which are the site's)
+  // this one is the reader's own.
+  { id: 'log', label: 'My Reading' },
 ]
 
 /**

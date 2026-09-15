@@ -28,6 +28,7 @@ import {
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
 import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'
+import { AccountSettings } from '@components/AccountSettings/AccountSettings'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 
 import {
@@ -463,6 +464,11 @@ export function Dashboard({
   otherReaders = OTHER_READERS.filter((r) => r.id !== READER.id),
   onSwitchReader,
   accountLabel,
+  /* The account behind the profiles — `user#edit`, the page the gear opens on a
+     library site. Given, the gear goes there; left off (a school, where there is
+     no account above the reader) it goes to Personalize Reader as it always
+     has. Same additive shape as `personalize` one line down. */
+  account,
   onOpenChallenge,
   onUnenrollChallenge,
   motivation,
@@ -536,12 +542,19 @@ export function Dashboard({
     connectedSite = true,
     communityGoal = null,
   } = features
-  // 'challenges' | 'settings' | 'log' | any `extraTabs` id — the gear (and
-  // "Manage connections") opens the reader's Personalize Reader page, where App
-  // Integrations live; the Reading Log tab opens the log itself. A parent can
+  // 'challenges' | 'settings' | 'account' | 'log' | any `extraTabs` id — the
+  // gear opens the account's own page where there is one and the reader's
+  // Personalize Reader page where there isn't; "Manage connections" always goes
+  // to the reader's, since App Integrations live there. The Reading Log tab
+  // opens the log itself. A parent can
   // drive the view instead, to deep-link straight to one of its extra tabs.
   const [viewState, setViewState] = useState('challenges')
-  const view = viewProp ?? viewState
+  const viewRaw = viewProp ?? viewState
+  // A school has no account above the reader. If the site changes under someone
+  // standing on the account page — the preview bar's own Library/School switch
+  // does exactly that — they land on the reader's settings rather than on a
+  // page with nothing behind it.
+  const view = viewRaw === 'account' && !account ? 'settings' : viewRaw
   const setView = onViewProp ?? setViewState
   const extraIds = extraTabs.map((t) => t.id)
   // A site running a read-a-thon gets a nav entry for it, ahead of Challenges —
@@ -582,7 +595,7 @@ export function Dashboard({
         onLog={onLog}
         onReview={onReview}
         onHome={() => setView('challenges')}
-        onAccount={() => setView('settings')}
+        onAccount={() => setView(account ? 'account' : 'settings')}
         beforeUser={
           <PartnerSwitcher
             partners={partners}
@@ -592,7 +605,7 @@ export function Dashboard({
           />
         }
         tabs={tabs}
-        active={view === 'challenges' || view === 'settings' ? 'challenges' : view}
+        active={['challenges', 'settings', 'account'].includes(view) ? 'challenges' : view}
         onTabChange={(id) => setView(id === 'log' || owned(id) ? id : 'challenges')}
         extraTabs={extraTabs}
         hideTabs={hideTabs}
@@ -618,6 +631,8 @@ export function Dashboard({
               onOpenBook={onOpenBook}
               bookFor={bookFor}
             />
+          ) : view === 'account' ? (
+            <AccountSettings title={accountLabel} {...account} />
           ) : view === 'settings' ? (
             <PersonalizeReader
               reader={reader}
