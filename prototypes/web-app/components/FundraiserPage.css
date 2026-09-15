@@ -1,6 +1,13 @@
 /* ─── Fundraiser ─────────────────────────────────────────────────────────────
    `fundraisers#show`. The challenge page's furniture with the two things a
-   challenge hasn't got: what has been raised, and the way to raise more. */
+   challenge hasn't got: what has been raised, and the way to raise more.
+
+   Queried against the column it sits in: the page renders into the reader's
+   main column and into a Pattern Library frame, both of which are narrow long
+   before the window is. */
+.fnd {
+  container-type: inline-size;
+}
 
 .fnd-head {
   padding: 22px 24px 24px;
@@ -283,8 +290,13 @@
   color: var(--c-text-light);
 }
 
-@media (max-width: 900px) {
+@container (max-width: 680px) {
+  /* The rail goes under the page. It keeps its own ground either way — it is
+     the point of the page, not a footnote to it. */
   .fnd-overview {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .fnd-head-art img {
+    width: 100%;
   }
 }

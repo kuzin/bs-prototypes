@@ -62,7 +62,7 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
   ]
 
   return (
-    <div className="fr">
+    <div className="fnd">
       {onBack && <ReaderBack onClick={onBack}>Back to Challenges</ReaderBack>}
 
       <header className="fnd-head" style={{ '--fnd-tint': f.tint }}>
