@@ -870,7 +870,7 @@ export const getChallengeDetail = (id) => CHALLENGE_DETAIL[id]
 
 export const AGES = ['0–2', '3–5', '6–8', '9–11', '12–14', '15–18']
 
-export const LANGUAGES = ['English', 'Spanish', 'French', 'Chinese', 'Arabic']
+export const LANGUAGES = ['English', 'Spanish']
 
 export const GENRES = [
   'Adventure',
@@ -895,7 +895,7 @@ export const BOOK_LIST_GENRES = GENRES
 // grouped in the app's own filter sidebar, with the group title as a subhead
 // over its own set of checkboxes.
 export const TOPIC_GROUPS = {
-  'Life Events': ['Starting School', 'Moving', 'A New Sibling', 'Loss'],
+  'Life Events': ['Starting School', 'Moving', 'Loss'],
   Feelings: ['Anxiety', 'Anger', 'Friendship', 'Belonging'],
   Interests: ['Sports', 'Space', 'Animals', 'Cooking', 'Inventing'],
 }
@@ -1035,7 +1035,10 @@ export const CATALOG = [
       lexile: '590L',
       genres: ['Fantasy', 'Realistic Fiction'],
       topics: { 'Life Events': ['Moving', 'Loss'], Feelings: ['Anxiety'] },
-      backgrounds: { 'Race & Ethnicity': ['Asian'], 'Family Structure': ['Grandparents'] },
+      backgrounds: {
+        'Race & Ethnicity': ['Asian', 'Multiracial'],
+        'Family Structure': ['Grandparents'],
+      },
       moods: ['magical', 'sad', 'heartwarming'],
       awards: ['Newbery Medal'],
       body: 'Lily’s halmoni is sick, and a tiger out of her grandmother’s Korean folktales turns up on the road offering a bargain Lily is not sure she should take.',
@@ -1062,7 +1065,11 @@ export const CATALOG = [
     lexile: '730L',
     genres: ['Sports', 'Realistic Fiction'],
     topics: { Interests: ['Sports'], Feelings: ['Anger', 'Belonging'] },
-    backgrounds: { 'Race & Ethnicity': ['Black'], 'Family Structure': ['Single Parent'] },
+    backgrounds: {
+      'Race & Ethnicity': ['Black'],
+      'Family Structure': ['Single Parent'],
+      'Gender & Identity': ['Boys'],
+    },
     moods: ['inspiring', 'suspenseful', 'thoughtful'],
     body: 'Castle Cranshaw has been running from one night for years. A track coach sees the speed in it and offers him a place on the team.',
     misc: ['Series'],
@@ -1074,6 +1081,7 @@ export const CATALOG = [
     lexile: '1020L',
     genres: ['Adventure', 'Realistic Fiction'],
     topics: { Interests: ['Animals'], Feelings: ['Anxiety'] },
+    backgrounds: { 'Gender & Identity': ['Boys'] },
     moods: ['suspenseful', 'adventurous', 'inspiring'],
     awards: ['Newbery Honor'],
     tip: 'Brian survives on what he notices. Ask what your reader would look for first.',
@@ -1210,6 +1218,107 @@ export const CATALOG = [
       misc: ['First Chapter Book', 'Series'],
     },
   ),
+  book(
+    'llama-llama',
+    'Llama Llama Red Pajama',
+    'Anna Dewdney',
+    '9780670059836',
+    ['#E23B6B', '#F2B705'],
+    {
+      ages: ['0–2', '3–5'],
+      language: 'English',
+      pages: 40,
+      lexile: 'AD420L',
+      genres: ['Picture Books', 'Poetry'],
+      topics: { Feelings: ['Anxiety'] },
+      moods: ['silly', 'heartwarming'],
+      body: 'Baby Llama cannot sleep, and the longer Mama takes to come back upstairs the worse it gets.',
+      misc: ['Read-Aloud', 'Board Book', 'Series'],
+    },
+  ),
+  book(
+    'parker-inheritance',
+    'The Parker Inheritance',
+    'Varian Johnson',
+    '9781338053012',
+    ['#0F766E', '#14532D'],
+    {
+      ages: ['9–11', '12–14'],
+      language: 'English',
+      pages: 352,
+      lexile: '600L',
+      genres: ['Mystery', 'Historical Fiction'],
+      topics: { 'Life Events': ['Moving'], Feelings: ['Belonging'] },
+      backgrounds: { 'Race & Ethnicity': ['Black'] },
+      moods: ['suspenseful', 'thoughtful'],
+      awards: ['Coretta Scott King Honor'],
+      tip: 'The puzzle is solvable. Keep a list of the clues as they turn up.',
+      body: 'A letter in Candice’s grandmother’s attic points at a fortune hidden somewhere in town, and at what the town did in 1957.',
+    },
+  ),
+  book(
+    'this-promise',
+    'I Can Make This Promise',
+    'Christine Day',
+    '9780062871992',
+    ['#B45309', '#7C2D12'],
+    {
+      ages: ['9–11'],
+      language: 'English',
+      pages: 256,
+      lexile: '790L',
+      genres: ['Realistic Fiction'],
+      topics: { Feelings: ['Belonging'], 'Life Events': ['Loss'] },
+      backgrounds: {
+        'Race & Ethnicity': ['Indigenous', 'Multiracial'],
+        'Family Structure': ['Foster & Adoption'],
+      },
+      moods: ['thoughtful', 'sad', 'heartwarming'],
+      body: 'Edie finds a box of letters and a photograph of a woman who looks like her, and starts asking what her mother was never told about her own family.',
+    },
+  ),
+
+  // ── The site's Spanish shelf ───────────────────────────────────────────────
+  // `language` is a facet of its own (`languages/_filters.html.haml`), which is
+  // how a bilingual site's catalog is browsed one language at a time.
+  book(
+    'ninas-rebeldes',
+    'Cuentos de buenas noches para niñas rebeldes',
+    'Elena Favilli y Francesca Cavallo',
+    undefined,
+    ['#C0432F', '#7C2D12'],
+    {
+      ages: ['6–8', '9–11'],
+      language: 'Spanish',
+      pages: 224,
+      lexile: '920L',
+      genres: ['Nonfiction'],
+      topics: { Interests: ['Inventing', 'Sports'], Feelings: ['Belonging'] },
+      backgrounds: { 'Gender & Identity': ['Girls'] },
+      moods: ['inspiring', 'thoughtful'],
+      body: 'Cien mujeres que hicieron algo difícil, una página cada una, para leer una por noche.',
+      misc: ['Series'],
+    },
+  ),
+  book(
+    'frida-animalitos',
+    'Frida Kahlo y sus animalitos',
+    'Monica Brown',
+    undefined,
+    ['#16A97A', '#0F766E'],
+    {
+      ages: ['3–5', '6–8'],
+      language: 'Spanish',
+      pages: 32,
+      lexile: 'AD630L',
+      genres: ['Picture Books', 'Nonfiction'],
+      topics: { Interests: ['Animals'] },
+      backgrounds: { 'Race & Ethnicity': ['Latine'], 'Gender & Identity': ['Girls'] },
+      moods: ['magical', 'inspiring'],
+      body: 'La vida de Frida contada a través de sus animales: dos monos, un loro, tres perros, dos pavos y un venado.',
+      misc: ['Read-Aloud'],
+    },
+  ),
 
   // ── Titles the reader has already logged ───────────────────────────────────
   // Same ids as the reading log's own `BOOKS` where the log has one, and a
@@ -1240,7 +1349,11 @@ export const CATALOG = [
       measure: 'pages',
       genres: ['Fantasy', 'Adventure'],
       topics: { Feelings: ['Belonging'], Interests: ['Inventing'] },
-      backgrounds: { Disability: ['Neurodivergent'], 'Family Structure': ['Single Parent'] },
+      backgrounds: {
+        Disability: ['Neurodivergent'],
+        'Family Structure': ['Single Parent'],
+        'Gender & Identity': ['Boys'],
+      },
       moods: ['adventurous', 'funny', 'suspenseful'],
       tip: 'Percy’s dyslexia turns out to be Ancient Greek. Ask what else he has been wrong about himself.',
       body: 'Percy gets thrown out of another school, finds out his father is a Greek god, and has ten days to return a stolen lightning bolt.',
@@ -1357,7 +1470,11 @@ export const CATALOG = [
       lexile: 'HL830L',
       genres: ['Realistic Fiction'],
       topics: { 'Life Events': ['Moving'], Feelings: ['Anxiety', 'Friendship'] },
-      backgrounds: { 'Race & Ethnicity': ['Asian'], 'Family Structure': ['Immigrant Family'] },
+      backgrounds: {
+        'Race & Ethnicity': ['Asian'],
+        'Family Structure': ['Immigrant Family'],
+        'Gender & Identity': ['Boys'],
+      },
       moods: ['heartwarming', 'thoughtful', 'sad'],
       tip: 'Darius names his depression plainly. That matters — talk about how he does it.',
       body: 'Darius visits Iran for the first time to meet his dying grandfather, and finds the friend he has never had waiting on the other side of the world.',

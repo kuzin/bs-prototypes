@@ -9,25 +9,21 @@
   align-items: center;
 }
 
-/* A facet that is set says so on its own button, in the accent — you can see
-   what the page is filtered by without opening anything. */
+/* A facet that is set takes the accent and says what it is set to — you can
+   read what the page is filtered by without opening anything. */
 .fmenu-trigger.is-set {
   color: var(--c-blue);
+  background: var(--c-blue-wash);
   border-color: var(--c-blue);
 }
-.fmenu-count {
-  display: inline-grid;
-  place-items: center;
-  min-width: 18px;
-  height: 18px;
-  padding: 0 5px;
-  margin-left: 6px;
-  font-size: 11.5px;
-  font-weight: 800;
-  line-height: 1;
-  color: #fff;
-  background: var(--c-blue);
-  border-radius: 999px;
+/* A long value ("Deaf & Hard of Hearing") shortens rather than stretching the
+   bar; the full set is on the button's tooltip and on the chips under it. */
+.fmenu-label {
+  display: block;
+  max-width: 22ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fmenu-pop {

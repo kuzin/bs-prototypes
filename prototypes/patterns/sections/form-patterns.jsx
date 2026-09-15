@@ -1215,10 +1215,12 @@ import '@components/Form/Form.css'
         of a column down the side of the page.
         <br />
         <br />
-        <strong>A facet that is set says so on its own button</strong>, with a count in the accent —
-        a filter you can&apos;t see from the page is a page that lies about what it is showing. Pair
-        it with <code>ActiveFilters</code> below the bar when you want the individual values
-        clearable too.
+        <strong>The button reports what it is set to</strong> rather than carrying a count beside an
+        unchanged label — &ldquo;Humor&rdquo; for one value, &ldquo;Genres: 3&rdquo; past that, in
+        the accent. A filter you can&apos;t see from the page is a page that lies about what it is
+        showing, and a 2 next to a label that never changed still makes you open the menu to find
+        out what the 2 was. Pair it with <code>ActiveFilters</code> below the bar when you want the
+        individual values clearable too.
         <br />
         <br />
         <code>groups</code> is the app&apos;s grouped facet (<code>background_groups</code>,{' '}

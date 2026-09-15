@@ -31,6 +31,10 @@ import '@components/Form/Form.css'
  * — a grade band — takes `multi={false}`, where `value` is a single value and
  * picking the active one clears it.
  *
+ * Either way the **button reports what it is set to** rather than carrying a
+ * count beside an unchanged label: "Humor" for one value, "Genres: 3" past
+ * that. What the 3 actually are is on the chips under the bar.
+ *
  *   <FilterMenu label="Genres" options={GENRES} value={genres} onChange={setGenres} multi />
  *   <FilterMenu label="Main Characters" groups={BACKGROUND_GROUPS} value={tags} onChange={setTags} multi />
  *   <FilterMenu label="Grade" options={GRADES} value={grade} onChange={setGrade} />
@@ -48,6 +52,13 @@ export function FilterMenu({
   const chosen = multi ? (value ?? []) : value == null ? [] : [value]
   const on = (o) => chosen.includes(o)
 
+  // The button says what it is set to, not how many things it is set to. A
+  // count beside an unchanged label makes you open the menu to find out what
+  // the 2 was; the one value you picked is usually the answer, and past one
+  // there is no reading it off a button anyway.
+  const summary =
+    chosen.length === 0 ? label : chosen.length === 1 ? chosen[0] : `${label}: ${chosen.length}`
+
   const toggle = (o) => {
     if (!multi) return onChange(value === o ? null : o)
     const set = value ?? []
@@ -64,12 +75,13 @@ export function FilterMenu({
           onClick={open}
           aria-haspopup="true"
           aria-expanded={isOpen}
+          /* The label alone is what a screen reader would otherwise lose once
+             the button starts reporting the value instead. */
+          aria-label={chosen.length ? `${label}: ${chosen.join(', ')}` : label}
+          title={chosen.length > 1 ? chosen.join(', ') : undefined}
           iconRight={<Icon name="chevron-down" size={15} stroke={2.2} />}
         >
-          {label}
-          {/* What's set, on the button — a filter you can't see from the page
-              is a page that lies about what it's showing. */}
-          {chosen.length > 0 && <span className="fmenu-count">{chosen.length}</span>}
+          <span className="fmenu-label">{summary}</span>
         </Button>
       )}
     >
