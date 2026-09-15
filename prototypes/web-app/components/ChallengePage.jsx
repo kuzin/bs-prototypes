@@ -11,6 +11,7 @@ import { EmptyState } from '@components/Primitives/Primitives'
 import { BookCover } from '../../logging-flow/components/BookCover'
 import { badgeSrc, bannerSrc } from '@components/ReaderApp/ReaderApp'
 import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
 import { BADGES, CATALOG_BY_ID, getChallengeDetail, getChallengeExtras } from '../data'
@@ -77,10 +78,17 @@ function Overview({ detail, challenge }) {
     <>
       <section className="cp-section">
         <p className="cp-description">{detail.description}</p>
-        <p className="cp-started">
-          <Icon name="calendar" size={15} />
-          {challenge.title} started on {detail.startedOn}
-        </p>
+        {/* A challenge that has ended says when, not when it opened — by the
+            time it is in your Past list, the start date has stopped being the
+            useful half of the span. */}
+        {(detail.endedOn || detail.startedOn) && (
+          <p className="cp-started">
+            <Icon name="calendar" size={15} />
+            {detail.endedOn
+              ? `${challenge.title} ended on ${detail.endedOn}`
+              : `${challenge.title} started on ${detail.startedOn}`}
+          </p>
+        )}
       </section>
 
       <section className="cp-section">
@@ -117,15 +125,11 @@ function Overview({ detail, challenge }) {
 }
 
 function Badges() {
-  const earned = BADGES.filter((b) => !b.locked)
-  const ordered = [...earned, ...BADGES.filter((b) => b.locked)]
+  const ordered = [...BADGES.filter((b) => !b.locked), ...BADGES.filter((b) => b.locked)]
 
   return (
     <section className="cp-section">
-      <h2 className="cp-h2">Badges</h2>
-      <p className="cp-subhead">
-        {earned.length}/{BADGES.length} Badges Earned
-      </p>
+      <ReaderPageHead as="h2" title="Badges" />
       <ShelfGrid>
         {ordered.map((b) => (
           <CollectionCard
@@ -148,13 +152,9 @@ function Badges() {
 }
 
 function Rewards({ detail }) {
-  const earned = detail.rewards.filter((r) => r.earned)
   return (
     <section className="cp-section">
-      <h2 className="cp-h2">Rewards</h2>
-      <p className="cp-subhead">
-        {earned.length}/{detail.rewards.length} Earned Rewards
-      </p>
+      <ReaderPageHead as="h2" title="Rewards" />
       <ul className="cp-rewards">
         {detail.rewards.map((r) => (
           <li key={r.name} className={`cp-reward${r.earned ? ' is-earned' : ''}`}>
@@ -185,7 +185,7 @@ function ReadingList({ list, onLog }) {
   const books = list.books.map((id) => CATALOG_BY_ID[id]).filter(Boolean)
   return (
     <section className="cp-section">
-      <h2 className="cp-h2">{list.name}</h2>
+      <ReaderPageHead as="h2" title={list.name} />
       <p className="cp-description">{list.description}</p>
       <ul className="cp-list">
         {books.map((b) => (
@@ -229,13 +229,16 @@ function Drawings({ extras }) {
 
   return (
     <section className="cp-section">
-      <div className="cp-tickets-head">
-        <h2 className="cp-h2">Ticket Drawings</h2>
-        <p className="cp-tickets-count">
-          <Icon name="ticket" size={16} /> {available} {available === 1 ? 'ticket' : 'tickets'}{' '}
-          available
-        </p>
-      </div>
+      <ReaderPageHead
+        as="h2"
+        title="Ticket Drawings"
+        actions={
+          <p className="cp-tickets-count">
+            <Icon name="ticket" size={16} /> {available} {available === 1 ? 'ticket' : 'tickets'}{' '}
+            available
+          </p>
+        }
+      />
 
       <ul className="cp-drawings">
         {(extras.drawings ?? []).map((d) => (
@@ -346,6 +349,7 @@ function Certificates({ list }) {
   }
   return (
     <section className="cp-section">
+      <ReaderPageHead as="h2" title="Certificates" />
       <ul className="cp-certs">
         {list.map((c) => (
           <li className="cp-cert" key={c.id}>

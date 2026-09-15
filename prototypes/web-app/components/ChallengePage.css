@@ -26,14 +26,6 @@
   font-weight: 800;
   color: var(--c-text-dark);
 }
-/* `p.challenge-subhead` — 14px bold grey under a section heading. */
-.cp-subhead {
-  margin-top: 3px;
-  margin-bottom: 18px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text-light);
-}
 .cp-empty {
   padding: 24px 0;
   font-size: 14.5px;
@@ -160,13 +152,6 @@
 /* ─── Ticket drawings ────────────────────────────────────────────────────────
    `programs/_ticket_reward`. A prize drawn from the tickets readers earn, and
    the reader chooses which drawings to spend theirs on. */
-.cp-tickets-head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 16px;
-  align-items: baseline;
-  justify-content: space-between;
-}
 .cp-tickets-count {
   display: inline-flex;
   gap: 6px;

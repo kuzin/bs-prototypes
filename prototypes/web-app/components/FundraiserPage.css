@@ -186,14 +186,7 @@
 }
 
 /* ── Donations ───────────────────────────────────────────────────────────── */
-.fnd-donations-head {
-  margin-bottom: 14px;
-}
-.fnd-donations-head .fnd-h2 {
-  margin-top: 0;
-}
 .fnd-donations-count {
-  margin-top: 2px;
   font-size: 13.5px;
   color: var(--c-text-light);
 }

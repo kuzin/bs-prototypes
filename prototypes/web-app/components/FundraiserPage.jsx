@@ -10,6 +10,7 @@ import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf
 import { EmptyState } from '@components/Primitives/Primitives'
 import { badgeSrc, bannerSrc, ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
+import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { ToastStack, useToasts } from '@components/Toast/Toast'
 
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
@@ -166,46 +167,52 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
         )}
 
         {tab === 'badges' && (
-          <ShelfGrid>
-            {earned.map((b) => (
-              <CollectionCard
-                key={b.name}
-                art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
-                name={b.name}
-                blurb={b.blurb}
-                date={`Earned ${b.date}`}
-              />
-            ))}
-          </ShelfGrid>
+          <>
+            <ReaderPageHead as="h2" title="Badges" />
+            <ShelfGrid>
+              {earned.map((b) => (
+                <CollectionCard
+                  key={b.name}
+                  art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
+                  name={b.name}
+                  blurb={b.blurb}
+                  date={`Earned ${b.date}`}
+                />
+              ))}
+            </ShelfGrid>
+          </>
         )}
 
         {tab === 'prizes' && (
-          <div className="fnd-prizes">
-            <div className="fnd-prize">
-              <span className="fnd-prize-art" aria-hidden="true">
-                🎟️
-              </span>
-              <div className="fnd-prize-copy">
-                <h3 className="fnd-prize-name">Book Fair Voucher</h3>
-                <p className="fnd-prize-at">Raise $50</p>
+          <>
+            <ReaderPageHead as="h2" title="Prizes" />
+            <div className="fnd-prizes">
+              <div className="fnd-prize">
+                <span className="fnd-prize-art" aria-hidden="true">
+                  🎟️
+                </span>
+                <div className="fnd-prize-copy">
+                  <h3 className="fnd-prize-name">Book Fair Voucher</h3>
+                  <p className="fnd-prize-at">Raise $50</p>
+                </div>
+                <Pill color="#0F7A55" variant="soft" size="sm">
+                  Earned
+                </Pill>
               </div>
-              <Pill color="#0F7A55" variant="soft" size="sm">
-                Earned
-              </Pill>
-            </div>
-            <div className="fnd-prize">
-              <span className="fnd-prize-art" aria-hidden="true">
-                🍕
-              </span>
-              <div className="fnd-prize-copy">
-                <h3 className="fnd-prize-name">Pizza with the Principal</h3>
-                <p className="fnd-prize-at">Raise $150</p>
+              <div className="fnd-prize">
+                <span className="fnd-prize-art" aria-hidden="true">
+                  🍕
+                </span>
+                <div className="fnd-prize-copy">
+                  <h3 className="fnd-prize-name">Pizza with the Principal</h3>
+                  <p className="fnd-prize-at">Raise $150</p>
+                </div>
+                <Pill color="#656565" variant="soft" size="sm">
+                  {money(f.myGoal - f.myRaised)} to go
+                </Pill>
               </div>
-              <Pill color="#656565" variant="soft" size="sm">
-                {money(f.myGoal - f.myRaised)} to go
-              </Pill>
             </div>
-          </div>
+          </>
         )}
 
         {tab === 'donations' && <Donations fundraiser={f} />}
@@ -249,12 +256,15 @@ function Donations({ fundraiser }) {
 
   return (
     <div className="fnd-donations">
-      <div className="fnd-donations-head">
-        <h2 className="fnd-h2">Donations</h2>
-        <p className="fnd-donations-count">
-          {fundraiser.donations.length} Donations · {money(total)} raised
-        </p>
-      </div>
+      <ReaderPageHead
+        as="h2"
+        title="Donations"
+        actions={
+          <p className="fnd-donations-count">
+            {fundraiser.donations.length} Donations · {money(total)} raised
+          </p>
+        }
+      />
       <ul className="fnd-donors">
         {fundraiser.donations.map((d) => (
           <li className="fnd-donor" key={d.id}>

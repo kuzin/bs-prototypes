@@ -852,6 +852,55 @@ export const CHALLENGE_DETAIL = {
       },
     ],
   },
+  // The two that have ended. A past challenge is the same page with the reading
+  // finished: the rings are full, the rewards are collected, and the line under
+  // the description says when it closed rather than when it opened. Without
+  // these the page had nothing to render for a challenge from the Past scope.
+  winter: {
+    startedOn: 'December 1, 2025',
+    endedOn: 'February 28, 2026',
+    description:
+      'Read With Benny ran the whole winter — log your minutes, and every fortnight brought an activity to go with them: a snow-day book swap, a cocoa-and-comics hour, and a family read-aloud night.',
+    types: ['Minutes', 'Activities'],
+    goals: [
+      goal('Minutes Completed', 900, 900, 'clock'),
+      goal('Badges Earned', 6, 6, 'award'),
+      goal('Completed Activities', 3, 3, 'circle-check'),
+    ],
+    rewards: [
+      {
+        name: 'Winter Reading tote',
+        detail: 'Collected from the library desk.',
+        at: 450,
+        earned: true,
+        on: 'January 20, 2026',
+      },
+      {
+        name: 'Hot cocoa party',
+        detail: 'For every reader who finished — held on the last Friday.',
+        at: 900,
+        earned: true,
+        on: 'February 27, 2026',
+      },
+    ],
+  },
+  'read-across': {
+    startedOn: 'March 2, 2026',
+    endedOn: 'March 8, 2026',
+    description:
+      'Read Across America is one week and one list. Read any four of the titles the school picked, log them as you go, and the week counts as complete.',
+    types: ['Reading List', 'Books'],
+    goals: [goal('Titles Completed', 4, 4, 'book-2'), goal('Badges Earned', 2, 2, 'award')],
+    rewards: [
+      {
+        name: 'Read Across America sticker',
+        detail: 'Handed out in homeroom on the Friday.',
+        at: 4,
+        earned: true,
+        on: 'March 6, 2026',
+      },
+    ],
+  },
 }
 
 // ─── What else a challenge can carry ─────────────────────────────────────────
@@ -917,11 +966,26 @@ export const CHALLENGE_EXTRAS = {
       books: ['wild-robot', 'new-kid', 'front-desk', 'when-you-trap-tiger', 'crossover', 'ghost'],
     },
   },
+  // A `book_list` challenge, so the list is the challenge — which is what its
+  // card's "Reading List" pill is promising.
+  'read-across': {
+    readingList: {
+      name: 'Read Across America Picks',
+      description: 'The school picked ten. Read any four of them during the week.',
+      books: ['last-cuentista', 'stella-diaz', 'el-deafo', 'julian', 'bud-not-buddy', 'lucky-cap'],
+    },
+  },
 }
 
 export const getChallengeExtras = (id) => CHALLENGE_EXTRAS[id] ?? {}
 
-export const getChallengeDetail = (id) => CHALLENGE_DETAIL[id]
+/* A challenge with no detail behind it used to take the page down with it —
+   `detail.types` on undefined. The fixture is the fix (every challenge you can
+   open has an entry now); this is so the next one that doesn't renders a thin
+   page rather than a white one. */
+const NO_DETAIL = { description: '', types: [], goals: [], rewards: [] }
+
+export const getChallengeDetail = (id) => CHALLENGE_DETAIL[id] ?? NO_DETAIL
 
 // ─── The book catalog ────────────────────────────────────────────────────────
 // `books#index` ("Find Books") and `books#show` — the site's own catalog, the
