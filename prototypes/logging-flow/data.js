@@ -262,6 +262,7 @@ export const MORE_CHALLENGES = [
     logTypes: ['minutes', 'books'],
     types: ['activities'],
     banner: 'summer-reading',
+    tint: '#D5EDFD',
     badges: 'spring-into-reading',
     description:
       'Keep reading all summer long. Log your minutes, finish activities, and earn a badge for every two weeks you keep it going.',
@@ -278,6 +279,7 @@ export const MORE_CHALLENGES = [
     types: ['book_list'],
     bookTalks: true,
     banner: 'battle-of-the-books',
+    tint: '#FD452B',
     badges: 'comics-choice',
     description:
       "Read your way through this year's battle list, then talk about what you read. Every title you finish puts your class closer to the final round.",
@@ -293,6 +295,7 @@ export const MORE_CHALLENGES = [
     logTypes: ['books'],
     types: ['reviews'],
     banner: '25-in-25',
+    tint: '#A8D6D6',
     badges: 'for-the-love-of-reading',
     description:
       'Twenty-five books in a year — about one every fortnight. Write a review for any five of them and the badge is yours.',
@@ -333,6 +336,7 @@ export const PAST_CHALLENGES = [
     logTypes: ['minutes'],
     types: ['activities'],
     banner: 'winter-reading',
+    tint: '#DDAF86',
     badges: 'spring-into-reading',
   },
   {
@@ -342,6 +346,7 @@ export const PAST_CHALLENGES = [
     logTypes: ['books'],
     types: ['book_list'],
     banner: 'read-across-america',
+    tint: '#7E6F94',
     badges: 'comics-choice',
   },
 ]

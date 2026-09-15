@@ -89,17 +89,19 @@
 }
 /* `.join-challenge-header` is the art on a tinted ground rather than bled to
    the edges — the banner is a poster, and the app frames it. */
+/* The art runs the head's full width, edge to edge — a banner drawn to be a
+   banner, floated on a pastel mat with a shadow, was a picture of one. The
+   ground is still the banner's own colour (`tint`, ColorThief's read of it at
+   70% white), which is what shows through a transparent corner and behind a
+   banner that isn't quite the same aspect. */
 .jc-head {
   display: flex;
   justify-content: center;
-  padding: 28px 24px 20px;
   background: #dbe8f5;
 }
 .jc-art {
+  display: block;
   width: 100%;
-  max-width: 420px;
-  border-radius: 10px;
-  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.07);
 }
 /* The body is the Modal's own — this only stops the description running away
    from the art on a tall challenge. */
@@ -198,9 +200,12 @@
    `_registration_questions_modal` renders into the join modal, so this is the
    same overlay with a different body: the site's own questions, asked once
    between pressing Join and being enrolled. */
-.jc-qintro {
+/* The rule sits evenly between the intro and the first question — same space
+   above it as below. Scoped to the body because `.modal-body p` sets its own
+   10px margin and outranks a single class. */
+.modal-body .jc-qintro {
   padding-bottom: 16px;
-  margin-bottom: 18px;
+  margin-bottom: 16px;
   font-size: 14.5px;
   line-height: 1.55;
   color: var(--c-text-light);
