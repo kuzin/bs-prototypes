@@ -98,9 +98,12 @@
   font-weight: 700;
   color: #087542;
 }
+/* The pill is the last of the badge's own statement — what it is, what it takes,
+   how far along you are. Whatever follows (the blurb, the activities, what it
+   pays out) is a new thought, so it gets room rather than butting up. */
 .bdg-progress {
   display: inline-flex;
-  margin: 12px 4px 0;
+  margin: 12px 4px 10px;
 }
 
 /* `.badge-attributes` — ruled off, because it is a different kind of statement

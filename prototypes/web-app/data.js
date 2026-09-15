@@ -1091,43 +1091,46 @@ export const BINGO_CARD = {
   size: 5,
   squares: [
     // Row 1 — the bingo.
-    won('pow', 'POW', 'Read a superhero comic', 'bingo', 'Jun 3, 2026', {
+    won('pow', 'POW', 'A superhero comic', 'bingo', 'Jun 3, 2026', {
       reward: 'Comics Choice enamel pin',
     }),
-    won('bam', 'BAM', 'Read a graphic novel over 200 pages', 'bingo', 'Jun 5, 2026'),
-    won('zap', 'ZAP', 'Read something with an animal on the cover', 'bingo', 'Jun 6, 2026'),
-    won('boom', 'BOOM', 'Read a comic a friend recommended', 'bingo', 'Jun 9, 2026', {
+    won('bam', 'BAM', 'Over 200 pages', 'bingo', 'Jun 5, 2026'),
+    won('zap', 'ZAP', 'An animal on the cover', 'bingo', 'Jun 6, 2026'),
+    won('boom', 'BOOM', 'A friend’s pick', 'bingo', 'Jun 9, 2026', {
       tickets: 1,
     }),
-    won('pop', 'POP', 'Read a manga', 'bingo', 'Jun 11, 2026'),
+    won('pop', 'POP', 'A manga', 'bingo', 'Jun 11, 2026'),
 
-    won('blue-book', 'Blue Book', 'Read a graphic memoir', 'earned', 'Jun 12, 2026'),
-    won('star', 'Star', 'Write a review of a comic', 'earned', 'Jun 14, 2026', {
+    won('blue-book', 'Blue Book', 'A graphic memoir', 'earned', 'Jun 12, 2026'),
+    won('star', 'Star', 'Write a review', 'earned', 'Jun 14, 2026', {
       certificate: 'Comics Choice — Reviewer',
     }),
-    won('free-space', 'Free Space', 'This one is yours for joining', 'earned', 'Jun 1, 2026'),
-    sq('hmmm', 'Hmmm', 'Read a mystery comic'),
-    sq('whoa', 'Whoa', 'Read something published this year'),
+    sq('flash', 'Flash', 'Under 20 minutes'),
+    sq('hmmm', 'Hmmm', 'A mystery'),
+    sq('whoa', 'Whoa', 'Published this year'),
 
-    won('lightning', 'Lightning', 'Read two comics in one day', 'earned', 'Jun 8, 2026'),
-    sq('red-book', 'Red Book', 'Read a comic in a series you have not tried'),
-    sq('flash', 'Flash', 'Read a comic in under 20 minutes'),
-    sq('surprise', 'Surprise', 'Let the librarian pick one for you', 'unavailable'),
-    sq('poof', 'Poof', 'Read a fantasy comic'),
+    won('lightning', 'Lightning', 'Two in one day', 'earned', 'Jun 8, 2026'),
+    sq('red-book', 'Red Book', 'A series you’ve never tried'),
+    // The middle square is the free space, the way every bingo card's is.
+    won('free-space', 'Free Space', 'Yours for joining', 'earned', 'Jun 1, 2026', {
+      free: true,
+    }),
+    sq('surprise', 'Surprise', 'A librarian’s pick', 'unavailable'),
+    sq('poof', 'Poof', 'A fantasy comic'),
 
-    won('comics', 'Comics', 'Read three comics on Comics Plus', 'earned', 'Jun 15, 2026', {
+    won('comics', 'Comics', 'Three on Comics Plus', 'earned', 'Jun 15, 2026', {
       tickets: 2,
     }),
-    sq('yellow-book', 'Yellow Book', 'Read a non-fiction comic'),
-    sq('blah-blah-blah', 'Blah Blah Blah', 'Read a comic that made you laugh'),
-    sq('next-chapter', 'Next Chapter', 'Finish a series you started'),
-    sq('lightbulb', 'Lightbulb', 'Read a comic that taught you something'),
+    sq('yellow-book', 'Yellow Book', 'A non-fiction comic'),
+    sq('blah-blah-blah', 'Blah Blah Blah', 'One that made you laugh'),
+    sq('next-chapter', 'Next Chapter', 'Finish a series'),
+    sq('lightbulb', 'Lightbulb', 'One that taught you something'),
 
-    sq('purple-book', 'Purple Book', 'Read a comic with no words'),
-    sq('read-more', 'Read More', 'Log five days in a row'),
-    sq('hooray', 'Hooray', 'Read a comic set somewhere you have never been'),
-    sq('pink-book', 'Pink Book', 'Read a comic by an author you have not read'),
-    sq('bang', 'BANG', 'Read the whole of a graphic novel in one sitting', 'unavailable'),
+    sq('purple-book', 'Purple Book', 'No words at all'),
+    sq('read-more', 'Read More', 'Five days in a row'),
+    sq('hooray', 'Hooray', 'Somewhere you’ve never been'),
+    sq('pink-book', 'Pink Book', 'An author you’ve never read'),
+    sq('bang', 'BANG', 'A whole book in one sitting', 'unavailable'),
   ],
 }
 

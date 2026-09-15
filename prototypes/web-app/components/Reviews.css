@@ -68,7 +68,9 @@
   color: var(--c-text);
 }
 .rv-more {
+  display: block;
   padding: 0;
+  margin-top: 6px;
   font: inherit;
   font-weight: 800;
   color: var(--c-blue);

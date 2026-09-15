@@ -50,14 +50,14 @@ function WrittenReview({ review, onEdit }) {
         <span className="rv-byline">Written by Olivia M. on {review.date}</span>
       </div>
 
-      <p className="rv-body">
-        {body}{' '}
-        {long && (
-          <button type="button" className="rv-more" onClick={() => setFull((f) => !f)}>
-            {full ? 'Show less' : 'Read more...'}
-          </button>
-        )}
-      </p>
+      <p className="rv-body">{body}</p>
+      {/* Its own line under the review rather than trailing the last sentence:
+          it is a control, and inline it read as part of what was written. */}
+      {long && (
+        <button type="button" className="rv-more" onClick={() => setFull((f) => !f)}>
+          {full ? 'Show less' : 'Read more...'}
+        </button>
+      )}
 
       {/* What you can do to it, on the card's own footer strip — the same
           place the picture cards put theirs. */}

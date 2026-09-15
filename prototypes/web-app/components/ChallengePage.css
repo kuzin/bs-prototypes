@@ -745,6 +745,23 @@
 .cp-square.is-bingo .cp-square-art img {
   background: #fff;
 }
+/* `.badge-check` in `earnables/_earnable_modal`, on the square too: a jade tick
+   punched out of the badge's rim at four o'clock. The percentages keep it on
+   the circle as the squares shrink. */
+.cp-square-check {
+  position: absolute;
+  right: 6%;
+  bottom: 6%;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: #fff;
+  background: #0ba85f;
+  border: 4px solid #fff;
+  border-radius: 100%;
+}
+
 /* `img:not(.earned-badge) { opacity: 30% }` — the app ships a grayed file per
    badge; we ship one, so the grey is a filter over it. */
 .cp-square:not(.is-earned):not(.is-bingo) .cp-square-art img {
@@ -790,6 +807,11 @@
   color: #5c5c5c;
   text-align: center;
 }
+/* The words are their own box only so a phone can clamp them; everywhere else
+   they are just the text. */
+.cp-square-words {
+  display: contents;
+}
 .cp-square-text::before {
   position: absolute;
   top: 0;
@@ -802,11 +824,17 @@
   border-radius: 3px;
 }
 
-/* `.badge-title` — the badge's own name, under what the square asks. */
+/* `.badge-title` — the badge's own name, under what the square asks.
+
+   The app gives this `flex: auto`, so it swallows whatever height the row has
+   over this square's own and the name ends up stranded in the middle of a field
+   of white. The requirement above it already has `flex: 1`; letting that take
+   all the slack keeps the badges aligned across a row, centres the requirement
+   in the space it has, and leaves the name sitting on the square's foot. */
 .cp-square-title {
-  flex: auto;
+  flex: none;
   width: 100%;
-  padding: 4px 16px 20px;
+  padding: 4px 16px 8px;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.5;
@@ -814,56 +842,38 @@
   text-align: center;
 }
 
-/* `.badge-receivables` — ribbon tabs hanging off the square's right edge, one
-   per thing the badge pays out, each in the app's own pastel. */
+/* `.badge-receivables` — one chip per thing the badge pays out, in the app's own
+   pastels. The app hangs them off the square's right edge on little ribbons,
+   which reads as a banner stuck to the corner; tucked inside the corner instead
+   they are the same information as a quiet mark on the square. */
 .cp-square-marks {
   position: absolute;
-  top: 24px;
-  right: -10px;
-  z-index: 10;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 6px;
   align-items: center;
 }
 .cp-mark {
-  position: relative;
   display: grid;
   place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 4px 4px 0 4px;
-}
-/* The tail: a small triangle under the tab's right edge, which is what the
-   app's skewed pseudo-elements draw. */
-.cp-mark::after {
-  position: absolute;
-  right: 0;
-  bottom: -8px;
-  content: '';
-  border-top: 8px solid;
-  border-right: 8px solid transparent;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
 }
 .cp-mark--ticket {
   color: #f5a208;
   background: #ffecc8;
 }
-.cp-mark--ticket::after {
-  border-top-color: #e9d0a0;
-}
 .cp-mark--reward {
   color: #b43dd0;
   background: #f4e2f8;
 }
-.cp-mark--reward::after {
-  border-top-color: #dcc0e4;
-}
 .cp-mark--certificate {
   color: #196dd5;
   background: #dde9f9;
-}
-.cp-mark--certificate::after {
-  border-top-color: #bccfe8;
 }
 
 @media (max-width: 1000px) {
@@ -873,8 +883,7 @@
   .cp-square {
     padding: 12px;
   }
-  /* The app drops the rule and the badge's margins here, and folds the ribbon
-     tabs into a row at the foot (`order: 3`). */
+  /* The app drops the rule and the badge's margins here. */
   .cp-square-text {
     padding: 0;
     margin: 0 0 8px;
@@ -886,26 +895,19 @@
   .cp-square-title {
     display: none;
   }
+  .cp-square-check {
+    width: 22px;
+    height: 22px;
+    border-width: 3px;
+  }
   .cp-square-marks {
-    position: relative;
-    top: auto;
-    right: auto;
-    flex-direction: row;
+    top: 6px;
+    right: 6px;
     gap: 4px;
-    justify-content: center;
-    order: 3;
-    width: 100%;
-    margin-top: 4px;
   }
   .cp-mark {
-    width: 100%;
-    max-width: 32px;
-    height: auto;
-    aspect-ratio: 1;
-    border-radius: 8px;
-  }
-  .cp-mark::after {
-    display: none;
+    width: 22px;
+    height: 22px;
   }
 }
 
@@ -914,29 +916,64 @@
      five across gives each one about 60px — and an earned or bingo square gets
      the jade back as its own border, since it has no badge ring left to carry
      it. */
+  /* Every cell a square. The app's `min-content` rows are for squares with a
+     badge in them; with only words left they made a ragged card of five
+     different row heights. Each cell takes its height from its own width
+     instead, and since the columns are equal the whole card is a regular grid
+     of squares — which is what a bingo card is. */
+  .cp-bingo > li {
+    height: auto;
+    aspect-ratio: 1;
+  }
   .cp-square {
-    padding: 8px;
+    padding: 6px;
     border-radius: 8px;
   }
   .cp-square.is-earned,
   .cp-square.is-bingo {
     border: 2px solid #0ba85f;
   }
-  .cp-square.is-earned .cp-square-marks {
-    background: #f2f2f2;
-  }
   .cp-square-art {
     display: none;
   }
+  /* A fixed cell can't grow to fit the words, so the words are clamped to what
+     fits and the rest is an ellipsis — the square opens the badge, which states
+     the requirement in full. `flex: none` hands the centring back to the
+     square's own `justify-content`. The size tracks the cell rather than
+     sitting at a pixel, the way the app's own `2.5vw` does. */
   .cp-square-text {
+    display: block;
+    flex: none;
     width: 100%;
-    height: 100%;
     margin: 0;
-    font-size: 12px;
+    font-size: clamp(9px, 2.4vw, 13px);
+    line-height: 1.25;
   }
+  /* The clamp has to sit inside the flex item, not on it: a flex item is
+     blockified and `-webkit-box` goes with it, so the ellipsis never rendered.
+     Its parent is a block here, which leaves the box alone. */
+  .cp-square-words {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+  /* A 60px cell has no room for a chip with a glyph in it, and three of them
+     would cover the words. What the reader needs here is only that there *is*
+     something on this square, so each one is a dot in its own colour — the
+     modal names them. */
   .cp-square-marks {
-    padding: 4px;
-    background: #fff;
-    border-radius: 8px;
+    top: 5px;
+    right: 5px;
+    gap: 3px;
+  }
+  .cp-mark {
+    width: 7px;
+    height: 7px;
+    background: currentcolor;
+    border-radius: 999px;
+  }
+  .cp-mark svg {
+    display: none;
   }
 }

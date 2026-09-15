@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -10,6 +10,24 @@ import { Banner } from '@components/Primitives/Primitives'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 
 import { BOOKS, READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
+
+/* Is the window phone-width right now? Not just at mount — a view that a phone
+   can't draw has to go the moment the window gets there, however it got there.
+   Local on purpose: exporting anything but components from this module would
+   cost it Fast Refresh. */
+function useNarrow(query = '(max-width: 560px)') {
+  const [narrow, setNarrow] = useState(
+    () => typeof window !== 'undefined' && window.matchMedia(query).matches,
+  )
+  useEffect(() => {
+    const mq = window.matchMedia(query)
+    const sync = () => setNarrow(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [query])
+  return narrow
+}
 import { CONNECTIONS, CONNECTION_LIST } from '../connections'
 import { BookCover } from './BookCover'
 import './ReadingLog.css'
@@ -625,22 +643,18 @@ export function ReadingLog({
   // way the app's own Calendar/List toggle is two. All Titles was a sub-tab of
   // its own and read as a different page; it is the same entries, counted by
   // book instead of by day.
-  //
+  const [ownView, setOwnView] = useState(defaultView ?? 'calendar')
   // A seven-column month gives each day ~43px on a phone, which can't carry a
-  // book title — so a phone opens on the list and leaves the calendar one tap
-  // away rather than showing a grid of clipped words.
-  const [ownView, setOwnView] = useState(
-    () =>
-      defaultView ??
-      (typeof window !== 'undefined' && window.matchMedia('(max-width: 560px)').matches
-        ? 'list'
-        : 'calendar'),
-  )
-  const view = !viewSwitch
+  // book title. So there is no calendar there at all: it drops out of the
+  // switcher, and a reader who was on it when the window narrowed lands on the
+  // list rather than on a grid of clipped words.
+  const narrow = useNarrow()
+  const wanted = !viewSwitch
     ? (defaultView ?? 'calendar')
     : titlesView || ownView !== 'titles'
       ? ownView
       : 'calendar'
+  const view = narrow && wanted === 'calendar' ? 'list' : wanted
   const extraIds = extraTabs.map((t) => t.id)
 
   const imported = partners.length ? entries.filter((e) => e.source).length : 0
@@ -687,11 +701,15 @@ export function ReadingLog({
                     onChange={setOwnView}
                     ariaLabel="Which view"
                     items={[
-                      {
-                        id: 'calendar',
-                        label: 'Calendar',
-                        icon: <Icon name="layout-grid" size={15} />,
-                      },
+                      ...(narrow
+                        ? []
+                        : [
+                            {
+                              id: 'calendar',
+                              label: 'Calendar',
+                              icon: <Icon name="layout-grid" size={15} />,
+                            },
+                          ]),
                       { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
                       ...(titlesView
                         ? [

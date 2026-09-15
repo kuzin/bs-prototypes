@@ -868,10 +868,10 @@ function BingoCard({ card, set }) {
               onClick={() => setOpen(q)}
               aria-label={`${q.text} — ${q.state === 'bingo' ? 'in a bingo' : (q.state ?? 'unearned')}`}
             >
-              {/* `.badge-receivables` — little ribbon tabs hanging off the
-                  square's right edge, one per thing the badge pays out. Below
-                  1000px the app folds them into a row at the foot (`order: 3`),
-                  which is what the media query does. */}
+              {/* `.badge-receivables` — one chip per thing the badge pays out,
+                  tucked inside the square's top corner. The app hangs them off
+                  the outside edge on ribbons, which reads as a banner stuck to
+                  the card. */}
               {(q.reward || q.tickets || q.certificate) && (
                 <span className="cp-square-marks">
                   {q.reward && (
@@ -893,8 +893,22 @@ function BingoCard({ card, set }) {
               )}
               <span className="cp-square-art">
                 <img src={badgeSrc(set, q.art)} alt="" />
+                {/* `.badge-check` — the same tick the badge modal puts on the
+                    rim of an earned badge, so a square you have reads as won
+                    from across the card rather than only by its tint. */}
+                {(q.state === 'earned' || q.state === 'bingo') && (
+                  <span className="cp-square-check" aria-hidden="true">
+                    <Icon name="check" size={14} stroke={3.2} />
+                  </span>
+                )}
               </span>
-              <span className="cp-square-text">{q.text}</span>
+              <span className="cp-square-text">
+                {/* The words are their own box so a phone can clamp them: a
+                    flex item is blockified, and `-webkit-box` with it, so the
+                    clamp has to sit one level in. `display: contents` keeps it
+                    out of the way everywhere else. */}
+                <span className="cp-square-words">{q.text}</span>
+              </span>
               {/* `.badge-title` — the badge's own name under what it asks. */}
               <span className="cp-square-title">{q.title}</span>
               {/* `.badge-unavailable` — the app lays it over the whole square

@@ -77,3 +77,15 @@
 .ibx.bnr--danger {
   --ibx-ink: #b3271a;
 }
+
+/* Banner stacks at 560px and reserves `100% - 30px` for its 18px glyph. This
+   bar's glyph is a 44px tile with a 14px gap beside it, so that basis was wider
+   than the line had left and the message dropped underneath the icon. Take
+   what's left of the row instead of a number, and the glyph stays on the left. */
+@media (max-width: 560px) {
+  .ibx > .bnr-body {
+    flex: 1;
+    flex-basis: auto;
+    min-width: 0;
+  }
+}

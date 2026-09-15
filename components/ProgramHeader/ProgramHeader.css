@@ -72,7 +72,10 @@
   justify-content: center;
   max-width: 480px;
   padding: 0 50px;
-  margin: -100px auto 0;
+  /* The app pulls this up 100px, which tucks the banner right under the back
+     link riding the band above it. A little less overlap puts air between the
+     two without moving the bands or the curve. */
+  margin: -86px auto 0;
   text-align: center;
 }
 /* The page ground, curving up to meet the title. */
