@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Field, Input, Textarea } from '@components/Form/Form'
-import { Modal, ModalClose } from '@components/Modal/Modal'
+import { Modal, ModalFullClose } from '@components/Modal/Modal'
 import { InfoBox } from '@components/InfoBox/InfoBox'
 
 import { BOOKS } from '../../logging-flow/data'
@@ -97,14 +97,15 @@ export function ReviewComposer({ open, kind = 'written', review, onClose, onSave
       : 'Write a Review'
 
   return (
-    <Modal open={open} onClose={onClose} variant="center" closeBadge ariaLabel={heading}>
-      <ModalClose onClick={onClose} />
-      <div className="rc">
-        <div className="modal-header modal-header--flush">
-          <h2 className="modal-title">{heading}</h2>
-        </div>
+    /* `reviews/new.html.erb` renders into `#logged-books--new` — the same
+       full-screen shell the logging flow uses. Writing a review is a task that
+       takes the screen, not a dialogue that sits over one. */
+    <Modal open={open} onClose={onClose} variant="full" ariaLabel={heading}>
+      <ModalFullClose onClick={onClose} />
+      <div className="modal-full-panel rc">
+        <h1 className="rc-heading">{heading}</h1>
 
-        <div className="modal-body rc-body">
+        <div className="rc-body">
           {picture && (
             <Field label="Picture Review name" required>
               <Input
@@ -191,11 +192,8 @@ export function ReviewComposer({ open, kind = 'written', review, onClose, onSave
           )}
         </div>
 
-        <div className="modal-footer">
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button onClick={save} disabled={touched && !ready}>
+        <div className="rc-foot">
+          <Button size="lg" onClick={save} disabled={touched && !ready}>
             Save
           </Button>
         </div>

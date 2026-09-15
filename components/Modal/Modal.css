@@ -288,3 +288,89 @@
 .modal-footer--between {
   justify-content: space-between;
 }
+
+/* ── Full-screen ─────────────────────────────────────────────────────────────
+   The reader app's own full-screen flow: a white page over the whole app area,
+   with the close in the corner. The logging flow is this, and so is writing a
+   review — the app renders both into the same `#logged-books--new` shell.
+
+   No backdrop: there is nothing behind it to click. It stops at the shell's
+   chrome rather than the window, so a preview bar or prototype nav stays
+   reachable. */
+.modal--full {
+  top: var(--chrome-top, 0px);
+  right: 0;
+  bottom: var(--chrome-bottom, 0px);
+  left: 0;
+  display: flex;
+  width: 100%;
+  max-height: none;
+  overflow-y: auto;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  animation: modal-full-in 0.18s ease;
+}
+.modal--full.modal--closing {
+  animation: modal-full-out 0.15s ease forwards;
+}
+
+@keyframes modal-full-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes modal-full-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* The panel inside it: a measure in the middle of the page, with room to
+   scroll past the bottom of a tall one. */
+.modal-full-panel {
+  width: 100%;
+  max-width: 760px;
+  margin: auto;
+  padding: 64px 24px 96px;
+}
+
+/* The corner controls. `fixed` against the viewport, so they clear the shell's
+   chrome themselves. */
+.modal-full-btn {
+  position: fixed;
+  z-index: 110;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  color: var(--c-gray-800);
+  cursor: pointer;
+  background: var(--c-gray-100);
+  border: 0;
+  border-radius: 9px;
+}
+.modal-full-btn:hover {
+  background: var(--c-gray-200);
+}
+.modal-full-close {
+  top: calc(var(--chrome-top, 0px) + 18px);
+  right: 18px;
+}
+.modal-full-back {
+  top: calc(var(--chrome-top, 0px) + 18px);
+  left: 18px;
+}
+
+@media (max-width: 620px) {
+  .modal-full-panel {
+    padding: 64px 16px 80px;
+  }
+}

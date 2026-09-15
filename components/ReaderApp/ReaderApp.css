@@ -479,7 +479,6 @@
   position: relative;
   z-index: 2;
   flex: 0 0 auto;
-  margin-top: -2px;
 }
 .wa-chcard-kebab {
   display: inline-flex;
@@ -964,7 +963,7 @@
   gap: 10px;
 }
 .wa-main-banners {
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 .wa-bannerstack-more {
   display: inline-flex;

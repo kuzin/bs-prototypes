@@ -1,12 +1,21 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Modal/Modal.css'
 
 const ANIM_DURATION = 220
 
 /**
- * Two variants:
+ * Three variants:
  *   <Modal open={open} onClose={fn} variant="side">…</Modal>   // right-slide panel
  *   <Modal open={open} onClose={fn} variant="center">…</Modal> // centered overlay
+ *   <Modal open={open} onClose={fn} variant="full">…</Modal>   // full-screen surface
+ *
+ * `full` is the reader app's own full-screen flow — a white page over the
+ * whole app area with a corner close, which is what the logging flow is and
+ * what `reviews/new.html.erb` renders into (the app gives both the same
+ * `#logged-books--new` shell). Use it for a task that takes the screen rather
+ * than a dialogue that sits over it; it has no backdrop, because there is
+ * nothing behind it to click.
  *
  * Closes on Escape and backdrop click. Renders nothing when !open and the
  * closing animation finishes.
@@ -64,12 +73,18 @@ export function Modal({
   const closingClass = closing ? ' modal--closing' : ''
   const content = open ? children : lastChildren.current
 
+  // The full-screen surface covers everything, so there is no backdrop to
+  // click and none is drawn.
+  const full = variant === 'full'
+
   return (
     <>
-      <div
-        className={`modal-backdrop modal-backdrop--${variant}${closingClass}`}
-        onClick={handleClose}
-      />
+      {!full && (
+        <div
+          className={`modal-backdrop modal-backdrop--${variant}${closingClass}`}
+          onClick={handleClose}
+        />
+      )}
       <div
         className={`modal modal--${variant}${closeBadge ? ' modal--has-close-badge' : ''}${closingClass}`}
         role="dialog"
@@ -112,6 +127,42 @@ export function ModalClose({ onClick, label = 'Close', className = '' }) {
         <path d="M18 6l-12 12" />
         <path d="M6 6l12 12" />
       </svg>
+    </button>
+  )
+}
+
+/**
+ * The corner controls a full-screen modal carries — close at the top right,
+ * and an optional back at the top left for a flow with steps behind it.
+ *
+ *   <Modal variant="full" open={open} onClose={close}>
+ *     <ModalFullClose onClick={close} />
+ *     <ModalFullBack onClick={back} />          // only where there is a back
+ *     <div className="modal-full-panel">…</div>
+ *   </Modal>
+ */
+export function ModalFullClose({ onClick, label = 'Close' }) {
+  return (
+    <button
+      type="button"
+      className="modal-full-btn modal-full-close"
+      onClick={onClick}
+      aria-label={label}
+    >
+      <Icon name="x" size={16} stroke={2.2} />
+    </button>
+  )
+}
+
+export function ModalFullBack({ onClick, label = 'Back' }) {
+  return (
+    <button
+      type="button"
+      className="modal-full-btn modal-full-back"
+      onClick={onClick}
+      aria-label={label}
+    >
+      <Icon name="chevron-left" size={18} stroke={2.2} />
     </button>
   )
 }

@@ -1,18 +1,25 @@
 /* ─── Writing or editing a review ────────────────────────────────────────
    `reviews/new.html.erb` and the two edit forms, in one modal. */
 
-.rc {
-  display: flex;
-  flex-direction: column;
-  max-height: 100%;
-  background: #fff;
-  border-radius: 14px;
+/* The app's own full-screen heading for this — `.logged-books--logging-heading`
+   at the top of the panel, not a modal title bar. */
+.rc-heading {
+  margin-bottom: 26px;
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--c-text-dark);
+  text-align: center;
 }
 .rc-body {
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  max-height: 58vh;
+  gap: 18px;
+}
+.rc-foot {
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
 }
 
 /* `reviews_with_autocomplete` — the titles the site knows, under the field. */

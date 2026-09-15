@@ -516,8 +516,17 @@ export function ReadingLog({
   subtabs = true,
   defaultTab = 'log',
   stats = true,
+  // Optional control of which sub-tab is showing, so a parent can move between
+  // them — the Wish List's "Find Books" goes to Book Lists next door.
+  tab: tabProp,
+  onTab,
 }) {
-  const [tab, setTab] = useState(defaultTab)
+  const [ownTab, setOwnTab] = useState(defaultTab)
+  const tab = tabProp ?? ownTab
+  const setTab = (id) => {
+    setOwnTab(id)
+    onTab?.(id)
+  }
   // A seven-column month gives each day ~43px on a phone, which can't carry a
   // book title — so a phone opens on the list and leaves the calendar one tap
   // away rather than showing a grid of clipped words.

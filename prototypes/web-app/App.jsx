@@ -9,8 +9,10 @@ import { BookCover } from '../logging-flow/components/BookCover'
 import { AllBadges } from './components/AllBadges'
 import { Friends } from './components/Friends'
 import { ReviewsPage } from './components/ReviewsPage'
+import { WishList } from './components/WishList'
+import { BookLists } from './components/BookLists'
 import { ChallengePage } from './components/ChallengePage'
-import { FRIEND_REQUESTS } from './data'
+import { FRIEND_REQUESTS, WISH_LIST, BOOK_LISTS } from './data'
 import {
   STREAK,
   DAILY_GOAL,
@@ -73,6 +75,13 @@ const OWN_TABS = ['badges', 'friends', 'reviews']
 // people.
 const HIDE_TABS = ['leaderboards']
 
+// Under Reading, beside the log and All Titles: what the reader has read, then
+// what they mean to read next and where to find more of it.
+const LOG_TABS = [
+  { id: 'wish', label: 'Wish List', count: WISH_LIST.length },
+  { id: 'lists', label: 'Book Lists', count: BOOK_LISTS.length },
+]
+
 // Half of what a reader sees is decided by settings an admin holds, so this
 // page is really several pages. The preview bar switches between them rather
 // than freezing one configuration into the fixtures. Each id is the app's own
@@ -120,6 +129,9 @@ export function App() {
   // The top bar can start a review from any page, so what it opens lives here
   // and the Reviews page renders it.
   const [composing, setComposing] = useState(null)
+  // Which sub-tab Reading is on, so the Wish List's "Find Books" can send the
+  // reader to Book Lists next door the way `reading_lists_path` does.
+  const [logTab, setLogTab] = useState('log')
 
   // The pages this prototype owns, by tab id.
   function renderTab(id) {
@@ -188,6 +200,14 @@ export function App() {
         ownTabs={OWN_TABS}
         hideTabs={HIDE_TABS}
         renderExtra={renderTab}
+        logTabs={LOG_TABS}
+        renderLogTab={(id) =>
+          id === 'lists' ? (
+            <BookLists />
+          ) : (
+            <WishList onFindBooks={() => setLogTab('lists')} onLog={() => setFlowOpen(true)} />
+          )
+        }
         onOpenChallenge={setChallenge}
         motivation={features.rmi ? 'available' : undefined}
         features={{

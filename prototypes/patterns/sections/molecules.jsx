@@ -1268,11 +1268,26 @@ export const moleculesSections = [
 </Modal>`,
     desc: (
       <>
-        Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both
-        close on backdrop click + Escape and animate in/out. The centered modal composes from{' '}
-        <code>.modal-image</code>, <code>.modal-header</code>, <code>.modal-body</code>,{' '}
-        <code>.modal-footer</code> — toggle each below. The title is 18px/800 and the body 16px,
-        matching the app&apos;s <code>.modal__title</code> / <code>.modal__content</code>.
+        Three variants: <code>side</code> (right-slide panel), <code>center</code> (overlay) and{' '}
+        <code>full</code> (full-screen surface). The first two close on backdrop click + Escape and
+        animate in/out.
+        <br />
+        <br />
+        <strong>
+          <code>full</code> is the reader app&apos;s own full-screen flow
+        </strong>{' '}
+        — a white page over the whole app area with a corner close. It is what the logging flow is,
+        and what writing a review is: the app renders both into the same{' '}
+        <code>#logged-books--new</code> shell. Use it for a task that <em>takes</em> the screen
+        rather than a dialogue that sits over one. It draws no backdrop, because there is nothing
+        behind it to click, and it stops at the shell&apos;s <code>--chrome-top</code> /{' '}
+        <code>--chrome-bottom</code> rather than the window, so a preview bar or prototype nav stays
+        reachable. Compose it from <code>ModalFullClose</code>, an optional{' '}
+        <code>ModalFullBack</code>, and a <code>.modal-full-panel</code> for the measure in the
+        middle. The centered modal composes from <code>.modal-image</code>,{' '}
+        <code>.modal-header</code>, <code>.modal-body</code>, <code>.modal-footer</code> — toggle
+        each below. The title is 18px/800 and the body 16px, matching the app&apos;s{' '}
+        <code>.modal__title</code> / <code>.modal__content</code>.
         <br />
         <br />
         <code>ModalClose</code> is the app&apos;s own close control — a floating white disc pinned

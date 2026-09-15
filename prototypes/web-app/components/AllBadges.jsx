@@ -13,9 +13,7 @@ import '@components/Tabs/Tabs.css'
 // prototype — no reason to draw a second set.
 import { AchievementArt } from '../../books/components/AchievementArt'
 
-import { WishList } from './WishList'
-import { BookLists } from './BookLists'
-import { ACHIEVEMENTS, BADGES, WISH_LIST, BOOK_LISTS } from '../data'
+import { ACHIEVEMENTS, BADGES } from '../data'
 
 /**
  * All Badges — everything the reader has earned, and what is still to come.
@@ -50,19 +48,11 @@ export function AllBadges() {
           items={[
             { id: 'badges', label: 'Badges', count: BADGES.length },
             { id: 'achievements', label: 'Achievements', count: ACHIEVEMENTS.length },
-            // A wish list is a collection of books too — and Book Lists is
-            // where its "Find Books" goes, so the two sit together.
-            { id: 'wish', label: 'Wish List', count: WISH_LIST.length },
-            { id: 'lists', label: 'Book Lists', count: BOOK_LISTS.length },
           ]}
         />
       </div>
 
-      {pane === 'wish' ? (
-        <WishList onFindBooks={() => setPane('lists')} />
-      ) : pane === 'lists' ? (
-        <BookLists />
-      ) : pane === 'badges' ? (
+      {pane === 'badges' ? (
         <>
           <ShelfHead title="Badges" />
           <ShelfGrid>

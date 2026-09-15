@@ -340,6 +340,8 @@ export function Dashboard({
   logEntries,
   logTabs = [],
   renderLogTab,
+  logTab,
+  onLogTab,
   onOpenChallenge,
   onUnenrollChallenge,
   motivation,
@@ -467,6 +469,8 @@ export function Dashboard({
               titlesView={titlesView}
               extraTabs={logTabs}
               renderExtra={renderLogTab}
+              tab={logTab}
+              onTab={onLogTab}
             />
           ) : view === 'settings' ? (
             <PersonalizeReader
