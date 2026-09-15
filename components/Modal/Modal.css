@@ -175,13 +175,18 @@
 /* ── Close badge ─────────────────────────────────────────────────────────────
    The admin's modal close: a floating white disc pinned *outside* the modal's
    top-right corner. Ported from `.mfp-close-badge-modal` / `.close-this-modal`
-   in bs-product lib/_modals.scss — 38px circle, `top/right: -10px`,
-   `0 3px 11px rgba(0,0,0,.1)`, an 18px $darkGray glyph, `$lighterGray` on
-   hover, an inset focus ring, and `scale(0.96)` on press. */
+   in bs-product lib/_modals.scss — 38px circle, `0 3px 11px rgba(0,0,0,.1)`, an
+   18px $darkGray glyph, `$lighterGray` on hover, an inset focus ring, and
+   `scale(0.96)` on press.
+
+   Its offset is the one departure: the app's -10 leaves the disc mostly *on*
+   the modal, which reads as a control inside the dialog. Half its width out
+   (-19 on a 38px disc) centres it on the corner point, and half on / half off
+   is what says "this closes the whole thing". */
 .modal-close-badge {
   position: absolute;
-  top: -10px;
-  right: -10px;
+  top: -19px;
+  right: -19px;
   z-index: 999;
   display: inline-flex;
   align-items: center;
@@ -220,8 +225,9 @@
   transform: scale(0.96);
 }
 
-/* The badge hangs 10px past the corner, so a modal carrying one can't clip its
-   own overflow. Scoped to the modifier rather than loosened for every modal. */
+/* The badge hangs half its width past the corner, so a modal carrying one
+   can't clip its own overflow. Scoped to the modifier rather than loosened for
+   every modal. */
 .modal--has-close-badge {
   overflow: visible;
 }
