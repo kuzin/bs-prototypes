@@ -3,31 +3,46 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 13px 0;
+  /* A label over a sub-line is already 35px of text; 13px each side made a 61px
+     row for two lines of type, and a list of them read as a form rather than a
+     list of switches. */
+  padding: 10px 0;
 }
 .setting-row.is-disabled .setting-row-text {
   opacity: 0.5;
 }
+/* The row's leading slot, where it has one. */
+.setting-row-icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  margin-right: 2px;
+}
 .setting-row-text {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
-/* 16px, from the app's settings pages (`#student-goals-settings label`) — at
-   the 14 this used to be, the label sat below the control beside it rather
-   than leading the row. Weight 700 rather than the app's 800: these rows stack
-   a dozen deep and 800 down a whole column reads as shouting. */
+/* 15px — the middle rung of the app's in-card ladder (16/15/14/13), and the
+   one the rest of the reader chrome is set in. 16 was a rung too loud for a
+   column of switches; 14, which this was before that, put the label below the
+   control beside it rather than leading the row. Weight 700 rather than the
+   app's 800: these rows stack a dozen deep and 800 down a whole column reads
+   as shouting. */
 .setting-row-label {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-text);
   /* An address or a long name has no space to break at, and ran out of the row
      rather than wrapping inside it. */
   overflow-wrap: anywhere;
 }
+/* Two rungs under the label, so the description reads as secondary without
+   needing a lighter weight to say so. */
 .setting-row-sub {
-  font-size: 14px;
+  font-size: 13px;
   color: var(--c-text-light);
 }
 .setting-row-control {
@@ -36,11 +51,10 @@
   gap: 10px;
   flex-shrink: 0;
 }
-/* Part of the control cluster, not the description — so it takes the size the
-   control beside it uses (16px), rather than the 14 of the sub-text on the
-   other side of the row. */
+/* Part of the control cluster, not the description — so it sits on the label's
+   rung rather than the sub-text's, and reads across the row as its pair. */
 .setting-row-state {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-text-light);
 }

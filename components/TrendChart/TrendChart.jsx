@@ -316,7 +316,12 @@ export function TrendChart({
     // plot's right edge — so the margin has to hold half a label. 16px was
     // enough for "May" but clipped a "Jun 15"; 30 covers a six-character date.
     right: hasRight ? 44 : 30,
-    bottom: 32,
+    /* 32px is the room the x labels need. With them hidden the plot should have
+       it back — it was drawing a third of an inch short of its own box, which
+       on a 180px card read as the chart not filling it. 8px is still enough for
+       the lowest y tick, which is centred on the axis line. (Same rule the left
+       margin already follows when *its* axis is hidden.) */
+    bottom: xAxisHidden ? 8 : 32,
     left: yAxisHidden ? 8 : longUnit(yUnit) ? 56 : 44,
   }
 

@@ -6,6 +6,16 @@
   --proto-nav-h: 48px;
 }
 
+/* …and claims it, wherever one is actually on screen. The bar sits above the
+   modal layer on purpose, so a modal that ignored it ran its footer underneath
+   — which is every modal in every prototype that didn't happen to set this by
+   hand. `html:has()` rather than `:root` for two reasons: it fires only when a
+   nav is rendered, not merely when this file is imported, and it outranks the
+   `:root` default in Modal.css whichever stylesheet loads second. */
+html:has(.proto-nav) {
+  --chrome-bottom: var(--proto-nav-h);
+}
+
 .proto-nav {
   font-family: var(--font-sans);
   display: flex;

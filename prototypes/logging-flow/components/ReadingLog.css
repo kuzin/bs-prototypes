@@ -52,18 +52,22 @@
 /* Flex rather than a grid: three tiles in a two-column grid leave a blank
    fourth cell, and there is nothing to put in it. Wrapped, the odd one out
    grows to take the row instead. */
+/* One gap between the blocks stacked down this page — the 20px the page head
+   already publishes under itself. The column ran 26 / 20 / 14 / 26 and read as
+   four unrelated decisions; the only tighter gap left is the month header's,
+   which is a heading hugging the grid it names. */
 .rl-streaks {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
 }
 .rl-streaks > * {
   flex: 1 1 220px;
 }
 
 .rl-importnote {
-  margin-bottom: 26px;
+  margin-bottom: 20px;
 }
 
 /* ─── Month header ────────────────────────────────────────────────────────── */
@@ -83,21 +87,6 @@
   display: flex;
   gap: 8px;
 }
-.rl-navbtn {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--c-border);
-  border-radius: 8px;
-  background: #ffffff;
-  color: var(--c-text-light);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-.rl-navbtn:hover {
-  background: var(--c-gray-100);
-}
-
 /* ─── Entry chip (shared by both views) ───────────────────────────────────── */
 
 .rl-entry {

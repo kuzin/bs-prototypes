@@ -2,11 +2,8 @@
 // A reader-facing book experience: rich metadata, reviews & comments, partner
 // shelves (Comics Plus, Scholastic, Sora), and Benny's AI recommendations.
 //
-// Covers come from the Open Library cover CDN by ISBN; `?default=false` makes a
-// missing cover 404 so the <Cover> component can fall back to a color gradient.
-
-export const coverFor = (isbn) =>
-  isbn ? `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false` : null
+// Covers are the shared <BookCover>'s: `isbn` fetches the real jacket from the
+// Open Library CDN, and what a record carries here is only the fallback.
 
 // ─── The reader (drives personalization) ─────────────────────────────────────
 
@@ -2040,12 +2037,26 @@ function deriveDist(rating, count) {
 
 export const BOOKS = RAW.map((b) => ({
   ...b,
-  cover: coverFor(b.isbn),
+  /* What `BookCover` reads off a record. `cover` is the flat pastel it paints
+     when Open Library has nothing — a pair, because it used to be a gradient —
+     and `kind` picks the magazine placeholder, a masthead and an issue rather
+     than a title and an author. A magazine that also has a print edition is a
+     book on a shelf, so it keeps the book treatment. */
+  cover: [b.color, b.color],
+  kind:
+    (b.formats ?? []).includes('magazine') && !(b.formats ?? []).includes('print')
+      ? 'magazine'
+      : 'book',
   ratingDist: b.ratingDist || deriveDist(b.rating, b.ratingCount),
   reviews: b.reviews || [],
 }))
 
 const BY_ID = Object.fromEntries(BOOKS.map((b) => [b.id, b]))
+/* The reading log knows a title by its name, not its id — every logged session
+   is a string somebody typed. This is how a logged line finds the catalog
+   record behind it, and so the book's own page. */
+const BY_TITLE = new Map(BOOKS.map((b) => [b.title.toLowerCase(), b]))
+export const bookByTitle = (title) => (title ? BY_TITLE.get(title.trim().toLowerCase()) : undefined)
 export const getBook = (id) => BY_ID[id]
 export const getBooks = (ids) => ids.map((id) => BY_ID[id]).filter(Boolean)
 

@@ -6,7 +6,7 @@ import { Pill } from '@components/Pill/Pill'
 import { Modal } from '@components/Modal/Modal'
 import { StatCard } from '@components/Cards/Cards'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
-import { Banner } from '@components/Primitives/Primitives'
+import { Banner, IconButton } from '@components/Primitives/Primitives'
 import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 
 import { BOOKS, READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
@@ -192,8 +192,8 @@ function EntryChip({ entry, dense, showImported = true, onOpenBook, bookFor }) {
   )
 }
 
-function CalendarView({ entries, showImported, onOpenBook, bookFor, goalMet }) {
-  const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
+function CalendarView({ entries, showImported, onOpenBook, bookFor, goalMet, month }) {
+  const weeks = monthGrid(month.year, month.month)
   return (
     <div className="rl-cal">
       <div className="rl-cal-head">
@@ -209,7 +209,7 @@ function CalendarView({ entries, showImported, onOpenBook, bookFor, goalMet }) {
             {week.map((day) => {
               const key = iso(day)
               const rows = entriesOn(entries, key)
-              const outside = day.getMonth() !== LOG_MONTH.month
+              const outside = day.getMonth() !== month.month
               const streak = rows.find((r) => r.streak)?.streak
               return (
                 <div key={key} className={`rl-cal-cell${outside ? ' is-outside' : ''}`}>
@@ -243,8 +243,8 @@ function CalendarView({ entries, showImported, onOpenBook, bookFor, goalMet }) {
   )
 }
 
-function ListView({ entries, showImported, onOpenBook, bookFor, goalMet }) {
-  const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
+function ListView({ entries, showImported, onOpenBook, bookFor, goalMet, month }) {
+  const weeks = monthGrid(month.year, month.month)
   return (
     <div className="rl-list">
       {weeks.map((week, wi) => {
@@ -648,6 +648,10 @@ export function ReadingLog({
   onTab,
   onOpenBook,
   bookFor = (title) => BOOK_BY_TITLE.get(title),
+  /* The month the calendar draws. logging-flow's own log is a fixed June 2026
+     fixture, so that's the default; a prototype whose entries are counted back
+     from today passes `currentMonth()` and its log lands where its reader is. */
+  month = LOG_MONTH,
 }) {
   const [ownTab, setOwnTab] = useState(defaultTab)
   const tab = tabProp ?? ownTab
@@ -790,14 +794,14 @@ export function ReadingLog({
               )}
 
               <div className="rl-month">
-                <h2 className="rl-month-label">{LOG_MONTH.label}</h2>
+                <h2 className="rl-month-label">{month.label}</h2>
                 <div className="rl-month-nav">
-                  <button type="button" className="rl-navbtn" aria-label="Previous month">
+                  <IconButton variant="secondary" size="md" aria-label="Previous month">
                     <Icon name="chevron-left" size={17} />
-                  </button>
-                  <button type="button" className="rl-navbtn" aria-label="Next month">
+                  </IconButton>
+                  <IconButton variant="secondary" size="md" aria-label="Next month">
                     <Icon name="chevron-right" size={17} />
-                  </button>
+                  </IconButton>
                 </div>
               </div>
             </>
@@ -810,6 +814,7 @@ export function ReadingLog({
               onOpenBook={onOpenBook}
               bookFor={bookFor}
               goalMet={goalMet}
+              month={month}
             />
           )}
           {view === 'list' && (
@@ -819,6 +824,7 @@ export function ReadingLog({
               onOpenBook={onOpenBook}
               bookFor={bookFor}
               goalMet={goalMet}
+              month={month}
             />
           )}
           {view === 'titles' && (

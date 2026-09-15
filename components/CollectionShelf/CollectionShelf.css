@@ -19,7 +19,10 @@
    it doesn't become a scroll container and break sticky positioning). */
 .wa-main .co-subtabs {
   width: 100vw;
-  margin-top: -24px;
+  /* Exactly the page's own top padding, whatever it is — a literal number here
+     leaves a strip of white between the nav and the band the moment the page's
+     padding moves. */
+  margin-top: calc(var(--wa-main-pad, 24px) * -1);
   margin-inline: calc(50% - 50vw);
 }
 

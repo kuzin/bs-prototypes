@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import {
+  BannerStack,
   ChallengeCard,
   GoalCard,
   ReaderTopBar,
@@ -15,6 +16,7 @@ import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeRead
 import { PARTNERS, PARTNER_BY_ID } from '../connections'
 import { READER, CHALLENGES, TITLE_BY_ID, importedSessions, readingLogEntries } from '../data'
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
+import { currentMonth } from '../../logging-flow/data'
 import { JoyfulFooter, APPS } from '../../footers/JoyfulFooter'
 import './Dashboard.css'
 
@@ -28,7 +30,8 @@ const autoLoggedRows = (connections) =>
       id: s.id,
       partnerId: s.partnerId,
       title: TITLE_BY_ID[s.title].title,
-      meta: `${PARTNER_BY_ID[s.partnerId].name} · ${s.when}${s.finished ? ' · Finished' : ''}`,
+      // When, and whether it was finished. The partner's mark is beside it.
+      meta: `${s.when}${s.finished ? ' · Finished' : ''}`,
       minutes: s.minutes,
     }))
 
@@ -36,6 +39,8 @@ export function Dashboard({
   streak,
   dailyGoal,
   connections,
+  logged = [],
+  onLog,
   onLinkPartner,
   onDisconnectPartner,
   onVisitPartner,
@@ -57,6 +62,7 @@ export function Dashboard({
         reader={{ ...READER, name: READER.name.split(' ')[0] }}
         secondaryActions={false}
         accountMenu={false}
+        onLog={onLog}
         onAccount={() => setView('settings')}
         onHome={() => setView('challenges')}
         beforeUser={
@@ -67,14 +73,25 @@ export function Dashboard({
             onVisit={onVisitPartner}
           />
         }
-        hideTabs={['reviews']}
+        /* Two tabs, because this prototype is two pages. The rest of the site
+           nav went where it led nowhere: a tab that quietly shows you the page
+           you were already on reads as broken, not as unbuilt. */
+        hideTabs={['friends', 'reviews', 'leaderboards', 'badges']}
         active={view === 'log' ? 'log' : 'challenges'}
         onTabChange={(id) => setView(id === 'log' ? 'log' : 'challenges')}
       />
       <main className="wa-main">
         <div className="wa-main-inner">
           {view === 'log' ? (
-            <ReadingLog entries={readingLogEntries(connections)} partners={PARTNERS} />
+            <ReadingLog
+              entries={readingLogEntries(connections, logged)}
+              partners={PARTNERS}
+              goal={dailyGoal.goal}
+              /* This prototype's history is counted back from today rather
+                 than pinned to a month, so the calendar opens where the reader
+                 is — including anything she logs while it's open. */
+              month={currentMonth()}
+            />
           ) : view === 'settings' ? (
             <PersonalizeReader
               reader={READER}
@@ -85,23 +102,28 @@ export function Dashboard({
             />
           ) : (
             <>
-              <ConnectBanner
-                partners={toLink}
-                onLink={onLinkPartner}
-                onDismiss={() => setDismissed(true)}
-              />
-              <StreakBanner
-                streak={streak}
-                message={
-                  streak.current > 0 ? (
-                    <>
-                      <strong>{streak.current}-day streak!</strong> Reading in{' '}
-                      {linkedCount > 1 ? 'your linked apps counts' : 'your linked app counts'}{' '}
-                      toward it too.
-                    </>
-                  ) : undefined
-                }
-              />
+              {/* One stack, the way the dashboard runs them everywhere else —
+                  two on the page and the rest folded away. */}
+              <BannerStack className="wa-main-banners">
+                <ConnectBanner
+                  partners={toLink}
+                  onLink={onLinkPartner}
+                  onDismiss={() => setDismissed(true)}
+                />
+                <StreakBanner
+                  streak={streak}
+                  onLog={onLog}
+                  message={
+                    streak.current > 0 && linkedCount > 0 ? (
+                      <>
+                        <strong>{streak.current}-day streak!</strong> Reading in{' '}
+                        {linkedCount > 1 ? 'your linked apps counts' : 'your linked app counts'}{' '}
+                        toward it too.
+                      </>
+                    ) : undefined
+                  }
+                />
+              </BannerStack>
               <div className="wa-layout">
                 <section className="wa-content">
                   <div className="wa-section-head">

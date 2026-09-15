@@ -34,17 +34,22 @@
    do in the card above. Each keeps what it has to say underneath it: the meter
    and the rules under the password, the match line under the confirmation —
    `start`, because the left column carries two things the right one doesn't. */
+/* One column, the way the app's own `.new-password` stacks it: the field, its
+   strength meter, its requirements, then the confirmation — each the full width
+   of the card, 16px apart (`.new-password-field:not(:first-of-type)`). Side by
+   side, the meter and the requirements read as belonging to the left column
+   rather than to the password, and both fields were half a card wide for no
+   reason. */
 .acct-pwgrid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px 20px;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   margin-bottom: 24px;
 }
-@container (max-width: 560px) {
-  .acct-pwgrid {
-    grid-template-columns: minmax(0, 1fr);
-  }
+.acct-pwcol {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
 
 /* `.new-password-field-label` — the label and the Show/Hide share a line, the

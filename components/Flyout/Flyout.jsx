@@ -43,11 +43,30 @@ function clipRect(node) {
  *   )}
  * </Flyout>
  *
+ * placement: `top|bottom` × `start|end` opens above or below the trigger, and
+ * `right|left` opens beside it, top-aligned. Either family flips when the side
+ * you asked for runs out of room. A side placement is what a grid of identical
+ * triggers wants — over a shelf of covers, a panel below the one you pressed
+ * covers the row under it, where one beside it leaves the shelf readable.
+ *
  * placement="auto" picks the quadrant with the most space after the popover mounts.
+ *
+ * `arrow` points the panel at what opened it. Worth it where the trigger is one
+ * of many identical things — a cover on a shelf, a row in a table — and the
+ * panel alone doesn't say which one you pressed. It follows the resolved
+ * placement, so it stays on the trigger's side after a flip.
  */
-export function Flyout({ trigger, children, placement = 'bottom-start', offset = 6 }) {
+export function Flyout({
+  trigger,
+  children,
+  placement = 'bottom-start',
+  offset = 6,
+  arrow = false,
+}) {
   const [open, setOpen] = useState(false)
-  const [resolvedPlacement, setRP] = useState(placement === 'auto' ? 'bottom-start' : placement)
+  // `right` / `left` are shorthand for the top-aligned pair.
+  const wanted = /^(right|left)$/.test(placement) ? `${placement}-start` : placement
+  const [resolvedPlacement, setRP] = useState(wanted === 'auto' ? 'bottom-start' : wanted)
   const wrapRef = useRef(null)
   const popRef = useRef(null)
 
@@ -86,9 +105,30 @@ export function Flyout({ trigger, children, placement = 'bottom-start', offset =
     const roomAbove = trigger.top - clip.top >= pop.height + 10
     const vert = roomBelow ? 'bottom' : roomAbove ? 'top' : 'bottom'
 
-    if (placement === 'auto') {
+    if (wanted === 'auto') {
       const horiz = clip.right - trigger.left >= pop.width ? 'start' : 'end'
       setRP(`${vert}-${horiz}`)
+      return
+    }
+
+    /* Beside the trigger: keep the side that was asked for while it fits, and
+       flip to the other when it doesn't. The panel is top-aligned to the
+       trigger, so it also rides up when it would run off the bottom. */
+    const beside = /^(right|left)-(start|end)$/.exec(wanted)
+    if (beside) {
+      const [, wantSide] = beside
+      const fitsRight = trigger.right + pop.width + 10 <= clip.right
+      const fitsLeft = trigger.left - pop.width - 10 >= clip.left
+      const side =
+        wantSide === 'right'
+          ? fitsRight || !fitsLeft
+            ? 'right'
+            : 'left'
+          : fitsLeft || !fitsRight
+            ? 'left'
+            : 'right'
+      const end = trigger.top + pop.height + 10 > clip.bottom && roomAbove
+      setRP(`${side}-${end ? 'end' : 'start'}`)
       return
     }
 
@@ -98,9 +138,9 @@ export function Flyout({ trigger, children, placement = 'bottom-start', offset =
     // trigger near the left edge the menu grows leftwards and off the box; the
     // author's choice was "hug this side", and honouring it past the edge just
     // clips the menu.
-    const match = /^(top|bottom)-(start|end)$/.exec(placement)
+    const match = /^(top|bottom)-(start|end)$/.exec(wanted)
     if (!match) {
-      setRP(placement)
+      setRP(wanted)
       return
     }
     const [, wantVert, wantHoriz] = match
@@ -120,7 +160,7 @@ export function Flyout({ trigger, children, placement = 'bottom-start', offset =
           : 'start'
 
     setRP(`${flipVert}-${flipHoriz}`)
-  }, [open, placement])
+  }, [open, wanted])
 
   const activePlacement = resolvedPlacement
 
@@ -130,10 +170,11 @@ export function Flyout({ trigger, children, placement = 'bottom-start', offset =
       {open && (
         <div
           ref={popRef}
-          className={`flyout-pop flyout-pop--${activePlacement}`}
+          className={`flyout-pop flyout-pop--${activePlacement}${arrow ? ' flyout-pop--arrow' : ''}`}
           style={{ '--fl-offset': `${offset}px` }}
           role="dialog"
         >
+          {arrow && <span className="flyout-arrow" aria-hidden="true" />}
           {typeof children === 'function' ? children({ close }) : children}
         </div>
       )}

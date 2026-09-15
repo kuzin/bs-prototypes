@@ -779,7 +779,7 @@ import '@components/BackBar/BackBar.css'
     ),
     render: () => (
       <Variant label="earned / not earned yet">
-        <div style={{ padding: 20, background: '#f3f4f6' }}>
+        <div className="pt-stage">
           <ShelfHead title="Badges" count="5 of 12" noun="earned" />
           <ShelfGrid>
             <CollectionCard

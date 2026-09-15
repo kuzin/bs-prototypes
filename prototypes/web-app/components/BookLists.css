@@ -4,24 +4,24 @@
 
 /* In the page header beside the buttons, so it takes a control's width rather
    than a line of the page. */
-.bl-search {
+.blp-search {
   width: 240px;
 }
 @container (max-width: 700px) {
-  .bl-search {
+  .blp-search {
     width: 100%;
   }
 }
 
 /* The two facets are the shared FilterMenu; this is only the rule under
    them. */
-.bl-filters {
+.blp-filters {
   padding-bottom: 18px;
   margin-bottom: 18px;
   border-bottom: 1px solid var(--c-border);
 }
 
-.bl-list {
+.blp-list {
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -29,7 +29,7 @@
   padding: 0;
   list-style: none;
 }
-.bl-row {
+.blp-row {
   position: relative;
   display: flex;
   gap: 18px;
@@ -43,7 +43,7 @@
 /* The whole row opens the list. Nothing else in it is interactive, so the hit
    area is one button over the card rather than a link around the name and a
    dead zone either side of it. */
-.bl-row-hit {
+.blp-row-hit {
   position: absolute;
   inset: 0;
   cursor: pointer;
@@ -51,12 +51,12 @@
   border: 0;
   border-radius: inherit;
 }
-.bl-row:hover .bl-name {
+.blp-row:hover .blp-name {
   text-decoration: underline;
 }
 /* `image_for_list`: the list's own image, or its first book's cover. Only a
    list with neither — an external one — falls back to its own colour. */
-.bl-cover {
+.blp-cover {
   display: grid;
   flex: none;
   place-items: center;
@@ -65,30 +65,30 @@
   color: rgb(255 255 255 / 85%);
   border-radius: 8px;
 }
-.bl-cover--book {
+.blp-cover--book {
   display: block;
   height: auto;
 }
 /* The mark that says a list opens somewhere else, on the name it opens from. */
-.bl-out {
+.blp-out {
   flex: none;
   margin-left: 2px;
   color: var(--c-text-light);
   vertical-align: -1px;
 }
-.bl-body {
+.blp-body {
   display: flex;
   flex: 1;
   flex-direction: column;
   min-width: 0;
 }
-.bl-head {
+.blp-head {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 10px;
   align-items: baseline;
 }
-.bl-name {
+.blp-name {
   display: inline-flex;
   gap: 5px;
   align-items: baseline;
@@ -97,35 +97,35 @@
   line-height: 1.25;
   color: var(--c-text-dark);
 }
-.bl-count {
+.blp-count {
   font-size: 13px;
   font-weight: 700;
   color: var(--c-text-light);
 }
-.bl-desc {
+.blp-desc {
   margin-top: 6px;
   font-size: 14.5px;
   line-height: 1.5;
   color: var(--c-text);
 }
-.bl-meta {
+.blp-meta {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 16px;
   align-items: center;
   margin-top: 12px;
 }
-.bl-by {
+.blp-by {
   font-size: 13px;
   color: var(--c-text-light);
 }
 /* The app labels both blocks — "Created by" and "Genres" are `h3`s over their
    own lists, not a byline and a loose row of tags. */
-.bl-by strong,
-.bl-genres strong {
+.blp-by strong,
+.blp-genres strong {
   font-weight: 800;
 }
-.bl-genres {
+.blp-genres {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
@@ -135,7 +135,7 @@
 }
 
 @media (max-width: 620px) {
-  .bl-row {
+  .blp-row {
     flex-wrap: wrap;
   }
 }

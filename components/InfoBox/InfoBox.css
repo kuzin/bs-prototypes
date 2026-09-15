@@ -26,12 +26,14 @@
   height: 26px;
 }
 
-/* The bar is one line high whatever it is handed. An announcement that wraps
-   to four lines pushes the whole dashboard down and still doesn't say enough
-   to act on — the detail lives behind the action, so the message is the hook
-   and gets clipped rather than allowed to grow. */
+/* An announcement is one line high whatever it is handed: wrapped to four
+   lines it pushes the whole dashboard down and still doesn't say enough to act
+   on, so the detail lives behind the action and the hook gets clipped instead.
+   A bare notice — no headline, no action — *is* the whole message, and a
+   sentence that has nowhere else to go wraps rather than losing its end. */
 .ibx .bnr-title,
-.ibx .bnr-msg {
+.ibx:has(.bnr-title) .bnr-msg,
+.ibx:has(.ibx-actions) .bnr-msg {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

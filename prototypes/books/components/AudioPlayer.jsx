@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { Cover } from './Cover'
+import { BookCover } from '@components/BookCover/BookCover'
 
 const parseLen = (s) => {
   const h = /(\d+)\s*h/.exec(s || '')
@@ -76,7 +76,7 @@ export function AudioPlayer({ book, onClose, onFinish }) {
       </div>
 
       <div className="bk-audio-art">
-        <Cover book={book} size="lg" />
+        <BookCover book={book} size="fill" />
       </div>
 
       <div className="bk-audio-meta">

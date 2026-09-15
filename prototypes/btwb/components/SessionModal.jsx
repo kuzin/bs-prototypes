@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
-import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { ChatBubble } from '@components/ChatBubble/ChatBubble'
 import {
@@ -19,7 +18,7 @@ import {
 } from '../data'
 
 import '@components/Button/Button.css'
-import '@components/Tabs/Tabs.css'
+import { IconButton } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 // The real Sessions for Review modal chrome: two-column shell, reader sidebar,
 // main tabs, section headers, review cards, conversation bubbles and footer.
@@ -29,25 +28,12 @@ import '../../sfr/components/SessionModal.talk.css'
 // One completed book talk, reviewed — built on Sessions for Review's own modal
 // (`sm2-*`) so it reads as the production surface rather than a lookalike. The
 // section vocabulary is SFR's too: review cards for Benny's read on the talk,
-// flags in a review stack, a Conversation tab and an Activity tab with notes and
-// a timeline.
+// and flags in a review stack. One scroll, no tabs — the session is the whole of
+// what this modal is for.
 //
 // What's new is *what* Benny reports: a written summary of the talk, plus a Reading
 // Confidence on comprehension talks. Integrity talks are the only type that flags.
 export function SessionModal({ session, onSelectSession, onClose }) {
-  const [tab, setTab] = useState('conversation')
-  const [noteDraft, setNoteDraft] = useState('')
-  // Notes are kept per session, not in one list — otherwise a note added on one
-  // reader's talk shows up on the next one you open.
-  const [notesById, setNotesById] = useState({})
-
-  // Switching sessions inside the modal is a content swap, so land back on the
-  // Conversation tab with an empty composer rather than wherever you just were.
-  useEffect(() => {
-    setTab('conversation')
-    setNoteDraft('')
-  }, [session?.id])
-
   if (!session) return null
 
   const kind = TALK_KINDS[session.kindId]
@@ -65,33 +51,6 @@ export function SessionModal({ session, onSelectSession, onClose }) {
   const answers = session.messages.filter((m) => m.role === 'student').length
   const questions = scriptFor(session.kindId).length - 1
 
-  const notes = notesById[session.id] ?? []
-  const feed = [...notes, ...(session.changeLog ?? [])]
-
-  function addNote() {
-    const text = noteDraft.trim()
-    if (!text) return
-    setNotesById((prev) => {
-      const mine = prev[session.id] ?? []
-      return {
-        ...prev,
-        [session.id]: [
-          {
-            id: `${session.id}-n${mine.length}`,
-            label: 'Note added',
-            icon: 'message',
-            color: '#0CA7BC',
-            by: 'You',
-            at: 'Just now',
-            note: text,
-          },
-          ...mine,
-        ],
-      }
-    })
-    setNoteDraft('')
-  }
-
   return (
     <Modal
       open={!!session}
@@ -102,37 +61,6 @@ export function SessionModal({ session, onSelectSession, onClose }) {
     >
       <ModalClose onClick={onClose} />
       <div className="sm2-shell bw-sm2">
-        {/* Top bar — step through the example sessions. */}
-        <div className="sm2-topbar">
-          <div className="sm2-topbar-left">
-            <div className="sm2-nav">
-              <button
-                className="sm2-nav-btn"
-                disabled={!prev}
-                onClick={() => prev && onSelectSession?.(prev)}
-                title="Previous session"
-              >
-                <Icon name="chevron-left" size={14} stroke={2.2} />
-                <span className="sm2-nav-label">Prev</span>
-              </button>
-              <span className="sm2-nav-count">
-                <strong>{idx + 1}</strong>
-                <span className="sm2-nav-count-sep">of</span>
-                {SESSIONS.length}
-              </span>
-              <button
-                className="sm2-nav-btn"
-                disabled={!next}
-                onClick={() => next && onSelectSession?.(next)}
-                title="Next session"
-              >
-                <span className="sm2-nav-label">Next</span>
-                <Icon name="chevron-right" size={14} stroke={2.2} />
-              </button>
-            </div>
-          </div>
-        </div>
-
         <div className="sm2-columns">
           {/* Left: the reader, and the other book talks. */}
           <div className="sm2-sidebar">
@@ -142,10 +70,15 @@ export function SessionModal({ session, onSelectSession, onClose }) {
               </span>
               <div className="sm2-reader-name">{session.student.name}</div>
               <div className="sm2-reader-meta">{session.student.grade} Grade</div>
-              <button className="sm2-view-profile">
-                <Icon name="user" size={13} />
-                View profile
-              </button>
+              <IconButton
+                variant="ghost"
+                size="md"
+                className="sm2-view-profile"
+                aria-label="View profile"
+                title="View profile"
+              >
+                <Icon name="user" size={17} />
+              </IconButton>
             </div>
 
             <div className="sm2-reader-sessions-head">
@@ -183,211 +116,179 @@ export function SessionModal({ session, onSelectSession, onClose }) {
 
           {/* Right: this session. */}
           <div className="sm2-main">
-            <div className="sm2-maintabs">
-              <Tabs
-                items={[
-                  { id: 'conversation', label: 'Logged Session' },
-                  { id: 'activity', label: 'Activity', count: feed.length || undefined },
-                ]}
-                active={tab}
-                onChange={setTab}
-                accent={kind.color}
-              />
-            </div>
-
-            {tab === 'conversation' ? (
-              <>
-                {/* ── Session details ─────────────────────────────────────── */}
-                <div className="sm2-section">
-                  <div className="sm2-section-head">
-                    <span className="sm2-section-title">Session Details</span>
+            {/* One scroll, no tabs: the session, then the notes on it. A
+                two-tab strip hid half a short modal behind a control, and on a
+                phone it collapsed into a select — a menu to choose between two
+                things that fit on the same page. */}
+            <>
+              {/* ── Session details ─────────────────────────────────────── */}
+              <div className="sm2-section">
+                <div className="sm2-section-head">
+                  <span className="sm2-section-title">Session Details</span>
+                </div>
+                <div className="sm2-details-card">
+                  <div className="sm2-book-cover" style={{ background: kind.color }}>
+                    <img src={session.book.cover} alt="" className="bw-sm2-cover-img" />
                   </div>
-                  <div className="sm2-details-card">
-                    <div className="sm2-book-cover" style={{ background: kind.color }}>
-                      <img src={session.book.cover} alt="" className="bw-sm2-cover-img" />
-                    </div>
-                    <div className="sm2-details-card-body">
-                      <div className="sm2-book-title">{session.book.title}</div>
-                      <div className="sm2-book-author">{session.book.author}</div>
-                      <div className="sm2-detail-rows">
-                        <div className="sm2-detail-row">
-                          <span>Date</span>
-                          <span>{session.date}</span>
-                        </div>
-                        <div className="sm2-detail-row">
-                          <span>Started By</span>
-                          <span>{session.trigger}</span>
-                        </div>
-                        <div className="sm2-detail-row">
-                          <span>Length</span>
-                          <span>
-                            {session.duration} · {answers} of {questions} answered
-                          </span>
-                        </div>
-                        <div className="sm2-detail-row">
-                          <span>Status</span>
-                          <span
-                            className={
-                              unfinished
-                                ? 'bw-sm2-status bw-sm2-status--unfinished'
-                                : 'bw-sm2-status'
-                            }
-                          >
-                            <Icon name={unfinished ? 'clock' : 'circle-check'} size={13} />
-                            {unfinished ? 'Unfinished' : 'Completed'}
-                          </span>
-                        </div>
+                  <div className="sm2-details-card-body">
+                    <div className="sm2-book-title">{session.book.title}</div>
+                    <div className="sm2-book-author">{session.book.author}</div>
+                    <div className="sm2-detail-rows">
+                      <div className="sm2-detail-row">
+                        <span>Date</span>
+                        <span>{session.date}</span>
                       </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* ── Benny's summary of the talk ─────────────────────────── */}
-                <div className="sm2-section">
-                  <div className="sm2-section-head">
-                    <span className="sm2-section-title">Benny’s Summary</span>
-                    <Pill color={kind.color} size="sm">
-                      {kind.short}
-                    </Pill>
-                  </div>
-                  <div className="sm2-prompt bw-sm2-summary">
-                    <img src="/bs-prototypes/benny.png" alt="" className="bw-sm2-summary-benny" />
-                    <p className="sm2-prompt-text">{session.summary}</p>
-                  </div>
-                </div>
-
-                {/* ── Reading Confidence — comprehension talks only ───────── */}
-                {confidence && (
-                  <div className="sm2-section">
-                    <div className="sm2-section-head">
-                      <span className="sm2-section-title">Reading Confidence</span>
-                      <div className="sm2-section-actions">
-                        <Button variant="secondary" size="sm">
-                          Override
-                        </Button>
+                      <div className="sm2-detail-row">
+                        <span>Started By</span>
+                        <span>{session.trigger}</span>
                       </div>
-                    </div>
-                    <ReviewCard {...confidence} desc={CONFIDENCE_BLURB} />
-                  </div>
-                )}
-
-                {/* ── Flags — positive first, then negative, as SFR orders them ── */}
-                {session.positiveFlags.length > 0 && (
-                  <div className="sm2-section">
-                    <div className="sm2-section-head">
-                      <span className="sm2-section-title sm2-section-title--pos">
-                        <Icon
-                          name="flag"
-                          size={13}
-                          color="#0BA85F"
-                          style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
-                        />
-                        Flags
-                      </span>
-                    </div>
-                    <div className="sm2-review-stack">
-                      {session.positiveFlags.map((f) => (
-                        <FlagCard key={f.id} flag={f} polarity="positive" />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {session.flags.length > 0 && (
-                  <div className="sm2-section">
-                    <div className="sm2-section-head">
-                      <span className="sm2-section-title sm2-section-title--neg">
-                        <Icon
-                          name="flag"
-                          size={13}
-                          color="#E85648"
-                          style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
-                        />
-                        Flags
-                      </span>
-                    </div>
-                    <div className="sm2-review-stack">
-                      {session.flags.map((f) => (
-                        <FlagCard key={f.id} flag={f} polarity="negative" />
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* ── The conversation ───────────────────────────────────── */}
-                <div className="sm2-section">
-                  <div className="sm2-section-head">
-                    <span className="sm2-section-title">Conversation</span>
-                  </div>
-                  {unfinished && (
-                    <div className="sm2-unfinished-banner">
-                      <Icon name="clock" size={14} />
-                      Student left this conversation unfinished — Benny is still waiting.
-                    </div>
-                  )}
-                  <div className="sm2-conversation">
-                    {session.messages.map((m, i) => (
-                      <SessionBubble key={i} msg={m} initials={initials} />
-                    ))}
-                  </div>
-                </div>
-              </>
-            ) : (
-              <div className="sm2-notes">
-                <div className="sm2-note-row">
-                  <textarea
-                    className="sm2-note-input"
-                    placeholder="Add a note for the team…"
-                    value={noteDraft}
-                    rows={2}
-                    onChange={(e) => setNoteDraft(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) addNote()
-                    }}
-                  />
-                  <Button variant="primary" disabled={!noteDraft.trim()} onClick={addNote}>
-                    Add note
-                  </Button>
-                </div>
-
-                {feed.length ? (
-                  <div className="sm2-tl">
-                    {feed.map((e) => (
-                      <div key={e.id} className="sm2-tl-item">
-                        <span className="sm2-tl-dot" style={{ color: e.color }}>
-                          <Icon name={e.icon} size={12} stroke={2.2} />
+                      <div className="sm2-detail-row">
+                        <span>Length</span>
+                        <span>
+                          {session.duration} · {answers} of {questions} answered
                         </span>
-                        <div className="sm2-tl-body">
-                          <div className="sm2-tl-head">
-                            <span className="sm2-tl-label">{e.label}</span>
-                            <span className="sm2-tl-right">
-                              <span className="sm2-tl-meta">
-                                {e.by} · {e.at}
-                              </span>
-                            </span>
-                          </div>
-                          {e.note && <div className="sm2-tl-note">{e.note}</div>}
-                        </div>
                       </div>
+                      <div className="sm2-detail-row">
+                        <span>Status</span>
+                        <span
+                          className={
+                            unfinished ? 'bw-sm2-status bw-sm2-status--unfinished' : 'bw-sm2-status'
+                          }
+                        >
+                          <Icon name={unfinished ? 'clock' : 'circle-check'} size={13} />
+                          {unfinished ? 'Unfinished' : 'Completed'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* ── Benny's summary of the talk ─────────────────────────── */}
+              <div className="sm2-section">
+                <div className="sm2-section-head">
+                  <span className="sm2-section-title">Benny’s Summary</span>
+                  <Pill color={kind.color} size="sm">
+                    {kind.short}
+                  </Pill>
+                </div>
+                <div className="sm2-prompt bw-sm2-summary">
+                  <img src="/bs-prototypes/benny.png" alt="" className="bw-sm2-summary-benny" />
+                  <p className="sm2-prompt-text">{session.summary}</p>
+                </div>
+              </div>
+
+              {/* ── Reading Confidence — comprehension talks only ───────── */}
+              {confidence && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title">Reading Confidence</span>
+                    <div className="sm2-section-actions">
+                      <Button variant="secondary" size="sm">
+                        Override
+                      </Button>
+                    </div>
+                  </div>
+                  <ReviewCard {...confidence} desc={CONFIDENCE_BLURB} />
+                </div>
+              )}
+
+              {/* ── Flags — positive first, then negative, as SFR orders them ── */}
+              {session.positiveFlags.length > 0 && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title sm2-section-title--pos">
+                      <Icon
+                        name="flag"
+                        size={13}
+                        color="#0BA85F"
+                        style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
+                      />
+                      Flags
+                    </span>
+                  </div>
+                  <div className="sm2-review-stack">
+                    {session.positiveFlags.map((f) => (
+                      <FlagCard key={f.id} flag={f} polarity="positive" />
                     ))}
                   </div>
-                ) : (
-                  <div className="sm2-notes-empty">
-                    <Icon name="message" size={20} />
-                    <span>No notes or activity yet — add the first note above.</span>
+                </div>
+              )}
+
+              {session.flags.length > 0 && (
+                <div className="sm2-section">
+                  <div className="sm2-section-head">
+                    <span className="sm2-section-title sm2-section-title--neg">
+                      <Icon
+                        name="flag"
+                        size={13}
+                        color="#E85648"
+                        style={{ display: 'inline', verticalAlign: 'middle', marginRight: 5 }}
+                      />
+                      Flags
+                    </span>
+                  </div>
+                  <div className="sm2-review-stack">
+                    {session.flags.map((f) => (
+                      <FlagCard key={f.id} flag={f} polarity="negative" />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* ── The conversation ───────────────────────────────────── */}
+              <div className="sm2-section">
+                <div className="sm2-section-head">
+                  <span className="sm2-section-title">Conversation</span>
+                </div>
+                {unfinished && (
+                  <div className="sm2-unfinished-banner">
+                    <Icon name="clock" size={14} />
+                    Student left this conversation unfinished — Benny is still waiting.
                   </div>
                 )}
+                <div className="sm2-conversation">
+                  {session.messages.map((m, i) => (
+                    <SessionBubble key={i} msg={m} initials={initials} />
+                  ))}
+                </div>
               </div>
-            )}
+            </>
           </div>
         </div>
 
         <div className="sm2-footer">
-          <Button variant="secondary">Edit Session</Button>
+          {/* Stepping through the queue is a footer control, beside the other
+              things you do to the session you are looking at — it had a bar of
+              its own at the top, which put the one control you press over and
+              over furthest from the ones beside it. */}
+          <div className="sm2-footer-left">
+            <IconButton
+              variant="secondary"
+              size="lg"
+              disabled={!prev}
+              onClick={() => prev && onSelectSession?.(prev)}
+              aria-label="Previous session"
+            >
+              <Icon name="chevron-left" size={17} stroke={2.2} />
+            </IconButton>
+            <IconButton
+              variant="secondary"
+              size="lg"
+              disabled={!next}
+              onClick={() => next && onSelectSession?.(next)}
+              aria-label="Next session"
+            >
+              <Icon name="chevron-right" size={17} stroke={2.2} />
+            </IconButton>
+          </div>
           <div className="sm2-footer-actions">
-            <button className="sm2-btn sm2-btn--danger">Delete Session</button>
+            <Button variant="secondary">Edit</Button>
+            <Button variant="secondary" className="sm2-btn--danger">
+              Delete
+            </Button>
             <Button variant="primary" onClick={onClose}>
-              Approve Session
+              Approve
             </Button>
           </div>
         </div>

@@ -12,9 +12,14 @@
    `auto-fill` says the thing that actually matters — a card is never narrower
    than 170px — and lets the count follow the room; `min()` keeps a container
    narrower than the floor from overflowing. */
+/* Four across the reader's content column, not five. At 210 the column fitted
+   five 214px cards and the avatar, the name and the streak pill all had to
+   share that — a friend card is a portrait, and it wants the room. 250 is the
+   smallest track that makes five stop fitting at 1152, and it still falls to
+   three and two on the way down. */
 .fr-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(250px, 100%), 1fr));
   gap: 26px 20px;
 }
 

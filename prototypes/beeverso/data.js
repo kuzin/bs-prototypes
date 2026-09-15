@@ -171,52 +171,166 @@ export const importedSessions = (connections) =>
 
 // ─── Reading the reader logged herself, in Beanstack ─────────────────────────
 
+/**
+ * What Carla reads off a shelf rather than in an app — the catalog the logger
+ * searches. A linked app logs itself; this is the half she still types in, and
+ * having both is the point of the prototype.
+ *
+ * `LogFlow`'s own shape: a `cover` gradient pair, and `measure` saying what the
+ * form asks her for.
+ */
+export const OWN_BOOKS = {
+  'front-desk': {
+    id: 'front-desk',
+    title: 'Front Desk',
+    author: 'Kelly Yang',
+    cover: ['#E0457B', '#F5A623'],
+    measure: 'minutes',
+    pages: 286,
+  },
+  esperanza: {
+    id: 'esperanza',
+    title: 'Esperanza Rising',
+    author: 'Pam Muñoz Ryan',
+    cover: ['#C1272D', '#F7941E'],
+    measure: 'minutes',
+    pages: 262,
+  },
+  'mango-abuela': {
+    id: 'mango-abuela',
+    title: 'Mango, Abuela, and Me',
+    author: 'Meg Medina',
+    cover: ['#1E7A5A', '#F2B705'],
+    measure: 'minutes',
+    pages: 32,
+  },
+  'merci-suarez': {
+    id: 'merci-suarez',
+    title: 'Merci Suárez Changes Gears',
+    author: 'Meg Medina',
+    cover: ['#00AEEF', '#7C4DA8'],
+    measure: 'minutes',
+    pages: 368,
+  },
+  sonadores: {
+    id: 'sonadores',
+    title: 'Soñadores',
+    author: 'Yuyi Morales',
+    cover: ['#3C0458', '#EC7C3C'],
+    measure: 'minutes',
+    pages: 40,
+  },
+}
+
+/**
+ * Everything the logger can find: her own shelf, plus every partner title. A
+ * partner's books are searchable whether or not the account is linked — she can
+ * always log a Beeverso book by hand, and linking is what stops her having to.
+ */
+export const LOG_BOOKS = {
+  ...OWN_BOOKS,
+  ...Object.fromEntries(
+    TITLES.map((t) => [
+      t.id,
+      {
+        id: t.id,
+        title: t.title,
+        author: t.author,
+        cover: t.cover,
+        partner: t.partner,
+        measure: 'minutes',
+      },
+    ]),
+  ),
+}
+
+// The covers on the logger's own "recently logged" shelf — her own reading,
+// since a partner's is logged for her and never goes through this flow.
+export const RECENTLY_LOGGED = ['front-desk', 'esperanza', 'mango-abuela']
+
 export const OWN_SESSIONS = [
-  { id: 'own-1', title: 'Front Desk', author: 'Kelly Yang', minutes: 20, when: 'Yesterday' },
-  { id: 'own-2', title: 'Esperanza Rising', author: 'Pam Muñoz Ryan', minutes: 15, when: 'Sunday' },
+  { id: 'own-1', book: 'front-desk', minutes: 20, when: 'Yesterday' },
+  { id: 'own-2', book: 'esperanza', minutes: 15, when: 'Sunday' },
 ]
 
 // ─── The reading log, as the calendar draws it ───────────────────────────────
 // The log page is logging-flow's real calendar, so the sessions above have to
-// land on actual days rather than "Today"/"Monday". The week is anchored to the
-// same June 2026 the calendar opens on, so both apps' history is in view.
+// land on actual days rather than "Today"/"Monday". Counted back from today
+// rather than pinned to a month: a fixed week goes stale, and anything the
+// reader logs here and now has to land in the same month as the history it is
+// being added to.
 
-const DAY_DATE = {
-  Today: '2026-06-11',
-  Yesterday: '2026-06-10',
-  Monday: '2026-06-08',
-  Sunday: '2026-06-07',
+/** `n` days ago, as the `YYYY-MM-DD` the calendar keys on. */
+export const daysAgo = (n) => {
+  const d = new Date()
+  d.setDate(d.getDate() - n)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+const DAY_OFFSET = { Today: 0, Yesterday: 1, Monday: 3, Sunday: 4 }
+const dayDate = (when) => daysAgo(DAY_OFFSET[when] ?? 0)
+
+/* Beeverso violet, Comics Plus green — one colour per app, so a glance at the
+   month says which of them logged what. (`tone` is the shared log's own set:
+   blue, pink, green, amber, violet, red. It had been carrying `purple` and
+   `teal`, which aren't in it, so every imported row drew with no ground at
+   all.) */
+const PARTNER_TONE = { beeverso: 'violet', comicsplus: 'green' }
+
 /**
- * Every session — the reader's own and each linked app's — as calendar
- * entries. An imported one carries its app in `source`, which is what puts the
- * partner's mark on the row and turns on the "imported" key.
+ * Every session — the reader's own, anything she has logged in this session,
+ * and each linked app's — as calendar entries. An imported one carries its app
+ * in `source`, which is what puts the partner's mark on the row and turns on
+ * the "imported" key.
  */
-export const readingLogEntries = (connections) => [
-  ...OWN_SESSIONS.map((s) => ({
-    id: s.id,
-    date: DAY_DATE[s.when] ?? DAY_DATE.Today,
-    kind: 'log',
-    title: s.title,
-    author: s.author,
-    minutes: s.minutes,
-    tone: 'blue',
-  })),
+export const readingLogEntries = (connections, logged = []) => [
+  ...OWN_SESSIONS.map((s) => {
+    const b = OWN_BOOKS[s.book]
+    return {
+      id: s.id,
+      date: dayDate(s.when),
+      kind: 'log',
+      title: b?.title ?? s.book,
+      author: b?.author,
+      minutes: s.minutes,
+      tone: 'blue',
+    }
+  }),
+  ...logged,
   ...importedSessions(connections).map((s) => {
     const t = TITLE_BY_ID[s.title]
     return {
       id: s.id,
-      date: DAY_DATE[s.when] ?? DAY_DATE.Today,
+      date: dayDate(s.when),
       kind: 'log',
       title: t?.title ?? s.title,
       author: t?.author,
       minutes: s.minutes,
       completed: s.finished,
       source: s.partnerId,
-      tone: s.partnerId === 'beeverso' ? 'purple' : 'teal',
+      tone: PARTNER_TONE[s.partnerId] ?? 'blue',
     }
   }),
+]
+
+/**
+ * `completed_summary_earnables` — what finishing a title wins her here. One
+ * card, from the challenge she's actually in: the logger ships a fixture of its
+ * own, and left to it the success screen credited a challenge this site has
+ * never run.
+ */
+export const EARNED_CARDS = [
+  {
+    id: 'lectora-del-mundo',
+    label: 'Badge Earned',
+    eyebrow: 'Lectora del Mundo',
+    title: 'Finish a Title',
+    description: 'Lectores del Mundo',
+    art: '/bs-prototypes/challenge-badges/spring-into-reading/butterfly.webp',
+    reward: 'Sticker Pack',
+    tickets: 2,
+    challenge: 'lectores',
+  },
 ]
 
 // ─── Dashboard furniture ─────────────────────────────────────────────────────
@@ -227,21 +341,29 @@ export const STREAK = { current: 0, longest: 11 }
 // over — the whole point of showing two connections at once.
 export const DAILY_GOAL = { minutes: 0, goal: 40 }
 
-// The shared reader `ChallengeCard`'s shape: cover art, name, dates and what
-// the challenge measures.
+/**
+ * The shared reader `ChallengeCard`'s shape: a drawn cover keyed by `art`, the
+ * name and dates, and the type chips — `logTypes` for what you log toward it,
+ * `types` for what kind of challenge it is. (`badge`, the single pill these
+ * carried before, is the card's legacy fallback: it renders one filled accent
+ * pill instead of the green chip row every other challenge in the app wears.)
+ */
 export const CHALLENGES = [
   {
     id: 'lectores',
     art: 'lectores',
+    tint: '#7B3FA8',
     title: 'Lectores del Mundo',
     dates: 'Arlington ISD · Spring Challenge',
-    badge: 'Books',
+    logTypes: ['books', 'minutes'],
+    badges: 'spring-into-reading',
   },
   {
     id: 'minutes-march',
     art: 'minutes-march',
+    tint: '#0C7E8E',
     title: 'March Minute Madness',
     dates: 'Whole school · Ends Mar 31',
-    badge: 'Minutes',
+    logTypes: ['minutes'],
   },
 ]

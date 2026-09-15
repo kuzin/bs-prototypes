@@ -111,18 +111,8 @@
    to hesitate over, so the reassurance sits with the form rather than in small
    print somewhere else. */
 .epi-footnote {
-  display: flex;
-  gap: 7px;
-  align-items: flex-start;
-  margin: 10px 0 0;
-  font-size: 12.5px;
-  line-height: 1.45;
-  color: var(--c-text-light);
+  margin-top: 6px;
   text-align: left;
-}
-.epi-footnote svg {
-  flex: none;
-  margin-top: 1px;
 }
 
 .epi-warn {

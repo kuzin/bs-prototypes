@@ -109,8 +109,8 @@
   color: var(--c-accent);
 }
 
+/* What happens to a picture review after you post it — the same inline notice
+   the bounds message uses, rather than a grey sentence the eye skips. */
 .rc-note {
-  font-size: 13.5px;
-  line-height: 1.5;
-  color: var(--c-text-light);
+  margin-top: 4px;
 }

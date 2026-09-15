@@ -13,7 +13,7 @@
 
 /* Three cells: the page, the cover and the tag rail. Named, so the stacked
    layout can put the cover first without the markup changing. */
-.bp-card {
+.bkp-card {
   display: grid;
   grid-template-areas:
     'main cover'
@@ -28,18 +28,18 @@
   border-radius: 16px;
 }
 
-.bp-main {
+.bkp-main {
   grid-area: main;
   min-width: 0;
 }
 
-.bp-title {
+.bkp-title {
   font-size: 26px;
   font-weight: 900;
   line-height: 1.15;
   color: var(--c-text-dark);
 }
-.bp-credits {
+.bkp-credits {
   display: flex;
   flex-wrap: wrap;
   gap: 4px 8px;
@@ -48,18 +48,18 @@
   font-size: 14.5px;
   color: var(--c-text-light);
 }
-.bp-person {
+.bkp-person {
   font-weight: 800;
   color: var(--c-text);
 }
 /* The ages sit apart from the credits — the app runs them on the same line but
    in their own `.ages` block, and a dot is what tells them apart here. */
-.bp-ages::before {
+.bkp-ages::before {
   margin-right: 8px;
   content: '·';
 }
 
-.bp-buttons {
+.bkp-buttons {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -68,45 +68,45 @@
 
 /* The tabs sit under the buttons, over the panel — what identifies the book
    (cover, title, credits, buttons, rail) is true on every tab and stays out. */
-.bp-tabs {
+.bkp-tabs {
   display: flex;
   padding-top: 18px;
   margin-top: 18px;
   border-top: 1px solid var(--c-border);
 }
 
-.bp-section {
+.bkp-section {
   padding-top: 20px;
   margin-top: 20px;
   border-top: 1px solid var(--c-border);
 }
 /* The panel owns the gap under the tab strip, so the first section in it drops
    its own top margin rather than sitting on top of the tabs. */
-.bp-panel {
+.bkp-panel {
   margin-top: 20px;
 }
-.bp-panel > .bp-section:first-child {
+.bkp-panel > .bkp-section:first-child {
   margin-top: 0;
 }
 /* …and the rule that separates one section from the next, which has nothing
    above it to separate from. Not the Learning Tip: that is a card with a border
    all the way round, and dropping its top edge left it open at the top. */
-.bp-panel > .bp-section:first-child:not(.bp-tip) {
+.bkp-panel > .bkp-section:first-child:not(.bkp-tip) {
   padding-top: 0;
   border-top: 0;
 }
-.bp-section h2 {
+.bkp-section h2 {
   margin-bottom: 8px;
   font-size: 15px;
   font-weight: 900;
   color: var(--c-text-dark);
 }
-.bp-section p {
+.bkp-section p {
   font-size: 15px;
   line-height: 1.6;
   color: var(--c-text);
 }
-.bp-source {
+.bkp-source {
   margin-top: 8px;
   font-size: 13px;
   color: var(--c-text-light);
@@ -114,13 +114,13 @@
 
 /* The Learning Tip is the one section a grown-up is looking for, so it is the
    one section with a ground of its own. */
-.bp-tip {
+.bkp-tip {
   padding: 16px 18px;
   background: #fff8e8;
   border: 1px solid #f3dca6;
   border-radius: 12px;
 }
-.bp-tip h2 {
+.bkp-tip h2 {
   color: #8a5a06;
 }
 
@@ -129,7 +129,7 @@
 /* `.mood-list` — the app stands the emoticon over its title and spaces them
    1.875rem apart. As pills with a 17px face they read as tags, which is what
    the block under them actually is; the face is the whole point of a mood. */
-.bp-moods {
+.bkp-moods {
   display: flex;
   flex-wrap: wrap;
   gap: 14px 26px;
@@ -137,7 +137,7 @@
   margin: 0;
   list-style: none;
 }
-.bp-moods li {
+.bkp-moods li {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -145,11 +145,11 @@
   width: 78px;
   text-align: center;
 }
-.bp-mood-face {
+.bkp-mood-face {
   font-size: 32px;
   line-height: 1;
 }
-.bp-mood-title {
+.bkp-mood-title {
   font-size: 12.5px;
   font-weight: 700;
   line-height: 1.3;
@@ -158,7 +158,7 @@
 
 /* ── Related picks ─────────────────────────────────────────────────────────
    Two across, as the app's `.related-picks-grid` is. */
-.bp-related {
+.bkp-related {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
@@ -166,7 +166,7 @@
   margin: 0;
   list-style: none;
 }
-.bp-related button {
+.bkp-related button {
   display: flex;
   gap: 12px;
   align-items: center;
@@ -179,47 +179,47 @@
   border: 1px solid var(--c-border);
   border-radius: 12px;
 }
-.bp-related button:hover {
+.bkp-related button:hover {
   background: var(--c-gray-0);
 }
-.bp-related-cover {
+.bkp-related-cover {
   display: block;
   flex: none;
   width: 44px;
 }
-.bp-related-meta {
+.bkp-related-meta {
   display: flex;
   flex-direction: column;
   gap: 2px;
   min-width: 0;
 }
-.bp-related-title {
+.bkp-related-title {
   font-size: 14px;
   font-weight: 800;
   line-height: 1.25;
   color: var(--c-text-dark);
 }
-.bp-related-author {
+.bkp-related-author {
   font-size: 12.5px;
   color: var(--c-text-light);
 }
 
 /* ── The tag rail ──────────────────────────────────────────────────────────
    `#product-aside`. The cover sits over it, the width of the rail. */
-.bp-aside {
+.bkp-aside {
   grid-area: aside;
   min-width: 0;
 }
-.bp-cover {
+.bkp-cover {
   grid-area: cover;
   width: 100%;
 }
-.bp-tags + .bp-tags {
+.bkp-tags + .bkp-tags {
   padding-top: 16px;
   margin-top: 16px;
   border-top: 1px solid var(--c-border);
 }
-.bp-tags > h2 {
+.bkp-tags > h2 {
   margin-bottom: 10px;
   font-size: 12.5px;
   font-weight: 900;
@@ -227,16 +227,16 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-.bp-taggroup + .bp-taggroup {
+.bkp-taggroup + .bkp-taggroup {
   margin-top: 14px;
 }
-.bp-taggroup h3 {
+.bkp-taggroup h3 {
   margin-bottom: 6px;
   font-size: 13px;
   font-weight: 800;
   color: var(--c-text-dark);
 }
-.bp-taglist {
+.bkp-taglist {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -247,32 +247,32 @@
 /* One colour per tag family, on the app's own pairs (`lib/_tag.scss`): a rail
    of forty grey chips is a wall, and this is how you find the genres in it
    without reading the headings. */
-.bp-taglist {
+.bkp-taglist {
   --tag-ink: var(--c-gray-800);
   --tag-bg: var(--c-gray-100);
 }
-.bp-tags--purple {
+.bkp-tags--purple {
   --tag-ink: #901eaa;
   --tag-bg: #fad8ff;
 }
-.bp-tags--teal {
+.bkp-tags--teal {
   --tag-ink: #047282;
   --tag-bg: #cefaff;
 }
-.bp-tags--green {
+.bkp-tags--green {
   --tag-ink: #0f7a55;
   --tag-bg: #dbf2e7;
 }
-.bp-tags--blue {
+.bkp-tags--blue {
   --tag-ink: #154887;
   --tag-bg: #dde9f9;
 }
-.bp-tags--gray {
+.bkp-tags--gray {
   --tag-ink: var(--c-gray-800);
   --tag-bg: var(--c-gray-100);
 }
 
-.bp-tag {
+.bkp-tag {
   height: 28px;
   padding: 0 11px;
   font: inherit;
@@ -284,10 +284,10 @@
   border: 1px solid transparent;
   border-radius: 999px;
 }
-.bp-tag:hover {
+.bkp-tag:hover {
   border-color: color-mix(in srgb, var(--tag-ink) 45%, transparent);
 }
-.bp-awards {
+.bkp-awards {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -300,7 +300,7 @@
   /* Stacked: the cover goes first, the way the app pushes its column first on
      a small screen — but at a size you can see past, since a 720px-wide cover
      is the whole screen before you reach what it's called. */
-  .bp-card {
+  .bkp-card {
     grid-template-areas:
       'cover'
       'main'
@@ -310,41 +310,41 @@
     gap: 20px;
     padding: 20px;
   }
-  .bp-cover {
+  .bkp-cover {
     width: 132px;
   }
   /* The rail is no longer a column beside the page, so it needs an edge of its
      own — without one the Lexile measure reads as one more section of the
      prose above it. */
-  .bp-aside {
+  .bkp-aside {
     padding: 18px;
     background: var(--c-gray-0);
     border: 1px solid var(--c-border);
     border-radius: 12px;
   }
-  .bp-related {
+  .bkp-related {
     grid-template-columns: minmax(0, 1fr);
   }
 }
 
 /* A tag with no facet behind it — a Lexile measure, a Misc. category. */
-.bp-tag--static {
+.bkp-tag--static {
   display: inline-flex;
   align-items: center;
   cursor: default;
 }
-.bp-tag--static:hover {
+.bkp-tag--static:hover {
   border-color: transparent;
 }
 
 /* ── Your reading ──────────────────────────────────────────────────────────
    The reader's own sessions for this title — what the app's per-book log page
    carries, on the page the catalog already gives the book. */
-.bp-noreading {
+.bkp-noreading {
   color: var(--c-text-light);
 }
 /* The design system's stat tile, as the reading log uses it. */
-.bp-readnums {
+.bkp-readnums {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
   gap: 12px;
@@ -353,17 +353,17 @@
 
 /* The design system's table. Its own rows are 13px; a session list that is the
    only thing on its tab can carry the page's own size. */
-.bp-sessions {
+.bkp-sessions {
   margin-top: 4px;
 }
-.bp-sessions .tbl td {
+.bkp-sessions .tbl td {
   font-size: 14px;
 }
-.bp-session-date {
+.bkp-session-date {
   font-weight: 700;
   color: var(--c-text);
 }
-.bp-session-amount {
+.bkp-session-amount {
   font-size: 15px;
   font-weight: 800;
   color: var(--c-text-dark);
@@ -372,12 +372,12 @@
 /* Editing happens in the row: the amount becomes a field and the pencil and the
    remove become save and cancel — `edit-times-read-input` and the four
    `session-action__*` controls. */
-.bp-session-edit {
+.bkp-session-edit {
   display: inline-flex;
   gap: 6px;
   align-items: center;
 }
-.bp-session-input {
+.bkp-session-input {
   width: 68px;
   height: 34px;
   padding: 0 8px;
@@ -389,7 +389,7 @@
   border: 1px solid var(--c-gray-500);
   border-radius: 8px;
 }
-.bp-session-unit {
+.bkp-session-unit {
   font-weight: 700;
   color: var(--c-text-light);
 }
@@ -398,7 +398,7 @@
   /* The table keeps its columns and scrolls rather than folding — a session is
      a date, an amount, where it came from and what you can do to it, and none
      of those reads on its own. */
-  .bp-sessions .tbl-scroll > .tbl {
+  .bkp-sessions .tbl-scroll > .tbl {
     width: max-content;
   }
 }

@@ -50,12 +50,7 @@ import {
   REGISTRATION_QUESTIONS,
   CHALLENGE_BY_ID,
 } from '../logging-flow/data'
-import {
-  CONNECTIONS,
-  CONNECTION_LIST,
-  TAKEN_USERNAMES,
-  partnerMinutes,
-} from '../logging-flow/connections'
+import { CONNECTIONS, TAKEN_USERNAMES, partnerMinutes } from '../logging-flow/connections'
 
 import '../logging-flow/index.css'
 import '@components/PrototypeNav/PrototypeNav.css'
@@ -80,8 +75,10 @@ import '@components/PreviewBar/PreviewBar.css'
 //    Reader) stay in their own prototypes.
 //  * **Scholastic.** The partner list and its titles are filtered out.
 
-// The reading apps this page offers, and the titles that go with them.
-const ALL_PARTNERS = CONNECTION_LIST.filter((p) => p.id !== 'scholastic')
+/* The reading apps this page offers, and the titles that go with them: Comics
+   Plus and Beeverso. Scholastic is the one that stays out — it's the logging
+   flow's own story, and `logging-flow` is where it's told. */
+const ALL_PARTNERS = [CONNECTIONS.comicsplus, CONNECTIONS.beeverso]
 const PARTNER_BOOKS = Object.fromEntries(
   Object.entries(BOOKS)
     .filter(([, b]) => b.partner !== 'scholastic')
@@ -91,6 +88,11 @@ const RECENT = RECENTLY_LOGGED.filter((id) => BOOKS[id]?.partner !== 'scholastic
 // …and the log with it. Filtering the catalog but not the log left Scholastic
 // magazines sitting in the Reading Log of a page that says it has no Scholastic.
 const LOG = READING_LOG.filter((e) => e.source !== 'scholastic')
+
+/* The same rule for the sources a site setting can switch off: turn one off and
+   the sessions it logged go with it. Leaving them behind said the reader has
+   rows from a service this site doesn't have. */
+const SOURCE_SETTING = { epic: 'epic', comicsplus: 'comicsPlus', beeverso: 'beeverso' }
 
 // Today, in the fixtures' own June.
 const TODAY = 'Jun 16, 2026'
@@ -127,6 +129,7 @@ const FEATURE_SWITCHES = [
   { id: 'fundraiser', label: 'Fundraiser', hint: 'a read-a-thon is running' },
   { id: 'bookMachine', label: 'Book machine', hint: 'has_limited_rewards?' },
   { id: 'comicsPlus', label: 'Comics Plus', hint: 'comics_plus_enabled' },
+  { id: 'beeverso', label: 'Beeverso', hint: 'beeverso_enabled' },
 
   // ── Logging ──────────────────────────────────────────────────────────────
   { id: 'scanIsbn', section: 'Logging', label: 'Scan ISBN', hint: 'display_scan_by_isbn?' },
@@ -247,6 +250,7 @@ const FEATURE_DEFAULTS = {
   fundraiser: true,
   bookMachine: true,
   comicsPlus: true,
+  beeverso: true,
   scanIsbn: true,
   timer: true,
   epic: true,
@@ -293,6 +297,13 @@ export function App() {
   // being the only way to change them.
   const [wish, setWish] = useState(WISH_LIST)
   const [log, setLog] = useState(LOG)
+  /* What the log actually shows: its own rows, minus any whose source this site
+     has turned off. Derived rather than filtered into state, so switching the
+     setting back brings the rows back. */
+  const shownLog = log.filter((e) => {
+    const setting = SOURCE_SETTING[e.source]
+    return !setting || features[setting]
+  })
   const wished = (id) => wish.some((w) => w.book === id)
   const toggleWish = (book) =>
     setWish((ws) =>
@@ -362,10 +373,11 @@ export function App() {
   // account, not two readers' data.
   const [profileId, setProfileId] = useState('olivia')
   const library = site === 'library'
-  /* `comics_plus_enabled?` + the `comics_plus_integration` flipper. Off, the
-     partner goes with it — the App Integrations card, the connect banner, the
-     switcher in the top bar and the sessions it logs. */
-  const partners = features.comicsPlus ? ALL_PARTNERS : []
+  /* `comics_plus_enabled?` + the `comics_plus_integration` flipper, and the
+     same for Beeverso. Each integration is its own site setting, so turning one
+     off takes only that partner with it — the App Integrations row, the connect
+     banner, the switcher in the top bar and the sessions it logs. */
+  const partners = ALL_PARTNERS.filter((p) => features[SOURCE_SETTING[p.id]])
   /* Which activities the reader has ticked off. The fixtures carry a starting
      state; this is what changes as they work through them. */
   const [doneActivities, setDone] = useState(
@@ -487,7 +499,7 @@ export function App() {
 
   // The pages this prototype owns, by tab id.
   function renderTab(id) {
-    if (id === 'fundraisers') return <FundraiserPage fundraiser={FUNDRAISER} entries={log} />
+    if (id === 'fundraisers') return <FundraiserPage fundraiser={FUNDRAISER} entries={shownLog} />
     if (id === 'badges') return <AllBadges />
     if (id === 'friends') return <Friends library={library} />
     if (id === 'reviews') return <ReviewsPage composing={composing} onCompose={setComposing} />
@@ -551,7 +563,7 @@ export function App() {
         onDisconnectPartner={handleDisconnect}
         onVisitPartner={setVisiting}
         partners={partners}
-        logEntries={log}
+        logEntries={shownLog}
         view={view}
         onView={(v) => {
           setView(v)
@@ -653,7 +665,7 @@ export function App() {
               challenge={challenge}
               tab={challengeTab}
               onTab={setChallengeTab}
-              entries={log}
+              entries={shownLog}
               onLog={() => setFlowOpen(true)}
               /* A badge's own modal offers whatever that badge is earned by —
                  a review badge sends you to write one, an activity badge to
@@ -699,6 +711,14 @@ export function App() {
         onLogged={handleLogged}
         connections={connections}
         {...LOG_FIXTURES}
+        /* Who the flow logs for, and who it could switch to. A library account
+           holds several profiles; a school student is one profile with nothing
+           above them, so there's nobody to switch to and the flow drops its
+           "Select a different reader" link — the same rule the top bar's reader
+           pill follows. The fixtures' own pair would have offered the switch on
+           both kinds of site. */
+        reader={current}
+        readers={library ? profiles.filter((p) => p.id !== current.id) : []}
         partners={partners}
         /* This page's own catalog: the fixture shelf minus Scholastic. */
         books={PARTNER_BOOKS}

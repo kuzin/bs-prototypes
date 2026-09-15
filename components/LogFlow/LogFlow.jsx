@@ -9,8 +9,8 @@ import { Icon } from '@components/Icon/Icon'
 
 import { BennyBubble } from '@components/BennyBubble/BennyBubble'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
+import { PARTNER_PRESETS } from '@components/PartnerConnect/partners'
 import { Flyout, FlyoutMenu, FlyoutMenuItem } from '@components/Flyout/Flyout'
-import { bannerSrc } from '@components/ReaderApp/ReaderApp'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Confetti } from '@components/Confetti/Confetti'
 import { EpicImport } from '@components/EpicImport/EpicImport'
@@ -90,9 +90,11 @@ const EPIC_READERS = [
 /* Who the flow logs for when nobody says. Every prototype passes its own. */
 const DEMO_READER = { id: 'demo', name: 'Olivia Martinez', initials: 'OM', color: '#F09A77' }
 
-/* What finishing a title wins here. The app builds these from the earnables the
-   log actually triggered (`completed_earned_cards`); ours is a fixture, but the
-   shape is the app's. */
+/* What finishing a title wins when the prototype doesn't say. The app builds
+   these from the earnables the log actually triggered
+   (`completed_earned_cards`); ours is a fixture, but the shape is the app's —
+   and a prototype with its own challenges passes its own, so the success screen
+   doesn't credit a challenge that site has never run. */
 const EARNED_CARDS = [
   {
     id: 'page-turner',
@@ -134,8 +136,6 @@ function fmtMinutes(min) {
   if (h) return `${h} hr`
   return `${m} min`
 }
-
-const coverLabel = (b) => b.title
 
 const EMOTICONS = ['😍', '😂', '🤩', '😢', '🤔', '👏', '🔥', '💜']
 const REVIEW_OPTIONS = [
@@ -182,6 +182,9 @@ export function LogFlow({
   logType: logTypeId = 'minute',
   site,
   dailyGoal,
+  /* `completed_summary_earnables` — what finishing a title wins on this site.
+     Left off, the flow's own fixture stands in. */
+  earnedCards = EARNED_CARDS,
   /* What the success screen's buttons do. Each gets the earned card it was
      pressed on; left off, that button isn't offered. */
   onViewBadge,
@@ -194,10 +197,8 @@ export function LogFlow({
      the flow opens on the form — `source=without_title`. */
   const firstStep = siteType.withoutTitle ? 'details' : 'search'
 
-  // search | lists | list | details | timer | review | success | reader
+  // search | lists | details | timer | review | success | reader
   const [step, setStep] = useState(firstStep)
-  // Which reading-list challenge is open, on the `list` step.
-  const [list, setList] = useState(null)
   const [returnStep, setReturnStep] = useState('search')
   const [logType, setLogType] = useState(siteType)
   // The extra questions a type asks instead of an amount — a moment's
@@ -206,6 +207,8 @@ export function LogFlow({
   const [reader, setReader] = useState(readerProp ?? DEMO_READER)
   const [query, setQuery] = useState('')
   const [scanOpen, setScanOpen] = useState(false)
+  // The list page's contents — a challenge's titles, or a partner's shelf.
+  const [listView, setListView] = useState(null)
   const [epicOpen, setEpicOpen] = useState(false)
 
   const [book, setBook] = useState(null) // a BOOKS entry, or a synthetic manual/untitled book
@@ -240,7 +243,6 @@ export function LogFlow({
     setQuery('')
     setScanOpen(false)
     setEpicOpen(false)
-    setList(null)
     setBook(null)
     setMinutesInput('')
     setCountInput('')
@@ -350,6 +352,12 @@ export function LogFlow({
     })
   }
 
+  /* `available_profiles_count > 1` — the app offers "Select a different
+     reader" only where there *is* one. A library account holds several
+     profiles; a school student is one profile with nothing above them, so the
+     link is hidden rather than opening an empty picker. */
+  const canSwitchReader = readers.length > 0
+
   function openReaderPicker() {
     setReturnStep(step)
     setStep('reader')
@@ -400,7 +408,7 @@ export function LogFlow({
       /* `completed_summary_earnables` — what came out of this log, one card
          each. The eyebrow is the badge's name, the title is what it took, and
          the line under both is the challenge it belongs to. */
-      earned: finished ? EARNED_CARDS : [],
+      earned: finished ? earnedCards : [],
     }
     setResult(payload)
     onLogged?.(payload)
@@ -439,7 +447,6 @@ export function LogFlow({
             onClick={() => {
               if (step === 'reader') return setStep(returnStep)
               if (step === 'timer') return setStep('details')
-              if (step === 'list') return setStep('lists')
               setStep('search')
             }}
             aria-label="Back"
@@ -460,7 +467,10 @@ export function LogFlow({
               readingListChallenges={readingListChallenges}
               cfg={cfg}
               onEpic={() => setEpicOpen(true)}
-              onLists={() => setStep('lists')}
+              onOpenList={(list) => {
+                setListView(list)
+                setStep('lists')
+              }}
               query={query}
               setQuery={setQuery}
               scanOpen={scanOpen}
@@ -468,23 +478,14 @@ export function LogFlow({
               onPick={pickBook}
               onManual={startManual}
               onWithoutTitle={startWithoutTitle}
-              onChangeReader={openReaderPicker}
+              onChangeReader={canSwitchReader ? openReaderPicker : undefined}
             />
           )}
 
           {step === 'lists' && (
-            <ReadingListStep
-              challenges={readingListChallenges}
-              onPick={(c) => {
-                setList(c)
-                setStep('list')
-              }}
-            />
-          )}
-
-          {step === 'list' && list && (
-            <ReadingListDetail
-              challenge={list}
+            <TitleListStep
+              list={listView}
+              connections={connections}
               books={books}
               /* Logging from a list is `source=reading_list_challenge`: the
                  title is already chosen, so it goes straight to the form. */
@@ -516,7 +517,7 @@ export function LogFlow({
               overWarn={overWarn}
               overLimit={overLimit}
               canLog={canLog}
-              onChangeReader={openReaderPicker}
+              onChangeReader={canSwitchReader ? openReaderPicker : undefined}
               onStartTimer={() => {
                 setTimerSeconds(0)
                 setTimerRunning(true)
@@ -674,87 +675,188 @@ function ReaderLine({ reader, onChange }) {
 // ─── Reading List Challenges ─────────────────────────────────────────────────
 
 /**
- * `reading_list_challenges#index` — the book-list challenges this reader is in.
- * A `Program` of type `book_list` is a set of titles somebody picked for them,
- * so the way into one is its banner and its name.
+ * `reading_list_challenges` — the book-list challenges this reader is in, and
+ * their titles, on one screen.
+ *
+ * The app makes this two: a grid of challenges, then one challenge's titles.
+ * A reader is rarely in more than two or three, and the second screen asked
+ * them to choose a challenge before they could look for the book they had
+ * already picked up — so the challenges are sections here and every title is
+ * one click away.
+ *
+ * Each section says what its challenge asks for, since that is the thing you
+ * can't tell from the covers: every title, a count, or a count that has to
+ * include particular ones (`all_program_books_required?`,
+ * `minimum_required_program_books`, `specific_program_books_required?`). Where
+ * it names specific ones the grid splits — those first, the rest under "More
+ * Titles".
  */
-function ReadingListStep({ challenges, onPick }) {
+/**
+ * A page of titles — `reading_list_challenges#show`, and the same page for a
+ * partner's own shelf. Both are a name, a line under it, and one or more runs
+ * of covers, so both are this: a challenge's page used to be its own component
+ * and a partner's shelf had nowhere to go at all.
+ *
+ * `list` is `{ title, sub, sections: [{ title, count, rows }] }`; the two
+ * builders below turn a challenge or a partner shelf into one.
+ */
+function TitleListStep({ list, books, connections, onLog, onRead }) {
+  if (!list) return null
+
   return (
     <div className="lf-rlc">
-      <h1 className="lf-h1">Reading List Challenges</h1>
-      <ul className="lf-rlc-grid">
-        {challenges.map((c) => (
-          <li key={c.id}>
-            <button type="button" className="lf-rlc-card" onClick={() => onPick(c)}>
-              <img src={bannerSrc(c.banner)} alt="" className="lf-rlc-banner" />
-              {/* `.gray-bar--bottom` — the app names the challenge on a bar
-                  under its art rather than over it. */}
-              <span className="lf-rlc-name">{c.title}</span>
-            </button>
-          </li>
-        ))}
-      </ul>
+      <header className="lf-rlc-head">
+        <h1 className="lf-rlc-name">{list.title}</h1>
+        {list.sub && <p className="lf-rlc-dates">{list.sub}</p>}
+      </header>
+
+      {list.sections.map((sec) => (
+        <section className="lf-rlc-section" key={sec.title}>
+          <div className="lf-rlc-sechead">
+            <h2 className="lf-rlc-sectitle">{sec.title}</h2>
+            {sec.count && <span className="lf-rlc-seccount">{sec.count}</span>}
+          </div>
+          <BookGrid
+            rows={sec.rows}
+            books={books}
+            connections={connections}
+            onLog={onLog}
+            onRead={onRead}
+          />
+        </section>
+      ))}
     </div>
   )
 }
 
-/**
- * `reading_list_challenges#show` — one challenge's titles. The app's own shape:
- * the banner in a tinted curved header, then **Select a Title** over a grid of
- * covers. A cover carries a tick once it's done and a mark where the title has
- * comprehension questions, and opens a menu of what you can do with it.
- *
- * Where the challenge requires specific titles the grid splits — the required
- * ones first under their own heading, everything else under "More Titles".
- */
-function ReadingListDetail({ challenge, books, onLog, onRead }) {
-  const req = challenge.required ?? {}
+/* A reading-list challenge: what it requires first, anything else after. */
+function challengeList(c) {
+  const req = c.required ?? {}
   const split = req.kind === 'specific'
-  const required = split ? challenge.books.filter((b) => b.required) : challenge.books
-  const rest = split ? challenge.books.filter((b) => !b.required) : []
+  const rest = split ? c.books.filter((b) => !b.required) : []
+  const read = c.books.filter((b) => b.done).length
+
+  return {
+    title: c.title,
+    sub: c.dates ?? 'Ongoing Challenge',
+    sections: [
+      {
+        title: split ? 'Required Titles' : 'Titles',
+        count: `${read} of ${req.count ?? c.books.length} read`,
+        rows: split ? c.books.filter((b) => b.required) : c.books,
+      },
+      ...(rest.length > 0
+        ? [{ title: 'More Titles', count: 'These count toward the total too', rows: rest }]
+        : []),
+    ],
+  }
+}
+
+/* A partner's own shelf — the titles it put in front of this reader. */
+function partnerList(rl) {
+  const rows = rl.titles.map((id) => ({ id, done: rl.completed.includes(id) }))
+  return {
+    title: rl.title,
+    sub: `From your ${PARTNER_NAMES[rl.partner] ?? 'linked'} account`,
+    sections: [
+      {
+        title: `All ${rl.unit ?? 'titles'}`,
+        count: `${rows.filter((r) => r.done).length} of ${rows.length} read`,
+        rows,
+      },
+    ],
+  }
+}
+
+/* "Read in Comics Plus" — the partner names itself in its own menu item. */
+const PARTNER_NAMES = Object.fromEntries(Object.values(PARTNER_PRESETS).map((p) => [p.id, p.name]))
+
+/**
+ * One book, wherever a book appears — a shelf on the search screen, a challenge
+ * grid, the recently-logged row.
+ *
+ * A finished title says so in the same place every time: a green tick on the
+ * bottom-right corner, and the cover itself steps back.
+ *
+ * Pressing one opens the same menu everywhere, offering the same choice: **read
+ * it in the partner's app**, where the title lives in one you've linked, or
+ * **log it here**. That choice used to be per-fixture flags (`readNow`,
+ * `goNow`) on a challenge's rows only, so the same Scholastic issue offered to
+ * be read on one screen and only logged on another.
+ */
+function CoverTile({
+  book,
+  size = 'fill',
+  done = false,
+  connections = {},
+  onLog,
+  onRead,
+  className = '',
+}) {
+  // Readable in the app only once that account is linked — otherwise the only
+  // thing this title can do here is be logged.
+  const partner = book.partner && connections[book.partner] ? book.partner : null
 
   return (
-    <div className="lf-rld">
-      {/* `.book-list-header-background` — a band in the challenge's own colour
-          with the banner sitting over it. */}
-      <div className="lf-rld-head" style={{ '--rld-tint': challenge.tint }}>
-        <img src={bannerSrc(challenge.banner)} alt="" className="lf-rld-banner" />
-      </div>
-      <h1 className="lf-rld-title">{challenge.title}</h1>
-      <p className="lf-rld-dates">{challenge.dates ?? 'Ongoing Challenge'}</p>
-
-      <h2 className="lf-rld-h2">Select a Title</h2>
-
-      {split && (
-        <div className="lf-rld-group">
-          <h3 className="lf-rld-grouphead">Required Titles</h3>
-          <p className="lf-rld-groupsub">
-            {req.count} titles required, including these specific titles
-          </p>
-        </div>
+    /* Beside the cover, not under it: a shelf is a row of these, and a panel
+       below the one you pressed covers the titles next to it. It flips to the
+       other side on its own where there's no room. */
+    <Flyout
+      placement="right"
+      arrow
+      trigger={({ toggle }) => (
+        <button
+          type="button"
+          className={`lf-tile ${className}`.trim()}
+          onClick={toggle}
+          aria-label={book.title}
+        >
+          <BookCover book={book} size={size} />
+          {/* `.completed-checkmarker-wrapper` */}
+          {done && (
+            <span className="lf-tile-mark lf-tile-mark--done">
+              <Icon name="check" size={15} stroke={3} />
+            </span>
+          )}
+        </button>
       )}
-      {!split && req.kind === 'count' && (
-        <div className="lf-rld-group">
-          <h3 className="lf-rld-grouphead">{req.count} titles required</h3>
-        </div>
-      )}
-
-      <BookGrid rows={required} books={books} onLog={onLog} onRead={onRead} />
-
-      {rest.length > 0 && (
+    >
+      {({ close }) => (
         <>
-          <div className="lf-rld-group">
-            <h3 className="lf-rld-grouphead">More Titles</h3>
+          {/* Which title this is — a shelf is a dozen covers, and a menu that
+              opens over one of them still has to say which. */}
+          <div className="lf-tile-menuhead">
+            <span className="lf-tile-menutitle">{book.title}</span>
+            {book.author && <span className="lf-tile-menuauthor">{book.author}</span>}
           </div>
-          <BookGrid rows={rest} books={books} onLog={onLog} onRead={onRead} />
+          <FlyoutMenu>
+            {partner && (
+              <FlyoutMenuItem
+                onClick={() => {
+                  close()
+                  onRead?.(book)
+                }}
+              >
+                Read in {PARTNER_NAMES[partner] ?? 'the app'}
+              </FlyoutMenuItem>
+            )}
+            <FlyoutMenuItem
+              onClick={() => {
+                close()
+                onLog?.(book)
+              }}
+            >
+              Log Reading
+            </FlyoutMenuItem>
+          </FlyoutMenu>
         </>
       )}
-    </div>
+    </Flyout>
   )
 }
 
 /** `.book-list-grid` — the covers, each with its own menu. */
-function BookGrid({ rows, books, onLog, onRead }) {
+function BookGrid({ rows, books, connections, onLog, onRead }) {
   return (
     <ul className="lf-rld-grid">
       {rows.map((row) => {
@@ -762,66 +864,13 @@ function BookGrid({ rows, books, onLog, onRead }) {
         if (!book) return null
         return (
           <li key={row.id} className="lf-rld-item">
-            <Flyout
-              placement="bottom"
-              trigger={({ toggle }) => (
-                <button
-                  type="button"
-                  className="lf-rld-cover"
-                  onClick={toggle}
-                  aria-label={book.title}
-                >
-                  <BookCover book={book} size="fill" />
-                  {/* `.reading-integrity-wrapper` — this title asks questions. */}
-                  {row.questions && (
-                    <span className="lf-rld-mark lf-rld-mark--q">
-                      <Icon name="help" size={13} stroke={2.4} />
-                    </span>
-                  )}
-                  {/* `.completed-checkmarker-wrapper` */}
-                  {row.done && (
-                    <span className="lf-rld-mark lf-rld-mark--done">
-                      <Icon name="check" size={13} stroke={3} />
-                    </span>
-                  )}
-                </button>
-              )}
-            >
-              {({ close }) => (
-                <div className="lf-rld-menu">
-                  <div className="lf-rld-menu-head">
-                    <span className="lf-rld-menu-title">{book.title}</span>
-                    {book.author && <span className="lf-rld-menu-author">{book.author}</span>}
-                    {row.questions && <span className="lf-rld-pill">Questions</span>}
-                  </div>
-                  <FlyoutMenu>
-                    {row.readNow && (
-                      <FlyoutMenuItem
-                        onClick={() => {
-                          close()
-                          onRead?.(book)
-                        }}
-                      >
-                        <Icon name="book-2" size={16} /> Read Now
-                      </FlyoutMenuItem>
-                    )}
-                    {row.goNow && (
-                      <FlyoutMenuItem onClick={close}>
-                        <Icon name="external-link" size={16} /> Go Now
-                      </FlyoutMenuItem>
-                    )}
-                    <FlyoutMenuItem
-                      onClick={() => {
-                        close()
-                        onLog?.(book)
-                      }}
-                    >
-                      <Icon name="book" size={16} /> Log Reading
-                    </FlyoutMenuItem>
-                  </FlyoutMenu>
-                </div>
-              )}
-            </Flyout>
+            <CoverTile
+              book={book}
+              done={row.done}
+              connections={connections}
+              onLog={onLog}
+              onRead={onRead}
+            />
           </li>
         )
       })}
@@ -841,7 +890,7 @@ function SearchStep({
   readingListChallenges,
   cfg,
   onEpic,
-  onLists,
+  onOpenList,
   query,
   setQuery,
   scanOpen,
@@ -913,50 +962,42 @@ function SearchStep({
           <ReaderLine reader={reader} onChange={onChangeReader} />
           <h1 className="lf-h1">Select a Title</h1>
 
-          <div className="lf-searchrow">
-            <SearchInput
-              value={query}
-              onChange={setQuery}
-              placeholder="Search for title or author"
-            />
-          </div>
+          {/* `.logged-books--logging-selection-section` — the app puts the
+              search and the other ways in on one grey panel, not loose on the
+              page. */}
+          <section className="lf-sect">
+            <div className="lf-searchrow">
+              <SearchInput
+                value={query}
+                onChange={setQuery}
+                placeholder="Search for title or author"
+              />
+            </div>
 
-          {/* `.logged-books--logging-actions` — the other ways in, each an icon
-              over its name. They are the app's own set and each is a site
-              setting: `display_scan_by_isbn?`, manual entry always, and the
-              reader's book lists where they have any. Ours were a button
-              wedged beside the search and two links at the foot of the page,
-              which is three different weights for three equal choices. */}
-          <div className="lf-actions">
-            {cfg.scanIsbn && (
-              <button type="button" className="lf-action" onClick={() => setScanOpen(true)}>
-                <Icon name="barcode" size={26} stroke={1.7} />
-                <span>Scan ISBN</span>
+            {/* `.logged-books--logging-actions` — each an icon over its name,
+                in thirds. Each is a site setting: `display_scan_by_isbn?`,
+                manual entry always, `epic_integration?`. */}
+            <div className="lf-actions">
+              {cfg.scanIsbn && (
+                <button type="button" className="lf-action" onClick={() => setScanOpen(true)}>
+                  <Icon name="barcode" size={40} stroke={1.6} />
+                  <span>Scan ISBN</span>
+                </button>
+              )}
+              <button type="button" className="lf-action" onClick={onManual}>
+                <Icon name="pencil" size={40} stroke={1.6} />
+                <span>Manually Enter Title</span>
               </button>
-            )}
-            <button type="button" className="lf-action" onClick={onManual}>
-              <Icon name="pencil" size={26} stroke={1.7} />
-              <span>Manually Enter Title</span>
-            </button>
-            {/* `epic_integration?` — not another way to find a title but another
-                way to log: Epic hands over what the reader has already read
-                there. It sits with these because it answers the same question
-                the screen is asking. */}
-            {cfg.epic && (
-              <button type="button" className="lf-action lf-action--epic" onClick={onEpic}>
-                <img src="/bs-prototypes/epic/Mark.png" alt="" className="lf-action-mark" />
-                <span>Import from Epic</span>
-              </button>
-            )}
-            {/* `reading_list_challenges_path` — its own screen, and only where
-                the reader is actually in one. */}
-            {readingListChallenges.length > 0 && (
-              <button type="button" className="lf-action" onClick={onLists}>
-                <Icon name="book" size={26} stroke={1.7} />
-                <span>Reading List Challenges</span>
-              </button>
-            )}
-          </div>
+              {/* Not another way to find a title but another way to log: Epic
+                  hands over what the reader has already read there. */}
+              {cfg.epic && (
+                <button type="button" className="lf-action" onClick={onEpic}>
+                  <img src="/bs-prototypes/epic/Mark.png" alt="" className="lf-action-mark" />
+                  <span>Import from Epic</span>
+                </button>
+              )}
+            </div>
+          </section>
         </>
       )}
 
@@ -1045,46 +1086,103 @@ function SearchStep({
                   <div className="lf-coverrow lf-coverrow--rl">
                     {readingList.titles
                       .filter((id) => books[id])
-                      .map((id) => {
-                        const logged = readingList.completed.includes(id)
-                        return (
-                          <button
-                            key={id}
-                            className={`lf-coverbtn lf-rltitle${logged ? ' is-logged' : ''}`}
-                            onClick={() => onPick(books[id])}
-                            title={coverLabel(books[id])}
-                          >
-                            <BookCover book={books[id]} size="md" />
-                            {logged && (
-                              <span className="lf-rlcheck" aria-label="Logged">
-                                <Icon name="check" size={12} stroke={3} />
-                              </span>
-                            )}
-                          </button>
-                        )
-                      })}
+                      .slice(0, 4)
+                      .map((id) => (
+                        <CoverTile
+                          key={id}
+                          book={books[id]}
+                          size="md"
+                          done={readingList.completed.includes(id)}
+                          connections={connections}
+                          onLog={onPick}
+                          onRead={onPick}
+                        />
+                      ))}
+
+                    <button
+                      className="lf-morecard"
+                      onClick={() => onOpenList(partnerList(readingList))}
+                    >
+                      <span className="lf-morecard-label">
+                        <span>View</span>
+                        <span>More</span>
+                      </span>
+                    </button>
                   </div>
-                  <button className="lf-link lf-viewall">
-                    View all {readingList.total} {readingList.unit || 'titles'} ›
-                  </button>
                 </section>
               )}
 
-              {/* Recently logged */}
-              <section className="lf-panel">
-                <h2 className="lf-panel-title">Recently Logged Titles</h2>
-                <div className="lf-coverrow lf-coverrow--center">
+              {/* `reading_list_challenges` — one shelf per challenge the reader
+                  is enrolled in, the same anatomy as a partner's: what it's
+                  called, a few of its titles with the ones they've read ticked
+                  off, and the way into the whole list. A single "Reading List
+                  Challenges" button stood here before, which made the reader
+                  open a screen to find out whether there was anything on it. */}
+              {readingListChallenges.map((rlc) => {
+                const shelf = rlc.books.filter((b) => books[b.id])
+                if (shelf.length === 0) return null
+                /* Four titles and the way into the rest, which is the fifth
+                   card on the shelf rather than a link under it — a shelf that
+                   ends in a card reads as continuing, where a link under it
+                   read as a footnote. Five is what fits a 640px panel. */
+                const shown = shelf.slice(0, 4)
+                return (
+                  <section key={rlc.id} className="lf-panel lf-rlband">
+                    <div className="lf-rlhead">
+                      <span className="lf-rlmark" style={{ '--rl-tint': rlc.tint }}>
+                        <Icon name="book" size={13} stroke={2.4} />
+                      </span>
+                      <h2 className="lf-panel-title lf-rlhead-title">{rlc.title}</h2>
+                      {rlc.dates && <span className="lf-rldates">{rlc.dates}</span>}
+                    </div>
+
+                    <div className="lf-coverrow lf-coverrow--rl">
+                      {shown.map((b) => (
+                        <CoverTile
+                          key={b.id}
+                          book={books[b.id]}
+                          size="md"
+                          done={b.done}
+                          connections={connections}
+                          onLog={onPick}
+                          onRead={onPick}
+                        />
+                      ))}
+
+                      <button
+                        className="lf-morecard"
+                        onClick={() => onOpenList(challengeList(rlc))}
+                      >
+                        <span className="lf-morecard-label">
+                          <span>View</span>
+                          <span>More</span>
+                        </span>
+                      </button>
+                    </div>
+                  </section>
+                )
+              })}
+
+              {/* `.logged-books--recently-read-books` — what they logged lately,
+                  a shelf of its own now that the reading lists have theirs, and
+                  named like them so three shelves read as three shelves. */}
+              <section className="lf-sect lf-recentsect">
+                <div className="lf-rlhead">
+                  <h2 className="lf-panel-title lf-rlhead-title">Recently Logged Titles</h2>
+                </div>
+                <div className="lf-recent">
                   {recentlyLogged
                     .filter((id) => books[id])
+                    .slice(0, 5)
                     .map((id) => (
-                      <button
+                      <CoverTile
                         key={id}
-                        className="lf-coverbtn"
-                        onClick={() => onPick(books[id])}
-                        title={coverLabel(books[id])}
-                      >
-                        <BookCover book={books[id]} size="md" />
-                      </button>
+                        book={books[id]}
+                        size="md"
+                        connections={connections}
+                        onLog={onPick}
+                        onRead={onPick}
+                      />
                     ))}
                 </div>
               </section>
@@ -1469,13 +1567,15 @@ function ReaderStep({ current, readers = [], onSelect }) {
           <button
             key={r.id}
             className={`lf-readercard${r.id === current.id ? ' is-active' : ''}`}
+            /* The card is picked out in the reader's own colour, the same one
+               their avatar wears — which is what tells four of these apart. */
+            style={{ '--reader': r.color }}
             onClick={() => onSelect(r)}
           >
             <Avatar initials={r.initials} color={r.color} size="lg" />
             <span className="lf-readercard-name">{r.name}</span>
-            <span className="lf-readercard-grade">{r.grade}</span>
             {r.id === current.id && (
-              <Icon name="circle-check-filled" size={18} className="lf-readercard-check" />
+              <Icon name="check" size={14} stroke={3} className="lf-readercard-check" />
             )}
           </button>
         ))}

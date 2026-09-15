@@ -1,11 +1,22 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
+import { LogFlow } from '@components/LogFlow/LogFlow'
 
 import { Dashboard } from './components/Dashboard'
 import { TitleCover } from './components/TitleCover'
-import { PARTNER_BY_ID, TAKEN_USERNAMES } from './connections'
-import { READER, STREAK, DAILY_GOAL, titlesFor, todayMinutes } from './data'
+import { PARTNERS, PARTNER_BY_ID, TAKEN_USERNAMES } from './connections'
+import {
+  READER,
+  STREAK,
+  DAILY_GOAL,
+  LOG_BOOKS,
+  RECENTLY_LOGGED,
+  EARNED_CARDS,
+  daysAgo,
+  titlesFor,
+  todayMinutes,
+} from './data'
 import './index.css'
 
 /**
@@ -30,6 +41,32 @@ export function App() {
   const [connections, setConnections] = useState({})
   const [linking, setLinking] = useState(null) // partner id mid-handoff
   const [visiting, setVisiting] = useState(null) // partner id whose catalog is open
+  const [flowOpen, setFlowOpen] = useState(false)
+  // What she logs herself while the prototype is open, so a hand-typed session
+  // lands in the same month as the imported ones and the contrast is visible.
+  const [logged, setLogged] = useState([])
+
+  /* A log she typed herself, as a calendar entry. Blue, and with no `source`:
+     the imported rows carry their app's mark and its colour, so the plain blue
+     row *is* the difference between the two halves of this prototype. */
+  function handleLogged(entry) {
+    const dates = entry.dates?.length ? entry.dates : [daysAgo(0)]
+    setLogged((ls) => [
+      ...ls,
+      ...dates.map((date, i) => ({
+        id: `own-${Date.now()}-${i}`,
+        date,
+        kind: 'log',
+        title: entry.book?.untitled ? 'Untitled' : (entry.book?.title ?? 'Reading'),
+        author: entry.book?.author,
+        minutes: entry.minutes,
+        completed: entry.finished,
+        tone: 'blue',
+      })),
+    ])
+    setStreak((s) => ({ ...s, current: Math.max(s.current, 1) }))
+    if (entry.minutes) setDailyGoal((g) => ({ ...g, minutes: g.minutes + entry.minutes }))
+  }
 
   // Linking is the payoff: that app's minutes for today land on the daily goal
   // (and start the streak) the moment the accounts connect.
@@ -60,9 +97,32 @@ export function App() {
         streak={streak}
         dailyGoal={dailyGoal}
         connections={connections}
+        logged={logged}
+        onLog={() => setFlowOpen(true)}
         onLinkPartner={setLinking}
         onDisconnectPartner={handleDisconnect}
         onVisitPartner={setVisiting}
+      />
+
+      {/* The other half of the story: what a linked app logs for her, and what
+          she still logs herself. It's the shared flow, with this prototype's own
+          catalog in it and the parts of the logger this site doesn't run —
+          scanning, Epic, book reviews — left off. */}
+      <LogFlow
+        open={flowOpen}
+        onClose={() => setFlowOpen(false)}
+        onLogged={handleLogged}
+        connections={connections}
+        partners={PARTNERS}
+        books={LOG_BOOKS}
+        recentlyLogged={RECENTLY_LOGGED}
+        reader={READER}
+        dailyGoal={dailyGoal}
+        /* Her own challenge, not the shared fixture's: a success screen that
+           credits a challenge this site has never run is the kind of seam a
+           prototype gets judged on. */
+        earnedCards={EARNED_CARDS}
+        site={{ epic: false, bookReviews: false }}
       />
       {visitingPartner && connections[visiting] && (
         <PartnerCatalog

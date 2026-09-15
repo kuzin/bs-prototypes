@@ -21,6 +21,14 @@
   --preview-bar-h: calc(var(--pvb-tray-h) + 20px); /* + the bar's 10px padding */
 }
 
+/* The same bargain the prototype nav makes: this bar paints above the modal
+   layer, so it publishes the strip it occupies and modals inset themselves by
+   it. Without it a centred modal's own top — and its close badge — sat behind
+   the bar, and the scrim stopped short of it. */
+html:has(.pvb) {
+  --chrome-top: var(--preview-bar-h);
+}
+
 .pvb {
   /* Above the modal layer (199/200), for the same reason the prototype nav is:
      it's the reviewer's chrome, not the screen under review. */
@@ -175,6 +183,13 @@
 }
 
 /* Phone: shed the strapline and tighten the title so the row stays one line. */
+/* The phone's view switcher, hidden until it is the one that shows. `.sel-wrap`
+   sets `display: inline-flex` at one class level too, so this has to be a child
+   selector to win whichever stylesheet loads second. */
+.pvb > .pvb-select {
+  display: none;
+}
+
 @media (max-width: 560px) {
   .pvb-subtitle {
     display: none;
@@ -182,15 +197,27 @@
   .pvb-title {
     font-size: 14px;
   }
-  .pvb-view {
-    padding: 0 10px;
-    font-size: 13px;
-  }
-  /* Wrap rather than scroll — hiding a view off the edge is worse than a
-     slightly taller bar. */
+  /* The strip goes and the dropdown takes the row. */
   .pvb-views {
-    flex-wrap: wrap;
-    overflow-x: visible;
+    display: none;
+  }
+  .pvb > .pvb-select {
+    display: flex;
+    width: 100%;
+  }
+  /* On the bar's own dark ground: a white field here reads as a hole punched
+     in the chrome. */
+  .pvb-select .sel {
+    color: #fff;
+    background: rgb(255 255 255 / 8%);
+    border-color: rgb(255 255 255 / 14%);
+  }
+  .pvb-select .sel option {
+    color: var(--c-text);
+    background: #fff;
+  }
+  .pvb-select .sel-arrow {
+    color: rgb(255 255 255 / 70%);
   }
 }
 

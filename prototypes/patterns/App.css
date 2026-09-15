@@ -1,11 +1,3 @@
-/* The Pattern Library runs the same prototype nav every other prototype does,
-   so it owes the shared chrome the same reserve: a centred modal sizes itself
-   against `--chrome-bottom`, and at 0 a tall one — the reading-level picker —
-   ran its footer under the nav bar. */
-:root {
-  --chrome-bottom: var(--proto-nav-h, 48px);
-}
-
 /* ── Back to top ─────────────────────────────────────────────────────────── */
 .pt-back-to-top {
   position: fixed;
@@ -558,6 +550,26 @@
    scrolls (and the pagination bar stays pinned below the scroll). */
 .pt-tbl-wide {
   min-width: 900px;
+}
+
+/* The frame supplies the space above its demo. A component that carries its own
+   leading margin — a page header's 26px, meant to clear the tab bar it sits
+   under in the real app — was stacking a second gap on top of the frame's
+   padding. Reaching one level in too, since a component's root usually wraps
+   the element holding the margin. */
+.pt-variant-frame > :first-child,
+.pt-variant-frame > :first-child > :first-child {
+  margin-top: 0;
+}
+
+/* A demo that needs to sit on the page's own grey rather than on white — a
+   reader-app section, a collection shelf — stands on this. It was six inline
+   style objects that had drifted into square corners inside a rounded card;
+   give it padding of its own where 20px isn't right. */
+.pt-stage {
+  padding: 20px;
+  background: var(--c-bg-muted);
+  border-radius: 12px;
 }
 
 /* When a frame holds discrete elements (buttons, pills) we want them in a row */

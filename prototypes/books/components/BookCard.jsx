@@ -1,25 +1,16 @@
 import { Icon } from '@components/Icon/Icon'
-import { Cover } from './Cover'
+import { BookCover } from '@components/BookCover/BookCover'
 import { FORMATS } from '../data'
 
-// Cover-forward card used across every Discover shelf.
+// Cover-forward card, everywhere this prototype shelves a book.
 //   'reason' → adds Benny's "why" line  |  'rank' → trending: readers count
 //   'audio'  → square (Audible-style) cover + play affordance + listening time
 //
-// `captioned={false}` drops the title and author. A Discover rail is a wall of
-// jackets you scan — the covers carry the names already, and repeating them
-// under every one turned each row into a block of text. The grids keep theirs,
-// where a card is a search result rather than a shelf.
-export function BookCard({
-  book,
-  onOpen,
-  onWish,
-  wished,
-  variant = 'default',
-  reason,
-  onPlay,
-  captioned = true,
-}) {
+// No caption. A shelf is a wall of jackets you scan, and the jacket carries the
+// name already — setting it again under every cover turned each row into a
+// block of text and left the ratings on a ragged line, because a one-line title
+// and a three-line one end at different heights.
+export function BookCard({ book, onOpen, onWish, wished, variant = 'default', reason, onPlay }) {
   const isAudio = variant === 'audio'
 
   return (
@@ -30,7 +21,7 @@ export function BookCard({
       aria-label={`${book.title} by ${book.author}`}
     >
       <div className="bk-card-coverwrap">
-        <Cover book={book} size="md" square={isAudio} />
+        <BookCover book={book} size="fill" square={isAudio} />
         {isAudio && (
           <span
             className="bk-card-play"
@@ -60,13 +51,6 @@ export function BookCard({
       </div>
 
       <div className="bk-card-body">
-        {captioned && (
-          <>
-            <span className="bk-card-title">{book.title}</span>
-            <span className="bk-card-author">{book.author}</span>
-          </>
-        )}
-
         {variant === 'rank' ? (
           <span className="bk-card-readers">
             <Icon name="users" size={15} />

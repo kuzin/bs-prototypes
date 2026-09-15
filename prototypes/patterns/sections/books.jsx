@@ -1,5 +1,4 @@
 import { useState } from 'react'
-import { Cover } from '../../books/components/Cover'
 import { Stars, RatingInline, StarInput } from '../../books/components/Stars'
 import { BookCard } from '../../books/components/BookCard'
 import { Shelf } from '../../books/components/Shelf'
@@ -20,33 +19,6 @@ function StarInputDemo() {
 }
 
 export const booksSections = [
-  {
-    group: 'books',
-    id: 'bk-cover',
-    name: 'Cover',
-    desc: (
-      <>
-        A book cover. Renders the real Open Library image when it loads, otherwise a designed
-        color-gradient placeholder built from <code>book.color</code> plus the title — so misses
-        still look intentional (magazines and unlisted titles fall back gracefully). Props:{' '}
-        <code>book</code>, <code>size</code> (<code>xs/sm/md/lg</code>).
-      </>
-    ),
-    render: () => (
-      <div className="bk-catalog">
-        <Variant label="real cover / gradient fallback">
-          <div style={{ display: 'flex', gap: 18, padding: 16 }}>
-            <div style={{ width: 120 }}>
-              <Cover book={getBook('wild-robot')} size="md" />
-            </div>
-            <div style={{ width: 120 }}>
-              <Cover book={getBook('natgeo-kids')} size="md" />
-            </div>
-          </div>
-        </Variant>
-      </div>
-    ),
-  },
   {
     group: 'books',
     id: 'bk-stars',

@@ -672,6 +672,11 @@ export function PartnerSwitcher({ partners = [], connections = {}, onManage, onV
 /**
  * `rows`: `{ id, partnerId, title, meta, minutes }` — already resolved by the
  * caller, since only the prototype knows how to name its own titles.
+ *
+ * `meta` is when it was read and whether it was finished — **not the partner's
+ * name.** The mark sits right beside it and carries the name in its tooltip, so
+ * spelling it out again put "Beeverso" on every row of a card headed "Logged
+ * for you" that already only holds a linked app's reading.
  */
 export function AutoLoggedCard({ rows = [], className = '' }) {
   if (rows.length === 0) return null
@@ -696,9 +701,6 @@ export function AutoLoggedCard({ rows = [], className = '' }) {
           </li>
         ))}
       </ul>
-      <p className="cn-auto-foot">
-        No need to log these — they came straight from your linked apps.
-      </p>
     </aside>
   )
 }

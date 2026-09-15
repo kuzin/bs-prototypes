@@ -1,20 +1,14 @@
-import { Button } from '@components/Button/Button'
-import { Tabs } from '@components/Tabs/Tabs'
-import { Icon } from '@components/Icon/Icon'
+import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
+import { ReaderTopBar as SharedTopBar } from '@components/ReaderApp/ReaderApp'
 import { READER } from '../data'
 
 const noop = () => {}
 
-function BeanstackLogo() {
-  return (
-    <span className="gr-logo">
-      <img src="/bs-prototypes/bs.svg" alt="" className="gr-logo-mark" />
-      <span className="gr-logo-word">beanstack</span>
-    </span>
-  )
-}
-
-// The reader's avatar + first name, as the app bar and the log flow both show it.
+/**
+ * The reader's avatar + first name, as the *log flow* shows it — the app's
+ * `.logged-books--logging-for-reader`, not the top bar's reader dropdown. The
+ * bar's own pill is `ReaderPill` in `@components/ReaderApp`.
+ */
 export function ReaderPill({ size = 'md' }) {
   return (
     <span className={`gr-reader-pill gr-reader-pill--${size}`}>
@@ -26,56 +20,26 @@ export function ReaderPill({ size = 'md' }) {
   )
 }
 
-const TABS = [
-  { id: 'challenges', label: 'Challenges' },
-  { id: 'friends', label: 'Friends' },
-  { id: 'leaderboards', label: 'Leaderboards' },
-  { id: 'reviews', label: 'Reviews' },
-  { id: 'badges', label: 'All Badges' },
-  { id: 'log', label: 'Reading Log' },
-]
-
 /**
- * Beanstack's reader app bar: the three logging actions on the left, the reader
- * on the right, site tabs underneath. Only "Log Reading" does anything here —
- * everything else is chrome, so the board stays the subject of the mock.
+ * Beanstack's reader app bar — the shared one. This prototype carried its own
+ * copy (a shorter bar, a smaller pill, its own near-miss of the accent), which
+ * is the drift the shared chrome exists to stop. Only "Log Reading" does
+ * anything here; everything else is chrome, so the board stays the subject of
+ * the mock, which is what `accountMenu={false}` and the empty `otherReaders`
+ * are for.
  */
 export function ReaderTopBar({ onLogReading }) {
   return (
-    <header className="gr-topbar">
-      <div className="gr-topbar-inner">
-        <BeanstackLogo />
-        <div className="gr-topbar-actions">
-          <Button variant="primary" size="sm" accent="#1A6DD5" onClick={onLogReading}>
-            Log Reading
-          </Button>
-          <Button variant="secondary" size="sm">
-            Complete Activity
-          </Button>
-          <Button variant="secondary" size="sm">
-            Write Review
-          </Button>
-        </div>
-        <div className="gr-topbar-user">
-          <ReaderPill />
-          <button className="gr-icon-btn" aria-label="Settings">
-            <Icon name="settings" size={19} />
-          </button>
-        </div>
-      </div>
-
-      <div className="gr-tabsbar">
-        <Tabs
-          variant="underline"
-          size="md"
-          active="challenges"
-          accent="#1A6DD5"
-          onChange={noop}
-          items={TABS}
-          ariaLabel="Reader sections"
-        />
-      </div>
-    </header>
+    <SharedTopBar
+      reader={READER}
+      active="challenges"
+      onTabChange={noop}
+      onLog={onLogReading}
+      onReview={noop}
+      onActivity={noop}
+      onAccount={noop}
+      accountMenu={false}
+    />
   )
 }
 

@@ -1639,7 +1639,7 @@ body,
 /* ─── Path picker modal (from the challenge card art) ─────────────────── */
 
 .modal--center:has(.pyp-pickmodal) {
-  width: min(640px, calc(100vw - 32px));
+  width: min(640px, calc(100vw - var(--modal-gutter) * 2));
 }
 .pyp-pickmodal {
   position: relative;

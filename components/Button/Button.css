@@ -66,23 +66,23 @@
 /* `.button--medium` — the default in the admin header: same 44px height and
    `padding: 0 20px` as the base `.button`, radius 10px.
 
-   16px rather than the app's 15: a `md` button and a `md` select are both 44px
-   on a 10px radius and constantly sit next to each other (a settings row, a
-   filter bar), and one point of difference between them read as a mistake
-   rather than a distinction. The app is inconsistent here — `select` is 16px
-   and `.button--medium` 15 — so matching the control is the better of the
-   two. */
+   15px, which is `.button--medium`'s own size. This carried 16 for a while to
+   match the 44px select it often sits beside — the app is inconsistent there,
+   `select` is 16 and the button 15 — but a 16px label on a 44px button reads
+   heavy next to the 15px type the rest of a settings row and the reader chrome
+   are set in, and the app's own number is the better tie-breaker. */
 .btn--md {
   height: 44px;
-  font-size: 16px;
+  font-size: 15px;
   padding: 0 20px;
   border-radius: 10px;
 }
 
-/* `.button--large` */
+/* `.button--large` — 16px, a rung over `md`, where 17 was off the ladder
+   entirely (14 · 15 · 16 · 18 · …). */
 .btn--lg {
   height: 56px;
-  font-size: 17px;
+  font-size: 16px;
   padding: 0 24px;
   border-radius: 16px;
 }

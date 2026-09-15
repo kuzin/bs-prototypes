@@ -1,4 +1,6 @@
 import { Icon } from '@components/Icon/Icon'
+import { PARTNER_BRANDS, PartnerMark as BrandMark } from '@components/PartnerBrand/PartnerBrand'
+import '@components/PartnerBrand/PartnerBrand.css'
 import { PARTNERS } from '../data'
 
 // ── Brand lockups ────────────────────────────────────────────────────────────
@@ -49,17 +51,15 @@ const PARTNER_GLYPH = {
   library: 'building-community',
 }
 
-// A square brand mark — Comics Plus uses its real asset; others get a colored
-// glyph badge. Used at the corner of covers, in "where to read", and as the
-// leading badge on Discover shelf headers.
+// A square brand mark. The shared registry carries the real art for the
+// partners that have it — Comics Plus's bubble, Scholastic's S, Sora's own mark
+// — so those come from there rather than from a glyph standing in for them; the
+// two it doesn't know (Libby, the school library) keep the coloured badge.
+// Used at the corner of covers, in "where to read", and in the settings list.
 export function PartnerMark({ id, size = 22 }) {
+  if (PARTNER_BRANDS[id]) return <BrandMark id={id} size={size} />
   const p = PARTNERS[id]
   if (!p) return null
-  if (id === 'comicsplus') {
-    return (
-      <img src={p.mark} alt={p.name} className="bk-pmark" style={{ width: size, height: size }} />
-    )
-  }
   return (
     <span
       className="bk-pmark bk-pmark--glyph"

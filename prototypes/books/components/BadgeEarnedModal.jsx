@@ -1,6 +1,5 @@
-import { Modal } from '@components/Modal/Modal'
-import { Button } from '@components/Button/Button'
-import { Icon } from '@components/Icon/Icon'
+import { BadgeModal } from '@components/BadgeModal/BadgeModal'
+import { AchievementArt } from './AchievementArt'
 import { getSessions } from '../data'
 
 // How many minutes a book's badge is worth: the reader's logged minutes for it,
@@ -10,36 +9,35 @@ const badgeMinutes = (book) => {
   return logged || Math.max(10, Math.round(book.pageCount / 5) * 5)
 }
 
-// Celebration shown the moment a book becomes "finished" — earns its badge.
+// A magazine's badge gets the magazine medallion; everything else gets books.
+const artFor = (book) => (book.kind === 'magazine' ? 'magazine' : 'books')
+
+/**
+ * The badge a finished book earns, the moment it is finished.
+ *
+ * It is `earnables/_earnable_modal` — the shared `BadgeModal`, the one behind
+ * every badge the app draws — rather than a celebration of its own: a reader
+ * meets this badge again on their Collections shelf, and the two should be the
+ * same object. The medallion, the closed ring with its check and the burst are
+ * all the modal's own; what this supplies is the book.
+ */
 export function BadgeEarnedModal({ open, onClose, book }) {
   if (!book) return null
   const minutes = badgeMinutes(book)
 
   return (
-    <Modal open={open} onClose={onClose} variant="center" ariaLabel="Badge earned">
-      <div className="bk-badge-modal" style={{ '--c': '#FFBC42' }}>
-        <button className="bk-settings-close" onClick={onClose} aria-label="Close">
-          <Icon name="x" size={18} />
-        </button>
-
-        <div className="bk-badge-burst" aria-hidden="true">
-          <Icon name="confetti" size={26} className="bk-badge-confetti bk-badge-confetti--l" />
-          <Icon name="confetti" size={20} className="bk-badge-confetti bk-badge-confetti--r" />
-          <span className="bk-badge-medal">
-            <Icon name="trophy" size={42} color="#fff" />
-          </span>
-        </div>
-
-        <span className="bk-badge-kicker">Badge earned!</span>
-        <h2 className="bk-badge-title">{book.title}</h2>
-        <p className="bk-badge-sub">
-          Worth <strong>{minutes} minutes</strong> of reading
-        </p>
-
-        <Button variant="primary" onClick={onClose} className="bk-badge-cta">
-          Keep reading
-        </Button>
-      </div>
-    </Modal>
+    <BadgeModal
+      /* An achievement leads with what you did and puts the reason under it,
+         which is what finishing a book is. */
+      badge={{
+        name: 'Badge earned!',
+        blurb: book.title,
+        about: `Worth ${minutes} minutes of reading.`,
+      }}
+      art={<AchievementArt art={artFor(book)} />}
+      confetti
+      open={open}
+      onClose={onClose}
+    />
   )
 }

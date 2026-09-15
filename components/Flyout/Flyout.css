@@ -52,6 +52,107 @@
   margin-bottom: var(--fl-offset, 6px);
 }
 
+/* Beside the trigger. `-start` hangs from its top edge, `-end` from its bottom
+   — the flip the measuring effect makes when the panel would run off. */
+.flyout-pop--right-start,
+.flyout-pop--right-end {
+  left: 100%;
+  margin-left: var(--fl-offset, 6px);
+}
+.flyout-pop--left-start,
+.flyout-pop--left-end {
+  right: 100%;
+  margin-right: var(--fl-offset, 6px);
+}
+.flyout-pop--right-start,
+.flyout-pop--left-start {
+  top: 0;
+}
+.flyout-pop--right-end,
+.flyout-pop--left-end {
+  bottom: 0;
+}
+
+/* ─── The arrow ───────────────────────────────────────────────────────────
+   A rotated square tucked under the panel's edge, sharing its ground. Only the
+   two sides that stick out carry the hairline — ringing all four drew the
+   square's own outline across the panel and you could see it was a diamond.
+   The half that overlaps sits on top of the panel's ring in plain white, which
+   is what joins the point to the edge. It follows whichever side the panel
+   resolved to, 20px in from the corner it's anchored by, so it lands over the
+   trigger rather than the middle of a wide menu. */
+.flyout-pop--arrow {
+  /* Room for the point, on top of the offset the panel already keeps. */
+  --fl-arrow: 7px;
+}
+.flyout-arrow {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  transform: rotate(45deg);
+}
+.flyout-pop--arrow.flyout-pop--bottom-start,
+.flyout-pop--arrow.flyout-pop--bottom-end {
+  margin-top: calc(var(--fl-offset, 6px) + var(--fl-arrow));
+}
+.flyout-pop--arrow.flyout-pop--top-start,
+.flyout-pop--arrow.flyout-pop--top-end {
+  margin-bottom: calc(var(--fl-offset, 6px) + var(--fl-arrow));
+}
+.flyout-pop--arrow.flyout-pop--right-start,
+.flyout-pop--arrow.flyout-pop--right-end {
+  margin-left: calc(var(--fl-offset, 6px) + var(--fl-arrow));
+}
+.flyout-pop--arrow.flyout-pop--left-start,
+.flyout-pop--arrow.flyout-pop--left-end {
+  margin-right: calc(var(--fl-offset, 6px) + var(--fl-arrow));
+}
+/* Rotated 45°, a square's top and left edges are the two that face up, its
+   bottom and left the two that face left, and so on round. */
+.flyout-pop--bottom-start .flyout-arrow,
+.flyout-pop--bottom-end .flyout-arrow {
+  top: -6px;
+  border-top: 1px solid var(--c-gray-200);
+  border-left: 1px solid var(--c-gray-200);
+}
+.flyout-pop--top-start .flyout-arrow,
+.flyout-pop--top-end .flyout-arrow {
+  bottom: -6px;
+  border-right: 1px solid var(--c-gray-200);
+  border-bottom: 1px solid var(--c-gray-200);
+}
+.flyout-pop--right-start .flyout-arrow,
+.flyout-pop--right-end .flyout-arrow {
+  left: -6px;
+  border-bottom: 1px solid var(--c-gray-200);
+  border-left: 1px solid var(--c-gray-200);
+}
+.flyout-pop--left-start .flyout-arrow,
+.flyout-pop--left-end .flyout-arrow {
+  right: -6px;
+  border-top: 1px solid var(--c-gray-200);
+  border-right: 1px solid var(--c-gray-200);
+}
+.flyout-pop--bottom-start .flyout-arrow,
+.flyout-pop--top-start .flyout-arrow {
+  left: 20px;
+}
+.flyout-pop--bottom-end .flyout-arrow,
+.flyout-pop--top-end .flyout-arrow {
+  right: 20px;
+}
+/* Beside the trigger the arrow runs down the panel's edge instead of across
+   its top, so it's the vertical offset that puts it on the trigger. */
+.flyout-pop--right-start .flyout-arrow,
+.flyout-pop--left-start .flyout-arrow {
+  top: 20px;
+}
+.flyout-pop--right-end .flyout-arrow,
+.flyout-pop--left-end .flyout-arrow {
+  bottom: 20px;
+}
+
 /* Convenience menu styling — opt-in via .flyout-menu inside the pop */
 .flyout-menu {
   display: flex;

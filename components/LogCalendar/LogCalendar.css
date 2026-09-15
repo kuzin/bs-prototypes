@@ -12,7 +12,7 @@
 .modal.lcal-modal {
   width: fit-content;
   min-width: 300px;
-  max-width: min(360px, calc(100vw - 32px));
+  max-width: min(360px, calc(100vw - var(--modal-gutter) * 2));
 }
 
 .lcal {

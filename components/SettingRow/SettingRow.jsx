@@ -18,6 +18,10 @@ import { Toggle } from '@components/Toggle/Toggle'
 export function SettingRow({
   label,
   sub,
+  /* Something to lead the row with — a partner's mark, most often. A row of
+     switches doesn't want a glyph each, but a list of *apps* is a list of
+     brands, and their marks are how a reader tells them apart. */
+  icon,
   control,
   state,
   checked,
@@ -33,6 +37,11 @@ export function SettingRow({
   )
   return (
     <div className={`setting-row${disabled ? ' is-disabled' : ''}`}>
+      {icon && (
+        <span className="setting-row-icon" aria-hidden="true">
+          {icon}
+        </span>
+      )}
       <div className="setting-row-text">
         <span className="setting-row-label">{label}</span>
         {sub && <span className="setting-row-sub">{sub}</span>}

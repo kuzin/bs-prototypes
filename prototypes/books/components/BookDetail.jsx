@@ -1,13 +1,29 @@
 import { useState, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { BackBar } from '@components/BackBar/BackBar'
+import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { Button } from '@components/Button/Button'
 import { SectionCard } from '@components/SectionCard/SectionCard'
 import { StatCard } from '@components/Cards/Cards'
 import '@components/SectionCard/SectionCard.css'
 import '@components/Cards/Cards.css'
 import { Tabs } from '@components/Tabs/Tabs'
-import { Cover } from './Cover'
+import { ChatBubble } from '@components/ChatBubble/ChatBubble'
+import { Table } from '@components/Table/Table'
+import { ProgressBar } from '@components/ProgressBar/ProgressBar'
+import { Modal, ModalClose } from '@components/Modal/Modal'
+import { RowAction, RowActions } from '@components/RowAction/RowAction'
+import '@components/Modal/Modal.css'
+import '@components/RowAction/RowAction.css'
+import '@components/ProgressBar/ProgressBar.css'
+import { EmptyState } from '@components/Primitives/Primitives'
+import '@components/Primitives/Primitives.css'
+import '@components/Table/Table.css'
+import { BookCover } from '@components/BookCover/BookCover'
+/* The page's frame is web-app's `books#show` — one card, the cover and the
+   rail in a 280px column beside the title, the buttons and the tabs. A book
+   opened here and a book opened there is the same page; only what goes on the
+   rail and in the panel differs. */
+import '../../web-app/components/BookPage.css'
 import { RatingInline } from './Stars'
 import { BookCard } from './BookCard'
 import { Reviews } from './Reviews'
@@ -50,17 +66,21 @@ function readProgress(book, sessions) {
   }
 }
 
+// What this title comes in. A rail card rather than a line under the credits:
+// it is a fact about the book, like its stats and where to read it, not part of
+// what the book is called.
 function FormatChips({ formats }) {
   return (
-    <span className="bk-formatchips">
-      <span className="bk-avail-label">Available as</span>
-      {formats.map((f) => (
-        <span key={f} className="bk-formatchip">
-          <Icon name={FORMATS[f].icon} size={14} />
-          {FORMATS[f].label}
-        </span>
-      ))}
-    </span>
+    <SectionCard header="divider" title="Available as">
+      <span className="bk-formatchips">
+        {formats.map((f) => (
+          <span key={f} className="bk-formatchip">
+            <Icon name={FORMATS[f].icon} size={14} />
+            {FORMATS[f].label}
+          </span>
+        ))}
+      </span>
+    </SectionCard>
   )
 }
 
@@ -88,103 +108,210 @@ function StatStrip({ book, sessions, status }) {
   )
 }
 
-function SessionRow({ s }) {
-  return (
-    <li className="bk-readlog-row">
-      <span className="bk-readlog-fmt">
-        <Icon name={FORMATS[s.format]?.icon || 'book-2'} size={15} />
-      </span>
-      <div className="bk-readlog-main">
-        <span className="bk-readlog-date">{s.date}</span>
-        <span className="bk-readlog-meta">
-          {fmtMins(s.minutes)}
-          {s.fromPage && s.toPage ? ` · p. ${s.fromPage}–${s.toPage}` : ''} ·{' '}
-          {FORMATS[s.format].label}
-        </span>
-      </div>
-    </li>
-  )
-}
-
-// Full reading log — its own tab.
-function ReadingLogTab({ book, sessions, status }) {
+/**
+ * This title's reading log — web-app's `BookPage` Reading Log tab: two of the
+ * reading log's own stat tiles over the design system's table.
+ *
+ * It was a tinted panel with a list of rows inside it, which is a card where
+ * the app has a table — a session is a date, an amount, what of the book it
+ * covered and what it was read on, and none of those reads as a sentence.
+ */
+function ReadingLogTab({ book, sessions, status, onEditSession, onRemoveSession }) {
+  const [editing, setEditing] = useState(null) // session index being corrected
+  const [draft, setDraft] = useState('')
+  const [removing, setRemoving] = useState(null) // session awaiting confirmation
   const total = sessions.reduce((a, s) => a + s.minutes, 0)
   const prog = status === 'reading' ? readProgress(book, sessions) : null
+
+  if (sessions.length === 0) {
+    return (
+      <EmptyState
+        variant="dashed"
+        icon={<Icon name="reading-log" size={26} />}
+        title="Nothing logged yet"
+        description="You haven’t logged any reading for this title yet."
+      />
+    )
+  }
+
   return (
-    <div className="bk-readlog">
-      <div className="bk-readlog-head">
-        <h3 className="bk-section-h">
-          <Icon name="reading-log" size={16} /> Your reading
-        </h3>
-        {sessions.length > 0 && (
-          <span className="bk-readlog-sum">
-            {sessions.length} session{sessions.length > 1 ? 's' : ''} · {fmtMins(total)} total
-          </span>
-        )}
+    <div className="bk-readlogtab">
+      <h3 className="bk-section-h">Your reading</h3>
+
+      <div className="bkp-readnums">
+        <StatCard
+          value={sessions.length}
+          label={sessions.length === 1 ? 'Session' : 'Sessions'}
+          color="#B45309"
+          icon={<Icon name="calendar" size={20} />}
+        />
+        <StatCard
+          value={fmtMins(total)}
+          label="Minutes"
+          color="#0B6B78"
+          icon={<Icon name="clock" size={20} />}
+        />
       </div>
 
+      {/* How far through the book those sessions have got — the one thing a
+          list of dates can't say, on the system's own bar and in a card of its
+          own rather than a hairline floating between two blocks. */}
       {prog && (
-        <div className="bk-readlog-progress">
-          <div className="bk-readlog-pbar">
-            <span style={{ width: `${prog.pct}%` }} />
-          </div>
-          <span className="bk-readlog-ptext">
-            p. {prog.toPage} of {book.pageCount} · {prog.pct}%
-          </span>
+        <SectionCard className="bk-progresscard">
+          <ProgressBar
+            value={prog.toPage}
+            max={book.pageCount}
+            color="#0D9488"
+            label="How far you’ve got"
+            subLabel={`Page ${prog.toPage} of ${book.pageCount}`}
+            valueLabel={`${prog.pct}%`}
+          />
+        </SectionCard>
+      )}
+
+      <Table
+        className="bkp-sessions"
+        bordered
+        columns={[
+          { key: 'date', label: 'Date', render: (_v, s) => <strong>{s.date}</strong> },
+          {
+            key: 'minutes',
+            label: 'Logged',
+            width: 140,
+            /* Correcting a number happens where the number is — you are
+               changing one figure, not filling in a form. */
+            render: (_v, s) =>
+              editing === s.id ? (
+                <span className="bkp-session-edit">
+                  <input
+                    className="bkp-session-input"
+                    type="number"
+                    min="1"
+                    value={draft}
+                    onChange={(e) => setDraft(e.target.value)}
+                    aria-label="minutes read"
+                    autoFocus
+                  />
+                  <span className="bkp-session-unit">min</span>
+                </span>
+              ) : (
+                fmtMins(s.minutes)
+              ),
+          },
+          {
+            key: 'pages',
+            label: 'Pages',
+            width: 130,
+            render: (_v, s) => (s.fromPage && s.toPage ? `p. ${s.fromPage}–${s.toPage}` : '—'),
+          },
+          {
+            key: 'format',
+            label: 'Format',
+            width: 130,
+            render: (_v, s) => (
+              <span className="bk-session-fmt">
+                <Icon name={FORMATS[s.format]?.icon || 'book-2'} size={15} />
+                {FORMATS[s.format]?.label}
+              </span>
+            ),
+          },
+          {
+            key: 'id',
+            label: '',
+            align: 'right',
+            width: 100,
+            render: (_v, s) => (
+              <RowActions>
+                {editing === s.id ? (
+                  <>
+                    <RowAction
+                      icon="check"
+                      label="Save"
+                      onClick={() => {
+                        const n = Number(draft)
+                        if (n > 0) onEditSession?.(s.id, n)
+                        setEditing(null)
+                      }}
+                    />
+                    <RowAction icon="x" label="Cancel" onClick={() => setEditing(null)} />
+                  </>
+                ) : (
+                  <>
+                    <RowAction
+                      icon="pencil"
+                      label="Edit this session"
+                      onClick={() => {
+                        setDraft(String(s.minutes ?? ''))
+                        setEditing(s.id)
+                      }}
+                    />
+                    <RowAction
+                      icon="trash"
+                      label="Remove this session"
+                      onClick={() => setRemoving(s)}
+                    />
+                  </>
+                )}
+              </RowActions>
+            ),
+          },
+        ]}
+        rows={sessions.map((s, i) => ({ id: i, ...s }))}
+        getRowKey={(s) => s.id}
+        highlightRow={(s) => editing === s.id}
+      />
+
+      {/* Taking a session back is the one thing here you can't undo, so it asks
+          — and "Don't Delete" is the way out, the way the app words it. */}
+      <Modal
+        open={Boolean(removing)}
+        onClose={() => setRemoving(null)}
+        variant="center"
+        closeBadge
+        ariaLabel="Delete this session"
+      >
+        <ModalClose onClick={() => setRemoving(null)} />
+        <div className="modal-header modal-header--flush">
+          <h2 className="modal-title">Are you sure you want to delete this reading session?</h2>
         </div>
-      )}
-
-      {sessions.length > 0 ? (
-        <ul className="bk-readlog-list">
-          {sessions.map((s, i) => (
-            <SessionRow key={i} s={s} />
-          ))}
-        </ul>
-      ) : (
-        <p className="bk-readlog-empty">No sessions logged yet — track your minutes as you read.</p>
-      )}
+        {removing && (
+          <div className="modal-body">
+            <p>
+              {removing.date} — {fmtMins(removing.minutes)}.
+            </p>
+          </div>
+        )}
+        <div className="modal-footer">
+          <Button variant="ghost" onClick={() => setRemoving(null)}>
+            Don’t Delete
+          </Button>
+          <Button
+            onClick={() => {
+              onRemoveSession?.(removing.id)
+              setRemoving(null)
+            }}
+          >
+            Delete
+          </Button>
+        </div>
+      </Modal>
     </div>
   )
 }
 
-// Compact preview shown in Overview — latest session + a link to the full tab.
-function ReadingPreview({ sessions, onView }) {
-  const total = sessions.reduce((a, s) => a + s.minutes, 0)
-  return (
-    <div className="bk-readlog bk-readlog--preview">
-      <div className="bk-readlog-head">
-        <h3 className="bk-section-h">
-          <Icon name="reading-log" size={16} /> Your reading
-        </h3>
-        <span className="bk-readlog-sum">
-          {sessions.length} session{sessions.length > 1 ? 's' : ''} · {fmtMins(total)} total
-        </span>
-      </div>
-      <ul className="bk-readlog-list">
-        <SessionRow s={sessions[0]} />
-      </ul>
-      <button className="bk-readlog-viewlog" onClick={onView}>
-        View reading log <Icon name="arrow-right" size={14} />
-      </button>
-    </div>
-  )
-}
-
-function OverviewTab({ book, sessions, onViewReading }) {
+function OverviewTab({ book }) {
   const { synopsis, about } = splitDescription(book.description)
   return (
     <div className="bk-overview">
-      {sessions.length > 0 && <ReadingPreview sessions={sessions} onView={onViewReading} />}
-
       <div className="bk-section">
         <h3 className="bk-section-h bk-section-h--benny">
           Benny’s take <Icon name="sparkles" size={15} />
         </h3>
+        {/* Benny says it the way Benny says everything — the Book Talk bubble,
+            which is the one chat module in the system. It was a bubble drawn
+            here, with a different face and a different tail. */}
         <div className="bk-benny-take">
-          <img src="/bs-prototypes/benny-happy.svg" alt="" className="bk-benny-take-avatar" />
-          <div className="bk-benny-take-bubble">
-            <p>{book.bennyTake}</p>
-          </div>
+          <ChatBubble msg={{ role: 'benny', text: book.bennyTake }} />
         </div>
       </div>
 
@@ -328,6 +455,10 @@ function WhereToRead({ availability, onRead }) {
 export function BookDetail({
   book,
   sessions = [],
+  /* Correcting a number and taking a session back — the reader's own log, so
+     both are theirs to change. Left off, the table is read-only. */
+  onEditSession,
+  onRemoveSession,
   shelf,
   onWish,
   onFinish,
@@ -335,7 +466,7 @@ export function BookDetail({
   onOpen,
   onOpenProfile,
   onBack,
-  backLabel = 'Discover',
+  backLabel = 'Back to Discover',
   userReviews,
   onAddReview,
   settings = { sora: true, scholastic: true, audiobooks: true, libby: false },
@@ -371,71 +502,83 @@ export function BookDetail({
   }, [book.id])
 
   return (
-    <div className="bk-detail">
-      <BackBar label={backLabel} onClick={onBack} />
+    <div className="bk-detail bp">
+      <ReaderBack onClick={onBack}>{backLabel}</ReaderBack>
 
-      {/* Hero — book identity */}
-      <header className="bk-dhero" style={{ '--accent': book.color }}>
-        <div className="bk-dhero-inner">
-          <div className="bk-dhero-coverwrap">
-            <Cover book={book} size="lg" />
-          </div>
-
-          <div className="bk-dhero-content">
-            {book.issue && <span className="bk-dhero-series">{book.issue}</span>}
-            <h1 className="bk-dhero-title">{book.title}</h1>
-            <p className="bk-dhero-author">by {book.author}</p>
-
-            <button className="bk-dhero-rating" onClick={() => setTab('reviews')}>
-              <RatingInline value={book.rating} count={book.ratingCount} size={18} />
-              <span className="bk-dhero-rating-link">See reviews</span>
-            </button>
-
-            <FormatChips formats={formats} />
-
-            {(readNowVia || hasAudio) && (
-              <div className="bk-hero-ctas">
-                {readNowVia && (
-                  <button className="bk-readnow" onClick={() => setReaderVia(readNowVia)}>
-                    <Icon name="device-tablet" size={15} /> Read now
-                  </button>
-                )}
-                {hasAudio && (
-                  <button className="bk-readnow bk-readnow--audio" onClick={() => onPlay(book.id)}>
-                    <Icon name="headphones" size={15} /> Listen now
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
+      <article className="bkp-card">
+        {/* Its own cell rather than the rail's first child: stacked, the cover
+            belongs at the top with the title, not after the rail. */}
+        <div className="bkp-cover">
+          <BookCover book={book} size="fill" />
         </div>
-      </header>
 
-      {/* Body — main column + rail */}
-      <div className="bk-dbody">
-        <div className="bk-dmain">
-          <Tabs
-            active={tab}
-            onChange={setTab}
-            variant="underline"
-            accent={book.color}
-            items={[
-              { id: 'overview', label: 'Overview' },
-              { id: 'reading', label: 'Reading Log' },
-              { id: 'reviews', label: 'Reviews', count: reviewCount },
-              { id: 'details', label: 'Details' },
-              { id: 'similar', label: 'More Like This' },
-            ]}
-          />
-          <div className="bk-tabpanel">
-            {tab === 'overview' && (
-              <OverviewTab
+        <div className="bkp-main">
+          <header className="bkp-head">
+            {book.issue && <span className="bk-dhero-series">{book.issue}</span>}
+            <h1 className="bkp-title">{book.title}</h1>
+            <p className="bkp-credits">
+              <span className="bkp-person">{book.author}</span>
+              <span className="bkp-role">(Author)</span>
+            </p>
+
+            <button
+              className="bk-dhero-rating"
+              onClick={() => setTab('reviews')}
+              aria-label="See reviews"
+            >
+              <RatingInline value={book.rating} count={book.ratingCount} size={18} />
+            </button>
+          </header>
+
+          {/* The app's own button row, in the app's own place — under the
+              credits rather than split between a hero and a rail card. */}
+          <div className="bkp-buttons">
+            {readNowVia && <Button onClick={() => setReaderVia(readNowVia)}>Read now</Button>}
+            {hasAudio && (
+              <Button
+                variant={readNowVia ? 'secondary' : 'primary'}
+                onClick={() => onPlay(book.id)}
+              >
+                Listen now
+              </Button>
+            )}
+            <Button
+              variant={wished || readNowVia || hasAudio ? 'secondary' : 'primary'}
+              onClick={() => onWish(book.id)}
+            >
+              {wished ? 'On your shelf' : 'Add to shelf'}
+            </Button>
+            <Button variant="secondary">Log reading</Button>
+          </div>
+
+          <div className="bkp-tabs">
+            <Tabs
+              active={tab}
+              onChange={setTab}
+              variant="pill"
+              size="md"
+              ariaLabel="About this book"
+              items={[
+                { id: 'overview', label: 'Overview' },
+                { id: 'reading', label: 'Reading Log' },
+                { id: 'reviews', label: 'Reviews', count: reviewCount },
+                { id: 'details', label: 'Details' },
+                { id: 'similar', label: 'More Like This' },
+              ]}
+            />
+          </div>
+
+          <div className="bkp-panel bk-tabpanel">
+            {tab === 'overview' && <OverviewTab book={book} />}
+            {tab === 'reading' && (
+              <ReadingLogTab
                 book={book}
                 sessions={sessions}
-                onViewReading={() => setTab('reading')}
+                status={status}
+                onEditSession={onEditSession}
+                onRemoveSession={onRemoveSession}
               />
             )}
-            {tab === 'reading' && <ReadingLogTab book={book} sessions={sessions} status={status} />}
             {tab === 'reviews' && (
               <Reviews
                 book={book}
@@ -446,7 +589,7 @@ export function BookDetail({
             {tab === 'details' && <DetailsTab book={book} />}
             {tab === 'similar' && (
               <div className="bk-similar">
-                <h3 className="bk-section-h">More Like This</h3>
+                <h3 className="bk-section-h">Readers also liked</h3>
                 <div className="bk-similar-grid">
                   {similar.map((b) => (
                     <BookCard
@@ -463,24 +606,13 @@ export function BookDetail({
           </div>
         </div>
 
-        <aside className="bk-drail">
-          <SectionCard className="bk-rail-actions">
-            <Button
-              variant={wished ? 'secondary' : 'primary'}
-              size="md"
-              onClick={() => onWish(book.id)}
-            >
-              {wished ? 'On your shelf' : 'Add to shelf'}
-            </Button>
-            <Button variant="secondary" size="md">
-              Log reading
-            </Button>
-          </SectionCard>
+        <aside className="bkp-aside">
+          <FormatChips formats={formats} />
           <StatStrip book={book} sessions={sessions} status={status} />
           <FriendsWhoRead book={book} onOpenProfile={onOpenProfile} />
           <WhereToRead availability={availability} onRead={setReaderVia} />
         </aside>
-      </div>
+      </article>
 
       {readerVia && (
         <ReadNow

@@ -68,8 +68,26 @@ button {
   width: 100%;
   max-width: var(--bw-page-w);
   margin: 0 auto;
-  padding: 36px 24px 40px;
+  /* The frame every other AppShell page in the repo uses (Roster Sync Settings
+     is the sibling): 40 over, 32 each side, 32 under. At 36/24 the cards sat
+     nearly on the shell's edges. */
+  padding: 40px 32px 32px;
 }
+/* Inside the creator's own scrolling form column, which already supplies the
+   frame — so the page drops its own and just caps the measure. */
+.bw-page--instep {
+  max-width: 760px;
+  padding: 0;
+}
+/* The creator's own root is `position: fixed` and owns the whole window — in
+   its prototype it is the whole window. Here it is one view under the preview
+   bar, so it goes back into the flow and takes what's left of the column. */
+.bw-ccroot.cc-root {
+  position: static;
+  flex: 1;
+  min-height: 0;
+}
+
 .bw-page-head {
   display: flex;
   align-items: center;
@@ -77,25 +95,6 @@ button {
   gap: 16px;
   flex-wrap: wrap;
   margin-bottom: 20px;
-}
-/* Demo affordance in the page header — deliberately quiet so it doesn't read as
-   a real setting. */
-.bw-state-swap {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  border: 1px dashed var(--c-gray-350, #d0d0d0);
-  background: #fff;
-  color: var(--c-gray-600);
-  font-size: 12.5px;
-  font-weight: 700;
-  padding: 7px 13px;
-  border-radius: 999px;
-  transition: all 0.14s;
-}
-.bw-state-swap:hover {
-  border-color: #0e7490;
-  color: #0e7490;
 }
 .bw-h1 {
   font-size: 26px;
@@ -113,37 +112,142 @@ button {
   color: var(--c-gray-600);
 }
 
-.bw-panel {
+/* One rhythm for the whole page, taken from the real settings form: its
+   `form` is a 20px-gap column of chunks and each `.form-chunk` is a 20px-gap
+   column of rows. So everything inside a panel — the title, a list, a nested
+   block, the help note — is 20px from its neighbour, and so is the next panel.
+   This used to be five different numbers (6 under a title, 14 over a banner,
+   16 between panels, 6/18 around a nested block). */
+/* `.form-chunk-header` over `.form-chunk` — a tinted band with the section's
+   name, then a white body that is a 20px column. That pairing is the shared
+   card's `header="bar"`; what's left here is the app's own padding and the
+   column the body runs in. */
+.bw-panel.section-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+/* The body is a 20px column, so the gap already spaces the band from the first
+   row — the band's own 14px bottom margin stacked on top of it. Matched to the
+   card's own rule or it loses on specificity and both apply. */
+.bw-panel.section-card--bar:not(.section-card--flush) > .section-card-title:first-child {
+  margin-bottom: 0;
+}
+/* A row's own padding is what spaces it from the row *next* to it; at the ends
+   of a list it stacks on top of the panel's and drops the first label a rung
+   below everything else. Same give-back `.section-card` makes. */
+.bw-panel > .setting-list > .setting-row:first-child {
+  padding-top: 0;
+}
+.bw-panel > .setting-list > .setting-row:last-child {
+  padding-bottom: 0;
+}
+
+/* `.book-talk-settings__toggle-row p` — a trigger's explanation is body copy on
+   this page, not the caption a dozen stacked switches want. Scoped here rather
+   than raised on the shared row, which a settings list of twenty rows tuned
+   down on purpose. */
+.bw-panel .setting-row {
+  padding: 14px 0;
+}
+.bw-panel .setting-row-text {
+  gap: 4px;
+}
+.bw-panel .setting-row-sub {
+  font-size: 14.5px;
+  line-height: 1.5;
+}
+
+/* The lowest-grade picker under the master switch. */
+.bw-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.bw-field-label {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+/* `.actions-wrap` — Save and Cancel, at the foot of the form. */
+.bw-actions {
+  display: flex;
+  gap: 10px;
+  /* The panels above and below carry 20px; the foot owes the same or it sits
+     wedged between the usage card and the limits form. */
+  margin-bottom: 20px;
+}
+/* `.form-chunk-nav.form-last` — a chunk that carries its own submit ends with
+   it rather than joining the page's own foot. */
+.bw-actions--chunk {
+  justify-content: flex-end;
+  margin-bottom: 0;
+}
+
+/* `book-talk-settings__usage` — what this site has spent, under the form. The
+   blurb belongs to the heading, so it cancels the panel's own gap. */
+/* `book-talk-settings__usage` — a white card of its own, 24px of room, no
+   header band: what the site has spent isn't a chunk of the form above it. */
+.bw-usage {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 24px;
+  margin-bottom: 20px;
   background: #fff;
-  border: 1px solid var(--c-border);
+  border: 1px solid var(--c-gray-200);
+  border-radius: 12px;
+}
+.bw-usage-title {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.bw-panel-sub {
+  margin: 0;
+  font-size: 15px;
+  color: var(--c-text-light);
+}
+.bw-usage-text {
+  margin-top: 4px;
+  font-size: 15px;
+  color: var(--c-text);
+}
+.bw-usage-text strong {
+  font-weight: 800;
+}
+/* `.book-talks-usage-bar` — 16px tall, fully rounded, $gray250 behind $blue600. */
+.bw-usage-bar {
+  width: 100%;
+  height: 16px;
+  background: var(--c-gray-250);
   border-radius: 16px;
-  padding: 20px 22px;
-  margin-bottom: 16px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
 }
-.bw-panel.is-dimmed {
-  opacity: 0.62;
+.bw-usage-bar-used {
+  height: 100%;
+  background: var(--c-blue);
+  border-radius: 16px;
 }
-/* A panel whose only content is setting rows: .setting-row already carries 13px
-   of its own vertical padding, so trim the panel's to keep the total at 20px
-   instead of stacking the two. */
-.bw-panel--rows {
-  padding-top: 7px;
-  padding-bottom: 7px;
+
+/* The ceiling is a permission, not a setting, so its form stands apart from
+   the page's own Save. */
+.bw-limitform .bw-field {
+  max-width: 260px;
 }
-/* …unless something follows the rows (a banner), which needs real breathing room
-   under it rather than the row's own 13px. */
-.bw-panel--rows:has(.bnr) {
-  padding-bottom: 18px;
+
+.bw-help-p {
+  margin: 0;
+}
+.bw-help-p + .bw-help-p {
+  margin-top: 8px;
 }
 .bw-panel-title {
   font-size: 16px;
   font-weight: 800;
   color: var(--c-text);
-  margin-bottom: 6px;
-}
-.bw-panel-banner {
-  margin-top: 14px;
+  margin: 0;
 }
 .bw-inline-strong {
   font-weight: 800;
@@ -151,7 +255,7 @@ button {
 }
 /* A caveat inside a nested subsetting, under the cards it qualifies. */
 .bw-subsetting-banner {
-  margin-top: 14px;
+  margin-top: 20px;
 }
 .bw-row-label-new {
   display: inline-flex;
@@ -160,27 +264,23 @@ button {
 }
 
 /* ─── Conversation-type cards ───────────────────────────────────────────── */
+/* A row's own configuration, inset into the panel rather than floating on it:
+   it runs the full width of the card, drops its corners, and takes a tinted
+   ground between two hairlines. A rounded block indented inside a rounded card
+   read as a second card; a recess reads as part of the row above it. */
 .bw-subsetting {
-  margin-top: 18px;
-  padding-top: 18px;
-  border-top: 1px dashed var(--c-border);
-}
-/* Nested inside the setting list, directly under "On book completions": an
-   indented tinted block, so it reads as that row's configuration rather than as
-   a sibling setting. */
-.bw-subsetting--nested {
-  margin: 6px 0 18px;
-  padding: 20px;
-  /* Reads as recessed into the panel rather than stacked on top of it: a fill a
-     shade darker than the white panel, a hairline edge, and an inner shadow at
-     the top. The white option cards inside then sit "above" the recess. */
-  border: 1px solid var(--c-border);
-  border-radius: 14px;
+  margin: 10px -18px 0;
+  padding: 20px 18px;
   background: var(--c-gray-0, #f8f8f8);
-  box-shadow: inset 0 1px 3px rgba(15, 23, 42, 0.06);
+  border-top: 1px solid var(--c-border);
+  border-bottom: 1px solid var(--c-border);
 }
-.bw-subsetting--nested > .bw-subsetting-title {
-  margin-bottom: 14px;
+/* The band's own bottom edge is the divider between it and the next setting —
+   left to itself the list drew a second hairline a few pixels under it, with a
+   strip of white trapped between the two. */
+.bw-subsetting + .setting-row {
+  border-top: 0;
+  padding-top: 14px;
 }
 .bw-subsetting-title {
   font-size: 14.5px;
@@ -188,70 +288,61 @@ button {
   color: var(--c-text);
   margin-bottom: 12px;
 }
+/* `.choice-card-container` — one card to a row. Two-up split a sentence the
+   admin has to read to choose across two narrow columns. */
 .bw-kind-cards {
-  display: grid;
-  /* Two-up: each card takes half the width, so the third wraps onto its own row. */
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
+/* `.choice-card` — white, a hairline, 6px corners, 18px/24px of room. The glyph
+   leads the row and the name sits over what that conversation does. */
 .bw-kind-card {
   position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 7px;
+  gap: 20px;
+  align-items: center;
+  padding: 18px 24px;
   text-align: left;
-  padding: 14px 15px;
-  border-radius: 13px;
-  border: 1.5px solid var(--c-border);
   background: #fff;
-  /* Clip the selected-corner triangle to the card's rounded corner. */
-  overflow: hidden;
+  border: 1.5px solid #eaeaea;
+  border-radius: 10px;
   transition: all 0.15s;
 }
 .bw-kind-card:hover {
-  border-color: var(--kind);
+  border-color: #ccc;
 }
+/* Chosen: the wash, the border and the ring every selectable card in this
+   system wears, rather than a treatment of this page's own. */
 .bw-kind-card.is-active {
-  border-color: var(--kind);
-  background: color-mix(in srgb, var(--kind) 7%, #fff);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--kind) 14%, transparent);
+  background: color-mix(in srgb, var(--c-blue) 9%, #fff);
+  border-color: var(--c-blue);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
-/* Selected state: a filled triangle in the top-right corner carrying the check,
-   rather than a check floating in the text flow. */
-.bw-kind-card.is-active::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 36px;
-  height: 36px;
-  background: var(--kind);
-  clip-path: polygon(100% 0, 100% 100%, 0 0);
+.bw-kind-card.is-active .bw-kind-icon,
+.bw-kind-card.is-active .bw-kind-label {
+  color: var(--c-blue-ink, var(--c-blue));
 }
-.bw-kind-head {
+.bw-kind-icon {
+  display: inline-flex;
+  flex: none;
+  color: var(--c-text-dark);
+}
+.bw-kind-text {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding-right: 24px;
-  color: var(--kind);
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
 }
 .bw-kind-label {
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 800;
-}
-.bw-kind-check {
-  position: absolute;
-  top: 5px;
-  right: 5px;
-  z-index: 1;
-  color: #fff;
+  color: var(--c-text-dark);
 }
 .bw-kind-blurb {
-  font-size: 13px;
-  /* Real body copy the admin has to read to choose, so slate-600 rather than the
-     subtle grey — it still sits clearly under the type's colored label. */
-  color: var(--c-gray-750);
+  font-size: 14.5px;
   line-height: 1.5;
+  color: var(--c-gray-750);
 }
 
 /* ─── Chip row (the Talk view's type switcher) ─────────────────────────── */
@@ -299,91 +390,6 @@ button {
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--c-gray-600);
-}
-
-/* ─── Upsell (BTWB not on the plan) ───────────────────────────────────── */
-.bw-upsell {
-  background: linear-gradient(160deg, #f2fbfc 0%, #fff 55%);
-  border: 1px solid #b8e4ea;
-  border-radius: 18px;
-  padding: 26px 28px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
-}
-.bw-upsell-body {
-  min-width: 0;
-}
-.bw-upsell-title {
-  font-size: 23px;
-  font-weight: 800;
-  color: var(--c-text);
-  letter-spacing: -0.01em;
-}
-.bw-upsell-lead {
-  margin-top: 7px;
-  font-size: 14.5px;
-  line-height: 1.6;
-  color: var(--c-gray-600);
-  max-width: 62ch;
-}
-.bw-upsell-list {
-  list-style: none;
-  margin: 18px 0 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 11px;
-}
-.bw-upsell-list li {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding-left: 13px;
-  border-left: 3px solid var(--kind);
-}
-.bw-upsell-kind {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--kind);
-}
-.bw-upsell-kind-blurb {
-  font-size: 13px;
-  line-height: 1.5;
-  color: var(--c-gray-600);
-}
-.bw-upsell-actions {
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  flex-wrap: wrap;
-  margin-top: 22px;
-}
-.bw-upsell-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #0e7490;
-  color: #fff;
-  font-size: 14px;
-  font-weight: 800;
-  padding: 11px 20px;
-  border-radius: 10px;
-  text-decoration: none;
-  transition: background 0.15s;
-}
-.bw-upsell-cta:hover {
-  background: #0c6076;
-}
-.bw-upsell-link {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: #0e7490;
-  text-decoration: none;
-}
-.bw-upsell-link:hover {
-  text-decoration: underline;
 }
 
 /* ─── Reader log card ──────────────────────────────────────────────────── */
@@ -443,7 +449,7 @@ button {
    hidden), so the panel must NOT set a wider width of its own — widen the modal
    instead and let the panel fill it. */
 .modal--center:has(.bw-talk) {
-  width: min(560px, calc(100vw - 32px));
+  width: min(560px, calc(100vw - var(--modal-gutter) * 2));
 }
 .bw-talk {
   display: flex;
@@ -683,12 +689,6 @@ button {
   .bw-log {
     flex-direction: column;
   }
-  .bw-kind-cards {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .bw-upsell {
-    padding: 22px 20px;
-  }
 }
 
 /* A sub-setting that's just one small control: label left, dial right, one row. */
@@ -704,4 +704,15 @@ button {
 .bw-subsetting .ninp {
   width: 140px;
   flex: 0 0 auto;
+}
+
+/* The app links straight out of its copy — "unverified reader", "turn on Book
+   Talks for specific challenges" — rather than leaving the admin to find them. */
+.bw-inline-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.bw-inline-link:hover {
+  color: var(--c-blue);
 }

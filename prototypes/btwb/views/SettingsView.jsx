@@ -1,12 +1,12 @@
-import { useState } from 'react'
 import { AppShell } from '@components/AppShell/AppShell'
 import { Banner } from '@components/Primitives/Primitives'
+import { SectionCard } from '@components/SectionCard/SectionCard'
+import { Button } from '@components/Button/Button'
 import { SettingRow, SettingList } from '@components/SettingRow/SettingRow'
-import { NumberInput } from '@components/Form/Form'
+import { NumberInput, Select } from '@components/Form/Form'
 import { Icon } from '@components/Icon/Icon'
 import { Pill } from '@components/Pill/Pill'
 import { TalkKindPicker } from '../components/TalkKindPicker'
-import { TALK_KINDS } from '../data'
 
 import '@components/MainRail/MainRail.css'
 import '@components/Pill/Pill.css'
@@ -14,6 +14,28 @@ import '@components/Primitives/Primitives.css'
 import '@components/BennyBubble/BennyBubble.css'
 import '@components/SettingRow/SettingRow.css'
 import '@components/Form/Form.css'
+import '@components/SectionCard/SectionCard.css'
+import '@components/Button/Button.css'
+
+/* `@grade_levels` — what `book_talks_lowest_grade_id` picks from. Benny is
+   grade 3 and up in practice, but the control offers the site's whole ladder
+   the way the app's does. */
+const GRADE_LEVELS = [
+  { value: 'k', label: 'Kindergarten' },
+  ...Array.from({ length: 12 }, (_, i) => ({
+    value: String(i + 1),
+    label: `Grade ${i + 1}`,
+  })),
+]
+
+/* `@minute_warning_level` — the site's own warning level, named in the trigger's
+   copy the way the app names it. */
+const WARNING_LEVEL = 120
+
+/* `@usage` — `BennyBot::Usage`, the conversations this site has spent against
+   its allowance. The real page renders it under the form as its own card, plus
+   an admin-only form for changing the ceiling. */
+const USAGE = { used: 1240, limit: 5000 }
 
 // Sidebar = the production "Setup" section, the same nav the Roster Sync
 // Settings prototype renders. Book Talks with Benny gets its own item here
@@ -87,13 +109,9 @@ export function SettingsView({
   settings,
   onChange,
   newTags = ['completion', 'kind', 'selfStart'],
-  planPreview = true,
 }) {
   const set = (patch) => onChange({ ...settings, ...patch })
   const off = !settings.btwbOn
-  // Whether BTWB is on this site's plan at all. Swappable from the page header so
-  // the sales state is one click away without its own demo view.
-  const [entitled, setEntitled] = useState(true)
 
   return (
     <AppShell
@@ -112,68 +130,11 @@ export function SettingsView({
       <div className="bw-page">
         <header className="bw-page-head">
           <h1 className="bw-h1">Book Talks with Benny</h1>
-          {/* Demo affordance, not a real control — swaps between a site that has
-            BTWB and one that doesn't. */}
-          {planPreview && (
-            <button
-              type="button"
-              className="bw-state-swap"
-              onClick={() => setEntitled((e) => !e)}
-              aria-pressed={!entitled}
-            >
-              <Icon name={entitled ? 'lock' : 'settings'} size={14} />
-              {entitled ? 'Preview: not on plan' : 'Preview: enabled site'}
-            </button>
-          )}
         </header>
 
-        {/* A site without BTWB gets the pitch instead of the switches. */}
-        {!entitled ? (
-          <UpsellPanel />
-        ) : (
-          <SettingsBody settings={settings} set={set} off={off} newTags={newTags} />
-        )}
+        <SettingsBody settings={settings} set={set} off={off} newTags={newTags} />
       </div>
     </AppShell>
-  )
-}
-
-// The sales state: BTWB isn't part of this site's plan, so there's nothing to
-// configure yet. Lead with what Benny would actually do for them — one line per
-// talk type — rather than a bare "not enabled, contact sales".
-function UpsellPanel() {
-  return (
-    <section className="bw-upsell">
-      <div className="bw-upsell-body">
-        <h2 className="bw-upsell-title">Let Benny do the talking</h2>
-        <p className="bw-upsell-lead">
-          Book Talks with Benny turn a finished book into a short, friendly conversation — so you
-          hear what your readers actually thought, without handing them a quiz.
-        </p>
-
-        <ul className="bw-upsell-list">
-          {Object.values(TALK_KINDS).map((k) => (
-            <li key={k.id} style={{ '--kind': k.color }}>
-              <span className="bw-upsell-kind">
-                <Icon name={k.icon} size={16} />
-                {k.label}
-              </span>
-              <span className="bw-upsell-kind-blurb">{k.blurb}</span>
-            </li>
-          ))}
-        </ul>
-
-        <div className="bw-upsell-actions">
-          <a className="bw-upsell-cta" href="#contact-account-team">
-            Talk to your account team
-            <Icon name="arrow-right" size={16} />
-          </a>
-          <a className="bw-upsell-link" href="#book-talks-learn-more">
-            See how Book Talks work
-          </a>
-        </div>
-      </div>
-    </section>
   )
 }
 
@@ -182,124 +143,201 @@ function SettingsBody({ settings, set, off, newTags }) {
   const isNew = (key) => newTags.includes(key)
   return (
     <>
-      {/* ── Master switch ─────────────────────────────────────────────────── */}
-      <section className="bw-panel bw-panel--rows">
+      {/* ── Master switch — the app's "Enable Book Talks" chunk ───────────── */}
+      <SectionCard header="bar" title="Enable Book Talks" className="bw-panel">
         <SettingList>
           <SettingRow
             label="Book Talks with Benny"
-            sub="Benny holds short, friendly conversations with readers about the books they log. Grade 3 and up."
-            state={settings.btwbOn ? 'On' : 'Off'}
+            sub="Toggling this on will enable Book Talks for all students in this school in the specified grades."
             checked={settings.btwbOn}
             onChange={(v) => set({ btwbOn: v })}
             size="lg"
           />
         </SettingList>
+
+        {/* `book_talks_lowest_grade_id` — which grades can chat with Benny at
+            all. It gates every trigger below, so it belongs with the master
+            switch rather than in the triggers chunk. */}
+        {!off && (
+          <div className="bw-field">
+            <label className="bw-field-label" htmlFor="bw-lowest-grade">
+              Select the lowest grade that can chat with Benny.
+            </label>
+            <Select
+              id="bw-lowest-grade"
+              value={settings.lowestGrade ?? '3'}
+              onChange={(e) => set({ lowestGrade: e.target.value })}
+            >
+              {GRADE_LEVELS.map((g) => (
+                <option key={g.value} value={g.value}>
+                  {g.label}
+                </option>
+              ))}
+            </Select>
+          </div>
+        )}
         {off && (
           <Banner level="warning" className="bw-panel-banner">
             Benny is switched off for this site — no book talks start, from any trigger. Turning him
             back on re-enables completion talks by default.
           </Banner>
         )}
-      </section>
+      </SectionCard>
 
       {/* ── The site-wide triggers ───────────────────────────────────────── */}
-      {/* Only the two switches this page actually owns. A challenge can turn
-          Book Talks on for itself, but that's the Challenge Creator's setting —
-          a read-only row for it just read as a broken control, so it's a line in
+      {/* Hidden rather than dimmed while Benny is off — `masterSection` in the
+          app is `hidden` unless enabled, and a page of switches you can see but
+          can't touch reads as broken.
+
+          Only the switches this page actually owns. A challenge can turn Book
+          Talks on for itself, but that's the Challenge Creator's setting — a
+          read-only row for it just read as a broken control, so it's a line in
           the footer note instead. */}
-      <section className={`bw-panel${off ? ' is-dimmed' : ''}`}>
-        <h2 className="bw-panel-title">When should Benny start a book talk?</h2>
+      {!off && (
+        <SectionCard header="bar" title="When should Benny start a book talk?" className="bw-panel">
+          <SettingList>
+            {/* NEW — the ticket's actual ask. */}
+            <SettingRow
+              label={
+                <span className="bw-row-label-new">
+                  On book completions
+                  {isNew('completion') && (
+                    <Pill color="#0E7490" variant="filled" size="sm">
+                      New
+                    </Pill>
+                  )}
+                </span>
+              }
+              sub="Benny starts a book talk every time a reader marks a book as complete."
+              checked={settings.onCompletion}
+              onChange={(v) => set({ onCompletion: v })}
+              disabled={off}
+              size="lg"
+            />
 
-        <SettingList>
-          {/* NEW — the ticket's actual ask. */}
-          <SettingRow
-            label={
-              <span className="bw-row-label-new">
-                On book completions
-                {isNew('completion') && (
-                  <Pill color="#0E7490" variant="filled" size="sm">
-                    New
-                  </Pill>
-                )}
-              </span>
-            }
-            sub="Benny starts a talk every time a reader logs a book as complete, anywhere on the site — challenge or not."
-            state={settings.onCompletion ? 'On' : 'Off'}
-            checked={settings.onCompletion}
-            onChange={(v) => set({ onCompletion: v })}
-            disabled={off}
-          />
+            {/* The ticket's open question, made an explicit admin choice. It
+                appears as the next thing in the list when completions are on,
+                rather than inside a tinted block of its own — a panel within a
+                panel put a second edge round something that is already inside
+                one. */}
+            {settings.onCompletion && !off && (
+              <div className="bw-subsetting">
+                <TalkKindPicker
+                  label="What kind of conversation should happen on book completions?"
+                  value={settings.completionKind}
+                  onChange={(id) => set({ completionKind: id })}
+                />
+              </div>
+            )}
 
-          {/* The ticket's open question, made an explicit admin choice. */}
-          {settings.onCompletion && !off && (
-            <div className="bw-subsetting bw-subsetting--nested">
-              <TalkKindPicker
-                showNew={isNew('kind')}
-                label="What kind of conversation should a completion talk be?"
-                value={settings.completionKind}
-                onChange={(id) => set({ completionKind: id })}
-              />
-            </div>
-          )}
-
-          {/* NEW — the reader-initiated trigger. The other two are scoped to the
+            {/* NEW — the reader-initiated trigger. The other two are scoped to the
               thing that fires them (a completion, a suspicious log, a challenge);
               a reader starting a talk on their own isn't inside any of those, so
               Benny has to be reachable site-wide. It's also the master switch for
               Book Talk badges: a challenge can only offer them when this is on. */}
-          <SettingRow
-            label={
-              <span className="bw-row-label-new">
-                Whenever a student wants
-                {isNew('selfStart') && (
-                  <Pill color="#0E7490" variant="filled" size="sm">
-                    New
-                  </Pill>
-                )}
-              </span>
-            }
-            sub="Readers can start a book talk with Benny on their own, any time — they don’t have to log a book first. Turning this on also enables Book Talk badges in challenges, which Benny awards for the conversations a reader has."
-            state={settings.selfStart ? 'On' : 'Off'}
-            checked={settings.selfStart}
-            onChange={(v) => set({ selfStart: v })}
-            disabled={off}
-          />
+            <SettingRow
+              label={
+                <span className="bw-row-label-new">
+                  Book Talk badges
+                  {isNew('selfStart') && (
+                    <Pill color="#0E7490" variant="filled" size="sm">
+                      New
+                    </Pill>
+                  )}
+                </span>
+              }
+              sub="Challenges can award badges for the book talks a reader has with Benny — which means readers start those talks themselves, whenever they want."
+              checked={settings.selfStart}
+              onChange={(v) => set({ selfStart: v })}
+              disabled={off}
+              size="lg"
+            />
 
-          {/* A talk readers can start at will needs a bound. */}
-          {settings.selfStart && !off && (
-            <div className="bw-subsetting bw-subsetting--nested bw-subsetting--inline">
-              <div className="bw-subsetting-title">How many can a reader start in a day?</div>
-              <NumberInput
-                min={1}
-                max={10}
-                value={settings.selfStartLimit ?? 3}
-                onChange={(v) => set({ selfStartLimit: v })}
-              />
-            </div>
-          )}
+            {/* A talk readers can start at will needs a bound. */}
+            {settings.selfStart && !off && (
+              <div className="bw-subsetting bw-subsetting--inline">
+                <div className="bw-subsetting-title">How many can a reader start in a day?</div>
+                <NumberInput
+                  min={1}
+                  max={10}
+                  value={settings.selfStartLimit ?? 3}
+                  onChange={(v) => set({ selfStartLimit: v })}
+                />
+              </div>
+            )}
 
-          {/* Today's behavior, part of the Integrity Suite. No type
+            {/* Today's behavior, part of the Integrity Suite. No type
               choice at all: this trigger fires *because* a log looks off, and the
               integrity talk is the only one that flags concerning patterns back.
               It's a switch, not a configuration. */}
-          <SettingRow
-            label="Above the warning threshold"
-            sub="Benny runs an integrity check-in when a reader logs more than the site’s warning level allows. Unverified readers only."
-            state={settings.onWarning ? 'On' : 'Off'}
-            checked={settings.onWarning}
-            onChange={(v) => set({ onWarning: v })}
-            disabled={off}
-          />
-        </SettingList>
+            <SettingRow
+              label="On logs above the warning level"
+              sub={
+                <>
+                  Benny starts an integrity book talk every time an{' '}
+                  <a className="bw-inline-link" href="#verified-readers">
+                    unverified reader
+                  </a>{' '}
+                  logs above the warning level ({WARNING_LEVEL}m).
+                </>
+              }
+              checked={settings.onWarning}
+              onChange={(v) => set({ onWarning: v })}
+              disabled={off}
+              size="lg"
+            />
+          </SettingList>
 
-        <Banner level="info" className="bw-panel-banner">
-          Book Talks can also be switched on for an individual challenge, in the Challenge Creator’s{' '}
-          <span className="bw-inline-strong">Book Talks</span> step — that challenge takes priority
-          over these site-wide triggers. Every completed talk lands on your{' '}
-          <span className="bw-inline-strong">Sessions for Review</span> page with Benny’s summary of
-          the talk.
-        </Banner>
+          {/* `.infobox.helpbox` — the app's own two paragraphs, the first of which
+            changes with the completion toggle. */}
+          <Banner level="info" className="bw-panel-banner">
+            <p className="bw-help-p">
+              {settings.onCompletion ? (
+                <>
+                  You can also{' '}
+                  <a className="bw-inline-link" href="#challenge-book-talks">
+                    turn on Book Talks for specific challenges
+                  </a>
+                  ; those settings take precedence over the ones on this page.
+                </>
+              ) : (
+                'Talks can also be turned on for specific challenges, using the Book Talks tab when you create one; those settings take precedence over the ones on this page.'
+              )}{' '}
+              Whatever the type, every completed talk appears under your{' '}
+              <span className="bw-inline-strong">Book Talks &amp; Flagged Sessions</span> page.
+            </p>
+          </Banner>
+        </SectionCard>
+      )}
+
+      {/* `book_talk_settings__usage` — what the site has spent this school year,
+          its own card under the form. */}
+      <section className="bw-usage">
+        <h2 className="bw-usage-title">Current Usage</h2>
+        <p className="bw-panel-sub">
+          Track the total number of conversations used this school year (since Aug. 1)
+        </p>
+        <span className="bw-usage-text">
+          <strong>Conversations Used:</strong> {USAGE.used.toLocaleString()}/
+          {USAGE.limit.toLocaleString()} ({Math.round((USAGE.used / USAGE.limit) * 100)}%)
+        </span>
+        <div className="bw-usage-bar">
+          <div
+            className="bw-usage-bar-used"
+            style={{ width: `${(USAGE.used / USAGE.limit) * 100}%` }}
+          />
+        </div>
       </section>
+
+      {/* `.actions-wrap` — the app's own Save / Cancel foot. */}
+      <div className="bw-actions">
+        <Button variant="primary" size="md">
+          Save
+        </Button>
+        <Button variant="secondary" size="md">
+          Cancel
+        </Button>
+      </div>
     </>
   )
 }

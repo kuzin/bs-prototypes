@@ -52,7 +52,7 @@ function WordUnlockDemo() {
 function ActivityDemo({ type }) {
   const [done, setDone] = useState(false)
   return (
-    <div style={{ padding: 20, background: '#f3f4f6' }}>
+    <div className="pt-stage">
       <div style={{ padding: '20px 22px', background: '#fff', borderRadius: 20 }}>
         <Activity
           type={type}
@@ -76,7 +76,7 @@ function FlashcardsDemo() {
   const [open, setOpen] = useState(false)
   const [cards, setCards] = useState(DECK_CARDS)
   return (
-    <div style={{ padding: 20, background: '#f3f4f6' }}>
+    <div className="pt-stage">
       <ReviewStrip cards={cards} onStart={() => setOpen(true)} />
       <Flashcards
         open={open}
@@ -239,7 +239,8 @@ export const wordsWithBennySections = [
             gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
             gap: 12,
             padding: 20,
-            background: '#f3f4f6',
+            background: 'var(--c-bg-muted)',
+            borderRadius: 12,
           }}
         >
           {TILE_CASES.map((c) => (
@@ -266,7 +267,7 @@ export const wordsWithBennySections = [
     ),
     render: () => (
       <Variant label="words · badges · achievements" full>
-        <div style={{ padding: '24px 20px 20px', background: '#f3f4f6' }}>
+        <div className="pt-stage" style={{ paddingTop: 24 }}>
           <Collections collection={SEED_COLLECTION} newestWord="suspicion" />
         </div>
       </Variant>
@@ -286,7 +287,7 @@ export const wordsWithBennySections = [
     ),
     render: () => (
       <Variant label="the Words pane on its own" full>
-        <div style={{ padding: '0 20px 20px', background: '#f3f4f6' }}>
+        <div className="pt-stage" style={{ paddingTop: 0 }}>
           <MyWords collection={SEED_COLLECTION} newestWord="suspicion" />
         </div>
       </Variant>
