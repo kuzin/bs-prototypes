@@ -7,7 +7,7 @@ import { EmptyState } from '@components/Primitives/Primitives'
 
 import { BookCover } from '../../logging-flow/components/BookCover'
 import { BOOKS } from '../../logging-flow/data'
-import { WISH_LIST, CATALOG_BY_ID } from '../data'
+import { CATALOG_BY_ID } from '../data'
 import './WishList.css'
 
 import '@components/Button/Button.css'
@@ -25,24 +25,35 @@ import '@components/Primitives/Primitives.css'
  *
  * "Search Wish List" and "Find Books" only show once there is a list; empty,
  * the page is the blank slate and its one way out.
+ *
+ * The list itself is the app's, not this page's: a book page can put a title on
+ * it and take it off again, so `items` and `onRemove` come from whoever owns
+ * the reader.
  */
 
 const READER = 'Olivia'
 
-export function WishList({ onFindBooks, onLog, onOpenBook }) {
-  const [items, setItems] = useState(WISH_LIST)
+/**
+ * The record behind a wish-list row. The catalog is the wider of the two — it
+ * has everything the log has and everything the reader hasn't read yet — but
+ * the log carries the partner magazines the catalog doesn't, so a row resolves
+ * against both. A row whose book is in neither is dropped rather than crashing
+ * the page.
+ */
+const recordFor = (id) => CATALOG_BY_ID[id] ?? BOOKS[id]
+
+export function WishList({ items = [], onRemove, onFindBooks, onLog, onOpenBook }) {
   const [q, setQ] = useState('')
   const [searching, setSearching] = useState(false)
 
   const term = q.trim().toLowerCase()
+  const known = items.filter((i) => recordFor(i.book))
   const shown = term
-    ? items.filter((i) => {
-        const b = BOOKS[i.book]
+    ? known.filter((i) => {
+        const b = recordFor(i.book)
         return b.title.toLowerCase().includes(term) || b.author.toLowerCase().includes(term)
       })
-    : items
-
-  const remove = (book) => setItems((is) => is.filter((i) => i.book !== book))
+    : known
 
   if (items.length === 0) {
     return (
@@ -97,9 +108,9 @@ export function WishList({ onFindBooks, onLog, onOpenBook }) {
       ) : (
         <ul className="wl-list">
           {shown.map((item) => {
-            const book = BOOKS[item.book]
-            // The row's title is that book's record — the catalog is wider than
-            // the log, so this is where a wished-for title goes.
+            const book = recordFor(item.book)
+            // The row's title goes to that book's page — but only a catalog
+            // title has one; a partner magazine the log knows does not.
             const record = CATALOG_BY_ID[item.book]
             return (
               <li className="wl-row" key={item.book}>
@@ -145,7 +156,7 @@ export function WishList({ onFindBooks, onLog, onOpenBook }) {
                       Get This Book
                     </Button>
                   )}
-                  <Button variant="secondary" size="sm" onClick={() => remove(item.book)}>
+                  <Button variant="secondary" size="sm" onClick={() => onRemove?.(item.book)}>
                     Remove
                   </Button>
                 </div>

@@ -58,10 +58,25 @@
   margin-top: 18px;
 }
 
+/* The tabs sit under the buttons, over the panel — what identifies the book
+   (cover, title, credits, buttons, rail) is true on every tab and stays out. */
+.bp-tabs {
+  display: flex;
+  padding-top: 18px;
+  margin-top: 18px;
+  border-top: 1px solid var(--c-border);
+}
+
 .bp-section {
   padding-top: 20px;
   margin-top: 20px;
   border-top: 1px solid var(--c-border);
+}
+/* The first section in a panel is already under the tab strip's own rule. */
+.bp-panel > .bp-section:first-child {
+  padding-top: 18px;
+  margin-top: 0;
+  border-top: 0;
 }
 .bp-section h2 {
   margin-bottom: 8px;
@@ -210,22 +225,48 @@
   margin: 0;
   list-style: none;
 }
+/* One colour per tag family, on the app's own pairs (`lib/_tag.scss`): a rail
+   of forty grey chips is a wall, and this is how you find the genres in it
+   without reading the headings. */
+.bp-taglist {
+  --tag-ink: var(--c-gray-800);
+  --tag-bg: var(--c-gray-100);
+}
+.bp-tags--purple {
+  --tag-ink: #901eaa;
+  --tag-bg: #fad8ff;
+}
+.bp-tags--teal {
+  --tag-ink: #047282;
+  --tag-bg: #cefaff;
+}
+.bp-tags--green {
+  --tag-ink: #0f7a55;
+  --tag-bg: #dbf2e7;
+}
+.bp-tags--blue {
+  --tag-ink: #154887;
+  --tag-bg: #dde9f9;
+}
+.bp-tags--gray {
+  --tag-ink: var(--c-gray-800);
+  --tag-bg: var(--c-gray-100);
+}
+
 .bp-tag {
   height: 28px;
   padding: 0 11px;
   font: inherit;
   font-size: 12.5px;
   font-weight: 700;
-  color: var(--c-text);
+  color: var(--tag-ink);
   cursor: pointer;
-  background: var(--c-gray-50);
-  border: 1px solid var(--c-border);
+  background: var(--tag-bg);
+  border: 1px solid transparent;
   border-radius: 999px;
 }
 .bp-tag:hover {
-  color: var(--c-blue);
-  background: #fff;
-  border-color: var(--c-blue);
+  border-color: color-mix(in srgb, var(--tag-ink) 45%, transparent);
 }
 .bp-awards {
   display: flex;
@@ -260,9 +301,7 @@
   cursor: default;
 }
 .bp-tag--static:hover {
-  color: var(--c-text);
-  background: var(--c-gray-50);
-  border-color: var(--c-border);
+  border-color: transparent;
 }
 
 /* ── Your reading ──────────────────────────────────────────────────────────
@@ -271,24 +310,12 @@
 .bp-noreading {
   color: var(--c-text-light);
 }
+/* The design system's stat tile, as the reading log uses it. */
 .bp-readnums {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 26px;
-  align-items: center;
-  margin-bottom: 6px;
-}
-.bp-readnums dt {
-  font-size: 11.5px;
-  font-weight: 800;
-  color: var(--c-text-light);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.bp-readnums dd {
-  font-size: 18px;
-  font-weight: 900;
-  color: var(--c-text-dark);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
 }
 
 .bp-sessions {
@@ -299,13 +326,40 @@
 }
 .bp-sessions li {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) 90px minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 1.2fr) 108px minmax(0, 1fr) auto;
   gap: 12px;
   align-items: center;
-  padding: 10px 0;
+  padding: 6px 0;
   font-size: 13px;
   color: var(--c-text);
   border-bottom: 1px solid var(--c-border);
+}
+.bp-sessions li.is-editing {
+  background: var(--c-gray-50);
+}
+
+/* Editing happens in the row: the amount becomes a field and the pencil and the
+   remove become save and cancel — `edit-times-read-input` and the four
+   `session-action__*` controls. */
+.bp-session-input {
+  width: 64px;
+  height: 32px;
+  padding: 0 8px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+  background: #fff;
+  border: 1px solid var(--c-gray-500);
+  border-radius: 8px;
+}
+.bp-session-unit {
+  margin-left: 6px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+.bp-session-actions {
+  justify-content: flex-end;
 }
 .bp-session-date {
   font-weight: 700;
@@ -332,5 +386,9 @@
   }
   .bp-session-source {
     grid-column: 1 / -1;
+    grid-row: 2;
+  }
+  .bp-session-actions {
+    grid-row: 2;
   }
 }

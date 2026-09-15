@@ -1123,15 +1123,16 @@
 
 /* ─── Back link ──────────────────────────────────────────────────────────────
    `.back-button` — the way off a page the nav can't reach. It sits above the
-   page header, so its own margin is the gap to that header and there is none
-   above it: the main column already has its padding. */
+   page header and owns the gap on both sides of itself: tight under the chrome
+   it reads as part of the bar, and tight over the page title it reads as part
+   of the heading. It is neither — it's the way out. */
 .wa-back {
   display: inline-flex;
   gap: 4px;
   align-items: center;
   height: 32px;
   padding: 0 10px 0 6px;
-  margin-bottom: 10px;
+  margin: 8px 0 18px;
   font: inherit;
   font-size: 14px;
   font-weight: 800;

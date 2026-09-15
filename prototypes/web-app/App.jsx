@@ -67,6 +67,9 @@ const RECENT = RECENTLY_LOGGED.filter((id) => BOOKS[id]?.partner !== 'scholastic
 // magazines sitting in the Reading Log of a page that says it has no Scholastic.
 const LOG = READING_LOG.filter((e) => e.source !== 'scholastic')
 
+// Today, in the fixtures' own June.
+const TODAY = 'Jun 16, 2026'
+
 // The tabs in the real nav that the dashboard has never had a page for. This
 // prototype builds them, so it claims them by id rather than letting the
 // dashboard bounce them back to Challenges.
@@ -79,12 +82,7 @@ const HIDE_TABS = ['leaderboards']
 
 // Under Reading, after the log itself: what the reader has read is the log's
 // own three views, and these are what they mean to read next and where to find
-// more of it.
-const LOG_TABS = [
-  { id: 'wish', label: 'Wish List', count: WISH_LIST.length },
-  { id: 'lists', label: 'Book Lists', count: BOOK_LISTS.length },
-]
-
+// more of it. The counts are live — a book page can add to the wish list.
 // Half of what a reader sees is decided by settings an admin holds, so this
 // page is really several pages. The preview bar switches between them rather
 // than freezing one configuration into the fixtures. Each id is the app's own
@@ -141,6 +139,29 @@ export function App() {
   // those it was. Each entry carries the label for its own way out, so the same
   // BookPage says "Back to Find Books" or "Back to Book Lists" depending on how
   // the reader got to it.
+  // The wish list and the log are the reader's, not a page's: a book page adds
+  // to the first and corrects the second, and the Wish List and Reading Log
+  // pages have to show it. Both were page-local state until those pages stopped
+  // being the only way to change them.
+  const [wish, setWish] = useState(WISH_LIST)
+  const [log, setLog] = useState(LOG)
+  const wished = (id) => wish.some((w) => w.book === id)
+  const toggleWish = (book) =>
+    setWish((ws) =>
+      ws.some((w) => w.book === book.id)
+        ? ws.filter((w) => w.book !== book.id)
+        : [
+            // The app's own line on a wish-list row is who put it there.
+            {
+              book: book.id,
+              addedBy: `${READER.name} M.`,
+              dateAdded: TODAY,
+              library: Boolean(book.isbn),
+            },
+            ...ws,
+          ],
+    )
+
   const [stack, setStack] = useState([])
   const top = stack[stack.length - 1] ?? null
   const push = (route) => setStack((s) => [...s, route])
@@ -165,6 +186,7 @@ export function App() {
           list={top.list}
           onBack={pop}
           onLog={() => setFlowOpen(true)}
+          onWish={toggleWish}
           onOpenBook={(book) => openBook(book, `Back to ${top.list.name}`)}
         />
       )
@@ -173,12 +195,23 @@ export function App() {
       <BookPage
         book={top.book}
         backLabel={top.back}
-        sessions={LOG.filter((e) => e.kind === 'log' && e.title === top.book.title)}
+        sessions={log.filter((e) => e.kind === 'log' && e.title === top.book.title)}
         onBack={pop}
         onLog={() => setFlowOpen(true)}
         onFilter={(initial) => push({ kind: 'browse', initial, back: `Back to ${top.book.title}` })}
         onOpenBook={(book) => openBook(book, `Back to ${top.book.title}`)}
-        wished={WISH_LIST.some((w) => w.book === top.book.id)}
+        wished={wished(top.book.id)}
+        onWish={toggleWish}
+        /* `logged_books#update` corrects the one number the reader typed; the
+           other is whichever of minutes or pages that session was measured in. */
+        onEditSession={(entry, value) =>
+          setLog((es) =>
+            es.map((e) =>
+              e.id === entry.id ? { ...e, [entry.minutes ? 'minutes' : 'pages']: value } : e,
+            ),
+          )
+        }
+        onRemoveSession={(entry) => setLog((es) => es.filter((e) => e.id !== entry.id))}
       />
     )
   }
@@ -241,7 +274,7 @@ export function App() {
         onDisconnectPartner={handleDisconnect}
         onVisitPartner={setVisiting}
         partners={PARTNERS}
-        logEntries={LOG}
+        logEntries={log}
         view={view}
         onView={(v) => {
           setView(v)
@@ -251,7 +284,10 @@ export function App() {
         ownTabs={OWN_TABS}
         hideTabs={HIDE_TABS}
         renderExtra={renderTab}
-        logTabs={LOG_TABS}
+        logTabs={[
+          { id: 'wish', label: 'Wish List', count: wish.length },
+          { id: 'lists', label: 'Book Lists', count: BOOK_LISTS.length },
+        ]}
         logTab={logTab}
         onLogTab={setLogTab}
         renderLogTab={(id) =>
@@ -262,6 +298,8 @@ export function App() {
             />
           ) : (
             <WishList
+              items={wish}
+              onRemove={(id) => setWish((ws) => ws.filter((w) => w.book !== id))}
               onFindBooks={() => push({ kind: 'browse', back: 'Back to Wish List' })}
               onOpenBook={(book) => openBook(book, 'Back to Wish List')}
               onLog={() => setFlowOpen(true)}
@@ -283,7 +321,7 @@ export function App() {
           top ? (
             renderRoute()
           ) : challenge ? (
-            <ChallengePage challenge={challenge} entries={LOG} onBack={() => setChallenge(null)} />
+            <ChallengePage challenge={challenge} entries={log} onBack={() => setChallenge(null)} />
           ) : null
         }
       />

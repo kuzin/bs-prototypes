@@ -27,7 +27,7 @@ import { WishList } from '../../web-app/components/WishList'
 import { BookLists, BookListPage } from '../../web-app/components/BookLists'
 import { FindBooks } from '../../web-app/components/FindBooks'
 import { BookPage } from '../../web-app/components/BookPage'
-import { BOOK_LISTS, CATALOG_BY_ID } from '../../web-app/data'
+import { BOOK_LISTS, CATALOG_BY_ID, WISH_LIST } from '../../web-app/data'
 import { READING_LOG } from '../../logging-flow/data'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from '../../web-app/components/FriendProfile'
@@ -481,7 +481,7 @@ export const readerAppSections = [
     render: () => (
       <>
         <Variant label="a destination, not just “back”">
-          <div style={{ padding: 20 }}>
+          <div style={{ padding: '12px 20px' }}>
             <ReaderBack>Back to Book Lists</ReaderBack>
           </div>
         </Variant>
@@ -991,13 +991,18 @@ export const readerAppSections = [
     usage: `import { WishList } from './components/WishList'
 import { BookLists } from './components/BookLists'
 
-<WishList onFindBooks={browse} onOpenBook={openBook} onLog={openLogFlow} />
+<WishList items={wish} onRemove={remove} onFindBooks={browse} onOpenBook={openBook} />
 <BookLists onOpenList={openList} onFindBooks={browse} />`,
     desc: (
       <>
         Books the reader means to get to — <code>profiles/wish_list.html.haml</code> — and{' '}
         <code>BookLists</code>, the curated shelves its &ldquo;Find Books&rdquo; sends you to (
         <code>reading_lists#index</code>).
+        <br />
+        <br />
+        The list is the reader&apos;s, not the page&apos;s — a book page can put a title on it and
+        take it off again — so <code>items</code> and <code>onRemove</code> come from whoever owns
+        the reader.
         <br />
         <br />A wish-list row says <strong>who put the book there</strong>: a parent or a teacher
         can add to a reader&apos;s list, so the app names whose idea it was rather than assuming the
@@ -1015,7 +1020,7 @@ import { BookLists } from './components/BookLists'
       <>
         <Variant label="a reader's wish list" full>
           <div style={{ padding: '0 20px 20px', background: '#fff' }}>
-            <WishList onFindBooks={noop} onLog={noop} />
+            <WishList items={WISH_LIST} onFindBooks={noop} onLog={noop} />
           </div>
         </Variant>
         <Variant label="the lists its “Find Books” goes to" full>
@@ -1079,6 +1084,10 @@ import { BookLists } from './components/BookLists'
   onLog={openLogFlow}
   onFilter={(initial) => browse(initial)}
   onOpenBook={openBook}
+  wished={onWishList}
+  onWish={toggleWish}
+  onEditSession={(entry, value) => correct(entry, value)}
+  onRemoveSession={(entry) => drop(entry)}
 />`,
     desc: (
       <>
@@ -1089,16 +1098,25 @@ import { BookLists } from './components/BookLists'
         <br />
         <br />
         The three buttons are the app&apos;s three (<code>books/_buttons.html.haml</code>) and are
-        gated the same way.{' '}
-        <strong>&ldquo;Add to Wish List&rdquo; turns into &ldquo;Added!&rdquo; in place</strong>{' '}
-        rather than navigating, which is what the app&apos;s own <code>ajax:success</code> handler
-        does to it.
+        gated the same way. The wish-list one <strong>acts in place and goes both ways</strong> —
+        the app&apos;s <code>ajax:success</code> handler turns it into a dead &ldquo;Added!&rdquo;
+        and leaves the Wish List page as the only way to undo it, which is a long way to go to
+        correct a mis-tap on the button you are still looking at.
         <br />
         <br />
-        <strong>Your Reading goes first</strong>, under the buttons: the app sends a logged
-        title&apos;s tile to that book&apos;s own log page, so a book you have read has to answer
-        &ldquo;how much of it?&rdquo; before it tells you what it&apos;s about. A title nobody has
-        logged says so.
+        The prose is behind tabs — Overview / Reading Log / More Like This, which are Book
+        Discovery&apos;s own names, so a book detail reads the same whichever prototype you opened
+        it in. What identifies the book (the cover, the title, the credits, the buttons and the tag
+        rail) stays out of them, because it is true on every tab.
+        <br />
+        <br />
+        The <strong>Reading Log</strong> tab is this title&apos;s slice of the reader&apos;s own
+        log, and a session there can be <strong>corrected or taken back</strong> —
+        <code>reading_log/_sessions.html.haml</code>: a pencil and a remove per row, the amount
+        becoming a field in place with Save and Cancel where those two were, and the app&apos;s own
+        confirm (&ldquo;Don&apos;t Delete&rdquo; included) for the delete. A session that came in
+        from a reading app offers only the remove — <code>logged_book_can_be_edited</code>, since
+        the number came from the app and there is nothing here to correct.
         <br />
         <br />
         The rail is <code>books/_product_aside.html.haml</code> in full. Every tag is a link into a
