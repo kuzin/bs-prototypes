@@ -68,10 +68,14 @@
   }
 }
 
-/* The cover and the title both open that book's record. */
+/* The cover and the title both open that book's record. Not `font: inherit` —
+   the shorthand sets every longhand, which would take the title's own weight
+   back down to the body's. */
 .wl-hit {
   padding: 0;
-  font: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  line-height: inherit;
   text-align: left;
   cursor: pointer;
   background: none;

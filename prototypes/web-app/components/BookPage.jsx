@@ -5,6 +5,7 @@ import { Pill } from '@components/Pill/Pill'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { StatCard } from '@components/Cards/Cards'
+import { Table } from '@components/Table/Table'
 import { RowAction, RowActions } from '@components/RowAction/RowAction'
 import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
@@ -20,6 +21,7 @@ import '@components/Tabs/Tabs.css'
 import '@components/Modal/Modal.css'
 import '@components/RowAction/RowAction.css'
 import '@components/Cards/Cards.css'
+import '@components/Table/Table.css'
 
 /**
  * One book — `books#show`, the record every other page's titles point at.
@@ -67,6 +69,19 @@ import '@components/Cards/Cards.css'
  */
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'] // prettier-ignore
+
+/**
+ * What the reader has put into this title, in whatever it was measured in. A
+ * title logged in pages has no minutes and vice versa, so the tile reports the
+ * one that has a number rather than showing both and dashing one.
+ */
+function totalRead(sessions) {
+  const minutes = sessions.reduce((n, e) => n + (e.minutes ?? 0), 0)
+  const pages = sessions.reduce((n, e) => n + (e.pages ?? 0), 0)
+  if (minutes && pages) return { value: minutes, label: 'Minutes (and pages)' }
+  if (pages) return { value: pages, label: 'Pages' }
+  return { value: minutes || '—', label: 'Minutes' }
+}
 
 /** `2026-06-16` → `June 16, 2026`, without constructing a Date (and its zone). */
 const longDate = (key) => {
@@ -172,123 +187,147 @@ export function BookPage({
                 ) : (
                   <>
                     {/* The same tile the reading log puts its numbers on, so this
-                    title's totals read as a slice of that page's. */}
+                        title's totals read as a slice of that page's. Two of
+                        them: how often, and how much. Whether a session was
+                        measured in minutes or pages is the table's own column,
+                        and a tile that can only say "—" is a tile that says
+                        nothing. */}
                     <div className="bp-readnums">
                       <StatCard
                         value={sessions.length}
-                        label="Sessions"
+                        label={sessions.length === 1 ? 'Session' : 'Sessions'}
                         color="#B45309"
                         icon={<Icon name="calendar" size={20} />}
                       />
                       <StatCard
-                        value={sessions.reduce((n, e) => n + (e.minutes ?? 0), 0) || '—'}
-                        label="Minutes"
+                        value={totalRead(sessions).value}
+                        label={totalRead(sessions).label}
                         color="#0B6B78"
                         icon={<Icon name="clock" size={20} />}
                       />
-                      <StatCard
-                        value={sessions.reduce((n, e) => n + (e.pages ?? 0), 0) || '—'}
-                        label="Pages"
-                        color="#5B21B6"
-                        icon={<Icon name="file-text" size={20} />}
-                      />
-                      {sessions.some((e) => e.completed) && (
-                        <StatCard
-                          value="Completed"
-                          label="This title"
-                          color="#0F7A55"
-                          icon={<Icon name="circle-check" size={20} />}
-                        />
-                      )}
                     </div>
-                    <ul className="bp-sessions">
-                      {[...sessions]
-                        .sort((a, b) => b.date.localeCompare(a.date))
-                        .map((e) => {
-                          // A session that came in from a reading app has nothing
-                          // here to correct — `logged_book_can_be_edited`.
-                          const editable = !e.source && Boolean(onEditSession)
-                          const unit = e.minutes ? 'min' : 'pages'
-                          const open = editing === e.id
-                          return (
-                            <li key={e.id} className={open ? 'is-editing' : undefined}>
-                              <span className="bp-session-date">{longDate(e.date)}</span>
-                              <span className="bp-session-amount">
-                                {open ? (
-                                  <>
-                                    <input
-                                      className="bp-session-input"
-                                      type="number"
-                                      min="1"
-                                      value={draft}
-                                      onChange={(ev) => setDraft(ev.target.value)}
-                                      aria-label={`${unit} read`}
-                                      autoFocus
-                                    />
-                                    <span className="bp-session-unit">{unit}</span>
-                                  </>
-                                ) : e.minutes ? (
-                                  `${e.minutes} min`
-                                ) : e.pages ? (
-                                  `${e.pages} pages`
-                                ) : (
-                                  'Logged'
-                                )}
+
+                    {/* The design system's table, header and all: these rows
+                        carry four things now and the app's own session list is
+                        a table in everything but markup. */}
+                    <Table
+                      className="bp-sessions"
+                      bordered
+                      columns={[
+                        {
+                          key: 'date',
+                          label: 'Date',
+                          render: (_v, e) => (
+                            <span className="bp-session-date">{longDate(e.date)}</span>
+                          ),
+                        },
+                        {
+                          key: 'amount',
+                          label: 'Logged',
+                          width: 150,
+                          render: (_v, e) =>
+                            editing === e.id ? (
+                              <span className="bp-session-edit">
+                                <input
+                                  className="bp-session-input"
+                                  type="number"
+                                  min="1"
+                                  value={draft}
+                                  onChange={(ev) => setDraft(ev.target.value)}
+                                  aria-label={`${e.minutes ? 'minutes' : 'pages'} read`}
+                                  autoFocus
+                                />
+                                <span className="bp-session-unit">
+                                  {e.minutes ? 'min' : 'pages'}
+                                </span>
                               </span>
-                              <span className="bp-session-source">
-                                {e.source ? (
-                                  <>
-                                    <PartnerMark id={e.source} size={15} />{' '}
-                                    {CONNECTIONS[e.source].name}
-                                  </>
-                                ) : (
-                                  <span className="bp-session-manual">Logged by hand</span>
-                                )}
-                              </span>
-                              <RowActions className="bp-session-actions">
-                                {open ? (
-                                  <>
+                            ) : (
+                              <strong className="bp-session-amount">
+                                {e.minutes
+                                  ? `${e.minutes} min`
+                                  : e.pages
+                                    ? `${e.pages} pages`
+                                    : 'Logged'}
+                              </strong>
+                            ),
+                        },
+                        {
+                          key: 'source',
+                          label: 'From',
+                          align: 'center',
+                          width: 80,
+                          /* The partner's mark and nothing else — its name is
+                             on the tooltip. Spelling "Comics Plus" out on every
+                             row of a table whose rows are all the same app is a
+                             column of repeated text. */
+                          render: (_v, e) =>
+                            e.source ? (
+                              <RowAction
+                                as="span"
+                                label={`Imported from ${CONNECTIONS[e.source].name}`}
+                              >
+                                <PartnerMark id={e.source} size={18} />
+                              </RowAction>
+                            ) : (
+                              <RowAction as="span" icon="user" label="Logged by hand" />
+                            ),
+                        },
+                        {
+                          key: 'id',
+                          label: '',
+                          align: 'right',
+                          width: 100,
+                          render: (_v, e) => (
+                            <RowActions>
+                              {editing === e.id ? (
+                                <>
+                                  <RowAction
+                                    icon="check"
+                                    label="Save"
+                                    onClick={() => {
+                                      const n = Number(draft)
+                                      if (n > 0) onEditSession(e, n)
+                                      setEditing(null)
+                                    }}
+                                  />
+                                  <RowAction
+                                    icon="x"
+                                    label="Cancel"
+                                    onClick={() => setEditing(null)}
+                                  />
+                                </>
+                              ) : (
+                                <>
+                                  {/* A session that came in from a reading app
+                                      has nothing here to correct —
+                                      `logged_book_can_be_edited`. */}
+                                  {!e.source && onEditSession && (
                                     <RowAction
-                                      icon="check"
-                                      label="Save"
+                                      icon="pencil"
+                                      label="Edit this session"
                                       onClick={() => {
-                                        const n = Number(draft)
-                                        if (n > 0) onEditSession(e, n)
-                                        setEditing(null)
+                                        setDraft(String(e.minutes ?? e.pages ?? ''))
+                                        setEditing(e.id)
                                       }}
                                     />
+                                  )}
+                                  {onRemoveSession && (
                                     <RowAction
-                                      icon="x"
-                                      label="Cancel"
-                                      onClick={() => setEditing(null)}
+                                      icon="trash"
+                                      label="Remove this session"
+                                      onClick={() => setRemoving(e)}
                                     />
-                                  </>
-                                ) : (
-                                  <>
-                                    {editable && (
-                                      <RowAction
-                                        icon="pencil"
-                                        label="Edit this session"
-                                        onClick={() => {
-                                          setDraft(String(e.minutes ?? e.pages ?? ''))
-                                          setEditing(e.id)
-                                        }}
-                                      />
-                                    )}
-                                    {onRemoveSession && (
-                                      <RowAction
-                                        icon="trash"
-                                        label="Remove this session"
-                                        onClick={() => setRemoving(e)}
-                                      />
-                                    )}
-                                  </>
-                                )}
-                              </RowActions>
-                            </li>
-                          )
-                        })}
-                    </ul>
+                                  )}
+                                </>
+                              )}
+                            </RowActions>
+                          ),
+                        },
+                      ]}
+                      rows={[...sessions].sort((a, b) => b.date.localeCompare(a.date))}
+                      getRowKey={(e) => e.id}
+                      highlightRow={(e) => editing === e.id}
+                    />
                   </>
                 )}
               </section>

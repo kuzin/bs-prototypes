@@ -132,6 +132,9 @@
   padding: 0;
   text-align: left;
   font: inherit;
+  /* After the shorthand, which was quietly resetting the title's own 800 —
+     `font: inherit` sets every longhand, and it wins on source order. */
+  font-weight: 800;
   color: inherit;
   background: none;
   border: 0;
@@ -164,11 +167,11 @@
   padding: 8px 9px;
 }
 .rl-entry--dense .rl-entry-title {
-  font-size: 12px;
+  font-size: 13.5px;
 }
 .rl-entry--dense .rl-entry-author,
 .rl-entry--dense .rl-entry-amounts {
-  font-size: 11px;
+  font-size: 12.5px;
 }
 
 /* Imported-from tag + its tooltip. */
@@ -224,8 +227,8 @@
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 .rl-cal-dow {
-  padding: 9px 10px;
-  font-size: 12px;
+  padding: 10px 10px;
+  font-size: 13.5px;
   font-weight: 700;
   color: var(--c-text-light);
   border-bottom: 1px solid var(--c-border);
@@ -235,8 +238,8 @@
   border-left: 1px solid var(--c-border);
 }
 .rl-cal-cell {
-  min-height: 130px;
-  padding: 8px;
+  min-height: 148px;
+  padding: 9px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -255,8 +258,8 @@
   color: var(--c-gray-600);
 }
 .rl-cal-date {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   color: var(--c-text-light);
 }
 .rl-cal-streak {
@@ -269,7 +272,7 @@
   border-left: 4px solid #e2825d;
   background: #fdece5;
   color: #a13a22;
-  font-size: 11px;
+  font-size: 12.5px;
   font-weight: 800;
 }
 

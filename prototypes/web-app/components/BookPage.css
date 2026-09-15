@@ -350,35 +350,38 @@
   margin-bottom: 18px;
 }
 
+/* The design system's table. Its own rows are 13px; a session list that is the
+   only thing on its tab can carry the page's own size. */
 .bp-sessions {
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  border-top: 1px solid var(--c-border);
+  margin-top: 4px;
 }
-.bp-sessions li {
-  display: grid;
-  grid-template-columns: minmax(0, 1.2fr) 108px minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: center;
-  padding: 6px 0;
-  font-size: 13px;
+.bp-sessions .tbl td {
+  font-size: 14px;
+}
+.bp-session-date {
+  font-weight: 700;
   color: var(--c-text);
-  border-bottom: 1px solid var(--c-border);
 }
-.bp-sessions li.is-editing {
-  background: var(--c-gray-50);
+.bp-session-amount {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-text-dark);
 }
 
 /* Editing happens in the row: the amount becomes a field and the pencil and the
    remove become save and cancel — `edit-times-read-input` and the four
    `session-action__*` controls. */
+.bp-session-edit {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+}
 .bp-session-input {
-  width: 64px;
-  height: 32px;
+  width: 68px;
+  height: 34px;
   padding: 0 8px;
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   color: var(--c-text-dark);
   background: #fff;
@@ -386,41 +389,15 @@
   border-radius: 8px;
 }
 .bp-session-unit {
-  margin-left: 6px;
   font-weight: 700;
   color: var(--c-text-light);
 }
-.bp-session-actions {
-  justify-content: flex-end;
-}
-.bp-session-date {
-  font-weight: 700;
-}
-.bp-session-amount {
-  font-weight: 800;
-  color: var(--c-text-dark);
-}
-.bp-session-source {
-  display: inline-flex;
-  gap: 6px;
-  align-items: center;
-  font-size: 12.5px;
-  font-weight: 700;
-}
-.bp-session-manual {
-  font-weight: 400;
-  color: var(--c-gray-600);
-}
 
 @container (max-width: 560px) {
-  .bp-sessions li {
-    grid-template-columns: minmax(0, 1fr) auto;
-  }
-  .bp-session-source {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-  .bp-session-actions {
-    grid-row: 2;
+  /* The table keeps its columns and scrolls rather than folding — a session is
+     a date, an amount, where it came from and what you can do to it, and none
+     of those reads on its own. */
+  .bp-sessions .tbl-scroll > .tbl {
+    width: max-content;
   }
 }
