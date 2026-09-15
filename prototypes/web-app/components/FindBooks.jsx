@@ -95,18 +95,21 @@ export function FindBooks({ onBack, backLabel, onOpenBook, initial }) {
       <ReaderPageHead
         as="h2"
         title="Find Books"
-        count={`${shown.length} of ${CATALOG.length} books`}
-        actions={<Button variant="secondary">Print This List</Button>}
+        /* Search belongs with the page's other controls, not on a line of its
+           own under the title taking the width of the page. */
+        actions={
+          <>
+            <SearchInput
+              className="fb-search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search titles and authors"
+              ariaLabel="Search the catalog"
+            />
+            <Button variant="secondary">Print This List</Button>
+          </>
+        }
       />
-
-      <div className="fb-search">
-        <SearchInput
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search titles and authors"
-          ariaLabel="Search the catalog"
-        />
-      </div>
 
       {/* The app's five facets, each behind its own button. */}
       <FilterMenuBar className="fb-filters">

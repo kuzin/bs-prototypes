@@ -37,7 +37,8 @@
 .bdg-art.is-earned .bdg-ring-fill {
   stroke: #0ba85f;
 }
-.bdg-art img {
+.bdg-art img,
+.bdg-art > svg:not(.bdg-ring) {
   width: 114px;
   height: 114px;
   object-fit: contain;
@@ -173,138 +174,10 @@
   line-height: 1.55;
   color: var(--c-text-light);
 }
+/* The activity list is its own component; this is only the rule that sets it
+   off from the badge's own statement above it. */
 .bdg-acts {
   padding-top: 16px;
   margin-top: 18px;
-  text-align: left;
   border-top: 1px solid var(--c-border);
-}
-.bdg-acts h3 {
-  margin-bottom: 10px;
-  font-size: 11.5px;
-  font-weight: 900;
-  color: var(--c-text-light);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-.bdg-acts ul {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-}
-.bdg-act {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  width: 100%;
-  padding: 10px 12px;
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  background: var(--c-gray-50);
-  border: 1px solid var(--c-border);
-  border-radius: 10px;
-}
-.bdg-act:hover {
-  border-color: var(--c-gray-500);
-}
-.bdg-act-check {
-  display: inline-flex;
-  flex: none;
-  color: var(--c-gray-400);
-}
-.bdg-acts .is-done .bdg-act {
-  background: #f2faf6;
-  border-color: #b7e2ce;
-}
-.bdg-acts .is-done .bdg-act-check {
-  color: #0ba85f;
-}
-.bdg-act-name {
-  flex: 1;
-  min-width: 0;
-  font-size: 14.5px;
-  font-weight: 700;
-  color: var(--c-text);
-}
-.bdg-acts .is-done .bdg-act-name {
-  color: var(--c-text-light);
-  text-decoration: line-through;
-}
-.bdg-act-do {
-  flex: none;
-  font-size: 12.5px;
-  font-weight: 800;
-  color: var(--c-teal);
-}
-.bdg-acts .is-done .bdg-act-do {
-  color: #087542;
-}
-
-/* The four kinds an activity comes in. The tick is its own button, so a text or
-   code activity can disable it — those complete by answering, not by ticking. */
-.bdg-act {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 12px;
-  background: var(--c-gray-50);
-  border: 1px solid var(--c-border);
-  border-radius: 10px;
-}
-.bdg-act-check {
-  display: inline-flex;
-  flex: none;
-  padding: 0;
-  color: var(--c-gray-400);
-  cursor: pointer;
-  background: none;
-  border: 0;
-}
-.bdg-act-check:disabled {
-  cursor: default;
-}
-.bdg-act-body {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: 8px;
-  align-items: flex-start;
-  min-width: 0;
-}
-.bdg-act-link {
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--c-blue);
-}
-.bdg-act-field {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: flex-start;
-  width: 100%;
-}
-.bdg-act-field label {
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--c-text-light);
-}
-.bdg-act-field textarea,
-.bdg-act-field input {
-  width: 100%;
-  padding: 8px 10px;
-  font: inherit;
-  font-size: 14px;
-  background: #fff;
-  border: 1px solid var(--c-gray-300, var(--c-border));
-  border-radius: 8px;
-}
-.bdg-act-times,
-.bdg-act-points {
-  font-size: 12.5px;
-  font-weight: 800;
-  color: #826022;
 }

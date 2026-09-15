@@ -19,6 +19,7 @@ import {
   ReaderTopBar,
   StreakBanner,
   bannerSrc,
+  badgeSrc,
 } from '@components/ReaderApp/ReaderApp'
 import { PartnerSwitcher } from '@components/PartnerConnect/PartnerConnect'
 import { AllBadges } from '../../web-app/components/AllBadges'
@@ -30,12 +31,14 @@ import { WishList } from '../../web-app/components/WishList'
 import { BookLists, BookListPage } from '../../web-app/components/BookLists'
 import { FindBooks } from '../../web-app/components/FindBooks'
 import { BookPage } from '../../web-app/components/BookPage'
-import { BOOK_LISTS, CATALOG_BY_ID, WISH_LIST } from '../../web-app/data'
+import { ACTIVITY_BADGES, BOOK_LISTS, CATALOG_BY_ID, WISH_LIST } from '../../web-app/data'
 import { READING_LOG } from '../../logging-flow/data'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from '../../web-app/components/FriendProfile'
 import { ChallengePage } from '../../web-app/components/ChallengePage'
 import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
+import { CompleteActivity } from '@components/CompleteActivity/CompleteActivity'
+import { ActivityList } from '@components/ActivityList/ActivityList'
 import { FundraiserPage, FundraiserWelcome } from '../../web-app/components/FundraiserPage'
 import { FUNDRAISER } from '../../web-app/data'
 import { MORE_CHALLENGES, REGISTRATION_QUESTIONS } from '../../logging-flow/data'
@@ -238,6 +241,58 @@ function FundraiserWelcomeDemo() {
       <Button onClick={() => setOpen(true)}>Land on a site running a fundraiser</Button>
       <FundraiserWelcome open={open} onClose={() => setOpen(false)} />
     </>
+  )
+}
+
+/* The flow with its own state, so a reviewer can walk both steps and watch the
+   counts move. */
+function CompleteActivityDemo() {
+  const badges = ACTIVITY_BADGES()
+  const [done, setDone] = useState(
+    () => new Set(badges.flatMap((b) => b.activities.filter((a) => a.done).map((a) => a.id))),
+  )
+  const [open, setOpen] = useState(false)
+  const toggle = (a) =>
+    setDone((d) => {
+      const next = new Set(d)
+      if (next.has(a.id)) next.delete(a.id)
+      else next.add(a.id)
+      return next
+    })
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Complete Activity</Button>
+      <CompleteActivity
+        open={open}
+        badges={badges}
+        src={(b) => badgeSrc(b.set, b.art)}
+        completed={done}
+        onToggle={(badge, a) => toggle(a)}
+        onClose={() => setOpen(false)}
+      />
+    </>
+  )
+}
+
+/* The badge whose four activities are one of each kind. */
+function ActivityListDemo() {
+  const badge = ACTIVITY_BADGES().find((b) => b.activities.length === 4)
+  const [done, setDone] = useState(
+    () => new Set(badge.activities.filter((a) => a.done).map((a) => a.id)),
+  )
+  return (
+    <ActivityList
+      activities={badge.activities}
+      done={done}
+      onToggle={(a) =>
+        setDone((d) => {
+          const next = new Set(d)
+          if (next.has(a.id)) next.delete(a.id)
+          else next.add(a.id)
+          return next
+        })
+      }
+    />
   )
 }
 
@@ -583,6 +638,73 @@ export const readerAppSections = [
         </Variant>
       </>
     ),
+  },
+  {
+    group: 'web-app',
+    sub: 'challenges',
+    id: 'complete-activity',
+    name: 'Complete Activity',
+    usage: `import { CompleteActivity } from '@components/CompleteActivity/CompleteActivity'
+
+<CompleteActivity
+  open={open}
+  badges={activityBadges}                /* learning tracks with activities under them */
+  src={(b) => badgeSrc(b.set, b.art)}
+  completed={doneIds}                    /* a Set of activity ids */
+  onToggle={(badge, activity) => tick(badge, activity)}
+  onClose={close}
+  label="Activity Badge"                 /* display_singular_learning_track_label */
+/>
+
+/* the reader shell wires it to the top bar's own button */
+<Dashboard activities={{ badges, src, completed, onToggle }} />`,
+    desc: (
+      <>
+        <strong>Complete Activity</strong> — <code>logged_books#activities</code>, the second thing
+        the reader&apos;s top bar offers after Log Reading. An activity badge is a{' '}
+        <code>LearningTrack</code>, and you earn it by doing the activities under it; this is where
+        you say you have.
+        <br />
+        <br />
+        Two steps on the logger&apos;s full-screen surface. <strong>Choose one</strong> —{' '}
+        <code>logged_books/_learning_track</code>: the badge&apos;s art ringed with how far along it
+        is, its name, what it takes, and how many of its activities are done. Then{' '}
+        <strong>its activities</strong>, which is the same list the badge&apos;s own modal shows.
+        The app skips the first step where the reader has only one, because a list of one is a
+        question with one answer.
+        <br />
+        <br />
+        The button is gated the way the app gates it —{' '}
+        <code>profile_has_current_learning_tracks?</code>: no activity badges, no button. A{' '}
+        <strong>repeatable</strong> track counts rather than ticks, so its badge&apos;s own figure
+        is the number.
+      </>
+    ),
+    render: () => <CompleteActivityDemo />,
+  },
+  {
+    group: 'web-app',
+    sub: 'challenges',
+    id: 'activity-list',
+    name: 'ActivityList',
+    usage: `import { ActivityList } from '@components/ActivityList/ActivityList'
+
+<ActivityList activities={badge.activities} done={doneIds} onToggle={(a) => tick(a)} />`,
+    desc: (
+      <>
+        The activities under an activity badge — <code>activities/_activity.html.haml</code> — in
+        the four kinds one comes in: tick it off, follow a <strong>link</strong> and come back,
+        write an answer (<code>is_text_box_challenge?</code>), or enter a <strong>code</strong> the
+        library handed out (<code>is_an_activity_code?</code>). The tick is its own button, because
+        the last two complete by being answered rather than by being ticked. A{' '}
+        <strong>repeatable</strong> one keeps a count instead.
+        <br />
+        <br />
+        The same list wherever it appears: inside the badge&apos;s own modal, and on the Complete
+        Activity screen, which is this list with nothing else around it.
+      </>
+    ),
+    render: () => <ActivityListDemo />,
   },
   {
     group: 'web-app',

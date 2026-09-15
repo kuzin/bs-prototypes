@@ -2,9 +2,15 @@
    `.library-list.wish-list` — a `book-row` per title: the cover, what it is
    and whose idea it was, then what you can do with it. */
 
+/* In the page header beside the buttons, so it takes a control's width rather
+   than a line of the page. */
 .wl-search {
-  max-width: 420px;
-  margin-bottom: 18px;
+  width: 240px;
+}
+@container (max-width: 700px) {
+  .wl-search {
+    width: 100%;
+  }
 }
 
 .wl-list {

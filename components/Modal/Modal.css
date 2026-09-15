@@ -25,6 +25,18 @@
   animation: modal-fade-out 0.22s ease-in forwards;
 }
 
+/* A dialogue opened over the full-screen flow — the badge you just earned, say.
+   The flow draws no backdrop of its own and its white sheet sits at 200, so a
+   scrim at 199 was hidden underneath it and the dialogue floated on a white
+   page with nothing dimmed behind it. Anything that isn't the flow goes above
+   the flow. */
+.modal-backdrop:not(.modal-backdrop--full) {
+  z-index: 201;
+}
+.modal:not(.modal--full) {
+  z-index: 202;
+}
+
 @keyframes modal-fade-in {
   from {
     opacity: 0;
@@ -101,7 +113,10 @@
   top: calc(50% + (var(--chrome-top) - var(--chrome-bottom)) / 2);
   left: 50%;
   width: min(520px, calc(100vw - 32px));
-  max-height: calc(100vh - 32px - var(--chrome-top) - var(--chrome-bottom));
+  /* 32px each side of the app area, not 16: the close badge hangs 19px above
+     the panel's own top edge, so at the old margin a full-height modal put its
+     close under the preview bar. */
+  max-height: calc(100vh - 64px - var(--chrome-top) - var(--chrome-bottom));
   transform: translate(-50%, -50%);
   border-radius: 14px;
   border: 1px solid var(--c-gray-200);

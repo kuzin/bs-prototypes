@@ -5,6 +5,7 @@ import { Pill } from '@components/Pill/Pill'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 
@@ -22,6 +23,7 @@ import '@components/Button/Button.css'
 import '@components/Pill/Pill.css'
 import '@components/SearchInput/SearchInput.css'
 import '@components/Primitives/Primitives.css'
+import '@components/ActiveFilters/ActiveFilters.css'
 
 /**
  * Book Lists — `reading_lists#index`, the curated shelves a site publishes and
@@ -72,42 +74,44 @@ export function BookLists({ onOpenList, onFindBooks }) {
       (!grades.length || l.grades.some((g) => grades.includes(g))) &&
       (!genres.length || l.genres.some((g) => genres.includes(g))),
   ).sort((a, b) => a.name.localeCompare(b.name))
-  const filtered = Boolean(term || grades.length || genres.length)
+
+  // One chip per set value, so clearing is per-tag rather than per-facet — the
+  // same row Find Books puts under its own facets.
+  const setters = { grades: setGrades, genres: setGenres }
+  const applied = Object.entries({ grades, genres }).flatMap(([key, values]) =>
+    values.map((v) => ({
+      key: `${key}:${v}`,
+      label: v,
+      onClear: () => setters[key]((set) => set.filter((x) => x !== v)),
+    })),
+  )
+  const clearAll = () => {
+    setGrades([])
+    setGenres([])
+  }
 
   return (
     <div className="bl">
       <ReaderPageHead
         as="h2"
         title="Book Lists"
+        /* Search belongs with the page's other controls, not on a line of its
+           own under the title taking the width of the page. */
         actions={
           <>
-            {filtered && (
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  setQ('')
-                  setGrades([])
-                  setGenres([])
-                }}
-              >
-                Clear Filters
-              </Button>
-            )}
+            <SearchInput
+              className="bl-search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search book lists"
+              ariaLabel="Search book lists"
+            />
             <Button variant="secondary" onClick={onFindBooks}>
               Find Books
             </Button>
           </>
         }
       />
-
-      <div className="bl-search">
-        <SearchInput
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="Search book lists"
-          ariaLabel="Search book lists"
-        />
-      </div>
 
       {/* `grade_levels/filters` and `genres/filters` — the app's own two. One
           value each: these narrow a shelf of shelves, where the catalog's own
@@ -128,6 +132,8 @@ export function BookLists({ onOpenList, onFindBooks }) {
           multi
         />
       </FilterMenuBar>
+
+      {applied.length > 0 && <ActiveFilters filters={applied} onClearAll={clearAll} />}
 
       {shown.length === 0 ? (
         <EmptyState

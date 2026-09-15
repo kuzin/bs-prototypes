@@ -1,0 +1,147 @@
+/* ─── Activities ─────────────────────────────────────────────────────────────
+   `activities/_activity.html.haml`. The list under an activity badge, and the
+   whole of the Complete Activity screen. */
+
+.act-list {
+  text-align: left;
+}
+/* A plain label, on the same rung every other label sits on — as uppercase
+   micro-caps it read as a system heading rather than the name of the list under
+   it. */
+.act-list-head {
+  margin-bottom: 8px;
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: var(--c-text);
+}
+.act-list ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* The tick is its own button, so a text or code activity can disable it —
+   those complete by answering, not by ticking. */
+.act {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  /* Centred against the name, which is all most rows have. The two that open a
+     field underneath keep the tick at the top, where its own row is. */
+  align-items: center;
+  padding: 12px;
+  background: var(--c-gray-50);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+}
+.act:hover {
+  border-color: var(--c-gray-500);
+}
+.act-check {
+  display: inline-flex;
+  flex: none;
+  padding: 0;
+  color: var(--c-gray-400);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.act:has(.act-field),
+.act:has(.act-times),
+.act:has(.act-link) {
+  align-items: flex-start;
+}
+.act-check:disabled {
+  cursor: default;
+}
+.act-check:focus-visible {
+  outline: none;
+}
+.act-check:focus-visible::after {
+  box-shadow: 0 0 0 3px #5599e1;
+}
+/* The whole row ticks, not just the 22px circle — a tick you have to aim at is
+   a tick people miss. The layer is the check button's own, so it stays one
+   control; the two kinds that complete by being answered are disabled and get
+   no layer. */
+.act-check:not(:disabled)::after {
+  position: absolute;
+  inset: -1px;
+  content: '';
+  border-radius: 10px;
+}
+/* Anything you can actually click inside the row sits over the layer. */
+.act-link,
+.act-field,
+.act-body .btn {
+  position: relative;
+  z-index: 1;
+}
+
+/* Done: the row goes green and the name is struck through. */
+.act-list .is-done .act {
+  background: #f2faf6;
+  border-color: #b7e2ce;
+}
+.act-list .is-done .act-check {
+  color: #0ba85f;
+}
+.act-list .is-done .act-name {
+  color: var(--c-text-light);
+  text-decoration: line-through;
+}
+
+.act-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
+}
+.act-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.act-link {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--c-blue);
+}
+
+/* `is_text_box_challenge?` and `is_an_activity_code?` — the two that complete
+   by being answered. */
+.act-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  width: 100%;
+}
+.act-field label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-text-light);
+}
+.act-field textarea,
+.act-field input {
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid var(--c-gray-300, var(--c-border));
+  border-radius: 8px;
+}
+
+/* A repeatable track keeps a count rather than a tick. */
+.act-times,
+.act-points {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #826022;
+}

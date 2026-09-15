@@ -142,7 +142,16 @@ function EntryChip({ entry, dense, showImported = true, onOpenBook, bookFor }) {
   // catalog has never heard of stays plain text rather than linking nowhere.
   const book = onOpenBook ? bookFor?.(entry.title) : null
   return (
-    <div className={`rl-entry rl-entry--${entry.tone}${dense ? ' rl-entry--dense' : ''}`}>
+    <div
+      className={`rl-entry rl-entry--${entry.tone}${dense ? ' rl-entry--dense' : ''}${
+        showImported && entry.source ? ' rl-entry--room' : ''
+      }`}
+    >
+      {/* Ahead of the text in the markup so a calendar cell can float it: a
+          mark in a column of its own takes that width off every line of the
+          title, not just the one it sits beside. `order` puts it back on the
+          right in the list, where the entry is a row with width to spare. */}
+      {showImported && entry.source && <ImportedTag entry={entry} />}
       <div className="rl-entry-main">
         {book ? (
           <button
@@ -171,7 +180,6 @@ function EntryChip({ entry, dense, showImported = true, onOpenBook, bookFor }) {
           </span>
         )}
       </div>
-      {showImported && entry.source && <ImportedTag entry={entry} />}
     </div>
   )
 }

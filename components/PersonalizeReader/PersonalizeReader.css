@@ -192,13 +192,12 @@
 .st-viewers {
   margin-top: 24px;
 }
+/* The same plain label the rest of the page uses for the name of a group. */
 .st-h3 {
-  margin-bottom: 4px;
-  font-size: 12.5px;
+  margin-bottom: 8px;
+  font-size: var(--text-label);
   font-weight: 800;
-  color: var(--c-text-light);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  color: var(--c-text);
 }
 
 /* ─── Deleting a reader ───────────────────────────────────────────────────── */
