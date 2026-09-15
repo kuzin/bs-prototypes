@@ -626,15 +626,21 @@ function Drawings({ extras }) {
             <div className="cp-drawing-foot">
               {/* What you have in it, on the same soft Pill everything else on
                   this page states itself with — and short, so it can sit beside
-                  the button rather than above it. */}
-              <Pill
-                color={entered[d.id] > 0 ? '#B45309' : '#656565'}
-                variant="soft"
-                size="sm"
-                icon={<Icon name="ticket" size={14} />}
-              >
-                {entered[d.id]} Entered
-              </Pill>
+                  the button rather than above it.
+
+                  Not on a drawing that has closed: the count is there to tell
+                  you what you can still change, and the notice under it is the
+                  whole of what is left to say. */}
+              {!d.ended && (
+                <Pill
+                  color={entered[d.id] > 0 ? '#B45309' : '#656565'}
+                  variant="soft"
+                  size="sm"
+                  icon={<Icon name="ticket" size={14} />}
+                >
+                  {entered[d.id]} Entered
+                </Pill>
+              )}
               {d.ended ? (
                 // `.ticket-reward-expired` — a statement of fact where the
                 // action would be, so it takes the app's own notice chrome
