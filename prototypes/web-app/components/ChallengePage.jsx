@@ -868,21 +868,40 @@ function BingoCard({ card, set }) {
               onClick={() => setOpen(q)}
               aria-label={`${q.text} — ${q.state === 'bingo' ? 'in a bingo' : (q.state ?? 'unearned')}`}
             >
-              <span className="cp-square-art">
-                <img src={badgeSrc(set, q.art)} alt="" />
-                {q.state === 'unavailable' && (
-                  <span className="cp-square-lock">
-                    <Icon name="lock" size={20} />
-                  </span>
-                )}
-              </span>
-              <span className="cp-square-text">{q.text}</span>
-              {/* `.badge-receivables` — `order: 3`, so it sits at the foot. */}
+              {/* `.badge-receivables` — little ribbon tabs hanging off the
+                  square's right edge, one per thing the badge pays out. Below
+                  1000px the app folds them into a row at the foot (`order: 3`),
+                  which is what the media query does. */}
               {(q.reward || q.tickets || q.certificate) && (
                 <span className="cp-square-marks">
-                  {q.reward && <Icon name="gift" size={14} />}
-                  {q.tickets && <Icon name="ticket" size={14} />}
-                  {q.certificate && <Icon name="award" size={14} />}
+                  {q.reward && (
+                    <span className="cp-mark cp-mark--reward" title="There is a reward">
+                      <Icon name="gift" size={16} />
+                    </span>
+                  )}
+                  {q.tickets && (
+                    <span className="cp-mark cp-mark--ticket" title="This badge earns tickets">
+                      <Icon name="ticket" size={16} />
+                    </span>
+                  )}
+                  {q.certificate && (
+                    <span className="cp-mark cp-mark--certificate" title="There is a certificate">
+                      <Icon name="award" size={16} />
+                    </span>
+                  )}
+                </span>
+              )}
+              <span className="cp-square-art">
+                <img src={badgeSrc(set, q.art)} alt="" />
+              </span>
+              <span className="cp-square-text">{q.text}</span>
+              {/* `.badge-title` — the badge's own name under what it asks. */}
+              <span className="cp-square-title">{q.title}</span>
+              {/* `.badge-unavailable` — the app lays it over the whole square
+                  at 80%, not a lock inside the art. */}
+              {q.state === 'unavailable' && (
+                <span className="cp-square-lock" aria-hidden="true">
+                  <Icon name="lock" size={72} stroke={1.4} />
                 </span>
               )}
             </button>
@@ -897,6 +916,7 @@ function BingoCard({ card, set }) {
           open && {
             name: open.title,
             blurb: open.text,
+            date: open.date,
             locked: !(open.state === 'earned' || open.state === 'bingo'),
             state: open.state,
             reward: open.reward,

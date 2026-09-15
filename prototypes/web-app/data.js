@@ -1082,29 +1082,42 @@ const drawing = (id, title, description, endsOn, entered, extra = {}) => ({
    earned. */
 const sq = (art, title, text, state, extra = {}) => ({ art, title, text, state, ...extra })
 
+/* An earned square is an earned badge, so it carries the date the badge modal
+   states — the square opens the same modal every other badge opens. */
+const won = (art, title, text, state, on, extra = {}) =>
+  sq(art, title, text, state, { date: on, ...extra })
+
 export const BINGO_CARD = {
   size: 5,
   squares: [
     // Row 1 — the bingo.
-    sq('pow', 'POW', 'Read a superhero comic', 'bingo', { reward: true }),
-    sq('bam', 'BAM', 'Read a graphic novel over 200 pages', 'bingo'),
-    sq('zap', 'ZAP', 'Read something with an animal on the cover', 'bingo'),
-    sq('boom', 'BOOM', 'Read a comic a friend recommended', 'bingo', { tickets: true }),
-    sq('pop', 'POP', 'Read a manga', 'bingo'),
+    won('pow', 'POW', 'Read a superhero comic', 'bingo', 'Jun 3, 2026', {
+      reward: 'Comics Choice enamel pin',
+    }),
+    won('bam', 'BAM', 'Read a graphic novel over 200 pages', 'bingo', 'Jun 5, 2026'),
+    won('zap', 'ZAP', 'Read something with an animal on the cover', 'bingo', 'Jun 6, 2026'),
+    won('boom', 'BOOM', 'Read a comic a friend recommended', 'bingo', 'Jun 9, 2026', {
+      tickets: 1,
+    }),
+    won('pop', 'POP', 'Read a manga', 'bingo', 'Jun 11, 2026'),
 
-    sq('blue-book', 'Blue Book', 'Read a graphic memoir', 'earned'),
-    sq('star', 'Star', 'Write a review of a comic', 'earned', { certificate: true }),
-    sq('free-space', 'Free Space', 'This one is yours for joining', 'earned'),
+    won('blue-book', 'Blue Book', 'Read a graphic memoir', 'earned', 'Jun 12, 2026'),
+    won('star', 'Star', 'Write a review of a comic', 'earned', 'Jun 14, 2026', {
+      certificate: 'Comics Choice — Reviewer',
+    }),
+    won('free-space', 'Free Space', 'This one is yours for joining', 'earned', 'Jun 1, 2026'),
     sq('hmmm', 'Hmmm', 'Read a mystery comic'),
     sq('whoa', 'Whoa', 'Read something published this year'),
 
-    sq('lightning', 'Lightning', 'Read two comics in one day', 'earned'),
+    won('lightning', 'Lightning', 'Read two comics in one day', 'earned', 'Jun 8, 2026'),
     sq('red-book', 'Red Book', 'Read a comic in a series you have not tried'),
     sq('flash', 'Flash', 'Read a comic in under 20 minutes'),
     sq('surprise', 'Surprise', 'Let the librarian pick one for you', 'unavailable'),
     sq('poof', 'Poof', 'Read a fantasy comic'),
 
-    sq('comics', 'Comics', 'Read three comics on Comics Plus', 'earned', { tickets: true }),
+    won('comics', 'Comics', 'Read three comics on Comics Plus', 'earned', 'Jun 15, 2026', {
+      tickets: 2,
+    }),
     sq('yellow-book', 'Yellow Book', 'Read a non-fiction comic'),
     sq('blah-blah-blah', 'Blah Blah Blah', 'Read a comic that made you laugh'),
     sq('next-chapter', 'Next Chapter', 'Finish a series you started'),

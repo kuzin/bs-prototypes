@@ -635,16 +635,17 @@
 }
 
 /* ─── The bingo card ─────────────────────────────────────────────────────────
-   `.bingo-grid` in microsite/_programs.scss, ported: a `fit-content` grid of
+   `.bingo-grid` in microsite/_programs.scss. A `fit-content` grid of
    `minmax(10px, 250px)` columns centred on the page, 16px apart (8 under
-   1000px). Each square is a 16px-radius card on `#f5f5f5` behind a 2px
-   `#eaeaea` border, and it grows 2% under the pointer. */
+   1000px), and each square a 16px-radius card on `#f5f5f5` behind a 2px
+   `#eaeaea` border that grows 2% under the pointer. */
 .cp-bingo {
   display: grid;
   grid-auto-rows: min-content;
   gap: 16px;
   align-items: center;
   width: fit-content;
+  max-width: 100%;
   padding: 0;
   margin: 22px auto 0;
   list-style: none;
@@ -658,12 +659,14 @@
 .cp-bingo--5 {
   grid-template-columns: repeat(5, minmax(10px, 250px));
 }
+/* `.bingo-item` — the cell, so the ribbon tabs have something to hang off. */
 .cp-bingo > li {
   position: relative;
   height: 100%;
 }
 
 .cp-square {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -677,15 +680,16 @@
   background: #f5f5f5;
   border: 2px solid #eaeaea;
   border-radius: 16px;
+  transform: scale(1);
   transition: transform 0.2s ease;
 }
 .cp-square:hover {
   transform: scale(1.02);
 }
 
-/* Earned lifts off the grey onto white with the app's own shadow, and drops
-   its border. A square in a **bingo** is the line you completed, so it takes
-   the pastel green and its text goes jade. */
+/* Earned lifts off the grey onto white with the app's own shadow and drops its
+   border. A square in a **bingo** is the line you completed, so it takes the
+   pastel green and its text goes jade. */
 .cp-square.is-earned {
   background: #fff;
   border-color: transparent;
@@ -702,11 +706,12 @@
 .cp-square.is-bingo .cp-square-text::before {
   background: rgb(11 168 95 / 20%);
 }
-.cp-square.is-unavailable .cp-square-text {
-  color: var(--c-gray-500);
+.cp-square.is-unavailable .cp-square-text,
+.cp-square.is-unavailable .cp-square-title {
+  color: var(--c-gray-350);
 }
 
-/* `.badge-image` — the art inside a 4px ring, which goes jade once earned. */
+/* `.badge-image` — the art inside a 4px ring that goes jade once earned. */
 .cp-square-art {
   position: relative;
   display: grid;
@@ -732,33 +737,46 @@
 .cp-square.is-bingo .cp-square-art img {
   background: #fff;
 }
-/* The app ships a separate grayed file per badge; we ship one, so unearned is
-   a filter over it — and an unavailable square is all but blank behind its
-   lock, the way `opacity: 0.1` leaves it. */
+/* The app ships a grayed file per badge; we ship one, so unearned is a filter
+   over it — and an unavailable square is all but blank behind its mark, the
+   way `opacity: 0.1` leaves it. */
 .cp-square:not(.is-earned):not(.is-bingo) .cp-square-art img {
   opacity: 0.3;
 }
 .cp-square.is-unavailable .cp-square-art img {
   opacity: 0.1;
 }
+/* `.badge-unavailable` — 80% of the square, over everything. */
 .cp-square-lock {
   position: absolute;
-  color: var(--c-gray-400);
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 80%;
+  height: 80%;
+  color: var(--c-gray-350);
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+.cp-square-lock svg {
+  width: 56%;
+  height: 56%;
 }
 
-/* `.badge-description` — what the square asks of you, under a short rule that
-   is 25% of the square's width. */
+/* `.badge-description` — what the square asks of you, under a rule a quarter of
+   the square wide. */
 .cp-square-text {
   position: relative;
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: center;
-  padding-top: 16px;
+  padding: 16px 0 0;
   margin-top: 8px;
   font-size: 14px;
   line-height: 1.35;
-  color: var(--c-gray-600);
+  color: #5c5c5c;
 }
 .cp-square-text::before {
   position: absolute;
@@ -772,23 +790,66 @@
   border-radius: 3px;
 }
 
-/* `.badge-receivables` — `order: 3`: what the square pays out goes at the
-   foot, not in a corner. */
-.cp-square-marks {
-  display: inline-flex;
-  order: 3;
-  gap: 4px;
-  justify-content: center;
-  padding: 5px 8px;
-  margin-top: 12px;
-  color: var(--c-gray-600);
-  background: #fff;
-  border-radius: 8px;
+/* `.badge-title` — the badge's own name, under what it asks. */
+.cp-square-title {
+  width: 100%;
+  padding: 4px 0 4px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #656565;
 }
-.cp-square.is-earned .cp-square-marks,
-.cp-square.is-bingo .cp-square-marks {
-  color: #087542;
-  background: #fff;
+
+/* `.badge-receivables` — ribbon tabs hanging off the square's right edge, one
+   per thing the badge pays out, each in the app's own pastel. */
+.cp-square-marks {
+  position: absolute;
+  top: 24px;
+  right: -10px;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+.cp-mark {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 4px 4px 0 4px;
+}
+/* The tail: a small triangle under the tab's right edge, which is what the
+   app's skewed pseudo-elements draw. */
+.cp-mark::after {
+  position: absolute;
+  right: 0;
+  bottom: -8px;
+  content: '';
+  border-top: 8px solid;
+  border-right: 8px solid transparent;
+}
+.cp-mark--ticket {
+  color: #f5a208;
+  background: #ffecc8;
+}
+.cp-mark--ticket::after {
+  border-top-color: #e9d0a0;
+}
+.cp-mark--reward {
+  color: #b43dd0;
+  background: #f4e2f8;
+}
+.cp-mark--reward::after {
+  border-top-color: #dcc0e4;
+}
+.cp-mark--certificate {
+  color: #196dd5;
+  background: #dde9f9;
+}
+.cp-mark--certificate::after {
+  border-top-color: #bccfe8;
 }
 
 @media (max-width: 1000px) {
@@ -798,8 +859,8 @@
   .cp-square {
     padding: 12px;
   }
-  /* The app drops the rule and the badge's own margins here; the description
-     becomes the square. */
+  /* The app drops the rule and the badge's margins here, and folds the ribbon
+     tabs into a row at the foot (`order: 3`). */
   .cp-square-text {
     padding-top: 0;
     margin: 0 0 8px;
@@ -807,11 +868,35 @@
   .cp-square-text::before {
     display: none;
   }
+  .cp-square-title {
+    display: none;
+  }
+  .cp-square-marks {
+    position: relative;
+    top: auto;
+    right: auto;
+    flex-direction: row;
+    gap: 4px;
+    justify-content: center;
+    order: 3;
+    width: 100%;
+    margin-top: 4px;
+  }
+  .cp-mark {
+    width: 100%;
+    max-width: 32px;
+    aspect-ratio: 1;
+    height: auto;
+    border-radius: 8px;
+  }
+  .cp-mark::after {
+    display: none;
+  }
 }
 
 @media (max-width: 560px) {
-  /* `$small-only`: the app hides the badge art altogether and lets the text
-     fill the square — five across gives each one about 60px. */
+  /* `$small-only`: the app hides the badge art and lets the text fill the
+     square — five across gives each one about 60px. */
   .cp-square {
     padding: 8px;
     border-radius: 8px;
@@ -825,8 +910,9 @@
     font-size: 12px;
   }
   .cp-square-marks {
-    padding: 3px 5px;
-    margin-top: 6px;
+    padding: 4px;
+    background: #fff;
+    border-radius: 8px;
   }
 }
 
