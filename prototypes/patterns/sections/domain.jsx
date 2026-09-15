@@ -613,6 +613,7 @@ import '@components/AlertsBanner/AlertsBanner.css'
   },
   {
     group: 'web-app',
+    sub: 'account',
     id: 'partner-connect-banner',
     name: 'Connect Banner',
     usage: `import { BannerStack } from '@components/ReaderApp/ReaderApp'
@@ -668,6 +669,7 @@ import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
   },
   {
     group: 'web-app',
+    sub: 'account',
     id: 'partner-connect-flow',
     name: 'Connect Flow',
     usage: `import { ConnectFlow } from '@components/PartnerConnect/PartnerConnect'
@@ -698,6 +700,7 @@ import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
   },
   {
     group: 'web-app',
+    sub: 'account',
     id: 'partner-switcher',
     name: 'Partner Switcher',
     usage: `import { PartnerSwitcher } from '@components/PartnerConnect/PartnerConnect'
@@ -738,6 +741,7 @@ import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
   },
   {
     group: 'web-app',
+    sub: 'account',
     id: 'partner-auto-logged',
     name: 'Auto-Logged Card',
     usage: `import { AutoLoggedCard } from '@components/PartnerConnect/PartnerConnect'
@@ -760,6 +764,7 @@ import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
   },
   {
     group: 'web-app',
+    sub: 'account',
     id: 'personalize-reader',
     name: 'Personalize Reader',
     usage: `import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'

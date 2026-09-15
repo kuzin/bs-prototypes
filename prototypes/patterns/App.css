@@ -330,6 +330,23 @@
   opacity: 0.85;
 }
 
+/* The sidebar's own sub-heading: quieter than the group above it, so the
+   hierarchy reads top-down rather than as two competing labels. */
+.pt-nav-sub {
+  padding: 10px 18px 3px;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  color: rgba(255, 255, 255, 0.3);
+}
+.pt-nav-sub:first-of-type {
+  padding-top: 4px;
+}
+/* A link under a sub-heading is indented to it, so the two levels are legible
+   without a second border or a wider rail. */
+.pt-nav-sub ~ .pt-nav-link {
+  padding-left: 28px;
+}
+
 .pt-nav-link {
   display: block;
   padding: 7px 18px;
@@ -964,6 +981,49 @@
 }
 
 /* Responsive grid of light, demo-free component cards. */
+/* ─── Sub-groups ─────────────────────────────────────────────────────────────
+   The second level, for a group that has outgrown one list. A rule above each
+   run, the name and what's in it on one line — enough to find your section by,
+   and not so much that the page becomes headings. */
+.pt-sub + .pt-sub {
+  margin-top: var(--space-24);
+}
+.pt-sub-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px var(--space-8);
+  align-items: baseline;
+  padding-top: var(--space-12);
+  margin-bottom: var(--space-12);
+  border-top: 1px solid var(--c-border);
+}
+.pt-sub:first-of-type .pt-sub-head {
+  padding-top: 0;
+  border-top: 0;
+}
+.pt-sub-title {
+  font-size: var(--text-label);
+  font-weight: var(--fw-extrabold);
+  color: var(--c-text);
+}
+.pt-sub-desc {
+  flex: 1;
+  font-size: var(--text-tag);
+  color: var(--c-text-light);
+}
+.pt-sub-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  font-size: var(--text-micro);
+  font-weight: var(--fw-bold);
+  color: var(--c-text-light);
+  background: var(--c-gray-100);
+  border-radius: 999px;
+}
+
 .pt-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -1975,4 +2035,10 @@ a.pt-nav-group-label {
   font-family: var(--font-mono);
   font-size: var(--text-micro);
   color: var(--c-gray-600);
+}
+
+/* The sub, after the group, on a search row — quieter than the group so the
+   pair reads as one location rather than two labels. */
+.pt-pal-row-sub {
+  opacity: 0.75;
 }

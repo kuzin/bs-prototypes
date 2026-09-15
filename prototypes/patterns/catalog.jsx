@@ -1,5 +1,11 @@
 // Pattern-library catalog: GROUPS metadata + the assembled SECTIONS list.
 //
+// A group may declare `subs` — an ordered list of sub-groups — and an entry
+// names one with `sub:`. It is the same idea as `group:` one level down, and
+// for the same reason: a group of thirty is a wall you scroll rather than a
+// list you read. Only a group that has outgrown one list needs them; most
+// don't, and a group without `subs` renders exactly as it did.
+//
 // The showcase functions, fixtures, and SECTION entries live in ./sections/*.jsx.
 // A file is just *where the showcase code lives* — the `group:` field on each
 // entry is what decides which group it shows up under, so one file can feed
@@ -178,8 +184,31 @@ export const GROUPS = [
     id: 'web-app',
     kind: 'prototype',
     title: 'Web App',
-    desc: 'The reader-facing chrome — the app bar and reader switcher, the challenge grid, the rail’s goal and leaderboard cards, and the partner-connection kit every integration prototype mounts.',
+    desc: 'The reader-facing app — the chrome every page sits in, the rail beside it, and a section per thing a reader actually does: challenges, reading, people, reviews, and the account behind the gear.',
     color: 'var(--c-orange)',
+    // Named for the reader's own nav wherever there is a tab to name them
+    // after, and for what the thing *is* where there isn't.
+    subs: [
+      { id: 'chrome', title: 'Chrome', desc: 'The frame every reader page sits in.' },
+      {
+        id: 'rail',
+        title: 'The rail',
+        desc: 'What sits beside the page — the reader’s own numbers.',
+      },
+      {
+        id: 'challenges',
+        title: 'Challenges',
+        desc: 'Joining one, reading it, and what it awards.',
+      },
+      { id: 'reading', title: 'Reading', desc: 'The catalog, the lists, and one book.' },
+      { id: 'people', title: 'People', desc: 'Friends, requests, and where a reader ranks.' },
+      { id: 'reviews', title: 'Reviews', desc: 'The reader’s own, and everybody else’s.' },
+      {
+        id: 'account',
+        title: 'Account & reading apps',
+        desc: 'The page behind the gear, and the partner kit that lives on it.',
+      },
+    ],
   },
   {
     id: 'ris',

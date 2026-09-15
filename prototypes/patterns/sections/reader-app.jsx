@@ -241,6 +241,7 @@ function FundraiserWelcomeDemo() {
 export const readerAppSections = [
   {
     group: 'web-app',
+    sub: 'chrome',
     id: 'reader-top-bar',
     name: 'ReaderTopBar',
     usage: `import { ReaderTopBar } from '@components/ReaderApp/ReaderApp'
@@ -319,6 +320,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'chrome',
     id: 'reader-pill',
     name: 'ReaderPill',
     usage: `import { ReaderPill } from '@components/ReaderApp/ReaderApp'
@@ -345,6 +347,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'chrome',
     id: 'reader-banner',
     name: 'ReaderBanner',
     usage: `import { ReaderBanner, ReaderBannerAction, BannerStack } from '@components/ReaderApp/ReaderApp'
@@ -433,6 +436,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'chrome',
     id: 'reader-streak-banner',
     name: 'StreakBanner',
     usage: `import { StreakBanner } from '@components/ReaderApp/ReaderApp'
@@ -478,6 +482,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'chrome',
     id: 'reader-back',
     name: 'ReaderBack',
     usage: `import { ReaderBack } from '@components/ReaderApp/ReaderApp'
@@ -513,6 +518,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'chrome',
     id: 'reader-page-head',
     name: 'ReaderPageHead',
     usage: `import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
@@ -577,6 +583,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'challenges',
     id: 'reader-challenge-card',
     name: 'ChallengeCard',
     usage: `import { ChallengeCard } from '@components/ReaderApp/ReaderApp'
@@ -659,6 +666,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'challenges',
     id: 'reader-challenge-scope',
     name: 'ChallengeScope',
     usage: `import { ChallengeScope } from '@components/ReaderApp/ReaderApp'
@@ -679,6 +687,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'challenges',
     id: 'reader-join-challenge',
     name: 'JoinChallenge',
     usage: `import { JoinChallenge, ConfirmUnenroll } from '../logging-flow/components/Dashboard'
@@ -752,6 +761,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'rail',
     id: 'reader-motivation-card',
     name: 'MotivationCard',
     usage: `import { MotivationCard } from '@components/ReaderApp/ReaderApp'
@@ -788,6 +798,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'rail',
     id: 'reader-goal-card',
     name: 'GoalCard',
     usage: `import { GoalCard } from '@components/ReaderApp/ReaderApp'
@@ -826,6 +837,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'rail',
     id: 'reader-leaderboard-card',
     name: 'LeaderboardCard',
     usage: `import { LeaderboardCard } from '@components/ReaderApp/ReaderApp'
@@ -849,6 +861,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'challenges',
     id: 'wa-all-badges',
     name: 'AllBadges',
     usage: `import { AllBadges } from './components/AllBadges'
@@ -876,6 +889,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'people',
     id: 'wa-friends',
     name: 'Friends',
     usage: `import { Friends } from './components/Friends'
@@ -906,6 +920,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'people',
     id: 'wa-friend-requests',
     name: 'FriendRequests',
     usage: `import { FriendRequests } from './components/FriendRequests'
@@ -953,6 +968,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'people',
     id: 'wa-friend-profile',
     name: 'FriendProfile',
     usage: `import { FriendProfile } from './components/FriendProfile'
@@ -996,6 +1012,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'people',
     id: 'wa-leaderboards',
     name: 'Leaderboards',
     usage: `import { Leaderboards } from './components/Leaderboards'
@@ -1022,6 +1039,7 @@ export const readerAppSections = [
   },
   {
     group: 'web-app',
+    sub: 'reading',
     id: 'wa-wish-list',
     name: 'WishList',
     usage: `import { WishList } from './components/WishList'
@@ -1069,6 +1087,7 @@ import { BookLists } from './components/BookLists'
   },
   {
     group: 'web-app',
+    sub: 'challenges',
     id: 'wa-fundraiser',
     name: 'FundraiserPage',
     usage: `import { FundraiserPage, FundraiserWelcome } from './components/FundraiserPage'
@@ -1133,6 +1152,7 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
   },
   {
     group: 'web-app',
+    sub: 'reading',
     id: 'wa-find-books',
     name: 'FindBooks',
     usage: `import { FindBooks } from './components/FindBooks'
@@ -1172,6 +1192,7 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
   },
   {
     group: 'web-app',
+    sub: 'reading',
     id: 'wa-book-page',
     name: 'BookPage',
     usage: `import { BookPage } from './components/BookPage'
@@ -1247,6 +1268,7 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
   },
   {
     group: 'web-app',
+    sub: 'reading',
     id: 'wa-book-list-page',
     name: 'BookListPage',
     usage: `import { BookListPage } from './components/BookLists'
@@ -1277,6 +1299,7 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
   },
   {
     group: 'web-app',
+    sub: 'reviews',
     id: 'wa-peer-reviews',
     name: 'PeerReviews',
     usage: `import { PeerReviews } from './components/PeerReviews'
@@ -1314,6 +1337,7 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
   },
   {
     group: 'web-app',
+    sub: 'reviews',
     id: 'wa-reviews',
     name: 'Reviews',
     usage: `import { Reviews } from './components/Reviews'
@@ -1347,6 +1371,7 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
   },
   {
     group: 'web-app',
+    sub: 'challenges',
     id: 'wa-challenge-page',
     name: 'ChallengePage',
     usage: `import { ChallengePage } from './components/ChallengePage'

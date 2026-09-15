@@ -48,6 +48,29 @@ function sectionsForGroup(groupId) {
   return SECTIONS.filter((s) => s.group === groupId)
 }
 
+/**
+ * A group's entries split into its declared sub-groups — the second level of
+ * organisation, for a group that has outgrown one list.
+ *
+ * Returns `null` for a group with no `subs`, so every caller can keep its
+ * one-list rendering rather than branching on an empty array. A sub with
+ * nothing in it is dropped, and anything an entry left unassigned falls into a
+ * trailing bucket rather than disappearing: a missing `sub:` should look like
+ * an oversight, not like a deleted component.
+ */
+function subsForGroup(group) {
+  if (!group?.subs?.length) return null
+  const items = sectionsForGroup(group.id)
+  const buckets = group.subs
+    .map((sub) => ({ ...sub, items: items.filter((s) => s.sub === sub.id) }))
+    .filter((b) => b.items.length > 0)
+  const known = new Set(group.subs.map((sub) => sub.id))
+  const rest = items.filter((s) => !known.has(s.sub))
+  return rest.length
+    ? [...buckets, { id: '_rest', title: 'Everything else', items: rest }]
+    : buckets
+}
+
 // ── Sidebar group expansion ───────────────────────────────────────────────
 // Several groups can stay open at once, and the set survives a reload — with
 // 19 groups, a one-at-a-time accordion kept throwing away where you were.
@@ -72,10 +95,11 @@ function CompCard({ groupId, section }) {
   )
 }
 
-function CardGrid({ groupId }) {
+function CardGrid({ groupId, sections }) {
+  const items = sections ?? sectionsForGroup(groupId)
   return (
     <div className="pt-card-grid">
-      {sectionsForGroup(groupId).map((s) => (
+      {items.map((s) => (
         <CompCard key={s.id} groupId={groupId} section={s} />
       ))}
     </div>
@@ -151,11 +175,25 @@ function Crumbs({ group, section }) {
 }
 
 function GroupView({ group }) {
+  const subs = subsForGroup(group)
   return (
     <div className="pt-group">
       <Crumbs group={group} />
       <GroupHeader title={group.title} desc={group.desc} />
-      <CardGrid groupId={group.id} />
+      {subs ? (
+        subs.map((sub) => (
+          <section className="pt-sub" key={sub.id} id={`sub-${sub.id}`}>
+            <div className="pt-sub-head">
+              <h2 className="pt-sub-title">{sub.title}</h2>
+              {sub.desc && <p className="pt-sub-desc">{sub.desc}</p>}
+              <span className="pt-sub-count">{sub.items.length}</span>
+            </div>
+            <CardGrid groupId={group.id} sections={sub.items} />
+          </section>
+        ))
+      ) : (
+        <CardGrid groupId={group.id} />
+      )}
     </div>
   )
 }
@@ -410,6 +448,7 @@ export function App() {
 
           {GROUPS.map((group, i) => {
             const items = sectionsForGroup(group.id)
+            const subs = subsForGroup(group)
             const isOpen = openGroups.has(group.id)
             const isActiveGroup = activeGroupId === group.id
             return (
@@ -433,15 +472,33 @@ export function App() {
                     </button>
                   </div>
                   {isOpen &&
-                    items.map((s) => (
-                      <a
-                        key={s.id}
-                        href={`#/${group.id}/${s.id}`}
-                        className={`pt-nav-link${activeSectionId === s.id ? ' pt-nav-link--active' : ''}`}
-                      >
-                        {s.name}
-                      </a>
-                    ))}
+                    (subs
+                      ? /* The same links, under the sub-headings the group
+                         declares — a run of thirty in one column is a list you
+                         scroll past rather than one you read. */
+                        subs.map((sub) => (
+                          <Fragment key={sub.id}>
+                            <div className="pt-nav-sub">{sub.title}</div>
+                            {sub.items.map((s) => (
+                              <a
+                                key={s.id}
+                                href={`#/${group.id}/${s.id}`}
+                                className={`pt-nav-link${activeSectionId === s.id ? ' pt-nav-link--active' : ''}`}
+                              >
+                                {s.name}
+                              </a>
+                            ))}
+                          </Fragment>
+                        ))
+                      : items.map((s) => (
+                          <a
+                            key={s.id}
+                            href={`#/${group.id}/${s.id}`}
+                            className={`pt-nav-link${activeSectionId === s.id ? ' pt-nav-link--active' : ''}`}
+                          >
+                            {s.name}
+                          </a>
+                        )))}
                 </div>
               </Fragment>
             )

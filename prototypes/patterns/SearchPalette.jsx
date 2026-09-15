@@ -11,6 +11,18 @@ import { GROUPS, SECTIONS } from './catalog'
 
 const groupTitle = (id) => GROUPS.find((g) => g.id === id)?.title ?? id
 
+// A group big enough to be sub-divided repeats its own name down thirty rows,
+// which tells you nothing; the sub is what tells them apart.
+const subTitle = (groupId, subId) =>
+  subId
+    ? (GROUPS.find((g) => g.id === groupId)?.subs?.find((x) => x.id === subId)?.title ?? '')
+    : ''
+
+// Group and sub, for the row and for the haystack — "web app reading" should
+// find the book pages.
+const whereText = (section) =>
+  [groupTitle(section.group), subTitle(section.group, section.sub)].filter(Boolean).join(' ')
+
 // Most section descriptions are JSX (they inline <code> for prop names), so
 // flatten a node down to its text before searching it.
 function textOf(node) {
@@ -24,7 +36,7 @@ function textOf(node) {
 const HAYSTACK = SECTIONS.map((section) => ({
   section,
   name: section.name.toLowerCase(),
-  group: groupTitle(section.group).toLowerCase(),
+  group: whereText(section).toLowerCase(),
   desc: textOf(section.desc).toLowerCase(),
 }))
 
@@ -124,7 +136,15 @@ export function SearchPalette({ onClose }) {
                 onClick={onClose}
               >
                 <span className="pt-pal-row-name">{s.name}</span>
-                <span className="pt-pal-row-group">{groupTitle(s.group)}</span>
+                <span className="pt-pal-row-group">
+                  {groupTitle(s.group)}
+                  {subTitle(s.group, s.sub) && (
+                    <>
+                      {' · '}
+                      <span className="pt-pal-row-sub">{subTitle(s.group, s.sub)}</span>
+                    </>
+                  )}
+                </span>
               </a>
             ))}
           </div>
