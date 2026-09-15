@@ -199,10 +199,12 @@
    same overlay with a different body: the site's own questions, asked once
    between pressing Join and being enrolled. */
 .jc-qintro {
+  padding-bottom: 16px;
   margin-bottom: 18px;
   font-size: 14.5px;
   line-height: 1.55;
   color: var(--c-text-light);
+  border-bottom: 1px solid var(--c-border);
 }
 .jc-questions {
   display: flex;
@@ -214,9 +216,11 @@
   margin: 0;
   border: 0;
 }
+/* No rule between questions: a `legend` sits *in* its fieldset's border box,
+   so a border-top on the fieldset draws a line through the question's own name
+   and leaves the padding hanging under it. The gap does the separating. */
 .jc-question + .jc-question {
-  padding-top: 18px;
-  border-top: 1px solid var(--c-border);
+  padding-top: 2px;
 }
 .jc-question-text {
   display: block;
@@ -227,19 +231,5 @@
   line-height: 1.35;
   color: var(--c-text-dark);
 }
-/* Which questions block the join, said on the question rather than in a
-   legend at the top — `active_and_required` is per question. */
-.jc-required,
-.jc-optional {
-  font-size: 11.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  white-space: nowrap;
-}
-.jc-required {
-  color: #b3401a;
-}
-.jc-optional {
-  color: var(--c-text-light);
-}
+/* Which questions block the join is the house asterisk, per question —
+   `active_and_required`. An optional one is marked by not having it. */

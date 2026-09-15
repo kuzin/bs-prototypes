@@ -169,10 +169,15 @@ export function JoinChallenge({
                     <fieldset className="jc-question" key={q.id}>
                       <legend className="jc-question-text">
                         {q.question}
-                        {q.required ? (
-                          <span className="jc-required"> Required</span>
-                        ) : (
-                          <span className="jc-optional"> Optional</span>
+                        {/* The house marker, and the app's own
+                            (`<abbr title='required'>*</abbr>` on its labels).
+                            Nothing marks an optional one: no asterisk is what
+                            optional looks like. */}
+                        {q.required && (
+                          <span className="fld-req" title="Required">
+                            {' '}
+                            *
+                          </span>
                         )}
                       </legend>
                       {/* One answer only — the admin screen says so outright,
