@@ -351,6 +351,15 @@ export const PAST_CHALLENGES = [
   },
 ]
 
+/* Every challenge a page can be opened for, by id — so a reload can put the
+   reader back on the one they had open. */
+export const CHALLENGE_BY_ID = Object.fromEntries(
+  [...CHALLENGES, ...MORE_CHALLENGES, ...CONNECTED_CHALLENGES, ...PAST_CHALLENGES].map((c) => [
+    c.id,
+    c,
+  ]),
+)
+
 export const TOP_SCHOOLS = [
   {
     rank: 1,

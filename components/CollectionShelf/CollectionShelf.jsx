@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
-import { byEarnedState, EarnedFilter, hasBothStates } from '@components/EarnedFilter/EarnedFilter'
+import { EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+import { byEarnedState, hasBothStates } from '@components/EarnedFilter/earned'
 import { EmptyState } from '@components/Primitives/Primitives'
 
 import './CollectionShelf.css'

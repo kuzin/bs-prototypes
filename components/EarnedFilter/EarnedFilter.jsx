@@ -1,4 +1,5 @@
 import { Tabs } from '@components/Tabs/Tabs'
+import { DEFAULT_EARNED, hasBothStates } from './earned'
 
 import '@components/Tabs/Tabs.css'
 
@@ -21,22 +22,10 @@ import '@components/Tabs/Tabs.css'
  *   const [state, setState] = useState('all')
  *   <EarnedFilter items={prizes} isEarned={(p) => p.earned} value={state} onChange={setState} />
  *   {byEarnedState(prizes, state, (p) => p.earned).map(…)}
+ *
+ * `byEarnedState` and `hasBothStates` are in `./earned` — a module that exports
+ * a component and nothing else is one React Fast Refresh can hot-swap.
  */
-
-const DEFAULT_EARNED = (item) => !item.locked
-
-/** Whether the control would show anything — both halves present. */
-export function hasBothStates(items, isEarned = DEFAULT_EARNED) {
-  return items.some((i) => isEarned(i)) && items.some((i) => !isEarned(i))
-}
-
-/** The set the control's current value asks for. */
-export function byEarnedState(items, state, isEarned = DEFAULT_EARNED) {
-  if (!hasBothStates(items, isEarned)) return items
-  if (state === 'earned') return items.filter((i) => isEarned(i))
-  if (state === 'unearned') return items.filter((i) => !isEarned(i))
-  return items
-}
 
 export function EarnedFilter({
   items,

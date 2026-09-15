@@ -43,6 +43,7 @@ import {
   RECENTLY_LOGGED,
   READING_LOG,
   REGISTRATION_QUESTIONS,
+  CHALLENGE_BY_ID,
 } from '../logging-flow/data'
 import {
   CONNECTIONS,
@@ -180,6 +181,18 @@ function loadSettings(defaults) {
 }
 
 const SITE_KEY = 'bs-web-app-site'
+/* Which tab, and which challenge if one is open. Session-scoped: it exists so
+   an edit or a refresh puts you back where you were, not so the app remembers
+   you between visits. */
+const NAV_KEY = 'bs-web-app-nav'
+
+function loadNav() {
+  try {
+    return JSON.parse(sessionStorage.getItem(NAV_KEY)) ?? {}
+  } catch {
+    return {}
+  }
+}
 /* `fundraiser-notification/fundraiser-id-N/profile-id-N/user-id-N` in the app —
    one fundraiser and one reader here, so one key. */
 const WELCOME_KEY = 'bs-web-app-fundraiser-welcomed'
@@ -206,11 +219,11 @@ export function App() {
   const [connections, setConnections] = useState({})
   const [linking, setLinking] = useState(null) // partner id mid-handoff
   const [visiting, setVisiting] = useState(null) // partner id whose catalog is open
-  const [challenge, setChallenge] = useState(null) // the challenge whose page is open
+  const [challenge, setChallenge] = useState(() => CHALLENGE_BY_ID[loadNav().challenge] ?? null)
   // The dashboard's view is driven from here so that leaving for another tab
   // also closes an open challenge — `page` replaces the main column, so
   // without this the challenge stayed up under a nav tab that had moved on.
-  const [view, setView] = useState('challenges')
+  const [view, setView] = useState(() => loadNav().view ?? 'challenges')
   const [features, setFeatures] = useState(() => loadSettings(FEATURE_DEFAULTS))
   const [requests, setRequests] = useState(FRIEND_REQUESTS)
   // The top bar can start a review from any page, so what it opens lives here
@@ -276,6 +289,17 @@ export function App() {
       /* as above */
     }
   }, [site])
+
+  // Where you were, so a reload doesn't send you back to the first screen.
+  // `sessionStorage`, not local: it is for the tab you have open — a new window
+  // starts on the dashboard the way a reader would.
+  useEffect(() => {
+    try {
+      sessionStorage.setItem(NAV_KEY, JSON.stringify({ view, challenge: challenge?.id ?? null }))
+    } catch {
+      /* as above */
+    }
+  }, [view, challenge])
 
   // Which of the account's profiles is being read as. A school has exactly one.
   //

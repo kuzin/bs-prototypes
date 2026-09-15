@@ -17,10 +17,11 @@ import { InfoBox } from '@components/InfoBox/InfoBox'
 import { BookCover } from '../../logging-flow/components/BookCover'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 import { CONNECTIONS } from '../../logging-flow/connections'
-import { badgeSrc, bannerSrc, ReaderBack } from '@components/ReaderApp/ReaderApp'
+import { badgeSrc, bannerSrc, prizeSrc, ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
 import { FilterMenuBar } from '@components/FilterMenu/FilterMenu'
-import { byEarnedState, EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+import { EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+import { byEarnedState } from '@components/EarnedFilter/earned'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
@@ -405,95 +406,210 @@ function ReadingList({ list, entries = [], onLog, onOpenBook }) {
 }
 
 /**
- * Ticket Drawings — `programs/_ticket_reward.html.haml`. A prize drawn from the
- * tickets readers earn, and the reader decides which drawings to spend theirs
- * on: the same ticket can't go into two.
+ * Ticket Drawings — `ticket_rewards/_ticket_rewards` and the two modals behind
+ * it. A prize drawn from the tickets readers earn, and the reader decides which
+ * drawings to spend theirs on: the same ticket can't go into two.
  *
- * A drawing that has closed says so and offers nothing — "Drawing has ended.
- * Winners will be notified." is the app's own line, and the site can rename
- * "drawing" (`word_for_drawing`) because a raffle is illegal in some states.
+ * Rows, like every other tab on this page, with the prize's own photo on the
+ * left — `reward_image`, desaturated on a drawing that has ended the way the
+ * app's `#grayscale` filter greys it.
+ *
+ * The row opens `_ticket_rewards_modal_overview`: the prize at size, the date,
+ * the description, an optional link the site added, and your entry count. The
+ * button at the end of the row goes straight to the stepper, and its **label
+ * is the state** — "Add/Remove Tickets", "Subtract Tickets" when you have none
+ * spare but some in, "Max Entered" at the cap, "No Tickets", or "Ended".
+ *
+ * Behind that is `_enter_drawing`: a stepper that **starts at what you have
+ * already entered**, which is how you take tickets back out — the button reads
+ * "No Change" until you move it, and says the cap while you do. It ends on the
+ * app's own confirmation ("N Tickets Entered · You have N tickets left.").
  */
 function Drawings({ extras }) {
+  const list = extras.drawings ?? []
   const [entered, setEntered] = useState(() =>
-    Object.fromEntries((extras.drawings ?? []).map((d) => [d.id, d.entered])),
+    Object.fromEntries(list.map((d) => [d.id, d.entered])),
   )
-  const [adding, setAdding] = useState(null) // the drawing whose modal is open
+  const [open, setOpen] = useState(null) // the drawing whose overview is open
+  const [editing, setEditing] = useState(null) // …whose stepper is open
   const [draft, setDraft] = useState(0)
+  const [added, setAdded] = useState(null) // the confirmation, once entered
+  const [state, setState] = useState('all')
 
   const earned = extras.tickets?.earned ?? 0
   const spent = Object.values(entered).reduce((n, v) => n + v, 0)
   const available = Math.max(0, earned - spent)
+
+  // `calculateMaxEntries` — the cap is the reward's own where it has one, and
+  // whatever you could still put in where it doesn't.
+  const capFor = (d, mine) =>
+    d.maxEntries > 0 ? Math.min(d.maxEntries, available + mine) : available + mine
+
+  const openStepper = (d) => {
+    setDraft(entered[d.id])
+    setEditing(d)
+    setAdded(null)
+  }
+
+  // The button's label *is* the state, which is how the app writes it.
+  const actionLabel = (d) =>
+    d.ended
+      ? 'Ended'
+      : d.maxEntries > 0 && entered[d.id] >= d.maxEntries
+        ? 'Max Entered'
+        : available <= 0 && entered[d.id] === 0
+          ? 'No Tickets'
+          : available <= 0
+            ? 'Subtract Tickets'
+            : 'Add/Remove Tickets'
+  const actionDisabled = (d) => d.ended || (available <= 0 && entered[d.id] === 0)
+
+  const isOpen = (d) => !d.ended
 
   return (
     <section className="cp-section">
       <ReaderPageHead
         as="h2"
         title="Ticket Drawings"
-        actions={
-          <p className="cp-tickets-count">
-            <Icon name="ticket" size={16} /> {available} {available === 1 ? 'ticket' : 'tickets'}{' '}
-            available
-          </p>
+        count={
+          available > 0
+            ? `${available} ${available === 1 ? 'ticket' : 'tickets'} to spend in this challenge`
+            : 'You have 0 tickets left to spend.'
         }
       />
 
+      <FilterMenuBar className="cp-listfilters">
+        <EarnedFilter
+          items={list}
+          isEarned={isOpen}
+          value={state}
+          onChange={setState}
+          ariaLabel="Which drawings"
+          labels={{ earned: 'Open', unearned: 'Ended' }}
+        />
+      </FilterMenuBar>
+
       <ul className="cp-drawings">
-        {(extras.drawings ?? []).map((d) => (
-          <li className="cp-drawing" key={d.id}>
-            <div className="cp-drawing-body">
-              <span className="cp-drawing-when">
-                {d.ended ? `Ended on ${d.endsOn}` : `Ends on ${d.endsOn}`}
+        {byEarnedState(list, state, isOpen).map((d) => (
+          <li className={`cp-drawing${d.ended ? ' is-ended' : ''}`} key={d.id}>
+            {/* The row opens the drawing; the button goes straight to the
+                stepper, the way every other tab on this page puts its one
+                action at the end of the row. */}
+            <button
+              type="button"
+              className="cp-drawing-open"
+              onClick={() => setOpen(d)}
+              aria-label={d.title}
+            >
+              <span className="cp-drawing-art">
+                {d.art ? <img src={prizeSrc(d.art)} alt="" /> : <Icon name="gift" size={26} />}
               </span>
-              <h3 className="cp-drawing-title">{d.title}</h3>
-              <p className="cp-drawing-desc">{d.description}</p>
-              <div className="cp-drawing-status">
-                {d.ended ? (
-                  <span className="cp-drawing-ended">
-                    <Icon name="clock" size={16} /> Drawing has ended. Winners will be notified.
+              <span className="cp-drawing-body">
+                <span className="cp-drawing-when">
+                  {d.ended ? `Ended on ${d.endsOn}` : `Ends on ${d.endsOn}`}
+                </span>
+                <span className="cp-drawing-title">{d.title}</span>
+                <span className="cp-drawing-desc">{d.description}</span>
+                {d.ended && (
+                  <span className="cp-drawing-expired">
+                    This drawing has ended. Winners will be notified.
                   </span>
-                ) : (
-                  <>
-                    <Button
-                      size="sm"
-                      disabled={available === 0}
-                      onClick={() => {
-                        setDraft(1)
-                        setAdding(d)
-                      }}
-                    >
-                      Add Tickets
-                    </Button>
-                    {entered[d.id] > 0 && (
-                      <span className="cp-drawing-entered">
-                        <Icon name="ticket" size={15} /> {entered[d.id]}{' '}
-                        {entered[d.id] === 1 ? 'Ticket' : 'Tickets'} Entered
-                      </span>
-                    )}
-                  </>
                 )}
-              </div>
+              </span>
+            </button>
+            <div className="cp-drawing-side">
+              <span className="cp-drawing-entered">
+                <Icon name="ticket" size={15} /> {entered[d.id]}{' '}
+                {entered[d.id] === 1 ? 'Ticket' : 'Tickets'} Entered
+              </span>
+              <Button
+                variant="secondary"
+                size="sm"
+                disabled={actionDisabled(d)}
+                onClick={() => openStepper(d)}
+              >
+                {actionLabel(d)}
+              </Button>
             </div>
           </li>
         ))}
       </ul>
 
-      {/* `ticket_rewards/_enter_drawing` — the title, what's left, and a
-          stepper. The button counts what you're about to spend. */}
+      {/* `_ticket_rewards_modal_overview` — the prize at size, with everything
+          the row hasn't room for. */}
       <Modal
-        open={Boolean(adding)}
-        onClose={() => setAdding(null)}
+        open={Boolean(open)}
+        onClose={() => setOpen(null)}
+        variant="center"
+        closeBadge
+        ariaLabel="Drawing"
+      >
+        <ModalClose onClick={() => setOpen(null)} />
+        {open && (
+          <>
+            {open.art && (
+              <img
+                className={`modal-image${open.ended ? ' is-ended' : ''}`}
+                src={prizeSrc(open.art)}
+                alt=""
+              />
+            )}
+            <div className="modal-body cp-dw">
+              <p className="cp-dw-when">
+                {open.ended ? `Ended on ${open.endsOn}` : `Ends on ${open.endsOn}`}
+              </p>
+              <h2 className="cp-dw-title">{open.title}</h2>
+              <p className="cp-dw-text">{open.description}</p>
+
+              {open.linkUrl && open.linkText && (
+                <p className="cp-dw-link">
+                  <a href={open.linkUrl} target="_blank" rel="noreferrer">
+                    {open.linkText}
+                  </a>
+                </p>
+              )}
+
+              <div className="cp-dw-tickets">
+                <span className="cp-dw-count">{entered[open.id]}</span>
+                <span className="cp-dw-countlbl">
+                  {entered[open.id] === 1 ? 'Ticket' : 'Tickets'} Entered
+                </span>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <Button
+                disabled={actionDisabled(open)}
+                onClick={() => {
+                  openStepper(open)
+                  setOpen(null)
+                }}
+              >
+                {actionLabel(open)}
+              </Button>
+            </div>
+          </>
+        )}
+      </Modal>
+
+      {/* `_enter_drawing` — the stepper, then the app's own confirmation. */}
+      <Modal
+        open={Boolean(editing)}
+        onClose={() => setEditing(null)}
         variant="center"
         closeBadge
         ariaLabel="Enter tickets"
       >
-        <ModalClose onClick={() => setAdding(null)} />
-        {adding && (
+        <ModalClose onClick={() => setEditing(null)} />
+        {editing && added == null && (
           <>
             <div className="modal-header modal-header--flush">
               <div className="modal-header-text">
-                <h2 className="modal-title">{adding.title}</h2>
+                <h2 className="modal-title">{editing.title}</h2>
                 <p className="modal-sub">
-                  {available} {available === 1 ? 'Ticket' : 'Tickets'} Available
+                  {/* Live, as the stepper moves: taking one back out puts it
+                      straight back in the pool. */}
+                  {available + entered[editing.id] - draft}{' '}
+                  {available + entered[editing.id] - draft === 1 ? 'Ticket' : 'Tickets'} Available
                 </p>
               </div>
             </div>
@@ -501,25 +617,45 @@ function Drawings({ extras }) {
               <NumberInput
                 size="lg"
                 min={0}
-                max={available}
+                max={capFor(editing, entered[editing.id])}
                 value={draft}
                 onChange={setDraft}
-                aria-label="Tickets to enter"
+                aria-label="Tickets entered"
               />
             </div>
             <div className="modal-footer">
-              <Button variant="ghost" onClick={() => setAdding(null)}>
+              <Button variant="ghost" onClick={() => setEditing(null)}>
                 Cancel
               </Button>
               <Button
-                disabled={draft < 1}
+                disabled={draft === entered[editing.id]}
                 onClick={() => {
-                  setEntered((e) => ({ ...e, [adding.id]: (e[adding.id] ?? 0) + draft }))
-                  setAdding(null)
+                  setEntered((e) => ({ ...e, [editing.id]: draft }))
+                  setAdded(draft)
                 }}
               >
-                Enter {draft} {draft === 1 ? 'Ticket' : 'Tickets'}
+                {draft === entered[editing.id]
+                  ? 'No Change'
+                  : `Enter ${draft} ${editing.maxEntries > 0 ? `(Max ${editing.maxEntries})` : '(No Max)'}`}
               </Button>
+            </div>
+          </>
+        )}
+        {editing && added != null && (
+          <>
+            <div className="modal-body cp-dwdone">
+              <span className="cp-dwdone-mark">
+                <Icon name="circle-check-filled" size={54} />
+              </span>
+              <h2 className="cp-dwdone-title">
+                {added} {added === 1 ? 'Ticket' : 'Tickets'} Entered
+              </h2>
+              <p className="cp-dwdone-sub">
+                You have {available} {available === 1 ? 'ticket' : 'tickets'} left.
+              </p>
+            </div>
+            <div className="modal-footer">
+              <Button onClick={() => setEditing(null)}>Close</Button>
             </div>
           </>
         )}

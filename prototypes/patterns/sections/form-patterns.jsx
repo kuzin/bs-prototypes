@@ -25,7 +25,8 @@ import { DatePicker } from '@components/DatePicker/DatePicker'
 import { TimePicker } from '@components/TimePicker/TimePicker'
 import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
 import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
-import { byEarnedState, EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+import { EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+import { byEarnedState } from '@components/EarnedFilter/earned'
 import { Knobs, Variant } from './_shared'
 
 function ColorInputKnobs() {
@@ -1269,7 +1270,8 @@ import '@components/Form/Form.css'
     group: 'form-patterns',
     id: 'earned-filter',
     name: 'EarnedFilter',
-    usage: `import { byEarnedState, EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+    usage: `import { EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+import { byEarnedState } from '@components/EarnedFilter/earned'
 
 const [state, setState] = useState('all')
 const isEarned = (p) => p.earned

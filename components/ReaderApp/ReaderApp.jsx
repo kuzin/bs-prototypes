@@ -376,6 +376,9 @@ export function StreakBanner({ streak, onLog, message }) {
  */
 export const bannerSrc = (key) => (key ? `/bs-prototypes/challenge-banners/${key}.webp` : null)
 
+/** A ticket drawing's prize photo — `TicketReward#reward_image`. */
+export const prizeSrc = (art) => (art ? `/bs-prototypes/challenge-prizes/${art}.jpg` : null)
+
 /** One of that challenge's badges, from `Design/.../<name>/Badges`. */
 export const badgeSrc = (set, name) =>
   set && name ? `/bs-prototypes/challenge-badges/${set}/${name}.webp` : null

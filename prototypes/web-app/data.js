@@ -940,13 +940,19 @@ export const CHALLENGE_DETAIL = {
 // `TicketReward` — a prize drawn from the tickets readers earn. A reader spends
 // their earned tickets entering the ones they want, so the same tickets can't
 // go in twice.
-const drawing = (id, title, description, endsOn, entered, ended = false) => ({
+//
+// `maxEntries` is the model's own (0 or blank means unlimited — `unlimited_entries`),
+// `art` is `reward_image`, and `linkText`/`linkUrl` are the optional pair the
+// modal shows under the description.
+const drawing = (id, title, description, endsOn, entered, extra = {}) => ({
   id,
   title,
   description,
   endsOn,
   entered,
-  ended,
+  ended: false,
+  maxEntries: 0,
+  ...extra,
 })
 
 export const CHALLENGE_EXTRAS = {
@@ -961,6 +967,12 @@ export const CHALLENGE_EXTRAS = {
         'The console and two games, drawn at the end-of-year assembly. Every reader in the school is in with a chance.',
         'Apr 30',
         2,
+        {
+          art: 'switch',
+          maxEntries: 5,
+          linkText: 'What comes with it',
+          linkUrl: 'https://magnolia.example.org/prizes/switch',
+        },
       ),
       drawing(
         'dw-bikes',
@@ -968,6 +980,7 @@ export const CHALLENGE_EXTRAS = {
         'Riverside donated two bikes and two helmets. One goes to a reader in grades K–5 and one to a reader in 6–8.',
         'Apr 30',
         0,
+        { art: 'bike' },
       ),
       drawing(
         'dw-pizza',
@@ -975,7 +988,7 @@ export const CHALLENGE_EXTRAS = {
         'Lunch for your whole class, on the PTA. Drawn once, from every ticket entered.',
         'Mar 28',
         3,
-        true,
+        { art: 'pizza', ended: true },
       ),
     ],
     // `earned_certificates` against `@program.certificates`: the challenge has
