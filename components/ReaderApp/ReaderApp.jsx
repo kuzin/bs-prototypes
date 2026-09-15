@@ -81,6 +81,12 @@ export function ReaderTopBar({
   onHome,
   onAccount,
   onSignOut,
+  onSwitchReader,
+  onEditReader,
+  /* What the gear opens. A library's gear is the *account creator's* settings —
+     the sign-in that holds the profiles — where a school's is the one reader's
+     own, because there is nothing above them. */
+  accountLabel = 'Edit Account',
   accountMenu = true,
   secondaryActions = true,
   actions,
@@ -160,7 +166,12 @@ export function ReaderTopBar({
 
         <div className="wa-topbar-user">
           {beforeUser}
-          <ReaderPill reader={reader} otherReaders={otherReaders} />
+          <ReaderPill
+            reader={reader}
+            otherReaders={otherReaders}
+            onSwitch={onSwitchReader}
+            onEdit={onEditReader}
+          />
           {accountMenu ? (
             <Flyout
               placement="bottom-end"
@@ -179,7 +190,7 @@ export function ReaderTopBar({
                       onAccount?.()
                     }}
                   >
-                    Edit Account
+                    {accountLabel}
                   </button>
                   <button
                     className="wa-acct-item"
@@ -239,7 +250,16 @@ export function ReaderBack({ onClick, children = 'Back' }) {
   )
 }
 
-export function ReaderPill({ reader, otherReaders = [] }) {
+/**
+ * Who is reading, and — on a library site — which of the account's profiles.
+ *
+ * A library account is an adult who signed up, holding one or many profiles:
+ * one for themselves, one for each child. The pill switches between them, and
+ * **Edit** opens that profile's own settings, which are not the account's. A
+ * school site has no account layer — a student is a profile and there is
+ * nobody to switch to — so an empty `otherReaders` makes this a label.
+ */
+export function ReaderPill({ reader, otherReaders = [], onSwitch, onEdit }) {
   if (!otherReaders.length) {
     return (
       <span className="wa-user-pill">
@@ -263,13 +283,26 @@ export function ReaderPill({ reader, otherReaders = [] }) {
           <div className="wa-readers-me">
             <span className="wa-user-avatar wa-user-avatar--lg">{reader.initials}</span>
             <span className="wa-readers-name">{reader.name}</span>
-            <button className="wa-readers-edit" onClick={close}>
+            <button
+              className="wa-readers-edit"
+              onClick={() => {
+                close()
+                onEdit?.(reader)
+              }}
+            >
               Edit
             </button>
           </div>
           <div className="wa-readers-others">
             {otherReaders.map((r) => (
-              <button key={r.id} className="wa-readers-row" onClick={close}>
+              <button
+                key={r.id}
+                className="wa-readers-row"
+                onClick={() => {
+                  close()
+                  onSwitch?.(r)
+                }}
+              >
                 <span className="wa-user-avatar" style={{ background: r.color }}>
                   {r.initials}
                 </span>

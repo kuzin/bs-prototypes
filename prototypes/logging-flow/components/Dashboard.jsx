@@ -450,6 +450,14 @@ export function Dashboard({
   /* The site's read-a-thon, if it is running one. Given, the nav grows a
      Fundraisers tab and the parent renders it from `renderExtra`. */
   fundraiser,
+  /* Who is reading, and — on a library site — the account's other profiles. A
+     library account holds one or many profiles and the pill switches between
+     them; a school is one-to-one and has nobody to switch to. Left off, this is
+     logging-flow's own single reader and its own picker list. */
+  reader = READER,
+  otherReaders = OTHER_READERS.filter((r) => r.id !== READER.id),
+  onSwitchReader,
+  accountLabel,
   onOpenChallenge,
   onUnenrollChallenge,
   motivation,
@@ -558,8 +566,15 @@ export function Dashboard({
       {/* The partner app switcher sits ahead of the reader pill — "swap between
           the two at any time using the logo in the top right." */}
       <ReaderTopBar
-        reader={READER}
-        otherReaders={OTHER_READERS.filter((r) => r.id !== READER.id)}
+        reader={reader}
+        otherReaders={otherReaders}
+        onSwitchReader={onSwitchReader}
+        /* The gear is the account's; a profile's own settings are behind the
+           Edit beside its name in the pill. On a school site there is no
+           account, so the gear is the reader's own and there is no pill to
+           reach them from. */
+        onEditReader={() => setView('settings')}
+        accountLabel={accountLabel}
         onLog={onLog}
         onReview={onReview}
         onHome={() => setView('challenges')}
@@ -598,7 +613,7 @@ export function Dashboard({
             />
           ) : view === 'settings' ? (
             <PersonalizeReader
-              reader={READER}
+              reader={reader}
               partners={partners}
               connections={connections}
               onLink={onLinkPartner}

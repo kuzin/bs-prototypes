@@ -289,3 +289,28 @@
   color: var(--c-blue);
   text-decoration: underline;
 }
+
+/* ─── Friend codes ───────────────────────────────────────────────────────────
+   A library's way in: no email address to ask a child for, so two readers swap
+   a code instead. */
+.fr-code-lede {
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+.fr-code {
+  padding: 16px;
+  margin: 16px 0 10px;
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+  text-align: center;
+  letter-spacing: 0.08em;
+  background: var(--c-gray-50);
+  border: 1px dashed var(--c-gray-500);
+  border-radius: 12px;
+}
+.fr-code-note {
+  font-size: 13px;
+  color: var(--c-text-light);
+}

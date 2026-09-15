@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
@@ -20,6 +20,8 @@ import {
   WISH_LIST,
   BOOK_LISTS,
   catalogBook,
+  ACCOUNT,
+  STUDENT,
   INTERESTS,
   GENRES,
   BACKGROUND_GROUPS,
@@ -125,13 +127,20 @@ const COMMUNITY_GOAL = { total: 128_400, goal: 250_000, unit: 'minutes' }
 // behind each filter, and what the site lets this reader set. Olivia is a
 // child profile on a school site that asks for grade levels, so she gets the
 // six recommendation filters rather than the adult's Reading Doorways.
-// A profile's own kind decides which Preferences list it gets, and it is not a
-// setting a reader can see — so it belongs on the preview bar rather than in
-// the page. A child gets the six filters the recommendation engine reads; an
-// adult or teen gets the Four Doorways instead.
-const PROFILE_KINDS = [
-  { id: 'child', label: 'Child profile', short: 'Child', icon: 'user' },
-  { id: 'adult', label: 'Adult profile', short: 'Adult', icon: 'user' },
+// The biggest structural difference in Beanstack, and not something a reader
+// can see — so it belongs on the preview bar rather than in the page.
+//
+//  * A **library** has an account creator, an adult who signs up, and that
+//    account holds one or many profiles: one for themselves, one per child.
+//    The reader pill switches between them; the gear is the *account's*
+//    settings and a profile's own are behind its Edit. Friends are made by
+//    swapping a friend code, because there is no email to ask a child for.
+//  * A **school** has no account layer. One student, one profile, nothing above
+//    it and nobody to switch to. Friends are invited by email, and the gear is
+//    that one reader's own settings.
+const SITE_TYPES = [
+  { id: 'library', label: 'Library site', short: 'Library', icon: 'building-store' },
+  { id: 'school', label: 'School site', short: 'School', icon: 'school' },
 ]
 
 const PREFERENCE_VOCAB = {
@@ -144,6 +153,33 @@ const PREFERENCE_VOCAB = {
   doorways: DOORWAYS,
   limits: PREFERENCE_LIMITS,
 }
+
+/**
+ * The preview bar's switches, kept across reloads.
+ *
+ * They are what a site's admin has turned on, and reading the page in one
+ * configuration usually means reloading it a few times — a switch that resets
+ * every time is one you have to set again on every reload, which is exactly
+ * when you least want to.
+ *
+ * Unknown keys are dropped and missing ones fall back, so adding a switch later
+ * doesn't break a stored set.
+ */
+const SETTINGS_KEY = 'bs-web-app-settings'
+
+function loadSettings(defaults) {
+  try {
+    const raw = JSON.parse(localStorage.getItem(SETTINGS_KEY))
+    if (!raw || typeof raw !== 'object') return defaults
+    return Object.fromEntries(
+      Object.keys(defaults).map((k) => [k, typeof raw[k] === 'boolean' ? raw[k] : defaults[k]]),
+    )
+  } catch {
+    return defaults
+  }
+}
+
+const SITE_KEY = 'bs-web-app-site'
 
 const FEATURE_DEFAULTS = {
   rmi: true,
@@ -172,7 +208,7 @@ export function App() {
   // also closes an open challenge — `page` replaces the main column, so
   // without this the challenge stayed up under a nav tab that had moved on.
   const [view, setView] = useState('challenges')
-  const [features, setFeatures] = useState(FEATURE_DEFAULTS)
+  const [features, setFeatures] = useState(() => loadSettings(FEATURE_DEFAULTS))
   const [requests, setRequests] = useState(FRIEND_REQUESTS)
   // The top bar can start a review from any page, so what it opens lives here
   // and the Reviews page renders it.
@@ -213,7 +249,42 @@ export function App() {
   // Personalize Reader write here, and the Preferences list reads back which
   // of them have been answered.
   const [prefs, setPrefs] = useState(READER_PREFERENCES)
-  const [kind, setKind] = useState('child')
+  const [site, setSite] = useState(() => {
+    try {
+      const saved = localStorage.getItem(SITE_KEY)
+      return saved === 'library' || saved === 'school' ? saved : 'school'
+    } catch {
+      return 'school'
+    }
+  })
+  // Both halves of the preview bar survive a reload.
+  useEffect(() => {
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(features))
+    } catch {
+      /* a private window, or storage turned off — the switches just don't stick */
+    }
+  }, [features])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(SITE_KEY, site)
+    } catch {
+      /* as above */
+    }
+  }, [site])
+
+  // Which of the account's profiles is being read as. A school has exactly one.
+  //
+  // Switching changes who the app says you are and whose settings the gear and
+  // the pill's Edit lead to. The reading itself — challenges, log, badges —
+  // stays Olivia's: a second reader's whole fixture set is a different
+  // prototype, and what this switch is here to show is the *shape* of a library
+  // account, not two readers' data.
+  const [profileId, setProfileId] = useState('olivia')
+  const library = site === 'library'
+  const profiles = library ? ACCOUNT.profiles : [STUDENT]
+  const current = profiles.find((p) => p.id === profileId) ?? profiles[0]
   // The site's registration questions are asked once, on the first challenge
   // this reader joins — the answers are the profile's, not the challenge's.
   const [regAnswers, setRegAnswers] = useState({})
@@ -279,7 +350,7 @@ export function App() {
   function renderTab(id) {
     if (id === 'fundraisers') return <FundraiserPage fundraiser={FUNDRAISER} entries={log} />
     if (id === 'badges') return <AllBadges />
-    if (id === 'friends') return <Friends />
+    if (id === 'friends') return <Friends library={library} />
     if (id === 'reviews') return <ReviewsPage composing={composing} onCompose={setComposing} />
     return null
   }
@@ -317,10 +388,13 @@ export function App() {
     <>
       <PreviewBar
         title="Beanstack Web App"
-        views={PROFILE_KINDS}
-        active={kind}
-        onChange={setKind}
-        ariaLabel="Which kind of profile"
+        views={SITE_TYPES}
+        active={site}
+        onChange={(v) => {
+          setSite(v)
+          setProfileId('olivia')
+        }}
+        ariaLabel="Which kind of site"
         toggles={FEATURE_SWITCHES.map((f) => ({ ...f, on: features[f.id] }))}
         onToggle={(id, on) => setFeatures((f) => ({ ...f, [id]: on }))}
       />
@@ -372,8 +446,14 @@ export function App() {
         }
         onOpenBook={(book) => openBook(book, 'Back to Reading Log')}
         bookFor={catalogBook}
+        reader={current}
+        otherReaders={library ? profiles.filter((p) => p.id !== current.id) : []}
+        onSwitchReader={(p) => setProfileId(p.id)}
+        /* The gear is the account creator's on a library site; on a school
+           site there is no account above the reader, so it is theirs. */
+        accountLabel={library ? 'Account Settings' : 'Personalize Reader'}
         personalize={{
-          kind,
+          kind: current.kind,
           preferences: prefs,
           vocab: PREFERENCE_VOCAB,
           sharedAccess: SHARED_ACCESS,
@@ -442,6 +522,7 @@ export function App() {
       {/* Once per reader, the first time they see a site running one. */}
       <FundraiserWelcome
         open={features.fundraiser && !welcomed}
+        school={!library}
         onClose={() => setWelcomed(true)}
       />
 

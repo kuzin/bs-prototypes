@@ -1811,3 +1811,43 @@ export const FUNDRAISER = {
   ],
   shareUrl: 'https://magnolia.beanstack.org/f/olivia-m',
 }
+
+// ─── The account, and the profiles on it ─────────────────────────────────────
+// The shape of a Beanstack reader differs by site type, and it is the biggest
+// structural difference between the two:
+//
+//  * **A library** has an **account creator** — an adult who signs up — and
+//    that account holds one or many *profiles*: one for the adult, one for each
+//    child. Each profile has its own reading, its own badges and its own
+//    settings. The gear is the *account's* settings; a profile's own are behind
+//    its Edit.
+//
+//  * **A school** has no account layer. It is one-to-one: a student is a
+//    profile, there is nothing above it, and there is nobody to switch to.
+//
+// `kind` is the profile's own — `adult?` / `teen?` / `child?` — and it decides
+// which Preferences list Personalize Reader shows. On a school site every
+// profile is a student, so the question never arises.
+
+const profile = (id, name, initials, color, kind, grade) => ({
+  id,
+  name,
+  initials,
+  color,
+  kind,
+  grade,
+})
+
+export const ACCOUNT = {
+  // `User` — the sign-in, which is not itself a reader.
+  email: 'dana.martinez@example.com',
+  name: 'Dana Martinez',
+  profiles: [
+    profile('dana', 'Dana Martinez', 'DM', '#0F766E', 'adult'),
+    profile('olivia', 'Olivia Martinez', 'OM', '#F09A77', 'child', '6th Grade'),
+    profile('noah', 'Noah Martinez', 'NM', '#7C5CFA', 'child', '3rd Grade'),
+  ],
+}
+
+// The one profile a school site has: the student, and nothing above them.
+export const STUDENT = profile('olivia', 'Olivia M.', 'OM', '#F09A77', 'child', '6th Grade')
