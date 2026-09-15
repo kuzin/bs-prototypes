@@ -547,16 +547,30 @@
    `programs/earned_certificate` — the page the app opens and prints. Its own
    furniture: the heavy grey border, the title over the orange ribbon, the
    badge, and the signature row. */
+/* A certificate is a landscape sheet, so the modal is one — the centred
+   default is 520px, which folded the signature row onto two lines. */
+.cp-certmodal {
+  width: min(760px, calc(100vw - 32px));
+}
+/* `closeBadge` turns the modal's clipping off so the disc can overhang, and a
+   square-cornered body then sits proud of the rounded edge. The body is the
+   first child, so it carries the top corners. */
 .cp-certbody {
   padding: 18px;
   background: var(--c-gray-100);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
 }
+/* Landscape letter — 11 × 8.5 — with the content spread down it the way the
+   print page spreads it (`justify-content: space-evenly`). */
 .cp-cert {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 14px;
   align-items: center;
-  padding: 26px 22px 22px;
+  justify-content: space-evenly;
+  aspect-ratio: 11 / 8.5;
+  padding: 22px;
   text-align: center;
   background: #fff;
   border: 10px solid #e0e0e0;
@@ -564,7 +578,7 @@
 .cp-cert-ribbon {
   position: relative;
   width: 100%;
-  max-width: 320px;
+  max-width: 380px;
 }
 .cp-cert-ribbon img {
   display: block;
@@ -593,7 +607,7 @@
   text-shadow: 1px 1px #e0e0e0;
 }
 .cp-cert-badge {
-  width: 112px;
+  width: 104px;
 }
 .cp-cert-sigs {
   display: flex;

@@ -27,6 +27,7 @@ export function Modal({
   closeBadge = false,
   children,
   ariaLabel,
+  className = '',
 }) {
   const [closing, setClosing] = useState(false)
   const [mounted, setMounted] = useState(open)
@@ -86,7 +87,7 @@ export function Modal({
         />
       )}
       <div
-        className={`modal modal--${variant}${closeBadge ? ' modal--has-close-badge' : ''}${closingClass}`}
+        className={`modal modal--${variant}${closeBadge ? ' modal--has-close-badge' : ''}${closingClass} ${className}`.trim()}
         role="dialog"
         aria-label={ariaLabel}
         aria-modal="true"

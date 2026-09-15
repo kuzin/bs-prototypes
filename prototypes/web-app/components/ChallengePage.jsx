@@ -911,6 +911,7 @@ function Certificates({ list }) {
         variant="center"
         closeBadge
         ariaLabel="Certificate"
+        className="cp-certmodal"
       >
         <ModalClose onClick={() => setPreview(null)} />
         {preview && (

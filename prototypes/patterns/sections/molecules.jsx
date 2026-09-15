@@ -1296,6 +1296,14 @@ export const moleculesSections = [
         default in the rail below. It isn&apos;t catalogued on its own because it positions against{' '}
         <code>.modal</code> and has no meaning outside one; the alternative is a plain{' '}
         <code>IconButton</code> in the header, which is the <code>inline</code> option.
+        <br />
+        <br />
+        <code>className</code> lands on the panel itself, which is how a caller widens a centred
+        modal past its 520px — a certificate preview is a landscape sheet and wants the room. A
+        modal with <code>closeBadge</code> has its clipping turned off so the disc can overhang, so
+        whatever sits at the top of it has to carry the corners:{' '}
+        <code>border-top-left-radius: inherit</code> on that first child, the way{' '}
+        <code>.modal-image</code> does.
       </>
     ),
     render: () => (
