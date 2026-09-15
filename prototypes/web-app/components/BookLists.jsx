@@ -141,7 +141,7 @@ export function BookLists({ onOpenList, onFindBooks }) {
           {shown.map((list) => {
             const first = listBooks(list)[0]
             return (
-              <li className={`bl-row${list.external ? ' is-external' : ''}`} key={list.id}>
+              <li className={`bl-row is-hit${list.external ? ' is-external' : ''}`} key={list.id}>
                 {list.external ? (
                   <a
                     className="bl-row-hit"

@@ -192,3 +192,19 @@
 .co-filters {
   margin-bottom: 18px;
 }
+
+/* A card that opens its badge. The hit area is a layer over the card, under
+   nothing — there is nothing else in a badge card to click. */
+.co-card--open {
+  position: relative;
+  cursor: pointer;
+}
+.co-card-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: inherit;
+}

@@ -1,0 +1,307 @@
+/* ─── One badge, opened ──────────────────────────────────────────────────────
+   `earnables/_earnable_single_column`. One column, centred: the badge in its
+   ring, what it takes, and what comes with it. */
+
+.bdg {
+  padding: 26px 24px 22px;
+  text-align: center;
+}
+
+/* `.badge-image.logging-badge` — a 140px ring round the art. The app draws it
+   as an SVG `progress-bar` with a `percent`, which is what the dash array is. */
+.bdg-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 148px;
+  height: 148px;
+  margin: 0 auto;
+}
+.bdg-ring {
+  position: absolute;
+  inset: 0;
+  fill: none;
+  transform: rotate(-90deg);
+}
+/* The app's own ring: 4px, `#eaeaea` behind `#0ba85f`. */
+.bdg-ring-track {
+  stroke: #eaeaea;
+  stroke-width: 4;
+}
+.bdg-ring-fill {
+  stroke: var(--c-blue);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.bdg-art.is-earned .bdg-ring-fill {
+  stroke: #0ba85f;
+}
+.bdg-art img {
+  width: 114px;
+  height: 114px;
+  object-fit: contain;
+  border-radius: 100%;
+}
+/* An unearned badge is the app's own grayed art; we ship one file per badge, so
+   the grey is a filter over it. */
+.bdg-art:not(.is-earned) img {
+  filter: saturate(0.08) opacity(0.5);
+}
+/* `.earned-indicator` — a 34px disc with a 5px white ring, sitting on the
+   badge's lower right. */
+.bdg-check {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  color: #fff;
+  background: #0ba85f;
+  border: 5px solid #fff;
+  border-radius: 100%;
+}
+.bdg-lock {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 46px;
+  height: 46px;
+  color: var(--c-gray-600);
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 1px 6px rgb(0 0 0 / 14%);
+}
+
+/* `.badge-name-and-goal` — the app sets the name at 14/bold in `#656565` and
+   what it takes at 22/900 under it. Sentence case, not caps: `badge_title`
+   gives the badge's own name, and shouting it made the label the headline. */
+.bdg-name {
+  margin-top: 26px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.39;
+  color: #656565;
+}
+.bdg-goal {
+  margin-top: 4px;
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.27;
+  color: var(--c-text-dark);
+}
+.bdg-on {
+  margin-top: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #087542;
+}
+.bdg-progress {
+  display: inline-flex;
+  margin: 12px 4px 0;
+}
+
+/* `.badge-attributes` — ruled off, because it is a different kind of statement
+   from the goal above it. Each `.attribute-item` is a 56px pastel circle beside
+   a 14/bold label over the detail at 16/900 — and the pastel is the app's own
+   per kind: yellow for tickets, purple for a reward, blue for a certificate. */
+.bdg-gets {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 0 0;
+  margin: 20px 0 0;
+  text-align: left;
+  list-style: none;
+  border-top: 1px solid var(--c-border);
+}
+.bdg-gets li {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 0;
+}
+.bdg-gets-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+}
+.bdg-gets-icon--reward {
+  color: #7c2d8f;
+  background: #f4e2f8;
+}
+.bdg-gets-icon--tickets {
+  color: #826022;
+  background: #ffecc8;
+}
+.bdg-gets-icon--certificate {
+  color: #0b6b78;
+  background: #ddf6f9;
+}
+.bdg-gets-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.bdg-gets-text strong {
+  font-size: 14px;
+  font-weight: 700;
+  color: #656565;
+}
+.bdg-gets-text span {
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+
+/* ─── An activity badge's activities ─────────────────────────────────────────
+   `earnables/_earnable_learning_track_more_activities`. The track's own line,
+   then the list you tick off. */
+.bdg-about {
+  margin-top: 14px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--c-text-light);
+}
+.bdg-acts {
+  padding-top: 16px;
+  margin-top: 18px;
+  text-align: left;
+  border-top: 1px solid var(--c-border);
+}
+.bdg-acts h3 {
+  margin-bottom: 10px;
+  font-size: 11.5px;
+  font-weight: 900;
+  color: var(--c-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.bdg-acts ul {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.bdg-act {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: var(--c-gray-50);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+}
+.bdg-act:hover {
+  border-color: var(--c-gray-500);
+}
+.bdg-act-check {
+  display: inline-flex;
+  flex: none;
+  color: var(--c-gray-400);
+}
+.bdg-acts .is-done .bdg-act {
+  background: #f2faf6;
+  border-color: #b7e2ce;
+}
+.bdg-acts .is-done .bdg-act-check {
+  color: #0ba85f;
+}
+.bdg-act-name {
+  flex: 1;
+  min-width: 0;
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.bdg-acts .is-done .bdg-act-name {
+  color: var(--c-text-light);
+  text-decoration: line-through;
+}
+.bdg-act-do {
+  flex: none;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--c-teal);
+}
+.bdg-acts .is-done .bdg-act-do {
+  color: #087542;
+}
+
+/* The four kinds an activity comes in. The tick is its own button, so a text or
+   code activity can disable it — those complete by answering, not by ticking. */
+.bdg-act {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 12px;
+  background: var(--c-gray-50);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+}
+.bdg-act-check {
+  display: inline-flex;
+  flex: none;
+  padding: 0;
+  color: var(--c-gray-400);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.bdg-act-check:disabled {
+  cursor: default;
+}
+.bdg-act-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 8px;
+  align-items: flex-start;
+  min-width: 0;
+}
+.bdg-act-link {
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--c-blue);
+}
+.bdg-act-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+  width: 100%;
+}
+.bdg-act-field label {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-text-light);
+}
+.bdg-act-field textarea,
+.bdg-act-field input {
+  width: 100%;
+  padding: 8px 10px;
+  font: inherit;
+  font-size: 14px;
+  background: #fff;
+  border: 1px solid var(--c-gray-300, var(--c-border));
+  border-radius: 8px;
+}
+.bdg-act-times,
+.bdg-act-points {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: #826022;
+}

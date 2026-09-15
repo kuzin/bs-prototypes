@@ -31,7 +31,11 @@ const earned = (set, art, name, date, blurb, type = 'logging') => ({
 
 // `have`/`need` drive the ring and the footer line the app writes as
 // "12/30 Minutes Completed".
-const locked = (set, art, name, blurb, have, need, unit, type = 'logging') => ({
+//
+// `extra` carries what a requirement can hang off a badge: `activities` for a
+// `LearningTrack` — an activity badge is a list of things to do, and the app's
+// own modal lists them — plus the optional reward / tickets / certificate.
+const locked = (set, art, name, blurb, have, need, unit, type = 'logging', extra = {}) => ({
   set,
   art,
   name,
@@ -41,6 +45,7 @@ const locked = (set, art, name, blurb, have, need, unit, type = 'logging') => ({
   unit,
   type,
   locked: true,
+  ...extra,
 })
 
 const SPRING = 'spring-into-reading'
@@ -96,6 +101,7 @@ export const BADGES = [
     5,
     'Books',
   ),
+  // A `LearningTrack`: the badge is the set of activities under it.
   locked(
     COMICS,
     'bingo',
@@ -105,16 +111,87 @@ export const BADGES = [
     5,
     'Activity',
     'activity',
+    {
+      about: 'Five squares in a line, any line — across, down or corner to corner.',
+      activities: [
+        { id: 'a1', name: 'Read a superhero comic', done: true },
+        { id: 'a2', name: 'Read a graphic novel over 200 pages', done: true },
+        { id: 'a3', name: 'Read something with an animal on the cover', done: true },
+        { id: 'a4', name: 'Read a comic a friend recommended' },
+        { id: 'a5', name: 'Read a manga' },
+      ],
+      tickets: 2,
+    },
+  ),
+  // The four kinds an `Activity` comes in, all on one badge: tick it off, follow
+  // a link, write an answer (`is_text_box_challenge?`), or enter a code the
+  // library hands out (`is_an_activity_code?`).
+  locked(
+    COMICS,
+    'registered',
+    'Comics Club',
+    'Do all four of the club activities.',
+    1,
+    4,
+    'Activity',
+    'activity',
+    {
+      about: 'The library runs a comics club every Thursday after school. Four things to do.',
+      activities: [
+        { id: 'c1', name: 'Come to a Thursday session', done: true },
+        {
+          id: 'c2',
+          name: 'Watch the “How comics are made” short',
+          kind: 'link',
+          linkText: 'Watch the video',
+          linkUrl: 'https://magnolia.example.org/comics-club/how-comics-are-made',
+        },
+        {
+          id: 'c3',
+          name: 'Which panel would you put on a poster, and why?',
+          kind: 'text',
+        },
+        {
+          id: 'c4',
+          name: 'Enter the code from the club handout',
+          kind: 'code',
+        },
+      ],
+      reward: 'Comics Club pin',
+    },
+  ),
+  // `learning_track.repeatable` — one you can do as many times as you like, and
+  // the app keeps a count rather than a tick.
+  locked(
+    COMICS,
+    'read-more',
+    'Panel by Panel',
+    'Draw a comic panel of your own. Do it as often as you like.',
+    2,
+    5,
+    'Activity',
+    'activity',
+    {
+      about: 'Repeatable: every panel you draw counts, and you can log as many as you want.',
+      repeatable: true,
+      activities: [
+        { id: 'r1', name: 'Draw a comic panel', kind: 'text', repeatable: true, times: 2 },
+      ],
+    },
   ),
   locked(
     COMICS,
     'full-card',
     'Full Card',
     'Fill every square on the Comics Choice card.',
-    7,
+    10,
     25,
     'Activity',
     'activity',
+    {
+      about: 'Every square on the card. Take your time — the challenge runs all month.',
+      certificate: 'Comics Choice — Full Card',
+    },
   ),
   locked(
     SPRING,
@@ -887,9 +964,11 @@ export const CHALLENGE_DETAIL = {
       'Comics Choice is a bingo card. Every square is a different kind of comic or graphic novel — read one, log it, and the square is yours. Fill a row for a Bingo badge, fill the whole card for the Full Card badge, and everything you read on Comics Plus counts automatically.',
     types: ['Bingo', 'Minutes', 'Activities'],
     goals: [
-      total('Badges Earned', 2, 'award', BADGE_ACCENT),
+      // Ten of the card's twenty-five squares, which is what the bingo card
+      // itself shows.
+      total('Badges Earned', 10, 'award', BADGE_ACCENT),
       goal('Minutes Completed', 88, 500, 'clock'),
-      goal('Completed Activities', 7, 25, 'circle-check'),
+      goal('Completed Activities', 10, 25, 'circle-check'),
       total('Rewards Earned', 0, 'gift', REWARD_ACCENT, 'rewards'),
     ],
     rewards: [
@@ -991,6 +1070,54 @@ const drawing = (id, title, description, endsOn, entered, extra = {}) => ({
   ...extra,
 })
 
+/* ─── The bingo card ──────────────────────────────────────────────────────────
+   `Bingo::CardService`. A `book_list`-style card is a square grid of
+   requirements, each a badge; the service keeps a parallel grid of states —
+   0 unearned, 1 earned, 2 in a bingo — and `find_state` adds `unavailable` for
+   a square whose requirement is date-restricted and not open yet.
+
+   A **bingo** is a completed row, column or diagonal, and the squares in it go
+   to state 2; earning every square is the **full card**. Here: the first row is
+   a bingo, so its five squares carry `bingo`, and a scatter of others are
+   earned. */
+const sq = (art, title, text, state, extra = {}) => ({ art, title, text, state, ...extra })
+
+export const BINGO_CARD = {
+  size: 5,
+  squares: [
+    // Row 1 — the bingo.
+    sq('pow', 'POW', 'Read a superhero comic', 'bingo', { reward: true }),
+    sq('bam', 'BAM', 'Read a graphic novel over 200 pages', 'bingo'),
+    sq('zap', 'ZAP', 'Read something with an animal on the cover', 'bingo'),
+    sq('boom', 'BOOM', 'Read a comic a friend recommended', 'bingo', { tickets: true }),
+    sq('pop', 'POP', 'Read a manga', 'bingo'),
+
+    sq('blue-book', 'Blue Book', 'Read a graphic memoir', 'earned'),
+    sq('star', 'Star', 'Write a review of a comic', 'earned', { certificate: true }),
+    sq('free-space', 'Free Space', 'This one is yours for joining', 'earned'),
+    sq('hmmm', 'Hmmm', 'Read a mystery comic'),
+    sq('whoa', 'Whoa', 'Read something published this year'),
+
+    sq('lightning', 'Lightning', 'Read two comics in one day', 'earned'),
+    sq('red-book', 'Red Book', 'Read a comic in a series you have not tried'),
+    sq('flash', 'Flash', 'Read a comic in under 20 minutes'),
+    sq('surprise', 'Surprise', 'Let the librarian pick one for you', 'unavailable'),
+    sq('poof', 'Poof', 'Read a fantasy comic'),
+
+    sq('comics', 'Comics', 'Read three comics on Comics Plus', 'earned', { tickets: true }),
+    sq('yellow-book', 'Yellow Book', 'Read a non-fiction comic'),
+    sq('blah-blah-blah', 'Blah Blah Blah', 'Read a comic that made you laugh'),
+    sq('next-chapter', 'Next Chapter', 'Finish a series you started'),
+    sq('lightbulb', 'Lightbulb', 'Read a comic that taught you something'),
+
+    sq('purple-book', 'Purple Book', 'Read a comic with no words'),
+    sq('read-more', 'Read More', 'Log five days in a row'),
+    sq('hooray', 'Hooray', 'Read a comic set somewhere you have never been'),
+    sq('pink-book', 'Pink Book', 'Read a comic by an author you have not read'),
+    sq('bang', 'BANG', 'Read the whole of a graphic novel in one sitting', 'unavailable'),
+  ],
+}
+
 export const CHALLENGE_EXTRAS = {
   spring: {
     // Every 250 minutes earns a ticket; five of the eight are already in
@@ -1066,6 +1193,9 @@ export const CHALLENGE_EXTRAS = {
       siteLink: { 'front-desk': 'https://magnolia.example.org/events/author-visit' },
       books: ['wild-robot', 'new-kid', 'front-desk', 'when-you-trap-tiger', 'crossover', 'ghost'],
     },
+  },
+  arresting: {
+    bingo: BINGO_CARD,
   },
   // A `book_list` challenge, so the list is the challenge — which is what its
   // card's "Reading List" pill is promising.

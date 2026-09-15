@@ -32,9 +32,8 @@
   border: 1px solid var(--c-border);
   border-radius: 14px;
 }
-.bl-row:hover {
-  border-color: var(--c-gray-500);
-}
+/* The ring is the shared `is-hit`; the name still underlines, which is what
+   says the row goes somewhere. */
 /* The whole row opens the list. Nothing else in it is interactive, so the hit
    area is one button over the card rather than a link around the name and a
    dead zone either side of it. */

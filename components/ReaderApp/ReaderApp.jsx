@@ -673,7 +673,7 @@ export function ChallengeCard({ challenge, accent = READER_ACCENT, onOpen, onUne
   const chips = types.length > 0 ? types : challenge.badge ? [challenge.badge] : []
 
   return (
-    <div className={`wa-chcard${onOpen ? ' wa-chcard--open' : ''}`}>
+    <div className={`wa-chcard${onOpen ? ' wa-chcard--open is-hit' : ''}`}>
       {/* The whole card is the link; the kebab has to sit outside it rather
           than inside, so the hit target is its own element — the same shape
           the friend card uses. */}

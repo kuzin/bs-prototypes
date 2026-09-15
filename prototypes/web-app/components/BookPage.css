@@ -179,7 +179,6 @@
 }
 .bp-related button:hover {
   background: var(--c-gray-50);
-  border-color: var(--c-gray-500);
 }
 .bp-related-cover {
   display: block;

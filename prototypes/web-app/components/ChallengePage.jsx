@@ -20,6 +20,7 @@ import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { badgeSrc, bannerSrc, prizeSrc, ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
+import { BadgeModal } from '@components/BadgeModal/BadgeModal'
 import { FilterMenuBar } from '@components/FilterMenu/FilterMenu'
 import { EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
 import { byEarnedState } from '@components/EarnedFilter/earned'
@@ -73,7 +74,7 @@ function tabsFor(extras) {
   return [
     { id: 'overview', label: 'Overview' },
     ...(extras.readingList ? [{ id: 'reading-list', label: 'Reading List' }] : []),
-    { id: 'bingo', label: 'Bingo Card', disabled: true },
+    ...(extras.bingo ? [{ id: 'bingo', label: 'Bingo Card' }] : []),
     { id: 'badges', label: 'Badges' },
     { id: 'rewards', label: 'Rewards' },
     ...(extras.drawings?.length ? [{ id: 'drawings', label: 'Ticket Drawings' }] : []),
@@ -163,7 +164,7 @@ function Overview({ detail, onTab }) {
   )
 }
 
-function Badges() {
+function Badges({ onLog }) {
   return (
     <section className="cp-section">
       <ReaderPageHead as="h2" title="Badges" />
@@ -171,6 +172,7 @@ function Badges() {
         badges={BADGES}
         src={(b) => badgeSrc(b.set, b.art)}
         emptyIcon={<Icon name="award" size={26} />}
+        onLog={onLog}
       />
     </section>
   )
@@ -601,7 +603,7 @@ function Drawings({ extras }) {
 
       <ul className="cp-drawings">
         {byEarnedState(list, state, isOpen).map((d) => (
-          <li className={`cp-drawing${d.ended ? ' is-ended' : ''}`} key={d.id}>
+          <li className={`cp-drawing is-hit${d.ended ? ' is-ended' : ''}`} key={d.id}>
             {/* The card opens the drawing; the button at the foot goes straight
                 to the stepper. */}
             <button
@@ -813,6 +815,104 @@ function Drawings({ extras }) {
  * has nothing to print yet.
  */
 /**
+ * The Bingo Card — `programs/_bingo_card_with_sidebar_content` and
+ * `Bingo::CardService`.
+ *
+ * A square grid of requirements, each a badge. The service keeps a parallel
+ * grid of states — 0 unearned, 1 earned, 2 **in a bingo** — and `find_state`
+ * adds `unavailable` for a square whose requirement is date-restricted and not
+ * open yet. A bingo is a completed row, column or diagonal; every square is the
+ * full card, and both have badges of their own.
+ *
+ * The notice over the grid is the app's own three lines, and which one you get
+ * is which of those you have done. Each square opens its badge, where the
+ * reader can see what it takes and what comes with it — `earnables/_earnable`
+ * and the modal behind it.
+ */
+const BINGO_NOTE = {
+  full: "Wow! You've earned every badge! Congratulations!",
+  bingo: 'You’ve earned bingo! Keep going to complete your card.',
+  none: 'Earn badges in a row, column, or diagonal to unlock your bingo badge!',
+}
+
+function BingoCard({ card, set }) {
+  const [open, setOpen] = useState(null)
+
+  const squares = card.squares
+  const hasBingo = squares.some((q) => q.state === 'bingo')
+  const fullCard = squares.every((q) => q.state === 'earned' || q.state === 'bingo')
+  const note = fullCard ? 'full' : hasBingo ? 'bingo' : 'none'
+
+  return (
+    <section className="cp-section">
+      <ReaderPageHead as="h2" title="Bingo Card" />
+
+      {/* `.bingo-infobox` — amber until you have a bingo, then green, with the
+          app's own two icons. */}
+      <InfoBox
+        level={hasBingo ? 'success' : 'warn'}
+        icon={<Icon name={hasBingo ? 'mood-happy' : 'info-circle'} size={26} />}
+        className="cp-listnote"
+      >
+        {BINGO_NOTE[note]}
+      </InfoBox>
+
+      <ul className={`cp-bingo cp-bingo--${card.size}`} aria-label="Bingo Card">
+        {squares.map((q) => (
+          <li key={q.art}>
+            {/* `.bingo-grid-item`: the badge in its circle, a rule, then what
+                the square asks of you, then what it pays out. */}
+            <button
+              type="button"
+              className={`cp-square is-${q.state ?? 'unearned'}`}
+              onClick={() => setOpen(q)}
+              aria-label={`${q.text} — ${q.state === 'bingo' ? 'in a bingo' : (q.state ?? 'unearned')}`}
+            >
+              <span className="cp-square-art">
+                <img src={badgeSrc(set, q.art)} alt="" />
+                {q.state === 'unavailable' && (
+                  <span className="cp-square-lock">
+                    <Icon name="lock" size={20} />
+                  </span>
+                )}
+              </span>
+              <span className="cp-square-text">{q.text}</span>
+              {/* `.badge-receivables` — `order: 3`, so it sits at the foot. */}
+              {(q.reward || q.tickets || q.certificate) && (
+                <span className="cp-square-marks">
+                  {q.reward && <Icon name="gift" size={14} />}
+                  {q.tickets && <Icon name="ticket" size={14} />}
+                  {q.certificate && <Icon name="award" size={14} />}
+                </span>
+              )}
+            </button>
+          </li>
+        ))}
+      </ul>
+
+      {/* Every badge in the app opens the same modal, and a bingo square is a
+          badge — so this is the shelf's modal, handed a square. */}
+      <BadgeModal
+        badge={
+          open && {
+            name: open.title,
+            blurb: open.text,
+            locked: !(open.state === 'earned' || open.state === 'bingo'),
+            state: open.state,
+            reward: open.reward,
+            tickets: open.tickets,
+            certificate: open.certificate,
+          }
+        }
+        src={() => badgeSrc(set, open?.art)}
+        open={Boolean(open)}
+        onClose={() => setOpen(null)}
+      />
+    </section>
+  )
+}
+
+/**
  * The certificate itself — `programs/earned_certificate`, which in the app is
  * a page that opens and immediately calls `window.print()`. Here it is a
  * preview first, because a prototype that fires the print dialog shows you
@@ -996,7 +1096,10 @@ export function ChallengePage({
             onOpenBook={onOpenBook}
           />
         )}
-        {tab === 'badges' && <Badges />}
+        {tab === 'bingo' && (
+          <BingoCard card={extras.bingo} set={challenge.badges ?? 'comics-choice'} />
+        )}
+        {tab === 'badges' && <Badges onLog={onLog} />}
         {tab === 'rewards' && <Rewards detail={detail} bookMachine={bookMachine} />}
         {tab === 'drawings' && <Drawings extras={extras} />}
         {tab === 'certificates' && <Certificates list={extras.certificates} />}

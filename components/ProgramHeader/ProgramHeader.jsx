@@ -15,7 +15,8 @@ import './ProgramHeader.css'
  *
  * `back` is the way out — a `<ReaderBack>`, laid over the band at the page's
  * own left gutter rather than above the header, where it pushed the whole
- * thing down off the top of the screen.
+ * thing down off the top of the screen. It takes the header's own colour, since
+ * a grey link on a coloured band reads as something that was left there.
  */
 
 /** The app's blend of the banner's dominant colour toward white. */
@@ -30,7 +31,7 @@ export function ProgramHeader({ back, banner, title, dates, tags, tint = '#ACACA
     // The app names these the other way round — `-bar-light` takes the 40%
     // blend and `-bar-dark` the 20% — so the stronger band is the tall one at
     // the top and the paler one sits behind its curve.
-    <div className="prog-header">
+    <div className="prog-header" style={{ '--prog-tint': tint }}>
       {/* The way out sits on the band, at the page's own left gutter — the
           header is full-bleed and the link is not. */}
       {back && <div className="prog-back">{back}</div>}

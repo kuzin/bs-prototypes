@@ -349,10 +349,8 @@
 .wa-chcard--open {
   cursor: pointer;
 }
-.wa-chcard--open:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.06);
-}
+/* The house hover for a clickable card is the shared `is-hit` ring — the art
+   still grows under it, which is what the app does. */
 /* The card is the link, but the kebab is a button — so the hit target is its
    own layer under the content rather than an element wrapping it. */
 .wa-chcard-hit {

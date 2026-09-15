@@ -26,8 +26,15 @@
   padding: 0 24px;
   margin: 0 auto;
 }
+/* The band's own colour taken down to an ink: a grey link on a tinted ground
+   reads as something that was left there rather than part of the header. */
 .prog-back .wa-back {
   margin: 0;
+  color: color-mix(in srgb, var(--prog-tint, #acacac) 62%, #1c1917);
+}
+.prog-back .wa-back:hover {
+  color: color-mix(in srgb, var(--prog-tint, #acacac) 40%, #1c1917);
+  background: color-mix(in srgb, var(--prog-tint, #acacac) 32%, #fff);
 }
 
 .prog-bar-strong {

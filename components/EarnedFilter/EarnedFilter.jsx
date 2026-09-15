@@ -46,6 +46,9 @@ export function EarnedFilter({
     <Tabs
       variant="pill"
       size="md"
+      /* A filter bar runs out of room long before a page does, so the control
+         becomes a dropdown rather than wrapping into a wall of pills. */
+      collapse
       active={value}
       accent="#1A6DD5"
       onChange={onChange}

@@ -369,7 +369,7 @@ export function BookPage({
                 <ul className="bp-related">
                   {related.map((b) => (
                     <li key={b.id}>
-                      <button type="button" onClick={() => onOpenBook?.(b)}>
+                      <button type="button" className="is-hit" onClick={() => onOpenBook?.(b)}>
                         <span className="bp-related-cover">
                           <BookCover book={b} size="fill" />
                         </span>
