@@ -635,25 +635,22 @@
 }
 
 /* ─── The bingo card ─────────────────────────────────────────────────────────
-   `.bingo-grid` in microsite/_programs.scss. A `fit-content` grid of
-   `minmax(10px, 250px)` columns centred on the page, 16px apart (8 under
-   1000px), and each square a 16px-radius card on `#f5f5f5` behind a 2px
-   `#eaeaea` border that grows 2% under the pointer. */
+   `.bingo-grid` in microsite/_programs.scss, transcribed. The Sass values it
+   resolves: `$light-gray` is `lighten(#000, 88%)` = `#e0e0e0`,
+   `darken($light-gray, 20%)` = `#adadad`, `$jade` = `#0ba85f`, `$pastelGreen`
+   = `#dbf2e7`, `$lightestGray` = `#f2f2f2`, and the description's
+   `lighten($text-color-medium, 10%)` = `#5c5c5c`. */
 .cp-bingo {
   display: grid;
-  /* The app leaves rows to their content (`min-content` + `align-items:
-     center`), which on a card whose squares ask different-length things gives
-     five rows of five different heights. A bingo card is a grid of equal cells,
-     so every row takes the same height and every square fills its cell —
-     the one place this doesn't follow the app to the letter. */
-  grid-auto-rows: 1fr;
+  grid-auto-rows: min-content;
   gap: 16px;
-  align-items: stretch;
+  align-items: center;
   width: fit-content;
   max-width: 100%;
   padding: 0;
   margin: 22px auto 0;
   list-style: none;
+  transition: all 0.2s ease;
 }
 .cp-bingo--3 {
   grid-template-columns: repeat(3, minmax(10px, 250px));
@@ -670,6 +667,7 @@
   height: 100%;
 }
 
+/* `.bingo-grid-item` */
 .cp-square {
   position: relative;
   display: flex;
@@ -679,6 +677,7 @@
   width: 100%;
   height: 100%;
   padding: 16px;
+  margin: 0;
   font: inherit;
   text-align: center;
   cursor: pointer;
@@ -692,37 +691,18 @@
   transform: scale(1.02);
 }
 
-/* Earned lifts off the grey onto white with the app's own shadow and drops its
-   border. A square in a **bingo** is the line you completed, so it takes the
-   pastel green and its text goes jade. */
+/* `&.earned` — off the grey onto white with a soft shadow, and no border. */
 .cp-square.is-earned {
   background: #fff;
-  border-color: transparent;
+  border: none;
   box-shadow: 0 2px 14px 0 rgb(0 0 0 / 9%);
 }
-/* A square in a bingo is part of the line you completed. The pastel green is
-   the app's, but the line is the thing — so the whole run reads as one band
-   rather than five separately-tinted cards. */
+/* `&.bingo` — the pastel green, no shadow, no border; its description goes
+   jade and so does the rule above it. */
 .cp-square.is-bingo {
   background: #dbf2e7;
-  border-color: #b7e2ce;
+  border: none;
   box-shadow: none;
-}
-
-/* The dauber. A bingo square you have is *marked* — that is what the game is —
-   so an earned square takes a stamp in its corner rather than recolouring the
-   badge's own ring, which put a thick jade circle round the comic art. */
-.cp-square-stamp {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  color: #fff;
-  background: #0ba85f;
-  border-radius: 100%;
 }
 .cp-square.is-bingo .cp-square-text {
   color: #0ba85f;
@@ -730,16 +710,14 @@
 .cp-square.is-bingo .cp-square-text::before {
   background: rgb(11 168 95 / 20%);
 }
-.cp-square.is-unavailable .cp-square-text,
-.cp-square.is-unavailable .cp-square-title {
-  color: var(--c-gray-350);
+/* `&.unavailable` */
+.cp-square.is-unavailable .cp-square-text {
+  color: #e0e0e0;
 }
 
-/* `.badge-image` — the art inside a 4px ring that goes jade once earned.
-   **It fills the square**: the app gives it `width: 100%` inside `margin: 0
-   14px 8px` and the badge itself is a 325px thumb, so the stamp is most of the
-   cell. Capped small it read as a list item with an icon rather than a square
-   on a bingo card. */
+/* `.badge-image` — a 4px `#e0e0e0` circle round the art, going jade the moment
+   the badge is earned. The img fills it: the badge is a 325px thumb, so the
+   stamp is most of the cell. */
 .cp-square-art {
   position: relative;
   display: grid;
@@ -747,7 +725,7 @@
   width: calc(100% - 28px);
   aspect-ratio: 1;
   margin: 0 14px 8px;
-  border: 4px solid var(--c-gray-200);
+  border: 4px solid #e0e0e0;
   border-radius: 100%;
 }
 .cp-square-art img {
@@ -757,12 +735,18 @@
   border: 4px solid transparent;
   border-radius: inherit;
 }
+.cp-square.is-earned .cp-square-art,
+.cp-square.is-bingo .cp-square-art {
+  border-color: #0ba85f;
+}
+.cp-square.is-earned .cp-square-art img {
+  background: transparent;
+}
 .cp-square.is-bingo .cp-square-art img {
   background: #fff;
 }
-/* The app ships a grayed file per badge; we ship one, so unearned is a filter
-   over it — and an unavailable square is all but blank behind its mark, the
-   way `opacity: 0.1` leaves it. */
+/* `img:not(.earned-badge) { opacity: 30% }` — the app ships a grayed file per
+   badge; we ship one, so the grey is a filter over it. */
 .cp-square:not(.is-earned):not(.is-bingo) .cp-square-art img {
   opacity: 0.3;
 }
@@ -778,7 +762,7 @@
   place-items: center;
   width: 80%;
   height: 80%;
-  color: var(--c-gray-350);
+  color: #adadad;
   pointer-events: none;
   transform: translate(-50%, -50%);
 }
@@ -788,21 +772,23 @@
 }
 
 /* `.badge-description` — what the square asks of you, under a rule a quarter of
-   the square wide. */
+   the square wide. The app sets it 16/900: the requirement *is* the square, so
+   it reads as the heavy hand-lettered text on a bingo square rather than a
+   caption under the badge. */
 .cp-square-text {
   position: relative;
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: center;
+  width: 100%;
   padding: 16px 0 0;
   margin-top: 8px;
-  /* The app leaves this at the body size and only drops it to 14 under 1000px,
-     which is why the requirement reads as the square's content rather than a
-     caption under the stamp. */
   font-size: 16px;
-  line-height: 1.35;
+  font-weight: 900;
+  line-height: 1.31;
   color: #5c5c5c;
+  text-align: center;
 }
 .cp-square-text::before {
   position: absolute;
@@ -812,20 +798,20 @@
   height: 3px;
   margin-left: -12.5%;
   content: '';
-  background: var(--c-gray-200);
+  background: #e0e0e0;
   border-radius: 3px;
 }
 
-/* `.badge-title` — the badge's own name, under what it asks. */
-/* `.badge-title` — the badge's own name, under what it asks, with the app's
-   own room beneath it. */
+/* `.badge-title` — the badge's own name, under what the square asks. */
 .cp-square-title {
+  flex: auto;
   width: 100%;
   padding: 4px 16px 20px;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.5;
   color: #656565;
+  text-align: center;
 }
 
 /* `.badge-receivables` — ribbon tabs hanging off the square's right edge, one
@@ -890,7 +876,7 @@
   /* The app drops the rule and the badge's margins here, and folds the ribbon
      tabs into a row at the foot (`order: 3`). */
   .cp-square-text {
-    padding-top: 0;
+    padding: 0;
     margin: 0 0 8px;
     font-size: 14px;
   }
@@ -914,8 +900,8 @@
   .cp-mark {
     width: 100%;
     max-width: 32px;
-    aspect-ratio: 1;
     height: auto;
+    aspect-ratio: 1;
     border-radius: 8px;
   }
   .cp-mark::after {
@@ -924,16 +910,26 @@
 }
 
 @media (max-width: 560px) {
-  /* `$small-only`: the app hides the badge art and lets the text fill the
-     square — five across gives each one about 60px. */
+  /* `$small-only`: the badge art goes and the description fills the square —
+     five across gives each one about 60px — and an earned or bingo square gets
+     the jade back as its own border, since it has no badge ring left to carry
+     it. */
   .cp-square {
     padding: 8px;
     border-radius: 8px;
+  }
+  .cp-square.is-earned,
+  .cp-square.is-bingo {
+    border: 2px solid #0ba85f;
+  }
+  .cp-square.is-earned .cp-square-marks {
+    background: #f2f2f2;
   }
   .cp-square-art {
     display: none;
   }
   .cp-square-text {
+    width: 100%;
     height: 100%;
     margin: 0;
     font-size: 12px;
@@ -943,52 +939,4 @@
     background: #fff;
     border-radius: 8px;
   }
-}
-
-/* ─── One square, opened ─────────────────────────────────────────────────── */
-.cp-sq {
-  text-align: center;
-}
-.cp-sq-art {
-  display: block;
-  width: 128px;
-  margin: 4px auto 0;
-}
-.cp-sq-art.is-unearned {
-  filter: saturate(0.08) opacity(0.55);
-}
-.cp-sq-title {
-  margin-top: 12px;
-  font-size: 20px;
-  font-weight: 900;
-  color: var(--c-text-dark);
-}
-.cp-sq-text {
-  margin-top: 6px;
-  font-size: 15px;
-  line-height: 1.5;
-  color: var(--c-text);
-}
-.cp-sq-state {
-  display: inline-flex;
-  margin-top: 12px;
-}
-.cp-sq-gets {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  padding: 14px;
-  margin: 16px 0 0;
-  text-align: left;
-  list-style: none;
-  background: var(--c-gray-50);
-  border-radius: 12px;
-}
-.cp-sq-gets li {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text);
 }

@@ -891,13 +891,6 @@ function BingoCard({ card, set }) {
                   )}
                 </span>
               )}
-              {/* The dauber: a square you have is marked, which is what makes a
-                  bingo card a bingo card. */}
-              {(q.state === 'earned' || q.state === 'bingo') && (
-                <span className="cp-square-stamp" aria-hidden="true">
-                  <Icon name="check" size={15} stroke={3.2} />
-                </span>
-              )}
               <span className="cp-square-art">
                 <img src={badgeSrc(set, q.art)} alt="" />
               </span>
