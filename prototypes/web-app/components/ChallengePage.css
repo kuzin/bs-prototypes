@@ -3,7 +3,7 @@
    `ProgramHeader` — the fundraiser wears the same one. */
 
 .cp-head {
-  padding-top: 22px;
+  padding-top: 34px;
 }
 /* The reading log's subnav shape — the plain pill, centred on the page, on a
    rule. The strip sits under a header that is already a band of colour, so it
@@ -641,9 +641,14 @@
    `#eaeaea` border that grows 2% under the pointer. */
 .cp-bingo {
   display: grid;
-  grid-auto-rows: min-content;
+  /* The app leaves rows to their content (`min-content` + `align-items:
+     center`), which on a card whose squares ask different-length things gives
+     five rows of five different heights. A bingo card is a grid of equal cells,
+     so every row takes the same height and every square fills its cell —
+     the one place this doesn't follow the app to the letter. */
+  grid-auto-rows: 1fr;
   gap: 16px;
-  align-items: center;
+  align-items: stretch;
   width: fit-content;
   max-width: 100%;
   padding: 0;
@@ -695,10 +700,29 @@
   border-color: transparent;
   box-shadow: 0 2px 14px 0 rgb(0 0 0 / 9%);
 }
+/* A square in a bingo is part of the line you completed. The pastel green is
+   the app's, but the line is the thing — so the whole run reads as one band
+   rather than five separately-tinted cards. */
 .cp-square.is-bingo {
   background: #dbf2e7;
-  border-color: transparent;
+  border-color: #b7e2ce;
   box-shadow: none;
+}
+
+/* The dauber. A bingo square you have is *marked* — that is what the game is —
+   so an earned square takes a stamp in its corner rather than recolouring the
+   badge's own ring, which put a thick jade circle round the comic art. */
+.cp-square-stamp {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  color: #fff;
+  background: #0ba85f;
+  border-radius: 100%;
 }
 .cp-square.is-bingo .cp-square-text {
   color: #0ba85f;
@@ -711,13 +735,16 @@
   color: var(--c-gray-350);
 }
 
-/* `.badge-image` — the art inside a 4px ring that goes jade once earned. */
+/* `.badge-image` — the art inside a 4px ring that goes jade once earned.
+   **It fills the square**: the app gives it `width: 100%` inside `margin: 0
+   14px 8px` and the badge itself is a 325px thumb, so the stamp is most of the
+   cell. Capped small it read as a list item with an icon rather than a square
+   on a bingo card. */
 .cp-square-art {
   position: relative;
   display: grid;
   place-items: center;
-  width: 100%;
-  max-width: 120px;
+  width: calc(100% - 28px);
   aspect-ratio: 1;
   margin: 0 14px 8px;
   border: 4px solid var(--c-gray-200);
@@ -729,10 +756,6 @@
   object-fit: cover;
   border: 4px solid transparent;
   border-radius: inherit;
-}
-.cp-square.is-earned .cp-square-art,
-.cp-square.is-bingo .cp-square-art {
-  border-color: #0ba85f;
 }
 .cp-square.is-bingo .cp-square-art img {
   background: #fff;
@@ -774,7 +797,10 @@
   justify-content: center;
   padding: 16px 0 0;
   margin-top: 8px;
-  font-size: 14px;
+  /* The app leaves this at the body size and only drops it to 14 under 1000px,
+     which is why the requirement reads as the square's content rather than a
+     caption under the stamp. */
+  font-size: 16px;
   line-height: 1.35;
   color: #5c5c5c;
 }
@@ -791,9 +817,11 @@
 }
 
 /* `.badge-title` — the badge's own name, under what it asks. */
+/* `.badge-title` — the badge's own name, under what it asks, with the app's
+   own room beneath it. */
 .cp-square-title {
   width: 100%;
-  padding: 4px 0 4px;
+  padding: 4px 16px 20px;
   font-size: 13px;
   font-weight: 700;
   line-height: 1.5;
@@ -864,6 +892,7 @@
   .cp-square-text {
     padding-top: 0;
     margin: 0 0 8px;
+    font-size: 14px;
   }
   .cp-square-text::before {
     display: none;
