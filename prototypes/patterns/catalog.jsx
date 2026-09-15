@@ -189,25 +189,13 @@ export const GROUPS = [
     // Named for the reader's own nav wherever there is a tab to name them
     // after, and for what the thing *is* where there isn't.
     subs: [
-      { id: 'chrome', title: 'Chrome', desc: 'The frame every reader page sits in.' },
-      {
-        id: 'rail',
-        title: 'The rail',
-        desc: 'What sits beside the page — the reader’s own numbers.',
-      },
-      {
-        id: 'challenges',
-        title: 'Challenges',
-        desc: 'Joining one, reading it, and what it awards.',
-      },
-      { id: 'reading', title: 'Reading', desc: 'The catalog, the lists, and one book.' },
-      { id: 'people', title: 'People', desc: 'Friends, requests, and where a reader ranks.' },
-      { id: 'reviews', title: 'Reviews', desc: 'The reader’s own, and everybody else’s.' },
-      {
-        id: 'account',
-        title: 'Account & reading apps',
-        desc: 'The page behind the gear, and the partner kit that lives on it.',
-      },
+      { id: 'chrome', title: 'Chrome' },
+      { id: 'rail', title: 'The rail' },
+      { id: 'challenges', title: 'Challenges' },
+      { id: 'reading', title: 'Reading' },
+      { id: 'people', title: 'People' },
+      { id: 'reviews', title: 'Reviews' },
+      { id: 'account', title: 'Account & reading apps' },
     ],
   },
   {

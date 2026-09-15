@@ -19,7 +19,7 @@ Before building any UI, look for something to reuse:
   badges / cards / tables / form-fields / form-patterns / overlays / feedback / navigation /
   charts / domain. The `group:` field **on each section entry** is what decides where it appears;
   the section _file_ is only where the showcase code lives, so one file may feed several groups.
-- **A group past ~15 entries gets sub-groups.** Declare them once as `subs: [{ id, title, desc }]`
+- **A group past ~15 entries gets sub-groups.** Declare them once as `subs: [{ id, title }]`
   on the group in `patterns/catalog.jsx`, then give each entry a `sub:`. They show as headed runs
   on the group page and in the sidebar, and as `Group · Sub` in ⌘K. Only a group that has outgrown
   one list needs them — a group without `subs` renders exactly as it did.

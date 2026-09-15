@@ -183,11 +183,7 @@ function GroupView({ group }) {
       {subs ? (
         subs.map((sub) => (
           <section className="pt-sub" key={sub.id} id={`sub-${sub.id}`}>
-            <div className="pt-sub-head">
-              <h2 className="pt-sub-title">{sub.title}</h2>
-              {sub.desc && <p className="pt-sub-desc">{sub.desc}</p>}
-              <span className="pt-sub-count">{sub.items.length}</span>
-            </div>
+            <h2 className="pt-sub-title">{sub.title}</h2>
             <CardGrid groupId={group.id} sections={sub.items} />
           </section>
         ))

@@ -983,45 +983,23 @@
 /* Responsive grid of light, demo-free component cards. */
 /* ─── Sub-groups ─────────────────────────────────────────────────────────────
    The second level, for a group that has outgrown one list. A rule above each
-   run, the name and what's in it on one line — enough to find your section by,
-   and not so much that the page becomes headings. */
+   run and its name — enough to find your section by, and nothing else: the
+   group's own description already says what the group is for, and a count on
+   every heading is six numbers nobody asked for. */
 .pt-sub + .pt-sub {
   margin-top: var(--space-24);
 }
-.pt-sub-head {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 2px var(--space-8);
-  align-items: baseline;
+.pt-sub-title {
   padding-top: var(--space-12);
   margin-bottom: var(--space-12);
-  border-top: 1px solid var(--c-border);
-}
-.pt-sub:first-of-type .pt-sub-head {
-  padding-top: 0;
-  border-top: 0;
-}
-.pt-sub-title {
   font-size: var(--text-label);
   font-weight: var(--fw-extrabold);
   color: var(--c-text);
+  border-top: 1px solid var(--c-border);
 }
-.pt-sub-desc {
-  flex: 1;
-  font-size: var(--text-tag);
-  color: var(--c-text-light);
-}
-.pt-sub-count {
-  display: inline-grid;
-  place-items: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  font-size: var(--text-micro);
-  font-weight: var(--fw-bold);
-  color: var(--c-text-light);
-  background: var(--c-gray-100);
-  border-radius: 999px;
+.pt-sub:first-of-type .pt-sub-title {
+  padding-top: 0;
+  border-top: 0;
 }
 
 .pt-card-grid {
