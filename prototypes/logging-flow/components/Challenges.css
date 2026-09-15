@@ -108,14 +108,17 @@
 .jc-body {
   max-height: 46vh;
 }
+/* The modal is the challenge page in miniature — its own banner over its own
+   title — so the title carries the page's weight rather than a dialog label's:
+   22/800 against `.cp-title`'s 28/800, with the dates a rung under. */
 .jc-title {
-  font-size: 18px;
-  font-weight: 900;
+  font-size: 22px;
+  font-weight: 800;
   color: var(--c-gray-900);
 }
 .jc-dates {
-  margin-top: 2px;
-  font-size: 13px;
+  margin-top: 3px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-gray-750);
 }

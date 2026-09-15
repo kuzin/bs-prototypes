@@ -9,7 +9,7 @@ import { EmptyState } from '@components/Primitives/Primitives'
 import {
   BannerStack,
   ChallengeCard,
-  FundraiserBanner,
+  FundraiserCard,
   ChallengeScope,
   GoalCard,
   CommunityGoalBanner,
@@ -473,7 +473,6 @@ export function Dashboard({
   page,
 }) {
   const [scope, setScope] = useState('current')
-  const [showFundraiser, setShowFundraiser] = useState(true)
 
   // The page's four lists, the way the app splits them: what you're in, what
   // else is open to you, what has ended, what you've ignored. They move between
@@ -609,6 +608,9 @@ export function Dashboard({
               entries={logEntries}
               partners={partners}
               titlesView={titlesView}
+              /* The goal is the site's, so the log shows it wherever the rail
+                 card does — the same switch turns both on. */
+              goal={readingGoals ? dailyGoal?.goal : undefined}
               extraTabs={logTabs}
               renderExtra={renderLogTab}
               tab={logTab}
@@ -645,15 +647,6 @@ export function Dashboard({
                 )}
                 {communityGoal && showGoal && (
                   <CommunityGoalBanner {...communityGoal} onDismiss={() => setShowGoal(false)} />
-                )}
-                {/* A site running a read-a-thon says so on every page. */}
-                {fundraiser && showFundraiser && (
-                  <FundraiserBanner
-                    raised={fundraiser.raised}
-                    goal={fundraiser.goal}
-                    onLearnMore={() => setView('fundraisers')}
-                    onDismiss={() => setShowFundraiser(false)}
-                  />
                 )}
                 <StreakBanner streak={streak} onLog={onLog} />
               </BannerStack>
@@ -807,13 +800,24 @@ export function Dashboard({
                 <div className="wa-rail">
                   {railTop}
                   {/* The app's rail order: the RMI nudge, then the goal, then
-                      the leaderboard. Gated on RMI being on for the site. */}
+                      the leaderboard. Gated on RMI being on for the site. The
+                      fundraiser goes in above the leaderboard — a site running
+                      one says so on every page, and a standing figure belongs
+                      with the other standing figures rather than in the banner
+                      stack, where waving it off took the total with it. */}
                   {motivation && <MotivationCard state={motivation} />}
                   {readingGoals && <GoalCard dailyGoal={dailyGoal} />}
                   <AutoLoggedCard
                     className="wa-card"
                     rows={partners.length ? autoLoggedRows(connections, BOOKS) : []}
                   />
+                  {fundraiser && (
+                    <FundraiserCard
+                      raised={fundraiser.raised}
+                      goal={fundraiser.goal}
+                      onLearnMore={() => setView('fundraisers')}
+                    />
+                  )}
                   {leaderboards && <LeaderboardCard schools={TOP_SCHOOLS} grades={TOP_GRADES} />}
                 </div>
               </div>

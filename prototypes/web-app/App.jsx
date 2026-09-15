@@ -524,6 +524,12 @@ export function App() {
         open={features.fundraiser && !welcomed}
         school={!library}
         onClose={() => setWelcomed(true)}
+        onStart={() => {
+          setWelcomed(true)
+          setView('fundraisers')
+          setChallenge(null)
+          setStack([])
+        }}
       />
 
       <PrototypeNav currentHref="/bs-prototypes/web-app/" />

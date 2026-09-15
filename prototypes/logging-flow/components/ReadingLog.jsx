@@ -67,6 +67,35 @@ function monthGrid(year, month) {
   return weeks
 }
 
+/**
+ * Which days met the reader's daily goal — `@goal_met_dates`.
+ *
+ * The app marks the calendar with a star per day and counts the stars in the
+ * streak row ("Times Goal Met"), both only where the site has individual
+ * reading goals on. A goal is minutes, so a day of pages-only logging doesn't
+ * meet one; the app's own `reading_goal` is measured the same way.
+ */
+function goalMetDates(entries, goal) {
+  if (!goal) return null
+  const byDay = new Map()
+  for (const e of entries) {
+    if (!e.minutes) continue
+    byDay.set(e.date, (byDay.get(e.date) ?? 0) + e.minutes)
+  }
+  return new Set([...byDay].filter(([, mins]) => mins >= goal).map(([day]) => day))
+}
+
+/** `.reader-log-goal-star` — filled on a day that met it, hollow on one that
+    didn't, and absent on a day before the goal was set or still to come. */
+function GoalStarMark({ met }) {
+  const label = met ? 'Goal met' : 'Goal not met'
+  return (
+    <span className={`rl-goalstar${met ? ' is-met' : ''}`} title={label} aria-label={label}>
+      <Icon name={met ? 'star-filled' : 'star'} size={13} />
+    </span>
+  )
+}
+
 function amount(e) {
   const bits = []
   if (e.minutes) bits.push(`${e.minutes} Minutes`)
@@ -129,7 +158,7 @@ function EntryChip({ entry, dense, showImported = true, onOpenBook, bookFor }) {
   )
 }
 
-function CalendarView({ entries, showImported, onOpenBook, bookFor }) {
+function CalendarView({ entries, showImported, onOpenBook, bookFor, goalMet }) {
   const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
   return (
     <div className="rl-cal">
@@ -150,7 +179,10 @@ function CalendarView({ entries, showImported, onOpenBook, bookFor }) {
               const streak = rows.find((r) => r.streak)?.streak
               return (
                 <div key={key} className={`rl-cal-cell${outside ? ' is-outside' : ''}`}>
-                  <div className="rl-cal-date">{day.getDate()}</div>
+                  <div className="rl-cal-date">
+                    {day.getDate()}
+                    {goalMet && !outside && <GoalStarMark met={goalMet.has(key)} />}
+                  </div>
                   {streak && (
                     <div className="rl-cal-streak">
                       {streak} day streak
@@ -177,7 +209,7 @@ function CalendarView({ entries, showImported, onOpenBook, bookFor }) {
   )
 }
 
-function ListView({ entries, showImported, onOpenBook, bookFor }) {
+function ListView({ entries, showImported, onOpenBook, bookFor, goalMet }) {
   const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
   return (
     <div className="rl-list">
@@ -200,7 +232,10 @@ function ListView({ entries, showImported, onOpenBook, bookFor }) {
               return (
                 <div key={iso(day)} className="rl-day">
                   <div className="rl-day-when">
-                    <div className="rl-day-num">{day.getDate()}</div>
+                    <div className="rl-day-num">
+                      {day.getDate()}
+                      {goalMet && <GoalStarMark met={goalMet.has(iso(day))} />}
+                    </div>
                     <div className="rl-day-name">{DAY_NAMES[day.getDay()]}</div>
                     {streak && (
                       <div className="rl-day-streak">
@@ -545,10 +580,13 @@ function TitlesView({ entries, stats = true, onOpenBook, bookFor }) {
 //
 // `heading` overrides the page title, `subtabs={false}` drops the strip,
 // `defaultTab` picks which sub-tab opens, `defaultView` picks which of the
-// three views it opens on, and `stats={false}` drops the shelf's summary row —
-// all for when this log is embedded in a page that already has those. A
-// challenge's log opens on the titles shelf and leaves the totals to the
-// Overview tab's own "Overall Progress". Left off, the page is exactly as it was.
+// three views it opens on, `viewSwitch={false}` pins it there and drops the
+// switcher, and `stats={false}` drops the shelf's summary row — all for when
+// this log is embedded in a page that already has those. A challenge's log is
+// the titles shelf and nothing else: a month calendar inside a challenge tab
+// invites you to look for days the challenge never claimed, and the totals are
+// the Overview tab's own "Overall Progress". Left off, the page is exactly as
+// it was.
 //
 // `onOpenBook` is where a logged title goes when you click it: the calendar and
 // list rows link straight through, and the shelf's roll-up modal offers it in
@@ -564,7 +602,12 @@ export function ReadingLog({
   subtabs = true,
   defaultTab = 'log',
   defaultView,
+  viewSwitch = true,
   stats = true,
+  // The reader's daily goal in minutes, where the site has individual reading
+  // goals on — `@effective_reading_goal`. It puts a star on every day in the
+  // log and a count of them in the streak row; off, the log is as it was.
+  goal,
   // Optional control of which sub-tab is showing, so a parent can move between
   // them — the Wish List's "Find Books" goes to Book Lists next door.
   tab: tabProp,
@@ -593,10 +636,15 @@ export function ReadingLog({
         ? 'list'
         : 'calendar'),
   )
-  const view = titlesView || ownView !== 'titles' ? ownView : 'calendar'
+  const view = !viewSwitch
+    ? (defaultView ?? 'calendar')
+    : titlesView || ownView !== 'titles'
+      ? ownView
+      : 'calendar'
   const extraIds = extraTabs.map((t) => t.id)
 
   const imported = partners.length ? entries.filter((e) => e.source).length : 0
+  const goalMet = goalMetDates(entries, goal)
 
   return (
     <div className="rl-page">
@@ -630,31 +678,33 @@ export function ReadingLog({
                 {/* Calendar, list or shelf is a segmented control, which in this
                     system is a pill Tabs — it was a two-button toggle of its
                     own, on its own active blue. */}
-                <Tabs
-                  variant="pill"
-                  size="md"
-                  active={view}
-                  accent="#1A6DD5"
-                  onChange={setOwnView}
-                  ariaLabel="Which view"
-                  items={[
-                    {
-                      id: 'calendar',
-                      label: 'Calendar',
-                      icon: <Icon name="layout-grid" size={15} />,
-                    },
-                    { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
-                    ...(titlesView
-                      ? [
-                          {
-                            id: 'titles',
-                            label: 'All Titles',
-                            icon: <Icon name="book-2" size={15} />,
-                          },
-                        ]
-                      : []),
-                  ]}
-                />
+                {viewSwitch && (
+                  <Tabs
+                    variant="pill"
+                    size="md"
+                    active={view}
+                    accent="#1A6DD5"
+                    onChange={setOwnView}
+                    ariaLabel="Which view"
+                    items={[
+                      {
+                        id: 'calendar',
+                        label: 'Calendar',
+                        icon: <Icon name="layout-grid" size={15} />,
+                      },
+                      { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
+                      ...(titlesView
+                        ? [
+                            {
+                              id: 'titles',
+                              label: 'All Titles',
+                              icon: <Icon name="book-2" size={15} />,
+                            },
+                          ]
+                        : []),
+                    ]}
+                  />
+                )}
               </>
             }
           />
@@ -678,6 +728,18 @@ export function ReadingLog({
                   color="#F0A024"
                   icon={<Icon name="flame-filled" size={20} />}
                 />
+                {/* `.streak-information-item.goal-met` — the app counts the
+                    stars back to August 1st, which for a one-month fixture is
+                    the month on screen. */}
+                {goalMet && (
+                  <StatCard
+                    value={goalMet.size}
+                    unit={goalMet.size === 1 ? 'Time' : 'Times'}
+                    label={`Goal met (${goal} min/day)`}
+                    color="#1A6DD5"
+                    icon={<Icon name="star-filled" size={20} />}
+                  />
+                )}
               </div>
 
               {/* Banner, not InfoBox: InfoBox is the announcement shape — a 26px
@@ -711,6 +773,7 @@ export function ReadingLog({
               showImported={imported > 0}
               onOpenBook={onOpenBook}
               bookFor={bookFor}
+              goalMet={goalMet}
             />
           )}
           {view === 'list' && (
@@ -719,6 +782,7 @@ export function ReadingLog({
               showImported={imported > 0}
               onOpenBook={onOpenBook}
               bookFor={bookFor}
+              goalMet={goalMet}
             />
           )}
           {view === 'titles' && (

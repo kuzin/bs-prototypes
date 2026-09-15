@@ -10,6 +10,7 @@ import { NumberInput } from '@components/Form/Form'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { BookCover } from '../../logging-flow/components/BookCover'
 import { badgeSrc, bannerSrc } from '@components/ReaderApp/ReaderApp'
+import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
 
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
 import { BADGES, CATALOG_BY_ID, getChallengeDetail, getChallengeExtras } from '../data'
@@ -75,13 +76,6 @@ function Overview({ detail, challenge }) {
   return (
     <>
       <section className="cp-section">
-        <div className="cp-types">
-          {detail.types.map((t) => (
-            <Pill key={t} color="#1A6DD5" variant="soft" size="sm">
-              {t}
-            </Pill>
-          ))}
-        </div>
         <p className="cp-description">{detail.description}</p>
         <p className="cp-started">
           <Icon name="calendar" size={15} />
@@ -182,12 +176,6 @@ function Rewards({ detail }) {
 }
 
 /** The dominant colour blended with white, the way the app's ColorThief does. */
-function wash(hex, alpha) {
-  const h = hex.replace('#', '')
-  const mix = (i) => Math.round(parseInt(h.slice(i, i + 2), 16) * alpha + 255 * (1 - alpha))
-  return `rgb(${mix(0)}, ${mix(2)}, ${mix(4)})`
-}
-
 /**
  * The Reading List tab — a `book_list` challenge's own shelf. The titles the
  * challenge asks you to read, each one a book you can open or log.
@@ -388,30 +376,27 @@ export function ChallengePage({ challenge, entries, onLog }) {
 
   return (
     <div className="cp">
-      {/* The app names these the other way round — `-bar-light` takes the 40%
-          blend and `-bar-dark` the 20% — so the stronger band is the tall one
-          at the top and the paler one sits behind its curve. */}
-      <div className="cp-header">
-        <div className="cp-bar-strong" style={{ background: wash(tint, 0.4) }} />
-        <div className="cp-bar-pale" style={{ background: wash(tint, 0.2) }} />
-        <div className="cp-header-info">
-          <img src={banner} alt={challenge.title} />
-          <h1 className="cp-title">{challenge.title}</h1>
-          {/* `program.date_span`, or the literal the app writes when there
-              isn't one. */}
-          <span className="cp-dates">
-            {challenge.dates === 'Ongoing' ? 'Ongoing Challenge' : challenge.dates}
-          </span>
-        </div>
-      </div>
+      <ProgramHeader
+        banner={banner}
+        title={challenge.title}
+        tint={tint}
+        /* `program.date_span`, or the literal the app writes when there
+           isn't one. */
+        dates={challenge.dates === 'Ongoing' ? 'Ongoing Challenge' : challenge.dates}
+        tags={detail.types.map((t) => (
+          <Pill key={t} color="#1A6DD5" variant="soft" size="sm">
+            {t}
+          </Pill>
+        ))}
+      />
 
       <div className="cp-head">
         <div className="cp-tabs">
           <Tabs
-            variant="underline"
+            variant="pill"
+            plain
             size="md"
             active={tab}
-            accent="#1A6DD5"
             onChange={setTab}
             ariaLabel="Challenge sections"
             items={tabsFor(extras)}
@@ -437,6 +422,7 @@ export function ChallengePage({ challenge, entries, onLog }) {
             heading="Challenge Log"
             subtabs={false}
             defaultView="titles"
+            viewSwitch={false}
             stats={false}
           />
         )}

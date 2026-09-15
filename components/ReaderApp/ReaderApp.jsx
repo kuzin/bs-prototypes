@@ -997,35 +997,42 @@ export function LeaderboardCard({
  * a bar, and without one just "$3,180 total raised" — a bar with nothing to
  * fill to is a bar that can only ever look wrong.
  */
-export function FundraiserBanner({ raised, goal, onLearnMore, onDismiss }) {
+/**
+ * `_fundraiser_main_banner` — what a site running a read-a-thon carries on
+ * every page, as a rail block rather than the app's dismissible bar.
+ *
+ * A fundraiser runs for weeks, and the total it is at is the sort of thing a
+ * reader looks up rather than gets told: in the banner stack it was one more
+ * strip to wave off, and a waved-off banner takes the number with it. In the
+ * rail it sits with the goal and the leaderboard — the three standing figures
+ * the page keeps — and there is nothing to dismiss.
+ *
+ * Without a goal it reads "$3,180 total raised" and drops the bar, since a bar
+ * with nothing to fill to can only ever look wrong.
+ */
+export function FundraiserCard({ raised, goal, onLearnMore }) {
   const money = (n) => `$${n.toLocaleString()}`
   return (
-    <ReaderBanner
-      tone="green"
-      onDismiss={onDismiss}
-      mark={<Icon name="coin" size={20} />}
-      title={
-        <>
-          <strong>We&apos;re running a reading fundraiser!</strong> Support us by donating.
-        </>
-      }
-      action={
-        <span className="wa-fund">
-          <span className="wa-fund-nums">
-            {goal ? (
-              <>
-                <strong>{money(raised)}</strong> of {money(goal)} Raised
-              </>
-            ) : (
-              <>
-                <strong>{money(raised)}</strong> total raised
-              </>
-            )}
-          </span>
-          {goal ? <ProgressBar value={raised} max={goal} color="#087542" /> : null}
-          <ReaderBannerAction onClick={onLearnMore}>Learn More</ReaderBannerAction>
-        </span>
-      }
-    />
+    <aside className="wa-card wa-fundcard" aria-label="Fundraiser progress">
+      <h4 className="wa-fundcard-title">We&apos;re running a reading fundraiser!</h4>
+      <p className="wa-fundcard-sub">Support us by donating.</p>
+      <p className="wa-fundcard-nums">
+        {goal ? (
+          <>
+            <strong>{money(raised)}</strong> of {money(goal)} Raised
+          </>
+        ) : (
+          <>
+            <strong>{money(raised)}</strong> total raised
+          </>
+        )}
+      </p>
+      {goal ? (
+        <ProgressBar value={raised} max={goal} color="#087542" className="wa-fundcard-bar" />
+      ) : null}
+      <button type="button" className="wa-fundcard-more" onClick={onLearnMore}>
+        View Fundraiser
+      </button>
+    </aside>
   )
 }

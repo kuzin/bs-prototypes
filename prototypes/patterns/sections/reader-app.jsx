@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
+import { Pill } from '@components/Pill/Pill'
 import {
   BannerStack,
   CommunityGoalBanner,
@@ -8,7 +9,7 @@ import {
   ReaderBannerAction,
   ReaderPageHead,
   ReaderBack,
-  FundraiserBanner,
+  FundraiserCard,
   ChallengeCard,
   ChallengeScope,
   GoalCard,
@@ -17,6 +18,7 @@ import {
   ReaderPill,
   ReaderTopBar,
   StreakBanner,
+  bannerSrc,
 } from '@components/ReaderApp/ReaderApp'
 import { PartnerSwitcher } from '@components/PartnerConnect/PartnerConnect'
 import { AllBadges } from '../../web-app/components/AllBadges'
@@ -33,6 +35,7 @@ import { READING_LOG } from '../../logging-flow/data'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from '../../web-app/components/FriendProfile'
 import { ChallengePage } from '../../web-app/components/ChallengePage'
+import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
 import { FundraiserPage, FundraiserWelcome } from '../../web-app/components/FundraiserPage'
 import { FUNDRAISER } from '../../web-app/data'
 import { MORE_CHALLENGES, REGISTRATION_QUESTIONS } from '../../logging-flow/data'
@@ -1098,9 +1101,9 @@ import { BookLists } from './components/BookLists'
     id: 'wa-fundraiser',
     name: 'FundraiserPage',
     usage: `import { FundraiserPage, FundraiserWelcome } from './components/FundraiserPage'
-import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
+import { FundraiserCard } from '@components/ReaderApp/ReaderApp'
 
-<FundraiserBanner raised={3180} goal={5000} onLearnMore={open} onDismiss={hide} />
+<FundraiserCard raised={3180} goal={5000} onLearnMore={open} />
 
 /* a nav destination, so no back link: a site running one gets its
    own tab, ahead of Challenges */
@@ -1134,11 +1137,13 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
         dismissed. The tab is singular where the app&apos;s own link says &ldquo;Fundraisers&rdquo;:
         a site has one running at a time (<code>active_fundraiser_id</code>) and the link goes
         straight to its page, so a plural promises a list that doesn&apos;t exist.{' '}
-        <code>FundraiserBanner</code> is <code>_fundraiser_main_banner</code>, which that site shows
-        on every page; without a goal it reads &ldquo;$3,180 total raised&rdquo; and drops the bar,
-        since a bar with nothing to fill to can only ever look wrong. <code>FundraiserWelcome</code>{' '}
-        is the modal a reader gets once, the first time they land on such a site — remembered in
-        localStorage by the app, a flag here.
+        <code>FundraiserCard</code> is <code>_fundraiser_main_banner</code>, which that site shows
+        on every page — a rail block here rather than the app&apos;s dismissible bar, since a
+        fundraiser runs for weeks and waving the bar off took the running total with it. Without a
+        goal it reads &ldquo;$3,180 total raised&rdquo; and drops the bar, since a bar with nothing
+        to fill to can only ever look wrong. <code>FundraiserWelcome</code> is the modal a reader
+        gets once, the first time they land on such a site — remembered in localStorage by the app,
+        a flag here.
       </>
     ),
     render: () => (
@@ -1148,15 +1153,15 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
             <FundraiserPage fundraiser={FUNDRAISER} entries={READING_LOG} />
           </div>
         </Variant>
-        <Variant label="the bar every page carries while one is running" full>
-          <BannerFrame>
-            <FundraiserBanner raised={3180} goal={5000} onLearnMore={noop} onDismiss={noop} />
-          </BannerFrame>
+        <Variant label="the rail block every page carries while one is running">
+          <div style={{ maxWidth: 300 }}>
+            <FundraiserCard raised={3180} goal={5000} onLearnMore={noop} />
+          </div>
         </Variant>
         <Variant label="no goal — the figure, and no bar to misread">
-          <BannerFrame>
-            <FundraiserBanner raised={3180} onLearnMore={noop} />
-          </BannerFrame>
+          <div style={{ maxWidth: 300 }}>
+            <FundraiserCard raised={3180} onLearnMore={noop} />
+          </div>
         </Variant>
         <Variant label="the welcome, once per reader">
           <FundraiserWelcomeDemo />
@@ -1380,6 +1385,64 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
         <div style={{ padding: '0 20px 20px', background: '#fff' }}>
           <Reviews />
         </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    sub: 'chrome',
+    id: 'program-header',
+    name: 'ProgramHeader',
+    usage: `import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
+
+<ProgramHeader
+  banner={bannerSrc(challenge.banner)}
+  title={challenge.title}
+  dates={challenge.dates}
+  tint={challenge.tint}
+  tags={types.map((t) => <Pill key={t} color="#1A6DD5" variant="soft" size="sm">{t}</Pill>)}
+/>`,
+    desc: (
+      <>
+        <code>programs/_program_header.html.haml</code>, the way a reader arrives at a program. Two
+        tinted bands, the taller one ending in a downward curve; the banner floats over them on a
+        rounded card, pulled up into the bands; and the page ground curves back up behind the title.
+        <br />
+        <br />
+        The bands are <strong>the banner&apos;s own dominant colour blended with white</strong> —
+        40% on the tall one, 20% behind it. The app reads that off the image with ColorThief; we
+        carry it on the program as <code>tint</code>.
+        <br />
+        <br />A challenge wears it and so does a fundraiser, which is what took it out of{' '}
+        <code>ChallengePage</code>: a read-a-thon is a challenge with money attached, and arriving
+        at one should not feel like arriving somewhere else. <code>tags</code> is the slot under the
+        dates — what the program asks of you, which reads as part of the title block rather than as
+        the first line of the body.
+        <br />
+        <br />
+        It bleeds to the window, but <strong>only inside the reader shell</strong>: the negative
+        margins cancel <code>.wa-main</code>&apos;s padding, and anywhere else they would tear the
+        header out of whatever is holding it — which is why it is framed here.
+      </>
+    ),
+    render: () => (
+      <Variant label="a challenge's own banner, and the colour it gives the page" full>
+        <ProgramHeader
+          banner={bannerSrc('spring-into-reading')}
+          title="Spring Into Reading"
+          dates="Apr 1 — Apr 30"
+          tint="#B4E0CC"
+          tags={
+            <>
+              <Pill color="#1A6DD5" variant="soft" size="sm">
+                Minutes
+              </Pill>
+              <Pill color="#1A6DD5" variant="soft" size="sm">
+                Activities
+              </Pill>
+            </>
+          }
+        />
       </Variant>
     ),
   },

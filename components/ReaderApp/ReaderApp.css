@@ -204,12 +204,19 @@
 .wa-tabsbar {
   border-top: 1px solid var(--c-gray-100);
 }
+/* The strip is the last thing in the top bar, and the top bar already draws a
+   rule across the window — `.tabs--underline`'s own track drew a second one
+   1px above it, capped at the content width, so the two read as a doubled edge
+   wherever the page is wider than the strip. The strip gives its track up and
+   drops onto the bar's, which is what the active tab's underline wants to sit
+   on anyway. */
 .wa-tabsbar .tabs {
   max-width: var(--wa-content-max);
-  margin: 0 auto;
+  margin: 0 auto -1px;
   padding: 0 24px;
   justify-content: center;
   gap: 0;
+  border-bottom: 0;
 }
 /* `.wa-tabsbar .tabs .tab`, not `.wa-tabsbar .tab`: the shorter selector ties
    `.tabs--underline .tab` on specificity, so the strip's padding came down to
@@ -729,6 +736,63 @@
 }
 .wa-leadcard-more:hover {
   text-decoration: none;
+}
+
+/* ─── Fundraiser card ────────────────────────────────────────────────────
+   A rail block on the goal card's own furniture — same ground, same 16/800
+   heading — with the green the app gives money everywhere else. */
+.wa-fundcard-title {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+.wa-fundcard-sub {
+  margin-top: 4px;
+  font-size: 15px;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+.wa-fundcard-nums {
+  margin-top: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-gray-800);
+}
+.wa-fundcard-nums strong {
+  font-size: 18px;
+  font-weight: 900;
+}
+/* The goal card's own 32px bar, in green. The two blocks sit one above the
+   other in the rail, and a 10px bar under a 32px one read as the lesser of the
+   two — which is not what a site running a read-a-thon means by it. The fill
+   keeps the same 32px minimum, so a fundraiser on its first dollar shows the
+   dot rather than nothing. */
+.wa-fundcard-bar {
+  margin-top: 8px;
+}
+.wa-fundcard .pgb-track {
+  height: 32px;
+  background: rgb(8 117 66 / 14%);
+  border-radius: 32px;
+}
+.wa-fundcard .pgb-fill {
+  min-width: 32px;
+  border-radius: 32px;
+}
+/* The leaderboard's own "View All Schools" — a rail block ends in a link, not
+   a button, because the block is the thing you read and the link is the way
+   past it. */
+.wa-fundcard-more {
+  padding: 0;
+  margin-top: 14px;
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-teal);
+  cursor: pointer;
+  background: none;
+  border: 0;
 }
 
 /* ─── Reader switcher + account menu (the topbar pill and gear) ───────────── */

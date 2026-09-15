@@ -30,6 +30,21 @@
   margin-inline: calc(50% - 50vw);
 }
 
+/* ─── The goal star ──────────────────────────────────────────────────────────
+   `.reader-log-goal-star`. Where the site has individual reading goals on, the
+   app puts one on every day in the log — filled where the day met the goal,
+   hollow where it didn't. It rides the date, so it inherits the date's size and
+   sits on its baseline rather than taking a line of its own. */
+.rl-goalstar {
+  display: inline-flex;
+  margin-left: 5px;
+  color: var(--c-gray-400);
+  vertical-align: baseline;
+}
+.rl-goalstar.is-met {
+  color: #f0a024;
+}
+
 /* ─── Streak cards and the import note ───────────────────────────────────── */
 /* Both are shared components now — StatCard and InfoBox style themselves; this
    is only where they sit. */
@@ -167,11 +182,11 @@
   padding: 8px 9px;
 }
 .rl-entry--dense .rl-entry-title {
-  font-size: 13.5px;
+  font-size: 15px;
 }
 .rl-entry--dense .rl-entry-author,
 .rl-entry--dense .rl-entry-amounts {
-  font-size: 12.5px;
+  font-size: 13px;
 }
 
 /* Imported-from tag + its tooltip. */
@@ -214,7 +229,12 @@
   visibility: visible;
 }
 
-/* ─── Calendar view ──────────────────────────────────────────────────────── */
+/* ─── Calendar view ──────────────────────────────────────────────────────────
+   A month grid gives each day a cell the width of a book cover, and the log's
+   own chip type was set for the list, where a row runs the page. In a cell it
+   read as fine print — so the calendar takes the ladder's own rungs: 15 for the
+   day names, 18 for the date, and the chip at the page's 15/13 rather than a
+   size below it. */
 
 .rl-cal {
   border: 1px solid var(--c-border);
@@ -228,7 +248,7 @@
 }
 .rl-cal-dow {
   padding: 10px 10px;
-  font-size: 13.5px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-text-light);
   border-bottom: 1px solid var(--c-border);
@@ -258,7 +278,7 @@
   color: var(--c-gray-600);
 }
 .rl-cal-date {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
   color: var(--c-text-light);
 }
@@ -272,7 +292,7 @@
   border-left: 4px solid #e2825d;
   background: #fdece5;
   color: #a13a22;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 800;
 }
 

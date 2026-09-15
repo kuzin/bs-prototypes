@@ -9,6 +9,7 @@ import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
 import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { badgeSrc, bannerSrc, ReaderBack } from '@components/ReaderApp/ReaderApp'
+import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
 import { ToastStack, useToasts } from '@components/Toast/Toast'
 
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
@@ -65,160 +66,161 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
     <div className="fnd">
       {onBack && <ReaderBack onClick={onBack}>Back to Challenges</ReaderBack>}
 
-      <header className="fnd-head" style={{ '--fnd-tint': f.tint }}>
-        <div className="fnd-head-art">
-          <img src={bannerSrc(f.banner)} alt="" />
-        </div>
-        <h1 className="fnd-title">{f.name}</h1>
-        <p className="fnd-dates">{f.dates}</p>
-      </header>
+      <ProgramHeader banner={bannerSrc(f.banner)} title={f.name} dates={f.dates} tint={f.tint} />
 
-      <div className="fnd-tabs">
-        <Tabs
-          variant="pill"
-          plain
-          size="md"
-          active={tab}
-          onChange={setTab}
-          ariaLabel="Fundraiser sections"
-          items={tabs}
-        />
+      <div className="fnd-head">
+        <div className="fnd-tabs">
+          <Tabs
+            variant="pill"
+            plain
+            size="md"
+            active={tab}
+            onChange={setTab}
+            ariaLabel="Fundraiser sections"
+            items={tabs}
+          />
+        </div>
       </div>
 
-      {tab === 'overview' && (
-        <div className="fnd-overview">
-          <div className="fnd-main">
-            {f.shortDescription && <h2 className="fnd-sub">{f.shortDescription}</h2>}
-            <p className="fnd-desc">{f.description}</p>
+      <div className="fnd-body">
+        {tab === 'overview' && (
+          <div className="fnd-overview">
+            <div className="fnd-main">
+              {f.shortDescription && <h2 className="fnd-sub">{f.shortDescription}</h2>}
+              <p className="fnd-desc">{f.description}</p>
 
-            <h2 className="fnd-h2">Overall Progress</h2>
-            <GoalTiles>
-              {f.progress.map((p) =>
-                p.need != null ? (
-                  <GoalTile key={p.id} label={p.label} have={p.have} need={p.need} />
-                ) : (
-                  <GoalTile
-                    key={p.id}
-                    label={p.label}
-                    value={p.value}
-                    accent={p.accent}
-                    icon={<Icon name={p.icon} size={24} />}
-                  />
-                ),
-              )}
-            </GoalTiles>
-          </div>
+              <h2 className="fnd-h2">Overall Progress</h2>
+              <GoalTiles>
+                {f.progress.map((p) =>
+                  p.need != null ? (
+                    <GoalTile key={p.id} label={p.label} have={p.have} need={p.need} />
+                  ) : (
+                    <GoalTile
+                      key={p.id}
+                      label={p.label}
+                      value={p.value}
+                      accent={p.accent}
+                      icon={<Icon name={p.icon} size={24} />}
+                    />
+                  ),
+                )}
+              </GoalTiles>
+            </div>
 
-          <aside className="fnd-rail">
-            {/* `_total_donations` — what this reader has raised, against what
+            <aside className="fnd-rail">
+              {/* `_total_donations` — what this reader has raised, against what
                 they said they'd raise. */}
-            <div className="fnd-card fnd-total">
-              <h2 className="fnd-card-h">Total Donations</h2>
-              <p className="fnd-total-nums">
-                <strong>{money(f.myRaised)}</strong>
-                {f.myGoal ? <span> / {money(f.myGoal)}</span> : null}
-              </p>
-              {f.myGoal ? <ProgressBar value={f.myRaised} max={f.myGoal} color="#0F7A55" /> : null}
-            </div>
+              <div className="fnd-card fnd-total">
+                <h2 className="fnd-card-h">Total Donations</h2>
+                <p className="fnd-total-nums">
+                  <strong>{money(f.myRaised)}</strong>
+                  {f.myGoal ? <span> / {money(f.myGoal)}</span> : null}
+                </p>
+                {f.myGoal ? (
+                  <ProgressBar value={f.myRaised} max={f.myGoal} color="#0F7A55" />
+                ) : null}
+              </div>
 
-            {/* The card the whole thing turns on. */}
-            <div className="fnd-card fnd-share">
-              <span className="fnd-share-face" aria-hidden="true">
-                😃
-              </span>
-              <h2 className="fnd-card-h">Get Donations, Get Rewarded</h2>
-              <p className="fnd-share-text">
-                Share your donation page with your friends and family to rack up those donation
-                dollars and earn badges.
-              </p>
-              <div className="fnd-share-icons">
-                {[
-                  { id: 'facebook', label: 'Share on Facebook', icon: 'brand-facebook' },
-                  { id: 'twitter', label: 'Share on X', icon: 'brand-x' },
-                  { id: 'email', label: 'Share via email', icon: 'mail' },
-                  { id: 'sms', label: 'Share via text', icon: 'message' },
-                ].map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    className="fnd-share-icon"
-                    aria-label={s.label}
-                    onClick={() =>
-                      push({ tone: 'info', title: s.label, body: 'Not wired up in a prototype.' })
-                    }
+              {/* The card the whole thing turns on. */}
+              <div className="fnd-card fnd-share">
+                <span className="fnd-share-face" aria-hidden="true">
+                  😃
+                </span>
+                <h2 className="fnd-card-h">Get Donations, Get Rewarded</h2>
+                <p className="fnd-share-text">
+                  Share your donation page with your friends and family to rack up those donation
+                  dollars and earn badges.
+                </p>
+                <div className="fnd-share-icons">
+                  {[
+                    { id: 'facebook', label: 'Share on Facebook', icon: 'brand-facebook' },
+                    { id: 'twitter', label: 'Share on X', icon: 'brand-x' },
+                    { id: 'email', label: 'Share via email', icon: 'mail' },
+                    { id: 'sms', label: 'Share via text', icon: 'message' },
+                  ].map((s) => (
+                    <button
+                      key={s.id}
+                      type="button"
+                      className="fnd-share-icon"
+                      aria-label={s.label}
+                      onClick={() =>
+                        push({ tone: 'info', title: s.label, body: 'Not wired up in a prototype.' })
+                      }
+                    >
+                      <Icon name={s.icon} size={18} />
+                    </button>
+                  ))}
+                </div>
+                <div className="fnd-share-link">
+                  <span className="fnd-share-url">{f.shareUrl}</span>
+                  <Button
+                    size="sm"
+                    onClick={() => push({ title: 'Fundraiser link copied to clipboard' })}
                   >
-                    <Icon name={s.icon} size={18} />
-                  </button>
-                ))}
+                    Copy
+                  </Button>
+                </div>
               </div>
-              <div className="fnd-share-link">
-                <span className="fnd-share-url">{f.shareUrl}</span>
-                <Button
-                  size="sm"
-                  onClick={() => push({ title: 'Fundraiser link copied to clipboard' })}
-                >
-                  Copy
-                </Button>
+            </aside>
+          </div>
+        )}
+
+        {tab === 'badges' && (
+          <ShelfGrid>
+            {earned.map((b) => (
+              <CollectionCard
+                key={b.name}
+                art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
+                name={b.name}
+                blurb={b.blurb}
+                date={`Earned ${b.date}`}
+              />
+            ))}
+          </ShelfGrid>
+        )}
+
+        {tab === 'prizes' && (
+          <div className="fnd-prizes">
+            <div className="fnd-prize">
+              <span className="fnd-prize-art" aria-hidden="true">
+                🎟️
+              </span>
+              <div className="fnd-prize-copy">
+                <h3 className="fnd-prize-name">Book Fair Voucher</h3>
+                <p className="fnd-prize-at">Raise $50</p>
               </div>
+              <Pill color="#0F7A55" variant="soft" size="sm">
+                Earned
+              </Pill>
             </div>
-          </aside>
-        </div>
-      )}
-
-      {tab === 'badges' && (
-        <ShelfGrid>
-          {earned.map((b) => (
-            <CollectionCard
-              key={b.name}
-              art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
-              name={b.name}
-              blurb={b.blurb}
-              date={`Earned ${b.date}`}
-            />
-          ))}
-        </ShelfGrid>
-      )}
-
-      {tab === 'prizes' && (
-        <div className="fnd-prizes">
-          <div className="fnd-prize">
-            <span className="fnd-prize-art" aria-hidden="true">
-              🎟️
-            </span>
-            <div className="fnd-prize-copy">
-              <h3 className="fnd-prize-name">Book Fair Voucher</h3>
-              <p className="fnd-prize-at">Raise $50</p>
+            <div className="fnd-prize">
+              <span className="fnd-prize-art" aria-hidden="true">
+                🍕
+              </span>
+              <div className="fnd-prize-copy">
+                <h3 className="fnd-prize-name">Pizza with the Principal</h3>
+                <p className="fnd-prize-at">Raise $150</p>
+              </div>
+              <Pill color="#656565" variant="soft" size="sm">
+                {money(f.myGoal - f.myRaised)} to go
+              </Pill>
             </div>
-            <Pill color="#0F7A55" variant="soft" size="sm">
-              Earned
-            </Pill>
           </div>
-          <div className="fnd-prize">
-            <span className="fnd-prize-art" aria-hidden="true">
-              🍕
-            </span>
-            <div className="fnd-prize-copy">
-              <h3 className="fnd-prize-name">Pizza with the Principal</h3>
-              <p className="fnd-prize-at">Raise $150</p>
-            </div>
-            <Pill color="#656565" variant="soft" size="sm">
-              {money(f.myGoal - f.myRaised)} to go
-            </Pill>
-          </div>
-        </div>
-      )}
+        )}
 
-      {tab === 'donations' && <Donations fundraiser={f} />}
+        {tab === 'donations' && <Donations fundraiser={f} />}
 
-      {tab === 'log' && (
-        <ReadingLog
-          entries={entries}
-          heading="Challenge Log"
-          subtabs={false}
-          defaultView="titles"
-          stats={false}
-        />
-      )}
+        {tab === 'log' && (
+          <ReadingLog
+            entries={entries}
+            heading="Challenge Log"
+            subtabs={false}
+            defaultView="titles"
+            viewSwitch={false}
+            stats={false}
+          />
+        )}
+      </div>
 
       <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
@@ -276,15 +278,18 @@ function Donations({ fundraiser }) {
  * The modal a reader gets the first time they land on a site running one —
  * `_fundraiser_notification`. Shown once and remembered in localStorage, which
  * is a `once` flag here.
+ *
+ * The art is the app's own `rectangle-group-mask.svg`, the drawn crowd it puts
+ * over this one modal and nowhere else. Its copy is left-aligned against it the
+ * way the app sets it, and "Get Started" opens the fundraiser: a button that
+ * only dismissed the thing it was on was an OK button wearing a verb.
  */
-export function FundraiserWelcome({ open, onClose, school = true }) {
+export function FundraiserWelcome({ open, onClose, onStart, school = true }) {
   const where = school ? 'school' : 'library'
   return (
     <Modal open={open} onClose={onClose} variant="center" closeBadge ariaLabel="Fundraiser">
       <ModalClose onClick={onClose} />
-      <div className="fnd-welcome-art" aria-hidden="true">
-        🐷
-      </div>
+      <img className="fnd-welcome-art" src="/bs-prototypes/fundraiser-header.svg" alt="" />
       <div className="modal-body fnd-welcome">
         <h2 className="fnd-welcome-title">
           Raise funds for your {where} and earn prizes by reading!
@@ -295,7 +300,7 @@ export function FundraiserWelcome({ open, onClose, school = true }) {
         </p>
       </div>
       <div className="modal-footer">
-        <Button onClick={onClose}>Get Started</Button>
+        <Button onClick={onStart ?? onClose}>Get Started</Button>
       </div>
     </Modal>
   )
