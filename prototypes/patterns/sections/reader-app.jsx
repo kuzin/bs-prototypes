@@ -1381,17 +1381,30 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
         stayed up under a nav tab that had moved on.
         <br />
         <br />
-        Reading List, Ticket Drawings and Certificates stay as furniture, the way the repo treats
-        unbuilt tabs. The hero is the challenge&apos;s own banner from{' '}
+        <strong>The nav is built from what the challenge has</strong> (
+        <code>_single_program_nav</code>): a Reading List only on a <code>book_list</code>{' '}
+        challenge, Ticket Drawings only where <code>@ticket_rewards_exist</code>, Certificates only
+        where <code>@certificates_exist</code>. Nothing is greyed out — a challenge without them
+        hasn&apos;t got those tabs, which is truer than a row of controls that don&apos;t work.
+        Bingo Card is the one holdout: a bingo board is the Gameboard Reader prototype&apos;s whole
+        subject, and a second one here would be a copy that drifts.
+        <br />
+        <br />
+        <strong>Ticket Drawings</strong> is <code>programs/_ticket_reward</code> — a prize drawn
+        from the tickets readers earn, and the reader decides which drawings to spend theirs on,
+        since the same ticket can&apos;t go into two. The closing date leads each one, above its
+        name: a drawing you have missed is the thing to know before you read what it was for. One
+        that has closed says &ldquo;Drawing has ended. Winners will be notified.&rdquo; and offers
+        nothing. The hero is the challenge&apos;s own banner from{' '}
         <code>public/challenge-banners/</code> — all three challenges here are real Beanstack ones,
         so each carries the art its design team ships, and the badges are that challenge&apos;s own
         illustrations rather than glyphs on coloured discs.
       </>
     ),
     render: () => (
-      <Variant label="the Overview tab" full>
+      <Variant label="eight tabs' worth — Overview, and the four the challenge earns" full>
         <div style={{ padding: '0 20px 20px', background: '#fff' }}>
-          <ChallengePage challenge={CHALLENGES[0]} />
+          <ChallengePage challenge={CHALLENGES[0]} entries={READING_LOG} />
         </div>
       </Variant>
     ),

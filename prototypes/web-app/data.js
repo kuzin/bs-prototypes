@@ -854,6 +854,73 @@ export const CHALLENGE_DETAIL = {
   },
 }
 
+// ─── What else a challenge can carry ─────────────────────────────────────────
+// `navigation/sidebar/_single_program_nav` — the challenge's nav is built from
+// what the challenge actually *has*: a Reading List tab only on a `book_list`
+// challenge, Ticket Drawings only where `@ticket_rewards_exist`, Certificates
+// only where `@certificates_exist`. Nothing is greyed out; a challenge without
+// them simply hasn't got those tabs.
+
+// `TicketReward` — a prize drawn from the tickets readers earn. A reader spends
+// their earned tickets entering the ones they want, so the same tickets can't
+// go in twice.
+const drawing = (id, title, description, endsOn, entered, ended = false) => ({
+  id,
+  title,
+  description,
+  endsOn,
+  entered,
+  ended,
+})
+
+export const CHALLENGE_EXTRAS = {
+  spring: {
+    // Every 250 minutes earns a ticket; five of the eight are already in
+    // drawings (two of those in one that has since closed).
+    tickets: { earned: 8 },
+    drawings: [
+      drawing(
+        'dw-switch',
+        'Nintendo Switch Grand Prize',
+        'The console and two games, drawn at the end-of-year assembly. Every reader in the school is in with a chance.',
+        'Apr 30',
+        2,
+      ),
+      drawing(
+        'dw-bikes',
+        'A Bike from Riverside Cycles',
+        'Riverside donated two bikes and two helmets. One goes to a reader in grades K–5 and one to a reader in 6–8.',
+        'Apr 30',
+        0,
+      ),
+      drawing(
+        'dw-pizza',
+        'Pizza Party for Your Class',
+        'Lunch for your whole class, on the PTA. Drawn once, from every ticket entered.',
+        'Mar 28',
+        3,
+        true,
+      ),
+    ],
+    certificates: [
+      {
+        id: 'cert-1',
+        name: 'Spring Into Reading — Completed',
+        earnedOn: 'April 28, 2026',
+        line: 'Awarded to Olivia M. for reading 1,000 minutes this spring.',
+      },
+    ],
+    // A `book_list` challenge's own shelf — the titles it asks you to read.
+    readingList: {
+      name: 'Spring Into Reading Picks',
+      description: 'Read any four of these and the challenge counts it as a milestone.',
+      books: ['wild-robot', 'new-kid', 'front-desk', 'when-you-trap-tiger', 'crossover', 'ghost'],
+    },
+  },
+}
+
+export const getChallengeExtras = (id) => CHALLENGE_EXTRAS[id] ?? {}
+
 export const getChallengeDetail = (id) => CHALLENGE_DETAIL[id]
 
 // ─── The book catalog ────────────────────────────────────────────────────────

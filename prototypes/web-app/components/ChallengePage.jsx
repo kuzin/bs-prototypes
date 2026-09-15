@@ -4,14 +4,23 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
 import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
+import { Button } from '@components/Button/Button'
+import { Modal, ModalClose } from '@components/Modal/Modal'
+import { NumberInput } from '@components/Form/Form'
+import { EmptyState } from '@components/Primitives/Primitives'
+import { BookCover } from '../../logging-flow/components/BookCover'
 import { badgeSrc, bannerSrc } from '@components/ReaderApp/ReaderApp'
 
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
-import { BADGES, getChallengeDetail } from '../data'
+import { BADGES, CATALOG_BY_ID, getChallengeDetail, getChallengeExtras } from '../data'
 import './ChallengePage.css'
 
 import '@components/Tabs/Tabs.css'
 import '@components/Pill/Pill.css'
+import '@components/Button/Button.css'
+import '@components/Modal/Modal.css'
+import '@components/Form/Form.css'
+import '@components/Primitives/Primitives.css'
 
 /**
  * One challenge, from the reader's side — `programs/_show.html.haml` and
@@ -34,19 +43,30 @@ import '@components/Pill/Pill.css'
  * Challenges tab is the way out, and printing belongs to the log, which has its
  * own Print button on the Challenge Log tab.
  *
- * The real nav is longer — Reading List, Bingo Card, Ticket Drawings and
- * Certificates each appear when the challenge has them. They stay as furniture.
+ * The nav is built from what the challenge *has*
+ * (`navigation/sidebar/_single_program_nav`): a Reading List only on a
+ * `book_list` challenge, Ticket Drawings only where `@ticket_rewards_exist`,
+ * Certificates only where `@certificates_exist`. Nothing is greyed out — a
+ * challenge without them hasn't got those tabs, which is a truer thing to show
+ * than a row of controls that don't work.
+ *
+ * Bingo Card is the exception still standing: a bingo board is the Gameboard
+ * Reader prototype's whole subject, and a second one here would be a copy that
+ * drifts.
  */
 
-const TABS = [
-  { id: 'overview', label: 'Overview' },
-  { id: 'badges', label: 'Badges' },
-  { id: 'rewards', label: 'Rewards' },
-  { id: 'log', label: 'Challenge Log' },
-  { id: 'reading-list', label: 'Reading List', disabled: true },
-  { id: 'drawings', label: 'Ticket Drawings', disabled: true },
-  { id: 'certificates', label: 'Certificates', disabled: true },
-]
+function tabsFor(extras) {
+  return [
+    { id: 'overview', label: 'Overview' },
+    ...(extras.readingList ? [{ id: 'reading-list', label: 'Reading List' }] : []),
+    { id: 'bingo', label: 'Bingo Card', disabled: true },
+    { id: 'badges', label: 'Badges' },
+    { id: 'rewards', label: 'Rewards' },
+    ...(extras.drawings?.length ? [{ id: 'drawings', label: 'Ticket Drawings' }] : []),
+    ...(extras.certificates?.length ? [{ id: 'certificates', label: 'Certificates' }] : []),
+    { id: 'log', label: 'Challenge Log' },
+  ]
+}
 
 function Overview({ detail, challenge }) {
   // "Recently Earned Badges" is the first six, which is what the app shows.
@@ -168,9 +188,201 @@ function wash(hex, alpha) {
   return `rgb(${mix(0)}, ${mix(2)}, ${mix(4)})`
 }
 
-export function ChallengePage({ challenge, entries }) {
+/**
+ * The Reading List tab — a `book_list` challenge's own shelf. The titles the
+ * challenge asks you to read, each one a book you can open or log.
+ */
+function ReadingList({ list, onLog }) {
+  if (!list) return null
+  const books = list.books.map((id) => CATALOG_BY_ID[id]).filter(Boolean)
+  return (
+    <section className="cp-section">
+      <h2 className="cp-h2">{list.name}</h2>
+      <p className="cp-description">{list.description}</p>
+      <ul className="cp-list">
+        {books.map((b) => (
+          <li className="cp-listbook" key={b.id}>
+            <span className="cp-listbook-cover">
+              <BookCover book={b} size="fill" />
+            </span>
+            <div className="cp-listbook-meta">
+              <span className="cp-listbook-title">{b.title}</span>
+              <span className="cp-listbook-author">{b.author}</span>
+            </div>
+            <Button size="sm" onClick={() => onLog?.(b)}>
+              Log
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+/**
+ * Ticket Drawings — `programs/_ticket_reward.html.haml`. A prize drawn from the
+ * tickets readers earn, and the reader decides which drawings to spend theirs
+ * on: the same ticket can't go into two.
+ *
+ * A drawing that has closed says so and offers nothing — "Drawing has ended.
+ * Winners will be notified." is the app's own line, and the site can rename
+ * "drawing" (`word_for_drawing`) because a raffle is illegal in some states.
+ */
+function Drawings({ extras }) {
+  const [entered, setEntered] = useState(() =>
+    Object.fromEntries((extras.drawings ?? []).map((d) => [d.id, d.entered])),
+  )
+  const [adding, setAdding] = useState(null) // the drawing whose modal is open
+  const [draft, setDraft] = useState(0)
+
+  const earned = extras.tickets?.earned ?? 0
+  const spent = Object.values(entered).reduce((n, v) => n + v, 0)
+  const available = Math.max(0, earned - spent)
+
+  return (
+    <section className="cp-section">
+      <div className="cp-tickets-head">
+        <h2 className="cp-h2">Ticket Drawings</h2>
+        <p className="cp-tickets-count">
+          <Icon name="ticket" size={16} /> {available} {available === 1 ? 'ticket' : 'tickets'}{' '}
+          available
+        </p>
+      </div>
+
+      <ul className="cp-drawings">
+        {(extras.drawings ?? []).map((d) => (
+          <li className="cp-drawing" key={d.id}>
+            <div className="cp-drawing-body">
+              <span className="cp-drawing-when">
+                {d.ended ? `Ended on ${d.endsOn}` : `Ends on ${d.endsOn}`}
+              </span>
+              <h3 className="cp-drawing-title">{d.title}</h3>
+              <p className="cp-drawing-desc">{d.description}</p>
+              <div className="cp-drawing-status">
+                {d.ended ? (
+                  <span className="cp-drawing-ended">
+                    <Icon name="clock" size={16} /> Drawing has ended. Winners will be notified.
+                  </span>
+                ) : (
+                  <>
+                    <Button
+                      size="sm"
+                      disabled={available === 0}
+                      onClick={() => {
+                        setDraft(1)
+                        setAdding(d)
+                      }}
+                    >
+                      Add Tickets
+                    </Button>
+                    {entered[d.id] > 0 && (
+                      <span className="cp-drawing-entered">
+                        <Icon name="ticket" size={15} /> {entered[d.id]}{' '}
+                        {entered[d.id] === 1 ? 'Ticket' : 'Tickets'} Entered
+                      </span>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {/* `ticket_rewards/_enter_drawing` — the title, what's left, and a
+          stepper. The button counts what you're about to spend. */}
+      <Modal
+        open={Boolean(adding)}
+        onClose={() => setAdding(null)}
+        variant="center"
+        closeBadge
+        ariaLabel="Enter tickets"
+      >
+        <ModalClose onClick={() => setAdding(null)} />
+        {adding && (
+          <>
+            <div className="modal-header modal-header--flush">
+              <div className="modal-header-text">
+                <h2 className="modal-title">{adding.title}</h2>
+                <p className="modal-sub">
+                  {available} {available === 1 ? 'Ticket' : 'Tickets'} Available
+                </p>
+              </div>
+            </div>
+            <div className="modal-body cp-ticketbody">
+              <NumberInput
+                size="lg"
+                min={0}
+                max={available}
+                value={draft}
+                onChange={setDraft}
+                aria-label="Tickets to enter"
+              />
+            </div>
+            <div className="modal-footer">
+              <Button variant="ghost" onClick={() => setAdding(null)}>
+                Cancel
+              </Button>
+              <Button
+                disabled={draft < 1}
+                onClick={() => {
+                  setEntered((e) => ({ ...e, [adding.id]: (e[adding.id] ?? 0) + draft }))
+                  setAdding(null)
+                }}
+              >
+                Enter {draft} {draft === 1 ? 'Ticket' : 'Tickets'}
+              </Button>
+            </div>
+          </>
+        )}
+      </Modal>
+    </section>
+  )
+}
+
+/**
+ * Certificates — `programs/earned_certificate`. The app renders a printable
+ * page per certificate; here each is a card with the Print the app's own page
+ * exists for.
+ */
+function Certificates({ list }) {
+  if (!list?.length) {
+    return (
+      <EmptyState
+        variant="dashed"
+        icon={<Icon name="award" size={26} />}
+        title="No certificates yet"
+        description="Finish the challenge and one turns up here to print."
+      />
+    )
+  }
+  return (
+    <section className="cp-section">
+      <ul className="cp-certs">
+        {list.map((c) => (
+          <li className="cp-cert" key={c.id}>
+            <div className="cp-cert-sheet">
+              <span className="cp-cert-seal" aria-hidden="true">
+                <Icon name="award" size={30} />
+              </span>
+              <h3 className="cp-cert-name">{c.name}</h3>
+              <p className="cp-cert-line">{c.line}</p>
+              <p className="cp-cert-date">{c.earnedOn}</p>
+            </div>
+            <Button variant="secondary" size="sm">
+              Print Certificate
+            </Button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+export function ChallengePage({ challenge, entries, onLog }) {
   const [tab, setTab] = useState('overview')
   const detail = getChallengeDetail(challenge.id)
+  const extras = getChallengeExtras(challenge.id)
   const banner = bannerSrc(challenge.banner)
   const tint = challenge.tint ?? '#ACACAC'
 
@@ -202,15 +414,18 @@ export function ChallengePage({ challenge, entries }) {
             accent="#1A6DD5"
             onChange={setTab}
             ariaLabel="Challenge sections"
-            items={TABS}
+            items={tabsFor(extras)}
           />
         </div>
       </div>
 
       <div className="cp-body">
         {tab === 'overview' && <Overview detail={detail} challenge={challenge} />}
+        {tab === 'reading-list' && <ReadingList list={extras.readingList} onLog={onLog} />}
         {tab === 'badges' && <Badges />}
         {tab === 'rewards' && <Rewards detail={detail} />}
+        {tab === 'drawings' && <Drawings extras={extras} />}
+        {tab === 'certificates' && <Certificates list={extras.certificates} />}
         {/* The challenge's own log is the reader's log scoped to it. Its
             sub-tabs go (this page has a strip already), it opens on the titles
             shelf — what belongs here is what was read toward this challenge,

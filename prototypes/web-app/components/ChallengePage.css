@@ -236,3 +236,186 @@
     flex-basis: 100%;
   }
 }
+
+/* ─── Reading List ───────────────────────────────────────────────────────────
+   A `book_list` challenge's own shelf: the titles it asks you to read. */
+.cp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+}
+.cp-listbook {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.cp-listbook-cover {
+  display: block;
+  flex: none;
+  width: 48px;
+}
+.cp-listbook-meta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.cp-listbook-title {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.cp-listbook-author {
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+
+/* ─── Ticket drawings ────────────────────────────────────────────────────────
+   `programs/_ticket_reward`. A prize drawn from the tickets readers earn, and
+   the reader chooses which drawings to spend theirs on. */
+.cp-tickets-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.cp-tickets-count {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 800;
+  color: #b45309;
+}
+
+.cp-drawings {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+}
+.cp-drawing {
+  padding: 18px 20px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+/* The closing date leads, above the name — a drawing you've missed is the one
+   thing you need to know before you read what it was for. */
+.cp-drawing-when {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--c-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.cp-drawing-title {
+  margin-top: 4px;
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+.cp-drawing-desc {
+  max-width: 68ch;
+  margin-top: 6px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--c-text);
+}
+.cp-drawing-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  margin-top: 14px;
+}
+.cp-drawing-entered {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: #b45309;
+}
+.cp-drawing-ended {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+
+.cp-ticketbody {
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* ─── Certificates ───────────────────────────────────────────────────────── */
+.cp-certs {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 16px;
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+}
+.cp-cert {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+/* A sheet, because that is what it becomes: the app's own page is built to be
+   printed and nothing else. */
+.cp-cert-sheet {
+  width: 100%;
+  padding: 28px 24px;
+  text-align: center;
+  background: #fffdf6;
+  border: 2px solid #e8d9a8;
+  border-radius: 10px;
+}
+.cp-cert-seal {
+  display: inline-grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  margin-bottom: 10px;
+  color: #b45309;
+  background: #fdf0d8;
+  border-radius: 999px;
+}
+.cp-cert-name {
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+.cp-cert-line {
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--c-text);
+}
+.cp-cert-date {
+  margin-top: 10px;
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--c-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}

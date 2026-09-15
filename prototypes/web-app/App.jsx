@@ -411,7 +411,12 @@ export function App() {
           ) : top ? (
             renderRoute()
           ) : challenge ? (
-            <ChallengePage challenge={challenge} entries={log} onBack={() => setChallenge(null)} />
+            <ChallengePage
+              challenge={challenge}
+              entries={log}
+              onLog={() => setFlowOpen(true)}
+              onBack={() => setChallenge(null)}
+            />
           ) : null
         }
       />
