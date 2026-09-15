@@ -58,7 +58,10 @@
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
-  align-items: flex-start;
+  /* Per flex line: the mark, the copy and the status centre on each other, and
+     the instructions take the line under them. Top-aligned it was set for the
+     instructions living in the middle column, which they no longer do. */
+  align-items: center;
   padding: 16px 18px;
   background: #fff;
   border: 1px solid var(--c-border);
