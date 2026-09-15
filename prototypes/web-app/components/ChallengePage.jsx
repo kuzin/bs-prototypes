@@ -209,16 +209,25 @@ function unlockLine(r) {
  * instructions are replaced by the app's own line — there is nothing left to do.
  *
  * `limited_reward` is the Book Machine, and it is a different thing: earned, it
- * hands you a link to go and pick a book. Whether the site has one at all is
- * `has_limited_rewards?(@current_microsite)` — a setting, so `bookMachine` is
- * the switch; off, the reward reads "No Books Remain" whether you earned it or
- * not, because nobody is redeeming one.
+ * hands you a link to go and pick a book. A site that hasn't got one hasn't got
+ * these rewards either — that is the `bookMachine` switch, and it takes them off
+ * the list rather than showing them in some state. `booksRemain: false` is the
+ * other case: the machine is here and empty, so the reward reads "No Books
+ * Remain" whether you earned it or not.
  */
-function Reward({ reward: r, bookMachine }) {
+/* What a reward's state looks like at a glance — the same four colours its
+   mark carries on the left. */
+const STATE_PILL = {
+  earned: { label: 'Earned', color: '#0F7A55' },
+  unearned: { label: 'Locked', color: '#656565' },
+  unavailable: { label: 'Unavailable', color: '#DC2626' },
+}
+
+function Reward({ reward: r }) {
   const limited = r.kind === 'limited'
-  // `has_limited_rewards?(@current_microsite)` — a site setting, not a property
-  // of the reward: when the machine is empty nobody redeems one, earned or not.
-  const gone = limited && !bookMachine
+  // The machine is out of books — `limited_reward` gone from an EarnedBadge.
+  // Nobody redeems one then, earned or not.
+  const gone = limited && r.booksRemain === false
   const state = gone ? 'unavailable' : r.earned ? 'earned' : 'unearned'
 
   return (
@@ -237,37 +246,42 @@ function Reward({ reward: r, bookMachine }) {
         ) : (
           <span className="cp-reward-detail">{unlockLine(r)}</span>
         )}
-
-        {/* `.reward-instructions` — only ever on an earned reward, because an
-            unearned one has nothing to claim yet. */}
-        {gone ? (
-          <div className="cp-reward-inst">
-            <h4>Instructions</h4>
-            <p>This reward is not redeemable anymore.</p>
-          </div>
-        ) : r.earned && limited ? (
-          <div className="cp-reward-inst cp-reward-machine">
-            <span className="cp-reward-machine-art" aria-hidden="true">
-              <Icon name="gift" size={28} />
-            </span>
-            <div className="cp-reward-machine-copy">
-              <strong>You earned a book from the book machine!</strong>
-              <span>Pick your free book today before it&apos;s gone!</span>
-            </div>
-            <Button as="a" href={r.pickUrl} target="_blank" size="sm">
-              Pick a Book
-            </Button>
-          </div>
-        ) : r.earned ? (
-          <div className="cp-reward-inst">
-            <h4>Instructions</h4>
-            <p>{r.redeemed ? 'Reward has been redeemed.' : r.instructions}</p>
-          </div>
-        ) : null}
       </div>
+      {/* The state, on the same soft Pill the prizes wear — four words in four
+          colours was doing the work of a badge without looking like one. */}
       <span className="cp-reward-at">
-        {gone ? 'Unavailable' : r.earned ? (r.redeemed ? 'Redeemed' : 'Earned') : 'Locked'}
+        <Pill color={STATE_PILL[state].color} variant="soft" size="sm">
+          {r.redeemed ? 'Redeemed' : STATE_PILL[state].label}
+        </Pill>
       </span>
+
+      {/* `.reward-instructions` — only ever on an earned reward, because an
+          unearned one has nothing to claim yet. Its own row under the whole
+          thing, not a third column: it runs the width the row runs. */}
+      {gone ? (
+        <div className="cp-reward-inst">
+          <h4>Instructions</h4>
+          <p>This reward is not redeemable anymore.</p>
+        </div>
+      ) : r.earned && limited ? (
+        <div className="cp-reward-inst cp-reward-machine">
+          <span className="cp-reward-machine-art" aria-hidden="true">
+            <Icon name="gift" size={28} />
+          </span>
+          <div className="cp-reward-machine-copy">
+            <strong>You earned a book from the book machine!</strong>
+            <span>Pick your free book today before it&apos;s gone!</span>
+          </div>
+          <Button as="a" href={r.pickUrl} target="_blank" size="sm">
+            Pick a Book
+          </Button>
+        </div>
+      ) : r.earned ? (
+        <div className="cp-reward-inst">
+          <h4>Instructions</h4>
+          <p>{r.redeemed ? 'Reward has been redeemed.' : r.instructions}</p>
+        </div>
+      ) : null}
     </li>
   )
 }
@@ -275,13 +289,16 @@ function Reward({ reward: r, bookMachine }) {
 function Rewards({ detail, bookMachine = true }) {
   const [state, setState] = useState('all')
   const isEarned = (r) => Boolean(r.earned)
+  // A site without a book machine has no book-machine rewards — the switch is
+  // whether the thing exists here, not what state it is in.
+  const rewards = detail.rewards.filter((r) => bookMachine || r.kind !== 'limited')
 
   return (
     <section className="cp-section">
       <ReaderPageHead as="h2" title="Rewards" />
       <FilterMenuBar className="cp-listfilters">
         <EarnedFilter
-          items={detail.rewards}
+          items={rewards}
           isEarned={isEarned}
           value={state}
           onChange={setState}
@@ -289,8 +306,8 @@ function Rewards({ detail, bookMachine = true }) {
         />
       </FilterMenuBar>
       <ul className="cp-rewards">
-        {byEarnedState(detail.rewards, state, isEarned).map((r) => (
-          <Reward key={r.name} reward={r} bookMachine={bookMachine} />
+        {byEarnedState(rewards, state, isEarned).map((r) => (
+          <Reward key={r.name} reward={r} />
         ))}
       </ul>
     </section>

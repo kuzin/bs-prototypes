@@ -105,24 +105,17 @@
   color: var(--c-text-light);
 }
 .cp-reward-at {
+  display: inline-flex;
   flex: none;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--c-gray-600);
-}
-.cp-reward.is-earned .cp-reward-at {
-  color: #0f7a55;
-}
-.cp-reward.is-unavailable .cp-reward-at {
-  color: #b91c1c;
 }
 
 /* `.reward-instructions` — what to do about a reward you have, under a heading
    of its own, because the description is how you claim it rather than what it
    is. */
 .cp-reward-inst {
+  flex-basis: 100%;
   padding-top: 10px;
-  margin-top: 10px;
+  margin-top: 2px;
   border-top: 1px solid var(--c-border);
 }
 .cp-reward-inst h4 {
@@ -146,9 +139,9 @@
   gap: 12px;
   align-items: center;
   padding: 14px;
+  margin-top: 12px;
   background: #fff8e8;
   border: 1px solid #f3dca6;
-  border-top: 1px solid #f3dca6;
   border-radius: 12px;
 }
 .cp-reward-machine-art {

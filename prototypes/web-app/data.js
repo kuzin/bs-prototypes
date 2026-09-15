@@ -821,9 +821,9 @@ export const CHALLENGE_DETAIL = {
         redeemed: true,
       },
       // `limited_reward` — the Book Machine. Earned, it hands you a link to go
-      // and pick a book. Whether the site has one is a setting
-      // (`has_limited_rewards?`), which is the Book machine switch on the
-      // preview bar rather than a field here.
+      // and pick a book. Whether the site has a machine at all is the Book
+      // machine switch on the preview bar; `booksRemain` is whether this one
+      // still has stock.
       {
         name: 'A free book from the book machine',
         kind: 'limited',
@@ -871,11 +871,13 @@ export const CHALLENGE_DETAIL = {
         instructions: 'Chosen from this year’s four designs.',
         earned: false,
       },
+      // The machine is here, and empty.
       {
         name: 'A free book from the book machine',
         kind: 'limited',
         unlock: { log: '600 Minutes' },
         earned: false,
+        booksRemain: false,
       },
     ],
   },
