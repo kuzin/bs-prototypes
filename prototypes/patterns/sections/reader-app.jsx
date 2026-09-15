@@ -32,7 +32,7 @@ import { READING_LOG } from '../../logging-flow/data'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from '../../web-app/components/FriendProfile'
 import { ChallengePage } from '../../web-app/components/ChallengePage'
-import { MORE_CHALLENGES } from '../../logging-flow/data'
+import { MORE_CHALLENGES, REGISTRATION_QUESTIONS } from '../../logging-flow/data'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { JoinChallenge, ConfirmUnenroll } from '../../logging-flow/components/Dashboard'
 import { Variant } from './_shared'
@@ -171,8 +171,9 @@ function TopBarDemo() {
 
 // Both modals open from something, so the examples give them the button they
 // open from rather than showing them already up.
-function JoinDemo({ challenge, ignored, label }) {
+function JoinDemo({ challenge, ignored, label, questions = [] }) {
   const [open, setOpen] = useState(null)
+  const [answers, setAnswers] = useState({})
   return (
     <>
       <Button onClick={() => setOpen(challenge)}>{label}</Button>
@@ -182,6 +183,9 @@ function JoinDemo({ challenge, ignored, label }) {
         onClose={() => setOpen(null)}
         onJoin={() => setOpen(null)}
         onDismiss={() => setOpen(null)}
+        questions={questions}
+        answers={answers}
+        onAnswer={setAnswers}
       />
     </>
   )
@@ -670,6 +674,8 @@ export const readerAppSections = [
   challenge={joining}          /* null closes it */
   ignored={isIgnored}          /* already ignored — drops "Not Interested" */
   onClose={close} onJoin={join} onDismiss={ignore}
+  questions={siteQuestions}    /* asked once, before the first enrolment */
+  answers={answered} onAnswer={setAnswered}
 />
 
 <ConfirmUnenroll challenge={leaving} onClose={close} onConfirm={leave} />`,
@@ -692,6 +698,16 @@ export const readerAppSections = [
         you&apos;re only there to come back the other way.
         <br />
         <br />
+        <strong>Registration questions</strong> come between pressing Join and being enrolled. They
+        are the site&apos;s, not the challenge&apos;s (<code>RegistrationQuestion</code>), multiple
+        choice with one answer — the admin screen says outright that there is no free-text question
+        in the product — and only the required ones block the button. The answers belong to the{' '}
+        <em>profile</em> (<code>registration_answers_profiles</code>), so a reader is asked once and
+        never again, whatever they join next; a question they were shown and skipped counts as
+        asked. The app renders them into this same overlay, which is why they are a body swap here
+        rather than a second modal.
+        <br />
+        <br />
         <code>ConfirmUnenroll</code> is its counterpart —{' '}
         <code>programs/_confirm_unenroll.html.haml</code>. Leaving a challenge throws away the
         progress in it, so the app asks first rather than acting on the kebab.
@@ -701,6 +717,13 @@ export const readerAppSections = [
       <>
         <Variant label="open to join">
           <JoinDemo challenge={MORE_CHALLENGES[0]} label="Join a challenge" />
+        </Variant>
+        <Variant label="a site that asks questions first — two required, one not">
+          <JoinDemo
+            challenge={MORE_CHALLENGES[0]}
+            questions={REGISTRATION_QUESTIONS}
+            label="Join, and answer the site's questions"
+          />
         </Variant>
         <Variant label="upcoming, no pre-registration — nothing to press, and it has alternatives">
           <JoinDemo challenge={MORE_CHALLENGES[1]} label="Open an upcoming challenge" />

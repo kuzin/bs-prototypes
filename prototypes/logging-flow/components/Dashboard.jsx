@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
-import { Input } from '@components/Form/Form'
+import { Input, Radio, RadioGroup } from '@components/Form/Form'
 import { InfoBox } from '@components/InfoBox/InfoBox'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { EmptyState } from '@components/Primitives/Primitives'
@@ -71,9 +71,33 @@ const JOIN_TINTS = ['#DBF2E7', '#DDF6F9', '#FFECC8', '#FCE0D6', '#F4E2F8']
  * come back the other way. Where the app hides the button row outright, this
  * keeps the footer and says why: a modal that stops mid-sentence reads as
  * broken rather than as closed.
+ *
+ * `questions` are the site's own registration questions, which the app renders
+ * into this same overlay (`_registration_questions_modal` is a partial *of*
+ * `_join_challenge`). They come between pressing Join and being enrolled, and
+ * only the first time: the answers belong to the profile rather than the
+ * challenge, so a reader who has answered them is never asked again.
  */
-export function JoinChallenge({ challenge, ignored, onClose, onJoin, onDismiss }) {
+export function JoinChallenge({
+  challenge,
+  ignored,
+  onClose,
+  onJoin,
+  onDismiss,
+  questions = [],
+  answers,
+  onAnswer,
+}) {
   const [joining, setJoining] = useState(false)
+  const [asking, setAsking] = useState(false)
+  const [draft, setDraft] = useState({})
+
+  // Asked, not answered: an optional question the reader skipped is recorded
+  // as asked, so keying off the value alone would put it back in front of them
+  // on every join they ever make.
+  const unanswered = questions.filter((q) => !(q.id in (answers ?? {})))
+  // `active_and_required` — the ones that block the join.
+  const missing = unanswered.filter((q) => q.required && !draft[q.id])
   const banner = challenge ? bannerSrc(challenge.banner) : null
   // ColorThief reads the banner's dominant colour at 0.7; the fixtures carry
   // that colour as `tint`, and a challenge without one takes a pastel the way
@@ -91,8 +115,28 @@ export function JoinChallenge({ challenge, ignored, onClose, onJoin, onDismiss }
     // request is out.
     setTimeout(() => {
       setJoining(false)
+      setAsking(false)
+      setDraft({})
       onJoin(challenge)
     }, 450)
+  }
+
+  // Pressing Join with questions outstanding asks them first; answering them is
+  // the same press, one screen on.
+  function start() {
+    if (unanswered.length > 0 && !asking) {
+      setAsking(true)
+      return
+    }
+    if (asking) {
+      onAnswer?.({
+        ...answers,
+        // Every question that was put to them, including the ones they left —
+        // `null` is "asked and skipped", which is not the same as never asked.
+        ...Object.fromEntries(unanswered.map((q) => [q.id, draft[q.id] ?? null])),
+      })
+    }
+    join()
   }
 
   return (
@@ -111,54 +155,96 @@ export function JoinChallenge({ challenge, ignored, onClose, onJoin, onDismiss }
               {banner && <img className="jc-art" src={banner} alt="" />}
             </div>
 
-            <div className="modal-body jc-body">
-              <h2 className="jc-title">{challenge.title}</h2>
-              <div className="jc-dates">{challenge.dates}</div>
-              <div className="jc-reqs">
-                {challengeTypes(challenge).map((t) => (
-                  <Pill key={t} color="#087542" size="sm" className="jc-type">
-                    {t}
-                  </Pill>
-                ))}
-                {challenge.range && (
-                  <Pill color="#1A6DD5" size="sm" className="jc-range">
-                    {challenge.ageDeterminant === 'ages'
-                      ? `Ages: ${challenge.range}`
-                      : challenge.range}
-                  </Pill>
+            {asking ? (
+              <div className="modal-body jc-body">
+                <h2 className="jc-title">Before {READER.name} joins</h2>
+                <p className="jc-qintro">
+                  {challenge.microsite ?? 'Magnolia Middle School'} asks everyone taking part these
+                  questions. You only answer them once.
+                </p>
+                <div className="jc-questions">
+                  {unanswered.map((q) => (
+                    <fieldset className="jc-question" key={q.id}>
+                      <legend className="jc-question-text">
+                        {q.question}
+                        {q.required ? (
+                          <span className="jc-required"> Required</span>
+                        ) : (
+                          <span className="jc-optional"> Optional</span>
+                        )}
+                      </legend>
+                      {/* One answer only — the admin screen says so outright,
+                          and there is no free-text question in the product. */}
+                      <RadioGroup
+                        name={q.id}
+                        layout="column"
+                        value={draft[q.id] ?? ''}
+                        onChange={(v) => setDraft((d) => ({ ...d, [q.id]: v }))}
+                      >
+                        {q.answers.map((a) => (
+                          <Radio key={a.id} value={a.id}>
+                            {a.answer}
+                          </Radio>
+                        ))}
+                      </RadioGroup>
+                    </fieldset>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="modal-body jc-body">
+                <h2 className="jc-title">{challenge.title}</h2>
+                <div className="jc-dates">{challenge.dates}</div>
+                <div className="jc-reqs">
+                  {challengeTypes(challenge).map((t) => (
+                    <Pill key={t} color="#087542" size="sm" className="jc-type">
+                      {t}
+                    </Pill>
+                  ))}
+                  {challenge.range && (
+                    <Pill color="#1A6DD5" size="sm" className="jc-range">
+                      {challenge.ageDeterminant === 'ages'
+                        ? `Ages: ${challenge.range}`
+                        : challenge.range}
+                    </Pill>
+                  )}
+                </div>
+
+                {/* Some challenges are offered as a set you pick one of. */}
+                {challenge.alternatives?.length > 0 && (
+                  <div className="jc-alts">
+                    <div className="jc-altshead">Alternative Challenges</div>
+                    <p className="jc-altsdesc">
+                      {READER.name} can choose between this challenge <strong>OR</strong> one of the
+                      following challenges.
+                    </p>
+                    <ul className="jc-altslist">
+                      {challenge.alternatives.map((a) => (
+                        <li key={a}>{a}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {challenge.description && (
+                  <>
+                    <div className="jc-deshead">Description</div>
+                    <p className="jc-destext">{challenge.description}</p>
+                  </>
                 )}
               </div>
-
-              {/* Some challenges are offered as a set you pick one of. */}
-              {challenge.alternatives?.length > 0 && (
-                <div className="jc-alts">
-                  <div className="jc-altshead">Alternative Challenges</div>
-                  <p className="jc-altsdesc">
-                    {READER.name} can choose between this challenge <strong>OR</strong> one of the
-                    following challenges.
-                  </p>
-                  <ul className="jc-altslist">
-                    {challenge.alternatives.map((a) => (
-                      <li key={a}>{a}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {challenge.description && (
-                <>
-                  <div className="jc-deshead">Description</div>
-                  <p className="jc-destext">{challenge.description}</p>
-                </>
-              )}
-            </div>
+            )}
 
             {/* The app's footer is reversed and pushed apart: the answer you're
                 being asked for on the right, the way out on the left. */}
             <div className="modal-footer modal-footer--between">
               {canJoin ? (
                 <>
-                  {isIgnored ? (
+                  {asking ? (
+                    <Button variant="secondary" disabled={joining} onClick={() => setAsking(false)}>
+                      Back
+                    </Button>
+                  ) : isIgnored ? (
                     <span />
                   ) : (
                     <Button
@@ -169,7 +255,7 @@ export function JoinChallenge({ challenge, ignored, onClose, onJoin, onDismiss }
                       Not Interested
                     </Button>
                   )}
-                  <Button onClick={join} disabled={joining}>
+                  <Button onClick={start} disabled={joining || (asking && missing.length > 0)}>
                     {joining ? 'Just a moment\u2026' : 'Join Challenge'}
                   </Button>
                 </>
@@ -354,6 +440,11 @@ export function Dashboard({
   onOpenBook,
   bookFor,
   personalize,
+  /* The site's registration questions, and what this profile has already
+     answered. Left off, joining a challenge is the one press it was. */
+  registrationQuestions = [],
+  registrationAnswers,
+  onRegistrationAnswers,
   onOpenChallenge,
   onUnenrollChallenge,
   motivation,
@@ -690,6 +781,9 @@ export function Dashboard({
         onClose={() => setJoining(null)}
         onJoin={joinChallenge}
         onDismiss={ignoreChallenge}
+        questions={registrationQuestions}
+        answers={registrationAnswers}
+        onAnswer={onRegistrationAnswers}
       />
       <ConfirmUnenroll
         challenge={leaving}

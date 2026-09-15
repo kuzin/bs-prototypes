@@ -570,3 +570,45 @@ export const READING_LOG = [
     importedOn: '6/16/26',
   },
 ]
+
+// ─── Registration questions ──────────────────────────────────────────────────
+// `RegistrationQuestion` — a site's own questions, asked once when a reader
+// first joins a challenge. Multiple choice and one answer only; the admin
+// screen says so outright ("questions are only available in a multiple choice
+// format… there is not currently an ability for free-form text answers"), which
+// is why there is no text field here either.
+//
+// `active` is whether the site is asking it at all, `required` is whether the
+// join is blocked without it (`active_and_required`), and the answers belong to
+// the *profile* rather than the challenge — `registration_answers_profiles` —
+// so a reader is asked once and never again, whatever they join next.
+
+const question = (id, text, required, answers) => ({
+  id,
+  question: text,
+  required,
+  answers: answers.map((a, i) => ({ id: `${id}-${i}`, answer: a })),
+})
+
+export const REGISTRATION_QUESTIONS = [
+  question('q-school', 'Which school do you go to?', true, [
+    'Magnolia Middle School',
+    'Oak Elementary',
+    'Hickory Middle School',
+    'I go somewhere else',
+  ]),
+  question('q-heard', 'How did you hear about our summer reading program?', true, [
+    'My teacher told me',
+    'A flyer or poster',
+    'At the library',
+    'A friend or family member',
+    'Social media',
+  ]),
+  question('q-branch', 'Which library branch do you visit most?', false, [
+    'Central',
+    'Riverside',
+    'Eastgate',
+    'I use the bookmobile',
+    'I don’t visit a branch',
+  ]),
+]

@@ -38,6 +38,7 @@ import {
   BOOKS,
   RECENTLY_LOGGED,
   READING_LOG,
+  REGISTRATION_QUESTIONS,
 } from '../logging-flow/data'
 import {
   CONNECTIONS,
@@ -111,6 +112,7 @@ const FEATURE_SWITCHES = [
   { id: 'leaderboards', label: 'Leaderboards', hint: 'show_school_leaderboards' },
   { id: 'challengeCode', label: 'Challenge codes', hint: 'show_challenge_code' },
   { id: 'connectedSite', label: 'Connected site', hint: 'is_connected_school?' },
+  { id: 'registrationQuestions', label: 'Registration questions', hint: '3 active, 2 required' },
 ]
 
 // The site's own goal, and what it has read toward it so far.
@@ -148,6 +150,7 @@ const FEATURE_DEFAULTS = {
   leaderboards: true,
   challengeCode: true,
   connectedSite: true,
+  registrationQuestions: true,
 }
 
 export function App() {
@@ -207,6 +210,9 @@ export function App() {
   // of them have been answered.
   const [prefs, setPrefs] = useState(READER_PREFERENCES)
   const [kind, setKind] = useState('child')
+  // The site's registration questions are asked once, on the first challenge
+  // this reader joins — the answers are the profile's, not the challenge's.
+  const [regAnswers, setRegAnswers] = useState({})
 
   const [stack, setStack] = useState([])
   const top = stack[stack.length - 1] ?? null
@@ -368,6 +374,9 @@ export function App() {
             setPrefs((p) => (id === 'basic' ? p : { ...p, [id]: value })),
           features: { avatars: true, gradeLevels: true, recommendations: true },
         }}
+        registrationQuestions={features.registrationQuestions ? REGISTRATION_QUESTIONS : []}
+        registrationAnswers={regAnswers}
+        onRegistrationAnswers={setRegAnswers}
         onOpenChallenge={setChallenge}
         motivation={features.rmi ? 'available' : undefined}
         features={{

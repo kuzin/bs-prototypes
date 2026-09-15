@@ -193,3 +193,53 @@
 }
 
 /* ─── Confirm un-enroll ──────────────────────────────────────────────────── */
+
+/* ─── Registration questions ─────────────────────────────────────────────────
+   `_registration_questions_modal` renders into the join modal, so this is the
+   same overlay with a different body: the site's own questions, asked once
+   between pressing Join and being enrolled. */
+.jc-qintro {
+  margin-bottom: 18px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--c-text-light);
+}
+.jc-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.jc-question {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.jc-question + .jc-question {
+  padding-top: 18px;
+  border-top: 1px solid var(--c-border);
+}
+.jc-question-text {
+  display: block;
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--c-text-dark);
+}
+/* Which questions block the join, said on the question rather than in a
+   legend at the top — `active_and_required` is per question. */
+.jc-required,
+.jc-optional {
+  font-size: 11.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.jc-required {
+  color: #b3401a;
+}
+.jc-optional {
+  color: var(--c-text-light);
+}
