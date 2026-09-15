@@ -40,6 +40,7 @@
 .fnd-goals {
   grid-column: 1 / -1;
 }
+
 .fnd-main {
   min-width: 0;
 }
@@ -58,6 +59,7 @@
 }
 .fnd-h2 {
   margin-top: 26px;
+  margin-bottom: 18px;
   font-size: 15px;
   font-weight: 900;
   color: var(--c-text-dark);

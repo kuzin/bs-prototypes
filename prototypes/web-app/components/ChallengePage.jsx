@@ -8,7 +8,7 @@ import {
   CollectionCard,
   ShelfGrid,
 } from '@components/CollectionShelf/CollectionShelf'
-import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
+import { GoalStat, GoalStats } from '@components/GoalStat/GoalStat'
 import { Button } from '@components/Button/Button'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { NumberInput } from '@components/Form/Form'
@@ -93,6 +93,17 @@ function Overview({ detail, onTab }) {
   return (
     <>
       <section className="cp-section">
+        <ReaderPageHead as="h2" title="Overview" />
+        {/* A challenge you find under Past is finished, and everything on this
+            page is a record rather than something to act on: the rings won't
+            move, the badges are the badges. Saying so at the top is the one
+            thing this page owes a reader who arrived from the Past list. */}
+        {detail.endedOn && (
+          <InfoBox icon={<Icon name="calendar" size={26} />} className="cp-endednote">
+            This challenge ended on {detail.endedOn}. Everything here is final — logging now counts
+            toward your current challenges instead.
+          </InfoBox>
+        )}
         <p className="cp-description">{detail.description}</p>
       </section>
 
@@ -103,28 +114,11 @@ function Overview({ detail, onTab }) {
       {detail.goals.length > 0 && (
         <section className="cp-section">
           <h2 className="cp-h2">Overall Progress</h2>
-          <GoalTiles>
-            {detail.goals.map((g) =>
-              g.need != null ? (
-                <GoalTile
-                  key={g.label}
-                  label={g.label}
-                  have={g.have}
-                  need={g.need}
-                  onClick={() => onTab?.(g.tab)}
-                />
-              ) : (
-                <GoalTile
-                  key={g.label}
-                  label={g.label}
-                  value={g.value}
-                  accent={g.accent}
-                  icon={<Icon name={g.icon} size={24} />}
-                  onClick={() => onTab?.(g.tab)}
-                />
-              ),
-            )}
-          </GoalTiles>
+          <GoalStats>
+            {detail.goals.map((g) => (
+              <GoalStat key={g.label} goal={g} onClick={() => onTab?.(g.tab)} />
+            ))}
+          </GoalStats>
         </section>
       )}
 

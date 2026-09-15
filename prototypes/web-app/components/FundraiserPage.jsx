@@ -7,7 +7,7 @@ import { byEarnedState, EarnedFilter } from '@components/EarnedFilter/EarnedFilt
 import { Pill } from '@components/Pill/Pill'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
-import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
+import { GoalStat, GoalStats } from '@components/GoalStat/GoalStat'
 import { BadgeShelf } from '@components/CollectionShelf/CollectionShelf'
 import { StatCard } from '@components/Cards/Cards'
 import { EmptyState } from '@components/Primitives/Primitives'
@@ -165,28 +165,15 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
                 the app, and to the tab that explains it. */}
             <section className="fnd-goals">
               <h2 className="fnd-h2">Overall Progress</h2>
-              <GoalTiles>
-                {f.progress.map((p) =>
-                  p.need != null ? (
-                    <GoalTile
-                      key={p.id}
-                      label={p.label}
-                      have={p.have}
-                      need={p.need}
-                      onClick={() => setTab(TILE_TAB[p.id] ?? 'badges')}
-                    />
-                  ) : (
-                    <GoalTile
-                      key={p.id}
-                      label={p.label}
-                      value={p.value}
-                      accent={p.accent}
-                      icon={<Icon name={p.icon} size={24} />}
-                      onClick={() => setTab(TILE_TAB[p.id] ?? 'badges')}
-                    />
-                  ),
-                )}
-              </GoalTiles>
+              <GoalStats>
+                {f.progress.map((p) => (
+                  <GoalStat
+                    key={p.id}
+                    goal={p}
+                    onClick={() => setTab(TILE_TAB[p.id] ?? 'badges')}
+                  />
+                ))}
+              </GoalStats>
             </section>
           </div>
         )}
