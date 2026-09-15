@@ -23,7 +23,7 @@
   list-style: none;
 }
 .rv-item {
-  padding: 20px 22px;
+  padding: 20px 22px 0;
   background: #fff;
   border: 1px solid var(--c-border);
   border-radius: 14px;
@@ -68,7 +68,9 @@
   color: var(--c-text);
 }
 .rv-more {
+  display: block;
   padding: 0;
+  margin-top: 6px;
   font: inherit;
   font-weight: 800;
   color: var(--c-blue);
@@ -79,8 +81,15 @@
 .rv-more:hover {
   text-decoration: underline;
 }
-.rv-edit {
-  margin-top: 16px;
+/* The card's footer strip, the way the picture cards carry theirs — full
+   width, so the rule runs edge to edge and the inset lives on the card. */
+.rv-foot {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 0;
+  margin: 16px -22px 0;
+  padding-right: 14px;
+  border-top: 1px solid var(--c-border);
 }
 
 /* ─── Picture reviews ────────────────────────────────────────────────────── */
@@ -101,7 +110,12 @@
   border: 1px solid var(--c-border);
   border-radius: 14px;
 }
+/* A button, because it opens the review — reset the chrome it brings. */
 .rv-pic-art {
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+  border: 0;
   display: grid;
   place-items: center;
   aspect-ratio: 4 / 3;
@@ -139,9 +153,25 @@
   font-size: 13px;
   color: var(--c-gray-600);
 }
+.rv-pic-actions {
+  margin-left: auto;
+}
 .rv-pic-foot {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px 10px 18px;
   margin-top: auto;
-  padding-top: 12px;
+  border-top: 1px solid var(--c-border);
+}
+/* The footer's three possible occupants sit on one line: `RowAction` is 32px,
+   so the heart and the approval pill match it rather than centring a shorter
+   box against a taller one. */
+.rv-pic-foot > .rv-hearts,
+.rv-pic-foot > .pill {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
 }
 .rv-hearts {
   display: inline-flex;

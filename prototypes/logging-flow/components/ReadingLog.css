@@ -30,6 +30,21 @@
   margin-inline: calc(50% - 50vw);
 }
 
+/* ─── The goal star ──────────────────────────────────────────────────────────
+   `.reader-log-goal-star`. Where the site has individual reading goals on, the
+   app puts one on every day in the log — filled where the day met the goal,
+   hollow where it didn't. It rides the date, so it inherits the date's size and
+   sits on its baseline rather than taking a line of its own. */
+.rl-goalstar {
+  display: inline-flex;
+  margin-left: 5px;
+  color: var(--c-gray-400);
+  vertical-align: baseline;
+}
+.rl-goalstar.is-met {
+  color: #f0a024;
+}
+
 /* ─── Streak cards and the import note ───────────────────────────────────── */
 /* Both are shared components now — StatCard and InfoBox style themselves; this
    is only where they sit. */
@@ -124,6 +139,28 @@
   font-weight: 800;
   line-height: 1.3;
 }
+/* The title is the book record, so it goes to that book's page. It stays the
+   chip's own colour — an entry is already a tinted block, and a blue link
+   inside one reads as a second accent rather than as the title. */
+.rl-entry-link {
+  display: block;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  /* After the shorthand, which was quietly resetting the title's own 800 —
+     `font: inherit` sets every longhand, and it wins on source order. */
+  font-weight: 800;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 0, 0, 0.25);
+  text-underline-offset: 2px;
+}
+.rl-entry-link:hover {
+  text-decoration-color: currentcolor;
+}
 .rl-entry-author {
   font-size: 12.5px;
   opacity: 0.8;
@@ -145,11 +182,11 @@
   padding: 8px 9px;
 }
 .rl-entry--dense .rl-entry-title {
-  font-size: 12px;
+  font-size: 15px;
 }
 .rl-entry--dense .rl-entry-author,
 .rl-entry--dense .rl-entry-amounts {
-  font-size: 11px;
+  font-size: 13px;
 }
 
 /* Imported-from tag + its tooltip. */
@@ -192,7 +229,12 @@
   visibility: visible;
 }
 
-/* ─── Calendar view ──────────────────────────────────────────────────────── */
+/* ─── Calendar view ──────────────────────────────────────────────────────────
+   A month grid gives each day a cell the width of a book cover, and the log's
+   own chip type was set for the list, where a row runs the page. In a cell it
+   read as fine print — so the calendar takes the ladder's own rungs: 15 for the
+   day names, 18 for the date, and the chip at the page's 15/13 rather than a
+   size below it. */
 
 .rl-cal {
   border: 1px solid var(--c-border);
@@ -205,8 +247,8 @@
   grid-template-columns: repeat(7, minmax(0, 1fr));
 }
 .rl-cal-dow {
-  padding: 9px 10px;
-  font-size: 12px;
+  padding: 10px 10px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--c-text-light);
   border-bottom: 1px solid var(--c-border);
@@ -216,8 +258,8 @@
   border-left: 1px solid var(--c-border);
 }
 .rl-cal-cell {
-  min-height: 130px;
-  padding: 8px;
+  min-height: 148px;
+  padding: 9px;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -236,8 +278,8 @@
   color: var(--c-gray-600);
 }
 .rl-cal-date {
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 18px;
+  font-weight: 800;
   color: var(--c-text-light);
 }
 .rl-cal-streak {
@@ -250,7 +292,7 @@
   border-left: 4px solid #e2825d;
   background: #fdece5;
   color: #a13a22;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 800;
 }
 
@@ -436,9 +478,23 @@
    book's own log page, so the numbers live one click in rather than spread
    across five columns nobody was reading. */
 
-/* The Modal's centered variant owns the width; this just sets the inset. */
+/* The Modal's centered variant owns the width; the body takes the inset and
+   the scroll, so the footer stays put at the bottom rather than riding up on a
+   title with a long session list. */
+.modal--center:has(.rl-detail) {
+  display: flex;
+}
 .rl-detail {
   position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.rl-detail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   padding: 26px;
 }
 .rl-detail-close {
@@ -543,7 +599,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
-  .rl-detail {
+  .rl-detail-body {
     padding: 20px;
   }
   .rl-detail-head {

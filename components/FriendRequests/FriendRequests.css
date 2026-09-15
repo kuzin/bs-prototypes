@@ -4,88 +4,26 @@
 
 .fq {
   position: relative;
+  /* Standalone — over the Friends grid — it owns the gap to what follows. In
+     the Challenges banner stack that gap is the stack's, so it gives it up. */
   margin-bottom: 24px;
 }
-
-.fq-bar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 64px;
-  padding: 16px;
-  overflow: hidden;
-  font-size: 15px;
-  font-weight: 700;
-  background: #ffedc8;
-  border-radius: 8px;
+.wa-bannerstack .fq {
+  margin-bottom: 0;
 }
-
-/* The swashes sit at the bar's right end and are clipped by it. */
-.fq-swash-wrap {
-  position: absolute;
-  top: -1rem;
-  right: 0;
-  display: flex;
-  justify-content: flex-end;
-}
-.fq-swash {
-  width: 300px;
-  height: 120px;
-}
-
-.fq-bar-content {
-  position: relative;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: space-between;
+/* The whole bar is the flyout's trigger, so the wrapper has to stop shrinking
+   to it — `.flyout` sizes to its trigger, which is right everywhere else. */
+.fq > .flyout {
+  display: block;
   width: 100%;
 }
 
-.fq-title {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  min-width: 0;
-  font-size: 15px;
-  font-weight: 900;
-  color: var(--c-text);
-}
-.fq-face-disc {
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 40px;
-  min-width: 40px;
-  height: 40px;
-  background: #fff;
-  border-radius: 50%;
-  box-shadow: 0 2px 3px 0 rgba(0, 0, 0, 0.06);
-}
 .fq-face {
   width: 24px;
   height: 24px;
 }
 
 /* The app's `.button-action-bar`: a white-bordered chip on the bar's own tint. */
-.fq-trigger {
-  display: inline-flex;
-  flex: none;
-  gap: 14px;
-  align-items: center;
-  padding: 5px 12px 5px 14px;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text);
-  cursor: pointer;
-  background: var(--c-gray-0);
-  border: 1px solid #fff;
-  border-radius: 999px;
-}
-.fq-trigger:hover {
-  background: #fff;
-}
 
 /* ─── The menu the requests live in ──────────────────────────────────────── */
 /* Scales open from its top edge, the way the app animates it. */

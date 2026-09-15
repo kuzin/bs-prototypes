@@ -46,19 +46,13 @@ export function ReaderTopBar({ onLogReading }) {
       <div className="gr-topbar-inner">
         <BeanstackLogo />
         <div className="gr-topbar-actions">
-          <Button
-            variant="primary"
-            size="sm"
-            accent="#1A6DD5"
-            icon={<Icon name="book" size={15} />}
-            onClick={onLogReading}
-          >
+          <Button variant="primary" size="sm" accent="#1A6DD5" onClick={onLogReading}>
             Log Reading
           </Button>
-          <Button variant="secondary" size="sm" icon={<Icon name="check" size={15} />}>
+          <Button variant="secondary" size="sm">
             Complete Activity
           </Button>
-          <Button variant="secondary" size="sm" icon={<Icon name="writing" size={15} />}>
+          <Button variant="secondary" size="sm">
             Write Review
           </Button>
         </div>

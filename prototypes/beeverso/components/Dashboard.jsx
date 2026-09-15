@@ -10,7 +10,7 @@ import {
   PartnerSwitcher,
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
-import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'
 
 import { PARTNERS, PARTNER_BY_ID } from '../connections'
 import { READER, CHALLENGES, TITLE_BY_ID, importedSessions, readingLogEntries } from '../data'

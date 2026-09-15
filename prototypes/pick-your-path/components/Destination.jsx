@@ -47,21 +47,10 @@ function TitleRow({ title, path, read, onToggle, onReadInApp }) {
           </button>
         ) : (
           <>
-            <Button
-              variant="primary"
-              size="sm"
-              className="pyp-title-read"
-              icon={<Icon name="book-2" size={15} />}
-              onClick={onReadInApp}
-            >
+            <Button variant="primary" size="sm" className="pyp-title-read" onClick={onReadInApp}>
               Read in app
             </Button>
-            <Button
-              variant="secondary"
-              size="sm"
-              icon={<Icon name="reading-log" size={15} />}
-              onClick={onToggle}
-            >
+            <Button variant="secondary" size="sm" onClick={onToggle}>
               Log it
             </Button>
           </>

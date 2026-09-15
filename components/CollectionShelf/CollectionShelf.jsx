@@ -1,6 +1,27 @@
+import { useState } from 'react'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
+import { FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+import { Tabs } from '@components/Tabs/Tabs'
+import { EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+import { byEarnedState, hasBothStates } from '@components/EarnedFilter/earned'
+import { EmptyState } from '@components/Primitives/Primitives'
+import { BadgeModal } from '@components/BadgeModal/BadgeModal'
 
 import './CollectionShelf.css'
+import '@components/Tabs/Tabs.css'
+import '@components/Primitives/Primitives.css'
+
+/* `appropriate_badges_title` — the app's own badge taxonomy, and the order it
+   names them in. A badge's `type` is the key; this is what a reader sees. */
+const TYPE_LABELS = {
+  logging: 'Reading',
+  activity: 'Activity',
+  review: 'Review',
+  point: 'Point',
+  challenge: 'Challenge',
+  donation: 'Donation',
+}
+const TYPE_ORDER = ['Reading', 'Activity', 'Review', 'Point', 'Challenge', 'Donation']
 
 /**
  * The reader's shelf of earned things — badges and achievements.
@@ -21,10 +42,31 @@ import './CollectionShelf.css'
 /**
  * One card. `art` is whatever goes in the circular slot — an illustrated
  * medallion, or a glyph on a colored disc (see `BadgeDisc` below).
+ *
+ * `size="sm"` is the same card at two-thirds: for a strip of them beside
+ * something else rather than a shelf of their own — the friend profile's
+ * "Latest badges" row, in a modal that has four other sections to get through.
  */
-export function CollectionCard({ art, name, blurb, date, locked = false, progress }) {
+export function CollectionCard({
+  art,
+  name,
+  blurb,
+  date,
+  locked = false,
+  progress,
+  size = 'md',
+  onOpen,
+}) {
   return (
-    <article className={`co-card${locked ? ' co-card--locked' : ''}`}>
+    <article
+      className={`co-card co-card--${size}${locked ? ' co-card--locked' : ''}${onOpen ? ' co-card--open is-hit' : ''}`}
+    >
+      {/* The whole card opens the badge, so the hit area is a layer under the
+          content rather than a button wrapping it — the card keeps its markup
+          and the ring keeps its place. */}
+      {onOpen && (
+        <button type="button" className="co-card-hit" onClick={onOpen} aria-label={name} />
+      )}
       <div className="co-card-art" aria-hidden="true">
         {art}
         {/* The app rings a locked badge with its progress toward earning it. */}
@@ -90,4 +132,116 @@ export function ShelfHead({ title, count, noun, children, as = 'h2' }) {
 /** The grid the cards sit in. */
 export function ShelfGrid({ children }) {
   return <div className="co-grid">{children}</div>
+}
+
+/**
+ * A shelf of badges, with the two filters a badge set needs once it is more
+ * than a screenful.
+ *
+ * **All / Earned / Unearned** is the question a reader actually arrives with —
+ * "what have I got" or "what is left" — and it is a segmented control, which in
+ * this system is a pill `Tabs`. It appears only where the set has both halves:
+ * **unearned badges exist inside a challenge and nowhere else**, so the
+ * reader's Collections shelf — which is everything they have earned, across
+ * every challenge — gets no state filter, because every answer would be the
+ * same shelf.
+ *
+ * **Type** is the app's own badge taxonomy (`appropriate_badges_title`:
+ * Reading/Logging, Activity, Review, Point, Challenge, Donation), derived from
+ * what this particular set contains rather than listed in full, so a challenge
+ * with no review badges doesn't offer a filter that can only ever empty the
+ * shelf. It is a segmented control, not a menu: there are four of them at most,
+ * and a reader looking for the activity badges shouldn't have to open something
+ * to learn there is such a thing.
+ *
+ * Earned first inside each result, the way the app lists them — what you have,
+ * then what's left.
+ */
+export function BadgeShelf({ badges, src, emptyIcon, onLog, logLabel }) {
+  const [state, setState] = useState('all')
+  const [type, setType] = useState('all')
+  // Every badge here opens — `earnables/_earnable_modal` is behind every badge
+  // the app draws, so it is behind every one here too.
+  const [open, setOpen] = useState(null)
+
+  const byState = byEarnedState(badges, state)
+  const shown = type === 'all' ? byState : byState.filter((b) => TYPE_LABELS[b.type] === type)
+  const ordered = [...shown.filter((b) => !b.locked), ...shown.filter((b) => b.locked)]
+
+  // Only the types this set actually has, in the app's own order.
+  const present = TYPE_ORDER.filter((t) => badges.some((b) => TYPE_LABELS[b.type] === t))
+
+  const hasFilters = hasBothStates(badges) || present.length > 1
+
+  return (
+    <>
+      {hasFilters && (
+        <FilterMenuBar className="co-filters">
+          <EarnedFilter items={badges} value={state} onChange={setState} ariaLabel="Which badges" />
+          {/* Which kind of badge, as a segmented control rather than a menu:
+              there are four of them at most, and a reader looking for the
+              activity badges shouldn't have to open something to find out
+              there is such a thing. */}
+          {present.length > 1 && (
+            <Tabs
+              variant="pill"
+              size="md"
+              collapse
+              active={type}
+              accent="#1A6DD5"
+              onChange={setType}
+              ariaLabel="Which kind of badge"
+              items={[
+                { id: 'all', label: 'All Types' },
+                ...present.map((t) => ({
+                  id: t,
+                  label: t,
+                  count: badges.filter((b) => TYPE_LABELS[b.type] === t).length,
+                })),
+              ]}
+            />
+          )}
+        </FilterMenuBar>
+      )}
+
+      {ordered.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          icon={emptyIcon}
+          title="No badges here"
+          description="Nothing in this set matches those filters."
+        />
+      ) : (
+        <ShelfGrid>
+          {ordered.map((b) => (
+            <CollectionCard
+              key={b.name}
+              art={<BadgeArt src={src(b)} />}
+              name={b.name}
+              blurb={b.blurb}
+              locked={b.locked}
+              progress={b.locked ? Math.round((b.have / b.need) * 100) : undefined}
+              onOpen={() => setOpen(b)}
+              // The app states a locked badge's requirement where an earned one
+              // states its date: "12/30 Minutes Completed".
+              date={
+                b.locked
+                  ? `${b.have.toLocaleString()}/${b.need.toLocaleString()} ${b.unit} Completed`
+                  : `Completed on ${b.date}`
+              }
+            />
+          ))}
+        </ShelfGrid>
+      )}
+
+      <BadgeModal
+        badge={open}
+        src={src}
+        open={Boolean(open)}
+        onClose={() => setOpen(null)}
+        onLog={onLog}
+        logLabel={logLabel}
+      />
+    </>
+  )
 }

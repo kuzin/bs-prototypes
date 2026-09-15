@@ -1206,12 +1206,54 @@ export const moleculesSections = [
         JSX or a render function that receives <code>{'{ close }'}</code>.{' '}
         <strong>Overflow rule:</strong> when a button row has 3+ actions, collapse the secondary
         ones into a <code>More</code> (kebab) flyout.
+        <br />
+        <br />
+        <strong>Two shapes go inside it.</strong> <code>.flyout-menu</code> is a list of things to
+        pick between — one line, one verb, and the whole row is the control.{' '}
+        <code>.flyout-rows</code> is a queue of things to <em>act on</em>: a subject, who or what it
+        is, and more than one answer per line. The friend-requests queue is the second kind — each
+        row is a person, with Accept and Decline opposite. The row takes no hover, because the row
+        itself isn&apos;t clickable and lighting it up implied a third thing to press, and the
+        answers are <strong>primary and secondary</strong>: one of them is what the bar was asking
+        for.
       </>
     ),
     render: () => (
       <>
         <FlyoutKnobs />
         <FlyoutShowcase />
+        <Variant label=".flyout-rows — a subject and its answers, not a list to pick from">
+          <Flyout
+            placement="bottom-start"
+            trigger={({ toggle }) => (
+              <Button variant="secondary" onClick={toggle}>
+                View Requests
+              </Button>
+            )}
+          >
+            {() => (
+              <div className="flyout-rows" role="menu">
+                {[
+                  { id: 'maya', name: 'Maya C.', initials: 'MC', color: '#F0966F' },
+                  { id: 'theo', name: 'Theo N.', initials: 'TN', color: '#0F766E' },
+                ].map((r) => (
+                  <div className="flyout-row" key={r.id} role="menuitem">
+                    <Avatar initials={r.initials} color={r.color} size="lg" shape="circle" />
+                    <div className="flyout-row-body">
+                      <span className="flyout-row-title">{r.name}</span>
+                    </div>
+                    <div className="flyout-row-actions">
+                      <Button size="sm">Accept</Button>
+                      <Button variant="secondary" size="sm">
+                        Decline
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </Flyout>
+        </Variant>
       </>
     ),
   },
@@ -1226,11 +1268,26 @@ export const moleculesSections = [
 </Modal>`,
     desc: (
       <>
-        Two variants: <code>side</code> (right-slide panel) and <code>center</code> (overlay). Both
-        close on backdrop click + Escape and animate in/out. The centered modal composes from{' '}
-        <code>.modal-image</code>, <code>.modal-header</code>, <code>.modal-body</code>,{' '}
-        <code>.modal-footer</code> — toggle each below. The title is 18px/800 and the body 16px,
-        matching the app&apos;s <code>.modal__title</code> / <code>.modal__content</code>.
+        Three variants: <code>side</code> (right-slide panel), <code>center</code> (overlay) and{' '}
+        <code>full</code> (full-screen surface). The first two close on backdrop click + Escape and
+        animate in/out.
+        <br />
+        <br />
+        <strong>
+          <code>full</code> is the reader app&apos;s own full-screen flow
+        </strong>{' '}
+        — a white page over the whole app area with a corner close. It is what the logging flow is,
+        and what writing a review is: the app renders both into the same{' '}
+        <code>#logged-books--new</code> shell. Use it for a task that <em>takes</em> the screen
+        rather than a dialogue that sits over one. It draws no backdrop, because there is nothing
+        behind it to click, and it stops at the shell&apos;s <code>--chrome-top</code> /{' '}
+        <code>--chrome-bottom</code> rather than the window, so a preview bar or prototype nav stays
+        reachable. Compose it from <code>ModalFullClose</code>, an optional{' '}
+        <code>ModalFullBack</code>, and a <code>.modal-full-panel</code> for the measure in the
+        middle. The centered modal composes from <code>.modal-image</code>,{' '}
+        <code>.modal-header</code>, <code>.modal-body</code>, <code>.modal-footer</code> — toggle
+        each below. The title is 18px/800 and the body 16px, matching the app&apos;s{' '}
+        <code>.modal__title</code> / <code>.modal__content</code>.
         <br />
         <br />
         <code>ModalClose</code> is the app&apos;s own close control — a floating white disc pinned
@@ -1239,6 +1296,14 @@ export const moleculesSections = [
         default in the rail below. It isn&apos;t catalogued on its own because it positions against{' '}
         <code>.modal</code> and has no meaning outside one; the alternative is a plain{' '}
         <code>IconButton</code> in the header, which is the <code>inline</code> option.
+        <br />
+        <br />
+        <code>className</code> lands on the panel itself, which is how a caller widens a centred
+        modal past its 520px — a certificate preview is a landscape sheet and wants the room. A
+        modal with <code>closeBadge</code> has its clipping turned off so the disc can overhang, so
+        whatever sits at the top of it has to carry the corners:{' '}
+        <code>border-top-left-radius: inherit</code> on that first child, the way{' '}
+        <code>.modal-image</code> does.
       </>
     ),
     render: () => (

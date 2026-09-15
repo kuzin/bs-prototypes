@@ -1,0 +1,314 @@
+/* ─── Fundraiser ─────────────────────────────────────────────────────────────
+   `fundraisers#show`. The challenge page's furniture with the two things a
+   challenge hasn't got: what has been raised, and the way to raise more.
+
+   Queried against the column it sits in: the page renders into the reader's
+   main column and into a Pattern Library frame, both of which are narrow long
+   before the window is. */
+.fnd {
+  container-type: inline-size;
+}
+
+/* The page under the shared ProgramHeader is the challenge page's, down to the
+   numbers: the same gap over the tab strip, the same rule across the page, the
+   same room at the bottom. A read-a-thon is a challenge with money attached,
+   and the two should not arrive differently. */
+.fnd-head {
+  padding-top: 22px;
+}
+.fnd-tabs {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--c-border);
+}
+.fnd-body {
+  padding-top: 30px;
+  padding-bottom: 48px;
+}
+
+/* Two columns, with Overall Progress spanning them underneath — the app's own
+   `.fundraiser-content-body` + `.challenge-content-goals`. The rail is the
+   point of the page, so it keeps its width down to a narrow column rather than
+   giving way to the prose. */
+.fnd-overview {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  align-items: start;
+}
+
+.fnd-main {
+  min-width: 0;
+}
+.fnd-sub {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--c-text-dark);
+}
+.fnd-desc {
+  max-width: 68ch;
+  margin-top: 10px;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--c-text);
+}
+.fnd-h2 {
+  margin-top: 26px;
+  margin-bottom: 18px;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+
+.fnd-rail {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+/* The dashboard's rail card, to the pixel — `.wa-card`'s 16/18 padding and
+   14px radius, its 16/800 heading and 15px body. These sat on a 14/900 heading
+   over 13.5px copy, which read as a smaller class of card than the ones in the
+   rail next door. */
+.fnd-card {
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 14px;
+}
+.fnd-card-h {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+.fnd-total-nums {
+  margin: 10px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-gray-800);
+}
+.fnd-total-nums strong {
+  font-size: 18px;
+  font-weight: 900;
+  color: #0f7a55;
+}
+/* The goal card's own 32px bar, which is what the fundraiser card in the
+   dashboard rail already wears. */
+.fnd-total .pgb-track {
+  height: 32px;
+  background: rgb(8 117 66 / 14%);
+  border-radius: 32px;
+}
+.fnd-total .pgb-fill {
+  min-width: 32px;
+  border-radius: 32px;
+}
+
+.fnd-share {
+  text-align: center;
+}
+.fnd-share-face {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 30px;
+  line-height: 1;
+}
+.fnd-share-text {
+  margin: 6px 0 14px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--c-gray-800);
+}
+.fnd-share-icons {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+.fnd-share-icon {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  color: var(--c-text);
+  cursor: pointer;
+  background: var(--c-gray-50);
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+}
+.fnd-share-icon:hover {
+  color: var(--c-blue);
+  background: #fff;
+  border-color: var(--c-blue);
+}
+/* The link and its Copy, which is the only control on this card that does
+   anything a reader can't do from their own address bar. */
+.fnd-share-link {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding-top: 14px;
+  border-top: 1px solid var(--c-border);
+}
+.fnd-share-url {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-gray-800);
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Same room under the filter row as the badge shelf's. */
+.fnd-prizefilters {
+  margin-bottom: 18px;
+}
+
+/* ── Prizes ──────────────────────────────────────────────────────────────── */
+.fnd-prizes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.fnd-prize {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.fnd-prize-art {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  font-size: 26px;
+  background: var(--c-gray-50);
+  border-radius: 12px;
+}
+.fnd-prize-copy {
+  flex: 1;
+  min-width: 0;
+}
+.fnd-prize-name {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.fnd-prize-at {
+  margin-top: 2px;
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+
+/* ── Donations ───────────────────────────────────────────────────────────── */
+/* The same grid the book page's session totals sit on. */
+.fnd-donationnums {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+.fnd-donors {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+/* Centred, not top-aligned: a sponsor's row is one line against a 38px disc,
+   and hanging it off the top left the row looking half-empty. */
+.fnd-donor {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.fnd-donor-icon {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: #b3401a;
+  background: #fdece5;
+  border-radius: 999px;
+}
+.fnd-donor-body {
+  min-width: 0;
+}
+.fnd-donor-text {
+  font-size: 15px;
+  color: var(--c-text);
+}
+.fnd-donor-text strong {
+  font-weight: 900;
+  color: #0f7a55;
+}
+/* What they wrote, set apart from what they gave — a donation message is the
+   half a reader actually reads. */
+.fnd-donor-message {
+  padding-left: 12px;
+  margin-top: 8px;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--c-text-light);
+  border-left: 3px solid var(--c-gray-200);
+}
+
+/* ── The welcome modal ───────────────────────────────────────────────────── */
+/* The art is a pale band with the figures drawn *above* it, and the app's
+   `margin-top: -65px` is what makes that read: the band lands on the modal's
+   top edge and the crowd pops out over it. 65 of the drawing's own 493 is
+   13.18%, and a percentage margin resolves against the width — so it stays the
+   same crop whatever the modal is scaled to. `closeBadge` has already turned
+   the modal's clipping off, which is the only reason the overhang shows. */
+.fnd-welcome-art {
+  position: relative;
+  display: block;
+  width: 100%;
+  margin-top: -13.18%;
+}
+/* `.fundraiser-notification-body` — 35/33 padding, ranged left, on the app's
+   own 22/900 and 16/bold. */
+.fnd-welcome {
+  padding: 26px 26px 22px;
+}
+.fnd-welcome-title {
+  font-size: 22px;
+  font-weight: 900;
+  line-height: 1.3;
+  color: var(--c-text-dark);
+}
+.fnd-welcome-text {
+  margin-top: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.56;
+  color: var(--c-text-light);
+}
+
+@container (max-width: 680px) {
+  /* The rail goes under the page. It keeps its own ground either way — it is
+     the point of the page, not a footnote to it. */
+  .fnd-overview {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .fnd-head-art img {
+    width: 100%;
+  }
+}

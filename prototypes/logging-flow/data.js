@@ -213,6 +213,9 @@ export const CHALLENGES = [
     title: 'Spring Into Reading',
     dates: 'Apr 1 — Apr 30',
     badge: 'Minutes',
+    canSelfUnenroll: true,
+    logTypes: ['minutes', 'books'],
+    types: ['activities'],
     banner: 'spring-into-reading',
     tint: '#B4E0CC',
     badges: 'spring-into-reading',
@@ -222,6 +225,9 @@ export const CHALLENGES = [
     title: 'For the Love of Reading',
     dates: 'Ongoing',
     badge: 'Minutes',
+    logTypes: ['minutes'],
+    types: ['reviews'],
+    canSelfUnenroll: true,
     banner: 'for-the-love-of-reading',
     tint: '#FA4856',
     badges: 'for-the-love-of-reading',
@@ -231,22 +237,175 @@ export const CHALLENGES = [
     title: 'Comics Choice',
     dates: 'Jun 1 — Jun 30',
     badge: 'Bingo',
+    canSelfUnenroll: true,
+    logTypes: ['books'],
+    types: ['bingo'],
+    bookTalks: true,
     banner: 'comics-choice',
     tint: '#61B2F1',
     badges: 'comics-choice',
   },
 ]
 
+// The app's Challenges page is four lists, not one: what you're in
+// (`current_challenges`), what else is open to you (`more_challenges`), what
+// has ended (`completed_challenges`), and what you've ignored
+// (`dismissed_challenges`). Ignored starts empty — you make it yourself.
+
+/** "More Challenges — Other available challenges." */
+export const MORE_CHALLENGES = [
+  {
+    id: 'summer',
+    title: 'Summer Reading',
+    dates: 'Jun 15 — Aug 22',
+    upcoming: true,
+    logTypes: ['minutes', 'books'],
+    types: ['activities'],
+    banner: 'summer-reading',
+    tint: '#D5EDFD',
+    badges: 'spring-into-reading',
+    description:
+      'Keep reading all summer long. Log your minutes, finish activities, and earn a badge for every two weeks you keep it going.',
+    range: 'Grades K–8',
+    // Not open yet and you can sign up anyway — the app's `allow_preregistration`.
+    allowPreregistration: true,
+  },
+  {
+    id: 'battle',
+    title: 'Battle of the Books',
+    dates: 'Sep 8 — Nov 14',
+    upcoming: true,
+    logTypes: ['books'],
+    types: ['book_list'],
+    bookTalks: true,
+    banner: 'battle-of-the-books',
+    tint: '#FD452B',
+    badges: 'comics-choice',
+    description:
+      "Read your way through this year's battle list, then talk about what you read. Every title you finish puts your class closer to the final round.",
+    range: 'Grades 4–8',
+    // Upcoming with no pre-registration: the modal shows it, but with nothing
+    // to press. And it's one of a set you pick from.
+    alternatives: ['Nonfiction November', 'Graphic Novel Gauntlet'],
+  },
+  {
+    id: '25-in-25',
+    title: '25 in 25',
+    dates: 'Jan 1 — Dec 31',
+    logTypes: ['books'],
+    types: ['reviews'],
+    banner: '25-in-25',
+    tint: '#A8D6D6',
+    badges: 'for-the-love-of-reading',
+    description:
+      'Twenty-five books in a year — about one every fortnight. Write a review for any five of them and the badge is yours.',
+    range: '5–12',
+    ageDeterminant: 'ages',
+  },
+]
+
+/**
+ * A reader at a school inside a district also sees what the district's other
+ * site is running — `connected_programs`. The app opens these on that site.
+ */
+export const CONNECTED_SITE = 'Oak Elementary'
+
+export const CONNECTED_CHALLENGES = [
+  {
+    id: 'benny-bean',
+    title: 'Read with Benny',
+    dates: 'Sep 1 — Oct 31',
+    logTypes: ['minutes'],
+    types: ['activities'],
+    banner: 'benny-bean',
+    badges: 'spring-into-reading',
+    tint: '#E8A33D',
+    connectedSite: CONNECTED_SITE,
+    range: 'Grades K–5',
+    description:
+      "Oak Elementary's autumn challenge, open to the whole district. Log your minutes and work through Benny's activities.",
+  },
+]
+
+/** "Past Challenges — Challenges that {name} is participating in and have ended." */
+export const PAST_CHALLENGES = [
+  {
+    id: 'winter',
+    title: 'Winter Reading',
+    dates: 'Dec 1 — Feb 28',
+    logTypes: ['minutes'],
+    types: ['activities'],
+    banner: 'winter-reading',
+    tint: '#DDAF86',
+    badges: 'spring-into-reading',
+  },
+  {
+    id: 'read-across',
+    title: 'Read Across America',
+    dates: 'Mar 2 — Mar 8',
+    logTypes: ['books'],
+    types: ['book_list'],
+    banner: 'read-across-america',
+    tint: '#7E6F94',
+    badges: 'comics-choice',
+  },
+]
+
+/* Every challenge a page can be opened for, by id — so a reload can put the
+   reader back on the one they had open. */
+export const CHALLENGE_BY_ID = Object.fromEntries(
+  [...CHALLENGES, ...MORE_CHALLENGES, ...CONNECTED_CHALLENGES, ...PAST_CHALLENGES].map((c) => [
+    c.id,
+    c,
+  ]),
+)
+
 export const TOP_SCHOOLS = [
-  { rank: 1, name: 'Magnolia Middle', value: 198, color: '#FFBC42' },
-  { rank: 2, name: 'Oak Elementary', value: 157, color: '#ACACAC' },
-  { rank: 3, name: 'Hickory Middle School', value: 104, color: '#C2884F' },
+  {
+    rank: 1,
+    name: 'Magnolia Middle',
+    value: 198,
+    color: '#FFBC42',
+    stats: { week: { minutes: 198, books: 24 }, month: { minutes: 812, books: 97 } },
+  },
+  {
+    rank: 2,
+    name: 'Oak Elementary',
+    value: 157,
+    color: '#ACACAC',
+    stats: { week: { minutes: 157, books: 19 }, month: { minutes: 690, books: 81 } },
+  },
+  {
+    rank: 3,
+    name: 'Hickory Middle School',
+    value: 104,
+    color: '#C2884F',
+    stats: { week: { minutes: 104, books: 12 }, month: { minutes: 455, books: 58 } },
+  },
 ]
 
 export const TOP_GRADES = [
-  { rank: 1, name: '6th grade', value: 412, color: '#FFBC42' },
-  { rank: 2, name: '5th grade', value: 388, color: '#ACACAC' },
-  { rank: 3, name: '7th grade', value: 271, color: '#C2884F' },
+  {
+    rank: 1,
+    name: '6th grade',
+    value: 412,
+    color: '#FFBC42',
+    stats: { week: { minutes: 412, books: 47 }, month: { minutes: 1680, books: 193 } },
+  },
+  {
+    rank: 2,
+    name: '5th grade',
+    value: 388,
+    color: '#ACACAC',
+    stats: { week: { minutes: 388, books: 51 }, month: { minutes: 1544, books: 205 } },
+  },
+  {
+    rank: 3,
+    name: '7th grade',
+    value: 271,
+    color: '#C2884F',
+    stats: { week: { minutes: 271, books: 33 }, month: { minutes: 1120, books: 141 } },
+  },
 ]
 
 // ─── Reading Log ─────────────────────────────────────────────────────────────
@@ -424,4 +583,46 @@ export const READING_LOG = [
     source: 'scholastic',
     importedOn: '6/16/26',
   },
+]
+
+// ─── Registration questions ──────────────────────────────────────────────────
+// `RegistrationQuestion` — a site's own questions, asked once when a reader
+// first joins a challenge. Multiple choice and one answer only; the admin
+// screen says so outright ("questions are only available in a multiple choice
+// format… there is not currently an ability for free-form text answers"), which
+// is why there is no text field here either.
+//
+// `active` is whether the site is asking it at all, `required` is whether the
+// join is blocked without it (`active_and_required`), and the answers belong to
+// the *profile* rather than the challenge — `registration_answers_profiles` —
+// so a reader is asked once and never again, whatever they join next.
+
+const question = (id, text, required, answers) => ({
+  id,
+  question: text,
+  required,
+  answers: answers.map((a, i) => ({ id: `${id}-${i}`, answer: a })),
+})
+
+export const REGISTRATION_QUESTIONS = [
+  question('q-school', 'Which school do you go to?', true, [
+    'Magnolia Middle School',
+    'Oak Elementary',
+    'Hickory Middle School',
+    'I go somewhere else',
+  ]),
+  question('q-heard', 'How did you hear about our summer reading program?', true, [
+    'My teacher told me',
+    'A flyer or poster',
+    'At the library',
+    'A friend or family member',
+    'Social media',
+  ]),
+  question('q-branch', 'Which library branch do you visit most?', false, [
+    'Central',
+    'Riverside',
+    'Eastgate',
+    'I use the bookmobile',
+    'I don’t visit a branch',
+  ]),
 ]

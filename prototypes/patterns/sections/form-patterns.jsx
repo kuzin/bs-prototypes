@@ -24,6 +24,9 @@ import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import { DatePicker } from '@components/DatePicker/DatePicker'
 import { TimePicker } from '@components/TimePicker/TimePicker'
 import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
+import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+import { EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+import { byEarnedState } from '@components/EarnedFilter/earned'
 import { Knobs, Variant } from './_shared'
 
 function ColorInputKnobs() {
@@ -841,6 +844,75 @@ function FieldFormKnobs() {
 
 // ── Chart knobs ──────────────────────────────────────────────────────────
 
+const FM_GENRES = ['Adventure', 'Fantasy', 'Graphic Novels', 'Humor', 'Mystery', 'Nonfiction']
+const FM_GRADES = ['K–2', '3–5', '6–8', '9–12']
+const FM_GROUPS = {
+  'Race & Ethnicity': ['Black', 'Latine', 'Asian', 'Indigenous'],
+  Disability: ['Deaf & Hard of Hearing', 'Neurodivergent'],
+}
+
+const DEMO_PRIZES = [
+  { id: 'p1', name: 'Book Fair Voucher', earned: true },
+  { id: 'p2', name: 'Sponsor a Shelf plaque' },
+  { id: 'p3', name: 'Pizza with the Principal' },
+  { id: 'p4', name: 'Name a library cart' },
+  { id: 'p5', name: 'Read-a-thon hoodie' },
+]
+
+function EarnedFilterDemo() {
+  const [state, setState] = useState('all')
+  const isEarned = (p) => Boolean(p.earned)
+  const shown = byEarnedState(DEMO_PRIZES, state, isEarned)
+  return (
+    <div style={{ display: 'grid', gap: 14 }}>
+      <EarnedFilter
+        items={DEMO_PRIZES}
+        isEarned={isEarned}
+        value={state}
+        onChange={setState}
+        ariaLabel="Which prizes"
+      />
+      <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 6 }}>
+        {shown.map((p) => (
+          <li key={p.id} style={{ fontSize: 14, fontWeight: 700 }}>
+            {p.name}
+            {p.earned ? ' — earned' : ''}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function FilterMenuDemo() {
+  const [genres, setGenres] = useState([])
+  const [tags, setTags] = useState([])
+  const [grade, setGrade] = useState(null)
+  return (
+    <>
+      <Variant label="several facets in a row — two that take a set, one that takes a value">
+        <FilterMenuBar>
+          <FilterMenu
+            label="Genres"
+            options={FM_GENRES}
+            value={genres}
+            onChange={setGenres}
+            multi
+          />
+          <FilterMenu
+            label="Main Characters"
+            groups={FM_GROUPS}
+            value={tags}
+            onChange={setTags}
+            multi
+          />
+          <FilterMenu label="Grade" options={FM_GRADES} value={grade} onChange={setGrade} />
+        </FilterMenuBar>
+      </Variant>
+    </>
+  )
+}
+
 export const formPatternsSections = [
   {
     group: 'form-patterns',
@@ -1156,6 +1228,78 @@ import '@components/Form/Form.css'
         <FieldFormKnobs />
       </>
     ),
+  },
+  {
+    group: 'form-patterns',
+    id: 'filter-menu',
+    name: 'FilterMenu',
+    usage: `import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+
+<FilterMenuBar>
+  <FilterMenu label="Genres" options={GENRES} value={genres} onChange={setGenres} multi />
+  <FilterMenu label="Main Characters" groups={BACKGROUND_GROUPS} value={tags} onChange={setTags} multi />
+  <FilterMenu label="Grade" options={GRADES} value={grade} onChange={setGrade} />
+</FilterMenuBar>`,
+    desc: (
+      <>
+        One facet, behind one button — the shape a catalog filter takes when there are five of them
+        and forty values between them. The app&apos;s own accordion (
+        <code>books/_filters.html.haml</code>: five <code>fieldset</code>s of checkboxes behind
+        headings) with the off-canvas drawer replaced by a row. The accordion&apos;s point is that
+        one section is open at a time; a <code>Flyout</code> is that, and it costs one row instead
+        of a column down the side of the page.
+        <br />
+        <br />
+        <strong>The button reports what it is set to</strong> rather than carrying a count beside an
+        unchanged label — &ldquo;Humor&rdquo; for one value, &ldquo;Genres: 3&rdquo; past that, in
+        the accent. A filter you can&apos;t see from the page is a page that lies about what it is
+        showing, and a 2 next to a label that never changed still makes you open the menu to find
+        out what the 2 was. Pair it with <code>ActiveFilters</code> below the bar when you want the
+        individual values clearable too.
+        <br />
+        <br />
+        <code>groups</code> is the app&apos;s grouped facet (<code>background_groups</code>,{' '}
+        <code>topic_groups</code>) — one filter made of several sets with subheads of their own.{' '}
+        <code>multi</code> is the difference between <code>with_genres[]</code> and a filter that
+        narrows to one thing, where picking the active value clears it.
+      </>
+    ),
+    render: () => <FilterMenuDemo />,
+  },
+  {
+    group: 'form-patterns',
+    id: 'earned-filter',
+    name: 'EarnedFilter',
+    usage: `import { EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+import { byEarnedState } from '@components/EarnedFilter/earned'
+
+const [state, setState] = useState('all')
+const isEarned = (p) => p.earned
+
+<EarnedFilter items={prizes} isEarned={isEarned} value={state} onChange={setState} />
+{byEarnedState(prizes, state, isEarned).map(…)}`,
+    desc: (
+      <>
+        <strong>All / Earned / Unearned</strong> — the question a reader turns up to a set of
+        earnables with: what have I got, and what is left. A segmented control, which in this system
+        is a pill <code>Tabs</code>, with the counts on the tabs so the answer is readable without
+        picking one.
+        <br />
+        <br />
+        <strong>It renders nothing unless the set has both halves.</strong> A shelf you have earned
+        all of — or none of — can only answer one way, and a reader&apos;s own badge collection is
+        earned-only by definition, since an unearned badge belongs to the challenge that sets its
+        requirement and exists nowhere else. <code>byEarnedState</code> is the matching filter, and
+        it passes the whole set through in that case rather than hiding things behind a control the
+        reader can&apos;t see.
+        <br />
+        <br />
+        <code>isEarned</code> is how a set says which half a thing is in — badges carry{' '}
+        <code>locked</code>, prizes and rewards carry <code>earned</code>. Used by{' '}
+        <code>BadgeShelf</code>, a challenge&apos;s Rewards tab and a fundraiser&apos;s Prizes.
+      </>
+    ),
+    render: () => <EarnedFilterDemo />,
   },
   {
     group: 'form-patterns',

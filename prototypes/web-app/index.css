@@ -1,0 +1,23 @@
+/* This shell carries both prototype bars — the preview bar above and the
+   prototype nav below — so the reader's sticky top bar stops below the preview
+   bar, and a full-screen surface opened inside it (the logging flow, writing a
+   review) covers the app rather than the chrome around it. Without these its
+   corner close landed under the preview bar.
+
+   On the root, not the reader shell: `LogFlow` renders as a sibling of that
+   shell, so a variable scoped to it never reached the flow. */
+#root {
+  --chrome-top: var(--preview-bar-h);
+  --chrome-bottom: var(--proto-nav-h);
+
+  /* `LogFlow` comes from the logging-flow prototype and brings its reset with
+     it, including `html, body, #root { height: 100% }`. That shell owns its own
+     scrolling; this page scrolls the document. A sticky element can only stick
+     inside its own containing block, so a root pinned to exactly one viewport
+     let the preview bar slide away after the first screenful — while the
+     reader's top bar stayed pinned at `--chrome-top`, leaving a bare 61px strip
+     above it with the page running through it. Let the root grow with the page
+     and the bar stays put the whole way down. */
+  height: auto;
+  min-height: 100%;
+}

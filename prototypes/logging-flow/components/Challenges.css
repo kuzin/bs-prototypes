@@ -1,0 +1,243 @@
+/* ─── The Challenges page ────────────────────────────────────────────────
+   What the app's `programs/_programs_list.html.haml` adds around the grid:
+   the scope toggle and the challenge-code button on one header row, a section
+   head per list, the "Got a challenge code?" tile at the end of More
+   Challenges, and the two modals those open. */
+
+.wa-section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.wa-group-head {
+  margin-bottom: 14px;
+}
+
+/* The upcoming-challenge reminder sits above the lists, in their column. */
+.wa-reminder {
+  margin-bottom: 18px;
+}
+/* `InfoBox` clips its message to one line on purpose — an announcement is a
+   hook and the detail lives behind its action. This one has no action: the
+   sentence IS the detail, and in a column this narrow one line lost the half
+   that tells you what to do. */
+.wa-reminder .bnr-msg {
+  overflow: visible;
+  white-space: normal;
+}
+
+/* ─── "Got a challenge code?" ───────────────────────────────────────────
+   The last tile in More Challenges — a card-shaped prompt rather than a card,
+   so it reads as the end of the row. */
+.wa-codecard {
+  display: grid;
+  grid-template-areas: 'stack';
+  place-items: center;
+  text-align: center;
+  background: var(--c-gray-0);
+  border: 1px dashed var(--c-border-strong);
+  border-radius: 14px;
+}
+/* A challenge card is its art at 920/351 with its body under it. Sharing a row
+   with one, the grid stretches this tile to match; alone in its own grid —
+   once the reader has joined everything else in More Challenges — there is
+   nothing to stretch against, so it reserves the same height itself. The
+   prompt stacks over that reservation rather than under it, so it stays
+   centred in the tile. */
+.wa-codecard::before {
+  grid-area: stack;
+  width: 100%;
+  margin-bottom: var(--wa-chcard-body-h);
+  aspect-ratio: 920 / 351;
+  content: '';
+}
+.wa-codecard-inner {
+  z-index: 1;
+  /* The inset lives here, not on the tile — the reservation above has to span
+     the tile's full width, the way a card's art does. */
+  padding: 0 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  grid-area: stack;
+}
+.wa-codecard-head {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-gray-800);
+}
+
+/* ─── Join a challenge ─────────────────────────────────────────────────── */
+
+.jc {
+  display: flex;
+  flex-direction: column;
+  max-height: 100%;
+  overflow: hidden;
+  background: #fff;
+  border-radius: 14px;
+}
+/* Where a challenge can't be joined yet the app hides its button row; keeping
+   the footer and saying so leaves the modal with a bottom edge. */
+.jc-notyet {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+/* `.join-challenge-header` is the art on a tinted ground rather than bled to
+   the edges — the banner is a poster, and the app frames it. */
+/* The art runs the head's full width, edge to edge — a banner drawn to be a
+   banner, floated on a pastel mat with a shadow, was a picture of one. The
+   ground is still the banner's own colour (`tint`, ColorThief's read of it at
+   70% white), which is what shows through a transparent corner and behind a
+   banner that isn't quite the same aspect. */
+.jc-head {
+  display: flex;
+  justify-content: center;
+  background: #dbe8f5;
+}
+.jc-art {
+  display: block;
+  width: 100%;
+}
+/* The body is the Modal's own — this only stops the description running away
+   from the art on a tall challenge. */
+.jc-body {
+  max-height: 46vh;
+}
+/* The modal is the challenge page in miniature — its own banner over its own
+   title — so the title carries the page's weight rather than a dialog label's:
+   22/800 against `.cp-title`'s 28/800, with the dates a rung under. */
+.jc-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--c-gray-900);
+}
+.jc-dates {
+  margin-top: 3px;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-gray-750);
+}
+.jc-reqs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 14px;
+}
+.jc-type {
+  background: #dbf2e7;
+}
+.jc-deshead {
+  margin-top: 20px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-gray-800);
+}
+.jc-destext {
+  margin-top: 6px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--c-gray-800);
+}
+/* Join is the answer; "Not Interested" is the other one, and the app gives it
+   no button chrome so the two don't read as a pair of equals. */
+
+/* ─── Enter a challenge code ───────────────────────────────────────────── */
+
+.cc-error {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-danger, #dc2626);
+}
+
+@media (max-width: 560px) {
+  .wa-section-actions {
+    width: 100%;
+  }
+}
+
+/* ─── Alternative challenges ─────────────────────────────────────────────
+   `.join-challenge-alternatives` — this challenge OR one of these, on the
+   app's own amber list. */
+.jc-alts {
+  margin-top: 20px;
+}
+.jc-altshead {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-gray-900);
+}
+.jc-altsdesc {
+  margin-top: 4px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--c-gray-800);
+}
+.jc-altslist {
+  margin: 14px 0 0;
+  padding: 0;
+  overflow: hidden;
+  list-style: none;
+  border-radius: 8px;
+}
+.jc-altslist li {
+  padding: 10px 15px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-gray-800);
+  text-align: center;
+  background: #ffecc8;
+  border-bottom: 1px solid #ffbc42;
+}
+.jc-altslist li:last-child {
+  border-bottom: 0;
+}
+
+/* ─── Confirm un-enroll ──────────────────────────────────────────────────── */
+
+/* ─── Registration questions ─────────────────────────────────────────────────
+   `_registration_questions_modal` renders into the join modal, so this is the
+   same overlay with a different body: the site's own questions, asked once
+   between pressing Join and being enrolled. */
+/* The rule sits evenly between the intro and the first question — same space
+   above it as below. Scoped to the body because `.modal-body p` sets its own
+   10px margin and outranks a single class. */
+.modal-body .jc-qintro {
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--c-text-light);
+  border-bottom: 1px solid var(--c-border);
+}
+.jc-questions {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.jc-question {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+/* No rule between questions: a `legend` sits *in* its fieldset's border box,
+   so a border-top on the fieldset draws a line through the question's own name
+   and leaves the padding hanging under it. The gap does the separating. */
+.jc-question + .jc-question {
+  padding-top: 2px;
+}
+.jc-question-text {
+  display: block;
+  padding: 0;
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.35;
+  color: var(--c-text-dark);
+}
+/* Which questions block the join is the house asterisk, per question —
+   `active_and_required`. An optional one is marked by not having it. */

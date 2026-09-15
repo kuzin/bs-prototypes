@@ -556,12 +556,7 @@ function SearchStep({
               placeholder="Search for title or author"
             />
             <span className="lf-searchdiv" />
-            <Button
-              variant="secondary"
-              size="md"
-              icon={<Icon name="barcode" size={18} />}
-              onClick={() => setScanOpen(true)}
-            >
+            <Button variant="secondary" size="md" onClick={() => setScanOpen(true)}>
               Scan ISBN
             </Button>
           </div>
@@ -833,12 +828,7 @@ function DetailsStep({
                 value={minutesInput}
                 onChange={(e) => setMinutesInput(e.target.value)}
               />
-              <Button
-                variant="secondary"
-                size="md"
-                icon={<Icon name="timer" size={18} />}
-                onClick={onStartTimer}
-              >
+              <Button variant="secondary" size="md" onClick={onStartTimer}>
                 Start Timer
               </Button>
             </div>
@@ -1009,7 +999,7 @@ function ReviewStep({ review, setReview, onSave }) {
         <Button variant="primary" size="md" onClick={onSave}>
           Save
         </Button>
-        <Button variant="secondary" size="md" icon={<Icon name="smile" size={16} />}>
+        <Button variant="secondary" size="md">
           Add Emoticon
         </Button>
       </div>
@@ -1085,12 +1075,7 @@ function SuccessStep({ result, bookTitle, onDone, onTalkToBenny, onOpenWord }) {
               I’ll hand you any Book Talk badge you earn along the way.
             </BennyBubble>
           </div>
-          <Button
-            variant="primary"
-            size="lg"
-            icon={<Icon name="message-chatbot" size={18} />}
-            onClick={() => onTalkToBenny(result)}
-          >
+          <Button variant="primary" size="lg" onClick={() => onTalkToBenny(result)}>
             Talk to Benny
           </Button>
           <button className="lf-benny-skip" onClick={onDone}>

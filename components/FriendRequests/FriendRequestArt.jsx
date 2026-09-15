@@ -1,4 +1,4 @@
-import './FriendRequests.css'
+import '@components/FriendRequests/FriendRequests.css'
 
 /**
  * The two pieces of art on the friend-requests bar, lifted from the app's own
@@ -30,34 +30,6 @@ export function BeamingFace() {
             d="M18,27.594 C14.404,27.594 11.728,27.222 10.063,26.849 L9.238,24.978 C10.061,25.29 13.127,25.875 18.001,25.875 C22.955,25.875 26.038,25.259 26.865,24.937 L26.164,26.779 C24.53,27.159 21.745,27.594 18,27.594 Z"
             id="Path"
             fill="#664500"
-          ></path>
-        </g>
-      </g>
-    </svg>
-  )
-}
-
-export function RequestSwashes() {
-  return (
-    <svg viewBox="0 0 174 64" className="fq-swash" aria-hidden="true">
-      <g id="Friend-Request-Swashes" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
-        <g id="Group" fill="#FFBC42" fillRule="nonzero">
-          <path
-            d="M0.96969697,0 C18.0704826,13.7185066 47.4374859,22.3221253 89.0707072,25.8108562 C130.703928,29.2995872 158.872278,42.0293019 173.575758,64 L0.96969697,64 L0.96969697,0 Z"
-            id="Path"
-            opacity="0.297"
-            transform="translate(87.272727, 32.000000) scale(-1, 1) translate(-87.272727, -32.000000) "
-          ></path>
-          <path
-            d="M109.556903,36.3894253 C149.352188,31.2137467 170.368575,19.0839384 172.606061,0 L172.606061,64 L0,64 C22.2150393,51.9373303 40.3147026,44.34077 54.2989897,41.2103192 C75.275421,36.5146432 89.5026309,38.997635 109.556903,36.3894253 Z"
-            id="Path"
-            opacity="0.4"
-          ></path>
-          <path
-            d="M0.96969697,21.3333333 C2.65019985,42.3616362 21.5758632,52.0378057 57.7466869,50.3618416 C86.885171,49.0117188 95.4379658,46.9051653 123.286299,54.1956095 C136.005864,57.5254777 152.769017,60.7936079 173.575758,64 L0.96969697,64 L0.96969697,21.3333333 Z"
-            id="Path"
-            opacity="0.639"
-            transform="translate(87.272727, 42.666667) scale(-1, 1) translate(-87.272727, -42.666667) "
           ></path>
         </g>
       </g>

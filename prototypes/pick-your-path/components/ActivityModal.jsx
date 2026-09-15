@@ -86,7 +86,6 @@ export function ActivityModal({ activity, path, open, done, response, onClose, o
                 variant="primary"
                 size="md"
                 disabled={!canSubmit}
-                icon={<Icon name="award" size={16} />}
                 onClick={() => onComplete(text.trim())}
               >
                 Complete &amp; earn badge

@@ -548,66 +548,15 @@
 /* Same chrome as the shared Banner (`.bnr`, the app's `.infobox`): a tinted
    block with no border and a 10px radius. The outline made it the only banner
    on the page wearing one. */
-.cn-banner {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  border-radius: 10px;
-  border: none;
-  margin-bottom: 12px;
-  box-sizing: border-box;
-}
-.cn-banner-msg {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1px;
-  font-size: var(--text-cell);
-  color: var(--c-text);
-}
 .cn-banner-msg strong {
   font-weight: 800;
 }
-.cn-banner-pitch {
-  font-size: 13px;
-  color: var(--c-text-light);
-}
 /* A white chip on the banner's tint — no outline, matching the banner. */
-.cn-banner-cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-  height: 36px;
-  padding: 0 14px;
-  border: none;
-  border-radius: 8px;
-  background: #ffffff;
-  font-family: inherit;
-  font-size: var(--text-label);
-  font-weight: 800;
-  color: var(--c-text);
-  cursor: pointer;
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 6%);
-}
-.cn-banner-cta:hover {
-  filter: brightness(0.97);
-}
 
 /* More than one app left to link: no partner owns the tint, so the banner goes
    neutral and each app gets its own button. */
 /* The neutral one still needs a ground to read as a banner: #f8f8f8 was a
    hair off white and vanished inside a white card once the outline went. */
-.cn-banner--multi {
-  background: var(--c-gray-150);
-}
-.cn-banner-marks {
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-}
 /* Overlap the marks into a stack — it reads as "your apps", not as a row of
    unrelated logos. Each sits on a ring of the banner's own background. */
 .cn-banner-marks > * {
@@ -619,12 +568,6 @@
 }
 /* Buttons and the dismiss travel as one row, so however narrow the banner gets
    the X stays to the right of the buttons instead of dropping below them. */
-.cn-banner-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
-}
 .cn-banner-ctas {
   display: flex;
   align-items: center;

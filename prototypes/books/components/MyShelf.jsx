@@ -26,7 +26,7 @@ export function MyShelf({ shelf, onOpen, onWish, onDiscover }) {
           </span>
           <h2>Your shelf is empty</h2>
           <p>Tap the bookmark on any book to save it here — to read now or later.</p>
-          <Button variant="primary" onClick={onDiscover} icon={<Icon name="compass" size={16} />}>
+          <Button variant="primary" onClick={onDiscover}>
             Browse Discover
           </Button>
         </div>

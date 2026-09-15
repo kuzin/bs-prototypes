@@ -1,108 +1,17 @@
 /* ─── One challenge, from the reader's side ─────────────────────────────────
-   `programs/_program_header.html.haml` + `_show.html.haml`. */
-
-/* ─── The header ────────────────────────────────────────────────────────────
-   `_program_header.html.haml` in full. Two tinted bands, the taller one ending
-   in a downward curve; the banner floats over them on a rounded card, pulled
-   up into the bands; and the page ground curves back up behind the title. The
-   bands are the banner's own dominant colour blended with white (40% on the
-   tall one, 20% behind it) — the app samples that with ColorThief, we carry it
-   on the challenge as `tint`. */
-
-.cp-header {
-  position: relative;
-}
-/* Full-bleed, but only inside the reader shell — the negative margins cancel
-   `.wa-main`'s top padding and `.wa-main-inner`'s sides, and anywhere else (the
-   Pattern Library's frame) they would just tear the header out of it. */
-.wa-main .cp-header {
-  width: 100vw;
-  margin-top: -24px;
-  margin-inline: calc(50% - 50vw);
-}
-
-.cp-bar-strong {
-  position: relative;
-  width: 100%;
-  height: 157px;
-}
-/* The lip: a band of the same colour with its bottom corners rounded right
-   off, which is what gives the header its curve. */
-.cp-bar-strong::after {
-  content: '';
-  position: absolute;
-  top: 130px;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  height: 40px;
-  background-color: inherit;
-  border-bottom-right-radius: 50%;
-  border-bottom-left-radius: 50%;
-}
-.cp-bar-pale {
-  position: absolute;
-  top: 150px;
-  z-index: 0;
-  width: 100%;
-  height: 60px;
-}
-
-.cp-header-info {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  max-width: 480px;
-  padding: 0 50px;
-  margin: -100px auto 0;
-  text-align: center;
-}
-/* The page ground, curving up to meet the title. */
-.cp-header-info::before {
-  content: '';
-  position: absolute;
-  top: 185px;
-  z-index: 1;
-  display: block;
-  width: 100%;
-  height: 40px;
-  background: #fff;
-  border-top-left-radius: 50%;
-  border-top-right-radius: 50%;
-}
-.cp-header-info img {
-  position: relative;
-  z-index: 10;
-  width: auto;
-  max-width: 480px;
-  max-height: 280px;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.07);
-}
-.cp-title {
-  position: relative;
-  z-index: 10;
-  margin-top: 32px;
-  font-size: 28px;
-  font-weight: 800;
-  line-height: 1.2;
-  color: var(--c-text-dark);
-}
-.cp-dates {
-  position: relative;
-  z-index: 10;
-  margin-top: 8px;
-  font-size: 16px;
-  line-height: 1.5;
-  color: var(--c-text-light);
-}
+   `programs/_show.html.haml`. The header above it is the shared
+   `ProgramHeader` — the fundraiser wears the same one. */
 
 .cp-head {
-  padding-top: 22px;
+  padding-top: 34px;
 }
+/* The reading log's subnav shape — the plain pill, centred on the page, on a
+   rule. The strip sits under a header that is already a band of colour, so it
+   takes the rule and leaves the ground alone. */
 .cp-tabs {
+  display: flex;
+  justify-content: center;
+  padding-bottom: 18px;
   border-bottom: 1px solid var(--c-border);
 }
 
@@ -113,138 +22,55 @@
   margin-top: 30px;
 }
 .cp-h2 {
+  margin-bottom: 18px;
   font-size: 20px;
   font-weight: 800;
   color: var(--c-text-dark);
 }
-/* `p.challenge-subhead` — 14px bold grey under a section heading. */
-.cp-subhead {
-  margin-top: 3px;
-  margin-bottom: 18px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--c-text-light);
-}
-.cp-empty {
-  padding: 24px 0;
-  font-size: 14.5px;
-  color: var(--c-text-light);
-}
 
 /* ─── Overview ───────────────────────────────────────────────────────────── */
 
-.cp-types {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
-}
+/* The description runs the page. A measure makes sense in a column beside
+   something; here there is nothing beside it, and a 72ch line left the block
+   looking like it had been cut short. */
 .cp-description {
-  max-width: 72ch;
   font-size: 15.5px;
   line-height: 1.6;
   color: var(--c-text);
 }
-.cp-started {
-  display: inline-flex;
-  gap: 7px;
-  align-items: center;
-  margin-top: 14px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--c-text-light);
-}
 
-.cp-goals {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(232px, 1fr));
-  gap: 14px;
-  margin: 18px 0 0;
-  padding: 0;
-  list-style: none;
+/* The list was a bare `ul`, so it wore the browser's own 40px indent and its
+   rows sat flush against each other. It is the page's other lists — the
+   reading list and the drawings — which are a column with a 12px gap. */
+.cp-rewardfilters {
+  margin-bottom: 18px;
 }
-.cp-goal {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 16px 18px;
-  background: #fff;
-  border: 1px solid var(--c-border);
-  border-radius: 14px;
-}
-.cp-goal-ring {
-  position: relative;
-  display: grid;
-  flex: none;
-  place-items: center;
-  width: 58px;
-  height: 58px;
-}
-.cp-goal-ring svg {
-  position: absolute;
-  inset: 0;
-  fill: none;
-  transform: rotate(-90deg);
-}
-.cp-goal-track {
-  stroke: var(--c-gray-200);
-  stroke-width: 9;
-}
-.cp-goal-fill {
-  stroke: var(--c-blue);
-  stroke-width: 9;
-  stroke-linecap: round;
-}
-.cp-goal.is-done .cp-goal-fill {
-  stroke: #0f7a55;
-}
-.cp-goal-pct {
-  font-size: 13px;
-  font-weight: 900;
-  color: var(--c-text-dark);
-}
-.cp-goal-copy {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-.cp-goal-label {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--c-text-light);
-}
-.cp-goal-num {
-  font-size: 19px;
-  font-weight: 900;
-  color: var(--c-text-dark);
-}
-.cp-goal-num em {
-  font-size: 14px;
-  font-style: normal;
-  font-weight: 700;
-  color: var(--c-gray-600);
-}
-
-/* ─── Rewards ────────────────────────────────────────────────────────────── */
-
 .cp-rewards {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin: 0;
+  gap: 12px;
   padding: 0;
+  margin: 0;
   list-style: none;
 }
+
 .cp-reward {
   display: flex;
   flex-wrap: wrap;
   gap: 14px;
+  /* Per flex line: the mark, the copy and the status centre on each other, and
+     the instructions take the line under them. Top-aligned it was set for the
+     instructions living in the middle column, which they no longer do. */
   align-items: center;
   padding: 16px 18px;
   background: #fff;
   border: 1px solid var(--c-border);
   border-radius: 14px;
+}
+/* A reward nobody can redeem any more reads as spent, not as something still
+   to aim at. */
+.cp-reward.is-unavailable {
+  background: var(--c-gray-50);
 }
 .cp-reward-mark {
   display: grid;
@@ -260,6 +86,10 @@
   color: #0f7a55;
   background: #e6f6ee;
 }
+.cp-reward.is-unavailable .cp-reward-mark {
+  color: #b91c1c;
+  background: #fdeaea;
+}
 .cp-reward-copy {
   display: flex;
   flex: 1;
@@ -268,8 +98,9 @@
   min-width: 0;
 }
 .cp-reward-name {
-  font-size: 15.5px;
+  font-size: 16px;
   font-weight: 800;
+  line-height: 1.3;
   color: var(--c-text-dark);
 }
 .cp-reward-detail {
@@ -277,44 +108,872 @@
   color: var(--c-text-light);
 }
 .cp-reward-at {
+  display: inline-flex;
   flex: none;
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--c-gray-600);
 }
-.cp-reward.is-earned .cp-reward-at {
-  color: #0f7a55;
+/* The one action a reward row can carry — a certificate's Print. */
+.cp-reward-action {
+  display: inline-flex;
+  flex: none;
+}
+
+/* `.reward-instructions` — what to do about a reward you have, under a heading
+   of its own, because the description is how you claim it rather than what it
+   is. */
+.cp-reward-inst {
+  flex-basis: 100%;
+  padding-top: 10px;
+  margin-top: 2px;
+  border-top: 1px solid var(--c-border);
+}
+.cp-reward-inst h4 {
+  font-size: 11.5px;
+  font-weight: 900;
+  color: var(--c-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.cp-reward-inst p {
+  margin-top: 3px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--c-text);
+}
+
+/* The Book Machine's own card — it isn't an instruction, it's a door. */
+.cp-reward-machine {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+  margin-top: 12px;
+  background: #fff8e8;
+  border: 1px solid #f3dca6;
+  border-radius: 12px;
+}
+.cp-reward-machine-art {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  color: #8a5a06;
+  background: #fdf0d8;
+  border-radius: 999px;
+}
+.cp-reward-machine-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 140px;
+}
+.cp-reward-machine-copy strong {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: #8a5a06;
+}
+.cp-reward-machine-copy span {
+  font-size: 13.5px;
+  color: var(--c-text);
 }
 
 @media (max-width: 560px) {
-  .cp-bar-strong {
-    height: 110px;
-  }
-  .cp-bar-strong::after {
-    top: 83px;
-  }
-  .cp-bar-pale {
-    top: 103px;
-    height: 40px;
-  }
-  .cp-header-info {
-    padding: 0 24px;
-    margin-top: -38px;
-  }
-  .cp-header-info::before {
-    top: 128px;
-  }
-  .cp-header-info img {
-    max-width: 100%;
-    max-height: 220px;
-  }
-  .cp-title {
-    font-size: 24px;
-  }
-  .cp-goals {
-    grid-template-columns: minmax(0, 1fr);
-  }
   .cp-reward-at {
     flex-basis: 100%;
+  }
+}
+
+.cp-listnote,
+.cp-endednote,
+.cp-listfilters {
+  margin-bottom: 18px;
+}
+
+/* ─── Reading List ───────────────────────────────────────────────────────────
+   A `book_list` challenge's own shelf: the titles it asks you to read. */
+/* A section heading with a way past it — "View All Badges" opposite. The h2
+   gives its own bottom margin to the row, so the two stay on one line. */
+.cp-sectionhead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.cp-sectionhead .cp-h2 {
+  margin-bottom: 0;
+}
+
+/* `.section-header--reading-list` + `p.challenge-subhead`. */
+.cp-listhead {
+  margin-top: 28px;
+}
+.cp-listhead .cp-h2 {
+  margin-bottom: 0;
+}
+.cp-subhead {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+
+.cp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+}
+.cp-listbook {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  padding: 16px 18px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+/* The cover is the way into the book, the same as it is on the site's own Book
+   Lists page — this is the same row doing the same job. */
+.cp-listbook-cover {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 58px;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+/* `.completed-checkmarker-wrapper` — the app rings the cover of a title you
+   have finished, which is the one thing this list couldn't tell you. */
+.cp-listbook-check {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  display: grid;
+  place-items: center;
+  color: #0f7a55;
+  background: #fff;
+  border-radius: 999px;
+}
+.cp-listbook-meta {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-start;
+  min-width: 0;
+}
+.cp-listbook-title {
+  padding: 0;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--c-text-dark);
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.cp-listbook-title:hover {
+  text-decoration: underline;
+}
+.cp-listbook-author {
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+/* Its own line under the author: where the book lives is a different fact from
+   who wrote it, and on one line the logo read as part of the name. */
+.cp-listbook-partner {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.cp-listbook-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+/* A finished title stays on the list — the app leaves it there with its mark —
+   but it stops competing with the ones still to read. */
+.cp-listbook.is-done {
+  background: var(--c-gray-50);
+}
+
+@media (max-width: 560px) {
+  .cp-listbook {
+    flex-wrap: wrap;
+  }
+  .cp-listbook-actions {
+    flex-basis: 100%;
+  }
+}
+
+/* The two figures over the list, on the page's own stat tile. */
+.cp-ticketnums {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+/* ─── Ticket drawings ────────────────────────────────────────────────────────
+   `ticket_rewards/_ticket_rewards`. Cards, because the prize has a picture and
+   the picture is most of what a drawing is. */
+.cp-drawings {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(288px, 100%), 1fr));
+  gap: 16px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.cp-drawing {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.cp-drawing.is-ended {
+  background: var(--c-gray-50);
+}
+/* The picture and what it is are one hit area — that whole part of the card is
+   the drawing. The button at the foot is its own. */
+.cp-drawing-open {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+
+.cp-drawing-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 176px;
+  overflow: hidden;
+  color: var(--c-gray-500);
+  background: var(--c-gray-100);
+}
+.cp-drawing-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+/* `.ticket-reward__image.ended` — the app desaturates a prize nobody can win
+   any more with its own `#grayscale` filter. */
+.cp-drawing.is-ended .cp-drawing-art img {
+  filter: saturate(0.1);
+}
+/* The closing date rides the picture. Above the title it read as the card's
+   heading, which is the one thing it isn't. */
+.cp-drawing-when {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgb(24 24 27 / 72%);
+  border-radius: 999px;
+  backdrop-filter: blur(3px);
+}
+.cp-drawing.is-ended .cp-drawing-when {
+  background: rgb(153 27 27 / 82%);
+}
+
+.cp-drawing-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px 10px;
+}
+.cp-drawing-title {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+.cp-drawing-desc {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: var(--c-text-light);
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+}
+
+/* What you have in it, and the one thing you can do about it, on one line —
+   the count is a label and the button is the action, so they read as a pair
+   rather than a stack. They wrap to two lines on a card too narrow for both. */
+.cp-drawing-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px 16px;
+}
+.cp-drawing-btn {
+  flex: none;
+}
+.cp-drawing-expired {
+  flex-basis: 100%;
+}
+
+/* ─── The drawing, opened ────────────────────────────────────────────────────
+   `_ticket_rewards_modal_overview`. The prize at size over what it is. */
+/* The wrapper that holds the date chip over the picture. `.modal-image` gets
+   its top corners from `inherit`, so the wrapper has to carry them — otherwise
+   it inherits a 0 from the span and the photo sits proud of the rounded modal.
+   (`closeBadge` turns the modal's own clipping off, which is what exposes it.) */
+.cp-dw-art {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+.modal-image.is-ended {
+  filter: saturate(0.1);
+}
+.cp-dw-title {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+.cp-dw-text {
+  margin-top: 8px;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--c-text);
+}
+.cp-dw-link {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* How many of your tickets are in it — the figure the modal is here to change,
+   so it sits on the ticket's own amber rather than a grey block. */
+.cp-dw-tickets {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 14px;
+  margin-top: 16px;
+  background: #fdf0d8;
+  border-radius: 12px;
+}
+.cp-dw-ticketmark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: #b45309;
+  background: #fff;
+  border-radius: 999px;
+}
+.cp-dw-count {
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  color: #b45309;
+}
+.cp-dw-countlbl {
+  font-size: 14px;
+  font-weight: 800;
+  color: #8a5a06;
+}
+
+/* The app's own confirmation: a mark, what changed, and what is left. */
+.cp-dwdone {
+  padding: 30px 22px 24px;
+  text-align: center;
+}
+.cp-dwdone-mark {
+  display: inline-flex;
+  color: #207a48;
+}
+.cp-dwdone-title {
+  margin-top: 12px;
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+.cp-dwdone-sub {
+  margin-top: 4px;
+  font-size: 14.5px;
+  color: var(--c-text-light);
+}
+
+@media (max-width: 560px) {
+  .cp-drawing-side {
+    flex-basis: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.cp-ticketbody {
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+/* ─── The certificate itself ─────────────────────────────────────────────────
+   `programs/earned_certificate` — the page the app opens and prints. Its own
+   furniture: the heavy grey border, the title over the orange ribbon, the
+   badge, and the signature row. */
+/* A certificate is a landscape sheet, so the modal is one — the centred
+   default is 520px, which folded the signature row onto two lines. */
+.cp-certmodal {
+  width: min(760px, calc(100vw - 32px));
+}
+/* `closeBadge` turns the modal's clipping off so the disc can overhang, and a
+   square-cornered body then sits proud of the rounded edge. The body is the
+   first child, so it carries the top corners. */
+.cp-certbody {
+  padding: 18px;
+  background: var(--c-gray-100);
+  border-top-left-radius: inherit;
+  border-top-right-radius: inherit;
+}
+/* Landscape letter — 11 × 8.5 — with the content spread down it the way the
+   print page spreads it (`justify-content: space-evenly`). */
+.cp-cert {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  justify-content: space-evenly;
+  aspect-ratio: 11 / 8.5;
+  padding: 22px;
+  text-align: center;
+  background: #fff;
+  border: 10px solid #e0e0e0;
+}
+.cp-cert-ribbon {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+}
+.cp-cert-ribbon img {
+  display: block;
+  width: 100%;
+}
+/* `#f2f2f2` with an orange shadow, sitting a third of the way down the ribbon
+   — the app's own placement. */
+.cp-cert-ribbon h2 {
+  position: absolute;
+  top: 32%;
+  left: 50%;
+  width: 100%;
+  padding: 0 24px;
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.15;
+  color: #f2f2f2;
+  text-shadow: 1px 1px orange;
+  transform: translate(-50%, -50%);
+}
+.cp-cert-body {
+  max-width: 44ch;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #424242;
+  text-shadow: 1px 1px #e0e0e0;
+}
+.cp-cert-badge {
+  width: 104px;
+}
+.cp-cert-sigs {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.cp-cert-sigs span {
+  width: 108px;
+  padding-top: 6px;
+  font-size: 13.5px;
+  font-style: italic;
+  color: #424242;
+  border-top: 2px solid #000;
+}
+.cp-cert-sigs img {
+  width: 54px;
+}
+
+/* ─── The bingo card ─────────────────────────────────────────────────────────
+   `.bingo-grid` in microsite/_programs.scss, transcribed. The Sass values it
+   resolves: `$light-gray` is `lighten(#000, 88%)` = `#e0e0e0`,
+   `darken($light-gray, 20%)` = `#adadad`, `$jade` = `#0ba85f`, `$pastelGreen`
+   = `#dbf2e7`, `$lightestGray` = `#f2f2f2`, and the description's
+   `lighten($text-color-medium, 10%)` = `#5c5c5c`. */
+.cp-bingo {
+  display: grid;
+  grid-auto-rows: min-content;
+  gap: 16px;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0;
+  margin: 22px auto 0;
+  list-style: none;
+  transition: all 0.2s ease;
+}
+.cp-bingo--3 {
+  grid-template-columns: repeat(3, minmax(10px, 250px));
+}
+.cp-bingo--4 {
+  grid-template-columns: repeat(4, minmax(10px, 250px));
+}
+.cp-bingo--5 {
+  grid-template-columns: repeat(5, minmax(10px, 250px));
+}
+/* `.bingo-item` — the cell, so the ribbon tabs have something to hang off. */
+.cp-bingo > li {
+  position: relative;
+  height: 100%;
+}
+
+/* `.bingo-grid-item` */
+.cp-square {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  margin: 0;
+  font: inherit;
+  text-align: center;
+  cursor: pointer;
+  background: #f5f5f5;
+  border: 2px solid #eaeaea;
+  border-radius: 16px;
+  transform: scale(1);
+  transition: transform 0.2s ease;
+}
+.cp-square:hover {
+  transform: scale(1.02);
+}
+
+/* `&.earned` — off the grey onto white with a soft shadow, and no border. */
+.cp-square.is-earned {
+  background: #fff;
+  border: none;
+  box-shadow: 0 2px 14px 0 rgb(0 0 0 / 9%);
+}
+/* `&.bingo` — the pastel green, no shadow, no border; its description goes
+   jade and so does the rule above it. */
+.cp-square.is-bingo {
+  background: #dbf2e7;
+  border: none;
+  box-shadow: none;
+}
+.cp-square.is-bingo .cp-square-text {
+  color: #0ba85f;
+}
+.cp-square.is-bingo .cp-square-text::before {
+  background: rgb(11 168 95 / 20%);
+}
+/* `&.unavailable` */
+.cp-square.is-unavailable .cp-square-text {
+  color: #e0e0e0;
+}
+
+/* `.badge-image` — a 4px `#e0e0e0` circle round the art, going jade the moment
+   the badge is earned. The img fills it: the badge is a 325px thumb, so the
+   stamp is most of the cell. */
+.cp-square-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(100% - 28px);
+  aspect-ratio: 1;
+  margin: 0 14px 8px;
+  border: 4px solid #e0e0e0;
+  border-radius: 100%;
+}
+.cp-square-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 4px solid transparent;
+  border-radius: inherit;
+}
+.cp-square.is-earned .cp-square-art,
+.cp-square.is-bingo .cp-square-art {
+  border-color: #0ba85f;
+}
+.cp-square.is-earned .cp-square-art img {
+  background: transparent;
+}
+.cp-square.is-bingo .cp-square-art img {
+  background: #fff;
+}
+/* `.badge-check` in `earnables/_earnable_modal`, on the square too: a jade tick
+   punched out of the badge's rim at four o'clock. The percentages keep it on
+   the circle as the squares shrink. */
+.cp-square-check {
+  position: absolute;
+  right: 6%;
+  bottom: 6%;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: #fff;
+  background: #0ba85f;
+  border: 4px solid #fff;
+  border-radius: 100%;
+}
+
+/* `img:not(.earned-badge) { opacity: 30% }` — the app ships a grayed file per
+   badge; we ship one, so the grey is a filter over it. */
+.cp-square:not(.is-earned):not(.is-bingo) .cp-square-art img {
+  opacity: 0.3;
+}
+.cp-square.is-unavailable .cp-square-art img {
+  opacity: 0.1;
+}
+/* `.badge-unavailable` — 80% of the square, over everything. */
+.cp-square-lock {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 80%;
+  height: 80%;
+  color: #adadad;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+.cp-square-lock svg {
+  width: 56%;
+  height: 56%;
+}
+
+/* `.badge-description` — what the square asks of you, under a rule a quarter of
+   the square wide. The app sets it 16/900: the requirement *is* the square, so
+   it reads as the heavy hand-lettered text on a bingo square rather than a
+   caption under the badge. */
+.cp-square-text {
+  position: relative;
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 16px 0 0;
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.31;
+  color: #5c5c5c;
+  text-align: center;
+}
+/* The words are their own box only so a phone can clamp them; everywhere else
+   they are just the text. */
+.cp-square-words {
+  display: contents;
+}
+.cp-square-text::before {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 25%;
+  height: 3px;
+  margin-left: -12.5%;
+  content: '';
+  background: #e0e0e0;
+  border-radius: 3px;
+}
+
+/* `.badge-title` — the badge's own name, under what the square asks.
+
+   The app gives this `flex: auto`, so it swallows whatever height the row has
+   over this square's own and the name ends up stranded in the middle of a field
+   of white. The requirement above it already has `flex: 1`; letting that take
+   all the slack keeps the badges aligned across a row, centres the requirement
+   in the space it has, and leaves the name sitting on the square's foot. */
+.cp-square-title {
+  flex: none;
+  width: 100%;
+  padding: 4px 16px 8px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+  color: #656565;
+  text-align: center;
+}
+
+/* `.badge-receivables` — one chip per thing the badge pays out, in the app's own
+   pastels. The app hangs them off the square's right edge on little ribbons,
+   which reads as a banner stuck to the corner; tucked inside the corner instead
+   they are the same information as a quiet mark on the square. */
+.cp-square-marks {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: center;
+}
+.cp-mark {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+}
+.cp-mark--ticket {
+  color: #f5a208;
+  background: #ffecc8;
+}
+.cp-mark--reward {
+  color: #b43dd0;
+  background: #f4e2f8;
+}
+.cp-mark--certificate {
+  color: #196dd5;
+  background: #dde9f9;
+}
+
+@media (max-width: 1000px) {
+  .cp-bingo {
+    gap: 8px;
+  }
+  .cp-square {
+    padding: 12px;
+  }
+  /* The app drops the rule and the badge's margins here. */
+  .cp-square-text {
+    padding: 0;
+    margin: 0 0 8px;
+    font-size: 14px;
+  }
+  .cp-square-text::before {
+    display: none;
+  }
+  .cp-square-title {
+    display: none;
+  }
+  .cp-square-check {
+    width: 22px;
+    height: 22px;
+    border-width: 3px;
+  }
+  .cp-square-marks {
+    top: 6px;
+    right: 6px;
+    gap: 4px;
+  }
+  .cp-mark {
+    width: 22px;
+    height: 22px;
+  }
+}
+
+@media (max-width: 560px) {
+  /* `$small-only`: the badge art goes and the description fills the square —
+     five across gives each one about 60px — and an earned or bingo square gets
+     the jade back as its own border, since it has no badge ring left to carry
+     it. */
+  /* Every cell a square. The app's `min-content` rows are for squares with a
+     badge in them; with only words left they made a ragged card of five
+     different row heights. Each cell takes its height from its own width
+     instead, and since the columns are equal the whole card is a regular grid
+     of squares — which is what a bingo card is. */
+  .cp-bingo > li {
+    height: auto;
+    aspect-ratio: 1;
+  }
+  .cp-square {
+    padding: 6px;
+    border-radius: 8px;
+  }
+  .cp-square.is-earned,
+  .cp-square.is-bingo {
+    border: 2px solid #0ba85f;
+  }
+  .cp-square-art {
+    display: none;
+  }
+  /* A fixed cell can't grow to fit the words, so the words are clamped to what
+     fits and the rest is an ellipsis — the square opens the badge, which states
+     the requirement in full. `flex: none` hands the centring back to the
+     square's own `justify-content`. The size tracks the cell rather than
+     sitting at a pixel, the way the app's own `2.5vw` does. */
+  .cp-square-text {
+    display: block;
+    flex: none;
+    width: 100%;
+    margin: 0;
+    font-size: clamp(9px, 2.4vw, 13px);
+    line-height: 1.25;
+  }
+  /* The clamp has to sit inside the flex item, not on it: a flex item is
+     blockified and `-webkit-box` goes with it, so the ellipsis never rendered.
+     Its parent is a block here, which leaves the box alone. */
+  .cp-square-words {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+  /* A 60px cell has no room for a chip with a glyph in it, and three of them
+     would cover the words. What the reader needs here is only that there *is*
+     something on this square, so each one is a dot in its own colour — the
+     modal names them. */
+  .cp-square-marks {
+    top: 5px;
+    right: 5px;
+    gap: 3px;
+  }
+  .cp-mark {
+    width: 7px;
+    height: 7px;
+    background: currentcolor;
+    border-radius: 999px;
+  }
+  .cp-mark svg {
+    display: none;
   }
 }

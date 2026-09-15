@@ -2,62 +2,70 @@
    A modal, opened from the Friends grid or a leaderboard row. Book Discovery
    drew this first; this is the same anatomy on the shared parts. */
 
-/* The centered Modal is 520px — a profile with three stat tiles needs more. */
+/* The centered Modal is 520px — the app's own friend modal is 480, but our
+   challenge cards go two across inside it and the earned strips want the run. */
 .modal--center:has(.fp) {
   width: min(640px, calc(100vw - 32px));
+  /* A defined height, not one that follows the tab: Overview is a long tab and
+     Challenges a short one, and sizing to content made the modal jump — and
+     move under the pointer — on every tab change. `max-height` still shortens
+     it on a small window; the body scrolls inside whatever is left. */
+  height: 720px;
+  display: flex;
 }
 
 .fp {
   position: relative;
   display: flex;
   flex-direction: column;
-  max-height: calc(100vh - 40px);
+  /* The Modal owns the height; the shell fills it and its body scrolls —
+     `.friend-modal-wrapper`. */
+  flex: 1;
+  min-height: 0;
   background: #fff;
-}
-.fp-close {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  z-index: 2;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  color: #fff;
-  cursor: pointer;
-  background: rgba(0, 0, 0, 0.25);
-  border: 0;
-  border-radius: 999px;
-}
-.fp-close:hover {
-  background: rgba(0, 0, 0, 0.4);
+  /* The modal turns `overflow: visible` to let the close badge hang past its
+     corner, so the shell has to round and clip its own — the colour band runs
+     edge to edge. */
+  overflow: hidden;
+  border-radius: 14px;
 }
 
-/* The friend's own colour as a band, with the avatar hanging over it — the
-   same shape their card in the grid has. */
+/* ─── Header ──────────────────────────────────────────────────────────────
+   `.friend-modal-header`: the friend's colour corner to corner, the scalloped
+   curve under it, the avatar hung over both, and the tabs inside the header on
+   its own near-white ground. Nothing here is inset — the band is the modal's
+   full width, which is what makes it read as the app's. */
 .fp-head {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 24px 18px;
   text-align: center;
+  padding-bottom: 0;
+  background: var(--c-gray-0);
+  border-bottom: 1px solid var(--c-border);
 }
 .fp-band {
+  width: 100%;
+  height: 96px;
+}
+.fp-curve {
   display: block;
   width: 100%;
-  height: 84px;
-  margin-bottom: -44px;
+  height: 34px;
 }
+/* Hung over the curve the way `.friend-image` is, on the header's ground
+   rather than white so the ring disappears into it. */
 .fp-avatar {
-  width: 88px;
-  height: 88px;
-  font-size: 29px;
-  border: 4px solid #fff;
+  width: 112px;
+  height: 112px;
+  margin-top: -84px;
+  font-size: 34px;
+  border: 7px solid var(--c-gray-0);
   border-radius: 999px;
-  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
 }
 .fp-name {
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 22px;
   font-weight: 800;
   color: var(--c-text-dark);
@@ -67,66 +75,70 @@
   font-size: 13.5px;
   color: var(--c-text-light);
 }
-
-.fp-stats {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 10px;
-  padding: 0 24px;
-}
-
+/* The tabs are the last row of the header, so the header's own border is the
+   rule they sit on — `.friend-modal-tabs`, `margin-top: 12px; padding: 0 24px`. */
 .fp-tabs {
+  align-self: stretch;
+  margin-top: 14px;
   padding: 0 24px;
-  margin-top: 18px;
-  border-bottom: 1px solid var(--c-border);
+  /* The app's `.border-tabs` carries no rule of its own here — the header's
+     border is the one under them, and it runs the full width. */
+  border-bottom: 0;
 }
+
 .fp-body {
   flex: 1;
   padding: 0 24px 24px;
   overflow-y: auto;
-}
-.fp-empty {
-  padding: 32px 0;
-  font-size: 14.5px;
-  color: var(--c-text-light);
-  text-align: center;
-}
-
-/* A modal is not a page: the shelf head scales down to a section heading, and
-   the cards go two across rather than taking the shelf's own 268px track. */
-.fp-body {
+  /* A modal is not a page: the shelf head scales down to a section heading. */
   --wa-pagehead-h: 32px;
-  --wa-pagehead-margin: 20px 0 12px;
+  --wa-pagehead-margin: 22px 0 12px;
   --wa-pagehead-size: 17px;
 }
-.fp-body .co-grid {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+/* ─── Earned badges and achievements ─────────────────────────────────────
+   The app's `.badges-container` is a row of badge thumbnails, so this is a
+   strip rather than a wall of cards — the name under the art, the rest on the
+   tooltip. It scrolls sideways when a reader has more than fits. */
+
+/* The strip of earned things — the shared `CollectionCard` at `sm`, in a row
+   that scrolls rather than a grid that wraps: this is a modal with four other
+   sections under it, and a shelf here would be the whole of it. */
+.fp-strip {
+  display: flex;
+  gap: 12px;
+  padding-bottom: 6px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.fp-strip .co-card {
+  flex: 0 0 148px;
+}
+
+/* ─── Statistics ─────────────────────────────────────────────────────────
+   `.friend-modal-stat-blocks` — a column, one figure per row. `StatCard` is
+   already the app's stat-block shape (icon left, figure over label), so it just
+   takes the full width. */
+
+.fp-stats {
+  display: flex;
+  flex-direction: column;
   gap: 12px;
 }
-.fp-body .co-card {
-  padding-top: 18px;
-}
-.fp-body .co-card-art {
-  width: 76px;
-  height: 76px;
-}
-.fp-body .co-card-name {
-  margin-top: 12px;
-  font-size: 15px;
-}
-.fp-body .co-card-blurb {
-  margin-top: 6px;
-  font-size: 13px;
-}
-.fp-body .co-card-foot {
-  padding: 11px 0;
-  margin-top: 16px;
-  font-size: 12.5px;
+
+/* ─── Challenges ─────────────────────────────────────────────────────────
+   `ChallengeCard`, the same card the reader sees on their own Challenges page.
+   The app stacks them full-width in a 480px modal; ours pair up. */
+
+.fp-challenges {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 18px;
 }
 
-/* ─── Challenges ─────────────────────────────────────────────────────────── */
+/* ─── Their log ──────────────────────────────────────────────────────────── */
 
-.fp-challenges,
 .fp-log {
   display: flex;
   flex-direction: column;
@@ -135,40 +147,6 @@
   padding: 0;
   list-style: none;
 }
-.fp-challenge {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  overflow: hidden;
-  background: #fff;
-  border: 1px solid var(--c-border);
-  border-radius: 12px;
-}
-.fp-challenge-art {
-  flex: none;
-  width: 120px;
-  height: 58px;
-  object-fit: cover;
-}
-.fp-challenge-meta {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  padding-right: 14px;
-}
-.fp-challenge-meta strong {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--c-text-dark);
-}
-.fp-challenge-meta span {
-  font-size: 13px;
-  color: var(--c-text-light);
-}
-
-/* ─── Their log ──────────────────────────────────────────────────────────── */
-
 .fp-log-row {
   display: flex;
   gap: 14px;
@@ -214,14 +192,20 @@
   color: var(--c-text-dark);
 }
 
+/* "View full reading log" — the app's own secondary button under the list. */
+.fp-log-more {
+  width: 100%;
+  margin-top: 12px;
+}
+
 @media (max-width: 560px) {
-  .fp-stats {
+  .fp-challenges {
     grid-template-columns: minmax(0, 1fr);
   }
-  .fp-body .co-grid {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .fp-challenge-art {
-    width: 92px;
+  .fp-avatar {
+    width: 96px;
+    height: 96px;
+    margin-top: -72px;
+    font-size: 30px;
   }
 }

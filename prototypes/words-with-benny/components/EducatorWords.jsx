@@ -171,10 +171,10 @@ export function EducatorWords({ onOpenStudent, written = [] }) {
           className="ew-tabs"
         />
         <div className="ew-head-actions">
-          <Button variant="ghost" size="sm" icon={<Icon name="download" size={15} />}>
+          <Button variant="ghost" size="sm">
             Export
           </Button>
-          <Button variant="ghost" size="sm" icon={<Icon name="printer" size={15} />}>
+          <Button variant="ghost" size="sm">
             Print word wall
           </Button>
         </div>

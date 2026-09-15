@@ -108,12 +108,7 @@ function BadgeDetailModal({ detail, open, onClose, onReplay }) {
         </div>
         <p className="bt-detail-desc">{detail.desc}</p>
         {detail.booktalk && (
-          <Button
-            variant="secondary"
-            size="md"
-            icon={<Icon name="message-chatbot" size={16} />}
-            onClick={onReplay}
-          >
+          <Button variant="secondary" size="md" onClick={onReplay}>
             View conversation
           </Button>
         )}
@@ -247,7 +242,11 @@ export function StudentView({ badge, selfStart = true }) {
             <Button variant="primary" size="sm" onClick={() => setLogOpen(true)}>
               Log Reading and Activities
             </Button>
-            <Button variant="secondary" size="sm" icon={<Icon name="chevron-down" size={13} />}>
+            <Button
+              variant="secondary"
+              size="sm"
+              iconRight={<Icon name="chevron-down" size={13} />}
+            >
               Add Review
             </Button>
           </>
@@ -302,12 +301,7 @@ export function StudentView({ badge, selfStart = true }) {
                   give you every badge our chat earns.
                 </p>
               </div>
-              <Button
-                variant="primary"
-                size="md"
-                icon={<Icon name="message-chatbot" size={16} />}
-                onClick={startSelfTalk}
-              >
+              <Button variant="primary" size="md" onClick={startSelfTalk}>
                 Start a Book Talk
               </Button>
             </div>

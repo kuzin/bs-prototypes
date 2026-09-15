@@ -1,0 +1,214 @@
+/* ─── Peer reviews ───────────────────────────────────────────────────────
+   `microsite#peer_reviews` — other readers' approved reviews. The cards are
+   the reader's own review cards with two things added: whose it is and where
+   they read, and the heart. */
+
+.pr-page {
+  padding-bottom: 8px;
+}
+
+/* Same strip, same room, as the reader's own reviews page next door — with the
+   scope control beside it when the type has one. */
+.pr-types {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 14px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* ─── Written ────────────────────────────────────────────────────────────── */
+
+.pr-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.pr-item {
+  padding: 20px 22px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+/* Title and byline take the room; the heart holds the right edge. */
+.pr-head {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+.pr-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  align-items: baseline;
+  min-width: 0;
+}
+.pr-booktitle {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+.pr-booktitle a {
+  color: inherit;
+  text-decoration: none;
+}
+.pr-booktitle a:hover {
+  text-decoration: underline;
+}
+.pr-author {
+  font-size: 15px;
+  color: var(--c-text-light);
+}
+/* The whole byline on its own line — "Written by Noah K., Magnolia Middle on
+   Jun 11" is a sentence, and wrapping it mid-name read as two facts. */
+.pr-byline {
+  flex-basis: 100%;
+  font-size: 13px;
+  color: var(--c-text-light);
+}
+.pr-body {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+.pr-more {
+  padding: 0;
+  font: inherit;
+  font-weight: 800;
+  color: var(--c-accent);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.pr-more:hover {
+  text-decoration: underline;
+}
+
+/* ─── Picture ────────────────────────────────────────────────────────────── */
+
+.pr-picgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+  gap: 20px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.pr-pic {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+/* A button, because it opens the review — reset the chrome it brings. */
+.pr-pic-art {
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+  border: 0;
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  color: rgb(255 255 255 / 70%);
+}
+.pr-pic-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 16px 18px 14px;
+}
+.pr-pic-title {
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--c-text-dark);
+}
+.pr-pic-for {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 8px;
+  font-size: 13.5px;
+  color: var(--c-text-light);
+}
+.pr-pic-for strong {
+  font-size: 14.5px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+.pr-pic-by {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--c-text-light);
+}
+.pr-pic-foot {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 10px 18px;
+  margin-top: auto;
+  border-top: 1px solid var(--c-border);
+}
+/* Both sides of the strip on one line, at the heart button's own height. */
+.pr-pic-foot > * {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+}
+.pr-pic-date {
+  font-size: 12.5px;
+  color: var(--c-text-light);
+}
+
+/* ─── Heart ──────────────────────────────────────────────────────────────
+   `hearts/_button` — the only thing a reader can do to somebody else's
+   review, and in the app it is picture-reviews only. */
+.pr-heart {
+  display: inline-flex;
+  flex: none;
+  gap: 6px;
+  align-items: center;
+  height: 30px;
+  padding: 0 11px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-text-light);
+  cursor: pointer;
+  background: var(--c-gray-0);
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+}
+.pr-heart:hover {
+  color: #dc493a;
+  border-color: #f0a79c;
+}
+.pr-heart.is-on {
+  color: #dc493a;
+  background: #fdecea;
+  border-color: #f0a79c;
+}
+
+/* ─── Pagination ─────────────────────────────────────────────────────────── */
+
+.pr-pages {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  margin-top: 22px;
+}
+.pr-pages-count {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}

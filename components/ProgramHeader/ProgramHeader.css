@@ -1,0 +1,161 @@
+/* ─── Program header ─────────────────────────────────────────────────────────
+   `programs/_program_header.html.haml` in full. See ProgramHeader.jsx for what
+   the two bands are and where the colour comes from. */
+
+.prog-header {
+  position: relative;
+}
+/* Full-bleed, but only inside the reader shell — the negative margins cancel
+   `.wa-main`'s top padding and `.wa-main-inner`'s sides, and anywhere else (the
+   Pattern Library's frame) they would just tear the header out of it. */
+.wa-main .prog-header {
+  width: 100vw;
+  margin-top: -24px;
+  margin-inline: calc(50% - 50vw);
+}
+
+/* Over the band, but lined up with the page under it: the header runs the
+   window and the content column doesn't. */
+.prog-back {
+  position: absolute;
+  top: 14px;
+  right: 0;
+  left: 0;
+  z-index: 11;
+  max-width: var(--wa-content-max, 1200px);
+  padding: 0 24px;
+  margin: 0 auto;
+}
+/* The band's own colour taken down to an ink: a grey link on a tinted ground
+   reads as something that was left there rather than part of the header. */
+.prog-back .wa-back {
+  margin: 0;
+  color: color-mix(in srgb, var(--prog-tint, #acacac) 62%, #1c1917);
+}
+.prog-back .wa-back:hover {
+  color: color-mix(in srgb, var(--prog-tint, #acacac) 40%, #1c1917);
+  background: color-mix(in srgb, var(--prog-tint, #acacac) 32%, #fff);
+}
+
+.prog-bar-strong {
+  position: relative;
+  width: 100%;
+  height: 157px;
+}
+/* The lip: a band of the same colour with its bottom corners rounded right
+   off, which is what gives the header its curve. */
+.prog-bar-strong::after {
+  content: '';
+  position: absolute;
+  top: 130px;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 40px;
+  background-color: inherit;
+  border-bottom-right-radius: 50%;
+  border-bottom-left-radius: 50%;
+}
+.prog-bar-pale {
+  position: absolute;
+  top: 150px;
+  z-index: 0;
+  width: 100%;
+  height: 60px;
+}
+
+.prog-header-info {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  max-width: 480px;
+  padding: 0 50px;
+  /* The app pulls this up 100px, which tucks the banner right under the back
+     link riding the band above it. A little less overlap puts air between the
+     two without moving the bands or the curve. */
+  margin: -86px auto 0;
+  text-align: center;
+}
+/* The page ground, curving up to meet the title. */
+.prog-header-info::before {
+  content: '';
+  position: absolute;
+  top: 185px;
+  z-index: 1;
+  display: block;
+  width: 100%;
+  height: 40px;
+  background: #fff;
+  border-top-left-radius: 50%;
+  border-top-right-radius: 50%;
+}
+.prog-header-info img {
+  position: relative;
+  z-index: 10;
+  width: auto;
+  max-width: 480px;
+  max-height: 280px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px 0 rgba(0, 0, 0, 0.07);
+}
+.prog-title {
+  position: relative;
+  z-index: 10;
+  margin-top: 32px;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: var(--c-text-dark);
+}
+.prog-dates {
+  position: relative;
+  z-index: 10;
+  margin-top: 8px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--c-text-light);
+}
+.prog-tags {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 12px;
+}
+
+/* The banner is the header, so it is the header that has to fit a phone —
+   queried on the window because the bands bleed to it. */
+@media (max-width: 560px) {
+  .prog-bar-strong {
+    height: 110px;
+  }
+  .prog-bar-strong::after {
+    top: 83px;
+  }
+  .prog-bar-pale {
+    top: 103px;
+    height: 40px;
+  }
+  .prog-header-info {
+    padding: 0 24px;
+    margin-top: -38px;
+  }
+  .prog-header-info::before {
+    top: 128px;
+  }
+  .prog-header-info img {
+    max-width: 100%;
+    max-height: 220px;
+  }
+  .prog-title {
+    font-size: 24px;
+  }
+  .prog-back {
+    top: 10px;
+    padding: 0 16px;
+  }
+}

@@ -32,20 +32,78 @@ import '@components/Cards/Cards.css'
  * two numbers on the tile and made the eye pick between them. `footer` stays
  * for the things that aren't trends ("79% of the class").
  */
-export function StatCard({ value, unit, label, footer, footerColor, color, icon, trend, action }) {
+/**
+ * The ring a progress figure wears in its tile's icon slot —
+ * `fundraisers/overview/_progress_card`, `programs/_overview_list_goals`.
+ *
+ * It fills the slot it is given, so a caller sizes it by sizing `.rc-stat-ico`.
+ * A drawn graphic rather than a glyph, which is why it is inline SVG: the
+ * percentage *is* the reading, and a number in a footer is not the same thing
+ * as an arc you can take in at a glance.
+ *
+ *   <StatCard icon={<ProgressRing pct={62} />} value="620" unit="/1,000" … />
+ */
+export function ProgressRing({ pct, done = false }) {
+  return (
+    <span className={`rc-ring${done ? ' is-done' : ''}`}>
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <circle className="rc-ring-track" cx="50" cy="50" r="44" />
+        <circle
+          className="rc-ring-fill"
+          cx="50"
+          cy="50"
+          r="44"
+          pathLength="100"
+          strokeDasharray={`${pct} 100`}
+        />
+      </svg>
+      <span className="rc-ring-pct">{pct}%</span>
+    </span>
+  )
+}
+
+export function StatCard({
+  value,
+  unit,
+  label,
+  footer,
+  footerColor,
+  color,
+  icon,
+  trend,
+  action,
+  onClick,
+}) {
   // Explicit `color` wins by setting --rc-stat-color inline. Otherwise the
   // card inherits --rc-accent from the page / enclosing ChartCard via the
   // CSS variable cascade — see .rc-stat in Cards.css. The tile's fill is a light
   // tint of that same one authored hex, so a caller still states one colour.
   const style = color ? { '--rc-stat-color': color } : undefined
+  // A tile that goes somewhere puts the whole card in the button, so the hit
+  // area is the card rather than the four words in it.
+  const Tag = onClick ? 'button' : 'div'
 
   return (
-    <div className="rc-stat" style={style}>
+    <Tag
+      className={`rc-stat${onClick ? ' rc-stat--hit' : ''}`}
+      style={style}
+      type={onClick ? 'button' : undefined}
+      onClick={onClick}
+    >
       {icon && <span className="rc-stat-ico">{icon}</span>}
       <div className="rc-stat-main">
         <div className="rc-stat-val">
           {value}
-          {unit && <span className="rc-stat-unit">{unit}</span>}
+          {unit && (
+            // "3 Days" is a figure and a word, and wants the row's gap. "/40"
+            // is a denominator, and "26 /40" is not a fraction — it closes up
+            // and drops a rung, so the figure stays the figure.
+            <span
+              className={`rc-stat-unit${String(unit).startsWith('/') ? ' rc-stat-unit--denom' : ''}`}
+            >
+              {unit}
+            </span>
+          )}
           {trend && <TrendChip {...trend} />}
         </div>
         <div className="rc-stat-lbl">{label}</div>
@@ -61,7 +119,7 @@ export function StatCard({ value, unit, label, footer, footerColor, color, icon,
           </a>
         )}
       </div>
-    </div>
+    </Tag>
   )
 }
 

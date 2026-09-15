@@ -1,5 +1,11 @@
 // Pattern-library catalog: GROUPS metadata + the assembled SECTIONS list.
 //
+// A group may declare `subs` — an ordered list of sub-groups — and an entry
+// names one with `sub:`. It is the same idea as `group:` one level down, and
+// for the same reason: a group of thirty is a wall you scroll rather than a
+// list you read. Only a group that has outgrown one list needs them; most
+// don't, and a group without `subs` renders exactly as it did.
+//
 // The showcase functions, fixtures, and SECTION entries live in ./sections/*.jsx.
 // A file is just *where the showcase code lives* — the `group:` field on each
 // entry is what decides which group it shows up under, so one file can feed
@@ -66,11 +72,13 @@ import '../admin-dashboard/index.css'
 
 import './App.css'
 
-export function GroupHeader({ title, desc }) {
+// The group page's own header: the name, and nothing under it. The blurb was
+// the same sentence as the group's tile on the home index, read a second time
+// by somebody who has already chosen the group.
+export function GroupHeader({ title }) {
   return (
     <div className="pt-group-header">
       <div className="pt-group-header-title">{title}</div>
-      <div className="pt-group-header-desc">{desc}</div>
     </div>
   )
 }
@@ -178,8 +186,19 @@ export const GROUPS = [
     id: 'web-app',
     kind: 'prototype',
     title: 'Web App',
-    desc: 'The reader-facing chrome — the app bar and reader switcher, the challenge grid, the rail’s goal and leaderboard cards, and the partner-connection kit every integration prototype mounts.',
+    desc: 'The reader-facing app — the chrome every page sits in, the rail beside it, and a section per thing a reader actually does: challenges, reading, people, reviews, and the account behind the gear.',
     color: 'var(--c-orange)',
+    // Named for the reader's own nav wherever there is a tab to name them
+    // after, and for what the thing *is* where there isn't.
+    subs: [
+      { id: 'chrome', title: 'Chrome' },
+      { id: 'rail', title: 'The rail' },
+      { id: 'challenges', title: 'Challenges' },
+      { id: 'reading', title: 'Reading' },
+      { id: 'people', title: 'People' },
+      { id: 'reviews', title: 'Reviews' },
+      { id: 'account', title: 'Account & reading apps' },
+    ],
   },
   {
     id: 'ris',

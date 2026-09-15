@@ -66,12 +66,7 @@ export function AskBenny({ onOpen, onWish, wishlist }) {
             />
             {/* The brand's teal, not the page's action blue — this is Benny's
                 panel, and the button is the one thing on it that acts. */}
-            <Button
-              type="submit"
-              variant="accent"
-              accent="var(--c-teal)"
-              icon={<Icon name="sparkles" size={15} />}
-            >
+            <Button type="submit" variant="accent" accent="var(--c-teal)">
               Ask Benny
             </Button>
           </form>

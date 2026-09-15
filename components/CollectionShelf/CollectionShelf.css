@@ -152,3 +152,59 @@
     margin-top: 18px;
   }
 }
+
+/* ─── The small card ─────────────────────────────────────────────────────────
+   The same card at two-thirds, for a strip of them beside something else
+   rather than a shelf of their own. Everything scales; nothing is dropped, so
+   a badge still says what it is and when it was earned. */
+.co-card--sm {
+  padding-top: 18px;
+}
+.co-card--sm .co-card-art {
+  width: 68px;
+  height: 68px;
+}
+.co-card--sm .co-card-name {
+  padding: 0 14px;
+  margin-top: 11px;
+  font-size: 14px;
+}
+.co-card--sm .co-card-blurb {
+  padding: 0 14px;
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.co-card--sm .co-card-foot {
+  padding: 10px 0;
+  margin-top: 14px;
+  font-size: 12px;
+}
+.co-card--sm .co-card-ring {
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+}
+
+/* The badge shelf's filter row: the All/Earned/Unearned control and the type
+   menu on one line, over the grid. `FilterMenuBar` already owns the wrap and
+   the gaps — this is only the room under it. */
+.co-filters {
+  margin-bottom: 18px;
+}
+
+/* A card that opens its badge. The hit area is a layer over the card, under
+   nothing — there is nothing else in a badge card to click. */
+.co-card--open {
+  position: relative;
+  cursor: pointer;
+}
+.co-card-hit {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: inherit;
+}

@@ -315,3 +315,33 @@ html::-webkit-scrollbar-thumb:hover {
 html::-webkit-scrollbar-corner {
   background: transparent;
 }
+
+/* ─── A card you can click ───────────────────────────────────────────────────
+   One hover for every clickable card in the system: the border darkens and a
+   soft ring sits just outside it — the same double edge a focused form field
+   wears, which is where the house gets the look from.
+
+   Grey, not coloured: on a page of cards this fires wherever the pointer is,
+   and a colour that loud on every pass reads as a state rather than a hover.
+   `--hit-accent` is there for a surface that genuinely wants its own. Put
+   `is-hit` on the card, not on the thing inside it: the ring belongs to the
+   edge you can see. */
+.is-hit {
+  transition:
+    border-color 0.13s ease,
+    box-shadow 0.13s ease,
+    transform 0.13s ease;
+}
+.is-hit:hover {
+  border-color: var(--hit-accent, var(--c-gray-500));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--hit-accent, var(--c-gray-500)) 22%, transparent);
+}
+.is-hit:active {
+  transform: translateY(1px);
+}
+/* A card whose own hit area is a button inside it — the ring still belongs to
+   the card. */
+.is-hit:focus-within {
+  border-color: var(--hit-accent, var(--c-gray-500));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--hit-accent, var(--c-gray-500)) 22%, transparent);
+}

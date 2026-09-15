@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Select } from '@components/Form/Form'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Form/Form.css'
 import '@components/Tabs/Tabs.css'
 
@@ -78,6 +79,8 @@ export function Tabs({
     }
   }, [items])
 
+  const at = items.findIndex((i) => i.id === active)
+
   return (
     <div
       ref={scrollRef}
@@ -88,19 +91,42 @@ export function Tabs({
       style={style}
     >
       {collapses && (
-        <Select
-          className="tabs-select"
-          value={active}
-          onChange={(e) => onChange?.(e.target.value)}
-          aria-label={ariaLabel}
-        >
-          {items.map((item) => (
-            <option key={item.id} value={item.id} disabled={item.disabled}>
-              {item.label}
-              {item.count != null ? ` (${item.count})` : ''}
-            </option>
-          ))}
-        </Select>
+        /* On a phone the strip is a select — and a select alone makes you open
+           a menu to reach the tab next door, which on a five-tab nav is most
+           moves. The arrows step it. */
+        <div className="tabs-select">
+          <button
+            type="button"
+            className="tabs-step"
+            disabled={at <= 0}
+            onClick={() => at > 0 && onChange?.(items[at - 1].id)}
+            aria-label="Previous tab"
+          >
+            <Icon name="chevron-left" size={18} stroke={2.2} />
+          </button>
+          <Select
+            className="tabs-select-input"
+            value={active}
+            onChange={(e) => onChange?.(e.target.value)}
+            aria-label={ariaLabel}
+          >
+            {items.map((item) => (
+              <option key={item.id} value={item.id} disabled={item.disabled}>
+                {item.label}
+                {item.count != null ? ` (${item.count})` : ''}
+              </option>
+            ))}
+          </Select>
+          <button
+            type="button"
+            className="tabs-step"
+            disabled={at < 0 || at >= items.length - 1}
+            onClick={() => at >= 0 && at < items.length - 1 && onChange?.(items[at + 1].id)}
+            aria-label="Next tab"
+          >
+            <Icon name="chevron-right" size={18} stroke={2.2} />
+          </button>
+        </div>
       )}
       {items.map((item) => (
         <button

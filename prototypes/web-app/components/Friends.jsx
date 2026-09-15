@@ -5,12 +5,12 @@ import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Avatar } from '@components/Avatar/Avatar'
 import { Button } from '@components/Button/Button'
 import { Pill } from '@components/Pill/Pill'
-import { Modal } from '@components/Modal/Modal'
-import { Flyout } from '@components/Flyout/Flyout'
+import { Modal, ModalClose } from '@components/Modal/Modal'
+import { Flyout, FlyoutMenu, FlyoutMenuItem } from '@components/Flyout/Flyout'
 import { Input } from '@components/Form/Form'
 import { ToastStack, useToasts } from '@components/Toast/Toast'
 
-import { FriendRequests } from './FriendRequests'
+import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from './FriendProfile'
 
 import { Leaderboards } from './Leaderboards'
@@ -35,8 +35,10 @@ import '@components/Tabs/Tabs.css'
  * The kebab carries the two things the app offers — view, and remove (or
  * cancel, on an invite that hasn't been accepted).
  *
- * This is a school site, so the action reads "Invite Friends"; a library site
- * gets "Add Friends" over a friend-code dropdown instead.
+ * The one action differs by site (`@is_library_site`): a school invites by
+ * email, a **library** hands out **friend codes** — "Add Friends" over a menu
+ * of "Share Your Friend Code" and "Enter a Friend Code". A library can't ask a
+ * child for somebody else's email address, so the code is the introduction.
  *
  * Leaderboards live under here rather than beside it in the main nav — the
  * profile pairs them on one page (`_friends_and_leaderboard_tabs.html.haml`:
@@ -130,6 +132,67 @@ function FriendCard({ person, onRemove, onOpen }) {
   )
 }
 
+/**
+ * A library's way in — `friend_codes/`. There is no email address to ask a
+ * child for, so two readers swap a code instead: one shares theirs, the other
+ * types it in. The privacy notice is the app's own, and it is why the feature
+ * exists in this shape.
+ */
+function FriendCodeModal({ mode, onClose }) {
+  const [code, setCode] = useState('')
+  const share = mode === 'share'
+
+  return (
+    <Modal
+      open={Boolean(mode)}
+      onClose={onClose}
+      variant="center"
+      closeBadge
+      ariaLabel={share ? 'Your friend code' : 'Enter a friend code'}
+    >
+      <ModalClose onClick={onClose} />
+      <div className="modal-header modal-header--flush">
+        <h2 className="modal-title">{share ? 'Share Your Friend Code' : 'Enter a Friend Code'}</h2>
+      </div>
+      <div className="modal-body">
+        {share ? (
+          <>
+            <p className="fr-code-lede">
+              Give this to a friend and they can add you. It is the only thing they need — no email
+              address, and nothing that says where you go to school.
+            </p>
+            <p className="fr-code">MAGNOLIA-4F7K</p>
+            <p className="fr-code-note">
+              Codes can be refreshed from your profile if you ever want to stop one working.
+            </p>
+          </>
+        ) : (
+          <>
+            <p className="fr-code-lede">
+              Type the code a friend gave you and we&apos;ll send them a request.
+            </p>
+            <Input
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
+              placeholder="e.g. MAGNOLIA-4F7K"
+              aria-label="Friend code"
+            />
+          </>
+        )}
+      </div>
+      <div className="modal-footer">
+        {share ? (
+          <Button onClick={onClose}>Copy Code</Button>
+        ) : (
+          <Button disabled={!code.trim()} onClick={onClose}>
+            Send Request
+          </Button>
+        )}
+      </div>
+    </Modal>
+  )
+}
+
 function InviteModal({ open, onClose }) {
   const [name, setName] = useState('')
   const [sent, setSent] = useState(false)
@@ -187,10 +250,12 @@ function InviteModal({ open, onClose }) {
   )
 }
 
-export function Friends() {
+export function Friends({ library = false }) {
   const [pane, setPane] = useState('friends')
   const [removed, setRemoved] = useState([])
   const [inviteOpen, setInviteOpen] = useState(false)
+  // 'share' | 'enter' — a library's two halves of the friend-code exchange.
+  const [codeOpen, setCodeOpen] = useState(null)
   const [requests, setRequests] = useState(FRIEND_REQUESTS)
   const [profileId, setProfileId] = useState(null)
   const { toasts, push, dismiss } = useToasts()
@@ -240,16 +305,57 @@ export function Friends() {
           <ReaderPageHead
             title="Friends"
             actions={
-              <Button
-                variant="secondary"
-                size="md"
-                icon={<Icon name="plus" size={15} />}
-                onClick={() => setInviteOpen(true)}
-              >
-                Invite Friends
-              </Button>
+              library ? (
+                <Flyout
+                  placement="bottom-end"
+                  trigger={({ toggle, open }) => (
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      onClick={toggle}
+                      aria-haspopup="menu"
+                      aria-expanded={open}
+                      iconRight={<Icon name="chevron-down" size={15} stroke={2.2} />}
+                    >
+                      Add Friends
+                    </Button>
+                  )}
+                >
+                  {({ close }) => (
+                    <FlyoutMenu>
+                      <FlyoutMenuItem
+                        onClick={() => {
+                          close()
+                          setCodeOpen('share')
+                        }}
+                      >
+                        Share Your Friend Code
+                      </FlyoutMenuItem>
+                      <FlyoutMenuItem
+                        onClick={() => {
+                          close()
+                          setCodeOpen('enter')
+                        }}
+                      >
+                        Enter a Friend Code
+                      </FlyoutMenuItem>
+                    </FlyoutMenu>
+                  )}
+                </Flyout>
+              ) : (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  icon={<Icon name="plus" size={15} />}
+                  onClick={() => setInviteOpen(true)}
+                >
+                  Invite Friends
+                </Button>
+              )
             }
           />
+
+          <FriendCodeModal mode={codeOpen} onClose={() => setCodeOpen(null)} />
 
           <FriendRequests
             requests={requests}

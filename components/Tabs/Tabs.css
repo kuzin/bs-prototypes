@@ -149,7 +149,11 @@
   font-weight: 600;
   color: var(--c-gray-750);
   cursor: pointer;
-  padding: 11px 20px;
+  /* On the system's control ladder, so a segmented control lines up with the
+     button beside it: sm 36, md 44, lg 52. It was a padding box that landed
+     at 39px, which left every one of these a few pixels short of its row. */
+  height: 44px;
+  padding: 0 20px;
   border-radius: 12px;
   white-space: nowrap;
   /* neutral grey, matching a table header's own ink */
@@ -211,11 +215,13 @@
 }
 
 .tabs--pill.tabs--sm .tab {
-  padding: 8px 14px;
+  height: 36px;
+  padding: 0 14px;
   font-size: 14px;
 }
 .tabs--pill.tabs--lg .tab {
-  padding: 11px 18px;
+  height: 52px;
+  padding: 0 18px;
   font-size: 16px;
 }
 
@@ -342,7 +348,11 @@
 }
 
 @media (max-width: 699px) {
-  .tabs--underline:has(> .tabs-select) {
+  /* A pill group collapses too where the caller asks for it (`collapse`): a
+     filter bar of two segmented controls is a dozen buttons, and past the point
+     where they fit on one line a pair of dropdowns beats a wall that wraps. */
+  .tabs--underline:has(> .tabs-select),
+  .tabs--pill:has(> .tabs-select) {
     display: block;
     border-bottom: none;
     overflow: visible;
@@ -350,13 +360,66 @@
     -webkit-mask-image: none;
     mask-image: none;
   }
+  /* The pill group's own ground is the track behind its buttons; with the
+     buttons gone it would be a grey bar round the select. */
+  .tabs--pill:has(> .tabs-select) {
+    padding: 0;
+    background: none;
+  }
 
-  .tabs--underline:has(> .tabs-select) .tab {
+  .tabs--underline:has(> .tabs-select) .tab,
+  .tabs--pill:has(> .tabs-select) .tab {
     display: none;
   }
 
-  .tabs--underline > .tabs-select {
-    display: block;
+  .tabs--underline > .tabs-select,
+  .tabs--pill > .tabs-select {
+    display: flex;
+    gap: 8px;
+    align-items: center;
     width: 100%;
+    /* Room around it — flush against the bar above and the page below, the
+       select read as part of the chrome rather than a control on the page. */
+    margin: 10px 0 14px;
+  }
+  /* In a filter bar the select is the control, not chrome over a page. */
+  .fmenu-bar .tabs--pill > .tabs-select {
+    margin: 0;
+  }
+  .fmenu-bar:has(.tabs-select) {
+    display: block;
+  }
+  .fmenu-bar:has(.tabs-select) > * + * {
+    margin-top: 8px;
+  }
+
+  .tabs-select-input {
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Step to the tab next door without opening the menu — on a five-tab nav
+     that is most of the moves anyone makes. */
+  .tabs-step {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    color: var(--c-text);
+    cursor: pointer;
+    background: #fff;
+    border: 2px solid var(--c-gray-300);
+    border-radius: 10px;
+  }
+  .tabs-step:disabled {
+    color: var(--c-gray-400);
+    cursor: default;
+    opacity: 0.6;
+  }
+  .tabs-step:not(:disabled):hover {
+    border-color: var(--c-gray-500);
   }
 }

@@ -571,7 +571,6 @@ export function SessionModal({
                           size="sm"
                           accent="#DC2626"
                           onClick={() => setConfirmingResolve(true)}
-                          icon={<Icon name="check" size={13} stroke={2.2} />}
                         >
                           Resolve
                         </Button>
@@ -631,7 +630,7 @@ export function SessionModal({
                   <div className="sm2-section-head">
                     <span className="sm2-section-title">Reading Confidence</span>
                     <div className="sm2-section-actions">
-                      <Button variant="secondary" size="sm" icon={<Icon name="pencil" size={13} />}>
+                      <Button variant="secondary" size="sm">
                         Override
                       </Button>
                     </div>
@@ -664,12 +663,7 @@ export function SessionModal({
                           Overridden
                         </span>
                       )}
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => setEditingRating(true)}
-                        icon={<Icon name="pencil" size={13} />}
-                      >
+                      <Button variant="secondary" size="sm" onClick={() => setEditingRating(true)}>
                         Override
                       </Button>
                     </div>
@@ -834,7 +828,6 @@ function ResolveConfirmModal({ open, onCancel, onResolve }) {
             onClick={() =>
               onResolve('supported', note.trim() || 'Student supported and connected to help.')
             }
-            icon={<Icon name="heart-handshake" size={13} stroke={2.2} />}
           >
             Student supported
           </Button>
@@ -878,11 +871,7 @@ export function ApproveConfirmModal({ open, flagCount, studentName, onCancel, on
           <Button variant="secondary" onClick={onCancel}>
             Cancel
           </Button>
-          <Button
-            variant="primary"
-            onClick={onConfirm}
-            icon={<Icon name="check" size={13} stroke={2.2} />}
-          >
+          <Button variant="primary" onClick={onConfirm}>
             Approve Session
           </Button>
         </div>

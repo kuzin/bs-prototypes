@@ -3,6 +3,7 @@ import { Icon } from '@components/Icon/Icon'
 import { Avatar } from '@components/Avatar/Avatar'
 import { PartnerBrand, PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 import { Flyout } from '@components/Flyout/Flyout'
+import { ReaderBanner, ReaderBannerAction } from '@components/ReaderApp/ReaderApp'
 import '@components/Flyout/Flyout.css'
 import '@components/PartnerConnect/PartnerConnect.css'
 
@@ -516,27 +517,19 @@ export function ConnectBanner({ partners = [], onLink, onDismiss }) {
 function SinglePartnerBanner({ partner: p, onLink, onDismiss }) {
   const brand = PARTNER_BRANDS[p.id]
   return (
-    <div className="cn-banner" style={{ background: brand.soft }}>
-      <PartnerMark id={p.id} size={30} />
-      {/* No second line here: `bannerText` is already the partner's pitch in
-          their own voice ("Link your Comics Plus account today!"), and the
-          marketing line under it said the same thing again. The multi-partner
-          banner keeps its subline because that one explains what linking does
-          rather than selling it. */}
-      <div className="cn-banner-msg">
-        <strong>{p.bannerText}</strong>
-      </div>
-      <div className="cn-banner-actions">
-        <button
-          className="cn-banner-cta"
-          style={{ color: brand.accent }}
-          onClick={() => onLink?.(p.id)}
-        >
-          Link Accounts
-        </button>
-        <BannerDismiss onDismiss={onDismiss} />
-      </div>
-    </div>
+    <ReaderBanner
+      tint={brand.soft}
+      ink={brand.accent}
+      onDismiss={onDismiss}
+      mark={<PartnerMark id={p.id} size={26} />}
+      /* No second line here: `bannerText` is already the partner's pitch in
+         their own voice ("Link your Comics Plus account today!"), and the
+         marketing line under it said the same thing again. The multi-partner
+         banner keeps its subline because that one explains what linking does
+         rather than selling it. */
+      title={<strong>{p.bannerText}</strong>}
+      action={<ReaderBannerAction onClick={() => onLink?.(p.id)}>Link Accounts</ReaderBannerAction>}
+    />
   )
 }
 
@@ -550,29 +543,24 @@ function MultiPartnerBanner({ partners, onLink, onDismiss }) {
       : `${names.slice(0, -1).join(', ')}, and ${names[names.length - 1]}`
 
   return (
-    <div className="cn-banner cn-banner--multi">
-      <span className="cn-banner-marks">
-        {partners.map((p) => (
-          <PartnerMark key={p.id} id={p.id} size={30} />
-        ))}
-      </span>
-      <div className="cn-banner-msg">
-        <strong>Connect your reading apps</strong>
-        <span className="cn-banner-pitch">
-          Link {listed}, and Beanstack logs what you read there automatically.
-        </span>
-      </div>
-      <div className="cn-banner-actions">
-        {/* One control, not a button per partner: three "Link X" buttons made the
-            banner a toolbar, and the row wrapped on anything narrow. The picking
-            happens in the menu, where each partner gets its own mark. */}
+    <ReaderBanner
+      onDismiss={onDismiss}
+      mark={<Icon name="link" size={20} />}
+      title={<strong>Connect your reading apps</strong>}
+      sub={`Link ${listed}, and Beanstack logs what you read there automatically.`}
+      action={
+        /* One control, not a button per partner: three "Link X" buttons made the
+           banner a toolbar, and the row wrapped on anything narrow. The picking
+           happens in the menu, where each partner gets its own mark. */
         <Flyout
           placement="bottom-end"
           trigger={({ toggle }) => (
-            <button className="cn-banner-cta" onClick={toggle}>
+            <ReaderBannerAction
+              onClick={toggle}
+              iconRight={<Icon name="chevron-down" size={14} stroke={2.4} />}
+            >
               Link an app
-              <Icon name="chevron-down" size={14} stroke={2.4} />
-            </button>
+            </ReaderBannerAction>
           )}
         >
           {({ close }) => (
@@ -593,9 +581,8 @@ function MultiPartnerBanner({ partners, onLink, onDismiss }) {
             </div>
           )}
         </Flyout>
-        <BannerDismiss onDismiss={onDismiss} />
-      </div>
-    </div>
+      }
+    />
   )
 }
 
