@@ -1,7 +1,8 @@
-import { Modal } from '@components/Modal/Modal'
-import { Toggle } from '@components/Toggle/Toggle'
+import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
+import { SettingList, SettingRow } from '@components/SettingRow/SettingRow'
 import { Icon } from '@components/Icon/Icon'
+import '@components/SettingRow/SettingRow.css'
 import { PartnerMark } from './PartnerBits'
 
 const FEATURES = [
@@ -27,54 +28,62 @@ const FEATURES = [
   },
 ]
 
+/* Audiobooks are a format rather than a partner, so the one row with no brand
+   behind it gets a glyph on a disc in its place — the shape a mark leaves. */
 function FeatureMark({ feature }) {
   if (feature === 'audiobooks') {
     return (
       <span
         className="bk-pmark bk-pmark--glyph"
-        style={{ width: 36, height: 36, background: '#0D9488' }}
+        style={{ width: 34, height: 34, background: '#0D9488' }}
       >
-        <Icon name="headphones" size={19} color="#fff" />
+        <Icon name="headphones" size={18} color="#fff" />
       </span>
     )
   }
-  return <PartnerMark id={feature} size={36} />
+  return <PartnerMark id={feature} size={34} />
 }
 
+/**
+ * Which reading apps this site has turned on — a reviewer's switch rather than
+ * a reader's, which is why it lives on the preview bar.
+ *
+ * The modal's own chrome: a header bar with a rule under it, a body that
+ * scrolls, and the answer on a footer — the shape every other modal in the
+ * system uses, in place of the header, intro and foot this drew for itself. The
+ * switches are the shared SettingRow, each led by the partner's real mark.
+ */
 export function SettingsModal({ open, onClose, settings, onToggle }) {
   return (
-    <Modal open={open} onClose={onClose} variant="center" ariaLabel="Settings">
-      <div className="bk-settings">
-        <div className="bk-settings-head">
-          <h2>
-            <Icon name="settings" size={20} /> Settings
-          </h2>
-          <button className="bk-settings-close" onClick={onClose} aria-label="Close settings">
-            <Icon name="x" size={18} />
-          </button>
-        </div>
-        <p className="bk-settings-intro">Turn discovery features on or off for this reader.</p>
+    <Modal open={open} onClose={onClose} variant="center" closeBadge ariaLabel="Reading apps">
+      <ModalClose onClick={onClose} />
 
-        <div className="bk-settings-list">
+      <div className="modal-header">
+        <div className="modal-header-text">
+          <h2 className="modal-title">Reading apps</h2>
+          <p className="modal-sub">Turn discovery features on or off for this reader.</p>
+        </div>
+      </div>
+
+      <div className="modal-body">
+        <SettingList>
           {FEATURES.map((f) => (
-            <label key={f.key} className="bk-setting-row">
-              <span className="bk-setting-icon">
-                <FeatureMark feature={f.key} />
-              </span>
-              <span className="bk-setting-text">
-                <span className="bk-setting-title">{f.title}</span>
-                <span className="bk-setting-desc">{f.desc}</span>
-              </span>
-              <Toggle checked={settings[f.key]} onChange={() => onToggle(f.key)} />
-            </label>
+            <SettingRow
+              key={f.key}
+              icon={<FeatureMark feature={f.key} />}
+              label={f.title}
+              sub={f.desc}
+              checked={settings[f.key]}
+              onChange={() => onToggle(f.key)}
+            />
           ))}
-        </div>
+        </SettingList>
+      </div>
 
-        <div className="bk-settings-foot">
-          <Button variant="primary" onClick={onClose}>
-            Done
-          </Button>
-        </div>
+      <div className="modal-footer">
+        <Button variant="primary" onClick={onClose}>
+          Done
+        </Button>
       </div>
     </Modal>
   )

@@ -324,7 +324,6 @@ export function SfrPage({
         onViewProfile={setProfileStudent}
         onPrev={hasPrev ? handlePrev : null}
         onNext={hasNext ? handleNext : null}
-        sessionIdx={sessionIdx}
         sessionCount={sessionList.length}
       />
 

@@ -1,5 +1,5 @@
 import { Icon } from '@components/Icon/Icon'
-import { BackBar } from '@components/BackBar/BackBar'
+import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { BookCard } from './BookCard'
 
@@ -7,7 +7,7 @@ import { BookCard } from './BookCard'
 export function ListPage({ list, onOpen, onWish, wishlist, onBack }) {
   return (
     <div className="bk-browse-page">
-      <BackBar label="Discover" onClick={onBack} />
+      <ReaderBack onClick={onBack}>Back to Discover</ReaderBack>
 
       {/* The curator is the one thing this page's header carries that the
           others don't — who picked the list is the point of it. */}

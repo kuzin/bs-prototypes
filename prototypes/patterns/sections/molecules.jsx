@@ -1462,7 +1462,9 @@ export const moleculesSections = [
         A labeled settings row: <code>label</code> (+ optional <code>sub</code>) on the left, a
         control on the right. Defaults to a <code>Toggle</code> (pass <code>checked</code>/
         <code>onChange</code>, plus optional <code>state</code> text like “Disabled”), or pass any{' '}
-        <code>control</code>. Wrap rows in <code>&lt;SettingList&gt;</code> for hairline dividers.
+        <code>control</code>. <code>icon</code> leads the row where one helps — a list of apps is a
+        list of brands, and their marks are how a reader tells them apart. Wrap rows in{' '}
+        <code>&lt;SettingList&gt;</code> for hairline dividers.
       </>
     ),
     render: () => (

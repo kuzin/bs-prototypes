@@ -189,19 +189,19 @@
   margin: 18px 0 26px;
 }
 
+/* `.logged-books--autocomplete` — fills its panel at the app's own 56px. */
 .lf-searchrow {
   display: flex;
-  align-items: stretch;
   gap: 14px;
-  max-width: 560px;
-  margin: 0 auto;
+  align-items: stretch;
+  width: 100%;
 }
 /* The hero search on this screen, so the field is taller than the shared
    control's 38px and its text steps up with it — 14px in a 52px box reads as a
    small input someone stretched. 16px is on the app's own ladder. */
 .lf-searchrow .search-input {
   flex: 1;
-  height: 52px;
+  height: 56px;
   background: #fff;
   border: 1.5px solid #dee2e6;
   border-radius: 10px;
@@ -210,58 +210,90 @@
   font-size: 16px;
 }
 
+/* `.logged-books--logging-selection-section` — the app groups this screen onto
+   grey panels rather than letting it run loose down the page: the search and
+   the other ways in on one, the reading lists and what you logged lately on
+   another. */
+.lf-sect {
+  width: 100%;
+  max-width: 640px;
+  padding: 24px;
+  margin: 0 auto 24px;
+  background: var(--c-gray-150);
+  border-radius: 24px;
+}
 /* `.logged-books--logging-actions` — the other ways to reach a title, each an
-   icon over its name. Equal weight because they are equal choices: one reader
-   scans, one types it in, one works from a list. */
+   icon over its name, in thirds. Equal weight because they are equal choices:
+   one reader scans, one types it in, one works from a list. */
 .lf-actions {
   display: flex;
-  flex-wrap: wrap;
   gap: 12px;
   justify-content: center;
-  max-width: 560px;
-  margin: 14px auto 0;
+  margin-top: 16px;
+}
+@media (max-width: 620px) {
+  .lf-actions {
+    flex-direction: column;
+  }
 }
 .lf-action {
   display: flex;
-  flex: 1 1 150px;
+  flex: 1 1 0;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   align-items: center;
   justify-content: center;
   min-width: 0;
-  padding: 16px 12px;
+  padding: 12px 16px;
   font: inherit;
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--c-text-dark);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--c-gray-800);
   text-align: center;
   cursor: pointer;
-  background: #fff;
-  border: 1px solid var(--c-gray-200);
-  border-radius: 12px;
+  background: var(--c-gray-250);
+  border: 0;
+  border-radius: 16px;
 }
 .lf-action:hover {
-  border-color: var(--c-gray-500);
+  background: var(--c-gray-300);
 }
 .lf-action:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px #5599e1;
 }
-.lf-action svg {
-  color: var(--c-teal, #0b8a8f);
+
+/* The head sits over the covers rather than beside them, so the row keeps its
+   own centring. */
+.lf-recentsect .lf-rlhead {
+  margin-bottom: 16px;
 }
+
+/* `.logged-books--recently-read-books` — the same five-column grid the
+   challenge shelves above it use, so a shelf of three and a shelf of five put
+   their covers on the same module. */
+.lf-recent {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
+  align-items: end;
+}
+@media (max-width: 620px) {
+  .lf-recent {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+/* Each cover casts a soft ellipse, which is what stops a row of them reading
+   as flat rectangles on a flat panel. */
+
 /* `.btn--md` carries an explicit 44px, which beats the row's `stretch`. Height
    `auto` hands it back, so the button takes the field's height rather than
    restating it — change the field and the button still lines up. */
 .lf-searchrow .btn {
   height: auto;
 }
-.lf-searchdiv {
-  width: 1px;
-  background: #e9ecef;
-  align-self: stretch;
-}
-
 /* Scanning owns the step, so the viewfinder is sized like one rather than like
    a thumbnail tucked under a search field. */
 .lf-scanner {
@@ -338,11 +370,12 @@
   gap: 14px;
   align-items: center;
   justify-content: center;
-  max-width: 560px;
-  margin: 18px auto 0;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 24px;
   padding: 48px 24px;
-  background: #f6f7f8;
-  border-radius: 16px;
+  background: var(--c-gray-150);
+  border-radius: 24px;
   animation: lf-fade 0.18s ease;
 }
 .lf-searching-text {
@@ -355,11 +388,12 @@
    replaces (.lf-panel), so the space below the field always holds one panel
    rather than sometimes a panel and sometimes loose text. */
 .lf-empty {
-  max-width: 560px;
-  margin: 18px auto 0;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 24px;
   padding: 32px 24px;
-  background: #f6f7f8;
-  border-radius: 16px;
+  background: var(--c-gray-150);
+  border-radius: 24px;
   animation: lf-fade 0.18s ease;
 }
 .lf-empty .emp-icon {
@@ -381,12 +415,16 @@
 }
 
 /* search results */
+/* The results stand in the same 640 column as the shelves they replace, and
+   with the same 24px under them — they were 560 wide on a 18px top margin, so
+   a search visibly narrowed the page it was searching. */
 .lf-results {
   display: flex;
   flex-direction: column;
   gap: 8px;
-  max-width: 560px;
-  margin: 18px auto 0;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 24px;
   animation: lf-fade 0.18s ease;
 }
 .lf-resultrow {
@@ -436,35 +474,6 @@
 }
 
 /* ── Read-or-log callout ─────────────────────────────────────────────────── */
-.lf-choice {
-  position: fixed;
-  inset: 0;
-  z-index: 150;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
-}
-.lf-choice-scrim {
-  position: absolute;
-  inset: 0;
-  border: 0;
-  background: rgba(15, 23, 42, 0.45);
-  backdrop-filter: blur(2px);
-  animation: lf-fade 0.16s ease;
-  cursor: pointer;
-}
-.lf-choice-card {
-  position: relative;
-  z-index: 1;
-  width: min(420px, 100%);
-  background: #fff;
-  border-radius: 20px;
-  padding: 28px 28px 24px;
-  text-align: center;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
-  animation: lf-pop 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
 @keyframes lf-pop {
   from {
     transform: scale(0.94) translateY(6px);
@@ -475,125 +484,21 @@
     opacity: 1;
   }
 }
-.lf-choice-x {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  width: 30px;
-  height: 30px;
-  border: 0;
-  border-radius: 8px;
-  background: #f1f3f5;
-  color: #495057;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.lf-choice-x:hover {
-  background: #e5e8eb;
-}
-.lf-choice-cover {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 14px;
-}
-.lf-choice-title {
-  font-size: 18px;
-  font-weight: 800;
-  color: #1f2933;
-  line-height: 1.25;
-}
-.lf-choice-author {
-  font-size: 13px;
-  color: #868e96;
-  margin-top: 2px;
-}
-.lf-choice-q {
-  font-size: 14px;
-  color: #495057;
-  margin: 12px 0 20px;
-  line-height: 1.45;
-}
-.lf-choice-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-.lf-choice-opt {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  border: 1.5px solid #e9ecef;
-  border-radius: 14px;
-  background: #fff;
-  padding: 14px 16px;
-  text-align: left;
-  cursor: pointer;
-  transition:
-    border-color 0.12s ease,
-    background 0.12s ease;
-}
-.lf-choice-opt:hover {
-  border-color: #cfd4d9;
-  background: #fafbfc;
-}
-.lf-choice-opt-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border-radius: 12px;
-  background: #f1f3f5;
-  color: #495057;
-}
-.lf-choice-opt-main {
-  flex: 1;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-.lf-choice-opt-title {
-  font-size: 15px;
-  font-weight: 800;
-  color: #1f2933;
-}
-.lf-choice-opt-sub {
-  font-size: 12.5px;
-  color: #868e96;
-}
-.lf-choice-opt-chev {
-  color: #adb5bd;
-  flex-shrink: 0;
-}
 /* the primary "Read" option gets the teal accent */
-.lf-choice-opt--read {
-  border-color: #99e0d5;
-  background: #f0fbf9;
-}
-.lf-choice-opt--read:hover {
-  border-color: #5cccbc;
-  background: #e6f7f4;
-}
-.lf-choice-opt--read .lf-choice-opt-icon {
-  background: #0d9488;
-  color: #fff;
-}
-.lf-choice-opt--read .lf-choice-opt-chev {
-  color: #0d9488;
-}
-
 /* panels (reading list + recently logged) */
+/* A shelf on the search screen is the same section everything else there is
+   built from — `.logged-books--logging-selection-section`: full width to 640,
+   24px of padding on a 24px radius, and 24px under it. It had been 560 wide on
+   a 16px radius with a top margin and nothing below, so it sat narrower than
+   the panels above and below it and the space under it was only ever whatever
+   the *next* panel's top margin happened to be. */
 .lf-panel {
-  margin: 22px auto 0;
-  max-width: 560px;
-  background: #f6f7f8;
-  border-radius: 16px;
-  padding: 20px;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto 24px;
+  padding: 24px;
+  background: var(--c-gray-150);
+  border-radius: 24px;
 }
 .lf-panel-title {
   font-size: 15px;
@@ -609,24 +514,9 @@
   flex-wrap: wrap;
   justify-content: flex-start;
 }
-.lf-coverrow--center {
-  justify-content: center;
-}
-.lf-coverbtn {
-  border: 0;
-  background: none;
-  padding: 0;
-  border-radius: 6px;
-  transition: transform 0.12s ease;
-}
-.lf-coverbtn:hover {
-  transform: translateY(-3px);
-}
-
 /* reading-list challenge band */
 .lf-rlband {
   position: relative;
-  padding: 18px 18px 16px;
 }
 .lf-rlhead {
   display: flex;
@@ -635,52 +525,163 @@
   margin-bottom: 4px;
 }
 .lf-rlhead-title {
+  flex: 1;
+  min-width: 0;
   margin: 0;
   text-align: left;
 }
+/* A challenge names itself with a disc in its own colour where a partner band
+   uses the partner's mark — same 20px, so the two kinds of shelf line up. */
+.lf-rlmark {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  color: #fff;
+  background: var(--rl-tint, var(--c-blue));
+  border-radius: 6px;
+}
+/* When it runs, on the end of its own line. */
+.lf-rldates {
+  flex: none;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+/* A grid of five, not a row that shares itself out: a full shelf fills the
+   panel exactly, and a short one keeps the same card size with space on the
+   end rather than stretching three covers across 640px. */
 .lf-coverrow--rl {
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 16px;
   margin-top: 14px;
 }
+/* Whatever a column comes out at, a cover keeps a cover's proportions. */
+.lf-coverrow--rl .bkcov,
+.lf-recent .bkcov {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 2 / 3;
+}
 
-/* per-title completion state inside the cover row */
-.lf-rltitle {
+/* ─── One book, one tile ──────────────────────────────────────────────────
+   A finished title says so the same way wherever it appears: a green tick on
+   the top-right corner. The cover itself stays as it is — a read book isn't
+   spent, and dimming it made a shelf of finished titles look switched off.
+   Everything else a title can do lives in the menu it opens. */
+.lf-tile {
   position: relative;
-  overflow: visible;
+  display: block;
+  width: 100%;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+  transition: transform 0.12s ease;
 }
-.lf-rltitle.is-logged .bkcov {
-  filter: saturate(0.85);
+.lf-tile:hover {
+  transform: translateY(-3px);
 }
-.lf-rltitle.is-logged .bkcov::after {
+.lf-tile:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px #5599e1;
+}
+/* Every cover casts the same soft ellipse, which is what stops a row of them
+   reading as flat rectangles on a flat panel. It was on the recently-logged
+   row alone, so one shelf stood on the page and the two above it didn't.
+
+   The app puts this on `z-index: -1`, which only works where nothing between
+   it and the page paints a background. Ours sits on a grey panel, so the
+   ellipse went behind it — it stacks above instead, with the cover above
+   that. */
+.lf-tile::after {
+  position: absolute;
+  bottom: -6px;
+  left: 10px;
+  z-index: 0;
+  width: calc(100% - 20px);
+  height: 20px;
   content: '';
-  position: absolute;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.32);
-  border-radius: inherit;
+  background: rgb(0 0 0 / 12%);
+  border-radius: 20px;
+  filter: blur(3px);
 }
-.lf-rlcheck {
+.lf-tile .bkcov {
+  position: relative;
+  z-index: 1;
+}
+.lf-tile-mark {
   position: absolute;
-  top: -6px;
-  right: -6px;
-  width: 22px;
-  height: 22px;
+  /* Over the cover it belongs to *and* the one next to it: the covers sit at
+     `z-index: 1` to clear their own cast shadow, and a mark left on `auto` was
+     painted under the next tile's cover, which clipped the tick on every
+     card but the last. */
+  z-index: 2;
   display: grid;
   place-items: center;
-  border-radius: 999px;
-  background: #16a34a;
+  width: 26px;
+  height: 26px;
   color: #fff;
   border: 2px solid #fff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.3);
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 30%);
 }
-.lf-viewall {
-  display: block;
-  text-align: center;
-  margin: 14px auto 0;
+.lf-tile-mark--done {
+  top: -7px;
+  right: -7px;
+  background: #0ba85f;
 }
 
-.lf-escape {
+/* The way into the rest of a shelf, as the card after the last cover — so the
+   row reads as continuing past what it shows rather than stopping at a link
+   underneath it. A cover's own height on the grey the screen's other secondary
+   actions use (`.lf-action`), which is what keeps it a slot on the shelf rather
+   than a cover with no art. */
+.lf-morecard {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 2 / 3;
+  padding: 10px;
+  font: inherit;
+  color: var(--c-gray-800);
+  cursor: pointer;
+  background: var(--c-gray-250);
+  border: 0;
+  border-radius: 7px;
+  transition:
+    transform 0.12s ease,
+    background 0.12s ease;
+}
+.lf-morecard:hover {
+  background: var(--c-gray-300);
+  transform: translateY(-3px);
+}
+/* Two words, one to a line — a card this narrow broke them anyway, and
+   breaking them on purpose keeps the pair centred. */
+.lf-morecard-label {
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.2;
   text-align: center;
-  margin-top: 26px;
+}
+
+/* `.logged-books--log-without-title` — the way out of the question, and the
+   last thing on the screen. On the panels' own 640 column with the shelves'
+   own spacing above it, so it closes the stack rather than floating in the
+   scroll body at a width nothing else uses. */
+.lf-escape {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 4px 0 8px;
+  text-align: center;
   font-size: 14px;
   color: #868e96;
 }
@@ -922,38 +923,63 @@
   max-width: 520px;
   margin: 0 auto;
 }
+/* The system's selectable card, the same one the conversation-type picker
+   uses: the accent on the border alone while you're hovering, and on the
+   border, a 7% wash and a soft ring once it's the one you've picked — plus a
+   filled corner carrying the tick, rather than a check floating over the
+   card's own padding.
+   Its accent is `--reader`, the reader's own avatar colour, so the card you're
+   on is picked out in the colour you already recognise them by. */
 .lf-readercard {
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
   gap: 8px;
-  border: 1.5px solid #eceef0;
-  border-radius: 16px;
-  background: #fff;
+  align-items: center;
   padding: 22px 16px;
+  background: #fff;
+  border: 1.5px solid var(--c-border);
+  border-radius: 16px;
+  /* Clips the selected corner to the card's own radius. */
+  overflow: hidden;
+  transition:
+    border-color 0.15s,
+    background 0.15s,
+    box-shadow 0.15s;
 }
 .lf-readercard:hover {
-  border-color: #cfd4d9;
+  border-color: var(--reader, var(--c-blue));
+}
+.lf-readercard:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px #5599e1;
 }
 .lf-readercard.is-active {
-  border-color: #1a6dd5;
-  background: #f5f9ff;
+  background: color-mix(in srgb, var(--reader, var(--c-blue)) 9%, #fff);
+  border-color: var(--reader, var(--c-blue));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--reader, var(--c-blue)) 18%, transparent);
+}
+.lf-readercard.is-active::after {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 36px;
+  height: 36px;
+  content: '';
+  background: var(--reader, var(--c-blue));
+  clip-path: polygon(100% 0, 100% 100%, 0 0);
 }
 .lf-readercard-name {
   font-weight: 800;
   color: #1f2933;
   font-size: 14.5px;
 }
-.lf-readercard-grade {
-  font-size: 12.5px;
-  color: #868e96;
-}
 .lf-readercard-check {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  color: #1a6dd5;
+  top: 6px;
+  right: 6px;
+  z-index: 1;
+  color: #ffffff;
 }
 
 /* ── Success ─────────────────────────────────────────────────────────────── */
@@ -1193,121 +1219,84 @@
 }
 
 /* Epic's mark keeps its own brand rather than being redrawn as a glyph — it is
-   another service's door, and the reader should recognise it. */
+   another service's door, and the reader should recognise it. A filled 38px
+   square sits level with the 40px line glyphs beside it: the same optical size,
+   because a solid shape fills its box and an outlined one doesn't. */
 .lf-action-mark {
-  width: 26px;
-  height: 26px;
-  border-radius: 6px;
+  width: 38px;
+  height: 38px;
+  /* Back up to the 40px box the glyphs beside it draw in, so all three labels
+     sit on one line. */
+  margin: 1px 0;
+  border-radius: 9px;
 }
 
 /* ─── Reading List Challenges ────────────────────────────────────────────────
-   `reading_list_challenges#index` and `#show` — a set of titles somebody picked
-   for this reader, reached from the search screen. */
+   `reading_list_challenges` — the sets of titles somebody picked for this
+   reader, reached from the search screen. One screen, a section per challenge:
+   the app splits this in two, but a reader is rarely in more than a couple and
+   the second screen stood between them and the book they already had in hand. */
 
 .lf-rlc {
-  width: min(680px, 100%);
-  margin: 0 auto;
-  text-align: center;
-}
-.lf-rlc-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
-  padding: 0;
-  margin: 26px 0 0;
-  list-style: none;
-}
-/* `.book-list-program--container` — the art with the name on a bar under it,
-   which is how the app names a challenge you're choosing between. */
-.lf-rlc-card {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  overflow: hidden;
-  font: inherit;
-  cursor: pointer;
-  background: #fff;
-  border: 1px solid var(--c-gray-200);
-  border-radius: 14px;
-}
-.lf-rlc-card:hover {
-  border-color: var(--c-gray-500);
-}
-.lf-rlc-card:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px #5599e1;
-}
-.lf-rlc-banner {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-}
-.lf-rlc-name {
-  padding: 12px 14px;
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--c-text-dark);
-  text-align: center;
-}
-
-/* ─── One challenge's titles ─────────────────────────────────────────────── */
-
-.lf-rld {
   width: min(760px, 100%);
   margin: 0 auto;
-  text-align: center;
-}
-/* `.book-list-header-background` — a band in the challenge's own colour with
-   the banner over it. The app pulls that colour off the art itself; ours is on
-   the fixture, which is the same answer without the canvas read. */
-.lf-rld-head {
-  display: grid;
-  place-items: center;
-  padding: 26px 20px;
-  background: color-mix(in srgb, var(--rld-tint, #acacac) 18%, #fff);
-  border-radius: 16px;
-}
-.lf-rld-banner {
-  width: min(380px, 100%);
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 5px 15px rgb(0 0 0 / 7%);
-}
-.lf-rld-title {
-  margin: 22px 0 0;
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 1.2;
-  color: var(--c-text-dark);
-}
-.lf-rld-dates {
-  margin: 4px 0 0;
-  font-size: 15px;
-  color: var(--c-text-light);
-}
-.lf-rld-h2 {
-  margin: 28px 0 0;
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--c-text-dark);
-}
-
-/* What this challenge asks for — every title, a count, or a count that has to
-   include particular ones. */
-.lf-rld-group {
-  margin: 22px 0 0;
   text-align: left;
 }
-.lf-rld-grouphead {
+
+/* ─── The challenge's own head ────────────────────────────────────────────── */
+
+.lf-rlc-head {
+  padding-bottom: 26px;
+}
+.lf-rlc-name {
   margin: 0;
-  font-size: 16px;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--c-text-dark);
+}
+.lf-rlc-dates {
+  margin: 5px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+/* ─── A run of titles ─────────────────────────────────────────────────────── */
+
+/* Each run of titles is a card, the same one the search screen's own sections
+   are (`.lf-sect` — 24px of padding on a 24px radius, over the app's
+   `.logged-books--logging-selection-section`), so both screens of this flow are
+   built out of the same panel. */
+.lf-rlc-section {
+  padding: 24px;
+  background: var(--c-gray-150);
+  border-radius: 24px;
+}
+.lf-rlc-section + .lf-rlc-section {
+  margin-top: 24px;
+}
+/* One head shape for every run: what it is on the left, what it means on the
+   right, ruled off from the covers under it. */
+.lf-rlc-sechead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  justify-content: space-between;
+  padding-bottom: 10px;
+  margin-bottom: 16px;
+  /* On the card's own grey, where `--c-border` disappeared into it. */
+  border-bottom: 1px solid var(--c-gray-300);
+}
+.lf-rlc-sectitle {
+  margin: 0;
+  font-size: 17px;
   font-weight: 800;
   color: var(--c-text-dark);
 }
-.lf-rld-groupsub {
-  margin: 2px 0 0;
+.lf-rlc-seccount {
   font-size: 13.5px;
+  font-weight: 700;
   color: var(--c-text-light);
 }
 
@@ -1315,85 +1304,50 @@
 .lf-rld-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
-  gap: 14px;
+  /* A wider row gap than column gap: each cover casts an ellipse below it, and
+     at an even 14px the one on the row above sat on the covers beneath. */
+  gap: 24px 14px;
   padding: 0;
-  margin: 14px 0 0;
+  margin: 12px 0 0;
   list-style: none;
 }
-.lf-rld-cover {
-  position: relative;
-  display: block;
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  padding: 0;
-  cursor: pointer;
-  background: none;
-  border: 0;
-  border-radius: 8px;
-}
-.lf-rld-cover:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px #5599e1;
-}
-.lf-rld-cover .bkcov {
-  width: 100%;
-  height: 100%;
-  border-radius: 8px;
-}
-
-/* The two marks a cover can carry, on the corner the app puts each: the tick
-   bottom-right where a finished thing is always marked, the question mark top-
-   left so the two never collide. */
-.lf-rld-mark {
-  position: absolute;
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  color: #fff;
-  border: 2px solid #fff;
-  border-radius: 50%;
-}
-.lf-rld-mark--done {
-  right: -5px;
-  bottom: -5px;
-  background: #0ba85f;
-}
-.lf-rld-mark--q {
-  top: -5px;
-  left: -5px;
-  background: #1a6dd5;
-}
-
-/* The menu a cover opens — what the title is, then what you can do with it. */
-.lf-rld-menu {
-  width: 232px;
-}
-.lf-rld-menu-head {
+/* What the menu is about, over the things it can do. */
+.lf-tile-menuhead {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  align-items: flex-start;
-  padding: 10px 12px;
-  text-align: left;
+  gap: 1px;
+  padding: 8px 10px 10px;
+  margin-bottom: 4px;
   border-bottom: 1px solid var(--c-gray-200);
 }
-.lf-rld-menu-title {
+.lf-tile-menutitle {
   font-size: 14px;
   font-weight: 800;
   line-height: 1.3;
   color: var(--c-text-dark);
 }
-.lf-rld-menu-author {
+.lf-tile-menuauthor {
   font-size: 12.5px;
   color: var(--c-text-light);
 }
-.lf-rld-pill {
-  padding: 2px 9px;
-  margin-top: 4px;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: #1a6dd5;
-  background: #e3edfb;
-  border-radius: 999px;
+
+/* `Flyout` wraps its trigger in an inline-block, which shrink-wraps to its
+   content — so a tile's `width: 100%` was resolving against the cover's own
+   content and every title came out a different size (an image cover its
+   image's, a gradient cover its title's). Wherever a tile stands in a cell,
+   the wrapper *is* the cell. */
+.lf-rld-item > .flyout,
+.lf-coverrow--rl > .flyout,
+.lf-recent > .flyout {
+  display: block;
+}
+
+/* In a grid the tile takes its cell; on a shelf it's the cover's own size. */
+.lf-rld-item .lf-tile {
+  aspect-ratio: 2 / 3;
+}
+.lf-rld-item .lf-tile .bkcov {
+  width: 100%;
+  height: 100%;
+  border-radius: 8px;
 }

@@ -13,6 +13,10 @@
 
 import { PARTNER_PRESETS } from '@components/PartnerConnect/partners'
 
+/* The two this prototype is about. `CONNECTIONS` holds a third — Beeverso —
+   which web-app offers in their place; it isn't in this list because a
+   Spanish-reading platform has nothing to do with the Scholastic story and
+   would arrive here as a third banner nobody asked for. */
 export const CONNECTION_IDS = ['comicsplus', 'scholastic']
 
 export const CONNECTIONS = {
@@ -39,6 +43,22 @@ export const CONNECTIONS = {
     defaultOrg: 'Magnolia Middle School',
     account: { name: 'olivia.mcgrane', initials: 'OM', color: '#F09A77' },
   },
+
+  /* Not one of this prototype's two — see `CONNECTION_IDS`. It lives here
+     rather than in web-app so that everything about a partner in this fixture
+     set (its orgs, its account, the sessions it logs) is in one place, and so
+     `autoLoggedRows` can resolve its rows like any other. */
+  beeverso: {
+    ...PARTNER_PRESETS.beeverso,
+    orgs: [
+      'Magnolia Middle School',
+      'Oak Elementary School',
+      'Hickory Middle School',
+      'Lincoln Elementary School',
+    ],
+    defaultOrg: 'Magnolia Middle School',
+    account: { name: 'olivia.m', initials: 'OM', color: '#F09A77' },
+  },
 }
 
 // Usernames that already belong to somebody else's Beanstack account — signing
@@ -53,6 +73,10 @@ export const PARTNER_SESSIONS = {
     { id: 'cp-2', book: 'amulet', minutes: 18, when: 'Today' },
   ],
   scholastic: [{ id: 'sc-1', book: 'scholastic-news', minutes: 12, when: 'Today' }],
+  beeverso: [
+    { id: 'bv-1', book: 'platero', minutes: 19, when: 'Today' },
+    { id: 'bv-2', book: 'monarca', minutes: 11, when: 'Today', finished: true },
+  ],
 }
 
 export const partnerMinutes = (id) =>
@@ -62,14 +86,17 @@ export const partnerMinutes = (id) =>
 export const CONNECTION_LIST = CONNECTION_IDS.map((id) => CONNECTIONS[id])
 
 // The auto-logged rail card takes display-ready rows, since only this prototype
-// knows how to turn a book key into a title.
+// knows how to turn a book key into a title. Keyed off what's *linked* rather
+// than off `CONNECTION_IDS`, so a page offering a partner this prototype
+// doesn't (web-app offers Beeverso) still gets its rows.
 export const autoLoggedRows = (connections, books) =>
-  CONNECTION_IDS.filter((id) => connections[id]).flatMap((id) =>
+  Object.keys(connections).flatMap((id) =>
     (PARTNER_SESSIONS[id] || []).map((s) => ({
       id: s.id,
       partnerId: id,
       title: books[s.book]?.title ?? s.book,
-      meta: `${CONNECTIONS[id].name} · ${s.when}${s.finished ? ' · Finished' : ''}`,
+      // When, and whether it was finished. The partner's mark is beside it.
+      meta: `${s.when}${s.finished ? ' · Finished' : ''}`,
       minutes: s.minutes,
     })),
   )

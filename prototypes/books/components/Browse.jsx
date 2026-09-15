@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { BackBar } from '@components/BackBar/BackBar'
+import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { SectionCard } from '@components/SectionCard/SectionCard'
@@ -186,7 +186,7 @@ export function Browse({
 
   return (
     <div className="bk-browse-page">
-      <BackBar label="Discover" onClick={onBack} />
+      <ReaderBack onClick={onBack}>Back to Discover</ReaderBack>
 
       <ReaderPageHead title="Find a book" />
 

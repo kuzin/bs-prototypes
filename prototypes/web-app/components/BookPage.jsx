@@ -136,25 +136,25 @@ export function BookPage({
     <div className="bp">
       {onBack && <ReaderBack onClick={onBack}>{backLabel}</ReaderBack>}
 
-      <article className="bp-card">
+      <article className="bkp-card">
         {/* Its own cell rather than the rail's first child: stacked, the cover
             belongs at the top with the title, not after the moods. The app
             pushes the same column first on a small screen. */}
-        <div className="bp-cover">
+        <div className="bkp-cover">
           <BookCover book={book} size="fill" />
         </div>
 
-        <div className="bp-main">
-          <header className="bp-head">
-            <h1 className="bp-title">{book.title}</h1>
-            <p className="bp-credits">
-              <span className="bp-person">{book.author}</span>
-              <span className="bp-role">(Author)</span>
-              {ages && <span className="bp-ages">{ages}</span>}
+        <div className="bkp-main">
+          <header className="bkp-head">
+            <h1 className="bkp-title">{book.title}</h1>
+            <p className="bkp-credits">
+              <span className="bkp-person">{book.author}</span>
+              <span className="bkp-role">(Author)</span>
+              {ages && <span className="bkp-ages">{ages}</span>}
             </p>
           </header>
 
-          <div className="bp-buttons">
+          <div className="bkp-buttons">
             {getThisBook && book.isbn && <Button>Get This Book</Button>}
             {wishList && (
               <Button variant="secondary" onClick={() => onWish?.(book)}>
@@ -168,7 +168,7 @@ export function BookPage({
             )}
           </div>
 
-          <div className="bp-tabs">
+          <div className="bkp-tabs">
             <Tabs
               variant="pill"
               size="md"
@@ -179,11 +179,13 @@ export function BookPage({
             />
           </div>
 
-          <div className="bp-panel">
+          <div className="bkp-panel">
             {tab === 'reading' && (
-              <section className="bp-section">
+              <section className="bkp-section">
                 {sessions.length === 0 ? (
-                  <p className="bp-noreading">You haven’t logged any reading for this title yet.</p>
+                  <p className="bkp-noreading">
+                    You haven’t logged any reading for this title yet.
+                  </p>
                 ) : (
                   <>
                     {/* The same tile the reading log puts its numbers on, so this
@@ -192,7 +194,7 @@ export function BookPage({
                         measured in minutes or pages is the table's own column,
                         and a tile that can only say "—" is a tile that says
                         nothing. */}
-                    <div className="bp-readnums">
+                    <div className="bkp-readnums">
                       <StatCard
                         value={sessions.length}
                         label={sessions.length === 1 ? 'Session' : 'Sessions'}
@@ -211,14 +213,14 @@ export function BookPage({
                         carry four things now and the app's own session list is
                         a table in everything but markup. */}
                     <Table
-                      className="bp-sessions"
+                      className="bkp-sessions"
                       bordered
                       columns={[
                         {
                           key: 'date',
                           label: 'Date',
                           render: (_v, e) => (
-                            <span className="bp-session-date">{longDate(e.date)}</span>
+                            <span className="bkp-session-date">{longDate(e.date)}</span>
                           ),
                         },
                         {
@@ -227,9 +229,9 @@ export function BookPage({
                           width: 150,
                           render: (_v, e) =>
                             editing === e.id ? (
-                              <span className="bp-session-edit">
+                              <span className="bkp-session-edit">
                                 <input
-                                  className="bp-session-input"
+                                  className="bkp-session-input"
                                   type="number"
                                   min="1"
                                   value={draft}
@@ -237,12 +239,12 @@ export function BookPage({
                                   aria-label={`${e.minutes ? 'minutes' : 'pages'} read`}
                                   autoFocus
                                 />
-                                <span className="bp-session-unit">
+                                <span className="bkp-session-unit">
                                   {e.minutes ? 'min' : 'pages'}
                                 </span>
                               </span>
                             ) : (
-                              <strong className="bp-session-amount">
+                              <strong className="bkp-session-amount">
                                 {e.minutes
                                   ? `${e.minutes} min`
                                   : e.pages
@@ -334,30 +336,30 @@ export function BookPage({
             )}
 
             {tab === 'overview' && book.tip && (
-              <section className="bp-section bp-tip">
+              <section className="bkp-section bkp-tip">
                 <h2>Learning Tip</h2>
                 <p>{book.tip}</p>
               </section>
             )}
 
             {tab === 'overview' && book.body && (
-              <section className="bp-section">
+              <section className="bkp-section">
                 <h2>Description</h2>
                 <p>{book.body}</p>
-                {book.source && <p className="bp-source">Source: {book.source}</p>}
+                {book.source && <p className="bkp-source">Source: {book.source}</p>}
               </section>
             )}
 
             {tab === 'overview' && book.moods?.length > 0 && (
-              <section className="bp-section">
+              <section className="bkp-section">
                 <h2>How Readers Felt</h2>
-                <ul className="bp-moods">
+                <ul className="bkp-moods">
                   {book.moods.map((m) => (
                     <li key={m}>
-                      <span className="bp-mood-face" aria-hidden="true">
+                      <span className="bkp-mood-face" aria-hidden="true">
                         {MOODS[m].emoji}
                       </span>
-                      <span className="bp-mood-title">{MOODS[m].title}</span>
+                      <span className="bkp-mood-title">{MOODS[m].title}</span>
                     </li>
                   ))}
                 </ul>
@@ -365,17 +367,17 @@ export function BookPage({
             )}
 
             {tab === 'similar' && (
-              <section className="bp-section">
-                <ul className="bp-related">
+              <section className="bkp-section">
+                <ul className="bkp-related">
                   {related.map((b) => (
                     <li key={b.id}>
                       <button type="button" className="is-hit" onClick={() => onOpenBook?.(b)}>
-                        <span className="bp-related-cover">
+                        <span className="bkp-related-cover">
                           <BookCover book={b} size="fill" />
                         </span>
-                        <span className="bp-related-meta">
-                          <span className="bp-related-title">{b.title}</span>
-                          <span className="bp-related-author">{b.author}</span>
+                        <span className="bkp-related-meta">
+                          <span className="bkp-related-title">{b.title}</span>
+                          <span className="bkp-related-author">{b.author}</span>
                         </span>
                       </button>
                     </li>
@@ -386,17 +388,17 @@ export function BookPage({
           </div>
         </div>
 
-        <aside className="bp-aside">
+        <aside className="bkp-aside">
           {book.lexile && (
-            <section className="bp-tags">
+            <section className="bkp-tags">
               <h2>Lexile Measure</h2>
-              <ul className="bp-taglist bp-tags--teal">
+              <ul className="bkp-taglist bkp-tags--teal">
                 <TagLink>{book.lexile}</TagLink>
               </ul>
             </section>
           )}
 
-          <section className="bp-tags">
+          <section className="bkp-tags">
             <h2>Tags</h2>
 
             <TagGroup title="Favorite Genres" tone="green">
@@ -431,9 +433,9 @@ export function BookPage({
                 own block because a medal is the reason a reader picks a book
                 up, not a tag they scan past. */}
             {book.awards?.length > 0 && (
-              <div className="bp-taggroup">
+              <div className="bkp-taggroup">
                 <h3>Awards</h3>
-                <ul className="bp-awards">
+                <ul className="bkp-awards">
                   {book.awards.map((a) => (
                     <li key={a}>
                       <Pill color="#B45309" variant="soft" size="sm">
@@ -510,9 +512,9 @@ function TagGroup({ title, tone = 'gray', children }) {
   const items = (Array.isArray(children) ? children : [children]).filter(Boolean)
   if (items.length === 0) return null
   return (
-    <div className="bp-taggroup">
+    <div className="bkp-taggroup">
       <h3>{title}</h3>
-      <ul className={`bp-taglist bp-tags--${tone}`}>{items}</ul>
+      <ul className={`bkp-taglist bkp-tags--${tone}`}>{items}</ul>
     </div>
   )
 }
@@ -527,11 +529,11 @@ function TagLink({ onClick, children }) {
   return (
     <li>
       {onClick ? (
-        <button type="button" className="bp-tag" onClick={onClick}>
+        <button type="button" className="bkp-tag" onClick={onClick}>
           {children}
         </button>
       ) : (
-        <span className="bp-tag bp-tag--static">{children}</span>
+        <span className="bkp-tag bkp-tag--static">{children}</span>
       )}
     </li>
   )

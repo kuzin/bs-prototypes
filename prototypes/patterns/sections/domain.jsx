@@ -255,21 +255,21 @@ const AUTO_LOGGED_ROWS = [
     id: 'a1',
     partnerId: 'comicsplus',
     title: 'Dog Man',
-    meta: 'Comics Plus \u00b7 Today \u00b7 Finished',
+    meta: 'Today \u00b7 Finished',
     minutes: 24,
   },
   {
     id: 'a2',
     partnerId: 'beeverso',
     title: 'Platero y yo',
-    meta: 'Beeverso \u00b7 Today',
+    meta: 'Today',
     minutes: 22,
   },
   {
     id: 'a3',
     partnerId: 'scholastic',
     title: 'Scholastic News',
-    meta: 'Scholastic \u00b7 Today',
+    meta: 'Today',
     minutes: 12,
   },
 ]
@@ -749,12 +749,20 @@ import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
     name: 'Auto-Logged Card',
     usage: `import { AutoLoggedCard } from '@components/PartnerConnect/PartnerConnect'
 
-<AutoLoggedCard rows={importedSessions} />`,
+<AutoLoggedCard
+  rows={[{ id, partnerId, title, meta: 'Today · Finished', minutes }]}
+/>`,
     desc: (
       <>
         The payoff of a linked account: reading that arrived from a partner without the reader
         logging anything. Takes display-ready <code>rows</code>, since only the consuming prototype
         knows how to name its own titles.
+        <br />
+        <br />
+        <code>meta</code> is <strong>when</strong> it was read and whether it was finished — not the
+        partner&apos;s name. Its mark is right beside it and names itself on hover, so putting the
+        name in the line too printed &ldquo;Beeverso&rdquo; down a card that already only holds a
+        linked app&apos;s reading.
       </>
     ),
     render: () => (

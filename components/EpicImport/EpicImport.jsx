@@ -7,6 +7,7 @@ import { Spinner } from '@components/Primitives/Primitives'
 import { Confetti } from '@components/Confetti/Confetti'
 import { ModalFullBack, ModalFullClose } from '@components/Modal/Modal'
 import { EarnedCard } from '@components/EarnedCard/EarnedCard'
+import { InfoBox } from '@components/InfoBox/InfoBox'
 import { useLockScroll } from '@components/useLockScroll/useLockScroll'
 
 import '@components/EpicImport/EpicImport.css'
@@ -313,10 +314,9 @@ function SignInStep({ as, setAs, fields, setFields, signingIn, canSignIn, onSign
       {/* `.epic-login-footer` — the app says this plainly, because handing one
           service another service's password is a thing people are right to
           hesitate over. */}
-      <p className="epi-footnote">
-        <Icon name="lock" size={15} />
+      <InfoBox icon={<Icon name="lock" size={26} />} className="epi-footnote">
         Beanstack will not store your account credentials. This is a secure SSL connection.
-      </p>
+      </InfoBox>
     </div>
   )
 }

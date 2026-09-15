@@ -5,7 +5,7 @@
 /* The centered Modal is 520px — the app's own friend modal is 480, but our
    challenge cards go two across inside it and the earned strips want the run. */
 .modal--center:has(.fp) {
-  width: min(640px, calc(100vw - 32px));
+  width: min(640px, calc(100vw - var(--modal-gutter) * 2));
   /* A defined height, not one that follows the tab: Overview is a long tab and
      Challenges a short one, and sizing to content made the modal jump — and
      move under the pointer — on every tab change. `max-height` still shortens
@@ -77,10 +77,13 @@
 }
 /* The tabs are the last row of the header, so the header's own border is the
    rule they sit on — `.friend-modal-tabs`, `margin-top: 12px; padding: 0 24px`. */
+/* A pill group is a control sitting on the header's band, not a strip fused to
+   its edge — so it keeps air on both sides of itself. As underline tabs it sat
+   on the header's own rule and wanted none. */
 .fp-tabs {
   align-self: stretch;
-  margin-top: 14px;
   padding: 0 24px;
+  margin: 18px 0 16px;
   /* The app's `.border-tabs` carries no rule of its own here — the header's
      border is the one under them, and it runs the full width. */
   border-bottom: 0;
@@ -130,9 +133,12 @@
    `ChallengeCard`, the same card the reader sees on their own Challenges page.
    The app stacks them full-width in a 480px modal; ours pair up. */
 
+/* One challenge to a row. Two-up inside a modal left each card 287px, which
+   is narrower than the same card gets on the Challenges page — the banner lost
+   its ends and three type chips crowded onto one line. */
 .fp-challenges {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 12px;
   margin-top: 18px;
 }
@@ -199,9 +205,6 @@
 }
 
 @media (max-width: 560px) {
-  .fp-challenges {
-    grid-template-columns: minmax(0, 1fr);
-  }
   .fp-avatar {
     width: 96px;
     height: 96px;

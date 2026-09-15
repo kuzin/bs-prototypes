@@ -7,6 +7,7 @@ import { Checkbox, Input, Select } from '@components/Form/Form'
 import { PartnerBrand } from '@components/PartnerBrand/PartnerBrand'
 import { SectionCard } from '@components/SectionCard/SectionCard'
 import { SettingList, SettingRow } from '@components/SettingRow/SettingRow'
+import { Toggle } from '@components/Toggle/Toggle'
 
 import '@components/PersonalizeReader/PersonalizeReader.css'
 
@@ -727,12 +728,19 @@ function PreferencePane({ id, pane, first, prefs, vocab, onCancel, onSave }) {
           {pane.shape === 'levels' && (
             <div className="pf-levels">
               {options.map((l) => (
-                <label className={`pf-level${value.includes(l.id) ? ' is-on' : ''}`} key={l.id}>
-                  <Checkbox checked={value.includes(l.id)} onChange={() => toggle(l.id)}>
-                    {l.name}
-                  </Checkbox>
+                /* The switch is the row's own label, not a control dropped
+                   inside one — a `<label>` around a `<Checkbox>` nested two
+                   labels and two inputs, and clicking the hint hit neither. */
+                <Toggle
+                  key={l.id}
+                  size="lg"
+                  className={`pf-level${value.includes(l.id) ? ' is-on' : ''}`}
+                  checked={value.includes(l.id)}
+                  onChange={() => toggle(l.id)}
+                >
+                  <span className="pf-level-name">{l.name}</span>
                   <span className="pf-level-hint">{l.description}</span>
-                </label>
+                </Toggle>
               ))}
             </div>
           )}

@@ -59,9 +59,6 @@ function ReviewComposer({ onAdd }) {
           onChange={(e) => setBody(e.target.value)}
         />
         <div className="bk-composer-foot">
-          <span className="bk-composer-hint">
-            <Icon name="shield-check" size={14} /> Reviews are visible to readers at your school
-          </span>
           <Button variant="primary" size="sm" disabled={!stars || !body.trim()} onClick={submit}>
             Post review
           </Button>
@@ -141,6 +138,7 @@ export function Reviews({ book, userReviews, onAdd }) {
   const all = [...userReviews, ...book.reviews]
   return (
     <div className="bk-reviews">
+      <h3 className="bk-section-h">Ratings and reviews</h3>
       <RatingBreakdown book={book} />
       <ReviewComposer onAdd={onAdd} />
       <div className="bk-review-list">

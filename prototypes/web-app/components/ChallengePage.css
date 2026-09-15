@@ -571,7 +571,7 @@
 /* A certificate is a landscape sheet, so the modal is one — the centred
    default is 520px, which folded the signature row onto two lines. */
 .cp-certmodal {
-  width: min(760px, calc(100vw - 32px));
+  width: min(760px, calc(100vw - var(--modal-gutter) * 2));
 }
 /* `closeBadge` turns the modal's clipping off so the disc can overhang, and a
    square-cornered body then sits proud of the rounded edge. The body is the

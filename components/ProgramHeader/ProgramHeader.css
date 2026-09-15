@@ -9,6 +9,11 @@
    whole header reads as one band down to that rule. */
 .prog-header {
   position: relative;
+  /* The tags are the last thing in the header and were sitting on its bottom
+     edge. On a challenge page the tab strip's own top padding hid that; on its
+     own — in the Pattern Library, or any page that doesn't follow it with
+     one — the header just stopped. */
+  padding-bottom: 24px;
   /* White at the top, where it meets the coloured band's curve, settling into
      the grey by the time it reaches the tab strip. A flat grey put a hard edge
      under the curve; the fade lets the band land on nothing. */

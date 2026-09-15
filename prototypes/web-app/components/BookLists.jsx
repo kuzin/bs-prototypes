@@ -100,7 +100,7 @@ export function BookLists({ onOpenList, onFindBooks }) {
         actions={
           <>
             <SearchInput
-              className="bl-search"
+              className="blp-search"
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search book lists"
@@ -116,7 +116,7 @@ export function BookLists({ onOpenList, onFindBooks }) {
       {/* `grade_levels/filters` and `genres/filters` — the app's own two. One
           value each: these narrow a shelf of shelves, where the catalog's own
           facets stack up. */}
-      <FilterMenuBar className="bl-filters">
+      <FilterMenuBar className="blp-filters">
         <FilterMenu
           label="Grade Levels"
           value={grades}
@@ -142,14 +142,14 @@ export function BookLists({ onOpenList, onFindBooks }) {
           description="Try a different genre or grade, or clear the filters."
         />
       ) : (
-        <ul className="bl-list">
+        <ul className="blp-list">
           {shown.map((list) => {
             const first = listBooks(list)[0]
             return (
-              <li className={`bl-row is-hit${list.external ? ' is-external' : ''}`} key={list.id}>
+              <li className={`blp-row is-hit${list.external ? ' is-external' : ''}`} key={list.id}>
                 {list.external ? (
                   <a
-                    className="bl-row-hit"
+                    className="blp-row-hit"
                     href={list.url}
                     target="_blank"
                     rel="noreferrer"
@@ -158,7 +158,7 @@ export function BookLists({ onOpenList, onFindBooks }) {
                 ) : (
                   <button
                     type="button"
-                    className="bl-row-hit"
+                    className="blp-row-hit"
                     onClick={() => onOpenList?.(list)}
                     aria-label={list.name}
                   />
@@ -168,32 +168,32 @@ export function BookLists({ onOpenList, onFindBooks }) {
                     back the same way, and a list with neither (an external one)
                     gets the tinted tile. */}
                 {first ? (
-                  <span className="bl-cover bl-cover--book">
+                  <span className="blp-cover blp-cover--book">
                     <BookCover book={first} size="fill" />
                   </span>
                 ) : (
-                  <span className="bl-cover" style={{ background: list.tint }} aria-hidden="true">
+                  <span className="blp-cover" style={{ background: list.tint }} aria-hidden="true">
                     <Icon name={list.external ? 'external-link' : 'book-2'} size={26} />
                   </span>
                 )}
 
-                <div className="bl-body">
-                  <div className="bl-head">
-                    <h3 className="bl-name">
+                <div className="blp-body">
+                  <div className="blp-head">
+                    <h3 className="blp-name">
                       {list.name}
                       {list.external && (
-                        <Icon name="external-link" size={14} stroke={2.2} className="bl-out" />
+                        <Icon name="external-link" size={14} stroke={2.2} className="blp-out" />
                       )}
                     </h3>
                     {/* An external list has no books here to count. */}
-                    {!list.external && <span className="bl-count">{list.count} Books</span>}
+                    {!list.external && <span className="blp-count">{list.count} Books</span>}
                   </div>
-                  <p className="bl-desc">{list.description}</p>
-                  <div className="bl-meta">
-                    <span className="bl-by">
+                  <p className="blp-desc">{list.description}</p>
+                  <div className="blp-meta">
+                    <span className="blp-by">
                       <strong>Created by</strong> {list.by}
                     </span>
-                    <span className="bl-genres">
+                    <span className="blp-genres">
                       <strong>Genres</strong>
                       {list.genres.map((g) => (
                         <Pill key={g} color="#087542" size="sm">

@@ -161,19 +161,306 @@ export const BOOKS = {
     pages: 24,
     partner: 'scholastic',
   },
+  'sn-jr': {
+    id: 'sn-jr',
+    title: 'Scholastic Let’s Find Out',
+    author: 'Scholastic',
+    cover: ['#F2B705', '#B06A00'],
+    kind: 'magazine',
+    masthead: 'Let’s Find Out',
+    issue: 'May 2026 · Bugs Up Close',
+    cadence: 'Weekly',
+    measure: 'pages',
+    pages: 8,
+    partner: 'scholastic',
+  },
+  'storyworks-jr': {
+    id: 'storyworks-jr',
+    title: 'Storyworks Jr.',
+    author: 'Scholastic',
+    cover: ['#FF8A3D', '#C2410C'],
+    kind: 'magazine',
+    masthead: 'Storyworks Jr.',
+    issue: 'May 2026 · The Lost Dog',
+    cadence: 'Monthly',
+    measure: 'minutes',
+    pages: 24,
+    partner: 'scholastic',
+  },
+  junior: {
+    id: 'junior',
+    title: 'Junior Scholastic',
+    author: 'Scholastic',
+    cover: ['#1E9E6A', '#0B5F3E'],
+    kind: 'magazine',
+    masthead: 'Junior Scholastic',
+    issue: 'May 2026 · Inside the Amazon',
+    cadence: 'Monthly',
+    measure: 'minutes',
+    pages: 24,
+    partner: 'scholastic',
+  },
+  'science-world': {
+    id: 'science-world',
+    title: 'Science World',
+    author: 'Scholastic',
+    cover: ['#22B8CF', '#0B6B78'],
+    kind: 'magazine',
+    masthead: 'Science World',
+    issue: 'May 2026 · Sharks Decoded',
+    cadence: 'Monthly',
+    measure: 'minutes',
+    pages: 20,
+    partner: 'scholastic',
+  },
+  action: {
+    id: 'action',
+    title: 'Scholastic Action',
+    author: 'Scholastic',
+    cover: ['#E8443A', '#8A1C16'],
+    kind: 'magazine',
+    masthead: 'Action',
+    issue: 'May 2026 · True Survival',
+    cadence: 'Monthly',
+    measure: 'minutes',
+    pages: 20,
+    partner: 'scholastic',
+  },
+  dynamath: {
+    id: 'dynamath',
+    title: 'DynaMath',
+    author: 'Scholastic',
+    cover: ['#7C5CFA', '#3B1E9E'],
+    kind: 'magazine',
+    masthead: 'DynaMath',
+    issue: 'May 2026 · Puzzle Palace',
+    cadence: 'Monthly',
+    measure: 'pages',
+    pages: 16,
+    partner: 'scholastic',
+  },
+  choices: {
+    id: 'choices',
+    title: 'Scholastic Choices',
+    author: 'Scholastic',
+    cover: ['#EC4899', '#9D174D'],
+    kind: 'magazine',
+    masthead: 'Choices',
+    issue: 'May 2026 · Sleep Better',
+    cadence: 'Monthly',
+    measure: 'minutes',
+    pages: 20,
+    partner: 'scholastic',
+  },
+  upfront: {
+    id: 'upfront',
+    title: 'The New York Times Upfront',
+    author: 'Scholastic',
+    cover: ['#334155', '#0F172A'],
+    kind: 'magazine',
+    masthead: 'Upfront',
+    issue: 'May 2026 · The Vote Ahead',
+    cadence: 'Monthly',
+    measure: 'minutes',
+    pages: 28,
+    partner: 'scholastic',
+  },
 }
 
-export const RECENTLY_LOGGED = ['scholastic-news', 'she-gets-the-girl', 'rump', 'lucky-cap']
+/* The rest of a 25-title reading list — the sort of middle-grade shelf a
+   school's “25 in 25” is built from. */
+BOOKS['wonder'] = {
+  id: 'wonder',
+  title: 'Wonder',
+  author: 'R. J. Palacio',
+  cover: ['#3FA9E0', '#1B5E8C'],
+  measure: 'minutes',
+  pages: 320,
+}
+BOOKS['crossover'] = {
+  id: 'crossover',
+  title: 'The Crossover',
+  author: 'Kwame Alexander',
+  cover: ['#F26430', '#A34320'],
+  measure: 'minutes',
+  pages: 240,
+}
+BOOKS['front-desk'] = {
+  id: 'front-desk',
+  title: 'Front Desk',
+  author: 'Kelly Yang',
+  cover: ['#E0457B', '#F5A623'],
+  measure: 'minutes',
+  pages: 286,
+}
+BOOKS['new-kid'] = {
+  id: 'new-kid',
+  title: 'New Kid',
+  author: 'Jerry Craft',
+  cover: ['#2BB3C0', '#F2B705'],
+  measure: 'minutes',
+  pages: 256,
+}
+BOOKS['ghost'] = {
+  id: 'ghost',
+  title: 'Ghost',
+  author: 'Jason Reynolds',
+  cover: ['#1A2433', '#6B4FA8'],
+  measure: 'minutes',
+  pages: 192,
+}
+BOOKS['esperanza'] = {
+  id: 'esperanza',
+  title: 'Esperanza Rising',
+  author: 'Pam Muñoz Ryan',
+  cover: ['#C1272D', '#F7941E'],
+  measure: 'minutes',
+  pages: 262,
+}
+BOOKS['holes'] = {
+  id: 'holes',
+  title: 'Holes',
+  author: 'Louis Sachar',
+  cover: ['#B06A00', '#F2B705'],
+  measure: 'minutes',
+  pages: 233,
+}
+BOOKS['refugee'] = {
+  id: 'refugee',
+  title: 'Refugee',
+  author: 'Alan Gratz',
+  cover: ['#0B6B78', '#22B8CF'],
+  measure: 'minutes',
+  pages: 352,
+}
+BOOKS['merci-suarez'] = {
+  id: 'merci-suarez',
+  title: 'Merci Suárez Changes Gears',
+  author: 'Meg Medina',
+  cover: ['#00AEEF', '#7C4DA8'],
+  measure: 'minutes',
+  pages: 368,
+}
+BOOKS['trap-a-tiger'] = {
+  id: 'trap-a-tiger',
+  title: 'When You Trap a Tiger',
+  author: 'Tae Keller',
+  cover: ['#F2B705', '#E8443A'],
+  measure: 'minutes',
+  pages: 304,
+}
+BOOKS['last-cuentista'] = {
+  id: 'last-cuentista',
+  title: 'The Last Cuentista',
+  author: 'Donna Barba Higuera',
+  cover: ['#3C0458', '#00AEEF'],
+  measure: 'minutes',
+  pages: 336,
+}
+BOOKS['show-me-a-sign'] = {
+  id: 'show-me-a-sign',
+  title: 'Show Me a Sign',
+  author: 'Ann Clare LeZotte',
+  cover: ['#1E7A5A', '#8DC63F'],
+  measure: 'minutes',
+  pages: 288,
+}
+BOOKS['other-words'] = {
+  id: 'other-words',
+  title: 'Other Words for Home',
+  author: 'Jasmine Warga',
+  cover: ['#EC4899', '#7C5CFA'],
+  measure: 'minutes',
+  pages: 352,
+}
+BOOKS['brown-girl'] = {
+  id: 'brown-girl',
+  title: 'Brown Girl Dreaming',
+  author: 'Jacqueline Woodson',
+  cover: ['#7C4DA8', '#EC7C3C'],
+  measure: 'minutes',
+  pages: 336,
+}
+BOOKS['wild-robot'] = {
+  id: 'wild-robot',
+  title: 'The Wild Robot',
+  author: 'Peter Brown',
+  cover: ['#1E9E6A', '#0B5F3E'],
+  measure: 'minutes',
+  pages: 288,
+}
+BOOKS['roll-of-thunder'] = {
+  id: 'roll-of-thunder',
+  title: 'Roll of Thunder, Hear My Cry',
+  author: 'Mildred D. Taylor',
+  cover: ['#8A1C16', '#E8443A'],
+  measure: 'minutes',
+  pages: 288,
+}
+BOOKS['hatchet'] = {
+  id: 'hatchet',
+  title: 'Hatchet',
+  author: 'Gary Paulsen',
+  cover: ['#334155', '#22B8CF'],
+  measure: 'minutes',
+  pages: 208,
+}
+
+// Beeverso's own, for the pages that offer that integration. Spanish titles
+// read in the partner's app, so they carry `partner` the way the Comics Plus
+// and Scholastic books do.
+BOOKS.platero = {
+  id: 'platero',
+  title: 'Platero y yo',
+  author: 'Juan Ramón Jiménez',
+  cover: ['#7C4DA8', '#EC7C3C'],
+  partner: 'beeverso',
+  measure: 'minutes',
+  pages: 144,
+}
+BOOKS.monarca = {
+  id: 'monarca',
+  title: 'El viaje de la mariposa monarca',
+  author: 'Texto corto · Ciencias',
+  cover: ['#00AEEF', '#662D91'],
+  partner: 'beeverso',
+  measure: 'minutes',
+}
+
+/* Six, so the shelf can show five after a page has filtered out a partner it
+   doesn't offer (web-app drops Scholastic). */
+export const RECENTLY_LOGGED = [
+  'scholastic-news',
+  'she-gets-the-girl',
+  'rump',
+  'lucky-cap',
+  'dog-man',
+  'amulet',
+]
 
 // A shelf of issues pulled from a linked partner's catalog, so it only appears
 // once that account is connected.
 export const READING_LIST = {
   partner: 'scholastic',
   title: 'Top Scholastic Picks',
-  total: 10,
   unit: 'issues',
-  completed: ['superscience', 'scholastic-news'],
-  titles: ['scope', 'superscience', 'storyworks', 'scholastic-news'],
+  completed: ['superscience', 'scholastic-news', 'junior'],
+  // The whole classroom-magazine line-up this reader's school subscribes to —
+  // the shelf shows four and its View More card opens the rest.
+  titles: [
+    'scope',
+    'superscience',
+    'storyworks',
+    'scholastic-news',
+    'storyworks-jr',
+    'junior',
+    'science-world',
+    'action',
+    'dynamath',
+    'choices',
+    'upfront',
+    'sn-jr',
+  ],
 }
 
 // ─── Dashboard backdrop (the "Challenges" page the flow opens on top of) ─────
@@ -402,6 +689,13 @@ export const TOP_GRADES = [
 export const LOG_STREAK = { current: 2, longest: 5 }
 
 export const LOG_MONTH = { label: 'June 2026', year: 2026, month: 5 } // month is 0-based
+
+/** The month the reader is actually in, in `LOG_MONTH`'s shape. */
+export const currentMonth = (d = new Date()) => ({
+  label: d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+  year: d.getFullYear(),
+  month: d.getMonth(),
+})
 
 export const READING_LOG = [
   {
@@ -644,9 +938,12 @@ export const REGISTRATION_QUESTIONS = [
  * must include specific ones (`all_program_books_required?`,
  * `minimum_required_program_books`, `specific_program_books_required?`).
  *
- * Per book: `done` is `cached_completed_book_ids`, `questions` is a title
- * carrying Reading Integrity questions, and `readNow`/`goNow` are the two ways
+ * Per book: `done` is `cached_completed_book_ids`, and `readNow`/`goNow` are the two ways
  * the app offers to go and read it rather than just log it.
+ *
+ * A title can sit on two lists — the same book is on plenty of them — so these
+ * deliberately overlap. They're all drawn from `BOOKS`, and a consumer that
+ * filters its catalog (the reader app drops Scholastic) simply shows fewer.
  */
 export const READING_LIST_CHALLENGES = [
   {
@@ -657,10 +954,10 @@ export const READING_LIST_CHALLENGES = [
     tint: '#E8443A',
     required: { kind: 'specific', count: 6 },
     books: [
-      { id: 'rump', required: true, done: true, questions: true },
+      { id: 'rump', required: true, done: true },
       { id: 'she-gets-the-girl', required: true, done: true },
       { id: 'lucky-cap', required: true, readNow: true },
-      { id: 'darius', required: true, questions: true },
+      { id: 'darius', required: true },
       { id: 'dog-man', goNow: true },
       { id: 'telegraph-club' },
     ],
@@ -675,8 +972,29 @@ export const READING_LIST_CHALLENGES = [
     books: [
       { id: 'amulet', done: true },
       { id: 'lesbianas-guide' },
-      { id: 'scope', readNow: true },
-      { id: 'storyworks' },
+      { id: 'dog-man' },
+      { id: 'rump' },
+      { id: 'wonder', done: true },
+      { id: 'crossover' },
+      { id: 'front-desk', done: true },
+      { id: 'new-kid', done: true },
+      { id: 'ghost' },
+      { id: 'esperanza' },
+      { id: 'holes', done: true },
+      { id: 'refugee' },
+      { id: 'merci-suarez' },
+      { id: 'trap-a-tiger' },
+      { id: 'last-cuentista' },
+      { id: 'show-me-a-sign' },
+      { id: 'other-words' },
+      { id: 'brown-girl' },
+      { id: 'wild-robot' },
+      { id: 'roll-of-thunder' },
+      { id: 'hatchet', done: true },
+      { id: 'she-gets-the-girl' },
+      { id: 'lucky-cap' },
+      { id: 'telegraph-club' },
+      { id: 'darius' },
     ],
   },
 ]

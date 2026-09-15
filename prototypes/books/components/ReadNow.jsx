@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { Cover } from './Cover'
+import { BookCover } from '@components/BookCover/BookCover'
 import { PartnerMark } from './PartnerBits'
 import { PARTNERS } from '../data'
 
@@ -157,7 +157,7 @@ export function ReadNow({ book, partner = 'comicsplus', onClose, onFinish }) {
         <div className={`bk-reader-sheet bk-reader-sheet--${cur.type}`}>
           {cur.type === 'cover' && (
             <div className="bk-reader-coverwrap">
-              <Cover book={book} size="lg" />
+              <BookCover book={book} size="fill" />
             </div>
           )}
           {cur.type === 'comic' && (

@@ -47,13 +47,17 @@
 
 /* The top bar carries the tab strip inside it, so both stick together. They
    stop below whatever prototype chrome the shell declares — at `top: 0` they
-   slid under the preview bar, which sits above them in the stack. */
+   slid under the preview bar, which sits above them in the stack.
+
+   `.header`'s own edge is a shadow rather than a rule — the one hairline the
+   app draws up here sits *between* the bar and the nav beneath it, which is
+   `.wa-tabsbar`'s border-top. */
 .wa-topbar {
   position: sticky;
   top: var(--chrome-top, 0px);
   z-index: 20;
   background: #ffffff;
-  border-bottom: 1px solid var(--c-gray-200);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
 
 /* The one container here that isn't capped: the top bar is app chrome and runs
@@ -63,19 +67,37 @@
 .wa-topbar-inner {
   max-width: none;
   margin: 0;
-  padding: 14px 24px;
+  /* `.top-bar` — a fixed 64px rather than a height the buttons happen to add
+     up to, so the bar is the same depth on every page and in every prototype
+     built on this chrome. */
+  height: 64px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   gap: 14px;
 }
+/* `@include bp($bp-900)` — the gutter opens to 32px once there's room. */
+@media (min-width: 900px) {
+  .wa-topbar-inner {
+    padding: 0 32px;
+  }
+}
 
 /* The topbar logo doubles as "back to Challenges" once the reader can navigate
-   to their settings page. */
+   to their settings page. `.logo` caps a tenant's own artwork at 44 × 180 and
+   dims it on hover — ours is a fixed wordmark, but it keeps both so a taller
+   logo dropped in here can't stretch the bar. */
 .wa-logo-btn {
   background: none;
   border: 0;
   padding: 0;
   display: inline-flex;
+  max-width: 180px;
+  max-height: 44px;
+  transition: opacity 0.13s ease;
+}
+.wa-logo-btn:hover {
+  opacity: 0.8;
 }
 
 /* Secondary top-bar actions fold into a flyout when the bar gets tight. */
@@ -151,38 +173,63 @@
   margin-left: auto;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 8px;
 }
+/* `.reader-dropdown-trigger` — 40px of pastel red at a 20px radius, with the
+   reader's avatar overhanging both ends of it inside a white ring. The pill and
+   the avatar are the same colour and move together on hover, so the ring is the
+   only thing separating them: one shape, not a disc sitting on a tablet. */
 .wa-user-pill {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 5px 16px 5px 5px;
+  height: 40px;
+  padding: 0;
   border: 0;
-  border-radius: 999px;
-  background: #fce5dc;
+  border-radius: 20px;
+  background: var(--c-red-wash);
   font-family: inherit;
-  font-weight: 700;
-  color: #2e2422;
-  font-size: 15px;
   cursor: pointer;
 }
-.wa-user-pill:hover {
-  filter: brightness(0.97);
+.wa-user-pill:hover,
+.wa-user-pill:hover .wa-user-avatar {
+  background: color-mix(in srgb, var(--c-red) 10%, var(--c-red-wash));
 }
-.wa-user-avatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 999px;
-  background: #f09a77;
-  color: #fff;
-  font-size: 13px;
+/* `.reader-dropdown__name`. */
+.wa-user-name {
+  padding: 0 20px 0 12px;
+  font-size: 14px;
   font-weight: 800;
+  color: var(--c-red-ink);
+}
+/* `.reader-avatar`: the shared 40px disc. The pill's own is bigger than the
+   pill (`46px` on a `-4px` margin) — that overhang is what makes it read as a
+   head on a shoulder rather than a chip in a slot. */
+.wa-user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--c-red-wash);
+  color: var(--c-red-ink);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.25;
   flex: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  letter-spacing: 0.02em;
+}
+.wa-user-pill .wa-user-avatar {
+  width: 46px;
+  height: 46px;
+  margin: -4px;
+  border: 3px solid #ffffff;
+  font-size: 13px;
+}
+/* The app has one avatar colour and uses it for everyone. Our readers carry
+   their own, so a reader who has one takes it as the ground and turns the
+   initials white — dark red on someone's teal is unreadable. */
+.wa-user-avatar--tinted {
+  color: #ffffff;
 }
 .wa-icon-btn {
   background: transparent;
@@ -200,9 +247,10 @@
   background: var(--c-gray-100);
 }
 
-/* Tabs bar */
+/* Tabs bar — `.navigation`, the app's second 64px row, ruled off from the bar
+   above it. */
 .wa-tabsbar {
-  border-top: 1px solid var(--c-gray-100);
+  border-top: 1px solid var(--c-gray-150);
 }
 /* The strip is the last thing in the top bar, and the top bar already draws a
    rule across the window — `.tabs--underline`'s own track drew a second one
@@ -212,7 +260,7 @@
    on anyway. */
 .wa-tabsbar .tabs {
   max-width: var(--wa-content-max);
-  margin: 0 auto -1px;
+  margin: 0 auto;
   padding: 0 24px;
   justify-content: center;
   gap: 0;
@@ -221,8 +269,11 @@
 /* `.wa-tabsbar .tabs .tab`, not `.wa-tabsbar .tab`: the shorter selector ties
    `.tabs--underline .tab` on specificity, so the strip's padding came down to
    whichever stylesheet the bundler happened to put last. */
+/* `.navigation__link` — `margin: 0 20px` on a full-height row, which is the
+   same 40px between labels our padding gives. 22px of it lands the row on the
+   app's 64px once the border above is counted. */
 .wa-tabsbar .tabs .tab {
-  padding: 14px 20px;
+  padding: 22px 20px;
   font-size: 15px;
 }
 
@@ -230,7 +281,14 @@
 
 .wa-main {
   flex: 1;
-  padding: 24px 0 48px;
+  /* The page starts clear of the bar rather than tight under it — 24px put the
+     first banner almost against the tab strip's rule. Named, because anything
+     that wants to sit flush under the nav has to cancel exactly this much: the
+     sub-tab band did it with a hardcoded -24px and came unstuck the moment
+     this changed. */
+  --wa-main-pad: 32px;
+
+  padding: var(--wa-main-pad) 0 48px;
 }
 .wa-main-inner {
   max-width: var(--wa-content-max);
@@ -890,7 +948,7 @@
 @media (max-width: 560px) {
   .wa-topbar-inner {
     gap: 8px;
-    padding: 12px 16px;
+    padding: 0 16px;
   }
   .wa-logo-btn .bsl-word {
     display: none;
@@ -899,8 +957,16 @@
     margin-left: 0;
   }
   .wa-user-pill {
-    gap: 0;
-    padding: 4px;
+    padding: 0;
+  }
+  /* With the name gone there's no pill left to overhang, and a 46px disc beside
+     a 40px gear reads as a mistake. It comes back to the shared 40px. */
+  .wa-user-pill .wa-user-avatar {
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    border: 0;
+    font-size: 14px;
   }
   .wa-user-name {
     display: none;
@@ -1064,6 +1130,17 @@
      of it. */
   container-type: inline-size;
 }
+/* A flyout opened from inside a bar is taller than the bar. Two things were
+   eating it: the bar's own `overflow: hidden`, which cut it off at the bar's
+   edge, and the next bar in the stack, which paints later and covered what was
+   left. Neither matters until one is open, so both stand down only then —
+   `container-type` already makes the bar a stacking context, so the z-index
+   bites against its siblings. */
+.wa-banner:has(.flyout-pop) {
+  z-index: 3;
+  overflow: visible;
+}
+
 .wa-banner-mark {
   display: grid;
   flex: none;

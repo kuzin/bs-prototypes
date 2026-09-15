@@ -7,7 +7,7 @@ import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { Flyout, FlyoutMenu, FlyoutMenuItem, FlyoutSelect } from '@components/Flyout/Flyout'
 import { Tooltip } from '@components/Primitives/Primitives'
 import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
-import { BsIcon } from '@components/BsIcons/BsIcons'
+import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 // Re-exported so the pages that already reach for it here keep working.
 export { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 
@@ -17,7 +17,6 @@ import '@components/Pill/Pill.css'
 import '@components/ProgressBar/ProgressBar.css'
 import '@components/Primitives/Primitives.css'
 import '@components/Flyout/Flyout.css'
-import '@components/BsIcons/BsIcons.css'
 // Last, so the bar's adjustments to the primitives above land after them.
 import './ReaderApp.css'
 
@@ -208,7 +207,7 @@ export function ReaderTopBar({
               placement="bottom-end"
               trigger={({ toggle }) => (
                 <button className="wa-icon-btn" onClick={toggle} aria-label="Account settings">
-                  <BsIcon set="actions" name="settings" size={20} />
+                  <PlumpyIcon name="settings" size={22} />
                 </button>
               )}
             >
@@ -237,7 +236,7 @@ export function ReaderTopBar({
             </Flyout>
           ) : (
             <button className="wa-icon-btn" aria-label="Account settings" onClick={onAccount}>
-              <Icon name="settings" size={20} />
+              <PlumpyIcon name="settings" size={22} />
             </button>
           )}
         </div>
@@ -334,7 +333,10 @@ export function ReaderPill({ reader, otherReaders = [], onSwitch, onEdit }) {
                   onSwitch?.(r)
                 }}
               >
-                <span className="wa-user-avatar" style={{ background: r.color }}>
+                <span
+                  className="wa-user-avatar wa-user-avatar--tinted"
+                  style={{ background: r.color }}
+                >
                   {r.initials}
                 </span>
                 {r.name}

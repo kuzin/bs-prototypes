@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useMemo } from 'react'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Button } from '@components/Button/Button'
-import { Tabs } from '@components/Tabs/Tabs'
 import { Icon } from '@components/Icon/Icon'
 import { Pill } from '@components/Pill/Pill'
 import { FlagIcon } from '@components/BsIcons/BsIcons'
@@ -11,8 +10,8 @@ import { talkKind, sessionConfidence, CONFIDENCE_META, CONFIDENCE_BLURB } from '
 import '@components/Modal/Modal.css'
 import '@components/Button/Button.css'
 import '@components/Form/Form.css'
-import '@components/Tabs/Tabs.css'
 import '@components/Pill/Pill.css'
+import { IconButton } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 import './SessionModal.css'
 
@@ -208,7 +207,6 @@ export function SessionModal({
   onViewProfile,
   onPrev,
   onNext,
-  sessionIdx,
   sessionCount,
   reviewer = CURRENT_USER,
   // One flag for "am I on a page about many readers?". It gates the sidebar
@@ -256,7 +254,6 @@ export function SessionModal({
           : null,
     [onNext, canNav, navIdx, allSessions, onSelectSession],
   )
-  const navIndex = sessionIdx ?? navIdx
   const navCount = sessionCount ?? allSessions.length
 
   useEffect(() => {
@@ -454,40 +451,6 @@ export function SessionModal({
     >
       <ModalClose onClick={onClose} />
       <div className="sm2-shell">
-        {/* Top bar */}
-        <div className="sm2-topbar">
-          <div className="sm2-topbar-left">
-            {!showReaderList && <span className="sm2-section-title">Reading session</span>}
-            {showReaderList && navCount > 0 && (
-              <div className="sm2-nav">
-                <button
-                  className="sm2-nav-btn"
-                  disabled={!goPrev}
-                  onClick={goPrev}
-                  title="Previous session (←)"
-                >
-                  <Icon name="chevron-left" size={14} stroke={2.2} />
-                  <span className="sm2-nav-label">Prev</span>
-                </button>
-                <span className="sm2-nav-count">
-                  <strong>{navIndex + 1}</strong>
-                  <span className="sm2-nav-count-sep">of</span>
-                  {navCount}
-                </span>
-                <button
-                  className="sm2-nav-btn"
-                  disabled={!goNext}
-                  onClick={goNext}
-                  title="Next session (→)"
-                >
-                  <span className="sm2-nav-label">Next</span>
-                  <Icon name="chevron-right" size={14} stroke={2.2} />
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
         {/* Two-column body */}
         <div className="sm2-columns">
           {showReaderList && (
@@ -507,10 +470,16 @@ export function SessionModal({
                     </div>
                   )}
                   {onViewProfile && (
-                    <button className="sm2-view-profile" onClick={() => onViewProfile(d.student)}>
-                      View Profile
-                      <Icon name="chevron-right" size={14} stroke={2.4} />
-                    </button>
+                    <IconButton
+                      variant="ghost"
+                      size="md"
+                      className="sm2-view-profile"
+                      onClick={() => onViewProfile(d.student)}
+                      aria-label="View profile"
+                      title="View profile"
+                    >
+                      <Icon name="user" size={17} />
+                    </IconButton>
                   )}
                 </div>
 
@@ -744,20 +713,50 @@ export function SessionModal({
           </div>
         </div>
 
-        {/* Footer — session actions (Edit / Delete / Approve). Safety signal
-            actions live in their own section above. Activity-badge Book Talks
-            have no footer. */}
-        {d.source !== 'self' ? (
+        {/* Footer — stepping through the queue, then what you can do to the
+            session in front of you. The pager had a bar of its own at the top;
+            it belongs with the other controls, and an activity-badge Book Talk
+            (which has no actions) still needs a way through the queue. Safety
+            signal actions live in their own section above. */}
+        {(showReaderList && navCount > 0) || d.source !== 'self' ? (
           <div className="sm2-footer">
-            <Button variant="secondary">Edit Session</Button>
-            <div className="sm2-footer-actions">
-              <button className="sm2-btn sm2-btn--danger">Delete Session</button>
-              {canApprove && (
-                <Button variant="primary" onClick={() => onApproveRequest?.(d)}>
-                  Unflag Session
-                </Button>
+            <div className="sm2-footer-left">
+              {showReaderList && navCount > 0 && (
+                <>
+                  <IconButton
+                    variant="secondary"
+                    size="lg"
+                    disabled={!goPrev}
+                    onClick={goPrev}
+                    aria-label="Previous session (left arrow key)"
+                  >
+                    <Icon name="chevron-left" size={17} stroke={2.2} />
+                  </IconButton>
+                  <IconButton
+                    variant="secondary"
+                    size="lg"
+                    disabled={!goNext}
+                    onClick={goNext}
+                    aria-label="Next session (right arrow key)"
+                  >
+                    <Icon name="chevron-right" size={17} stroke={2.2} />
+                  </IconButton>
+                </>
               )}
             </div>
+            {d.source !== 'self' && (
+              <div className="sm2-footer-actions">
+                <Button variant="secondary">Edit</Button>
+                <Button variant="secondary" className="sm2-btn--danger">
+                  Delete
+                </Button>
+                {canApprove && (
+                  <Button variant="primary" onClick={() => onApproveRequest?.(d)}>
+                    Unflag
+                  </Button>
+                )}
+              </div>
+            )}
           </div>
         ) : null}
       </div>

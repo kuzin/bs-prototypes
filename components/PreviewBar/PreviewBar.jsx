@@ -1,7 +1,9 @@
 import { useEffect, useRef } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { Select } from '@components/Form/Form'
 import { Toggle } from '@components/Toggle/Toggle'
 import { Flyout } from '@components/Flyout/Flyout'
+import '@components/Form/Form.css'
 import '@components/Toggle/Toggle.css'
 import '@components/Flyout/Flyout.css'
 import './PreviewBar.css'
@@ -106,6 +108,25 @@ export function PreviewBar({
         <span className="pvb-title">{title}</span>
         {subtitle && <span className="pvb-subtitle">{subtitle}</span>}
       </div>
+
+      {/* On a phone the strip is four pills on a 375px row — it wrapped to two
+          and three lines and took a third of the screen. Below that width it is
+          a dropdown instead, the way a page's own tab bar collapses. Both are
+          rendered and CSS picks; no consumer changes. */}
+      {views.length > 0 && (
+        <Select
+          className="pvb-select"
+          value={active}
+          onChange={(e) => onChange?.(e.target.value)}
+          aria-label={ariaLabel}
+        >
+          {views.map((v) => (
+            <option key={v.id} value={v.id}>
+              {v.label}
+            </option>
+          ))}
+        </Select>
+      )}
 
       {views.length > 0 && (
         <div className="pvb-views" role="tablist" aria-label={ariaLabel}>

@@ -293,7 +293,7 @@
    dropdown — and even the longest of them, fifteen interest tiles, fits a
    modal with room to spare. */
 .pf-modal {
-  width: min(660px, calc(100vw - 32px));
+  width: min(660px, calc(100vw - var(--modal-gutter) * 2));
 }
 .pf {
   display: flex;
@@ -426,8 +426,15 @@
   flex-direction: column;
   gap: 10px;
 }
+/* A whole row is the switch: the name and the site's own description take the
+   line, the switch sits at the end of it. `row-reverse` rather than a separate
+   text element, so the row stays one `<label>` around one input and the hint is
+   as clickable as the name. */
 .pf-level {
-  display: block;
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 14px;
+  align-items: center;
   padding: 14px 16px;
   cursor: pointer;
   background: #fff;
@@ -441,13 +448,19 @@
   background: var(--c-blue-wash);
   border-color: var(--c-blue);
 }
-/* `p.inline-hints` — what the site says this level means, under its name and
-   indented to the checkbox's label. */
+.pf-level > .tgl-label {
+  flex: 1;
+  min-width: 0;
+}
+.pf-level-name {
+  display: block;
+}
+/* `p.inline-hints` — what the site says this level means, under its name. */
 .pf-level-hint {
   display: block;
   margin-top: 4px;
-  margin-left: 28px;
   font-size: 13.5px;
+  font-weight: 400;
   line-height: 1.5;
   color: var(--c-text-light);
 }

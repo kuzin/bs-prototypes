@@ -208,7 +208,12 @@
   border-radius: 8px;
 }
 .tabs--pill.tabs--xs .tab {
-  padding: 5px 11px;
+  /* The rung below `sm`. It had padding and a type size but no height, so the
+     base `.tabs--pill .tab`'s 44px stood and every `xs` group came out the
+     height of an `md` one — which is exactly what it was reaching for a smaller
+     control to avoid. */
+  height: 28px;
+  padding: 0 11px;
   font-size: 14px;
   border-radius: 6px;
   gap: 5px;

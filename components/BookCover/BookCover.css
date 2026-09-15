@@ -36,59 +36,99 @@
   overflow: hidden;
 }
 
-/* magazine masthead placeholder — name up top, issue at the foot */
+/* A magazine is a book with an issue instead of an author: the masthead sits
+   where a title does, at the foot, in the name's own case. It used to be set
+   uppercase under a rule at the top of the cover — a masthead treatment, which
+   made a shelf of mixed books and issues read as two different components. */
 .bkcov--mag {
-  justify-content: flex-start;
-  gap: 5px;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.14) 1px, transparent 1px);
+  background-image: radial-gradient(circle, rgb(255 255 255 / 14%) 1px, transparent 1px);
   background-size: 7px 7px;
 }
 .bkcov-magname {
   font-weight: 900;
-  line-height: 1.02;
-  letter-spacing: -0.03em;
-  text-transform: uppercase;
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
-  padding-bottom: 4px;
-  border-bottom: 2px solid rgba(255, 255, 255, 0.5);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 35%);
   /* mastheads are set as wide as the cover allows — break rather than clip */
   overflow-wrap: anywhere;
 }
 .bkcov-issue {
-  margin-top: auto;
-  font-weight: 800;
-  line-height: 1.15;
-  opacity: 0.95;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  font-weight: 700;
+  line-height: 1.1;
+  opacity: 0.92;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
 .bkcov--sm .bkcov-magname {
-  font-size: 7.5px;
+  font-size: 9px;
 }
 .bkcov--sm .bkcov-issue {
-  font-size: 7px;
+  font-size: 8.5px;
   -webkit-line-clamp: 2;
 }
 .bkcov--md .bkcov-magname {
-  font-size: 11px;
+  font-size: 13px;
 }
 .bkcov--md .bkcov-issue {
-  font-size: 9px;
+  font-size: 11px;
 }
 .bkcov--lg .bkcov-magname {
-  font-size: 17px;
+  font-size: 19px;
 }
 .bkcov--lg .bkcov-issue {
-  font-size: 12px;
+  font-size: 13.5px;
 }
 
 /* "there's a digital edition" chip — sits clear of the cover's own text */
 .bkcov.bkcov--img {
   padding: 0;
+}
+/* The drop shadows under the type are tuned for white on a dark cover; on a
+   pastel ground they only muddy it, and the ink carries itself. The inset
+   edges go with them — they were reading as a crease down a light card.
+
+   It's also a container, so what a placeholder shows can follow the width it
+   actually got rather than the `size` it was handed — `fill` is whatever its
+   cell is, which on a log row is 40px and on a shelf is 120. */
+.bkcov--flat {
+  box-shadow: 0 1px 2px rgb(15 23 42 / 12%);
+  container-type: inline-size;
+}
+
+/* The app's own `bs-heart`, in the cover's ink. Hidden until the cover is too
+   small to set a title in. */
+.bkcov-mark {
+  display: none;
+}
+@container (max-width: 76px) {
+  .bkcov-title,
+  .bkcov-author,
+  .bkcov-magname,
+  .bkcov-issue {
+    display: none;
+  }
+  .bkcov-mark {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+  }
+  .bkcov-mark svg {
+    width: 36%;
+    max-width: 18px;
+    height: auto;
+    fill: currentColor;
+  }
+}
+.bkcov--flat .bkcov-title,
+.bkcov--flat .bkcov-author,
+.bkcov--flat .bkcov-magname,
+.bkcov--flat .bkcov-issue {
+  text-shadow: none;
 }
 .bkcov--img img {
   width: 100%;
@@ -105,10 +145,10 @@
   padding: 7px;
 }
 .bkcov--sm .bkcov-title {
-  font-size: 10px;
+  font-size: 11px;
 }
 .bkcov--sm .bkcov-author {
-  font-size: 7.5px;
+  font-size: 9px;
   -webkit-line-clamp: 1;
 }
 
@@ -119,10 +159,10 @@
   padding: 10px;
 }
 .bkcov--md .bkcov-title {
-  font-size: 13px;
+  font-size: 15px;
 }
 .bkcov--md .bkcov-author {
-  font-size: 10px;
+  font-size: 11.5px;
 }
 
 .bkcov--lg {
@@ -132,10 +172,10 @@
   padding: 13px;
 }
 .bkcov--lg .bkcov-title {
-  font-size: 18px;
+  font-size: 21px;
 }
 .bkcov--lg .bkcov-author {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 /* Fills its grid cell rather than taking a fixed size — the All Titles shelf.
@@ -150,14 +190,49 @@
   padding: 12px;
 }
 .bkcov--fill .bkcov-title {
-  font-size: 15px;
+  font-size: 17px;
 }
 .bkcov--fill .bkcov-author {
-  font-size: 11px;
+  font-size: 12.5px;
 }
 .bkcov--fill .bkcov-magname {
-  font-size: 14px;
+  font-size: 16px;
 }
 .bkcov--fill .bkcov-issue {
-  font-size: 10px;
+  font-size: 11.5px;
+}
+
+/* `fill` is whatever its cell gives it, and a cell is 132px on the All Titles
+   shelf but 507 on an in-app reader's sheet — where a 17px title read as a
+   caption stuck to the bottom of a poster. Past 240px the placeholder sets
+   itself in the cover's own width instead of in pixels. Nothing that shelves
+   these is that wide, so every tile below the threshold is untouched. */
+@container (min-width: 240px) {
+  .bkcov--fill .bkcov-title {
+    font-size: 10cqw;
+  }
+  .bkcov--fill .bkcov-author {
+    font-size: 4cqw;
+  }
+  .bkcov--fill .bkcov-magname {
+    font-size: 9cqw;
+  }
+  .bkcov--fill .bkcov-issue {
+    font-size: 3.6cqw;
+  }
+}
+
+/* Audiobook art — square, at the same width the 2:3 tile would have taken, so
+   a row of mixed books and audiobooks lines up on its left and right edges. */
+.bkcov--square.bkcov--fill {
+  aspect-ratio: 1;
+}
+.bkcov--square.bkcov--sm {
+  height: 68px;
+}
+.bkcov--square.bkcov--md {
+  height: 104px;
+}
+.bkcov--square.bkcov--lg {
+  height: 152px;
 }

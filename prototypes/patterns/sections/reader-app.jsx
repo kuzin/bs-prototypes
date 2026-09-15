@@ -827,7 +827,11 @@ export const readerAppSections = [
         is the number.
       </>
     ),
-    render: () => <CompleteActivityDemo />,
+    render: () => (
+      <Variant label="the button the reader's top bar offers, and what it opens">
+        <CompleteActivityDemo />
+      </Variant>
+    ),
   },
   {
     group: 'web-app',
@@ -851,7 +855,11 @@ export const readerAppSections = [
         Activity screen, which is this list with nothing else around it.
       </>
     ),
-    render: () => <ActivityListDemo />,
+    render: () => (
+      <Variant label="the four kinds, one of them already ticked">
+        <ActivityListDemo />
+      </Variant>
+    ),
   },
   {
     group: 'web-app',
@@ -1800,6 +1808,7 @@ import { FundraiserCard } from '@components/ReaderApp/ReaderApp'
   partners={partnerList}
   connections={linked}
   dailyGoal={{ minutes, goal }}          /* drives the goal bar on the way out */
+  earnedCards={cards}                    /* what finishing a title wins on this site */
   site={{ rostered, verified, backlogDays: 14, multiDate: true, timer: true }}
   onViewBadge={(card) => openBadge(card)}
   onTickets={(card) => goToRewards(card.challenge)}
@@ -2008,6 +2017,7 @@ readableDates(dates)  /* "Today" · "September 12, 2026, September 15, 2026" */`
     usage: `import { BookCover } from '@components/BookCover/BookCover'
 
 <BookCover book={book} size="md" />      /* sm | md | lg | fill */
+<BookCover book={book} size="fill" square /> /* audiobook art */
 
 /* book: { title, author, isbn, coverId, cover: [from, to], kind, masthead, issue } */`,
     desc: (
@@ -2020,7 +2030,8 @@ readableDates(dates)  /* "Today" · "September 12, 2026, September 15, 2026" */`
         <br />
         <br />A magazine (<code>kind: &apos;magazine&apos;</code>) gets a masthead placeholder —
         name over issue — so a rack of them reads like a magazine rack rather than a shelf of books
-        with missing covers.
+        with missing covers. <code>square</code> is audiobook art, which is square the way a record
+        sleeve is.
       </>
     ),
     render: () => (

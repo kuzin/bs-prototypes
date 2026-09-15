@@ -1019,13 +1019,13 @@ button {
 }
 .modal--center:has(.bt-award-modal) {
   z-index: 211;
-  width: min(380px, calc(100vw - 32px));
+  width: min(380px, calc(100vw - var(--modal-gutter) * 2));
 }
 
 /* ─── Review modal ──────────────────────────────────────────────────────── */
 /* The shared center Modal is 520px wide; widen it just for the review. */
 .modal--center:has(.bt-review) {
-  width: min(840px, calc(100vw - 32px));
+  width: min(840px, calc(100vw - var(--modal-gutter) * 2));
 }
 .bt-review {
   width: 100%;

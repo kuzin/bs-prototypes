@@ -16,9 +16,9 @@ let restore = null
  * the wrong part scrolls a screen nobody can see.
  *
  * Locking `<html>` rather than `<body>` is what actually stops iOS and Safari,
- * and the page's own scroll position is put back on release. The gutter the
- * scrollbar leaves behind is replaced with padding so the page doesn't jump
- * sideways as it locks.
+ * and the page's own scroll position is put back on release. Any width the
+ * lock takes away is replaced with padding so the page doesn't jump sideways
+ * as it locks.
  *
  *   useLockScroll(open)
  *
@@ -31,12 +31,23 @@ export function useLockScroll(active = true) {
 
     if (locks === 0) {
       const y = window.scrollY
-      // An overlay-style scrollbar takes no width, so this is 0 on most Macs
-      // and the padding is a no-op there.
-      const gutter = window.innerWidth - root.clientWidth
       const prev = { overflow: root.style.overflow, paddingRight: root.style.paddingRight }
+
+      /* Measure what locking actually costs rather than assuming it costs a
+         scrollbar. `tokens.css` holds a gutter open on `<html>` at all times
+         (`overflow-y: scroll` + `scrollbar-gutter: stable`) so nothing shifts
+         when a page grows past the fold — and Chromium keeps that gutter
+         reserved under `overflow: hidden` too. Padding a scrollbar's width on
+         top of a gutter that never collapsed pushed the whole page, and its
+         sidebar with it, half a scrollbar to the left every time this opened.
+         An overlay-style scrollbar costs nothing either, so on most Macs this
+         is a no-op both ways. */
+      const width = () => document.body.clientWidth
+      const before = width()
       root.style.overflow = 'hidden'
+      const gutter = width() - before
       if (gutter > 0) root.style.paddingRight = `${gutter}px`
+
       restore = () => {
         root.style.overflow = prev.overflow
         root.style.paddingRight = prev.paddingRight

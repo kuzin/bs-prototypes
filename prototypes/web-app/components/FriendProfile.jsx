@@ -287,7 +287,10 @@ export function FriendProfile({ friendId, onClose }) {
                 {friend.since ? ` · ${friend.since}` : ''}
               </p>
               <Tabs
-                variant="underline"
+                /* The sub-tab bar on a band of its own — no grey track, the
+                   active pill a tint of the strip's own accent. */
+                variant="pill"
+                plain
                 size="sm"
                 center
                 active={tab}

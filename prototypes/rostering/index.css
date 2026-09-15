@@ -860,7 +860,7 @@
 
 /* ─── Deactivation modal ──────────────────────────────────────────────────── */
 .modal--center:has(.rost-deact-modal) {
-  width: min(680px, calc(100vw - 32px));
+  width: min(680px, calc(100vw - var(--modal-gutter) * 2));
 }
 .rost-deact-modal .modal-body {
   padding: 16px 20px 20px;

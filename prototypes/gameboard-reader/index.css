@@ -51,51 +51,7 @@ body {
   text-decoration: underline;
 }
 
-/* ── Top bar ─────────────────────────────────────────────────────────────── */
-
-.gr-topbar {
-  border-bottom: 1px solid var(--c-border);
-  background: var(--c-surface);
-}
-
-.gr-topbar-inner {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 10px 24px;
-  max-width: 1440px;
-  margin: 0 auto;
-}
-
-.gr-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  flex-shrink: 0;
-}
-.gr-logo-mark {
-  width: 19px;
-  height: 19px;
-}
-.gr-logo-word {
-  font-size: 19px;
-  font-weight: var(--fw-black);
-  letter-spacing: -0.02em;
-  color: #16283c;
-}
-
-.gr-topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.gr-topbar-user {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
+/* ── Logging-for pill ────────────────────────────────────────────────────── */
 
 .gr-reader-pill {
   display: inline-flex;
@@ -129,32 +85,6 @@ body {
   width: 21px;
   height: 21px;
   font-size: 9px;
-}
-
-.gr-icon-btn {
-  display: grid;
-  place-items: center;
-  width: 34px;
-  height: 34px;
-  border: 0;
-  border-radius: var(--radius-full);
-  background: none;
-  color: var(--c-gray-700);
-  cursor: pointer;
-}
-.gr-icon-btn:hover {
-  background: var(--c-gray-100);
-  color: var(--c-gray-900);
-}
-
-.gr-tabsbar {
-  display: flex;
-  justify-content: center;
-  border-top: 1px solid var(--c-gray-100);
-}
-.gr-tabsbar .tabs {
-  border-bottom: 0;
-  max-width: 100%;
 }
 
 /* ── Challenge hero ──────────────────────────────────────────────────────── */
@@ -1374,7 +1304,7 @@ body {
    corner — the shared Modal caps at 520 and clips. Reached via :has() because
    Modal takes no className. */
 .modal--center:has(.gr-unlock) {
-  width: min(480px, calc(100vw - 32px));
+  width: min(480px, calc(100vw - var(--modal-gutter) * 2));
   border-radius: var(--radius-2xl);
   overflow: visible;
 }
@@ -1403,30 +1333,6 @@ body {
 }
 
 @media (max-width: 760px) {
-  /* App bar: logo and reader keep the top row, the three logging actions drop
-     to their own scrollable row beneath. The site tabs already scroll on their
-     own (Tabs handles it, with edge fades). */
-  .gr-topbar-inner {
-    flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px 14px;
-  }
-  .gr-topbar-actions {
-    order: 3;
-    width: 100%;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-  .gr-topbar-actions::-webkit-scrollbar {
-    display: none;
-  }
-  .gr-topbar-actions .btn {
-    flex: 1 0 auto;
-  }
-  .gr-tabsbar {
-    justify-content: flex-start;
-  }
-
   /* Hero: a shorter band and banner so the fold still shows the board. */
   .gr-hero {
     padding: 36px 14px 0;

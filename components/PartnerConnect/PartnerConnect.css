@@ -1,8 +1,16 @@
 /* Partner account handoff — the partner's own site plus the linking cards. */
 
+/* Stops below whatever prototype chrome the shell declares, the way the log
+   flow's own overlay does. At `inset: 0` the partner's header slid under the
+   preview bar (which sits above this in the stack), so a reader handed off to
+   Beeverso or Comics Plus landed on a page with no branding on it. A prototype
+   that declares no chrome is unchanged. */
 .cf-overlay {
   position: fixed;
-  inset: 0;
+  top: var(--chrome-top, 0px);
+  right: 0;
+  bottom: var(--chrome-bottom, 0px);
+  left: 0;
   z-index: 120;
 }
 
@@ -429,10 +437,16 @@
 
 /* ─── Prototype-only escape hatch ─────────────────────────────────────────── */
 
+/* Sits clear of the prototype nav strip, wherever that strip is relative to
+   this surface. A shell that declares `--chrome-bottom` has already ended the
+   overlay above the strip, so the hint owes it nothing but the gap; one that
+   doesn't runs underneath it, and the hint has to clear its height first. The
+   flat 62px this used to carry was the second case only, and left 14px — the
+   pill wraps to two lines now, so it read as resting on the bar. */
 .cf-hint {
   position: absolute;
   left: 50%;
-  bottom: 62px;
+  bottom: calc(max(var(--proto-nav-h, 0px) - var(--chrome-bottom, 0px), 0px) + 24px);
   transform: translateX(-50%);
   z-index: 3;
   display: flex;
@@ -855,13 +869,6 @@
   font-weight: 800;
   color: #1a6dd5;
 }
-.cn-auto-foot {
-  margin: 12px 0 0;
-  font-size: 12px;
-  line-height: 1.45;
-  color: var(--c-gray-600);
-}
-
 /* ─── District SSO, below the sign-in form ─────────────────────────────────── */
 
 .cf-or {

@@ -166,7 +166,7 @@ export function ReviewComposer({ open, kind = 'written', review, onClose, onSave
             <Field label="Review" required>
               {/* `render_review_length_message` — the site's own bounds, said
                   up front rather than after a rejected save. */}
-              <InfoBox icon={<Icon name="info" size={22} />} className="rc-bounds">
+              <InfoBox icon={<Icon name="info" size={26} />} className="rc-bounds">
                 Your review must be between {MIN} and {MAX.toLocaleString()} characters.
               </InfoBox>
               <Textarea
@@ -186,9 +186,9 @@ export function ReviewComposer({ open, kind = 'written', review, onClose, onSave
           )}
 
           {picture && (
-            <p className="rc-note">
+            <InfoBox icon={<Icon name="shield-check" size={26} />} className="rc-note">
               A picture review is checked by staff before other readers can see it.
-            </p>
+            </InfoBox>
           )}
         </div>
 

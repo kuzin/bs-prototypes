@@ -29,7 +29,10 @@
    that's lit when the three sit side by side. */
 .es-heat-seg--on {
   background: var(--es-bg);
-  box-shadow: inset 0 0 0 2px var(--es-c);
+  /* The band's own ink, let down into its ground. At full strength the ring was
+     the darkest thing in the card and read as a border drawn around the word
+     rather than as the segment being lit. */
+  box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--es-c) 35%, var(--es-bg));
   color: var(--es-c);
   font-weight: var(--fw-extrabold);
 }

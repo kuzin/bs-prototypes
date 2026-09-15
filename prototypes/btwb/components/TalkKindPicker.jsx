@@ -1,23 +1,25 @@
 import { Icon } from '@components/Icon/Icon'
-import { Pill } from '@components/Pill/Pill'
 import { TALK_KIND_OPTIONS } from '../data'
 
-// Which of the three conversations a trigger should start.
-//
-// Every trigger now carries this choice — book completions, a challenge, and the
-// warning threshold — so the cards live in one place rather than being repeated
-// per surface. Each card is the type's name plus what that conversation actually
-// is; the blurbs come from TALK_KINDS so the picker, the upsell panel and the
-// talk itself all describe a type the same way.
-// `showNew` lets a consumer suppress the "New" tag on the newer talk type — a
-// prototype about a different feature shouldn't flag this one as its own news.
-export function TalkKindPicker({
-  value,
-  onChange,
-  label,
-  ariaLabel = 'Conversation type',
-  showNew = true,
-}) {
+/* `.choice-card` — what the admin reads when picking a conversation is what
+   that conversation does *to the reader*, which is a different sentence from
+   the one a session card needs. `TALK_KINDS[].blurb` describes a talk you are
+   looking at; these describe one you are choosing. */
+const CHOICE_COPY = {
+  engagement: 'A chat that prompts students to reflect on the book and what they enjoyed most when reading.', // prettier-ignore
+  comprehension: 'A chat that prompts students to demonstrate what they understood, focusing on the plot, characters, and themes.', // prettier-ignore
+}
+
+/**
+ * Which conversation a trigger should start — the app's `.choice-card`
+ * container: one card to a row, the type's glyph, its name, and what it does.
+ *
+ * A card is white with a hairline until it's the one chosen, when it takes the
+ * app's green border and a green corner flag with a tick in it. The types carry
+ * their own colours everywhere else in this prototype; here they don't, because
+ * on this page the only colour that means anything is "this is the one".
+ */
+export function TalkKindPicker({ value, onChange, label, ariaLabel = 'Conversation type' }) {
   return (
     <>
       {label && <h3 className="bw-subsetting-title">{label}</h3>}
@@ -31,20 +33,15 @@ export function TalkKindPicker({
               role="radio"
               aria-checked={active}
               className={`bw-kind-card${active ? ' is-active' : ''}`}
-              style={{ '--kind': k.color }}
               onClick={() => onChange(k.id)}
             >
-              <span className="bw-kind-head">
-                <Icon name={k.icon} size={16} />
-                <span className="bw-kind-label">{k.label}</span>
-                {k.isNew && showNew && (
-                  <Pill color={k.color} variant="filled" size="sm">
-                    New
-                  </Pill>
-                )}
-                {active && <Icon name="check" size={14} stroke={2.6} className="bw-kind-check" />}
+              <span className="bw-kind-icon">
+                <Icon name={k.icon} size={24} />
               </span>
-              <span className="bw-kind-blurb">{k.blurb}</span>
+              <span className="bw-kind-text">
+                <span className="bw-kind-label">{k.short}</span>
+                <span className="bw-kind-blurb">{CHOICE_COPY[k.id] ?? k.blurb}</span>
+              </span>
             </button>
           )
         })}

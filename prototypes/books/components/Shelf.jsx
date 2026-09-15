@@ -1,110 +1,71 @@
-import { useRef, useState, useEffect } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { Button } from '@components/Button/Button'
-import { IconButton } from '@components/Primitives/Primitives'
-import '@components/Primitives/Primitives.css'
 import { BookCard } from './BookCard'
 import { PARTNERS } from '../data'
 
-// A titled horizontal row of books. Every shelf shares one header anatomy —
-// title + subtitle on the left, the controls on the right — so the page reads
-// consistently top to bottom. A curated shelf keeps its curator's avatar,
-// because that is who is speaking; the rest carry no glyph.
+/* Five titles and the way into the rest, which is the sixth card on the shelf
+   rather than a control in the header — the same shelf the log flow builds for
+   a reading list. A shelf that ends in a card reads as continuing, where a
+   button up in the corner read as a separate thing to go and press. */
+const SHOWN = 5
+
+/**
+ * A titled shelf of books. Every shelf shares one header anatomy — title +
+ * subtitle on the left — so the page reads consistently top to bottom. A
+ * curated shelf keeps its curator's line, because that is who is speaking; the
+ * rest carry none.
+ *
+ * The row is a grid, not a scrolling track. Six equal cells across, so every
+ * jacket on the page is the same size and a shelf is a shelf whether it holds
+ * five books or twenty — the track it replaced left the last book half cut off
+ * as a hint that there was more, and needed a pair of arrows to say so.
+ */
 export function Shelf({ shelf, books, onOpen, onWish, wishlist, onPlay, onViewAll }) {
-  const trackRef = useRef(null)
-  const [edge, setEdge] = useState({ start: true, end: false })
   const partner = shelf.partner ? PARTNERS[shelf.partner] : null
   const accent = partner ? partner.accent : shelf.accent || '#0D9488'
-
-  const updateEdges = () => {
-    const el = trackRef.current
-    if (!el) return
-    setEdge({
-      start: el.scrollLeft <= 4,
-      end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 4,
-    })
-  }
-  useEffect(() => {
-    updateEdges()
-  }, [books])
-
-  const scroll = (dir) => {
-    const el = trackRef.current
-    if (el) el.scrollBy({ left: dir * Math.round(el.clientWidth * 0.8), behavior: 'smooth' })
-  }
+  const more = onViewAll && books.length > SHOWN
+  const shown = more ? books.slice(0, SHOWN) : books
+  // Audiobook art is square, so the card that ends that shelf is too — at 2:3
+  // it stood a third taller than everything beside it.
+  const audio = shelf.kind === 'audio'
 
   return (
     <section className="bk-shelf" style={{ '--accent': accent }}>
       <div className="bk-shelf-head">
-        <div className="bk-shelf-headmain">
-          <div className="bk-shelf-titles">
-            <h2 className="bk-shelf-title">{shelf.title}</h2>
-            {shelf.curator ? (
-              <p className="bk-shelf-sub bk-shelf-sub--curator">
-                <Icon name="apple" size={13} /> Curated by {shelf.curator.name} ·{' '}
-                {shelf.curator.role}
-              </p>
-            ) : (
-              shelf.subtitle && <p className="bk-shelf-sub">{shelf.subtitle}</p>
-            )}
-          </div>
-        </div>
-        <div className="bk-shelf-controls">
-          {onViewAll && (
-            <Button
-              variant="secondary"
-              size="sm"
-              className="bk-shelf-viewall"
-              iconRight={<Icon name="chevron-right" size={14} />}
-              onClick={() => onViewAll(shelf, books)}
-            >
-              {partner ? `View More on ${partner.name}` : 'View all'}
-            </Button>
-          )}
-          {/* Grouped so a phone can drop the pair — a touch screen scrolls the
-              track with a finger and doesn't need buttons to do it. */}
-          <span className="bk-shelf-arrows">
-            <IconButton
-              variant="secondary"
-              size="md"
-              onClick={() => scroll(-1)}
-              disabled={edge.start}
-              aria-label="Scroll left"
-            >
-              <Icon name="chevron-left" size={18} />
-            </IconButton>
-            <IconButton
-              variant="secondary"
-              size="md"
-              onClick={() => scroll(1)}
-              disabled={edge.end}
-              aria-label="Scroll right"
-            >
-              <Icon name="chevron-right" size={18} />
-            </IconButton>
-          </span>
-        </div>
+        <h2 className="bk-shelf-title">{shelf.title}</h2>
+        {shelf.curator ? (
+          <p className="bk-shelf-sub bk-shelf-sub--curator">
+            <Icon name="apple" size={13} /> Curated by {shelf.curator.name} · {shelf.curator.role}
+          </p>
+        ) : (
+          shelf.subtitle && <p className="bk-shelf-sub">{shelf.subtitle}</p>
+        )}
       </div>
 
-      <div
-        className={`bk-shelf-trackwrap ${edge.start ? '' : 'can-left'} ${edge.end ? '' : 'can-right'}`.trim()}
-      >
-        <div className="bk-shelf-track" ref={trackRef} onScroll={updateEdges}>
-          {books.map((book) => (
-            <BookCard
-              captioned={false}
-              key={book.id}
-              book={book}
-              onOpen={onOpen}
-              onWish={onWish}
-              wished={wishlist.has(book.id)}
-              onPlay={onPlay}
-              variant={
-                shelf.kind === 'rank' ? 'rank' : shelf.kind === 'audio' ? 'audio' : 'default'
-              }
-            />
-          ))}
-        </div>
+      <div className="bk-shelf-row">
+        {shown.map((book) => (
+          <BookCard
+            key={book.id}
+            book={book}
+            onOpen={onOpen}
+            onWish={onWish}
+            wished={wishlist.has(book.id)}
+            onPlay={onPlay}
+            variant={shelf.kind === 'rank' ? 'rank' : audio ? 'audio' : 'default'}
+          />
+        ))}
+
+        {more && (
+          <button
+            type="button"
+            className={`bk-morecard${audio ? ' bk-morecard--square' : ''}`}
+            onClick={() => onViewAll(shelf, books)}
+          >
+            <span className="bk-morecard-label">
+              <span>View</span>
+              <span>More</span>
+            </span>
+          </button>
+        )}
       </div>
     </section>
   )

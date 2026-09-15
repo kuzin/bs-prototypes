@@ -90,6 +90,20 @@ export const PARTNER_BRANDS = {
     // seven times. Height-matched it reads a size smaller, so it takes a taller box.
     wordmarkScale: 1.4,
   },
+  libby: {
+    id: 'libby',
+    dark: '#3D0A1E',
+    name: 'Libby',
+    // Libby's own rose, and the tint it takes on light chrome. No official
+    // asset is vendored for it — every other partner here renders a real file
+    // out of `/public/<partner>`, so rather than draw a lookalike this one
+    // takes the registry's glyph badge in Libby's colours. Drop `Mark.svg` and
+    // `Wordmark.svg` into `public/libby/` and it renders like the rest.
+    accent: '#C8256A',
+    soft: '#FBE9F1',
+    // Libby is the borrowing app: ebooks and audiobooks from your own library.
+    glyph: 'headphones',
+  },
   overdrive: {
     id: 'overdrive',
     dark: '#00293C',
