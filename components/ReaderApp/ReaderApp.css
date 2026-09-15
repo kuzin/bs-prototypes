@@ -418,7 +418,9 @@
   min-height: var(--wa-chcard-body-h);
   display: flex;
   gap: 12px;
-  align-items: flex-start;
+  /* Centred on the title and dates beside it, not pinned to the top — the
+     kebab acts on the whole card, so it sits with the whole of it. */
+  align-items: center;
   justify-content: space-between;
   padding: 20px 16px 16px;
 }
@@ -479,6 +481,13 @@
   position: relative;
   z-index: 2;
   flex: 0 0 auto;
+}
+/* The menuslot's own `z-index` makes it a stacking context, which traps the
+   flyout's popover inside the card — the card after it in the grid then paints
+   over the open menu. Lifting the whole card while its menu is open puts the
+   popover above its neighbours again. */
+.wa-chcard:has(.flyout-pop) {
+  z-index: 30;
 }
 .wa-chcard-kebab {
   display: inline-flex;
