@@ -13,7 +13,7 @@ import { StatCard } from '@components/Cards/Cards'
 import { Button } from '@components/Button/Button'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { NumberInput } from '@components/Form/Form'
-import { EmptyState } from '@components/Primitives/Primitives'
+import { Banner, EmptyState } from '@components/Primitives/Primitives'
 import { InfoBox } from '@components/InfoBox/InfoBox'
 import { BookCover } from '../../logging-flow/components/BookCover'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
@@ -602,9 +602,8 @@ function Drawings({ extras }) {
       <ul className="cp-drawings">
         {byEarnedState(list, state, isOpen).map((d) => (
           <li className={`cp-drawing${d.ended ? ' is-ended' : ''}`} key={d.id}>
-            {/* The row opens the drawing; the button goes straight to the
-                stepper, the way every other tab on this page puts its one
-                action at the end of the row. */}
+            {/* The card opens the drawing; the button at the foot goes straight
+                to the stepper. */}
             <button
               type="button"
               className="cp-drawing-open"
@@ -612,34 +611,48 @@ function Drawings({ extras }) {
               aria-label={d.title}
             >
               <span className="cp-drawing-art">
-                {d.art ? <img src={prizeSrc(d.art)} alt="" /> : <Icon name="gift" size={26} />}
+                {d.art ? <img src={prizeSrc(d.art)} alt="" /> : <Icon name="gift" size={34} />}
+                {/* The closing date rides the picture — it belongs to the prize,
+                    and above the title it was reading as the card's heading. */}
+                <span className="cp-drawing-when">
+                  {d.ended ? `Ended ${d.endsOn}` : `Ends ${d.endsOn}`}
+                </span>
               </span>
               <span className="cp-drawing-body">
-                <span className="cp-drawing-when">
-                  {d.ended ? `Ended on ${d.endsOn}` : `Ends on ${d.endsOn}`}
-                </span>
                 <span className="cp-drawing-title">{d.title}</span>
                 <span className="cp-drawing-desc">{d.description}</span>
-                {d.ended && (
-                  <span className="cp-drawing-expired">
-                    This drawing has ended. Winners will be notified.
-                  </span>
-                )}
               </span>
             </button>
-            <div className="cp-drawing-side">
-              <span className="cp-drawing-entered">
-                <Icon name="ticket" size={15} /> {entered[d.id]}{' '}
-                {entered[d.id] === 1 ? 'Ticket' : 'Tickets'} Entered
-              </span>
-              <Button
-                variant="secondary"
+            <div className="cp-drawing-foot">
+              {/* What you have in it, on the same soft Pill everything else on
+                  this page states itself with — and short, so it can sit beside
+                  the button rather than above it. */}
+              <Pill
+                color={entered[d.id] > 0 ? '#B45309' : '#656565'}
+                variant="soft"
                 size="sm"
-                disabled={actionDisabled(d)}
-                onClick={() => openStepper(d)}
+                icon={<Icon name="ticket" size={14} />}
               >
-                {actionLabel(d)}
-              </Button>
+                {entered[d.id]} Entered
+              </Pill>
+              {d.ended ? (
+                // `.ticket-reward-expired` — a statement of fact where the
+                // action would be, so it takes the app's own notice chrome
+                // rather than sitting loose at the foot of the card.
+                <Banner level="info" className="cp-drawing-expired">
+                  This drawing has ended. Winners will be notified.
+                </Banner>
+              ) : (
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="cp-drawing-btn"
+                  disabled={actionDisabled(d)}
+                  onClick={() => openStepper(d)}
+                >
+                  {actionLabel(d)}
+                </Button>
+              )}
             </div>
           </li>
         ))}
@@ -658,16 +671,18 @@ function Drawings({ extras }) {
         {open && (
           <>
             {open.art && (
-              <img
-                className={`modal-image${open.ended ? ' is-ended' : ''}`}
-                src={prizeSrc(open.art)}
-                alt=""
-              />
+              <span className="cp-dw-art">
+                <img
+                  className={`modal-image${open.ended ? ' is-ended' : ''}`}
+                  src={prizeSrc(open.art)}
+                  alt=""
+                />
+                <span className="cp-drawing-when">
+                  {open.ended ? `Ended ${open.endsOn}` : `Ends ${open.endsOn}`}
+                </span>
+              </span>
             )}
             <div className="modal-body cp-dw">
-              <p className="cp-dw-when">
-                {open.ended ? `Ended on ${open.endsOn}` : `Ends on ${open.endsOn}`}
-              </p>
               <h2 className="cp-dw-title">{open.title}</h2>
               <p className="cp-dw-text">{open.description}</p>
 
@@ -680,6 +695,9 @@ function Drawings({ extras }) {
               )}
 
               <div className="cp-dw-tickets">
+                <span className="cp-dw-ticketmark" aria-hidden="true">
+                  <Icon name="ticket" size={20} />
+                </span>
                 <span className="cp-dw-count">{entered[open.id]}</span>
                 <span className="cp-dw-countlbl">
                   {entered[open.id] === 1 ? 'Ticket' : 'Tickets'} Entered
