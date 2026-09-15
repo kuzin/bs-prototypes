@@ -15,7 +15,8 @@ import '@components/Tabs/Tabs.css'
  * belongs to the challenge that sets its requirement and exists nowhere else.
  *
  * `isEarned` is how a set says which half a thing is in: badges carry
- * `locked`, prizes and rewards carry `earned`.
+ * `locked`, prizes and rewards carry `earned`. `labels` renames the two halves
+ * for a set that isn't earned but read — a reading list is Completed / To Read.
  *
  *   const [state, setState] = useState('all')
  *   <EarnedFilter items={prizes} isEarned={(p) => p.earned} value={state} onChange={setState} />
@@ -43,10 +44,14 @@ export function EarnedFilter({
   value,
   onChange,
   ariaLabel = 'Which of these',
+  labels,
 }) {
   if (!hasBothStates(items, isEarned)) return null
 
   const earned = items.filter((i) => isEarned(i)).length
+  // Badges and prizes are earned; a book on a reading list is read. Same three
+  // states either way — the words are the caller's.
+  const { earned: earnedLabel = 'Earned', unearned: unearnedLabel = 'Unearned' } = labels ?? {}
 
   return (
     <Tabs
@@ -58,8 +63,8 @@ export function EarnedFilter({
       ariaLabel={ariaLabel}
       items={[
         { id: 'all', label: 'All', count: items.length },
-        { id: 'earned', label: 'Earned', count: earned },
-        { id: 'unearned', label: 'Unearned', count: items.length - earned },
+        { id: 'earned', label: earnedLabel, count: earned },
+        { id: 'unearned', label: unearnedLabel, count: items.length - earned },
       ]}
     />
   )

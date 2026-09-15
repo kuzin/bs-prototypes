@@ -14,6 +14,22 @@
   margin-inline: calc(50% - 50vw);
 }
 
+/* Over the band, but lined up with the page under it: the header runs the
+   window and the content column doesn't. */
+.prog-back {
+  position: absolute;
+  top: 14px;
+  right: 0;
+  left: 0;
+  z-index: 11;
+  max-width: var(--wa-content-max, 1200px);
+  padding: 0 24px;
+  margin: 0 auto;
+}
+.prog-back .wa-back {
+  margin: 0;
+}
+
 .prog-bar-strong {
   position: relative;
   width: 100%;
@@ -127,5 +143,9 @@
   }
   .prog-title {
     font-size: 24px;
+  }
+  .prog-back {
+    top: 10px;
+    padding: 0 16px;
   }
 }

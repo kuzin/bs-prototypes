@@ -978,6 +978,9 @@ export const CHALLENGE_EXTRAS = {
         true,
       ),
     ],
+    // `earned_certificates` against `@program.certificates`: the challenge has
+    // two, one of which is banked. An unearned one names what it takes rather
+    // than a date — it is the thing still to aim at.
     certificates: [
       {
         id: 'cert-1',
@@ -985,11 +988,28 @@ export const CHALLENGE_EXTRAS = {
         earnedOn: 'April 28, 2026',
         line: 'Awarded to Olivia M. for reading 1,000 minutes this spring.',
       },
+      {
+        id: 'cert-2',
+        name: 'Spring Into Reading — Reading Champion',
+        line: 'Awarded to a reader who logs on every day of the month.',
+        at: 'Log on all 30 days',
+      },
     ],
     // A `book_list` challenge's own shelf — the titles it asks you to read.
+    //
+    // `minimum` is `minimum_required_program_books` and `required` is the
+    // specific-titles case (`specific_program_books_required?`): four count,
+    // two of them named, the rest the reader's pick. `readNow` is a book with
+    // external content behind it (`content_url` / `product_code` on the
+    // `program_book`) and `siteLink` is one the site points somewhere for.
     readingList: {
       name: 'Spring Into Reading Picks',
       description: 'Read any four of these and the challenge counts it as a milestone.',
+      minimum: 4,
+      required: ['wild-robot', 'new-kid'],
+      completed: ['wild-robot', 'when-you-trap-tiger'],
+      readNow: { 'new-kid': 'comicsplus', crossover: 'comicsplus' },
+      siteLink: { 'front-desk': 'https://magnolia.example.org/events/author-visit' },
       books: ['wild-robot', 'new-kid', 'front-desk', 'when-you-trap-tiger', 'crossover', 'ghost'],
     },
   },
@@ -998,7 +1018,9 @@ export const CHALLENGE_EXTRAS = {
   'read-across': {
     readingList: {
       name: 'Read Across America Picks',
-      description: 'The school picked ten. Read any four of them during the week.',
+      description: 'The school picked six. Read any four of them during the week.',
+      minimum: 4,
+      completed: ['last-cuentista', 'el-deafo', 'julian', 'bud-not-buddy'],
       books: ['last-cuentista', 'stella-diaz', 'el-deafo', 'julian', 'bud-not-buddy', 'lucky-cap'],
     },
   },

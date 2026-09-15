@@ -15,7 +15,9 @@ import { NumberInput } from '@components/Form/Form'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { InfoBox } from '@components/InfoBox/InfoBox'
 import { BookCover } from '../../logging-flow/components/BookCover'
-import { badgeSrc, bannerSrc } from '@components/ReaderApp/ReaderApp'
+import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
+import { CONNECTIONS } from '../../logging-flow/connections'
+import { badgeSrc, bannerSrc, ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
 import { FilterMenuBar } from '@components/FilterMenu/FilterMenu'
 import { byEarnedState, EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
@@ -87,8 +89,10 @@ function tabsFor(extras) {
  * description and the progress strip saying less than either.
  */
 function Overview({ detail, onTab }) {
-  // "Recently Earned Badges" is the first six, which is what the app shows.
-  const recent = BADGES.filter((b) => !b.locked).slice(0, 6)
+  const earned = BADGES.filter((b) => !b.locked)
+  // A row of four, with the rest one click away on the Badges tab — the strip
+  // is a taste of the set, not the set.
+  const recent = earned.slice(0, 4)
 
   return (
     <>
@@ -104,7 +108,7 @@ function Overview({ detail, onTab }) {
             toward your current challenges instead.
           </InfoBox>
         )}
-        <h2 className="cp-h2">Description</h2>
+        <h2 className="cp-h2">Challenge Description</h2>
         <p className="cp-description">{detail.description}</p>
       </section>
 
@@ -124,7 +128,14 @@ function Overview({ detail, onTab }) {
       )}
 
       <section className="cp-section">
-        <h2 className="cp-h2">Recently Earned Badges</h2>
+        <div className="cp-sectionhead">
+          <h2 className="cp-h2">Recently Earned Badges</h2>
+          {earned.length > recent.length && (
+            <Button variant="secondary" size="sm" onClick={() => onTab?.('badges')}>
+              View All Badges
+            </Button>
+          )}
+        </div>
         {recent.length === 0 ? (
           // `.no-results` — the app's own two lines, a heading over a sentence.
           <EmptyState
@@ -204,34 +215,191 @@ function Rewards({ detail }) {
  * The Reading List tab — a `book_list` challenge's own shelf. The titles the
  * challenge asks you to read, each one a book you can open or log.
  */
-function ReadingList({ list, onLog }) {
+/**
+ * `.section-header--reading-list` — a heading inside a tab that already has a
+ * page head, so it takes the page's own section size rather than a second
+ * 26px title, with `p.challenge-subhead` under it.
+ */
+function ListHead({ title, sub }) {
+  return (
+    <header className="cp-listhead">
+      <h3 className="cp-h2">{title}</h3>
+      {sub && <p className="cp-subhead">{sub}</p>}
+    </header>
+  )
+}
+
+/**
+ * One title on the list — `logged_books/_book_list_grid__list_item`.
+ *
+ * The app draws a cover grid and hides the title, author and actions in a
+ * dropdown behind each cover; this is the same content as a row, which is the
+ * shape the site's own Book Lists page uses for the identical job. What the
+ * cover carries either way is **state**: a book you have finished wears the
+ * app's completed checkmark, which is the one thing you could not tell about
+ * this list before.
+ *
+ * Up to three actions, in the app's own order: **Read Now** where the book has
+ * external content behind it (`content_url` — a Comics Plus title opens in
+ * Comics Plus), **Go Now** where the site has pointed the book somewhere
+ * (`site_link`), and **Log Reading**.
+ */
+function ListBook({ book, list, done, onLog, onOpenBook }) {
+  const readNow = list.readNow?.[book.id]
+  const siteLink = list.siteLink?.[book.id]
+
+  return (
+    <li className={`cp-listbook${done ? ' is-done' : ''}`}>
+      <button
+        type="button"
+        className="cp-listbook-cover"
+        onClick={() => onOpenBook?.(book)}
+        aria-label={book.title}
+      >
+        <BookCover book={book} size="fill" />
+        {done && (
+          <span className="cp-listbook-check" title="Completed">
+            <Icon name="circle-check-filled" size={20} />
+          </span>
+        )}
+      </button>
+      <div className="cp-listbook-meta">
+        <button type="button" className="cp-listbook-title" onClick={() => onOpenBook?.(book)}>
+          {book.title}
+        </button>
+        <span className="cp-listbook-author">{book.author}</span>
+        {/* Where the book lives, on its own line — not inside the button, where
+            a partner logo crammed against a verb read as neither. */}
+        {readNow && (
+          <span className="cp-listbook-partner">
+            <PartnerMark id={readNow} size={15} />
+            {CONNECTIONS[readNow]?.name}
+          </span>
+        )}
+      </div>
+      <div className="cp-listbook-actions">
+        {readNow && (
+          <Button variant="secondary" size="sm" onClick={() => onLog?.(book)}>
+            Read Now
+          </Button>
+        )}
+        {siteLink && (
+          <Button as="a" href={siteLink} target="_blank" variant="secondary" size="sm">
+            Go Now
+          </Button>
+        )}
+        <Button size="sm" onClick={() => onLog?.(book)}>
+          Log
+        </Button>
+      </div>
+    </li>
+  )
+}
+
+/**
+ * The Reading List tab — a `book_list` challenge's own shelf.
+ *
+ * The head is `reading_list_with_sidebar`: the list, and how many titles are on
+ * it. What the challenge *asks* of you comes off `_book_list_grid`, which has
+ * three cases and words each one itself — every title required, a number of
+ * them required, or a number required **including** particular ones, which is
+ * the case that splits the shelf into "Required Titles" and "More Titles".
+ */
+function ReadingList({ list, entries = [], onLog, onOpenBook }) {
+  const [state, setState] = useState('all')
   if (!list) return null
   const books = list.books.map((id) => CATALOG_BY_ID[id]).filter(Boolean)
+  // `cached_completed_book_ids` — what this reader has finished. The app reads
+  // it off the log, and so does this; `list.completed` is the prototype's way
+  // of saying a title was finished before this one-month log fixture starts.
+  const done = new Set([
+    ...entries.filter((e) => e.completed).map((e) => e.title),
+    ...(list.completed ?? []).map((id) => CATALOG_BY_ID[id]?.title).filter(Boolean),
+  ])
+
+  const specific = list.required?.length > 0
+  const required = specific ? books.filter((b) => list.required.includes(b.id)) : []
+  const rest = specific ? books.filter((b) => !list.required.includes(b.id)) : books
+
+  const read = (b) => done.has(b.title)
+  const title = (n) => `${n} ${n === 1 ? 'title' : 'titles'}`
+  // A section the filter has emptied goes with its heading — a "More Titles"
+  // head over nothing is worse than no head.
+  const shelf = (items) => {
+    const shown = byEarnedState(items, state, read)
+    if (shown.length === 0) return null
+    return (
+      <ul className="cp-list">
+        {shown.map((b) => (
+          <ListBook
+            key={b.id}
+            book={b}
+            list={list}
+            done={read(b)}
+            onLog={onLog}
+            onOpenBook={onOpenBook}
+          />
+        ))}
+      </ul>
+    )
+  }
+  const section = (head, items) =>
+    shelf(items) && (
+      <>
+        {head}
+        {shelf(items)}
+      </>
+    )
+
   return (
     <section className="cp-section">
-      <ReaderPageHead as="h2" title={list.name} />
+      <ReaderPageHead as="h2" title={list.name} count={`${books.length} total titles`} />
       {/* The list's line is the rule of the thing — "read any four of these and
           it counts" — not a caption under the title, so it takes the app's own
           `.infobox` rather than sitting in the prose. */}
       <InfoBox icon={<Icon name="bulb" size={26} />} className="cp-listnote">
         {list.description}
       </InfoBox>
-      <ul className="cp-list">
-        {books.map((b) => (
-          <li className="cp-listbook" key={b.id}>
-            <span className="cp-listbook-cover">
-              <BookCover book={b} size="fill" />
-            </span>
-            <div className="cp-listbook-meta">
-              <span className="cp-listbook-title">{b.title}</span>
-              <span className="cp-listbook-author">{b.author}</span>
-            </div>
-            <Button size="sm" onClick={() => onLog?.(b)}>
-              Log
-            </Button>
-          </li>
-        ))}
-      </ul>
+
+      <FilterMenuBar className="cp-listfilters">
+        <EarnedFilter
+          items={books}
+          isEarned={read}
+          value={state}
+          onChange={setState}
+          ariaLabel="Which titles"
+          labels={{ earned: 'Completed', unearned: 'To Read' }}
+        />
+      </FilterMenuBar>
+
+      {specific ? (
+        <>
+          {section(
+            <ListHead
+              title="Required Titles"
+              sub={`${title(list.minimum)} required, including these specific titles`}
+            />,
+            required,
+          )}
+          {section(<ListHead title="More Titles" />, rest)}
+        </>
+      ) : (
+        <>
+          {section(
+            list.minimum != null ? (
+              <ListHead
+                title={
+                  list.minimum >= books.length
+                    ? 'Required Titles'
+                    : `${title(list.minimum)} required`
+                }
+                sub={list.minimum >= books.length ? 'All Titles Required' : undefined}
+              />
+            ) : null,
+            rest,
+          )}
+        </>
+      )}
     </section>
   )
 }
@@ -365,7 +533,18 @@ function Drawings({ extras }) {
  * page per certificate; here each is a card with the Print the app's own page
  * exists for.
  */
+/**
+ * Certificates — `programs/earned_certificate`. The app renders a printable
+ * page per certificate; here each is a row, like the rewards and the prizes it
+ * sits beside. A big framed sheet per certificate was a picture of the printout
+ * rather than a list of them, and it fell apart the moment there were two.
+ *
+ * An unearned one names what it takes where an earned one names its date, and
+ * has nothing to print yet.
+ */
 function Certificates({ list }) {
+  const [state, setState] = useState('all')
+
   if (!list?.length) {
     return (
       <EmptyState
@@ -376,23 +555,41 @@ function Certificates({ list }) {
       />
     )
   }
+
+  const isEarned = (c) => Boolean(c.earnedOn)
+
   return (
     <section className="cp-section">
       <ReaderPageHead as="h2" title="Certificates" />
-      <ul className="cp-certs">
-        {list.map((c) => (
-          <li className="cp-cert" key={c.id}>
-            <div className="cp-cert-sheet">
-              <span className="cp-cert-seal" aria-hidden="true">
-                <Icon name="award" size={30} />
-              </span>
-              <h3 className="cp-cert-name">{c.name}</h3>
-              <p className="cp-cert-line">{c.line}</p>
-              <p className="cp-cert-date">{c.earnedOn}</p>
+      <FilterMenuBar className="cp-listfilters">
+        <EarnedFilter
+          items={list}
+          isEarned={isEarned}
+          value={state}
+          onChange={setState}
+          ariaLabel="Which certificates"
+        />
+      </FilterMenuBar>
+      <ul className="cp-rewards">
+        {byEarnedState(list, state, isEarned).map((c) => (
+          <li key={c.id} className={`cp-reward${isEarned(c) ? ' is-earned' : ''}`}>
+            <span className="cp-reward-mark">
+              <Icon name="award" size={26} />
+            </span>
+            <div className="cp-reward-copy">
+              <span className="cp-reward-name">{c.name}</span>
+              <span className="cp-reward-detail">{c.line}</span>
             </div>
-            <Button variant="secondary" size="sm">
-              Print Certificate
-            </Button>
+            {isEarned(c) ? (
+              <>
+                <span className="cp-reward-at">Earned On {c.earnedOn}</span>
+                <Button variant="secondary" size="sm">
+                  Print
+                </Button>
+              </>
+            ) : (
+              <span className="cp-reward-at">{c.at}</span>
+            )}
           </li>
         ))}
       </ul>
@@ -400,7 +597,7 @@ function Certificates({ list }) {
   )
 }
 
-export function ChallengePage({ challenge, entries, onLog }) {
+export function ChallengePage({ challenge, entries, onLog, onOpenBook, onBack }) {
   const [tab, setTab] = useState('overview')
   const detail = getChallengeDetail(challenge.id)
   const extras = getChallengeExtras(challenge.id)
@@ -410,6 +607,7 @@ export function ChallengePage({ challenge, entries, onLog }) {
   return (
     <div className="cp">
       <ProgramHeader
+        back={onBack && <ReaderBack onClick={onBack}>Back to Challenges</ReaderBack>}
         banner={banner}
         title={challenge.title}
         tint={tint}
@@ -439,7 +637,14 @@ export function ChallengePage({ challenge, entries, onLog }) {
 
       <div className="cp-body">
         {tab === 'overview' && <Overview detail={detail} onTab={setTab} />}
-        {tab === 'reading-list' && <ReadingList list={extras.readingList} onLog={onLog} />}
+        {tab === 'reading-list' && (
+          <ReadingList
+            list={extras.readingList}
+            entries={entries}
+            onLog={onLog}
+            onOpenBook={onOpenBook}
+          />
+        )}
         {tab === 'badges' && <Badges />}
         {tab === 'rewards' && <Rewards detail={detail} />}
         {tab === 'drawings' && <Drawings extras={extras} />}

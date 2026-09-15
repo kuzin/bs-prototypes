@@ -37,9 +37,6 @@
   gap: 24px;
   align-items: start;
 }
-.fnd-goals {
-  grid-column: 1 / -1;
-}
 
 .fnd-main {
   min-width: 0;

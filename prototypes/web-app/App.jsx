@@ -506,6 +506,7 @@ export function App() {
               challenge={challenge}
               entries={log}
               onLog={() => setFlowOpen(true)}
+              onOpenBook={(b) => openBook(b, challenge.title)}
               onBack={() => setChallenge(null)}
             />
           ) : null

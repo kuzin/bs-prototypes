@@ -111,49 +111,139 @@
 }
 
 .cp-listnote,
-.cp-endednote {
+.cp-endednote,
+.cp-listfilters {
   margin-bottom: 18px;
 }
 
 /* ─── Reading List ───────────────────────────────────────────────────────────
    A `book_list` challenge's own shelf: the titles it asks you to read. */
+/* A section heading with a way past it — "View All Badges" opposite. The h2
+   gives its own bottom margin to the row, so the two stay on one line. */
+.cp-sectionhead {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+.cp-sectionhead .cp-h2 {
+  margin-bottom: 0;
+}
+
+/* `.section-header--reading-list` + `p.challenge-subhead`. */
+.cp-listhead {
+  margin-top: 28px;
+}
+.cp-listhead .cp-h2 {
+  margin-bottom: 0;
+}
+.cp-subhead {
+  margin-top: 3px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+
 .cp-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   padding: 0;
   margin: 18px 0 0;
   list-style: none;
 }
 .cp-listbook {
   display: flex;
-  gap: 16px;
+  gap: 18px;
   align-items: center;
-  padding: 14px 16px;
+  padding: 16px 18px;
   background: #fff;
   border: 1px solid var(--c-border);
   border-radius: 14px;
 }
+/* The cover is the way into the book, the same as it is on the site's own Book
+   Lists page — this is the same row doing the same job. */
 .cp-listbook-cover {
+  position: relative;
   display: block;
   flex: none;
-  width: 48px;
+  width: 58px;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+/* `.completed-checkmarker-wrapper` — the app rings the cover of a title you
+   have finished, which is the one thing this list couldn't tell you. */
+.cp-listbook-check {
+  position: absolute;
+  right: -7px;
+  bottom: -7px;
+  display: grid;
+  place-items: center;
+  color: #0f7a55;
+  background: #fff;
+  border-radius: 999px;
 }
 .cp-listbook-meta {
   display: flex;
   flex: 1;
   flex-direction: column;
   gap: 2px;
+  align-items: flex-start;
   min-width: 0;
 }
 .cp-listbook-title {
-  font-size: 15px;
+  padding: 0;
+  font: inherit;
+  font-size: 16px;
   font-weight: 800;
+  line-height: 1.3;
   color: var(--c-text-dark);
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.cp-listbook-title:hover {
+  text-decoration: underline;
 }
 .cp-listbook-author {
   font-size: 13.5px;
   color: var(--c-text-light);
+}
+/* Its own line under the author: where the book lives is a different fact from
+   who wrote it, and on one line the logo read as part of the name. */
+.cp-listbook-partner {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  margin-top: 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.cp-listbook-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+/* A finished title stays on the list — the app leaves it there with its mark —
+   but it stops competing with the ones still to read. */
+.cp-listbook.is-done {
+  background: var(--c-gray-50);
+}
+
+@media (max-width: 560px) {
+  .cp-listbook {
+    flex-wrap: wrap;
+  }
+  .cp-listbook-actions {
+    flex-basis: 100%;
+  }
 }
 
 /* ─── Ticket drawings ────────────────────────────────────────────────────────
@@ -233,60 +323,4 @@
   justify-content: center;
   padding-top: 20px;
   padding-bottom: 20px;
-}
-
-/* ─── Certificates ───────────────────────────────────────────────────────── */
-.cp-certs {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
-  gap: 16px;
-  padding: 0;
-  margin: 18px 0 0;
-  list-style: none;
-}
-.cp-cert {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
-}
-/* A sheet, because that is what it becomes: the app's own page is built to be
-   printed and nothing else. */
-.cp-cert-sheet {
-  width: 100%;
-  padding: 28px 24px;
-  text-align: center;
-  background: #fffdf6;
-  border: 2px solid #e8d9a8;
-  border-radius: 10px;
-}
-.cp-cert-seal {
-  display: inline-grid;
-  place-items: center;
-  width: 58px;
-  height: 58px;
-  margin-bottom: 10px;
-  color: #b45309;
-  background: #fdf0d8;
-  border-radius: 999px;
-}
-.cp-cert-name {
-  font-size: 18px;
-  font-weight: 900;
-  line-height: 1.25;
-  color: var(--c-text-dark);
-}
-.cp-cert-line {
-  margin-top: 8px;
-  font-size: 14px;
-  line-height: 1.55;
-  color: var(--c-text);
-}
-.cp-cert-date {
-  margin-top: 10px;
-  font-size: 12.5px;
-  font-weight: 800;
-  color: var(--c-text-light);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }

@@ -76,9 +76,13 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
 
   return (
     <div className="fnd">
-      {onBack && <ReaderBack onClick={onBack}>Back to Challenges</ReaderBack>}
-
-      <ProgramHeader banner={bannerSrc(f.banner)} title={f.name} dates={f.dates} tint={f.tint} />
+      <ProgramHeader
+        back={onBack && <ReaderBack onClick={onBack}>Back to Challenges</ReaderBack>}
+        banner={bannerSrc(f.banner)}
+        title={f.name}
+        dates={f.dates}
+        tint={f.tint}
+      />
 
       <div className="fnd-head">
         <div className="fnd-tabs">
@@ -100,6 +104,22 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
             <div className="fnd-main">
               {f.shortDescription && <h2 className="fnd-sub">{f.shortDescription}</h2>}
               <p className="fnd-desc">{f.description}</p>
+
+              {/* `.challenge-content-goals`. The app hangs this under both
+                  columns and across the page; in the column, under the prose it
+                  belongs to, it fills the run the rail would otherwise leave
+                  empty beside it. Each tile is a link to the tab that explains
+                  it, which is what `_overall_progress`'s own hrefs do. */}
+              <h2 className="fnd-h2">Overall Progress</h2>
+              <GoalStats>
+                {f.progress.map((p) => (
+                  <GoalStat
+                    key={p.id}
+                    goal={p}
+                    onClick={() => setTab(TILE_TAB[p.id] ?? 'badges')}
+                  />
+                ))}
+              </GoalStats>
             </div>
 
             <aside className="fnd-rail">
@@ -157,24 +177,6 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
                 </div>
               </div>
             </aside>
-
-            {/* `.challenge-content-goals` — the app puts Overall Progress
-                under the two columns and across the page, not inside the prose
-                column. Seven tiles in an 828px column wrapped 3–3–1; the same
-                seven across the page are two clean rows. Each one is a link in
-                the app, and to the tab that explains it. */}
-            <section className="fnd-goals">
-              <h2 className="fnd-h2">Overall Progress</h2>
-              <GoalStats>
-                {f.progress.map((p) => (
-                  <GoalStat
-                    key={p.id}
-                    goal={p}
-                    onClick={() => setTab(TILE_TAB[p.id] ?? 'badges')}
-                  />
-                ))}
-              </GoalStats>
-            </section>
           </div>
         )}
 

@@ -12,6 +12,10 @@ import './ProgramHeader.css'
  * A challenge wears it and so does a fundraiser: a read-a-thon is a challenge
  * with money attached, and arriving at one should feel like arriving at the
  * other.
+ *
+ * `back` is the way out — a `<ReaderBack>`, laid over the band at the page's
+ * own left gutter rather than above the header, where it pushed the whole
+ * thing down off the top of the screen.
  */
 
 /** The app's blend of the banner's dominant colour toward white. */
@@ -21,12 +25,15 @@ export function wash(hex, alpha) {
   return `rgb(${mix(0)}, ${mix(2)}, ${mix(4)})`
 }
 
-export function ProgramHeader({ banner, title, dates, tags, tint = '#ACACAC' }) {
+export function ProgramHeader({ back, banner, title, dates, tags, tint = '#ACACAC' }) {
   return (
     // The app names these the other way round — `-bar-light` takes the 40%
     // blend and `-bar-dark` the 20% — so the stronger band is the tall one at
     // the top and the paler one sits behind its curve.
     <div className="prog-header">
+      {/* The way out sits on the band, at the page's own left gutter — the
+          header is full-bleed and the link is not. */}
+      {back && <div className="prog-back">{back}</div>}
       <div className="prog-bar-strong" style={{ background: wash(tint, 0.4) }} />
       <div className="prog-bar-pale" style={{ background: wash(tint, 0.2) }} />
       <div className="prog-header-info">
