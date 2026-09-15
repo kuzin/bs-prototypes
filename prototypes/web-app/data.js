@@ -760,8 +760,26 @@ export const PEER_REVIEWS = [
 // keys in logging-flow's data — all three of these are real Beanstack
 // challenges, so each carries the art its design team ships.
 
-// The Overview's "Overall Progress" ring tiles, in the app's render order.
-const goal = (label, have, need, icon) => ({ label, have, need, icon })
+// The Overview's "Overall Progress" tiles. The app has two shapes and renders
+// them in one fixed order (`_overview_list_goals`): the titles from a reading
+// list, then Badges Earned, then one per log type, then Reviews, then
+// Completed Activities, then Rewards / Tickets / Certificates Earned.
+//
+// A `goal` is `_progress_card` — it has a denominator, so it draws a ring and
+// reads "620 / 1,000". A `total` is `_total_card` — a count with nothing to
+// reach, so no ring. Badges Earned is a total in the app, not a fraction; as a
+// ring it promised a badge set you could finish.
+//
+// `tab` is where the app's own href goes: every tile is a link to the tab that
+// explains its number.
+const goal = (label, have, need, icon, tab = 'badges') => ({ label, have, need, icon, tab })
+const total = (label, value, icon, accent, tab = 'badges') => ({ label, value, icon, accent, tab })
+
+/* The colours the total tiles carry, matched to the fundraiser's own. */
+const BADGE_ACCENT = '#B45309'
+const REWARD_ACCENT = '#7C5CFA'
+const TICKET_ACCENT = '#E1511C'
+const CERT_ACCENT = '#0F7A55'
 
 export const CHALLENGE_DETAIL = {
   spring: {
@@ -770,12 +788,14 @@ export const CHALLENGE_DETAIL = {
       'Spring Into Reading runs the whole month of April. Log your minutes, earn a badge for every milestone, and help Magnolia Middle hit its school goal of 40,000 minutes. Every 250 minutes you log earns you a ticket for the end-of-month drawing.',
     types: ['Minutes', 'Activities', 'Reviews'],
     goals: [
+      goal('Titles Completed', 5, 10, 'book-2', 'reading-list'),
+      total('Badges Earned', 3, 'award', BADGE_ACCENT),
       goal('Minutes Completed', 620, 1000, 'clock'),
-      goal('Badges Earned', 3, 8, 'award'),
-      goal('Titles Completed', 5, 10, 'book-2'),
       goal('Reviews', 1, 3, 'writing'),
       goal('Completed Activities', 2, 5, 'circle-check'),
-      goal('Tickets Earned', 2, 4, 'ticket'),
+      total('Rewards Earned', 2, 'gift', REWARD_ACCENT, 'rewards'),
+      total('Tickets Earned', 8, 'ticket', TICKET_ACCENT, 'drawings'),
+      total('Certificates Earned', 1, 'award', CERT_ACCENT, 'certificates'),
     ],
     rewards: [
       {
@@ -812,9 +832,10 @@ export const CHALLENGE_DETAIL = {
       'For the Love of Reading is an ongoing challenge — no end date. Log whatever you are reading and collect the badge set as you go: a rose, a bouquet, a love letter, and eleven more. Write a review of something you loved and Benny will find you a badge for that too.',
     types: ['Minutes', 'Reviews'],
     goals: [
+      total('Badges Earned', 2, 'award', BADGE_ACCENT),
       goal('Minutes Completed', 310, 600, 'clock'),
-      goal('Badges Earned', 2, 17, 'award'),
       goal('Reviews', 2, 3, 'writing'),
+      total('Rewards Earned', 1, 'gift', REWARD_ACCENT, 'rewards'),
     ],
     rewards: [
       {
@@ -833,9 +854,10 @@ export const CHALLENGE_DETAIL = {
       'Comics Choice is a bingo card. Every square is a different kind of comic or graphic novel — read one, log it, and the square is yours. Fill a row for a Bingo badge, fill the whole card for the Full Card badge, and everything you read on Comics Plus counts automatically.',
     types: ['Bingo', 'Minutes', 'Activities'],
     goals: [
+      total('Badges Earned', 2, 'award', BADGE_ACCENT),
       goal('Minutes Completed', 88, 500, 'clock'),
-      goal('Badges Earned', 2, 28, 'award'),
       goal('Completed Activities', 7, 25, 'circle-check'),
+      total('Rewards Earned', 0, 'gift', REWARD_ACCENT, 'rewards'),
     ],
     rewards: [
       {
@@ -863,9 +885,10 @@ export const CHALLENGE_DETAIL = {
       'Read With Benny ran the whole winter — log your minutes, and every fortnight brought an activity to go with them: a snow-day book swap, a cocoa-and-comics hour, and a family read-aloud night.',
     types: ['Minutes', 'Activities'],
     goals: [
+      total('Badges Earned', 6, 'award', BADGE_ACCENT),
       goal('Minutes Completed', 900, 900, 'clock'),
-      goal('Badges Earned', 6, 6, 'award'),
       goal('Completed Activities', 3, 3, 'circle-check'),
+      total('Rewards Earned', 2, 'gift', REWARD_ACCENT, 'rewards'),
     ],
     rewards: [
       {
@@ -890,7 +913,11 @@ export const CHALLENGE_DETAIL = {
     description:
       'Read Across America is one week and one list. Read any four of the titles the school picked, log them as you go, and the week counts as complete.',
     types: ['Reading List', 'Books'],
-    goals: [goal('Titles Completed', 4, 4, 'book-2'), goal('Badges Earned', 2, 2, 'award')],
+    goals: [
+      goal('Titles Completed', 4, 4, 'book-2', 'reading-list'),
+      total('Badges Earned', 2, 'award', BADGE_ACCENT),
+      total('Rewards Earned', 1, 'gift', REWARD_ACCENT, 'rewards'),
+    ],
     rewards: [
       {
         name: 'Read Across America sticker',

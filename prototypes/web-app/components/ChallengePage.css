@@ -26,11 +26,6 @@
   font-weight: 800;
   color: var(--c-text-dark);
 }
-.cp-empty {
-  padding: 24px 0;
-  font-size: 14.5px;
-  color: var(--c-text-light);
-}
 
 /* ─── Overview ───────────────────────────────────────────────────────────── */
 
@@ -40,14 +35,20 @@
   line-height: 1.6;
   color: var(--c-text);
 }
-.cp-started {
-  display: inline-flex;
-  gap: 7px;
-  align-items: center;
-  margin-top: 14px;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--c-text-light);
+
+/* The list was a bare `ul`, so it wore the browser's own 40px indent and its
+   rows sat flush against each other. It is the page's other lists — the
+   reading list and the drawings — which are a column with a 12px gap. */
+.cp-rewardfilters {
+  margin-bottom: 18px;
+}
+.cp-rewards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
 }
 
 /* The Overall Progress strip is the shared GoalTile — the fundraiser's own
@@ -106,6 +107,10 @@
   .cp-reward-at {
     flex-basis: 100%;
   }
+}
+
+.cp-listnote {
+  margin-bottom: 18px;
 }
 
 /* ─── Reading List ───────────────────────────────────────────────────────────

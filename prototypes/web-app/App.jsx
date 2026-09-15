@@ -180,6 +180,9 @@ function loadSettings(defaults) {
 }
 
 const SITE_KEY = 'bs-web-app-site'
+/* `fundraiser-notification/fundraiser-id-N/profile-id-N/user-id-N` in the app —
+   one fundraiser and one reader here, so one key. */
+const WELCOME_KEY = 'bs-web-app-fundraiser-welcomed'
 
 const FEATURE_DEFAULTS = {
   rmi: true,
@@ -290,7 +293,27 @@ export function App() {
   const [regAnswers, setRegAnswers] = useState({})
   // The once-per-reader welcome the app pops the first time they land on a site
   // running a read-a-thon. The fundraiser itself is a nav tab, not a page state.
-  const [welcomed, setWelcomed] = useState(false)
+  //
+  // Once means once: `_fundraiser_notification` writes a
+  // `fundraiser-notification/fundraiser-id-N/profile-id-N/user-id-N` key to
+  // localStorage and never shows the modal to that reader again. Held in
+  // component state it came back on every reload, which is a different modal
+  // from the one the app has.
+  const [welcomed, setWelcomed] = useState(() => {
+    try {
+      return localStorage.getItem(WELCOME_KEY) === '1'
+    } catch {
+      return false
+    }
+  })
+  const dismissWelcome = () => {
+    setWelcomed(true)
+    try {
+      localStorage.setItem(WELCOME_KEY, '1')
+    } catch {
+      /* a browser with storage off still gets the modal once a session */
+    }
+  }
 
   const [stack, setStack] = useState([])
   const top = stack[stack.length - 1] ?? null
@@ -523,9 +546,9 @@ export function App() {
       <FundraiserWelcome
         open={features.fundraiser && !welcomed}
         school={!library}
-        onClose={() => setWelcomed(true)}
+        onClose={dismissWelcome}
         onStart={() => {
-          setWelcomed(true)
+          dismissWelcome()
           setView('fundraisers')
           setChallenge(null)
           setStack([])

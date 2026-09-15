@@ -3,6 +3,7 @@ import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+import { byEarnedState, EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
 import { Pill } from '@components/Pill/Pill'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
@@ -230,26 +231,19 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
 function Prizes({ fundraiser }) {
   const [state, setState] = useState('all')
   const all = fundraiser.prizes ?? []
-  const earned = all.filter((p) => p.earned)
-  const unearned = all.filter((p) => !p.earned)
-  const shown = state === 'earned' ? earned : state === 'unearned' ? unearned : all
+  const isEarned = (p) => Boolean(p.earned)
+  const shown = byEarnedState(all, state, isEarned)
 
   return (
     <>
       <ReaderPageHead as="h2" title="Prizes" />
       <FilterMenuBar className="fnd-prizefilters">
-        <Tabs
-          variant="pill"
-          size="md"
-          active={state}
-          accent="#1A6DD5"
+        <EarnedFilter
+          items={all}
+          isEarned={isEarned}
+          value={state}
           onChange={setState}
           ariaLabel="Which prizes"
-          items={[
-            { id: 'all', label: 'All', count: all.length },
-            { id: 'earned', label: 'Earned', count: earned.length },
-            { id: 'unearned', label: 'Unearned', count: unearned.length },
-          ]}
         />
       </FilterMenuBar>
 

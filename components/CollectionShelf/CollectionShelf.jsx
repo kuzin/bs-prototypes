@@ -1,11 +1,10 @@
 import { useState } from 'react'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
-import { Tabs } from '@components/Tabs/Tabs'
 import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+import { byEarnedState, EarnedFilter, hasBothStates } from '@components/EarnedFilter/EarnedFilter'
 import { EmptyState } from '@components/Primitives/Primitives'
 
 import './CollectionShelf.css'
-import '@components/Tabs/Tabs.css'
 import '@components/Primitives/Primitives.css'
 
 /* `appropriate_badges_title` — the app's own badge taxonomy, and the order it
@@ -139,46 +138,20 @@ export function BadgeShelf({ badges, src, emptyIcon }) {
   const [state, setState] = useState('all')
   const [types, setTypes] = useState([])
 
-  const earned = badges.filter((b) => !b.locked)
-  const unearned = badges.filter((b) => b.locked)
-  // A set with no unearned half can only answer one way, so the state control
-  // never appears on it — see the note above.
-  const byState =
-    earned.length === 0 || unearned.length === 0
-      ? badges
-      : state === 'earned'
-        ? earned
-        : state === 'unearned'
-          ? unearned
-          : badges
+  const byState = byEarnedState(badges, state)
   const shown = types.length ? byState.filter((b) => types.includes(TYPE_LABELS[b.type])) : byState
   const ordered = [...shown.filter((b) => !b.locked), ...shown.filter((b) => b.locked)]
 
   // Only the types this set actually has, in the app's own order.
   const present = TYPE_ORDER.filter((t) => badges.some((b) => TYPE_LABELS[b.type] === t))
 
-  const bothHalves = earned.length > 0 && unearned.length > 0
-  const hasFilters = bothHalves || present.length > 1
+  const hasFilters = hasBothStates(badges) || present.length > 1
 
   return (
     <>
       {hasFilters && (
         <FilterMenuBar className="co-filters">
-          {bothHalves && (
-            <Tabs
-              variant="pill"
-              size="md"
-              active={state}
-              accent="#1A6DD5"
-              onChange={setState}
-              ariaLabel="Which badges"
-              items={[
-                { id: 'all', label: 'All', count: badges.length },
-                { id: 'earned', label: 'Earned', count: earned.length },
-                { id: 'unearned', label: 'Unearned', count: unearned.length },
-              ]}
-            />
-          )}
+          <EarnedFilter items={badges} value={state} onChange={setState} ariaLabel="Which badges" />
           {present.length > 1 && (
             <FilterMenu label="Type" options={present} value={types} onChange={setTypes} multi />
           )}

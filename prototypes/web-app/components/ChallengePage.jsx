@@ -13,9 +13,12 @@ import { Button } from '@components/Button/Button'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { NumberInput } from '@components/Form/Form'
 import { EmptyState } from '@components/Primitives/Primitives'
+import { InfoBox } from '@components/InfoBox/InfoBox'
 import { BookCover } from '../../logging-flow/components/BookCover'
 import { badgeSrc, bannerSrc } from '@components/ReaderApp/ReaderApp'
 import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
+import { FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+import { byEarnedState, EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 
 import { ReadingLog } from '../../logging-flow/components/ReadingLog'
@@ -75,7 +78,15 @@ function tabsFor(extras) {
   ]
 }
 
-function Overview({ detail, challenge }) {
+/**
+ * The Overview — `programs/_show.html.haml`, which is three blocks and nothing
+ * else: the description, "Overall Progress", and "Recently Earned Badges".
+ *
+ * There is no date line in the body. The app puts the span in the header and
+ * says nothing further; "started on April 3" was ours, and it sat between the
+ * description and the progress strip saying less than either.
+ */
+function Overview({ detail, onTab }) {
   // "Recently Earned Badges" is the first six, which is what the app shows.
   const recent = BADGES.filter((b) => !b.locked).slice(0, 6)
 
@@ -83,34 +94,49 @@ function Overview({ detail, challenge }) {
     <>
       <section className="cp-section">
         <p className="cp-description">{detail.description}</p>
-        {/* A challenge that has ended says when, not when it opened — by the
-            time it is in your Past list, the start date has stopped being the
-            useful half of the span. */}
-        {(detail.endedOn || detail.startedOn) && (
-          <p className="cp-started">
-            <Icon name="calendar" size={15} />
-            {detail.endedOn
-              ? `${challenge.title} ended on ${detail.endedOn}`
-              : `${challenge.title} started on ${detail.startedOn}`}
-          </p>
-        )}
       </section>
 
-      <section className="cp-section">
-        <h2 className="cp-h2">Overall Progress</h2>
-        <GoalTiles>
-          {detail.goals.map((g) => (
-            <GoalTile key={g.label} label={g.label} have={g.have} need={g.need} />
-          ))}
-        </GoalTiles>
-      </section>
+      {/* `.challenge-content-goals`. Every tile is a link to the tab that
+          explains its number, which is what `_overview_list_goals`'s own hrefs
+          do — Titles to the reading list, Rewards to Rewards, the rest to the
+          badges that measure them. */}
+      {detail.goals.length > 0 && (
+        <section className="cp-section">
+          <h2 className="cp-h2">Overall Progress</h2>
+          <GoalTiles>
+            {detail.goals.map((g) =>
+              g.need != null ? (
+                <GoalTile
+                  key={g.label}
+                  label={g.label}
+                  have={g.have}
+                  need={g.need}
+                  onClick={() => onTab?.(g.tab)}
+                />
+              ) : (
+                <GoalTile
+                  key={g.label}
+                  label={g.label}
+                  value={g.value}
+                  accent={g.accent}
+                  icon={<Icon name={g.icon} size={24} />}
+                  onClick={() => onTab?.(g.tab)}
+                />
+              ),
+            )}
+          </GoalTiles>
+        </section>
+      )}
 
       <section className="cp-section">
         <h2 className="cp-h2">Recently Earned Badges</h2>
         {recent.length === 0 ? (
-          <p className="cp-empty">
-            Olivia hasn&apos;t earned any badges yet. Participate in the challenge to earn badges.
-          </p>
+          // `.no-results` — the app's own two lines, a heading over a sentence.
+          <EmptyState
+            icon={<Icon name="award" size={26} />}
+            title="Olivia hasn't earned any badges yet."
+            description="Participate in the challenge to earn badges."
+          />
         ) : (
           <ShelfGrid>
             {recent.map((b) => (
@@ -143,11 +169,23 @@ function Badges() {
 }
 
 function Rewards({ detail }) {
+  const [state, setState] = useState('all')
+  const isEarned = (r) => Boolean(r.earned)
+
   return (
     <section className="cp-section">
       <ReaderPageHead as="h2" title="Rewards" />
+      <FilterMenuBar className="cp-rewardfilters">
+        <EarnedFilter
+          items={detail.rewards}
+          isEarned={isEarned}
+          value={state}
+          onChange={setState}
+          ariaLabel="Which rewards"
+        />
+      </FilterMenuBar>
       <ul className="cp-rewards">
-        {detail.rewards.map((r) => (
+        {byEarnedState(detail.rewards, state, isEarned).map((r) => (
           <li key={r.name} className={`cp-reward${r.earned ? ' is-earned' : ''}`}>
             <span className="cp-reward-mark">
               <Icon name={r.earned ? 'circle-check-filled' : 'gift'} size={26} />
@@ -177,7 +215,12 @@ function ReadingList({ list, onLog }) {
   return (
     <section className="cp-section">
       <ReaderPageHead as="h2" title={list.name} />
-      <p className="cp-description">{list.description}</p>
+      {/* The list's line is the rule of the thing — "read any four of these and
+          it counts" — not a caption under the title, so it takes the app's own
+          `.infobox` rather than sitting in the prose. */}
+      <InfoBox icon={<Icon name="bulb" size={26} />} className="cp-listnote">
+        {list.description}
+      </InfoBox>
       <ul className="cp-list">
         {books.map((b) => (
           <li className="cp-listbook" key={b.id}>
@@ -400,7 +443,7 @@ export function ChallengePage({ challenge, entries, onLog }) {
       </div>
 
       <div className="cp-body">
-        {tab === 'overview' && <Overview detail={detail} challenge={challenge} />}
+        {tab === 'overview' && <Overview detail={detail} onTab={setTab} />}
         {tab === 'reading-list' && <ReadingList list={extras.readingList} onLog={onLog} />}
         {tab === 'badges' && <Badges />}
         {tab === 'rewards' && <Rewards detail={detail} />}

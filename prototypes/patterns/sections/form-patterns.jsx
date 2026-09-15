@@ -25,6 +25,7 @@ import { DatePicker } from '@components/DatePicker/DatePicker'
 import { TimePicker } from '@components/TimePicker/TimePicker'
 import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
 import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+import { byEarnedState, EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
 import { Knobs, Variant } from './_shared'
 
 function ColorInputKnobs() {
@@ -849,6 +850,39 @@ const FM_GROUPS = {
   Disability: ['Deaf & Hard of Hearing', 'Neurodivergent'],
 }
 
+const DEMO_PRIZES = [
+  { id: 'p1', name: 'Book Fair Voucher', earned: true },
+  { id: 'p2', name: 'Sponsor a Shelf plaque' },
+  { id: 'p3', name: 'Pizza with the Principal' },
+  { id: 'p4', name: 'Name a library cart' },
+  { id: 'p5', name: 'Read-a-thon hoodie' },
+]
+
+function EarnedFilterDemo() {
+  const [state, setState] = useState('all')
+  const isEarned = (p) => Boolean(p.earned)
+  const shown = byEarnedState(DEMO_PRIZES, state, isEarned)
+  return (
+    <div style={{ display: 'grid', gap: 14 }}>
+      <EarnedFilter
+        items={DEMO_PRIZES}
+        isEarned={isEarned}
+        value={state}
+        onChange={setState}
+        ariaLabel="Which prizes"
+      />
+      <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 6 }}>
+        {shown.map((p) => (
+          <li key={p.id} style={{ fontSize: 14, fontWeight: 700 }}>
+            {p.name}
+            {p.earned ? ' — earned' : ''}
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
 function FilterMenuDemo() {
   const [genres, setGenres] = useState([])
   const [tags, setTags] = useState([])
@@ -1230,6 +1264,40 @@ import '@components/Form/Form.css'
       </>
     ),
     render: () => <FilterMenuDemo />,
+  },
+  {
+    group: 'form-patterns',
+    id: 'earned-filter',
+    name: 'EarnedFilter',
+    usage: `import { byEarnedState, EarnedFilter } from '@components/EarnedFilter/EarnedFilter'
+
+const [state, setState] = useState('all')
+const isEarned = (p) => p.earned
+
+<EarnedFilter items={prizes} isEarned={isEarned} value={state} onChange={setState} />
+{byEarnedState(prizes, state, isEarned).map(…)}`,
+    desc: (
+      <>
+        <strong>All / Earned / Unearned</strong> — the question a reader turns up to a set of
+        earnables with: what have I got, and what is left. A segmented control, which in this system
+        is a pill <code>Tabs</code>, with the counts on the tabs so the answer is readable without
+        picking one.
+        <br />
+        <br />
+        <strong>It renders nothing unless the set has both halves.</strong> A shelf you have earned
+        all of — or none of — can only answer one way, and a reader&apos;s own badge collection is
+        earned-only by definition, since an unearned badge belongs to the challenge that sets its
+        requirement and exists nowhere else. <code>byEarnedState</code> is the matching filter, and
+        it passes the whole set through in that case rather than hiding things behind a control the
+        reader can&apos;t see.
+        <br />
+        <br />
+        <code>isEarned</code> is how a set says which half a thing is in — badges carry{' '}
+        <code>locked</code>, prizes and rewards carry <code>earned</code>. Used by{' '}
+        <code>BadgeShelf</code>, a challenge&apos;s Rewards tab and a fundraiser&apos;s Prizes.
+      </>
+    ),
+    render: () => <EarnedFilterDemo />,
   },
   {
     group: 'form-patterns',
