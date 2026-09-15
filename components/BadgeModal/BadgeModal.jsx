@@ -1,13 +1,16 @@
-import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Pill } from '@components/Pill/Pill'
 import { Modal, ModalClose } from '@components/Modal/Modal'
+import { ActivityList } from '@components/ActivityList/ActivityList'
+import { Confetti } from '@components/Confetti/Confetti'
 
 import './BadgeModal.css'
 import '@components/Button/Button.css'
 import '@components/Pill/Pill.css'
 import '@components/Modal/Modal.css'
+import '@components/ActivityList/ActivityList.css'
+import '@components/Confetti/Confetti.css'
 
 /**
  * One badge, opened — `earnables/_earnable_modal` and
@@ -25,6 +28,11 @@ import '@components/Modal/Modal.css'
  *
  *   <BadgeModal badge={badge} src={badgeSrc} onClose={close} onLog={log} />
  *
+ * An **achievement** is the same modal with a drawn medallion instead of a
+ * badge file and a burst of confetti — `art` takes the node, `confetti` fires
+ * it. One modal behind both, because to a reader they are the same object:
+ * a round thing you earned, with a date and a line about why.
+ *
  * `badge` is the log's own shape — `{ name, blurb, date, have, need, unit,
  * locked }` — plus the optional `required` / `reward` / `tickets` /
  * `certificate` a requirement can carry, and `state: 'bingo' | 'unavailable'`
@@ -34,104 +42,11 @@ import '@components/Modal/Modal.css'
  * activities — so `activities` gets listed with a tick each, the way the app's
  * own two-column modal lists them.
  */
-/**
- * One activity, in the four kinds an `Activity` comes in: tick it off, follow a
- * **link** (`link_title` / `link_url`), write an answer
- * (`is_text_box_challenge?`), or enter a **code** the library handed out
- * (`is_an_activity_code?`). A **repeatable** track counts rather than ticks —
- * you can do it again, and the app keeps the total.
- *
- * The tick is its own button, because the last two complete by answering
- * rather than by ticking.
- */
-function Activity({ activity: a, done, onToggle }) {
-  const [codeOpen, setCodeOpen] = useState(false)
-  const [value, setValue] = useState('')
-  const answered = a.kind === 'text' || a.kind === 'code'
-
-  return (
-    <li className={done && !a.repeatable ? 'is-done' : undefined}>
-      <div className="bdg-act">
-        <button
-          type="button"
-          className="bdg-act-check"
-          onClick={onToggle}
-          aria-pressed={done}
-          aria-label={done ? 'Completed' : 'Mark complete'}
-          disabled={answered}
-        >
-          <Icon name={done ? 'circle-check-filled' : 'circle'} size={22} />
-        </button>
-        <div className="bdg-act-body">
-          <span className="bdg-act-name">{a.name}</span>
-
-          {a.kind === 'link' && (
-            <a className="bdg-act-link" href={a.linkUrl} target="_blank" rel="noreferrer">
-              {a.linkText}
-            </a>
-          )}
-
-          {a.kind === 'text' && !done && (
-            <div className="bdg-act-field">
-              <label htmlFor={`act-${a.id}`}>
-                {a.repeatable ? 'Enter your activity' : 'Add a response'}
-              </label>
-              <textarea
-                id={`act-${a.id}`}
-                rows={2}
-                value={value}
-                onChange={(e) => setValue(e.target.value)}
-              />
-              <Button
-                size="sm"
-                disabled={!value.trim()}
-                onClick={() => {
-                  onToggle()
-                  setValue('')
-                }}
-              >
-                Save
-              </Button>
-            </div>
-          )}
-
-          {/* The code field sits behind the button: most readers haven't got a
-              code to type, and the app hides it the same way. */}
-          {a.kind === 'code' &&
-            !done &&
-            (codeOpen ? (
-              <div className="bdg-act-field">
-                <label htmlFor={`code-${a.id}`}>Secret code</label>
-                <input
-                  id={`code-${a.id}`}
-                  value={value}
-                  onChange={(e) => setValue(e.target.value)}
-                />
-                <Button size="sm" disabled={!value.trim()} onClick={onToggle}>
-                  Save
-                </Button>
-              </div>
-            ) : (
-              <Button variant="secondary" size="sm" onClick={() => setCodeOpen(true)}>
-                Enter Secret Code
-              </Button>
-            ))}
-
-          {a.repeatable && (
-            <span className="bdg-act-times">
-              {a.times ?? 0} {a.times === 1 ? 'time' : 'times'} so far
-            </span>
-          )}
-          {a.points && <span className="bdg-act-points">Worth {a.points} Points</span>}
-        </div>
-      </div>
-    </li>
-  )
-}
-
 export function BadgeModal({
   badge,
   src,
+  art,
+  confetti = false,
   open = true,
   onClose,
   onLog,
@@ -179,6 +94,9 @@ export function BadgeModal({
   return (
     <Modal open={open} onClose={onClose} variant="center" closeBadge ariaLabel="Badge">
       <ModalClose onClick={onClose} />
+      {/* Something you have already earned is worth a moment — the burst is
+          one-shot and stops on its own. */}
+      {confetti && earned && <Confetti count={18} distance={360} />}
       <div className="modal-body bdg">
         {/* `.badge-image.logging-badge` — the ring is the share done, and it
             goes jade and takes a check the moment the badge is earned. */}
@@ -194,7 +112,9 @@ export function BadgeModal({
               strokeDasharray={`${ring} 100`}
             />
           </svg>
-          <img src={src(badge)} alt="" />
+          {/* `art` is a drawn medallion rather than a file — what an
+              achievement has instead of a badge image. */}
+          {art ?? <img src={src(badge)} alt="" />}
           {earned && (
             <span className="bdg-check" aria-hidden="true">
               <Icon name="check" size={18} stroke={3} />
@@ -207,7 +127,7 @@ export function BadgeModal({
           )}
         </div>
 
-        <p className="bdg-name">{badge.name}</p>
+        {badge.name && <p className="bdg-name">{badge.name}</p>}
         <h2 className="bdg-goal">{badge.blurb}</h2>
 
         {earned && badge.date && <p className="bdg-on">Completed on {badge.date}</p>}
@@ -251,17 +171,11 @@ export function BadgeModal({
         {badge.about && <p className="bdg-about">{badge.about}</p>}
         {badge.activities?.length > 0 && (
           <div className="bdg-acts">
-            <h3>Activities</h3>
-            <ul>
-              {badge.activities.map((a) => (
-                <Activity
-                  key={a.id}
-                  activity={a}
-                  done={done.has(a.id)}
-                  onToggle={() => onToggleActivity?.(badge, a)}
-                />
-              ))}
-            </ul>
+            <ActivityList
+              activities={badge.activities}
+              done={done}
+              onToggle={(a) => onToggleActivity?.(badge, a)}
+            />
           </div>
         )}
 

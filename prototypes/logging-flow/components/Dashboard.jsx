@@ -28,6 +28,7 @@ import {
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
 import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'
+import { CompleteActivity } from '@components/CompleteActivity/CompleteActivity'
 import { AccountSettings } from '@components/AccountSettings/AccountSettings'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 
@@ -469,6 +470,11 @@ export function Dashboard({
      no account above the reader) it goes to Personalize Reader as it always
      has. Same additive shape as `personalize` one line down. */
   account,
+  /* The activity badges the reader could be ticking things off in, and how to
+     tick one — `profile_has_current_learning_tracks?`. Given, the top bar grows
+     its **Complete Activity** button and this is what it opens; left off, the
+     app doesn't offer it, which is what the app does. */
+  activities,
   onOpenChallenge,
   onUnenrollChallenge,
   motivation,
@@ -575,6 +581,7 @@ export function Dashboard({
   // One banner covers every partner still to link, so waving it off is one
   // decision rather than one per app.
   const [dismissed, setDismissed] = useState(false)
+  const [activityOpen, setActivityOpen] = useState(false)
 
   const toLink = dismissed ? [] : partners.filter((p) => !connections[p.id])
 
@@ -594,6 +601,7 @@ export function Dashboard({
         accountLabel={accountLabel}
         onLog={onLog}
         onReview={onReview}
+        onActivity={activities ? () => setActivityOpen(true) : undefined}
         onHome={() => setView('challenges')}
         onAccount={() => setView(account ? 'account' : 'settings')}
         beforeUser={
@@ -610,6 +618,13 @@ export function Dashboard({
         extraTabs={extraTabs}
         hideTabs={hideTabs}
       />
+      {activities && (
+        <CompleteActivity
+          open={activityOpen}
+          onClose={() => setActivityOpen(false)}
+          {...activities}
+        />
+      )}
       <main className="wa-main">
         <div className="wa-main-inner">
           {page ? (

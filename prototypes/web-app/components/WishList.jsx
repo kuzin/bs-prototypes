@@ -44,7 +44,6 @@ const recordFor = (id) => CATALOG_BY_ID[id] ?? BOOKS[id]
 
 export function WishList({ items = [], onRemove, onFindBooks, onLog, onOpenBook }) {
   const [q, setQ] = useState('')
-  const [searching, setSearching] = useState(false)
 
   const term = q.trim().toLowerCase()
   const known = items.filter((i) => recordFor(i.book))
@@ -75,28 +74,24 @@ export function WishList({ items = [], onRemove, onFindBooks, onLog, onOpenBook 
       <ReaderPageHead
         as="h2"
         title="Wish List"
+        /* Search belongs with the page's other controls. It used to be a button
+           that revealed a full-width field underneath — two steps and a line of
+           the page to do what a field in the header does. */
         actions={
           <>
+            <SearchInput
+              className="wl-search"
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Search this list"
+              ariaLabel="Search wish list"
+            />
             <Button variant="secondary" onClick={onFindBooks}>
               Find Books
-            </Button>
-            <Button variant="secondary" onClick={() => setSearching((s) => !s)}>
-              Search Wish List
             </Button>
           </>
         }
       />
-
-      {searching && (
-        <div className="wl-search">
-          <SearchInput
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search this list"
-            aria-label="Search wish list"
-          />
-        </div>
-      )}
 
       {shown.length === 0 ? (
         <EmptyState

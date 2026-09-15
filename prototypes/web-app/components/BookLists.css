@@ -2,9 +2,15 @@
    `reading_lists#index`. A `.reading-list-row` per shelf: its cover, what it
    is and how many books are on it, who made it, and the genres it covers. */
 
+/* In the page header beside the buttons, so it takes a control's width rather
+   than a line of the page. */
 .bl-search {
-  max-width: 420px;
-  margin-bottom: 16px;
+  width: 240px;
+}
+@container (max-width: 700px) {
+  .bl-search {
+    width: 100%;
+  }
 }
 
 /* The two facets are the shared FilterMenu; this is only the rule under

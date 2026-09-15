@@ -121,9 +121,14 @@ export function ReaderTopBar({
           {!actions && secondaryActions && (
             <>
               <div className="wa-actions-wide">
-                <Button variant="ghost" size="md" onClick={onActivity}>
-                  Complete Activity
-                </Button>
+                {/* `display_complete_activity_button =
+                    profile_has_current_learning_tracks?` — offered only where
+                    the reader is in something with activities to do. */}
+                {onActivity && (
+                  <Button variant="ghost" size="md" onClick={onActivity}>
+                    Complete Activity
+                  </Button>
+                )}
                 <Button variant="ghost" size="md" onClick={onReview}>
                   Write a Review
                 </Button>
@@ -139,15 +144,17 @@ export function ReaderTopBar({
                 >
                   {({ close }) => (
                     <FlyoutMenu>
-                      <FlyoutMenuItem
-                        icon={<Icon name="check" size={16} />}
-                        onClick={() => {
-                          onActivity?.()
-                          close()
-                        }}
-                      >
-                        Complete Activity
-                      </FlyoutMenuItem>
+                      {onActivity && (
+                        <FlyoutMenuItem
+                          icon={<Icon name="check" size={16} />}
+                          onClick={() => {
+                            onActivity()
+                            close()
+                          }}
+                        >
+                          Complete Activity
+                        </FlyoutMenuItem>
+                      )}
                       <FlyoutMenuItem
                         icon={<Icon name="writing" size={16} />}
                         onClick={() => {

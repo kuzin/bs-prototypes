@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { BadgeModal } from '@components/BadgeModal/BadgeModal'
 import { Tabs } from '@components/Tabs/Tabs'
 import { badgeSrc } from '@components/ReaderApp/ReaderApp'
 import { Icon } from '@components/Icon/Icon'
@@ -32,6 +33,9 @@ const EARNED = BADGES.filter((b) => !b.locked)
 
 export function AllBadges() {
   const [pane, setPane] = useState('badges')
+  // An achievement opens the same modal a badge does — to a reader they are the
+  // same object: a round thing you earned, with a date and a line about why.
+  const [open, setOpen] = useState(null)
 
   return (
     <div className="co">
@@ -73,9 +77,21 @@ export function AllBadges() {
                 name={a.name}
                 blurb={a.detail}
                 date={a.date}
+                onOpen={() => setOpen(a)}
               />
             ))}
           </ShelfGrid>
+
+          <BadgeModal
+            /* An achievement leads with what you did — a badge leads with its
+               own name and puts what it took underneath, which is the other way
+               round. */
+            badge={open && { blurb: open.name, about: open.detail, date: open.date }}
+            art={open && <AchievementArt art={open.art} />}
+            confetti
+            open={Boolean(open)}
+            onClose={() => setOpen(null)}
+          />
         </>
       )}
     </div>

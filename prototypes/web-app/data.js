@@ -52,6 +52,25 @@ const SPRING = 'spring-into-reading'
 const LOVE = 'for-the-love-of-reading'
 const COMICS = 'comics-choice'
 
+/* A badge's set is its challenge's, so this is the one place that turns the one
+   into the other — Complete Activity groups by it, because "which challenge is
+   this for" is the first thing you need to know about an activity badge you
+   didn't go looking for. */
+const CHALLENGE_OF = {
+  [SPRING]: 'Spring Into Reading',
+  [LOVE]: 'For the Love of Reading',
+  [COMICS]: 'Comics Choice',
+}
+
+/* `profile_has_current_learning_tracks?` — the activity badges the reader could
+   be ticking things off in right now. A learning track *is* its activities, so
+   only the ones that have some. */
+export const ACTIVITY_BADGES = () =>
+  BADGES.filter((b) => b.type === 'activity' && b.activities?.length > 0).map((b) => ({
+    ...b,
+    challenge: CHALLENGE_OF[b.set],
+  }))
+
 export const BADGES = [
   earned(SPRING, 'butterfly', 'Butterfly', 'Apr 6, 2026', 'Earned for logging 100 minutes!'),
   earned(SPRING, 'rainbow', 'Rainbow', 'Apr 14, 2026', 'Earned for logging 7 days in a row!'),
@@ -191,6 +210,35 @@ export const BADGES = [
     {
       about: 'Every square on the card. Take your time — the challenge runs all month.',
       certificate: 'Comics Choice — Full Card',
+    },
+  ),
+  // Spring Into Reading runs activities too — `types: ['activities']` — so the
+  // reader has tracks in more than one challenge at a time, which is the normal
+  // case and the reason Complete Activity groups them.
+  locked(
+    SPRING,
+    'planted-tulips',
+    'Green Thumb',
+    'Do all three of the garden activities.',
+    1,
+    3,
+    'Activity',
+    'activity',
+    {
+      about: 'The library planted a reading garden out back. Three things to do in it.',
+      activities: [
+        { id: 'g1', name: 'Plant something in the reading garden', done: true },
+        {
+          id: 'g2',
+          name: 'Read outside for twenty minutes',
+        },
+        {
+          id: 'g3',
+          name: 'What grew best this spring, and why do you think so?',
+          kind: 'text',
+        },
+      ],
+      tickets: 1,
     },
   ),
   locked(

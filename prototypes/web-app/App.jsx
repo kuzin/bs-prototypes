@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
+import { badgeSrc } from '@components/ReaderApp/ReaderApp'
 import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
 
 import { Dashboard } from '../logging-flow/components/Dashboard'
@@ -21,6 +22,7 @@ import {
   BOOK_LISTS,
   catalogBook,
   ACCOUNT,
+  ACTIVITY_BADGES,
   LIBRARY_BRANCHES,
   STUDENT,
   INTERESTS,
@@ -79,7 +81,7 @@ import '@components/PreviewBar/PreviewBar.css'
 //  * **Scholastic.** The partner list and its titles are filtered out.
 
 // The reading apps this page offers, and the titles that go with them.
-const PARTNERS = CONNECTION_LIST.filter((p) => p.id !== 'scholastic')
+const ALL_PARTNERS = CONNECTION_LIST.filter((p) => p.id !== 'scholastic')
 const PARTNER_BOOKS = Object.fromEntries(
   Object.entries(BOOKS)
     .filter(([, b]) => b.partner !== 'scholastic')
@@ -121,6 +123,7 @@ const FEATURE_SWITCHES = [
   { id: 'registrationQuestions', label: 'Registration questions', hint: '3 active, 2 required' },
   { id: 'fundraiser', label: 'Fundraiser', hint: 'a read-a-thon is running' },
   { id: 'bookMachine', label: 'Book machine', hint: 'has_limited_rewards?' },
+  { id: 'comicsPlus', label: 'Comics Plus', hint: 'comics_plus_enabled' },
 ]
 
 // The site's own goal, and what it has read toward it so far.
@@ -210,6 +213,7 @@ const FEATURE_DEFAULTS = {
   registrationQuestions: true,
   fundraiser: true,
   bookMachine: true,
+  comicsPlus: true,
 }
 
 export function App() {
@@ -317,6 +321,18 @@ export function App() {
   // account, not two readers' data.
   const [profileId, setProfileId] = useState('olivia')
   const library = site === 'library'
+  /* `comics_plus_enabled?` + the `comics_plus_integration` flipper. Off, the
+     partner goes with it — the App Integrations card, the connect banner, the
+     switcher in the top bar and the sessions it logs. */
+  const partners = features.comicsPlus ? ALL_PARTNERS : []
+  /* Which activities the reader has ticked off. The fixtures carry a starting
+     state; this is what changes as they work through them. */
+  const [doneActivities, setDone] = useState(
+    () =>
+      new Set(
+        ACTIVITY_BADGES().flatMap((b) => b.activities.filter((a) => a.done).map((a) => a.id)),
+      ),
+  )
   const profiles = library ? ACCOUNT.profiles : [STUDENT]
   const current = profiles.find((p) => p.id === profileId) ?? profiles[0]
   // The site's registration questions are asked once, on the first challenge
@@ -469,7 +485,7 @@ export function App() {
         onLinkPartner={setLinking}
         onDisconnectPartner={handleDisconnect}
         onVisitPartner={setVisiting}
-        partners={PARTNERS}
+        partners={partners}
         logEntries={log}
         view={view}
         onView={(v) => {
@@ -525,6 +541,20 @@ export function App() {
               }
             : undefined
         }
+        /* `profile_has_current_learning_tracks?` — the top bar only offers
+           Complete Activity where there is something to complete. */
+        activities={{
+          badges: ACTIVITY_BADGES(),
+          src: (b) => badgeSrc(b.set, b.art),
+          completed: doneActivities,
+          onToggle: (badge, activity) =>
+            setDone((d) => {
+              const next = new Set(d)
+              if (next.has(activity.id)) next.delete(activity.id)
+              else next.add(activity.id)
+              return next
+            }),
+        }}
         personalize={{
           kind: current.kind,
           preferences: prefs,
@@ -579,7 +609,7 @@ export function App() {
         onClose={() => setFlowOpen(false)}
         onLogged={handleLogged}
         connections={connections}
-        partners={PARTNERS}
+        partners={partners}
         books={PARTNER_BOOKS}
         recentlyLogged={RECENT}
       />
