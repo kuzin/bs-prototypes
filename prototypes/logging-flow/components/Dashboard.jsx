@@ -536,8 +536,12 @@ export function Dashboard({
   // `display_fundraisers_nav_link`, which the app shows only where there is an
   // active fundraiser. It is a destination, not something you reach from a
   // banner you have already dismissed.
+  //
+  // Singular, where the app's own link says "Fundraisers": a site has one
+  // running at a time (`active_fundraiser_id`), and the link goes straight to
+  // that one's page. A plural tab promises a list that doesn't exist.
   const tabs = fundraiser
-    ? [{ id: 'fundraisers', label: 'Fundraisers' }, ...READER_TABS]
+    ? [{ id: 'fundraisers', label: 'Fundraiser' }, ...READER_TABS]
     : READER_TABS
   // A view the parent renders rather than this component: its own extra tabs,
   // plus any built-in tab it has claimed.

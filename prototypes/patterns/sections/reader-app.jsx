@@ -1131,11 +1131,14 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
         <br />A site running one gets <strong>its own nav tab, ahead of Challenges</strong> (
         <code>display_fundraisers_nav_link</code>, shown only where there is an active fundraiser),
         so the page is a destination rather than something you reach from a banner you have already
-        dismissed. <code>FundraiserBanner</code> is <code>_fundraiser_main_banner</code>, which that
-        site shows on every page; without a goal it reads &ldquo;$3,180 total raised&rdquo; and
-        drops the bar, since a bar with nothing to fill to can only ever look wrong.{' '}
-        <code>FundraiserWelcome</code> is the modal a reader gets once, the first time they land on
-        such a site — remembered in localStorage by the app, a flag here.
+        dismissed. The tab is singular where the app&apos;s own link says &ldquo;Fundraisers&rdquo;:
+        a site has one running at a time (<code>active_fundraiser_id</code>) and the link goes
+        straight to its page, so a plural promises a list that doesn&apos;t exist.{' '}
+        <code>FundraiserBanner</code> is <code>_fundraiser_main_banner</code>, which that site shows
+        on every page; without a goal it reads &ldquo;$3,180 total raised&rdquo; and drops the bar,
+        since a bar with nothing to fill to can only ever look wrong. <code>FundraiserWelcome</code>{' '}
+        is the modal a reader gets once, the first time they land on such a site — remembered in
+        localStorage by the app, a flag here.
       </>
     ),
     render: () => (
