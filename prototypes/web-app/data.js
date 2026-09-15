@@ -1036,6 +1036,11 @@ export const CHALLENGE_EXTRAS = {
         name: 'Spring Into Reading — Completed',
         earnedOn: 'April 28, 2026',
         line: 'Awarded to Olivia M. for reading 1,000 minutes this spring.',
+        // `programs/earned_certificate` — the printable page's own `@title`,
+        // `@body` and `@badge_image`.
+        title: 'Certificate of Achievement',
+        body: 'This certifies that Olivia M. completed Spring Into Reading by logging 1,000 minutes between April 1 and April 30, 2026.',
+        badge: { set: 'spring-into-reading', art: 'completed' },
       },
       {
         id: 'cert-2',

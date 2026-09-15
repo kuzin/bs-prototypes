@@ -812,8 +812,39 @@ function Drawings({ extras }) {
  * An unearned one names what it takes where an earned one names its date, and
  * has nothing to print yet.
  */
+/**
+ * The certificate itself — `programs/earned_certificate`, which in the app is
+ * a page that opens and immediately calls `window.print()`. Here it is a
+ * preview first, because a prototype that fires the print dialog shows you
+ * nothing.
+ *
+ * Its own furniture, from that template: a heavy grey border, the title over
+ * the app's orange ribbon, the body, the challenge's badge, and the signature
+ * row — Library, Beanstack's emblem, Librarian.
+ */
+function CertificateSheet({ cert }) {
+  return (
+    <div className="cp-cert">
+      <div className="cp-cert-ribbon">
+        <img src="/bs-prototypes/certificate/srp-certificate-banner.png" alt="" />
+        <h2>{cert.title ?? cert.name}</h2>
+      </div>
+      <p className="cp-cert-body">{cert.body ?? cert.line}</p>
+      {cert.badge && (
+        <img className="cp-cert-badge" src={badgeSrc(cert.badge.set, cert.badge.art)} alt="" />
+      )}
+      <div className="cp-cert-sigs">
+        <span>Library</span>
+        <img src="/bs-prototypes/certificate/srp-certificate-emblem.png" alt="" />
+        <span>Librarian</span>
+      </div>
+    </div>
+  )
+}
+
 function Certificates({ list }) {
   const [state, setState] = useState('all')
+  const [preview, setPreview] = useState(null)
 
   if (!list?.length) {
     return (
@@ -840,29 +871,62 @@ function Certificates({ list }) {
           ariaLabel="Which certificates"
         />
       </FilterMenuBar>
+      {/* The same row as a reward, because it is the same thing: something the
+          challenge gave you, what it took, and the one action on it. */}
       <ul className="cp-rewards">
         {byEarnedState(list, state, isEarned).map((c) => (
-          <li key={c.id} className={`cp-reward${isEarned(c) ? ' is-earned' : ''}`}>
+          <li key={c.id} className={`cp-reward is-${isEarned(c) ? 'earned' : 'unearned'}`}>
             <span className="cp-reward-mark">
-              <Icon name="award" size={26} />
+              <Icon name={isEarned(c) ? 'circle-check-filled' : 'award'} size={26} />
             </span>
             <div className="cp-reward-copy">
-              <span className="cp-reward-name">{c.name}</span>
-              <span className="cp-reward-detail">{c.line}</span>
+              <h3 className="cp-reward-name">{c.name}</h3>
+              <span className="cp-reward-detail">
+                {isEarned(c) ? `Earned on ${c.earnedOn}. ${c.line}` : `${c.at} to earn this one.`}
+              </span>
             </div>
-            {isEarned(c) ? (
-              <>
-                <span className="cp-reward-at">Earned On {c.earnedOn}</span>
-                <Button variant="secondary" size="sm">
-                  Print
+            <span className="cp-reward-at">
+              <Pill
+                color={isEarned(c) ? STATE_PILL.earned.color : STATE_PILL.unearned.color}
+                variant="soft"
+                size="sm"
+              >
+                {isEarned(c) ? STATE_PILL.earned.label : STATE_PILL.unearned.label}
+              </Pill>
+            </span>
+            {isEarned(c) && (
+              <span className="cp-reward-action">
+                <Button variant="secondary" size="sm" onClick={() => setPreview(c)}>
+                  View
                 </Button>
-              </>
-            ) : (
-              <span className="cp-reward-at">{c.at}</span>
+              </span>
             )}
           </li>
         ))}
       </ul>
+
+      <Modal
+        open={Boolean(preview)}
+        onClose={() => setPreview(null)}
+        variant="center"
+        closeBadge
+        ariaLabel="Certificate"
+      >
+        <ModalClose onClick={() => setPreview(null)} />
+        {preview && (
+          <>
+            <div className="modal-body cp-certbody">
+              <CertificateSheet cert={preview} />
+            </div>
+            <div className="modal-footer">
+              <Button variant="ghost" onClick={() => setPreview(null)}>
+                Close
+              </Button>
+              <Button onClick={() => window.print()}>Print Certificate</Button>
+            </div>
+          </>
+        )}
+      </Modal>
     </section>
   )
 }

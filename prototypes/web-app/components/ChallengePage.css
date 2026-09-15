@@ -108,6 +108,11 @@
   display: inline-flex;
   flex: none;
 }
+/* The one action a reward row can carry — a certificate's Print. */
+.cp-reward-action {
+  display: inline-flex;
+  flex: none;
+}
 
 /* `.reward-instructions` — what to do about a reward you have, under a heading
    of its own, because the description is how you claim it rather than what it
@@ -536,4 +541,75 @@
   justify-content: center;
   padding-top: 20px;
   padding-bottom: 20px;
+}
+
+/* ─── The certificate itself ─────────────────────────────────────────────────
+   `programs/earned_certificate` — the page the app opens and prints. Its own
+   furniture: the heavy grey border, the title over the orange ribbon, the
+   badge, and the signature row. */
+.cp-certbody {
+  padding: 18px;
+  background: var(--c-gray-100);
+}
+.cp-cert {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  align-items: center;
+  padding: 26px 22px 22px;
+  text-align: center;
+  background: #fff;
+  border: 10px solid #e0e0e0;
+}
+.cp-cert-ribbon {
+  position: relative;
+  width: 100%;
+  max-width: 320px;
+}
+.cp-cert-ribbon img {
+  display: block;
+  width: 100%;
+}
+/* `#f2f2f2` with an orange shadow, sitting a third of the way down the ribbon
+   — the app's own placement. */
+.cp-cert-ribbon h2 {
+  position: absolute;
+  top: 32%;
+  left: 50%;
+  width: 100%;
+  padding: 0 24px;
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.15;
+  color: #f2f2f2;
+  text-shadow: 1px 1px orange;
+  transform: translate(-50%, -50%);
+}
+.cp-cert-body {
+  max-width: 44ch;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #424242;
+  text-shadow: 1px 1px #e0e0e0;
+}
+.cp-cert-badge {
+  width: 112px;
+}
+.cp-cert-sigs {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+.cp-cert-sigs span {
+  width: 108px;
+  padding-top: 6px;
+  font-size: 13.5px;
+  font-style: italic;
+  color: #424242;
+  border-top: 2px solid #000;
+}
+.cp-cert-sigs img {
+  width: 54px;
 }
