@@ -1,6 +1,24 @@
+import { useState } from 'react'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
+import { Tabs } from '@components/Tabs/Tabs'
+import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+import { EmptyState } from '@components/Primitives/Primitives'
 
 import './CollectionShelf.css'
+import '@components/Tabs/Tabs.css'
+import '@components/Primitives/Primitives.css'
+
+/* `appropriate_badges_title` — the app's own badge taxonomy, and the order it
+   names them in. A badge's `type` is the key; this is what a reader sees. */
+const TYPE_LABELS = {
+  logging: 'Reading',
+  activity: 'Activity',
+  review: 'Review',
+  point: 'Point',
+  challenge: 'Challenge',
+  donation: 'Donation',
+}
+const TYPE_ORDER = ['Reading', 'Activity', 'Review', 'Point', 'Challenge', 'Donation']
 
 /**
  * The reader's shelf of earned things — badges and achievements.
@@ -94,4 +112,107 @@ export function ShelfHead({ title, count, noun, children, as = 'h2' }) {
 /** The grid the cards sit in. */
 export function ShelfGrid({ children }) {
   return <div className="co-grid">{children}</div>
+}
+
+/**
+ * A shelf of badges, with the two filters a badge set needs once it is more
+ * than a screenful.
+ *
+ * **All / Earned / Unearned** is the question a reader actually arrives with —
+ * "what have I got" or "what is left" — and it is a segmented control, which in
+ * this system is a pill `Tabs`. It appears only where the set has both halves:
+ * **unearned badges exist inside a challenge and nowhere else**, so the
+ * reader's Collections shelf — which is everything they have earned, across
+ * every challenge — gets no state filter, because every answer would be the
+ * same shelf.
+ *
+ * **Type** is the app's own badge taxonomy (`appropriate_badges_title`:
+ * Reading/Logging, Activity, Review, Point, Challenge, Donation), derived from
+ * what this particular set contains rather than listed in full, so a challenge
+ * with no review badges doesn't offer a filter that can only ever empty the
+ * shelf.
+ *
+ * Earned first inside each result, the way the app lists them — what you have,
+ * then what's left.
+ */
+export function BadgeShelf({ badges, src, emptyIcon }) {
+  const [state, setState] = useState('all')
+  const [types, setTypes] = useState([])
+
+  const earned = badges.filter((b) => !b.locked)
+  const unearned = badges.filter((b) => b.locked)
+  // A set with no unearned half can only answer one way, so the state control
+  // never appears on it — see the note above.
+  const byState =
+    earned.length === 0 || unearned.length === 0
+      ? badges
+      : state === 'earned'
+        ? earned
+        : state === 'unearned'
+          ? unearned
+          : badges
+  const shown = types.length ? byState.filter((b) => types.includes(TYPE_LABELS[b.type])) : byState
+  const ordered = [...shown.filter((b) => !b.locked), ...shown.filter((b) => b.locked)]
+
+  // Only the types this set actually has, in the app's own order.
+  const present = TYPE_ORDER.filter((t) => badges.some((b) => TYPE_LABELS[b.type] === t))
+
+  const bothHalves = earned.length > 0 && unearned.length > 0
+  const hasFilters = bothHalves || present.length > 1
+
+  return (
+    <>
+      {hasFilters && (
+        <FilterMenuBar className="co-filters">
+          {bothHalves && (
+            <Tabs
+              variant="pill"
+              size="md"
+              active={state}
+              accent="#1A6DD5"
+              onChange={setState}
+              ariaLabel="Which badges"
+              items={[
+                { id: 'all', label: 'All', count: badges.length },
+                { id: 'earned', label: 'Earned', count: earned.length },
+                { id: 'unearned', label: 'Unearned', count: unearned.length },
+              ]}
+            />
+          )}
+          {present.length > 1 && (
+            <FilterMenu label="Type" options={present} value={types} onChange={setTypes} multi />
+          )}
+        </FilterMenuBar>
+      )}
+
+      {ordered.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          icon={emptyIcon}
+          title="No badges here"
+          description="Nothing in this set matches those filters."
+        />
+      ) : (
+        <ShelfGrid>
+          {ordered.map((b) => (
+            <CollectionCard
+              key={b.name}
+              art={<BadgeArt src={src(b)} />}
+              name={b.name}
+              blurb={b.blurb}
+              locked={b.locked}
+              progress={b.locked ? Math.round((b.have / b.need) * 100) : undefined}
+              // The app states a locked badge's requirement where an earned one
+              // states its date: "12/30 Minutes Completed".
+              date={
+                b.locked
+                  ? `${b.have.toLocaleString()}/${b.need.toLocaleString()} ${b.unit} Completed`
+                  : `Completed on ${b.date}`
+              }
+            />
+          ))}
+        </ShelfGrid>
+      )}
+    </>
+  )
 }

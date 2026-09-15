@@ -12,11 +12,13 @@ import { SectionCard, SectionCardTitle } from '@components/SectionCard/SectionCa
 import {
   BadgeArt,
   BadgeDisc,
+  BadgeShelf,
   CollectionCard,
   ShelfGrid,
   ShelfHead,
 } from '@components/CollectionShelf/CollectionShelf'
 import { badgeSrc } from '@components/ReaderApp/ReaderApp'
+import { BADGES } from '../../web-app/data'
 import { ColorInput, Field, Input, Select } from '@components/Form/Form'
 import { SCHOOLS } from '../../ris/data'
 import { Icon } from '@components/Icon/Icon'
@@ -805,6 +807,56 @@ import '@components/BackBar/BackBar.css'
               date="Completed on Jun 24, 2026"
             />
           </ShelfGrid>
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'cards',
+    id: 'badge-shelf',
+    name: 'BadgeShelf',
+    usage: `import { BadgeShelf } from '@components/CollectionShelf/CollectionShelf'
+
+<BadgeShelf
+  badges={BADGES}
+  src={(b) => badgeSrc(b.set, b.art)}
+  emptyIcon={<Icon name="award" size={26} />}
+/>`,
+    desc: (
+      <>
+        The whole shelf with the two filters a badge set needs once it is more than a screenful: the
+        head is the caller&apos;s, everything under it is this.
+        <br />
+        <br />
+        <strong>All / Earned / Unearned</strong> is the question a reader actually arrives with —
+        what have I got, what is left — so it is a segmented control, which in this system is a pill{' '}
+        <code>Tabs</code>, with the counts on the tabs. It shows only where the set has both halves:{' '}
+        <strong>an unearned badge belongs to a challenge and exists nowhere else</strong>, so the
+        reader&apos;s Collections shelf — everything they have earned, across every challenge — gets
+        no state filter, because every answer would be the same shelf. <strong>Type</strong> is the
+        app&apos;s own badge taxonomy (<code>appropriate_badges_title</code>: Reading/Logging,
+        Activity, Review, Point, Challenge, Donation), and it is{' '}
+        <em>derived from the set in hand</em> rather than listed in full — a challenge with no
+        review badges doesn&apos;t get a filter that can only ever empty the shelf, and a set with
+        one type doesn&apos;t get the menu at all.
+        <br />
+        <br />
+        Earned first inside every result, the way the app lists them. <code>src</code> resolves a
+        badge to its art, so a caller with its own art folder keeps control of that.
+        <br />
+        <br />
+        Used by <strong>web-app</strong> on three pages that had three copies of the same grid: the
+        Collections shelf, a challenge&apos;s Badges tab and a fundraiser&apos;s.
+      </>
+    ),
+    render: () => (
+      <Variant label="fourteen badges, seven earned">
+        <div style={{ padding: 20, background: '#fff' }}>
+          <BadgeShelf
+            badges={BADGES}
+            src={(b) => badgeSrc(b.set, b.art)}
+            emptyIcon={<Icon name="award" size={26} />}
+          />
         </div>
       </Variant>
     ),

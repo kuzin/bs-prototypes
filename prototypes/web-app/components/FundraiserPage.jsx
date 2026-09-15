@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
+import { FilterMenuBar } from '@components/FilterMenu/FilterMenu'
 import { Pill } from '@components/Pill/Pill'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
-import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
+import { BadgeShelf } from '@components/CollectionShelf/CollectionShelf'
 import { StatCard } from '@components/Cards/Cards'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { badgeSrc, bannerSrc, ReaderBack } from '@components/ReaderApp/ReaderApp'
@@ -48,13 +49,21 @@ import '@components/Toast/Toast.css'
 
 const money = (n) => `$${n.toLocaleString()}`
 
+/* Where each Overall Progress tile goes, from `_overall_progress`'s own hrefs:
+   the money tiles to Donations, the prizes to Prizes, everything the badges
+   measure to Badges. */
+const TILE_TAB = {
+  raised: 'donations',
+  donations: 'donations',
+  prizes: 'prizes',
+}
+
 export function FundraiserPage({ fundraiser, entries, onBack }) {
   const [tab, setTab] = useState('overview')
   const { toasts, push, dismiss } = useToasts()
 
   const f = fundraiser
   const hasPrizes = f.progress.some((p) => p.id === 'prizes')
-  const earned = BADGES.filter((b) => !b.locked).slice(0, 6)
 
   const tabs = [
     { id: 'overview', label: 'Overview' },
@@ -90,23 +99,6 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
             <div className="fnd-main">
               {f.shortDescription && <h2 className="fnd-sub">{f.shortDescription}</h2>}
               <p className="fnd-desc">{f.description}</p>
-
-              <h2 className="fnd-h2">Overall Progress</h2>
-              <GoalTiles>
-                {f.progress.map((p) =>
-                  p.need != null ? (
-                    <GoalTile key={p.id} label={p.label} have={p.have} need={p.need} />
-                  ) : (
-                    <GoalTile
-                      key={p.id}
-                      label={p.label}
-                      value={p.value}
-                      accent={p.accent}
-                      icon={<Icon name={p.icon} size={24} />}
-                    />
-                  ),
-                )}
-              </GoalTiles>
             </div>
 
             <aside className="fnd-rail">
@@ -164,57 +156,52 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
                 </div>
               </div>
             </aside>
+
+            {/* `.challenge-content-goals` — the app puts Overall Progress
+                under the two columns and across the page, not inside the prose
+                column. Seven tiles in an 828px column wrapped 3–3–1; the same
+                seven across the page are two clean rows. Each one is a link in
+                the app, and to the tab that explains it. */}
+            <section className="fnd-goals">
+              <h2 className="fnd-h2">Overall Progress</h2>
+              <GoalTiles>
+                {f.progress.map((p) =>
+                  p.need != null ? (
+                    <GoalTile
+                      key={p.id}
+                      label={p.label}
+                      have={p.have}
+                      need={p.need}
+                      onClick={() => setTab(TILE_TAB[p.id] ?? 'badges')}
+                    />
+                  ) : (
+                    <GoalTile
+                      key={p.id}
+                      label={p.label}
+                      value={p.value}
+                      accent={p.accent}
+                      icon={<Icon name={p.icon} size={24} />}
+                      onClick={() => setTab(TILE_TAB[p.id] ?? 'badges')}
+                    />
+                  ),
+                )}
+              </GoalTiles>
+            </section>
           </div>
         )}
 
         {tab === 'badges' && (
           <>
             <ReaderPageHead as="h2" title="Badges" />
-            <ShelfGrid>
-              {earned.map((b) => (
-                <CollectionCard
-                  key={b.name}
-                  art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
-                  name={b.name}
-                  blurb={b.blurb}
-                  date={`Earned ${b.date}`}
-                />
-              ))}
-            </ShelfGrid>
+            <BadgeShelf
+              badges={BADGES}
+              src={(b) => badgeSrc(b.set, b.art)}
+              emptyIcon={<Icon name="award" size={26} />}
+            />
           </>
         )}
 
-        {tab === 'prizes' && (
-          <>
-            <ReaderPageHead as="h2" title="Prizes" />
-            <div className="fnd-prizes">
-              <div className="fnd-prize">
-                <span className="fnd-prize-art" aria-hidden="true">
-                  🎟️
-                </span>
-                <div className="fnd-prize-copy">
-                  <h3 className="fnd-prize-name">Book Fair Voucher</h3>
-                  <p className="fnd-prize-at">Raise $50</p>
-                </div>
-                <Pill color="#0F7A55" variant="soft" size="sm">
-                  Earned
-                </Pill>
-              </div>
-              <div className="fnd-prize">
-                <span className="fnd-prize-art" aria-hidden="true">
-                  🍕
-                </span>
-                <div className="fnd-prize-copy">
-                  <h3 className="fnd-prize-name">Pizza with the Principal</h3>
-                  <p className="fnd-prize-at">Raise $150</p>
-                </div>
-                <Pill color="#656565" variant="soft" size="sm">
-                  {money(f.myGoal - f.myRaised)} to go
-                </Pill>
-              </div>
-            </div>
-          </>
-        )}
+        {tab === 'prizes' && <Prizes fundraiser={f} />}
 
         {tab === 'donations' && <Donations fundraiser={f} />}
 
@@ -232,6 +219,72 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
 
       <ToastStack toasts={toasts} onDismiss={dismiss} />
     </div>
+  )
+}
+
+/**
+ * `_fundraiser_rewards` — what raising a given amount earns, and which of them
+ * this reader has banked. The same All / Earned / Unearned the badge shelf
+ * takes, since it is the same question: what have I got, and what is left.
+ */
+function Prizes({ fundraiser }) {
+  const [state, setState] = useState('all')
+  const all = fundraiser.prizes ?? []
+  const earned = all.filter((p) => p.earned)
+  const unearned = all.filter((p) => !p.earned)
+  const shown = state === 'earned' ? earned : state === 'unearned' ? unearned : all
+
+  return (
+    <>
+      <ReaderPageHead as="h2" title="Prizes" />
+      <FilterMenuBar className="fnd-prizefilters">
+        <Tabs
+          variant="pill"
+          size="md"
+          active={state}
+          accent="#1A6DD5"
+          onChange={setState}
+          ariaLabel="Which prizes"
+          items={[
+            { id: 'all', label: 'All', count: all.length },
+            { id: 'earned', label: 'Earned', count: earned.length },
+            { id: 'unearned', label: 'Unearned', count: unearned.length },
+          ]}
+        />
+      </FilterMenuBar>
+
+      {shown.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          icon={<Icon name="gift" size={26} />}
+          title="No prizes here"
+          description="Nothing in this fundraiser matches that filter."
+        />
+      ) : (
+        <div className="fnd-prizes">
+          {shown.map((p) => (
+            <div className="fnd-prize" key={p.id}>
+              <span className="fnd-prize-art" aria-hidden="true">
+                {p.art}
+              </span>
+              <div className="fnd-prize-copy">
+                <h3 className="fnd-prize-name">{p.name}</h3>
+                <p className="fnd-prize-at">Raise {money(p.at)}</p>
+              </div>
+              {p.earned ? (
+                <Pill color="#0F7A55" variant="soft" size="sm">
+                  Earned {p.on}
+                </Pill>
+              ) : (
+                <Pill color="#656565" variant="soft" size="sm">
+                  {money(p.at - fundraiser.myRaised)} to go
+                </Pill>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </>
   )
 }
 
@@ -256,7 +309,6 @@ function Donations({ fundraiser }) {
   }
 
   const count = fundraiser.donations.length
-  const people = fundraiser.donations.filter((d) => !d.sponsor).length
 
   return (
     <div className="fnd-donations">
@@ -276,11 +328,6 @@ function Donations({ fundraiser }) {
           label={count === 1 ? 'Donation' : 'Donations'}
           color="#1A6DD5"
           icon={<Icon name="users" size={20} />}
-          footer={
-            people < count
-              ? `${people} from friends and family, ${count - people} from sponsors`
-              : undefined
-          }
         />
       </div>
       <ul className="fnd-donors">

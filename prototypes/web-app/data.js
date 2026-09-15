@@ -1865,6 +1865,15 @@ export const FUNDRAISER = {
     { id: 'reviews', label: 'Reviews Written', have: 1, need: 2 },
     { id: 'prizes', label: 'Prizes Earned', value: 1, icon: 'gift', accent: '#7C5CFA' },
   ],
+  // `_fundraiser_rewards` — what raising a given amount earns. One of the five
+  // is banked; the rest name what is still to raise.
+  prizes: [
+    { id: 'p1', name: 'Book Fair Voucher', art: '🎟️', at: 50, earned: true, on: 'May 14' },
+    { id: 'p2', name: 'Sponsor a Shelf plaque', art: '🏷️', at: 100 },
+    { id: 'p3', name: 'Pizza with the Principal', art: '🍕', at: 150 },
+    { id: 'p4', name: 'Name a library cart', art: '🛒', at: 250 },
+    { id: 'p5', name: 'Read-a-thon hoodie', art: '🧥', at: 400 },
+  ],
   donations: [
     donation('d1', 'Grandma Jo', 40, 'Read something with a dragon in it for me. xx'),
     donation('d2', 'Dana Moore', 25, 'So proud of you, Liv!'),

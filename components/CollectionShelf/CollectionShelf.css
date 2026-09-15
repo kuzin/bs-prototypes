@@ -185,3 +185,10 @@
   width: calc(100% + 8px);
   height: calc(100% + 8px);
 }
+
+/* The badge shelf's filter row: the All/Earned/Unearned control and the type
+   menu on one line, over the grid. `FilterMenuBar` already owns the wrap and
+   the gaps — this is only the room under it. */
+.co-filters {
+  margin-bottom: 18px;
+}

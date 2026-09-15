@@ -27,13 +27,18 @@
   padding-bottom: 48px;
 }
 
-/* The rail is the point of the page, so it keeps its width down to a narrow
-   column rather than giving way to the prose. */
+/* Two columns, with Overall Progress spanning them underneath — the app's own
+   `.fundraiser-content-body` + `.challenge-content-goals`. The rail is the
+   point of the page, so it keeps its width down to a narrow column rather than
+   giving way to the prose. */
 .fnd-overview {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 300px;
   gap: 24px;
   align-items: start;
+}
+.fnd-goals {
+  grid-column: 1 / -1;
 }
 .fnd-main {
   min-width: 0;
@@ -64,26 +69,43 @@
   gap: 14px;
   min-width: 0;
 }
+/* The dashboard's rail card, to the pixel — `.wa-card`'s 16/18 padding and
+   14px radius, its 16/800 heading and 15px body. These sat on a 14/900 heading
+   over 13.5px copy, which read as a smaller class of card than the ones in the
+   rail next door. */
 .fnd-card {
-  padding: 18px;
+  padding: 16px 18px;
   background: #fff;
-  border: 1px solid var(--c-border);
+  border: 1px solid var(--c-gray-200);
   border-radius: 14px;
 }
 .fnd-card-h {
-  font-size: 14px;
-  font-weight: 900;
-  color: var(--c-text-dark);
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-gray-800);
 }
 .fnd-total-nums {
-  margin: 8px 0 10px;
-  font-size: 15px;
-  color: var(--c-text-light);
+  margin: 10px 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-gray-800);
 }
 .fnd-total-nums strong {
-  font-size: 28px;
+  font-size: 18px;
   font-weight: 900;
   color: #0f7a55;
+}
+/* The goal card's own 32px bar, which is what the fundraiser card in the
+   dashboard rail already wears. */
+.fnd-total .pgb-track {
+  height: 32px;
+  background: rgb(8 117 66 / 14%);
+  border-radius: 32px;
+}
+.fnd-total .pgb-fill {
+  min-width: 32px;
+  border-radius: 32px;
 }
 
 .fnd-share {
@@ -97,9 +119,9 @@
 }
 .fnd-share-text {
   margin: 6px 0 14px;
-  font-size: 13.5px;
-  line-height: 1.55;
-  color: var(--c-text-light);
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--c-gray-800);
 }
 .fnd-share-icons {
   display: flex;
@@ -137,12 +159,17 @@
   flex: 1;
   min-width: 0;
   overflow: hidden;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--c-text-light);
+  color: var(--c-gray-800);
   text-align: left;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Same room under the filter row as the badge shelf's. */
+.fnd-prizefilters {
+  margin-bottom: 18px;
 }
 
 /* ── Prizes ──────────────────────────────────────────────────────────────── */
@@ -201,10 +228,12 @@
   margin: 0;
   list-style: none;
 }
+/* Centred, not top-aligned: a sponsor's row is one line against a 38px disc,
+   and hanging it off the top left the row looking half-empty. */
 .fnd-donor {
   display: flex;
   gap: 14px;
-  align-items: flex-start;
+  align-items: center;
   padding: 16px 18px;
   background: #fff;
   border: 1px solid var(--c-border);

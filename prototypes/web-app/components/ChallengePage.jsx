@@ -2,7 +2,12 @@ import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
-import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
+import {
+  BadgeArt,
+  BadgeShelf,
+  CollectionCard,
+  ShelfGrid,
+} from '@components/CollectionShelf/CollectionShelf'
 import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
 import { Button } from '@components/Button/Button'
 import { Modal, ModalClose } from '@components/Modal/Modal'
@@ -125,28 +130,14 @@ function Overview({ detail, challenge }) {
 }
 
 function Badges() {
-  const ordered = [...BADGES.filter((b) => !b.locked), ...BADGES.filter((b) => b.locked)]
-
   return (
     <section className="cp-section">
       <ReaderPageHead as="h2" title="Badges" />
-      <ShelfGrid>
-        {ordered.map((b) => (
-          <CollectionCard
-            key={b.name}
-            art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
-            name={b.name}
-            blurb={b.blurb}
-            locked={b.locked}
-            progress={b.locked ? Math.round((b.have / b.need) * 100) : undefined}
-            date={
-              b.locked
-                ? `${b.have.toLocaleString()}/${b.need.toLocaleString()} ${b.unit} Completed`
-                : `Completed on ${b.date}`
-            }
-          />
-        ))}
-      </ShelfGrid>
+      <BadgeShelf
+        badges={BADGES}
+        src={(b) => badgeSrc(b.set, b.art)}
+        emptyIcon={<Icon name="award" size={26} />}
+      />
     </section>
   )
 }
