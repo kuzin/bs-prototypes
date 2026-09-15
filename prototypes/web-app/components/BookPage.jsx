@@ -122,6 +122,13 @@ export function BookPage({
       {onBack && <ReaderBack onClick={onBack}>{backLabel}</ReaderBack>}
 
       <article className="bp-card">
+        {/* Its own cell rather than the rail's first child: stacked, the cover
+            belongs at the top with the title, not after the moods. The app
+            pushes the same column first on a small screen. */}
+        <div className="bp-cover">
+          <BookCover book={book} size="fill" />
+        </div>
+
         <div className="bp-main">
           <header className="bp-head">
             <h1 className="bp-title">{book.title}</h1>
@@ -341,10 +348,6 @@ export function BookPage({
         </div>
 
         <aside className="bp-aside">
-          <div className="bp-cover">
-            <BookCover book={book} size="fill" />
-          </div>
-
           {book.lexile && (
             <section className="bp-tags">
               <h2>Lexile Measure</h2>

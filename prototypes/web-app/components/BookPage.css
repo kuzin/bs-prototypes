@@ -11,10 +11,17 @@
   container-type: inline-size;
 }
 
+/* Three cells: the page, the cover and the tag rail. Named, so the stacked
+   layout can put the cover first without the markup changing. */
 .bp-card {
   display: grid;
+  grid-template-areas:
+    'main cover'
+    'main aside';
   grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 32px;
+  grid-template-rows: auto 1fr;
+  gap: 20px 32px;
+  align-content: start;
   padding: 26px;
   background: #fff;
   border: 1px solid var(--c-border);
@@ -22,6 +29,7 @@
 }
 
 .bp-main {
+  grid-area: main;
   min-width: 0;
 }
 
@@ -72,10 +80,19 @@
   margin-top: 20px;
   border-top: 1px solid var(--c-border);
 }
-/* The first section in a panel is already under the tab strip's own rule. */
+/* The panel owns the gap under the tab strip, so the first section in it drops
+   its own top margin rather than sitting on top of the tabs. */
+.bp-panel {
+  margin-top: 20px;
+}
 .bp-panel > .bp-section:first-child {
-  padding-top: 18px;
   margin-top: 0;
+}
+/* …and the rule that separates one section from the next, which has nothing
+   above it to separate from. Not the Learning Tip: that is a card with a border
+   all the way round, and dropping its top edge left it open at the top. */
+.bp-panel > .bp-section:first-child:not(.bp-tip) {
+  padding-top: 0;
   border-top: 0;
 }
 .bp-section h2 {
@@ -189,11 +206,12 @@
 /* ── The tag rail ──────────────────────────────────────────────────────────
    `#product-aside`. The cover sits over it, the width of the rail. */
 .bp-aside {
+  grid-area: aside;
   min-width: 0;
 }
 .bp-cover {
+  grid-area: cover;
   width: 100%;
-  margin-bottom: 20px;
 }
 .bp-tags + .bp-tags {
   padding-top: 16px;
@@ -278,16 +296,30 @@
 }
 
 @container (max-width: 720px) {
-  /* The rail goes under the page rather than beside it, and the cover comes
-     with it — on a phone the app pushes the cover above the title, but a
-     720px-wide cover is the whole screen before you reach what it's called. */
+  /* Stacked: the cover goes first, the way the app pushes its column first on
+     a small screen — but at a size you can see past, since a 720px-wide cover
+     is the whole screen before you reach what it's called. */
   .bp-card {
+    grid-template-areas:
+      'cover'
+      'main'
+      'aside';
     grid-template-columns: minmax(0, 1fr);
-    gap: 24px;
+    grid-template-rows: auto;
+    gap: 20px;
     padding: 20px;
   }
   .bp-cover {
-    width: 140px;
+    width: 132px;
+  }
+  /* The rail is no longer a column beside the page, so it needs an edge of its
+     own — without one the Lexile measure reads as one more section of the
+     prose above it. */
+  .bp-aside {
+    padding: 18px;
+    background: var(--c-gray-50);
+    border: 1px solid var(--c-border);
+    border-radius: 12px;
   }
   .bp-related {
     grid-template-columns: minmax(0, 1fr);
