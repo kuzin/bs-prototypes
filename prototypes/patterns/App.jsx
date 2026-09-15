@@ -179,7 +179,7 @@ function GroupView({ group }) {
   return (
     <div className="pt-group">
       <Crumbs group={group} />
-      <GroupHeader title={group.title} desc={group.desc} />
+      <GroupHeader title={group.title} />
       {subs ? (
         subs.map((sub) => (
           <section className="pt-sub" key={sub.id} id={`sub-${sub.id}`}>

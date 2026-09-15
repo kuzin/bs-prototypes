@@ -404,13 +404,6 @@
   line-height: 1.1;
 }
 
-.pt-group-header-desc {
-  font-size: var(--text-label);
-  color: var(--c-text-light);
-  margin-top: 3px;
-  font-weight: var(--fw-medium);
-}
-
 /* ── Component page — flat, no card wrapper ───────────────────────────────── */
 .pt-section {
   background: transparent;

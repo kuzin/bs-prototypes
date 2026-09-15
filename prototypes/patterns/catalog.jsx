@@ -72,11 +72,13 @@ import '../admin-dashboard/index.css'
 
 import './App.css'
 
-export function GroupHeader({ title, desc }) {
+// The group page's own header: the name, and nothing under it. The blurb was
+// the same sentence as the group's tile on the home index, read a second time
+// by somebody who has already chosen the group.
+export function GroupHeader({ title }) {
   return (
     <div className="pt-group-header">
       <div className="pt-group-header-title">{title}</div>
-      <div className="pt-group-header-desc">{desc}</div>
     </div>
   )
 }
