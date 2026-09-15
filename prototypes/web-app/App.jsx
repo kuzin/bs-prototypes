@@ -21,9 +21,10 @@ import {
   BOOK_LISTS,
   catalogBook,
   ACCOUNT,
+  LIBRARY_BRANCHES,
   STUDENT,
   INTERESTS,
-  GENRES,
+  PREFERENCE_GENRES,
   BACKGROUND_GROUPS,
   READING_LEVELS,
   PREFERENCE_LANGUAGES,
@@ -147,7 +148,7 @@ const SITE_TYPES = [
 
 const PREFERENCE_VOCAB = {
   interests: INTERESTS,
-  genres: GENRES,
+  genres: PREFERENCE_GENRES,
   backgroundGroups: BACKGROUND_GROUPS,
   readingLevels: READING_LEVELS,
   languages: PREFERENCE_LANGUAGES,
@@ -507,8 +508,23 @@ export function App() {
         otherReaders={library ? profiles.filter((p) => p.id !== current.id) : []}
         onSwitchReader={(p) => setProfileId(p.id)}
         /* The gear is the account creator's on a library site; on a school
-           site there is no account above the reader, so it is theirs. */
-        accountLabel={library ? 'Account Settings' : 'Personalize Reader'}
+           site there is no account above the reader, so it is theirs. The
+           library word is the app's own — the dropdown and the page it opens
+           both say `edit_account_text_for_schools`. */
+        accountLabel={library ? 'Edit Account' : 'Personalize Reader'}
+        /* …and on a library site the gear opens that account's page: the email
+           and the password, and the only place the whole account can be
+           deleted. A school has no account above the reader, so there is none
+           to pass and the gear stays on Personalize Reader. */
+        account={
+          library
+            ? {
+                account: ACCOUNT,
+                branches: LIBRARY_BRANCHES,
+                features: { zipcode: true, libraryCard: true },
+              }
+            : undefined
+        }
         personalize={{
           kind: current.kind,
           preferences: prefs,
@@ -517,7 +533,15 @@ export function App() {
           sharedInvites: SHARED_INVITES,
           onSavePreferences: (id, value) =>
             setPrefs((p) => (id === 'basic' ? p : { ...p, [id]: value })),
-          features: { avatars: true, gradeLevels: true, recommendations: true },
+          /* `@rostered_app_integrations_only` — a rostered site is a school
+             site in practice, and there the roster owns the reader. The app
+             leaves exactly one thing on Personalize Reader: App Integrations. */
+          features: {
+            avatars: true,
+            gradeLevels: true,
+            recommendations: true,
+            rostered: !library,
+          },
         }}
         fundraiser={features.fundraiser ? FUNDRAISER : null}
         registrationQuestions={features.registrationQuestions ? REGISTRATION_QUESTIONS : []}

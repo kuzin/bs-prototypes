@@ -1,0 +1,188 @@
+/* ─── Edit Account ───────────────────────────────────────────────────────────
+   `user/edit.html.haml`. The page frame — title, sections, the delete block —
+   is Personalize Reader's `.st-*`, imported alongside this: the two pages sit
+   behind the same gear and should be the same page. What's here is only what
+   this one adds — the form grid, and the password block with its meter,
+   checklist and match line. */
+
+/* Two per row. The app stacks everything in one column — which, in a page-wide
+   card, is a ZIP code in a box 690px across. Two columns in a 760px card gives
+   each field about 330, which is the width a field wants; narrower than the
+   card, the grid folds back to one. The measure and the centring are the
+   settings-page frame both of these pages share (`.st-page` in
+   PersonalizeReader.css).
+
+   The row gap is the app's own rhythm: every control on the site carries
+   `margin-bottom: 16px` (`lib/_forms.scss`), so that is the air between one
+   field's input and the next one's label. The 6px above each label is the
+   design system's and stays — it runs labels a step tighter than the app. */
+.acct-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+  margin-bottom: 24px;
+}
+@container (max-width: 560px) {
+  .acct-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ─── The password block ─────────────────────────────────────────────────── */
+
+/* The password and its confirmation read the way Email and Email Confirmation
+   do in the card above. Each keeps what it has to say underneath it: the meter
+   and the rules under the password, the match line under the confirmation —
+   `start`, because the left column carries two things the right one doesn't. */
+.acct-pwgrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 20px;
+  align-items: start;
+  margin-bottom: 24px;
+}
+@container (max-width: 560px) {
+  .acct-pwgrid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* `.new-password-field-label` — the label and the Show/Hide share a line, the
+   toggle pushed to the end. */
+.acct-pw-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+/* The same label as every other field on the page — `.fld-label`'s rung, not a
+   second one a pixel down. */
+.acct-pw-label {
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: var(--c-text);
+}
+.acct-pw-toggle {
+  padding: 0;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-blue, #196dd5);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.acct-pw-toggle:hover {
+  text-decoration: underline;
+}
+
+/* Everything under the password field keeps the form's two spacings and no
+   others: 6px between a thing and its own label or content, 16px between one
+   thing and the next — the same 6/16 the fields above run on. */
+
+/* `.password-strength-meter` — a fifth of the track per point, in the app's own
+   five colours. It stands a little off the field above it: at 6px the bar read
+   as part of the input's own border rather than a reading of what's in it. */
+.acct-meter {
+  margin-top: 10px;
+}
+.acct-meter-track {
+  height: 6px;
+  overflow: hidden;
+  background: var(--c-gray-200, #e5e5e5);
+  border-radius: 999px;
+}
+.acct-meter-bar {
+  height: 100%;
+  border-radius: 999px;
+  transition:
+    width 0.2s ease,
+    background 0.2s ease;
+}
+.acct-meter-text {
+  margin-top: 6px;
+  font-size: var(--text-label);
+  color: var(--c-text-light);
+}
+.acct-meter-text span {
+  font-weight: 800;
+  color: var(--c-text);
+}
+
+/* `.password-requirements` — a cross per rule until it passes, then a tick. */
+/* The rules stand off a little further than the 16px between fields: they sit
+   between the meter above and the confirmation's label below, and at the field
+   gap all three ran together. 20px each side — the 4px below rides on top of
+   the grid's own 16. */
+.acct-reqs {
+  margin-top: 20px;
+  margin-bottom: 4px;
+}
+/* The heading is a label, and reads at the label's rung like every other one on
+   the page; the rules under it follow it. */
+.acct-reqs h4 {
+  margin: 0 0 6px;
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: var(--c-text);
+}
+.acct-reqs ul {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.acct-reqs li {
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  font-size: var(--text-label);
+  color: var(--c-text-light);
+}
+.acct-reqs li svg {
+  flex: none;
+  color: var(--c-red, #dc2626);
+}
+.acct-reqs li.is-met {
+  color: var(--c-text);
+}
+.acct-reqs li.is-met svg {
+  color: var(--c-green, #0f7a55);
+}
+
+/* `.new-password-field-infobox` — the app's own two boxes, one line each. */
+.acct-match {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 12px;
+  margin-top: 6px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #b91c1c;
+  background: #fdecec;
+  border-radius: 8px;
+}
+.acct-match.is-ok {
+  color: #0f7a55;
+  background: #e6f4ed;
+}
+.acct-match svg {
+  flex: none;
+}
+
+/* ─── Saving ──────────────────────────────────────────────────────────────── */
+
+.acct-save {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  align-items: center;
+}
+.acct-saved {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #0f7a55;
+}

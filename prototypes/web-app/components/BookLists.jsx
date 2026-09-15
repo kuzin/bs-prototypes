@@ -79,7 +79,6 @@ export function BookLists({ onOpenList, onFindBooks }) {
       <ReaderPageHead
         as="h2"
         title="Book Lists"
-        count={`${BOOK_LISTS.length} lists`}
         actions={
           <>
             {filtered && (

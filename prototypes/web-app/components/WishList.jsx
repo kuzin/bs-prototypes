@@ -75,7 +75,6 @@ export function WishList({ items = [], onRemove, onFindBooks, onLog, onOpenBook 
       <ReaderPageHead
         as="h2"
         title="Wish List"
-        count={`${items.length} ${items.length === 1 ? 'book' : 'books'}`}
         actions={
           <>
             <Button variant="secondary" onClick={onFindBooks}>

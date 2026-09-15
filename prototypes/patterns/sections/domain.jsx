@@ -19,6 +19,7 @@ import {
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
 import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'
+import { AccountSettings } from '@components/AccountSettings/AccountSettings'
 import { BannerStack } from '@components/ReaderApp/ReaderApp'
 import { DailyReadingTracker } from '@components/DailyReadingTracker/DailyReadingTracker'
 import { RMI_FACTORS } from '../../ris/data'
@@ -37,6 +38,8 @@ import {
   READER_PREFERENCES,
   SHARED_ACCESS,
   SHARED_INVITES,
+  ACCOUNT,
+  LIBRARY_BRANCHES,
 } from '../../web-app/data'
 import { Knobs, Variant } from './_shared'
 
@@ -765,6 +768,78 @@ import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
   {
     group: 'web-app',
     sub: 'account',
+    id: 'account-settings',
+    name: 'Edit Account',
+    usage: `import { AccountSettings } from '@components/AccountSettings/AccountSettings'
+
+<AccountSettings account={account} />
+
+/* …and with what the site collects, and its own word for a password */
+<AccountSettings
+  account={account}
+  title="Edit Account"
+  branches={branches}              /* the library's own, for Preferred Branch */
+  authWord="Passcode"              /* word_for_auth_type */
+  minLength={8}
+  features={{ zipcode: true, libraryCard: true, strongPassword: true }}
+  onSave={(fields) => save(fields)}
+  onDelete={() => deleteAccount()}
+/>`,
+    desc: (
+      <>
+        The page behind the gear on a library site — <code>user#edit</code>. This is the{' '}
+        <em>account</em> rather than a reader: the sign-in that holds the profiles, so the email and
+        the password live here, and it is the only place the whole account — every reader under it
+        included — can be deleted. Its sibling is Personalize Reader below, which is one
+        reader&apos;s own settings; a school has no account above the reader and only ever sees that
+        one.
+        <br />
+        <br />
+        The app has one form with one Save; here the details and the password are two cards with one
+        each, because changing an email and changing a password are different errands — and the
+        app&apos;s own rule means its single Save will not take the first without the second.
+        <br />
+        <br />
+        The password half has two shapes, and which one a site gets is the{' '}
+        <code>block_default_passwords</code> flipper: a plain pair of fields, or the strong-password
+        block — a strength meter in the app&apos;s own five colours, a requirements checklist and a
+        match line — where nothing saves until a new password passes all three.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="a library account — ZIP, library card and a branch" full>
+          <div style={{ padding: '0 24px' }}>
+            <AccountSettings
+              account={ACCOUNT}
+              branches={LIBRARY_BRANCHES}
+              features={{ zipcode: true, libraryCard: true }}
+            />
+          </div>
+        </Variant>
+        <Variant label="the plain password pair, on a site that calls it a Passcode" full>
+          <div style={{ padding: '0 24px' }}>
+            <AccountSettings
+              account={ACCOUNT}
+              authWord="Passcode"
+              features={{ strongPassword: false }}
+            />
+          </div>
+        </Variant>
+        <Variant label="a military site — the two extra lists" full>
+          <div style={{ padding: '0 24px' }}>
+            <AccountSettings
+              account={ACCOUNT}
+              features={{ zipcode: true, militaryBranch: true, militarySponsor: true }}
+            />
+          </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    sub: 'account',
     id: 'personalize-reader',
     name: 'Personalize Reader',
     usage: `import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'
@@ -785,34 +860,41 @@ import { BannerStack } from '@components/ReaderApp/ReaderApp'
     desc: (
       <>
         The reader&apos;s settings page — <code>profiles#edit_options</code>. Everything a reader
-        (or the grown-up holding their account) can change about themselves: what they like, who can
-        see them, which reading apps are linked, and how to delete them.
+        (or the grown-up holding their account) can change about themselves: who they are, what they
+        like, who can see them, which reading apps are linked, and how to delete them. A stack of
+        cards, each with a title row, on the same frame as Edit Account beside it.
+        <br />
+        <br />
+        <strong>Profile</strong> is the identity block: the picture, the name, and the way into{' '}
+        <code>Basic Information</code>. The app puts the picture behind a pencil on a 140px circle
+        in a column of its own and a modal behind that, to do one thing; here it is a block that
+        saves in place, consent checkbox and all.
         <br />
         <br />
         <strong>Preferences</strong> is the app&apos;s own link-list, and each row carries whether
         it has been answered — <code>is_personalized?</code>, the <code>finished</code> /{' '}
-        <code>not-finished</code> class on those links — plus what the answer was. <code>kind</code>{' '}
-        decides which list: a child gets the six filters the recommendation engine reads, an adult
-        or teen gets the <strong>Four Doorways</strong> instead, which is a different page behind a
-        row of the same shape.
+        <code>not-finished</code> class on those links — plus what the answer was, with the count
+        beside the title. <code>kind</code> decides which list: a child gets the six filters the
+        recommendation engine reads, an adult or teen gets the <strong>Four Doorways</strong>{' '}
+        instead.
         <br />
-        <br />A row opens that filter&apos;s form. In the app each is a page in the sign-up funnel
-        with Back and &ldquo;Next: Choose Favorite Genres&rdquo;; here they are panes of one
-        full-screen flow, which is the same shape without six routes to invent. The headings, the
+        <br />A row opens that filter&apos;s form in a modal. In the app each is a page in the
+        sign-up funnel with Back and &ldquo;Next: Choose Favorite Genres&rdquo;. The headings, the
         &ldquo;Pick up to N&rdquo; limits, the over-limit notice and the
         <strong> &ldquo;No Preference&rdquo; option</strong> — a real answer, not a blank — are the
         app&apos;s own.
         <br />
         <br />
-        It is also the home of <strong>App Integrations</strong>, where a partner account is
-        connected or disconnected. Each partner in <code>partners</code> is its own row, so linking
-        one never touches the other; an empty <code>partners</code> drops the section entirely
-        rather than leaving a bare heading.{' '}
+        <strong>Notifications</strong> is the app&apos;s two Yes/No radio sections — recommendations
+        and email — as two switches, because a binary with a Save button under it is four
+        interactions to change a yes to a no. It is also the home of{' '}
+        <strong>App Integrations</strong>, where a partner account is connected or disconnected; an
+        empty <code>partners</code> drops that card rather than leaving a bare heading.{' '}
         <strong>
           Leave <code>preferences</code> off
         </strong>{' '}
-        and the page is the shallow one it has always been — a single Basic Information row — which
-        is how Words with Benny and beeverso reuse it for the integration surface alone.
+        and the Profile and Preferences cards go with it — which is how Words with Benny and
+        beeverso reuse the page for the integration surface alone.
       </>
     ),
     render: () => (

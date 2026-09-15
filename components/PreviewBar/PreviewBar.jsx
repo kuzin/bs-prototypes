@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Toggle } from '@components/Toggle/Toggle'
 import { Flyout } from '@components/Flyout/Flyout'
@@ -54,11 +55,35 @@ export function PreviewBar({
   className = '',
 }) {
   const cls = ['pvb', sticky && 'pvb--sticky', className].filter(Boolean).join(' ')
+  const barRef = useRef(null)
+
+  // `--preview-bar-h` is derived from one pill height in CSS, which is right
+  // until the bar wraps: at phone width it runs to two or three rows and the
+  // variable still said 61px. Everything keyed to it — a sticky header's `top`,
+  // a full-height shell's height, a centred modal's centre — was then off by
+  // however much the bar had grown, and the modal's title sat behind the bar.
+  // Publishing the measured height keeps them honest.
+  useEffect(() => {
+    const el = barRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const sync = () =>
+      document.documentElement.style.setProperty(
+        '--preview-bar-h',
+        `${Math.round(el.getBoundingClientRect().height)}px`,
+      )
+    sync()
+    const ro = new ResizeObserver(sync)
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+      document.documentElement.style.removeProperty('--preview-bar-h')
+    }
+  }, [])
   // What's been turned off is the interesting number — the cog says it so you
   // aren't reading a half-empty page wondering why.
   const offCount = toggles.filter((t) => !t.on).length
   return (
-    <div className={cls}>
+    <div className={cls} ref={barRef}>
       <div className="pvb-titles">
         <span className="pvb-title">{title}</span>
         {subtitle && <span className="pvb-subtitle">{subtitle}</span>}

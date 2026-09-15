@@ -88,6 +88,14 @@
 
 /* ── Centered overlay ────────────────────────────────────────────────────── */
 .modal--center {
+  /* A column, so the header and the footer are pinned and the body is what
+     scrolls. The body used to carry its own `calc(100vh - 240px)` cap, which
+     knew nothing about the chrome above and below or about how tall this
+     modal's own header and footer were — a long one then ran past the panel and
+     out of the bottom of it, since `closeBadge` leaves the panel
+     `overflow: visible`. The panel's own max-height governs now. */
+  display: flex;
+  flex-direction: column;
   /* Centred in the app area the backdrop covers, not the window, so it doesn't
      drift under the preview bar on a shell that has one. */
   top: calc(50% + (var(--chrome-top) - var(--chrome-bottom)) / 2);
@@ -142,7 +150,10 @@
   align-items: center;
   gap: 12px;
   padding: 16px 22px 14px;
-  border-bottom: 1px solid var(--c-gray-100);
+  /* `--c-gray-100` is #f5f5f5, which against the modal's white is a 2%
+     difference — the rule was there and nobody could see it. `--c-gray-200` is
+     the hairline every card and table in the system draws. */
+  border-bottom: 1px solid var(--c-gray-200);
 }
 
 .modal-header--flush {
@@ -153,6 +164,16 @@
 .modal-header-text {
   flex: 1;
   min-width: 0;
+}
+
+/* A line under the title — what the modal wants, where the title is only what
+   it is about. It reads a rung under the body text, not level with it. */
+.modal-sub {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--c-text-light);
 }
 
 /* `.modal__title` in bs-product lib/_modals.scss: 18px / 800 / $gray900 at
@@ -257,11 +278,21 @@
 
 .modal-body {
   padding: 14px 22px 18px;
-  font-size: var(--text-body);
-  color: var(--c-text);
-  line-height: 1.55;
   overflow-y: auto;
+  font-size: var(--text-body);
+  line-height: 1.55;
+  color: var(--c-text);
+  /* Only where the panel isn't a flex column and can't do the capping itself. */
   max-height: calc(100vh - 240px);
+}
+.modal--center > .modal-header,
+.modal--center > .modal-footer {
+  flex: none;
+}
+.modal--center > .modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: none;
 }
 
 .modal-body p {

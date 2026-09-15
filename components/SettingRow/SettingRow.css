@@ -22,6 +22,9 @@
   font-size: 16px;
   font-weight: 700;
   color: var(--c-text);
+  /* An address or a long name has no space to break at, and ran out of the row
+     rather than wrapping inside it. */
+  overflow-wrap: anywhere;
 }
 .setting-row-sub {
   font-size: 14px;
@@ -48,4 +51,17 @@
 }
 .setting-list > .setting-row:first-child {
   border-top: 0;
+}
+
+/* Where a list runs to the edge of a card, its end rows' padding sits on top of
+   the card's own and leaves the first label a rung lower than anything else in
+   the card. The rows keep the padding between each other and give back the
+   padding at whichever end meets the card — the top only when the list follows
+   the title directly, since a list under a paragraph or a header row wants the
+   gap it has. */
+.section-card > .section-card-title + .setting-list > .setting-row:first-child {
+  padding-top: 0;
+}
+.section-card > .setting-list:last-child > .setting-row:last-child {
+  padding-bottom: 0;
 }

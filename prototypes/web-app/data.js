@@ -1271,6 +1271,30 @@ export const GENRES = [
 // Genre records the catalog does — one vocabulary, two pages.
 export const BOOK_LIST_GENRES = GENRES
 
+/* The same twelve genres for Personalize Reader's picker, which shows art
+   beside each one. As bare strings every tile fell back to the same stack of
+   books, so a grid of twelve genres carried twelve identical glyphs and told a
+   reader nothing. */
+const GENRE_EMOJI = {
+  Adventure: '🗺️',
+  Fantasy: '🐉',
+  'Graphic Novels': '💥',
+  'Historical Fiction': '🏰',
+  Humor: '😂',
+  Mystery: '🔎',
+  Nonfiction: '🌍',
+  'Picture Books': '🖍️',
+  Poetry: '✒️',
+  'Realistic Fiction': '🏡',
+  'Science Fiction': '🚀',
+  Sports: '⚽',
+}
+export const PREFERENCE_GENRES = GENRES.map((name) => ({
+  id: name,
+  name,
+  emoji: GENRE_EMOJI[name],
+}))
+
 // `topic_groups` → `topics`, and `background_groups` → `backgrounds`. Both are
 // grouped in the app's own filter sidebar, with the group title as a subhead
 // over its own set of checkboxes.
@@ -2161,9 +2185,17 @@ const profile = (id, name, initials, color, kind, grade) => ({
 })
 
 export const ACCOUNT = {
-  // `User` — the sign-in, which is not itself a reader.
+  // `User` — the sign-in, which is not itself a reader. The fields under the
+  // name are what Edit Account edits; which of them a site actually collects is
+  // a site setting, so the page gates them rather than the fixture.
   email: 'dana.martinez@example.com',
   name: 'Dana Martinez',
+  firstName: 'Dana',
+  lastName: 'Martinez',
+  phone: '(410) 555-0148',
+  zip: '21201',
+  libraryCard: '29078003411926',
+  branch: 'central',
   profiles: [
     profile('dana', 'Dana Martinez', 'DM', '#0F766E', 'adult'),
     profile('olivia', 'Olivia Martinez', 'OM', '#F09A77', 'child', '6th Grade'),
@@ -2173,3 +2205,13 @@ export const ACCOUNT = {
 
 // The one profile a school site has: the student, and nothing above them.
 export const STUDENT = profile('olivia', 'Olivia M.', 'OM', '#F09A77', 'child', '6th Grade')
+
+/* `library_branches` — a library's own branches, which Edit Account offers as
+   the account's preferred one. A school has none, and the field goes with them. */
+export const LIBRARY_BRANCHES = [
+  { id: 'central', name: 'Central Library' },
+  { id: 'hampden', name: 'Hampden Branch' },
+  { id: 'canton', name: 'Canton Branch' },
+  { id: 'roland-park', name: 'Roland Park Branch' },
+  { id: 'waverly', name: 'Waverly Branch' },
+]
