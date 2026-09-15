@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Icon } from '@components/Icon/Icon'
 import '@components/Flyout/Flyout.css'
 
 // The box the popover has to fit inside: the intersection of every clipping
@@ -136,6 +137,91 @@ export function Flyout({ trigger, children, placement = 'bottom-start', offset =
           {typeof children === 'function' ? children({ close }) : children}
         </div>
       )}
+    </div>
+  )
+}
+
+/**
+ * The list inside a flyout, and one row of it. Every menu in the app was
+ * rebuilding this locally — the reader chrome had its own `.wa-more-menu` at a
+ * different type size and hover — so these are the one shape.
+ *
+ *   <FlyoutMenu>
+ *     <FlyoutMenuItem icon={<Icon name="check" size={16} />} onClick={…}>Complete Activity</FlyoutMenuItem>
+ *     <FlyoutMenuItem danger onClick={…}>Un-enroll</FlyoutMenuItem>
+ *   </FlyoutMenu>
+ */
+export function FlyoutMenu({ children, role = 'menu', className = '' }) {
+  return (
+    <div className={`flyout-menu ${className}`.trim()} role={role}>
+      {children}
+    </div>
+  )
+}
+
+export function FlyoutMenuItem({
+  icon,
+  active = false,
+  danger = false,
+  onClick,
+  role = 'menuitem',
+  children,
+  ...rest
+}) {
+  return (
+    <button
+      type="button"
+      role={role}
+      className={`flyout-menu-item${active ? ' flyout-menu-item--active' : ''}${danger ? ' flyout-menu-item--danger' : ''}`}
+      onClick={onClick}
+      {...rest}
+    >
+      {icon && <span className="flyout-menu-icon">{icon}</span>}
+      <span className="flyout-menu-label">{children}</span>
+    </button>
+  )
+}
+
+/**
+ * A flyout that picks one of a set — a period, a unit, a grade band.
+ *
+ * It shows **every** option with the current one ticked, rather than listing
+ * only the alternatives. Hiding the current value was how four of these were
+ * written, and it means a menu of two opens onto a single row with nothing to
+ * say which of the two you are on.
+ *
+ *   <FlyoutSelect
+ *     options={[{ id: 'week', label: 'This Week' }, …]}
+ *     value={range}
+ *     onChange={setRange}
+ *     close={close}
+ *   />
+ *
+ * `value` is matched against each option's `id`; `close` is the render prop's
+ * own, so picking closes the flyout.
+ */
+export function FlyoutSelect({ options, value, onChange, close, ariaLabel }) {
+  return (
+    <div className="flyout-menu flyout-select" role="listbox" aria-label={ariaLabel}>
+      {options.map((o) => {
+        const on = o.id === value
+        return (
+          <button
+            key={o.id}
+            type="button"
+            role="option"
+            aria-selected={on}
+            className={`flyout-menu-item${on ? ' flyout-menu-item--active' : ''}`}
+            onClick={() => {
+              onChange(o.id)
+              close?.()
+            }}
+          >
+            <span className="flyout-menu-label">{o.label}</span>
+            {on && <Icon name="check" size={15} stroke={2.4} />}
+          </button>
+        )
+      })}
     </div>
   )
 }

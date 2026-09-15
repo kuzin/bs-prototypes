@@ -124,6 +124,25 @@
   font-weight: 800;
   line-height: 1.3;
 }
+/* The title is the book record, so it goes to that book's page. It stays the
+   chip's own colour — an entry is already a tinted block, and a blue link
+   inside one reads as a second accent rather than as the title. */
+.rl-entry-link {
+  display: block;
+  padding: 0;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: rgba(0, 0, 0, 0.25);
+  text-underline-offset: 2px;
+}
+.rl-entry-link:hover {
+  text-decoration-color: currentcolor;
+}
 .rl-entry-author {
   font-size: 12.5px;
   opacity: 0.8;
@@ -436,9 +455,23 @@
    book's own log page, so the numbers live one click in rather than spread
    across five columns nobody was reading. */
 
-/* The Modal's centered variant owns the width; this just sets the inset. */
+/* The Modal's centered variant owns the width; the body takes the inset and
+   the scroll, so the footer stays put at the bottom rather than riding up on a
+   title with a long session list. */
+.modal--center:has(.rl-detail) {
+  display: flex;
+}
 .rl-detail {
   position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.rl-detail-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   padding: 26px;
 }
 .rl-detail-close {
@@ -543,7 +576,7 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 10px;
   }
-  .rl-detail {
+  .rl-detail-body {
     padding: 20px;
   }
   .rl-detail-head {

@@ -7,7 +7,7 @@ import { EmptyState } from '@components/Primitives/Primitives'
 
 import { BookCover } from '../../logging-flow/components/BookCover'
 import { BOOKS } from '../../logging-flow/data'
-import { WISH_LIST } from '../data'
+import { WISH_LIST, CATALOG_BY_ID } from '../data'
 import './WishList.css'
 
 import '@components/Button/Button.css'
@@ -29,7 +29,7 @@ import '@components/Primitives/Primitives.css'
 
 const READER = 'Olivia'
 
-export function WishList({ onFindBooks, onLog }) {
+export function WishList({ onFindBooks, onLog, onOpenBook }) {
   const [items, setItems] = useState(WISH_LIST)
   const [q, setQ] = useState('')
   const [searching, setSearching] = useState(false)
@@ -98,13 +98,37 @@ export function WishList({ onFindBooks, onLog }) {
         <ul className="wl-list">
           {shown.map((item) => {
             const book = BOOKS[item.book]
+            // The row's title is that book's record — the catalog is wider than
+            // the log, so this is where a wished-for title goes.
+            const record = CATALOG_BY_ID[item.book]
             return (
               <li className="wl-row" key={item.book}>
-                <span className="wl-cover">
-                  <BookCover book={book} size="fill" />
-                </span>
+                {record ? (
+                  <button
+                    type="button"
+                    className="wl-cover wl-hit"
+                    onClick={() => onOpenBook?.(record)}
+                    aria-label={book.title}
+                  >
+                    <BookCover book={book} size="fill" />
+                  </button>
+                ) : (
+                  <span className="wl-cover">
+                    <BookCover book={book} size="fill" />
+                  </span>
+                )}
                 <div className="wl-meta">
-                  <span className="wl-title">{book.title}</span>
+                  {record ? (
+                    <button
+                      type="button"
+                      className="wl-title wl-hit"
+                      onClick={() => onOpenBook?.(record)}
+                    >
+                      {book.title}
+                    </button>
+                  ) : (
+                    <span className="wl-title">{book.title}</span>
+                  )}
                   <span className="wl-author">{book.author}</span>
                   {/* The app's own line — a wish list is not always your own. */}
                   <span className="wl-added">

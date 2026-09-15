@@ -4,7 +4,7 @@ import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
 import { Pill } from '@components/Pill/Pill'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
-import { Flyout } from '@components/Flyout/Flyout'
+import { Flyout, FlyoutMenu, FlyoutMenuItem, FlyoutSelect } from '@components/Flyout/Flyout'
 import { Tooltip } from '@components/Primitives/Primitives'
 import { BeanstackLogo } from '@components/BeanstackLogo/BeanstackLogo'
 import { BsIcon } from '@components/BsIcons/BsIcons'
@@ -131,26 +131,26 @@ export function ReaderTopBar({
                   )}
                 >
                   {({ close }) => (
-                    <div className="wa-more-menu">
-                      <button
-                        className="wa-more-item"
+                    <FlyoutMenu>
+                      <FlyoutMenuItem
+                        icon={<Icon name="check" size={16} />}
                         onClick={() => {
                           onActivity?.()
                           close()
                         }}
                       >
-                        <Icon name="check" size={16} /> Complete Activity
-                      </button>
-                      <button
-                        className="wa-more-item"
+                        Complete Activity
+                      </FlyoutMenuItem>
+                      <FlyoutMenuItem
+                        icon={<Icon name="writing" size={16} />}
                         onClick={() => {
                           onReview?.()
                           close()
                         }}
                       >
-                        <Icon name="writing" size={16} /> Write Review
-                      </button>
-                    </div>
+                        Write Review
+                      </FlyoutMenuItem>
+                    </FlyoutMenu>
                   )}
                 </Flyout>
               </div>
@@ -220,6 +220,25 @@ export function ReaderTopBar({
  * switcher every household account has; without, it is just a label — a
  * one-reader prototype shouldn't offer a menu that can't go anywhere.
  */
+/**
+ * The way back off a page the nav can't reach — a book, or one book list.
+ *
+ * `.back-button` in the app (`reading_lists/show.html.haml`, `books/show`): a
+ * chevron and where it goes, sitting above the page's own header rather than
+ * inside it. It says its destination rather than just "Back", because these
+ * pages are reached from more than one place.
+ *
+ *   <ReaderBack onClick={close}>Back to Book Lists</ReaderBack>
+ */
+export function ReaderBack({ onClick, children = 'Back' }) {
+  return (
+    <button type="button" className="wa-back" onClick={onClick}>
+      <Icon name="chevron-left" size={16} stroke={2.4} />
+      {children}
+    </button>
+  )
+}
+
 export function ReaderPill({ reader, otherReaders = [] }) {
   if (!otherReaders.length) {
     return (
@@ -691,19 +710,16 @@ export function ChallengeCard({ challenge, accent = READER_ACCENT, onOpen, onUne
               )}
             >
               {({ close }) => (
-                <div className="wa-more-menu" role="menu">
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="wa-more-item"
+                <FlyoutMenu>
+                  <FlyoutMenuItem
                     onClick={() => {
                       onUnenroll?.(challenge)
                       close()
                     }}
                   >
                     Un-enroll
-                  </button>
-                </div>
+                  </FlyoutMenuItem>
+                </FlyoutMenu>
               )}
             </Flyout>
           </span>
@@ -870,24 +886,7 @@ function LeadPicker({ options, value, onChange, placement }) {
       )}
     >
       {({ close }) => (
-        <div className="wa-more-menu" role="menu">
-          {options
-            .filter((o) => o.id !== current.id)
-            .map((o) => (
-              <button
-                key={o.id}
-                className="wa-more-item"
-                type="button"
-                role="menuitem"
-                onClick={() => {
-                  onChange(o.id)
-                  close()
-                }}
-              >
-                {o.label}
-              </button>
-            ))}
-        </div>
+        <FlyoutSelect options={options} value={current.id} onChange={onChange} close={close} />
       )}
     </Flyout>
   )

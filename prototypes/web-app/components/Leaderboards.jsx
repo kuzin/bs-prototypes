@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { Tabs } from '@components/Tabs/Tabs'
-import { Flyout } from '@components/Flyout/Flyout'
+import { Flyout, FlyoutSelect } from '@components/Flyout/Flyout'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
 import { Table } from '@components/Table/Table'
+import { RowAction, RowActions } from '@components/RowAction/RowAction'
 import { Avatar } from '@components/Avatar/Avatar'
 import { CustomSelect } from '@components/CustomSelect/CustomSelect'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
@@ -21,6 +22,7 @@ import '@components/Flyout/Flyout.css'
 import '@components/Button/Button.css'
 import '@components/ReaderApp/ReaderApp.css'
 import '@components/Table/Table.css'
+import '@components/RowAction/RowAction.css'
 import '@components/Avatar/Avatar.css'
 import '@components/CustomSelect/CustomSelect.css'
 
@@ -34,6 +36,12 @@ import '@components/CustomSelect/CustomSelect.css'
  *
  * The podium rows get a coin rather than a number, and the reader's own row is
  * highlighted and suffixed "(You)" — both straight from the app.
+ *
+ * What the app doesn't do: the Friends board here also ranks the readers at the
+ * site you haven't added, so the board has someone on it to be a ranking
+ * against. That makes the last column an action rather than decoration — a
+ * friend's row opens their profile, a stranger's row offers to ask them, and
+ * one you have already asked says so and waits.
  */
 
 function Rank({ rank }) {
@@ -41,10 +49,13 @@ function Rank({ rank }) {
   return <span className={`lb-medal lb-medal--${rank}`}>{rank}</span>
 }
 
-export function Leaderboards({ onOpenFriend }) {
+export function Leaderboards({ onOpenFriend, onAddFriend }) {
   const [board, setBoard] = useState('friends')
   const [type, setType] = useState('minutes')
   const [period, setPeriod] = useState('week')
+  // Who you've asked from this page, so the button reports back in place
+  // rather than the row simply going quiet.
+  const [asked, setAsked] = useState([])
 
   const boardLabel = LEADERBOARD_BOARDS.find((b) => b.id === board).label
   const typeDef = LEADERBOARD_TYPES.find((t) => t.id === type)
@@ -73,7 +84,9 @@ export function Leaderboards({ onOpenFriend }) {
               shape="circle"
             />
           )}
-          {board === 'friends' && !row.isMe && onOpenFriend ? (
+          {/* Only a friend's name goes anywhere: a profile is something a
+              reader lets you see, so a stranger's is a name and a number. */}
+          {row.isFriend && onOpenFriend ? (
             <button
               type="button"
               className="lb-name lb-name--link"
@@ -93,6 +106,51 @@ export function Leaderboards({ onOpenFriend }) {
       align: 'right',
       render: (v) => <strong className="lb-value">{v.toLocaleString()}</strong>,
     },
+    // Only the friends board ranks people, so only it has anything to do with
+    // a row.
+    ...(board === 'friends'
+      ? [
+          {
+            key: 'id',
+            label: '',
+            align: 'right',
+            width: 64,
+            render: (_v, row) => {
+              if (row.isMe) return null
+              return (
+                <RowActions>
+                  {row.isFriend ? (
+                    <RowAction
+                      icon="user"
+                      label={`View ${row.name}'s profile`}
+                      onClick={() => onOpenFriend?.(row.id)}
+                    />
+                  ) : row.pending || asked.includes(row.id) ? (
+                    /* Already asked — the app's own in-between state, where an
+                       invitation is out and nothing more can be done from here.
+                       A mark, not a control: `as="span"` keeps the cell and
+                       drops the button. */
+                    <RowAction
+                      as="span"
+                      icon="hourglass"
+                      label={`Friend request sent to ${row.name}`}
+                    />
+                  ) : (
+                    <RowAction
+                      icon="user-plus"
+                      label={`Add ${row.name} as a friend`}
+                      onClick={() => {
+                        setAsked((a) => [...a, row.id])
+                        onAddFriend?.(row)
+                      }}
+                    />
+                  )}
+                </RowActions>
+              )
+            },
+          },
+        ]
+      : []),
   ]
 
   return (
@@ -120,22 +178,13 @@ export function Leaderboards({ onOpenFriend }) {
             )}
           >
             {({ close }) => (
-              <div className="wa-more-menu" role="menu">
-                {LEADERBOARD_PERIODS.filter((p) => p.value !== period).map((p) => (
-                  <button
-                    key={p.value}
-                    type="button"
-                    role="menuitem"
-                    className="wa-more-item"
-                    onClick={() => {
-                      setPeriod(p.value)
-                      close()
-                    }}
-                  >
-                    {p.label}
-                  </button>
-                ))}
-              </div>
+              <FlyoutSelect
+                ariaLabel="Which period"
+                options={LEADERBOARD_PERIODS.map((p) => ({ id: p.value, label: p.label }))}
+                value={period}
+                onChange={setPeriod}
+                close={close}
+              />
             )}
           </Flyout>
         }

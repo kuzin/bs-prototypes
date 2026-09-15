@@ -111,27 +111,12 @@
   background: var(--c-gray-100);
 }
 
-.wa-more-menu {
-  min-width: 200px;
-  padding: 6px;
-}
-.wa-more-item {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  width: 100%;
-  padding: 9px 10px;
-  border: 0;
-  border-radius: 8px;
-  background: none;
-  font-family: inherit;
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--c-text);
-  text-align: left;
-}
-.wa-more-item:hover {
-  background: var(--c-gray-100);
+/* The reader chrome's own menu is gone: every one of these is now the shared
+   `.flyout-menu` (an action list) or `.flyout-select` (a pick), which is what
+   they were copies of. All that's left is a width for the ones in this app. */
+.wa-topbar .flyout-menu,
+.wa-chcard .flyout-menu {
+  min-width: 190px;
 }
 
 .wa-topbar-actions {
@@ -1070,8 +1055,19 @@
 }
 
 /* A dismiss on a tinted ground disappears into it, so it gets a ground of its
-   own — enough to find, not enough to compete with the bar's own action. */
+   own — enough to find, not enough to compete with the bar's own action.
+
+   It is pinned rather than laid out in the flex row: a bar that has wrapped
+   puts its action on a second line, and a dismiss in the flow follows it there
+   and ends up beside the action or centred under the message. On a bar that
+   fits one line it sits where it always did — centred against the trailing
+   edge; the narrow rules below lift it to the corner, which is the only place
+   left once the action has a row of its own. */
 .wa-banner-close {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -1085,6 +1081,10 @@
   border: 0;
   border-radius: 8px;
 }
+/* Only a bar that has one gives up the corner. */
+.wa-banner:has(.wa-banner-close) {
+  padding-right: 46px;
+}
 .wa-banner-close:hover {
   background: #fff;
 }
@@ -1095,28 +1095,22 @@
    Note `flex-wrap` is on the banner unconditionally, above — an element can't
    query its own container, so the rules here only reach its children. Wrapping
    costs nothing while everything still fits on one line. */
-@container (max-width: 400px) {
+@container (max-width: 460px) {
   .wa-banner-mark {
     width: 34px;
     height: 34px;
+  }
+  /* Wrapped: the action owns the second row, so the dismiss goes to the
+     corner rather than centring itself against two rows of bar. */
+  .wa-banner-close {
+    top: 10px;
+    transform: none;
   }
   /* A zero basis, so the message wraps its text beside the mark rather than
      sizing to the unwrapped sentence and taking a row of its own. */
   .wa-banner-body {
     flex: 1 1 0;
     min-width: 0;
-  }
-  /* The dismiss goes to the corner rather than taking a column from the
-     message or trailing the action onto a third row. The banner can't pad
-     itself for it — an element can't query its own container — so the message
-     keeps the clearance instead. */
-  .wa-banner-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-  }
-  .wa-banner-body {
-    padding-right: 30px;
   }
   .wa-banner-actions,
   .wa-banner-actions:has(.wa-cgoal-meter) {
@@ -1125,4 +1119,29 @@
   .wa-banner-actions .btn {
     width: 100%;
   }
+}
+
+/* ─── Back link ──────────────────────────────────────────────────────────────
+   `.back-button` — the way off a page the nav can't reach. It sits above the
+   page header, so its own margin is the gap to that header and there is none
+   above it: the main column already has its padding. */
+.wa-back {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  height: 32px;
+  padding: 0 10px 0 6px;
+  margin-bottom: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--c-text-light);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 8px;
+}
+.wa-back:hover {
+  color: var(--c-text-dark);
+  background: var(--c-gray-100);
 }

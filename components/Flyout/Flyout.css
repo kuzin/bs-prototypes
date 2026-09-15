@@ -174,3 +174,18 @@
   flex: none;
   gap: 8px;
 }
+
+/* ─── Select ─────────────────────────────────────────────────────────────
+   A menu that picks one of a set rather than firing an action: every option
+   is listed and the current one is ticked at the trailing edge. */
+.flyout-menu-label {
+  flex: 1;
+  min-width: 0;
+}
+.flyout-select {
+  min-width: 180px;
+}
+.flyout-select .flyout-menu-item svg {
+  flex: none;
+  color: var(--c-blue);
+}

@@ -1,0 +1,112 @@
+/* ─── Filter menus ───────────────────────────────────────────────────────────
+   A row of facet buttons, each opening its own checkbox list. The app's filter
+   accordion, with the drawer replaced by the row. */
+
+.fmenu-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* A facet that is set says so on its own button, in the accent — you can see
+   what the page is filtered by without opening anything. */
+.fmenu-trigger.is-set {
+  color: var(--c-blue);
+  border-color: var(--c-blue);
+}
+.fmenu-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  line-height: 1;
+  color: #fff;
+  background: var(--c-blue);
+  border-radius: 999px;
+}
+
+.fmenu-pop {
+  width: 244px;
+}
+.fmenu-list {
+  max-height: 300px;
+  padding: 8px;
+  overflow-y: auto;
+}
+.fmenu-set + .fmenu-set {
+  padding-top: 8px;
+  margin-top: 8px;
+  border-top: 1px solid var(--c-border);
+}
+.fmenu-set-title {
+  padding: 0 6px;
+  margin-bottom: 4px;
+  font-size: 11.5px;
+  font-weight: 800;
+  color: var(--c-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+/* One value per row: two-up left "Multiracial" stranded on a line of its own
+   and clipped anything as long as "Deaf & Hard of Hearing". */
+.fmenu-set .chk {
+  display: flex;
+  width: 100%;
+  padding: 6px;
+  border-radius: 6px;
+}
+.fmenu-set .chk:hover {
+  background: var(--c-gray-100);
+}
+
+/* The single-value facet is a pick, not a set of checkboxes — a row that ticks
+   and untick s itself, the way the app's grade filter takes one band. */
+.fmenu-one {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 7px 8px;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text);
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+}
+.fmenu-one:hover {
+  background: var(--c-gray-100);
+}
+.fmenu-one.is-on {
+  color: var(--c-blue);
+}
+
+.fmenu-foot {
+  padding: 8px;
+  border-top: 1px solid var(--c-border);
+}
+.fmenu-foot button {
+  width: 100%;
+  padding: 6px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-text-light);
+  cursor: pointer;
+  background: none;
+  border: 0;
+  border-radius: 6px;
+}
+.fmenu-foot button:hover {
+  color: var(--c-text-dark);
+  background: var(--c-gray-100);
+}

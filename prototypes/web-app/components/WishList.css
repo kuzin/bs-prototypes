@@ -67,3 +67,16 @@
     flex: 1 0 100%;
   }
 }
+
+/* The cover and the title both open that book's record. */
+.wl-hit {
+  padding: 0;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.wl-title.wl-hit:hover {
+  text-decoration: underline;
+}

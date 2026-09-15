@@ -88,12 +88,26 @@ function ImportedTag({ entry }) {
   )
 }
 
-function EntryChip({ entry, dense, showImported = true }) {
+function EntryChip({ entry, dense, showImported = true, onOpenBook, bookFor }) {
   const amounts = amount(entry)
+  // Every row is a book, so its title goes to that book's page — but only
+  // where the prototype has one and the catalog knows the title. A title the
+  // catalog has never heard of stays plain text rather than linking nowhere.
+  const book = onOpenBook ? bookFor?.(entry.title) : null
   return (
     <div className={`rl-entry rl-entry--${entry.tone}${dense ? ' rl-entry--dense' : ''}`}>
       <div className="rl-entry-main">
-        <div className="rl-entry-title">{entry.title}</div>
+        {book ? (
+          <button
+            type="button"
+            className="rl-entry-title rl-entry-link"
+            onClick={() => onOpenBook(book)}
+          >
+            {entry.title}
+          </button>
+        ) : (
+          <div className="rl-entry-title">{entry.title}</div>
+        )}
         {entry.author && <div className="rl-entry-author">{entry.author}</div>}
         {amounts.length > 0 && (
           <div className="rl-entry-amounts">
@@ -115,7 +129,7 @@ function EntryChip({ entry, dense, showImported = true }) {
   )
 }
 
-function CalendarView({ entries, showImported }) {
+function CalendarView({ entries, showImported, onOpenBook, bookFor }) {
   const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
   return (
     <div className="rl-cal">
@@ -144,7 +158,14 @@ function CalendarView({ entries, showImported }) {
                     </div>
                   )}
                   {rows.map((e) => (
-                    <EntryChip key={e.id} entry={e} dense showImported={showImported} />
+                    <EntryChip
+                      key={e.id}
+                      entry={e}
+                      dense
+                      showImported={showImported}
+                      onOpenBook={onOpenBook}
+                      bookFor={bookFor}
+                    />
                   ))}
                 </div>
               )
@@ -156,7 +177,7 @@ function CalendarView({ entries, showImported }) {
   )
 }
 
-function ListView({ entries, showImported }) {
+function ListView({ entries, showImported, onOpenBook, bookFor }) {
   const weeks = monthGrid(LOG_MONTH.year, LOG_MONTH.month)
   return (
     <div className="rl-list">
@@ -189,7 +210,13 @@ function ListView({ entries, showImported }) {
                   </div>
                   <div className="rl-day-rows">
                     {rows.map((e) => (
-                      <EntryChip key={e.id} entry={e} showImported={showImported} />
+                      <EntryChip
+                        key={e.id}
+                        entry={e}
+                        showImported={showImported}
+                        onOpenBook={onOpenBook}
+                        bookFor={bookFor}
+                      />
                     ))}
                   </div>
                 </div>
@@ -224,9 +251,11 @@ const BOOK_BY_TITLE = new Map(Object.values(BOOKS).map((b) => [b.title, b]))
  * The record `BookCover` wants for one logged title. A title in the catalog
  * brings its real cover; one that only exists in the log gets a tile in the
  * next of the app's seven colours, so a miss still looks designed.
+ *
+ * `known` is the record a wider catalog than the log's own found for the title
+ * — web-app's, which has a cover for things the log only has a name for.
  */
-function coverBook(title, author, i) {
-  const known = BOOK_BY_TITLE.get(title)
+function coverBook(title, author, i, known) {
   if (known) return known
   const c = NO_COVER_COLORS[i % NO_COVER_COLORS.length]
   return { title, author, cover: [c, c] }
@@ -328,7 +357,7 @@ function TitleStats({ entries }) {
 }
 
 /** One shelf tile: the cover, a completed check, and the app it came from. */
-function TitleTile({ row, index, onOpen }) {
+function TitleTile({ row, index, onOpen, book }) {
   const [source] = [...row.sources]
   return (
     <li className="rl-tile">
@@ -338,7 +367,7 @@ function TitleTile({ row, index, onOpen }) {
         onClick={onOpen}
         aria-label={`${row.title}${row.completed ? ' — completed' : ''}`}
       >
-        <BookCover book={coverBook(row.title, row.author, index)} size="fill" />
+        <BookCover book={coverBook(row.title, row.author, index, book)} size="fill" />
         {/* Both marks stack in one corner rather than taking a corner each: a
             magazine's masthead runs left-to-right across the top of its tile,
             and a mark in the opposite corner cut the front off its name. */}
@@ -360,8 +389,12 @@ function TitleTile({ row, index, onOpen }) {
 }
 
 /**
- * What the five columns used to say, on the title you actually asked about —
- * the app links a tile through to that book's own log page.
+ * What the five columns used to say, on the title you actually asked about.
+ *
+ * The app links a tile through to that book's own log page. Where a prototype
+ * has built one — web-app's `BookPage`, which carries these same sessions — the
+ * tile goes there instead and this never opens. It is what's left for a title
+ * the log knows and the catalog doesn't.
  */
 function TitleDetail({ row, index, onClose }) {
   return (
@@ -371,54 +404,56 @@ function TitleDetail({ row, index, onClose }) {
           <button type="button" className="rl-detail-close" onClick={onClose} aria-label="Close">
             <Icon name="x" size={17} />
           </button>
-          <div className="rl-detail-head">
-            <div className="rl-detail-cover">
-              <BookCover book={coverBook(row.title, row.author, index)} size="fill" />
+          <div className="rl-detail-body">
+            <div className="rl-detail-head">
+              <div className="rl-detail-cover">
+                <BookCover book={coverBook(row.title, row.author, index)} size="fill" />
+              </div>
+              <div className="rl-detail-meta">
+                <h2 className="rl-detail-title">{row.title}</h2>
+                {row.author && <p className="rl-detail-author">by {row.author}</p>}
+                {row.completed && (
+                  <Pill color="#0F7A55" variant="soft" size="sm">
+                    Completed
+                  </Pill>
+                )}
+                <dl className="rl-detail-nums">
+                  <div>
+                    <dt>Sessions</dt>
+                    <dd>{row.sessions.length}</dd>
+                  </div>
+                  <div>
+                    <dt>Minutes</dt>
+                    <dd>{row.minutes || '—'}</dd>
+                  </div>
+                  <div>
+                    <dt>Pages</dt>
+                    <dd>{row.pages || '—'}</dd>
+                  </div>
+                </dl>
+              </div>
             </div>
-            <div className="rl-detail-meta">
-              <h2 className="rl-detail-title">{row.title}</h2>
-              {row.author && <p className="rl-detail-author">by {row.author}</p>}
-              {row.completed && (
-                <Pill color="#0F7A55" variant="soft" size="sm">
-                  Completed
-                </Pill>
-              )}
-              <dl className="rl-detail-nums">
-                <div>
-                  <dt>Sessions</dt>
-                  <dd>{row.sessions.length}</dd>
-                </div>
-                <div>
-                  <dt>Minutes</dt>
-                  <dd>{row.minutes || '—'}</dd>
-                </div>
-                <div>
-                  <dt>Pages</dt>
-                  <dd>{row.pages || '—'}</dd>
-                </div>
-              </dl>
-            </div>
-          </div>
 
-          <ul className="rl-detail-sessions">
-            {row.sessions.map((e) => (
-              <li key={e.id}>
-                <span className="rl-detail-date">{longDate(e.date)}</span>
-                <span className="rl-detail-amount">
-                  {e.minutes ? `${e.minutes} min` : e.pages ? `${e.pages} pages` : 'Logged'}
-                </span>
-                <span className="rl-detail-source">
-                  {e.source ? (
-                    <>
-                      <PartnerMark id={e.source} size={15} /> {CONNECTIONS[e.source].name}
-                    </>
-                  ) : (
-                    <span className="rl-detail-manual">Logged by hand</span>
-                  )}
-                </span>
-              </li>
-            ))}
-          </ul>
+            <ul className="rl-detail-sessions">
+              {row.sessions.map((e) => (
+                <li key={e.id}>
+                  <span className="rl-detail-date">{longDate(e.date)}</span>
+                  <span className="rl-detail-amount">
+                    {e.minutes ? `${e.minutes} min` : e.pages ? `${e.pages} pages` : 'Logged'}
+                  </span>
+                  <span className="rl-detail-source">
+                    {e.source ? (
+                      <>
+                        <PartnerMark id={e.source} size={15} /> {CONNECTIONS[e.source].name}
+                      </>
+                    ) : (
+                      <span className="rl-detail-manual">Logged by hand</span>
+                    )}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       )}
     </Modal>
@@ -426,7 +461,7 @@ function TitleDetail({ row, index, onClose }) {
 }
 
 /** "All Titles" — every logged title as a cover, grouped by month. */
-function TitlesView({ entries, stats = true }) {
+function TitlesView({ entries, stats = true, onOpenBook, bookFor }) {
   // The app's own pair of tabs on this page: everything, or just what's done.
   const [filter, setFilter] = useState('all')
   const [open, setOpen] = useState(null)
@@ -469,12 +504,21 @@ function TitlesView({ entries, stats = true }) {
             {m.rows.map((row) => {
               i += 1
               const at = i
+              // A tile goes to that book's page where there is one — it
+              // carries these sessions and the record besides. The roll-up
+              // modal is what a title the catalog has never heard of gets.
+              // The record also supplies the cover, which is why it's resolved
+              // whether or not there's anywhere to send the click.
+              const book = bookFor?.(row.title)
               return (
                 <TitleTile
                   key={row.title}
                   row={row}
                   index={at}
-                  onOpen={() => setOpen({ row, index: at })}
+                  book={book}
+                  onOpen={() =>
+                    book && onOpenBook ? onOpenBook(book) : setOpen({ row, index: at })
+                  }
                 />
               )
             })}
@@ -492,20 +536,24 @@ function TitlesView({ entries, stats = true }) {
 // per-entry partner marks — since with nothing linked there's nothing to
 // explain. Defaults to logging-flow's own list, so that prototype is unchanged.
 //
-// `titlesView={false}` leaves the "All Titles" tab standing but inert — it is
-// part of the real page's furniture, so it stays visible, it just doesn't go
-// anywhere in a prototype that isn't about it.
+// `titlesView={false}` drops "All Titles" from the view switcher, for a
+// prototype where the shelf isn't the point.
 //
 // `extraTabs` / `renderExtra` hang another sub-tab off this strip, the same way
 // `Dashboard` lets a prototype hang one off the main nav — web-app puts its
-// Reviews page here.
+// Wish List and Book Lists here.
 //
 // `heading` overrides the page title, `subtabs={false}` drops the strip,
-// `defaultTab` picks which view opens, and `stats={false}` drops the shelf's
-// summary row — all for when this log is embedded in a page that already has
-// those. A challenge's log tab opens on the titles shelf (a month calendar of
-// every session the reader logged anywhere isn't that challenge's log) and
-// leaves the totals to the Overview tab's own "Overall Progress". Left off, the page is exactly as it was.
+// `defaultTab` picks which sub-tab opens, `defaultView` picks which of the
+// three views it opens on, and `stats={false}` drops the shelf's summary row —
+// all for when this log is embedded in a page that already has those. A
+// challenge's log opens on the titles shelf and leaves the totals to the
+// Overview tab's own "Overall Progress". Left off, the page is exactly as it was.
+//
+// `onOpenBook` is where a logged title goes when you click it: the calendar and
+// list rows link straight through, and the shelf's roll-up modal offers it in
+// its footer. `bookFor` says which catalog record a logged title *is* — a
+// prototype whose catalog is wider than the log's own passes its own resolver.
 export function ReadingLog({
   entries = READING_LOG,
   partners = CONNECTION_LIST,
@@ -515,11 +563,14 @@ export function ReadingLog({
   heading,
   subtabs = true,
   defaultTab = 'log',
+  defaultView,
   stats = true,
   // Optional control of which sub-tab is showing, so a parent can move between
   // them — the Wish List's "Find Books" goes to Book Lists next door.
   tab: tabProp,
   onTab,
+  onOpenBook,
+  bookFor = (title) => BOOK_BY_TITLE.get(title),
 }) {
   const [ownTab, setOwnTab] = useState(defaultTab)
   const tab = tabProp ?? ownTab
@@ -527,14 +578,22 @@ export function ReadingLog({
     setOwnTab(id)
     onTab?.(id)
   }
+  // Calendar, list, or the shelf of every title — three views of one log, the
+  // way the app's own Calendar/List toggle is two. All Titles was a sub-tab of
+  // its own and read as a different page; it is the same entries, counted by
+  // book instead of by day.
+  //
   // A seven-column month gives each day ~43px on a phone, which can't carry a
   // book title — so a phone opens on the list and leaves the calendar one tap
   // away rather than showing a grid of clipped words.
-  const [view, setView] = useState(() =>
-    typeof window !== 'undefined' && window.matchMedia('(max-width: 560px)').matches
-      ? 'list'
-      : 'calendar',
+  const [ownView, setOwnView] = useState(
+    () =>
+      defaultView ??
+      (typeof window !== 'undefined' && window.matchMedia('(max-width: 560px)').matches
+        ? 'list'
+        : 'calendar'),
   )
+  const view = titlesView || ownView !== 'titles' ? ownView : 'calendar'
   const extraIds = extraTabs.map((t) => t.id)
 
   const imported = partners.length ? entries.filter((e) => e.source).length : 0
@@ -548,15 +607,8 @@ export function ReadingLog({
             plain
             size="md"
             active={tab}
-            onChange={(id) => (id !== 'titles' || titlesView) && setTab(id)}
-            // Extras go between the log and All Titles rather than after it:
-            // All Titles is the archive at the end of the strip, and what a
-            // prototype hangs here belongs beside the log itself.
-            items={[
-              { id: 'log', label: 'Reading Log' },
-              ...extraTabs,
-              { id: 'titles', label: 'All Titles' },
-            ]}
+            onChange={setTab}
+            items={[{ id: 'log', label: 'Reading Log' }, ...extraTabs]}
           />
         </div>
       )}
@@ -569,38 +621,45 @@ export function ReadingLog({
       {!extraIds.includes(tab) && (
         <>
           <ReaderPageHead
-            title={heading ?? (tab === 'log' ? 'Reading Log' : 'All Titles')}
+            title={heading ?? 'Reading Log'}
             actions={
               <>
                 <Button variant="secondary" size="md">
                   Print log
                 </Button>
-                {/* Calendar or list is a segmented control, which in this
+                {/* Calendar, list or shelf is a segmented control, which in this
                     system is a pill Tabs — it was a two-button toggle of its
                     own, on its own active blue. */}
-                {tab === 'log' && (
-                  <Tabs
-                    variant="pill"
-                    size="md"
-                    active={view}
-                    accent="#1A6DD5"
-                    onChange={setView}
-                    ariaLabel="Calendar or list"
-                    items={[
-                      {
-                        id: 'calendar',
-                        label: 'Calendar',
-                        icon: <Icon name="layout-grid" size={15} />,
-                      },
-                      { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
-                    ]}
-                  />
-                )}
+                <Tabs
+                  variant="pill"
+                  size="md"
+                  active={view}
+                  accent="#1A6DD5"
+                  onChange={setOwnView}
+                  ariaLabel="Which view"
+                  items={[
+                    {
+                      id: 'calendar',
+                      label: 'Calendar',
+                      icon: <Icon name="layout-grid" size={15} />,
+                    },
+                    { id: 'list', label: 'List', icon: <Icon name="list" size={15} /> },
+                    ...(titlesView
+                      ? [
+                          {
+                            id: 'titles',
+                            label: 'All Titles',
+                            icon: <Icon name="book-2" size={15} />,
+                          },
+                        ]
+                      : []),
+                  ]}
+                />
               </>
             }
           />
 
-          {tab === 'log' && (
+          {view !== 'titles' && (
             <>
               {/* The design system's stat tile, not a local copy of its shape —
                   the same tile the All Titles shelf puts its numbers on. */}
@@ -631,11 +690,7 @@ export function ReadingLog({
                   to see where and when.
                 </Banner>
               )}
-            </>
-          )}
 
-          {tab === 'log' ? (
-            <>
               <div className="rl-month">
                 <h2 className="rl-month-label">{LOG_MONTH.label}</h2>
                 <div className="rl-month-nav">
@@ -647,14 +702,27 @@ export function ReadingLog({
                   </button>
                 </div>
               </div>
-              {view === 'calendar' ? (
-                <CalendarView entries={entries} showImported={imported > 0} />
-              ) : (
-                <ListView entries={entries} showImported={imported > 0} />
-              )}
             </>
-          ) : (
-            <TitlesView entries={entries} stats={stats} />
+          )}
+
+          {view === 'calendar' && (
+            <CalendarView
+              entries={entries}
+              showImported={imported > 0}
+              onOpenBook={onOpenBook}
+              bookFor={bookFor}
+            />
+          )}
+          {view === 'list' && (
+            <ListView
+              entries={entries}
+              showImported={imported > 0}
+              onOpenBook={onOpenBook}
+              bookFor={bookFor}
+            />
+          )}
+          {view === 'titles' && (
+            <TitlesView entries={entries} stats={stats} onOpenBook={onOpenBook} bookFor={bookFor} />
           )}
         </>
       )}

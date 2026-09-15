@@ -302,10 +302,10 @@ function Footer() {
  * integration surface drops out — the connect banner, the topbar switcher, the
  * "logged for you" rail card, and the App Integrations settings section.
  *
- * `titlesView={false}` is passed straight through to the Reading Log: its
- * "All Titles" tab stays on the page but stops being reachable. `logEntries`
- * is too, for a prototype whose log isn't logging-flow's own — web-app has no
- * Scholastic, so its log must not carry Scholastic sessions either.
+ * `titlesView={false}` is passed straight through to the Reading Log: it drops
+ * "All Titles" from that page's view switcher. `logEntries` is too, for a
+ * prototype whose log isn't logging-flow's own — web-app has no Scholastic, so
+ * its log must not carry Scholastic sessions either.
  *
  * `onOpenChallenge` makes the challenge cards go somewhere. They have always
  * been buttons; a prototype that has built the challenge page passes this and
@@ -316,8 +316,11 @@ function Footer() {
  * put — a destination that isn't one of the tabs.
  *
  * `logTabs` / `renderLogTab` are the same additive pair one level down: an
- * extra sub-tab on the Reading Log's own strip, between the log and "All
- * Titles". web-app puts Reviews there.
+ * extra sub-tab on the Reading Log's own strip, after the log itself — web-app
+ * puts its Wish List and Book Lists there.
+ *
+ * `onOpenBook` / `bookFor` go through to the log as well: where a prototype has
+ * a book page, every logged title links to it.
  */
 export function Dashboard({
   streak,
@@ -342,6 +345,8 @@ export function Dashboard({
   renderLogTab,
   logTab,
   onLogTab,
+  onOpenBook,
+  bookFor,
   onOpenChallenge,
   onUnenrollChallenge,
   motivation,
@@ -471,6 +476,8 @@ export function Dashboard({
               renderExtra={renderLogTab}
               tab={logTab}
               onTab={onLogTab}
+              onOpenBook={onOpenBook}
+              bookFor={bookFor}
             />
           ) : view === 'settings' ? (
             <PersonalizeReader

@@ -289,6 +289,13 @@ export const FRIEND_REQUESTS = [
 // `leaderboards/index.html.haml` tabs three boards — Friends, Grade, School —
 // each over the same table: rank, reader, and the log type's total. The period
 // dropdown and the log-type tabs are the app's own wording.
+//
+// One departure: the app's Friends board ranks only confirmed friends, so a
+// reader who has two friends sees a board of three and there is nothing on the
+// page to do about it. Here the board also carries the readers at the site you
+// haven't added, which gives the ranking someone to be a ranking against and
+// gives the page its one useful action — the same "Add Friend" the Friends tab
+// offers, on the row where you noticed the person.
 
 export const LEADERBOARD_BOARDS = [
   { id: 'friends', label: 'Friends' },
@@ -328,6 +335,28 @@ const GRADES = [
   { id: 'g8', name: '8th grade', minutesThisWeek: 190, booksThisYear: 214 },
 ]
 
+// Readers at the site who aren't friends. `pending` is one you've already
+// asked — `profile.has_pending_friends?` in the app, the state between asking
+// and being accepted.
+const otherReader = (id, name, initials, color, grade, minutes, books, pending = false) => ({
+  id,
+  name,
+  initials,
+  color,
+  grade,
+  minutesThisWeek: minutes,
+  booksThisYear: books,
+  pending,
+})
+
+export const SITE_READERS = [
+  otherReader('ravi', 'Ravi K.', 'RK', '#0F766E', 'Grade 6', 233, 31),
+  otherReader('nina', 'Nina B.', 'NB', '#7C5CFA', 'Grade 5', 162, 24),
+  otherReader('kai', 'Kai T.', 'KT', '#B45309', 'Grade 6', 121, 19),
+  otherReader('ava', 'Ava M.', 'AM', '#0EA5A5', 'Grade 3', 148, 22, true),
+  otherReader('zoe', 'Zoe B.', 'ZB', '#DC493A', 'Grade 3', 97, 16, true),
+]
+
 const SCHOOLS = [
   { id: 'magnolia', name: 'Magnolia Middle', minutesThisWeek: 198, booksThisYear: 174, isMe: true },
   { id: 'oak', name: 'Oak Elementary', minutesThisWeek: 157, booksThisYear: 168 },
@@ -340,7 +369,12 @@ const SCHOOLS = [
 const PERIOD_FACTOR = { week: 1, month: 4.3 }
 
 export function leaderboardRows(board, type, period) {
-  const pool = board === 'friends' ? [...FRIENDS, ME] : board === 'grade' ? GRADES : SCHOOLS
+  const pool =
+    board === 'friends'
+      ? [...FRIENDS.map((f) => ({ ...f, isFriend: true })), ME, ...SITE_READERS]
+      : board === 'grade'
+        ? GRADES
+        : SCHOOLS
   const factor = PERIOD_FACTOR[period] ?? 1
   return pool
     .map((p) => ({
@@ -447,82 +481,143 @@ export const WISH_LIST = [
 // `reading_lists#index` — "Book Lists", the curated shelves a site publishes
 // and where "Find Books" sends you from the Wish List. A row is the list's
 // cover, its name and how many books are on it, a description, who made it,
-// and the genres it covers. The page filters by grade level and genre.
+// and the genres it covers. The page filters by grade level and genre, both
+// of which take several values at once (`with_grade_levels[]`, `with_genres[]`).
+//
+// `external` is the app's own second kind of list (`ReadingList#external_list`,
+// with `external_lists` / `internal_lists` scopes): a list that lives somewhere
+// else. It has no books of its own, so it shows no count and its name opens the
+// other site rather than a detail page here.
+//
+// `keywords` stands in for `searchable_keywords`, the column the search matches
+// on — which is why searching "graphic novel" finds a list whose name never
+// says it.
 
-const bookList = (id, name, count, by, grades, genres, description, tint) => ({
+// `reading_list_books` — which books are on which list, by catalog id. The
+// count on the index comes from here rather than being carried separately, so
+// a list can't claim eighteen books and then show four.
+export const BOOK_LIST_BOOKS = {
+  'bl-graphic': ['new-kid', 'el-deafo', 'amulet', 'dog-man', 'crossover'],
+  'bl-scary': ['when-you-trap-tiger', 'amulet', 'hatchet', 'last-cuentista'],
+  'bl-true': ['el-deafo', 'bud-not-buddy', 'telegraph-club', 'crossover', 'front-desk'],
+  'bl-funny': ['dragons-tacos', 'mercy-watson', 'dog-man', 'stella-diaz', 'lucky-cap', 'rump'],
+  'bl-first': ['mercy-watson', 'stella-diaz', 'julian', 'market-street', 'winn-dixie'],
+}
+
+const bookList = (id, name, by, grades, genres, description, tint, extra = {}) => ({
   id,
   name,
-  count,
+  count: BOOK_LIST_BOOKS[id]?.length ?? 0,
   by,
   grades,
   genres,
   description,
   tint,
+  ...extra,
 })
 
-export const BOOK_LIST_GENRES = [
-  'Adventure',
-  'Fantasy',
-  'Graphic Novels',
-  'Historical Fiction',
-  'Humor',
-  'Mystery',
-  'Nonfiction',
-  'Realistic Fiction',
+export const BOOK_LIST_GRADES = [
+  'Babies and Toddlers',
+  'Preschool',
+  'Kindergarten',
+  '1st Grade',
+  '2nd Grade',
+  '3rd Grade',
+  '4th Grade',
+  '5th Grade',
+  '6th Grade',
+  '7th Grade',
+  '8th Grade',
+  '9th Grade',
+  '10th Grade',
+  '11th Grade',
+  '12th Grade',
+  'Adult',
 ]
-
-export const BOOK_LIST_GRADES = ['K–2', '3–5', '6–8', '9–12']
 
 export const BOOK_LISTS = [
   bookList(
     'bl-graphic',
     'Start Here: Graphic Novels',
-    18,
     'Magnolia Middle Library',
-    ['3–5', '6–8'],
+    ['3rd Grade', '4th Grade', '5th Grade', '6th Grade'],
     ['Graphic Novels', 'Adventure'],
     'If a wall of text puts you off, start here. Every one of these tells as much in its pictures as in its words.',
     '#61B2F1',
+    { keywords: 'comics manga graphic novel reluctant reader visual' },
   ),
   bookList(
     'bl-scary',
     'Scary, But Not Too Scary',
-    12,
     'Mr. Reyes',
-    ['3–5'],
+    ['3rd Grade', '4th Grade', '5th Grade'],
     ['Mystery', 'Fantasy'],
     'Spooky enough to be worth reading with the light on, and nothing in them that will keep you up.',
     '#7C5CFA',
+    { keywords: 'spooky halloween ghost creepy mild horror' },
   ),
   bookList(
     'bl-true',
     'True Stories Worth Arguing About',
-    15,
     'Magnolia Middle Library',
-    ['6–8', '9–12'],
+    ['6th Grade', '7th Grade', '8th Grade', '9th Grade'],
     ['Nonfiction', 'Historical Fiction'],
     'Real people who did difficult things, told well enough that you will want to check whether they really happened that way.',
     '#0B6B78',
+    { keywords: 'true stories biography memoir debate history' },
   ),
   bookList(
     'bl-funny',
     'Books That Are Actually Funny',
-    21,
     'Ms. Whitfield',
-    ['K–2', '3–5'],
+    ['Kindergarten', '1st Grade', '2nd Grade', '3rd Grade'],
     ['Humor', 'Graphic Novels'],
     'Tested on a room of nine-year-olds. These are the ones that got a laugh out loud, not a polite one.',
     '#F0A024',
+    { keywords: 'funny humour laugh silly jokes' },
   ),
   bookList(
     'bl-first',
     'First Chapter Books',
-    24,
     'Magnolia Middle Library',
-    ['K–2'],
+    ['Kindergarten', '1st Grade', '2nd Grade'],
     ['Realistic Fiction', 'Adventure'],
     'Short chapters, big type, and a story that finishes before anyone loses the thread.',
     '#16A97A',
+    { keywords: 'early reader beginning chapter book transitional' },
+  ),
+
+  // ── Lists that live somewhere else ─────────────────────────────────────────
+  // `external_list` — the site points at somebody else's list rather than
+  // keeping one. No books of its own, so no count and no page here: the name
+  // opens the other site.
+  bookList(
+    'bl-nyt',
+    'Notable Children’s Books of the Year',
+    'The New York Public Library',
+    ['3rd Grade', '4th Grade', '5th Grade', '6th Grade', '7th Grade', '8th Grade'],
+    ['Realistic Fiction', 'Nonfiction'],
+    'The library’s own annual pick of the hundred best books for children, published each December.',
+    '#334155',
+    {
+      external: true,
+      url: 'https://www.nypl.org/books-more/recommendations/best-books/kids',
+      keywords: 'award best of the year notable librarians choice',
+    },
+  ),
+  bookList(
+    'bl-state',
+    'Bluebonnet Award Nominees',
+    'Texas Library Association',
+    ['3rd Grade', '4th Grade', '5th Grade', '6th Grade'],
+    ['Adventure', 'Mystery', 'Humor'],
+    'The twenty titles up for this year’s state award — read at least five and you can vote in the spring.',
+    '#7C2D12',
+    {
+      external: true,
+      url: 'https://txla.org/tools-resources/reading-lists/texas-bluebonnet-award/',
+      keywords: 'award state nominees voting bluebonnet',
+    },
   ),
 ]
 
@@ -760,3 +855,547 @@ export const CHALLENGE_DETAIL = {
 }
 
 export const getChallengeDetail = (id) => CHALLENGE_DETAIL[id]
+
+// ─── The book catalog ────────────────────────────────────────────────────────
+// `books#index` ("Find Books") and `books#show` — the site's own catalog, the
+// one every other page's titles are records in.
+//
+// A catalog book carries more than a logged title does: the age band it's for,
+// its language, the moods readers gave it, and the five tag families the app
+// filters on — Favorite Genres, Topics, Main Characters, Awards and Misc. The
+// book page shows all of them; the browse page filters on the first four.
+//
+// The catalog is a superset of the reading log's own `BOOKS`: everything a
+// reader has logged is in here, plus everything they haven't read yet.
+
+export const AGES = ['0–2', '3–5', '6–8', '9–11', '12–14', '15–18']
+
+export const LANGUAGES = ['English', 'Spanish', 'French', 'Chinese', 'Arabic']
+
+export const GENRES = [
+  'Adventure',
+  'Fantasy',
+  'Graphic Novels',
+  'Historical Fiction',
+  'Humor',
+  'Mystery',
+  'Nonfiction',
+  'Picture Books',
+  'Poetry',
+  'Realistic Fiction',
+  'Science Fiction',
+  'Sports',
+]
+
+// Kept under its old name for the Book Lists page, which filters on the same
+// Genre records the catalog does — one vocabulary, two pages.
+export const BOOK_LIST_GENRES = GENRES
+
+// `topic_groups` → `topics`, and `background_groups` → `backgrounds`. Both are
+// grouped in the app's own filter sidebar, with the group title as a subhead
+// over its own set of checkboxes.
+export const TOPIC_GROUPS = {
+  'Life Events': ['Starting School', 'Moving', 'A New Sibling', 'Loss'],
+  Feelings: ['Anxiety', 'Anger', 'Friendship', 'Belonging'],
+  Interests: ['Sports', 'Space', 'Animals', 'Cooking', 'Inventing'],
+}
+
+export const BACKGROUND_GROUPS = {
+  'Race & Ethnicity': ['Black', 'Latine', 'Asian', 'Indigenous', 'Multiracial'],
+  'Family Structure': ['Single Parent', 'Grandparents', 'Foster & Adoption', 'Immigrant Family'],
+  'Gender & Identity': ['Girls', 'Boys', 'LGBTQ+'],
+  Disability: ['Deaf & Hard of Hearing', 'Neurodivergent', 'Physical Disability'],
+}
+
+export const MOODS = {
+  funny: { title: 'Funny', emoji: '😂' },
+  adventurous: { title: 'Adventurous', emoji: '🧭' },
+  heartwarming: { title: 'Heartwarming', emoji: '🥰' },
+  suspenseful: { title: 'Suspenseful', emoji: '😬' },
+  thoughtful: { title: 'Thought-Provoking', emoji: '🤔' },
+  magical: { title: 'Magical', emoji: '✨' },
+  sad: { title: 'Sad', emoji: '😢' },
+  inspiring: { title: 'Inspiring', emoji: '💪' },
+  silly: { title: 'Silly', emoji: '🤪' },
+  scary: { title: 'Scary', emoji: '👻' },
+}
+
+/**
+ * One catalog record. `id` matches the reading log's own book id where the
+ * title is one a reader can log, so a logged session and a catalog entry are
+ * the same book rather than two that happen to share a name.
+ */
+const book = (id, title, author, isbn, cover, extra) => ({
+  id,
+  title,
+  author,
+  isbn,
+  cover,
+  measure: 'minutes',
+  ...extra,
+})
+
+export const CATALOG = [
+  book('wild-robot', 'The Wild Robot', 'Peter Brown', '9780316381994', ['#5FB48A', '#2F7A5C'], {
+    ages: ['6–8', '9–11'],
+    language: 'English',
+    pages: 288,
+    lexile: '740L',
+    genres: ['Adventure', 'Science Fiction'],
+    topics: { Interests: ['Animals', 'Inventing'], Feelings: ['Belonging'] },
+    moods: ['adventurous', 'heartwarming', 'thoughtful'],
+    tip: 'Ask what Roz learns from watching the animals — and what she teaches them back.',
+    body: 'A robot wakes alone on a wild island with no idea how she got there, and has to learn the animals’ ways to survive her first winter.',
+    source: 'Publisher summary',
+    misc: ['Series', 'Read-Aloud'],
+  }),
+  book('new-kid', 'New Kid', 'Jerry Craft', '9780062691200', ['#F0A024', '#C2410C'], {
+    ages: ['9–11', '12–14'],
+    language: 'English',
+    pages: 256,
+    lexile: 'GN320L',
+    genres: ['Graphic Novels', 'Realistic Fiction'],
+    topics: { 'Life Events': ['Starting School'], Feelings: ['Belonging', 'Friendship'] },
+    backgrounds: { 'Race & Ethnicity': ['Black'] },
+    moods: ['funny', 'thoughtful', 'heartwarming'],
+    awards: ['Newbery Medal', 'Coretta Scott King Author Award'],
+    tip: 'Jordan draws what he can’t say out loud. Try keeping a sketch journal for a week.',
+    body: 'Jordan would rather be at art school, but his parents send him to a private school across town where he is one of the few Black students in his grade.',
+    misc: ['Book Club Pick'],
+  }),
+  book('front-desk', 'Front Desk', 'Kelly Yang', '9781338157796', ['#E23B6B', '#9D174D'], {
+    ages: ['9–11'],
+    language: 'English',
+    pages: 304,
+    lexile: '640L',
+    genres: ['Realistic Fiction', 'Historical Fiction'],
+    topics: { 'Life Events': ['Moving'], Feelings: ['Belonging'] },
+    backgrounds: { 'Race & Ethnicity': ['Asian'], 'Family Structure': ['Immigrant Family'] },
+    moods: ['inspiring', 'heartwarming', 'thoughtful'],
+    tip: 'Mia writes letters to fix things. Ask who your reader would write to.',
+    body: 'Mia’s parents manage a motel, and ten-year-old Mia runs the front desk — hiding families in empty rooms and talking her way past a landlord who misses nothing.',
+    misc: ['Series'],
+  }),
+  book('wonder', 'Wonder', 'R.J. Palacio', '9780375869020', ['#2BB3C0', '#0B5566'], {
+    ages: ['9–11', '12–14'],
+    language: 'English',
+    pages: 320,
+    lexile: '790L',
+    genres: ['Realistic Fiction'],
+    topics: { 'Life Events': ['Starting School'], Feelings: ['Belonging', 'Friendship'] },
+    backgrounds: { Disability: ['Physical Disability'] },
+    moods: ['heartwarming', 'sad', 'inspiring'],
+    tip: 'Each section switches narrator. Ask whose version of a scene felt truest.',
+    body: 'August has been homeschooled all his life. Fifth grade is his first year in a real classroom, and everyone there has already decided what his face means.',
+    misc: ['Book Club Pick', 'Read-Aloud'],
+  }),
+  book('el-deafo', 'El Deafo', 'Cece Bell', '9781419712173', ['#7C5CFA', '#4C1D95'], {
+    ages: ['6–8', '9–11'],
+    language: 'English',
+    pages: 248,
+    lexile: 'GN420L',
+    genres: ['Graphic Novels', 'Nonfiction'],
+    topics: { Feelings: ['Friendship', 'Belonging'], 'Life Events': ['Starting School'] },
+    backgrounds: { Disability: ['Deaf & Hard of Hearing'] },
+    moods: ['funny', 'heartwarming', 'inspiring'],
+    awards: ['Newbery Honor'],
+    tip: 'The speech bubbles change as Cece’s hearing does. Look at how they’re drawn.',
+    body: 'A memoir in comics about growing up deaf, the enormous hearing aid strapped to her chest, and the superpower she decides it gives her.',
+  }),
+  book(
+    'last-cuentista',
+    'The Last Cuentista',
+    'Donna Barba Higuera',
+    '9781646140923',
+    ['#1A2433', '#5B21B6'],
+    {
+      ages: ['9–11', '12–14'],
+      language: 'English',
+      pages: 336,
+      lexile: '630L',
+      genres: ['Science Fiction', 'Adventure'],
+      topics: { Interests: ['Space'], Feelings: ['Belonging'] },
+      backgrounds: { 'Race & Ethnicity': ['Latine'] },
+      moods: ['suspenseful', 'thoughtful', 'magical'],
+      awards: ['Newbery Medal', 'Pura Belpré Award'],
+      tip: 'Petra keeps the old stories alive. Ask which story your reader would save.',
+      body: 'Earth is gone, and on the ship that left it someone has quietly erased everyone’s memory of it. Petra wakes up still remembering her grandmother’s stories.',
+    },
+  ),
+  book(
+    'when-you-trap-tiger',
+    'When You Trap a Tiger',
+    'Tae Keller',
+    '9781524715700',
+    ['#F2B705', '#B45309'],
+    {
+      ages: ['9–11'],
+      language: 'English',
+      pages: 304,
+      lexile: '590L',
+      genres: ['Fantasy', 'Realistic Fiction'],
+      topics: { 'Life Events': ['Moving', 'Loss'], Feelings: ['Anxiety'] },
+      backgrounds: { 'Race & Ethnicity': ['Asian'], 'Family Structure': ['Grandparents'] },
+      moods: ['magical', 'sad', 'heartwarming'],
+      awards: ['Newbery Medal'],
+      body: 'Lily’s halmoni is sick, and a tiger out of her grandmother’s Korean folktales turns up on the road offering a bargain Lily is not sure she should take.',
+    },
+  ),
+  book('crossover', 'The Crossover', 'Kwame Alexander', '9780544107717', ['#DC493A', '#7F1D1D'], {
+    ages: ['9–11', '12–14'],
+    language: 'English',
+    pages: 240,
+    lexile: '750L',
+    genres: ['Poetry', 'Sports', 'Realistic Fiction'],
+    topics: { Interests: ['Sports'], 'Life Events': ['Loss'], Feelings: ['Anger'] },
+    backgrounds: { 'Race & Ethnicity': ['Black'] },
+    moods: ['inspiring', 'sad', 'thoughtful'],
+    awards: ['Newbery Medal', 'Coretta Scott King Honor'],
+    tip: 'It’s written in verse. Read a page out loud and hear the ball bouncing.',
+    body: 'Twin brothers rule the basketball court until one of them falls for a girl and the other has to work out who he is without him.',
+    misc: ['Novel in Verse'],
+  }),
+  book('ghost', 'Ghost', 'Jason Reynolds', '9781481450157', ['#03B5AA', '#0B6B78'], {
+    ages: ['9–11', '12–14'],
+    language: 'English',
+    pages: 192,
+    lexile: '730L',
+    genres: ['Sports', 'Realistic Fiction'],
+    topics: { Interests: ['Sports'], Feelings: ['Anger', 'Belonging'] },
+    backgrounds: { 'Race & Ethnicity': ['Black'], 'Family Structure': ['Single Parent'] },
+    moods: ['inspiring', 'suspenseful', 'thoughtful'],
+    body: 'Castle Cranshaw has been running from one night for years. A track coach sees the speed in it and offers him a place on the team.',
+    misc: ['Series'],
+  }),
+  book('hatchet', 'Hatchet', 'Gary Paulsen', '9781416936473', ['#2F7A5C', '#14532D'], {
+    ages: ['9–11', '12–14'],
+    language: 'English',
+    pages: 208,
+    lexile: '1020L',
+    genres: ['Adventure', 'Realistic Fiction'],
+    topics: { Interests: ['Animals'], Feelings: ['Anxiety'] },
+    moods: ['suspenseful', 'adventurous', 'inspiring'],
+    awards: ['Newbery Honor'],
+    tip: 'Brian survives on what he notices. Ask what your reader would look for first.',
+    body: 'A thirteen-year-old is the only one left alive after a bush-plane crash, with a hatchet on his belt and a Canadian forest in every direction.',
+    misc: ['Classic', 'Series'],
+  }),
+  book(
+    'winn-dixie',
+    'Because of Winn-Dixie',
+    'Kate DiCamillo',
+    '9780763644321',
+    ['#F26430', '#B45309'],
+    {
+      ages: ['6–8', '9–11'],
+      language: 'English',
+      pages: 192,
+      lexile: '610L',
+      genres: ['Realistic Fiction'],
+      topics: { 'Life Events': ['Moving', 'Loss'], Interests: ['Animals'] },
+      backgrounds: { 'Family Structure': ['Single Parent'] },
+      moods: ['heartwarming', 'sad', 'funny'],
+      awards: ['Newbery Honor'],
+      body: 'India Opal walks into a supermarket for groceries and walks out with a dog, who proceeds to introduce her to everyone lonely in town.',
+      misc: ['Classic', 'Read-Aloud'],
+    },
+  ),
+  book(
+    'bud-not-buddy',
+    'Bud, Not Buddy',
+    'Christopher Paul Curtis',
+    '9780553494105',
+    ['#1D70A2', '#0F3D5E'],
+    {
+      ages: ['9–11', '12–14'],
+      language: 'English',
+      pages: 256,
+      lexile: '950L',
+      genres: ['Historical Fiction', 'Adventure'],
+      topics: { 'Life Events': ['Loss'], Feelings: ['Belonging'] },
+      backgrounds: { 'Race & Ethnicity': ['Black'], 'Family Structure': ['Foster & Adoption'] },
+      moods: ['funny', 'adventurous', 'heartwarming'],
+      awards: ['Newbery Medal', 'Coretta Scott King Author Award'],
+      body: 'It’s 1936 and ten-year-old Bud has run from another foster home, carrying flyers he is certain will lead him to the father he has never met.',
+      misc: ['Classic'],
+    },
+  ),
+  book(
+    'stella-diaz',
+    'Stella Díaz Has Something to Say',
+    'Angela Dominguez',
+    '9781626728479',
+    ['#19BFD5', '#0E7490'],
+    {
+      ages: ['6–8'],
+      language: 'English',
+      pages: 208,
+      lexile: '610L',
+      genres: ['Realistic Fiction', 'Humor'],
+      topics: { 'Life Events': ['Starting School'], Feelings: ['Anxiety', 'Friendship'] },
+      backgrounds: { 'Race & Ethnicity': ['Latine'], 'Family Structure': ['Immigrant Family'] },
+      moods: ['funny', 'heartwarming'],
+      tip: 'Stella mixes up her Spanish and English when she’s nervous. Ask when that happens to your reader.',
+      body: 'Stella knows exactly what she wants to say and freezes every time she has to say it — until a class presentation gives her no way around it.',
+      misc: ['Series'],
+    },
+  ),
+  book(
+    'dragons-tacos',
+    'Dragons Love Tacos',
+    'Adam Rubin',
+    '9780803736801',
+    ['#F0A024', '#DC493A'],
+    {
+      ages: ['3–5', '6–8'],
+      language: 'English',
+      pages: 40,
+      lexile: 'AD450L',
+      genres: ['Picture Books', 'Humor', 'Fantasy'],
+      topics: { Interests: ['Cooking'] },
+      moods: ['silly', 'funny', 'magical'],
+      tip: 'Read the salsa warning slowly. The pause is the whole joke.',
+      body: 'Dragons love tacos. Dragons do not love spicy salsa. A party planner who ignores this will regret it.',
+      misc: ['Read-Aloud'],
+    },
+  ),
+  book(
+    'market-street',
+    'Last Stop on Market Street',
+    'Matt de la Peña',
+    '9780399257742',
+    ['#6761A8', '#312E81'],
+    {
+      ages: ['3–5', '6–8'],
+      language: 'English',
+      pages: 32,
+      lexile: 'AD610L',
+      genres: ['Picture Books', 'Realistic Fiction'],
+      topics: { Feelings: ['Belonging'] },
+      backgrounds: { 'Race & Ethnicity': ['Black'], 'Family Structure': ['Grandparents'] },
+      moods: ['heartwarming', 'thoughtful'],
+      awards: ['Newbery Medal', 'Caldecott Honor'],
+      tip: 'CJ asks why they don’t have things. Nana answers every time with something they do have.',
+      body: 'CJ and his grandmother ride the bus across town after church, and she shows him what there is to see on a route he thinks is boring.',
+      misc: ['Read-Aloud'],
+    },
+  ),
+  book('julian', 'Julián Is a Mermaid', 'Jessica Love', '9780763690458', ['#2BB3C0', '#9D174D'], {
+    ages: ['3–5', '6–8'],
+    language: 'English',
+    pages: 40,
+    lexile: 'AD350L',
+    genres: ['Picture Books'],
+    topics: { Feelings: ['Belonging'] },
+    backgrounds: { 'Gender & Identity': ['LGBTQ+'], 'Family Structure': ['Grandparents'] },
+    moods: ['magical', 'heartwarming', 'inspiring'],
+    body: 'Julián sees three women dressed as mermaids on the subway and knows at once what he wants to be. His abuela sees him seeing them.',
+    misc: ['Read-Aloud', 'Nearly Wordless'],
+  }),
+  book(
+    'mercy-watson',
+    'Mercy Watson to the Rescue',
+    'Kate DiCamillo',
+    '9780763645045',
+    ['#FFBC42', '#D97706'],
+    {
+      ages: ['3–5', '6–8'],
+      language: 'English',
+      pages: 80,
+      lexile: '450L',
+      genres: ['Humor', 'Adventure'],
+      topics: { Interests: ['Animals', 'Cooking'] },
+      moods: ['silly', 'funny'],
+      body: 'The Watsons’ pig sleeps in their bed, the bed goes through the floor, and Mercy goes for help — or possibly for toast with a great deal of butter.',
+      misc: ['First Chapter Book', 'Series'],
+    },
+  ),
+
+  // ── Titles the reader has already logged ───────────────────────────────────
+  // Same ids as the reading log's own `BOOKS` where the log has one, and a
+  // record here for the three it doesn't: every title in the log has a page to
+  // link to, which is the point of a catalog.
+  book('snapdragon', 'Snapdragon', 'Kat Leyh', '9781250171115', ['#E23B6B', '#5B21B6'], {
+    ages: ['9–11', '12–14'],
+    language: 'English',
+    pages: 240,
+    lexile: 'GN360L',
+    genres: ['Graphic Novels', 'Fantasy'],
+    topics: { Interests: ['Animals'], Feelings: ['Friendship', 'Belonging'] },
+    backgrounds: { 'Gender & Identity': ['LGBTQ+'], 'Family Structure': ['Single Parent'] },
+    moods: ['magical', 'heartwarming', 'scary'],
+    body: 'Snap thinks the woman at the edge of town is a witch. She is right, and the witch is willing to teach her.',
+  }),
+  book(
+    'lightning-thief',
+    'Percy Jackson and the Olympians #1: The Lightning Thief',
+    'Rick Riordan',
+    '9780786838653',
+    ['#1D70A2', '#0F3D5E'],
+    {
+      ages: ['9–11', '12–14'],
+      language: 'English',
+      pages: 400,
+      lexile: '740L',
+      measure: 'pages',
+      genres: ['Fantasy', 'Adventure'],
+      topics: { Feelings: ['Belonging'], Interests: ['Inventing'] },
+      backgrounds: { Disability: ['Neurodivergent'], 'Family Structure': ['Single Parent'] },
+      moods: ['adventurous', 'funny', 'suspenseful'],
+      tip: 'Percy’s dyslexia turns out to be Ancient Greek. Ask what else he has been wrong about himself.',
+      body: 'Percy gets thrown out of another school, finds out his father is a Greek god, and has ten days to return a stolen lightning bolt.',
+      misc: ['Series', 'Classic'],
+    },
+  ),
+  book(
+    'harvest-party',
+    'Welcome to the Forest: The Harvest Party',
+    'Katie Risor',
+    undefined,
+    ['#2F7A5C', '#14532D'],
+    {
+      ages: ['6–8'],
+      language: 'English',
+      pages: 48,
+      lexile: 'GN280L',
+      genres: ['Graphic Novels', 'Picture Books'],
+      topics: { Interests: ['Animals', 'Cooking'], Feelings: ['Friendship'] },
+      moods: ['heartwarming', 'silly'],
+      body: 'The animals of the forest are throwing a harvest party, and nobody has told the badger what he is supposed to bring.',
+      misc: ['Series'],
+    },
+  ),
+  // Same ids as the reading log's own `BOOKS`, so a logged session and a
+  // catalog record are one book.
+  book(
+    'she-gets-the-girl',
+    'She Gets the Girl',
+    'Rachel Lippincott and Alyson Derrick',
+    undefined,
+    ['#9DC7F0', '#F4A98B'],
+    {
+      ages: ['15–18'],
+      language: 'English',
+      pages: 400,
+      lexile: 'HL620L',
+      genres: ['Realistic Fiction', 'Humor'],
+      topics: { Feelings: ['Friendship', 'Belonging'], 'Life Events': ['Starting School'] },
+      backgrounds: { 'Gender & Identity': ['LGBTQ+', 'Girls'] },
+      moods: ['funny', 'heartwarming'],
+      body: 'Two college freshmen with nothing in common strike a deal: one helps the other win a girl back, and neither expects how that goes.',
+    },
+  ),
+  book('rump', 'Rump', 'Liesl Shurtliff', '9780307977939', ['#3B4A3A', '#6E7A53'], {
+    ages: ['9–11'],
+    language: 'English',
+    pages: 272,
+    lexile: '660L',
+    measure: 'pages',
+    genres: ['Fantasy', 'Humor'],
+    topics: { Feelings: ['Belonging'] },
+    moods: ['funny', 'magical', 'adventurous'],
+    tip: 'It retells Rumpelstiltskin from his side. Read the original first and compare.',
+    body: 'In a kingdom where your name is your destiny, a boy called Rump has been handed half of one — and a gift for spinning straw into gold he cannot control.',
+  }),
+  book('lucky-cap', 'Lucky Cap', 'Patrick Jennings', undefined, ['#3FA9E0', '#E23B3B'], {
+    ages: ['9–11'],
+    language: 'English',
+    pages: 176,
+    lexile: '680L',
+    genres: ['Humor', 'Realistic Fiction'],
+    topics: { 'Life Events': ['Starting School'], Interests: ['Sports'] },
+    moods: ['funny', 'silly'],
+    body: 'Enzo starts middle school with a prototype cap from his dad’s company, and everything that happens next is either the cap’s doing or his own.',
+  }),
+  book(
+    'lesbianas-guide',
+    "The Lesbiana's Guide to Catholic School",
+    'Sonora Reyes',
+    '9780062981066',
+    ['#2BB3C0', '#F2B705'],
+    {
+      ages: ['15–18'],
+      language: 'English',
+      pages: 336,
+      lexile: 'HL680L',
+      genres: ['Realistic Fiction'],
+      topics: { 'Life Events': ['Starting School'], Feelings: ['Belonging', 'Anxiety'] },
+      backgrounds: { 'Race & Ethnicity': ['Latine'], 'Gender & Identity': ['LGBTQ+'] },
+      moods: ['thoughtful', 'funny', 'heartwarming'],
+      body: 'Yamilet transfers to a Catholic school planning to keep her head down for one year, which lasts until she meets the only out kid in it.',
+    },
+  ),
+  book(
+    'telegraph-club',
+    'Last Night at the Telegraph Club',
+    'Malinda Lo',
+    '9780525555254',
+    ['#1A2433', '#3A506B'],
+    {
+      ages: ['15–18'],
+      language: 'English',
+      pages: 416,
+      lexile: 'HL710L',
+      genres: ['Historical Fiction'],
+      topics: { Feelings: ['Belonging'] },
+      backgrounds: { 'Race & Ethnicity': ['Asian'], 'Gender & Identity': ['LGBTQ+'] },
+      moods: ['thoughtful', 'suspenseful'],
+      awards: ['National Book Award'],
+      body: '1954, San Francisco Chinatown. Lily and Kath start slipping out to a club neither can be seen in, while the Red Scare makes every family a suspect.',
+    },
+  ),
+  book(
+    'darius',
+    'Darius the Great Is Not Okay',
+    'Adib Khorram',
+    '9780735231856',
+    ['#C0432F', '#E87A2C'],
+    {
+      ages: ['12–14', '15–18'],
+      language: 'English',
+      pages: 316,
+      lexile: 'HL830L',
+      genres: ['Realistic Fiction'],
+      topics: { 'Life Events': ['Moving'], Feelings: ['Anxiety', 'Friendship'] },
+      backgrounds: { 'Race & Ethnicity': ['Asian'], 'Family Structure': ['Immigrant Family'] },
+      moods: ['heartwarming', 'thoughtful', 'sad'],
+      tip: 'Darius names his depression plainly. That matters — talk about how he does it.',
+      body: 'Darius visits Iran for the first time to meet his dying grandfather, and finds the friend he has never had waiting on the other side of the world.',
+    },
+  ),
+  book('dog-man', 'Dog Man', 'Dav Pilkey', '9780545581608', ['#F0A024', '#D9822B'], {
+    ages: ['6–8', '9–11'],
+    language: 'English',
+    pages: 240,
+    lexile: 'GN390L',
+    genres: ['Graphic Novels', 'Humor'],
+    topics: { Interests: ['Animals'] },
+    moods: ['silly', 'funny'],
+    body: 'A police officer and his dog are put back together in the wrong order, and the result fights crime with more enthusiasm than judgement.',
+    misc: ['Series'],
+  }),
+  book(
+    'amulet',
+    'Amulet: The Stonekeeper',
+    'Kazu Kibuishi',
+    '9780439846806',
+    ['#5B21B6', '#312E81'],
+    {
+      ages: ['9–11'],
+      language: 'English',
+      pages: 192,
+      lexile: 'GN210L',
+      genres: ['Graphic Novels', 'Fantasy', 'Adventure'],
+      topics: { 'Life Events': ['Moving', 'Loss'] },
+      moods: ['suspenseful', 'magical', 'adventurous'],
+      body: 'After their father dies, Emily and Navin move into a great-grandfather’s empty house, and what lives under it takes their mother the first night.',
+      misc: ['Series'],
+    },
+  ),
+]
+
+export const CATALOG_BY_ID = Object.fromEntries(CATALOG.map((b) => [b.id, b]))
+export const CATALOG_BY_TITLE = new Map(CATALOG.map((b) => [b.title, b]))
+
+/** The catalog record for a logged title, by name — what the log links to. */
+export const catalogBook = (title) => CATALOG_BY_TITLE.get(title)

@@ -10,9 +10,11 @@ import { AllBadges } from './components/AllBadges'
 import { Friends } from './components/Friends'
 import { ReviewsPage } from './components/ReviewsPage'
 import { WishList } from './components/WishList'
-import { BookLists } from './components/BookLists'
+import { BookLists, BookListPage } from './components/BookLists'
+import { FindBooks } from './components/FindBooks'
+import { BookPage } from './components/BookPage'
 import { ChallengePage } from './components/ChallengePage'
-import { FRIEND_REQUESTS, WISH_LIST, BOOK_LISTS } from './data'
+import { FRIEND_REQUESTS, WISH_LIST, BOOK_LISTS, catalogBook } from './data'
 import {
   STREAK,
   DAILY_GOAL,
@@ -75,8 +77,9 @@ const OWN_TABS = ['badges', 'friends', 'reviews']
 // people.
 const HIDE_TABS = ['leaderboards']
 
-// Under Reading, beside the log and All Titles: what the reader has read, then
-// what they mean to read next and where to find more of it.
+// Under Reading, after the log itself: what the reader has read is the log's
+// own three views, and these are what they mean to read next and where to find
+// more of it.
 const LOG_TABS = [
   { id: 'wish', label: 'Wish List', count: WISH_LIST.length },
   { id: 'lists', label: 'Book Lists', count: BOOK_LISTS.length },
@@ -129,9 +132,56 @@ export function App() {
   // The top bar can start a review from any page, so what it opens lives here
   // and the Reviews page renders it.
   const [composing, setComposing] = useState(null)
-  // Which sub-tab Reading is on, so the Wish List's "Find Books" can send the
-  // reader to Book Lists next door the way `reading_lists_path` does.
+  // Which sub-tab Reading is on, so a page can send the reader to another one
+  // the way `reading_lists_path` does.
   const [logTab, setLogTab] = useState('log')
+
+  // The catalog is a stack, not a tab: a book is reached from the log, a wish
+  // list, a book list or the browse page, and "back" has to mean whichever of
+  // those it was. Each entry carries the label for its own way out, so the same
+  // BookPage says "Back to Find Books" or "Back to Book Lists" depending on how
+  // the reader got to it.
+  const [stack, setStack] = useState([])
+  const top = stack[stack.length - 1] ?? null
+  const push = (route) => setStack((s) => [...s, route])
+  const pop = () => setStack((s) => s.slice(0, -1))
+  const openBook = (book, back) => push({ kind: 'book', book, back })
+
+  // The catalog pages — whichever is on top of the stack.
+  function renderRoute() {
+    if (top.kind === 'browse') {
+      return (
+        <FindBooks
+          initial={top.initial}
+          backLabel={top.back}
+          onBack={pop}
+          onOpenBook={(book) => openBook(book, 'Back to Find Books')}
+        />
+      )
+    }
+    if (top.kind === 'list') {
+      return (
+        <BookListPage
+          list={top.list}
+          onBack={pop}
+          onLog={() => setFlowOpen(true)}
+          onOpenBook={(book) => openBook(book, `Back to ${top.list.name}`)}
+        />
+      )
+    }
+    return (
+      <BookPage
+        book={top.book}
+        backLabel={top.back}
+        sessions={LOG.filter((e) => e.kind === 'log' && e.title === top.book.title)}
+        onBack={pop}
+        onLog={() => setFlowOpen(true)}
+        onFilter={(initial) => push({ kind: 'browse', initial, back: `Back to ${top.book.title}` })}
+        onOpenBook={(book) => openBook(book, `Back to ${top.book.title}`)}
+        wished={WISH_LIST.some((w) => w.book === top.book.id)}
+      />
+    )
+  }
 
   // The pages this prototype owns, by tab id.
   function renderTab(id) {
@@ -196,18 +246,30 @@ export function App() {
         onView={(v) => {
           setView(v)
           setChallenge(null)
+          setStack([])
         }}
         ownTabs={OWN_TABS}
         hideTabs={HIDE_TABS}
         renderExtra={renderTab}
         logTabs={LOG_TABS}
+        logTab={logTab}
+        onLogTab={setLogTab}
         renderLogTab={(id) =>
           id === 'lists' ? (
-            <BookLists />
+            <BookLists
+              onOpenList={(list) => push({ kind: 'list', list, back: 'Back to Book Lists' })}
+              onFindBooks={() => push({ kind: 'browse', back: 'Back to Book Lists' })}
+            />
           ) : (
-            <WishList onFindBooks={() => setLogTab('lists')} onLog={() => setFlowOpen(true)} />
+            <WishList
+              onFindBooks={() => push({ kind: 'browse', back: 'Back to Wish List' })}
+              onOpenBook={(book) => openBook(book, 'Back to Wish List')}
+              onLog={() => setFlowOpen(true)}
+            />
           )
         }
+        onOpenBook={(book) => openBook(book, 'Back to Reading Log')}
+        bookFor={catalogBook}
         onOpenChallenge={setChallenge}
         motivation={features.rmi ? 'available' : undefined}
         features={{
@@ -218,7 +280,9 @@ export function App() {
         onAcceptFriend={(r) => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
         onDeclineFriend={(r) => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
         page={
-          challenge ? (
+          top ? (
+            renderRoute()
+          ) : challenge ? (
             <ChallengePage challenge={challenge} entries={LOG} onBack={() => setChallenge(null)} />
           ) : null
         }

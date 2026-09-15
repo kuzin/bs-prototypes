@@ -4,9 +4,18 @@ import { Button } from '@components/Button/Button'
 import { Pill } from '@components/Pill/Pill'
 import { SearchInput } from '@components/SearchInput/SearchInput'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
+import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
 import { EmptyState } from '@components/Primitives/Primitives'
+import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 
-import { BOOK_LISTS, BOOK_LIST_GENRES, BOOK_LIST_GRADES } from '../data'
+import { BookCover } from '../../logging-flow/components/BookCover'
+import {
+  BOOK_LISTS,
+  BOOK_LIST_BOOKS,
+  BOOK_LIST_GENRES,
+  BOOK_LIST_GRADES,
+  CATALOG_BY_ID,
+} from '../data'
 import './BookLists.css'
 
 import '@components/Button/Button.css'
@@ -20,26 +29,50 @@ import '@components/Primitives/Primitives.css'
  *
  * A row is the list's cover, its name and **how many books are on it**, what
  * it's for, who made it, and the genres it covers. The page filters two ways —
- * grade level and genre — which in the app is an off-canvas sidebar with
- * "Clear Filters" and "Hide Filters" over it; here the filters are chips on
- * the page, since there is no room to hide a drawer in a prototype and the
- * choice is small enough to show.
+ * grade level and genre, each taking several values (`with_grade_levels[]`,
+ * `with_genres[]`) — which in the app is an off-canvas sidebar with "Clear
+ * Filters" and "Hide Filters" over it; here each is a button that opens its own
+ * list, the same way the catalog's five facets are.
+ *
+ * The cover is `image_for_list`: the list's own image where it has one, and
+ * otherwise **the cover of its first book by title** — which is why a list of
+ * graphic novels looks like one before you open it.
+ *
+ * A list can also live somewhere else (`external_list`): no books of its own,
+ * so no count, and the name opens the other site rather than a page here.
+ *
+ * Search is `searchable_keywords ILIKE` — the name, the description, the genres
+ * and a keyword line that isn't shown, so "manga" finds a list whose name never
+ * says it.
+ *
+ * A row opens that list — `BookListPage` below.
  */
-export function BookLists() {
+
+/** `image_for_list` — the list's own cover, or its first book's. */
+function listBooks(list) {
+  return (BOOK_LIST_BOOKS[list.id] ?? [])
+    .map((id) => CATALOG_BY_ID[id])
+    .filter(Boolean)
+    .sort((a, b) => a.title.localeCompare(b.title))
+}
+
+export function BookLists({ onOpenList, onFindBooks }) {
   const [q, setQ] = useState('')
-  const [grade, setGrade] = useState(null)
-  const [genre, setGenre] = useState(null)
+  const [grades, setGrades] = useState([])
+  const [genres, setGenres] = useState([])
 
   const term = q.trim().toLowerCase()
   const shown = BOOK_LISTS.filter(
     (l) =>
       (!term ||
-        l.name.toLowerCase().includes(term) ||
-        l.description.toLowerCase().includes(term)) &&
-      (!grade || l.grades.includes(grade)) &&
-      (!genre || l.genres.includes(genre)),
-  )
-  const filtered = Boolean(term || grade || genre)
+        [l.name, l.description, l.keywords ?? '', l.genres.join(' ')]
+          .join(' ')
+          .toLowerCase()
+          .includes(term)) &&
+      (!grades.length || l.grades.some((g) => grades.includes(g))) &&
+      (!genres.length || l.genres.some((g) => genres.includes(g))),
+  ).sort((a, b) => a.name.localeCompare(b.name))
+  const filtered = Boolean(term || grades.length || genres.length)
 
   return (
     <div className="bl">
@@ -48,18 +81,23 @@ export function BookLists() {
         title="Book Lists"
         count={`${BOOK_LISTS.length} lists`}
         actions={
-          filtered ? (
-            <Button
-              variant="secondary"
-              onClick={() => {
-                setQ('')
-                setGrade(null)
-                setGenre(null)
-              }}
-            >
-              Clear Filters
+          <>
+            {filtered && (
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setQ('')
+                  setGrades([])
+                  setGenres([])
+                }}
+              >
+                Clear Filters
+              </Button>
+            )}
+            <Button variant="secondary" onClick={onFindBooks}>
+              Find Books
             </Button>
-          ) : null
+          </>
         }
       />
 
@@ -72,11 +110,25 @@ export function BookLists() {
         />
       </div>
 
-      {/* `grade_levels/filters` and `genres/filters` — the app's own two. */}
-      <div className="bl-filters">
-        <Filter label="Grade" value={grade} options={BOOK_LIST_GRADES} onChange={setGrade} />
-        <Filter label="Genre" value={genre} options={BOOK_LIST_GENRES} onChange={setGenre} />
-      </div>
+      {/* `grade_levels/filters` and `genres/filters` — the app's own two. One
+          value each: these narrow a shelf of shelves, where the catalog's own
+          facets stack up. */}
+      <FilterMenuBar className="bl-filters">
+        <FilterMenu
+          label="Grade Levels"
+          value={grades}
+          options={BOOK_LIST_GRADES}
+          onChange={setGrades}
+          multi
+        />
+        <FilterMenu
+          label="Genres"
+          value={genres}
+          options={BOOK_LIST_GENRES}
+          onChange={setGenres}
+          multi
+        />
+      </FilterMenuBar>
 
       {shown.length === 0 ? (
         <EmptyState
@@ -86,58 +138,171 @@ export function BookLists() {
         />
       ) : (
         <ul className="bl-list">
-          {shown.map((list) => (
-            <li className="bl-row" key={list.id}>
-              <span className="bl-cover" style={{ background: list.tint }} aria-hidden="true">
-                <Icon name="book-2" size={28} />
-              </span>
-              <div className="bl-body">
-                <div className="bl-head">
-                  <h3 className="bl-name">
-                    <a href="#list">{list.name}</a>
-                  </h3>
-                  <span className="bl-count">{list.count} Books</span>
-                </div>
-                <p className="bl-desc">{list.description}</p>
-                <div className="bl-meta">
-                  <span className="bl-by">
-                    <strong>Created by</strong> {list.by}
+          {shown.map((list) => {
+            const first = listBooks(list)[0]
+            return (
+              <li className={`bl-row${list.external ? ' is-external' : ''}`} key={list.id}>
+                {list.external ? (
+                  <a
+                    className="bl-row-hit"
+                    href={list.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label={`${list.name} (opens in a new tab)`}
+                  />
+                ) : (
+                  <button
+                    type="button"
+                    className="bl-row-hit"
+                    onClick={() => onOpenList?.(list)}
+                    aria-label={list.name}
+                  />
+                )}
+
+                {/* The list's own image, or its first book's — the app falls
+                    back the same way, and a list with neither (an external one)
+                    gets the tinted tile. */}
+                {first ? (
+                  <span className="bl-cover bl-cover--book">
+                    <BookCover book={first} size="fill" />
                   </span>
-                  <span className="bl-genres">
-                    {list.genres.map((g) => (
-                      <Pill key={g} color="#087542" size="sm">
-                        {g}
-                      </Pill>
-                    ))}
+                ) : (
+                  <span className="bl-cover" style={{ background: list.tint }} aria-hidden="true">
+                    <Icon name={list.external ? 'external-link' : 'book-2'} size={26} />
                   </span>
+                )}
+
+                <div className="bl-body">
+                  <div className="bl-head">
+                    <h3 className="bl-name">
+                      {list.name}
+                      {list.external && (
+                        <Icon name="external-link" size={14} stroke={2.2} className="bl-out" />
+                      )}
+                    </h3>
+                    {/* An external list has no books here to count. */}
+                    {!list.external && <span className="bl-count">{list.count} Books</span>}
+                  </div>
+                  <p className="bl-desc">{list.description}</p>
+                  <div className="bl-meta">
+                    <span className="bl-by">
+                      <strong>Created by</strong> {list.by}
+                    </span>
+                    <span className="bl-genres">
+                      <strong>Genres</strong>
+                      {list.genres.map((g) => (
+                        <Pill key={g} color="#087542" size="sm">
+                          {g}
+                        </Pill>
+                      ))}
+                    </span>
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            )
+          })}
         </ul>
       )}
     </div>
   )
 }
 
-/** One of the page's two filters — a row of chips, any one of which is off. */
-function Filter({ label, value, options, onChange }) {
+/**
+ * One list — `reading_lists#show`. The way back, the list's name over a Print
+ * button, what it's for, the grade bands and genres it covers, and then the
+ * books on it.
+ *
+ * The tags are the app's own two colours (`tag--purple` for a grade band,
+ * `tag--teal` for a genre, from `lib/_tag.scss`) on our Pill rather than a
+ * local copy of that class.
+ *
+ * A row is `li.reading-list-book`: the cover and title, the authors, and the
+ * two things you can do with it. "Wish List" turns into "Added!" in place —
+ * the app's own `ajax:success` handler does exactly that rather than navigating
+ * away from a list you are still reading.
+ */
+export function BookListPage({ list, onBack, onOpenBook, onLog, onWish, features = {} }) {
+  const [added, setAdded] = useState([])
+  const { bookLogging = true, wishList = true } = features
+  // `show_reading_list_books` orders by `book_title`.
+  const books = listBooks(list)
+
   return (
-    <div className="bl-filter">
-      <span className="bl-filter-label">{label}</span>
-      <div className="bl-filter-opts">
-        {options.map((o) => (
-          <button
-            key={o}
-            type="button"
-            className={`bl-chip${value === o ? ' is-on' : ''}`}
-            aria-pressed={value === o}
-            onClick={() => onChange(value === o ? null : o)}
-          >
-            {o}
-          </button>
+    <div className="blp">
+      <ReaderBack onClick={onBack}>Back to Book Lists</ReaderBack>
+
+      <ReaderPageHead
+        as="h2"
+        title={list.name}
+        count={`${books.length} ${books.length === 1 ? 'book' : 'books'}`}
+        actions={<Button variant="secondary">Print This List</Button>}
+      />
+
+      {list.description && <p className="blp-desc">{list.description}</p>}
+
+      <div className="blp-meta">
+        {list.grades.map((g) => (
+          <Pill key={g} color="#901eaa" size="md">
+            {g}
+          </Pill>
+        ))}
+        {list.genres.map((g) => (
+          <Pill key={g} color="#047282" size="md">
+            {g}
+          </Pill>
         ))}
       </div>
+
+      {books.length === 0 ? (
+        <EmptyState
+          variant="dashed"
+          title="No books have been added to this list yet."
+          description="Check back — whoever made this list is still filling it."
+        />
+      ) : (
+        <ul className="blp-books">
+          {books.map((b) => (
+            <li className="blp-book" key={b.id}>
+              <button
+                type="button"
+                className="blp-book-cover"
+                onClick={() => onOpenBook?.(b)}
+                aria-label={b.title}
+              >
+                <BookCover book={b} size="fill" />
+              </button>
+              <div className="blp-book-meta">
+                <button type="button" className="blp-book-title" onClick={() => onOpenBook?.(b)}>
+                  {b.title}
+                </button>
+                <span className="blp-book-author">{b.author}</span>
+              </div>
+              {/* Both are settings: `allow_book_logging?` and the site's log
+                  types for the first, `hide_wish_list?` for the second. */}
+              <div className="blp-book-actions">
+                {bookLogging && (
+                  <Button size="sm" onClick={() => onLog?.(b)}>
+                    Log
+                  </Button>
+                )}
+                {wishList && (
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    disabled={added.includes(b.id)}
+                    onClick={() => {
+                      setAdded((a) => [...a, b.id])
+                      onWish?.(b)
+                    }}
+                  >
+                    {added.includes(b.id) ? 'Added!' : 'Wish List'}
+                  </Button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   )
 }

@@ -24,6 +24,7 @@ import { FilterBar, FilterItem } from '@components/FilterBar/FilterBar'
 import { DatePicker } from '@components/DatePicker/DatePicker'
 import { TimePicker } from '@components/TimePicker/TimePicker'
 import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
+import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
 import { Knobs, Variant } from './_shared'
 
 function ColorInputKnobs() {
@@ -841,6 +842,42 @@ function FieldFormKnobs() {
 
 // ── Chart knobs ──────────────────────────────────────────────────────────
 
+const FM_GENRES = ['Adventure', 'Fantasy', 'Graphic Novels', 'Humor', 'Mystery', 'Nonfiction']
+const FM_GRADES = ['K–2', '3–5', '6–8', '9–12']
+const FM_GROUPS = {
+  'Race & Ethnicity': ['Black', 'Latine', 'Asian', 'Indigenous'],
+  Disability: ['Deaf & Hard of Hearing', 'Neurodivergent'],
+}
+
+function FilterMenuDemo() {
+  const [genres, setGenres] = useState([])
+  const [tags, setTags] = useState([])
+  const [grade, setGrade] = useState(null)
+  return (
+    <>
+      <Variant label="several facets in a row — two that take a set, one that takes a value">
+        <FilterMenuBar>
+          <FilterMenu
+            label="Genres"
+            options={FM_GENRES}
+            value={genres}
+            onChange={setGenres}
+            multi
+          />
+          <FilterMenu
+            label="Main Characters"
+            groups={FM_GROUPS}
+            value={tags}
+            onChange={setTags}
+            multi
+          />
+          <FilterMenu label="Grade" options={FM_GRADES} value={grade} onChange={setGrade} />
+        </FilterMenuBar>
+      </Variant>
+    </>
+  )
+}
+
 export const formPatternsSections = [
   {
     group: 'form-patterns',
@@ -1156,6 +1193,41 @@ import '@components/Form/Form.css'
         <FieldFormKnobs />
       </>
     ),
+  },
+  {
+    group: 'form-patterns',
+    id: 'filter-menu',
+    name: 'FilterMenu',
+    usage: `import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
+
+<FilterMenuBar>
+  <FilterMenu label="Genres" options={GENRES} value={genres} onChange={setGenres} multi />
+  <FilterMenu label="Main Characters" groups={BACKGROUND_GROUPS} value={tags} onChange={setTags} multi />
+  <FilterMenu label="Grade" options={GRADES} value={grade} onChange={setGrade} />
+</FilterMenuBar>`,
+    desc: (
+      <>
+        One facet, behind one button — the shape a catalog filter takes when there are five of them
+        and forty values between them. The app&apos;s own accordion (
+        <code>books/_filters.html.haml</code>: five <code>fieldset</code>s of checkboxes behind
+        headings) with the off-canvas drawer replaced by a row. The accordion&apos;s point is that
+        one section is open at a time; a <code>Flyout</code> is that, and it costs one row instead
+        of a column down the side of the page.
+        <br />
+        <br />
+        <strong>A facet that is set says so on its own button</strong>, with a count in the accent —
+        a filter you can&apos;t see from the page is a page that lies about what it is showing. Pair
+        it with <code>ActiveFilters</code> below the bar when you want the individual values
+        clearable too.
+        <br />
+        <br />
+        <code>groups</code> is the app&apos;s grouped facet (<code>background_groups</code>,{' '}
+        <code>topic_groups</code>) — one filter made of several sets with subheads of their own.{' '}
+        <code>multi</code> is the difference between <code>with_genres[]</code> and a filter that
+        narrows to one thing, where picking the active value clears it.
+      </>
+    ),
+    render: () => <FilterMenuDemo />,
   },
   {
     group: 'form-patterns',

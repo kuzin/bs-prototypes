@@ -7,6 +7,7 @@ import {
   ReaderBanner,
   ReaderBannerAction,
   ReaderPageHead,
+  ReaderBack,
   ChallengeCard,
   ChallengeScope,
   GoalCard,
@@ -23,7 +24,11 @@ import { Leaderboards } from '../../web-app/components/Leaderboards'
 import { Reviews } from '../../web-app/components/Reviews'
 import { PeerReviews } from '../../web-app/components/PeerReviews'
 import { WishList } from '../../web-app/components/WishList'
-import { BookLists } from '../../web-app/components/BookLists'
+import { BookLists, BookListPage } from '../../web-app/components/BookLists'
+import { FindBooks } from '../../web-app/components/FindBooks'
+import { BookPage } from '../../web-app/components/BookPage'
+import { BOOK_LISTS, CATALOG_BY_ID } from '../../web-app/data'
+import { READING_LOG } from '../../logging-flow/data'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from '../../web-app/components/FriendProfile'
 import { ChallengePage } from '../../web-app/components/ChallengePage'
@@ -134,10 +139,11 @@ function BarFrame({ children }) {
 }
 
 // The banner is not a full-bleed component — in the reader app it sits in
-// `.wa-main-inner`'s gutters and owns only its own bottom margin. `full` is
-// `padding: 0`, so the example has to stand in for the page's sides.
+// `.wa-main-inner`'s gutters, and it has no margin of its own (the stack owns
+// the gaps). `full` is `padding: 0`, so the example has to stand in for the
+// page's sides *and* its own breathing room, top and bottom.
 function BannerFrame({ children }) {
-  return <div style={{ padding: '20px 20px 0', background: '#fff' }}>{children}</div>
+  return <div style={{ padding: 20, background: '#fff' }}>{children}</div>
 }
 
 function TopBarDemo() {
@@ -449,6 +455,41 @@ export const readerAppSections = [
               }
             />
           </BannerFrame>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'reader-back',
+    name: 'ReaderBack',
+    usage: `import { ReaderBack } from '@components/ReaderApp/ReaderApp'
+
+<ReaderBack onClick={close}>Back to Book Lists</ReaderBack>`,
+    desc: (
+      <>
+        The way back off a reader page the nav can&apos;t reach — a book, or one book list.{' '}
+        <code>.back-button</code> in the app (<code>reading_lists/show.html.haml</code>): a chevron
+        and where it goes, sitting <em>above</em> the page&apos;s own header rather than inside it.
+        <br />
+        <br />
+        It names its destination rather than saying just &ldquo;Back&rdquo;, because these pages are
+        reached from more than one place — the same <code>BookPage</code> is opened from the Reading
+        Log, a wish list, a book list and the browse page, and each says which.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="a destination, not just “back”">
+          <div style={{ padding: 20 }}>
+            <ReaderBack>Back to Book Lists</ReaderBack>
+          </div>
+        </Variant>
+        <Variant label="over the page header it belongs to">
+          <div style={{ padding: '20px 20px 0' }}>
+            <ReaderBack>Back to Find Books</ReaderBack>
+            <ReaderPageHead as="h2" title="The Wild Robot" count="288 pages" />
+          </div>
         </Variant>
       </>
     ),
@@ -950,8 +991,8 @@ export const readerAppSections = [
     usage: `import { WishList } from './components/WishList'
 import { BookLists } from './components/BookLists'
 
-<WishList onFindBooks={openLists} onLog={openLogFlow} />
-<BookLists />`,
+<WishList onFindBooks={browse} onOpenBook={openBook} onLog={openLogFlow} />
+<BookLists onOpenList={openList} onFindBooks={browse} />`,
     desc: (
       <>
         Books the reader means to get to — <code>profiles/wish_list.html.haml</code> — and{' '}
@@ -979,10 +1020,141 @@ import { BookLists } from './components/BookLists'
         </Variant>
         <Variant label="the lists its “Find Books” goes to" full>
           <div style={{ padding: '0 20px 20px', background: '#fff' }}>
-            <BookLists />
+            <BookLists onOpenList={noop} onFindBooks={noop} />
           </div>
         </Variant>
       </>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-find-books',
+    name: 'FindBooks',
+    usage: `import { FindBooks } from './components/FindBooks'
+
+<FindBooks onOpenBook={openBook} onBack={pop} backLabel="Back to Wish List" />
+
+/* opened from a book's own tag rail, filtered by the tag that was clicked */
+<FindBooks initial={{ genres: ['Humor'] }} onOpenBook={openBook} />`,
+    desc: (
+      <>
+        The site&apos;s catalog — <code>books#index</code> — and the five facets it filters on:
+        Recommended Age, Favorite Genres, Languages, Main Characters and Topics. (Interests and
+        Reading Levels are admin-only in the app, so they aren&apos;t here.)
+        <br />
+        <br />
+        The app keeps the facets in an off-canvas drawer behind &ldquo;Choose Filters&rdquo;, with
+        &ldquo;Clear Filters&rdquo; and &ldquo;Hide Filters&rdquo; floating over the page. A
+        prototype has nowhere to hide a drawer, so the same three controls sit in the page header
+        and the panel opens in place — and{' '}
+        <strong>what is set shows as chips above the grid</strong>, on the shared{' '}
+        <code>ActiveFilters</code>. The drawer&apos;s own problem is that a filtered page
+        doesn&apos;t look filtered.
+        <br />
+        <br />
+        The app&apos;s h1 is &ldquo;Children&apos;s Books&rdquo;; this is headed by the thing the
+        reader pressed to get here, which is &ldquo;Find Books&rdquo; in both the Wish List and the
+        Book Lists.
+      </>
+    ),
+    render: () => (
+      <Variant label="the catalog, and the facets behind “Choose Filters”" full>
+        <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+          <FindBooks onOpenBook={noop} />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-book-page',
+    name: 'BookPage',
+    usage: `import { BookPage } from './components/BookPage'
+
+<BookPage
+  book={book}
+  sessions={log.filter((e) => e.kind === 'log' && e.title === book.title)}
+  backLabel="Back to Find Books"
+  onBack={pop}
+  onLog={openLogFlow}
+  onFilter={(initial) => browse(initial)}
+  onOpenBook={openBook}
+/>`,
+    desc: (
+      <>
+        One book — <code>books#show</code>, the record every other page&apos;s titles point at. The
+        cover and the tag rail on the right, the title, credits and the three buttons on the left,
+        and under them what the reader has logged, the Learning Tip, the Description, the moods
+        readers gave it, and Related Picks.
+        <br />
+        <br />
+        The three buttons are the app&apos;s three (<code>books/_buttons.html.haml</code>) and are
+        gated the same way.{' '}
+        <strong>&ldquo;Add to Wish List&rdquo; turns into &ldquo;Added!&rdquo; in place</strong>{' '}
+        rather than navigating, which is what the app&apos;s own <code>ajax:success</code> handler
+        does to it.
+        <br />
+        <br />
+        <strong>Your Reading goes first</strong>, under the buttons: the app sends a logged
+        title&apos;s tile to that book&apos;s own log page, so a book you have read has to answer
+        &ldquo;how much of it?&rdquo; before it tells you what it&apos;s about. A title nobody has
+        logged says so.
+        <br />
+        <br />
+        The rail is <code>books/_product_aside.html.haml</code> in full. Every tag is a link into a
+        catalog filtered by it — that is how a reader gets from one book to the next. The two the
+        browse page has no facet for (a Lexile measure, the Misc. categories) state rather than
+        navigate, since a link that filters by nothing is worse than a label.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="a title the reader has logged" full>
+          <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+            <BookPage
+              book={CATALOG_BY_ID.rump}
+              sessions={READING_LOG.filter((e) => e.kind === 'log' && e.title === 'Rump')}
+              onLog={noop}
+              onOpenBook={noop}
+            />
+          </div>
+        </Variant>
+        <Variant label="one they haven’t" full>
+          <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+            <BookPage book={CATALOG_BY_ID['market-street']} onLog={noop} onOpenBook={noop} />
+          </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    id: 'wa-book-list-page',
+    name: 'BookListPage',
+    usage: `import { BookListPage } from './components/BookLists'
+
+<BookListPage list={list} onBack={pop} onOpenBook={openBook} onLog={openLogFlow} />`,
+    desc: (
+      <>
+        One curated shelf — <code>reading_lists#show</code>. The way back, the list&apos;s name over
+        a Print button, what it&apos;s for, the grade bands and genres it covers, and the books on
+        it.
+        <br />
+        <br />
+        The tags are the app&apos;s own two colours (<code>tag--purple</code> for a grade band,{' '}
+        <code>tag--teal</code> for a genre, from <code>lib/_tag.scss</code>) on our{' '}
+        <code>Pill</code> rather than a local copy of that class.{' '}
+        <strong>&ldquo;Wish List&rdquo; turns into &ldquo;Added!&rdquo; in place</strong> — the
+        app&apos;s own handler does exactly that rather than navigating away from a list you are
+        still reading.
+      </>
+    ),
+    render: () => (
+      <Variant label="a list and what's on it" full>
+        <div style={{ padding: '0 20px 20px', background: '#fff' }}>
+          <BookListPage list={BOOK_LISTS[0]} onBack={noop} onOpenBook={noop} onLog={noop} />
+        </div>
+      </Variant>
     ),
   },
   {

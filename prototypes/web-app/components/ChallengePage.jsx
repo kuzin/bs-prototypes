@@ -254,7 +254,7 @@ export function ChallengePage({ challenge, entries }) {
             entries={entries}
             heading="Challenge Log"
             subtabs={false}
-            defaultTab="titles"
+            defaultView="titles"
             stats={false}
           />
         )}
