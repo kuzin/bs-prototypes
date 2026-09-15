@@ -799,29 +799,49 @@ export const CHALLENGE_DETAIL = {
     ],
     rewards: [
       {
+        name: 'Welcome sticker',
+        unlock: { program: 'registration' },
+        instructions: 'Ask at the library desk — they have a sheet behind the counter.',
+        earned: true,
+        on: 'April 3, 2026',
+      },
+      {
         name: 'Bookmark set',
-        detail: 'A set of four Benny bookmarks, collected from the front office.',
-        at: 250,
+        unlock: { log: '250 Minutes' },
+        instructions: 'Collect from the front office and show them this screen.',
         earned: true,
         on: 'April 12, 2026',
       },
       {
         name: 'Free book from the cart',
-        detail: 'Pick any title from the reading cart outside the library.',
-        at: 500,
+        unlock: { log: '500 Minutes' },
+        instructions: 'Pick any title from the reading cart outside the library.',
         earned: true,
         on: 'April 21, 2026',
+        redeemed: true,
+      },
+      // `limited_reward` — the Book Machine. Earned, it hands you a link to go
+      // and pick a book. Whether the site has one is a setting
+      // (`has_limited_rewards?`), which is the Book machine switch on the
+      // preview bar rather than a field here.
+      {
+        name: 'A free book from the book machine',
+        kind: 'limited',
+        unlock: { badge: 'Rainbow' },
+        earned: true,
+        on: 'April 14, 2026',
+        pickUrl: 'https://magnolia.example.org/book-machine',
       },
       {
         name: 'Extra library period',
-        detail: 'One extra library period, arranged with your teacher.',
-        at: 750,
+        unlock: { log: '750 Minutes' },
+        instructions: 'One extra library period, arranged with your teacher.',
         earned: false,
       },
       {
         name: 'Spring Into Reading t-shirt',
-        detail: 'Handed out at the end-of-month assembly.',
-        at: 1000,
+        unlock: { program: 'completion' },
+        instructions: 'Handed out at the end-of-month assembly.',
         earned: false,
       },
     ],
@@ -840,12 +860,23 @@ export const CHALLENGE_DETAIL = {
     rewards: [
       {
         name: 'Sticker sheet',
-        detail: 'Collect from the library desk.',
-        at: 200,
+        unlock: { log: '200 Minutes' },
+        instructions: 'Collect from the library desk.',
         earned: true,
         on: 'March 9, 2026',
       },
-      { name: 'Poster', detail: 'Chosen from this year’s four designs.', at: 600, earned: false },
+      {
+        name: 'Poster',
+        unlock: { badge: "Cupid's Arrow" },
+        instructions: 'Chosen from this year’s four designs.',
+        earned: false,
+      },
+      {
+        name: 'A free book from the book machine',
+        kind: 'limited',
+        unlock: { log: '600 Minutes' },
+        earned: false,
+      },
     ],
   },
   arresting: {
@@ -862,14 +893,14 @@ export const CHALLENGE_DETAIL = {
     rewards: [
       {
         name: 'Comics Choice enamel pin',
-        detail: 'For filling a whole row.',
-        at: 250,
+        unlock: { badge: 'Bingo!' },
+        instructions: 'For filling a whole row — collect from the library desk.',
         earned: false,
       },
       {
         name: 'Graphic novel of your choice',
-        detail: 'For the full card — pick any title from the Comics Plus shelf.',
-        at: 500,
+        unlock: { program: 'full_card_bingo' },
+        instructions: 'Pick any title from the Comics Plus shelf.',
         earned: false,
       },
     ],
@@ -893,17 +924,19 @@ export const CHALLENGE_DETAIL = {
     rewards: [
       {
         name: 'Winter Reading tote',
-        detail: 'Collected from the library desk.',
-        at: 450,
+        unlock: { log: '450 Minutes' },
+        instructions: 'Collected from the library desk.',
         earned: true,
         on: 'January 20, 2026',
+        redeemed: true,
       },
       {
         name: 'Hot cocoa party',
-        detail: 'For every reader who finished — held on the last Friday.',
-        at: 900,
+        unlock: { program: 'completion' },
+        instructions: 'For every reader who finished — held on the last Friday.',
         earned: true,
         on: 'February 27, 2026',
+        redeemed: true,
       },
     ],
   },
@@ -921,10 +954,11 @@ export const CHALLENGE_DETAIL = {
     rewards: [
       {
         name: 'Read Across America sticker',
-        detail: 'Handed out in homeroom on the Friday.',
-        at: 4,
+        unlock: { program: 'completion' },
+        instructions: 'Handed out in homeroom on the Friday.',
         earned: true,
         on: 'March 6, 2026',
+        redeemed: true,
       },
     ],
   },

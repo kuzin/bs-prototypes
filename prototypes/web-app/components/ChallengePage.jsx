@@ -9,6 +9,7 @@ import {
   ShelfGrid,
 } from '@components/CollectionShelf/CollectionShelf'
 import { GoalStat, GoalStats } from '@components/GoalStat/GoalStat'
+import { StatCard } from '@components/Cards/Cards'
 import { Button } from '@components/Button/Button'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { NumberInput } from '@components/Form/Form'
@@ -175,14 +176,110 @@ function Badges() {
   )
 }
 
-function Rewards({ detail }) {
+/**
+ * How a reward was unlocked, or what it takes — `programs/_reward` writes a
+ * sentence for each case and this is the same set of them. A reward hangs off
+ * a badge (a logging one, or a named one), or off the challenge itself:
+ * registering for it, finishing it, or filling its bingo card.
+ */
+function unlockLine(r) {
+  const { log, badge, program } = r.unlock ?? {}
+  if (r.earned) {
+    if (program === 'registration') return `Unlocked by registering for this challenge on ${r.on}.`
+    if (program === 'completion') return `Unlocked by completing this challenge on ${r.on}.`
+    if (program === 'full_card_bingo')
+      return `Unlocked by completing the full card bingo for this challenge on ${r.on}.`
+    if (log) return `Unlocked on ${r.on} for logging ${log}.`
+    return `Unlocked with the ${badge} badge on ${r.on}.`
+  }
+  if (program === 'registration') return 'Register for this challenge to unlock this reward.'
+  if (program === 'completion') return 'Complete this challenge to unlock this reward.'
+  if (program === 'full_card_bingo') return 'Complete the full bingo card to unlock this reward.'
+  if (log) return `Log ${log} to unlock this reward.`
+  return `Complete the ${badge} badge to unlock this reward.`
+}
+
+/**
+ * One reward — `programs/_reward`, `_classic_unearned_reward` and the two
+ * limited-reward partials.
+ *
+ * A reward is a title, **how it was unlocked** and **what to do about it**: the
+ * app puts its `description` behind an "Instructions" heading, because the
+ * description is not what the reward is, it is how you claim it. Redeemed, the
+ * instructions are replaced by the app's own line — there is nothing left to do.
+ *
+ * `limited_reward` is the Book Machine, and it is a different thing: earned, it
+ * hands you a link to go and pick a book. Whether the site has one at all is
+ * `has_limited_rewards?(@current_microsite)` — a setting, so `bookMachine` is
+ * the switch; off, the reward reads "No Books Remain" whether you earned it or
+ * not, because nobody is redeeming one.
+ */
+function Reward({ reward: r, bookMachine }) {
+  const limited = r.kind === 'limited'
+  // `has_limited_rewards?(@current_microsite)` — a site setting, not a property
+  // of the reward: when the machine is empty nobody redeems one, earned or not.
+  const gone = limited && !bookMachine
+  const state = gone ? 'unavailable' : r.earned ? 'earned' : 'unearned'
+
+  return (
+    <li className={`cp-reward is-${state}`}>
+      <span className="cp-reward-mark">
+        <Icon name={gone ? 'circle-x' : r.earned ? 'circle-check-filled' : 'gift'} size={26} />
+      </span>
+      <div className="cp-reward-copy">
+        <h3 className="cp-reward-name">{r.name}</h3>
+        {gone ? (
+          <span className="cp-reward-detail">
+            <Pill color="#DC2626" variant="soft" size="sm">
+              No Books Remain
+            </Pill>
+          </span>
+        ) : (
+          <span className="cp-reward-detail">{unlockLine(r)}</span>
+        )}
+
+        {/* `.reward-instructions` — only ever on an earned reward, because an
+            unearned one has nothing to claim yet. */}
+        {gone ? (
+          <div className="cp-reward-inst">
+            <h4>Instructions</h4>
+            <p>This reward is not redeemable anymore.</p>
+          </div>
+        ) : r.earned && limited ? (
+          <div className="cp-reward-inst cp-reward-machine">
+            <span className="cp-reward-machine-art" aria-hidden="true">
+              <Icon name="gift" size={28} />
+            </span>
+            <div className="cp-reward-machine-copy">
+              <strong>You earned a book from the book machine!</strong>
+              <span>Pick your free book today before it&apos;s gone!</span>
+            </div>
+            <Button as="a" href={r.pickUrl} target="_blank" size="sm">
+              Pick a Book
+            </Button>
+          </div>
+        ) : r.earned ? (
+          <div className="cp-reward-inst">
+            <h4>Instructions</h4>
+            <p>{r.redeemed ? 'Reward has been redeemed.' : r.instructions}</p>
+          </div>
+        ) : null}
+      </div>
+      <span className="cp-reward-at">
+        {gone ? 'Unavailable' : r.earned ? (r.redeemed ? 'Redeemed' : 'Earned') : 'Locked'}
+      </span>
+    </li>
+  )
+}
+
+function Rewards({ detail, bookMachine = true }) {
   const [state, setState] = useState('all')
   const isEarned = (r) => Boolean(r.earned)
 
   return (
     <section className="cp-section">
       <ReaderPageHead as="h2" title="Rewards" />
-      <FilterMenuBar className="cp-rewardfilters">
+      <FilterMenuBar className="cp-listfilters">
         <EarnedFilter
           items={detail.rewards}
           isEarned={isEarned}
@@ -193,29 +290,13 @@ function Rewards({ detail }) {
       </FilterMenuBar>
       <ul className="cp-rewards">
         {byEarnedState(detail.rewards, state, isEarned).map((r) => (
-          <li key={r.name} className={`cp-reward${r.earned ? ' is-earned' : ''}`}>
-            <span className="cp-reward-mark">
-              <Icon name={r.earned ? 'circle-check-filled' : 'gift'} size={26} />
-            </span>
-            <div className="cp-reward-copy">
-              <span className="cp-reward-name">{r.name}</span>
-              <span className="cp-reward-detail">{r.detail}</span>
-            </div>
-            <span className="cp-reward-at">
-              {r.earned ? `Earned On ${r.on}` : `At ${r.at.toLocaleString()} minutes`}
-            </span>
-          </li>
+          <Reward key={r.name} reward={r} bookMachine={bookMachine} />
         ))}
       </ul>
     </section>
   )
 }
 
-/** The dominant colour blended with white, the way the app's ColorThief does. */
-/**
- * The Reading List tab — a `book_list` challenge's own shelf. The titles the
- * challenge asks you to read, each one a book you can open or log.
- */
 /**
  * `.section-header--reading-list` — a heading inside a tab that already has a
  * page head, so it takes the page's own section size rather than a second
@@ -468,15 +549,27 @@ function Drawings({ extras }) {
 
   return (
     <section className="cp-section">
-      <ReaderPageHead
-        as="h2"
-        title="Ticket Drawings"
-        count={
-          available > 0
-            ? `${available} ${available === 1 ? 'ticket' : 'tickets'} to spend in this challenge`
-            : 'You have 0 tickets left to spend.'
-        }
-      />
+      <ReaderPageHead as="h2" title="Ticket Drawings" />
+
+      {/* What you have to spend is the number this whole page turns on — the
+          app puts it in the subhead, which is where a page puts something it
+          doesn't want read. It takes the page's own stat tile instead, beside
+          what you have already committed; the two add up to what the challenge
+          has earned you. */}
+      <div className="cp-ticketnums">
+        <StatCard
+          value={available}
+          label={available === 1 ? 'Ticket to spend' : 'Tickets to spend in this challenge'}
+          color="#B45309"
+          icon={<Icon name="ticket" size={22} />}
+        />
+        <StatCard
+          value={spent}
+          label={spent === 1 ? 'Ticket entered' : 'Tickets entered'}
+          color="#1A6DD5"
+          icon={<Icon name="circle-check-filled" size={22} />}
+        />
+      </div>
 
       <FilterMenuBar className="cp-listfilters">
         <EarnedFilter
@@ -733,8 +826,24 @@ function Certificates({ list }) {
   )
 }
 
-export function ChallengePage({ challenge, entries, onLog, onOpenBook, onBack }) {
-  const [tab, setTab] = useState('overview')
+export function ChallengePage({
+  challenge,
+  entries,
+  onLog,
+  onOpenBook,
+  onBack,
+  bookMachine = true,
+  tab: tabProp,
+  onTab,
+}) {
+  // The parent can drive which tab is open, the way Dashboard lets one drive
+  // its view — web-app does, so a reload lands back where the reader was.
+  const [ownTab, setOwnTab] = useState('overview')
+  const tab = tabProp ?? ownTab
+  const setTab = (id) => {
+    setOwnTab(id)
+    onTab?.(id)
+  }
   const detail = getChallengeDetail(challenge.id)
   const extras = getChallengeExtras(challenge.id)
   const banner = bannerSrc(challenge.banner)
@@ -782,7 +891,7 @@ export function ChallengePage({ challenge, entries, onLog, onOpenBook, onBack })
           />
         )}
         {tab === 'badges' && <Badges />}
-        {tab === 'rewards' && <Rewards detail={detail} />}
+        {tab === 'rewards' && <Rewards detail={detail} bookMachine={bookMachine} />}
         {tab === 'drawings' && <Drawings extras={extras} />}
         {tab === 'certificates' && <Certificates list={extras.certificates} />}
         {/* The challenge's own log is the reader's log scoped to it. Its

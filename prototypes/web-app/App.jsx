@@ -119,6 +119,7 @@ const FEATURE_SWITCHES = [
   { id: 'connectedSite', label: 'Connected site', hint: 'is_connected_school?' },
   { id: 'registrationQuestions', label: 'Registration questions', hint: '3 active, 2 required' },
   { id: 'fundraiser', label: 'Fundraiser', hint: 'a read-a-thon is running' },
+  { id: 'bookMachine', label: 'Book machine', hint: 'has_limited_rewards?' },
 ]
 
 // The site's own goal, and what it has read toward it so far.
@@ -207,6 +208,7 @@ const FEATURE_DEFAULTS = {
   connectedSite: true,
   registrationQuestions: true,
   fundraiser: true,
+  bookMachine: true,
 }
 
 export function App() {
@@ -224,6 +226,7 @@ export function App() {
   // also closes an open challenge — `page` replaces the main column, so
   // without this the challenge stayed up under a nav tab that had moved on.
   const [view, setView] = useState(() => loadNav().view ?? 'challenges')
+  const [challengeTab, setChallengeTab] = useState(() => loadNav().challengeTab ?? 'overview')
   const [features, setFeatures] = useState(() => loadSettings(FEATURE_DEFAULTS))
   const [requests, setRequests] = useState(FRIEND_REQUESTS)
   // The top bar can start a review from any page, so what it opens lives here
@@ -295,11 +298,14 @@ export function App() {
   // starts on the dashboard the way a reader would.
   useEffect(() => {
     try {
-      sessionStorage.setItem(NAV_KEY, JSON.stringify({ view, challenge: challenge?.id ?? null }))
+      sessionStorage.setItem(
+        NAV_KEY,
+        JSON.stringify({ view, challenge: challenge?.id ?? null, challengeTab }),
+      )
     } catch {
       /* as above */
     }
-  }, [view, challenge])
+  }, [view, challenge, challengeTab])
 
   // Which of the account's profiles is being read as. A school has exactly one.
   //
@@ -344,6 +350,10 @@ export function App() {
   const push = (route) => setStack((s) => [...s, route])
   const pop = () => setStack((s) => s.slice(0, -1))
   const openBook = (book, back) => push({ kind: 'book', book, back })
+  const openChallenge = (c) => {
+    setChallenge(c)
+    setChallengeTab('overview')
+  }
 
   // The catalog pages — whichever is on top of the stack.
   function renderRoute() {
@@ -513,7 +523,7 @@ export function App() {
         registrationQuestions={features.registrationQuestions ? REGISTRATION_QUESTIONS : []}
         registrationAnswers={regAnswers}
         onRegistrationAnswers={setRegAnswers}
-        onOpenChallenge={setChallenge}
+        onOpenChallenge={openChallenge}
         motivation={features.rmi ? 'available' : undefined}
         features={{
           ...features,
@@ -528,9 +538,12 @@ export function App() {
           ) : challenge ? (
             <ChallengePage
               challenge={challenge}
+              tab={challengeTab}
+              onTab={setChallengeTab}
               entries={log}
               onLog={() => setFlowOpen(true)}
               onOpenBook={(b) => openBook(b, challenge.title)}
+              bookMachine={features.bookMachine}
               onBack={() => setChallenge(null)}
             />
           ) : null
