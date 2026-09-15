@@ -14,7 +14,23 @@ import { BookLists, BookListPage } from './components/BookLists'
 import { FindBooks } from './components/FindBooks'
 import { BookPage } from './components/BookPage'
 import { ChallengePage } from './components/ChallengePage'
-import { FRIEND_REQUESTS, WISH_LIST, BOOK_LISTS, catalogBook } from './data'
+import {
+  FRIEND_REQUESTS,
+  WISH_LIST,
+  BOOK_LISTS,
+  catalogBook,
+  INTERESTS,
+  GENRES,
+  BACKGROUND_GROUPS,
+  READING_LEVELS,
+  PREFERENCE_LANGUAGES,
+  BOOK_LIST_GRADES,
+  DOORWAYS,
+  PREFERENCE_LIMITS,
+  READER_PREFERENCES,
+  SHARED_ACCESS,
+  SHARED_INVITES,
+} from './data'
 import {
   STREAK,
   DAILY_GOAL,
@@ -100,6 +116,30 @@ const FEATURE_SWITCHES = [
 // The site's own goal, and what it has read toward it so far.
 const COMMUNITY_GOAL = { total: 128_400, goal: 250_000, unit: 'minutes' }
 
+// Everything Personalize Reader's Preferences list needs: the vocabularies
+// behind each filter, and what the site lets this reader set. Olivia is a
+// child profile on a school site that asks for grade levels, so she gets the
+// six recommendation filters rather than the adult's Reading Doorways.
+// A profile's own kind decides which Preferences list it gets, and it is not a
+// setting a reader can see — so it belongs on the preview bar rather than in
+// the page. A child gets the six filters the recommendation engine reads; an
+// adult or teen gets the Four Doorways instead.
+const PROFILE_KINDS = [
+  { id: 'child', label: 'Child profile', short: 'Child', icon: 'user' },
+  { id: 'adult', label: 'Adult profile', short: 'Adult', icon: 'user' },
+]
+
+const PREFERENCE_VOCAB = {
+  interests: INTERESTS,
+  genres: GENRES,
+  backgroundGroups: BACKGROUND_GROUPS,
+  readingLevels: READING_LEVELS,
+  languages: PREFERENCE_LANGUAGES,
+  gradeLevels: BOOK_LIST_GRADES,
+  doorways: DOORWAYS,
+  limits: PREFERENCE_LIMITS,
+}
+
 const FEATURE_DEFAULTS = {
   rmi: true,
   communityGoal: true,
@@ -161,6 +201,12 @@ export function App() {
             ...ws,
           ],
     )
+
+  // What this reader has told Beanstack about themselves. The forms behind
+  // Personalize Reader write here, and the Preferences list reads back which
+  // of them have been answered.
+  const [prefs, setPrefs] = useState(READER_PREFERENCES)
+  const [kind, setKind] = useState('child')
 
   const [stack, setStack] = useState([])
   const top = stack[stack.length - 1] ?? null
@@ -257,6 +303,10 @@ export function App() {
     <>
       <PreviewBar
         title="Beanstack Web App"
+        views={PROFILE_KINDS}
+        active={kind}
+        onChange={setKind}
+        ariaLabel="Which kind of profile"
         toggles={FEATURE_SWITCHES.map((f) => ({ ...f, on: features[f.id] }))}
         onToggle={(id, on) => setFeatures((f) => ({ ...f, [id]: on }))}
       />
@@ -308,6 +358,16 @@ export function App() {
         }
         onOpenBook={(book) => openBook(book, 'Back to Reading Log')}
         bookFor={catalogBook}
+        personalize={{
+          kind,
+          preferences: prefs,
+          vocab: PREFERENCE_VOCAB,
+          sharedAccess: SHARED_ACCESS,
+          sharedInvites: SHARED_INVITES,
+          onSavePreferences: (id, value) =>
+            setPrefs((p) => (id === 'basic' ? p : { ...p, [id]: value })),
+          features: { avatars: true, gradeLevels: true, recommendations: true },
+        }}
         onOpenChallenge={setChallenge}
         motivation={features.rmi ? 'available' : undefined}
         features={{

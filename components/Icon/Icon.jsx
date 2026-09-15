@@ -36,6 +36,7 @@ import {
   IconMenu2,
   // ── status / feedback ──
   IconInfoCircle,
+  IconCircle,
   IconCircleCheck,
   IconCircleCheckFilled,
   IconCircleX,
@@ -258,6 +259,7 @@ const REGISTRY = {
 
   // status / feedback
   info: IconInfoCircle,
+  circle: IconCircle,
   'circle-check': IconCircleCheck,
   'circle-check-filled': IconCircleCheckFilled,
   'circle-x': IconCircleX,

@@ -25,7 +25,7 @@ import {
   PartnerSwitcher,
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
-import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 
 import {
@@ -321,6 +321,12 @@ function Footer() {
  *
  * `onOpenBook` / `bookFor` go through to the log as well: where a prototype has
  * a book page, every logged title links to it.
+ *
+ * `personalize` is the same additive shape for the settings page: hand it the
+ * reader's saved filters, the vocabularies behind them and the site's own
+ * gates, and Personalize Reader grows its real Preferences list and the forms
+ * behind it. Left off, that page is the single Basic Information row every
+ * prototype rendering this for its App Integrations has always had.
  */
 export function Dashboard({
   streak,
@@ -347,6 +353,7 @@ export function Dashboard({
   onLogTab,
   onOpenBook,
   bookFor,
+  personalize,
   onOpenChallenge,
   onUnenrollChallenge,
   motivation,
@@ -486,6 +493,7 @@ export function Dashboard({
               connections={connections}
               onLink={onLinkPartner}
               onDisconnect={onDisconnectPartner}
+              {...personalize}
             />
           ) : (
             <>

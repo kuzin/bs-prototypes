@@ -1516,3 +1516,176 @@ export const CATALOG_BY_TITLE = new Map(CATALOG.map((b) => [b.title, b]))
 
 /** The catalog record for a logged title, by name — what the log links to. */
 export const catalogBook = (title) => CATALOG_BY_TITLE.get(title)
+
+// ─── Personalize Reader ──────────────────────────────────────────────────────
+// `profiles#edit_options` and the funnel behind it. The Preferences list is a
+// row per filter the reader can set, each showing whether it *has* been set —
+// `@profile_presenter.is_personalized?`, which is the app's own finished /
+// not-finished class on those links. The forms themselves are
+// `profiles/personalization_forms/*`.
+//
+// Which rows appear depends on the profile: a child gets the six recommendation
+// filters, an adult or teen gets Reading Doorways instead (and only where the
+// site does `adult_curated_recommendations?`). Grade Level is a site setting,
+// and a rostered site drops Basic Information because the roster owns it.
+
+/** `Pick up to N` — the app's own per-filter limits. */
+export const PREFERENCE_LIMITS = {
+  interests: 5,
+  genres: 5,
+  backgrounds: 5,
+  readingLevels: 2,
+  doorways: 2,
+}
+
+// `Interest` — what the reader likes, not what they read. The app ships an icon
+// per interest; a prototype has the emoji it would have drawn.
+export const INTERESTS = [
+  { id: 'animals', name: 'Animals', emoji: '🐾' },
+  { id: 'space', name: 'Space', emoji: '🚀' },
+  { id: 'sports', name: 'Sports', emoji: '⚽️' },
+  { id: 'art', name: 'Art & Drawing', emoji: '🎨' },
+  { id: 'music', name: 'Music', emoji: '🎸' },
+  { id: 'cooking', name: 'Cooking', emoji: '🍳' },
+  { id: 'building', name: 'Building & Inventing', emoji: '🔧' },
+  { id: 'nature', name: 'Nature & Outdoors', emoji: '🌲' },
+  { id: 'history', name: 'History', emoji: '🏺' },
+  { id: 'science', name: 'Science', emoji: '🔬' },
+  { id: 'magic', name: 'Magic & Myths', emoji: '🐉' },
+  { id: 'scary', name: 'Scary Stories', emoji: '👻' },
+  { id: 'jokes', name: 'Jokes & Silliness', emoji: '🤪' },
+  { id: 'friends', name: 'Friendship', emoji: '🤝' },
+  { id: 'vehicles', name: 'Trucks & Trains', emoji: '🚂' },
+]
+
+// `ReadingLevel` — a band with a description the site can override
+// (`custom_description`), and an age range that greys it out for a reader it
+// doesn't fit (`age_limits_with_half_years`).
+export const READING_LEVELS = [
+  {
+    id: 'board',
+    name: 'Board Books',
+    description: 'A few words a page, and pages you can chew on.',
+    ages: [0, 3],
+  },
+  {
+    id: 'picture',
+    name: 'Picture Books',
+    description: 'A story told as much in the pictures as in the words — read together.',
+    ages: [3, 7],
+  },
+  {
+    id: 'early',
+    name: 'Early Readers',
+    description: 'Short sentences and repeated words, for a reader sounding it out alone.',
+    ages: [5, 8],
+  },
+  {
+    id: 'first-chapter',
+    name: 'First Chapter Books',
+    description: 'Short chapters and big type, with a picture every few pages.',
+    ages: [6, 10],
+  },
+  {
+    id: 'middle',
+    name: 'Middle Grade',
+    description: 'A full novel, and a plot that runs for more than one sitting.',
+    ages: [8, 13],
+  },
+  {
+    id: 'ya',
+    name: 'Young Adult',
+    description: 'Longer, harder, and written for a reader who wants to be taken seriously.',
+    ages: [12, 18],
+  },
+]
+
+// The site's languages, as a reader preference rather than a catalog facet.
+export const PREFERENCE_LANGUAGES = LANGUAGES
+
+/**
+ * The Four Doorways — `Category::FOUR_DOORWAYS`, and the reason an adult
+ * profile has a preferences page at all. The descriptions and the "People often
+ * describe these kinds of books as…" phrases are `CategoryPresenter`'s own,
+ * word for word: they are the reading-expert framing the feature is built on
+ * (Nancy Pearl's four doorways), not copy a prototype should paraphrase.
+ */
+export const DOORWAYS = [
+  {
+    id: 'plot',
+    name: 'Plot Driven',
+    emoji: '🎢',
+    tint: '#F0A024',
+    description:
+      "Books which are action packed and fast paced; the type of books you can't put down. Think of adventure, thrillers, mystery, true crime or true adventure.",
+    phrases: [
+      'Page turning!',
+      'I couldn’t put it down!',
+      'I wanted to find out what happened next.',
+      'It was adrenaline-fueled.',
+    ],
+  },
+  {
+    id: 'people',
+    name: 'People Focused',
+    emoji: '💬',
+    tint: '#E23B6B',
+    description:
+      "Books where you fall in love with the characters and think about them even after you've finished reading the book. This could include fiction, romance, biography, detective stories or memoirs.",
+    phrases: [
+      'The people I am reading about seem utterly real.',
+      'When the book was over, I felt like I lost someone dear to me because I’ll never spend time with the character again.',
+    ],
+  },
+  {
+    id: 'place',
+    name: 'Place Focused',
+    emoji: '🗺️',
+    tint: '#0B6B78',
+    description:
+      "Books where the setting is a key element of the story. This is the kind of book where you feel you've been transported to another place or time. This could include fiction, travel, fantasy, science fiction or western.",
+    phrases: [
+      'I felt like I knew every street and shop of that town.',
+      'It made me wish I had grown up there.',
+    ],
+  },
+  {
+    id: 'prose',
+    name: 'Prose Driven',
+    emoji: '✒️',
+    tint: '#5B21B6',
+    description:
+      'Books where language and the crafting of the text is notable; the type of the books where you linger over the sentences because they are so beautifully written. This will include both fiction and non-fiction.',
+    phrases: [
+      'I kept reading slower and slower because I wanted to savor the language.',
+      'I’m not even sure what the book was about, but I loved the way the author wrote.',
+    ],
+  },
+]
+
+/**
+ * `profile.customized_filters` — what this reader has actually set. An empty
+ * array is the app's "No Preference", which is a real answer and not a blank:
+ * `is_personalized?` is false for it, so the row reads as unfinished and the
+ * recommendations fall back to the whole catalog.
+ */
+export const READER_PREFERENCES = {
+  gradeLevel: '6th Grade',
+  interests: ['animals', 'magic', 'jokes'],
+  genres: ['Graphic Novels', 'Fantasy', 'Humor'],
+  backgrounds: [],
+  readingLevels: ['middle'],
+  languages: ['English'],
+  doorways: [],
+  birthday: 'March 4, 2014',
+}
+
+// `shared_accesses` — who can see this reader, and who has been asked and
+// hasn't answered. The app lists them under the invite form, with Revoke on the
+// first and Resend / Remove on the second.
+export const SHARED_ACCESS = [
+  { id: 'sa-1', name: 'Dana Moore' },
+  { id: 'sa-2', name: 'Mr. Reyes' },
+]
+
+export const SHARED_INVITES = [{ id: 'si-1', email: 'grandma.jo@example.com' }]

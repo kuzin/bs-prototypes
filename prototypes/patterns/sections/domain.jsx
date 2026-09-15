@@ -18,13 +18,26 @@ import {
   PartnerSwitcher,
   AutoLoggedCard,
 } from '@components/PartnerConnect/PartnerConnect'
-import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'
 import { BannerStack } from '@components/ReaderApp/ReaderApp'
 import { DailyReadingTracker } from '@components/DailyReadingTracker/DailyReadingTracker'
 import { RMI_FACTORS } from '../../ris/data'
 import { CONNECTIONS, CONNECTION_LIST, TAKEN_USERNAMES } from '../../logging-flow/connections'
 import { READER as PARTNER_READER } from '../../logging-flow/data'
 import { BEEVERSO } from '../../beeverso/connections'
+import {
+  INTERESTS,
+  GENRES,
+  BACKGROUND_GROUPS,
+  READING_LEVELS,
+  PREFERENCE_LANGUAGES,
+  BOOK_LIST_GRADES,
+  DOORWAYS,
+  PREFERENCE_LIMITS,
+  READER_PREFERENCES,
+  SHARED_ACCESS,
+  SHARED_INVITES,
+} from '../../web-app/data'
 import { Knobs, Variant } from './_shared'
 
 // The auto-logged rail card borrows the reader dashboard's card chrome.
@@ -280,11 +293,24 @@ function ConnectFlowDemo({ partner: p }) {
   )
 }
 
-function PersonalizeReaderDemo() {
+const PR_VOCAB = {
+  interests: INTERESTS,
+  genres: GENRES,
+  backgroundGroups: BACKGROUND_GROUPS,
+  readingLevels: READING_LEVELS,
+  languages: PREFERENCE_LANGUAGES,
+  gradeLevels: BOOK_LIST_GRADES,
+  doorways: DOORWAYS,
+  limits: PREFERENCE_LIMITS,
+}
+
+function PersonalizeReaderDemo({ kind = 'child', deep = true }) {
   const [connections, setConnections] = useState({ comicsplus: PARTNER_LINKED.comicsplus })
+  const [prefs, setPrefs] = useState(READER_PREFERENCES)
   return (
     <PersonalizeReader
       reader={PARTNER_READER}
+      kind={kind}
       partners={CONNECTION_LIST}
       connections={connections}
       onLink={(id) => setConnections((c) => ({ ...c, [id]: { ...PARTNER_LINKED[id] } }))}
@@ -294,6 +320,13 @@ function PersonalizeReaderDemo() {
           delete next[id]
           return next
         })
+      }
+      preferences={deep ? prefs : undefined}
+      vocab={PR_VOCAB}
+      sharedAccess={deep ? SHARED_ACCESS : []}
+      sharedInvites={deep ? SHARED_INVITES : []}
+      onSavePreferences={(id, value) =>
+        setPrefs((p) => (id === 'basic' ? p : { ...p, [id]: value }))
       }
     />
   )
@@ -729,26 +762,72 @@ import { ConnectBanner } from '@components/PartnerConnect/PartnerConnect'
     group: 'web-app',
     id: 'personalize-reader',
     name: 'Personalize Reader',
-    usage: `import { PersonalizeReader } from '@components/PartnerConnect/PersonalizeReader'
+    usage: `import { PersonalizeReader } from '@components/PersonalizeReader/PersonalizeReader'
 import { BannerStack } from '@components/ReaderApp/ReaderApp'
 
-<PersonalizeReader reader={reader} partners={partners} connections={connections} />`,
+<PersonalizeReader reader={reader} partners={partners} connections={connections} />
+
+/* …and with the Preferences list and the forms behind it */
+<PersonalizeReader
+  reader={reader}
+  kind="child"                 /* or "adult" — a different list entirely */
+  preferences={prefs}
+  vocab={{ interests, genres, backgroundGroups, readingLevels, languages, gradeLevels, doorways, limits }}
+  onSavePreferences={(id, value) => save(id, value)}
+  sharedAccess={viewers}
+  sharedInvites={invited}
+/>`,
     desc: (
       <>
-        The reader&apos;s settings page, and the home of <strong>App Integrations</strong> — where a
-        partner account is actually connected or disconnected. Each partner in <code>partners</code>{' '}
-        is its own row, so linking one never touches the other. The dashboard banner and the top-bar
-        switcher are shortcuts into this section. An empty <code>partners</code> drops the App
-        Integrations section entirely rather than leaving a bare heading — that's how a prototype
-        with no reading-app linking (Words with Benny) reuses this page.
+        The reader&apos;s settings page — <code>profiles#edit_options</code>. Everything a reader
+        (or the grown-up holding their account) can change about themselves: what they like, who can
+        see them, which reading apps are linked, and how to delete them.
+        <br />
+        <br />
+        <strong>Preferences</strong> is the app&apos;s own link-list, and each row carries whether
+        it has been answered — <code>is_personalized?</code>, the <code>finished</code> /{' '}
+        <code>not-finished</code> class on those links — plus what the answer was. <code>kind</code>{' '}
+        decides which list: a child gets the six filters the recommendation engine reads, an adult
+        or teen gets the <strong>Four Doorways</strong> instead, which is a different page behind a
+        row of the same shape.
+        <br />
+        <br />A row opens that filter&apos;s form. In the app each is a page in the sign-up funnel
+        with Back and &ldquo;Next: Choose Favorite Genres&rdquo;; here they are panes of one
+        full-screen flow, which is the same shape without six routes to invent. The headings, the
+        &ldquo;Pick up to N&rdquo; limits, the over-limit notice and the
+        <strong> &ldquo;No Preference&rdquo; option</strong> — a real answer, not a blank — are the
+        app&apos;s own.
+        <br />
+        <br />
+        It is also the home of <strong>App Integrations</strong>, where a partner account is
+        connected or disconnected. Each partner in <code>partners</code> is its own row, so linking
+        one never touches the other; an empty <code>partners</code> drops the section entirely
+        rather than leaving a bare heading.{' '}
+        <strong>
+          Leave <code>preferences</code> off
+        </strong>{' '}
+        and the page is the shallow one it has always been — a single Basic Information row — which
+        is how Words with Benny and beeverso reuse it for the integration surface alone.
       </>
     ),
     render: () => (
-      <Variant label="Comics Plus connected, Scholastic not" full>
-        <div style={{ padding: '0 24px' }}>
-          <PersonalizeReaderDemo />
-        </div>
-      </Variant>
+      <>
+        <Variant label="a child profile — the six recommendation filters" full>
+          <div style={{ padding: '0 24px' }}>
+            <PersonalizeReaderDemo />
+          </div>
+        </Variant>
+        <Variant label="an adult profile — Reading Doorways instead" full>
+          <div style={{ padding: '0 24px' }}>
+            <PersonalizeReaderDemo kind="adult" />
+          </div>
+        </Variant>
+        <Variant label="without preferences — the integration surface on its own" full>
+          <div style={{ padding: '0 24px' }}>
+            <PersonalizeReaderDemo deep={false} />
+          </div>
+        </Variant>
+      </>
     ),
   },
   {

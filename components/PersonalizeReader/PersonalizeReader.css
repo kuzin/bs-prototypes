@@ -1,0 +1,666 @@
+/* Beanstack's "Personalize Reader" settings page. */
+
+.st-page {
+  padding: 40px 0 64px;
+  /* The page is dropped into frames far narrower than the window — the pattern
+     library renders it around 560px, and the reader prototypes put it in a
+     content column — so the layout answers to its container. The viewport
+     media query this replaced never fired in any of them. */
+  container-type: inline-size;
+}
+
+.st-title {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--c-text);
+  margin-bottom: 32px;
+}
+
+.st-layout {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+}
+
+/* ─── Avatar ──────────────────────────────────────────────────────────────── */
+
+.st-avatar {
+  position: relative;
+  width: 140px;
+  height: 140px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+}
+.st-avatar-initials {
+  font-size: 30px;
+  font-weight: 800;
+  color: #b1281f;
+}
+/* Only ever shown in the inline (stacked) layout — beside a circle that has
+   left its column, the name is what makes the row an identity row rather than
+   a stray avatar. */
+.st-avatar-name {
+  display: none;
+  min-width: 0;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--c-text);
+  overflow-wrap: anywhere;
+}
+.st-avatar-edit {
+  position: absolute;
+  right: 12px;
+  bottom: 8px;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  color: var(--c-text-light);
+  cursor: pointer;
+  background: #f5f5f5;
+  border: 0;
+  border-radius: 999px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 12%);
+}
+.st-avatar-edit:hover {
+  color: var(--c-text-dark);
+  background: #fff;
+}
+
+/* ─── Sections ────────────────────────────────────────────────────────────── */
+
+.st-section {
+  margin-bottom: 48px;
+}
+.st-h2 {
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--c-text);
+  margin-bottom: 14px;
+}
+.st-body {
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--c-text);
+  margin-bottom: 18px;
+}
+.st-hint {
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--c-text-light);
+  margin-bottom: 14px;
+}
+
+.st-linklist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.st-linkrow {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  font-family: inherit;
+  color: var(--c-text);
+  cursor: pointer;
+  background: #f5f5f5;
+  border: 0;
+  border-radius: 10px;
+}
+.st-linkrow:hover {
+  background: #e8eef5;
+}
+.st-linkrow-label {
+  font-size: 14px;
+  font-weight: 800;
+}
+/* `finished` / `not-finished` — an open circle for a filter nobody has
+   answered, a tick for one that is set. */
+.st-linkrow-state {
+  display: inline-flex;
+  flex: none;
+  color: var(--c-gray-500);
+}
+.st-linkrow-state.is-done {
+  color: var(--c-green, #0f7a55);
+}
+.st-linkrow-value {
+  margin-left: auto;
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--c-text-light);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.st-rule {
+  border-top: 1px solid var(--c-border);
+  border-bottom: 1px solid var(--c-border);
+  margin-bottom: 20px;
+}
+.st-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 14px 0;
+}
+.st-row-label {
+  font-size: 14px;
+  color: var(--c-text);
+}
+
+/* ─── App Integrations ────────────────────────────────────────────────────── */
+
+.st-integrations {
+  display: flex;
+  flex-direction: column;
+}
+.st-integration {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.st-integration:first-child {
+  border-top: 1px solid var(--c-border);
+}
+.st-integration-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+.st-integration-acct {
+  font-size: 13px;
+  color: var(--c-text-light);
+}
+
+/* ─── Share / delete ──────────────────────────────────────────────────────── */
+
+.st-field {
+  margin-bottom: 16px;
+}
+.st-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-text);
+  margin-bottom: 7px;
+}
+.st-input {
+  width: 100%;
+  height: 42px;
+  padding: 0 14px;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--c-text);
+}
+.st-input::placeholder {
+  color: var(--c-gray-600);
+}
+
+.st-warn {
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: #fdecec;
+  color: #b91c1c;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 18px;
+}
+.st-check {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  color: var(--c-text);
+}
+.st-check input {
+  width: 18px;
+  height: 18px;
+  margin: 1px 0 0;
+  flex-shrink: 0;
+}
+/* Armed only once both boxes are ticked, and it still asks after that — the
+   app's `.button--primary.reject` is a real red button, not a grey one you
+   have to guess at. */
+.st-delete {
+  height: 44px;
+  padding: 0 22px;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  cursor: pointer;
+  background: var(--c-red, #dc2626);
+  border: 0;
+  border-radius: 8px;
+}
+.st-delete:hover:not(:disabled) {
+  background: #b91c1c;
+}
+.st-delete:disabled {
+  color: var(--c-gray-600);
+  cursor: not-allowed;
+  background: #f5f5f5;
+}
+
+/* ─── Responsive ──────────────────────────────────────────────────────────────
+   Keyed to `.st-page`'s container, not the viewport, and kept at the bottom of
+   the file: every rule below overrides a base rule of equal specificity, so
+   source order is what makes them win. */
+
+/* First the avatar column pays for the squeeze, not the form: a 140px circle
+   in a 260px column is mostly air, and the form is what has work to do. */
+@container (max-width: 900px) {
+  .st-layout {
+    grid-template-columns: 170px minmax(0, 1fr);
+  }
+  .st-avatar {
+    width: 110px;
+    height: 110px;
+  }
+  .st-avatar-initials {
+    font-size: 24px;
+  }
+}
+
+/* Past that there's no column width left to give, so the avatar stops being a
+   column at all — it goes inline above the sections, beside the reader's name,
+   with a rule under it. The shipped page breaks to a stack here too. */
+@container (max-width: 720px) {
+  .st-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .st-avatar-col {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--c-border);
+  }
+  .st-avatar {
+    width: 76px;
+    height: 76px;
+    flex: none;
+  }
+  .st-avatar-initials {
+    font-size: 20px;
+  }
+  .st-avatar-edit {
+    right: 0;
+    bottom: 2px;
+    width: 26px;
+    height: 26px;
+  }
+  .st-avatar-name {
+    display: block;
+  }
+}
+
+/* Phone width: the two-up rows have nothing left to trade. */
+@container (max-width: 460px) {
+  .st-title {
+    font-size: 24px;
+    margin-bottom: 24px;
+  }
+  .st-integration {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .st-row {
+    gap: 14px;
+  }
+}
+
+/* ─── Shared access ─────────────────────────────────────────────────────────
+   `.viewers-wrap` — who has this reader, and who has been asked. */
+.st-viewers {
+  padding-top: 18px;
+  margin-top: 22px;
+  border-top: 1px solid var(--c-border);
+}
+.st-h3 {
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+.st-invite {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--c-border);
+}
+.st-invite:last-child {
+  border-bottom: 0;
+}
+.st-invite-who {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+.st-invite-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.st-checks {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+/* ─── The preference forms ──────────────────────────────────────────────────
+   One pane of the funnel, on the full-screen surface. A column with the
+   question at the top and the two buttons pinned at the bottom, which is what
+   `.sign-up-funnel-pager-buttons` is. */
+.pf {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+.pf-title {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--c-text-dark);
+}
+.pf-limit {
+  margin-top: 6px;
+  font-size: 15px;
+  color: var(--c-text-light);
+}
+/* `.filter-limit-notice.over-selected` */
+.pf-over {
+  padding: 11px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #9a3412;
+  background: #fff3e8;
+  border: 1px solid #f3cba6;
+  border-radius: 10px;
+}
+
+.pf-body {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* The app's own first option, on every one of these forms. */
+.pf-none {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  align-self: flex-start;
+  padding: 10px 16px 10px 12px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text);
+  cursor: pointer;
+  background: var(--c-gray-50);
+  border: 1px solid var(--c-border);
+  border-radius: 999px;
+}
+.pf-none:hover {
+  border-color: var(--c-gray-500);
+}
+.pf-none.is-on {
+  color: var(--c-blue-ink);
+  background: var(--c-blue-wash);
+  border-color: var(--c-blue);
+}
+
+/* `list-icons.flip-wrap` — the app flips a tile over to a tick when you pick
+   it. A tinted tile with its own tick says the same thing without the
+   animation, and reads at a glance down a grid of fifteen. */
+.pf-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(170px, 100%), 1fr));
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.pf-tile {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  width: 100%;
+  min-height: 62px;
+  padding: 12px 14px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text);
+  text-align: left;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+}
+.pf-tile:hover {
+  border-color: var(--c-gray-500);
+}
+.pf-tile.is-on {
+  color: var(--c-blue-ink);
+  background: var(--c-blue-wash);
+  border-color: var(--c-blue);
+}
+.pf-tile-art {
+  flex: none;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.pf-group-title {
+  margin-bottom: 8px;
+  font-size: 13px;
+  font-weight: 900;
+  color: var(--c-text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.pf-checks {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr));
+  gap: 8px 16px;
+}
+.pf-checks--stack {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.pf-levels {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pf-level {
+  display: block;
+  padding: 14px 16px;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 12px;
+}
+.pf-level:hover {
+  border-color: var(--c-gray-500);
+}
+.pf-level.is-on {
+  background: var(--c-blue-wash);
+  border-color: var(--c-blue);
+}
+/* `p.inline-hints` — what the site says this level means, under its name and
+   indented to the checkbox's label. */
+.pf-level-hint {
+  display: block;
+  margin-top: 4px;
+  margin-left: 28px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--c-text-light);
+}
+
+/* The Four Doorways: two across, each with its own colour and its own way in
+   to the explanation. */
+.pf-doorways {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 14px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.pf-doorway {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  padding: 18px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: #fff;
+  border: 2px solid var(--c-border);
+  border-radius: 14px;
+}
+.pf-doorway:hover {
+  border-color: var(--dw);
+}
+.pf-doorway.is-on {
+  background: color-mix(in srgb, var(--dw) 10%, #fff);
+  border-color: var(--dw);
+}
+.pf-doorway-art {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  background: color-mix(in srgb, var(--dw) 16%, #fff);
+  border-radius: 12px;
+}
+.pf-doorway-name {
+  font-size: 17px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+.pf-doorway-more {
+  padding: 8px 4px 0;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--c-blue);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.pf-doorway-more:hover {
+  text-decoration: underline;
+}
+
+.pf-one,
+.pf-basic {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  max-width: 340px;
+}
+
+.pf-foot {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  padding-top: 20px;
+  margin-top: 6px;
+  border-top: 1px solid var(--c-border);
+}
+
+.pf-phrases-head {
+  margin: 16px 0 8px;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+.pf-phrases {
+  padding-left: 20px;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--c-text);
+}
+
+/* ─── Edit avatar ───────────────────────────────────────────────────────── */
+.av-preview {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 18px;
+}
+.av-disc {
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  color: #b4593a;
+  border-radius: 999px;
+}
+.av-picked {
+  color: rgb(0 0 0 / 45%);
+}
+.av-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+.av-notice {
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--c-border);
+}
+
+/* The avatar modal's own sub-line under its title. */
+.modal-sub {
+  margin-top: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--c-text-light);
+}
+
+/* These two labels run to three lines, and the control centring itself against
+   all of them leaves it floating beside the middle sentence. */
+.av-notice .chk,
+.st-checks .chk,
+.pf-level .chk {
+  align-items: flex-start;
+}
+.av-notice .chk-box,
+.st-checks .chk-box,
+.pf-level .chk-box {
+  margin-top: 1px;
+}
