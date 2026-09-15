@@ -193,12 +193,7 @@ export function App() {
             />
 
             <div className="gr-board-foot">
-              <Button
-                variant="primary"
-                accent="#1A6DD5"
-                icon={<Icon name="book" size={16} />}
-                onClick={() => setLogOpen(true)}
-              >
+              <Button variant="primary" accent="#1A6DD5" onClick={() => setLogOpen(true)}>
                 Log Reading
               </Button>
               <button type="button" className="gr-link" onClick={resetDemo}>

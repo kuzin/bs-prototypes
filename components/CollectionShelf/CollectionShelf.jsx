@@ -21,10 +21,14 @@ import './CollectionShelf.css'
 /**
  * One card. `art` is whatever goes in the circular slot — an illustrated
  * medallion, or a glyph on a colored disc (see `BadgeDisc` below).
+ *
+ * `size="sm"` is the same card at two-thirds: for a strip of them beside
+ * something else rather than a shelf of their own — the friend profile's
+ * "Latest badges" row, in a modal that has four other sections to get through.
  */
-export function CollectionCard({ art, name, blurb, date, locked = false, progress }) {
+export function CollectionCard({ art, name, blurb, date, locked = false, progress, size = 'md' }) {
   return (
-    <article className={`co-card${locked ? ' co-card--locked' : ''}`}>
+    <article className={`co-card co-card--${size}${locked ? ' co-card--locked' : ''}`}>
       <div className="co-card-art" aria-hidden="true">
         {art}
         {/* The app rings a locked badge with its progress toward earning it. */}

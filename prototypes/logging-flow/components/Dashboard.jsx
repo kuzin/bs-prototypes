@@ -15,6 +15,7 @@ import {
   CommunityGoalBanner,
   LeaderboardCard,
   MotivationCard,
+  READER_TABS,
   ReaderTopBar,
   StreakBanner,
   bannerSrc,
@@ -446,9 +447,9 @@ export function Dashboard({
   registrationQuestions = [],
   registrationAnswers,
   onRegistrationAnswers,
-  /* The site's read-a-thon, if it is running one, and where Learn More goes. */
+  /* The site's read-a-thon, if it is running one. Given, the nav grows a
+     Fundraisers tab and the parent renders it from `renderExtra`. */
   fundraiser,
-  onOpenFundraiser,
   onOpenChallenge,
   onUnenrollChallenge,
   motivation,
@@ -531,9 +532,17 @@ export function Dashboard({
   const view = viewProp ?? viewState
   const setView = onViewProp ?? setViewState
   const extraIds = extraTabs.map((t) => t.id)
+  // A site running a read-a-thon gets a nav entry for it, ahead of Challenges —
+  // `display_fundraisers_nav_link`, which the app shows only where there is an
+  // active fundraiser. It is a destination, not something you reach from a
+  // banner you have already dismissed.
+  const tabs = fundraiser
+    ? [{ id: 'fundraisers', label: 'Fundraisers' }, ...READER_TABS]
+    : READER_TABS
   // A view the parent renders rather than this component: its own extra tabs,
   // plus any built-in tab it has claimed.
-  const owned = (id) => extraIds.includes(id) || ownTabs.includes(id)
+  const owned = (id) =>
+    extraIds.includes(id) || ownTabs.includes(id) || (id === 'fundraisers' && Boolean(fundraiser))
   // One banner covers every partner still to link, so waving it off is one
   // decision rather than one per app.
   const [dismissed, setDismissed] = useState(false)
@@ -559,6 +568,7 @@ export function Dashboard({
             onVisit={onVisitPartner}
           />
         }
+        tabs={tabs}
         active={view === 'challenges' || view === 'settings' ? 'challenges' : view}
         onTabChange={(id) => setView(id === 'log' || owned(id) ? id : 'challenges')}
         extraTabs={extraTabs}
@@ -617,7 +627,7 @@ export function Dashboard({
                   <FundraiserBanner
                     raised={fundraiser.raised}
                     goal={fundraiser.goal}
-                    onLearnMore={() => onOpenFundraiser?.(fundraiser)}
+                    onLearnMore={() => setView('fundraisers')}
                     onDismiss={() => setShowFundraiser(false)}
                   />
                 )}

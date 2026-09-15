@@ -262,11 +262,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
                     <div className="sm2-section-head">
                       <span className="sm2-section-title">Reading Confidence</span>
                       <div className="sm2-section-actions">
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          icon={<Icon name="pencil" size={13} />}
-                        >
+                        <Button variant="secondary" size="sm">
                           Override
                         </Button>
                       </div>
@@ -390,11 +386,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
           <Button variant="secondary">Edit Session</Button>
           <div className="sm2-footer-actions">
             <button className="sm2-btn sm2-btn--danger">Delete Session</button>
-            <Button
-              variant="primary"
-              onClick={onClose}
-              icon={<Icon name="check" size={13} stroke={2.2} />}
-            >
+            <Button variant="primary" onClick={onClose}>
               Approve Session
             </Button>
           </div>

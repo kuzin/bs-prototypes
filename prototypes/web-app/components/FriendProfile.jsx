@@ -5,9 +5,9 @@ import { Button } from '@components/Button/Button'
 import { Modal, ModalClose } from '@components/Modal/Modal'
 import { Tabs } from '@components/Tabs/Tabs'
 import { StatCard } from '@components/Cards/Cards'
-import { EmptyState, Tooltip } from '@components/Primitives/Primitives'
+import { EmptyState } from '@components/Primitives/Primitives'
 import { ChallengeCard, badgeSrc } from '@components/ReaderApp/ReaderApp'
-import { BadgeArt, ShelfHead } from '@components/CollectionShelf/CollectionShelf'
+import { BadgeArt, CollectionCard, ShelfHead } from '@components/CollectionShelf/CollectionShelf'
 
 import { AchievementArt } from '../../books/components/AchievementArt'
 import { BookCover } from '../../logging-flow/components/BookCover'
@@ -82,22 +82,11 @@ function HeaderCurve({ color }) {
   )
 }
 
-/**
- * One earned thing in the strip: its art over its name, with the detail on a
- * tooltip — the app hangs the same detail off the thumbnail's `title`.
- */
-function EarnedItem({ art, name, detail }) {
-  return (
-    <Tooltip content={detail}>
-      <div className="fp-earned">
-        <span className="fp-earned-art">{art}</span>
-        <span className="fp-earned-name">{name}</span>
-      </div>
-    </Tooltip>
-  )
-}
-
-/** The app's `.badges-container`: a row of earned art, scrolled if it overruns. */
+/** The app's `.badges-container`: a row of earned things, scrolled if it
+    overruns. They are the design system's own `CollectionCard` at `sm` — the
+    same card All Badges and the challenge page use, so a badge looks like a
+    badge wherever you meet one. They were art over a name with everything else
+    on a tooltip, which is a thing you have to hover to read. */
 function EarnedStrip({ children }) {
   return <div className="fp-strip">{children}</div>
 }
@@ -112,11 +101,13 @@ function Overview({ friend }) {
       {badges.length > 0 ? (
         <EarnedStrip>
           {badges.map((b) => (
-            <EarnedItem
+            <CollectionCard
               key={b.name}
+              size="sm"
               art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
               name={b.name}
-              detail={`Earned in ${CHALLENGES.find((c) => c.badges === b.set)?.title ?? 'a challenge'} · ${b.date}`}
+              blurb={CHALLENGES.find((c) => c.badges === b.set)?.title ?? 'A challenge'}
+              date={b.date}
             />
           ))}
         </EarnedStrip>
@@ -132,11 +123,13 @@ function Overview({ friend }) {
       {achievements.length > 0 ? (
         <EarnedStrip>
           {achievements.map((a) => (
-            <EarnedItem
+            <CollectionCard
               key={a.name}
+              size="sm"
               art={<AchievementArt art={a.art} />}
               name={a.name}
-              detail={`${a.detail} · ${a.date}`}
+              blurb={a.detail}
+              date={a.date}
             />
           ))}
         </EarnedStrip>

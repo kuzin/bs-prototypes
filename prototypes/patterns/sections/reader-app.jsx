@@ -306,7 +306,7 @@ export const readerAppSections = [
                   <Button
                     variant="secondary"
                     size="sm"
-                    icon={<Icon name="chevron-down" size={13} />}
+                    iconRight={<Icon name="chevron-down" size={13} />}
                   >
                     Add Review
                   </Button>
@@ -571,7 +571,7 @@ export const readerAppSections = [
             <ReaderPageHead
               title="Reviews"
               actions={
-                <Button variant="primary" size="md" icon={<Icon name="writing" size={15} />}>
+                <Button variant="primary" size="md">
                   Write a Review
                 </Button>
               }
@@ -951,9 +951,16 @@ export const readerAppSections = [
         the reader app, and it is cheerful on purpose.
       </>
     ),
+    // Not a `full` variant: `full` clips the card to its corners, and a Flyout
+    // is anchored inline rather than portaled, so the open menu was cut off at
+    // the card's edge. The fix for that had been 200px of reserved padding,
+    // sitting empty under a closed one.
+    //
+    // The negative margin takes back the bar's own 24px — that is its gap to
+    // the Friends grid underneath it, and there is no grid here.
     render: () => (
-      <Variant label="two waiting — open the menu" full>
-        <div style={{ padding: '20px 20px 200px', background: '#fff' }}>
+      <Variant label="two waiting — open the menu">
+        <div style={{ background: '#fff', marginBottom: -24 }}>
           <FriendRequests
             requests={[
               { id: 'maya', name: 'Maya C.', initials: 'MC', color: '#F0966F' },
@@ -1095,7 +1102,9 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
 
 <FundraiserBanner raised={3180} goal={5000} onLearnMore={open} onDismiss={hide} />
 
-<FundraiserPage fundraiser={fundraiser} entries={log} onBack={close} />
+/* a nav destination, so no back link: a site running one gets its
+   own tab, ahead of Challenges */
+<FundraiserPage fundraiser={fundraiser} entries={log} />
 
 <FundraiserWelcome open={!seen} onClose={markSeen} />`,
     desc: (
@@ -1119,10 +1128,12 @@ import { FundraiserBanner } from '@components/ReaderApp/ReaderApp'
         <code>donation_sponsor</code> is a business the site lined up rather than somebody who knows
         the reader, so it carries no message — it sponsored the fundraiser, not them.
         <br />
-        <br />
-        <code>FundraiserBanner</code> is <code>_fundraiser_main_banner</code>, which a site running
-        one shows on every page; without a goal it reads &ldquo;$3,180 total raised&rdquo; and drops
-        the bar, since a bar with nothing to fill to can only ever look wrong.{' '}
+        <br />A site running one gets <strong>its own nav tab, ahead of Challenges</strong> (
+        <code>display_fundraisers_nav_link</code>, shown only where there is an active fundraiser),
+        so the page is a destination rather than something you reach from a banner you have already
+        dismissed. <code>FundraiserBanner</code> is <code>_fundraiser_main_banner</code>, which that
+        site shows on every page; without a goal it reads &ldquo;$3,180 total raised&rdquo; and
+        drops the bar, since a bar with nothing to fill to can only ever look wrong.{' '}
         <code>FundraiserWelcome</code> is the modal a reader gets once, the first time they land on
         such a site — remembered in localStorage by the app, a flag here.
       </>

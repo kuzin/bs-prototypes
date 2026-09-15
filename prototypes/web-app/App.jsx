@@ -217,9 +217,8 @@ export function App() {
   // The site's registration questions are asked once, on the first challenge
   // this reader joins — the answers are the profile's, not the challenge's.
   const [regAnswers, setRegAnswers] = useState({})
-  // The read-a-thon's own page, and the once-per-reader welcome the app pops
-  // the first time they land on a site running one.
-  const [fundraiser, setFundraiser] = useState(null)
+  // The once-per-reader welcome the app pops the first time they land on a site
+  // running a read-a-thon. The fundraiser itself is a nav tab, not a page state.
   const [welcomed, setWelcomed] = useState(false)
 
   const [stack, setStack] = useState([])
@@ -278,6 +277,7 @@ export function App() {
 
   // The pages this prototype owns, by tab id.
   function renderTab(id) {
+    if (id === 'fundraisers') return <FundraiserPage fundraiser={FUNDRAISER} entries={log} />
     if (id === 'badges') return <AllBadges />
     if (id === 'friends') return <Friends />
     if (id === 'reviews') return <ReviewsPage composing={composing} onCompose={setComposing} />
@@ -344,7 +344,6 @@ export function App() {
           setView(v)
           setChallenge(null)
           setStack([])
-          setFundraiser(null)
         }}
         ownTabs={OWN_TABS}
         hideTabs={HIDE_TABS}
@@ -384,11 +383,6 @@ export function App() {
           features: { avatars: true, gradeLevels: true, recommendations: true },
         }}
         fundraiser={features.fundraiser ? FUNDRAISER : null}
-        onOpenFundraiser={(f) => {
-          setChallenge(null)
-          setStack([])
-          setFundraiser(f)
-        }}
         registrationQuestions={features.registrationQuestions ? REGISTRATION_QUESTIONS : []}
         registrationAnswers={regAnswers}
         onRegistrationAnswers={setRegAnswers}
@@ -402,13 +396,7 @@ export function App() {
         onAcceptFriend={(r) => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
         onDeclineFriend={(r) => setRequests((rs) => rs.filter((x) => x.id !== r.id))}
         page={
-          fundraiser ? (
-            <FundraiserPage
-              fundraiser={fundraiser}
-              entries={log}
-              onBack={() => setFundraiser(null)}
-            />
-          ) : top ? (
+          top ? (
             renderRoute()
           ) : challenge ? (
             <ChallengePage

@@ -170,9 +170,10 @@ export function FundraiserPage({ fundraiser, entries, onBack }) {
           {earned.map((b) => (
             <CollectionCard
               key={b.name}
-              art={<BadgeArt src={badgeSrc(b.set, b.art)} alt="" />}
-              title={b.name}
-              sub={b.date}
+              art={<BadgeArt src={badgeSrc(b.set, b.art)} />}
+              name={b.name}
+              blurb={b.blurb}
+              date={`Earned ${b.date}`}
             />
           ))}
         </ShelfGrid>

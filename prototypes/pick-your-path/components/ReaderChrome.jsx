@@ -23,10 +23,10 @@ export function ReaderTopBar({ active = 'challenges', onNav }) {
           <span className="pyp-logo-word">beanstack</span>
         </div>
         <div className="pyp-topbar-actions">
-          <Button variant="primary" size="sm" icon={<Icon name="book" size={15} />}>
+          <Button variant="primary" size="sm">
             Log Reading and Activities
           </Button>
-          <Button variant="ghost" size="sm" icon={<Icon name="writing" size={15} />}>
+          <Button variant="ghost" size="sm">
             Write Review
           </Button>
         </div>

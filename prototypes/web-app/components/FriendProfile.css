@@ -101,39 +101,18 @@
    strip rather than a wall of cards — the name under the art, the rest on the
    tooltip. It scrolls sideways when a reader has more than fits. */
 
+/* The strip of earned things — the shared `CollectionCard` at `sm`, in a row
+   that scrolls rather than a grid that wraps: this is a modal with four other
+   sections under it, and a shelf here would be the whole of it. */
 .fp-strip {
   display: flex;
-  gap: 18px;
+  gap: 12px;
   padding-bottom: 6px;
   overflow-x: auto;
   scrollbar-width: thin;
 }
-.fp-earned {
-  display: flex;
-  flex: 0 0 92px;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  text-align: center;
-}
-.fp-earned-art {
-  display: grid;
-  place-items: center;
-  width: 72px;
-  height: 72px;
-  overflow: hidden;
-  border-radius: 999px;
-}
-.fp-earned-art > img,
-.fp-earned-art > svg {
-  width: 100%;
-  height: 100%;
-}
-.fp-earned-name {
-  font-size: 13px;
-  font-weight: 800;
-  line-height: 1.25;
-  color: var(--c-text-dark);
+.fp-strip .co-card {
+  flex: 0 0 148px;
 }
 
 /* ─── Statistics ─────────────────────────────────────────────────────────

@@ -152,3 +152,36 @@
     margin-top: 18px;
   }
 }
+
+/* ─── The small card ─────────────────────────────────────────────────────────
+   The same card at two-thirds, for a strip of them beside something else
+   rather than a shelf of their own. Everything scales; nothing is dropped, so
+   a badge still says what it is and when it was earned. */
+.co-card--sm {
+  padding-top: 18px;
+}
+.co-card--sm .co-card-art {
+  width: 68px;
+  height: 68px;
+}
+.co-card--sm .co-card-name {
+  padding: 0 14px;
+  margin-top: 11px;
+  font-size: 14px;
+}
+.co-card--sm .co-card-blurb {
+  padding: 0 14px;
+  margin-top: 6px;
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+.co-card--sm .co-card-foot {
+  padding: 10px 0;
+  margin-top: 14px;
+  font-size: 12px;
+}
+.co-card--sm .co-card-ring {
+  inset: -4px;
+  width: calc(100% + 8px);
+  height: calc(100% + 8px);
+}

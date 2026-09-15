@@ -315,7 +315,6 @@ function ReaderActions({ onClose, student }) {
         trigger={({ toggle }) => (
           <Button
             variant="secondary"
-            icon={<Icon name="dots" size={16} />}
             iconRight={
               <Icon
                 name="chevron-down"
@@ -2791,13 +2790,7 @@ function ReadingLogPage({ reader }) {
         accent={SECTION_ACCENT.readinglog.text}
         accentBg={SECTION_ACCENT.readinglog.bg}
         action={
-          <Button
-            variant="secondary"
-            size="msm"
-            aria-label="Print log"
-            title="Print log"
-            icon={<Icon name="printer" size={16} stroke={2.1} />}
-          >
+          <Button variant="secondary" size="msm" aria-label="Print log" title="Print log">
             <span className="rp-btn-label">Print log</span>
           </Button>
         }
@@ -4260,16 +4253,11 @@ function ChallengeLogSheet({ open, onClose, student, challenge }) {
       <div className="rp-clog">
         {/* Screen-only chrome: it must not print. */}
         <div className="rp-clog-bar">
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<Icon name="chevron-left" size={14} />}
-            onClick={onClose}
-          >
+          <Button variant="secondary" size="sm" onClick={onClose}>
             Back
           </Button>
           <span className="rp-clog-bar-title">Challenge log</span>
-          <Button size="sm" icon={<Icon name="printer" size={15} />} onClick={() => window.print()}>
+          <Button size="sm" onClick={() => window.print()}>
             Print
           </Button>
         </div>

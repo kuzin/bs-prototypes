@@ -52,7 +52,6 @@ export function PathPickerModal({ open, offered, chosenPathId, onChoose, onClose
                   variant="primary"
                   size="lg"
                   className="pyp-pickrow-cta"
-                  icon={<Icon name="arrow-right" size={18} />}
                   onClick={() => onChoose(path.id)}
                 >
                   {current ? 'Continue' : 'Choose'}
