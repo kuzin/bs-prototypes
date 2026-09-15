@@ -117,15 +117,24 @@ function FriendCard({ person, onRemove, onOpen }) {
       <div className="fr-card-foot">
         <span className="fr-card-name">{person.name}</span>
         <span className="fr-card-grade">{person.grade}</span>
+        {/* The streak and a pending invite share this slot, so they are the
+            same object: a soft pill, the streak in flame red and the invite in
+            grey. A bare red number beside a pill read as two different kinds of
+            thing in the same place. */}
         {pending ? (
-          <Pill color="#656565" variant="soft" size="sm">
+          <Pill color="#656565" variant="soft" size="sm" className="fr-card-tag">
             Pending Invite
           </Pill>
         ) : (
-          <span className={`fr-card-streak${person.streak ? '' : ' is-none'}`}>
-            <Icon name="flame-filled" size={15} />
+          <Pill
+            color={person.streak ? '#dc493a' : '#acacac'}
+            variant="soft"
+            size="sm"
+            className="fr-card-tag"
+            icon={<Icon name="flame-filled" size={14} />}
+          >
             {person.streak}
-          </span>
+          </Pill>
         )}
       </div>
     </div>

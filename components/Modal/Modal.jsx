@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { useLockScroll } from '@components/useLockScroll/useLockScroll'
 import '@components/Modal/Modal.css'
 
 const ANIM_DURATION = 220
@@ -36,6 +37,13 @@ export function Modal({
   // which would otherwise leave an empty panel collapsing to a line).
   const lastChildren = useRef(children)
   if (open) lastChildren.current = children
+
+  /* A full-screen surface covers the window, so the page behind it holds
+     still — otherwise it keeps its own scrollbar beside the surface's and a
+     wheel over the wrong half scrolls a screen nobody can see. The side and
+     centre variants leave the page alone: their backdrop already swallows the
+     wheel, and locking would shift the page under a dialogue you can see past. */
+  useLockScroll(open && variant === 'full')
 
   // Request a close — let the parent flip `open`; the effect below plays the
   // exit animation and unmounts. (Backdrop/Escape route through here too.)

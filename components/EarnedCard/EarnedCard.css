@@ -1,0 +1,125 @@
+/* ─── What a log earned ──────────────────────────────────────────────────────
+   `logged_books/_completed_earned_card`. One card per thing won, with whatever
+   came with it as its own row underneath. Shared by the logging flow's success
+   screen and the Epic import's — an import is a batch of logs, so it earns
+   things the same way and should say so the same way. */
+
+.ec {
+  width: 100%;
+  padding: 20px;
+  text-align: left;
+  background: #fff;
+  border: 2px solid var(--c-gray-200);
+  border-radius: 10px;
+}
+.ec {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.ec-label {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+.ec-body {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+.ec-art {
+  flex: none;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+}
+/* A drawn medallion sizes itself, so the slot just holds it. */
+.ec-art--drawn {
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+}
+.ec-art--drawn svg,
+.ec-art--drawn > * {
+  width: 100%;
+  height: 100%;
+}
+.ec-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+/* The badge's own name rides above what it took, which is the headline — you
+   know what you did before you know what it's called. */
+.ec-eyebrow,
+.ec-desc {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+.ec-title {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+.ec-body .btn {
+  flex: none;
+}
+
+/* Ruled off: a reward is a different kind of fact from the badge that won it. */
+.ec-extras {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--c-gray-200);
+}
+.ec-extra {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.ec-extra-art {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+.ec-extra-art--reward {
+  color: #7c2d8f;
+  background: #f9d8ff;
+}
+.ec-extra-art--ticket {
+  color: #826022;
+  background: #ffefbe;
+}
+.ec-extra-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.ec-extra-label {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+.ec-extra-title {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+.ec-extra .btn {
+  flex: none;
+}

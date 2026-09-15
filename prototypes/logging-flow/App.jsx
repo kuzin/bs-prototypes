@@ -2,11 +2,11 @@ import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 
 import { Dashboard } from './components/Dashboard'
-import { LogFlow } from './components/LogFlow'
+import { LogFlow } from '@components/LogFlow/LogFlow'
 import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
-import { BookCover } from './components/BookCover'
-import { STREAK, DAILY_GOAL, READER, BOOKS } from './data'
-import { CONNECTIONS, TAKEN_USERNAMES, partnerMinutes } from './connections'
+import { BookCover } from '@components/BookCover/BookCover'
+import { STREAK, DAILY_GOAL, READER, BOOKS, LOG_FIXTURES } from './data'
+import { CONNECTIONS, CONNECTION_LIST, TAKEN_USERNAMES, partnerMinutes } from './connections'
 import './index.css'
 
 export function App() {
@@ -66,6 +66,12 @@ export function App() {
         onClose={() => setFlowOpen(false)}
         onLogged={handleLogged}
         connections={connections}
+        {...LOG_FIXTURES}
+        partners={CONNECTION_LIST}
+        /* `multiDate` is `@multiclick_enabled` — this site has a Days log type,
+           so the calendar takes several dates at once. */
+        site={{ multiDate: true, backlogDays: 14 }}
+        dailyGoal={dailyGoal}
       />
       {visiting && connections[visiting] && (
         <PartnerCatalog

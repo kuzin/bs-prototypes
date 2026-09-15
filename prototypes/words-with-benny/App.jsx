@@ -8,7 +8,8 @@ import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 // exactly where a reader would actually be standing. Both take the vocabulary
 // layer through optional props they already support for this kind of add-on.
 import { Dashboard } from '../logging-flow/components/Dashboard'
-import { LogFlow } from '../logging-flow/components/LogFlow'
+import { LogFlow } from '@components/LogFlow/LogFlow'
+import { LOG_FIXTURES } from '../logging-flow/data'
 
 import { WordUnlock } from './components/WordUnlock'
 import { Flashcards } from './components/Flashcards'
@@ -279,6 +280,7 @@ export function App() {
         onClose={() => setFlowOpen(false)}
         onLogged={handleLogged}
         onOpenWord={pending ? openWord : undefined}
+        {...LOG_FIXTURES}
         {...NO_PARTNERS}
         {...OWN_BOOKS}
       />

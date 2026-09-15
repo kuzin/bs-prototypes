@@ -8,7 +8,8 @@ import { ReaderTopBar } from '@components/ReaderApp/ReaderApp'
 import { BennyChat } from '../components/BennyChat'
 // Entry point 4 uses the REAL logging flow, reused from the Logging Flow
 // prototype — Benny's hand-off is an additive prop on its success step.
-import { LogFlow } from '../../logging-flow/components/LogFlow'
+import { LogFlow } from '@components/LogFlow/LogFlow'
+import { LOG_FIXTURES } from '../../logging-flow/data'
 import { CHALLENGE, BENNY_FACE } from '../data'
 
 import bannerImg from '../assets/challenge/banner.png'
@@ -350,6 +351,7 @@ export function StudentView({ badge, selfStart = true }) {
       {logOpen && (
         <LogFlow
           open
+          {...LOG_FIXTURES}
           onClose={() => setLogOpen(false)}
           // Only offer the hand-off when the self-start trigger is on.
           onTalkToBenny={selfStart ? startSelfTalk : undefined}

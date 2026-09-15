@@ -10,7 +10,7 @@ import { RowAction, RowActions } from '@components/RowAction/RowAction'
 import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 
-import { BookCover } from '../../logging-flow/components/BookCover'
+import { BookCover } from '@components/BookCover/BookCover'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { CATALOG, MOODS } from '../data'
 import './BookPage.css'

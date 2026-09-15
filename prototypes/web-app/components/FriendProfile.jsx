@@ -10,7 +10,7 @@ import { ChallengeCard, badgeSrc } from '@components/ReaderApp/ReaderApp'
 import { BadgeArt, CollectionCard, ShelfHead } from '@components/CollectionShelf/CollectionShelf'
 
 import { AchievementArt } from '../../books/components/AchievementArt'
-import { BookCover } from '../../logging-flow/components/BookCover'
+import { BookCover } from '@components/BookCover/BookCover'
 import { BOOKS, CHALLENGES } from '../../logging-flow/data'
 import { getFriend } from '../data'
 import './FriendProfile.css'

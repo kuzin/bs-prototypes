@@ -32,7 +32,13 @@ import { BookLists, BookListPage } from '../../web-app/components/BookLists'
 import { FindBooks } from '../../web-app/components/FindBooks'
 import { BookPage } from '../../web-app/components/BookPage'
 import { ACTIVITY_BADGES, BOOK_LISTS, CATALOG_BY_ID, WISH_LIST } from '../../web-app/data'
-import { READING_LOG } from '../../logging-flow/data'
+import { READING_LOG, LOG_FIXTURES } from '../../logging-flow/data'
+import { CONNECTION_LIST } from '../../logging-flow/connections'
+import { LogFlow, LogSuccess } from '@components/LogFlow/LogFlow'
+import { LogCalendar } from '@components/LogCalendar/LogCalendar'
+import { BookCover } from '@components/BookCover/BookCover'
+import { EpicImport } from '@components/EpicImport/EpicImport'
+import { AchievementArt } from '../../books/components/AchievementArt'
 import { FriendRequests } from '@components/FriendRequests/FriendRequests'
 import { FriendProfile } from '../../web-app/components/FriendProfile'
 import { ChallengePage } from '../../web-app/components/ChallengePage'
@@ -49,6 +55,23 @@ import { Variant } from './_shared'
 const noop = () => {}
 
 const READER = { initials: 'OM', name: 'Olivia' }
+
+/* A title with no cover on the CDN and a magazine, so the two placeholders both
+   get shown rather than only the happy path. */
+const DEMO_BOOK = {
+  id: 'demo',
+  title: 'The Wild Robot Escapes',
+  author: 'Peter Brown',
+  cover: ['#2E7D6F', '#14463F'],
+}
+const DEMO_MAG = {
+  id: 'demo-mag',
+  kind: 'magazine',
+  title: 'Scholastic News',
+  masthead: 'Scholastic News',
+  issue: 'May 2026 · Save the Bees!',
+  cover: ['#D8342B', '#8E1A14'],
+}
 
 const OTHER_READERS = [
   { id: 'noah', name: 'Noah Martinez', initials: 'NM', color: '#7C5CFA' },
@@ -139,6 +162,130 @@ const TOP_GRADES = [
 
 // The bar is sticky and full-bleed; inside a showcase card it wants a plain
 // block to sit in so it doesn't try to pin itself to the page.
+/* The logging flow takes the whole screen, so the demo opens it from a button
+   the way the reader's top bar does rather than trying to inline it. */
+function LogFlowDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>Log Reading</Button>
+      <LogFlow
+        open={open}
+        onClose={() => setOpen(false)}
+        {...LOG_FIXTURES}
+        partners={CONNECTION_LIST}
+        site={{ multiDate: true, backlogDays: 14 }}
+        dailyGoal={{ minutes: 8, goal: 20 }}
+      />
+    </>
+  )
+}
+
+function LogCalendarDemo() {
+  const [open, setOpen] = useState(false)
+  const [dates, setDates] = useState([])
+  const back = (n) => {
+    const d = new Date()
+    d.setDate(d.getDate() - n)
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  }
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Select Date
+      </Button>
+      <LogCalendar
+        open={open}
+        value={dates}
+        logged={[1, 2, 3, 5, 8, 9, 12].map(back)}
+        multi
+        backlogDays={14}
+        onSave={(d) => {
+          setDates(d)
+          setOpen(false)
+        }}
+        onClose={() => setOpen(false)}
+      />
+    </>
+  )
+}
+
+/* The three kinds of thing a log can win, which is what the earned cards are
+   for: a badge with its payout, a challenge completed, and an achievement —
+   the app's `completed_summary_earnables` is an `EarnedBadge`, a
+   `BadgeRequirement` or an `EarnedAchievement`. An achievement's art is a drawn
+   medallion rather than a file, which is why it comes in as a node. */
+const BADGE_CARD = {
+  id: 'page-turner',
+  label: 'Badge Earned',
+  eyebrow: 'Page Turner',
+  title: 'Finish a Title',
+  description: 'For the Love of Reading',
+  art: '/bs-prototypes/challenge-badges/for-the-love-of-reading/heart-balloon.webp',
+  reward: 'Sticker Pack',
+  tickets: 2,
+}
+const CHALLENGE_CARD = {
+  id: 'completed',
+  label: 'Challenge Complete',
+  eyebrow: 'For the Love of Reading',
+  title: 'Completed!',
+  description: 'Every badge in the challenge',
+  art: '/bs-prototypes/challenge-badges/for-the-love-of-reading/completed.webp',
+  reward: 'Bookmark',
+}
+const STREAK_CARD = {
+  id: 'streak',
+  label: 'Achievement Earned',
+  title: '30 Day Streak',
+  description: 'A month without missing a day',
+  art: <AchievementArt art="streak" />,
+  viewLabel: 'View Achievement',
+}
+
+/* The success screen on its own. Its mood is random in the flow, so the demo
+   fixes one per variant rather than reloading until you've seen all three. */
+function logResult(mood, extra = {}) {
+  return {
+    logType: 'minute',
+    measure: 'minutes',
+    minutes: 45,
+    logValue: 45,
+    unit: 'minute',
+    days: 1,
+    dates: [],
+    fields: {},
+    mood,
+    finished: false,
+    earned: [],
+    reader: READER,
+    ...extra,
+  }
+}
+
+function EpicImportDemo() {
+  const [open, setOpen] = useState(false)
+  return (
+    <>
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Import from Epic
+      </Button>
+      <EpicImport
+        open={open}
+        profiles={[
+          { id: 'p1', name: 'Olivia Martinez' },
+          { id: 'p2', name: 'Noah Martinez' },
+        ]}
+        epicReaders={[
+          { id: 'e1', name: 'Olivia Martinez', books: 12, minutes: 340 },
+          { id: 'e2', name: 'Noah Martinez', books: 5, minutes: 120 },
+        ]}
+        onClose={() => setOpen(false)}
+      />
+    </>
+  )
+}
+
 function BarFrame({ children }) {
   return (
     <div style={{ position: 'relative', background: '#fff', overflowX: 'auto' }}>
@@ -1629,6 +1776,260 @@ import { FundraiserCard } from '@components/ReaderApp/ReaderApp'
       <Variant label="eight tabs' worth — Overview, and the four the challenge earns" full>
         <div style={{ padding: '0 20px 20px', background: '#fff' }}>
           <ChallengePage challenge={CHALLENGES[0]} entries={READING_LOG} />
+        </div>
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    sub: 'reading',
+    id: 'log-flow',
+    name: 'LogFlow',
+    usage: `import { LogFlow } from '@components/LogFlow/LogFlow'
+
+<LogFlow
+  open={open}
+  onClose={close}
+  onLogged={(entry) => record(entry)}
+  logType="minute"                       /* LogType short_name — the type this site logs in */
+  books={catalog}                        /* the shelf it searches */
+  recentlyLogged={ids}
+  readingList={list}                     /* the reader's Reading List Challenges band */
+  reader={reader}
+  readers={otherReaders}                 /* "Select a different reader" */
+  partners={partnerList}
+  connections={linked}
+  dailyGoal={{ minutes, goal }}          /* drives the goal bar on the way out */
+  site={{ rostered, verified, backlogDays: 14, multiDate: true, timer: true }}
+  onViewBadge={(card) => openBadge(card)}
+  onTickets={(card) => goToRewards(card.challenge)}
+/>`,
+    desc: (
+      <>
+        <strong>Log Reading</strong> — <code>logged_books#new</code> through <code>#create</code>,
+        the whole full-screen flow: pick a title, say how much, and land on what it earned you.
+        <br />
+        <br />
+        The <strong>title step</strong> is <code>Select a Title</code> — a search over the site
+        catalog, with Scan ISBN, Manually Enter Title and Reading List Challenges as equal
+        alternatives, and <em>Log without a title</em> for a site that doesn&apos;t insist on one.
+        <br />
+        <br />
+        The <strong>form</strong> asks for whatever this site&apos;s <code>LogType</code> measures —
+        minutes with a timer, a count of pages or hours or books, or the questions the four
+        title-less types ask instead (a moment&apos;s description, an event&apos;s name and kind, a
+        video or magazine title). <code>Select Date</code> opens the calendar below. On a rostered
+        site an unverified reader&apos;s number is policed: over the warning threshold they are
+        asked whether they&apos;re sure and made to promise, and at the limit it is refused.
+        <br />
+        <br />
+        The <strong>success step</strong> is the app&apos;s own — Benny in one of three moods under
+        a burst of confetti, the daily-goal bar, and a card per thing the log earned with{' '}
+        <em>View Badge</em> and <em>Go to Tickets</em> on it.
+        <br />
+        <br />
+        It ships no fixtures: every catalog, reader and list comes in as a prop, so each prototype
+        hands it its own shelf.
+      </>
+    ),
+    render: () => (
+      <Variant label="the whole flow, opened the way the top bar opens it">
+        <LogFlowDemo />
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    sub: 'reading',
+    id: 'log-success',
+    name: 'LogSuccess',
+    usage: `import { LogSuccess } from '@components/LogFlow/LogFlow'
+
+<LogSuccess
+  result={entry}                         /* what LogFlow hands onLogged */
+  bookTitle="She Gets the Girl"
+  dailyGoal={{ minutes, goal }}          /* school sites with individual goals */
+  onDone={close}
+  onAnother={startAnother}
+  onViewBadge={(card) => openBadge(card)}
+  onTickets={(card) => goToRewards(card.challenge)}
+/>`,
+    desc: (
+      <>
+        <strong>You did it!</strong> — <code>logged_books#completed</code>, the screen a finished
+        log lands on. Normally the last step of <code>LogFlow</code>; exported on its own because
+        it&apos;s the one screen in that flow worth looking at without driving through the rest.
+        <br />
+        <br />
+        Benny in one of <strong>three moods</strong> — <code>happy</code>, <code>cool</code>,{' '}
+        <code>party</code> — the app&apos;s own three files, picked at random per log. Which mood
+        you get is the only random thing here, and it&apos;s what stops the fiftieth log of the
+        summer feeling like the first forty-nine. In the flow he lands under a burst of confetti,
+        which rides the whole surface rather than this block.
+        <br />
+        <br />
+        Under it: what was logged, the <strong>daily goal</strong> it moved — a 32px yellow pill, a
+        pinch, then the goal itself as its own disc, which goes yellow when you reach it — and a
+        card per thing the log <strong>earned</strong>, with <em>View Badge</em> and{' '}
+        <em>Go to Tickets</em> on it.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant
+          label="party — everything at once: two badges, an achievement, and the goal passed"
+          full
+        >
+          <div className="pt-logsuccess">
+            <LogSuccess
+              result={logResult('party', {
+                finished: true,
+                earnedBadge: true,
+                earned: [BADGE_CARD, CHALLENGE_CARD, STREAK_CARD],
+              })}
+              bookTitle="She Gets the Girl"
+              dailyGoal={{ minutes: 45, goal: 20 }}
+              onDone={noop}
+              onAnother={noop}
+              onViewBadge={noop}
+              onReward={noop}
+              onTickets={noop}
+            />
+          </div>
+        </Variant>
+        <Variant label="happy — one achievement, and the goal still short" full>
+          <div className="pt-logsuccess">
+            <LogSuccess
+              result={logResult('happy', { earned: [STREAK_CARD] })}
+              bookTitle="Rump"
+              dailyGoal={{ minutes: 12, goal: 20 }}
+              onDone={noop}
+              onAnother={noop}
+              onViewBadge={noop}
+            />
+          </div>
+        </Variant>
+        <Variant label="cool — nothing but the log" full>
+          <div className="pt-logsuccess">
+            <LogSuccess result={logResult('cool')} bookTitle="Snapdragon" onDone={noop} />
+          </div>
+        </Variant>
+      </>
+    ),
+  },
+  {
+    group: 'web-app',
+    sub: 'reading',
+    id: 'epic-import',
+    name: 'EpicImport',
+    usage: `import { EpicImport } from '@components/EpicImport/EpicImport'
+
+<EpicImport
+  open={open}
+  profiles={beanstackProfiles}            /* who the logs can land on */
+  epicReaders={readersFromEpic}           /* [{ id, name, books, minutes }] */
+  onClose={close}
+  onImported={(rows) => record(rows)}
+/>
+
+/* offered by the logging flow when the site has it on */
+<LogFlow site={{ epic: true }} … />`,
+    desc: (
+      <>
+        <strong>Import from Epic</strong> — <code>epic_integration#login</code> →{' '}
+        <code>#sync_readers</code> → <code>#loading_epic_import</code>, offered from the logging
+        flow when <code>microsite_settings.epic_integration?</code> is on.
+        <br />
+        <br />A <strong>one-shot import</strong>, not an account link — which is why it isn&apos;t{' '}
+        <code>ConnectFlow</code>. Nothing stays connected: Epic hands over what the reader has
+        already read there, Beanstack logs it, and that&apos;s the end of it.
+        <br />
+        <br />
+        Three steps. <strong>Sign in</strong> as a student with a class code or as a parent with a
+        username — Epic&apos;s own two doors, which is why the first screen is a choice rather than
+        a form. <strong>Select Readers to Import</strong>, because an Epic account can hold several
+        readers and a Beanstack account several profiles; the app pre-matches on name and warns
+        where two Epic readers share one. Then <strong>what came across</strong>, per reader.
+        <br />
+        <br />
+        It renders in Epic&apos;s own blue — the reader is handing over Epic credentials, so the
+        screen should look like Epic&apos;s — but the back and close are Beanstack&apos;s shared{' '}
+        <code>ModalFullBack</code> / <code>ModalFullClose</code>, since the way out of a screen
+        shouldn&apos;t change shape halfway through a flow.
+      </>
+    ),
+    render: () => (
+      <Variant label="sign in · map the readers · what came across">
+        <EpicImportDemo />
+      </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    sub: 'reading',
+    id: 'log-calendar',
+    name: 'LogCalendar',
+    usage: `import { LogCalendar, readableDates } from '@components/LogCalendar/LogCalendar'
+
+<LogCalendar
+  open={open}
+  value={dates}                          /* ISO strings — logged_book[date_read] is a list */
+  logged={alreadyLoggedISODates}         /* these get a dot */
+  multi={site.multiDate}                 /* @multiclick_enabled — a site with a Days log type */
+  backlogDays={14}                       /* microsite_settings.back_logging_days */
+  onSave={setDates}
+  onClose={close}
+/>
+
+readableDates(dates)  /* "Today" · "September 12, 2026, September 15, 2026" */`,
+    desc: (
+      <>
+        <strong>Change Date</strong> — <code>logged_books/_logging_calendar</code>, behind the
+        logging form&apos;s <code>Select Date</code>.
+        <br />
+        <br />A real calendar rather than a list of the last few days, because the app lets you log
+        backwards: a reader who forgot all week opens this and ticks five days at once. Days already
+        logged carry a dot so you can see the gap you&apos;re filling; future days aren&apos;t
+        selectable; days past the site&apos;s backlogging window are refused with the app&apos;s own
+        line about how far back you may go; and so is more than 31. Where a site has a Days log
+        type, <em>Select Entire Month</em> ticks the whole page.
+      </>
+    ),
+    render: () => (
+      <Variant label="multi-select, a 14-day window, dots on the days already logged">
+        <LogCalendarDemo />
+      </Variant>
+    ),
+  },
+  {
+    group: 'cards',
+    id: 'book-cover',
+    name: 'BookCover',
+    usage: `import { BookCover } from '@components/BookCover/BookCover'
+
+<BookCover book={book} size="md" />      /* sm | md | lg | fill */
+
+/* book: { title, author, isbn, coverId, cover: [from, to], kind, masthead, issue } */`,
+    desc: (
+      <>
+        A book&apos;s cover, with somewhere to fall back to. The real image comes from Open Library
+        — by <code>coverId</code> where there is one, since an ISBN can resolve to a foreign or
+        coverless edition — and the CDN is asked to 404 rather than serve a blank, so a missing
+        cover lands on the gradient placeholder with the title and author set into it instead of an
+        empty grey rectangle.
+        <br />
+        <br />A magazine (<code>kind: &apos;magazine&apos;</code>) gets a masthead placeholder —
+        name over issue — so a rack of them reads like a magazine rack rather than a shelf of books
+        with missing covers.
+      </>
+    ),
+    render: () => (
+      <Variant label="the four sizes, and the two placeholders">
+        <div style={{ display: 'flex', gap: 18, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+          <BookCover book={CATALOG_BY_ID['she-gets-the-girl'] ?? DEMO_BOOK} size="sm" />
+          <BookCover book={CATALOG_BY_ID['she-gets-the-girl'] ?? DEMO_BOOK} size="md" />
+          <BookCover book={DEMO_BOOK} size="lg" />
+          <BookCover book={DEMO_MAG} size="md" />
         </div>
       </Variant>
     ),

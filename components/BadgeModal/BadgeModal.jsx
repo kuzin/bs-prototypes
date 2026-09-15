@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Pill } from '@components/Pill/Pill'
@@ -11,6 +12,11 @@ import '@components/Pill/Pill.css'
 import '@components/Modal/Modal.css'
 import '@components/ActivityList/ActivityList.css'
 import '@components/Confetti/Confetti.css'
+
+/** "Minutes" → "Minute" — `log_type.name.to_s.singularize.titleize`. */
+function singular(unit) {
+  return unit.endsWith('ies') ? `${unit.slice(0, -3)}y` : unit.replace(/s$/, '')
+}
 
 /**
  * One badge, opened — `earnables/_earnable_modal` and
@@ -50,19 +56,68 @@ export function BadgeModal({
   open = true,
   onClose,
   onLog,
+  onReview,
   logLabel,
   completed,
   onToggleActivity,
 }) {
-  if (!badge) return null
-
   // Which activities are done — the caller's, where it keeps that; the
   // fixture's own otherwise.
-  const done = new Set(completed ?? (badge.activities ?? []).filter((a) => a.done).map((a) => a.id))
+  const done = new Set(
+    completed ?? (badge?.activities ?? []).filter((a) => a.done).map((a) => a.id),
+  )
 
-  const earned = !badge.locked
-  const pct =
-    badge.need != null ? Math.min(100, Math.round(((badge.have ?? 0) / badge.need) * 100)) : 0
+  /* An activity badge *is* its activities, so its progress is however many of
+     them are ticked — not a stored figure. Tick one here and the ring and the
+     pill move with it, because they are reading the same set the list is. */
+  const tracked = badge?.activities?.length > 0 && !badge.repeatable
+  const have = tracked ? badge.activities.filter((a) => done.has(a.id)).length : badge?.have
+  const need = tracked ? badge.activities.length : badge?.need
+
+  const earned = tracked ? have >= need : Boolean(badge) && !badge.locked
+
+  /* Ticking the last activity off *is* the moment the badge is won, and it
+     happens with the reader already looking at the badge. So the modal they
+     are in celebrates rather than a second identical one opening over it: the
+     ring closes, the check lands, and the burst goes off.
+
+     The last activity in a long list is at the bottom of a scrolled panel,
+     though, and the badge is at the top — so the panel rides back up first and
+     the confetti waits for it. Celebrating off-screen is not celebrating. */
+  const bodyRef = useRef(null)
+  const [justEarned, setJustEarned] = useState(false)
+  const wasEarned = useRef(earned)
+  useEffect(() => {
+    if (earned && !wasEarned.current) {
+      const el = bodyRef.current
+      const scrolled = el ? el.scrollTop > 0 : false
+      el?.scrollTo({ top: 0, behavior: 'smooth' })
+      const t = setTimeout(() => setJustEarned(true), scrolled ? 420 : 0)
+      wasEarned.current = earned
+      return () => clearTimeout(t)
+    }
+    wasEarned.current = earned
+  }, [earned])
+
+  if (!badge) return null
+
+  /* What this badge is earned by decides what the footer offers — the app has
+     a different button per requirement kind, because "Log Reading" under a
+     badge you earn by writing reviews sends the reader to the wrong screen.
+     `ReviewRequirement` → Write Next Review, `LearningTrack` → its activities,
+     `BadgeRequirement` → Log Next <whatever it counts>. */
+  const action =
+    badge.type === 'review'
+      ? onReview && { label: 'Write Next Review', onClick: () => onReview(badge) }
+      : // An activity badge lists its activities right here with a tick each,
+        // so there is nowhere else to send the reader.
+        badge.type === 'activity' && badge.activities?.length > 0
+        ? null
+        : onLog && {
+            label: logLabel ?? (badge.unit ? `Log Next ${singular(badge.unit)}` : 'Log Reading'),
+            onClick: () => onLog(badge),
+          }
+  const pct = need != null ? Math.min(100, Math.round(((have ?? 0) / need) * 100)) : 0
   const ring = earned ? 100 : pct
   const gets = [
     badge.reward && {
@@ -96,8 +151,8 @@ export function BadgeModal({
       <ModalClose onClick={onClose} />
       {/* Something you have already earned is worth a moment — the burst is
           one-shot and stops on its own. */}
-      {confetti && earned && <Confetti count={18} distance={360} />}
-      <div className="modal-body bdg">
+      {(confetti || justEarned) && earned && <Confetti count={18} distance={360} />}
+      <div className="modal-body bdg" ref={bodyRef}>
         {/* `.badge-image.logging-badge` — the ring is the share done, and it
             goes jade and takes a check the moment the badge is earned. */}
         <div className={`bdg-art${earned ? ' is-earned' : ''}`}>
@@ -134,11 +189,11 @@ export function BadgeModal({
 
         {/* `.overlay-goal-progress-data-number` — the pill goes green once the
             figure has reached the requirement. */}
-        {badge.need != null && (
+        {need != null && (
           <span className="bdg-progress">
             <Pill color={earned ? '#087542' : '#656565'} variant="soft" size="md">
-              <strong>{(earned ? badge.need : (badge.have ?? 0)).toLocaleString()}</strong>
-              {` / ${badge.need.toLocaleString()} ${badge.unit}`}
+              <strong>{(earned ? need : (have ?? 0)).toLocaleString()}</strong>
+              {` / ${need.toLocaleString()} ${badge.unit}`}
             </Pill>
           </span>
         )}
@@ -198,13 +253,15 @@ export function BadgeModal({
       </div>
 
       {/* `.log-footer-button` — the app only offers it where there is still
-          something to do and the challenge is running. */}
+          something to do and the challenge is running, and what it offers is
+          whatever this badge is actually earned by. */}
       <div className="modal-footer">
         {/* Close is the primary either way: the modal is somewhere you came to
-            look, and logging is a detour from it rather than the point. */}
-        {!earned && onLog && (
-          <Button variant="secondary" onClick={() => onLog(badge)}>
-            {logLabel ?? 'Log Reading'}
+            look, and going off to do the thing is a detour from it rather than
+            the point. */}
+        {!earned && action && (
+          <Button variant="secondary" onClick={action.onClick}>
+            {action.label}
           </Button>
         )}
         <Button onClick={onClose}>Close</Button>

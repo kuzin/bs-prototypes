@@ -1,7 +1,6 @@
 import { useState } from 'react'
-import { Icon } from '@components/Icon/Icon'
-import { coverIdUrl, coverUrl } from '../data'
-import './BookCover.css'
+import { coverIdUrl, coverUrl } from '@components/BookCover/covers'
+import '@components/BookCover/BookCover.css'
 
 /**
  * Book cover: real Open Library image when available, gradient placeholder
@@ -10,9 +9,6 @@ import './BookCover.css'
  * cell rather than taking a fixed size — the All Titles shelf). Magazines (`kind: 'magazine'`) get a
  * masthead-style placeholder — name + issue — so they read like a magazine
  * rack rather than a book with a missing cover.
- *
- * Titles with a digital edition (`readable`) get a corner chip. The sm size is
- * only used in search rows, which already spell out "Readable" beside the row.
  */
 export function BookCover({ book, size = 'md', className = '' }) {
   const [err, setErr] = useState(false)
@@ -20,11 +16,10 @@ export function BookCover({ book, size = 'md', className = '' }) {
   const src = coverIdUrl(book.coverId) ?? coverUrl(book.isbn)
   const showImg = src && !err
   const isMag = !showImg && book.kind === 'magazine'
-  const showReadable = book.readable && size !== 'sm'
 
   return (
     <span
-      className={`bkcov bkcov--${size} ${showImg ? 'bkcov--img' : ''} ${isMag ? 'bkcov--mag' : ''} ${showReadable ? 'bkcov--readable' : ''} ${className}`.trim()}
+      className={`bkcov bkcov--${size} ${showImg ? 'bkcov--img' : ''} ${isMag ? 'bkcov--mag' : ''} ${className}`.trim()}
       style={
         showImg ? undefined : { background: `linear-gradient(150deg, ${from} 0%, ${to} 100%)` }
       }
@@ -42,12 +37,6 @@ export function BookCover({ book, size = 'md', className = '' }) {
           <span className="bkcov-title">{book.title}</span>
           <span className="bkcov-author">{book.author}</span>
         </>
-      )}
-
-      {showReadable && (
-        <span className="bkcov-readable">
-          <Icon name="book-2" size={size === 'lg' ? 16 : 11} stroke={2.4} />
-        </span>
       )}
     </span>
   )

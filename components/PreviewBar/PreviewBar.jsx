@@ -36,10 +36,28 @@ import './PreviewBar.css'
  * along the bar: there are usually more of them than fit, and they are
  * something you set once and then forget while you read the page.
  *
+ * Give a switch a `section:` and the panel heads the run it starts — once a
+ * prototype has twenty of them, "which of these is about logging?" is a real
+ * question. Switches without one stay in a single unheaded list.
+ *
  * `short` is the label the strip swaps to before it would start overflowing;
  * it falls back to `label`. Deliberately no accent prop — the active pill is
  * white on every prototype, which is what keeps the bars consistent.
  */
+/* Switches in the order given, split wherever a `section:` changes. A list with
+   no sections comes back as one unheaded run, so nothing has to change to keep
+   the flat panel. */
+function groupToggles(toggles) {
+  const out = []
+  for (const t of toggles) {
+    const section = t.section ?? null
+    const last = out[out.length - 1]
+    if (last && last.section === section) last.items.push(t)
+    else out.push({ section, items: [t] })
+  }
+  return out
+}
+
 export function PreviewBar({
   title,
   subtitle,
@@ -130,15 +148,25 @@ export function PreviewBar({
           {() => (
             <div className="pvb-panel">
               <div className="pvb-panel-head">{togglesLabel}</div>
-              {toggles.map((t) => (
-                <label key={t.id} className="pvb-panel-row">
-                  <span className="pvb-panel-text">
-                    <span className="pvb-panel-label">{t.label}</span>
-                    {t.hint && <span className="pvb-panel-hint">{t.hint}</span>}
-                  </span>
-                  <Toggle size="sm" checked={t.on} onChange={(on) => onToggle?.(t.id, on)} />
-                </label>
-              ))}
+              <div className="pvb-panel-list">
+                {groupToggles(toggles).map((g) => (
+                  <div className="pvb-panel-group" key={g.section ?? '_'}>
+                    {/* A section heading only where a prototype has grouped its
+                      switches — an ungrouped list keeps the flat panel it has
+                      always had. */}
+                    {g.section && <div className="pvb-panel-section">{g.section}</div>}
+                    {g.items.map((t) => (
+                      <label key={t.id} className="pvb-panel-row">
+                        <span className="pvb-panel-text">
+                          <span className="pvb-panel-label">{t.label}</span>
+                          {t.hint && <span className="pvb-panel-hint">{t.hint}</span>}
+                        </span>
+                        <Toggle size="sm" checked={t.on} onChange={(on) => onToggle?.(t.id, on)} />
+                      </label>
+                    ))}
+                  </div>
+                ))}
+              </div>
             </div>
           )}
         </Flyout>

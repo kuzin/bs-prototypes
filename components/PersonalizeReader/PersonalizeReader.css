@@ -85,7 +85,7 @@
   align-items: flex-start;
   padding: 14px 16px;
   margin-top: 16px;
-  background: var(--c-gray-50, #fafafa);
+  background: var(--c-gray-0);
   border-radius: 10px;
 }
 /* The Basic Information row hangs off the bottom of the block it belongs to. */
@@ -135,7 +135,7 @@
   font-family: inherit;
   color: var(--c-text);
   cursor: pointer;
-  background: var(--c-gray-50, #fafafa);
+  background: var(--c-gray-0);
   border: 1px solid var(--c-gray-200);
   border-radius: 10px;
 }

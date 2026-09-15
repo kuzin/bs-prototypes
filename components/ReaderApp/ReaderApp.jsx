@@ -1,4 +1,4 @@
-import { Children, useState } from 'react'
+import { Children, useEffect, useRef, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
 import { Tabs } from '@components/Tabs/Tabs'
@@ -101,8 +101,31 @@ export function ReaderTopBar({
 }) {
   const items = [...tabs, ...extraTabs].filter((t) => !hideTabs.includes(t.id))
 
+  /* The bar is sticky and the right-hand rail sticks under it, so the rail
+     needs to know how tall it is. It isn't a fixed number — the actions wrap at
+     narrow widths and the tab strip grows a row — so measure it and publish it,
+     the way the preview bar publishes its own height. Pinned at a guess, the
+     first rail card slid under the bar. */
+  const barRef = useRef(null)
+  useEffect(() => {
+    const el = barRef.current
+    if (!el || typeof ResizeObserver === 'undefined') return
+    const sync = () =>
+      document.documentElement.style.setProperty(
+        '--wa-topbar-h',
+        `${Math.round(el.getBoundingClientRect().height)}px`,
+      )
+    sync()
+    const ro = new ResizeObserver(sync)
+    ro.observe(el)
+    return () => {
+      ro.disconnect()
+      document.documentElement.style.removeProperty('--wa-topbar-h')
+    }
+  }, [])
+
   return (
-    <header className="wa-topbar">
+    <header className="wa-topbar" ref={barRef}>
       <div className="wa-topbar-inner">
         {onHome ? (
           <button className="wa-logo-btn" onClick={onHome} aria-label="Beanstack home">

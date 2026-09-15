@@ -2,8 +2,17 @@
    `programs/_program_header.html.haml` in full. See ProgramHeader.jsx for what
    the two bands are and where the colour comes from. */
 
+/* The block below the coloured band — the banner, the title, what kind of
+   challenge it is — sits on a pale grey rather than the page ground. It is
+   still header, and on white it ran straight into the content under it with
+   nothing but the tab rule between them. The strip below inherits it, so the
+   whole header reads as one band down to that rule. */
 .prog-header {
   position: relative;
+  /* White at the top, where it meets the coloured band's curve, settling into
+     the grey by the time it reaches the tab strip. A flat grey put a hard edge
+     under the curve; the fade lets the band land on nothing. */
+  background: linear-gradient(to bottom, #fff 0%, var(--c-gray-0) 100%);
 }
 /* Full-bleed, but only inside the reader shell — the negative margins cancel
    `.wa-main`'s top padding and `.wa-main-inner`'s sides, and anywhere else (the
@@ -78,7 +87,7 @@
   margin: -86px auto 0;
   text-align: center;
 }
-/* The page ground, curving up to meet the title. */
+/* The header's own ground, curving up to meet the title. */
 .prog-header-info::before {
   content: '';
   position: absolute;

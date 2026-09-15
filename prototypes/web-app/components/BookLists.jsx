@@ -9,7 +9,7 @@ import { ActiveFilters } from '@components/ActiveFilters/ActiveFilters'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 
-import { BookCover } from '../../logging-flow/components/BookCover'
+import { BookCover } from '@components/BookCover/BookCover'
 import {
   BOOK_LISTS,
   BOOK_LIST_BOOKS,
@@ -239,7 +239,6 @@ export function BookListPage({ list, onBack, onOpenBook, onLog, onWish, features
       <ReaderPageHead
         as="h2"
         title={list.name}
-        count={`${books.length} ${books.length === 1 ? 'book' : 'books'}`}
         actions={<Button variant="secondary">Print This List</Button>}
       />
 

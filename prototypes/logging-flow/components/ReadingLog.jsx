@@ -7,7 +7,7 @@ import { Modal } from '@components/Modal/Modal'
 import { StatCard } from '@components/Cards/Cards'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { Banner } from '@components/Primitives/Primitives'
-import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
+import { PartnerMark, PARTNER_BRANDS } from '@components/PartnerBrand/PartnerBrand'
 
 import { BOOKS, READING_LOG, LOG_STREAK, LOG_MONTH } from '../data'
 
@@ -29,7 +29,7 @@ function useNarrow(query = '(max-width: 1024px)') {
   return narrow
 }
 import { CONNECTIONS, CONNECTION_LIST } from '../connections'
-import { BookCover } from './BookCover'
+import { BookCover } from '@components/BookCover/BookCover'
 import './ReadingLog.css'
 
 import '@components/Button/Button.css'
@@ -122,8 +122,16 @@ function amount(e) {
 }
 
 /** "Imported from Comics Plus on 6/3/26" — hover the partner mark to see it. */
+/* Where a logged row came from, by id. Anything with a brand can be a source —
+   a linked reading app that logs on the reader's behalf, or a one-shot import
+   like Epic. */
+const sourceOf = (id) => (id ? (PARTNER_BRANDS[id] ?? CONNECTIONS[id]) : null)
+
 function ImportedTag({ entry }) {
-  const p = CONNECTIONS[entry.source]
+  /* The brand registry, not the reader's linked accounts: Epic is a one-shot
+     import rather than a standing link, so its rows are in the log without it
+     ever appearing in `CONNECTIONS`. */
+  const p = sourceOf(entry.source)
   if (!p) return null
   return (
     <span className="rl-imported" tabIndex={0}>
@@ -505,7 +513,7 @@ function TitleDetail({ row, index, onClose }) {
                   <span className="rl-detail-source">
                     {e.source ? (
                       <>
-                        <PartnerMark id={e.source} size={15} /> {CONNECTIONS[e.source].name}
+                        <PartnerMark id={e.source} size={15} /> {sourceOf(e.source)?.name}
                       </>
                     ) : (
                       <span className="rl-detail-manual">Logged by hand</span>

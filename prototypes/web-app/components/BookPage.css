@@ -180,7 +180,7 @@
   border-radius: 12px;
 }
 .bp-related button:hover {
-  background: var(--c-gray-50);
+  background: var(--c-gray-0);
 }
 .bp-related-cover {
   display: block;
@@ -318,7 +318,7 @@
      prose above it. */
   .bp-aside {
     padding: 18px;
-    background: var(--c-gray-50);
+    background: var(--c-gray-0);
     border: 1px solid var(--c-border);
     border-radius: 12px;
   }

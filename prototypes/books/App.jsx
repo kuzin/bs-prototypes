@@ -4,7 +4,8 @@ import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 
 import { Dashboard } from '../logging-flow/components/Dashboard'
-import { LogFlow } from '../logging-flow/components/LogFlow'
+import { LogFlow } from '@components/LogFlow/LogFlow'
+import { LOG_FIXTURES } from '../logging-flow/data'
 import { STREAK, DAILY_GOAL, READING_LOG } from '../logging-flow/data'
 
 // The reader pages this prototype doesn't own are web-app's — it is the
@@ -248,7 +249,13 @@ export function App() {
         page={page}
       />
 
-      <LogFlow open={flowOpen} onClose={() => setFlowOpen(false)} connections={{}} partners={[]} />
+      <LogFlow
+        open={flowOpen}
+        onClose={() => setFlowOpen(false)}
+        connections={{}}
+        partners={[]}
+        {...LOG_FIXTURES}
+      />
 
       <FriendProfile friendId={profileId} onClose={() => setProfileId(null)} />
 

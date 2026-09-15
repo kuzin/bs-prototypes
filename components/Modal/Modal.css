@@ -8,6 +8,12 @@
 :root {
   --chrome-top: 0px;
   --chrome-bottom: 0px;
+  /* The panel's corner, as a variable rather than a literal: a footer sitting
+     at the bottom of the panel has to round with it, and it can't always reach
+     the radius by inheritance — wrap the body and footer in a `<form>`, as the
+     challenge-code modal does, and `border-radius: inherit` picks up the
+     form's 0 and the footer's grey spills past the corner. */
+  --modal-radius: 14px;
 }
 
 .modal-backdrop {
@@ -118,7 +124,7 @@
      close under the preview bar. */
   max-height: calc(100vh - 64px - var(--chrome-top) - var(--chrome-bottom));
   transform: translate(-50%, -50%);
-  border-radius: 14px;
+  border-radius: var(--modal-radius);
   border: 1px solid var(--c-gray-200);
   animation: modal-center-in 0.18s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -330,8 +336,14 @@
   padding: 14px 22px 16px;
   border-top: 1px solid var(--c-border);
   background: var(--c-gray-0);
-  border-bottom-left-radius: inherit;
-  border-bottom-right-radius: inherit;
+}
+/* Only where the panel has corners to match. The side panel and the
+   full-screen surface are square, and a rounded footer inside either would be
+   a curve against a straight edge. */
+.modal--center .modal-footer:last-child,
+.modal--center form:last-child > .modal-footer:last-child {
+  border-bottom-right-radius: var(--modal-radius);
+  border-bottom-left-radius: var(--modal-radius);
 }
 
 .modal-footer--start {
