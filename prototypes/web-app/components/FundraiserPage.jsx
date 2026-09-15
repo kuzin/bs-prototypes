@@ -7,6 +7,7 @@ import { Modal, ModalClose } from '@components/Modal/Modal'
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
 import { GoalTile, GoalTiles } from '@components/GoalTile/GoalTile'
 import { BadgeArt, CollectionCard, ShelfGrid } from '@components/CollectionShelf/CollectionShelf'
+import { StatCard } from '@components/Cards/Cards'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { badgeSrc, bannerSrc, ReaderBack } from '@components/ReaderApp/ReaderApp'
 import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
@@ -254,17 +255,34 @@ function Donations({ fundraiser }) {
     )
   }
 
+  const count = fundraiser.donations.length
+  const people = fundraiser.donations.filter((d) => !d.sponsor).length
+
   return (
     <div className="fnd-donations">
-      <ReaderPageHead
-        as="h2"
-        title="Donations"
-        actions={
-          <p className="fnd-donations-count">
-            {fundraiser.donations.length} Donations · {money(total)} raised
-          </p>
-        }
-      />
+      <ReaderPageHead as="h2" title="Donations" />
+      {/* What the count line said, on the design system's own tile — the same
+          one the Overview's totals and the reading log's streaks sit on, and
+          the same colours `_overall_progress` gives these two figures. */}
+      <div className="fnd-donationnums">
+        <StatCard
+          value={money(total)}
+          label="Total raised"
+          color="#0F7A55"
+          icon={<Icon name="coin" size={20} />}
+        />
+        <StatCard
+          value={count}
+          label={count === 1 ? 'Donation' : 'Donations'}
+          color="#1A6DD5"
+          icon={<Icon name="users" size={20} />}
+          footer={
+            people < count
+              ? `${people} from friends and family, ${count - people} from sponsors`
+              : undefined
+          }
+        />
+      </div>
       <ul className="fnd-donors">
         {fundraiser.donations.map((d) => (
           <li className="fnd-donor" key={d.id}>

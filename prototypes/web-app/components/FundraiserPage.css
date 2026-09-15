@@ -186,9 +186,12 @@
 }
 
 /* ── Donations ───────────────────────────────────────────────────────────── */
-.fnd-donations-count {
-  font-size: 13.5px;
-  color: var(--c-text-light);
+/* The same grid the book page's session totals sit on. */
+.fnd-donationnums {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
 }
 .fnd-donors {
   display: flex;
