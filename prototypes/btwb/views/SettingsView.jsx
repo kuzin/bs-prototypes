@@ -102,13 +102,15 @@ const SETUP_NAV = [
 // `newTags` names which rows wear a "New" pill. Each prototype flags what's new
 // to IT — book-talks is about the self-started trigger, so it passes just that
 // one rather than re-announcing this page's earlier additions.
-// `planPreview` shows the demo swap between a site that has BTWB and one that
-// doesn't. That's this prototype's own story; a consumer borrowing the page for
-// a different feature hides it.
+// `selfStart` adds the Book Talk badges row and its daily bound. That row is
+// the Book Talks: Badges prototype's own proposal — this page is where its
+// setting would live, but a prototype about the completion trigger shouldn't
+// carry a second prototype's news, so it's off unless the consumer asks.
 export function SettingsView({
   settings,
   onChange,
-  newTags = ['completion', 'kind', 'selfStart'],
+  newTags = ['completion', 'kind'],
+  selfStart = false,
 }) {
   const set = (patch) => onChange({ ...settings, ...patch })
   const off = !settings.btwbOn
@@ -132,14 +134,20 @@ export function SettingsView({
           <h1 className="bw-h1">Book Talks with Benny</h1>
         </header>
 
-        <SettingsBody settings={settings} set={set} off={off} newTags={newTags} />
+        <SettingsBody
+          settings={settings}
+          set={set}
+          off={off}
+          newTags={newTags}
+          selfStart={selfStart}
+        />
       </div>
     </AppShell>
   )
 }
 
 // The configurable state — the settings this ticket is actually about.
-function SettingsBody({ settings, set, off, newTags }) {
+function SettingsBody({ settings, set, off, newTags, selfStart }) {
   const isNew = (key) => newTags.includes(key)
   return (
     <>
@@ -230,40 +238,44 @@ function SettingsBody({ settings, set, off, newTags }) {
               </div>
             )}
 
-            {/* NEW — the reader-initiated trigger. The other two are scoped to the
-              thing that fires them (a completion, a suspicious log, a challenge);
-              a reader starting a talk on their own isn't inside any of those, so
-              Benny has to be reachable site-wide. It's also the master switch for
-              Book Talk badges: a challenge can only offer them when this is on. */}
-            <SettingRow
-              label={
-                <span className="bw-row-label-new">
-                  Book Talk badges
-                  {isNew('selfStart') && (
-                    <Pill color="#0E7490" variant="filled" size="sm">
-                      New
-                    </Pill>
-                  )}
-                </span>
-              }
-              sub="Challenges can award badges for the book talks a reader has with Benny — which means readers start those talks themselves, whenever they want."
-              checked={settings.selfStart}
-              onChange={(v) => set({ selfStart: v })}
-              disabled={off}
-              size="lg"
-            />
-
-            {/* A talk readers can start at will needs a bound. */}
-            {settings.selfStart && !off && (
-              <div className="bw-subsetting bw-subsetting--inline">
-                <div className="bw-subsetting-title">How many can a reader start in a day?</div>
-                <NumberInput
-                  min={1}
-                  max={10}
-                  value={settings.selfStartLimit ?? 3}
-                  onChange={(v) => set({ selfStartLimit: v })}
+            {/* The Book Talks: Badges proposal — a challenge can only offer a
+              Book Talk badge if readers can start talks on their own, which no
+              other trigger lets them do. The setting belongs on this page; the
+              proposal belongs to that prototype, so it only shows where it is
+              being proposed. */}
+            {selfStart && (
+              <>
+                <SettingRow
+                  label={
+                    <span className="bw-row-label-new">
+                      Book Talk badges
+                      {isNew('selfStart') && (
+                        <Pill color="#0E7490" variant="filled" size="sm">
+                          New
+                        </Pill>
+                      )}
+                    </span>
+                  }
+                  sub="Challenges can award badges for the book talks a reader has with Benny — which means readers start those talks themselves, whenever they want."
+                  checked={settings.selfStart}
+                  onChange={(v) => set({ selfStart: v })}
+                  disabled={off}
+                  size="lg"
                 />
-              </div>
+
+                {/* A talk readers can start at will needs a bound. */}
+                {settings.selfStart && !off && (
+                  <div className="bw-subsetting bw-subsetting--inline">
+                    <div className="bw-subsetting-title">How many can a reader start in a day?</div>
+                    <NumberInput
+                      min={1}
+                      max={10}
+                      value={settings.selfStartLimit ?? 3}
+                      onChange={(v) => set({ selfStartLimit: v })}
+                    />
+                  </div>
+                )}
+              </>
             )}
 
             {/* Today's behavior, part of the Integrity Suite. No type

@@ -47,7 +47,7 @@ export function App() {
         // The reused BTWB page expects its own root for the page width + the
         // full-height flex chain the AppShell sidebar hangs off.
         <div className="bt-settings">
-          <SettingsView settings={site} onChange={setSite} newTags={['selfStart']} />
+          <SettingsView settings={site} onChange={setSite} newTags={['selfStart']} selfStart />
         </div>
       )}
       {view === 'create' && (
