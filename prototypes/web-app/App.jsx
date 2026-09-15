@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
 import { badgeSrc } from '@components/ReaderApp/ReaderApp'
+import { BadgeModal } from '@components/BadgeModal/BadgeModal'
 import { ConnectFlow, PartnerCatalog } from '@components/PartnerConnect/PartnerConnect'
 
 import { Dashboard } from '../logging-flow/components/Dashboard'
-import { LogFlow } from '../logging-flow/components/LogFlow'
-import { BookCover } from '../logging-flow/components/BookCover'
+import { LogFlow } from '@components/LogFlow/LogFlow'
+import { BookCover } from '@components/BookCover/BookCover'
 import { AllBadges } from './components/AllBadges'
 import { Friends } from './components/Friends'
 import { ReviewsPage } from './components/ReviewsPage'
@@ -43,6 +44,7 @@ import {
   DAILY_GOAL,
   READER,
   BOOKS,
+  LOG_FIXTURES,
   RECENTLY_LOGGED,
   READING_LOG,
   REGISTRATION_QUESTIONS,
@@ -76,8 +78,6 @@ import '@components/PreviewBar/PreviewBar.css'
 //    plain "Done" — the logging flow on its own.
 //  * **Discover / My Shelf** (Book Discovery) and **the Gameboard** (Gameboard
 //    Reader) stay in their own prototypes.
-//  * **Reading in the app.** No title here is marked `readable`, so the flow
-//    never offers the read-or-log choice and the e-reader never opens.
 //  * **Scholastic.** The partner list and its titles are filtered out.
 
 // The reading apps this page offers, and the titles that go with them.
@@ -85,7 +85,7 @@ const ALL_PARTNERS = CONNECTION_LIST.filter((p) => p.id !== 'scholastic')
 const PARTNER_BOOKS = Object.fromEntries(
   Object.entries(BOOKS)
     .filter(([, b]) => b.partner !== 'scholastic')
-    .map(([id, b]) => [id, { ...b, readable: false }]),
+    .map(([id, b]) => [id, b]),
 )
 const RECENT = RECENTLY_LOGGED.filter((id) => BOOKS[id]?.partner !== 'scholastic')
 // …and the log with it. Filtering the catalog but not the log left Scholastic
@@ -112,6 +112,9 @@ const HIDE_TABS = ['leaderboards']
 // page is really several pages. The preview bar switches between them rather
 // than freezing one configuration into the fixtures. Each id is the app's own
 // setting; `rmi` is the one that isn't a boolean — it has three states.
+/* The site settings behind the cog. `section:` heads a run — the logging ones
+   are their own because there are now enough of them that finding one in a flat
+   list of twenty meant reading all twenty. */
 const FEATURE_SWITCHES = [
   { id: 'rmi', label: 'Motivation (RMI)', hint: 'rmi_enabled' },
   { id: 'communityGoal', label: 'Community goal', hint: 'microsite.community_goal' },
@@ -124,6 +127,36 @@ const FEATURE_SWITCHES = [
   { id: 'fundraiser', label: 'Fundraiser', hint: 'a read-a-thon is running' },
   { id: 'bookMachine', label: 'Book machine', hint: 'has_limited_rewards?' },
   { id: 'comicsPlus', label: 'Comics Plus', hint: 'comics_plus_enabled' },
+
+  // ── Logging ──────────────────────────────────────────────────────────────
+  { id: 'scanIsbn', section: 'Logging', label: 'Scan ISBN', hint: 'display_scan_by_isbn?' },
+  { id: 'timer', section: 'Logging', label: 'Reading timer', hint: 'display_timer?' },
+  { id: 'epic', section: 'Logging', label: 'Import from Epic', hint: 'epic_integration?' },
+  {
+    id: 'requireTitle',
+    section: 'Logging',
+    label: 'Require a title',
+    hint: 'require_title_for_logs',
+  },
+  { id: 'bookReviews', section: 'Logging', label: 'Reviews on a log', hint: 'book_reviews?' },
+  {
+    id: 'multiDate',
+    section: 'Logging',
+    label: 'Log several days at once',
+    hint: '@multiclick_enabled',
+  },
+  {
+    id: 'backlogging',
+    section: 'Logging',
+    label: 'Backlogging',
+    hint: 'back_logging_days — 14',
+  },
+  {
+    id: 'logLimits',
+    section: 'Logging',
+    label: 'Police log values',
+    hint: 'LogTypeMicrosite warning/limit',
+  },
 ]
 
 // The site's own goal, and what it has read toward it so far.
@@ -214,6 +247,14 @@ const FEATURE_DEFAULTS = {
   fundraiser: true,
   bookMachine: true,
   comicsPlus: true,
+  scanIsbn: true,
+  timer: true,
+  epic: true,
+  requireTitle: false,
+  bookReviews: true,
+  multiDate: false,
+  backlogging: true,
+  logLimits: true,
 }
 
 export function App() {
@@ -333,6 +374,30 @@ export function App() {
         ACTIVITY_BADGES().flatMap((b) => b.activities.filter((a) => a.done).map((a) => a.id)),
       ),
   )
+  /* Ticking one off. It lives up here because two surfaces do it — the Complete
+     Activity screen and a badge's own modal, which lists the same activities. */
+  const toggleActivity = (_badge, activity) =>
+    setDone((d) => {
+      const next = new Set(d)
+      if (next.has(activity.id)) next.delete(activity.id)
+      else next.add(activity.id)
+      return next
+    })
+  /* The badge an earned card is showing, when the reader asks to see it. */
+  const [earnedBadge, setEarnedBadge] = useState(null)
+  /* Where an earned card's reward and tickets both go: the Rewards tab of the
+     challenge that paid them out. */
+  const goToRewards = (card) => {
+    const c = CHALLENGE_BY_ID[card.challenge]
+    if (!c) return
+    setFlowOpen(false)
+    // The same three the nav itself does — a route left on the stack renders
+    // over the challenge and you never see it.
+    setStack([])
+    setView('challenges')
+    setChallenge(c)
+    setChallengeTab('rewards')
+  }
   const profiles = library ? ACCOUNT.profiles : [STUDENT]
   const current = profiles.find((p) => p.id === profileId) ?? profiles[0]
   // The site's registration questions are asked once, on the first challenge
@@ -547,13 +612,7 @@ export function App() {
           badges: ACTIVITY_BADGES(),
           src: (b) => badgeSrc(b.set, b.art),
           completed: doneActivities,
-          onToggle: (badge, activity) =>
-            setDone((d) => {
-              const next = new Set(d)
-              if (next.has(activity.id)) next.delete(activity.id)
-              else next.add(activity.id)
-              return next
-            }),
+          onToggle: toggleActivity,
         }}
         personalize={{
           kind: current.kind,
@@ -596,6 +655,16 @@ export function App() {
               onTab={setChallengeTab}
               entries={log}
               onLog={() => setFlowOpen(true)}
+              /* A badge's own modal offers whatever that badge is earned by —
+                 a review badge sends you to write one, an activity badge to
+                 its activities. */
+              onReview={() => {
+                setView('reviews')
+                setChallenge(null)
+                setComposing({ kind: 'written' })
+              }}
+              completedActivities={doneActivities}
+              onToggleActivity={toggleActivity}
               onOpenBook={(b) => openBook(b, challenge.title)}
               bookMachine={features.bookMachine}
               onBack={() => setChallenge(null)}
@@ -604,14 +673,62 @@ export function App() {
         }
       />
 
+      {/* Over the logging flow, so closing it puts the reader back on the
+          screen that offered it. */}
+      <BadgeModal
+        badge={
+          earnedBadge && {
+            name: earnedBadge.eyebrow,
+            blurb: earnedBadge.title,
+            about: earnedBadge.description,
+            date: 'Today',
+            reward: earnedBadge.reward,
+            tickets: earnedBadge.tickets,
+            locked: false,
+          }
+        }
+        src={() => earnedBadge?.art}
+        confetti
+        open={Boolean(earnedBadge)}
+        onClose={() => setEarnedBadge(null)}
+      />
+
       <LogFlow
         open={flowOpen}
         onClose={() => setFlowOpen(false)}
         onLogged={handleLogged}
         connections={connections}
+        {...LOG_FIXTURES}
         partners={partners}
+        /* This page's own catalog: the fixture shelf minus Scholastic. */
         books={PARTNER_BOOKS}
         recentlyLogged={RECENT}
+        dailyGoal={dailyGoal}
+        /* The two ways out of an earned card: the badge's own modal, and the
+           Rewards tab of the challenge the tickets came from — tickets are only
+           worth anything spent, and that's where you spend them. */
+        onViewBadge={(card) => setEarnedBadge(card)}
+        /* Both land on the challenge's Rewards tab — that's where a reward is
+           claimed and where tickets are spent. */
+        onReward={(card) => goToRewards(card)}
+        onTickets={(card) => goToRewards(card)}
+        /* The site settings the logging form reads. Only a school site polices
+           a log value, and only then for a reader staff haven't verified —
+           `LogLimitWarning`'s own three conditions. */
+        site={{
+          /* Only a school site polices a log value, and only then for a reader
+             staff haven't verified — `LogLimitWarning`'s own three conditions,
+             with the cog standing in for the first. */
+          rostered: !library && features.logLimits,
+          verified: false,
+          backlogDays: features.backlogging ? 14 : 0,
+          multiDate: features.multiDate,
+          timer: features.timer,
+          scanIsbn: features.scanIsbn,
+          epic: features.epic,
+          requireTitle: features.requireTitle,
+          bookReviews: features.bookReviews,
+        }}
       />
 
       {visiting && connections[visiting] && (

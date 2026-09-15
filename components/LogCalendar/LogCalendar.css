@@ -1,0 +1,178 @@
+/* ─── Change Date ────────────────────────────────────────────────────────────
+   `simple_calendar/_month_calendar`, in the modal the logging form's "Select
+   Date" opens. */
+
+/* Seven columns of 36px cells and the gaps between them — the same cell the
+   shared `DatePicker` uses, so a calendar is a calendar wherever it opens. Any
+   wider and the modal stretches the grid into something the size of a wall
+   planner. */
+/* `.modal.lcal-modal`, not `.lcal-modal`: the class lands on the panel itself,
+   so this and `.modal--center` are the same specificity and Modal.css — which
+   is imported after — would otherwise win. Specificity, not source order. */
+.modal.lcal-modal {
+  width: fit-content;
+  min-width: 300px;
+  max-width: min(360px, calc(100vw - 32px));
+}
+
+.lcal {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lcal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lcal-month {
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--c-text-dark);
+}
+.lcal-nav {
+  display: flex;
+  gap: 4px;
+}
+.lcal-navbtn {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  color: var(--c-text);
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--c-border);
+  border-radius: 8px;
+}
+.lcal-navbtn:hover:not(:disabled) {
+  border-color: var(--c-gray-500);
+}
+.lcal-navbtn:disabled {
+  color: var(--c-gray-400);
+  cursor: default;
+  opacity: 0.5;
+}
+
+.lcal-dow,
+.lcal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 36px);
+  gap: 2px;
+  justify-content: center;
+}
+.lcal-dow span {
+  padding-bottom: 2px;
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: var(--c-text-light);
+  text-align: center;
+}
+
+/* The shared picker's 36px cell. The number sits high enough that the
+   logged-day dot has its own line under it rather than crowding the digits,
+   which is why this is a column rather than a centred single line. */
+.lcal-day {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--c-text);
+  cursor: pointer;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 50%;
+}
+.lcal-day:hover:not(:disabled):not(.is-on) {
+  color: var(--c-blue);
+  background: var(--c-blue-wash);
+}
+.lcal-day:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px #5599e1;
+}
+/* Neither the days either side of the month nor days that haven't happened are
+   anything you can log against — the app doesn't even make them tabbable. */
+.lcal-day.is-outside {
+  color: transparent;
+  cursor: default;
+}
+.lcal-day.is-future {
+  color: var(--c-gray-400);
+  cursor: default;
+}
+/* Past the backlogging window. Still visible — the reader needs to see that the
+   day exists and is out of reach, which is what the message under the grid
+   explains — but plainly not on offer. */
+.lcal-day.is-locked {
+  color: var(--c-gray-400);
+}
+/* Today keeps a ring whether or not it's the one picked. */
+.lcal-day.is-today {
+  font-weight: 800;
+  color: var(--c-blue);
+  box-shadow: inset 0 0 0 1.5px var(--c-blue);
+}
+/* Selected is a filled disc, the same one every date picker in the app uses —
+   a rounded square read as a tile, and a whole month of them as one solid
+   block rather than as days you'd picked one by one. */
+.lcal-day.is-on {
+  color: #fff;
+  background: var(--c-blue);
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.lcal-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--c-blue);
+  border-radius: 50%;
+}
+.lcal-day.is-on .lcal-dot {
+  background: #fff;
+}
+
+/* The two refusals. They replace nothing and push nothing around — they appear
+   under the grid, where the app puts them, and go on the next click. */
+.lcal-error {
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  padding: 9px 11px;
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: #b91c1c;
+  background: #fdecec;
+  border-radius: 8px;
+}
+.lcal-error svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.lcal-selectall {
+  align-self: center;
+  padding: 4px;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 800;
+  color: var(--c-blue, #196dd5);
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.lcal-selectall:hover {
+  text-decoration: underline;
+}

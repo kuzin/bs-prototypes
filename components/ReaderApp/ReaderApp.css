@@ -503,10 +503,12 @@
   flex-direction: column;
   gap: 16px;
   position: sticky;
-  /* Clear of the sticky top bar plus a gap — pinned at exactly the bar's
-     height the first card sat flush against it, which read as the card being
-     part of the chrome. */
-  top: 126px;
+  /* Under the sticky top bar, plus a gap. Both numbers have to be measured:
+     the bar itself pins below whatever chrome the shell declares, and its own
+     height changes when the actions wrap or the tab strip takes a second row.
+     `ReaderTopBar` publishes the height it actually has — at a guessed 126px
+     the first rail card slid under a 181px-deep bar. */
+  top: calc(var(--chrome-top, 0px) + var(--wa-topbar-h, 120px) + 16px);
 }
 
 .wa-card {
@@ -1029,9 +1031,9 @@
   /* Tight against the last bar — it belongs to the stack above it, not to the
      space below. */
   margin-top: -2px;
-  padding: 4px 14px;
+  padding: 7px 16px;
   font: inherit;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 800;
   color: var(--c-text-light);
   cursor: pointer;

@@ -28,6 +28,7 @@ import {
   IconArrowBackUp,
   IconX,
   IconCheck,
+  IconPlugOff,
   IconPlus,
   IconMinus,
   IconDots,
@@ -210,6 +211,7 @@ import {
   // ── book discovery ──
   IconHeadphones,
   IconDeviceTablet,
+  IconMovie,
   IconNews,
   IconBookmark,
   IconBookmarkFilled,
@@ -385,6 +387,7 @@ const REGISTRY = {
   quote: IconQuote,
   code: IconCode,
   photo: IconPhoto,
+  'plug-off': IconPlugOff,
   palette: IconPalette,
   'zoom-in': IconZoomIn,
   'zoom-out': IconZoomOut,
@@ -456,6 +459,7 @@ const REGISTRY = {
   // book discovery
   headphones: IconHeadphones,
   'device-tablet': IconDeviceTablet,
+  movie: IconMovie,
   news: IconNews,
   bookmark: IconBookmark,
   'bookmark-filled': IconBookmarkFilled,

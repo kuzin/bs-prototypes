@@ -7,7 +7,7 @@ import { FilterMenu, FilterMenuBar } from '@components/FilterMenu/FilterMenu'
 import { EmptyState } from '@components/Primitives/Primitives'
 import { ReaderBack } from '@components/ReaderApp/ReaderApp'
 
-import { BookCover } from '../../logging-flow/components/BookCover'
+import { BookCover } from '@components/BookCover/BookCover'
 import { CATALOG, AGES, GENRES, LANGUAGES, TOPIC_GROUPS, BACKGROUND_GROUPS, MOODS } from '../data'
 import './FindBooks.css'
 

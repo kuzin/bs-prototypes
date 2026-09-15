@@ -1685,7 +1685,7 @@ import { NIVO_THEME, AXIS_BOTTOM, AXIS_LEFT } from '@components/charts/charts'
     ),
     render: () => (
       <Variant label="a mixed strip — three totals and three with a ring" full>
-        <div style={{ padding: 20, background: 'var(--c-gray-50)' }}>
+        <div style={{ padding: 20, background: 'var(--c-gray-0)' }}>
           <GoalStats>
             <GoalStat
               goal={{ label: 'Total Raised', value: '$95', icon: 'coin', accent: '#0F7A55' }}

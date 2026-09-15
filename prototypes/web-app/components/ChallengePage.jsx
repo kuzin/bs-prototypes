@@ -15,7 +15,7 @@ import { Modal, ModalClose } from '@components/Modal/Modal'
 import { NumberInput } from '@components/Form/Form'
 import { Banner, EmptyState } from '@components/Primitives/Primitives'
 import { InfoBox } from '@components/InfoBox/InfoBox'
-import { BookCover } from '../../logging-flow/components/BookCover'
+import { BookCover } from '@components/BookCover/BookCover'
 import { PartnerMark } from '@components/PartnerBrand/PartnerBrand'
 import { CONNECTIONS } from '../../logging-flow/connections'
 import { badgeSrc, bannerSrc, prizeSrc, ReaderBack } from '@components/ReaderApp/ReaderApp'
@@ -164,7 +164,7 @@ function Overview({ detail, onTab }) {
   )
 }
 
-function Badges({ onLog }) {
+function Badges({ onLog, onReview, completed, onToggleActivity }) {
   return (
     <section className="cp-section">
       <ReaderPageHead as="h2" title="Badges" />
@@ -173,6 +173,9 @@ function Badges({ onLog }) {
         src={(b) => badgeSrc(b.set, b.art)}
         emptyIcon={<Icon name="award" size={26} />}
         onLog={onLog}
+        onReview={onReview}
+        completed={completed}
+        onToggleActivity={onToggleActivity}
       />
     </section>
   )
@@ -1070,6 +1073,9 @@ export function ChallengePage({
   challenge,
   entries,
   onLog,
+  onReview,
+  completedActivities,
+  onToggleActivity,
   onOpenBook,
   onBack,
   bookMachine = true,
@@ -1133,7 +1139,14 @@ export function ChallengePage({
         {tab === 'bingo' && (
           <BingoCard card={extras.bingo} set={challenge.badges ?? 'comics-choice'} />
         )}
-        {tab === 'badges' && <Badges onLog={onLog} />}
+        {tab === 'badges' && (
+          <Badges
+            onLog={onLog}
+            onReview={onReview}
+            completed={completedActivities}
+            onToggleActivity={onToggleActivity}
+          />
+        )}
         {tab === 'rewards' && <Rewards detail={detail} bookMachine={bookMachine} />}
         {tab === 'drawings' && <Drawings extras={extras} />}
         {tab === 'certificates' && <Certificates list={extras.certificates} />}

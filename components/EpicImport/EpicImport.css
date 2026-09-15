@@ -1,0 +1,368 @@
+/* ─── Import from Epic ───────────────────────────────────────────────────────
+   `epic_integration#login` → `#sync_readers` → `#loading_epic_import`. Epic's
+   own surface, in Epic's blue — the reader is handing over Epic credentials, so
+   the screen should look like it belongs to Epic rather than to us. */
+
+.epi {
+  position: fixed;
+  top: var(--chrome-top, 0px);
+  right: 0;
+  bottom: var(--chrome-bottom, 0px);
+  left: 0;
+  z-index: 120;
+  display: flex;
+  overflow-y: auto;
+  background: #fff;
+  animation: epi-fade 0.18s ease;
+}
+@keyframes epi-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+.epi-scroll {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding: 72px 24px 64px;
+  margin: auto;
+}
+
+.epi-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  width: min(380px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+/* The two steps that are rows and cards rather than a form. 560px is the
+   measure the log flow gives its own earned cards (`.lf-earned`) — a reader
+   meets both screens, so the cards on them are the same width. */
+.epi-panel--wide {
+  width: min(560px, 100%);
+}
+
+.epi-wordmark {
+  width: 132px;
+  height: auto;
+}
+.epi-h1 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1.2;
+  color: var(--c-text-dark);
+}
+.epi-sub {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.5;
+  color: var(--c-text-light);
+  text-wrap: pretty;
+}
+
+.epi-choices,
+.epi-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  margin-top: 4px;
+}
+.epi-btn {
+  width: 100%;
+}
+
+.epi-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+  text-align: left;
+}
+.epi-label {
+  font-size: var(--text-label);
+  font-weight: 800;
+  color: var(--c-text);
+}
+.epi-label + .epi-label {
+  margin-top: 10px;
+}
+.epi-input {
+  width: 100%;
+  padding: 11px 13px;
+  font: inherit;
+  font-size: 15px;
+  background: #fff;
+  border: 1.5px solid var(--c-gray-300, var(--c-border));
+  border-radius: 10px;
+}
+.epi-input:focus {
+  border-color: #0a96e6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(10, 150, 230, 0.16);
+}
+
+/* Handing one service another service's password is a thing people are right
+   to hesitate over, so the reassurance sits with the form rather than in small
+   print somewhere else. */
+.epi-footnote {
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--c-text-light);
+  text-align: left;
+}
+.epi-footnote svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+.epi-warn {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  width: 100%;
+  padding: 11px 13px;
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #5c4a1e;
+  text-align: left;
+  background: #fffaf0;
+  border: 1.5px solid #e8a33d;
+  border-radius: 10px;
+}
+.epi-warn svg {
+  flex: none;
+  margin-top: 1px;
+}
+
+/* ─── Which Epic reader is which Beanstack reader ─────────────────────────── */
+
+.epi-readers {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  padding: 0;
+  margin: 8px 0 0;
+  list-style: none;
+}
+/* Epic on the left, the arrow, Beanstack on the right — the row reads as the
+   mapping it is. It wraps to two lines before the select gets squeezed. */
+.epi-reader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  padding: 12px 14px;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--c-gray-200);
+  border-radius: 12px;
+}
+.epi-reader-who {
+  display: flex;
+  flex: 1 1 180px;
+  gap: 11px;
+  align-items: center;
+  min-width: 0;
+}
+.epi-reader-avatar {
+  position: relative;
+  flex: none;
+}
+/* Epic's own 'e' on the corner of the avatar, so which side of the mapping
+   this is never has to be spelled out. */
+.epi-reader-mark {
+  position: absolute;
+  right: -3px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  color: #fff;
+  background: #0a96e6;
+  border: 2px solid #fff;
+  border-radius: 50%;
+}
+.epi-reader-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.epi-reader-text strong {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+.epi-reader-text span {
+  font-size: 13px;
+  color: var(--c-text-light);
+}
+.epi-reader-arrow {
+  flex: none;
+  color: var(--c-gray-400);
+}
+.epi-reader-pick {
+  flex: 1 1 180px;
+  min-width: 0;
+}
+
+/* ─── Waiting, and failing ────────────────────────────────────────────────── */
+
+/* `.transition-screen-image` over `.transition-screen-text` — one drawing, one
+   line, nothing else. Every wait and every failure is this same frame, which is
+   what makes a flow that stopped still feel like the flow. */
+.epi-transition {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-items: center;
+  width: min(550px, 100%);
+  margin: 0 auto;
+  text-align: center;
+}
+.epi-trans-art {
+  display: grid;
+  place-items: center;
+  width: 160px;
+  height: 160px;
+  margin-top: 40px;
+  color: #0a96e6;
+  background: #e7f4fd;
+  border-radius: 50%;
+}
+/* Neither failure is the reader's fault and one isn't anybody's, so both are
+   amber rather than red. */
+.epi-trans-art--error,
+.epi-trans-art--broken {
+  color: #b5822a;
+  background: #fff4e0;
+}
+.epi-trans-art--done {
+  color: #0ba85f;
+  background: #e6f7ee;
+}
+.epi-trans-text {
+  width: min(430px, 100%);
+  margin: 40px 0 0;
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--c-text-dark);
+  text-wrap: pretty;
+}
+.epi-actions--tight {
+  width: min(280px, 100%);
+  margin-top: 28px;
+}
+/* A full-width button is right on the 380px sign-in form, where it is the only
+   thing on the line. On the wider steps it became a 560px slab, so it keeps a
+   button's own width there and stays centred. */
+.epi-panel--wide .epi-actions {
+  width: min(280px, 100%);
+  margin-top: 24px;
+}
+
+/* ─── What came across ────────────────────────────────────────────────────── */
+
+.epi-h1--imported {
+  margin: 45px 0 0;
+}
+
+.epi-results {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-top: 35px;
+}
+/* The log flow's earned card, to the pixel — white, a 2px rule, 10px corners,
+   20px of padding. Finishing an import lands on the same kind of card
+   finishing a log does. */
+.epi-result {
+  width: 100%;
+  padding: 20px;
+  text-align: left;
+  background: #fff;
+  border: 2px solid var(--c-gray-200);
+  border-radius: 10px;
+}
+.epi-result-name {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+/* Ruled off from the reader's name above, one row per figure. */
+.epi-result-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 16px;
+  margin-top: 16px;
+  border-top: 1px solid var(--c-gray-200);
+}
+.epi-stat {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+.epi-stat-art {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+.epi-stat-art--books {
+  color: #0b6b78;
+  background: #ddf6f9;
+}
+.epi-stat-art--minutes {
+  color: #826022;
+  background: #ffefbe;
+}
+.epi-stat-text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+.epi-stat-label {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+.epi-stat-value {
+  font-size: 18px;
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+
+/* The earned cards, where an import won something. */
+.epi-earned {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  margin-top: 16px;
+}

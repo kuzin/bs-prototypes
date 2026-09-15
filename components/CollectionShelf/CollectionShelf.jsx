@@ -157,7 +157,16 @@ export function ShelfGrid({ children }) {
  * Earned first inside each result, the way the app lists them — what you have,
  * then what's left.
  */
-export function BadgeShelf({ badges, src, emptyIcon, onLog, logLabel }) {
+export function BadgeShelf({
+  badges,
+  src,
+  emptyIcon,
+  onLog,
+  onReview,
+  logLabel,
+  completed,
+  onToggleActivity,
+}) {
   const [state, setState] = useState('all')
   const [type, setType] = useState('all')
   // Every badge here opens — `earnables/_earnable_modal` is behind every badge
@@ -240,7 +249,10 @@ export function BadgeShelf({ badges, src, emptyIcon, onLog, logLabel }) {
         open={Boolean(open)}
         onClose={() => setOpen(null)}
         onLog={onLog}
+        onReview={onReview}
         logLabel={logLabel}
+        completed={completed}
+        onToggleActivity={onToggleActivity}
       />
     </>
   )

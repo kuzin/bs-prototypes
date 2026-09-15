@@ -278,7 +278,13 @@ function PrevNextLink({ groupId, target, dir }) {
 }
 
 function PrevNext({ group, section }) {
-  const items = sectionsForGroup(group.id)
+  /* Walk the order the sidebar actually shows, not the order the entries
+     happen to sit in their section file. A group with sub-groups renders them
+     in its declared order, so an entry appended to the end of a file but
+     belonging to a sub-group in the middle would otherwise send Next off to a
+     component nowhere near it on the page. */
+  const subs = subsForGroup(group)
+  const items = subs ? subs.flatMap((b) => b.items) : sectionsForGroup(group.id)
   const i = items.findIndex((s) => s.id === section.id)
 
   return (

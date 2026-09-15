@@ -23,23 +23,14 @@ export const OTHER_READERS = [
 // ─── Books ───────────────────────────────────────────────────────────────────
 // `measure` drives the log-details step: 'minutes' shows Time Spent Reading,
 // 'pages' shows How many pages were read? (the two "combined logging" variants).
-// `readable: true` means there's a digital edition you can open in the in-app
-// e-reader — reading it live-counts minutes that carry straight into the log.
 // `kind: 'magazine'` titles are Scholastic classroom magazines — they have no
 // ISBN cover, so BookCover gives them a masthead treatment (`masthead` name +
 // `issue`), and they carry an issue line instead of a page count you'd read
 // cover-to-cover. `masthead` is the short logo name a real cover shows.
 
-// Open Library cover CDN — `?default=false` 404s on a missing cover so
-// BookCover can fall back to the color gradient.
-export const coverUrl = (isbn) =>
-  isbn ? `https://covers.openlibrary.org/b/isbn/${isbn}-M.jpg?default=false` : null
-
-// The same CDN by Open Library's own numeric cover id. An ISBN can resolve to a
-// foreign or coverless edition; a cover id is the exact image, so it's the more
-// reliable handle when you have one (`coverId` wins over `isbn` in BookCover).
-export const coverIdUrl = (id) =>
-  id ? `https://covers.openlibrary.org/b/id/${id}-M.jpg?default=false` : null
+// The cover CDN helpers moved to BookCover, which is the only thing that uses
+// them; re-exported here for the fixtures that already reach for them.
+export { coverUrl, coverIdUrl } from '@components/BookCover/covers'
 
 export const BOOKS = {
   'she-gets-the-girl': {
@@ -49,7 +40,6 @@ export const BOOKS = {
     cover: ['#9DC7F0', '#F4A98B'],
     measure: 'minutes',
     pages: 400,
-    readable: true,
   },
   rump: {
     id: 'rump',
@@ -67,7 +57,6 @@ export const BOOKS = {
     cover: ['#3FA9E0', '#E23B3B'],
     measure: 'minutes',
     pages: 176,
-    readable: true,
   },
   'lesbianas-guide': {
     id: 'lesbianas-guide',
@@ -86,7 +75,6 @@ export const BOOKS = {
     isbn: '9780525555254',
     measure: 'minutes',
     pages: 416,
-    readable: true,
   },
   darius: {
     id: 'darius',
@@ -96,7 +84,6 @@ export const BOOKS = {
     isbn: '9780735231856',
     measure: 'minutes',
     pages: 316,
-    readable: true,
   },
 
   // ── Titles that come from a linked reading partner ─────────────────────────
@@ -146,7 +133,6 @@ export const BOOKS = {
     cadence: 'Monthly',
     measure: 'minutes',
     pages: 24,
-    readable: true,
     partner: 'scholastic',
   },
   superscience: {
@@ -160,7 +146,6 @@ export const BOOKS = {
     cadence: 'Monthly',
     measure: 'minutes',
     pages: 16,
-    readable: true,
     partner: 'scholastic',
   },
   scope: {
@@ -174,7 +159,6 @@ export const BOOKS = {
     cadence: 'Monthly',
     measure: 'minutes',
     pages: 24,
-    readable: true,
     partner: 'scholastic',
   },
 }
@@ -459,6 +443,30 @@ export const READING_LOG = [
     pages: 34,
     tone: 'blue',
   },
+  /* Epic rows. Not a linked account that keeps logging — a batch the reader
+     imported in one go, which is why they all carry the same `importedOn`. */
+  {
+    id: 'l5e',
+    date: '2026-06-02',
+    kind: 'log',
+    title: 'The Bad Guys in Intergalactic Gas',
+    author: 'Aaron Blabey',
+    minutes: 25,
+    tone: 'blue',
+    source: 'epic',
+    importedOn: '6/4/26',
+  },
+  {
+    id: 'l5f',
+    date: '2026-06-04',
+    kind: 'log',
+    title: 'Ada Twist, Scientist',
+    author: 'Andrea Beaty',
+    minutes: 18,
+    tone: 'violet',
+    source: 'epic',
+    importedOn: '6/4/26',
+  },
   {
     id: 'l5',
     date: '2026-06-03',
@@ -626,3 +634,67 @@ export const REGISTRATION_QUESTIONS = [
     'I don’t visit a branch',
   ]),
 ]
+
+/**
+ * `reading_list_challenges#index` — the book-list challenges this reader is
+ * enrolled in. A `Program` of type `book_list`: a set of titles the library or
+ * teacher picked, some of them required.
+ *
+ * `required` is the app's three shapes — every title, a count, or a count that
+ * must include specific ones (`all_program_books_required?`,
+ * `minimum_required_program_books`, `specific_program_books_required?`).
+ *
+ * Per book: `done` is `cached_completed_book_ids`, `questions` is a title
+ * carrying Reading Integrity questions, and `readNow`/`goNow` are the two ways
+ * the app offers to go and read it rather than just log it.
+ */
+export const READING_LIST_CHALLENGES = [
+  {
+    id: 'rlc-summer',
+    title: 'Battle of the Books',
+    banner: 'battle-of-the-books',
+    dates: 'Sep 8 – Nov 14',
+    tint: '#E8443A',
+    required: { kind: 'specific', count: 6 },
+    books: [
+      { id: 'rump', required: true, done: true, questions: true },
+      { id: 'she-gets-the-girl', required: true, done: true },
+      { id: 'lucky-cap', required: true, readNow: true },
+      { id: 'darius', required: true, questions: true },
+      { id: 'dog-man', goNow: true },
+      { id: 'telegraph-club' },
+    ],
+  },
+  {
+    id: 'rlc-25',
+    title: '25 in 25',
+    banner: '25-in-25',
+    dates: 'Jan 1 – Dec 31',
+    tint: '#4C8DD8',
+    required: { kind: 'count', count: 25 },
+    books: [
+      { id: 'amulet', done: true },
+      { id: 'lesbianas-guide' },
+      { id: 'scope', readNow: true },
+      { id: 'storyworks' },
+    ],
+  },
+]
+
+/**
+ * The demo catalog the shared `LogFlow` searches, as one object to spread.
+ *
+ * The component itself ships no fixtures — it's in `@components` now, and a
+ * shared component doesn't get to know about any one prototype's data — so
+ * every consumer hands it a shelf. This is the one this prototype family uses:
+ *
+ *   <LogFlow {...LOG_FIXTURES} partners={CONNECTION_LIST} … />
+ */
+export const LOG_FIXTURES = {
+  books: BOOKS,
+  recentlyLogged: RECENTLY_LOGGED,
+  readingList: READING_LIST,
+  readingListChallenges: READING_LIST_CHALLENGES,
+  reader: READER,
+  readers: OTHER_READERS,
+}

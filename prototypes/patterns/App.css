@@ -1,3 +1,11 @@
+/* The Pattern Library runs the same prototype nav every other prototype does,
+   so it owes the shared chrome the same reserve: a centred modal sizes itself
+   against `--chrome-bottom`, and at 0 a tall one — the reading-level picker —
+   ran its footer under the nav bar. */
+:root {
+  --chrome-bottom: var(--proto-nav-h, 48px);
+}
+
 /* ── Back to top ─────────────────────────────────────────────────────────── */
 .pt-back-to-top {
   position: fixed;
@@ -2012,4 +2020,16 @@ a.pt-nav-group-label {
    pair reads as one location rather than two labels. */
 .pt-pal-row-sub {
   opacity: 0.75;
+}
+
+/* The log-success screen is normally the last step of a full-screen flow, so
+   its background art positions against the surface. Here it needs a box of its
+   own to sit in — tall enough that the art has somewhere to go, and clipped so
+   the ribbons and scatter stay inside the example. */
+.pt-logsuccess {
+  position: relative;
+  min-height: 560px;
+  padding: 32px 0;
+  overflow: hidden;
+  background: #fff;
 }

@@ -2,8 +2,12 @@
    `programs/_show.html.haml`. The header above it is the shared
    `ProgramHeader` — the fundraiser wears the same one. */
 
+/* Still the header: it carries the header's grey down to the tab rule, which
+   is where the header actually ends and the page begins. */
 .cp-head {
   padding-top: 34px;
+  /* The bottom of the header's fade — the strip sits at the grey end of it. */
+  background: var(--c-gray-0);
 }
 /* The reading log's subnav shape — the plain pill, centred on the page, on a
    rule. The strip sits under a header that is already a band of colour, so it
@@ -13,6 +17,17 @@
   justify-content: center;
   padding-bottom: 18px;
   border-bottom: 1px solid var(--c-border);
+}
+/* Full-bleed like the header above it, so the grey runs window-wide rather
+   than stopping at the content column. */
+.wa-main .cp-head {
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+}
+.wa-main .cp-tabs {
+  max-width: var(--wa-content-max, 1200px);
+  padding-inline: 24px;
+  margin: 0 auto;
 }
 
 .cp-body {
@@ -70,7 +85,7 @@
 /* A reward nobody can redeem any more reads as spent, not as something still
    to aim at. */
 .cp-reward.is-unavailable {
-  background: var(--c-gray-50);
+  background: var(--c-gray-0);
 }
 .cp-reward-mark {
   display: grid;
@@ -309,7 +324,7 @@
 /* A finished title stays on the list — the app leaves it there with its mark —
    but it stops competing with the ones still to read. */
 .cp-listbook.is-done {
-  background: var(--c-gray-50);
+  background: var(--c-gray-0);
 }
 
 @media (max-width: 560px) {
@@ -349,7 +364,7 @@
   border-radius: 14px;
 }
 .cp-drawing.is-ended {
-  background: var(--c-gray-50);
+  background: var(--c-gray-0);
 }
 /* The picture and what it is are one hit area — that whole part of the card is
    the drawing. The button at the foot is its own. */

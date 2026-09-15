@@ -87,42 +87,6 @@
 }
 
 /* "there's a digital edition" chip — sits clear of the cover's own text */
-.bkcov-readable {
-  position: absolute;
-  right: 5px;
-  bottom: 5px;
-  z-index: 1; /* stay legible through the logged-state dim overlay */
-  display: grid;
-  place-items: center;
-  width: 20px;
-  height: 20px;
-  border-radius: 999px;
-  background: #0ca7bc;
-  color: #fff;
-  box-shadow:
-    0 1px 3px rgba(15, 23, 42, 0.35),
-    inset 0 0 0 1.5px rgba(255, 255, 255, 0.9);
-}
-.bkcov--lg .bkcov-readable {
-  right: 8px;
-  bottom: 8px;
-  width: 28px;
-  height: 28px;
-}
-/* keep the foot line (author / issue) out from under the chip */
-.bkcov--readable .bkcov-author,
-.bkcov--readable .bkcov-issue {
-  padding-right: 20px;
-}
-.bkcov--lg.bkcov--readable .bkcov-author,
-.bkcov--lg.bkcov--readable .bkcov-issue {
-  padding-right: 30px;
-}
-
-/* Real cover image — the padding the size classes set is an inset for the
-   placeholder's title/author text, so a real cover has to clear it. Doubled
-   selector because the size rules below are equal-specificity and come later,
-   which is what was cropping every cover by the inset. */
 .bkcov.bkcov--img {
   padding: 0;
 }

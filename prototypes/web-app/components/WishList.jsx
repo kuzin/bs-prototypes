@@ -5,7 +5,7 @@ import { SearchInput } from '@components/SearchInput/SearchInput'
 import { ReaderPageHead } from '@components/ReaderPageHead/ReaderPageHead'
 import { EmptyState } from '@components/Primitives/Primitives'
 
-import { BookCover } from '../../logging-flow/components/BookCover'
+import { BookCover } from '@components/BookCover/BookCover'
 import { BOOKS } from '../../logging-flow/data'
 import { CATALOG_BY_ID } from '../data'
 import './WishList.css'
