@@ -168,6 +168,11 @@ export function LogFlow({
   partners = [],
   books = {},
   recentlyLogged = [],
+  /* A title the surface already knows it is logging — pressed **Log** on a
+     book rather than **Log Reading** in the bar. Given, the flow opens on that
+     title's form instead of the search; left off, it opens where it always
+     did. */
+  book: bookProp,
   readingList,
   /* `reading_list_challenges#index` — the book-list challenges this reader is
      enrolled in. Given any, the search screen offers them. */
@@ -233,17 +238,18 @@ export function LogFlow({
   // Reset everything each time the flow is opened.
   useEffect(() => {
     if (!open) return
-    setStep(firstStep)
-    setLogType(siteType)
+    // Opened on a title the surface already picked, the search has nothing left
+    // to ask — the flow starts on that title's own form.
+    setStep(bookProp ? 'details' : firstStep)
+    setLogType(bookProp ? typeForBook(bookProp) : siteType)
     setFields({})
-    // A title-less type opens straight on its form, so it needs its stand-in
-    // book in place before the step renders.
-    setBook(siteType.withoutTitle ? untitledFor(siteType) : null)
     setReader(readerProp ?? DEMO_READER)
     setQuery('')
     setScanOpen(false)
     setEpicOpen(false)
-    setBook(null)
+    // A title-less type opens straight on its form, so it needs its stand-in
+    // book in place before the step renders.
+    setBook(bookProp ?? (siteType.withoutTitle ? untitledFor(siteType) : null))
     setMinutesInput('')
     setCountInput('')
     setDates([])
@@ -255,10 +261,11 @@ export function LogFlow({
     setTimerSeconds(0)
     setTimerRunning(false)
     setResult(null)
-    // Only on open. `types` is rebuilt every render, so listing it here would
-    // reset the flow under the reader's hands.
+    // Only on open (and on the title it was opened with). `types` is rebuilt
+    // every render, so listing it here would reset the flow under the reader's
+    // hands.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [open])
+  }, [open, bookProp])
 
   // The flow covers the window, so the page behind it holds still.
   useLockScroll(open)
@@ -583,8 +590,29 @@ export function LogFlow({
                 setStep(firstStep)
               }}
               onTalkToBenny={onTalkToBenny}
-              onOpenWord={onOpenWord}
+              /* A word waiting is one more screen, not a second offer crammed
+                 onto this one — the success screen ends in Next. */
+              onNext={onOpenWord ? () => setStep('word') : undefined}
             />
+          )}
+
+          {/* The word the log turned up, offered on its own. Benny says what he
+              found; the button hands it over. */}
+          {step === 'word' && (
+            <div className="lf-step lf-success">
+              <div className="lf-benny">
+                <BennyBubble variant="hero">
+                  <strong>I found a word in there.</strong> One word from {bookTitle} — it’s yours
+                  to keep.
+                </BennyBubble>
+              </div>
+              <Button variant="primary" size="lg" onClick={() => onOpenWord(result)}>
+                Unlock My Word
+              </Button>
+              <button className="lf-benny-skip" onClick={onClose}>
+                Not right now
+              </button>
+            </div>
           )}
         </div>
       </div>
@@ -1610,7 +1638,7 @@ export function LogSuccess({
   onReward,
   onTickets,
   onTalkToBenny,
-  onOpenWord,
+  onNext,
 }) {
   const amount =
     result.logType === 'minute'
@@ -1718,33 +1746,19 @@ export function LogSuccess({
             Not right now
           </button>
         </>
-      ) : onOpenWord ? (
-        <>
-          {/* Same catch-them-here moment, spent on a word from the book. */}
-          <div className="lf-benny">
-            <BennyBubble variant="centered">
-              <strong>I found a word in there.</strong> One word from {bookTitle}, a short round
-              with me, and it’s yours to keep.
-            </BennyBubble>
-          </div>
-          <Button variant="primary" size="lg" onClick={() => onOpenWord(result)}>
-            Unlock My Word
-          </Button>
-          <button className="lf-benny-skip" onClick={onDone}>
-            Not right now
-          </button>
-        </>
       ) : (
         /* `logged-books--actions` — logging one thing usually means logging
-           another, so the app keeps that door open beside the way out. */
+           another, so the app keeps that door open beside the way out. A site
+           with a word waiting has one more screen to go, so the way out reads
+           **Next** instead of Finish. */
         <div className="lf-success-actions">
           {onAnother && (
             <Button variant="secondary" size="lg" onClick={onAnother}>
               Log Another Title
             </Button>
           )}
-          <Button variant="primary" size="lg" onClick={onDone}>
-            Finish
+          <Button variant="primary" size="lg" onClick={onNext ?? onDone}>
+            {onNext ? 'Next' : 'Finish'}
           </Button>
         </div>
       )}

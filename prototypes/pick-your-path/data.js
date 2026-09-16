@@ -51,18 +51,128 @@ const PATH_BANNERS = {
 // The Tier-2 words the cluster teaches. Definitions are kid-facing — they're
 // what shows in each title's glossary page in the in-app reader, on the word
 // chips throughout the student's path, and in the teacher's cluster picker.
+// `say` and `part` are the shape a word record takes everywhere else in these
+// prototypes (see `words-with-benny`): how you say it, what kind of word it is,
+// what it means, and a sentence that puts it to work.
+/* The four words, in the record shape the vocabulary activities read
+   (`words-with-benny`): how you say it, what kind of word it is, what it means,
+   why it turned up in this book, and a `check` — one sentence that uses it
+   right beside near-misses a Grade-4 reader would plausibly pick. `definition`
+   is kept as an alias of `meaning`, since the rest of this prototype reads it
+   under that name. */
+const w = (word, say, part, meaning, why, correct, wrong) => ({
+  word,
+  say,
+  part,
+  meaning,
+  definition: meaning,
+  why,
+  example: correct,
+  check: { correct, wrong },
+})
+
 export const VOCAB = [
-  { word: 'accelerate', definition: 'To speed up — to go faster and faster.' },
-  { word: 'propel', definition: 'To push or drive something forward.' },
-  {
-    word: 'momentum',
-    definition: 'The push a moving thing carries — more speed or more weight means more of it.',
-  },
-  { word: 'velocity', definition: 'How fast something is moving in one direction.' },
+  w(
+    'accelerate',
+    'ak-SEL-uh-rate',
+    'verb',
+    'To speed up — to go faster and faster.',
+    'Everything on your path is something that gets going in a hurry.',
+    'The snowboarder began to accelerate the moment the slope tipped downhill.',
+    [
+      'She had to accelerate the door open before the bell rang.',
+      'The accelerate on his jacket was coming loose.',
+    ],
+  ),
+  w(
+    'propel',
+    'pruh-PEL',
+    'verb',
+    'To push or drive something forward.',
+    'Something has to do the pushing — a board, an engine, a pair of wings.',
+    'One hard push off the lip was enough to propel her over the gap.',
+    ['He felt propel about missing the bus.', 'They propel in the library every Tuesday.'],
+  ),
+  w(
+    'momentum',
+    'moh-MEN-tum',
+    'noun',
+    'The push a moving thing carries — more speed or more weight means more of it.',
+    'Once something heavy is moving, it takes a lot to stop it.',
+    'The truck had so much momentum that it kept rolling with the engine off.',
+    ['She momentum the ball across the field.', 'The momentum tasted sweeter than he expected.'],
+  ),
+  w(
+    'velocity',
+    'vuh-LOSS-ih-tee',
+    'noun',
+    'How fast something is moving in one direction.',
+    'Speed is only half of it — which way it is going matters too.',
+    'A peregrine falcon reaches its highest velocity in a hunting dive.',
+    ['He velocitied down the stairs two at a time.', 'Her velocity apology sounded sincere.'],
+  ),
+  w(
+    'friction',
+    'FRIK-shun',
+    'noun',
+    'The drag between two things rubbing together — what slows a moving thing down.',
+    'Every one of these books has something trying to stop the thing that is moving.',
+    'Fresh wax cuts the friction between the board and the snow.',
+    ['She felt a friction of hunger before lunch.', 'They friction the room every Friday.'],
+  ),
+  w(
+    'gravity',
+    'GRAV-ih-tee',
+    'noun',
+    'The pull that brings everything back down to the ground.',
+    'Whatever goes up on your path has to come down again.',
+    'Gravity is what turns the top of a jump into the start of a landing.',
+    ['He gravitied the ball toward the net.', 'The gravity of the paint was still wet.'],
+  ),
+  w(
+    'inertia',
+    'in-UR-shuh',
+    'noun',
+    'A thing’s habit of staying as it is — still if it is still, moving if it is moving.',
+    'The hardest part of any of these is getting started, or stopping.',
+    'It takes a real shove to beat the inertia of a parked monster truck.',
+    ['She inertia’d the door shut behind her.', 'The inertia smelled of fresh bread.'],
+  ),
 ]
 
 export const VOCAB_BY_WORD = Object.fromEntries(VOCAB.map((v) => [v.word, v]))
 export const WORD_LIST = VOCAB.map((v) => v.word)
+
+/**
+ * The word list, against what the reader has read — the vocabulary half of this
+ * challenge.
+ *
+ * A word is *in* the titles whose `words` name it. Logging one of those titles
+ * **turns it up**; what **banks** it is the unlock round, the same three
+ * activities `words-with-benny` collects a word with. So a word has three
+ * states: hiding, turned up (waiting on its round), and collected.
+ */
+export function wordsForPath(path, readTitleIds, collected = []) {
+  const read = new Set(readTitleIds)
+  const kept = new Set(collected)
+  return VOCAB.map((v) => {
+    const inTitles = path.titles.filter((t) => t.words.includes(v.word))
+    const foundIn = inTitles.filter((t) => read.has(t.id))
+    return {
+      ...v,
+      inTitles,
+      foundIn,
+      turnedUp: foundIn.length > 0,
+      found: kept.has(v.word),
+    }
+  })
+}
+
+/** The word a freshly-logged title turns up and the reader hasn't banked yet. */
+export function wordWaitingFor(path, title, collected = []) {
+  const kept = new Set(collected)
+  return VOCAB.find((v) => title.words.includes(v.word) && !kept.has(v.word)) ?? null
+}
 
 export const SITE = {
   school: 'Lincoln Elementary',
@@ -422,13 +532,16 @@ const MORE_TITLES = {
 }
 
 // Every title on a path teaches two of the cluster's words. The featured three
-// name theirs by hand; the deeper shelf takes the next pair off this rotation so
-// no title is ever missing its chips.
+// name theirs by hand; the deeper shelf takes the next pair off this rotation,
+// which walks the whole list so every word is hiding in at least two titles.
 const WORD_PAIRS = [
   ['accelerate', 'propel'],
   ['momentum', 'velocity'],
-  ['propel', 'momentum'],
-  ['velocity', 'accelerate'],
+  ['friction', 'gravity'],
+  ['inertia', 'accelerate'],
+  ['propel', 'friction'],
+  ['gravity', 'momentum'],
+  ['velocity', 'inertia'],
 ]
 
 // Attach the deeper shelf + each path's generated theme banner.
@@ -448,8 +561,22 @@ export const PATH_BY_ID = Object.fromEntries(PATHS.map((p) => [p.id, p]))
 // Seed the student demo so the destination page opens with real progress
 // (matches the proposal example: "read 2 of 3", activities still to do).
 export const SEED = {
-  chosenPathId: 'sports',
-  readTitleIds: ['s1', 's2'], // 2 of 3 read
+  /* Nobody has picked yet — which is the proposal's first beat, and the state
+     the challenge card's three-up cover is for. The id below is what the
+     student's own page falls back to when the dev switcher jumps straight to
+     it without a choice having been made. */
+  chosenPathId: null,
+  fallbackPathId: 'sports',
+  /* 2 of 3 read — the first and third titles rather than the first two,
+     because on every path those two leave exactly one of the four words still
+     hiding, which is the state the Word List has anything to say in. */
+  readTitleIds: ['s1', 's3'],
+  /* When each of those went on the log. A challenge log is a log: it has to say
+     when, and the first two entries predate the demo. */
+  loggedOn: { s1: 'April 18, 2026', s3: 'April 27, 2026' },
+  loggedValue: { s1: 31, s3: 32 },
+  // The words those two titles turned up, already banked.
+  collectedWords: ['accelerate', 'propel', 'momentum'],
   doneActivityIds: [], // 0 of 2 done — the student completes these live
   streak: 5,
 }
@@ -461,46 +588,304 @@ export const SEED = {
 
 export const DAILY_GOAL = { minutes: 12, goal: 20 }
 
+// `programs/_programs_list_item` — the shape the shared `ChallengeCard` reads:
+// art, name, dates, the site under them, and the chips that say what format the
+// challenge is and what you log for it. Words of Motion is the live one.
 export const CHALLENGES = [
   {
     id: 'words-of-motion',
     title: 'Words of Motion',
     dates: 'Apr 14 — May 30',
-    badge: 'Destination',
-    kicker: 'Vocabulary · Mr. Reyes',
+    /* The card's third line is `connected_site` in the app — where a challenge
+       you joined elsewhere came from. Only this one uses it, and for the one
+       thing worth saying about it here: which path the reader is on. */
+    types: ['book_list', 'activities'],
+    logTypes: ['books'],
+    bannerImg: bannerDestination,
     // the live one — opens the student's path
     live: true,
-    art: { image: bannerDestination, ink: '#ECFEFF' },
   },
   {
     id: 'spring',
     title: 'Spring Into Reading',
     dates: 'Apr 1 — Apr 30',
-    badge: 'Minutes',
-    kicker: 'Lincoln Elementary',
-    art: { bg: 'linear-gradient(180deg, #BFE3FA 0%, #B6F0C9 100%)', ink: '#23806C' },
+    types: [],
+    logTypes: ['minutes'],
+    art: 'spring',
   },
   {
     id: 'mystery-month',
     title: 'Mystery Month',
     dates: 'Ongoing',
-    badge: 'Books',
-    kicker: 'Room 14 · Grade 4',
-    art: { bg: 'linear-gradient(180deg, #FFE8A8 0%, #C8E6B8 100%)', ink: '#3D2A18' },
+    types: ['reviews'],
+    logTypes: ['books'],
+    art: 'mystery-month',
   },
 ]
 
+// `_leaderboard_widget` — the shared card's two tabs are Top Schools and Top
+// Grades on a school site, and each row carries a figure per range and unit.
 export const TOP_READERS = [
-  { rank: 1, name: 'Diego H.', value: 214, color: '#FFBC42' },
-  { rank: 2, name: 'Maya C.', value: 198, color: '#ACACAC', isMe: true },
-  { rank: 3, name: 'Priya S.', value: 165, color: '#C2884F' },
+  { rank: 1, name: 'Diego H.', stats: { week: { minutes: 214, books: 6 }, month: { minutes: 806, books: 21 } }, color: '#FFBC42' }, // prettier-ignore
+  { rank: 2, name: 'Maya C.', isMe: true, stats: { week: { minutes: 198, books: 5 }, month: { minutes: 742, books: 19 } }, color: '#ACACAC' }, // prettier-ignore
+  { rank: 3, name: 'Priya S.', stats: { week: { minutes: 165, books: 4 }, month: { minutes: 690, books: 17 } }, color: '#C2884F' }, // prettier-ignore
 ]
 
 export const TOP_CLASSES = [
-  { rank: 1, name: 'Room 14 · Grade 4', value: 1840, color: '#FFBC42' },
-  { rank: 2, name: 'Room 9 · Grade 4', value: 1610, color: '#ACACAC' },
-  { rank: 3, name: 'Room 21 · Grade 5', value: 1275, color: '#C2884F' },
+  { rank: 1, name: 'Room 14 · Grade 4', stats: { week: { minutes: 1840, books: 47 }, month: { minutes: 7120, books: 168 } }, color: '#FFBC42' }, // prettier-ignore
+  { rank: 2, name: 'Room 9 · Grade 4', stats: { week: { minutes: 1610, books: 41 }, month: { minutes: 6380, books: 150 } }, color: '#ACACAC' }, // prettier-ignore
+  { rank: 3, name: 'Room 21 · Grade 5', stats: { week: { minutes: 1275, books: 33 }, month: { minutes: 5010, books: 121 } }, color: '#C2884F' }, // prettier-ignore
 ]
+
+// ─── The reader's word collection ────────────────────────────────────────────
+// Collections > Words is the reader's own, not a challenge's: every word Maya
+// has banked by logging, wherever she banked it. These came from earlier
+// challenges and sit alongside the ones this path turns up.
+
+const elsewhere = (word, say, part, meaning, example, bookId, from, challenge, date) => ({
+  word,
+  say,
+  part,
+  meaning,
+  definition: meaning,
+  example,
+  check: { correct: example, wrong: [] },
+  bookId,
+  from,
+  challenge,
+  date,
+})
+
+export const WORDS_ELSEWHERE = [
+  elsewhere(
+    'ferocious',
+    'fuh-ROH-shus',
+    'adjective',
+    'Fierce and violent — the kind of angry that makes people back away.',
+    'The bear let out a ferocious roar and the whole clearing went quiet.',
+    'wild-robot',
+    'The Wild Robot',
+    'Mystery Month',
+    '2026-03-12',
+  ),
+  elsewhere(
+    'stealthy',
+    'STEL-thee',
+    'adjective',
+    'Moving so quietly and carefully that nobody notices you.',
+    'One stealthy step at a time, he crossed the hall without a sound.',
+    'spy-school',
+    'Spy School',
+    'Mystery Month',
+    '2026-03-03',
+  ),
+  elsewhere(
+    'peculiar',
+    'pih-KYOOL-yer',
+    'adjective',
+    'Odd in a way you can’t quite explain.',
+    'There was something peculiar about a hole that deep in the middle of nowhere.',
+    'holes',
+    'Holes',
+    'Spring Into Reading',
+    '2026-02-24',
+  ),
+  elsewhere(
+    'triumph',
+    'TRY-umf',
+    'noun',
+    'A win you really had to work for.',
+    'After a season of losses, the last shot felt like a triumph.',
+    'crossover',
+    'The Crossover',
+    'Spring Into Reading',
+    '2026-02-09',
+  ),
+]
+
+/** The books those came from, for the collection's own book lookup. */
+const BOOKS_ELSEWHERE = Object.fromEntries(
+  WORDS_ELSEWHERE.map((w) => [w.bookId, { id: w.bookId, title: w.from }]),
+)
+
+const MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
+/** "April 18, 2026" → "2026-04-18". The log writes dates the way a reader says
+ *  them; the collection sorts and groups on them, so it wants them ordered. */
+export function toIso(date) {
+  const m = /^([A-Za-z]+) (\d+), (\d{4})$/.exec(date ?? '')
+  if (!m) return date ?? ''
+  const month = String(MONTHS.indexOf(m[1]) + 1).padStart(2, '0')
+  return `${m[3]}-${month}-${m[2].padStart(2, '0')}`
+}
+
+/**
+ * Everything the reader has collected, **oldest first** — the shape
+ * `words-with-benny`'s collection takes, since that is the surface this feeds:
+ * `{ word, bookId, date, firstTry }`, with the challenge it came from kept
+ * alongside for the filter.
+ *
+ * The collection is the reader's; a challenge is only where a word happened to
+ * turn up. So this path's banked words fold in with the ones banked before it.
+ */
+export function wordCollection(path, collected = [], loggedOn = {}) {
+  const here = VOCAB.filter((v) => collected.includes(v.word)).map((v) => {
+    const from = path?.titles.find((t) => t.words.includes(v.word) && loggedOn[t.id])
+    return {
+      word: v.word,
+      bookId: from?.id,
+      date: toIso(from ? loggedOn[from.id] : ''),
+      firstTry: true,
+      challenge: DESTINATION.title,
+    }
+  })
+  const before = WORDS_ELSEWHERE.map((w) => ({
+    word: w.word,
+    bookId: w.bookId,
+    date: w.date,
+    firstTry: w.word !== 'peculiar',
+    challenge: w.challenge,
+  }))
+  return [...before, ...here].sort((a, b) => a.date.localeCompare(b.date))
+}
+
+/** The full record behind a collected word, wherever it was banked. */
+export function wordFor(name) {
+  return VOCAB.find((v) => v.word === name) ?? WORDS_ELSEWHERE.find((w) => w.word === name) ?? null
+}
+
+/** …and the book it came from — a title on the path, or one read before it. */
+export function bookFor(path, id) {
+  return path?.titles.find((t) => t.id === id) ?? BOOKS_ELSEWHERE[id] ?? null
+}
+
+// ─── The logging flow's catalog ──────────────────────────────────────────────
+// The shared `LogFlow` searches a book map and offers shelves off it. A path's
+// titles are that catalog here, so the reader logs the same book they are
+// looking at rather than one from somebody else's fixture.
+
+// `cover` is a full Open Library image URL; `BookCover` wants the numeric id.
+const coverIdOf = (url) => {
+  const m = /\/b\/id\/(\d+)-/.exec(url ?? '')
+  return m ? m[1] : undefined
+}
+
+export function logBooksForPath(path) {
+  return Object.fromEntries(
+    path.titles.map((t) => [
+      t.id,
+      {
+        id: t.id,
+        title: t.title,
+        author: t.author,
+        coverId: coverIdOf(t.cover),
+        cover: [path.color, path.color],
+        // These are 24–32 page nonfiction titles: pages is what they're read in.
+        measure: 'pages',
+        pages: t.pages,
+      },
+    ]),
+  )
+}
+
+/** The path, as the reading list the flow offers off its search screen. */
+export function logListForPath(path, readTitleIds = []) {
+  return {
+    title: path.name,
+    unit: 'titles',
+    completed: readTitleIds,
+    titles: path.titles.map((t) => t.id),
+  }
+}
+
+// ─── Rewards ─────────────────────────────────────────────────────────────────
+// `programs/_reward.html.haml`. A reward hangs off a badge — a reading one, an
+// activity one, or the challenge itself — and it is three things: its title,
+// **how it was unlocked** (or what will unlock it), and **what to do about it**,
+// which is what the app puts behind an "Instructions" heading. A redeemed one
+// keeps its place and loses its instructions; there is nothing left to do.
+
+export const REWARDS = [
+  {
+    id: 'rw-first',
+    name: 'Reading Champion Sticker',
+    unlock: { badge: 'your first title' },
+    instructions: 'Ask Mr. Reyes for it at the start of the next class.',
+    on: 'April 18',
+    redeemed: true,
+    needs: { titles: 1 },
+  },
+  {
+    id: 'rw-three',
+    name: 'Front-of-the-Line Library Pass',
+    unlock: { log: '3 titles from your path' },
+    instructions: 'Show this screen at the library desk and go straight to the front.',
+    needs: { titles: 3 },
+  },
+  {
+    id: 'rw-activities',
+    name: 'Choose the Class Read-Aloud',
+    unlock: { badge: 'both extension activities' },
+    instructions: 'Tell Mr. Reyes which book you want — he reads it to the class next Friday.',
+    needs: { activities: 'all' },
+  },
+  {
+    id: 'rw-capstone',
+    name: 'Words of Motion Certificate',
+    unlock: { program: 'completion' },
+    instructions: 'Open it from this tab and print it, or ask Mr. Reyes to print it for you.',
+    needs: { capstone: true },
+  },
+]
+
+/**
+ * The reward list against a reader's progress. `needs` is what each one asks
+ * for, and it is checked the same way the badges are — off the reading and the
+ * activities rather than a stored flag.
+ */
+export function rewardsForPath(path, readTitleIds, doneActivityIds, capstoneEarned) {
+  const read = new Set(readTitleIds)
+  const done = new Set(doneActivityIds)
+  const readCount = path.titles.filter((t) => read.has(t.id)).length
+  const allDone = path.activities.every((a) => done.has(a.id))
+
+  return REWARDS.map((r) => {
+    const earned = r.needs.capstone
+      ? Boolean(capstoneEarned)
+      : r.needs.activities === 'all'
+        ? allDone
+        : readCount >= (r.needs.titles ?? 0)
+    return { ...r, earned, redeemed: earned && r.redeemed }
+  })
+}
+
+/** `programs/_reward` writes a sentence for each case; this is the same set. */
+export function rewardUnlockLine(r) {
+  const { log, badge, program } = r.unlock ?? {}
+  if (r.earned) {
+    if (program === 'completion') return `Unlocked by completing this challenge${on(r)}.`
+    if (log) return `Unlocked${on(r)} for logging ${log}.`
+    return `Unlocked${on(r)} with ${badge}.`
+  }
+  if (program === 'completion') return 'Complete this challenge to unlock this reward.'
+  if (log) return `Log ${log} to unlock this reward.`
+  return `Finish ${badge} to unlock this reward.`
+}
+
+const on = (r) => (r.on ? ` on ${r.on}` : '')
 
 // ─── Badge model ──────────────────────────────────────────────────────────────
 // Badges are derived from progress so there's one source of truth. A path shows:

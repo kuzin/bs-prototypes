@@ -293,7 +293,40 @@ export const ACTIVITY_BADGES = [
 export const activityBadgeEarned = (badge, done) =>
   badge.activities.every((a) => done.includes(a.id))
 
-// ─── Titles for the log-reading flow ─────────────────────────────────────────
+// ─── Rewards ─────────────────────────────────────────────────────────────────
+// A reward hangs off a badge (`_reward.html.haml`), which on a board means it
+// hangs off a space — the three that carry a reward mark. The reader sees the
+// title always, and the instructions for claiming it only once it's unlocked.
+
+export const REWARDS = [
+  {
+    id: 'rw-2',
+    spaceId: 's2',
+    title: 'Bookmark and Sticker Pack',
+    instructions: 'Ask at the front desk and pick whichever design you like best.',
+  },
+  {
+    id: 'rw-5',
+    spaceId: 's5',
+    title: 'A Free Book from the Prize Cart',
+    instructions:
+      'Show a librarian this screen and they will wheel out the cart. Whatever you choose is yours to keep.',
+  },
+  {
+    id: 'rw-finish',
+    spaceId: 'finish',
+    title: 'Winter Reading Party Invitation',
+    instructions:
+      'Hot cocoa, a craft table, and a certificate with your name on it. Saturday, January 24 at 2pm in the community room.',
+  },
+]
+
+export const rewardFor = (spaceId) => REWARDS.find((r) => r.spaceId === spaceId) || null
+
+// ─── Titles ──────────────────────────────────────────────────────────────────
+// The three books already behind the reader's `booksFinished: 3` — they open
+// the Challenge Log, and anything logged in the demo lands on top of them.
+//
 // Open Library cover CDN — `?default=false` 404s on a missing cover so the
 // cover tile can fall back to its color gradient.
 export const coverUrl = (isbn) =>
@@ -323,6 +356,38 @@ export const BOOKS = [
     isbn: '9780307977939',
     pages: 272,
     cover: ['#3B4A3A', '#6E7A53'],
+  },
+]
+
+// The log this challenge opens with — `programs#full_reading_log`: one row a
+// session, with what it was, when it went on, and how much it was worth.
+export const LOG_ITEMS = [
+  {
+    id: 'li-3',
+    title: 'Rump',
+    author: 'Liesl Shurtliff',
+    date: 'January 4, 2026',
+    logType: 'Minutes',
+    logValue: 45,
+    finished: true,
+  },
+  {
+    id: 'li-2',
+    title: 'She Gets the Girl',
+    author: 'Rachel Lippincott and Alyson Derrick',
+    date: 'December 29, 2025',
+    logType: 'Minutes',
+    logValue: 60,
+    finished: true,
+  },
+  {
+    id: 'li-1',
+    title: 'Giants Beware',
+    author: 'Rafael Rosado and Jorge Aguirre',
+    date: 'December 18, 2025',
+    logType: 'Minutes',
+    logValue: 30,
+    finished: true,
   },
 ]
 

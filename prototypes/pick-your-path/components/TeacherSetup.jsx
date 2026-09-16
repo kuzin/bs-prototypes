@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
+import { Button } from '@components/Button/Button'
 import { Toggle } from '@components/Toggle/Toggle'
 import { SectionCard } from '@components/SectionCard/SectionCard'
 import { Stepper } from '@components/Stepper/Stepper'
@@ -9,6 +10,11 @@ import { CoverTile, BadgeDisc, WordChips } from './common'
 import { badgesForPath } from '../data'
 import { DESTINATION, DESTINATION_CATALOG, PATHS, VOCAB } from '../data'
 
+/* Setting a destination is a step of building a challenge, so the screen wears
+   the Challenge Creator's own chrome — the title bar and the step rail — rather
+   than standing on a bare page as if it were somewhere else in the admin. */
+import '../../challenge-creator/index.css'
+
 // What each badge kind is called in the Badges table's Type column.
 const BADGE_KIND_LABEL = {
   reading: 'Per title',
@@ -16,9 +22,14 @@ const BADGE_KIND_LABEL = {
   destination: 'Destination',
 }
 
+/* `getSteps` for the challenge this teacher is building. Destination and Paths
+   are the two this proposal adds; the rest are the creator's own. */
 const SETUP_STEPS = [
+  { id: 'type', name: 'Type' },
   { id: 'destination', name: 'Destination' },
   { id: 'paths', name: 'Paths' },
+  { id: 'rewards', name: 'Rewards' },
+  { id: 'review', name: 'Review' },
 ]
 
 // One offerable path — a bold illustrated card. The Offered switch lives in the
@@ -226,76 +237,99 @@ export function TeacherSetup({ offered, onTogglePath }) {
     setExpanded((cur) => (cur.includes(id) ? cur.filter((x) => x !== id) : [...cur, id]))
 
   return (
-    <div className="pyp-teacher">
-      <div className="pyp-stepbar">
-        <div className="pyp-stepbar-inner">
-          <Stepper steps={SETUP_STEPS} current="paths" accent="#0F766E" />
+    <div className="cc-root pyp-ccroot">
+      <header className="cc-topbar">
+        <div className="cc-topbar-left">
+          <span className="cc-title">{DESTINATION.title}</span>
+          <span className="cc-status">Draft</span>
         </div>
+        <div className="cc-topbar-right">
+          <Button variant="ghost" size="sm">
+            Save &amp; exit
+          </Button>
+          <Button variant="primary" size="sm" accent="#0CA7BC">
+            Publish
+          </Button>
+        </div>
+      </header>
+
+      <div className="cc-stepbar">
+        <Stepper steps={SETUP_STEPS} current="paths" accent="#0CA7BC" />
       </div>
 
-      <div className="pyp-teacher-body">
-        <header className="pyp-page-head">
-          <h1 className="pyp-page-title">Set a destination</h1>
-          <p className="pyp-page-sub">
-            Choose a vocabulary cluster, then pick the interest paths your students can practice
-            through.
-          </p>
-        </header>
+      <div className="cc-main">
+        <main className="cc-form">
+          <div className="cc-form-inner">
+            <header className="pyp-page-head">
+              <h1 className="pyp-page-title">Set a destination</h1>
+              <p className="pyp-page-sub">
+                Choose a vocabulary cluster, then pick the interest paths your students can practice
+                through.
+              </p>
+            </header>
 
-        {/* Step 1 — the destination */}
-        <SectionCard title="Choose the destination" className="pyp-panel">
-          <p className="pyp-panel-sub">The Tier-2 vocabulary cluster every path will practice.</p>
-          <div className="pyp-dest-grid">
-            {DESTINATION_CATALOG.map((d) => {
-              const selected = d.id === DESTINATION.id
-              return (
-                <button
-                  key={d.id}
-                  type="button"
-                  className={`pyp-dest-card${selected ? ' is-selected' : ''}${d.ready ? '' : ' is-disabled'}`}
-                  disabled={!d.ready}
-                  aria-pressed={selected}
-                >
-                  <span className="pyp-dest-icon">
-                    <Icon name={d.icon} size={22} stroke={1.8} />
-                  </span>
-                  <span className="pyp-dest-text">
-                    <span className="pyp-dest-subject">{d.subject}</span>
-                    <span className="pyp-dest-title">{d.title}</span>
-                  </span>
-                  {/* selected = filled corner triangle carrying the check, the
+            {/* Step 1 — the destination */}
+            <SectionCard header="bar" title="Choose the destination" className="pyp-panel">
+              <p className="pyp-panel-sub">
+                The Tier-2 vocabulary cluster every path will practice.
+              </p>
+              <div className="pyp-dest-grid">
+                {DESTINATION_CATALOG.map((d) => {
+                  const selected = d.id === DESTINATION.id
+                  return (
+                    <button
+                      key={d.id}
+                      type="button"
+                      className={`pyp-dest-card${selected ? ' is-selected' : ''}${d.ready ? '' : ' is-disabled'}`}
+                      disabled={!d.ready}
+                      aria-pressed={selected}
+                    >
+                      <span className="pyp-dest-icon">
+                        <Icon name={d.icon} size={22} stroke={1.8} />
+                      </span>
+                      <span className="pyp-dest-text">
+                        <span className="pyp-dest-subject">{d.subject}</span>
+                        <span className="pyp-dest-title">{d.title}</span>
+                      </span>
+                      {/* selected = filled corner triangle carrying the check, the
                       same treatment as the completion-kind cards in `btwb` */}
-                  {selected && (
-                    <Icon name="check" size={14} stroke={2.6} className="pyp-dest-check" />
-                  )}
-                </button>
-              )
-            })}
-          </div>
-        </SectionCard>
+                      {selected && (
+                        <Icon name="check" size={14} stroke={2.6} className="pyp-dest-check" />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </SectionCard>
 
-        {/* Step 2 — the paths */}
-        <SectionCard title="Choose the paths students can pick" className="pyp-panel">
-          <p className="pyp-panel-sub">
-            Same four words, different vehicle — students pick the subject that excites them.
-          </p>
-          <div className="pyp-pathset">
-            {PATHS.map((path) => {
-              const on = offered.includes(path.id)
-              return (
-                <PathOffer
-                  key={path.id}
-                  path={path}
-                  on={on}
-                  disabled={on && offeredCount === 1}
-                  onToggle={() => onTogglePath(path.id)}
-                  open={expanded.includes(path.id)}
-                  onToggleOpen={() => toggleExpanded(path.id)}
-                />
-              )
-            })}
+            {/* Step 2 — the paths */}
+            <SectionCard
+              header="bar"
+              title="Choose the paths students can pick"
+              className="pyp-panel"
+            >
+              <p className="pyp-panel-sub">
+                Same four words, different vehicle — students pick the subject that excites them.
+              </p>
+              <div className="pyp-pathset">
+                {PATHS.map((path) => {
+                  const on = offered.includes(path.id)
+                  return (
+                    <PathOffer
+                      key={path.id}
+                      path={path}
+                      on={on}
+                      disabled={on && offeredCount === 1}
+                      onToggle={() => onTogglePath(path.id)}
+                      open={expanded.includes(path.id)}
+                      onToggleOpen={() => toggleExpanded(path.id)}
+                    />
+                  )
+                })}
+              </div>
+            </SectionCard>
           </div>
-        </SectionCard>
+        </main>
       </div>
     </div>
   )

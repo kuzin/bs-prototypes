@@ -8,6 +8,11 @@ import '@components/Cards/Cards.css'
 import '@components/Primitives/Primitives.css'
 
 import { BOOKS, KNOWN_BANDS, bandFor, boxInfo, wordByName } from '../data'
+
+/* This prototype's own two lookups, as the defaults. A prototype that brings
+   its own words passes `wordFor` / `bookFor` instead — the collection, the
+   tiles and the deck are all the same surfaces whichever words are in them. */
+const bookById = (id) => BOOKS[id]
 import { ReviewStrip } from './Flashcards'
 import './MyWords.css'
 
@@ -36,14 +41,46 @@ function prettyDate(iso) {
   return `${MONTHS[Number(m) - 1]} ${Number(d)}`
 }
 
+const LONG_MONTHS = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+
+/** The collection cut into months, newest first — the Reading Log's own shape
+ *  for a shelf this long. */
+function byMonth(entries) {
+  const months = new Map()
+  for (const e of entries) {
+    const key = (e.date ?? '').slice(0, 7)
+    if (!months.has(key)) months.set(key, [])
+    months.get(key).push(e)
+  }
+  return [...months.entries()]
+    .sort(([a], [b]) => b.localeCompare(a))
+    .map(([key, rows]) => {
+      const [year, month] = key.split('-')
+      return { key, label: month ? `${LONG_MONTHS[+month - 1]} ${year}` : 'Earlier', rows }
+    })
+}
+
 /**
  * One collected word. `isNew` gives the word just banked a moment of its own;
  * `card` is where the review deck currently has it, which is the difference
  * between a collection and a list — a word here is either sticking or slipping.
  */
-export function WordTile({ entry, isNew, card }) {
-  const word = wordByName(entry.word)
-  const book = entry.bookId ? BOOKS[entry.bookId] : null
+export function WordTile({ entry, isNew, card, wordFor = wordByName, bookFor = bookById }) {
+  const word = wordFor(entry.word)
+  const book = entry.bookId ? bookFor(entry.bookId) : null
   if (!word) return null
   return (
     <article className={`mw-tile${isNew ? ' is-new' : ''}`}>
@@ -82,7 +119,24 @@ export function WordTile({ entry, isNew, card }) {
   )
 }
 
-export function MyWords({ collection, newestWord, cards = {}, onReview }) {
+export function MyWords({
+  collection,
+  newestWord,
+  cards = {},
+  onReview,
+  /* The word and book records behind a collection entry. Default to this
+     prototype's; another passes its own. */
+  wordFor = wordByName,
+  bookFor = bookById,
+  /* The Monday this prototype's fixture week starts on — "collected this week"
+     is a stat, so it needs a week to be in. */
+  weekStart = '2026-06-20',
+  /* Group the shelf by the month each word was collected, the way the Reading
+     Log groups All Titles. Off by default: this prototype's collection reads as
+     one running list. */
+  groupByMonth = false,
+  accent = '#B43DD0',
+}) {
   const [band, setBand] = useState('all')
 
   // Newest first — a collection reads like a log, most recent at the top.
@@ -110,7 +164,7 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
     [ordered, band, cards],
   )
 
-  const thisWeek = collection.filter((e) => e.date >= '2026-06-20').length
+  const thisWeek = collection.filter((e) => e.date >= weekStart).length
   const firstTry = collection.length
     ? Math.round((collection.filter((e) => e.firstTry).length / collection.length) * 100)
     : 0
@@ -144,7 +198,7 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
           block
           active={band}
           onChange={setBand}
-          accent="#B43DD0"
+          accent={accent}
           ariaLabel="Filter words by how well they're known"
           className="mw-filters"
           items={tabs}
@@ -166,9 +220,23 @@ export function MyWords({ collection, newestWord, cards = {}, onReview }) {
           description="No words have reached this stage — keep going through the deck and they'll move up."
         />
       ) : (
-        <div className="mw-grid">
-          {shown.map((e) => (
-            <WordTile key={e.word} entry={e} isNew={e.word === newestWord} card={cards[e.word]} />
+        <div className="mw-shelf">
+          {(groupByMonth ? byMonth(shown) : [{ key: 'all', rows: shown }]).map((m) => (
+            <section key={m.key} className="mw-month">
+              {m.label && <p className="mw-month-label">{m.label}</p>}
+              <div className="mw-grid">
+                {m.rows.map((e) => (
+                  <WordTile
+                    key={e.word}
+                    entry={e}
+                    isNew={e.word === newestWord}
+                    card={cards[e.word]}
+                    wordFor={wordFor}
+                    bookFor={bookFor}
+                  />
+                ))}
+              </div>
+            </section>
           ))}
         </div>
       )}

@@ -22,8 +22,12 @@ import '@components/Button/Button.css'
  *     onReward={goToRewards}
  *     onTickets={goToTickets}
  *   />
+ *
+ * `children` is a last ruled-off row for whatever else the surface has to say
+ * about this badge — the gameboard puts the reader's place on the board there,
+ * because where a badge sits is the news on a board and nowhere else.
  */
-export function EarnedCard({ card, onViewBadge, onReward, onTickets }) {
+export function EarnedCard({ card, onViewBadge, onReward, onTickets, children }) {
   return (
     <article className="ec">
       <h3 className="ec-label">{card.label}</h3>
@@ -94,6 +98,8 @@ export function EarnedCard({ card, onViewBadge, onReward, onTickets }) {
           )}
         </div>
       )}
+
+      {children && <div className="ec-foot">{children}</div>}
     </article>
   )
 }

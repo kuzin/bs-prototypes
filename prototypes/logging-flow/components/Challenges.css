@@ -4,13 +4,6 @@
    head per list, the "Got a challenge code?" tile at the end of More
    Challenges, and the two modals those open. */
 
-.wa-section-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
 .wa-group-head {
   margin-bottom: 14px;
 }
@@ -152,12 +145,6 @@
   font-size: 14px;
   font-weight: 700;
   color: var(--c-danger, #dc2626);
-}
-
-@media (max-width: 560px) {
-  .wa-section-actions {
-    width: 100%;
-  }
 }
 
 /* ─── Alternative challenges ─────────────────────────────────────────────

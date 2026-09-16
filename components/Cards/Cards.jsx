@@ -85,7 +85,7 @@ export function StatCard({
 
   return (
     <Tag
-      className={`rc-stat${onClick ? ' rc-stat--hit' : ''}`}
+      className={`rc-stat${onClick ? ' rc-stat--hit' : ''}${trend ? ' rc-stat--trend' : ''}`}
       style={style}
       type={onClick ? 'button' : undefined}
       onClick={onClick}
@@ -104,7 +104,6 @@ export function StatCard({
               {unit}
             </span>
           )}
-          {trend && <TrendChip {...trend} />}
         </div>
         <div className="rc-stat-lbl">{label}</div>
         {footer && (
@@ -119,6 +118,9 @@ export function StatCard({
           </a>
         )}
       </div>
+      {trend && (
+        <TrendChip {...trend} className={`rc-stat-trend ${trend.className ?? ''}`.trim()} />
+      )}
     </Tag>
   )
 }

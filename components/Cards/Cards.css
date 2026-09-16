@@ -9,6 +9,7 @@
    drives the fill (a light tint), the icon and the action. */
 .rc-stat {
   --rc-stat-color: var(--rc-accent, var(--c-gray-900));
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -23,6 +24,23 @@
 .rc-stat-main {
   flex: 1;
   min-width: 0;
+}
+
+/* The delta belongs to the tile, not to the figure. Beside the number it read
+   as a second figure in the same breath as the first; pinned to the top
+   trailing corner it is plainly an annotation on the card.
+   Out of the flow rather than a third column, so the label underneath still
+   has the tile's full width — as a column it pushed two-word labels onto a
+   second line and left the row of tiles reading at different heights. */
+.rc-stat-trend {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+}
+
+/* The one line it *does* share: keep the figure clear of it. */
+.rc-stat--trend .rc-stat-val {
+  padding-right: 46px;
 }
 
 /* A whole-card link. The button has to give back everything a `div` had — a

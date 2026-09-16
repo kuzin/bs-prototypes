@@ -74,6 +74,40 @@
   transform: translateX(-50%);
 }
 
+/* ── Hero ─────────────────────────────────────────────────────────────────
+   The centred variant at the size of a moment. A screen that exists only to
+   carry what Benny is saying should read as one — the same shape, scaled, so
+   nothing about it is a second design. */
+
+.benny-bubble-wrap--hero {
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  text-align: center;
+}
+.benny-bubble-wrap--hero .benny-bubble-avatar {
+  width: 104px;
+  height: 104px;
+}
+.benny-bubble-wrap--hero .benny-bubble-body {
+  flex: 0 1 auto;
+  max-width: 100%;
+}
+.benny-bubble-wrap--hero .benny-bubble {
+  padding: 20px 26px;
+  font-size: 20px;
+  line-height: 1.55;
+  border-radius: 16px;
+}
+.benny-bubble-wrap--hero .benny-bubble::before {
+  top: -11px;
+  left: 50%;
+  border: 11px solid transparent;
+  border-top: 0;
+  border-bottom: 11px solid #f2f2f2;
+  transform: translateX(-50%);
+}
+
 .benny-bubble strong {
   font-weight: 800;
   color: var(--c-gray-900);

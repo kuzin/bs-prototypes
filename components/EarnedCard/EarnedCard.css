@@ -123,3 +123,10 @@
 .ec-extra .btn {
   flex: none;
 }
+
+/* Whatever else the surface has to add about this badge, ruled off the same
+   way a reward is. */
+.ec-foot {
+  padding-top: 16px;
+  border-top: 1px solid var(--c-gray-200);
+}

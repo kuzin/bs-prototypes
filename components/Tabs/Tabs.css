@@ -173,6 +173,19 @@
   font-weight: 700;
 }
 
+/* On a tinted page the default track (#f2f2f2) is within a shade of the ground
+   it sits on, so the group stops reading as a control at all. `onTint` takes it
+   a step down, and the inactive labels a step darker with it. */
+.tabs--pill.tabs--on-tint {
+  background: var(--c-gray-250);
+}
+.tabs--pill.tabs--on-tint .tab {
+  color: var(--c-gray-800);
+}
+.tabs--pill.tabs--on-tint .tab-count {
+  background: rgb(255 255 255 / 70%);
+}
+
 /* A pill group sitting on a band of its own — the sub-tab bar under the reader's
    main nav. No track: the band is the surface. The active pill takes a tint of
    the strip's own accent, which is the one treatment that reads here — it was a

@@ -447,6 +447,11 @@ export const CHALLENGE_ART = {
     title: 'MARCH\nMINUTE\nMADNESS',
     titleColor: '#052F38',
   },
+  'mystery-month': {
+    bg: 'linear-gradient(180deg, #FFE8A8 0%, #C8E6B8 100%)',
+    title: 'MYSTERY\nMONTH',
+    titleColor: '#3D2A18',
+  },
 }
 
 /**
@@ -473,6 +478,8 @@ const BANNER_TONES = {
   amber: { bg: '#ffedc8', ink: '#8a5a00' },
   green: { bg: '#e7f7ef', ink: '#087542' },
   red: { bg: '#ffe8de', ink: '#b3401a' },
+  // The vocabulary deck's own — Words with Benny is purple everywhere else.
+  purple: { bg: '#f4e2f8', ink: '#822c95' },
 }
 
 /**
@@ -527,13 +534,23 @@ export function ReaderBanner({
  * hand-rolled chip, which meant its own hover, its own focus ring and its own
  * press state, none of which matched the buttons everywhere else. The banner
  * only supplies the ground it sits on and the ink it takes.
+ *
+ * `solid` inverts it: the bar's own ink as the ground, white type on it. For a
+ * bar whose action is the point rather than an offer — a deck asking to be
+ * reviewed, against a bar that is only telling you something.
  */
-export function ReaderBannerAction({ size = 'sm', className = '', children, ...rest }) {
+export function ReaderBannerAction({
+  size = 'sm',
+  solid = false,
+  className = '',
+  children,
+  ...rest
+}) {
   return (
     <Button
       variant="secondary"
       size={size}
-      className={`wa-banner-chip ${className}`.trim()}
+      className={`wa-banner-chip${solid ? ' wa-banner-chip--solid' : ''} ${className}`.trim()}
       {...rest}
     >
       {children}
@@ -694,11 +711,18 @@ const CHALLENGE_TYPE_COLOR = '#087542'
  * and one you're allowed to leave carries a kebab with "Un-enroll" — given both
  * `canSelfUnenroll` and an `onUnenroll` to call.
  *
+ * Art comes from `hero` (a node the caller composes), `banner` (a key into
+ * Beanstack's own banners), `bannerImg` (a src the prototype supplies itself)
+ * or `art` (a drawn cover), in that order.
+ *
  * `onOpen` is optional — the card has always been clickable, it just never had
  * anywhere to go. A prototype that has built the challenge page passes it.
  */
 export function ChallengeCard({ challenge, accent = READER_ACCENT, onOpen, onUnenroll }) {
-  const banner = bannerSrc(challenge.banner)
+  /* `banner` names one of Beanstack's own; `bannerImg` is a src outright, for a
+     prototype whose challenge has art of its own rather than a key into the
+     shared set. */
+  const banner = challenge.bannerImg ?? bannerSrc(challenge.banner)
   const art = CHALLENGE_ART[challenge.art] ?? CHALLENGE_ART.spring
   // `badge` was the single measure pill this card used to carry; a challenge
   // that still only has one keeps showing it.
@@ -720,8 +744,12 @@ export function ChallengeCard({ challenge, accent = READER_ACCENT, onOpen, onUne
       )}
 
       {/* The real banner where the challenge has one — `img.challenge-image` in
-          the app's own card — and the drawn cover where it doesn't. */}
-      {banner ? (
+          the app's own card — and the drawn cover where it doesn't. `hero` is
+          art the caller composes itself, for a challenge whose cover is made of
+          more than one picture. */}
+      {challenge.hero ? (
+        <div className="wa-chcard-hero">{challenge.hero}</div>
+      ) : banner ? (
         <div className="wa-chcard-hero">
           <img src={banner} alt="" className="wa-chcard-img" />
         </div>
@@ -969,11 +997,16 @@ function LeadPicker({ options, value, onChange, placement }) {
  *
  * Both pickers are live. A row can carry a figure per range and unit
  * (`stats: { week: { minutes, books } }`); one that only has a single `value`
- * keeps showing it, so the older fixtures still render.
+ * keeps showing it, so the older fixtures still render. `isMe` marks the
+ * reader's own row.
  */
 export function LeaderboardCard({
   schools = [],
   grades = [],
+  /* What this site's two lists are called. A district site ranks schools and
+     grades; a single classroom ranks the readers in it and the rooms beside it,
+     and the widget is the same widget either way. */
+  labels = { schools: 'Schools', grades: 'Grades' },
   ranges = LEADERBOARD_RANGES,
   units = LEADERBOARD_UNITS,
 }) {
@@ -994,8 +1027,8 @@ export function LeaderboardCard({
         ariaLabel="Which leaderboard"
         className="wa-leadcard-tabs"
         items={[
-          { id: 'schools', label: 'Top Schools' },
-          { id: 'grades', label: 'Top Grades' },
+          { id: 'schools', label: `Top ${labels.schools}` },
+          { id: 'grades', label: `Top ${labels.grades}` },
         ]}
       />
       <div className="wa-leadcard-body">
@@ -1005,18 +1038,23 @@ export function LeaderboardCard({
         </div>
         <ul className="wa-leadcard-list">
           {rows.map((row) => (
-            <li key={row.rank} className="wa-leadcard-row">
+            <li key={row.rank} className={`wa-leadcard-row${row.isMe ? ' is-me' : ''}`}>
               <span className="wa-leadcard-rank" style={{ background: row.color }}>
                 {row.rank}
               </span>
-              <span className="wa-leadcard-name">{row.name}</span>
+              <span className="wa-leadcard-name">
+                {row.name}
+                {/* The app marks the reader's own row — on a class leaderboard
+                    of thirty, finding yourself is the point. */}
+                {row.isMe && <em> (you)</em>}
+              </span>
               <span className="wa-leadcard-val">{figure(row)}</span>
             </li>
           ))}
         </ul>
         <div className="wa-leadcard-foot">
           <a href="#" className="wa-leadcard-more">
-            View All {tab === 'schools' ? 'Schools' : 'Grades'}
+            View All {labels[tab]}
           </a>
         </div>
       </div>
