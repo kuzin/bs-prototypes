@@ -1,0 +1,182 @@
+/* A single unbroken surface — nothing overhangs it, so it needs no spacer slot and nothing it
+ * sits above has to make room. The shipped bar's shadow is kept: `0 3px 13px rgba(0,0,0,.05)`. */
+.m-tb2 {
+  flex: none;
+  position: relative;
+  z-index: 4;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  /* 6pt taller than the shipped bar's 54. Content is now just the 40pt pill, so 60 gives it 10
+   * either side without the bar going hollow. */
+  height: calc(var(--m-tabbar-h) + 6px + var(--m-safe-bottom));
+  padding-bottom: var(--m-safe-bottom);
+  background: var(--m-white);
+  box-shadow: 0 3px 13px rgba(0, 0, 0, 0.05);
+}
+
+/* Inset-free devices need the same descender room the shipped bar did, on top of the 10. */
+.m-frame[data-inset-bottom='0'] .m-tb2 {
+  height: calc(var(--m-tabbar-h) + 10px);
+}
+
+.m-tb2-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
+  flex: 1 1 0%;
+}
+
+.m-tb2-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 0;
+  color: var(--m-warm-grey);
+}
+
+/* The rounded active state. A pill behind the ICON only — running it behind the label too makes
+ * the bar read as a segmented control rather than a tab bar. */
+.m-tb2-pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Taller now that the label is gone — the pill IS the tab, so it carries the whole tap target
+   * rather than sharing it with a word underneath. */
+  width: 56px;
+  height: 40px;
+  border-radius: 14px;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease;
+}
+
+/* `PressableButton` type `activeTab` — lightness(accent, 90) ground, darken(accent, .3) ink. Not
+ * an invented pair: it is the state the design system already defines for an active tab. */
+.m-tb2-tab.is-active {
+  color: var(--m-accent-tab-text);
+}
+
+.m-tb2-tab.is-active .m-tb2-pill {
+  background: var(--m-accent-tab-bg);
+}
+
+.m-tb2-tab:active .m-tb2-pill {
+  background: var(--m-accent-tab-bg-pressed);
+}
+
+.m-tb2-icon {
+  display: block;
+}
+
+/* Badges ride the pill's corner rather than the icon's, so they clear the active ground. */
+.m-tb2-badge {
+  position: absolute;
+  top: -2px;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 8px;
+  background: var(--m-red);
+  color: var(--m-white);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: 0 0 0 2px var(--m-white);
+}
+
+.m-tb2-badge.is-dot {
+  min-width: 8px;
+  width: 8px;
+  height: 8px;
+  padding: 0;
+  top: 2px;
+  right: 8px;
+}
+
+/* The plus: a 44pt squircle that lives INSIDE the bar's height rather than a 56pt circle lifted
+ * clear of it. Same corner language as the app's own FAB, which is a squircle at radius 24 — this
+ * keeps that and just stops it breaking the bar's edge. */
+.m-tb2-plus {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0 4px;
+  border-radius: 50%;
+  background: var(--m-accent);
+  color: var(--m-accent-ink);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--m-accent) 40%, transparent);
+  transition:
+    transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 180ms ease;
+}
+
+.m-tb2-plus:active {
+  background: var(--m-accent-pressed);
+}
+
+.m-tb2-plus.is-open {
+  transform: rotate(135deg);
+}
+
+/* ── variant="floating" ──────────────────────────────────────────────────── */
+/* The bar leaves the screen edge: inset 16 either side, lifted clear of the home indicator, and
+ * given a rounded-rectangle radius so it reads as an object rather than a region. It is absolutely
+ * positioned, so the body behind it keeps its full height and content scrolls UNDERNEATH — which
+ * is the trade this variant makes, and why `.m-frame.has-floating-bar .m-scroll` pays back the
+ * clearance at the bottom of every list. */
+.m-tb2--floating {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  /* Sits flush on the safe-area boundary rather than floating 10pt above it — the bar still
+   * clears the home indicator, but stops looking like it is drifting up the screen. */
+  bottom: var(--m-safe-bottom);
+  height: 60px;
+  padding-bottom: 0;
+  /* A rounded rectangle rather than a full pill. At 32 (half the 64pt height) the ends curve so
+   * hard that the outer tabs lose their corners and the bar reads as a capsule; 20 keeps it
+   * obviously a bar. */
+  border-radius: 20px;
+  box-shadow:
+    0 6px 24px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+/* Inset-free devices have no home indicator to sit above, so the lift is a judgement rather than a
+ * derived value: at 8 the bar reads as stuck to the glass. 16 gives it the same sense of floating
+ * that the safe-area inset provides for free on a notch phone. */
+.m-frame[data-inset-bottom='0'] .m-tb2--floating {
+  height: 60px;
+  bottom: 16px;
+}
+
+/* The end items still want a little clearance from the corner. */
+.m-tb2--floating .m-tb2-group {
+  padding: 0 2px;
+}
+
+/* The bar no longer occupies layout, so every scroller has to clear it itself: the bar's height
+ * plus its lift plus a little air.
+ *
+ * A SPACER, not `padding-bottom`. Both scrollers are `display: flex` with `overflow`, and a flex
+ * container's trailing padding is not counted in its scrollable overflow — scroll to the end and
+ * the last row still sits under the bar, with the padding rendered beyond the scroll extent where
+ * it does nothing. A real child is in the flow, so it is measured. */
+.m-frame.has-floating-bar .m-scroll::after,
+.m-frame.has-floating-bar .m-frame-body.is-scroll::after {
+  content: '';
+  display: block;
+  flex: none;
+  height: calc(60px + var(--m-safe-bottom) + 12px);
+}

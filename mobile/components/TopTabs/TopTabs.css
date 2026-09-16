@@ -1,0 +1,66 @@
+/* LogTabNavigatorStyles.tabBar — 56pt, the same chrome shadow as the header, and on iOS no
+ * bottom border (the border is the Android branch). */
+.m-toptabs {
+  flex: none;
+  display: flex;
+  flex-direction: row;
+  align-content: center;
+  width: 100%;
+  height: 56px;
+  background: var(--m-white);
+  box-shadow: 0 3px 13px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  scrollbar-width: none;
+  position: relative;
+  z-index: 6;
+}
+
+.m-toptabs::-webkit-scrollbar {
+  height: 0;
+}
+
+/* TabStyles.tabWrapper: full height, centred, 12pt each side. */
+.m-toptab {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 12px;
+  white-space: nowrap;
+}
+
+/* Tab.tsx adds 8pt outside the first and last items. */
+.m-toptab:first-child {
+  margin-left: 8px;
+}
+
+.m-toptab:last-child {
+  margin-right: 8px;
+}
+
+.m-toptab-label {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-warm-grey);
+}
+
+.m-toptab.is-active .m-toptab-label {
+  color: var(--m-grey-dark-1);
+}
+
+/* TabStyles.indicator — 3pt, full width of the item, pinned to the bottom. */
+.m-toptab-indicator {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  border-radius: 3px;
+  background: transparent;
+}
+
+.m-toptab.is-active .m-toptab-indicator {
+  background: var(--m-cta);
+}

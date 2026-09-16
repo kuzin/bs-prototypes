@@ -1,0 +1,217 @@
+.m-st {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--m-space-8);
+}
+
+/* StreaksCardStyles.card — shared by the streak cards AND TimesGoalMetCard. */
+.m-st-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+  padding-top: 26px;
+  padding-bottom: 40px;
+  border-radius: 10px;
+}
+
+.m-st-achievement {
+  /* Pulls the number up into the artwork's optical padding. */
+  margin-top: -5px;
+  font-size: 26px;
+  font-weight: 900;
+  letter-spacing: -0.48px;
+}
+
+.m-st-text {
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.26px;
+}
+
+/* ── TimesGoalMetCard ────────────────────────────────────────────────────── */
+.m-st-goalcard {
+  justify-content: center;
+  background: var(--m-yellow-extra-light);
+}
+
+.m-st-goal-col,
+.m-st-goal-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 115px;
+}
+
+/* A 90pt box, matching the streak cards' artwork height so the two card shapes line up. */
+.m-st-goal-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 90px;
+}
+
+.m-st-goal-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  background: var(--m-yellow);
+}
+
+.m-st-goal-count {
+  margin-bottom: 4px;
+  font-size: 26px;
+  font-weight: 800;
+  line-height: 28px;
+  letter-spacing: 0.35px;
+  text-align: center;
+  color: var(--m-orange-vivid);
+}
+
+.m-st-goal-label {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 20px;
+  letter-spacing: -0.35px;
+  text-align: center;
+  color: var(--m-grey-dark-3);
+}
+
+.m-st-calendar {
+  display: flex;
+  flex-direction: column;
+  padding: 32px 20px 0;
+}
+
+.m-st-day.is-outside .m-st-daynum {
+  opacity: 0.35;
+}
+
+/* A 7-column GRID, not a flex row with space-between. The run's wash fills its whole cell, so
+ * consecutive days butt together and read as one pill — with `space-between` there were gaps
+ * between the cells and the bar had to be bridged by a filler, which is where the lumps came
+ * from. */
+.m-st-weekdays,
+.m-st-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+}
+
+/* The star hangs BELOW its day rather than sitting inside it, so the row gap has to clear the
+ * star as well as the cell — at a plain 36pt rhythm the stars run into the numbers underneath. */
+.m-st-week {
+  margin-bottom: 20px;
+}
+
+/* dayHeader — three-LETTER names ('Sun', 'Mon', …), not initials: `react-native-calendars` writes
+ * the short day name. Bold, `colors.gray` #a3a3a3. */
+.m-st-weekday {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px 0 7px;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+  color: var(--m-c-gray);
+}
+
+/* The cell carries the streak wash and nothing else. It is SHORTER than the 36pt day inside it,
+ * so today's disc stands a little proud of the bar rather than being swallowed by it — which is
+ * how the shipped screen reads. */
+.m-st-cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+}
+
+.m-st-cell.is-marked {
+  background: var(--m-accent-tab-bg);
+}
+
+/* Only the ENDS of a run round — a week edge counts as an end, which is what breaks the bar
+ * cleanly at Saturday and restarts it on Sunday. */
+.m-st-cell.opens-run {
+  border-top-left-radius: 14px;
+  border-bottom-left-radius: 14px;
+}
+
+.m-st-cell.closes-run {
+  border-top-right-radius: 14px;
+  border-bottom-right-radius: 14px;
+}
+
+/* CalendarDayStyles.container — a 36pt square per day, centred in its cell. */
+.m-st-day {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.m-st-daynum {
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.26px;
+  color: var(--m-grey-dark-3);
+}
+
+/* Today, not yet logged: a white disc with a 2pt accent ring. */
+.m-st-day.is-today {
+  border-radius: 50px;
+  background: var(--m-white);
+  box-shadow: inset 0 0 0 2px var(--m-accent);
+}
+
+.m-st-day.is-today .m-st-daynum {
+  color: var(--m-accent);
+}
+
+/* Today, logged: the ring becomes a fill and the number flips to white. */
+.m-st-day.is-today-logged {
+  background: var(--m-accent);
+  box-shadow: none;
+}
+
+.m-st-day.is-today-logged .m-st-daynum {
+  color: var(--m-white);
+}
+
+/* A logged day reads in the accent; a future one is dimmer than an unlogged past day, because
+ * "not yet" is not the same as "did not". */
+.m-st-day.is-marked:not(.is-today) .m-st-daynum {
+  color: var(--m-accent);
+}
+
+.m-st-day.is-future .m-st-daynum {
+  color: var(--m-grey-light-1);
+}
+
+.m-st-outside-dot {
+  flex: none;
+}
+
+/* starContainer — hangs BELOW the day rather than inside it, so it never crowds the number. */
+/* Stroke UNDER the fill, so the white reads as a border around the star rather than eating into
+ * its points — SVG's default paints the stroke over the fill. */
+.m-st-star svg {
+  paint-order: stroke fill;
+}
+
+.m-st-star {
+  position: absolute;
+  z-index: 2;
+  bottom: -9px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}

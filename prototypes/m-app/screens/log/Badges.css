@@ -1,0 +1,21 @@
+/* Badges.tsx — flatlistStyle paddingTop 24, contentContainerStyle paddingBottom 34
+ * (CONTAINER_PADDING_BOTTOM), on white. */
+/* `flex: 1 0 auto`, NOT `1 1 0%` — a screen inside the tab scroller. With a zero basis the box is
+ * sized to the scroller and its own content overflows it, so the scroll extent comes from content
+ * the flex layout never measured and the floating bar's clearance spacer lands ABOVE it. An auto
+ * basis means the box is at least its content, and still grows to fill a short screen. */
+.m-badges {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-badges-list {
+  display: flex;
+  flex-direction: column;
+  padding-top: 24px;
+  padding-bottom: 34px;
+  background: var(--m-white);
+}

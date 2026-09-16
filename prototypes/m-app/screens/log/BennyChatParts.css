@@ -1,0 +1,213 @@
+/* ── BennyLoader ──────────────────────────────────────────────────────────
+ * BennyLoaderStyles: a greyLight3 pill on the left, holding three 8pt dots. The animation
+ * interpolates ONE dark dot along the row and reverses, 500ms each way — so it reads as a hand-off
+ * rather than three independent pulses. */
+.m-bl {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  align-self: flex-start;
+  padding: 10px;
+  border-radius: 20px;
+  background: var(--m-grey-light-3);
+}
+
+.m-bl-dot {
+  width: 8px;
+  height: 8px;
+  margin: 0 2px;
+  border-radius: 4px;
+  background: var(--m-c-very-light-grey);
+  animation: m-bl-pulse 1500ms linear infinite;
+}
+
+@keyframes m-bl-pulse {
+  0%,
+  100% {
+    background: var(--m-c-very-light-grey);
+  }
+  20% {
+    background: var(--m-c-dark-grey);
+  }
+  40% {
+    background: var(--m-c-very-light-grey);
+  }
+}
+
+/* ── ConversationError ────────────────────────────────────────────────── */
+.m-ce {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: center;
+  margin-top: 10px;
+}
+
+.m-ce-text {
+  margin-left: 6px;
+  margin-right: 8px;
+  color: var(--m-c-alert-red);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17.5px;
+}
+
+/* ── RetryButton — right-aligned, under the reader's own failed message. ── */
+.m-rb {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  align-self: flex-end;
+}
+
+.m-rb-text {
+  margin-left: 6px;
+  margin-right: 8px;
+  color: var(--m-c-alert-red);
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17.5px;
+}
+
+.m-rb-line {
+  width: 1px;
+  height: 14px;
+  margin-right: 8px;
+  background: var(--m-c-very-light-grey);
+}
+
+.m-rb-retry {
+  color: var(--m-c-blue-b-6);
+  font-size: 14px;
+  line-height: 17.5px;
+}
+
+/* ── RateBennyConversation ────────────────────────────────────────────── */
+.m-rc {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  border-radius: var(--m-radius-card);
+  border: 1px solid var(--m-c-green-white);
+}
+
+.m-rc-title {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 17.5px;
+  color: var(--m-c-secondary);
+}
+
+.m-rc-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.m-rc-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  border-radius: var(--m-radius-control);
+  background: var(--m-white);
+}
+
+.m-rc-label {
+  margin-left: 6px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 17.5px;
+}
+
+.m-rc-bad .m-rc-label {
+  color: var(--m-c-burnt-sienna);
+}
+
+.m-rc-good .m-rc-label {
+  color: var(--m-c-fun-green);
+}
+
+/* The ground only fills once a rating is picked. */
+.m-rc-bad.is-picked {
+  background: var(--m-c-apricot-peach);
+}
+
+.m-rc-good.is-picked {
+  background: var(--m-c-ice-cold);
+}
+
+/* ── End-conversation modal ───────────────────────────────────────────── */
+.m-ecm {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--m-gutter);
+}
+
+.m-ecm-backdrop {
+  position: absolute;
+  inset: 0;
+  background: var(--m-c-light-dark, rgba(0, 0, 0, 0.35));
+}
+
+.m-ecm-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 24px;
+  border-radius: var(--m-radius-card);
+  background: var(--m-white);
+}
+
+.m-ecm-title {
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 20.29px;
+  color: var(--m-c-mine-black);
+  text-align: center;
+}
+
+.m-ecm-sub {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22.4px;
+  color: var(--m-c-secondary);
+  text-align: center;
+}
+
+.m-ecm-end {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  margin-top: 24px;
+  border-radius: var(--m-radius-card);
+  background: var(--m-accent);
+  color: var(--m-white);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* GeneralButton, white with secondary text — marginTop 8. */
+.m-ecm-cancel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 56px;
+  margin-top: 8px;
+  border-radius: var(--m-radius-card);
+  background: var(--m-white);
+  color: var(--m-c-secondary);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 16px;
+}

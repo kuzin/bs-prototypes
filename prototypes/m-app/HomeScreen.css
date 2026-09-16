@@ -1,0 +1,91 @@
+/* DIVERGENCE — Home sits on the home GREY, not white.
+ *
+ * `Home.tsx` sets `container: { backgroundColor: colors.white }`, which leaves a column of white
+ * cards on a white page where the only thing separating a card from the ground is a 6%-opacity
+ * shadow. The app already has the colour for this and names it after this screen —
+ * `backgroundHomeGray` #f4f4f4 — it just is not used here. On it, every card reads as a card.
+ *
+ * The ScrollView adds 58pt of bottom padding. */
+.m-home {
+  display: flex;
+  flex-direction: column;
+  background: var(--m-c-background-home-gray);
+  padding-bottom: 58px;
+}
+
+/* THE PAGE OWNS THE RHYTHM, not the cards.
+ *
+ * Every card on this screen used to carry its own vertical margin — 24 on PendingBookTalks, 12 on
+ * MotivatorSurveyCard, a 16 bottom on the goal banner and the streak card, 24 on the fundraiser —
+ * so the gap between any two depended on which two, and turning a flag off changed the spacing of
+ * its neighbours. Declared here, the stack has one gap whatever is showing.
+ *
+ * Two steps: 16 between the stacked cards at the top (they are notices, read in one glance) and
+ * 56 between the SECTIONS below (EmptyHomeContainer's own value — they are separate subjects). */
+.m-home > * + * {
+  margin-top: 16px;
+}
+
+.m-home > .m-home-section {
+  display: flex;
+  flex-direction: column;
+  margin-top: 56px;
+}
+
+/* Home.tsx wraps ChallengesList in `challengeListContainer: { marginTop: -20 }`, which pulls it
+ * back against its own 56 — so the challenges sit closer to the streak card than any other pair. */
+.m-home > .m-home-section--challenges {
+  margin-top: 36px;
+}
+
+/* The first child never takes a top margin — the header above it already sets the inset. */
+.m-home > *:first-child {
+  margin-top: 24px;
+}
+
+/* Rails bleed to the right edge; the first card carries the inset. */
+.m-home-rail {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.m-home-rail::-webkit-scrollbar {
+  height: 0;
+}
+
+/* styles/Styles.ts bookListContainer — marginRight 16, marginTop 24, radius 8. */
+.m-home-book {
+  flex: none;
+  margin-right: 16px;
+  margin-top: 24px;
+  border-radius: var(--m-radius-cover);
+}
+
+/* 21 in the source — one off the page gutter every other rail and card uses, which shows up as a
+ * single-pixel step between the Recent Titles rail and the Challenges rail above it. */
+.m-home-book.is-first {
+  margin-left: var(--m-gutter);
+}
+
+/* BookImage at its Home size: 131×197. The title inside stands in for a cover that has not
+ * loaded, which is what BookImage itself falls back to. */
+.m-home-cover {
+  display: flex;
+  align-items: flex-end;
+  width: 131px;
+  height: 197px;
+  padding: 12px;
+  border-radius: var(--m-radius-cover);
+  overflow: hidden;
+}
+
+.m-home-cover-title {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 23px;
+  color: var(--m-white);
+  text-align: left;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}

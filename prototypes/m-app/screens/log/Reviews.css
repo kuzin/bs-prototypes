@@ -1,0 +1,165 @@
+/* The FlatList itself — white ground and `paddingTop: 8` on the log tab (Discover uses 16). */
+/* No top padding on the log tab — the FilterBar is full-bleed and sits flush under the tabs, so
+ * the list's own 8 would open a white gap above it. Discover has no bar and keeps its 16. */
+/* `flex: 1 0 auto`, NOT `1 1 0%`. With a zero basis the screen is sized to the scroller and its
+ * own content overflows that box — so the scroll extent comes from content the flex layout never
+ * measured, and anything the scroller puts AFTER this (the floating bar's spacer) lands above it
+ * instead of below. An auto basis means the box is at least its content, and still grows to fill
+ * a short screen so the empty state can centre. */
+.m-rv {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+/* Discover pads the list 16 rather than 8. */
+.m-rv.is-discover {
+  padding-top: 16px;
+}
+
+/* contentContainerStyle — flexGrow 1 so the empty state can fill, plus a 40pt tail. */
+.m-rv-list {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-bottom: 40px;
+}
+
+/* reviewWrapper — `paddingVertical: 24` in the source. Tightened to 20: with a 16pt gap under the
+ * date and 8 under the title, 24 either end made each row about 50pt of air for three lines of
+ * text, and the list read as a column of gaps with reviews in them. */
+.m-rv-item {
+  align-self: stretch;
+  padding: 20px;
+  background: var(--m-white);
+}
+
+/* A rejected card keeps the white ground of its neighbours — the colour lives in the notice. */
+
+/* reviewMeta — Discover only now: the avatar, the author, and the dots. On the Log tab it is
+ * empty and collapses to nothing. */
+.m-rv-meta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+/* The title row, with the dots riding it. `align-items: flex-start` so a two-line title keeps the
+ * control at the top rather than centring it against the wrap. */
+.m-rv-head {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* The dots are a 36pt target around a 24pt glyph, and the target was setting the ROW's height —
+ * 36 against a 21pt title, which pushed the date 15pt clear of the thing it belongs to. The
+ * negative block margin takes the 6pt of overhang at each end out of layout while leaving the
+ * touch area exactly as big. */
+.m-rv-head .m-rv-dots {
+  margin-block: -8px;
+}
+
+.m-rv-head .m-rv-title {
+  flex: 1 1 0%;
+  min-width: 0;
+  margin-bottom: 0;
+}
+
+.m-rv-who {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* `initialsContainer` carries the 16pt gap to the text itself. It only exists on Discover — the
+ * log tab's ProfileRow is an empty View, so the row opens straight onto the date. */
+.m-rv-who .m-profile {
+  margin-right: 16px;
+}
+
+/* renderAuthor — discover only. */
+.m-rv-author {
+  margin-bottom: 2px;
+}
+
+/* The date belongs to the title above it, so it is pulled tight against it. `bodySmaller` carries
+ * a 20pt line box on 13pt text — 3.5pt of half-leading at each end — which is what was opening
+ * the gap; tightening the line box moves the date up without touching the margins. */
+.m-rv-date {
+  margin-bottom: 10px;
+  line-height: 16px;
+  color: var(--m-grey-dark-3);
+}
+
+/* The 36pt touch target around a 24pt glyph — the target is bigger than the art. */
+.m-rv-dots {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+}
+
+.m-rv-title {
+  margin-bottom: 8px;
+}
+
+/* numberOfLines={4} + ellipsizeMode 'tail'. */
+.m-rv-text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
+  overflow: hidden;
+}
+
+/* The notice — an infobox, so the colour marks the MESSAGE rather than the whole review. The
+ * 3pt left bar is what the app uses elsewhere to flag a block (the Reading Log's session cards),
+ * so a reader has seen it before. */
+.m-rv-notice {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 14px;
+  padding: 10px 12px;
+  border-left: 3px solid var(--m-orange);
+  border-radius: 4px;
+  background: var(--m-yellow-light);
+  color: var(--m-grey-dark-1);
+}
+
+.m-rv-notice .m-img {
+  flex: none;
+  margin-top: 1px;
+}
+
+/* `StyleSheet.hairlineWidth` is 1/PixelRatio — 0.333 on a 3x phone, which is ONE device pixel.
+ * 0.5px was the closer number and the wrong choice: at some scroll offsets it lands between device
+ * pixels and vanishes entirely, so a separator would be missing from one row and not its
+ * neighbour. 1px is one device pixel at 1x, which is what the hairline actually is. */
+.m-rv-sep {
+  height: 1px;
+  background: var(--m-c-border);
+}
+
+/* ReviewsListItem's row is a TouchableHighlight at `activeOpacity: 1` — it does NOT fade; the
+ * whole feedback is the underlay showing through. One colour now, because a rejected card is no
+ * longer a different ground: the source's second underlay was yellowLight darkened 4%. */
+.m-rv-item:active {
+  background: var(--m-grey-light-4);
+}
+
+/* The dots are their own TouchableOpacity at `activeOpacity: 0.5` — a lighter fade than the RN
+ * default, and separate from the row underneath it. */
+.m-rv-dots:active {
+  opacity: 0.5;
+}

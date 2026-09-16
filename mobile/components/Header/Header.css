@@ -1,0 +1,62 @@
+.m-header {
+  flex: none;
+  display: flex;
+  align-items: center;
+  height: var(--m-header-h);
+  padding: 0 var(--m-gutter);
+  position: relative;
+  z-index: 3;
+}
+
+/* NavigationStyles.navigationShadowBorderStyle. The app forks this between an iOS shadow and an
+ * Android hairline border; we take the iOS branch, as everywhere else. */
+.m-header.has-shadow {
+  box-shadow: var(--m-shadow-chrome);
+}
+
+.m-header-side {
+  display: flex;
+  align-items: center;
+  flex: 1 1 0%;
+  min-width: 0;
+  gap: var(--m-space-2);
+}
+
+.m-header-right {
+  justify-content: flex-end;
+}
+
+/* The centred title must not be pushed off-centre by uneven sides, so it sits in its own
+ * non-flexing cell between two equal flexible ones. */
+.m-header-title {
+  flex: none;
+  max-width: 62%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-header-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: -8px;
+  color: var(--m-grey-dark-1);
+  border-radius: 999px;
+}
+
+.m-header-back:hover {
+  background: var(--m-grey-light-3);
+}
+
+/* Root variant: left-aligned large title, no centring cell. */
+.m-header-root {
+  justify-content: space-between;
+}
+
+.m-header-root-title {
+  flex: 1 1 0%;
+  min-width: 0;
+}

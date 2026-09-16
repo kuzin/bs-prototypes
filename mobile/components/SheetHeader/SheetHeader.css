@@ -1,0 +1,53 @@
+/* MODAL_HEADER_HEIGHT 60 with MODAL_HEADER_OVERLAP -1 — the 1pt overlap is what stops a seam
+ * showing between the header and the band below it, which share a colour. */
+.m-sheethead {
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  height: 60px;
+  margin-bottom: -1px;
+}
+
+/* Equal thirds, so the centre slot lands on the TRUE centre regardless of what the two ends hold.
+ * Sizing the ends to their content instead drifts the middle whenever one side gains an action. */
+.m-sheethead-slot {
+  display: flex;
+  flex: 1 1 0%;
+  min-width: 0;
+  align-items: center;
+}
+
+.m-sheethead-slot--center {
+  flex: none;
+  justify-content: center;
+}
+
+.m-sheethead-slot--end {
+  justify-content: flex-end;
+}
+
+/* ImageHeaderButton: `paddingVertical: 15`, and `getHeaderBackButton`'s default style replaces its
+ * 10pt right padding with 50. The slot itself has NO horizontal padding — the 15pt inset comes
+ * from the glyph's own marginLeft, which is why a row that pads instead lands the chevron wrong. */
+.m-sheethead-btn {
+  display: flex;
+  align-items: center;
+  padding: 15px 50px 15px 0;
+}
+
+.m-sheethead-btn .m-img {
+  margin-left: 15px;
+}
+
+.m-sheethead-options {
+  display: flex;
+  align-items: center;
+  padding: 15px 15px 15px 0;
+}
+
+.m-sheethead-title {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

@@ -1,0 +1,68 @@
+/* StreaksMessageStyles.streaksContainer.
+ *
+ * The source pins 144pt and pads only left/right, because the corner artwork needed a canvas of a
+ * known size. With the art gone the height is whatever the copy and the button need, and the
+ * padding is the 20 every other Home card uses on all four sides. */
+.m-streak {
+  position: relative;
+  margin: 0 var(--m-gutter);
+  padding: 20px;
+  border-radius: var(--m-radius-card);
+  background: var(--m-white);
+  box-shadow: var(--m-shadow-card);
+  overflow: hidden;
+}
+
+/* containerBorder — applied when there are no streak graphics: a dashed outline instead of the
+ * shadow. The source also adds 25pt on the right, room the corner art no longer needs. */
+.m-streak.is-plain {
+  border: 2px dashed rgba(219, 219, 219, 0.6);
+  box-shadow: none;
+}
+
+.m-streak-info {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The count sits in the card's top-right corner, on the title's line rather than beside the
+ * button.
+ *
+ * It is the card's subject — "12 days" is what the title and the message are both about — so it
+ * belongs where the eye lands first. Down in the footer it sat next to the action and read as a
+ * second control, and a pill beside a button is a pair of things to press. `align-items:
+ * flex-start` keeps it pinned to the top when the message wraps to three lines. */
+.m-streak-head {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.m-streak-text {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+/* flameView — the flame itself is WHITE on the red pill, not yellow. */
+.m-streak-flame {
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  background: var(--m-red);
+  padding: 6px 12px;
+  border-radius: 24px;
+}
+
+.m-streak-count {
+  color: var(--m-white);
+}
+
+.m-streak-frowny {
+  flex: none;
+}

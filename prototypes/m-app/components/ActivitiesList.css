@@ -1,0 +1,120 @@
+/* The VERTICAL list — contentContainerStyle is `paddingBottom: 20` and nothing else. It was a
+ * horizontal rail here while the wrong row variant was on Home; the rail now lives in
+ * `.m-acts-h` and this is a plain column again. */
+.m-acts {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 20px;
+}
+
+/* backgroundViewLayout — paddingVertical 16, and a greyLight4 wash while PRESSED.
+ * `pressed` is a press, so it maps to :active. Putting it on :hover fired a press state on mere
+ * mouseover, and only here — which read as this row behaving differently from every other. */
+/* Full width — the 320pt that was here stood in for `flex: 1` having nothing to flex against
+ * inside a horizontal list, which is a problem that no longer exists. */
+.m-act {
+  display: block;
+  width: 100%;
+  padding: 16px 0;
+  text-align: left;
+}
+
+.m-act:active {
+  background: var(--m-grey-light-4);
+}
+
+/* badgeView — marginHorizontal 20 is what insets every item, including the first. */
+.m-act-inner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin: 0 20px;
+}
+
+.m-act-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 76px;
+  height: 76px;
+  border-radius: 38px;
+  border: 4px solid var(--m-grey-light-2);
+  margin-right: 20px;
+}
+
+.m-act-ring.is-done {
+  border-color: var(--m-green);
+}
+
+.m-act-disc {
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+.m-act-check {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 13.5px;
+  border: 4px solid var(--m-white);
+  background: var(--m-green);
+}
+
+.m-act-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.m-act-name {
+  color: var(--m-grey-dark-3);
+  margin-bottom: 4px;
+}
+
+.m-act-name,
+.m-act-desc {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── horizontal={true} — the Home rail ───────────────────────────────────── */
+/* Deliberately NOT sharing `.m-acts`: the two variants have no style in common in the source, so a
+ * shared base class only invites an assertion written for one to silently match the other. */
+.m-acts-h {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.m-acts-h::-webkit-scrollbar {
+  height: 0;
+}
+
+/* ActivityItemBadge.itemButton */
+.m-actb {
+  flex: none;
+  margin-top: 24px;
+}
+
+/* An 87pt circle and nothing else — no ring, no check, no caption. */
+.m-actb-art {
+  display: block;
+  width: 87px;
+  height: 87px;
+  border-radius: 43.5px;
+  object-fit: cover;
+}

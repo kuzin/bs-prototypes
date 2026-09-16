@@ -37,6 +37,8 @@ import { gameboardSections } from './sections/gameboard'
 import { gameboardReaderSections } from './sections/gameboard-reader'
 import { wordsWithBennySections } from './sections/words-with-benny'
 import { engagementSignalsSections } from './sections/engagement-signals'
+import { mobileSections } from './sections/mobile'
+import { mobileIconSections } from './sections/mobile-icons'
 
 // Global resets + body font (needed for Radix portals outside .pt-shell)
 import '../ris/index.css'
@@ -108,6 +110,21 @@ export function BreakpointIndicator() {
     </div>
   )
 }
+
+/**
+ * Which design system a group belongs to. The library hosts two: the web system in `components/`
+ * and the mobile one in `mobile/`, mirrored from the React Native app. They share this shell but
+ * never share a page — the toggle in the sidebar swaps the whole catalog, because a component from
+ * the wrong system is never the answer to "what should I use here?".
+ *
+ * A group with no `platform` is desktop, so the existing 24 needed no edit.
+ */
+export const PLATFORMS = [
+  { id: 'desktop', title: 'Desktop' },
+  { id: 'mobile', title: 'Mobile' },
+]
+
+export const platformOf = (group) => group?.platform ?? 'desktop'
 
 export const GROUPS = [
   {
@@ -277,6 +294,57 @@ export const GROUPS = [
     desc: 'Components for Reading Engagement Signals — the Increasing / Consistent / Declining pill, the month-by-month trajectory, the six drivers behind a reading, and the two surfaces they appear on: the classroom Engagement tab and the profile\u2019s Engagement section.',
     color: 'var(--c-red)',
   },
+
+  // ── Mobile ──────────────────────────────────────────────────────────────
+  {
+    id: 'm-foundations',
+    title: 'Foundations',
+    platform: 'mobile',
+    desc: 'The generated layer — the palette and type ladder ported straight from the app’s own theme, plus the per-tenant accent.',
+    color: 'var(--c-teal)',
+  },
+  {
+    id: 'm-iconography',
+    title: 'Iconography',
+    platform: 'mobile',
+    desc: 'The app’s whole icon system — 314 raster assets addressed by key, mirrored from its own registry. Check here before drawing anything new.',
+    color: 'var(--c-purple)',
+  },
+  {
+    id: 'm-controls',
+    title: 'Buttons & Labels',
+    platform: 'mobile',
+    desc: 'The things you tap, and the chips that annotate them.',
+    color: 'var(--c-blue)',
+  },
+  {
+    id: 'm-content',
+    title: 'Content',
+    platform: 'mobile',
+    desc: 'Cards, avatars and empty states — what a screen is actually made of.',
+    color: 'var(--c-green)',
+  },
+  {
+    id: 'm-feedback',
+    title: 'Feedback & States',
+    platform: 'mobile',
+    desc: 'What a list shows when it has nothing, is still fetching, or is being pulled on — the three states a populated screenshot never covers.',
+    color: 'var(--c-blue)',
+  },
+  {
+    id: 'm-overlays',
+    title: 'Overlays',
+    platform: 'mobile',
+    desc: 'What comes up over a screen — the “…” action sheet every options menu uses, and the system alert that confirms anything destructive.',
+    color: 'var(--c-orange)',
+  },
+  {
+    id: 'm-chrome',
+    title: 'App Chrome',
+    platform: 'mobile',
+    desc: 'The device shell and the navigation furniture — the frame, the header, and the tab bar with its FAB.',
+    color: 'var(--c-purple)',
+  },
 ]
 
 export const SECTIONS = [
@@ -300,4 +368,6 @@ export const SECTIONS = [
   ...gameboardReaderSections,
   ...wordsWithBennySections,
   ...engagementSignalsSections,
+  ...mobileSections,
+  ...mobileIconSections,
 ]

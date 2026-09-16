@@ -1,0 +1,125 @@
+/* The shadow-card recipe, with its own 16pt bottom margin. */
+.m-dgb {
+  display: flex;
+  flex-direction: column;
+  background: var(--m-white);
+  border-radius: var(--m-radius-card);
+  padding: 24px;
+  margin: 0 var(--m-gutter);
+  box-shadow: var(--m-shadow-card);
+}
+
+/* DIVERGENCE — `flush` drops the card.
+ *
+ * On Home the banner is one card among several on a grey ground, and the white/radius/shadow is
+ * what separates it from its neighbours. On the Reading Log it is the ONLY card, sitting on a
+ * white page directly under the tabs — so the chrome was drawing a box around nothing, and the
+ * banner read as something pasted onto the screen rather than the screen's own header.
+ *
+ * Flush keeps the type and the bar and throws away the container: full-bleed, no radius, no
+ * shadow, and the same 1pt greyLight2 rule the week headers use, so it closes the same way every
+ * other band on that page closes. */
+.m-dgb.is-flush {
+  padding: 20px var(--m-gutter) 24px;
+  margin: 0;
+  border-radius: 0;
+  box-shadow: none;
+  border-bottom: 1px solid var(--m-grey-light-2);
+}
+
+.m-dgb-sub {
+  margin-bottom: 12px;
+}
+
+.m-dgb-static {
+  color: var(--m-grey-dark-3);
+  margin-bottom: 16px;
+}
+
+.m-dgb-minutes {
+  color: var(--m-grey-dark-2);
+  margin-bottom: 8px;
+}
+
+/* Only the elapsed number is tinted — the goal and the word "Minutes" stay grey. */
+.m-dgb-total {
+  color: var(--m-orange-vivid);
+}
+
+.m-dgb-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.m-dgb-track {
+  position: relative;
+  flex: 1 1 0%;
+  min-width: 0;
+  height: 32px;
+  border-radius: 32px;
+  background: var(--m-grey-light-1);
+  overflow: hidden;
+  z-index: 1;
+}
+
+.m-dgb-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: 32px;
+  background: var(--m-yellow);
+  transition: width 240ms ease;
+}
+
+/* Both the connector and the star pull 2pt left so they nest into the track's rounded end. */
+.m-dgb-connector {
+  display: flex;
+  width: 12px;
+  height: 12px;
+  margin-left: -2px;
+}
+
+.m-dgb-star {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 16px;
+  background: var(--m-grey-light-1);
+  margin-left: -2px;
+  z-index: 1;
+}
+
+.m-dgb-star.is-met {
+  background: var(--m-yellow);
+}
+
+/* ── One-row variants ──────────────────────────────────────────────────────
+ * The number and the bar share a line. The bar keeps its 32pt height because the star cap is a
+ * 32pt disc — that is the cost of keeping the star on the bar, and it is why this lands near 62pt
+ * rather than the 40 a thin track would allow. */
+.m-dgb--compact {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.m-dgb-line {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.m-dgb--compact .m-dgb-minutes {
+  flex: none;
+  margin-bottom: 0;
+  white-space: nowrap;
+}
+
+.m-dgb--compact .m-dgb-row {
+  flex: 1 1 0%;
+  min-width: 0;
+}

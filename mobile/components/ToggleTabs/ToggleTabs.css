@@ -1,0 +1,35 @@
+/* ToggleTabsStyles.toggleContainer — note the 32/16 vertical margins are part of the control. */
+.m-toggle {
+  display: flex;
+  flex-direction: row;
+  margin: 32px var(--m-gutter) 16px;
+  padding: 4px;
+  border-radius: 20px;
+  background: var(--m-c-form-gray-background);
+}
+
+.m-toggle-item {
+  display: flex;
+  flex: 1 1 0%;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  border-radius: var(--m-radius-card);
+  color: var(--m-c-secondary);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -0.25px;
+  line-height: 16px;
+  text-transform: capitalize;
+}
+
+/* A shadow with NO offset — it sits evenly around the active pill rather than under it. */
+.m-toggle-item.is-active {
+  background: var(--m-white);
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+}
+
+/* TouchableOpacity with no `activeOpacity` — the RN default 0.2. */
+.m-toggle-item:active {
+  opacity: 0.2;
+}

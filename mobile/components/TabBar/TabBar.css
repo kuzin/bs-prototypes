@@ -1,0 +1,116 @@
+/* BeanstackTabs.tsx + BeanstackTabsStyles.ts.
+ *
+ * Height is 54 + safe-bottom, paddingTop 14 (10 when there is no inset). The separator is the
+ * ANDROID branch (borderTopWidth 1, greyLight3) — on iOS there is only the shadow, so that is what
+ * this renders. */
+.m-tabbar {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-around;
+  height: calc(var(--m-tabbar-h) + var(--m-safe-bottom));
+  padding-top: 14px;
+  padding-bottom: var(--m-safe-bottom);
+  background: var(--m-white);
+  box-shadow: 0 3px 13px rgba(0, 0, 0, 0.05);
+  position: relative;
+  z-index: 4;
+}
+
+/* A device with no home indicator uses the compact padding. */
+/* A device with NO bottom inset — the SE — is a DEVIATION from the app's two constants here, and
+ * deliberately so.
+ *
+ * The app sets `TAB_BAR_PADDING_TOP_COMPACT = 10` on a 54pt bar. Its own arithmetic then leaves
+ * zero slack: 10 + 4 (the tab's padding) + 24 icon + 4 + 12 label is exactly 54, so the label's
+ * box ends flush with the glass. RN draws a descender past its line box quite happily; CSS clips
+ * it at the screen's overflow, which cut the g in "Log" and the y in "Community". Padding alone
+ * cannot fix it — the content is taller than the padding box and simply overflows — so the bar
+ * takes 4pt of extra height.
+ *
+ * Given those 58pt, the top padding then balances the bar: 5 + 4 puts 9pt above the icon, and
+ * 58 - 5 - 44 leaves the same 9pt under the label. On a notch phone the asymmetry is CORRECT and
+ * is left alone — the extra room down there is the home-indicator region, which is how iOS looks.
+ * This rule is scoped to the inset-free devices only. */
+.m-frame[data-inset-bottom='0'] .m-tabbar {
+  padding-top: 5px;
+  height: calc(var(--m-tabbar-h) + 4px);
+}
+
+/* TabNavigatorIcon.styles.tabContainer — a fixed 65pt slot, not a flexed one. */
+.m-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 65px;
+  padding-top: 4px;
+}
+
+.m-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  color: var(--m-c-dusty-gray);
+}
+
+/* The active tab is NOT tinted with the tenant accent — the app uses mineBlack for the label and
+ * swaps to a different icon asset. Colouring it with the accent was wrong. */
+.m-tab.is-active .m-tab-icon {
+  color: var(--m-grey-dark-1);
+}
+
+.m-tab-label {
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: -0.24px;
+  line-height: 12px;
+  color: var(--m-c-dusty-gray);
+}
+
+.m-tab.is-active .m-tab-label {
+  color: var(--m-grey-dark-1);
+}
+
+/* TabNavigatorIcon.styles.redIcon — an 18pt red pill pinned to the slot, not a dot on the icon.
+ * The Discover variant holds a 4pt white dot; Community holds a count or the word NEW. */
+.m-tab-badge {
+  position: absolute;
+  z-index: 10;
+  right: 10px;
+  top: -5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 18px;
+  min-width: 18px;
+  border-radius: 9px;
+  background: var(--m-red);
+  color: var(--m-white);
+  font-size: 10px;
+  font-weight: 700;
+  box-shadow: 0 2px 2px rgba(232, 86, 72, 0.21);
+}
+
+.m-tab-badge--count {
+  padding: 0 5px;
+}
+
+.m-tab-badge--dot::after {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--m-white);
+}
+
+/* The FAB's slot. The button itself lives in PlusMenu, which is an overlay above the whole tab
+ * bar — here we only reserve the space so the four real tabs sit where they should. */
+.m-tab-plus-slot {
+  width: 65px;
+  flex: none;
+}

@@ -1,0 +1,117 @@
+.m-rd {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+/* scrollViewStyles — 40pt of air above the reviewer, 20 either side. */
+.m-rd-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  padding: 40px 20px 20px;
+}
+
+.m-rd-scroll::-webkit-scrollbar {
+  width: 0;
+}
+
+/* A TextButton in primaryColor — `fontStyles.button` with the tenant colour overriding its own. */
+.m-rd-edit {
+  margin-right: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 19px;
+  letter-spacing: -0.29px;
+  color: var(--m-accent);
+}
+
+.m-rd-who {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+/* fontStyles.button — 16/700 at -0.29, mineShaftBlack on iOS. */
+.m-rd-author {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 19px;
+  letter-spacing: -0.29px;
+  color: var(--m-c-mine-shaft-black);
+}
+
+.m-rd-date {
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--m-c-dove-gray);
+}
+
+/* The review body — 500 weight on iOS, which is heavier than it looks in a screenshot. */
+.m-rd-text {
+  margin-top: 15px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 22px;
+  letter-spacing: -0.29px;
+  color: var(--m-grey-dark-2);
+}
+
+/* `reviewingHeader` is fontStyles.button at 16 — stepped up with the other section headers. */
+.m-rd-reviewing {
+  margin-top: 32px;
+}
+
+/* reviewingSubContainer — the panel. The cover is positioned against THIS, and overhangs it. */
+.m-rd-book {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--m-grey-light-3);
+}
+
+/* bookInfoContainer — a hard 75%, so the title wraps clear of the cover rather than under it. */
+.m-rd-book-info {
+  width: 75%;
+}
+
+.m-rd-book-title {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  overflow: hidden;
+  margin-bottom: 4px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 17px;
+  letter-spacing: -0.22px;
+  color: var(--m-c-mine-black);
+}
+
+.m-rd-book-author {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  letter-spacing: -0.22px;
+  color: var(--m-c-mine-black);
+}
+
+/* reviewBookContainer — 60×90 hung off the panel's top edge by 10. */
+.m-rd-cover {
+  position: absolute;
+  right: 16px;
+  top: -10px;
+  width: 60px;
+  height: 90px;
+  border-radius: 8px;
+}

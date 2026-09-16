@@ -1,0 +1,34 @@
+/* StreaksCalendarsStyles.calendarHeader — the smaller of the app's two, taken for both. */
+.m-monthhead {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  padding: 0 10px;
+}
+
+/* ArrowButton is a bare Pressable around a 24pt image — no box of its own, so the button is
+ * exactly the glyph. */
+.m-monthhead-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* `style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1 })}`. */
+.m-monthhead-arrow:active:not(:disabled) {
+  opacity: 0.5;
+}
+
+/* Disabled is the TINT swap the glyph already applies — never an opacity change on top of it. */
+.m-monthhead-arrow:disabled {
+  cursor: default;
+}
+
+/* StreaksCalendarsStyles.monthText at 16, stepped up to `primaryTitle` with the Log's other
+ * section headers — the month is the top of the hierarchy on both screens that use this. */
+.m-monthhead-title {
+  letter-spacing: -0.32px;
+}

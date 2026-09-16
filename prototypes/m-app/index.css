@@ -1,0 +1,248 @@
+/* The page AROUND the phone. Everything inside the device is the mobile design
+ * system (`.m-app`, from @mobile/base.css) and does not inherit from here —
+ * that separation is the whole point of the scope. */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: #eceff3;
+  color: var(--c-gray-900);
+  min-height: 100vh;
+}
+
+/* The stage centres the PHONE in the viewport, not the phone-plus-controls column. The dev bar is
+ * taken out of flow to achieve that: left in the column it pushed the frame down by half its own
+ * height, which reads as "slightly low" rather than centred.
+ *
+ * `min-height: 100dvh` rather than 100vh so a mobile browser's collapsing toolbar does not leave
+ * the frame off-centre. */
+.m-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: 28px 20px;
+}
+
+/* When the phone plus its chrome is taller than the viewport, centring would push the top out of
+ * reach. This keeps the whole thing scrollable from the top. */
+.m-stage > * {
+  flex: none;
+}
+
+/* Dev controls — a scaffold for reviewing the design, not part of the app, which is why they sit
+ * outside the flow (they should not influence where the design lands) and behind a toggle (an
+ * unfolded control bar competes with the thing being reviewed). */
+.m-stage-tools {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.m-stage-toggle {
+  display: flex;
+  align-items: center;
+  padding: 7px 13px;
+  border-radius: 999px;
+  border: 1px solid var(--c-border);
+  background: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-gray-600);
+  cursor: pointer;
+  transition:
+    color 140ms ease,
+    border-color 140ms ease;
+}
+
+.m-stage-toggle:hover {
+  color: var(--c-text);
+  border-color: var(--c-border-strong);
+}
+
+.m-stage-toggle.is-open {
+  color: var(--c-text);
+  border-color: var(--c-border-strong);
+}
+
+/* A flyout panel rather than a bar: the controls used to sit loose above the phone and overlap
+ * its top edge, which put stage furniture inside the thing the stage is presenting. As a panel it
+ * floats clear, and it closes the way a menu does — click outside, or Escape. */
+.m-stage-bar {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: max-content;
+  max-width: min(560px, calc(100vw - 32px));
+  padding: 12px;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow:
+    0 12px 32px rgba(16, 24, 40, 0.14),
+    0 2px 6px rgba(16, 24, 40, 0.06);
+  animation: m-stage-pop 140ms ease;
+}
+
+@keyframes m-stage-pop {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -4px);
+  }
+}
+
+/* The anchor for the panel — and it must not clip it. */
+.m-stage-tools {
+  position: absolute;
+}
+
+.m-stage-bar select {
+  font: inherit;
+  font-size: 13px;
+  padding: 5px 8px;
+  border: 1px solid var(--c-gray-300);
+  border-radius: 8px;
+  background: #fff;
+}
+
+.m-swatches {
+  display: flex;
+  gap: 5px;
+}
+
+.m-swatch {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.m-swatch[aria-pressed='true'] {
+  border-color: var(--c-gray-900);
+}
+
+/* Home-section flags, behind a cog in the stage bar. Scaffolding for reviewing the conditional
+ * sections — not app chrome. */
+.m-cog-wrap {
+  position: relative;
+  display: flex;
+}
+
+.m-cog {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid var(--c-gray-300);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--c-gray-600);
+  cursor: pointer;
+}
+
+.m-cog:hover,
+.m-cog.is-open {
+  color: var(--c-gray-900);
+  border-color: var(--c-gray-400);
+}
+
+.m-cog-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 280px;
+  padding: 8px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow:
+    0 1px 3px rgba(16, 24, 40, 0.1),
+    0 12px 32px rgba(16, 24, 40, 0.14);
+}
+
+.m-cog-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 4px 8px 8px;
+  border-bottom: 1px solid var(--c-gray-200);
+  margin-bottom: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--c-gray-500);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.m-cog-head > button {
+  font: inherit;
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid var(--c-gray-300);
+  border-radius: 999px;
+  background: #fff;
+  color: var(--c-gray-700);
+  cursor: pointer;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.m-flag {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 5px 8px;
+  border-radius: 7px;
+  cursor: pointer;
+}
+
+.m-flag:hover {
+  background: var(--c-gray-50, #f7f7f8);
+}
+
+.m-flag > input {
+  grid-row: span 2;
+  align-self: center;
+  margin: 0;
+}
+
+.m-flag-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-gray-800);
+}
+
+/* The real gate, so the checkbox says WHY a reader would or would not see the section. */
+.m-flag-gate {
+  font-size: 10.5px;
+  line-height: 1.3;
+  color: var(--c-gray-500);
+  word-break: break-word;
+}

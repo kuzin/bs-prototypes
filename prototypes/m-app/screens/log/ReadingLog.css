@@ -1,0 +1,177 @@
+.m-rl {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: var(--m-space-8);
+}
+
+/* WeeklyLogHeaderStyles — rules on BOTH edges, which is what separates the weeks. */
+.m-rl-week-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 20px;
+  padding: 8px 0;
+  border-top: 1px solid var(--m-grey-light-2);
+  border-bottom: 1px solid var(--m-grey-light-2);
+}
+
+.m-rl-week-text {
+  font-size: 16px;
+  color: var(--m-grey-dark-1);
+}
+
+/* WeeklyLogStyles.container */
+.m-rl-week {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 20px;
+}
+
+/* WeekdayStyles.container */
+.m-rl-day {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 8px 0;
+}
+
+/* DIVERGENCE — a fixed day column, so every session card starts on the same line.
+ *
+ * `WeekdayStyles` sizes this column to its content (`sessionContainer: { flex: 1 }` takes the
+ * rest), so in the app the cards step in and out by a few points down the week depending on
+ * whether a day has a streak pill and whether its number is one digit or two. Measured across a
+ * week here: 43.4 to 54.0. 56 clears the widest, with room for a three-digit streak.
+ *
+ * The cards being different WIDTHS is fine and stays — it is the ragged left edge that reads as a
+ * mistake, because the eye tracks a column start and there isn't one. */
+.m-rl-daycol {
+  flex: none;
+  width: 56px;
+}
+
+.m-rl-daynum-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.m-rl-daynum {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 25px;
+  letter-spacing: 0.32px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-rl-dayname {
+  display: block;
+  font-size: 13px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  color: var(--m-warm-grey);
+}
+
+/* WeekdayStyles.streakContainer — an orange pill under the date. */
+.m-rl-streak {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-radius: var(--m-radius-card);
+  background: var(--m-orange-light);
+}
+
+.m-rl-streak-num {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 16px;
+  letter-spacing: -0.25px;
+  color: var(--m-orange-dark);
+}
+
+.m-rl-sessions {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+/* WeekListItemStyles.container — blue by default, coral once the session finished a book. */
+.m-rl-session {
+  display: flex;
+  flex-direction: row;
+  border-radius: var(--m-radius-control);
+  border-left: 4px solid var(--m-c-blue-b-6);
+  border-top: 1px solid var(--m-white);
+  margin-bottom: 4px;
+  background: var(--m-c-blue-b-0);
+  color: var(--m-c-blue-b-7);
+}
+
+.m-rl-session.is-completed {
+  border-left-color: var(--m-c-coral-c-4);
+  background: var(--m-c-coral-c-0);
+  color: var(--m-c-coral-c-7);
+}
+
+/* A 12pt bar in the ground colour, sitting just inside the 4pt rule. */
+.m-rl-session-line {
+  flex: none;
+  width: 12px;
+  border-radius: 2px;
+  background: transparent;
+}
+
+/* BANNER_MARGIN_TOP — the goal banner sits above the month row. */
+.m-rl-session-body {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  margin: 12px 12px 12px 0;
+}
+
+.m-rl-session-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 17px;
+  letter-spacing: -0.22px;
+}
+
+.m-rl-session-author {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 15px;
+  letter-spacing: -0.12px;
+  margin-top: 4px;
+}
+
+.m-rl-session-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.m-rl-session-stat {
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+}
+
+/* The completed pill reuses the stats type on a coralC1 ground. */
+.m-rl-session-completed {
+  display: flex;
+  align-self: flex-start;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-top: 12px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: var(--m-c-coral-c-1);
+}

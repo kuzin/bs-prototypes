@@ -1,0 +1,166 @@
+/* FundraisersHomeCardStyles.container — the source gives this a 24 gutter and a 17pt radius, both
+ * one off the page's own. On the page gutter and `--m-radius-card` with every other Home card. */
+.m-fund {
+  display: flex;
+  flex-direction: column;
+  margin: 0 var(--m-gutter);
+  background: var(--m-white);
+  border-radius: var(--m-radius-card);
+  /* 20 on every inside edge — the gutter the banner, the description and the content block all
+   * already used, with the source's odd 31pt foot brought onto it. */
+  padding-bottom: 20px;
+  box-shadow: var(--m-shadow-card);
+}
+
+.m-fund-header {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* The header clips to the CARD's top corners, so the band inside it can be square.
+ *
+ * The band carried its own 10pt radius, which read as a rounded rectangle floating inside a
+ * 16pt-rounded card — two radii a few pixels apart at the same corner, which is the one place the
+ * eye catches a mismatch. One rounded edge, owned by the thing that actually has the edge. */
+.m-fund-header {
+  border-top-left-radius: var(--m-radius-card);
+  border-top-right-radius: var(--m-radius-card);
+}
+
+/* headerCurveContainer — a 110pt colour band with the white curve stretched across its base. */
+.m-fund-band {
+  position: relative;
+  width: 100%;
+  height: 110px;
+}
+
+/* headerImageContainer — the banner punches up out of the band.
+ *
+ * `position: relative` is load-bearing, not decoration: the band above is positioned (so its curve
+ * can be absolute), and a positioned element paints above a STATIC sibling whatever the DOM order.
+ * Without this the banner's top 80pt renders behind the band and the header reads as a clipped
+ * image instead of a layered one. RN has no such rule — later siblings simply paint later. */
+.m-fund-banner {
+  position: relative;
+  z-index: 1;
+  margin: -80px 20px 0;
+  box-shadow: 0 5px 7px rgba(0, 0, 0, 0.07);
+  border-radius: var(--m-radius-control);
+}
+
+/* HeaderImage sizes by aspect ratio, not a fixed height: useBannerAspectRatio starts at the
+ * upload guideline 920×351 and clamps to [920/400, 1200/400] once the real image loads. */
+.m-fund-banner > span {
+  display: block;
+  width: 100%;
+  aspect-ratio: 920 / 351;
+  border-radius: var(--m-radius-control);
+}
+
+/* DIVERGENCE — left aligned, not centred, and no rule under it.
+ *
+ * Centred text plus a full-bleed hairline made the name and the date read as a masthead sitting
+ * above a separate panel, so one card looked like two. Everything else on the card — the amount,
+ * the bar, the button label — starts at the same left edge; the title was the only thing that
+ * did not, which is what made the block feel like a different card. */
+.m-fund-desc {
+  display: flex;
+  flex-direction: column;
+  padding: 20px 20px 0;
+}
+
+.m-fund-content {
+  padding: 20px 20px 0;
+}
+
+.m-fund-money {
+  margin-bottom: 20px;
+}
+
+/* MoneyRaisedStyles.currentAmount is 24/900, the heaviest AND largest thing on the screen —
+ * bigger than the card's own title and than every section header on Home. 20 keeps it the biggest
+ * thing inside the card, which is all it needs to be. */
+.m-fund-amount {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 24px;
+  letter-spacing: 0.3px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-fund-goal {
+  font-weight: 500;
+  color: var(--m-grey-dark-3);
+}
+
+.m-fund-slider {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 14px;
+}
+
+.m-fund-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 0%;
+  height: 10px;
+  border-radius: 999px;
+  background: var(--m-grey-light-2);
+}
+
+.m-fund-fill {
+  position: relative;
+  height: 100%;
+  min-width: 10px;
+  border-radius: 999px;
+  background: var(--m-accent);
+}
+
+.m-fund-knob {
+  position: absolute;
+  right: -5px;
+  top: 50%;
+  display: flex;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--m-accent);
+  transform: translateY(-50%);
+}
+
+.m-fund-knob::after {
+  content: '';
+  margin: auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--m-white);
+}
+
+.m-fund-pct {
+  display: flex;
+  align-items: center;
+  margin-left: 16px;
+}
+
+.m-fund-pct-text {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 20px;
+  letter-spacing: -0.22px;
+  color: var(--m-grey-dark-2);
+}
+
+.m-fund-nogoal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.m-fund-details {
+  color: var(--m-grey-dark-3);
+}

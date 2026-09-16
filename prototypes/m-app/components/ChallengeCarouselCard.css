@@ -1,0 +1,39 @@
+.m-cc {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 278px;
+  margin-right: 16px;
+  margin-top: 27px;
+  text-align: left;
+}
+
+/* Only the first card is inset; the rest run to the edge so the row reads as scrollable. */
+.m-cc.is-first {
+  margin-left: 20px;
+}
+
+/* 278×106 in the source, which IS the app's banner ratio — `useBannerAspectRatio` starts at the
+ * upload guideline 920×351, and 920/351 = 2.621 against 278/106 = 2.623. Stated as the ratio so
+ * it survives a different card width: the fixed height was correct only at 278, and the next
+ * device or a two-up layout would have silently letterboxed every banner. */
+.m-cc-banner {
+  display: block;
+  width: 278px;
+  aspect-ratio: 920 / 351;
+  border-radius: var(--m-radius-card);
+  overflow: hidden;
+}
+
+.m-cc-title {
+  margin-top: 16px;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-cc-dates {
+  margin-top: 5px;
+}

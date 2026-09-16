@@ -1,0 +1,71 @@
+/* Achievement.styles.js · `badgeSize = (width - 72) / 3` — off Dimensions.get('window'), so it is
+ * the SCREEN width rather than the container's. PhoneFrame publishes that as --m-screen-w. */
+.m-ach-list {
+  --m-ach-size: calc((var(--m-screen-w) - 72px) / 3);
+  display: grid;
+  /* numColumns={3} — a fixed three, not an auto-fit. */
+  grid-template-columns: repeat(3, 1fr);
+  /* listLayout paddingTop 32, listContentContainer paddingBottom 74. */
+  padding-top: 32px;
+  padding-bottom: 74px;
+  /* columnWrapperStyle's `paddingHorizontal: 12`. In RN that styles the View wrapping each ROW, so
+   * it is 12pt at the two ends of a row — NOT 12pt around every item. Applied per item it makes a
+   * column 12+8+107+8+12 = 147 and the row 441 against a 393 screen, and the third column runs off
+   * the edge. On the row it is 12 + 3×(8+107+8) + 12 = 393 exactly. */
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+/* The row's `paddingVertical: 8`. Carried on the tile rather than a row wrapper: every tile in a
+ * row is the same height, so 8 top and 8 bottom per tile gives the same 16pt between rows and the
+ * same 8pt at each end that the wrapper produced. */
+.m-ach {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 0;
+}
+
+.m-ach-art {
+  width: var(--m-ach-size);
+  height: var(--m-ach-size);
+  border-radius: calc(var(--m-ach-size) / 2);
+  margin: 0 8px;
+  overflow: hidden;
+}
+
+/* EmptyState.styles.js — `margin: '20%'` resolves against the parent's WIDTH on every side in RN,
+ * which is also how a percentage margin behaves in CSS, so it carries over literally. */
+.m-ach-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin: 20%;
+}
+
+.m-ach-empty-cat {
+  width: 86px;
+  height: 142px;
+  margin-top: 20%;
+}
+
+.m-ach-empty-title {
+  margin-top: 20px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 22px;
+  letter-spacing: -0.31px;
+  text-align: center;
+  color: var(--m-grey-dark-1);
+}
+
+.m-ach-empty-sub {
+  margin-top: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 17px;
+  letter-spacing: -0.22px;
+  text-align: center;
+  color: var(--m-grey-dark-3);
+}

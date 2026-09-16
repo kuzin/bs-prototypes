@@ -1,0 +1,96 @@
+/* PressableButtonStyles.ts — the three sizes share paddingHorizontal 16 and gap 10. */
+.m-btn {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 var(--m-space-4);
+  font-weight: 700;
+  border-radius: var(--m-radius-control);
+  transition: background-color 120ms ease;
+}
+
+.m-btn.is-full {
+  display: flex;
+  width: 100%;
+}
+
+.m-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.m-btn-large {
+  min-height: var(--m-control-lg);
+  border-radius: var(--m-radius-card);
+  font-size: 16px;
+  line-height: 20px;
+}
+
+.m-btn-medium {
+  min-height: var(--m-control-md);
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.m-btn-small {
+  min-height: var(--m-control-sm);
+  font-size: 14px;
+  line-height: 18px;
+}
+
+.m-btn-icon {
+  display: flex;
+  align-items: center;
+  flex: none;
+}
+
+/* ── Types ───────────────────────────────────────────────────────────────
+ * The app has no hover state at all — pressed is an instant swap via Pressable's
+ * style callback, with no transitions anywhere. Hover here is a browser
+ * affordance for reviewing a design, not a behaviour mobile should build. */
+.m-btn-primary {
+  background: var(--m-accent);
+  color: var(--m-accent-ink);
+}
+
+.m-btn-primary:hover:not(:disabled),
+.m-btn-primary:active:not(:disabled) {
+  background: var(--m-accent-pressed);
+}
+
+.m-btn-grey {
+  background: var(--m-grey-light-3);
+  color: var(--m-grey-dark-2);
+}
+
+.m-btn-grey:hover:not(:disabled),
+.m-btn-grey:active:not(:disabled) {
+  background: var(--m-grey-light-1);
+}
+
+.m-btn-text {
+  background: none;
+  color: var(--m-accent);
+  min-height: 0;
+  padding: 0;
+}
+
+.m-btn-text:hover:not(:disabled) {
+  color: var(--m-accent-pressed);
+}
+
+.m-btn-activeTab {
+  background: var(--m-accent-tab-bg);
+  color: var(--m-accent-tab-text);
+}
+
+.m-btn-activeTab:hover:not(:disabled) {
+  background: var(--m-accent-tab-bg-pressed);
+}
+
+.m-btn-inactiveTab {
+  background: var(--m-grey-light-3);
+  color: var(--m-grey-dark-3);
+}

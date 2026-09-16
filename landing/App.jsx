@@ -39,6 +39,7 @@ const SECTIONS = (() => {
 // Per-prototype card glyphs, rendered via the shared <Icon> (Tabler). Color is
 // applied by the wrapping .card-icon span (accent). Keyed by prototype id.
 const ICON_NAMES = {
+  'm-app': 'device-mobile', // phone — the mobile design system
   'challenge-creator': 'trophy', // a trophy
   'student-profile': 'user', // a person
   'ris-school': 'school', // schoolhouse

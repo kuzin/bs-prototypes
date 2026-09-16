@@ -1,0 +1,295 @@
+/* ----------------------------------------------------------------------------
+ * Mobile design system — the scope, the geometry, and the layout discipline.
+ *
+ * Everything mobile lives inside `.m-app`. That scope is not decoration: the web
+ * design system (components/ui/tokens.css) defines its palette on a bare `:root`
+ * AND patches `html`, so a second `:root` block would win by source order rather
+ * than by intent. Scoping means both systems can sit in one page — which the
+ * Pattern Library needs — without either one leaking.
+ *
+ * Colors and the type ladder are GENERATED (tokens.generated.css). What is here
+ * is the half that could not be: `spacing.js` in the RN app holds four values,
+ * and the real system lives as literals across ~240 style files. These numbers
+ * are that usage histogram, read as intent.
+ * ------------------------------------------------------------------------- */
+
+@import './tokens.generated.css';
+
+.m-app {
+  /* ── Type ───────────────────────────────────────────────────────────────
+   * The app ships NO custom font — no fontFamily anywhere, no .ttf/.otf, no
+   * UIAppFonts. Every glyph is the platform system face. So a mobile prototype
+   * must actively opt OUT of Museo Sans Rounded, which the engine's HTML
+   * template loads for every page. */
+  --m-font:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Segoe UI', Roboto,
+    sans-serif;
+
+  /* ── Spacing ────────────────────────────────────────────────────────────
+   * The page gutter is 20 (marginHorizontal: 20 appears 108×, paddingHorizontal
+   * 101×) — NOT the 16 that spacing.js implies. 16 is the secondary step. */
+  --m-gutter: 20px;
+  --m-space-1: 4px;
+  --m-space-2: 8px;
+  --m-space-3: 12px;
+  --m-space-4: 16px;
+  --m-space-5: 20px;
+  --m-space-6: 24px;
+  --m-space-8: 32px;
+  --m-space-10: 40px;
+
+  /* ── Radii ──────────────────────────────────────────────────────────────
+   * Clustered, and each cluster means something: 8 book covers & info blocks,
+   * 10 inputs / small+medium buttons / toasts, 16 cards / large buttons /
+   * bottom sheets, 18–20 pills and segmented tracks. */
+  --m-radius-cover: 8px;
+  --m-radius-control: 10px;
+  --m-radius-card: 16px;
+  --m-radius-pill: 18px;
+
+  /* ── Elevation ──────────────────────────────────────────────────────────
+   * The card recipe forks the shadow COLOUR, not the geometry:
+   *   Platform.OS === 'android' ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.06)'
+   * with shadowOpacity: 1. We take the iOS branch as intent — the Android
+   * value would render cards roughly 8× too dark. */
+  --m-shadow-card: 0 5px 15px rgba(0, 0, 0, 0.06);
+  --m-shadow-chrome: 0 3px 13px rgba(0, 0, 0, 0.05);
+  --m-shadow-float: 0 3px 8px rgba(0, 0, 0, 0.12);
+
+  /* ── Control ladder ─────────────────────────────────────────────────────
+   * PressableButtonStyles.ts. All three share paddingHorizontal 16, gap 10. */
+  --m-control-lg: 56px;
+  --m-control-md: 40px;
+  --m-control-sm: 36px;
+  --m-input-h: 56px;
+  --m-input-border: 2px;
+
+  /* ── Screen grounds ─────────────────────────────────────────────────────
+   * There is no dark mode in the app at all — zero useColorScheme, and
+   * AppStatusBar hardcodes barStyle='dark-content'. */
+  --m-screen-bg: var(--m-c-background-home-gray);
+  --m-surface: var(--m-white);
+
+  /* ── Tenant accent ──────────────────────────────────────────────────────
+   * The real accent is RUNTIME: state.authentication.primaryColor comes per
+   * microsite from the API and is referenced in 221 files. Derived states use
+   * the `color` npm package, which CSS cannot reproduce faithfully — notably
+   * Color(c).lightness(90) is an HSL-lightness SET, not a mix, so color-mix()
+   * gives a different answer. These are the defaults for the app's own
+   * fallback (brandColors.denim); useAccent() overwrites them with values
+   * computed by the same library the app uses.
+   * See mobile/accent.js. */
+  --m-accent: var(--m-denim);
+  --m-accent-pressed: #1457aa;
+  --m-accent-tab-bg: #e3edfb;
+  --m-accent-tab-bg-pressed: #86aee9;
+  --m-accent-tab-text: #0f4180;
+  --m-accent-ink: var(--m-white);
+  /* The microsite's second colour — it draws the top-tab indicator, not the buttons. */
+  --m-cta: var(--m-denim);
+
+  /* ── Device geometry ────────────────────────────────────────────────────
+   * Overridden per device by PhoneFrame. Defaults are iPhone 15/16 Pro. */
+  --m-safe-top: 59px;
+  --m-safe-bottom: 34px;
+  --m-header-h: 60px; /* HEADER_HEIGHT; the chrome adds --m-safe-top on top */
+  --m-tabbar-h: 54px;
+
+  font-family: var(--m-font);
+  color: var(--m-grey-dark-2);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Press vs hover ───────────────────────────────────────────────────────
+ * React Native has `pressed` and nothing else — no hover, and no transitions anywhere in the app.
+ * So a `pressed` style maps to `:active`, never `:hover`. Mapping it to hover fires a press state
+ * on mouseover and makes one component behave unlike its neighbours.
+ *
+ * `:hover` is reserved for controls that read as buttons, purely as a review affordance on a
+ * device that has a pointer. It is listed in DEVIATIONS in mobile/fidelity.spec.js.
+ * ---------------------------------------------------------------------- */
+
+/* ── Reset + layout discipline ───────────────────────────────────────────
+ * React Native is flex-by-default with a COLUMN main axis and has no cascade.
+ * Mirroring that here is not pedantry — it is the guard against designing
+ * something mobile engineering cannot build. A layout that only works because
+ * of `display: block`, float, grid or the cascade is a layout that does not
+ * survive the handoff. Use .m-row / .m-col, and reach for grid only in a
+ * deliberate, documented exception.
+ * ---------------------------------------------------------------------- */
+
+/* Every reset selector is wrapped in `:where()`, which contributes NO specificity — so these
+ * weigh exactly as much as the bare element selector inside them and ANY component class beats
+ * them. Written the obvious way (`.m-app button { background: none }`) the reset scores (0,1,1)
+ * and silently outranks single-class component rules like `.m-chalcard-orange`, erasing their
+ * background. That is a trap worth disarming once, here, rather than fighting per component. */
+:where(.m-app) *,
+:where(.m-app) *::before,
+:where(.m-app) *::after {
+  box-sizing: border-box;
+}
+
+:where(.m-app) :is(p, h1, h2, h3, h4, figure) {
+  margin: 0;
+}
+
+:where(.m-app) :is(ul, ol) {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+:where(.m-app) button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  text-align: inherit;
+}
+
+:where(.m-app) img {
+  display: block;
+  max-width: 100%;
+}
+
+/* The two layout primitives. `.m-col` is RN's default View; `.m-row` is
+ * flexDirection: 'row'. Both exist so a stray `display: block` reads as a
+ * mistake rather than as a choice. */
+.m-col,
+.m-row {
+  display: flex;
+  min-width: 0;
+}
+
+.m-col {
+  flex-direction: column;
+}
+
+.m-row {
+  flex-direction: row;
+  align-items: center;
+}
+
+/* RN's `flex: 1` is grow+shrink+basis-0, which is NOT the CSS shorthand
+ * default (basis auto). Spelling it out avoids the classic overflow bug where
+ * a long title refuses to shrink. */
+.m-flex {
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* ── Type ────────────────────────────────────────────────────────────────
+ * The generated `.m-t-*` classes carry size/weight/spacing/colour. This is the
+ * shared behaviour: RN Text never wraps mid-word by default and honours
+ * numberOfLines, which `.m-clamp-N` mirrors. */
+:where(.m-app) :where([class*='m-t-']) {
+  margin: 0;
+}
+
+/* The scroll region inside a tab that owns its own — a top-tab row must stay put while the
+ * content under it moves, so the frame body cannot be the scroller in that case.
+ *
+ * The ground is WHITE: all three top-tab navigators (Log, Discover, Community) set
+ * `sceneStyle.backgroundColor` to white, so a screen under a top-tab row never sits on the grey
+ * app background. */
+.m-scroll {
+  background: var(--m-white);
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: none;
+}
+
+.m-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* A screen showing nothing but a STATE — an empty view, a skeleton, a spinner — grows to fill the
+ * scroller, so that state centres in the VIEW rather than sitting just under the tabs.
+ *
+ * It has to be the wrapper that grows, not the state: several screens put a ToggleTabs above the
+ * state (All Titles, Book Talks), and those tabs must stay at the top while the state centres in
+ * what is left. The wrapper's own bottom padding goes with it — it exists to clear the tab bar
+ * below a long list, and against a centred block it just pushes it off-centre. */
+.m-scroll > :has(> .m-esv, > .m-skel, > .m-load) {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding-bottom: 0;
+}
+
+/* THE LOG'S SECTION HEADER, declared once.
+ *
+ * The app sets every one of them to `topLevelTitle` (16/700/-0.32) and every ROW title under them
+ * to 14–16 as well — on Book Talks the header and its rows were byte-identical, so the heading was
+ * doing no work the row's position in the list was not already doing. Stepped up one rung to
+ * `primaryTitle` 20/700: a size the app already has, where 17 sits too close to 16 to read as a
+ * level at all.
+ *
+ * Declared HERE rather than per screen because it is used on five of them and was being written
+ * out longhand on each — which is how Reading Motivation ended up on `sectionTitle` (20/800 with
+ * positive tracking) and looking heavier than its neighbours. */
+.m-section-head {
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 26px;
+  color: var(--m-grey-dark-1);
+}
+
+/* THE CARD PAIR — a card's headline and the line under it, declared once.
+ *
+ * The sizes already agreed across Home (17/700 over 14/500); what did not was everything else.
+ * Title line-heights ran 22, 20 and 19, sub line-heights 17.5, 17 and `normal`, and the margin
+ * between them 4 or 10 — so the rendered gap came out 8, 4 and 10 on three cards that are doing
+ * exactly the same thing. That is invisible in any one card and obvious in a column of them.
+ *
+ * `titleRegular` (17/700/22) is the app's own role for this; the sub is `subHeading`'s size and
+ * weight on a line box that actually fits it. */
+.m-card-title {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 22px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-card-title + .m-card-sub {
+  margin-top: 2px;
+}
+
+.m-card-sub {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 18px;
+  color: var(--m-grey-dark-3);
+}
+
+.m-clamp-1,
+.m-clamp-2,
+.m-clamp-3,
+.m-clamp-4 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.m-clamp-1 {
+  -webkit-line-clamp: 1;
+}
+
+.m-clamp-2 {
+  -webkit-line-clamp: 2;
+}
+
+.m-clamp-3 {
+  -webkit-line-clamp: 3;
+}
+
+.m-clamp-4 {
+  -webkit-line-clamp: 4;
+}

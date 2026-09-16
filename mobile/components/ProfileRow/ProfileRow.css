@@ -1,0 +1,79 @@
+.m-profile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.m-profile-avatar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  overflow: visible;
+  background: var(--m-red-light);
+  color: var(--m-orange-dark);
+  font-weight: 700;
+}
+
+.m-profile-avatar > img {
+  width: 100%;
+  height: 100%;
+  border-radius: 999px;
+  object-fit: cover;
+}
+
+.m-profile-small .m-profile-avatar {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+
+.m-profile-medium .m-profile-avatar {
+  width: 44px;
+  height: 44px;
+  font-size: 15px;
+}
+
+.m-profile-large .m-profile-avatar {
+  width: 96px;
+  height: 96px;
+  font-size: 32px;
+}
+
+/* `showOnlyInitials` — ProfileRow.tsx's `initialsContainer` + `showOnlyInitialsStyles`. A 40pt
+ * disc whose text is `colors.secondary`, NOT the orangeDark the other initials use. Placed after
+ * the size rules so it wins over whichever size the caller passed. */
+.m-profile-initials-only .m-profile-avatar {
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: -0.19px;
+  line-height: 17px;
+  color: var(--m-grey-dark-2);
+}
+
+.m-profile-link {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--m-denim);
+  color: var(--m-white);
+  border: 2px solid var(--m-white);
+}
+
+.m-profile-name {
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

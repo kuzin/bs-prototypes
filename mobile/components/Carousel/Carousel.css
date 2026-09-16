@@ -1,0 +1,77 @@
+.m-car {
+  display: flex;
+  flex-direction: column;
+}
+
+/* The inset that centres the active card and reveals its neighbours: (393 - 329) / 2 on Streaks.
+ * `touch-action: pan-y` keeps a vertical page scroll working while a horizontal drag is the
+ * carousel's — without it the page and the carousel fight over the same gesture. */
+.m-car-frame {
+  overflow: hidden;
+  touch-action: pan-y;
+  cursor: grab;
+}
+
+.m-car-frame:active {
+  cursor: grabbing;
+}
+
+.m-car-track {
+  display: flex;
+  flex-direction: row;
+  transition: transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* No transition while the finger is down (it would lag the drag), and none during the loop's
+ * re-centre (it would animate a jump the whole point of which is to be invisible). */
+.m-car-track.is-still {
+  transition: none;
+}
+
+/* snap-carousel's defaults, which neither call site overrides: 0.9 scale, 0.7 opacity. */
+.m-car-slide {
+  flex: 0 0 100%;
+  min-width: 0;
+  transform: scale(0.9);
+  opacity: 0.7;
+  transition:
+    transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    opacity 320ms ease;
+}
+
+.m-car-slide.is-active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .m-car-track,
+  .m-car-slide {
+    transition: none;
+  }
+}
+
+/* Equal air above and below. `AutoHeightCarousel`'s `paginationContainer` already specifies
+ * `marginTop: 16` with a `gap: 16`, so the number is the app's; the matching 16 below is the
+ * symmetry — Streaks' card carries a 30pt top margin inside its slide and the persona card fills
+ * its frame exactly, so without this the dots sit flush against one and not the other. */
+.m-car-dots {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-bottom: 16px;
+}
+
+.m-car-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 100px;
+  background: var(--m-grey-dark-3);
+  opacity: 0.2;
+}
+
+.m-car-dot.is-active {
+  opacity: 1;
+}

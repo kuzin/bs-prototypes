@@ -1,0 +1,88 @@
+.m-at {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 64px;
+}
+
+/* sectionHeaderContainer.
+ *
+ * These headers STICK: AllTitles leaves `stickySectionHeadersEnabled` at its default, while
+ * ReadingLog explicitly sets it false. That difference is the whole reason this container has a
+ * white ground — without it, rows would show through the header as they scroll under. */
+.m-at-section-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--m-white);
+}
+
+/* AllTitlesStyles.headerDivider — inset to the gutter, not full bleed. */
+.m-at-divider {
+  height: 1px;
+  margin: 0 20px;
+  background: var(--m-grey-light-2);
+}
+
+/* AllTitlesStyles.sectionHeader, stepped up to `primaryTitle` — see BookTalks.css for why. */
+.m-at-section {
+  letter-spacing: -0.3px;
+  margin: 16px 20px;
+}
+
+/* completedLogContainer — a loose row that wraps, 16pt gaps, inside the page gutter. */
+.m-at-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding: 0 20px;
+  margin-bottom: 16px;
+}
+
+.m-at-tile {
+  position: relative;
+  flex: none;
+  width: 96px;
+}
+
+.m-at-tile-cover {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-end;
+  width: 96px;
+  height: 144px;
+  padding: 8px;
+  border-radius: var(--m-radius-cover);
+  overflow: hidden;
+}
+
+.m-at-tile-title {
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 17px;
+  color: var(--m-white);
+  text-align: left;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+}
+
+/* AllTitlesStyles.shadowWrapper + shadow — 7% black, offset down 5 and right 8, behind the cover.
+ * Reproduced as a sibling rather than a box-shadow because that is what the app draws. */
+.m-at-tile-shadow {
+  position: absolute;
+  z-index: 0;
+  bottom: -5px;
+  left: 8px;
+  width: 100%;
+  height: 16px;
+  border-radius: var(--m-radius-cover);
+  background: var(--m-black);
+  opacity: 0.07;
+}
+
+/* TouchableOpacity with no `activeOpacity`, so the RN default 0.2 applies — the cover fades almost
+ * out under the finger. The tap is also `debounce(…, 500)` in the source, which is about stopping
+ * a double-tap opening two sheets rather than anything visual. */
+.m-at-tile:active {
+  opacity: 0.2;
+}

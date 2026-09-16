@@ -2,17 +2,40 @@ import { Fragment, useState, useEffect, useCallback, useSyncExternalStore } from
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { Icon } from '@components/Icon/Icon'
 import { Tabs } from '@components/Tabs/Tabs'
-import { GROUPS, SECTIONS, GroupHeader, BreakpointIndicator } from './catalog'
+import {
+  GROUPS,
+  SECTIONS,
+  PLATFORMS,
+  platformOf,
+  GroupHeader,
+  BreakpointIndicator,
+} from './catalog'
 import { SearchPalette } from './SearchPalette'
 import { CodeBlock } from './CodeBlock'
 
-const SHARED_GROUPS = GROUPS.filter((g) => g.kind !== 'prototype')
-const PROTOTYPE_GROUPS = GROUPS.filter((g) => g.kind === 'prototype')
+// ── Platform ──────────────────────────────────────────────────────────────
+// The library hosts two design systems. They share this shell but never share a
+// page: a desktop component is never the answer to a mobile question, so the
+// toggle swaps the whole catalog rather than mixing the two into one list.
+const PLATFORM_KEY = 'pt-platform'
 
-// True when this group is the first prototype-specific group — used to drop in
-// a "Prototype-specific" divider between the shared groups and the per-prototype ones.
-function startsPrototypeSection(i) {
-  return GROUPS[i].kind === 'prototype' && GROUPS[i - 1]?.kind !== 'prototype'
+function readPlatform() {
+  try {
+    const saved = localStorage.getItem(PLATFORM_KEY)
+    return PLATFORMS.some((p) => p.id === saved) ? saved : 'desktop'
+  } catch {
+    return 'desktop'
+  }
+}
+
+const groupsFor = (platform) => GROUPS.filter((g) => platformOf(g) === platform)
+const sharedGroupsFor = (platform) => groupsFor(platform).filter((g) => g.kind !== 'prototype')
+const prototypeGroupsFor = (platform) => groupsFor(platform).filter((g) => g.kind === 'prototype')
+
+// True when this group is the first prototype-specific one in its platform — the
+// divider between the shared groups and the per-prototype ones.
+function startsPrototypeSection(groups, i) {
+  return groups[i].kind === 'prototype' && groups[i - 1]?.kind !== 'prototype'
 }
 
 // ---------------------------------------------------------------------------
@@ -120,36 +143,59 @@ function GroupTile({ group }) {
   )
 }
 
-function HomeView() {
+function HomeView({ platform }) {
+  const isMobile = platform === 'mobile'
+  const shared = sharedGroupsFor(platform)
+  const perPrototype = prototypeGroupsFor(platform)
+  const count = SECTIONS.filter((s) => groupsFor(platform).some((g) => g.id === s.group)).length
+
   return (
     <>
       <div className="pt-home-intro">
         <h1 className="pt-home-title">Pattern Library</h1>
         <p className="pt-home-lede">
-          {SECTIONS.length} components across {GROUPS.length} groups. Pick a group below, or press{' '}
-          <kbd>⌘K</kbd> to search for a component by name.
+          {isMobile ? (
+            <>
+              {count} mobile components across {shared.length + perPrototype.length} groups —
+              mirrored from the React Native app, with tokens generated from its own theme. Press{' '}
+              <kbd>⌘K</kbd> to search.
+            </>
+          ) : (
+            <>
+              {count} components across {shared.length + perPrototype.length} groups. Pick a group
+              below, or press <kbd>⌘K</kbd> to search for a component by name.
+            </>
+          )}
         </p>
       </div>
 
       <div className="pt-home-section-label">
-        Shared system
-        <span>Used across every prototype — check here before building anything new</span>
+        {isMobile ? 'Mobile system' : 'Shared system'}
+        <span>
+          {isMobile
+            ? 'A separate design system — the mobile app has its own palette, type ladder and geometry'
+            : 'Used across every prototype — check here before building anything new'}
+        </span>
       </div>
       <div className="pt-group-tiles">
-        {SHARED_GROUPS.map((g) => (
+        {shared.map((g) => (
           <GroupTile key={g.id} group={g} />
         ))}
       </div>
 
-      <div className="pt-home-section-label">
-        Prototype-specific patterns
-        <span>Built for a single prototype, catalogued under its name</span>
-      </div>
-      <div className="pt-group-tiles">
-        {PROTOTYPE_GROUPS.map((g) => (
-          <GroupTile key={g.id} group={g} />
-        ))}
-      </div>
+      {perPrototype.length > 0 && (
+        <>
+          <div className="pt-home-section-label">
+            Prototype-specific patterns
+            <span>Built for a single prototype, catalogued under its name</span>
+          </div>
+          <div className="pt-group-tiles">
+            {perPrototype.map((g) => (
+              <GroupTile key={g.id} group={g} />
+            ))}
+          </div>
+        </>
+      )}
     </>
   )
 }
@@ -330,6 +376,10 @@ export function App() {
   const [paletteOpen, setPaletteOpen] = useState(false)
   // Which sidebar groups are expanded — any number at once, remembered across reloads.
   const [openGroups, setOpenGroups] = useState(readOpenGroups)
+  // Which design system the library is showing. Remembered, because it is a mode you work in
+  // for a while rather than a filter you flip.
+  const [platform, setPlatform] = useState(readPlatform)
+  const visibleGroups = groupsFor(platform)
 
   const openPalette = useCallback(() => setPaletteOpen(true), [])
 
@@ -349,6 +399,21 @@ export function App() {
   useEffect(() => {
     localStorage.setItem(OPEN_GROUPS_KEY, JSON.stringify([...openGroups]))
   }, [openGroups])
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(PLATFORM_KEY, platform)
+    } catch {
+      /* private mode */
+    }
+  }, [platform])
+
+  // A link into a group from the other system switches to it rather than 404-ing — a shared URL
+  // should land where it points, whichever mode the recipient last used.
+  const routePlatform = route.group ? platformOf(route.group) : null
+  useEffect(() => {
+    if (routePlatform && routePlatform !== platform) setPlatform(routePlatform)
+  }, [routePlatform, platform])
 
   // ⌘K / Ctrl-K anywhere, and "/" when you're not already typing into something.
   useEffect(() => {
@@ -387,7 +452,7 @@ export function App() {
   // it when the route *changes*, so the sidebar stays shut until you navigate.
   const allCollapsed = openGroups.size === 0
   const toggleAllGroups = () =>
-    setOpenGroups(allCollapsed ? new Set(GROUPS.map((g) => g.id)) : new Set())
+    setOpenGroups(allCollapsed ? new Set(visibleGroups.map((g) => g.id)) : new Set())
 
   const activeGroupId = route.group?.id ?? null
   const activeSectionId = route.section?.id ?? null
@@ -448,14 +513,35 @@ export function App() {
             <kbd>⌘K</kbd>
           </button>
 
-          {GROUPS.map((group, i) => {
+          {/* Two design systems, one shell. */}
+          <div className="pt-platform" role="group" aria-label="Design system">
+            {PLATFORMS.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={`pt-platform-btn${platform === p.id ? ' pt-platform-btn--active' : ''}`}
+                aria-pressed={platform === p.id}
+                onClick={() => {
+                  if (p.id === platform) return
+                  setPlatform(p.id)
+                  window.location.hash = '#/'
+                }}
+              >
+                {p.title}
+              </button>
+            ))}
+          </div>
+
+          {visibleGroups.map((group, i) => {
             const items = sectionsForGroup(group.id)
             const subs = subsForGroup(group)
             const isOpen = openGroups.has(group.id)
             const isActiveGroup = activeGroupId === group.id
             return (
               <Fragment key={group.id}>
-                {startsPrototypeSection(i) && <div className="pt-nav-divider" aria-hidden="true" />}
+                {startsPrototypeSection(visibleGroups, i) && (
+                  <div className="pt-nav-divider" aria-hidden="true" />
+                )}
                 <div className={`pt-nav-group${isOpen ? ' pt-nav-group--open' : ''}`}>
                   <div
                     className={`pt-nav-group-label${isActiveGroup ? ' pt-nav-group-label--active' : ''}`}
@@ -508,14 +594,14 @@ export function App() {
         </aside>
 
         <main className={`pt-content${route.view === 'component' ? ' pt-content--panes' : ''}`}>
-          {route.view === 'home' && <HomeView />}
+          {route.view === 'home' && <HomeView platform={platform} />}
           {route.view === 'group' && <GroupView group={route.group} />}
           {route.view === 'component' && (
             <ComponentView group={route.group} section={route.section} />
           )}
         </main>
       </div>
-      {paletteOpen && <SearchPalette onClose={() => setPaletteOpen(false)} />}
+      {paletteOpen && <SearchPalette platform={platform} onClose={() => setPaletteOpen(false)} />}
       {showTop && (
         <button
           type="button"

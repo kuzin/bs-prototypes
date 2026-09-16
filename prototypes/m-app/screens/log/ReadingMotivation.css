@@ -1,0 +1,171 @@
+/* `flex: 1 0 auto`, like every other screen in the tab scroller — a zero basis sizes the box to
+ * the scroller and lets its content overflow, which puts the floating bar's clearance above the
+ * content instead of below it. */
+.m-rmi {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  min-height: 0;
+}
+
+/* `scrollContentStyle` — the gap here provides ALL the spacing between sections; none of them
+ * carries a top margin.
+ *
+ * NOT a scroller of its own. The app wraps this in a ScrollView because in RN the screen is the
+ * scrolling unit; here the TAB owns one, shared by all nine, and nesting a second meant Reading
+ * Motivation was the only tab where pull-to-refresh did nothing and the floating bar's clearance
+ * landed on the wrong element. `flexGrow: 1` stays, so AnswerSurvey's own `flex: 1` still has
+ * room to centre in. */
+.m-rmi-scroll {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  padding-bottom: 32px;
+  gap: 32px;
+}
+
+/* ── ReadingMotivationFilter ─────────────────────────────────────────────── */
+/* Full-bleed: the only section here with no 20pt gutter. */
+/* ── AnswerSurvey ────────────────────────────────────────────────────────── */
+.m-rmi-answer {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  justify-content: center;
+  align-items: center;
+  gap: 32px;
+  margin: 0 20px;
+}
+
+.m-rmi-answer-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.m-rmi-answer-desc {
+  color: var(--m-c-dim-gray);
+  text-align: center;
+}
+
+/* ── MotivationTypes ─────────────────────────────────────────────────────── */
+.m-rmi-types {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Only the TITLE is inset — the carousel stays full-bleed so a page can be screen-wide. */
+.m-rmi-types-title {
+  padding: 0 20px;
+}
+
+/* PersonaCard.styles.ts */
+/* No horizontal margin: the Carousel's own 32pt peek is the inset now, and the card's own 20
+ * stacked on top of it made this card 289 wide against Streaks' 329. One inset, from the
+ * carousel, so both screens' cards are the same width and peek the same amount. */
+.m-rmi-persona {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  border-radius: 16px;
+}
+
+.m-rmi-persona-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.m-rmi-persona-desc {
+  text-align: center;
+}
+
+/* ── ReadingGoals ────────────────────────────────────────────────────────── */
+.m-rmi-goals {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 16px;
+  margin: 0 20px;
+}
+
+.m-rmi-goals-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  border-radius: 16px;
+  background: var(--m-grey-light-3);
+}
+
+/* A 64pt disc that CROPS Benny: he is pinned bottom-right at 57pt inside a 64pt box with
+ * `overflow: hidden`, so his top-left is clipped by the circle. */
+.m-rmi-goals-avatar {
+  position: relative;
+  flex: none;
+  width: 64px;
+  height: 64px;
+  border-radius: 38px;
+  background: var(--m-border-grey);
+  overflow: hidden;
+}
+
+.m-rmi-goals-benny {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 57px;
+  height: 57px;
+}
+
+.m-rmi-goals-number {
+  font-size: 56px;
+  font-weight: 600;
+  color: var(--m-accent);
+}
+
+.m-rmi-goals-unit {
+  color: var(--m-grey-dark-2);
+}
+
+/* ── Recommendations ─────────────────────────────────────────────────────── */
+.m-rmi-recs {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  gap: 16px;
+  padding: 0 20px;
+}
+
+.m-rmi-recs-list {
+  border-radius: 16px;
+  background: var(--m-grey-light-3);
+}
+
+.m-rmi-rec {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+}
+
+/* recommendationItemWithDivider — every item after the first, so the list never opens with a rule. */
+.m-rmi-rec + .m-rmi-rec {
+  border-top: 1px solid var(--m-border-grey);
+}
+
+.m-rmi-rec-text {
+  flex: 1 1 0%;
+  min-width: 0;
+}

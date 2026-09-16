@@ -1,0 +1,23 @@
+.m-card {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--m-radius-card);
+  background: var(--m-surface);
+}
+
+/* Cards sit inside the page gutter rather than bleeding to the edge. */
+.m-card.has-gutter {
+  margin-left: var(--m-gutter);
+  margin-right: var(--m-gutter);
+}
+
+.m-card-shadow {
+  padding: var(--m-space-6);
+  box-shadow: var(--m-shadow-card);
+}
+
+.m-card-border {
+  padding: var(--m-space-5);
+  gap: var(--m-space-4);
+  border: 2px solid var(--m-grey-light-2);
+}
