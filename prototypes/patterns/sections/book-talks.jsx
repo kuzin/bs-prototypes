@@ -1,7 +1,12 @@
 import { useState } from 'react'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
-import { ChatBubble, AnnotationBlock, TypingBubble } from '@components/ChatBubble/ChatBubble'
+import {
+  ChatBubble,
+  ChatThread,
+  AnnotationBlock,
+  TypingBubble,
+} from '@components/ChatBubble/ChatBubble'
 import { BennyChat } from '../../book-talks/components/BennyChat'
 import { BadgeEditor } from '../../book-talks/components/BadgeEditor'
 import { DEFAULT_BADGE, STUDENTS } from '../../book-talks/data'
@@ -62,7 +67,10 @@ export const bookTalksSections = [
     name: 'ChatBubble',
     usage: `import { ChatBubble, AnnotationBlock, TypingBubble } from '@components/ChatBubble/ChatBubble'
 
-<ChatBubble msg={{ role: 'benny', text: 'Did you like *Wonder*?' }} />
+<ChatThread>
+  <ChatBubble msg={{ role: 'benny', text: 'Did you like *Wonder*?' }} />
+  <ChatBubble msg={{ role: 'student', text: 'The helmet part.' }} initials="MC" />
+</ChatThread>
 <ChatBubble msg={reply} initials="MC" />
 <AnnotationBlock msg={{ sentiment: 'warning', label: 'Minimal Response', why: '…' }} />
 <TypingBubble />`,
@@ -90,49 +98,53 @@ export const bookTalksSections = [
     render: () => (
       <>
         <Variant label="transcript — annotated, with reasoning">
-          <ChatBubble msg={{ role: 'benny', text: 'What did you like about *Wonder*?' }} />
-          <ChatBubble
-            msg={{ role: 'student', text: "Auggie's helmet stuff was my favorite part." }}
-            initials="MC"
-          />
-          <AnnotationBlock
-            msg={{
-              sentiment: 'positive',
-              label: 'Specific Detail',
-              why: 'The answer names an object and a scene from the book rather than restating the question, which is the signal we treat as evidence the reader finished it.',
-            }}
-          />
-          <ChatBubble
-            msg={{ role: 'student', text: 'idk he did stuff', flagged: true }}
-            initials="MC"
-          />
-          <AnnotationBlock
-            msg={{
-              sentiment: 'warning',
-              label: 'Minimal Response',
-              why: 'Four words, no detail from the text, and no answer to what was asked — below the length and specificity thresholds for a scored answer.',
-            }}
-          />
-          <AnnotationBlock
-            msg={{
-              sentiment: 'warning',
-              label: 'Inaccurate Plot Detail',
-              why: 'No character in Wonder does what this answer describes.',
-            }}
-          />
+          <ChatThread>
+            <ChatBubble msg={{ role: 'benny', text: 'What did you like about *Wonder*?' }} />
+            <ChatBubble
+              msg={{ role: 'student', text: "Auggie's helmet stuff was my favorite part." }}
+              initials="MC"
+            />
+            <AnnotationBlock
+              msg={{
+                sentiment: 'positive',
+                label: 'Specific Detail',
+                why: 'The answer names an object and a scene from the book rather than restating the question, which is the signal we treat as evidence the reader finished it.',
+              }}
+            />
+            <ChatBubble
+              msg={{ role: 'student', text: 'idk he did stuff', flagged: true }}
+              initials="MC"
+            />
+            <AnnotationBlock
+              msg={{
+                sentiment: 'warning',
+                label: 'Minimal Response',
+                why: 'Four words, no detail from the text, and no answer to what was asked — below the length and specificity thresholds for a scored answer.',
+              }}
+            />
+            <AnnotationBlock
+              msg={{
+                sentiment: 'warning',
+                label: 'Inaccurate Plot Detail',
+                why: 'No character in Wonder does what this answer describes.',
+              }}
+            />
+          </ChatThread>
         </Variant>
         <Variant label="safety signal — the turn it fired on">
-          <ChatBubble
-            msg={{
-              role: 'student',
-              text: 'sometimes i wish i could just disappear',
-              trigger: true,
-            }}
-            initials="TW"
-          />
-          <AnnotationBlock
-            msg={{ tone: 'safety', text: 'Benny flagged this for wellbeing review.' }}
-          />
+          <ChatThread>
+            <ChatBubble
+              msg={{
+                role: 'student',
+                text: 'sometimes i wish i could just disappear',
+                trigger: true,
+              }}
+              initials="TW"
+            />
+            <AnnotationBlock
+              msg={{ tone: 'safety', text: 'Benny flagged this for wellbeing review.' }}
+            />
+          </ChatThread>
         </Variant>
         <div className="bt-root">
           <Variant label="live chat — teal reader bubble, read-aloud, typing">

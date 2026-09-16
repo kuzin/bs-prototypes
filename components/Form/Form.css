@@ -450,15 +450,11 @@
   outline-offset: 2px;
 }
 
-/* Flex centring lines up the label's *box* with the checkbox, but the ink
-   inside that box sits high: measured on Museo at bold 16px, the cap-height
-   centre lands 0.78px above the box's centre, because the font's 14/4
-   ascent/descent split is asymmetric. Nudge it back down in em so it holds at
-   every rung. */
-.chk-label,
-.rdo-label {
-  transform: translateY(0.05em);
-}
+/* No optical nudge on the label. There used to be a `translateY(0.05em)` here
+   on the theory that the cap-height centre sits above the box's; measured on
+   the real thing — Museo bold 15px, the box's own rect against the label's
+   cap-height centre from canvas metrics — it lands 0.9px the *other* way, so
+   the nudge was the whole error. Flex centring on its own is within 0.2px. */
 
 .chk-label {
   font-weight: 700;
@@ -716,17 +712,21 @@
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-blue) 18%, transparent);
 }
 
+/* The control ladder, not a smaller one of its own. The chip sits in a row of
+   inputs and selects — a 22px dot beside a 36px field left the row looking
+   like it had a hole in it, and "same height" is what makes a rail of knobs
+   read as one row. */
 .cinp-chip--sm {
-  width: 22px;
-  height: 22px;
+  width: 36px;
+  height: 36px;
 }
 .cinp-chip--md {
-  width: 26px;
-  height: 26px;
+  width: 44px;
+  height: 44px;
 }
 .cinp-chip--lg {
-  width: 30px;
-  height: 30px;
+  width: 52px;
+  height: 52px;
 }
 
 .cinp-chip::-webkit-color-swatch-wrapper {

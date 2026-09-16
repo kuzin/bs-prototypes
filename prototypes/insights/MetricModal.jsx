@@ -31,7 +31,7 @@ export function MetricModal({ metricId, value, open, onClose }) {
             </div>
             <IconButton
               variant="ghost"
-              size="sm"
+              size="xs"
               onClick={close}
               aria-label="Close"
               className="modal-close"

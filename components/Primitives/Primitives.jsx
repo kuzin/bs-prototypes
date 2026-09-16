@@ -55,11 +55,13 @@ export function Spinner({ size = 'md', color, className = '' }) {
  * </IconButton>
  *
  * variants: secondary (default) | primary | ghost | danger
- * sizes:    sm | md | lg
+ * sizes:    xs | sm | md | lg — the same 36 / 44 / 52 ladder `Button` and the
+ *           form fields use, so `size="sm"` is the same height on both. `xs`
+ *           (28px) is the dense rung, for a table row or a card's corner.
  */
 export function IconButton({
   variant = 'secondary',
-  size = 'md',
+  size = 'sm',
   disabled,
   className = '',
   children,
@@ -280,7 +282,7 @@ export function Banner({
       {onDismiss && (
         <IconButton
           variant="ghost"
-          size="sm"
+          size="xs"
           onClick={onDismiss}
           aria-label="Dismiss"
           className="bnr-close"

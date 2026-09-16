@@ -497,6 +497,9 @@ function FlyoutShowcase() {
             placement="bottom-end"
             trigger={({ open, toggle }) => (
               <IconButton
+                /* Same rung as the two buttons beside it — that is the whole
+                   point of an overflow menu: it is the third control in the
+                   row, not a smaller afterthought. */
                 variant="secondary"
                 size="sm"
                 aria-label="More actions"
@@ -609,7 +612,7 @@ function CenteredModalKnobs() {
             {withImage && closeStyle === 'inline' && (
               <IconButton
                 variant="secondary"
-                size="sm"
+                size="xs"
                 onClick={close}
                 aria-label="Close"
                 className="modal-close modal-close--floating"
@@ -624,7 +627,7 @@ function CenteredModalKnobs() {
               {!withImage && closeStyle === 'inline' && (
                 <IconButton
                   variant="ghost"
-                  size="sm"
+                  size="xs"
                   onClick={close}
                   aria-label="Close"
                   className="modal-close"

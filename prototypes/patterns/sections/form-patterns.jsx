@@ -864,7 +864,7 @@ function EarnedFilterDemo() {
   const isEarned = (p) => Boolean(p.earned)
   const shown = byEarnedState(DEMO_PRIZES, state, isEarned)
   return (
-    <div style={{ display: 'grid', gap: 14 }}>
+    <Variant label="a fundraiser's Prizes tab — the strip over the set it cuts">
       <EarnedFilter
         items={DEMO_PRIZES}
         isEarned={isEarned}
@@ -872,7 +872,15 @@ function EarnedFilterDemo() {
         onChange={setState}
         ariaLabel="Which prizes"
       />
-      <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 6 }}>
+      <ul
+        style={{
+          margin: '14px 0 0',
+          padding: 0,
+          listStyle: 'none',
+          display: 'grid',
+          gap: 6,
+        }}
+      >
         {shown.map((p) => (
           <li key={p.id} style={{ fontSize: 14, fontWeight: 700 }}>
             {p.name}
@@ -880,7 +888,7 @@ function EarnedFilterDemo() {
           </li>
         ))}
       </ul>
-    </div>
+    </Variant>
   )
 }
 

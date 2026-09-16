@@ -11,7 +11,9 @@ import './CompleteToggle.css'
  * bs-product admin/_admin.scss): a 32px filled checkbox glyph, green
  * `#0BA85F` when it's done and grey when it isn't, clickable either way.
  * `repeatable` swaps it for the app's "add" glyph, which is what a row that
- * can be completed more than once shows instead.
+ * can be completed more than once shows instead — and since that glyph is an
+ * add, it adds: given `onChange` the cell is a small secondary button carrying
+ * the running count, and calls back with `count + 1`.
  *
  * It is deliberately not a `Checkbox`: it reads as a state you set, not a form
  * field you fill in, and the app draws it as a glyph rather than an input.
@@ -28,12 +30,28 @@ import './CompleteToggle.css'
  *
  * @param {boolean}  done        the completed state
  * @param {function} onChange    (next) => void; omit for a read-only cell
- * @param {boolean}  repeatable  show the add glyph instead of a checkbox
+ * @param {boolean}  repeatable  show the add glyph instead of a checkbox;
+ *                               `onChange` then receives `count + 1`
  * @param {number}   count       completions, shown beside a repeatable glyph
  * @param {string}   label       what this row is, for the accessible name
  * @param {object}   wording     { set, unset, on, off } — what the action and
  *                               the state are called in this column
  */
+/**
+ * The box itself — the design system's own checkbox face (`.chk-box`), not a
+ * glyph that resembles one. It was two Tabler squares before, which meant this
+ * column's box carried a different radius, a different border weight and a
+ * different tick from every other checkbox on the page. Same construction as
+ * the real control, in this column's own green.
+ */
+function CheckBox() {
+  return (
+    <span className="ctog-box" aria-hidden="true">
+      <Icon name="check" size={15} stroke={3} />
+    </span>
+  )
+}
+
 const WORDING = {
   set: 'Mark complete',
   unset: 'Mark not complete',
@@ -61,21 +79,41 @@ export function CompleteToggle({
     .filter(Boolean)
     .join(' ')
 
-  // A repeatable row has nothing to set — the count is the record — so it
-  // renders as a mark rather than a control.
+  // A repeatable row is never "complete" — the count is the record, and the
+  // glyph the app puts here is an *add*. So it adds: the cell takes the
+  // secondary button's chrome and hands back the next count. Without
+  // `onChange` it keeps the same shape as a read-only mark, so a column of
+  // them still lines up.
   if (repeatable) {
+    const n = count ?? 0
+    const title = `${n} ${n === 1 ? 'completion' : 'completions'}`
+    if (!onChange) {
+      return (
+        <span className={cls} title={title}>
+          <Icon name="plus" size={18} stroke={2.4} />
+          {count != null && <span className="ctog-count">{count}</span>}
+        </span>
+      )
+    }
     return (
-      <span className={cls} title={`${count ?? 0} completions`}>
-        <Icon name="plus" size={22} stroke={2.4} />
+      <button
+        type="button"
+        className={cls}
+        onClick={() => onChange(n + 1)}
+        disabled={disabled}
+        title={`Add a completion — ${title}`}
+        aria-label={label ? `Add a completion: ${label}` : 'Add a completion'}
+      >
+        <Icon name="plus" size={18} stroke={2.4} />
         {count != null && <span className="ctog-count">{count}</span>}
-      </span>
+      </button>
     )
   }
 
   if (!onChange) {
     return (
       <span className={cls} title={done ? w.on : w.off}>
-        <Icon name={done ? 'square-check-filled' : 'square'} size={32} stroke={2} />
+        <CheckBox />
       </span>
     )
   }
@@ -90,10 +128,7 @@ export function CompleteToggle({
       title={done ? w.unset : w.set}
       disabled={disabled}
     >
-      {/* The app draws a *filled* checkbox glyph, not a stroked outline, and
-          draws it at a full 32px — this column is the row's one control, so it
-          is deliberately the biggest hit target in the row. */}
-      <Icon name={done ? 'square-check-filled' : 'square'} size={32} stroke={2} />
+      <CheckBox />
     </button>
   )
 }

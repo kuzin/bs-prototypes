@@ -1,3 +1,4 @@
+import { Icon, ICON_NAMES } from '@components/Icon/Icon'
 /**
  * PlumpyIcon — the duotone icon family the real Beanstack admin chrome uses.
  *
@@ -596,8 +597,93 @@ const PLUMPY = {
       </>
     ),
   },
+  // ── Row actions ───────────────────────────────────────────────────────────
+  // The glyphs a table row's trailing controls ask for. RowAction promises
+  // Plumpy "wherever the pack has it", and these were the names that quietly
+  // fell through to the stroked set — which put two icon families side by side
+  // in the same cluster.
+  flag: {
+    id: '2ngs3nBmHV6w',
+    figma: 'icons8-alpha-flag',
+    body: (
+      <>
+        <path d="M6,22H3V4.5C3,3.672,3.672,3,4.5,3h0C5.328,3,6,3.672,6,4.5V22z" />
+        <path d="M19.73,17H14V5h5.73c1.696,0,2.622,1.978,1.536,3.28L20.067,9.72c-0.618,0.742-0.618,1.819,0,2.561l1.199,1.439 C22.352,15.022,21.426,17,19.73,17z" />
+        <rect width="9" height="12" x="6" y="5" opacity=".35" />
+      </>
+    ),
+  },
+  printer: {
+    id: 'iy1cxm0lE8jm',
+    figma: 'icons8-print',
+    body: (
+      <>
+        <path
+          d="M16,21H8c-1.657,0-3-1.343-3-3V6c0-1.657,1.343-3,3-3h8c1.657,0,3,1.343,3,3v12 C19,19.657,17.657,21,16,21z"
+          opacity=".35"
+        />
+        <path d="M20,7H4C2.895,7,2,7.895,2,9v7c0,1.105,0.895,2,2,2h1v-1c0-1.105,0.895-2,2-2h10c1.105,0,2,0.895,2,2v1h1 c1.105,0,2-0.895,2-2V9C22,7.895,21.105,7,20,7z" />
+      </>
+    ),
+  },
+  check: {
+    id: '6Dz9xBnxD2Il',
+    figma: 'icons8-checkmark',
+    body: (
+      <>
+        <path
+          d="M5.268,10.732c-0.976-0.976-2.559-0.976-3.536,0s-0.976,2.559,0,3.536l4.645,4.645 c1.449,1.449,3.797,1.449,5.246,0L12.536,18L5.268,10.732z"
+          opacity=".35"
+        />
+        <path d="M22.268,4.732c-0.976-0.976-2.559-0.976-3.536,0L9,14.464L12.536,18l9.732-9.732C23.244,7.291,23.244,5.708,22.268,4.732z" />
+      </>
+    ),
+  },
+  x: {
+    id: '9OxuTxguyFeg',
+    figma: 'icons8-multiply',
+    body: (
+      <>
+        <path
+          d="M16.536,4.636C16.339,4.832,13.805,7.367,12,9.172c-1.805-1.805-4.339-4.339-4.536-4.536 c-0.781-0.781-2.047-0.781-2.828,0s-0.781,2.047,0,2.828C4.832,7.661,7.367,10.195,9.172,12c-1.805,1.805-4.339,4.339-4.536,4.536 c-0.781,0.781-0.781,2.047,0,2.828c0.781,0.781,2.047,0.781,2.828,0C7.606,19.222,19.222,7.606,19.364,7.464 c0.781-0.781,0.781-2.047,0-2.828C18.583,3.855,17.317,3.855,16.536,4.636z"
+          opacity=".35"
+        />
+        <path d="M19.364,19.364c0.781-0.781,0.781-2.047,0-2.828c-0.196-0.196-2.731-2.731-4.536-4.536L12,14.828 c1.805,1.805,4.339,4.339,4.536,4.536C17.317,20.145,18.583,20.145,19.364,19.364z" />
+      </>
+    ),
+  },
+  hourglass: {
+    id: '2HRx1QDVEjxg',
+    figma: 'icons8-hourglass',
+    body: (
+      <>
+        <path
+          d="M19,6.703V6c0-1.105-0.895-2-2-2H7C5.895,4,5,4.895,5,6v0.703 c0,2,1.192,3.808,3.031,4.596L9.667,12L8.03,12.701C6.192,13.489,5,15.297,5,17.297V18c0,1.104,0.895,2,2,2h10c1.105,0,2-0.896,2-2 v-0.703c0-2-1.192-3.808-3.031-4.596L14.333,12l1.637-0.702C17.808,10.511,19,8.703,19,6.703z"
+          opacity=".35"
+        />
+        <path d="M18.5,5h-13C4.672,5,4,4.328,4,3.5S4.672,2,5.5,2h13C19.328,2,20,2.672,20,3.5S19.328,5,18.5,5z" />
+        <path d="M18.5,22h-13C4.672,22,4,21.328,4,20.5S4.672,19,5.5,19h13c0.828,0,1.5,0.672,1.5,1.5S19.328,22,18.5,22z" />
+        <path d="M8.039,8c0.154,0.956,0.784,1.782,1.692,2.17l2.268,0.972l2.269-0.972c0.909-0.389,1.539-1.215,1.693-2.17H8.039z" />
+        <path d="M15.961,19c-0.154-0.956-0.784-1.782-1.692-2.17l-2.268-0.972L9.732,16.83C8.823,17.219,8.193,18.045,8.039,19H15.961z" />
+      </>
+    ),
+  },
 }
 
+/* Where the app's semantic name and Plumpy's differ for the same glyph. The
+   `<Icon>` registry is the naming authority — a caller says `flame` and should
+   get Plumpy's fire without having to know which pack drew it. */
+const ALIAS = {
+  flame: 'fire',
+  'message-chatbot': 'chat',
+}
+
+/** Whether the Plumpy pack can draw this name, aliases included. */
+export const hasPlumpy = (name) => Boolean(PLUMPY[ALIAS[name] ?? name])
+
+/* The pack's own keys — one tile per glyph in the gallery. Use `hasPlumpy` to
+   ask whether a name can be drawn; an alias answers yes without being a second
+   entry here. */
 export const PLUMPY_NAMES = Object.keys(PLUMPY)
 
 /** name → the Figma/Icons8 asset name, for the Pattern Library listing. */
@@ -606,8 +692,15 @@ export const PLUMPY_SOURCES = Object.fromEntries(
 )
 
 export function PlumpyIcon({ name, size = 24, className = '', title }) {
-  const icon = PLUMPY[name]
-  if (!icon) return null
+  const icon = PLUMPY[ALIAS[name] ?? name]
+  /* A name this pack doesn't carry falls through to the stroked `<Icon>` —
+     same size, same slot — which is the contract `RowAction` already
+     documents. Returning `null` was worse than a mismatched family: an
+     `icon="attendance"` (the Icons8 asset name, not this pack's) left a 44px
+     empty box in a banner and read as a design choice. */
+  if (!icon) {
+    return ICON_NAMES.includes(name) ? <Icon name={name} size={size} className={className} /> : null
+  }
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"

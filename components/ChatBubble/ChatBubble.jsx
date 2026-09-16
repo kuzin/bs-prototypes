@@ -31,6 +31,20 @@ function renderText(text) {
  * `children` render inside the bubble, under the text — BTWB's transcript hangs
  * each answer's reasoning strip off the bottom of the answer's own bubble.
  */
+/**
+ * The stack the rows sit in. A `ChatBubble` draws one turn and has never owned
+ * the space between turns — every consumer wrapped it in a flex column of its
+ * own, which works right up until something renders the rows loose and they
+ * come out touching. This is that column, so the rhythm ships with the rows.
+ *
+ *   <ChatThread>
+ *     {msgs.map((m) => <ChatBubble key={m.id} msg={m} />)}
+ *   </ChatThread>
+ */
+export function ChatThread({ children, className = '' }) {
+  return <div className={`cht-thread ${className}`.trim()}>{children}</div>
+}
+
 export function ChatBubble({
   msg,
   initials,

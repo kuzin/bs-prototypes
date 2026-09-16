@@ -26,7 +26,11 @@
    it doesn't become a scroll container and break sticky positioning). */
 .wa-main .rl-subtabs {
   width: 100vw;
-  margin-top: -24px;
+  /* Exactly the page's own top padding, which `.wa-main` publishes as a token
+     for this — a hardcoded 24 left an 8px band of page ground above the strip
+     the moment that padding moved to 32, and the Collections band next door
+     (which does read the token) sat flush while this one didn't. */
+  margin-top: calc(var(--wa-main-pad, 24px) * -1);
   margin-inline: calc(50% - 50vw);
 }
 

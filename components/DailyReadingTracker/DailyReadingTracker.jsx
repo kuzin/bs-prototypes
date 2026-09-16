@@ -92,7 +92,7 @@ function GoalCell({ row, onEditGoal }) {
       {onEditGoal !== false && (
         <IconButton
           variant="ghost"
-          size="sm"
+          size="xs"
           title="Edit goal"
           onClick={(e) => {
             e.stopPropagation()

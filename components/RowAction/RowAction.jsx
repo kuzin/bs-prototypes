@@ -1,5 +1,5 @@
 import { Icon } from '@components/Icon/Icon'
-import { PlumpyIcon, PLUMPY_NAMES } from '@components/PlumpyIcon/PlumpyIcon'
+import { PlumpyIcon, hasPlumpy } from '@components/PlumpyIcon/PlumpyIcon'
 import { Tooltip } from '@components/Primitives/Primitives'
 import '@components/Primitives/Primitives.css'
 import './RowAction.css'
@@ -28,6 +28,10 @@ import './RowAction.css'
  * does: `.refresh-icon { @include icon('refresh', '#000000', 20, 'plumpy') }`
  * on its own row action. Anything Plumpy doesn't carry falls back to the
  * stroked `<Icon>` — same size, same cell — so a name never renders nothing.
+ * Two fall back on purpose rather than for want of a glyph: the month-stepper
+ * chevrons, because a directional arrow is chrome and not one of Plumpy's
+ * drawn objects, and `user-plus`, because every "add user" in the pack is a
+ * gendered figure and a K-12 product shouldn't pick one to mean "a friend".
  *
  *   <RowAction icon="dots" label="Actions for The Hobbit" onClick={…} />
  *   <RowAction label="Redeem reward" onClick={…}>
@@ -61,7 +65,7 @@ export function RowAction({
 }) {
   const body =
     children ??
-    (PLUMPY_NAMES.includes(icon) ? (
+    (hasPlumpy(icon) ? (
       <PlumpyIcon name={icon} size={20} />
     ) : (
       <Icon name={icon} size={20} stroke={1.9} />

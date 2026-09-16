@@ -46,9 +46,12 @@ export function Collections({ collection, newestWord, cards, onReview }) {
         />
       </div>
 
+      {/* No count under any of these heads — the pane strip directly above
+          already carries each one, and the same figure twice on one screen
+          reads as two different numbers until you check. */}
       {pane === 'words' && (
         <>
-          <ShelfHead title="Words" count={collection.length} noun="collected" />
+          <ShelfHead title="Words" />
           <MyWords
             collection={collection}
             newestWord={newestWord}
@@ -60,7 +63,7 @@ export function Collections({ collection, newestWord, cards, onReview }) {
 
       {pane === 'badges' && (
         <>
-          <ShelfHead title="Earned Badges" count={BADGES.length} noun="Badges" />
+          <ShelfHead title="Earned Badges" />
           <ShelfGrid>
             {BADGES.map((b) => (
               <CollectionCard
@@ -81,7 +84,7 @@ export function Collections({ collection, newestWord, cards, onReview }) {
 
       {pane === 'achievements' && (
         <>
-          <ShelfHead title="Achievements" count={ACHIEVEMENTS.length} noun="Achievements" />
+          <ShelfHead title="Achievements" />
           <ShelfGrid>
             {ACHIEVEMENTS.map((a) => (
               <CollectionCard

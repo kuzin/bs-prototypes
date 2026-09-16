@@ -94,7 +94,7 @@ export function CustomizeModal({ open, onClose, visibleTiles, onChange }) {
             </div>
             <IconButton
               variant="ghost"
-              size="sm"
+              size="xs"
               onClick={close}
               aria-label="Close"
               className="modal-close"

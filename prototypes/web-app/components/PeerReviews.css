@@ -77,11 +77,17 @@
   line-height: 1.6;
   color: var(--c-text);
 }
+/* Its own line, not the tail of the sentence — and the same line the reader's
+   own Reviews page puts it on (`.rv-more`), since the two are neighbours on the
+   My Reading strip now. Trailing an ellipsis it read as part of the review. */
 .pr-more {
+  display: block;
+  margin-top: 6px;
   padding: 0;
   font: inherit;
   font-weight: 800;
   color: var(--c-accent);
+  text-align: left;
   cursor: pointer;
   background: none;
   border: 0;

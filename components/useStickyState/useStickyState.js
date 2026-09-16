@@ -40,3 +40,28 @@ export function useStickyState(key, initial) {
 
   return [value, setValue]
 }
+
+/**
+ * Forget every sticky value and start the prototype over.
+ *
+ * Sticky state is the one thing a reload doesn't clear — that's the point of it
+ * — so "back to the beginning" has to say so explicitly: drop the `bsp:` keys,
+ * then reload, and the prototype opens exactly where a first-time reader would.
+ * Everything else a prototype holds is ordinary React state, which the reload
+ * takes care of.
+ */
+export function resetPrototype() {
+  try {
+    // Only this prototype's keys. They are namespaced by its id, which is the
+    // folder in the URL for all but a couple of prototypes — and where the two
+    // disagree nothing matches, so fall back to clearing the lot rather than
+    // reloading to exactly where you already were.
+    const slug = window.location.pathname.split('/').filter(Boolean).pop()
+    const keys = Object.keys(sessionStorage).filter((k) => k.startsWith('bsp:'))
+    const mine = keys.filter((k) => k.startsWith(`bsp:${slug}:`))
+    for (const key of mine.length ? mine : keys) sessionStorage.removeItem(key)
+  } catch {
+    /* no storage — nothing to forget, and the reload still does its half */
+  }
+  window.location.reload()
+}

@@ -485,7 +485,10 @@ export const adminDashboardSections = [
         <Variant label="two actions + dismiss" ground>
           <InfoBox
             title="Roster sync finished"
-            icon="attendance"
+            /* The pack's own name. `attendance` is this glyph's *Icons8* asset
+               name, which the gallery prints under it — easy to copy, and it
+               is not what `PlumpyIcon` answers to. */
+            icon="client-success"
             action={{ label: 'Learn more' }}
             readMore={{ label: 'Read more' }}
             onDismiss={() => {}}

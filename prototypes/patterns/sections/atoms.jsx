@@ -241,19 +241,24 @@ function IconButtonShowcase() {
         </Specimens>
       </Variant>
 
-      <Variant label="sizes">
+      <Variant label="sizes — the same ladder Button and the form fields stand on">
         <Specimens>
-          <Specimen label='size="sm"'>
+          <Specimen label='size="xs" — 28px'>
+            <IconButton size="xs" aria-label="Edit">
+              <EditIcon />
+            </IconButton>
+          </Specimen>
+          <Specimen label='size="sm" (default) — 36px'>
             <IconButton size="sm" aria-label="Edit">
               <EditIcon />
             </IconButton>
           </Specimen>
-          <Specimen label='size="md" (default)'>
+          <Specimen label='size="md" — 44px'>
             <IconButton size="md" aria-label="Edit">
               <EditIcon />
             </IconButton>
           </Specimen>
-          <Specimen label='size="lg"'>
+          <Specimen label='size="lg" — 52px'>
             <IconButton size="lg" aria-label="Edit">
               <EditIcon />
             </IconButton>
@@ -343,7 +348,7 @@ function ButtonKnobs() {
 
 function IconButtonKnobs() {
   const [variant, setVariant] = useState('secondary')
-  const [size, setSize] = useState('md')
+  const [size, setSize] = useState('sm')
   const [iconKey, setIconKey] = useState('plus')
   const [disabled, setDisabled] = useState(false)
   const ICONS = {
@@ -369,6 +374,7 @@ function IconButtonKnobs() {
         </Field>
         <Field label="size">
           <Select value={size} onChange={(e) => setSize(e.target.value)}>
+            <option>xs</option>
             <option>sm</option>
             <option>md</option>
             <option>lg</option>
@@ -1016,6 +1022,7 @@ function ProgressBarKnobs() {
  */
 function CompleteToggleKnobs() {
   const [done, setDone] = useState(false)
+  const [times, setTimes] = useState(7)
   const [repeatable, setRepeatable] = useState(false)
   const [disabled, setDisabled] = useState(false)
   const [readOnly, setReadOnly] = useState(false)
@@ -1036,9 +1043,9 @@ function CompleteToggleKnobs() {
         <CompleteToggle
           done={done}
           repeatable={repeatable}
-          count={repeatable ? 7 : undefined}
+          count={repeatable ? times : undefined}
           disabled={disabled}
-          onChange={readOnly ? undefined : setDone}
+          onChange={readOnly ? undefined : repeatable ? setTimes : setDone}
           label="Museums"
         />
       </Variant>
@@ -1047,7 +1054,7 @@ function CompleteToggleKnobs() {
           <CompleteToggle done onChange={() => {}} label="Complete" />
           <CompleteToggle done={false} onChange={() => {}} label="Not complete" />
           <CompleteToggle done disabled label="Already redeemed" />
-          <CompleteToggle repeatable count={7} label="Repeatable" />
+          <CompleteToggle repeatable count={7} onChange={() => {}} label="Repeatable" />
         </div>
       </Variant>
       <Variant label="wording — the same control, renamed for its column (hover it)">
@@ -1147,8 +1154,8 @@ export const atomsSections = [
     name: 'PlumpyIcon',
     usage: `import { PlumpyIcon } from '@components/PlumpyIcon/PlumpyIcon'
 
-<PlumpyIcon name="dashboard" size={22} />
-<PlumpyIcon name="badge" size={18} title="Badges" />`,
+<PlumpyIcon name="insights" size={22} />
+<PlumpyIcon name="medal" size={18} title="Badges" />`,
     desc: (
       <>
         The <strong>duotone</strong> family the real Beanstack admin chrome uses for its main rail —
@@ -1214,8 +1221,15 @@ import { Icon } from '@components/Icon/Icon'
     desc: (
       <>
         Square button with just an icon. Variants: <code>primary</code>, <code>secondary</code>,{' '}
-        <code>ghost</code>, <code>danger</code>. Sizes: <code>sm</code>, <code>md</code>,{' '}
-        <code>lg</code>. Always pair with an <code>aria-label</code>.
+        <code>ghost</code>, <code>danger</code>.
+        <br />
+        <br />
+        Sizes are the app&apos;s control ladder, by the same names <code>Button</code> and the form
+        fields use — <code>sm</code> 36, <code>md</code> 44, <code>lg</code> 52 — so an icon button
+        beside a button at the same rung comes out the same height. They used to run a rung short
+        (28 / 36 / 44), which put a 28px control next to a 36px one with nothing in the JSX to say
+        so. <code>xs</code> is that 28px rung, kept for the dense places that want it: a table row,
+        a card&apos;s corner, a banner&apos;s dismiss. Always pair with an <code>aria-label</code>.
       </>
     ),
     render: () => (
@@ -1657,7 +1671,10 @@ import { Icon } from '@components/Icon/Icon'
         field you fill in, and the app draws it as a glyph rather than an input.{' '}
         <code>repeatable</code> swaps it for the app&apos;s <code>add</code> glyph and a running
         count, because a row that can be completed more than once has no single done state — the
-        count is the record. Omit <code>onChange</code> for a read-only cell.
+        count is the record. Since that glyph is an <em>add</em>, it adds: the cell takes the
+        secondary button&apos;s chrome and calls <code>onChange</code> with <code>count + 1</code>.
+        Omit <code>onChange</code> for a read-only cell — same shape, no pointer, so a column of
+        them still lines up.
         <br />
         <br />
         The same glyph runs several different columns, and &ldquo;Mark complete&rdquo; is the wrong

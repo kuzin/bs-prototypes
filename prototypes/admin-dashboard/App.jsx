@@ -383,7 +383,7 @@ export function App() {
                       <div className="adm-side-sub">{availableWidgets.length} available</div>
                     )}
                   </div>
-                  <IconButton variant="ghost" size="sm" onClick={close} aria-label="Close">
+                  <IconButton variant="ghost" size="xs" onClick={close} aria-label="Close">
                     <XIcon />
                   </IconButton>
                 </header>

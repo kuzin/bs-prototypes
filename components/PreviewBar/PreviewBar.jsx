@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Select } from '@components/Form/Form'
+import { resetPrototype } from '@components/useStickyState/useStickyState'
 import { Toggle } from '@components/Toggle/Toggle'
 import { Flyout } from '@components/Flyout/Flyout'
 import '@components/Form/Form.css'
@@ -68,6 +69,9 @@ export function PreviewBar({
   onChange,
   toggles = [],
   onToggle,
+  // What clicking the title does. Defaults to forgetting where you were and
+  // reloading — a prototype that can rewind itself passes its own.
+  onHome,
   togglesLabel = 'Site settings',
   actions,
   sticky = true,
@@ -104,10 +108,19 @@ export function PreviewBar({
   const offCount = toggles.filter((t) => !t.on).length
   return (
     <div className={cls} ref={barRef}>
-      <div className="pvb-titles">
+      {/* The title is the way back to the beginning — every prototype ends up
+          somewhere three clicks in, and the one thing every reviewer wants next
+          is to see it from the top again. `onHome` overrides for a prototype
+          that can start itself over without a reload. */}
+      <button
+        type="button"
+        className="pvb-titles"
+        onClick={onHome ?? resetPrototype}
+        title={`Start ${title} over`}
+      >
         <span className="pvb-title">{title}</span>
         {subtitle && <span className="pvb-subtitle">{subtitle}</span>}
-      </div>
+      </button>
 
       {/* On a phone the strip is four pills on a 375px row — it wrapped to two
           and three lines and took a third of the screen. Below that width it is
@@ -140,7 +153,7 @@ export function PreviewBar({
               title={v.label}
               onClick={() => onChange?.(v.id)}
             >
-              {v.icon && <Icon name={v.icon} size={15} />}
+              {v.icon && <Icon name={v.icon} size={13} />}
               <span className="pvb-view-label">{v.label}</span>
               <span className="pvb-view-label-short">{v.short ?? v.label}</span>
             </button>
@@ -160,7 +173,7 @@ export function PreviewBar({
               aria-expanded={open}
               aria-label={togglesLabel}
             >
-              <Icon name="settings" size={16} />
+              <Icon name="settings" size={14} />
               <span className="pvb-cog-label">{togglesLabel}</span>
               {offCount > 0 && <span className="pvb-cog-count">{offCount} off</span>}
             </button>

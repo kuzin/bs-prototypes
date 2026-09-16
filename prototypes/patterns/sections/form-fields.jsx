@@ -36,7 +36,7 @@ function RichTextKnobs() {
         <RichText value={html} onChange={setHtml} size={size} placeholder="Write a description…" />
         <pre
           style={{
-            marginTop: 10,
+            margin: '10px 0 0',
             fontSize: 11,
             background: '#f8f8f8',
             padding: 8,

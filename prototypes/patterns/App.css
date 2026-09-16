@@ -1184,7 +1184,9 @@ a.pt-nav-group-label {
   align-items: center;
   gap: 8px;
   width: calc(100% - 28px);
-  margin: 0 14px 10px;
+  /* Room off the title above it — flush against "Pattern Library" the two read
+     as one block rather than a heading and the thing under it. */
+  margin: 12px 14px 10px;
   padding: 8px 10px;
   background: rgba(255, 255, 255, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.16);
