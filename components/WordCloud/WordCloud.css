@@ -2,6 +2,7 @@
    these rules only cover the frame and the interaction states. */
 
 .wcl {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,6 +26,72 @@
   transition:
     opacity 0.14s ease,
     fill 0.14s ease;
+}
+
+/* ── Movement ────────────────────────────────────────────────────────────────
+   All of it rides on the inner group, and on `scale`/`translate` rather than
+   `transform`, so the entrance, the drift and the hover pop compose instead of
+   overwriting each other — and none of them touch the rotation the outer group
+   carries as an attribute. */
+
+.wcl-word-fx {
+  transform-box: fill-box;
+  transform-origin: center;
+  transition: scale 0.16s cubic-bezier(0.2, 0.7, 0.3, 1);
+}
+
+@keyframes wcl-in {
+  from {
+    opacity: 0;
+    scale: 0.7;
+  }
+}
+
+/* A hair of vertical float. The point is that the wall looks alive when you
+   glance at it, not that you can watch any word travel — 2.5px over six-odd
+   seconds, and neighbours going opposite ways so nothing pulses in unison. */
+@keyframes wcl-drift {
+  from {
+    translate: 0 -2.5px;
+  }
+  to {
+    translate: 0 2.5px;
+  }
+}
+
+.wcl--animate .wcl-word-fx {
+  animation: wcl-in 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) backwards;
+  animation-delay: calc(var(--wcl-i, 0) * 16ms);
+}
+
+.wcl--drift .wcl-word-fx {
+  animation:
+    wcl-in 0.45s cubic-bezier(0.2, 0.7, 0.3, 1) backwards,
+    wcl-drift 6s ease-in-out infinite alternate;
+  animation-delay: calc(var(--wcl-i, 0) * 16ms), calc(var(--wcl-i, 0) * -137ms);
+  animation-duration: 0.45s, calc(5.5s + var(--wcl-i, 0) * 71ms);
+}
+
+.wcl--drift .wcl-word:nth-child(even) .wcl-word-fx {
+  animation-direction: normal, alternate-reverse;
+}
+
+/* The word under the pointer comes forward and stops floating. */
+.wcl--interactive .wcl-word:hover .wcl-word-fx,
+.wcl--interactive .wcl-word:focus-visible .wcl-word-fx {
+  scale: 1.08;
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wcl-word-fx {
+    animation: none !important;
+    transition: none;
+  }
+  .wcl--interactive .wcl-word:hover .wcl-word-fx,
+  .wcl--interactive .wcl-word:focus-visible .wcl-word-fx {
+    scale: 1;
+  }
 }
 
 /* Hovering one word quiets the rest, so a cloud dense enough to be worth
@@ -53,4 +120,38 @@
 }
 .wcl--interactive:hover .wcl-word--selected text {
   opacity: 1;
+}
+
+/* ── Hover card ──────────────────────────────────────────────────────────────
+   The native <title> is a one-line string that arrives a second late; where a
+   word has something to say — what it means, where it came from — it gets a
+   real card instead. Drawn in the cloud's own box, centred over the word and
+   sitting above it, and never in the way of the pointer. */
+
+.wcl-tip {
+  position: absolute;
+  z-index: 3;
+  /* Mirrors TIP_W in WordCloud.jsx, which does the edge clamp. */
+  width: 248px;
+  padding: 10px 12px;
+  translate: -50% calc(-100% - 10px);
+  background: var(--c-gray-0, #fff);
+  border: 1px solid var(--c-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 14%);
+  pointer-events: none;
+  animation: wcl-tip-in 0.12s ease-out;
+}
+
+@keyframes wcl-tip-in {
+  from {
+    opacity: 0;
+    translate: -50% calc(-100% - 4px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wcl-tip {
+    animation: none;
+  }
 }

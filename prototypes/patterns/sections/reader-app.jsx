@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
 import { Pill } from '@components/Pill/Pill'
+import { ProgressBar } from '@components/ProgressBar/ProgressBar'
+import { EarnedCard } from '@components/EarnedCard/EarnedCard'
 import {
   BannerStack,
   CommunityGoalBanner,
@@ -559,11 +561,11 @@ export const readerAppSections = [
 
 <BannerStack max={2}>
   <ReaderBanner
-    tone="red"                       /* blue | amber | green | red — or \`tint\`/\`ink\` to override */
+    tone="red"                       /* blue | amber | green | red | purple — or \`tint\`/\`ink\` */
     mark={<Icon name="flame-filled" size={22} />}
     title={<><strong>No current streak.</strong> Log reading every day…</>}
     sub="optional second line"
-    action={<ReaderBannerAction onClick={open}>View Streaks</ReaderBannerAction>}
+    action={<ReaderBannerAction solid onClick={open}>View Streaks</ReaderBannerAction>}
     onDismiss={dismiss}
   />
 </BannerStack>`,
@@ -581,9 +583,11 @@ export const readerAppSections = [
         <br />
         <code>ReaderBannerAction</code> is a real <code>Button</code>, not a chip: it was its own
         hover, its own focus ring and its own press state, none of which matched the buttons
-        everywhere else. The banner only supplies the white ground it sits on and the ink it takes.{' '}
-        <code>tint</code>/<code>ink</code> override the tone for the case where the colour
-        isn&apos;t ours — a partner banner takes the partner&apos;s.
+        everywhere else. The banner only supplies the white ground it sits on and the ink it takes —
+        or, with <code>solid</code>, the other way round: the bar&apos;s ink as the ground and white
+        type on it, for a bar whose action is the point rather than an offer. <code>tint</code>/
+        <code>ink</code> override the tone for the case where the colour isn&apos;t ours — a partner
+        banner takes the partner&apos;s.
         <br />
         <br />
         <code>BannerStack</code> is why they don&apos;t pile up: a reader with a lot going on could
@@ -593,7 +597,7 @@ export const readerAppSections = [
     ),
     render: () => (
       <>
-        <Variant label="the four tones, one anatomy" full>
+        <Variant label="the tones, one anatomy — and `solid` on the last two" full>
           <div style={{ padding: 20, background: '#fff' }}>
             <ReaderBanner
               tone="blue"
@@ -608,6 +612,14 @@ export const readerAppSections = [
               mark={<Icon name="users" size={20} />}
               title={<strong>You have 2 new friend requests!</strong>}
               action={<ReaderBannerAction>View Requests</ReaderBannerAction>}
+            />
+            <div style={{ height: 10 }} />
+            <ReaderBanner
+              tone="purple"
+              mark={<Icon name="layers" size={20} />}
+              title={<strong>7 words are ready for another look</strong>}
+              sub="Flip through them and I’ll space the ones you know further apart."
+              action={<ReaderBannerAction solid>Review 7</ReaderBannerAction>}
             />
             <div style={{ height: 10 }} />
             <CommunityGoalBanner total={128400} goal={250000} onDismiss={noop} />
@@ -878,6 +890,7 @@ export const readerAppSections = [
     upcoming: false,
     connectedSite: 'Oak Elementary',
     canSelfUnenroll: true,
+    // bannerImg: myArt,            // art the prototype supplies itself
   }}
   onOpen={open}
   onUnenroll={leave}
@@ -1122,7 +1135,11 @@ export const readerAppSections = [
     name: 'LeaderboardCard',
     usage: `import { LeaderboardCard } from '@components/ReaderApp/ReaderApp'
 
-<LeaderboardCard schools={TOP_SCHOOLS} grades={TOP_GRADES} />`,
+<LeaderboardCard
+  schools={TOP_SCHOOLS}
+  grades={TOP_GRADES}
+  labels={{ schools: 'Readers', grades: 'Classes' }}  // what this site's two lists are called
+/>`,
     desc: (
       <>
         The dashboard rail&apos;s leaderboard, ported from the shipped widget (
@@ -1130,13 +1147,24 @@ export const readerAppSections = [
         range pickers on a grey band across the panel&apos;s head, the rows with no dividers between
         them, then &ldquo;View all&rdquo; behind a rule of its own. Rows are{' '}
         <code>{'{ rank, name, value, color }'}</code> — the colour is the rank disc&apos;s, so gold
-        / silver / bronze are the data&apos;s business, not the component&apos;s.
+        / silver / bronze are the data&apos;s business, not the component&apos;s. <code>isMe</code>{' '}
+        marks the reader&apos;s own row, and <code>labels</code> renames the two lists for a site
+        that ranks something other than schools and grades.
       </>
     ),
     render: () => (
-      <Variant label="switch between schools and grades">
-        <LeaderboardCard schools={TOP_SCHOOLS} grades={TOP_GRADES} />
-      </Variant>
+      <>
+        <Variant label="switch between schools and grades">
+          <LeaderboardCard schools={TOP_SCHOOLS} grades={TOP_GRADES} />
+        </Variant>
+        <Variant label="a classroom's own two lists, with the reader's row marked">
+          <LeaderboardCard
+            schools={TOP_SCHOOLS.map((r, i) => (i === 1 ? { ...r, isMe: true } : r))}
+            grades={TOP_GRADES}
+            labels={{ schools: 'Readers', grades: 'Classes' }}
+          />
+        </Variant>
+      </>
     ),
   },
   {
@@ -1675,6 +1703,7 @@ import { FundraiserCard } from '@components/ReaderApp/ReaderApp'
 <ProgramHeader
   banner={bannerSrc(challenge.banner)}
   title={challenge.title}
+  subtitle={challenge.series}        // optional — what this program is part of
   dates={challenge.dates}
   tint={challenge.tint}
   tags={types.map((t) => <Pill key={t} color="#1A6DD5" variant="soft" size="sm">{t}</Pill>)}
@@ -1700,27 +1729,48 @@ import { FundraiserCard } from '@components/ReaderApp/ReaderApp'
         It bleeds to the window, but <strong>only inside the reader shell</strong>: the negative
         margins cancel <code>.wa-main</code>&apos;s padding, and anywhere else they would tear the
         header out of whatever is holding it — which is why it is framed here.
+        <br />
+        <br />
+        <code>subtitle</code> is optional and names what the program is part of, for the case where
+        it is part of something — a reading path belongs to the destination it travels, and the
+        title is the path.
       </>
     ),
     render: () => (
-      <Variant label="a challenge's own banner, and the colour it gives the page" full>
-        <ProgramHeader
-          banner={bannerSrc('spring-into-reading')}
-          title="Spring Into Reading"
-          dates="Apr 1 — Apr 30"
-          tint="#B4E0CC"
-          tags={
-            <>
+      <>
+        <Variant label="a challenge's own banner, and the colour it gives the page" full>
+          <ProgramHeader
+            banner={bannerSrc('spring-into-reading')}
+            title="Spring Into Reading"
+            dates="Apr 1 — Apr 30"
+            tint="#B4E0CC"
+            tags={
+              <>
+                <Pill color="#1A6DD5" variant="soft" size="sm">
+                  Minutes
+                </Pill>
+                <Pill color="#1A6DD5" variant="soft" size="sm">
+                  Activities
+                </Pill>
+              </>
+            }
+          />
+        </Variant>
+        <Variant label="one that belongs to something — the subtitle names it" full>
+          <ProgramHeader
+            banner={bannerSrc('minutes-march')}
+            title="The Sports Path"
+            subtitle="Words of Motion"
+            dates="Apr 14 — May 30"
+            tint="#6FE0D6"
+            tags={
               <Pill color="#1A6DD5" variant="soft" size="sm">
-                Minutes
+                Reading List
               </Pill>
-              <Pill color="#1A6DD5" variant="soft" size="sm">
-                Activities
-              </Pill>
-            </>
-          }
-        />
-      </Variant>
+            }
+          />
+        </Variant>
+      </>
     ),
   },
   {
@@ -1845,6 +1895,78 @@ import { FundraiserCard } from '@components/ReaderApp/ReaderApp'
       <Variant label="the whole flow, opened the way the top bar opens it">
         <LogFlowDemo />
       </Variant>
+    ),
+  },
+  {
+    group: 'web-app',
+    sub: 'reading',
+    id: 'earned-card',
+    name: 'EarnedCard',
+    usage: `import { EarnedCard } from '@components/EarnedCard/EarnedCard'
+
+<EarnedCard
+  card={{
+    label: 'Badge Earned',
+    eyebrow: 'Page Turner',                /* the badge's own name */
+    title: 'Finish a Title',               /* what it took */
+    description: 'For the Love of Reading',/* the challenge it belongs to */
+    art: badgeSrc(set, name),              /* a src, or a node for a drawn medallion */
+    viewLabel: 'View Achievement',         /* renames the button */
+    reward: 'Sticker Pack',
+    tickets: 2,
+  }}
+  onViewBadge={openBadge}
+  onReward={goToRewards}
+  onTickets={goToTickets}
+>
+  {/* optional: one more ruled-off row of the surface's own */}
+</EarnedCard>`,
+    desc: (
+      <>
+        <code>logged_books/_completed_earned_card</code> — <strong>one thing a log won</strong>. The
+        badge&apos;s art beside its name, what it took, and the challenge it belongs to; then
+        whatever came with it, one row each, under a rule.
+        <br />
+        <br />
+        The card leads with <strong>what you did</strong> and puts the badge&apos;s own name above
+        it: you know you finished a title before you know the badge is called Page Turner. A reward
+        or a ticket payout is a different kind of fact from the badge that won it, so each gets its
+        own row with its own way on — a reward is claimed on the challenge&apos;s Rewards tab, and
+        knowing you won one with no way to it is the half of the news that doesn&apos;t help.
+        <br />
+        <br />
+        <code>art</code> is a badge&apos;s image src, or a node for an achievement&apos;s drawn
+        medallion — the same 72px slot either way — and <code>viewLabel</code> renames the button,
+        because an achievement is not a badge and the button shouldn&apos;t say it is.{' '}
+        <code>children</code> is a last ruled-off row for whatever else the surface has to say about
+        this badge: the gameboard puts the reader&apos;s place on the board there, because{' '}
+        <em>where</em> a badge sits is the news on a board and nowhere else.
+        <br />
+        <br />
+        It is shared because an Epic import earns things too — a batch of logs is still logs, and
+        the screen at the end of one should say so the same way.
+      </>
+    ),
+    render: () => (
+      <>
+        <Variant label="a badge, with the reward and tickets that came with it">
+          <EarnedCard card={BADGE_CARD} onViewBadge={noop} onReward={noop} onTickets={noop} />
+        </Variant>
+        <Variant label="an achievement — a drawn medallion, and the button renamed">
+          <EarnedCard card={STREAK_CARD} onViewBadge={noop} />
+        </Variant>
+        <Variant label="no extras, and nowhere to send the reader">
+          <EarnedCard card={{ ...CHALLENGE_CARD, reward: undefined }} />
+        </Variant>
+        <Variant label="children — a last row of the surface's own">
+          <EarnedCard card={{ ...BADGE_CARD, reward: undefined, tickets: undefined }}>
+            <div className="pt-earned-foot">
+              <span>Your place on the board</span>
+              <ProgressBar value={4} max={10} color="#1A6DD5" size="sm" />
+            </div>
+          </EarnedCard>
+        </Variant>
+      </>
     ),
   },
   {

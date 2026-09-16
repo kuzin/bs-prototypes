@@ -31,6 +31,10 @@ import '@components/WordCloud/WordCloud.css'
 
 const HEIGHTS = { sm: 180, md: 240, lg: 320, xl: 380 }
 
+// The hover card's width, fixed so the clamp that keeps it inside the cloud
+// can be arithmetic rather than a measure-then-move. Mirrored in the CSS.
+const TIP_W = 248
+
 // ─── Colour ramp ────────────────────────────────────────────────────────────
 // Heaviest words get the accent (deepened); the tail fades to slate so the
 // cloud reads as one weighted field instead of a wall of brand colour.
@@ -177,6 +181,9 @@ export function WordCloud({
   maxSize = 46,
   rotate = 0, // 0–1: roughly what share of words turn 90°. 0 = all horizontal.
   valueLabel = (w) => (w.value != null ? String(w.value) : ''),
+  tooltip, // (word) => node — a hover card instead of the native title
+  animate = false, // words fade up into place, heaviest first
+  drift = false, // and then breathe, very slightly, forever
   onWordClick,
   selected, // the `text` of a word to highlight
   ariaLabel,
@@ -184,6 +191,7 @@ export function WordCloud({
 }) {
   const ref = useRef(null)
   const [box, setBox] = useState(null)
+  const [hover, setHover] = useState(null) // { word, x, y } in container px
   const [family, setFamily] = useState("'museo-sans-rounded', 'Nunito', 'Trebuchet MS', sans-serif")
   const [fontsReady, setFontsReady] = useState(false)
 
@@ -239,8 +247,34 @@ export function WordCloud({
   }, [words, box, family, minSize, maxSize, rotate, fontsReady])
 
   const h = typeof height === 'number' ? height : (HEIGHTS[height] ?? HEIGHTS.md)
-  const interactive = typeof onWordClick === 'function'
-  const cls = ['wcl', interactive && 'wcl--interactive', className].filter(Boolean).join(' ')
+  const showTip = typeof tooltip === 'function'
+  // Hovering one word quiets the rest — worth doing whenever a word answers to
+  // the pointer at all, whether that answer is a card or a click.
+  const interactive = typeof onWordClick === 'function' || showTip
+  const cls = [
+    'wcl',
+    interactive && 'wcl--interactive',
+    animate && 'wcl--animate',
+    drift && 'wcl--drift',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ')
+
+  /* Where the card goes: centred over the word, in the container's own
+     coordinates, and pulled back from the edges so it doesn't hang off the
+     card it's drawn in. */
+  const openTip = (word, el) => {
+    const c = ref.current?.getBoundingClientRect()
+    if (!c) return
+    const r = el.getBoundingClientRect()
+    const half = TIP_W / 2
+    const x = Math.min(
+      Math.max(r.left - c.left + r.width / 2, half),
+      Math.max(half, c.width - half),
+    )
+    setHover({ word, x, y: r.top - c.top })
+  }
 
   return (
     <div ref={ref} className={cls} style={{ height: h }}>
@@ -258,7 +292,7 @@ export function WordCloud({
               .join(', ')}${cloud.placed.length > 5 ? ` and ${cloud.placed.length - 5} more` : ''}`
           }
         >
-          {cloud.placed.map((w) => {
+          {cloud.placed.map((w, i) => {
             const isSel = selected != null && selected === w.text
             const pad = Math.max(4, w.size * 0.18)
             return (
@@ -266,9 +300,9 @@ export function WordCloud({
                 key={w.text}
                 className={['wcl-word', isSel && 'wcl-word--selected'].filter(Boolean).join(' ')}
                 transform={w.rotated ? `rotate(-90 ${w.cx} ${w.cy})` : undefined}
-                onClick={interactive ? () => onWordClick(w) : undefined}
+                onClick={onWordClick ? () => onWordClick(w) : undefined}
                 onKeyDown={
-                  interactive
+                  onWordClick
                     ? (e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault()
@@ -277,36 +311,54 @@ export function WordCloud({
                       }
                     : undefined
                 }
+                onPointerEnter={showTip ? (e) => openTip(w, e.currentTarget) : undefined}
+                onPointerLeave={showTip ? () => setHover(null) : undefined}
+                onFocus={showTip ? (e) => openTip(w, e.currentTarget) : undefined}
+                onBlur={showTip ? () => setHover(null) : undefined}
                 tabIndex={interactive ? 0 : undefined}
-                role={interactive ? 'button' : undefined}
+                role={onWordClick ? 'button' : undefined}
               >
-                {isSel && (
-                  <rect
-                    className="wcl-halo"
-                    x={w.cx - w.boxW / 2 - pad}
-                    y={w.cy - w.boxH / 2 - pad * 0.8}
-                    width={w.boxW + pad * 2}
-                    height={w.boxH + pad * 1.6}
-                    rx={(w.boxH + pad * 1.6) / 2}
-                    fill={w.color || accent}
-                  />
-                )}
-                <text
-                  x={w.cx}
-                  y={w.cy}
-                  textAnchor="middle"
-                  fontSize={w.size}
-                  fontWeight={w.weight}
-                  fill={w.color || rampColor(accent, w.t)}
-                  fillOpacity={w.color ? 1 : tailOpacity(w.t)}
-                >
-                  <title>{w.title || `${w.text} — ${valueLabel(w)}`}</title>
-                  {w.text}
-                </text>
+                {/* The animations live on an inner group: the outer one already
+                    carries the rotation as a transform attribute, and a CSS
+                    transform on the same element would replace it. */}
+                <g className="wcl-word-fx" style={{ '--wcl-i': i }}>
+                  {isSel && (
+                    <rect
+                      className="wcl-halo"
+                      x={w.cx - w.boxW / 2 - pad}
+                      y={w.cy - w.boxH / 2 - pad * 0.8}
+                      width={w.boxW + pad * 2}
+                      height={w.boxH + pad * 1.6}
+                      rx={(w.boxH + pad * 1.6) / 2}
+                      fill={w.color || accent}
+                    />
+                  )}
+                  <text
+                    x={w.cx}
+                    y={w.cy}
+                    textAnchor="middle"
+                    fontSize={w.size}
+                    fontWeight={w.weight}
+                    fill={w.color || rampColor(accent, w.t)}
+                    fillOpacity={w.color ? 1 : tailOpacity(w.t)}
+                  >
+                    {!showTip && <title>{w.title || `${w.text} — ${valueLabel(w)}`}</title>}
+                    {w.text}
+                  </text>
+                </g>
               </g>
             )
           })}
         </svg>
+      )}
+      {hover && (
+        <div
+          className="wcl-tip"
+          role="tooltip"
+          style={{ left: `${hover.x}px`, top: `${hover.y}px` }}
+        >
+          {tooltip(hover.word)}
+        </div>
       )}
     </div>
   )

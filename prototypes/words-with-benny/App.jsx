@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
+import { useStickyState } from '@components/useStickyState/useStickyState'
 
 // The reader half runs on the real logging surfaces — logging-flow's dashboard
 // and its combined-logging flow — rather than a lookalike, so the unlock lands
@@ -65,7 +66,7 @@ const VIEWS = [
 ]
 
 export function App() {
-  const [view, setView] = useState('log')
+  const [view, setView] = useStickyState('words-with-benny:view', 'log')
 
   // ── Reader state ──────────────────────────────────────────────────────────
   const [flowOpen, setFlowOpen] = useState(false)
@@ -97,7 +98,7 @@ export function App() {
 
   // Which dashboard tab the reader is on. Driven from here so the toolbar can
   // deep-link to Collections, and so the unlock can hand off to it.
-  const [readerTab, setReaderTab] = useState('challenges')
+  const [readerTab, setReaderTab] = useStickyState('words-with-benny:reader-tab', 'challenges')
 
   const [openStudent, setOpenStudent] = useState(null)
 

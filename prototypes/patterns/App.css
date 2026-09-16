@@ -2034,6 +2034,19 @@ a.pt-nav-group-label {
   opacity: 0.75;
 }
 
+/* The `children` slot's demo row — a label over a bar, standing in for what a
+   surface puts in the earned card's last row. */
+.pt-earned-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pt-earned-foot span {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--c-gray-800);
+}
+
 /* The log-success screen is normally the last step of a full-screen flow, so
    its background art positions against the surface. Here it needs a box of its
    own to sit in — tall enough that the art has somewhere to go, and clipped so

@@ -3,20 +3,26 @@ import { Tabs } from '@components/Tabs/Tabs'
 import { Button } from '@components/Button/Button'
 import { Icon } from '@components/Icon/Icon'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
+import { useStickyState } from '@components/useStickyState/useStickyState'
 
 import { ProgressBar } from '@components/ProgressBar/ProgressBar'
+import { ProgramHeader } from '@components/ProgramHeader/ProgramHeader'
+import { Pill } from '@components/Pill/Pill'
+import { LogFlow } from '@components/LogFlow/LogFlow'
+import '@components/Pill/Pill.css'
 
+import { LOG_FIXTURES } from '../logging-flow/data'
 import { ReaderTopBar, ReaderFooter } from './components/ReaderChrome'
 import { BadgeDisc } from './components/BadgeDisc'
 import { ReaderBoard } from './components/ReaderBoard'
-import { LogReadingFlow } from './components/LogReadingFlow'
 import { YouDidItSheet, BadgeUnlockedModal } from './components/Celebrations'
 import { BadgesTab } from './components/BadgesTab'
+import { OverviewTab, RewardsTab, LogTab } from './components/ChallengeTabs'
 import {
   CHALLENGE,
   SPACES,
+  LOG_ITEMS,
   banner,
-  heroWave,
   isEarned,
   nextSpace,
   activityBadgeEarned,
@@ -42,7 +48,10 @@ const CHALLENGE_TABS = [
 
 export function App() {
   const [booksFinished, setBooksFinished] = useState(CHALLENGE.booksFinished)
-  const [tab, setTab] = useState('gameboard')
+  const [tab, setTab] = useStickyState('gameboard-reader:tab', 'gameboard')
+  // The challenge's own log — what the Challenge Log tab lists, and what every
+  // session logged in the demo lands on top of.
+  const [sessions, setSessions] = useState(LOG_ITEMS)
 
   const [logOpen, setLogOpen] = useState(false)
   const [result, setResult] = useState(null) // the session just logged
@@ -56,6 +65,10 @@ export function App() {
   useEffect(() => () => clearTimeout(popTimer.current), [])
 
   const target = nextSpace(booksFinished)
+  // Every space but START — what "cleared" is counted against, since a reader
+  // has START before they have done anything.
+  const boardSpaces = SPACES.length - 1
+  const rewardsWon = SPACES.filter((s) => s.reward && isEarned(s, booksFinished)).length
 
   // The badge modal serves two arrivals: a space the reader just cleared, and
   // one they tapped to look at again. Same modal either way — only the close
@@ -73,6 +86,19 @@ export function App() {
     setResult(session)
     setUnlocked(cleared)
     setLogOpen(false)
+    // One row per log, newest first — the shape `full_reading_log` prints.
+    setSessions((rows) => [
+      {
+        id: `li-${rows.length + 1}-${Date.now()}`,
+        title: session.book?.title || 'Untitled',
+        author: session.book?.author || '',
+        date: session.date,
+        logType: session.unit === 'page' ? 'Pages' : 'Minutes',
+        logValue: session.logValue,
+        finished: session.finished,
+      },
+      ...rows,
+    ])
   }
 
   // Dismissing the celebration hands off to the badge modal, if one is pending.
@@ -110,6 +136,20 @@ export function App() {
     if (!wasDone && activityBadgeEarned(badge, next)) setViewing(badge)
   }
 
+  // The earned card's own two ways on: the badge it names, and the reward that
+  // came with it. Both close the celebration first — they are somewhere else.
+  const viewEarnedBadge = (space) => {
+    setResult(null)
+    setUnlocked(null)
+    setViewing(space)
+  }
+
+  const goToRewards = () => {
+    setResult(null)
+    setUnlocked(null)
+    setTab('rewards')
+  }
+
   const logAnother = () => {
     setResult(null)
     setUnlocked(null)
@@ -127,30 +167,38 @@ export function App() {
     setViewing(null)
     setPopped(null)
     setDoneActivities([])
+    setSessions(LOG_ITEMS)
   }
 
   return (
     <div className="gr-root">
       <ReaderTopBar onLogReading={() => setLogOpen(true)} />
 
-      <div className="gr-hero">
-        <div className="gr-hero-band" aria-hidden="true">
-          <img className="gr-hero-wave" src={heroWave} alt="" />
-        </div>
-        <img className="gr-hero-banner" src={banner} alt="" />
-        <h1 className="gr-hero-title">{CHALLENGE.name}</h1>
-        <p className="gr-hero-dates">{CHALLENGE.dates}</p>
-        <div className="gr-hero-tabs">
-          <Tabs
-            variant="underline"
-            size="md"
-            active={tab}
-            accent="#1A6DD5"
-            onChange={setTab}
-            items={CHALLENGE_TABS}
-            ariaLabel="Challenge sections"
-          />
-        </div>
+      {/* The challenge header every other reader surface uses — two tinted
+          bands, the banner on a card pulled up into them, then the title and
+          dates. This page had drawn its own version of the same thing. */}
+      <ProgramHeader
+        banner={banner}
+        title={CHALLENGE.name}
+        dates={CHALLENGE.dates}
+        tint="#61B2F1"
+        tags={
+          <Pill color="#1A6DD5" variant="soft" size="sm">
+            Gameboard
+          </Pill>
+        }
+      />
+
+      <div className="gr-tabs">
+        <Tabs
+          variant="pill"
+          plain
+          size="md"
+          active={tab}
+          onChange={setTab}
+          items={CHALLENGE_TABS}
+          ariaLabel="Challenge sections"
+        />
       </div>
 
       <main className="gr-main">
@@ -158,16 +206,23 @@ export function App() {
           <>
             <div className="gr-board-head">
               <div className="gr-progress">
+                <span className="gr-progress-label">Your progress</span>
                 <span className="gr-progress-line">
                   <strong>{booksFinished}</strong>
-                  <span> of {SPACES.length - 1} spaces cleared</span>
+                  <span>
+                    of {boardSpaces} spaces cleared
+                    {rewardsWon > 0 &&
+                      ` · ${rewardsWon} ${rewardsWon === 1 ? 'reward' : 'rewards'} unlocked`}
+                  </span>
                 </span>
-                <ProgressBar
-                  value={booksFinished}
-                  max={SPACES.length - 1}
-                  color="#1a6dd5"
-                  size="sm"
-                />
+                <ProgressBar value={booksFinished} max={boardSpaces} color="#1a6dd5" size="md" />
+                <span className="gr-progress-note">
+                  {target
+                    ? `${boardSpaces - booksFinished} more ${
+                        boardSpaces - booksFinished === 1 ? 'book' : 'books'
+                      } to reach FINISH.`
+                    : 'The whole board is yours. Nicely done.'}
+                </span>
               </div>
 
               {target && (
@@ -181,7 +236,9 @@ export function App() {
                   <span className="gr-next-text">
                     <span className="gr-next-label">Next up</span>
                     <strong>{target.requirement}</strong>
+                    <span className="gr-next-hint">Log a finished title to clear it</span>
                   </span>
+                  <Icon name="chevron-right" size={18} className="gr-next-go" />
                 </button>
               )}
             </div>
@@ -208,38 +265,51 @@ export function App() {
             onActivity={toggleActivity}
             onBadge={setViewing}
           />
+        ) : tab === 'rewards' ? (
+          <RewardsTab booksFinished={booksFinished} />
+        ) : tab === 'log' ? (
+          <LogTab
+            sessions={sessions}
+            booksFinished={booksFinished}
+            onLog={() => setLogOpen(true)}
+          />
         ) : (
-          <div className="gr-placeholder">
-            <Icon name="route" size={26} />
-            <p>
-              This mock covers the <strong>Gameboard</strong> and <strong>Badges</strong> tabs — the
-              reader’s trip around the board, and everything there is to earn.
-            </p>
-            <Button variant="secondary" size="sm" onClick={() => setTab('gameboard')}>
-              Back to the Gameboard
-            </Button>
-          </div>
+          <OverviewTab
+            booksFinished={booksFinished}
+            doneActivities={doneActivities}
+            onTab={setTab}
+            onBadge={setViewing}
+          />
         )}
       </main>
 
       <ReaderFooter />
 
-      <LogReadingFlow open={logOpen} onClose={() => setLogOpen(false)} onLogged={handleLogged} />
+      {/* The reader's log-reading flow — the shared one. This prototype carried
+          its own two-step copy of it, which is the drift the shared flow exists
+          to stop; the board's own celebration still takes over the moment a
+          session lands, which is what `onLogged` closing it is for. */}
+      <LogFlow
+        open={logOpen}
+        onClose={() => setLogOpen(false)}
+        onLogged={handleLogged}
+        {...LOG_FIXTURES}
+      />
 
       <YouDidItSheet
         open={!!result}
         onClose={finishCelebration}
         onLogAnother={logAnother}
-        minutes={result?.minutes}
+        onViewBadge={viewEarnedBadge}
+        onReward={goToRewards}
+        amount={result?.logValue}
+        unit={result?.unit}
         book={result?.book}
-      />
-
-      <BadgeUnlockedModal
-        open={badgeOpen}
-        onClose={closeBadge}
-        space={badgeSpace}
+        earned={unlocked}
         booksFinished={booksFinished}
       />
+
+      <BadgeUnlockedModal open={badgeOpen} onClose={closeBadge} space={badgeSpace} />
 
       <PrototypeNav currentHref="/bs-prototypes/gameboard-reader/" />
     </div>

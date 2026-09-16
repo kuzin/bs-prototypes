@@ -744,6 +744,41 @@ export function profileFor(studentId) {
  * every word here, and the counts sum to the 490 words the roster says the
  * class has collected, because each one is a student-word pair.
  */
+// ─── Which challenge a word came out of ──────────────────────────────────────
+// A word is collected by logging a book, and a book is read *for* something —
+// so the challenge a word belongs to is the challenge its book was read in.
+// Nothing here is assigned: these are the classroom's own reading challenges,
+// and the vocabulary is what fell out of them.
+
+export const CLASS_CHALLENGES = [
+  { id: 'battle', name: 'Battle of the Books' },
+  { id: 'novel-study', name: 'Novel Study: Wonder' },
+  { id: 'free-choice', name: 'Free Choice Reading' },
+]
+
+/* Which challenge each book was read for. A book nobody read for a challenge
+   is Free Choice, which is most of a class's reading and worth saying. */
+const BOOK_CHALLENGE = {
+  'she-gets-the-girl': 'battle',
+  'lucky-cap': 'battle',
+  darius: 'battle',
+  'telegraph-club': 'battle',
+  wonder: 'novel-study',
+  holes: 'novel-study',
+  matilda: 'novel-study',
+  rump: 'free-choice',
+  'lesbianas-guide': 'free-choice',
+  crossover: 'free-choice',
+  terabithia: 'free-choice',
+  hatchet: 'free-choice',
+}
+
+/** The challenge a word came out of, via the book it was collected from. */
+export function challengeForWord(name) {
+  const word = ALL_WORDS.find((w) => w.word === name)
+  return word?.bookId ? (BOOK_CHALLENGE[word.bookId] ?? 'free-choice') : 'free-choice'
+}
+
 export const CLASS_TOP_WORDS = [
   { word: 'mischievous', students: 24 },
   { word: 'empathy', students: 23 },
@@ -784,20 +819,22 @@ export const CLASS_TOP_WORDS = [
   { word: 'motive', students: 5 },
 ]
 
-/** Words collected per week, against reading logs per week, since the feature turned on. */
+/** Words collected per week, against reading logs per week, since the feature
+    turned on. `date` is the Monday the week starts on, so a reporting window
+    can clip the series the same way it counts everything else. */
 export const CLASS_TREND = [
-  { week: 'Mar 30', words: 0, logs: 61 },
-  { week: 'Apr 6', words: 34, logs: 68 },
-  { week: 'Apr 13', words: 51, logs: 74 },
-  { week: 'Apr 20', words: 48, logs: 71 },
-  { week: 'Apr 27', words: 63, logs: 83 },
-  { week: 'May 4', words: 70, logs: 88 },
-  { week: 'May 11', words: 66, logs: 85 },
-  { week: 'May 18', words: 79, logs: 94 },
-  { week: 'May 25', words: 84, logs: 97 },
-  { week: 'Jun 1', words: 91, logs: 103 },
-  { week: 'Jun 8', words: 88, logs: 99 },
-  { week: 'Jun 15', words: 104, logs: 112 },
+  { date: '2026-03-30', week: 'Mar 30', words: 0, logs: 61 },
+  { date: '2026-04-06', week: 'Apr 6', words: 34, logs: 68 },
+  { date: '2026-04-13', week: 'Apr 13', words: 51, logs: 74 },
+  { date: '2026-04-20', week: 'Apr 20', words: 48, logs: 71 },
+  { date: '2026-04-27', week: 'Apr 27', words: 63, logs: 83 },
+  { date: '2026-05-04', week: 'May 4', words: 70, logs: 88 },
+  { date: '2026-05-11', week: 'May 11', words: 66, logs: 85 },
+  { date: '2026-05-18', week: 'May 18', words: 79, logs: 94 },
+  { date: '2026-05-25', week: 'May 25', words: 84, logs: 97 },
+  { date: '2026-06-01', week: 'Jun 1', words: 91, logs: 103 },
+  { date: '2026-06-08', week: 'Jun 8', words: 88, logs: 99 },
+  { date: '2026-06-15', week: 'Jun 15', words: 104, logs: 112 },
 ]
 
 /** A student's own collection, invented per-student so the drill-down is real. */
@@ -818,12 +855,16 @@ export function collectionFor(studentId) {
   const retried = new Set(
     Array.from({ length: retries }, (_, k) => Math.floor(((k + 0.5) * n) / Math.max(retries, 1))),
   )
-  // Dated oldest-first, one every couple of days up to Jun 26, so the view's
-  // newest-first ordering actually descends.
+  // Dated oldest-first, up to Jun 26, so the view's newest-first ordering
+  // actually descends. The cadence is per-student and slightly uneven — an
+  // even one every two days for everybody made every seven-day window identical
+  // to the one before it, which is exactly the comparison the class summary's
+  // trends are trying to draw.
   const END = Date.UTC(2026, 5, 26)
+  const stride = 2 + (ROSTER.findIndex((s) => s.id === studentId) % 3)
   return Array.from({ length: n }, (_, i) => {
     const src = pool[(start + i) % pool.length]
-    const day = new Date(END - (n - 1 - i) * 2 * 86400000)
+    const day = new Date(END - ((n - 1 - i) * stride + ((i * 7) % 3)) * 86400000)
     return {
       word: src.word,
       bookId: src.bookId,
@@ -831,6 +872,58 @@ export function collectionFor(studentId) {
       firstTry: !retried.has(i),
     }
   })
+}
+
+// ─── Reporting windows ───────────────────────────────────────────────────────
+// The date filter over the classroom's Vocabulary page. The app's own reading
+// log offers exactly two periods — "This School Year" and "All Time" — but a
+// teacher reading a word report asks shorter questions than a year: what did
+// this month turn up, was last month better. So the list carries both ends.
+
+// `label` names the option in the control; `phrase` is the same window inside
+// a sentence ("Words collected in the last 3 months"), which is not always the
+// label lower-cased.
+export const WORD_RANGES = [
+  { id: 'month', label: 'This month', phrase: 'this month' },
+  { id: 'last-month', label: 'Last month', phrase: 'last month' },
+  { id: 'last-3', label: 'Last 3 months', phrase: 'in the last 3 months' },
+  { id: 'year', label: 'This school year', phrase: 'this school year' },
+  { id: 'all', label: 'All time', phrase: 'all year' },
+]
+
+/** The window as `[from, to)` ISO days — `null` at either end means open. */
+export function rangeBounds(id, today = TODAY) {
+  const d = new Date(`${today}T00:00:00Z`)
+  const [y, m] = [d.getUTCFullYear(), d.getUTCMonth()]
+  const iso = (year, month) => new Date(Date.UTC(year, month, 1)).toISOString().slice(0, 10)
+  switch (id) {
+    case 'month':
+      return [iso(y, m), null]
+    case 'last-month':
+      return [iso(y, m - 1), iso(y, m)]
+    case 'last-3':
+      return [iso(y, m - 2), null]
+    // A school year starts in August, so June belongs to the one that opened
+    // the previous August rather than to the calendar year it sits in.
+    case 'year':
+      return [iso(m >= 7 ? y : y - 1, 7), null]
+    default:
+      return [null, null]
+  }
+}
+
+export function inRange(dateIso, id) {
+  const [from, to] = rangeBounds(id)
+  return (!from || dateIso >= from) && (!to || dateIso < to)
+}
+
+/* Whether the window runs up to today — the only kind that can say anything
+   about "this week", which is half of what the class summary reports. */
+export const rangeIsCurrent = (id) => rangeBounds(id)[1] === null
+
+/** Every word every student has collected, dated — what a window counts. */
+export function classCollection() {
+  return ROSTER.flatMap((s) => collectionFor(s.id).map((w) => ({ ...w, studentId: s.id })))
 }
 
 // ─── Activities ──────────────────────────────────────────────────────────────

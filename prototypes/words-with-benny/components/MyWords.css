@@ -170,3 +170,23 @@
   font-weight: 700;
   color: #acacac;
 }
+
+/* ── Grouped by month ────────────────────────────────────────────────────
+   Opt-in (`groupByMonth`), for a collection long enough that when a word was
+   banked is worth reading — the Reading Log's own head for All Titles. */
+.mw-shelf {
+  display: flex;
+  flex-direction: column;
+}
+.mw-month-label {
+  padding: 24px 0 12px;
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 900;
+  color: var(--c-text);
+  border-bottom: 1px solid var(--c-border);
+}
+/* The band filter above sits close; the first month still wants its own air. */
+.mw-shelf {
+  margin-top: 8px;
+}

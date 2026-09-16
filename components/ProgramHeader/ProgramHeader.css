@@ -24,7 +24,10 @@
    Pattern Library's frame) they would just tear the header out of it. */
 .wa-main .prog-header {
   width: 100vw;
-  margin-top: -24px;
+  /* Exactly the page's own top padding, which `.wa-main` publishes as a token
+     for this — a hardcoded 24 left an 8px band of page ground showing between
+     the site nav and the header the moment that padding moved to 32. */
+  margin-top: calc(var(--wa-main-pad, 24px) * -1);
   margin-inline: calc(50% - 50vw);
 }
 
@@ -36,9 +39,18 @@
   right: 0;
   left: 0;
   z-index: 11;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
   max-width: var(--wa-content-max, 1200px);
   padding: 0 24px;
   margin: 0 auto;
+}
+/* With no `back` to sit beside, the action still belongs on the right. */
+.prog-action {
+  display: inline-flex;
+  margin-left: auto;
 }
 /* The band's own colour taken down to an ink: a grey link on a tinted ground
    reads as something that was left there rather than part of the header. */
@@ -123,6 +135,16 @@
   line-height: 1.2;
   color: var(--c-text-dark);
 }
+/* A rung under the title and a rung over the dates: what this program belongs
+   to, where it belongs to something. */
+.prog-subtitle {
+  position: relative;
+  z-index: 10;
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
 .prog-dates {
   position: relative;
   z-index: 10;
@@ -145,13 +167,13 @@
    queried on the window because the bands bleed to it. */
 @media (max-width: 560px) {
   .prog-bar-strong {
-    height: 110px;
+    height: 122px;
   }
   .prog-bar-strong::after {
-    top: 83px;
+    top: 95px;
   }
   .prog-bar-pale {
-    top: 103px;
+    top: 115px;
     height: 40px;
   }
   .prog-header-info {
@@ -159,7 +181,7 @@
     margin-top: -38px;
   }
   .prog-header-info::before {
-    top: 128px;
+    top: 140px;
   }
   .prog-header-info img {
     max-width: 100%;
@@ -168,8 +190,10 @@
   .prog-title {
     font-size: 24px;
   }
+  /* 10px was set for a bare link; the row can carry an action with a ground of
+     its own, and that sat almost flush against the band's top edge. */
   .prog-back {
-    top: 10px;
+    top: 16px;
     padding: 0 16px;
   }
 }

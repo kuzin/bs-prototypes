@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
+import { useStickyState } from '@components/useStickyState/useStickyState'
 // The self-started trigger is a site setting, so it lives on the real Book
 // Talks site-settings page — reused wholesale from the BTWB prototype.
 import { SettingsView } from '../btwb/views/SettingsView'
@@ -23,7 +24,7 @@ const VIEWS = [
 ]
 
 export function App() {
-  const [view, setView] = useState('settings')
+  const [view, setView] = useStickyState('book-talks:view', 'settings')
   // The teacher builds a list of Book Talk badges in the Create view (starts
   // empty, like the Challenge Creator's Badges step). Student/Review work off
   // the first one — or the demo badge — so they always have something to show.

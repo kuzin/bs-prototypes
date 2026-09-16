@@ -197,7 +197,7 @@
 
 /* ── Prefix ─────────────────────────────────────────────────────────────── */
 .bl-prefix {
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--c-gray-750);
 }
@@ -230,7 +230,7 @@
 }
 
 .bl-label {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--c-gray-800);
   white-space: nowrap;
@@ -238,10 +238,9 @@
   text-overflow: ellipsis;
 }
 
-/* Icon rows with no sublabel (label-only) — bump the label slightly so
-   it carries the row visually (matches mood of a list of headings). */
+/* Icon rows with no sublabel (label-only) — the label is the whole row, so it
+   takes the heading's weight and ink on top of the shared size. */
 .bl-row--icon .bl-meta:not(:has(.bl-sublabel)) .bl-label {
-  font-size: 15px;
   font-weight: 700;
   color: var(--c-text);
 }

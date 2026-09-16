@@ -7,7 +7,7 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: #eef1f4;
+  background: #ffffff;
   color: #2a2a2a;
   -webkit-font-smoothing: antialiased;
 }
@@ -43,58 +43,16 @@ body,
   --pyp-maxw-narrow: 920px; /* teacher form width */
   --pyp-pad: 20px; /* card / section / panel padding */
   --pyp-gap: 24px; /* gap between stacked sections */
+  /* A column, so whichever screen is showing fills the window under the
+     preview bar and its own ground reaches the bottom — the reader app's is
+     white, the Challenge Creator's is grey. */
+  display: flex;
+  flex-direction: column;
   min-height: 100%;
 }
 .pyp-dot {
   color: #d0d0d0;
   margin: 0 2px;
-}
-
-/* Theme the shared primary Button teal to match this prototype. Modals portal
-   to <body> (outside .pyp-app), so the modal content roots are listed too. */
-.pyp-app .btn--primary,
-.pyp-activity .btn--primary,
-.pyp-celebrate .btn--primary {
-  background: var(--pyp-teal);
-  border-color: var(--pyp-teal);
-}
-.pyp-app .btn--primary:hover:not(:disabled),
-.pyp-activity .btn--primary:hover:not(:disabled),
-.pyp-celebrate .btn--primary:hover:not(:disabled) {
-  background: #0b5c55;
-  border-color: #0b5c55;
-}
-
-/* ─── Shared brand logo ────────────────────────────────────────────────── */
-.pyp-logo {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
-.pyp-logo-mark {
-  width: 26px;
-  height: 26px;
-}
-.pyp-logo-word {
-  font-size: 20px;
-  font-weight: 800;
-  color: #0f766e;
-  letter-spacing: -0.01em;
-}
-/* ─── Teacher: admin chrome ────────────────────────────────────────────── */
-.pyp-stepbar {
-  background: #fff;
-  border-bottom: 1px solid var(--pyp-line);
-}
-.pyp-stepbar-inner {
-  max-width: var(--pyp-maxw-narrow);
-  margin: 0 auto;
-  padding: 14px var(--pyp-gutter);
-}
-.pyp-teacher-body {
-  max-width: var(--pyp-maxw-narrow);
-  margin: 0 auto;
-  padding: 22px var(--pyp-gutter) 72px;
 }
 
 /* Page head */
@@ -115,22 +73,14 @@ body,
   color: var(--pyp-muted);
   max-width: 62ch;
 }
-
-/* Teacher panels (SectionCard) — one spacing rhythm for every panel:
-   title → 8px → sub-line → 20px → content. The shared card's own head margin is
-   sized for a title with no sub-line under it. */
-.pyp-teacher-body .section-card {
-  margin-bottom: 20px;
+/* The two steps stand apart — they are two decisions, not one long form. */
+.pyp-panel + .pyp-panel {
+  margin-top: var(--pyp-gap);
 }
-.pyp-teacher-body .section-card--plain {
-  padding: 22px 24px 24px;
-}
-.pyp-teacher-body .section-card--plain .section-card-head {
-  margin-bottom: 8px;
-}
-.pyp-teacher-body .section-card-title {
-  font-size: 18px;
-  letter-spacing: -0.012em;
+/* The banded header carries its own rule, so the panel's body opens under it
+   rather than off the card's own padding. */
+.pyp-panel.section-card--bar > .section-card-title {
+  margin-bottom: 18px;
 }
 .pyp-panel-sub {
   margin: 0 0 20px;
@@ -271,14 +221,14 @@ body,
    sets `overflow: hidden` (to clip its own corners), which would make it the
    sticky scroll container and kill this; nothing inside this panel needs clipping,
    so it opts out. */
-.pyp-teacher .pyp-panel {
+.pyp-ccroot .pyp-panel {
   overflow: visible;
 }
-/* Sticks under the shared PreviewBar, so the path stays named while you scroll
-   its shelf. Driven off --preview-bar-h rather than a pixel guess. */
+/* Sticks to the top of the creator's scrolling form column, so the path stays
+   named while you scroll its shelf. */
 .pyp-pathoffer.is-open .pyp-pathoffer-row {
   position: sticky;
-  top: var(--preview-bar-h);
+  top: 0;
   z-index: 2;
   background: #fff;
   border-bottom: 1px solid var(--pyp-line);
@@ -379,13 +329,7 @@ body,
   color: var(--pyp-muted);
 }
 .pyp-pathoffer.is-on .pyp-pathoffer-toggle .tgl-label {
-  color: var(--path-color);
-}
-/* the switch takes the path's color too, so a row reads as one object (the
-   shared Toggle's own on-state is the system blue) */
-.pyp-pathoffer-toggle .tgl-input:checked + .tgl-track,
-.pyp-pathoffer-toggle .tgl:hover .tgl-input:checked + .tgl-track {
-  background: var(--path-color);
+  color: var(--pyp-ink);
 }
 .pyp-pathoffer-body {
   display: flex;
@@ -400,156 +344,124 @@ body,
 }
 /* ─── Reader chrome (student) ──────────────────────────────────────────── */
 .pyp-reader {
-  min-height: 100%;
-}
-.pyp-topbar {
-  background: #fff;
-  border-bottom: 1px solid var(--pyp-line);
-}
-.pyp-topbar-inner {
-  max-width: var(--pyp-maxw);
-  margin: 0 auto;
-  padding: 12px var(--pyp-gutter);
   display: flex;
-  align-items: center;
-  gap: 16px;
-}
-.pyp-topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-left: 8px;
-}
-.pyp-topbar-user {
-  margin-left: auto;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-.pyp-user-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 12px 4px 4px;
-  border-radius: 999px;
-  background: #f5f5f5;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--pyp-ink);
-}
-.pyp-user-avatar {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #0f766e;
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  font-weight: 800;
-}
-.pyp-icon-btn {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  border: none;
-  background: transparent;
-  color: var(--pyp-muted);
-  display: grid;
-  place-items: center;
-}
-.pyp-icon-btn:hover {
-  background: #f5f5f5;
-  color: var(--pyp-ink);
-}
-.pyp-tabsbar {
-  max-width: var(--pyp-maxw);
-  margin: 0 auto;
-  padding: 0 var(--pyp-gutter);
-}
-
-.pyp-reader-body {
-  padding: 28px 0 72px;
-}
-.pyp-reader-inner {
-  max-width: var(--pyp-maxw);
-  margin: 0 auto;
-  padding: 0 var(--pyp-gutter);
-}
-.pyp-h2 {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 19px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-}
-.pyp-h2 svg {
-  color: var(--path-color, #0f766e);
-}
-
-/* ─── Destination band (pick + destination) ───────────────────────────── */
-.pyp-dest-band {
-  background: linear-gradient(135deg, #0f766e 0%, #0b3b39 100%);
-  color: #fff;
-}
-.pyp-dest-band-inner {
-  max-width: var(--pyp-maxw);
-  margin: 0 auto;
-  padding: 32px var(--pyp-gutter);
-  min-height: 196px;
-  display: flex;
+  flex: 1;
   flex-direction: column;
-  justify-content: center;
-  position: relative;
+  min-height: 0;
 }
-.pyp-dest-band-title {
-  font-size: 34px;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+/* The page fills whatever the header and footer leave. */
+.pyp-reader .wa-main {
+  flex: 1;
 }
-.pyp-dest-band-sub {
-  margin-top: 8px;
-  font-size: 15px;
-  max-width: 64ch;
-  color: rgba(255, 255, 255, 0.9);
-  line-height: 1.5;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+
+/* ─── The challenge's three-up cover ───────────────────────────────────────
+   One slice per path on offer, filling the shared card's hero — a challenge you
+   pick your way through says so on its cover. */
+.pyp-montage {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 2px;
 }
-.pyp-dest-band-tag {
-  font-size: 15px;
-  color: rgba(255, 255, 255, 0.9);
-  margin-top: 6px;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+.pyp-montage-slice {
+  background-position: center;
+  background-size: cover;
 }
-.pyp-changepath {
+/* The invitation, centred across all three — the cover's one piece of type. */
+.pyp-montage-cta {
   position: absolute;
   top: 50%;
-  right: var(--pyp-gutter);
-  transform: translateY(-50%);
+  right: 12px;
+  left: 12px;
+  translate: 0 -50%;
   display: inline-flex;
-  align-items: center;
   gap: 6px;
+  align-items: center;
+  justify-content: center;
   padding: 7px 12px;
-  border-radius: 9px;
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  background: rgba(255, 255, 255, 0.12);
-  color: #fff;
   font-size: 13px;
-  font-weight: 700;
-}
-.pyp-changepath:hover {
-  background: rgba(255, 255, 255, 0.22);
+  font-weight: 800;
+  color: var(--pyp-ink);
+  background: rgb(255 255 255 / 92%);
+  border-radius: 999px;
 }
 
-/* ─── Destination screen ──────────────────────────────────────────────── */
-.pyp-statstrip {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  margin: 0 0 24px;
+/* ─── The reader's path, in the header ─────────────────────────────────────
+   The banner IS the path, so all the header needs beside it is its name and
+   the way to swap it — a chip-shaped action in the tag row rather than a
+   button parked next to it. */
+
+/* A Program's `header_image` is drawn at 920 × 351; these path illustrations
+   are near-square, so both places one is shown as a banner crop it to a
+   banner's shape rather than letting it fill the screen. */
+.pyp-reader .prog-header-info img,
+.pyp-pickmodal .jc-art {
+  object-fit: cover;
+  object-position: center 46%;
+}
+.pyp-pickmodal .jc-art {
+  aspect-ratio: 920 / 351;
+}
+
+/* Wider than the shared 480 — a banner is a wide shape, and at 480 this one
+   was a strip. Its height is fixed rather than derived, because the header's
+   own ground-curve (`.prog-header-info::before`) is anchored at a pixel: the
+   two have to be told the same number or the arc comes out from behind the art
+   and reads as a stray shadow. 237 is 920 × 351 at 620 wide. */
+.pyp-reader .prog-header-info {
+  max-width: 720px;
+}
+.pyp-reader .prog-header-info img {
+  width: 100%;
+  max-width: none;
+  height: 237px;
+}
+.pyp-reader .prog-header-info::before {
+  top: 237px;
+}
+@media (max-width: 760px) {
+  .pyp-reader .prog-header-info img {
+    height: 150px;
+  }
+  .pyp-reader .prog-header-info::before {
+    top: 150px;
+  }
+}
+
+/* On the band, opposite the back link — it takes the band's own ink, the same
+   as the link does, rather than sitting there as a white chip. */
+.pyp-changepath {
+  display: inline-flex;
+  gap: 5px;
+  align-items: center;
+  padding: 5px 13px;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: color-mix(in srgb, var(--prog-tint, #acacac) 62%, #1c1917);
+  cursor: pointer;
+  background: rgb(255 255 255 / 55%);
+  border: 0;
+  border-radius: 999px;
+}
+.pyp-changepath:hover {
+  color: color-mix(in srgb, var(--prog-tint, #acacac) 40%, #1c1917);
+  background: #fff;
+}
+
+/* The Challenge Creator's frame owns the whole window in its own prototype;
+   embedded here it has to go back into the flow. */
+.pyp-ccroot.cc-root {
+  position: static;
+  flex: 1;
+  min-height: 0;
+}
+/* Wider than the creator's own 760px step: this one holds four-column tables. */
+.pyp-ccroot .cc-form-inner > * {
+  max-width: 1000px;
+  margin-inline: auto;
 }
 .pyp-stat {
   display: flex;
@@ -587,108 +499,6 @@ body,
   color: var(--pyp-muted);
   font-weight: 600;
 }
-
-/* Challenge sub-tabs + tab panels */
-.pyp-dest-subtabs {
-  margin-bottom: 20px;
-  border-bottom: 1px solid var(--pyp-line);
-}
-.pyp-tabpanel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--pyp-gap);
-}
-.pyp-badgegallery {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
-  gap: 22px 12px;
-  margin-top: 16px;
-}
-.pyp-section {
-  background: #fff;
-  border: 1px solid var(--pyp-line);
-  border-radius: 16px;
-  padding: var(--pyp-pad);
-}
-.pyp-section-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-.pyp-section-count {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--path-color, #0f766e);
-  background: color-mix(in srgb, var(--path-color, #0f766e) 10%, #fff);
-  padding: 3px 10px;
-  border-radius: 999px;
-}
-.pyp-section-sub {
-  font-size: 13.5px;
-  color: var(--pyp-muted);
-  /* pulls up under a section head, which carries its own 12px bottom margin */
-  margin: -4px 0 12px;
-}
-/* …but when it follows a progress bar there's no margin to absorb, so the
-   negative pull would drag the text onto the bar. */
-.pgb + .pyp-section-sub {
-  margin-top: 10px;
-}
-
-/* Title rows */
-.pyp-titles {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-top: 16px;
-}
-.pyp-title {
-  display: flex;
-  gap: 14px;
-  align-items: center;
-  padding: 12px;
-  border: 1px solid var(--pyp-line);
-  border-radius: 13px;
-  transition: border-color 0.14s ease;
-}
-.pyp-title.is-read {
-  background: #f2fbf7;
-  border-color: #b3e6d1;
-}
-.pyp-title-cover {
-  flex: 0 0 auto;
-  width: 66px;
-}
-.pyp-title-info {
-  flex: 1;
-  min-width: 0;
-}
-.pyp-title-name {
-  font-size: 15px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-  line-height: 1.25;
-}
-.pyp-title-author {
-  font-size: 12.5px;
-  color: var(--pyp-muted);
-  margin-top: 1px;
-}
-.pyp-title-blurb {
-  font-size: 13px;
-  color: #656565;
-  margin-top: 5px;
-  line-height: 1.4;
-}
-.pyp-title-meta {
-  font-size: 12px;
-  color: var(--pyp-muted);
-  margin-top: 5px;
-}
-.pyp-title-action {
-  flex: 0 0 auto;
-}
 .pyp-read-toggle {
   display: inline-flex;
   align-items: center;
@@ -717,7 +527,9 @@ body,
   width: 100%;
   aspect-ratio: 2 / 3;
   border-radius: 10px;
-  overflow: hidden;
+  /* Not `hidden`: the completed mark hangs off the corner. What needed
+     clipping rounds itself instead — see below. */
+  overflow: visible;
   color: #fff;
   background: #dbe3ea;
 }
@@ -771,36 +583,29 @@ body,
   margin-top: 2px;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
 }
-/* Read state — a green wash over the art with a banner across its foot, so a
-   finished title is obvious from across the list. */
+/* Read state — `.completed-checkmarker-wrapper`, the mark the logging flow
+   puts on a finished title (`.lf-tile-mark--done`). It hangs off the cover's
+   corner, so it needs room outside the cover's own box to do it. */
 .pyp-cover-read {
   position: absolute;
+  top: -7px;
+  right: -7px;
   z-index: 3;
-  inset: 0;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  /* light enough that the cover art still reads through it */
-  background: linear-gradient(
-    to top,
-    rgba(9, 122, 88, 0.45) 0%,
-    rgba(9, 122, 88, 0.12) 42%,
-    rgba(9, 122, 88, 0) 74%
-  );
-}
-.pyp-cover-read-banner {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  width: 100%;
-  padding: 5px 0 6px;
-  justify-content: center;
-  background: #0f9c72;
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
   color: #fff;
-  font-size: 11px;
-  font-weight: 900;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  background: #0ba85f;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgb(15 23 42 / 30%);
+}
+/* What the cover used to clip, rounding itself. */
+.pyp-cover-img,
+.pyp-cover-wm,
+.pyp-cover-overlay {
+  border-radius: inherit;
 }
 
 /* Activities */
@@ -871,134 +676,6 @@ body,
 }
 .pyp-actcard-foot.is-done {
   color: #0ba85f;
-}
-
-/* Rewards tab */
-.pyp-rewardgrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 12px;
-}
-.pyp-reward {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 16px;
-  border: 1px solid var(--pyp-line);
-  border-radius: 13px;
-  background: #fff;
-}
-.pyp-reward.is-earned {
-  border-color: color-mix(in srgb, #0ba85f 40%, #fff);
-  background: #f0fdf7;
-}
-.pyp-reward-icon {
-  flex: 0 0 auto;
-  width: 42px;
-  height: 42px;
-  border-radius: 11px;
-  display: grid;
-  place-items: center;
-  background: #f5f5f5;
-  color: #acacac;
-}
-.pyp-reward.is-earned .pyp-reward-icon {
-  background: #dcfce7;
-  color: #0ba85f;
-}
-.pyp-reward-text {
-  flex: 1;
-  min-width: 0;
-}
-.pyp-reward-name {
-  font-size: 14.5px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-}
-.pyp-reward-desc {
-  font-size: 12.5px;
-  color: var(--pyp-muted);
-  margin-top: 2px;
-  line-height: 1.4;
-}
-.pyp-reward-status {
-  flex: 0 0 auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 800;
-  color: var(--pyp-muted);
-}
-.pyp-reward-status.is-earned {
-  color: #0ba85f;
-}
-
-/* Challenge Log tab */
-.pyp-log {
-  list-style: none;
-  margin: 12px 0 0;
-  padding: 0;
-}
-.pyp-log-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 2px;
-}
-.pyp-log-item + .pyp-log-item {
-  border-top: 1px solid var(--pyp-line);
-}
-.pyp-log-icon {
-  flex: 0 0 auto;
-  width: 34px;
-  height: 34px;
-  border-radius: 9px;
-  display: grid;
-  place-items: center;
-}
-.pyp-log-body {
-  flex: 1;
-  min-width: 0;
-}
-.pyp-log-text {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--pyp-ink);
-}
-.pyp-log-note {
-  font-size: 13px;
-  color: #656565;
-  font-style: italic;
-  margin-top: 2px;
-}
-.pyp-log-empty {
-  font-size: 14px;
-  color: var(--pyp-muted);
-  padding: 8px 0;
-}
-
-/* ─── Common: cover preview row ────────────────────────────────────────── */
-/* auto-fit so the trailing "+N more" tile stays on the same row as the covers */
-.pyp-coverpreview {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: 8px;
-}
-.pyp-coverpreview-item {
-  width: 100%;
-  min-width: 0;
-  cursor: default;
-}
-/* The shared Tooltip wraps its child in a display:inline-flex span. Nested
-   inside a plain block item it fills the width by default, but pin it
-   explicitly (scoped to this usage only) so pyp-cover's own width:100%
-   never resolves against an indeterminate box. */
-.pyp-coverpreview-item .ttp {
-  display: flex;
-  width: 100%;
 }
 
 /* ─── Common: badge disc ──────────────────────────────────────────────── */
@@ -1083,22 +760,6 @@ body,
   position: relative;
   padding: 24px;
 }
-.pyp-activity-close {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  width: 30px;
-  height: 30px;
-  border: none;
-  border-radius: 50%;
-  background: #f5f5f5;
-  color: #707070;
-  display: grid;
-  place-items: center;
-}
-.pyp-activity-close:hover {
-  background: #eaeaea;
-}
 .pyp-activity-head {
   display: flex;
   align-items: center;
@@ -1160,18 +821,12 @@ body,
   line-height: 1.4;
   margin-bottom: 10px;
 }
+/* The shared Textarea brings the system's own chrome; the path's colour is the
+   one thing it can't know. */
 .pyp-activity-input {
   width: 100%;
-  border: 1.5px solid var(--pyp-line);
-  border-radius: 11px;
-  padding: 11px 13px;
-  font-family: inherit;
-  font-size: 14px;
-  color: var(--pyp-ink);
-  resize: vertical;
 }
 .pyp-activity-input:focus {
-  outline: none;
   border-color: var(--path-color);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--path-color) 18%, transparent);
 }
@@ -1209,29 +864,6 @@ body,
   font-weight: 700;
   margin-right: auto;
 }
-
-/* ─── Badge celebration ───────────────────────────────────────────────── */
-.pyp-celebrate {
-  position: relative;
-  text-align: center;
-  padding: 28px 24px 22px;
-  overflow: hidden;
-}
-.pyp-confetti {
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-.pyp-confetti-bit {
-  position: absolute;
-  top: -18px;
-  width: 9px;
-  height: 14px;
-  border-radius: 2px;
-  opacity: 0;
-  animation: pyp-fall 1.5s ease-in forwards;
-}
 @keyframes pyp-fall {
   0% {
     transform: translateY(0) rotate(0deg);
@@ -1245,31 +877,6 @@ body,
     opacity: 0;
   }
 }
-.pyp-celebrate-medal {
-  position: relative;
-  width: 138px;
-  height: 138px;
-  margin: 8px auto 14px;
-  display: grid;
-  place-items: center;
-  animation: pyp-pop 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.pyp-celebrate-img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 16px rgba(15, 23, 42, 0.22));
-}
-.pyp-celebrate-face {
-  width: 104px;
-  height: 104px;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  border: 4px solid var(--badge-color);
-  background: color-mix(in srgb, var(--badge-color) 14%, #fff);
-  color: var(--badge-color);
-}
 @keyframes pyp-pop {
   0% {
     transform: scale(0.2);
@@ -1280,48 +887,18 @@ body,
     opacity: 1;
   }
 }
-.pyp-celebrate-kicker {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--badge-color);
-}
-.pyp-celebrate-name {
-  font-size: 23px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-  margin: 4px 0 4px;
-}
-.pyp-celebrate-type {
-  font-size: 13px;
-  color: var(--pyp-muted);
-  margin-bottom: 20px;
-}
 
 /* ─── Responsive ──────────────────────────────────────────────────────── */
 @media (max-width: 960px) {
   .pyp-dest-grid {
     grid-template-columns: 1fr 1fr;
   }
-  .pyp-pathoffer-sec:last-child {
-    grid-column: 1 / -1;
-  }
 }
 @media (max-width: 620px) {
-  .pyp-statstrip {
-    grid-template-columns: 1fr 1fr;
-  }
   .pyp-actgrid {
     grid-template-columns: 1fr;
   }
   .pyp-dest-grid {
-    grid-template-columns: 1fr;
-  }
-  .pyp-rewardgrid {
     grid-template-columns: 1fr;
   }
   .pyp-pathoffer-body {
@@ -1329,478 +906,116 @@ body,
   }
 }
 
-/* ─── Challenges dashboard (student) ──────────────────────────────────── */
-
-.pyp-streak {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 12px 16px;
-  margin-bottom: 24px;
-  border-radius: 14px;
-  background: #fff1e8;
-  border: 1px solid #fbd8c2;
-}
-.pyp-streak-flame {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 11px;
-  border-radius: 999px;
-  background: #fff;
-  color: #ea580c;
-  font-size: 14px;
-  font-weight: 900;
-  flex-shrink: 0;
-}
-.pyp-streak-msg {
-  flex: 1;
-  font-size: 14.5px;
-  color: var(--pyp-ink);
-}
-.pyp-streak-x {
-  display: grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  border: 0;
-  border-radius: 999px;
-  background: none;
-  color: var(--pyp-muted);
-  cursor: pointer;
-}
-.pyp-streak-x:hover {
-  background: rgba(234, 88, 12, 0.1);
-  color: #ea580c;
-}
-
-.pyp-chlayout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 312px;
-  gap: 28px;
-  align-items: start;
-}
-.pyp-ch-head {
-  align-items: center;
-  margin-bottom: 4px;
-}
-
-/* challenge cards */
-.pyp-chgrid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 18px;
-  margin-top: 16px;
-}
-.pyp-chcard {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--pyp-line);
-  border-radius: 16px;
-  background: #fff;
-  overflow: hidden;
-  text-align: left;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
-  transition:
-    border-color 0.14s ease,
-    box-shadow 0.14s ease;
-}
-.pyp-chcard.is-live {
-  border-color: color-mix(in srgb, #0f766e 40%, #fff);
-}
-.pyp-chcard.is-live:hover {
-  border-color: #0f766e;
-  box-shadow: 0 10px 26px rgba(15, 118, 110, 0.18);
-}
-
-/* the live challenge's art: one slice per path on offer */
-.pyp-chcard-montage {
-  position: relative;
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: 1fr;
-  gap: 2px;
-  min-height: 138px;
-  padding: 0;
-  border: 0;
-  background: var(--pyp-line);
-  cursor: pointer;
-}
-.pyp-chcard-slice {
-  position: relative;
-  background-size: cover;
-  background-position: center;
-  transition: flex-grow 0.16s ease;
-}
-.pyp-chcard-slice-icon {
-  position: absolute;
-  top: 8px;
-  left: 8px;
-  display: grid;
-  place-items: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
-  color: #14312e;
-}
-.pyp-chcard-choose {
-  position: absolute;
-  left: 10px;
-  right: 10px;
-  bottom: 10px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.94);
-  color: #0f766e;
-  font-size: 12.5px;
-  font-weight: 900;
-  box-shadow: 0 2px 8px rgba(4, 33, 30, 0.28);
-  transition:
-    background 0.14s ease,
-    transform 0.14s ease;
-}
-.pyp-chcard-montage:hover .pyp-chcard-choose {
-  background: #0f766e;
-  color: #fff;
-  transform: translateY(-2px);
-}
-.pyp-chcard-hero {
-  position: relative;
-  display: grid;
-  place-items: center;
-  min-height: 132px;
-  padding: 20px 18px 26px;
-  background-size: cover;
-  background-position: center;
-}
-.pyp-chcard-arttitle {
-  font-size: 21px;
-  font-weight: 900;
-  line-height: 1.08;
-  text-align: center;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-}
-.pyp-chcard-pill {
-  position: absolute;
-  right: 10px;
-  bottom: 10px;
-}
-.pyp-chcard-body {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  padding: 13px 16px 16px;
-}
-.pyp-chcard-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-}
-.pyp-chcard-dates {
-  font-size: 13px;
-  color: var(--pyp-muted);
-}
-.pyp-chcard-kicker {
-  margin-top: 3px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--pyp-muted);
-}
-.pyp-chcard-open {
-  align-self: flex-start;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  margin-top: 10px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font-size: 13.5px;
-  font-weight: 800;
-  color: #0f766e;
-  cursor: pointer;
-}
-.pyp-chcard-open:hover {
-  text-decoration: underline;
-}
-
-/* right rail */
-.pyp-chrail {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-.pyp-railcard {
-  padding: 18px;
-  border: 1px solid var(--pyp-line);
-  border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
-}
-.pyp-railcard-title {
-  font-size: 16px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-}
-.pyp-railcard-sub {
-  margin-top: 3px;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--pyp-muted);
-}
-.pyp-goal-amount {
-  margin: 14px 0 8px;
-}
-.pyp-goal-amount strong {
-  font-size: 27px;
-  font-weight: 900;
-}
-.pyp-goal-amount span {
-  font-size: 13.5px;
-  font-weight: 700;
-  color: var(--pyp-muted);
-}
-.pyp-railcard-tabs {
-  margin: -4px 0 12px;
-  border-bottom: 1px solid var(--pyp-line);
-}
-.pyp-lead {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 0;
-  list-style: none;
-}
-.pyp-lead-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.pyp-lead-row.is-me .pyp-lead-name {
-  font-weight: 800;
-  color: #0f766e;
-}
-.pyp-lead-rank {
-  display: grid;
-  place-items: center;
-  width: 22px;
-  height: 22px;
-  border-radius: 999px;
-  color: #fff;
-  font-size: 12px;
-  font-weight: 900;
-  flex-shrink: 0;
-}
-.pyp-lead-name {
-  flex: 1;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--pyp-ink);
-}
-.pyp-lead-name em {
-  font-style: normal;
-  font-weight: 700;
-  color: var(--pyp-muted);
-}
-.pyp-lead-val {
-  font-size: 14px;
-  font-weight: 800;
-  color: var(--pyp-ink);
-}
-.pyp-lead-more {
-  display: block;
-  width: 100%;
-  margin-top: 14px;
-  padding: 0;
-  border: 0;
-  background: none;
-  text-align: center;
-  font-size: 13.5px;
-  font-weight: 800;
-  color: #0f766e;
-  cursor: pointer;
-}
-.pyp-lead-more:hover {
-  text-decoration: underline;
-}
-
-@media (max-width: 1000px) {
-  .pyp-chlayout {
-    grid-template-columns: minmax(0, 1fr);
-  }
-}
-
-/* ─── Path picker modal (from the challenge card art) ─────────────────── */
+/* ─── Challenge preview modal ──────────────────────────────────────────────
+   `programs/_join_challenge.html.haml` — the preview the app puts in front of
+   a reader before they are in a challenge. Everything above the alternatives
+   is the app's own `.jc-*`; what's here is the one thing this challenge does
+   differently: its alternatives are pressable, because choosing one is the
+   join. */
 
 .modal--center:has(.pyp-pickmodal) {
   width: min(640px, calc(100vw - var(--modal-gutter) * 2));
 }
-.pyp-pickmodal {
-  position: relative;
-  max-height: calc(100vh - 34px);
-  overflow-y: auto;
-  padding: 26px 26px 24px;
-  background: #fff;
+.pyp-pickmodal.jc {
+  max-height: calc(100vh - 34px - var(--chrome-top, 0px) - var(--chrome-bottom, 0px));
 }
-.pyp-pickmodal-close {
-  position: absolute;
-  top: 14px;
-  right: 14px;
-  display: grid;
-  place-items: center;
-  width: 32px;
-  height: 32px;
-  border: 0;
-  border-radius: 999px;
-  background: #f1f5f4;
-  color: var(--pyp-ink);
-  cursor: pointer;
+/* `.jc-art` runs the head's full width, which is right for a banner. The crop
+   that makes one of these a banner is up beside the page header's. */
+.pyp-pickmodal .jc-head {
+  overflow: hidden;
 }
-.pyp-pickmodal-close:hover {
-  background: #eaeaea;
-}
+/* The challenge's own identity block, above the rule. */
 .pyp-pickmodal-head {
-  margin-bottom: 20px;
-  padding-right: 40px;
-}
-.pyp-pickmodal-kicker {
-  font-size: 11.5px;
-  font-weight: 900;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: #0f766e;
-}
-.pyp-pickmodal-title {
-  margin-top: 4px;
-  font-size: 23px;
-  font-weight: 900;
-  color: var(--pyp-ink);
-}
-.pyp-pickmodal-sub {
-  margin-top: 5px;
-  font-size: 14px;
-  line-height: 1.45;
-  color: var(--pyp-muted);
-}
-.pyp-pickmodal-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+  align-items: flex-start;
+  padding: 18px 22px 16px;
 }
 
-.pyp-pickrow {
+/* `.join-challenge-alternatives`, as rows. The app's amber list is a list of
+   names; these are choices, so each one shows what it holds. */
+.pyp-alts {
+  margin-top: 0;
+}
+.pyp-altslist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 14px 0 0;
+  list-style: none;
+}
+.pyp-alt {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
   align-items: center;
-  gap: 18px;
   padding: 14px 16px;
-  border: 1px solid var(--pyp-line);
-  border-radius: 14px;
   background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
   transition:
     border-color 0.14s ease,
     box-shadow 0.14s ease;
 }
-.pyp-pickrow:hover {
+.pyp-alt:hover {
   border-color: var(--path-color);
   box-shadow: 0 6px 18px color-mix(in srgb, var(--path-color) 18%, transparent);
 }
-.pyp-pickrow.is-current {
+.pyp-alt.is-current {
   border-color: color-mix(in srgb, var(--path-color) 55%, #fff);
   background: color-mix(in srgb, var(--path-color) 5%, #fff);
 }
-.pyp-pickrow-head {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+/* The path's shelf as a pile — three covers fanned over each other, tilted a
+   degree apart so the stack reads as books rather than a stripe. */
+.pyp-alt-stack {
+  position: relative;
+  display: block;
+  flex: none;
+  width: 78px;
+  height: 78px;
 }
-.pyp-pickrow-name {
+.pyp-coverstack-item {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--i) * 15px);
+  width: 46px;
+  translate: 0 -50%;
+  rotate: calc((var(--i) - 1) * 4deg);
+  z-index: var(--i);
+  filter: drop-shadow(0 2px 5px rgb(15 23 42 / 22%));
+}
+.pyp-alt-copy {
+  min-width: 0;
+}
+.pyp-alt-head {
+  display: flex;
+  gap: 9px;
+  align-items: center;
+}
+.pyp-alt-name {
   font-size: 16px;
   font-weight: 800;
   color: var(--pyp-ink);
 }
-.pyp-pickrow-current {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  font-size: 11.5px;
-  font-weight: 800;
-  color: #0f766e;
-}
-.pyp-pickrow-tag {
+.pyp-alt-tag {
   margin-top: 2px;
   font-size: 13px;
   line-height: 1.4;
   color: var(--pyp-muted);
 }
-.pyp-pickrow-covers {
-  margin-top: 9px;
-  max-width: 236px;
-}
-/* the row's one decision — carries the path's own color */
-.pyp-pickrow-cta {
-  white-space: nowrap;
-  min-width: 148px;
+.pyp-alt-cta {
+  min-width: 118px;
   justify-content: center;
-  background: var(--path-color) !important;
-  border-color: var(--path-color) !important;
-  font-size: 15.5px !important;
-  font-weight: 900 !important;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--path-color) 32%, transparent);
-}
-.pyp-pickrow-cta:hover {
-  background: color-mix(in srgb, var(--path-color) 86%, #04211e) !important;
-  box-shadow: 0 7px 18px color-mix(in srgb, var(--path-color) 40%, transparent);
+  white-space: nowrap;
 }
 
 @media (max-width: 560px) {
-  .pyp-pickrow {
-    grid-template-columns: minmax(0, 1fr);
+  .pyp-alt {
+    grid-template-columns: auto minmax(0, 1fr);
   }
-  .pyp-pickrow-cta {
+  .pyp-alt-cta {
     grid-column: 1 / -1;
     justify-content: center;
   }
-}
-
-/* the "+N more" tile that closes a shortened cover-preview row */
-.pyp-coverpreview-more {
-  display: grid;
-  place-items: center;
-  width: 100%;
-  aspect-ratio: 2 / 3;
-  border-radius: 8px;
-  border: 1px dashed color-mix(in srgb, var(--path-color, #0f766e) 45%, #fff);
-  background: color-mix(in srgb, var(--path-color, #0f766e) 7%, #fff);
-  color: color-mix(in srgb, var(--path-color, #0f766e) 78%, #04211e);
-  font-size: 14px;
-  font-weight: 900;
-}
-
-/* reveal the rest of a path's shelf on the destination page */
-.pyp-titles-more {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  margin-top: 12px;
-  padding: 8px 14px;
-  border: 1px solid var(--pyp-line);
-  border-radius: 999px;
-  background: #fff;
-  font-size: 13.5px;
-  font-weight: 800;
-  color: var(--path-color, #0f766e);
-  cursor: pointer;
-}
-.pyp-titles-more:hover {
-  border-color: var(--path-color, #0f766e);
-  background: color-mix(in srgb, var(--path-color, #0f766e) 6%, #fff);
 }
 
 /* ─── In-app title reader ─────────────────────────────────────────────── */
@@ -2036,30 +1251,188 @@ body,
 .pyp-tr-donebtn:hover {
   background: color-mix(in srgb, var(--path-color) 86%, #04211e);
 }
-
-/* the two ways to finish a title */
-.pyp-title-action {
+/* ─── Reading List ─────────────────────────────────────────────────────────
+   `logged_books/_book_list_grid` — the app draws a book list as a cover grid,
+   so the art is the card and everything else sits under it. */
+.pyp-bookgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(210px, 100%), 1fr));
+  gap: 18px;
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+}
+.pyp-bookcard {
   display: flex;
   flex-direction: column;
-  gap: 7px;
-  align-items: stretch;
+  gap: 12px;
+  padding: 14px;
+  background: #fff;
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
 }
-.pyp-title-action .btn {
-  white-space: nowrap;
+.pyp-bookcard.is-read {
+  border-color: color-mix(in srgb, #0f9c72 40%, #fff);
+  background: #f7fdfa;
+}
+/* The cover is the way into the book, and the whole of it is the hit area. */
+.pyp-bookcard-cover {
+  display: block;
+  padding: 0;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.pyp-bookcard-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  align-items: flex-start;
+  min-width: 0;
+}
+.pyp-bookcard-title {
+  padding: 0;
+  font: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--pyp-ink);
+  text-align: left;
+  cursor: pointer;
+  background: none;
+  border: 0;
+}
+.pyp-bookcard-title:hover {
+  text-decoration: underline;
+}
+.pyp-bookcard-author {
+  font-size: 13px;
+  color: var(--pyp-muted);
+}
+.pyp-bookcard-facts {
+  font-size: 12.5px;
+  color: var(--pyp-muted);
+}
+/* The two ways to finish a title, side by side at the card's foot. */
+.pyp-bookcard-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+}
+.pyp-bookcard-actions .btn,
+.pyp-bookcard-actions .pyp-read-toggle {
+  flex: 1;
   justify-content: center;
 }
-.pyp-title-read {
-  background: var(--path-color) !important;
-  border-color: var(--path-color) !important;
+
+/* ─── Challenge Log ────────────────────────────────────────────────────────
+   `programs#full_reading_log`: a Summary, then the Log Items themselves. The
+   Word List opens with the same strip. */
+.pyp-logsummary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin: 18px 0;
 }
-.pyp-title-read:hover {
-  background: color-mix(in srgb, var(--path-color) 86%, #04211e) !important;
+/* The strip carries the gap now, so the card only makes up the difference. */
+.pyp-logcard {
+  margin-top: 4px;
+}
+.pyp-logcard .tbl-scroll,
+.pyp-logcard .tbl {
+  border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+}
+.pyp-logtitle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pyp-logtitle strong {
+  font-weight: 800;
+  color: var(--pyp-ink);
+}
+.pyp-logtitle span {
+  font-size: 13px;
+  color: var(--pyp-muted);
 }
 
-/* ─── Vocabulary chips ─────────────────────────────────────────────────────
-   The cluster's target words, wherever a title, activity, or path shows which
-   of the four it puts to work. Chips inherit the surface's path accent, so the
-   same component reads on white cards and on the illustrated band alike. */
+/* ─── Collections ──────────────────────────────────────────────────────────
+   `web-app`'s own shelf (`AllBadges`) with a third pane. On the collection
+   shelf every word is found, so its card can say how the word is pronounced
+   and what kind of word it is — the Word List keeps those back. */
+.co .pyp-wordgrid {
+  margin-top: 0;
+}
+
+/* ─── Word List ────────────────────────────────────────────────────────────
+   The vocabulary half of the challenge. A card is the word and what it means;
+   locked, it keeps the word and trades the meaning for where to look. */
+.pyp-wordgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
+  /* Every row the height of the tallest card — a locked word has no meaning to
+     show, and left to itself it was half the height of the ones beside it. */
+  grid-auto-rows: 1fr;
+  gap: 14px;
+  padding: 0;
+  margin: 18px 0 0;
+  list-style: none;
+}
+.pyp-wordcard {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px;
+  background: var(--c-gray-0);
+  border: 1px solid var(--c-border);
+  border-radius: 14px;
+}
+.pyp-wordcard.is-found {
+  background: #fff;
+  border-color: color-mix(in srgb, var(--path-color, #0f766e) 34%, #fff);
+}
+.pyp-wordcard-head {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+}
+.pyp-wordcard-word {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: 0.12em;
+  color: var(--c-gray-500);
+}
+.pyp-wordcard.is-found .pyp-wordcard-word {
+  letter-spacing: normal;
+  color: var(--path-color, var(--pyp-ink));
+}
+.pyp-wordcard-state {
+  display: inline-flex;
+  flex: none;
+  color: var(--c-gray-500);
+}
+.pyp-wordcard-meaning {
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--pyp-ink);
+}
+/* Where a found word's meaning goes — sized to the type it stands in for. */
+.pyp-wordcard-blank {
+  margin-top: 3px;
+}
+.pyp-wordcard-foot {
+  margin-top: auto;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--pyp-muted);
+}
+.pyp-wordcard.is-found .pyp-wordcard-foot {
+  color: var(--path-color, var(--pyp-muted));
+}
+
 .pyp-words {
   display: flex;
   flex-wrap: wrap;
@@ -2080,6 +1453,14 @@ body,
   white-space: nowrap;
   cursor: help;
 }
+/* A word still out there — the right shape, none of the letters. */
+.pyp-word--hidden {
+  color: var(--c-gray-500);
+  letter-spacing: 0.12em;
+  cursor: default;
+  background: var(--c-gray-100);
+  border-color: var(--c-border);
+}
 .pyp-words--xs {
   gap: 4px;
 }
@@ -2087,6 +1468,15 @@ body,
   padding: 1px 6px;
   font-size: 10px;
   font-weight: 800;
+}
+/* On the Overview the four words are the section, not a caption on something
+   else, so they get read at the size the section's own type is. */
+.pyp-words--lg {
+  gap: 8px;
+}
+.pyp-words--lg .pyp-word {
+  padding: 6px 14px;
+  font-size: 15px;
 }
 
 /* The vocabulary cluster's words, on the teacher's destination cards */
@@ -2196,64 +1586,9 @@ body,
 .pyp-pathoffer-tabs .tab-count {
   font-size: 12.5px;
 }
-
-/* Target words on a title row */
-.pyp-title-words {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 7px;
-}
-.pyp-title-words-label {
-  font-size: 10.5px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--pyp-muted);
-}
 .pyp-actcard-words,
 .pyp-activity-words {
   margin-top: 2px;
-}
-.pyp-pickmodal-words {
-  margin-top: 10px;
-}
-
-/* The cluster itself, on the student's path band — sits over artwork, so the
-   chips go translucent-white instead of taking the path accent. */
-.pyp-bandwords {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 12px;
-  max-width: 62ch;
-}
-.pyp-bandwords-label {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 11px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(255, 255, 255, 0.85);
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
-  margin-right: 2px;
-}
-.pyp-bandword {
-  display: inline-flex;
-  align-items: center;
-  padding: 3px 10px;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.42);
-  background: rgba(255, 255, 255, 0.18);
-  backdrop-filter: blur(2px);
-  color: #fff;
-  font-size: 12.5px;
-  font-weight: 800;
-  cursor: help;
 }
 
 /* ─── Reader: highlighted words + glossary page ────────────────────────────

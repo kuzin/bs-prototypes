@@ -297,7 +297,7 @@ function StatCardShowcase() {
         </div>
       </Variant>
 
-      <Variant label="trend — spread into a TrendChip, not a bare number">
+      <Variant label="trend — a TrendChip in the tile's top trailing corner">
         <div className="rc-stats-row" style={{ '--rc-stats-cols': 3 }}>
           <StatCard
             value={490}
@@ -1462,6 +1462,9 @@ function WordCloudKnobs() {
   const [count, setCount] = useState(WC_WORDS.length)
   const [rotate, setRotate] = useState(false)
   const [clickable, setClickable] = useState(true)
+  const [tip, setTip] = useState(true)
+  const [animate, setAnimate] = useState(true)
+  const [drift, setDrift] = useState(true)
   const [picked, setPicked] = useState(null)
 
   const words = WC_WORDS.slice(0, count)
@@ -1497,6 +1500,15 @@ function WordCloudKnobs() {
         <Field label="Clickable">
           <Toggle checked={clickable} onChange={setClickable} />
         </Field>
+        <Field label="Hover card">
+          <Toggle checked={tip} onChange={setTip} />
+        </Field>
+        <Field label="Animate in">
+          <Toggle checked={animate} onChange={setAnimate} />
+        </Field>
+        <Field label="Drift">
+          <Toggle checked={drift} onChange={setDrift} />
+        </Field>
       </Knobs>
 
       <Variant label={picked ? `Selected: ${picked}` : 'Class word wall'}>
@@ -1513,6 +1525,19 @@ function WordCloudKnobs() {
             maxSize={maxSize}
             rotate={rotate ? 0.25 : 0}
             selected={picked}
+            animate={animate}
+            drift={drift}
+            tooltip={
+              tip
+                ? (w) => (
+                    <>
+                      <strong>{w.text}</strong>
+                      <br />
+                      {w.value} of 24 students have collected it
+                    </>
+                  )
+                : undefined
+            }
             valueLabel={(w) => `${w.value} of 24 students`}
             onWordClick={
               clickable ? (w) => setPicked(w.text === picked ? null : w.text) : undefined
@@ -1754,8 +1779,10 @@ import '@components/Cards/Cards.css'
         <br />
         <code>trend</code> is spread straight into a <code>{'<TrendChip>'}</code>, so it takes that
         component&apos;s own props (<code>{'{ delta, format, suffix, inverse, showValue }'}</code>)
-        — not a bare number. Pass it instead of spelling a delta out in <code>footer</code>:
-        &ldquo;+101 in the last 7 days&rdquo; beside a 490 puts two numbers on the tile and makes
+        — not a bare number. It is drawn in the tile&apos;s top trailing corner rather than beside
+        the figure, so the label underneath keeps the tile&apos;s full width and a row of tiles
+        reads at one height. Pass it instead of spelling a delta out in <code>footer</code>:
+        &ldquo;+101 in the last 7 days&rdquo; written into the tile puts two numbers on it and makes
         the eye pick between them. <code>footer</code> stays for the things that aren&apos;t trends.
         <br />
         <br />
@@ -1959,7 +1986,17 @@ import '@components/BarList/BarList.css'
     name: 'WordCloud',
     usage: `import { WordCloud } from '@components/WordCloud/WordCloud'
 
-<WordCloud words={[{ text: 'dragon', value: 42 }]} height={280} onWordClick={pick} />`,
+<WordCloud words={[{ text: 'dragon', value: 42 }]} height={280} onWordClick={pick} />
+
+/* \`tooltip\` gives a word a hover card instead of the native title; \`animate\`
+   fades the cloud in heaviest-first, \`drift\` keeps it breathing after. */
+<WordCloud
+  words={words}
+  accent="#B43DD0"
+  animate
+  drift
+  tooltip={(w) => <strong>{w.text}</strong>}
+/>`,
     desc: (
       <>
         A real weighted word cloud — words are measured in the font they render in, then packed
@@ -1970,9 +2007,17 @@ import '@components/BarList/BarList.css'
         <code>height</code> (<code>'sm' | 'md' | 'lg' | 'xl'</code> or a number),{' '}
         <code>minSize</code>/<code>maxSize</code>, and <code>rotate</code> (0–1: roughly what share
         of words turn 90°). Pass <code>onWordClick</code> + <code>selected</code> to make it a
-        filter — hovering then quiets the rest of the cloud. Reach for it when the shape of a whole
-        vocabulary is the point; for a ranking anyone has to read values off, use{' '}
-        <code>BarList</code>.
+        filter — hovering then quiets the rest of the cloud.
+        <br />
+        <br />
+        <code>tooltip</code> (<code>{'(word) => node'}</code>) replaces the native{' '}
+        <code>{'<title>'}</code> with a card drawn over the word — room for what the word means and
+        where it came from, and it arrives on hover rather than a second later. It also turns the
+        quiet-the-rest hover on, with or without <code>onWordClick</code>. <code>animate</code>{' '}
+        fades the words up into place heaviest-first, and <code>drift</code> keeps them floating a
+        couple of pixels afterwards — both respect <code>prefers-reduced-motion</code>. Reach for
+        the cloud when the shape of a whole vocabulary is the point; for a ranking anyone has to
+        read values off, use <code>BarList</code>.
       </>
     ),
     render: () => (

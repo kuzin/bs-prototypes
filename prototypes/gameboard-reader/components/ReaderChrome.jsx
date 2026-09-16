@@ -5,22 +5,6 @@ import { READER } from '../data'
 const noop = () => {}
 
 /**
- * The reader's avatar + first name, as the *log flow* shows it — the app's
- * `.logged-books--logging-for-reader`, not the top bar's reader dropdown. The
- * bar's own pill is `ReaderPill` in `@components/ReaderApp`.
- */
-export function ReaderPill({ size = 'md' }) {
-  return (
-    <span className={`gr-reader-pill gr-reader-pill--${size}`}>
-      <span className="gr-reader-avatar" style={{ background: READER.color }}>
-        {READER.initials}
-      </span>
-      <span className="gr-reader-name">{READER.name}</span>
-    </span>
-  )
-}
-
-/**
  * Beanstack's reader app bar — the shared one. This prototype carried its own
  * copy (a shorter bar, a smaller pill, its own near-miss of the accent), which
  * is the drift the shared chrome exists to stop. Only "Log Reading" does

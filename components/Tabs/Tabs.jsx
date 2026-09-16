@@ -35,6 +35,9 @@ export function Tabs({
   size = 'md',
   block = false,
   plain = false,
+  /* A darker track, for a group sitting on a tinted page rather than white —
+     the default #f2f2f2 all but disappears on the admin's grey. */
+  onTint = false,
   center = false,
   accent,
   ariaLabel,
@@ -85,7 +88,7 @@ export function Tabs({
     <div
       ref={scrollRef}
       onScroll={updateScrollFade}
-      className={`tabs tabs--${variant} tabs--${size}${plain ? ' tabs--plain' : ''}${center ? ' tabs--center' : ''}${block ? ' tabs--block' : ''}${canScrollLeft ? ' tabs--scroll-left' : ''}${canScrollRight ? ' tabs--scroll-right' : ''} ${className}`.trim()}
+      className={`tabs tabs--${variant} tabs--${size}${plain ? ' tabs--plain' : ''}${onTint ? ' tabs--on-tint' : ''}${center ? ' tabs--center' : ''}${block ? ' tabs--block' : ''}${canScrollLeft ? ' tabs--scroll-left' : ''}${canScrollRight ? ' tabs--scroll-right' : ''} ${className}`.trim()}
       role={collapses ? undefined : 'tablist'}
       aria-label={collapses ? undefined : ariaLabel}
       style={style}

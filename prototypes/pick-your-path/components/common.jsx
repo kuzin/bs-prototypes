@@ -7,47 +7,44 @@ import { VOCAB_BY_WORD } from '../data'
 // or path needs to show which of the four words it puts to work — each chip
 // carries the kid-facing definition on hover, so the words are teachable
 // wherever they appear. `size="xs"` is the dense variant for grid captions.
-export function WordChips({ words, size = 'sm', className = '' }) {
+export function WordChips({ words, size = 'sm', collected, className = '' }) {
   if (!words?.length) return null
+  // `collected` turns the row into a scoreboard: a word you have banked reads
+  // normally, one still out there is a blank of the right length. Left off,
+  // every chip reads — which is what the teacher's own screens want.
+  const kept = collected && new Set(collected)
   return (
     <span className={`pyp-words pyp-words--${size} ${className}`.trim()}>
-      {words.map((w) => (
-        <Tooltip key={w} content={VOCAB_BY_WORD[w]?.definition ?? w}>
-          <span className="pyp-word">{w}</span>
-        </Tooltip>
-      ))}
+      {words.map((w) =>
+        kept && !kept.has(w) ? (
+          <span key={w} className="pyp-word pyp-word--hidden" aria-label="Not found yet">
+            {'•'.repeat(Math.min(w.length, 10))}
+          </span>
+        ) : (
+          <Tooltip key={w} content={VOCAB_BY_WORD[w]?.definition ?? w}>
+            <span className="pyp-word">{w}</span>
+          </Tooltip>
+        ),
+      )}
     </span>
   )
 }
 
-// A row of small cover previews — each reveals its title via tooltip on
-// hover, with no visible caption, so a path can be previewed without adding
-// text clutter to the layout. A path's shelf runs ~10 deep, so only the first
-// `limit` are shown and the remainder collapse into a "+N more" tile.
-export function CoverPreviewRow({ path, limit = 3, className = '' }) {
+/**
+ * A path's shelf as a stack — the first few covers fanned over each other, the
+ * way a pile of books reads. It stands for the shelf rather than listing it:
+ * how many titles there are is the row's business, not the picture's.
+ */
+export function CoverStack({ path, limit = 3, className = '' }) {
   const shown = path.titles.slice(0, limit)
-  const rest = path.titles.length - shown.length
   return (
-    <div className={`pyp-coverpreview ${className}`.trim()}>
-      {shown.map((t) => (
-        // The grid item is a plain div (stretches to fill its column
-        // reliably); Tooltip wraps just the tile inside it, so the shared
-        // component's own inline-flex wrapper is never the thing being
-        // sized by the grid.
-        <div key={t.id} className="pyp-coverpreview-item">
-          <Tooltip content={t.title}>
-            <CoverTile cover={t.cover} label={t.title} path={path} />
-          </Tooltip>
-        </div>
+    <span className={`pyp-coverstack ${className}`.trim()} aria-hidden="true">
+      {shown.map((t, i) => (
+        <span key={t.id} className="pyp-coverstack-item" style={{ '--i': i }}>
+          <CoverTile cover={t.cover} label={t.title} path={path} />
+        </span>
       ))}
-      {rest > 0 && (
-        <div className="pyp-coverpreview-item">
-          <Tooltip content={`${rest} more titles on this path`}>
-            <span className="pyp-coverpreview-more">+{rest}</span>
-          </Tooltip>
-        </div>
-      )}
-    </div>
+    </span>
   )
 }
 
@@ -89,12 +86,11 @@ export function CoverTile({ cover, label, path, read, showTitle = false }) {
         </span>
       )}
       {read && (
-        // A tinted wash plus a banner across the foot of the cover: a small
-        // floating check was too easy to miss on busy cover art.
-        <span className="pyp-cover-read">
-          <span className="pyp-cover-read-banner">
-            <Icon name="check" size={13} stroke={3} /> Read
-          </span>
+        // `.completed-checkmarker-wrapper` — the same mark the logging flow
+        // puts on a title you've finished (`.lf-tile-mark--done`), so a read
+        // cover looks the same wherever you meet one.
+        <span className="pyp-cover-read" title="Completed">
+          <Icon name="check" size={15} stroke={3} />
         </span>
       )}
     </div>

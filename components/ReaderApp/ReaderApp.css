@@ -360,6 +360,20 @@
   color: var(--c-text);
   letter-spacing: -0.02em;
 }
+/* Whatever the section puts opposite its title — the scope control, a button.
+   It lived in logging-flow's own stylesheet, which meant the other half of
+   `.wa-section-head` only existed on one page. */
+.wa-section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+@media (max-width: 560px) {
+  .wa-section-actions {
+    width: 100%;
+  }
+}
 
 /* Group */
 .wa-group {
@@ -771,6 +785,23 @@
   flex: 1;
   font-weight: 600;
   color: var(--c-text);
+}
+/* The reader's own row, on the tinted band the app gives it. */
+.wa-leadcard-row.is-me {
+  background: color-mix(in srgb, var(--c-blue-wash) 55%, #fff);
+}
+.wa-leadcard-row.is-me .wa-leadcard-name,
+.wa-leadcard-row.is-me .wa-leadcard-val {
+  color: var(--c-blue-ink);
+}
+.wa-leadcard-name em {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--c-text-light);
+}
+.wa-leadcard-row.is-me .wa-leadcard-name em {
+  color: var(--c-blue-ink);
+  opacity: 0.7;
 }
 .wa-leadcard-val {
   font-weight: 700;
@@ -1193,6 +1224,17 @@
 .wa-banner-chip.btn--secondary:hover:not(:disabled) {
   background: #fff;
   border-color: color-mix(in srgb, var(--wab-ink) 45%, transparent);
+}
+/* Inverted — the bar's own ink as the ground. For a bar whose action is the
+   point rather than an offer. */
+.wa-banner-chip--solid.btn--secondary {
+  color: #fff;
+  background: var(--wab-ink);
+  border-color: transparent;
+}
+.wa-banner-chip--solid.btn--secondary:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--wab-ink) 86%, black);
+  border-color: transparent;
 }
 
 /* A dismiss on a tinted ground disappears into it, so it gets a ground of its

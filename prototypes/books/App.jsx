@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
+import { useStickyState } from '@components/useStickyState/useStickyState'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 
 import { Dashboard } from '../logging-flow/components/Dashboard'
@@ -33,11 +34,11 @@ let _uid = 0
 export function App() {
   // `tab` is the nav tab; `sub` is a page layered over it (a book, the browse
   // page, a list) that replaces the main column without leaving the tab.
-  const [tab, setTab] = useState('log')
+  const [tab, setTab] = useStickyState('books:tab', 'log')
   // Which pane of My Reading. Discover and My Shelf are panes of it rather than
   // tabs of their own: everything the reader keeps — what they logged, what
   // they saved, what they're looking for next — is one place in the nav.
-  const [logTab, setLogTab] = useState('discover')
+  const [logTab, setLogTab] = useStickyState('books:log-tab', 'discover')
   const [sub, setSub] = useState(null)
   const [challenge, setChallenge] = useState(null)
   const [browseInit, setBrowseInit] = useState(null) // { query?, filter? } seeded into Browse

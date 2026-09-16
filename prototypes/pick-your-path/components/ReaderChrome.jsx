@@ -1,55 +1,45 @@
-import { Icon } from '@components/Icon/Icon'
-import { Button } from '@components/Button/Button'
-import { Tabs } from '@components/Tabs/Tabs'
+import { ReaderTopBar } from '@components/ReaderApp/ReaderApp'
+import { JoyfulFooter, APPS } from '../../footers/JoyfulFooter'
 import { SITE } from '../data'
 
-const NAV_TABS = [
-  { id: 'challenges', label: 'Challenges' },
-  { id: 'reviews', label: 'Reviews' },
-  { id: 'badges', label: 'All Badges' },
-  { id: 'log', label: 'Reading Log' },
-  { id: 'recs', label: 'Recommendations' },
-]
+const READER = {
+  id: 'maya',
+  name: SITE.student.firstName,
+  initials: SITE.student.initials,
+  color: '#F09A77',
+}
 
-// Student-facing reader top bar — its own `.pyp-topbar` chrome (mirrors the
-// web-app reader look without importing its stylesheet). Only Challenges is
-// wired up; the rest of the nav is scaffolding, as elsewhere in the prototypes.
-export function ReaderTopBar({ active = 'challenges', onNav }) {
+/**
+ * Every student-facing screen in this prototype: the shared reader app bar and
+ * page frame, with the screen's own content in the middle.
+ *
+ * This used to be a hand-rolled `.pyp-topbar` — its own logo lockup, its own
+ * reader pill, its own tab strip — beside four other prototypes rendering the
+ * real one. Only Challenges is wired up; the rest of the nav is scaffolding, as
+ * elsewhere in the prototypes.
+ */
+export function ReaderShell({ active = 'challenges', onNav, onLog, children, band }) {
   return (
-    <header className="pyp-topbar">
-      <div className="pyp-topbar-inner">
-        <div className="pyp-logo">
-          <img src="/bs-prototypes/bs.svg" alt="" className="pyp-logo-mark" />
-          <span className="pyp-logo-word">beanstack</span>
-        </div>
-        <div className="pyp-topbar-actions">
-          <Button variant="primary" size="sm">
-            Log Reading and Activities
-          </Button>
-          <Button variant="ghost" size="sm">
-            Write Review
-          </Button>
-        </div>
-        <div className="pyp-topbar-user">
-          <span className="pyp-user-pill">
-            <span className="pyp-user-avatar">{SITE.student.initials}</span>
-            <span className="pyp-user-name">{SITE.student.firstName}</span>
-          </span>
-          <button className="pyp-icon-btn" aria-label="Settings">
-            <Icon name="settings" size={20} />
-          </button>
-        </div>
-      </div>
-      <div className="pyp-tabsbar">
-        <Tabs
-          variant="underline"
-          size="md"
-          active={active}
-          accent="#0F766E"
-          onChange={(id) => id === 'challenges' && onNav?.('challenges')}
-          items={NAV_TABS}
-        />
-      </div>
-    </header>
+    <div className="pyp-reader">
+      <ReaderTopBar
+        reader={READER}
+        /* The site nav is the shared one — `READER_TABS`, the order the app
+           spells it — less the two this school doesn't run. */
+        hideTabs={['reviews', 'leaderboards']}
+        active={active}
+        /* Challenges and Collections are real here; the rest of the nav is
+           scaffolding, as elsewhere in the prototypes. */
+        onTabChange={(id) => ['challenges', 'badges'].includes(id) && onNav?.(id)}
+        onLog={onLog}
+        /* A school site has no account above the reader, so the gear is the
+           reader's own settings rather than a menu. */
+        accountMenu={false}
+      />
+      {band}
+      <main className="wa-main">
+        <div className="wa-main-inner">{children}</div>
+      </main>
+      <JoyfulFooter app={APPS.find((a) => a.id === 'beanstack')} />
+    </div>
   )
 }

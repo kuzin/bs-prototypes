@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
-import { Modal } from '@components/Modal/Modal'
+import { Modal, ModalClose } from '@components/Modal/Modal'
+import { Textarea } from '@components/Form/Form'
 import { WordChips } from './common'
 
 // The extension-activity flow: read the offline prompt, then enter the short
@@ -18,12 +19,9 @@ export function ActivityModal({ activity, path, open, done, response, onClose, o
   const canSubmit = text.trim().length > 0
 
   return (
-    <Modal open={open} onClose={onClose} variant="center" ariaLabel={activity.name}>
+    <Modal open={open} onClose={onClose} variant="center" closeBadge ariaLabel={activity.name}>
+      <ModalClose onClick={onClose} />
       <div className="pyp-activity" style={{ '--path-color': path.color }}>
-        <button className="pyp-activity-close" onClick={onClose} aria-label="Close">
-          <Icon name="x" size={16} stroke={2.2} />
-        </button>
-
         <div className="pyp-activity-head">
           <span className="pyp-activity-icon">
             <Icon name={activity.icon} size={24} stroke={1.8} />
@@ -58,9 +56,10 @@ export function ActivityModal({ activity, path, open, done, response, onClose, o
               <p>{response}</p>
             </div>
           ) : (
-            <textarea
+            <Textarea
               id="pyp-activity-input"
               className="pyp-activity-input"
+              size="lg"
               rows={4}
               value={text}
               placeholder={activity.placeholder}

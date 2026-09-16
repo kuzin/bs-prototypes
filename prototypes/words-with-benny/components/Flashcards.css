@@ -3,62 +3,10 @@
 
 /* ─── The strip above the collection ─────────────────────────────────────── */
 
+/* The strip is `ReaderBanner` now — the bar brings its own ground, mark and
+   chip. All this keeps is the space under it. */
 .fc-strip {
-  display: flex;
-  gap: 13px;
-  align-items: center;
-  padding: 14px 16px;
-  background: linear-gradient(100deg, #f5f3ff, #faf5ff);
-  border: 1px solid #e9d5ff;
-  border-radius: 14px;
-}
-.fc-strip.is-clear {
-  background: #f8f8f8;
-  border-color: #e8eef5;
-}
-
-.fc-strip-art {
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  width: 42px;
-  height: 42px;
-  color: #fff;
-  background: #b43dd0;
-  border-radius: 12px;
-}
-.fc-strip.is-clear .fc-strip-art {
-  color: #acacac;
-  background: #e8eef5;
-}
-
-.fc-strip-copy {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-.fc-strip-lead {
-  font-size: 15px;
-  font-weight: 800;
-  color: #2a2a2a;
-}
-.fc-strip-sub {
-  margin-top: 2px;
-  font-size: 13px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: #707070;
-}
-
-@media (max-width: 620px) {
-  .fc-strip {
-    flex-wrap: wrap;
-  }
-  .fc-strip-copy {
-    flex-basis: calc(100% - 55px);
-  }
-  .fc-strip .btn {
-    width: 100%;
-  }
+  margin-bottom: 18px;
 }
 
 /* ─── The deck ───────────────────────────────────────────────────────────── */

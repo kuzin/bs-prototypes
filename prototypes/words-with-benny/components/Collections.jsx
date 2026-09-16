@@ -48,7 +48,7 @@ export function Collections({ collection, newestWord, cards, onReview }) {
 
       {pane === 'words' && (
         <>
-          <ShelfHead title="Vocabulary" count={collection.length} noun="Words" />
+          <ShelfHead title="Words" count={collection.length} noun="collected" />
           <MyWords
             collection={collection}
             newestWord={newestWord}

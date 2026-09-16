@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { PrototypeNav } from '@components/PrototypeNav/PrototypeNav'
 import { PreviewBar } from '@components/PreviewBar/PreviewBar'
+import { useStickyState } from '@components/useStickyState/useStickyState'
 import { SettingsView } from './views/SettingsView'
 import { ChallengeView } from './views/ChallengeView'
 import { TalkView } from './views/TalkView'
@@ -25,7 +26,7 @@ const VIEWS = [
 ]
 
 export function App() {
-  const [view, setView] = useState('settings')
+  const [view, setView] = useStickyState('btwb:view', 'settings')
   const [settings, setSettings] = useState(DEFAULT_SETTINGS)
 
   // The ticket's default: completion talks are on whenever BTWB is on. Switching

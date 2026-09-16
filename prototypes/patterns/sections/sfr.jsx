@@ -32,6 +32,7 @@ function BennyBubbleKnobs() {
           <Select value={variant} onChange={(e) => setVariant(e.target.value)}>
             <option value="side">side</option>
             <option value="centered">centered</option>
+            <option value="hero">hero</option>
           </Select>
         </Field>
         <Field label="timestamp">
@@ -288,7 +289,9 @@ export const sfrSections = [
         stacks Benny above the bubble with the tail pointing up at him and the copy centred, for a
         centred column: there, a left-hand avatar sits off the axis everything else is composed on,
         and ranged-left copy has no edge to start from. The log flow's post-log handoff is the
-        centred case.
+        centred case. <code>variant="hero"</code> is that one at the size of a moment — a big Benny
+        over big type, for a screen whose whole job is what he is saying, like the word a log just
+        turned up.
       </>
     ),
     render: () => (

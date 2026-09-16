@@ -12,6 +12,9 @@ import '@components/BennyBubble/BennyBubble.css'
  *   centered  avatar above, bubble under it with the tail pointing up, copy
  *             centred — for a centred column, where a left-hand avatar sits off
  *             the axis everything else is composed on.
+ *   hero      the centred one at the size of a moment rather than a remark —
+ *             a big Benny over big type, for a screen whose whole job is what
+ *             he is saying (the word a log just turned up).
  *
  * `timestamp` adds an "Analysis last run on …" line below the bubble.
  *

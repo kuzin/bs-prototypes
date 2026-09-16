@@ -68,6 +68,7 @@ function ToastDemo() {
 function TabsShowcase() {
   const [a, setA] = useState('daily')
   const [b, setB] = useState('overview')
+  const [t, setT] = useState('class')
   const [c, setC] = useState('details')
   const [seg, setSeg] = useState('classes')
   const [folder, setFolder] = useState('schools')
@@ -96,6 +97,22 @@ function TabsShowcase() {
             { id: 'history', label: 'History' },
           ]}
         />
+      </Variant>
+      <Variant label="onTint — the pill track darkened, for a grey page">
+        {/* Drawn on the app's own page grey, because that's the whole point of
+            it: the default track is barely a shade off this ground. */}
+        <div style={{ background: 'var(--c-bg)', padding: 16, borderRadius: 12 }}>
+          <Tabs
+            variant="pill"
+            onTint
+            active={t}
+            onChange={setT}
+            items={[
+              { id: 'class', label: 'Class summary' },
+              { id: 'students', label: 'By student', count: 24 },
+            ]}
+          />
+        </div>
       </Variant>
       <Variant label="folder variant — tabs on top of a panel">
         {/* On a grey ground, because the whole point of the variant is that the
@@ -1141,7 +1158,10 @@ export const moleculesSections = [
 <Tabs active={tab} onChange={setTab} items={[{ id: 'overview', label: 'Overview' }]} />
 
 /* Segmented control / view switcher — never build a separate component */
-<Tabs variant="pill" block active={range} onChange={setRange} items={ranges} />`,
+<Tabs variant="pill" block active={range} onChange={setRange} items={ranges} />
+
+/* \`onTint\` — a darker track, for a pill strip on the page's grey */
+<Tabs variant="pill" onTint active={tab} onChange={setTab} items={items} />`,
     desc: (
       <>
         Horizontal tab strip. <code>items</code> is <code>{'[{ id, label, count?, icon? }]'}</code>.
@@ -1160,6 +1180,12 @@ export const moleculesSections = [
         <br />
         If the panel carries a border, inset the strip by that border width — the active tab has to
         line up with the panel&apos;s <em>interior</em>, and the outline sits outside it.
+        <br />
+        <br />
+        <code>onTint</code> darkens the pill track one step, for a strip that sits on the app&apos;s
+        page grey rather than on white — against that ground the default track is barely a shade off
+        the page and the strip reads as loose buttons. The classroom&apos;s Vocabulary tab is the
+        case.
         <br />
         <br />
         <code>plain</code> drops the pill variant&apos;s track and gives the active pill a grey fill

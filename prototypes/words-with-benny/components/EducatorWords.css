@@ -197,3 +197,52 @@
     align-items: flex-start;
   }
 }
+
+/* The page's filter bar, sitting off the header rather than against it. */
+.ew-filters {
+  margin: 18px 0;
+}
+.ew-filters .sel-wrap {
+  min-width: 220px;
+}
+.ew-wall-empty {
+  padding: 40px 0;
+  font-size: 14px;
+  color: var(--c-text-light);
+  text-align: center;
+}
+
+/* ── The word wall's hover card ─────────────────────────────────────────────
+   WordCloud draws the box; this is what goes in it. */
+
+.ew-tip-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.ew-tip-word {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+.ew-tip-part {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--c-text-light);
+}
+.ew-tip-meaning {
+  margin: 4px 0 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--c-gray-800);
+}
+.ew-tip-foot {
+  margin: 8px 0 0;
+  padding-top: 7px;
+  border-top: 1px solid var(--c-border);
+  font-size: 12px;
+  color: var(--c-text-light);
+}
+.ew-tip-foot strong {
+  color: var(--c-gray-800);
+}

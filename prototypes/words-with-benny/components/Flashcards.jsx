@@ -1,10 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
 import { Button } from '@components/Button/Button'
+import { ReaderBanner, ReaderBannerAction } from '@components/ReaderApp/ReaderApp'
 import '@components/Button/Button.css'
 
 import { BOOKS, boxInfo, dueCards, wordByName } from '../data'
 import './Flashcards.css'
+
+/* This prototype's own book lookup, as the default — a prototype that brings
+   its own words passes `wordFor` / `bookFor` instead. */
+const bookById = (id) => BOOKS[id]
 
 // The collection, turned round. Everything else in this prototype pushes words
 // *into* the collection; this is the one surface that hands them back — a deck
@@ -26,39 +31,47 @@ const nextUpIn = (box) => {
   return days === 1 ? 'tomorrow' : `in ${days} days`
 }
 
-/** The strip that sits above the collection and says the deck is waiting. */
+/**
+ * The bar above the collection that says the deck is waiting.
+ *
+ * It is `ReaderBanner` — the same bar the streak, the community goal and the
+ * partner prompt all use. A deck coming due is exactly what that bar is for:
+ * one line of news about the reader, with the one thing to do about it at the
+ * end. It was a shape of its own, which meant its own hover, its own chip and
+ * its own idea of how tall a bar is.
+ */
 export function ReviewStrip({ cards, onStart }) {
   const due = dueCards(cards).length
   const total = Object.keys(cards).length
   const known = Object.values(cards).filter((c) => c.box >= 4).length
 
   return (
-    <div className={`fc-strip${due ? '' : ' is-clear'}`}>
-      <span className="fc-strip-art" aria-hidden="true">
-        <Icon name="layers" size={22} stroke={1.9} />
-      </span>
-      <div className="fc-strip-copy">
-        <p className="fc-strip-lead">
-          {due
-            ? `${due} ${due === 1 ? 'word is' : 'words are'} ready for another look`
-            : 'Deck’s all caught up'}
-        </p>
-        <p className="fc-strip-sub">
-          {due
-            ? 'Flip through them and I’ll space the ones you know further apart.'
-            : `${known} of your ${total} words are sticking. I’ll bring the rest back as they come due.`}
-        </p>
-      </div>
-      <Button variant={due ? 'primary' : 'secondary'} size="md" onClick={onStart}>
-        {due ? `Review ${due}` : 'Study anyway'}
-      </Button>
-    </div>
+    <ReaderBanner
+      className="fc-strip"
+      tone={due ? 'purple' : 'green'}
+      mark={<Icon name="layers" size={20} stroke={1.9} />}
+      title={
+        due
+          ? `${due} ${due === 1 ? 'word is' : 'words are'} ready for another look`
+          : 'Deck’s all caught up'
+      }
+      sub={
+        due
+          ? 'Flip through them and I’ll space the ones you know further apart.'
+          : `${known} of your ${total} words are sticking. I’ll bring the rest back as they come due.`
+      }
+      action={
+        <ReaderBannerAction solid={Boolean(due)} onClick={onStart}>
+          {due ? `Review ${due}` : 'Study anyway'}
+        </ReaderBannerAction>
+      }
+    />
   )
 }
 
 /** One card. Front is the word alone; the back is everything the reader banked. */
-function Card({ word, entry, flipped, onFlip }) {
-  const book = entry?.bookId ? BOOKS[entry.bookId] : null
+function Card({ word, entry, flipped, onFlip, bookFor = bookById }) {
+  const book = entry?.bookId ? bookFor(entry.bookId) : null
   return (
     <button
       className={`fc-card${flipped ? ' is-flipped' : ''}`}
@@ -80,7 +93,7 @@ function Card({ word, entry, flipped, onFlip }) {
             {word.say} <em>· {word.part}</em>
           </span>
           <span className="fc-back-meaning">{word.meaning}</span>
-          <span className="fc-back-example">“{word.check.correct}”</span>
+          {word.check?.correct && <span className="fc-back-example">“{word.check.correct}”</span>}
           {book && (
             <span className="fc-back-from">
               <Icon name="book" size={13} /> {book.title}
@@ -93,7 +106,15 @@ function Card({ word, entry, flipped, onFlip }) {
   )
 }
 
-export function Flashcards({ open, cards, collection, onGrade, onClose }) {
+export function Flashcards({
+  open,
+  cards,
+  collection,
+  onGrade,
+  onClose,
+  wordFor = wordByName,
+  bookFor = bookById,
+}) {
   // The deck is fixed at the moment it's opened — grading a card must not
   // reshuffle the pile under the reader mid-session.
   const deck = useMemo(() => {
@@ -134,7 +155,7 @@ export function Flashcards({ open, cards, collection, onGrade, onClose }) {
   if (!open) return null
 
   const name = deck[i]
-  const word = name ? wordByName(name) : null
+  const word = name ? wordFor(name) : null
   const card = name ? cards[name] : null
   const entry = name ? collection.find((e) => e.word === name) : null
   const finished = i >= deck.length
@@ -163,6 +184,7 @@ export function Flashcards({ open, cards, collection, onGrade, onClose }) {
             entry={entry}
             flipped={flipped}
             onFlip={() => setFlipped((f) => !f)}
+            bookFor={bookFor}
           />
 
           {flipped ? (
