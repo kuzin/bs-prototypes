@@ -581,7 +581,7 @@ export function App() {
               </div>
               <IconButton
                 variant="ghost"
-                size="sm"
+                size="xs"
                 onClick={close}
                 aria-label="Close preview"
                 className="modal-close"

@@ -5,15 +5,28 @@
    And it is an actual bar: a tinted strip with the page's own border and
    radius. Transparent, a label and some chips floating over the results read
    as part of the list rather than as a statement about it. */
+/* Two columns, not one wrapping row: the chips take as much of the bar as they
+   need and wrap inside their own column, and the action sits beside them in the
+   top corner. As one row, `margin-left: auto` only pushed "Clear all" to the
+   end of *its* line — so the moment the chips wrapped it dropped to the last
+   line and read as one more chip. */
 .af-bar {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1fr auto;
   gap: 8px;
-  align-items: center;
+  align-items: start;
   padding: 10px 14px;
   background: var(--c-gray-0);
   border: 1px solid var(--c-border);
   border-radius: 10px;
+}
+
+.af-set {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  min-width: 0;
 }
 
 .af-label {
@@ -48,23 +61,30 @@
 }
 
 /* Clear all ends the row rather than trailing the last chip: it acts on the
-   whole set, and after the chips it reads as one more of them. */
+   whole set, and after the chips it reads as one more of them.
+
+   It carries the secondary button's hairline rather than being bare text: in a
+   row of bordered chips, the one thing with no edge read as a caption, and it
+   is the only control in the bar that does something irreversible. */
 .af-clear-all {
-  margin-left: auto;
-  font-size: var(--text-label);
-  font-weight: 600;
-  color: var(--c-gray-600);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 4px 6px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 11px;
+  height: 30px;
   font-family: inherit;
-  border-radius: 6px;
+  font-size: var(--text-label);
+  font-weight: 700;
+  color: var(--c-text);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--c-gray-300);
+  border-radius: 8px;
   transition:
     color 0.1s,
-    background 0.1s;
+    background 0.1s,
+    border-color 0.1s;
 }
 .af-clear-all:hover {
-  color: var(--c-gray-750);
-  background: var(--c-gray-100);
+  background: var(--c-gray-0);
+  border-color: var(--c-gray-500);
 }

@@ -10,7 +10,8 @@ import { LogFlow } from '@components/LogFlow/LogFlow'
 import { BookCover } from '@components/BookCover/BookCover'
 import { AllBadges } from './components/AllBadges'
 import { Friends } from './components/Friends'
-import { ReviewsPage } from './components/ReviewsPage'
+import { Reviews } from './components/Reviews'
+import { PeerReviews } from './components/PeerReviews'
 import { WishList } from './components/WishList'
 import { BookLists, BookListPage } from './components/BookLists'
 import { FindBooks } from './components/FindBooks'
@@ -100,12 +101,15 @@ const TODAY = 'Jun 16, 2026'
 // The tabs in the real nav that the dashboard has never had a page for. This
 // prototype builds them, so it claims them by id rather than letting the
 // dashboard bounce them back to Challenges.
-const OWN_TABS = ['badges', 'friends', 'reviews']
+const OWN_TABS = ['badges', 'friends']
 
-// Leaderboards isn't a top-level destination here — it's a sub-tab of Friends,
-// since the profile pairs the two on one page and they're two views of the same
-// people.
-const HIDE_TABS = ['leaderboards']
+// Neither Leaderboards nor Reviews is a top-level destination here.
+// Leaderboards is a sub-tab of Friends, since the profile pairs the two on one
+// page and they're two views of the same people. Reviews sits under My Reading
+// with the log, the Wish List and the Book Lists: a review is a thing you write
+// about what you read, and the nav had it standing apart from everything you
+// read.
+const HIDE_TABS = ['leaderboards', 'reviews']
 
 // Under Reading, after the log itself: what the reader has read is the log's
 // own three views, and these are what they mean to read next and where to find
@@ -502,7 +506,6 @@ export function App() {
     if (id === 'fundraisers') return <FundraiserPage fundraiser={FUNDRAISER} entries={shownLog} />
     if (id === 'badges') return <AllBadges />
     if (id === 'friends') return <Friends library={library} />
-    if (id === 'reviews') return <ReviewsPage composing={composing} onCompose={setComposing} />
     return null
   }
 
@@ -554,7 +557,8 @@ export function App() {
         dailyGoal={dailyGoal}
         onLog={() => setFlowOpen(true)}
         onReview={() => {
-          setView('reviews')
+          setView('log')
+          setLogTab('reviews')
           setChallenge(null)
           setComposing({ kind: 'written' })
         }}
@@ -576,6 +580,8 @@ export function App() {
         logTabs={[
           { id: 'wish', label: 'Wish List', count: wish.length },
           { id: 'lists', label: 'Book Lists', count: BOOK_LISTS.length },
+          { id: 'reviews', label: 'Reviews' },
+          { id: 'peer', label: 'Peer Reviews' },
         ]}
         logTab={logTab}
         onLogTab={setLogTab}
@@ -585,6 +591,10 @@ export function App() {
               onOpenList={(list) => push({ kind: 'list', list, back: 'Back to Book Lists' })}
               onFindBooks={() => push({ kind: 'browse', back: 'Back to Book Lists' })}
             />
+          ) : id === 'reviews' ? (
+            <Reviews composing={composing} onCompose={setComposing} />
+          ) : id === 'peer' ? (
+            <PeerReviews />
           ) : (
             <WishList
               items={wish}
@@ -671,7 +681,8 @@ export function App() {
                  a review badge sends you to write one, an activity badge to
                  its activities. */
               onReview={() => {
-                setView('reviews')
+                setView('log')
+                setLogTab('reviews')
                 setChallenge(null)
                 setComposing({ kind: 'written' })
               }}

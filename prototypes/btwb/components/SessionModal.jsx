@@ -72,7 +72,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
               <div className="sm2-reader-meta">{session.student.grade} Grade</div>
               <IconButton
                 variant="ghost"
-                size="md"
+                size="sm"
                 className="sm2-view-profile"
                 aria-label="View profile"
                 title="View profile"
@@ -265,7 +265,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
           <div className="sm2-footer-left">
             <IconButton
               variant="secondary"
-              size="lg"
+              size="md"
               disabled={!prev}
               onClick={() => prev && onSelectSession?.(prev)}
               aria-label="Previous session"
@@ -274,7 +274,7 @@ export function SessionModal({ session, onSelectSession, onClose }) {
             </IconButton>
             <IconButton
               variant="secondary"
-              size="lg"
+              size="md"
               disabled={!next}
               onClick={() => next && onSelectSession?.(next)}
               aria-label="Next session"

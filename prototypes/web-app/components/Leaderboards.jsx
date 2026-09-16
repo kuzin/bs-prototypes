@@ -49,17 +49,28 @@ function Rank({ rank }) {
   return <span className={`lb-medal lb-medal--${rank}`}>{rank}</span>
 }
 
-export function Leaderboards({ onOpenFriend, onAddFriend }) {
+/**
+ * `types` and `getRows` are additive, and go together: a prototype that gives
+ * readers a fourth thing to be ranked by appends it to the type strip and
+ * answers for its rows, delegating the built-in two back to `leaderboardRows`.
+ * Words with Benny ranks words collected that way.
+ */
+export function Leaderboards({
+  onOpenFriend,
+  onAddFriend,
+  types = LEADERBOARD_TYPES,
+  getRows = leaderboardRows,
+}) {
   const [board, setBoard] = useState('friends')
-  const [type, setType] = useState('minutes')
+  const [type, setType] = useState(types[0].id)
   const [period, setPeriod] = useState('week')
   // Who you've asked from this page, so the button reports back in place
   // rather than the row simply going quiet.
   const [asked, setAsked] = useState([])
 
   const boardLabel = LEADERBOARD_BOARDS.find((b) => b.id === board).label
-  const typeDef = LEADERBOARD_TYPES.find((t) => t.id === type)
-  const rows = leaderboardRows(board, type, period)
+  const typeDef = types.find((t) => t.id === type) ?? types[0]
+  const rows = getRows(board, type, period)
 
   const columns = [
     {
@@ -209,7 +220,7 @@ export function Leaderboards({ onOpenFriend, onAddFriend }) {
           accent="#1A6DD5"
           onChange={setType}
           ariaLabel="Which log type"
-          items={LEADERBOARD_TYPES.map((t) => ({ id: t.id, label: t.label }))}
+          items={types.map((t) => ({ id: t.id, label: t.label }))}
         />
       </div>
 

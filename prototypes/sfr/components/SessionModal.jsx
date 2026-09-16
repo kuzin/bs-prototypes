@@ -472,7 +472,7 @@ export function SessionModal({
                   {onViewProfile && (
                     <IconButton
                       variant="ghost"
-                      size="md"
+                      size="sm"
                       className="sm2-view-profile"
                       onClick={() => onViewProfile(d.student)}
                       aria-label="View profile"
@@ -725,7 +725,7 @@ export function SessionModal({
                 <>
                   <IconButton
                     variant="secondary"
-                    size="lg"
+                    size="md"
                     disabled={!goPrev}
                     onClick={goPrev}
                     aria-label="Previous session (left arrow key)"
@@ -734,7 +734,7 @@ export function SessionModal({
                   </IconButton>
                   <IconButton
                     variant="secondary"
-                    size="lg"
+                    size="md"
                     disabled={!goNext}
                     onClick={goNext}
                     aria-label="Next session (right arrow key)"

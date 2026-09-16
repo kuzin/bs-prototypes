@@ -110,29 +110,40 @@
 }
 
 /* Sizes — the admin icon button is 36px with a 20px glyph. */
-.icnb--sm {
+/* The same rungs `Button` and the form fields stand on, by the same names —
+   36 / 44 / 52. They used to run 28 / 36 / 44, so an icon button and a button
+   asking for the same rung by name came out 28px against 36px, and the JSX
+   gave no hint of it. The 28px rung is still here; it is `xs`, which is
+   what it always was. */
+.icnb--xs {
   width: 28px;
   height: 28px;
   border-radius: 7px;
 }
-.icnb--md {
+.icnb--sm {
   width: 36px;
   height: 36px;
 }
-.icnb--lg {
+.icnb--md {
   width: 44px;
   height: 44px;
   border-radius: 10px;
+}
+.icnb--lg {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
 }
 
 .icnb svg {
   width: 20px;
   height: 20px;
 }
-.icnb--sm svg {
+.icnb--xs svg {
   width: 16px;
   height: 16px;
 }
+.icnb--md svg,
 .icnb--lg svg {
   width: 24px;
   height: 24px;

@@ -438,8 +438,10 @@ const dragFor = useDragReorder((from, to) => reorder(from, to))
         template&apos;s own art at the front of the list.
       </>
     ),
+    // Not `full`: the gallery draws its own columns but no outer edge, so
+    // bleeding it to the card's rim put the set labels hard against it.
     render: () => (
-      <Variant label="sets, search, and a colour filter" full>
+      <Variant label="sets, search, and a colour filter">
         <BadgeGalleryDemo />
       </Variant>
     ),

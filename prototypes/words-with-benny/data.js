@@ -12,6 +12,9 @@
 export { READER, coverUrl, STREAK, DAILY_GOAL } from '../logging-flow/data'
 
 import { BOOKS as LF_BOOKS } from '../logging-flow/data'
+// The reader's friends are web-app's friends — the same people, the same
+// faces, met again in the prototype that asks what their reading turned up.
+import { FRIENDS, SITE_READERS } from '../web-app/data'
 
 // ─── Books ───────────────────────────────────────────────────────────────────
 // Ordinary books only. logging-flow's catalog carries titles that live in a
@@ -924,6 +927,104 @@ export const rangeIsCurrent = (id) => rangeBounds(id)[1] === null
 /** Every word every student has collected, dated — what a window counts. */
 export function classCollection() {
   return ROSTER.flatMap((s) => collectionFor(s.id).map((w) => ({ ...w, studentId: s.id })))
+}
+
+// ─── Other readers' collections ──────────────────────────────────────────────
+// Words are collected by logging, and logging is something the reader's friends
+// do too — so a friend has a collection, and the friends board can rank one
+// against another. The people are web-app's, not new ones: the same friends,
+// the same faces and the same reading, met again in the one prototype that asks
+// what their reading turned up.
+
+/* A word every couple of logs is the rule (`UNLOCK_EVERY`), but not every log
+   offers one — a reader is already holding some of the words their next book
+   carries. Across a year that settles at roughly seven words per ten titles,
+   which is exactly where the reader's own seeded collection sits (19 words
+   against 27 titles), so the same ratio gives everybody else a believable
+   number without a second fixture to keep in step. */
+export const wordsFromTitles = (titles) => Math.round(titles * 0.7)
+
+/** Everyone the friends board ranks, the reader included. */
+export const READERS = [
+  ...FRIENDS.map((f) => ({ ...f, isFriend: true })),
+  ...SITE_READERS,
+  { id: 'olivia', name: 'Olivia M.', initials: 'OM', color: '#F26430', booksThisYear: 27 },
+]
+
+const readerIndex = (id) =>
+  Math.max(
+    0,
+    READERS.findIndex((r) => r.id === id),
+  )
+
+/**
+ * Another reader's collection — the same shape as the reader's own, so every
+ * surface that draws a collection (the shelf, the tiles, the stats) draws this
+ * one too.
+ *
+ * Deterministic, and dated the same way the classroom's are: oldest first, up
+ * to Jun 26, at a cadence of its own so two readers' weeks don't march in step.
+ */
+export function collectionForReader(id) {
+  const person = READERS.find((r) => r.id === id)
+  if (!person) return []
+  // Only words that name a book, so every row cites a title.
+  const pool = ALL_WORDS.filter((x) => x.bookId)
+  const n = Math.min(wordsFromTitles(person.booksThisYear ?? 0), pool.length)
+  const i = readerIndex(id)
+  // A rate in the seventies to the mid-nineties, steady per person — nobody
+  // aces every word and nobody misses most of them.
+  const firstTry = 72 + ((i * 7) % 24)
+  const retries = Math.round((n * (100 - firstTry)) / 100)
+  const retried = new Set(
+    Array.from({ length: retries }, (_, k) => Math.floor(((k + 0.5) * n) / Math.max(retries, 1))),
+  )
+  const END = Date.UTC(2026, 5, 26)
+  const stride = 2 + (i % 3)
+  return Array.from({ length: n }, (_, k) => {
+    const src = pool[(i * 5 + k) % pool.length]
+    const day = new Date(END - ((n - 1 - k) * stride + ((k * 7) % 3)) * 86400000)
+    return {
+      word: src.word,
+      bookId: src.bookId,
+      date: day.toISOString().slice(0, 10),
+      firstTry: !retried.has(k),
+    }
+  })
+}
+
+/** How many words someone has collected — the figure the board ranks on. */
+export const wordsCollectedBy = (id) => collectionForReader(id).length
+
+/** The type strip's fourth entry, and the one this prototype exists for. */
+export const WORDS_LEADERBOARD_TYPE = {
+  id: 'words',
+  label: 'Words',
+  column: 'Words collected',
+}
+
+/* The board's two periods, as the first day each one counts from. The app
+   spells them out — "This Week (Since Monday)", "This Month (Since the 1st)" —
+   so they are exactly that, against the fixtures' own Sunday. */
+const PERIOD_FROM = { week: '2026-06-22', month: '2026-06-01' }
+
+/**
+ * The friends board, ranked by words collected in the period.
+ *
+ * Every other reader's collection is dated, so the window is a real cut of it
+ * rather than a scaled guess. The reader's own is passed in live, because hers
+ * is the one that moves while you watch: collect a word and her row climbs.
+ */
+export function wordLeaderboardRows(mine, period = 'week') {
+  const from = PERIOD_FROM[period] ?? PERIOD_FROM.week
+  const since = (rows) => rows.filter((e) => e.date >= from).length
+  return READERS.map((p) => ({
+    ...p,
+    isMe: p.id === 'olivia',
+    value: since(p.id === 'olivia' ? mine : collectionForReader(p.id)),
+  }))
+    .sort((a, b) => b.value - a.value)
+    .map((row, i) => ({ ...row, rank: i + 1 }))
 }
 
 // ─── Activities ──────────────────────────────────────────────────────────────

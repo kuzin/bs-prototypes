@@ -38,7 +38,7 @@ import { TrendChip } from '@components/TrendChip/TrendChip'
 import { ToastStack, useToasts } from '@components/Toast/Toast'
 import { CompleteToggle } from '@components/CompleteToggle/CompleteToggle'
 import { RowAction, RowActions } from '@components/RowAction/RowAction'
-import { PlumpyIcon, PLUMPY_NAMES } from '@components/PlumpyIcon/PlumpyIcon'
+import { PlumpyIcon, hasPlumpy } from '@components/PlumpyIcon/PlumpyIcon'
 import { BsIcon, FlagIcon } from '@components/BsIcons/BsIcons'
 import { Pill } from '@components/Pill/Pill'
 import { Icon } from '@components/Icon/Icon'
@@ -727,11 +727,7 @@ function StatRow({ icon, accent, label, children, onOpen }) {
             draws rather than vanishing. Plumpy runs a rung bigger: it's a
             filled duotone shape, so it reads smaller than a stroked icon at
             the same box. */}
-        {PLUMPY_NAMES.includes(icon) ? (
-          <PlumpyIcon name={icon} size={18} />
-        ) : (
-          <Icon name={icon} size={16} />
-        )}
+        {hasPlumpy(icon) ? <PlumpyIcon name={icon} size={18} /> : <Icon name={icon} size={16} />}
       </span>
       <span className="rp-statrow-label">{label}</span>
       {children}

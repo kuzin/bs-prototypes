@@ -1,0 +1,42 @@
+/* The Words tab on a friend's profile. The modal is a 480px column, so both
+   blocks give up the reader's own wider geometry: the Statistics tiles pair up
+   rather than stacking one per row, and the tiles go two across. */
+
+.fw-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.fw-stats .rc-stat {
+  padding: 12px 13px;
+  border-radius: 12px;
+}
+.fw-stats .rc-stat-lbl {
+  font-size: 12px;
+}
+
+.fw-grid {
+  display: grid;
+  margin-top: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+  gap: 10px;
+}
+
+/* The tiles are the reader's own, one step down: in a modal column they carry
+   the same three lines in less room. */
+.fw-grid .mw-tile {
+  padding: 12px 13px;
+}
+.fw-grid .mw-tile-word {
+  font-size: 16px;
+}
+.fw-grid .mw-tile-meaning {
+  font-size: 13px;
+}
+
+.fw-more {
+  margin: 14px 0 0;
+  font-size: 13px;
+  color: var(--c-text-light);
+  text-align: center;
+}

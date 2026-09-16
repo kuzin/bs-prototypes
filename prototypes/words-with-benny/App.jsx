@@ -12,7 +12,15 @@ import { Dashboard } from '../logging-flow/components/Dashboard'
 import { LogFlow } from '@components/LogFlow/LogFlow'
 import { LOG_FIXTURES } from '../logging-flow/data'
 
+// Friends, its leaderboards and the friend profile are web-app's real pages —
+// this prototype hangs its vocabulary on them rather than building a second set.
+import { Friends } from '../web-app/components/Friends'
+import { Reviews } from '../web-app/components/Reviews'
+import { PeerReviews } from '../web-app/components/PeerReviews'
+import { LEADERBOARD_TYPES, leaderboardRows } from '../web-app/data'
+
 import { WordUnlock } from './components/WordUnlock'
+import { FriendWords } from './components/FriendWords'
 import { Flashcards } from './components/Flashcards'
 import { Collections } from './components/Collections'
 // The real classroom page, straight out of the Student Profile prototype.
@@ -30,10 +38,13 @@ import {
   DAILY_GOAL,
   TODAY,
   UNLOCK_EVERY,
+  WORDS_LEADERBOARD_TYPE,
   gradeCard,
   newCard,
   pickWord,
   seedReviews,
+  wordLeaderboardRows,
+  wordsFromTitles,
 } from './data'
 
 import './index.css'
@@ -55,14 +66,17 @@ const NO_PARTNERS = {
 // logging-flow's Comics Plus titles and Scholastic magazine issues.
 const OWN_BOOKS = { books: BOOKS, recentlyLogged: RECENTLY_LOGGED }
 
-// `short` is what the preview bar's strip swaps to before it would overflow.
+/* Just the destination. The bar sat above a screen that already says whose it
+   is — a blue admin rail or a reader's white top bar — and "Reader ·" on three
+   of five was a prefix you read past every time. The glyphs carry the split. */
 const VIEWS = [
-  { id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' },
-  { id: 'words', label: 'Reader · Collections', short: 'Collections', icon: 'vocabulary' },
-  { id: 'educator', label: 'Educator · Classroom', short: 'Classroom', icon: 'chart-bar' },
+  { id: 'log', label: 'Log Reading', icon: 'book' },
+  { id: 'words', label: 'Collections', icon: 'vocabulary' },
+  { id: 'friends', label: 'Friends', icon: 'users' },
+  { id: 'educator', label: 'Classroom', icon: 'chart-bar' },
   // The feature's own educator surface is a tab inside the classroom page, so
   // reaching it meant two clicks past the bar. This lands on it directly.
-  { id: 'edu-vocab', label: 'Educator · Vocabulary', short: 'Vocabulary', icon: 'vocabulary' },
+  { id: 'edu-vocab', label: 'Word Report', icon: 'report-analytics' },
 ]
 
 export function App() {
@@ -101,6 +115,11 @@ export function App() {
   const [readerTab, setReaderTab] = useStickyState('words-with-benny:reader-tab', 'challenges')
 
   const [openStudent, setOpenStudent] = useState(null)
+
+  // My Reading's own sub-tab, and whether a review is being written — the top
+  // bar's "Write a Review" opens one on the tab that holds them.
+  const [logTab, setLogTab] = useStickyState('words-with-benny:log-tab', 'log')
+  const [composing, setComposing] = useState(null)
 
   function handleLogged(entry) {
     setStreak((s) => ({ ...s, current: Math.max(s.current, 1) }))
@@ -183,8 +202,12 @@ export function App() {
     setView('words')
   }
 
-  // The two reader views are the same page — just a different tab on it.
-  const readerView = view === 'words' ? 'collections' : readerTab
+  // The reader views are all the same page — just a different tab on it. The
+  // bar and the nav name the same places differently in one spot, so the
+  // mapping lives here rather than in three separate conditionals.
+  const TAB_FOR_VIEW = { words: 'collections', friends: 'friends', log: 'challenges' }
+  const VIEW_FOR_TAB = { collections: 'words', friends: 'friends' }
+  const readerView = TAB_FOR_VIEW[view] && view !== 'log' ? TAB_FOR_VIEW[view] : readerTab
 
   return (
     <div className="wb-root">
@@ -195,8 +218,7 @@ export function App() {
         active={view}
         onChange={(id) => {
           setView(id)
-          if (id === 'log') setReaderTab('challenges')
-          if (id === 'words') setReaderTab('collections')
+          if (TAB_FOR_VIEW[id]) setReaderTab(TAB_FOR_VIEW[id])
         }}
         actions={
           <>
@@ -255,23 +277,73 @@ export function App() {
             view={readerView}
             onView={(id) => {
               setReaderTab(id)
-              setView(id === 'collections' ? 'words' : 'log')
+              setView(VIEW_FOR_TAB[id] ?? 'log')
             }}
             // Collections supersedes the built-in "All Badges" tab — words,
             // badges and achievements are one destination, not three.
             extraTabs={[{ id: 'collections', label: 'Collections' }]}
-            // Collections supersedes All Badges; the Reading Log is off because
-            // this prototype is about what a log *unlocks*, and a second place
-            // to read the log back only draws the eye away from that.
-            hideTabs={['badges', 'log']}
-            renderExtra={() => (
-              <Collections
-                collection={collection}
-                newestWord={newestWord}
-                cards={cards}
-                onReview={() => setDeckOpen(true)}
-              />
-            )}
+            // All Badges is superseded by Collections. Leaderboards and Reviews
+            // are hidden because neither is a top-level destination any more —
+            // the board is a pane of Friends, and Reviews a tab of My Reading.
+            hideTabs={['badges', 'leaderboards', 'reviews']}
+            /* Reviews lives under My Reading rather than beside it, the same
+               way it does in web-app: a review is something you write about
+               what you read. */
+            logTabs={[
+              { id: 'reviews', label: 'Reviews' },
+              { id: 'peer', label: 'Peer Reviews' },
+            ]}
+            logTab={logTab}
+            onLogTab={setLogTab}
+            renderLogTab={(id) =>
+              id === 'peer' ? (
+                <PeerReviews />
+              ) : (
+                <Reviews composing={composing} onCompose={setComposing} />
+              )
+            }
+            onReview={() => {
+              setReaderTab('log')
+              setLogTab('reviews')
+              setView('log')
+              setComposing({ kind: 'written' })
+            }}
+            // Friends is the reader's other half of this feature: the same
+            // people, ranked by what their reading turned up and each carrying
+            // a collection of their own. It's web-app's real Friends page,
+            // claimed by id and handed the vocabulary layer through the
+            // additive slots it takes for exactly this.
+            ownTabs={['friends']}
+            renderExtra={(id) =>
+              id === 'friends' ? (
+                <Friends
+                  friendTabs={[{ id: 'words', label: 'Words' }]}
+                  renderFriendTab={(_tab, friend) => <FriendWords friend={friend} />}
+                  leaderboardTypes={[...LEADERBOARD_TYPES, WORDS_LEADERBOARD_TYPE]}
+                  leaderboardRows={(board, type, period) => {
+                    if (type !== 'words') return leaderboardRows(board, type, period)
+                    // A grade and a school have no collection of their own to
+                    // count, but they do have the titles behind one — so their
+                    // figure is the same ratio every reader's is derived from,
+                    // applied to the board's own books number.
+                    if (board !== 'friends') {
+                      return leaderboardRows(board, 'books', period).map((r) => ({
+                        ...r,
+                        value: wordsFromTitles(r.value),
+                      }))
+                    }
+                    return wordLeaderboardRows(collection, period)
+                  }}
+                />
+              ) : (
+                <Collections
+                  collection={collection}
+                  newestWord={newestWord}
+                  cards={cards}
+                  onReview={() => setDeckOpen(true)}
+                />
+              )
+            }
           />
         )}
       </div>

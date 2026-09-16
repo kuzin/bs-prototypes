@@ -16,9 +16,13 @@
      --preview-bar-h is published so a prototype can size a full-height shell
      below the bar (`height: calc(100vh - var(--preview-bar-h) - …)`) or stick a
      header under it, instead of hard-coding a pixel guess. */
-  --pvb-pill-h: 33px;
-  --pvb-tray-h: calc(var(--pvb-pill-h) + 8px); /* + the tray's 4px padding */
-  --preview-bar-h: calc(var(--pvb-tray-h) + 20px); /* + the bar's 10px padding */
+  /* Small on purpose. This is the reviewer's chrome sitting on top of the
+     screen under review, and it was reading as part of the product — a 33px
+     pill in 14px bold is the size of the app's own tabs. It steps down a rung
+     so the eye goes past it to the page. */
+  --pvb-pill-h: 26px;
+  --pvb-tray-h: calc(var(--pvb-pill-h) + 6px); /* + the tray's 3px padding */
+  --preview-bar-h: calc(var(--pvb-tray-h) + 14px); /* + the bar's 7px padding */
 }
 
 /* The same bargain the prototype nav makes: this bar paints above the modal
@@ -39,7 +43,7 @@ html:has(.pvb) {
   gap: 8px 18px;
   align-items: center;
   min-height: var(--preview-bar-h);
-  padding: 10px 18px;
+  padding: 7px 14px;
   color: #fff;
   background: var(--c-gray-900);
 }
@@ -49,32 +53,51 @@ html:has(.pvb) {
   top: 0;
 }
 
+/* A button now, so it has to give back what a button brings: its own font,
+   centred text, a border and a background. */
 .pvb-titles {
   display: flex;
   flex: none;
   flex-direction: column;
   min-width: 0;
+  padding: 3px 7px;
+  margin-left: -7px;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
   line-height: 1.15;
+  transition: background 0.15s ease;
+}
+.pvb-titles:hover {
+  background: rgb(255 255 255 / 10%);
+}
+.pvb-titles:focus-visible {
+  outline: 2px solid rgb(255 255 255 / 70%);
+  outline-offset: 1px;
 }
 .pvb-title {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 800;
   white-space: nowrap;
 }
 .pvb-subtitle {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--c-gray-500);
   white-space: nowrap;
 }
 
 .pvb-views {
   display: flex;
-  gap: 4px;
+  gap: 2px;
   height: var(--pvb-tray-h);
-  padding: 4px;
+  padding: 3px;
   margin-left: auto;
   background: rgb(255 255 255 / 8%);
-  border-radius: 12px;
+  border-radius: 9px;
   /* Last resort on very narrow screens: scroll the strip rather than let it
      push the title around or spill off the page. */
   max-width: 100%;
@@ -88,17 +111,17 @@ html:has(.pvb) {
 .pvb-view {
   display: flex;
   flex: none;
-  gap: 7px;
+  gap: 5px;
   align-items: center;
   height: var(--pvb-pill-h);
-  padding: 0 13px;
-  font-size: 14px;
+  padding: 0 9px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--c-gray-400);
   white-space: nowrap;
   background: transparent;
   border: 0;
-  border-radius: 9px;
+  border-radius: 7px;
   transition:
     background 0.15s ease,
     color 0.15s ease;
@@ -140,9 +163,9 @@ html:has(.pvb) {
   gap: 5px;
   align-items: center;
   height: var(--pvb-tray-h);
-  padding: 0 12px;
+  padding: 0 10px;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: var(--c-gray-400);
   background: transparent;
@@ -168,8 +191,8 @@ html:has(.pvb) {
 @media (max-width: 760px) {
   .pvb {
     flex-wrap: wrap;
-    gap: 10px;
-    padding: 10px 14px;
+    gap: 8px;
+    padding: 7px 12px;
   }
   .pvb-views {
     justify-content: flex-start;

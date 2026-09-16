@@ -7,6 +7,12 @@
      row for two lines of type, and a list of them read as a form rather than a
      list of switches. */
   padding: 10px 0;
+  /* One floor for every row, whatever is in it: the md control ladder's 44px
+     plus this padding. A list mixes a bare switch (40px), a switch over a
+     sub-line (55) and a select (65), and at their natural heights the hairlines
+     between them fell at four different rhythms down one card. Centred, so a
+     short row sits on the same line its neighbours do. */
+  min-height: 64px;
 }
 .setting-row.is-disabled .setting-row-text {
   opacity: 0.5;
@@ -67,15 +73,21 @@
   border-top: 0;
 }
 
-/* Where a list runs to the edge of a card, its end rows' padding sits on top of
-   the card's own and leaves the first label a rung lower than anything else in
-   the card. The rows keep the padding between each other and give back the
-   padding at whichever end meets the card — the top only when the list follows
-   the title directly, since a list under a paragraph or a header row wants the
-   gap it has. */
-.section-card > .section-card-title + .setting-list > .setting-row:first-child {
+/* The padding between rows is the list's business; the padding at its two ends
+   belongs to whatever holds it. Left on, the end rows' padding stacks on top of
+   the card's own and the first label sits a rung lower than everything else in
+   the card. So the ends give theirs back — and give back their share of the
+   min-height with it, or the row would keep the height the padding was making
+   and nothing would move. */
+.setting-list > .setting-row:first-child {
   padding-top: 0;
+  min-height: 54px;
 }
-.section-card > .setting-list:last-child > .setting-row:last-child {
+.setting-list > .setting-row:last-child {
   padding-bottom: 0;
+  min-height: 54px;
+}
+/* A list of one has both ends. */
+.setting-list > .setting-row:first-child:last-child {
+  min-height: 44px;
 }

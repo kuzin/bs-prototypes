@@ -796,10 +796,10 @@ export function ReadingLog({
               <div className="rl-month">
                 <h2 className="rl-month-label">{month.label}</h2>
                 <div className="rl-month-nav">
-                  <IconButton variant="secondary" size="md" aria-label="Previous month">
+                  <IconButton variant="secondary" size="sm" aria-label="Previous month">
                     <Icon name="chevron-left" size={17} />
                   </IconButton>
-                  <IconButton variant="secondary" size="md" aria-label="Next month">
+                  <IconButton variant="secondary" size="sm" aria-label="Next month">
                     <Icon name="chevron-right" size={17} />
                   </IconButton>
                 </div>

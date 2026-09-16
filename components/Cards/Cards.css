@@ -87,6 +87,10 @@
 }
 
 /* Optional — the tile reads fine as just a figure and its label. */
+/* The glyph sits on a white plate, the same one the reader banner's mark does
+   — a bare 20px glyph on the tile's own tint read as a stray mark beside the
+   figure rather than as the tile's icon, and the plate is what makes the two
+   the same object wherever a reader meets them. */
 .rc-stat-ico {
   display: inline-flex;
   align-items: center;
@@ -96,13 +100,28 @@
   height: 40px;
   /* full strength against the tile's own tint */
   color: var(--rc-stat-color);
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 2px 3px rgb(0 0 0 / 6%);
 }
 
+/* Two things in this slot are the mark themselves and fill it edge to edge: a
+   progress ring, and an illustrated icon. Neither has room for a plate behind
+   it, and a circle peeking out from under square artwork is worse than none. */
+.rc-stat-ico:has(.rc-ring),
+.rc-stat-ico:has(.plumpy-icon) {
+  background: none;
+  box-shadow: none;
+}
+
+/* 22, a rung down the app's ladder from 24. The tile is a figure over a
+   15px label with a 40px mark beside it; at 24 the number was carrying more
+   weight than a summary tile in a row of four is asking for. */
 .rc-stat-val {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   line-height: 1.15;
   letter-spacing: -0.01em;
@@ -125,7 +144,7 @@
 }
 
 .rc-stat-unit {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 800;
   color: inherit;
 }

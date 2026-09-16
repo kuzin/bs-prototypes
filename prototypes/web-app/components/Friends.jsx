@@ -259,7 +259,19 @@ function InviteModal({ open, onClose }) {
   )
 }
 
-export function Friends({ library = false }) {
+/**
+ * `friendTabs` / `renderFriendTab` and `leaderboardTypes` / `leaderboardRows`
+ * are pass-throughs to the two surfaces underneath: a prototype that adds
+ * something readers collect hangs a tab on the friend modal and a ranking on
+ * the board without either component knowing what the thing is.
+ */
+export function Friends({
+  library = false,
+  friendTabs = [],
+  renderFriendTab,
+  leaderboardTypes,
+  leaderboardRows: getRows,
+}) {
   const [pane, setPane] = useState('friends')
   const [removed, setRemoved] = useState([])
   const [inviteOpen, setInviteOpen] = useState(false)
@@ -308,7 +320,7 @@ export function Friends({ library = false }) {
       </div>
 
       {pane === 'leaderboards' ? (
-        <Leaderboards onOpenFriend={setProfileId} />
+        <Leaderboards onOpenFriend={setProfileId} types={leaderboardTypes} getRows={getRows} />
       ) : (
         <div className="fr-page">
           <ReaderPageHead
@@ -382,7 +394,12 @@ export function Friends({ library = false }) {
           </div>
 
           <InviteModal open={inviteOpen} onClose={() => setInviteOpen(false)} />
-          <FriendProfile friendId={profileId} onClose={() => setProfileId(null)} />
+          <FriendProfile
+            friendId={profileId}
+            onClose={() => setProfileId(null)}
+            extraTabs={friendTabs}
+            renderExtra={renderFriendTab}
+          />
           <ToastStack toasts={toasts} onDismiss={dismiss} />
         </div>
       )}

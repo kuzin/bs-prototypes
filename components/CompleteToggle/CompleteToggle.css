@@ -22,34 +22,104 @@
     background 0.12s;
 }
 
-/* `#0BA85F` — the app's own checked green, not one of the tag greens. */
-.ctog--done {
-  color: #0ba85f;
+/* The box is the form system's own `.chk-box`, to the pixel — 24px, a 2px
+   hairline and a 6px radius — so this column's control and a checkbox
+   elsewhere on the page are visibly the same object. Only the checked colour
+   differs, and that difference is the app's: `#0BA85F`, not the form blue. */
+.ctog-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background: #fff;
+  border: 2px solid var(--c-gray-300);
+  border-radius: 6px;
+  /* The tick is always drawn and always centred; unchecked, it's invisible —
+     the same trick the real checkbox uses, so the box never reflows. */
+  color: transparent;
+  transition:
+    background 0.12s,
+    border-color 0.12s,
+    color 0.12s;
 }
 
-.ctog:hover:not(.ctog--disabled) {
-  background: var(--c-gray-150);
+/* `#0BA85F` — the app's own checked green, not one of the tag greens. */
+.ctog--done .ctog-box {
+  color: #fff;
+  background: #0ba85f;
+  border-color: #0ba85f;
+}
+
+.ctog:hover:not(.ctog--disabled) .ctog-box {
+  border-color: var(--c-gray-400);
+}
+.ctog--done:hover:not(.ctog--disabled) .ctog-box {
+  background: #099a56;
+  border-color: #099a56;
+}
+
+button.ctog:focus-visible {
+  outline: none;
+}
+button.ctog:focus-visible .ctog-box {
+  outline: 2px solid var(--c-blue);
+  outline-offset: 2px;
 }
 
 /* Disabled-but-checked is `$green100` in the app, i.e. present but inert. */
 .ctog--disabled {
   cursor: default;
-  color: #b2fad8;
+}
+.ctog--disabled .ctog-box {
+  color: #fff;
+  background: #b2fad8;
+  border-color: #b2fad8;
 }
 
 /* A repeatable row can't be completed, so the app shows its "add" glyph — and
-   the running count is the actual record, so it rides alongside. The app draws
-   this one smaller than the checkbox (`.repeatable { height: 22px; width: 22px }`). */
+   the running count is the actual record, so it rides alongside.
+
+   It wears the secondary button's chrome rather than the checkbox's bare cell:
+   a glyph and a numeral floating side by side in a table column read as two
+   separate marks, and the thing is a control — it adds a completion. Same
+   hairline and hover the rest of the app's secondary buttons carry. */
 .ctog--repeatable {
   width: auto;
   min-width: 36px;
+  height: 32px;
+  gap: 5px;
+  padding: 0 10px;
+  color: var(--c-text);
+  background: transparent;
+  border: 1px solid var(--c-gray-300);
+  border-radius: 8px;
+  transition:
+    background 0.12s,
+    border-color 0.12s;
+}
+
+button.ctog--repeatable:hover:not(.ctog--disabled) {
+  background: var(--c-gray-0);
+  border-color: var(--c-gray-500);
+}
+
+/* Nothing to add — a read-only cell keeps the shape so the column lines up,
+   and gives up the pointer. */
+span.ctog--repeatable {
   cursor: default;
-  color: var(--c-gray-500);
+}
+
+.ctog--repeatable.ctog--disabled {
+  color: var(--c-gray-400);
+  border-color: var(--c-gray-200);
 }
 
 .ctog-count {
   font-size: 15px;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
-  color: var(--c-gray-800);
+  color: inherit;
 }

@@ -3337,6 +3337,18 @@
   flex-direction: column;
   gap: 8px;
 }
+/* The 8px between rows rides on the row, not only on `.cc-badge-rows` — the
+   ladder's wrapper supplies it with a flex `gap`, which does nothing for rows
+   rendered anywhere else and left them stacked flush in the Pattern Library.
+   A `margin-top` on the adjacent sibling collapses to nothing inside a flex
+   column, so the two don't add up. */
+.cc-badgerow + .cc-badgerow {
+  margin-top: 8px;
+}
+.cc-badge-rows > .cc-badgerow + .cc-badgerow {
+  margin-top: 0;
+}
+
 .cc-badgerow {
   display: flex;
   align-items: center;

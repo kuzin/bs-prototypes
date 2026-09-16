@@ -7,6 +7,34 @@
  * purpose — the live chat is Beanstack teal at the reader, the transcript is
  * the app's quiet blue at a teacher reading someone else's conversation. */
 
+/* 12px between turns — the gap the session modal's transcript has always set
+   on its own wrapper, moved in here so it holds wherever the rows are drawn.
+   A consumer that already supplies its own column keeps working; this one just
+   means a bare stack of rows is no longer a wall of touching bubbles. */
+.cht-thread {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Margins rather than a `gap`, because the rhythm here is not even: 12px
+   between turns, but a note hugs the turn it annotates (its own 2px rule wins
+   on specificity) and consecutive notes touch, since two notes on one answer
+   are one band with a rule between them rather than two separate cards. A
+   flex `gap` can't be cancelled for one pair. */
+.cht-thread > * + * {
+  margin-top: 12px;
+}
+.cht-thread > .cht-note + .cht-note {
+  margin-top: 0;
+}
+/* A note's own 2px was written for a wrapper that added its gap on top of it;
+   in this thread the margin is the whole spacing, so the first note of a band
+   takes the same 12px off the turn it annotates as any other row. Scoped to
+   `.cht-thread` so a consumer with its own gap keeps the sum it had. */
+.cht-thread > .cht-note:not(.cht-note + .cht-note) {
+  margin-top: 12px;
+}
+
 .cht-row {
   --cht-student-bg: #eff6ff;
   --cht-student-ink: #1e3a5f;
@@ -181,7 +209,9 @@
    fold away. */
 .cht-note--safety {
   flex-direction: row;
-  align-items: flex-start;
+  /* One line of text, so the flag centres against it. `flex-start` aligned the
+     14px glyph to the line box's top and left it sitting ~4px high. */
+  align-items: center;
   gap: 8px;
   padding: 11px 16px;
   border-radius: 10px;

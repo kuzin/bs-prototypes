@@ -1768,7 +1768,9 @@ import '@components/Cards/Cards.css'
         border and no shadow — the fill is the card. <code>color</code> supplies the hue: the fill
         is a light tint of it, and the icon and action take it at full strength, so a caller still
         states one colour. The <code>icon</code> is optional — without one the tile is just figure,
-        label and action.
+        label and action. A glyph is drawn on a white plate, the same one the reader banner&apos;s
+        mark wears, so the two read as the same object; a <code>ProgressRing</code> or an
+        illustrated <code>PlumpyIcon</code> fills the slot itself and gets no plate.
         <br />
         <br />
         <code>action</code> puts a link at the foot of the tile ({'{ label, href }'}), for the stats

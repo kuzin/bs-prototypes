@@ -247,9 +247,16 @@ function ReadingLog({ friend }) {
   )
 }
 
-export function FriendProfile({ friendId, onClose }) {
+/**
+ * `extraTabs` / `renderExtra` are additive, the same pair the reader dashboard
+ * and the classroom page take: a prototype that gives a reader something else
+ * to collect hangs its own tab here rather than forking the modal. Words with
+ * Benny puts a friend's vocabulary next to their badges with them.
+ */
+export function FriendProfile({ friendId, onClose, extraTabs = [], renderExtra }) {
   const [tab, setTab] = useState('overview')
   const friend = friendId ? getFriend(friendId) : null
+  const tabs = [...TABS, ...extraTabs]
 
   // Every friend opens on Overview — the app fetches the modal fresh each time,
   // so the tab a previous friend was left on shouldn't carry over.
@@ -297,7 +304,7 @@ export function FriendProfile({ friendId, onClose }) {
                 accent="#1A6DD5"
                 onChange={setTab}
                 ariaLabel="Which part of the profile"
-                items={TABS}
+                items={tabs}
                 className="fp-tabs"
               />
             </header>
@@ -306,6 +313,7 @@ export function FriendProfile({ friendId, onClose }) {
               {tab === 'overview' && <Overview friend={friend} />}
               {tab === 'challenges' && <Challenges friend={friend} />}
               {tab === 'log' && <ReadingLog friend={friend} />}
+              {extraTabs.some((t) => t.id === tab) && renderExtra?.(tab, friend)}
             </div>
           </div>
         </>
