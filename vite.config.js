@@ -153,7 +153,14 @@ export default defineConfig({
     entries: ['landing/main.jsx', 'prototypes/*/main.jsx'],
   },
   resolve: {
-    alias: [{ find: '@components', replacement: resolve(ROOT, 'components') }],
+    alias: [
+      { find: '@components', replacement: resolve(ROOT, 'components') },
+      // The mobile design system. Deliberately a SECOND system, not an extension of
+      // @components: the RN app ships no custom font, has its own palette and type ladder, and
+      // its own geometry. Everything under it is scoped to `.m-app` so the two can coexist on
+      // one page — which the Pattern Library needs.
+      { find: '@mobile', replacement: resolve(ROOT, 'mobile') },
+    ],
     // Force a single React instance across every entry + pre-bundled dep —
     // standard hygiene for a multi-entry app with many React-dependent libs
     // (Radix, dnd-kit, nivo, react-spring).

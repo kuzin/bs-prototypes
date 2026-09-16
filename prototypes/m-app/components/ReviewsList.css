@@ -1,0 +1,70 @@
+.m-revs {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.m-revs::-webkit-scrollbar {
+  height: 0;
+}
+
+/* Inline styles in the source: 295×187, radius 10, padding 24, on lightestGray — a white card on
+ * the home grey at the page's own radius instead. `min-height` rather than a fixed 187: the card
+ * has to be able to hold four clamped lines plus the affordance, and a hard height just clips
+ * whichever of them does not fit. */
+.m-rev {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  width: 295px;
+  min-height: 187px;
+  padding: 20px;
+  margin-top: 24px;
+  margin-right: 16px;
+  border-radius: var(--m-radius-card);
+  background: var(--m-white);
+  box-shadow: var(--m-shadow-card);
+  text-align: left;
+}
+
+.m-rev:active {
+  background: var(--m-grey-light-4);
+}
+
+.m-rev.is-first {
+  margin-left: var(--m-gutter);
+}
+
+/* fontStyles.button with an overridden lineHeight of 21. */
+/* 17/700 with the rest of Home's card titles. */
+.m-rev-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.29px;
+  line-height: 21px;
+  color: var(--m-grey-dark-1);
+}
+
+/* fontStyles.description, with weight bumped to 500 on iOS. */
+.m-rev-body {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.29px;
+  line-height: 22px;
+  color: var(--m-grey-dark-2);
+}
+
+/* Pushed to the card's foot by `margin-top: auto`, so it sits on the bottom edge whether the
+ * review runs to four lines or one. Styled like the section header's View All — it is the same
+ * promise, made by a card instead of a row. */
+.m-rev-more {
+  margin-top: auto;
+  padding-top: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.28px;
+  line-height: 20px;
+  color: var(--m-accent);
+}

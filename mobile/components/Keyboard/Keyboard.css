@@ -1,0 +1,112 @@
+/* The iOS light-mode keyboard. Sizes are logical points, like everything else here.
+ *
+ * The proportions are the part that makes it read as iOS rather than as "a grid of keys": letter
+ * keys stay a constant width across rows (so the nine-key row is INSET rather than stretched), the
+ * modifier keys on the third row are about 1.25× a letter, and the whole thing sits on a grey
+ * ground with white keys that carry a hard 1pt bottom edge rather than a blur. */
+.m-kb {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  /* Above everything the frame can show — the PlusMenu at 100 and a modal sheet at 200. On device
+   * the keyboard is drawn by the system over the whole app, including modals. */
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  height: 291px;
+  padding: 8px 3px 0;
+  background: #d1d3d9;
+  user-select: none;
+  animation: m-kb-in 250ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes m-kb-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+.m-kb-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 6px;
+  padding: 0 3px;
+  margin-bottom: 11px;
+}
+
+/* The nine-key row is inset by half a key each side, keeping letter width constant. */
+.m-kb-row-inset {
+  padding: 0 21px;
+}
+
+.m-kb-key {
+  display: flex;
+  flex: 1 1 0%;
+  align-items: center;
+  justify-content: center;
+  height: 42px;
+  border-radius: 5px;
+  background: #fff;
+  /* A hard 1pt edge, not a blur — this is what makes iOS keys look pressed into the ground. */
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.3);
+  font-family: var(--m-font);
+  font-size: 22px;
+  font-weight: 400;
+  color: #000;
+  cursor: pointer;
+  transition: background-color 60ms linear;
+}
+
+/* Modifiers sit on a darker ground and are wider than a letter — 1.25× on the third row. */
+.m-kb-mod {
+  background: #adb3bd;
+}
+
+.m-kb-row-mods .m-kb-mod {
+  flex: 1.25 1 0%;
+}
+
+/* Shift filled = shift on; iOS inverts it rather than tinting. */
+.m-kb-key.is-active {
+  background: #fff;
+}
+
+/* A letter darkens on press; a modifier lightens. iOS pops letters up into a bubble, which is
+ * more than this needs — the tone change reads the same at prototype scale. */
+.m-kb-key.is-pressed {
+  background: #b9bdc6;
+}
+
+.m-kb-mod.is-pressed {
+  background: #fff;
+}
+
+/* The bottom row: the switch and return keys are fixed, and space takes what is left. */
+.m-kb-row-bottom .m-kb-wide {
+  flex: 0 0 auto;
+  min-width: 88px;
+  font-size: 16px;
+}
+
+.m-kb-space {
+  flex: 1 1 auto;
+  font-size: 16px;
+}
+
+/* The emoji/mic tray, which is why the keyboard is taller than four rows. */
+.m-kb-tray {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1 1 auto;
+  padding: 0 14px 18px;
+  color: #4a4a4a;
+}
+
+.m-kb-tray-icon {
+  display: flex;
+  cursor: pointer;
+}

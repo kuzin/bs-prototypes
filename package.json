@@ -10,6 +10,8 @@
     "preview": "vite preview",
     "new": "node scripts/new-prototype.js",
     "check": "node scripts/check-prototypes.js",
+    "mobile:tokens": "node scripts/sync-mobile-tokens.js",
+    "mobile:images": "node scripts/sync-mobile-images.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",

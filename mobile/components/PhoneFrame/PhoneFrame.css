@@ -1,0 +1,313 @@
+/* The device. The bezel is deliberately plain — it frames the design without
+ * competing with it, and it is the only part of this system that does not
+ * correspond to something in the app. */
+.m-frame {
+  position: relative;
+  flex: none;
+  /* The body's radius is the screen's plus the bezel, so the two stay concentric. A square-screen
+   * phone still has a slightly rounded BODY, hence the max(). */
+  border-radius: max(14px, calc(var(--m-screen-radius, 41px) + var(--m-bezel-y, 3px)));
+  background: linear-gradient(160deg, #2a2a30 0%, #0d0d0f 12%, #0d0d0f 88%, #34343c 100%);
+  /* The declared device size (393×852) is the SCREEN, so the bezel has to sit OUTSIDE it. Under
+   * border-box the 3px padding came out of the 393 and every screen rendered 387 wide — every
+   * gutter 6pt narrow, and `--m-screen-w` claiming a width the stage did not have, which put
+   * anything sized off `Dimensions.get('window')` (the chat bubble's width*0.75, the achievements
+   * grid) 6pt out of step with its own container. */
+  box-sizing: content-box;
+  padding: var(--m-bezel-y, 3px) var(--m-bezel-x, 3px);
+  box-shadow:
+    /* the machined rail, then the polished lip inside it, then the drop */
+    0 0 0 1px #4a4a52,
+    0 0 0 2.5px #23232a,
+    inset 0 0 0 1px rgba(255, 255, 255, 0.07),
+    0 18px 50px rgba(0, 0, 0, 0.26);
+}
+
+/* ── Device hardware ─────────────────────────────────────────────────────── */
+/* The Dynamic Island — a pill cut out of the DISPLAY, so it paints over the screen rather than
+ * sitting in the bezel. 125×36 at 11 from the top edge, which is why the status bar's time and
+ * glyphs sit either side of it instead of spanning the width. */
+.m-frame-island {
+  position: absolute;
+  top: var(--m-island-top);
+  left: 50%;
+  z-index: 10;
+  width: var(--m-island-w);
+  height: var(--m-island-h);
+  border-radius: calc(var(--m-island-h) / 2);
+  background: #000;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* The SE's earpiece slit, in the bezel above the display. */
+.m-frame-earpiece {
+  position: absolute;
+  top: calc(var(--m-bezel-y) / 2 - 2px);
+  left: 50%;
+  width: 46px;
+  height: 5px;
+  border-radius: 3px;
+  background: #1c1c22;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.8);
+  transform: translateX(-50%);
+}
+
+/* The front camera, offset to the left of the earpiece as it is on the device. */
+.m-frame-camera {
+  position: absolute;
+  top: calc(var(--m-bezel-y) / 2 - 1px);
+  left: calc(50% - 44px);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #15151a;
+  box-shadow: inset 0 0 0 1px rgba(90, 120, 150, 0.45);
+  transform: translateY(-1px);
+}
+
+/* The home button — a ring rather than a filled disc, which is what the Touch ID one is. */
+.m-frame-home {
+  position: absolute;
+  bottom: calc(var(--m-bezel-y) / 2 - 17px);
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #0d0d0f;
+  box-shadow:
+    inset 0 0 0 1.5px #3c3c44,
+    inset 0 1px 2px rgba(0, 0, 0, 0.7);
+  transform: translateX(-50%);
+}
+
+.m-frame-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  /* Per device. A 41pt rounding on the SE's square display clipped the status-bar time and the
+   * tab-bar labels, because its 20/0 safe insets leave nothing between the chrome and the corner. */
+  border-radius: var(--m-screen-radius, 41px);
+  background: var(--m-screen-bg);
+  isolation: isolate;
+}
+
+/* With a sheet up, the ground behind everything is black — that is what the status bar and the
+ * gap above the sheet sit on. */
+.m-frame-screen.has-sheet {
+  background: #000;
+}
+
+/* The presenting screen. */
+.m-frame-stage {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  transform-origin: top center;
+  transition:
+    transform 320ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-radius 320ms ease;
+}
+
+/* Scaled back and rounded, the way iOS stacks a card modal behind its sheet.
+ *
+ * The card stays BELOW the status bar — it is the sheet that drops, leaving a sliver of the card's
+ * rounded edge in the gap. Lifting the card instead put its header over the status bar, which
+ * never happens on device. */
+.m-frame-screen.has-sheet .m-frame-stage {
+  transform: scale(0.913);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* ── Status bar ─────────────────────────────────────────────────────────── */
+/* Always above the presenting card — a scaled card must never paint over the status bar. */
+/* The status bar is CENTRED in the safe-top band, not sitting at its bottom — which on a notch
+ * phone means centred on the Dynamic Island. The numbers line up exactly: the island is 36 tall at
+ * 11 from the top, so it is centred at 29 inside a band of 2×11 + 36 = 58, against a 59pt inset.
+ * Bottom-aligning it instead dropped the time and the glyphs ~18pt below the island they are
+ * supposed to flank. On the SE there is no island and the same rule centres the text in its 20pt
+ * bar, which is also correct. */
+.m-statusbar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--m-safe-top);
+  padding: 0 28px;
+  color: var(--m-grey-dark-1);
+}
+
+/* The pre-notch layout: signal | time | wifi + battery, with the time CENTRED. The three cells
+ * are equal so the middle one lands on the true centre however wide the glyph runs are.
+ *
+ * The 20pt bar height is correct — it is the SE's real safe-area top inset — but the TYPE in it is
+ * not the notch phones'. Those get a 15pt time because they have 59pt to fill; at 15pt the line box
+ * is 18 and swallows 90% of a 20pt bar, which is what makes it feel jammed against the glass. The
+ * pre-notch status bar runs about 12pt with correspondingly smaller glyphs, and sits in from the
+ * edge rather than the notch phones' 28. */
+.m-statusbar.is-legacy {
+  padding: 0 6px;
+}
+
+/* What actually crowds a 20pt bar is the LINE BOX, not the font size: at 15px with normal leading
+ * the box is 18 and leaves 1pt either side. Pinning `line-height: 1` makes the box the glyph size,
+ * so the time can stay legible at 14 and still sit with 3pt of air above and below. Sizing down to
+ * 12 to buy that room instead just made the bar look underscaled. */
+.m-statusbar.is-legacy .m-statusbar-time {
+  font-size: 14px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+/* Height alone — the viewBox gives each glyph an intrinsic ratio, so the width follows. */
+.m-statusbar.is-legacy svg {
+  height: 11px;
+  width: auto;
+}
+
+.m-statusbar.is-legacy > * {
+  flex: 1 1 0%;
+  display: flex;
+  align-items: center;
+}
+
+.m-statusbar.is-legacy > :first-child {
+  justify-content: flex-start;
+}
+
+.m-statusbar.is-legacy .m-statusbar-time {
+  justify-content: center;
+}
+
+.m-statusbar.is-legacy > :last-child {
+  justify-content: flex-end;
+}
+
+/* Inverted over a sheet — white glyphs on the black ground. */
+.m-statusbar.is-inverted {
+  color: var(--m-white);
+}
+
+.m-statusbar-time {
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.m-statusbar-glyphs {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── Scroll region ──────────────────────────────────────────────────────
+ * The FRAME scrolls, not the page. Without this the prototype would scroll the
+ * browser window and the chrome would slide away — which is exactly the thing
+ * a device shell exists to prevent. */
+.m-frame-body {
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.m-frame-body.is-scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* iOS hides the scrollbar until you scroll; a permanent web scrollbar inside a
+ * phone reads as wrong and steals 15px of a 393px-wide design. */
+.m-frame-body.is-scroll {
+  scrollbar-width: none;
+}
+
+.m-frame-body.is-scroll::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* The sheet. PlusMenu sits at 100, so this has to clear it — on device the modal is pushed over
+ * the whole navigator and the tab bar simply is not there.
+ *
+ * It starts below the status bar rather than at the top of the screen, which is what leaves the
+ * presenting card's rounded edge peeking above it. */
+.m-frame-sheet {
+  position: absolute;
+  /* 8pt below the presenting card's top edge, which is what leaves that edge visible. */
+  top: calc(var(--m-safe-top) + 8px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+  background: var(--m-white);
+  overflow: hidden;
+  animation: m-sheet-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes m-sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* With the keyboard up, everything above it loses that much room. Reserving it on the screen
+ * rather than on a single screen's layout means every surface shrinks the same way — which is the
+ * whole point of modelling the keyboard at all. */
+.m-frame-screen.has-keyboard .m-frame-stage,
+.m-frame-screen.has-keyboard .m-frame-sheet {
+  padding-bottom: 291px;
+}
+
+/* The safe-area inset belongs to the home indicator, and the keyboard covers it. */
+.m-frame-screen.has-keyboard {
+  --m-safe-bottom: 0px;
+}
+
+.m-home-indicator {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  width: 140px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--m-grey-dark-1);
+  opacity: 0.85;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* A PUSHED screen rather than a presented one. It covers the whole navigator — including the
+ * status bar area, which it paints itself — with no scale-back behind it, no black ground and no
+ * peeking card edge, because nothing is being presented over anything. It slides in from the
+ * right, which is the other half of how a push reads. */
+.m-frame-card {
+  position: absolute;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  background: var(--m-white);
+  animation: m-card-in 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes m-card-in {
+  from {
+    transform: translateX(100%);
+  }
+}

@@ -1,0 +1,59 @@
+.m-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  border-radius: var(--m-radius-pill);
+  white-space: nowrap;
+  /* `alignSelf: 'center'` is on all three size styles, so the pill centres itself rather than
+   * stretching to its parent — which is what lets it sit in a column with stretched siblings. */
+  align-self: center;
+  /* PILL_MARGIN_LEFT — applied inline to every pill EXCEPT orange. */
+  margin-left: 5px;
+}
+
+.m-pill-small {
+  min-height: 27px;
+  padding: 0 10px;
+  font-size: 12px;
+  line-height: 17px;
+  letter-spacing: -0.22px;
+}
+
+.m-pill-medium {
+  min-height: 36px;
+  padding: 8px 16px;
+  font-size: 14px;
+  line-height: 20px;
+  letter-spacing: -0.19px;
+}
+
+.m-pill-large {
+  min-height: 40px;
+  padding: 10px 20px;
+  border-radius: var(--m-radius-card);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.m-pill-green {
+  background: var(--m-green-light);
+  color: var(--m-green-dark);
+}
+
+.m-pill-red {
+  background: var(--m-red-light);
+  color: var(--m-red-dark);
+}
+
+.m-pill-grey {
+  background: var(--m-grey-light-3);
+  color: var(--m-grey-dark-3);
+}
+
+.m-pill-orange {
+  background: var(--m-orange-light);
+  color: var(--m-orange-dark);
+  /* The one colour PILL_MARGIN_LEFT is not applied to. */
+  margin-left: 0;
+}

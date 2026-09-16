@@ -3,3 +3,10 @@ node_modules
 pnpm-lock.yaml
 public
 *.svg
+
+# Generated from the React Native app's theme by `pnpm mobile:tokens`. Prettier must not touch it:
+# the generator compares its own output byte-for-byte to detect drift, and a reformat afterwards
+# makes that check fail forever.
+mobile/tokens.generated.css
+mobile/images.generated.js
+mobile/svg.generated.jsx

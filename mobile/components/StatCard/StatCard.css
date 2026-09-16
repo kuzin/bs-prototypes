@@ -1,0 +1,81 @@
+/* `.rc-stat` from the web prototype: a row, 16pt radius, and the card's ground is a light tint of
+ * the stat's own colour rather than white. The tint is passed in as one of the brand `*-light`
+ * tokens, which are the same relationship the web card builds with `color-mix(… 16%, white)`. */
+.m-statcard {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border-radius: 16px;
+  background: var(--m-grey-light-3);
+  text-align: left;
+}
+
+/* `.rc-stat-ico` — a 40pt WHITE circle over the tint, so the glyph reads at full strength against
+ * a ground that is a wash of its own colour. The small shadow is what lifts it off that wash. */
+.m-statcard-tile {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  background: var(--m-white);
+  box-shadow: 0 2px 3px rgb(0 0 0 / 6%);
+}
+
+/* Takes the width it is given — the card sits in a column that sizes it. */
+.m-statcard-main {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.m-statcard-val {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+}
+
+/* The pair is its own baseline row, so the unit sits on the number's baseline and the two never
+ * separate across a wrap. */
+.m-statcard-pair {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+/* 41pt in the source. 28 here: the figure still dominates the card, and at 41 a two-part value
+ * wrapped on every phone narrower than the 393 this is drawn at. */
+.m-statcard-num {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 34px;
+  color: var(--m-grey-dark-1);
+}
+
+/* `paragraphMedium`, an explicit 16 rather than an inherited size. The source offsets it with
+ * `top: 24` to drop it to the big number's baseline; `align-items: baseline` does that properly. */
+.m-statcard-unit {
+  font-size: 16px;
+  color: var(--m-grey-dark-2);
+}
+
+/* A bare `fontSize: 12` plus `blackFont` in the source — which despite the name is
+ * `colors.secondary` #424242, not black.
+ *
+ * DIVERGENCE — bold sentence case, not all caps. The source's labels are uppercase in the
+ * STRINGS themselves ("READING TIME"), which at 12pt beside a 28pt figure reads as shouting at
+ * the quietest thing on the card. Weight separates the label from the unit beside it without
+ * raising its voice. */
+.m-statcard-title {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 17px;
+  color: var(--m-grey-dark-2);
+}

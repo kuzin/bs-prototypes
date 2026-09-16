@@ -210,6 +210,8 @@ import {
   IconAlertHexagon,
   // ── book discovery ──
   IconHeadphones,
+  IconDeviceDesktop,
+  IconDeviceMobile,
   IconDeviceTablet,
   IconMovie,
   IconNews,
@@ -458,6 +460,8 @@ const REGISTRY = {
 
   // book discovery
   headphones: IconHeadphones,
+  'device-desktop': IconDeviceDesktop,
+  'device-mobile': IconDeviceMobile,
   'device-tablet': IconDeviceTablet,
   movie: IconMovie,
   news: IconNews,

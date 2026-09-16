@@ -1,0 +1,60 @@
+/* The source pins this at 489pt and lets `flex: 1` on the list spread whatever is left between
+ * four rows — so the gaps are a leftover, not a decision, and they change if a stat is added.
+ * Sized to its content instead, with the rhythm stated by the rows themselves. */
+.m-mystats {
+  display: flex;
+  flex-direction: column;
+  margin: 0 var(--m-gutter);
+  background: var(--m-white);
+  border-radius: var(--m-radius-card);
+  padding: 20px;
+  box-shadow: var(--m-shadow-card);
+}
+
+.m-mystats-alltime {
+  margin-top: 2px;
+}
+
+.m-mystats-list {
+  display: flex;
+  flex-direction: column;
+  margin: 12px 0 16px;
+}
+
+/* A rule BETWEEN rows, never above the first or below the last — the list's own edges are the
+ * card's padding, and a line there would be closing something that is already closed. Padding
+ * rather than a margin, so the rule sits midway between two rows instead of hugging one. */
+.m-mystats-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0;
+}
+
+.m-mystats-row + .m-mystats-row {
+  border-top: 1px solid var(--m-c-border);
+}
+
+.m-mystats-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* 48pt tile at radius 20 in the source — a rounded square, not a circle. 40 here, matching the
+ * StatCard's, so a stat tile is one size wherever it appears. */
+.m-mystats-tile {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 16px;
+}
+
+.m-mystats-title {
+  margin-left: 16px;
+  font-weight: 500;
+}

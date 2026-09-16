@@ -1,0 +1,39 @@
+/* styles.viewBackground — `flex: 1` so it takes whatever height the list left it and centres in
+ * that, rather than sitting at the top of an empty scroller. */
+.m-esv {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+  background: var(--m-white);
+  text-align: center;
+}
+
+.m-esv-art {
+  flex: none;
+  margin-bottom: 19px;
+}
+
+/* blackFont is #424242 — greyDark2. Not black, despite the name. */
+.m-esv-bold,
+.m-esv-middle,
+.m-esv-final {
+  color: var(--m-grey-dark-2);
+}
+
+/* largeLineHeight 26 on the headline, smallLineHeight 24 under it — set per string, so the stack
+ * reads as three statements rather than one wrapped paragraph. */
+.m-esv-bold {
+  line-height: 26px;
+}
+
+.m-esv-middle {
+  margin-top: 12px;
+  line-height: 24px;
+}
+
+.m-esv-final {
+  margin-top: 12px;
+}

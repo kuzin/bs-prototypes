@@ -1,0 +1,28 @@
+.m-secthead {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  /* headerStyles.sectionHeaderContainer — deliberately asymmetric. */
+  margin-left: 21px;
+  margin-right: 18px;
+}
+
+/* The link takes the tenant's primaryColor; denimBlue is only the fallback in the stylesheet. */
+.m-secthead-all {
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.28px;
+  line-height: 20px;
+  color: var(--m-accent);
+}
+
+.m-secthead-all:active {
+  opacity: 0.5;
+}

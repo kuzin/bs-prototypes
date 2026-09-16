@@ -1,0 +1,108 @@
+.m-ad {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+/* SafeAreaView + headerRow — the same 60pt / -1pt pair the badge sheet uses, on the same wash.
+ * Unlike that one it is a SIBLING of the ScrollView, so it stays put while the body scrolls. */
+.m-ad-header {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  height: 60px;
+  margin-bottom: -1px;
+  background: var(--m-accent-wash);
+}
+
+/* The one thing this sheet's header needs beyond the shared component: it is a SIBLING of the
+ * scroll view, so it must not shrink when the body grows. */
+.m-ad-header {
+  flex: none;
+}
+
+.m-ad-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.m-ad-scroll::-webkit-scrollbar {
+  width: 0;
+}
+
+/* detailContainer — alignItems center, width 100%. Each child centres itself; the container does
+ * not centre text for them. */
+.m-ad-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* topColorFullHeight — 76pt here, against the badge sheet's 84. Rounded at the BOTTOM only.
+ *
+ * The iOS `topColorSpacer` above it is expressed differently in this file — the raw `color` at
+ * `opacity: 0.2` rather than the pre-mixed wash — but over white those are the same value, since
+ * white.mix(c, 0.2) IS 0.2×c over 0.8×white. */
+.m-ad-band {
+  width: 100%;
+  height: 76px;
+  border-radius: 16px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  background: var(--m-accent-wash);
+}
+
+/* detailImageContainer — 136pt white disc, pulled up half its height. No ring and no check: those
+ * belong to a badge, not an achievement. */
+.m-ad-medallion {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 136px;
+  height: 136px;
+  border-radius: 68px;
+  background: var(--m-white);
+  margin-top: -68px;
+}
+
+.m-ad-art {
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  overflow: hidden;
+}
+
+/* fullScreenContent — paddingHorizontal 20 and nothing else, so it shrinks to its content inside
+ * the centring parent, exactly as the RN View does. */
+.m-ad-content {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+  padding: 0 20px;
+}
+
+.m-ad-name {
+  margin-top: 12px;
+  text-align: center;
+}
+
+.m-ad-squiggle {
+  align-self: center;
+  width: 50px;
+  height: 11px;
+  margin-top: 32px;
+  margin-bottom: 28px;
+}
+
+.m-ad-desc {
+  text-align: center;
+}

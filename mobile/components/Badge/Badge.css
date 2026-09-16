@@ -1,0 +1,138 @@
+.m-badge-row {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+
+/* backgroundViewLayout — paddingVertical 16, with a greyLight4 wash while pressed. */
+.m-badge {
+  display: block;
+  width: 100%;
+  padding: 16px 0;
+  text-align: left;
+}
+
+.m-badge:active {
+  background: var(--m-grey-light-4);
+}
+
+/* badgeView — marginHorizontal 20 is what insets the row. */
+.m-badge-view {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  margin: 0 20px;
+}
+
+/* badgeImageView — a 76pt ring with a 4pt border that turns green only on a real earned date. */
+.m-badge-ring {
+  position: relative;
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 38px;
+  border: 4px solid var(--m-grey-light-2);
+  margin-right: 20px;
+}
+
+.m-badge-ring.is-earned {
+  border-color: var(--m-green);
+}
+
+/* badgeImage — 56pt, and its fill follows `isEarned`, which is a looser test than the ring's. */
+.m-badge-art {
+  width: 56px;
+  height: 56px;
+  border-radius: 28px;
+  overflow: hidden;
+}
+
+/* completedCheck — notched into the ring's bottom-right corner. */
+.m-badge-check {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 27px;
+  height: 27px;
+  border-radius: 13.5px;
+  border: 4px solid var(--m-white);
+  background: var(--m-green);
+}
+
+.m-badge-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.m-badge-title,
+.m-badge-name,
+.m-badge-earned {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* challengeNameText — fontStyles.bodySmaller in greyDark3. */
+.m-badge-title {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+  margin-bottom: 4px;
+}
+
+/* fontStyles.titleRegular */
+.m-badge-name {
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 22px;
+  color: var(--m-grey-dark-1);
+}
+
+/* badgeEarnedText — fontStyles.bodySmall, greenDark once earned and greyDark3 while in progress. */
+.m-badge-earned {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+}
+
+.m-badge-earned.is-earned {
+  color: var(--m-green-dark);
+}
+
+/* badgeIconView — absolute against the row, centred vertically. */
+/* One chip, laid out ACROSS rather than down, and IN THE FLOW rather than absolutely placed.
+ *
+ * The source pins `badgeIconView` to the right edge, which is why the text needs
+ * `ICON_MARGIN_WITH_ICONS` to reserve room for it — a fixed 44, sized for the widest case. A
+ * horizontal chip is 32pt wide with one glyph and 76 with three, so a fixed reserve either
+ * truncates the badge title or leaves a hole. In the flow it takes exactly its own width and the
+ * text flexes around it, so no reserve is needed at all. */
+.m-badge-markers {
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  margin-left: 12px;
+  padding: 5px 8px;
+  border-radius: 12px;
+  background: var(--m-grey-light-4);
+}
+
+/* badgeAwardTag — 40×28 with 2pt of vertical breathing room. */
+.m-badge-marker {
+  flex: none;
+}

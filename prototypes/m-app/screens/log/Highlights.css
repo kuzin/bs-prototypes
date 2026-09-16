@@ -1,0 +1,186 @@
+/* The source's ScrollView is `[backgroundView, { paddingTop: 30 }]` — 30pt of air above a
+ * segmented control that floats on the page. The FilterBar is full-bleed and sits flush under the
+ * top tabs, so that padding became a white gap above it, the same way it did on Reviews. */
+.m-hl {
+  display: flex;
+  flex-direction: column;
+  background: var(--m-white);
+}
+
+/* Statistics.styles.segmentedControlContainer — full width, padding 16, closed by a hairline. */
+.m-hl-control-wrap {
+  width: 100%;
+  padding: 16px;
+  border-bottom: 1px solid var(--m-c-light-gray);
+}
+
+/* DIVERGENCE — a real iOS segmented control, not `react-native-segmented-control-tab`.
+ *
+ * The library draws a row of 1pt boxes outlined in primaryColor with the active cell filled,
+ * which is an Android/web convention; on iOS a segmented control is a grey TRACK with the
+ * selected segment raised out of it as a white pill. The app is iOS-first and everything else on
+ * these screens follows the platform, so this one should too.
+ *
+ * The system metrics: a `#767680` track at 12% alpha, 2pt inset, 7pt inner radius against the
+ * track's 9, and 13pt semibold labels. */
+.m-hl-control {
+  display: flex;
+  flex-direction: row;
+  padding: 2px;
+  border-radius: 9px;
+  background: rgba(118, 118, 128, 0.12);
+}
+
+.m-hl-seg {
+  flex: 1 1 0%;
+  min-width: 0;
+  padding: 6px 4px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  text-align: center;
+  color: var(--m-grey-dark-1);
+  background: transparent;
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+
+/* The selected segment is a raised white pill — the shadow is what makes it read as lifted out of
+ * the track rather than painted onto it. */
+.m-hl-seg.is-active {
+  font-weight: 600;
+  background: var(--m-white);
+  box-shadow:
+    0 3px 8px rgba(0, 0, 0, 0.12),
+    0 3px 1px rgba(0, 0, 0, 0.04);
+}
+
+/* Hairline dividers between unselected segments, which iOS hides either side of the pill. */
+.m-hl-seg + .m-hl-seg {
+  position: relative;
+}
+
+.m-hl-seg + .m-hl-seg::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 15%;
+  bottom: 15%;
+  width: 1px;
+  background: rgba(60, 60, 67, 0.2);
+}
+
+.m-hl-seg.is-active::before,
+.m-hl-seg.is-active + .m-hl-seg::before {
+  display: none;
+}
+
+/* ── The chart ───────────────────────────────────────────────────────────── */
+/* Chart.tsx: a 200pt row, axes at 10pt grey. `svg` sets a 2pt stroke in primaryColor and NO fill,
+ * and `start={-7000}` puts the area's baseline far off-screen — so the AreaChart renders as a
+ * bare line. */
+.m-hl-chart-row {
+  display: flex;
+  flex-direction: row;
+  height: 200px;
+  padding: 0 10px;
+}
+
+.m-hl-yaxis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex: none;
+  /* contentInset { top: 10, bottom: 10 } on the YAxis. */
+  padding: 10px 0;
+  font-size: 10px;
+  color: grey;
+}
+
+.m-hl-plot {
+  flex: 1 1 0%;
+  min-width: 0;
+  /* areaChart contentInset — 20 top and bottom, and -1 at each side so the line meets the edges. */
+  padding: 20px 10px;
+  height: 100%;
+}
+
+.m-hl-xaxis {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 0 20px;
+  /* contentInset { left: 15, right: 15 }. */
+  padding: 0 15px;
+  font-size: 10px;
+  color: grey;
+}
+
+/* ── Stat rows (shared by ReadingStatistics and Peaks) ───────────────────── */
+/* The whole screen is one left-aligned column: every row is inset 32 and spaced 48. */
+/* Full-width cards in one column. The source stacks these as bare rows at `marginTop: 48` each,
+ * so six stats run about 500pt down the page with nothing between them; carded and tinted they
+ * take a third of that and read as a set. */
+.m-hl-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.m-hl-row {
+  margin-left: 32px;
+  margin-top: 48px;
+}
+
+.m-hl-row-head {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* No type role — a bare `fontSize: 12` plus `blackFont`, which despite the name is
+ * `colors.secondary` #424242 (greyDark2), NOT black. All three lines of this row take it.
+ * The labels are uppercase in the source strings themselves, not via text-transform. */
+.m-hl-row-title {
+  margin-left: 8px;
+  font-size: 12px;
+  color: var(--m-grey-dark-2);
+}
+
+.m-hl-row-val {
+  display: flex;
+  flex-direction: row;
+  margin-top: 16px;
+}
+
+.m-hl-val {
+  font-size: 41px;
+  font-weight: 700;
+  color: var(--m-grey-dark-2);
+  line-height: 1;
+}
+
+/* A second value in a two-value row sits 16 from the first unit. */
+.m-hl-val2 {
+  margin-left: 16px;
+}
+
+/* `top: 24` with no `position: absolute` — RN Views are relative by default, so this offsets the
+ * unit downward in place, dropping it to the big number's baseline. It carries
+ * `fontStyles.paragraphMedium`, which is an explicit 16 rather than an inherited size. */
+.m-hl-unit {
+  position: relative;
+  top: 24px;
+  margin-left: 8px;
+  font-size: 16px;
+  color: var(--m-grey-dark-2);
+}
+
+/* 25, not 24. The asymmetry is in the source. */
+.m-hl-unit2 {
+  top: 25px;
+}

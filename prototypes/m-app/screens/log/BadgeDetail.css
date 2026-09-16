@@ -1,0 +1,225 @@
+.m-bd {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+.m-bd-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  /* The scroll content carries 40pt of tail. */
+  padding-bottom: 40px;
+}
+
+.m-bd-scroll::-webkit-scrollbar {
+  width: 0;
+}
+
+.m-bd-detail {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* topColorFullHeight — an 84pt band, rounded at the BOTTOM corners only, on the same wash as the
+ * header above it. */
+.m-bd-band {
+  width: 100%;
+  height: 84px;
+  border-radius: 16px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  background: var(--m-accent-wash);
+}
+
+/* detailImageContainer — a 160pt white disc pulled up half its height so it straddles the band.
+ *
+ * The z-index is belt-and-braces, not load-bearing: the band precedes this in DOM order and the
+ * ring inside is itself positioned, so the medallion already wins on tree order. It is here so
+ * that giving the band a stacking context later — which is all it took to hide the fundraiser
+ * banner — cannot silently bury the overlap. The fidelity check probes the top quarter for
+ * exactly that. */
+.m-bd-medallion {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 160px;
+  height: 160px;
+  border-radius: 80px;
+  background: var(--m-white);
+  margin-top: -80px;
+}
+
+/* completedCircle — a 145pt ring with a 5pt border, green once earned. */
+.m-bd-ring {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 145px;
+  height: 145px;
+  border-radius: 72.5px;
+  border: 5px solid var(--m-grey-light-2);
+}
+
+.m-bd-ring.is-earned {
+  border-color: var(--m-green);
+}
+
+.m-bd-art {
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+  overflow: hidden;
+}
+
+/* completedCheck — 36pt here, against 27pt on the list row, and inset 1/1 rather than -4/-4. */
+.m-bd-check {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 18px;
+  border: 5px solid var(--m-white);
+  background: var(--m-green);
+}
+
+/* detailTextContainer */
+.m-bd-text {
+  width: 100%;
+  padding: 0 20px;
+  margin-top: 12px;
+}
+
+/* The summary block only takes its bottom margin when there are awards under it. */
+.m-bd-summary.has-extras {
+  margin-bottom: 32px;
+}
+
+.m-bd-title,
+.m-bd-challenge,
+.m-bd-range {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: center;
+  color: var(--m-grey-dark-3);
+}
+
+.m-bd-title {
+  margin-bottom: 4px;
+}
+
+.m-bd-name {
+  text-align: center;
+}
+
+.m-bd-challenge {
+  margin-top: 4px;
+  margin-bottom: 6px;
+}
+
+.m-bd-range {
+  margin-bottom: 4px;
+}
+
+.m-bd-earned {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  text-align: center;
+  color: var(--m-green-dark);
+}
+
+.m-bd-pills {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.m-bd-required {
+  margin-top: 12px;
+}
+
+/* awardsBlock — bleeds past the text gutter and carries a rule on BOTH edges. */
+.m-bd-awards {
+  margin: 0 -20px;
+  padding: 12px 0;
+  border-top: 1px solid var(--m-grey-light-2);
+  border-bottom: 1px solid var(--m-grey-light-2);
+}
+
+/* Award.styles.ts */
+.m-bd-award {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 12px 20px;
+}
+
+.m-bd-award-icon {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 48px;
+  margin-right: 20px;
+}
+
+.m-bd-award-purple {
+  background: var(--m-purple-light);
+}
+
+.m-bd-award-yellow {
+  background: var(--m-yellow-light);
+}
+
+.m-bd-award-blue {
+  background: var(--m-blue-light);
+}
+
+.m-bd-award-text {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-width: 0;
+  margin-top: 1px;
+}
+
+.m-bd-award-type {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+  margin-bottom: 2px;
+}
+
+/* titleText merges bodyRegular with secondaryTitle — the later spread wins, so it is 16/bold. */
+.m-bd-award-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-grey-dark-2);
+}
+
+.m-bd-award-desc {
+  margin-top: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 20px;
+  color: var(--m-grey-dark-3);
+}

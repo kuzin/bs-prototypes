@@ -1,0 +1,331 @@
+/* ----------------------------------------------------------------------------
+ * GENERATED FILE -- do not edit by hand.
+ *
+ * Source: zoobean/beanstack_mobile src/assets/themes/
+ *   brandColors.js - colors.ts - fontStyles.tsx
+ * Regenerate: pnpm mobile:tokens   (needs a mobile checkout; see scripts/sync-mobile-tokens.js)
+ *
+ * Platform forks are resolved to IOS. The app ships no custom font, so the
+ * family is the platform system face -- set once on .m-app in mobile/base.css, not here.
+ *
+ * Spacing, radii and shadows are NOT generated: they were never centralised in the app.
+ * They are hand-authored in mobile/base.css from the real usage histogram.
+ * ------------------------------------------------------------------------- */
+
+
+.m-app {
+  /* brandColors.js -- the real design system: hue ramps + the grey ladder. */
+  --m-blue-dark: #0f7280;
+  --m-black: #000000;
+  --m-blue: #19bfd5;
+  --m-blue-light: #ddf6f9;
+  --m-denim-dark: #154887;
+  --m-denim: #196dd5;
+  --m-denim-light: #dde9f9;
+  --m-green-dark: #087542;
+  --m-green: #0ba85f;
+  --m-green-light: #dbf2e7;
+  --m-orange-dark: #a34320;
+  --m-orange: #f26430;
+  --m-orange-vivid: #e1511c;
+  --m-orange-light: #fce0d6;
+  --m-yellow-dark: #826022;
+  --m-yellow: #ffbc42;
+  --m-yellow-light: #ffecc8;
+  --m-yellow-extra-light: #fef6e6;
+  --m-red-dark: #ab3f35;
+  --m-red: #e85648;
+  --m-red-light: #fce6e4;
+  --m-purple-dark: #822c95;
+  --m-purple: #b43dd0;
+  --m-purple-light: #f4e2f8;
+  --m-pink-dark: #9e3d51;
+  --m-pink: #f85275;
+  --m-pink-light: #fdd6de;
+  --m-grey-dark-1: #2a2a2a;
+  --m-grey-dark-2: #424242;
+  --m-grey-dark-3: #656565;
+  --m-grey-dark-4: #c8c8c8;
+  --m-grey-light-7: #f9f9f9;
+  --m-grey-dark-5: #1c1c1c;
+  --m-grey-light-6: #fafafa;
+  --m-grey-light-5: #f8f8f8;
+  --m-grey-light-4: #f5f5f5;
+  --m-grey-light-3: #f2f2f2;
+  --m-grey-light-2: #eaeaea;
+  --m-grey-light-1: #e5e5e5;
+  --m-white: #ffffff;
+  --m-warm-grey: #929292;
+  --m-border-grey: #d9d9d9;
+  --m-silver: #b9b9b9;
+  --m-cloud-white: #fcfcfc;
+  --m-dark-silver: #9a9a9a;
+  --m-yellow-warning: #f5a208;
+  --m-warning-background: #ab720b;
+  --m-transparent: transparent;
+
+  /* colors.ts -- only the entries that do NOT duplicate a brandColors hex. */
+  --m-c-alto: #d0d0d0;
+  --m-c-alto-gray: #d8d8d8;
+  --m-c-alto-white: #d3d3d3;
+  --m-c-apricot-peach: #fabdb8;
+  --m-c-background-home-gray: #f4f4f4;
+  --m-c-bajo-gray: #8d8d8d;
+  --m-c-blue-b-0: #e6f1ff;
+  --m-c-blue-b-6: #1a6dd5;
+  --m-c-blue-b-7: #0c5dbe;
+  --m-c-blue-hyperlink-color: #13549b;
+  --m-c-border: #e0e0e0;
+  --m-c-brick: #c33a2c;
+  --m-c-brown-grey: #888888;
+  --m-c-brownish-grey: #6b6b6b;
+  --m-c-burnt-sienna: #e85748;
+  --m-c-button-active-state: #f7f7f7;
+  --m-c-button-orange: #8c6724;
+  --m-c-chevron-gray: #a1a1a1;
+  --m-c-cinderella: #fcd3ce;
+  --m-c-cod-gray: #151515;
+  --m-c-colonial-white: #feefbd;
+  --m-c-coral-c-0: #ffe6eb;
+  --m-c-coral-c-1: #febfcd;
+  --m-c-coral-c-7: #c21237;
+  --m-c-coral-c-8: #a10829;
+  --m-c-dark-grey: #8e8e93;
+  --m-c-dusty-gray: #999999;
+  --m-c-eerie-black: #1b1b1b;
+  --m-c-flamingo: #f46838;
+  --m-c-french-pass: #b3f7ff;
+  --m-c-fun-green: #017841;
+  --m-c-gallery-grey: #ececec;
+  --m-c-gossamer: #0ea85f;
+  --m-c-green-mint: #38d58b;
+  --m-c-green-spring: #1ec174;
+  --m-c-gray: #a3a3a3;
+  --m-c-gray-79: #c9c9c9;
+  --m-c-grayish: #7d7d7d;
+  --m-c-gray-pebble: #dedede;
+  --m-c-ice-cold: #b2fad8;
+  --m-c-jade-green: #2da562;
+  --m-c-light-blue-low: #f0fbfc;
+  --m-c-light-gray: #e0e0e0;
+  --m-c-light-green: #effaf5;
+  --m-c-light-orange: #fdf0eb;
+  --m-c-matterhorn: #4c4c4c;
+  --m-c-mid-green: #4f9a40;
+  --m-c-mine-shaft-black: #202020;
+  --m-c-nero-black: #1e1e1e;
+  --m-c-nero-cod-black: #1a1a1a;
+  --m-c-pattens-blue: #ddeaf9;
+  --m-c-pink: #ef6582;
+  --m-c-red: #ff3b30;
+  --m-c-red-error: #dc493a;
+  --m-c-red-warning-background-color: #ffeae8;
+  --m-c-red-warning-color: #cc3333;
+  --m-c-salem: #0d7b48;
+  --m-c-salomie: #ffdf91;
+  --m-c-secondary-section: #f7f7f7;
+  --m-c-silver-chalice: #acacac;
+  --m-c-sky-blue: #1bbef0;
+  --m-c-strong-orange: #b88d43;
+  --m-c-table-separator: #e0e0e0;
+  --m-c-theme-strong-color: #00c0d3;
+  --m-c-thunderbird: #bb1c0f;
+  --m-c-alert-red: #d12b1e;
+  --m-c-tundora: #4a4a4a;
+  --m-c-very-light-pink: #fdebea;
+  --m-c-viking-blue: #48a4c8;
+  --m-c-yellow: #f7c744;
+  --m-c-light-dark: rgba(0, 0, 0, 0.35);
+
+  /* colors.ts names that ARE a brandColors hex under another spelling. */
+  --m-c-ashes-gray: var(--m-warm-grey);
+  --m-c-baby-blue: var(--m-blue-light);
+  --m-c-blanched-almond: var(--m-yellow-light);
+  --m-c-blue-darkness: var(--m-blue-dark);
+  --m-c-coral-c-4: var(--m-pink);
+  --m-c-dark-pink: var(--m-pink);
+  --m-c-dark-red: var(--m-orange-dark);
+  --m-c-denim-blue: var(--m-denim);
+  --m-c-dim-gray: var(--m-grey-dark-3);
+  --m-c-dove-gray: var(--m-grey-dark-3);
+  --m-c-form-gray-background: var(--m-grey-light-3);
+  --m-c-gainsboro-white: var(--m-border-grey);
+  --m-c-graphite-black: var(--m-grey-dark-5);
+  --m-c-green-haze: var(--m-green);
+  --m-c-green-white: var(--m-grey-light-2);
+  --m-c-header-grey: var(--m-grey-light-6);
+  --m-c-kumera: var(--m-yellow-dark);
+  --m-c-light-blue: var(--m-denim-light);
+  --m-c-lightest-gray: var(--m-grey-light-3);
+  --m-c-medium-carmine: var(--m-red-dark);
+  --m-c-mercury-gray: var(--m-grey-light-1);
+  --m-c-mine-black: var(--m-grey-dark-1);
+  --m-c-misty-rose: var(--m-red-light);
+  --m-c-pale-green: var(--m-green-light);
+  --m-c-peach: var(--m-orange-light);
+  --m-c-primary: var(--m-blue);
+  --m-c-principal-background-color: var(--m-white);
+  --m-c-secondary: var(--m-grey-dark-2);
+  --m-c-snow: var(--m-grey-light-7);
+  --m-c-surfie-green: var(--m-green-dark);
+  --m-c-very-light-grey: var(--m-grey-dark-4);
+  --m-c-white-smoke: var(--m-grey-light-5);
+  --m-c-wild-sand: var(--m-grey-light-4);
+  --m-c-yellow-orange: var(--m-yellow);
+}
+
+/* -- Type ladder -- fontStyles.tsx, one class per role ------------------- */
+
+.m-t-header-bar-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--m-grey-dark-1);
+  text-align: center;
+}
+.m-t-primary-title {
+  font-size: 20px;
+  font-weight: 700;
+}
+.m-t-secondary-title {
+  font-size: 16px;
+  font-weight: 700;
+}
+.m-t-secondary-title-semibold {
+  font-size: 16px;
+  font-weight: 600;
+}
+.m-t-small-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+.m-t-semibold-small {
+  font-size: 12px;
+  font-weight: 600;
+}
+.m-t-paragraph-medium {
+  font-size: 16px;
+}
+.m-t-paragraph-small {
+  font-size: 14px;
+}
+.m-t-bold-small {
+  font-size: 12px;
+  font-weight: 700;
+}
+.m-t-black-font {
+  color: var(--m-grey-dark-2);
+}
+.m-t-large-line-height {
+  line-height: 26px;
+}
+.m-t-medium-line-height {
+  line-height: 24px;
+}
+.m-t-small-line-height {
+  line-height: 19px;
+}
+.m-t-title {
+  font-size: 34px;
+  font-weight: 800;
+  letter-spacing: 0.34px;
+  line-height: 41px;
+  color: var(--m-grey-dark-1);
+}
+.m-t-top-level-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.32px;
+  line-height: 25px;
+  color: var(--m-grey-dark-1);
+}
+.m-t-section-title {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.32px;
+  line-height: 24px;
+  color: var(--m-grey-dark-1);
+}
+.m-t-item-title {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.31px;
+  line-height: 20px;
+  color: var(--m-grey-dark-1);
+}
+.m-t-subtitle {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.31px;
+  line-height: 20px;
+  color: var(--m-grey-dark-1);
+}
+.m-t-sub-heading {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.22px;
+  line-height: 17px;
+  color: var(--m-warm-grey);
+}
+.m-t-body-description {
+  font-size: 16px;
+  font-weight: 400;
+  letter-spacing: 0.25px;
+  line-height: 19px;
+  color: var(--m-grey-dark-2);
+}
+.m-t-button {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.29px;
+  line-height: 19px;
+  color: var(--m-c-mine-shaft-black);
+}
+.m-t-description {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: -0.29px;
+  line-height: 22px;
+  color: var(--m-grey-dark-2);
+}
+.m-t-title-regular {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
+  line-height: 22px;
+}
+.m-t-title-small {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
+  line-height: 21px;
+}
+.m-t-detail-page-title {
+  font-size: 22px;
+  font-weight: 800;
+  line-height: 28px;
+  color: var(--m-grey-dark-1);
+}
+.m-t-body-regular {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--m-grey-dark-2);
+  line-height: 23px;
+}
+.m-t-body-small {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--m-grey-dark-2);
+  line-height: 20px;
+}
+.m-t-body-smaller {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--m-grey-dark-2);
+  line-height: 20px;
+}
+.m-t-title-heavy {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--m-grey-dark-1);
+  line-height: 22px;
+}

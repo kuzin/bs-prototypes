@@ -1,0 +1,42 @@
+/* colonialWhite (#FEEFBD) — one of the few places the app uses it. */
+.m-pbt {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  height: 52px;
+  margin: 0 var(--m-gutter);
+  padding-left: 16px;
+  padding-right: 18px;
+  /* DIVERGENCE — the source's 8pt radius. One card radius across Home: the app gives each of
+   * these its own (PendingBookTalks 8, Fundraiser 17, MyStats 17, Motivator 16, Reviews 10), and
+   * they are all the same kind of object — a full-width card on the Home column. */
+  border-radius: var(--m-radius-card);
+  /* DIVERGENCE — a white card with a yellow BAR, not a yellow card.
+   *
+   * The source fills this with `colonialWhite` #FEEFBD, which was a clear signal on the white
+   * page Home used to have. On the home grey it is barely a step away from the ground, and it
+   * repeats the yellow of the motivator illustration directly below it, so the two blur into one
+   * band. A plain white card, like every other one on the column — a yellow border and a yellow
+   * left bar were both tried and both made this the one card on Home wearing a status colour, for
+   * a row that is a shortcut rather than a warning. Benny and the bold label are enough to find
+   * it. */
+  background: var(--m-white);
+  box-shadow: var(--m-shadow-card);
+}
+
+.m-pbt-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+/* The source sets only a margin, so the label inherits the default body weight — which on a
+ * coloured alert reads as body copy that happens to be yellow. Bold: it is the one line on the
+ * card and the reason the card is there. */
+.m-pbt-text {
+  margin-left: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--m-grey-dark-1);
+}

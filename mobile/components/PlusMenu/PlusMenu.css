@@ -1,0 +1,111 @@
+/* PlusMenuStyles.root — an absolute fill above everything, transparent to pointers until open. */
+.m-plus {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+}
+
+.m-plus-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  opacity: 0;
+  transition: opacity 250ms ease;
+  pointer-events: none;
+}
+
+.m-plus.is-open .m-plus-backdrop {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* The fan is anchored to the FAB, so both share one origin: bottom centre, lifted by the safe
+ * area plus FAB_LIFT — keep this in step with the constant in PlusMenu.jsx. */
+.m-plus-fan {
+  position: absolute;
+  left: 50%;
+  bottom: calc(var(--m-safe-bottom) + 10px);
+  width: 0;
+  height: 56px;
+}
+
+/* ActionButtonItem — a 64pt rounded square with a label under it, scaled up from the FAB. */
+.m-plus-item {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px;
+  margin-left: -50px;
+  opacity: 0;
+  transform-origin: center bottom;
+  transition:
+    transform 250ms ease,
+    opacity 250ms ease;
+  pointer-events: none;
+}
+
+.m-plus.is-open .m-plus-item {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.m-plus-item-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: 16px;
+  border-radius: 27px;
+  background: var(--m-white);
+  color: var(--m-accent);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.16);
+}
+
+.m-plus-item-label {
+  position: absolute;
+  top: 64px;
+  width: 100px;
+  text-align: center;
+  color: var(--m-white);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.22px;
+  line-height: 17px;
+}
+
+/* The FAB. borderRadius 24 on a 56pt box — a squircle, not a circle (a circle would be 28). */
+.m-plus-fab {
+  position: absolute;
+  left: 50%;
+  margin-left: -28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 24px;
+  background: var(--m-accent);
+  color: var(--m-white);
+  box-shadow: 0 3px 5px rgba(0, 0, 0, 0.09);
+  pointer-events: auto;
+  transition:
+    background-color 250ms ease,
+    color 250ms ease;
+}
+
+/* Open: the fill animates to white and the glyph to red, rotating 135°. */
+.m-plus.is-open .m-plus-fab {
+  background: var(--m-white);
+  color: var(--m-red);
+}
+
+.m-plus-fab > svg {
+  transition: transform 250ms ease;
+}
+
+.m-plus.is-open .m-plus-fab > svg {
+  transform: rotate(135deg);
+}

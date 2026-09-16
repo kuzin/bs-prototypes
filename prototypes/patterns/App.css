@@ -2060,3 +2060,48 @@ a.pt-nav-group-label {
   overflow: hidden;
   background: #fff;
 }
+
+/* ── Design-system toggle ─────────────────────────────────────────────────
+ * The library hosts two systems — the web one in components/, and the mobile
+ * one mirrored from the React Native app. They never share a page, so this is a
+ * mode switch rather than a filter: it swaps the whole catalog, the group index
+ * and the ⌘K haystack together. */
+.pt-platform {
+  display: flex;
+  gap: 2px;
+  /* The sidebar has no horizontal padding of its own — every child sets its own inset, so this
+     matches .pt-sidebar-search's 14px rather than bleeding to the edges. */
+  width: calc(100% - 28px);
+  /* The search button sits 10px above; a control that switches the whole catalog wants a clearer
+     break from it than from the group list below. */
+  margin: 10px 14px 16px;
+  padding: 2px;
+  border-radius: 9px;
+  background: var(--c-gray-100);
+}
+
+.pt-platform-btn {
+  display: flex;
+  flex: 1 1 0%;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 7px;
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c-gray-600);
+  cursor: pointer;
+}
+
+.pt-platform-btn:hover {
+  color: var(--c-gray-900);
+}
+
+.pt-platform-btn--active {
+  background: #fff;
+  color: var(--c-gray-900);
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.1);
+}

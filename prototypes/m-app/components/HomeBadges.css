@@ -1,0 +1,40 @@
+/* contentContainerStyle.marginTop is 20 on home (CONTAINER_SPACE); the list itself has no padding. */
+.m-hbadges {
+  display: flex;
+  flex-direction: row;
+  margin-top: 20px;
+  padding-right: var(--m-gutter);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.m-hbadges::-webkit-scrollbar {
+  height: 0;
+}
+
+/* Badge.styles.circleBtn — 87pt square at radius 68, so it clips to a circle. The spacing between
+ * badges is marginLeft 20 on every item, including the first, which is also what insets the row. */
+.m-hbadge {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 87px;
+  height: 87px;
+  margin-left: 20px;
+  border-radius: 68px;
+  overflow: hidden;
+  transition: opacity 120ms ease;
+}
+
+/* CIRCLE_OPACITY_PRESSED — a press, so :active rather than :hover. */
+.m-hbadge:active {
+  opacity: 0.5;
+}
+
+/* resizeMode="contain" as a prop, which wins over the stylesheet's `cover`. */
+.m-hbadge > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}

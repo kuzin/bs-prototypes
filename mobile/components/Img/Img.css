@@ -1,0 +1,13 @@
+.m-img {
+  display: block;
+  flex: none;
+}
+
+/* A tinted asset is a mask over a solid fill — there is no CSS equivalent of RN's tintColor on a
+ * real <img>. Centred and non-repeating so it behaves like resizeMode rather than a background. */
+.m-img-tinted {
+  mask-repeat: no-repeat;
+  -webkit-mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-position: center;
+}

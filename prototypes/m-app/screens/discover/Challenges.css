@@ -1,0 +1,175 @@
+/* mainChallengeContainer */
+/* `flex: 1 0 auto`, NOT `1 1 0%` — a screen inside the tab scroller. With a zero basis the box is
+ * sized to the scroller and its own content overflows it, so the scroll extent comes from content
+ * the flex layout never measured and the floating bar's clearance spacer lands ABOVE it. An auto
+ * basis means the box is at least its content, and still grows to fill a short screen. */
+.m-chl {
+  display: flex;
+  flex-direction: column;
+  flex: 1 0 auto;
+  min-height: 0;
+  background: var(--m-white);
+}
+
+/* challengeContentContainer */
+.m-chl-list {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 24px;
+}
+
+/* ── ChallengeFilterComponent ────────────────────────────────────────────── */
+/* Full-bleed greyLight4, and a 40pt gap below it before the first section title. */
+.m-chl-filter {
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  margin-bottom: 40px;
+  background: var(--m-grey-light-4);
+}
+
+/* The 8pt horizontal padding is cancelled by `marginLeft: -8`, so the label still lines up on the
+ * 20pt gutter while the tap target is wider than the text. */
+.m-chl-filter-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 8px;
+  margin-left: -8px;
+}
+
+.m-chl-filter-text {
+  font-size: 15px;
+  line-height: 16px;
+  font-weight: 700;
+  color: var(--m-grey-dark-3);
+}
+
+.m-chl-filter-arrow {
+  width: 16px;
+  height: 16px;
+  margin-left: 8px;
+}
+
+.m-chl-code {
+  padding: 10px;
+  border-radius: 10px;
+  background: var(--m-white);
+  /* The iOS branch: shadowOpacity .12 at 0/2, no radius given — so a tight, dark drop. */
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.12);
+}
+
+.m-chl-code-text {
+  color: var(--m-accent);
+}
+
+/* ── Section headers ─────────────────────────────────────────────────────── */
+.m-chl-secthead {
+  margin: 0 20px 24px;
+}
+
+/* `marginTop: index > 0 ? 32 : 0` — only "More Challenges" carries it. */
+.m-chl-secthead.has-gap {
+  margin-top: 32px;
+}
+
+.m-chl-subtitle {
+  margin-top: 4px;
+  color: var(--m-grey-dark-3);
+}
+
+/* ── ChallengeCardComponent ──────────────────────────────────────────────── */
+/* TWO nested borders, which is not a mistake: the outer cardContainer is a 2pt greyLight6 ring at
+ * radius 12, and the inner detailContainer a 2pt greyLight3 at radius 10. The pair reads as one
+ * soft double edge. */
+.m-chl-card {
+  display: block;
+  margin: 0 20px 24px;
+  min-height: 265px;
+  border: 2px solid var(--m-grey-light-6);
+  border-radius: 12px;
+  text-align: left;
+}
+
+.m-chl-card-inner {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  border: 2px solid var(--m-grey-light-3);
+  border-radius: 10px;
+  background: var(--m-white);
+}
+
+.m-chl-banner {
+  position: relative;
+  border-radius: 10px;
+  background: var(--m-white);
+}
+
+/* headerImageWrapper zeroes the radius and then rounds only the top pair, so the banner meets the
+ * card's straight sides below it. */
+.m-chl-banner-wrap {
+  display: block;
+  width: 100%;
+  border-radius: 0;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+  overflow: hidden;
+}
+
+/* useBannerAspectRatio starts at the 920×351 guideline and re-reads the real ratio on load. With
+ * no real artwork the guideline is what shows. */
+.m-chl-banner-img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 920 / 351;
+  object-fit: cover;
+}
+
+/* challengeStateContainer — hung 25pt BELOW the banner's bottom edge, so it straddles the banner
+ * and the title block. The white ground is its own, not the card's. */
+.m-chl-state {
+  position: absolute;
+  right: 10px;
+  bottom: -25px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  margin: 3px 0;
+  border-radius: 18px;
+  background: var(--m-white);
+}
+
+/* challengeSectionContainer — a 16pt gutter, narrower than the 20 the card sits on. */
+.m-chl-meta {
+  display: flex;
+  flex-direction: column;
+  padding: 24px 16px 0;
+}
+
+.m-chl-dates {
+  margin-top: 4px;
+  color: var(--m-grey-dark-3);
+}
+
+/* logTypeView — 12pt gutter, narrower again, and 17pt of air above and below the pill row. */
+.m-chl-types {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 17px 12px;
+}
+
+/* Each pill is wrapped in a View with `marginVertical: 3` so wrapped rows do not touch. */
+.m-chl-type {
+  display: flex;
+  margin: 3px 0;
+}

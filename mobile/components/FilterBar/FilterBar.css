@@ -1,0 +1,34 @@
+/* styles.container — 13pt top and bottom, 20 each side, on greyLight4. */
+.m-filterbar {
+  display: flex;
+  flex: none;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 13px 20px;
+  background: var(--m-grey-light-4);
+  text-align: left;
+}
+
+/* A Pressable with a static style in the source, so no feedback — but a full-width control that
+ * does not respond to a press reads as broken. */
+.m-filterbar:active {
+  background: var(--m-grey-light-3);
+}
+
+/* styles.filterText. The label carries its OWN 9pt vertical padding on top of the bar's 13, so
+ * the bar measures 13 + 9 + 18 + 9 + 13 = 62 rather than the 44 the bar padding alone would give.
+ *
+ * No LEFT padding, though: the source's 10 sits on top of the bar's 20pt gutter and sets the
+ * label 30 from the edge, while everything else on these screens starts at 20. */
+.m-filterbar-label {
+  overflow: hidden;
+  padding: 9px 10px 9px 0;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 18px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: var(--m-grey-dark-2);
+}

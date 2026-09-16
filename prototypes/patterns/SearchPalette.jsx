@@ -7,7 +7,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Icon } from '@components/Icon/Icon'
-import { GROUPS, SECTIONS } from './catalog'
+import { GROUPS, SECTIONS, platformOf } from './catalog'
 
 const groupTitle = (id) => GROUPS.find((g) => g.id === id)?.title ?? id
 
@@ -35,6 +35,8 @@ function textOf(node) {
 // Precomputed once — 134 sections re-flattened on every keystroke would be silly.
 const HAYSTACK = SECTIONS.map((section) => ({
   section,
+  // Which design system this entry belongs to — the palette only ever searches one.
+  platform: platformOf(GROUPS.find((g) => g.id === section.group)),
   name: section.name.toLowerCase(),
   group: whereText(section).toLowerCase(),
   desc: textOf(section.desc).toLowerCase(),
@@ -53,24 +55,25 @@ function score({ name, group, desc }, q) {
   return null
 }
 
-function useResults(query) {
+function useResults(query, platform) {
   return useMemo(() => {
     const q = query.trim().toLowerCase()
     if (!q) return []
-    return HAYSTACK.map((entry) => ({ entry, rank: score(entry, q) }))
+    return HAYSTACK.filter((entry) => entry.platform === platform)
+      .map((entry) => ({ entry, rank: score(entry, q) }))
       .filter((r) => r.rank !== null)
       .sort((a, b) => b.rank - a.rank || a.entry.name.localeCompare(b.entry.name))
       .slice(0, 40)
       .map((r) => r.entry.section)
-  }, [query])
+  }, [query, platform])
 }
 
-export function SearchPalette({ onClose }) {
+export function SearchPalette({ platform = 'desktop', onClose }) {
   const [query, setQuery] = useState('')
   const [active, setActive] = useState(0)
   const inputRef = useRef(null)
   const listRef = useRef(null)
-  const results = useResults(query)
+  const results = useResults(query, platform)
 
   useEffect(() => inputRef.current?.focus(), [])
   useEffect(() => setActive(0), [query])

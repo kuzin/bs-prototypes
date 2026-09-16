@@ -210,4 +210,14 @@ export const PROTOTYPES = [
     accent: '#0BA85F',
     description: 'Increasing, consistent or declining — and what is driving it.',
   },
+  {
+    id: 'm-app',
+    name: 'Mobile · App',
+    section: 'Prototypes',
+    category: 'Mobile app',
+    platform: 'mobile',
+    href: '/bs-prototypes/m-app/',
+    accent: '#196DD5',
+    description: 'The app chrome and all four tabs — Home, Log, Discover, Community.',
+  },
 ]

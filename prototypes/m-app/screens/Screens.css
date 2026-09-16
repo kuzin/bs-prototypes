@@ -1,0 +1,209 @@
+/* Shared layout for the Log / Discover / Community tab bodies.
+ * The page gutter is 20 — the value that actually recurs across the app, not spacing.js's 16. */
+.m-scr {
+  display: flex;
+  flex-direction: column;
+  padding: var(--m-space-4) 0 var(--m-space-8);
+}
+
+.m-scr-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: var(--m-space-3);
+  padding: var(--m-space-3) var(--m-gutter);
+}
+
+.m-scr-row + .m-scr-row {
+  border-top: 1px solid var(--m-grey-light-2);
+}
+
+.m-scr-row.is-you {
+  background: var(--m-accent-tab-bg);
+}
+
+.m-scr-rowmeta {
+  gap: 3px;
+  align-items: flex-start;
+}
+
+/* Radius 8 is the book-cover value specifically. */
+.m-scr-cover {
+  flex: none;
+  width: 44px;
+  height: 66px;
+  border-radius: var(--m-radius-cover);
+}
+
+.m-scr-daygroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.m-scr-daylabel {
+  padding: var(--m-space-4) var(--m-gutter) var(--m-space-2);
+}
+
+.m-scr-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--m-space-6) var(--m-gutter);
+}
+
+/* ── Badges grid ──────────────────────────────────────────────────────── */
+.m-scr-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--m-space-5) var(--m-space-3);
+  padding: var(--m-space-6) var(--m-gutter) var(--m-space-8);
+}
+
+.m-scr-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  text-align: center;
+}
+
+.m-scr-badge-medal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  border-radius: 999px;
+}
+
+.m-scr-badge.is-locked .m-scr-badge-medal {
+  background: var(--m-grey-light-2);
+  color: var(--m-grey-dark-4);
+}
+
+/* ── Streaks ──────────────────────────────────────────────────────────── */
+.m-scr-week {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--m-space-4);
+  padding: var(--m-space-3) var(--m-gutter);
+}
+
+.m-scr-dots {
+  gap: 6px;
+}
+
+.m-scr-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--m-grey-light-2);
+}
+
+.m-scr-dot.is-met {
+  background: var(--m-green);
+}
+
+/* ── Highlights ───────────────────────────────────────────────────────── */
+.m-scr-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--m-space-3);
+  padding: var(--m-space-5) var(--m-gutter) var(--m-space-8);
+}
+
+.m-scr-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--m-space-5);
+  border-radius: var(--m-radius-card);
+  background: var(--m-white);
+  box-shadow: var(--m-shadow-card);
+}
+
+/* ── Discover ─────────────────────────────────────────────────────────── */
+.m-scr-chal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--m-space-2);
+  margin: 0 var(--m-gutter) var(--m-space-3);
+  padding: var(--m-space-5);
+  border-radius: var(--m-radius-card);
+  border: 2px solid var(--m-grey-light-2);
+  background: var(--m-white);
+}
+
+.m-scr-chal-head {
+  justify-content: space-between;
+  gap: var(--m-space-3);
+  align-items: flex-start;
+}
+
+.m-scr-chal-head > h3 {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.m-scr-actionicon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--m-radius-control);
+  background: var(--m-grey-light-3);
+  font-size: 20px;
+}
+
+.m-scr-date {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 52px;
+  border-radius: var(--m-radius-control);
+  background: var(--m-denim-light);
+  color: var(--m-denim-dark);
+}
+
+.m-scr-date-mon {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.m-scr-date-day {
+  font-size: 19px;
+  font-weight: 800;
+  line-height: 20px;
+}
+
+/* ── Community ────────────────────────────────────────────────────────── */
+.m-scr-requests {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--m-space-3);
+  margin: 0 var(--m-gutter) var(--m-space-2);
+  padding: var(--m-space-4);
+  border-radius: var(--m-radius-card);
+  background: var(--m-yellow-light);
+}
+
+.m-scr-rank {
+  flex: none;
+  width: 20px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--m-grey-dark-3);
+  text-align: center;
+}

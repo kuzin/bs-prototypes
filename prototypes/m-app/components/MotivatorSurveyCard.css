@@ -1,0 +1,41 @@
+.m-msc {
+  display: flex;
+  flex-direction: column;
+  background: var(--m-white);
+  border-radius: var(--m-radius-card);
+  padding: 24px;
+  /* 16, not the page's 20. */
+  margin: 0 var(--m-gutter);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.06);
+}
+
+/* The illustration bleeds to the card's own edges — negative margins cancel the 24pt padding on
+ * the three sides it touches, and it takes the card's top corners so the two radii agree.
+ *
+ * `object-fit: cover` rather than `contain`: at full width the artwork is wider than 96pt tall,
+ * and `contain` would letterbox it inside a band of white. */
+.m-msc-character {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  margin: -24px -24px 16px;
+  border-top-left-radius: var(--m-radius-card);
+  border-top-right-radius: var(--m-radius-card);
+  overflow: hidden;
+}
+
+/* `object-fit` is NOT set here — Img writes it inline from its `fit` prop, which beats any rule
+ * in this file. The call site passes `fit="cover"`. */
+.m-msc-character > img {
+  width: 100%;
+  height: 100%;
+}
+
+.m-msc-text {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 16px;
+}
+
+/* blueB6 (#1A6DD5) — a hardcoded blue, NOT the tenant accent. Reproduced as-is. */

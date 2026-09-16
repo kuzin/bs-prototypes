@@ -1,0 +1,140 @@
+/* backgroundViewLayout — full width, white, 16pt of vertical padding (10 in search). */
+.m-bli {
+  display: block;
+  width: 100%;
+  padding: 16px 0;
+  background: var(--m-white);
+  text-align: left;
+}
+
+.m-bli.is-search {
+  padding: 10px 0;
+}
+
+/* underlayColor greyLight4 — a press, so :active. */
+.m-bli:active {
+  background: var(--m-grey-light-4);
+}
+
+.m-bli-item {
+  display: flex;
+  flex-direction: row;
+  padding: 0 20px;
+}
+
+.m-bli-wrapper {
+  position: relative;
+  flex: none;
+}
+
+.m-bli-cover {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 80px;
+  height: 120px;
+  border-radius: var(--m-radius-cover);
+  overflow: hidden;
+}
+
+.m-bli.is-search .m-bli-cover {
+  width: 56px;
+  height: 84px;
+  border-radius: 6px;
+}
+
+/* BookImage's placeholder: the title abbreviation on the book's own colour. */
+.m-bli-abbr {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-white);
+}
+
+/* shadowWrapper + shadow — a sibling block, not a box-shadow. */
+.m-bli-shadow {
+  position: absolute;
+  z-index: 0;
+  bottom: -5px;
+  left: 8px;
+  width: 100%;
+  height: 16px;
+  border-radius: 8px;
+  background: var(--m-black);
+  opacity: 0.07;
+}
+
+.m-bli.is-search .m-bli-shadow {
+  bottom: -4px;
+  left: 6px;
+  border-radius: 6px;
+}
+
+.m-bli-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-width: 0;
+  padding-left: 20px;
+  justify-content: center;
+}
+
+.m-bli-title,
+.m-bli-author {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.m-bli-author {
+  color: var(--m-grey-dark-3);
+  margin-top: 4px;
+}
+
+.m-bli-progress {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-top: 24px;
+}
+
+.m-bli-track {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  flex-shrink: 1;
+  width: 100%;
+  height: 6px;
+  border-radius: var(--m-radius-control);
+  background: #f2f2f2;
+  margin-right: 16px;
+}
+
+/* ctaColor, not primaryColor. */
+.m-bli-fill {
+  position: absolute;
+  inset: 0;
+  height: 6px;
+  border-radius: var(--m-radius-control);
+  background: var(--m-cta);
+}
+
+.m-bli-pct {
+  flex: none;
+  color: var(--m-grey-dark-3);
+}
+
+/* smallTag — greenLight ground, greenDark ink, and it REPLACES the progress bar. */
+.m-bli-tag {
+  display: inline-flex;
+  align-self: flex-start;
+  padding: 5px 10px;
+  margin-top: 16px;
+  border-radius: var(--m-radius-pill);
+  background: var(--m-green-light);
+  color: var(--m-green-dark);
+  font-size: 12px;
+  font-weight: 700;
+}

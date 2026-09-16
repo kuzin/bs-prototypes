@@ -1,0 +1,71 @@
+.m-bt {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+/* The first section header sits right under the FilterBar, so it drops its own 32pt top margin —
+ * later headers keep theirs, because between two sections the 32 is doing real work. */
+.m-filterbar + section > .m-bt-section {
+  margin-top: 16px;
+}
+
+/* DIVERGENCE — section headers step up to `primaryTitle` (20/700).
+ *
+ * The app sets every one of them to `topLevelTitle` (16/700/-0.32), and every ROW TITLE under
+ * them to 14–16 as well — on Book Talks the section header and its row titles are byte-identical,
+ * so the heading is doing no work that the row's own position in the list was not already doing.
+ *
+ * 20 is a rung the app already has, not a new size; 17 was the alternative and sits too close to
+ * 16 to read as a level. Row titles stay where they are — the gap is what was missing, and it is
+ * cheaper to buy it at the top of the hierarchy than to shrink everything under it. */
+.m-bt-section {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.32px;
+  line-height: 26px;
+  color: var(--m-grey-dark-1);
+  margin-top: 32px;
+  margin-bottom: 16px;
+  padding: 0 20px;
+}
+
+.m-bt-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 16px 20px;
+  text-align: left;
+}
+
+.m-bt-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.m-bt-title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.32px;
+  line-height: 25px;
+  color: var(--m-grey-dark-1);
+}
+
+.m-bt-date {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.22px;
+  line-height: 17px;
+  color: var(--m-grey-dark-3);
+}
+
+/* itemSeparator — serves as BOTH the item and the section separator. */
+.m-bt-rule {
+  height: 1px;
+  margin: 0 20px;
+  background: var(--m-grey-light-2);
+}
