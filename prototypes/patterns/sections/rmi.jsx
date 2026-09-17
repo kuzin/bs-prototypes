@@ -204,13 +204,18 @@ export const rmiSections = [
 <GenreRecommendations scores={index.scores} subject="class" />`,
     desc: (
       <>
-        Three genres for each of the top motivation types, from the RMI toolkit&rsquo;s own mapping
-        &mdash; ten personas, three genres each, with the reason every one suits that type. This is
-        the reader&rsquo;s-advisory half of a report: the recommended <em>actions</em> tell an
-        educator what to do, and these tell them what to put in the reader&rsquo;s hands. The reason
-        matters more than the list &mdash; it&rsquo;s what lets a librarian explain the choice.{' '}
-        <strong>The Mystery</strong> has none: it isn&rsquo;t a reading taste but the absence of a
-        clear one, so the block doesn&rsquo;t render rather than inventing a shelf.
+        The three genres of the reader&rsquo;s <em>strongest</em> motivation type, from the RMI
+        toolkit&rsquo;s own mapping &mdash; ten personas, three genres each, with the reason every
+        one suits that type. This is the reader&rsquo;s-advisory half of a report: the recommended{' '}
+        <em>actions</em> tell an educator what to do, and these tell them what to put in the
+        reader&rsquo;s hands. The reason matters more than the list &mdash; it&rsquo;s what lets a
+        librarian explain the choice.
+        <br />
+        <br />
+        The strongest type alone, not the top three: those three genres are what the book lists are
+        built from, so showing nine promised six shelves nothing downstream ever fills.{' '}
+        <strong>The Mystery</strong> has none at all &mdash; it isn&rsquo;t a reading taste but the
+        absence of a clear one, so the block doesn&rsquo;t render rather than inventing a shelf.
       </>
     ),
     render: () => (

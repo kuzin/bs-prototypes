@@ -266,7 +266,7 @@ export function TopMotivationTypes({ scores }) {
 
 // ── Genre recommendations ────────────────────────────────────────────────
 /**
- * Three genres for each of the reader's top motivation types, from the RMI
+ * The three genres of the reader's strongest motivation type, from the RMI
  * toolkit's own mapping.
  *
  * This is the reader's-advisory half of the report: the recommended *actions*
@@ -274,50 +274,50 @@ export function TopMotivationTypes({ scores }) {
  * reader's hands. Each genre carries the reason it suits that type, because the
  * point isn't the list — it's that a librarian can explain the choice.
  *
+ * The strongest type alone, not the top three. The three genres under one type
+ * are what the book lists are built from, so showing nine here promised six
+ * shelves that nothing downstream ever fills — and a reader pointed at nine
+ * genres at once has been pointed at nothing.
+ *
  * `mystery` has no genres. It isn't a reading taste, it's the absence of a
  * clear one, so the block doesn't render rather than inventing a shelf.
  */
 export function GenreRecommendations({ scores, subject = 'reader' }) {
-  const types = topThreeFactors(scores).filter((f) => GENRES_BY_FACTOR[f.name])
-  if (types.length === 0) return null
+  const factor = topThreeFactors(scores)[0]
+  const genres = GENRES_BY_FACTOR[factor?.name]
+  if (!genres) return null
+
+  const def = FACTORS[factor.name]
+  const slug = def.student_name.toLowerCase().replace(/\s+/g, '-')
 
   return (
     <section className="rmi-genres">
       <h3 className="rmi-block-title">Genre Recommendations</h3>
       <p className="rmi-genres-lede">
-        Genres that suit {subject === 'class' ? "this class's" : "this reader's"} top motivation
-        types.
+        Genres that suit {subject === 'class' ? "this class's" : "this reader's"} strongest
+        motivation type.
       </p>
 
-      <div className="rmi-genres-types">
-        {types.map((factor) => {
-          const def = FACTORS[factor.name]
-          const slug = def.student_name.toLowerCase().replace(/\s+/g, '-')
+      <div className="rmi-genre-type">
+        <div className="rmi-genre-type-head">
+          <img
+            className="rmi-genre-type-portrait"
+            src={asset(`factors/${slug}.png`)}
+            alt=""
+            width={32}
+            height={32}
+          />
+          <span className="rmi-genre-type-name">{def.student_name}</span>
+        </div>
 
-          return (
-            <div key={factor.name} className="rmi-genre-type">
-              <div className="rmi-genre-type-head">
-                <img
-                  className="rmi-genre-type-portrait"
-                  src={asset(`factors/${slug}.png`)}
-                  alt=""
-                  width={32}
-                  height={32}
-                />
-                <span className="rmi-genre-type-name">{def.student_name}</span>
-              </div>
-
-              <ul className="rmi-genre-list">
-                {GENRES_BY_FACTOR[factor.name].map((genre) => (
-                  <li key={genre.name} className="rmi-genre">
-                    <span className="rmi-genre-name">{genre.name}</span>
-                    <span className="rmi-genre-why">{genre.why}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )
-        })}
+        <ul className="rmi-genre-list">
+          {genres.map((genre) => (
+            <li key={genre.name} className="rmi-genre">
+              <span className="rmi-genre-name">{genre.name}</span>
+              <span className="rmi-genre-why">{genre.why}</span>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   )

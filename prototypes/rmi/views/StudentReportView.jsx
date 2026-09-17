@@ -1,6 +1,7 @@
 import { PageHeader } from '@components/PageHeader/PageHeader'
 import { Button } from '@components/Button/Button'
 import { BackBar } from '@components/BackBar/BackBar'
+import { Tabs } from '@components/Tabs/Tabs'
 import { Select } from '@components/Form/Form'
 import '@components/Form/Form.css'
 import { EmptyState } from '@components/Primitives/Primitives'
@@ -31,12 +32,21 @@ import './StudentReportView.css'
  *
  * The distinctive part is the filter bar: pick another index to compare
  * against and every score grows a ± against that period, which is how an
- * educator sees whether a reader moved between the fall and the winter.
+ * educator sees whether a reader moved between the fall and the winter. It
+ * belongs to the summary — a comparison changes the scores, and there is
+ * nothing on a book list for it to change.
+ *
+ * The lists sit on their own tab, as they do on the index: a report is
+ * something you read and a book list is something you act on somewhere else,
+ * at the shelves or in a purchase order, and thirty-six jackets underneath the
+ * factor table buried the report they were meant to follow from.
  */
 export function StudentReportView({
   index,
   indexes,
   studentId,
+  tab,
+  onTab,
   comparisonId,
   onComparison,
   onBack,
@@ -81,27 +91,51 @@ export function StudentReportView({
         }
       />
 
-      <div className="rmi-filter-bar">
-        <Select value={indexId} disabled onChange={() => {}} className="rmi-filter-survey">
-          <option value={indexId}>{index.name}</option>
-        </Select>
-
-        <label className="rmi-filter-field">
-          <span>Compare against:</span>
-          <Select value={comparisonId ?? ''} onChange={(e) => onComparison(e.target.value || null)}>
-            <option value="">Select a survey to compare against</option>
-            {options.map((i) => (
-              <option key={i.id} value={i.id}>
-                {i.name}
-              </option>
-            ))}
-          </Select>
-        </label>
-      </div>
+      <Tabs
+        active={tab}
+        onChange={onTab}
+        items={[
+          { id: 'summary', label: 'Summary' },
+          { id: 'books', label: 'Book List' },
+        ]}
+      />
 
       <div className="rmi-report">
-        {response ? (
+        {!response ? (
+          <EmptyState
+            variant="dashed"
+            title="No data collected."
+            description={`${firstName} hasn't completed this index yet.`}
+          />
+        ) : tab === 'books' ? (
+          <BookLists
+            factor={topThreeFactors(response.scores)[0].name}
+            band={bandForGrades(EDUCATOR.grades)}
+            forReader={firstName}
+          />
+        ) : (
           <>
+            <div className="rmi-filter-bar">
+              <Select value={indexId} disabled onChange={() => {}} className="rmi-filter-survey">
+                <option value={indexId}>{index.name}</option>
+              </Select>
+
+              <label className="rmi-filter-field">
+                <span>Compare against:</span>
+                <Select
+                  value={comparisonId ?? ''}
+                  onChange={(e) => onComparison(e.target.value || null)}
+                >
+                  <option value="">Select a survey to compare against</option>
+                  {options.map((i) => (
+                    <option key={i.id} value={i.id}>
+                      {i.name}
+                    </option>
+                  ))}
+                </Select>
+              </label>
+            </div>
+
             <ScoreCards scores={response.scores} deltas={deltas} />
             <BennySays
               summary={summaryFor(response.scores, { subject: firstName })}
@@ -116,19 +150,8 @@ export function StudentReportView({
             />
             <TopMotivationTypes scores={response.scores} />
             <GenreRecommendations scores={response.scores} />
-            <BookLists
-              factor={topThreeFactors(response.scores)[0].name}
-              band={bandForGrades(EDUCATOR.grades)}
-              forReader={firstName}
-            />
             <FactorTable scores={response.scores} deltas={factorDeltas} />
           </>
-        ) : (
-          <EmptyState
-            variant="dashed"
-            title="No data collected."
-            description={`${firstName} hasn't completed this index yet.`}
-          />
         )}
       </div>
     </>

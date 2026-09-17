@@ -44,6 +44,7 @@ export function App() {
   const [indexId, setIndexId] = useStickyState('rmi:index', null)
   const [tab, setTab] = useStickyState('rmi:tab', 'summary')
   const [studentId, setStudentId] = useStickyState('rmi:student', null)
+  const [studentTab, setStudentTab] = useStickyState('rmi:student-tab', 'summary')
   const [comparisonId, setComparisonId] = useStickyState('rmi:comparison', null)
 
   // The index periods are editable, so they're state rather than the module's
@@ -61,6 +62,7 @@ export function App() {
 
   function openStudent(id) {
     setStudentId(id)
+    setStudentTab('summary')
     setComparisonId(null)
   }
 
@@ -105,6 +107,8 @@ export function App() {
         index={index}
         indexes={indexes}
         studentId={studentId}
+        tab={studentTab}
+        onTab={setStudentTab}
         comparisonId={comparisonId}
         onComparison={setComparisonId}
         onBack={() => setStudentId(null)}

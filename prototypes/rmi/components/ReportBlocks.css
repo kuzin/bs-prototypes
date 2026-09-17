@@ -361,14 +361,6 @@
   color: var(--c-gray-750);
 }
 
-/* One column per motivation type, so the three read as parallel shelves
-   rather than one long list you have to keep your place in. */
-.rmi-genres-types {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-}
-
 .rmi-genre-type {
   display: flex;
   flex-direction: column;
@@ -397,13 +389,22 @@
   color: var(--c-gray-800);
 }
 
+/* One column per genre, so the three read as parallel shelves rather than one
+   list you have to keep your place in. They were columns per motivation type
+   until the block narrowed to the strongest type alone. */
 .rmi-genre-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+@media (max-width: 720px) {
+  .rmi-genre-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }
 
 .rmi-genre {
