@@ -354,34 +354,15 @@
   min-width: 0;
 }
 
-/* The persona leads; the factor it stands for rides beside it, because
-   everything else on the page — the table, the summary, the advice — is
-   written in factors. */
 .rmi-top-type-name {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
   font-size: var(--text-cell);
   font-weight: 800;
   color: var(--c-gray-800);
 }
 
-.rmi-top-type-factor {
-  font-size: var(--text-tag);
-  font-weight: 700;
-  color: var(--c-gray-600);
-}
-
 .rmi-top-type-desc {
   font-size: var(--text-cell);
   color: var(--c-gray-750);
-}
-
-.rmi-top-type-score {
-  font-size: var(--text-subhead);
-  font-weight: 800;
-  color: var(--c-text-dark);
-  flex-shrink: 0;
 }
 
 /* ── Factor table ──────────────────────────────────────────────────────── */

@@ -211,11 +211,10 @@ export function ReadingGoalAndActions({ goal, recommendations }) {
  * reveal shows them, named the way they were named there.
  *
  * `top_three_factors` drives the summary and the recommendations, but until now
- * it was only legible on the reader's side. An educator needs it in both
- * vocabularies at once: the reader was told they are **The Lion**, while the
- * table below this, the summary and the recommendation copy all say
- * **confidence**. So each row carries the persona, the factor it stands for,
- * and the educator's definition of it.
+ * it was only legible on the reader's side. Here it's the persona and what it
+ * means — the factor it scores against and the score itself are both in the
+ * table directly below, so repeating them makes this a worse version of that
+ * table rather than the thing the table doesn't say.
  *
  * `mystery` is a motivation type like any other, with its own portrait and its
  * own definition — it's what the engine returns when nothing clears the
@@ -247,18 +246,9 @@ export function TopMotivationTypes({ scores }) {
               />
 
               <div className="rmi-top-type-text">
-                <span className="rmi-top-type-name">
-                  {def.student_name}
-                  {!mystery && (
-                    <span className="rmi-top-type-factor">
-                      {factor.name[0].toUpperCase() + factor.name.slice(1)}
-                    </span>
-                  )}
-                </span>
+                <span className="rmi-top-type-name">{def.student_name}</span>
                 <span className="rmi-top-type-desc">{def.educator_definition}</span>
               </div>
-
-              {!mystery && <span className="rmi-top-type-score">{factor.score.toFixed(1)}</span>}
             </li>
           )
         })}
