@@ -84,13 +84,7 @@ export function App() {
 
   return (
     <div className="rmi-root">
-      <PreviewBar
-        title="Reading Motivation Index"
-        views={VIEWS}
-        active={view}
-        onChange={setView}
-        sticky={false}
-      />
+      <PreviewBar title="Reading Motivation Index" views={VIEWS} active={view} onChange={setView} />
 
       {view === 'educator' ? (
         <RmiShell section={section} onNavigate={navigate} educator={EDUCATOR}>

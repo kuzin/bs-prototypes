@@ -12,14 +12,16 @@
    adds is that the rail is sticky for the viewport's height (the way its
    `.sidebar` is), so long report pages scroll under it.
 
-   The prototype's preview bar sits above the shell, so the rail is the
-   viewport minus that bar — PreviewBar publishes its height for exactly this.
-   Without it the bottom strip's avatar falls below the fold. */
+   It sticks *below* the preview bar and stops *above* the prototype nav, both
+   of which publish their heights (`--preview-bar-h`, `--chrome-bottom`) for
+   exactly this. Without them the rail's bottom strip — Support and the account
+   avatar — hides behind the nav. Both default to 0, so the rail is a plain
+   full-height column wherever that chrome isn't present. */
 .rmi-rail {
   position: sticky;
-  top: 0;
+  top: var(--preview-bar-h, 0px);
   align-self: flex-start;
-  height: calc(100vh - var(--preview-bar-h, 0px));
+  height: calc(100vh - var(--preview-bar-h, 0px) - var(--chrome-bottom, 0px));
   border-right: 1px solid var(--c-gray-200);
 }
 
@@ -57,7 +59,7 @@
 
 .rmi-account-menu {
   position: fixed;
-  bottom: 12px;
+  bottom: calc(12px + var(--chrome-bottom, 0px));
   left: 86px; /* clear of the 80px rail */
   z-index: 41;
   min-width: 212px;
@@ -116,7 +118,7 @@
   background: #fff;
   border-bottom: 1px solid var(--c-gray-200);
   position: sticky;
-  top: 0;
+  top: var(--preview-bar-h, 0px);
   z-index: 25;
 }
 
@@ -149,7 +151,7 @@
    thing it can't know is that the prototype's preview bar is above it. */
 .rmi-rail-drawer {
   top: var(--preview-bar-h, 0px);
-  height: calc(100vh - var(--preview-bar-h, 0px));
+  height: calc(100vh - var(--preview-bar-h, 0px) - var(--chrome-bottom, 0px));
 }
 
 @media (max-width: 700px) {

@@ -39,12 +39,12 @@ export const rmiSections = [
       <>
         The three gauges every RMI report opens with. Intrinsic and Extrinsic each fill against{' '}
         <strong>20</strong>; the Overall card stacks both against <strong>40</strong>, so its ring
-        reads as the two halves of one score rather than a third number. Geometry and colour are
-        the app&rsquo;s <code>summary_controller.ts</code> — a 360° sweep at radius 38 on a 12px
-        stroke, <code>#17BFD5</code> intrinsic and <code>#C849E5</code> extrinsic — and the outer
-        two cards point a triangle at the middle one. <code>average</code> switches the labels to
-        &ldquo;Avg …&rdquo; for a class; <code>deltas</code> adds the ± shown when an index is
-        being compared against another.
+        reads as the two halves of one score rather than a third number. Geometry and colour are the
+        app&rsquo;s <code>summary_controller.ts</code> — a 360° sweep at radius 38 on a 12px stroke,{' '}
+        <code>#17BFD5</code> intrinsic and <code>#C849E5</code> extrinsic — and the outer two cards
+        point a triangle at the middle one. <code>average</code> switches the labels to &ldquo;Avg
+        …&rdquo; for a class; <code>deltas</code> adds the ± shown when an index is being compared
+        against another.
       </>
     ),
     render: () => (
@@ -103,8 +103,8 @@ export const rmiSections = [
         factors, purple for the five extrinsic, grey for <strong>mystery</strong>, the placeholder
         for a reader with no strong preference. The drawings come from the shared{' '}
         <code>RMI_ICONS</code> set (bs-product&rsquo;s own art) and are masks painted in{' '}
-        <code>currentColor</code>, so each axis sets both its ground and its ink. Hovering gives
-        the educator-facing definition.
+        <code>currentColor</code>, so each axis sets both its ground and its ink. Hovering gives the
+        educator-facing definition.
       </>
     ),
     render: () => (
@@ -138,10 +138,9 @@ export const rmiSections = [
       <>
         The recommended daily minutes beside the two things to try. The goal is banded off the
         overall score (15 / 20 / 25 / 30); the recommendations are drawn from the engine&rsquo;s 62
-        YAML entries, each tagged with the factor that earned it so it can carry that
-        factor&rsquo;s icon. An educator reading one student sees the{' '}
-        <code>reader_internal</code> set (&ldquo;them&rdquo;), a class report the{' '}
-        <code>group</code> set (&ldquo;students&rdquo;).
+        YAML entries, each tagged with the factor that earned it so it can carry that factor&rsquo;s
+        icon. An educator reading one student sees the <code>reader_internal</code> set
+        (&ldquo;them&rdquo;), a class report the <code>group</code> set (&ldquo;students&rdquo;).
       </>
     ),
     render: () => (
@@ -164,10 +163,10 @@ export const rmiSections = [
 <FactorTable scores={response.scores} deltas={factorDeltas} />`,
     desc: (
       <>
-        All ten factors ranked, each with its <strong>1.0–4.0</strong> bar. The first three rows
-        are tinted, which is what makes the table read as &ldquo;these are the motivators&rdquo;
-        rather than a flat list. <code>deltas</code> adds a ± per factor when an index is being
-        compared against another.
+        All ten factors ranked, each with its <strong>1.0–4.0</strong> bar. The first three rows are
+        tinted, which is what makes the table read as &ldquo;these are the motivators&rdquo; rather
+        than a flat list. <code>deltas</code> adds a ± per factor when an index is being compared
+        against another.
       </>
     ),
     render: () => (
