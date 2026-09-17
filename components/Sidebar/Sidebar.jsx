@@ -362,8 +362,10 @@ export function Sidebar({
           onClose={close}
           // The section we're actually in is the one whose pages we can list —
           // the others are elsewhere in the app, and tapping them is a
-          // navigation, not an expansion.
-          sections={mainRailActive ? { [mainRailActive]: nav } : {}}
+          // navigation, not an expansion. MainRail resolves which row that is
+          // from `active`/`activeIndex`, so this is just our nav, unconditionally.
+          // Section headers aren't destinations, so they don't become rows.
+          sectionNav={nav.filter((item) => item.type !== 'section')}
           activeSectionItem={active}
           onSelectSectionItem={(id) => {
             onNavigate?.(id)
