@@ -63,63 +63,23 @@
   font-size: var(--text-tag);
 }
 
-/* ── Account menu ────────────────────────────────────────────────────────
-   `.dropdown-items-list`: a white rounded panel beside the avatar, growing up
-   from the bottom of the rail. Fixed, so the one copy serves the rail's avatar
-   and the topbar's. */
-.rmi-menu-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 40;
-}
-
-.rmi-account-menu {
-  position: fixed;
-  bottom: calc(12px + var(--chrome-bottom, 0px));
-  left: 86px; /* clear of the 80px rail */
-  z-index: 41;
-  min-width: 212px;
-  margin: 0;
-  padding: 6px;
-  list-style: none;
-  background: #fff;
-  border: 1px solid var(--c-gray-200);
-  border-radius: var(--radius-md, 10px);
-  box-shadow: 0 8px 24px rgb(0 0 0 / 14%);
-  text-align: left;
-}
-
-.rmi-account-menu-head {
-  padding: 8px 10px 10px;
+/* The account menu is a shared <Flyout>; all that's local is the identity line
+   above its items. */
+.rmi-account-head {
+  padding: 8px 12px 10px;
   border-bottom: 1px solid var(--c-gray-200);
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-.rmi-account-menu-head strong {
+.rmi-account-head strong {
   font-size: var(--text-label);
   color: var(--c-text-dark);
 }
-.rmi-account-menu-head span {
+.rmi-account-head span {
   font-size: var(--text-micro);
   color: var(--c-gray-600);
-}
-
-.rmi-account-menu button {
-  width: 100%;
-  padding: 8px 10px;
-  border: none;
-  background: none;
-  border-radius: 6px;
-  font: inherit;
-  font-size: var(--text-label);
-  color: var(--c-text);
-  text-align: left;
-  cursor: pointer;
-}
-.rmi-account-menu button:hover {
-  background: var(--c-gray-100);
 }
 
 /* ── Phone ───────────────────────────────────────────────────────────────
@@ -159,7 +119,7 @@
   fill: var(--c-accent);
 }
 
-.rmi-topbar-avatar {
+.rmi-topbar .main-rail-avatar {
   margin: 0;
 }
 
@@ -179,12 +139,5 @@
   }
   .rmi-topbar {
     display: flex;
-  }
-  /* The menu hangs off the topbar's avatar instead of the rail's. */
-  .rmi-account-menu {
-    top: 60px;
-    right: 12px;
-    bottom: auto;
-    left: auto;
   }
 }

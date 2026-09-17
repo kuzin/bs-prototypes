@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import { MainRail } from '@components/MainRail/MainRail'
+import { Flyout, FlyoutMenu, FlyoutMenuItem } from '@components/Flyout/Flyout'
+import '@components/Flyout/Flyout.css'
 import { Icon } from '@components/Icon/Icon'
 import '@components/MainRail/MainRail.css'
 import { asset } from '../assets'
@@ -35,10 +37,50 @@ const NAV = [
 
 const ACCOUNT_ITEMS = ['Billing & Invoices', 'Edit Account', 'Sign Out']
 
+/**
+ * The account menu, anchored to whichever avatar opened it. `right-end` puts it
+ * beside the rail and bottom-aligned, which is where the app's opens; Flyout
+ * flips it if the side runs out of room, and keeps it clear of any clipping
+ * ancestor on its own.
+ */
+function AccountMenu({ educator, placement }) {
+  return (
+    <Flyout
+      placement={placement}
+      trigger={({ toggle, open }) => (
+        <button
+          type="button"
+          className="main-rail-avatar"
+          title="Account"
+          aria-label="Open account menu"
+          aria-haspopup="menu"
+          aria-expanded={open}
+          onClick={toggle}
+        >
+          {educator.initials}
+        </button>
+      )}
+    >
+      {({ close }) => (
+        <FlyoutMenu>
+          <div className="rmi-account-head">
+            <strong>{educator.name}</strong>
+            <span>{educator.email}</span>
+          </div>
+          {ACCOUNT_ITEMS.map((label) => (
+            <FlyoutMenuItem key={label} onClick={close}>
+              {label}
+            </FlyoutMenuItem>
+          ))}
+        </FlyoutMenu>
+      )}
+    </Flyout>
+  )
+}
+
 const PHONE = '(max-width: 700px)'
 
 export function RmiShell({ section, onNavigate, educator, children }) {
-  const [menuOpen, setMenuOpen] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   // Below Sidebar's own mobile breakpoint the rail is replaced by a topbar, and
@@ -78,16 +120,7 @@ export function RmiShell({ section, onNavigate, educator, children }) {
         <svg className="rmi-topbar-logo" viewBox="0 0 24 32" aria-hidden="true">
           <path d="M8.626 6.934c0 0-2.765-3.301-6.174-0.407-4.015 3.409-3.504 10.254 8.248 25.171 0.291 0.369 0.852 0.442 0.7-0.313-0.431-2.133-0.614-6.205 3.594-10.001 5.274-4.759 11.544-12.716 7.525-18.394-4.052-5.724-11.834-2.273-13.892 3.944z" />
         </svg>
-        <button
-          type="button"
-          className="main-rail-avatar rmi-topbar-avatar"
-          aria-label="Open account menu"
-          aria-haspopup="menu"
-          aria-expanded={menuOpen}
-          onClick={() => setMenuOpen((o) => !o)}
-        >
-          {educator.initials}
-        </button>
+        <AccountMenu educator={educator} placement="bottom-end" />
       </div>
 
       {/* The rail's own bottom strip carries Support and the avatar. What's New
@@ -99,7 +132,7 @@ export function RmiShell({ section, onNavigate, educator, children }) {
         onSelect={select}
         initials={educator.initials}
         whatsNew={false}
-        onAvatarClick={() => setMenuOpen((o) => !o)}
+        avatar={<AccountMenu educator={educator} placement="right-end" />}
       />
 
       {isPhone && drawerOpen && (
@@ -111,25 +144,6 @@ export function RmiShell({ section, onNavigate, educator, children }) {
           onClose={() => setDrawerOpen(false)}
           className="rmi-rail-drawer"
         />
-      )}
-
-      {menuOpen && (
-        <>
-          <div className="rmi-menu-scrim" onClick={() => setMenuOpen(false)} />
-          <ul className="rmi-account-menu" role="menu">
-            <li className="rmi-account-menu-head">
-              <strong>{educator.name}</strong>
-              <span>{educator.email}</span>
-            </li>
-            {ACCOUNT_ITEMS.map((label) => (
-              <li key={label}>
-                <button type="button" role="menuitem" onClick={() => setMenuOpen(false)}>
-                  {label}
-                </button>
-              </li>
-            ))}
-          </ul>
-        </>
       )}
 
       <main className="rmi-content">

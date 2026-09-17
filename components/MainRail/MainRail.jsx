@@ -32,6 +32,9 @@ import './MainRail.css'
  *                              rail, since it's a Beanstack destination.
  * @param {Function} onAvatarClick  makes the avatar a button — for a product
  *                              whose rail opens an account menu.
+ * @param {ReactNode} avatar    replaces the avatar outright, for a product that
+ *                              needs to own the element — anchoring a <Flyout>
+ *                              to it, say. Takes precedence over onAvatarClick.
  */
 
 // The rail order exactly as the Figma frame lists it.
@@ -105,6 +108,7 @@ export function MainRail({
   items = RAIL_ITEMS,
   whatsNew,
   onAvatarClick,
+  avatar,
   className = '',
   initials = 'EG',
   drawer = false,
@@ -404,20 +408,21 @@ export function MainRail({
         <button type="button" className="main-rail-icon-btn" title="Support" aria-label="Support">
           <PlumpyIcon name="help" size={24} />
         </button>
-        {onAvatarClick ? (
-          <button
-            type="button"
-            className="main-rail-avatar"
-            title="Account"
-            aria-label="Open account menu"
-            aria-haspopup="menu"
-            onClick={onAvatarClick}
-          >
-            {initials}
-          </button>
-        ) : (
-          <div className="main-rail-avatar">{initials}</div>
-        )}
+        {avatar ??
+          (onAvatarClick ? (
+            <button
+              type="button"
+              className="main-rail-avatar"
+              title="Account"
+              aria-label="Open account menu"
+              aria-haspopup="menu"
+              onClick={onAvatarClick}
+            >
+              {initials}
+            </button>
+          ) : (
+            <div className="main-rail-avatar">{initials}</div>
+          ))}
       </div>
     </div>
   )
