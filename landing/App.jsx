@@ -63,6 +63,7 @@ const ICON_NAMES = {
   'words-with-benny': 'vocabulary',
   'reader-profile': 'users',
   'engagement-signals': 'activity-pulse',
+  rmi: 'flame',
 }
 
 const ICONS = Object.fromEntries(

@@ -44,7 +44,6 @@ export function App() {
           view below owns its own scrolling. */}
       <PreviewBar
         title="Book Talks: Comprehension"
-        subtitle="Site-wide completion setting"
         views={VIEWS}
         active={view}
         onChange={setView}

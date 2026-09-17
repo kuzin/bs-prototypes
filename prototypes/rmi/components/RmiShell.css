@@ -1,0 +1,210 @@
+/* Frame around the shared <MainRail>. The rail's own look is MainRail.css —
+   nothing here restyles it; this is the column it sits in, the phone topbar,
+   and the account menu the standalone product hangs off its avatar. */
+
+.rmi-shell {
+  display: flex;
+  min-height: 100vh;
+  background: var(--c-gray-100);
+}
+
+/* MainRail brings its own 80px width and white ground; what the standalone app
+   adds is that the rail is sticky for the viewport's height (the way its
+   `.sidebar` is), so long report pages scroll under it.
+
+   It sticks *below* the preview bar and stops *above* the prototype nav, both
+   of which publish their heights (`--preview-bar-h`, `--chrome-bottom`) for
+   exactly this. Without them the rail's bottom strip — Support and the account
+   avatar — hides behind the nav. Both default to 0, so the rail is a plain
+   full-height column wherever that chrome isn't present. */
+.rmi-rail {
+  position: sticky;
+  top: var(--preview-bar-h, 0px);
+  align-self: flex-start;
+  height: calc(100vh - var(--preview-bar-h, 0px) - var(--chrome-bottom, 0px));
+  border-right: 1px solid var(--c-gray-200);
+}
+
+.rmi-content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Same measure and gutters as every other admin surface here
+   (AppShell.css → --admin-content-max / --admin-gutter). */
+.rmi-page {
+  flex: 1;
+  width: 100%;
+  padding: var(--admin-pad-top)
+    max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) var(--admin-pad-bottom);
+}
+
+/* ── Vertical rhythm ─────────────────────────────────────────────────────
+   The app's, measured off its own Sass: 24px under the page header
+   (`.page-header`) and under the tab strip (`.nav-bar`), 20px under everything
+   else — the back link, the filter bar, each card in a report. The shared
+   PageHeader/BackBar/Tabs deliberately carry no bottom margin (their admin
+   containers use a flex `gap`), and `.rmi-page` is block flow, so the page
+   supplies them here rather than each view inventing its own. */
+.rmi-page > .page-header,
+.rmi-page > .tabs {
+  margin-bottom: 24px;
+}
+
+.rmi-page > .back-bar {
+  margin-bottom: 20px;
+}
+
+.rmi-footer {
+  padding: 20px max(var(--admin-gutter), calc((100% - var(--admin-content-max)) / 2)) 28px;
+  color: var(--c-gray-600);
+  font-size: var(--text-tag);
+}
+
+/* The account menu is a shared <Flyout>. Two things are local: the identity
+   line above its items, and where the panel sits. `right-end` hangs it from the
+   bottom of the *wrapper*, which includes the avatar's 20px margin — so it
+   overhangs the rail's end. Pulling it back by that margin lands the panel's
+   bottom edge on the avatar's. */
+.rmi-shell .flyout-pop--right-end {
+  bottom: 20px;
+}
+
+.rmi-account-head {
+  padding: 8px 12px 10px;
+  border-bottom: 1px solid var(--c-gray-200);
+  margin-bottom: 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rmi-account-head strong {
+  font-size: var(--text-label);
+  color: var(--c-text-dark);
+}
+.rmi-account-head span {
+  font-size: var(--text-micro);
+  color: var(--c-gray-600);
+}
+
+/* `.form-chunk` — a bordered panel with a tinted header strip. The roster uses
+   one to hold the add form and the table together. */
+.rmi-form-chunk {
+  border: 1px solid var(--c-gray-250);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.rmi-form-chunk-head {
+  padding: 12px 20px;
+  background: var(--c-gray-0);
+  border-bottom: 1px solid var(--c-gray-250);
+}
+
+.rmi-form-chunk-title {
+  margin: 0;
+  font-size: var(--text-body);
+  font-weight: 800;
+  color: var(--c-text-dark);
+}
+
+.rmi-form-chunk-body {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 20px 20px 30px;
+  background: #fff;
+}
+
+/* `.field-group`: the field and its button on one baseline. */
+.rmi-field-group {
+  display: flex;
+  gap: 20px;
+  align-items: flex-end;
+}
+
+.rmi-add-field {
+  flex: 1;
+  max-width: 420px;
+}
+
+/* `.page-buttons` — the pair under a form page. */
+.rmi-page-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+/* ── Phone ───────────────────────────────────────────────────────────────
+   Below 700px the rail is replaced by a topbar and reached as a drawer —
+   the same tier Sidebar uses, and the same <MainRail drawer> it opens. */
+.rmi-topbar {
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 16px;
+  background: #fff;
+  border-bottom: 1px solid var(--c-gray-200);
+  position: sticky;
+  top: var(--preview-bar-h, 0px);
+  z-index: 25;
+}
+
+.rmi-topbar-toggle {
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  border-radius: 100%;
+  color: var(--c-gray-900);
+}
+.rmi-topbar-toggle:hover {
+  background: var(--c-gray-150);
+}
+
+/* The product's own mark, in the rail's logo box and in the phone topbar. It
+   goes to the first destination rather than out of the app. */
+.rmi-rail-logo {
+  display: block;
+  padding: 0;
+  border: none;
+  background: none;
+  line-height: 0;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+}
+.rmi-rail-logo:hover {
+  transform: scale(1.08);
+}
+.rmi-rail-logo img {
+  display: block;
+}
+
+.rmi-topbar .main-rail-avatar {
+  margin: 0;
+}
+
+/* MainRail's drawer positions itself (fixed, full width, z-index 998); the only
+   thing it can't know is that the prototype's preview bar is above it. */
+.rmi-rail-drawer {
+  top: var(--preview-bar-h, 0px);
+  height: calc(100vh - var(--preview-bar-h, 0px) - var(--chrome-bottom, 0px));
+}
+
+@media (max-width: 700px) {
+  .rmi-shell {
+    flex-direction: column;
+  }
+  .rmi-rail {
+    display: none;
+  }
+  .rmi-topbar {
+    display: flex;
+  }
+}

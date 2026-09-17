@@ -1,0 +1,495 @@
+/* The reader-facing survey — `layouts/survey.html.erb` and
+   `pages/_survey.scss` / `_survey_intro.scss` / `_motivation_type.scss`.
+   Full-bleed and centred: no rail, no page header, one thing at a time. */
+
+/* Fills whatever the root gives it (`.rmi-root` is the 100vh column), rather
+   than claiming a viewport of its own — with the preview bar above, a second
+   100vh would push the first question below the fold. */
+/* The app's is `margin: 56px auto` over `padding: 0 24px`, which works because
+   its survey body is white. Ours sits in the prototype shell, whose ground is
+   the admin grey — a margin there shows through as a band above and below the
+   screen. Same 56px, taken as padding so the white is the layout's own, plus
+   room at the foot for the prototype nav. */
+.rmi-survey-layout {
+  position: relative;
+  width: 100%;
+  padding: 56px 24px calc(56px + var(--chrome-bottom, 0px));
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  align-items: center;
+  background: #fff;
+}
+
+/* 8px bar across the top, filling to question N of 20. */
+.rmi-survey-progress {
+  height: 8px;
+  background: var(--c-blue);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: calc(var(--question-number, 1) / 20 * 100%);
+  transition: width 0.25s ease;
+}
+
+/* `.heading-32` and `.body-18` from the app's type scale. Both land on
+   `--gray800`, which is our `--c-text`. */
+.rmi-survey-heading {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--c-text);
+}
+
+.rmi-survey-lede {
+  margin: 0;
+  font-size: var(--text-modal);
+  line-height: 1.5;
+  font-weight: 500;
+  text-align: center;
+  color: var(--c-text);
+}
+
+.rmi-center {
+  text-align: center;
+}
+
+/* ── Intro ─────────────────────────────────────────────────────────────── */
+/* `.survey-intro-header` — Benny sits *above* the greeting, on the same centre
+   line as everything else on the screen, not beside it. */
+.rmi-survey-intro-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.rmi-survey-intro-image {
+  width: 114px;
+  height: 114px;
+  margin-bottom: 16px;
+}
+
+.rmi-survey-intro-header .rmi-survey-heading {
+  margin-bottom: 12px;
+}
+
+.rmi-survey-intro-form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-top: 24px;
+}
+.rmi-survey-intro-form .inp-wrap,
+.rmi-survey-intro-form .fld {
+  max-width: 300px;
+}
+.rmi-survey-intro-form input {
+  width: 100%;
+  text-align: center;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+
+/* A prototype-only shortcut so the survey can be walked without the handout. */
+.rmi-survey-hint {
+  border: none;
+  background: none;
+  padding: 0;
+  font: inherit;
+  font-size: var(--text-tag);
+  color: var(--c-gray-600);
+  text-decoration: underline;
+  cursor: pointer;
+}
+.rmi-survey-hint:hover {
+  color: var(--c-blue);
+}
+
+/* The one control on this screen the product doesn't have. It says so, and it
+   is set apart from the survey's own type so nobody mistakes it for a way a
+   reader is meant to go. */
+.rmi-survey-skip {
+  padding: 5px 12px;
+  font: inherit;
+  font-size: var(--text-micro);
+  font-weight: 700;
+  color: var(--c-gray-600);
+  cursor: pointer;
+  background: none;
+  border: 1px dashed var(--c-gray-300);
+  border-radius: 999px;
+}
+.rmi-survey-skip:hover {
+  color: var(--c-blue);
+  border-color: var(--c-blue);
+}
+
+/* ── Question ──────────────────────────────────────────────────────────── */
+.rmi-survey-question {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.rmi-survey-question-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.rmi-survey-question-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.25;
+  max-width: 600px;
+  text-align: center;
+  color: var(--c-gray-900);
+}
+
+.rmi-survey-read-aloud {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font: inherit;
+  font-size: var(--text-modal);
+  font-weight: 500;
+  color: var(--c-blue);
+  cursor: pointer;
+  border: none;
+  background: none;
+  padding: 0;
+}
+.rmi-survey-read-aloud[aria-pressed='true'] {
+  color: var(--c-gray-600);
+}
+
+.rmi-survey-answers {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 200px));
+  justify-content: center;
+  width: 100%;
+}
+
+.rmi-survey-answer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  background: var(--c-gray-150);
+  border: 3px solid var(--c-gray-150);
+  border-radius: 12px;
+  padding: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition:
+    background 0.13s ease,
+    border-color 0.13s ease;
+}
+.rmi-survey-answer:hover {
+  background: var(--c-gray-250);
+  border-color: var(--c-gray-250);
+}
+.rmi-survey-answer.is-checked {
+  background: #fff;
+  border-color: var(--c-green);
+}
+.rmi-survey-answer:has(input:focus-visible) {
+  outline: 2px solid #4591ef;
+  outline-offset: 2px;
+}
+
+/* The chosen answer gets a green triangle folded into its top-right corner. */
+.rmi-survey-answer-check {
+  background: var(--c-green);
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 32px;
+  height: 32px;
+  display: none;
+  align-items: flex-start;
+  justify-content: flex-end;
+  clip-path: polygon(100% 0, 0 0, 100% 100%);
+  color: #fff;
+}
+.rmi-survey-answer.is-checked .rmi-survey-answer-check {
+  display: flex;
+}
+.rmi-survey-answer-check svg {
+  margin: 2px 3px 0 0;
+}
+
+.rmi-survey-answer input {
+  position: absolute;
+  clip: rect(1px, 1px, 1px, 1px);
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+}
+
+.rmi-survey-answer-image {
+  width: 56px;
+  height: 56px;
+}
+
+.rmi-survey-answer-label {
+  font-size: var(--text-label);
+  line-height: 1.25;
+  color: var(--c-gray-800);
+  font-weight: 800;
+  text-align: center;
+}
+
+/* ── Checkpoints + completion ──────────────────────────────────────────── */
+.rmi-survey-checkpoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+.rmi-survey-checkpoint-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  text-align: center;
+}
+
+.rmi-survey-checkpoint-image {
+  width: 100%;
+  max-width: fit-content;
+  margin-bottom: 16px;
+}
+
+/* ── Motivation type reveal ────────────────────────────────────────────── */
+.rmi-motivation-summary {
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  align-items: center;
+}
+
+.rmi-motivation-types {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+  width: 100%;
+}
+
+.rmi-motivation-type-wrap {
+  grid-column: span 2;
+  position: relative;
+}
+
+.rmi-motivation-type {
+  padding: 32px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.rmi-motivation-type-image {
+  width: 110px;
+  margin-bottom: 16px;
+}
+.rmi-motivation-type--large .rmi-motivation-type-image {
+  width: 120px;
+}
+
+.rmi-motivation-type-title {
+  margin: 0 0 4px;
+  font-size: var(--text-modal);
+  line-height: 1.25;
+  font-weight: 800;
+  text-align: center;
+  color: var(--c-text);
+}
+
+.rmi-motivation-type-text {
+  margin: 0;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  font-weight: 500;
+  text-align: center;
+  color: var(--c-text);
+}
+
+/* Each persona has its own ground (lib/_colors.scss). */
+.rmi-motivation-type--the-lion {
+  background: #fde9ce;
+}
+.rmi-motivation-type--the-climber {
+  background: #f3e3d8;
+}
+.rmi-motivation-type--the-detective {
+  background: #f2f8d3;
+}
+.rmi-motivation-type--the-fan {
+  background: #d4f2f7;
+}
+.rmi-motivation-type--the-guardian {
+  background: #f0dbdb;
+}
+.rmi-motivation-type--the-closer {
+  background: #fae2d1;
+}
+.rmi-motivation-type--the-star {
+  background: #d3f3f8;
+}
+.rmi-motivation-type--the-scholar {
+  background: #f8d4d3;
+}
+.rmi-motivation-type--the-butterfly {
+  background: #e9eedd;
+}
+.rmi-motivation-type--the-champion {
+  background: #feeecd;
+}
+.rmi-motivation-type--the-mystery {
+  background: #fdd2ce;
+}
+
+/* The art is 27×62: `-31px` is half its height against `top: 50%`, and `-43px`
+   is its own width plus a 16px gap from the card. */
+.rmi-motivation-stars {
+  position: absolute;
+  top: 50%;
+  margin-top: -31px;
+  width: 27px;
+  height: 62px;
+  pointer-events: none;
+}
+.rmi-motivation-stars--left {
+  left: -43px;
+}
+.rmi-motivation-stars--right {
+  right: -43px;
+}
+
+.rmi-motivation-subhead {
+  margin: 0;
+  font-size: var(--text-subhead);
+  line-height: 1.25;
+  font-weight: 800;
+  text-align: center;
+  color: var(--c-text);
+}
+
+/* `.motivation-summary__reading-goal` — a grey card, not a bare row: Benny
+   above the figure, everything on one centre line. */
+.rmi-motivation-goal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 32px;
+  border-radius: 16px;
+  background: var(--c-gray-150);
+  width: 100%;
+}
+
+.rmi-motivation-goal-image {
+  width: 88px;
+  height: 88px;
+}
+
+.rmi-motivation-goal-minutes {
+  font-size: 56px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--c-blue);
+}
+
+/* `heading-18` */
+.rmi-motivation-goal-label {
+  font-size: var(--text-modal);
+  line-height: 1.25;
+  font-weight: 800;
+  color: var(--c-text);
+}
+
+/* `.motivation-summary__recommendations` — one grey card, its rows ruled apart
+   rather than floating as a spaced list. */
+.rmi-motivation-recs {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: 16px;
+  background: var(--c-gray-150);
+  width: 100%;
+}
+
+.rmi-motivation-recs li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  font-size: var(--text-body);
+  line-height: 1.5;
+  font-weight: 500;
+  color: var(--c-text);
+}
+.rmi-motivation-recs li:not(:last-child) {
+  border-bottom: 1px solid var(--c-gray-300);
+}
+
+/* A 16px star in the app's `--gray500`, not a colour accent. */
+.rmi-motivation-recs-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--c-gray-500);
+}
+
+/* ── Genres to try ─────────────────────────────────────────────────────────
+   The reader's half of the toolkit's genre mapping: which shelves suit each
+   type they came out as. Same grey card as the goal and the advice, so the
+   three payoff blocks read as one family. */
+
+/* ── Narrow ────────────────────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .rmi-survey-answers {
+    grid-template-columns: repeat(2, minmax(120px, 1fr));
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 600px) {
+  .rmi-survey-intro-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .rmi-motivation-stars {
+    display: none;
+  }
+}
+
+@media (max-width: 450px) {
+  .rmi-motivation-types {
+    grid-template-columns: 1fr;
+  }
+  .rmi-motivation-type-wrap {
+    grid-column: span 1;
+  }
+  .rmi-survey-heading {
+    font-size: 26px;
+  }
+  .rmi-survey-question-title {
+    font-size: 23px;
+  }
+}

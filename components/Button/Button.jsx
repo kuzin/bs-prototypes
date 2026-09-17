@@ -8,6 +8,10 @@ import '@components/Button/Button.css'
  * variants: primary | secondary | ghost | danger | accent
  * sizes:    sm | msm | md | lg   (the app's small / medium-small / medium / large)
  *
+ * `iconOnly` squares the button to its own height and drops the side padding —
+ * the app's `.button--icon`, for a target that carries a glyph and no words.
+ * Pass an `aria-label`, since there's no text to name it.
+ *
  * When variant="accent", pass `accent` (CSS color) to tint it.
  */
 export function Button({
@@ -19,12 +23,20 @@ export function Button({
   disabled,
   loading,
   accent,
+  iconOnly = false,
   className = '',
   children,
   ...rest
 }) {
   const Tag = as
-  const cls = ['btn', `btn--${variant}`, `btn--${size}`, loading && 'btn--loading', className]
+  const cls = [
+    'btn',
+    `btn--${variant}`,
+    `btn--${size}`,
+    iconOnly && 'btn--icon-only',
+    loading && 'btn--loading',
+    className,
+  ]
     .filter(Boolean)
     .join(' ')
 

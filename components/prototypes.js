@@ -220,4 +220,12 @@ export const PROTOTYPES = [
     accent: '#196DD5',
     description: 'The app chrome and all four tabs — Home, Log, Discover, Community.',
   },
+  {
+    id: 'rmi',
+    name: 'Reading Motivation Index',
+    section: 'Prototypes',
+    href: '/bs-prototypes/rmi/',
+    accent: '#14B8A6',
+    description: 'The standalone RMI product — educator indexes and the student motivation quiz.',
+  },
 ]

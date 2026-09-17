@@ -22,7 +22,6 @@ import './PreviewBar.css'
  *
  * <PreviewBar
  *   title="Words with Benny"
- *   subtitle="Site-wide completion setting"    // optional second line
  *   views={[{ id: 'log', label: 'Reader · Log Reading', short: 'Log', icon: 'book' }]}
  *   active={view}
  *   onChange={setView}
@@ -63,7 +62,6 @@ function groupToggles(toggles) {
 
 export function PreviewBar({
   title,
-  subtitle,
   views = [],
   active,
   onChange,
@@ -119,7 +117,6 @@ export function PreviewBar({
         title={`Start ${title} over`}
       >
         <span className="pvb-title">{title}</span>
-        {subtitle && <span className="pvb-subtitle">{subtitle}</span>}
       </button>
 
       {/* On a phone the strip is four pills on a 375px row — it wrapped to two

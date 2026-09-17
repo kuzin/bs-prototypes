@@ -233,6 +233,15 @@ import {
   IconGauge,
   IconRuler,
   IconRun,
+  // ── RMI genre shelves ──
+  IconSword,
+  IconBuildingCastle,
+  IconMountain,
+  IconFingerprint,
+  IconBooks,
+  IconDeviceGamepad2,
+  IconFlask,
+  IconFriends,
   IconFlagOff,
   IconSnowflake,
   IconRosetteDiscountCheck,
@@ -484,6 +493,16 @@ const REGISTRY = {
   gauge: IconGauge,
   ruler: IconRuler,
   run: IconRun,
+
+  // RMI genre shelves
+  sword: IconSword,
+  'building-castle': IconBuildingCastle,
+  mountain: IconMountain,
+  fingerprint: IconFingerprint,
+  books: IconBooks,
+  'device-gamepad': IconDeviceGamepad2,
+  flask: IconFlask,
+  friends: IconFriends,
 }
 
 export const ICON_NAMES = Object.keys(REGISTRY)

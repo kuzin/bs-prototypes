@@ -1,0 +1,65 @@
+/* `classroom/survey_responses/show` — the back link, then the filter bar above
+   one reader's report. */
+
+/* `.filter-bar` — one row: the index selector takes the slack so the comparison
+   selector sits against the right edge, the way `.filter-bar__flex` does it. */
+.rmi-filter-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 20px;
+  margin-bottom: 20px;
+  padding: 14px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+/* Takes the remaining width, and fills it — the control names which index the
+   report is of, so a short box with a long white gap after it read as a field
+   waiting for something else to sit beside it. */
+.rmi-filter-survey {
+  flex: 1;
+  min-width: 0;
+}
+.rmi-filter-survey.sel-wrap {
+  display: flex;
+  width: auto;
+}
+
+.rmi-filter-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: none;
+}
+
+.rmi-filter-field > span {
+  font-size: var(--text-label);
+  font-weight: 700;
+  color: var(--c-gray-750);
+  white-space: nowrap;
+}
+
+.rmi-filter-field .sel-wrap {
+  min-width: 232px;
+}
+
+@media (max-width: 860px) {
+  .rmi-filter-bar {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .rmi-filter-field {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+  .rmi-filter-field .sel-wrap,
+  .rmi-filter-survey.sel-wrap {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+}

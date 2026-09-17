@@ -1,0 +1,769 @@
+/* The report body. Values are the standalone app's own
+   (`pages/_index_summary.scss`), whose palette variables are listed beside the
+   rules that use them. Its teal600 is our --c-teal exactly (#0CA7BC); the
+   lighter teals and the whole purple ramp are RMI's own, so they're declared
+   here rather than pretending to be design-system tokens. */
+
+/* `.rmi-root` so every RMI surface gets them; `.rmi-report` as well so a
+   pattern-library showcase, which renders that wrapper on its own, still does. */
+.rmi-root,
+.rmi-report {
+  --rmi-teal-50: #cdfaff;
+  --rmi-teal-100: #b4f7ff;
+  --rmi-teal-200: #84eefc;
+  --rmi-teal-600: var(--c-teal); /* #0CA7BC */
+  --rmi-teal-800: #017382;
+  --rmi-purple-50: #f9d8ff;
+  --rmi-purple-100: #f7caff;
+  --rmi-purple-200: #f0a6ff;
+  --rmi-purple-600: #c849e5;
+  --rmi-purple-800: #901faa;
+  --rmi-blue-600: #196dd5;
+  --rmi-yellow-0: #fff6e6;
+  --rmi-yellow-200: #ffe091;
+}
+
+/* ── Score cards ───────────────────────────────────────────────────────── */
+.rmi-score-cards {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.rmi-score-card {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.rmi-score-card-inner {
+  padding: 20px 40px 20px 20px;
+  border-radius: 16px;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex: 1;
+}
+
+/* The outer two cards each point a triangle at the overall card between them. */
+.rmi-score-card--intrinsic::after,
+.rmi-score-card--extrinsic::before {
+  content: '';
+  position: relative;
+  width: 0;
+  height: 0;
+  border-top: 15px solid transparent;
+  border-bottom: 15px solid transparent;
+}
+.rmi-score-card--intrinsic::after {
+  border-left: 15px solid var(--rmi-teal-50);
+}
+.rmi-score-card--extrinsic::before {
+  border-right: 15px solid var(--rmi-purple-50);
+}
+
+.rmi-score-card--intrinsic {
+  --rmi-track: var(--rmi-teal-200);
+}
+.rmi-score-card--intrinsic .rmi-score-card-inner {
+  background: var(--rmi-teal-50);
+}
+.rmi-score-card--intrinsic .rmi-score-card-total {
+  color: var(--rmi-teal-800);
+}
+
+.rmi-score-card--extrinsic {
+  --rmi-track: var(--rmi-purple-200);
+}
+.rmi-score-card--extrinsic .rmi-score-card-inner {
+  background: var(--rmi-purple-50);
+}
+.rmi-score-card--extrinsic .rmi-score-card-total {
+  color: var(--rmi-purple-800);
+}
+
+.rmi-score-card--overall {
+  --rmi-track: var(--c-gray-250);
+}
+.rmi-score-card--overall .rmi-score-card-inner {
+  background: #fff;
+}
+.rmi-score-card--overall .rmi-score-card-total {
+  color: var(--c-gray-700);
+}
+
+.rmi-score-card-chart {
+  width: 54px;
+  height: 54px;
+  flex-shrink: 0;
+}
+
+.rmi-gauge {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.rmi-score-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.rmi-score-card-numbers {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.rmi-score-card-score {
+  font-size: var(--text-head);
+  font-weight: 800;
+  color: var(--c-text-dark);
+  line-height: 1.1;
+}
+
+.rmi-score-card-total {
+  font-size: var(--text-cell);
+  font-weight: 700;
+}
+
+.rmi-score-card-description {
+  font-size: var(--text-label);
+  color: var(--c-gray-750);
+}
+
+/* ── Deltas (only when comparing against another index) ────────────────── */
+.rmi-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 1px;
+  margin-left: 6px;
+  font-size: var(--text-tag);
+  font-weight: 700;
+  white-space: nowrap;
+}
+.rmi-delta--increase {
+  color: var(--c-green-ink);
+}
+.rmi-delta--decrease {
+  color: var(--c-red-ink);
+}
+.rmi-delta--no-change {
+  color: var(--c-gray-600);
+}
+
+/* ── Benny says ────────────────────────────────────────────────────────── */
+/* `.benny-says` — the bubble lives in a white card with its title above it. */
+.rmi-benny-says {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.rmi-block-title {
+  margin: 0 0 16px;
+  font-size: var(--text-modal);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-gray-800);
+}
+
+/* ── Factor icon ───────────────────────────────────────────────────────── */
+/* `.factor-icon`: a rounded square, tinted by axis. The drawings are masks
+   painted in `currentColor`, so each axis sets both its ground and its ink —
+   teal600 on teal100, purple600 on purple100.
+
+   The app's is 24px because its table cell is a single line. Ours carries the
+   factor's definition under its name, so the square grows to stand against a
+   two-line block rather than floating beside it. `--rmi-factor-box` lets the
+   one-line uses — the recommendation rows, the Top Motivators cell — keep 24. */
+.rmi-factor-icon {
+  width: var(--rmi-factor-box, 32px);
+  height: var(--rmi-factor-box, 32px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.rmi-factor-icon--intrinsic {
+  background: var(--rmi-teal-100);
+  color: var(--rmi-teal-600);
+}
+.rmi-factor-icon--extrinsic {
+  background: var(--rmi-purple-100);
+  color: var(--rmi-purple-600);
+}
+.rmi-factor-icon--unknown {
+  background: var(--c-gray-300);
+  color: var(--c-gray-750);
+}
+.rmi-factor-icon svg,
+.rmi-factor-icon img,
+.rmi-factor-icon .bsi {
+  width: var(--rmi-factor-glyph, 20px) !important;
+  height: var(--rmi-factor-glyph, 20px) !important;
+}
+
+/* One-line contexts keep the app's 24px square. */
+.rmi-rec-actions-item,
+.rmi-top-motivators {
+  --rmi-factor-box: 24px;
+  --rmi-factor-glyph: 16px;
+}
+
+/* ── Reading goal + recommended actions ────────────────────────────────── */
+/* `.actions-reading-goals`: six columns, the goal taking two and the actions
+   four, each its own card. */
+.rmi-actions-goals {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* The card stretches to whatever the actions beside it need, and the figure
+   sits on its centre line. Nothing else is in here, so the centring is the
+   card's own — no title to work around. */
+.rmi-reading-goals {
+  grid-column: span 2;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.rmi-reading-goals-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  text-align: center;
+}
+
+.rmi-reading-goals-number {
+  font-size: 56px;
+  line-height: 1;
+  font-weight: 700;
+  color: var(--c-blue);
+}
+
+.rmi-reading-goals-text {
+  font-size: var(--text-cell);
+  line-height: 1.25;
+  font-weight: 800;
+  color: var(--c-gray-800);
+}
+
+.rmi-rec-actions {
+  grid-column: span 4;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+}
+
+.rmi-rec-actions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Each action is its own grey pill, not a ruled row. */
+.rmi-rec-actions-item {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--c-gray-150);
+  font-size: var(--text-cell);
+  line-height: 1.45;
+  color: var(--c-gray-800);
+}
+
+/* ── Top motivation types ──────────────────────────────────────────────── */
+/* The reader's own three, in their own portraits, on the educator's report. */
+.rmi-top-types {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+/* With only a portrait and a name left, three full-width bars would be mostly
+   empty. They sit side by side instead, each taking a third. */
+.rmi-top-types-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* The Mystery is on its own — it doesn't share the row with anything. */
+.rmi-top-types-list:has(> :only-child) {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.rmi-top-type {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--c-gray-150);
+}
+
+.rmi-top-type-rank {
+  width: 22px;
+  flex-shrink: 0;
+  font-size: var(--text-cell);
+  font-weight: 800;
+  color: var(--c-gray-750);
+  text-align: center;
+}
+
+.rmi-top-type-portrait {
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.rmi-top-type-name {
+  flex: 1;
+  min-width: 0;
+  font-size: var(--text-cell);
+  font-weight: 800;
+  color: var(--c-gray-800);
+}
+
+/* ── Genre recommendations ─────────────────────────────────────────────── */
+.rmi-genres {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+/* The title and its lede on the left, the way into the lists on the right. */
+.rmi-genres-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.rmi-genres-lede {
+  margin: -8px 0 0;
+  font-size: var(--text-cell);
+  color: var(--c-gray-750);
+}
+
+/* One card per genre, so the three read as three shelves rather than one list
+   you have to keep your place in. They were columns inside a single grey block
+   until the block narrowed to the strongest motivation type alone, at which
+   point the block was only a border around three things that stand alone. */
+.rmi-genre-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 720px) {
+  .rmi-genre-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.rmi-genre {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 16px;
+  border-radius: 10px;
+  background: var(--shelf-ground, var(--c-gray-150));
+}
+
+/* ── Three shelves, three colours ──────────────────────────────────────────
+   A type's three genres are the same three in the same order wherever they
+   appear — on the summary as recommendations, on the Book List tab as lists —
+   so the colour is the position, not the genre. Second shelf is the purple
+   one on both screens, which is what makes them read as the same three things
+   rather than two unrelated sets of cards. The ramps are the product's own:
+   intrinsic teal, extrinsic purple, and the app's action blue for the third. */
+.rmi-shelf-1 {
+  --shelf-ink: var(--rmi-teal-800);
+  --shelf-ground: var(--rmi-teal-50);
+}
+.rmi-shelf-2 {
+  --shelf-ink: var(--rmi-purple-800);
+  --shelf-ground: var(--rmi-purple-50);
+}
+.rmi-shelf-3 {
+  --shelf-ink: var(--rmi-blue-600);
+  --shelf-ground: color-mix(in srgb, var(--rmi-blue-600) 14%, #fff);
+}
+
+/* The glyph that tells a shelf apart at a glance — thirty genre names is a
+   wall of text, and the three a reader is pointed at have to be read fast. */
+.rmi-genre-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  margin-bottom: 8px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--shelf-ink, var(--rmi-teal-800));
+}
+
+.rmi-genre-name {
+  font-size: var(--text-cell);
+  font-weight: 700;
+  color: var(--c-text-dark);
+}
+
+/* The reason the genre suits them — the thing that lets a librarian explain
+   the choice rather than just hand over a list. */
+.rmi-genre-why {
+  font-size: var(--text-tag);
+  line-height: 1.45;
+  color: var(--c-gray-750);
+}
+
+@media (max-width: 900px) {
+  .rmi-genres-types {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ── Title recommendations ─────────────────────────────────────────────── */
+.rmi-titles {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.rmi-titles-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.rmi-titles-lede {
+  margin: -8px 0 16px;
+  font-size: var(--text-cell);
+  color: var(--c-gray-750);
+}
+
+/* Five across at full width; the covers set the column, so a narrower report
+   drops to four, three, two rather than shrinking the jackets. */
+.rmi-titles-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 20px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rmi-title {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rmi-title .bkcov {
+  margin-bottom: 8px;
+}
+
+.rmi-title-name {
+  font-size: var(--text-label);
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--c-text-dark);
+}
+
+.rmi-title-author {
+  font-size: var(--text-tag);
+  color: var(--c-gray-750);
+}
+
+/* Which genre found it — the link back to the motivation type, without which
+   this is just a shelf of books someone picked. */
+.rmi-title-genre {
+  margin-top: 6px;
+  align-self: flex-start;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--c-gray-150);
+  font-size: var(--text-micro);
+  font-weight: 700;
+  color: var(--c-gray-750);
+}
+
+@media (max-width: 720px) {
+  .rmi-titles-head {
+    flex-direction: column;
+  }
+}
+
+/* ── Book lists ────────────────────────────────────────────────────────── */
+.rmi-booklist {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.rmi-booklist-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+/* The type's portrait beside the heading — the same art the reader was shown
+   when they were told which type they are. */
+.rmi-booklist-who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.rmi-booklist-portrait {
+  flex-shrink: 0;
+  border-radius: 50%;
+}
+
+.rmi-booklist-lede {
+  margin: 2px 0 0;
+  font-size: var(--text-cell);
+  color: var(--c-gray-750);
+}
+
+/* A reader's lists are a stack of cards, not one card with three runs in it:
+   a single card made them read as one long scroll you lose your place in. */
+.rmi-booklist-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Each list is its own card on the page's grey, the way every other block on
+   a report is — three shelves is three things to act on. */
+.rmi-booklist-group {
+  padding: 20px;
+  background: #fff;
+  border-radius: 12px;
+}
+
+.rmi-booklist-group-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 10px;
+}
+
+/* On a white list card the tint moves to the disc, so the shelf keeps its
+   colour without the card shouting it. */
+.rmi-booklist-group-head .rmi-genre-icon {
+  margin-bottom: 0;
+  background: var(--shelf-ground, var(--c-gray-150));
+}
+
+.rmi-booklist-group-name {
+  margin: 0;
+  font-size: var(--text-head);
+  font-weight: 800;
+  line-height: 1.25;
+  color: var(--c-text-dark);
+}
+
+/* The toolkit's own reason this genre suits the type — what turns a list of
+   twelve books into a recommendation. */
+.rmi-booklist-group-why {
+  margin: 2px 0 0;
+  font-size: var(--text-tag);
+  line-height: 1.45;
+  color: var(--c-gray-750);
+}
+
+/* ── The class's pull list ─────────────────────────────────────────────── */
+/* A grid of jackets: at three hundred titles a row apiece is a page nobody
+   reaches the end of, and what you do with a pull list is scan it. */
+.rmi-rollup {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 20px 14px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rmi-rollup-cell {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* The tooltip's own wrapper is the jacket's box, so it has to fill the cell
+   rather than shrink-wrap the way a span does. */
+.rmi-rollup-hit {
+  display: block;
+}
+
+/* How many of the room this one copy would serve. */
+.rmi-rollup-count {
+  align-self: flex-start;
+  margin-top: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--rmi-purple-50);
+  font-size: var(--text-micro);
+  font-weight: 700;
+  color: var(--rmi-purple-800);
+}
+
+/* ── Factor table ──────────────────────────────────────────────────────── */
+/* The shared <Table>; what's local is the rank/description cell and the bar. */
+.rmi-factors-table {
+  border-radius: 12px;
+}
+
+.rmi-table-factors {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rmi-table-factors-number {
+  font-weight: 800;
+  min-width: 22px;
+  color: var(--c-gray-750);
+}
+
+.rmi-table-factors-content {
+  display: flex;
+  flex-direction: column;
+}
+
+/* `.table-factors__name` carries a weight and nothing else — the size is the
+   cell's own 15px, and so is the description's. The weight is the whole
+   hierarchy between them. */
+.rmi-table-factors-name {
+  font-size: var(--text-cell);
+  font-weight: 800;
+  color: var(--c-gray-800);
+}
+
+.rmi-table-factors-description {
+  font-size: var(--text-cell);
+  color: var(--c-gray-750);
+}
+
+.rmi-factor-score {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+/* The app pins the bar at 150px. Ours takes whatever the cell has left over
+   instead, so it fills the column when nothing is being compared and gives the
+   room back to the ± when something is. */
+.rmi-factor-bar {
+  flex: 1;
+  min-width: 80px;
+  height: 10px;
+  position: relative;
+}
+
+.rmi-factor-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: var(--c-gray-300);
+  border-radius: 6px;
+  position: absolute;
+  top: 2px;
+}
+
+.rmi-factor-bar-total {
+  height: 10px;
+  background: #4591ef; /* blue400 */
+  border-radius: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.rmi-factor-score-number {
+  font-size: var(--text-cell);
+  font-weight: 700;
+  color: var(--c-text-dark);
+  min-width: 26px;
+  text-align: right;
+}
+
+/* ── Narrow ────────────────────────────────────────────────────────────── */
+@media (max-width: 1050px) {
+  .rmi-score-cards {
+    flex-direction: column;
+  }
+  .rmi-score-card {
+    flex-direction: column;
+    width: 100%;
+  }
+  .rmi-score-card-inner {
+    width: 100%;
+    padding-right: 20px;
+  }
+  .rmi-score-card--intrinsic::after {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 15px solid var(--rmi-teal-50);
+    border-bottom: none;
+  }
+  .rmi-score-card--extrinsic::before {
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-bottom: 15px solid var(--rmi-purple-50);
+    border-top: none;
+  }
+}
+
+@media (max-width: 960px) {
+  .rmi-actions-goals {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 860px) {
+  .rmi-factor-bar {
+    min-width: 60px;
+  }
+  .rmi-table-factors-description {
+    display: none;
+  }
+}

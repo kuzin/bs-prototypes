@@ -37,6 +37,7 @@ import { gameboardSections } from './sections/gameboard'
 import { gameboardReaderSections } from './sections/gameboard-reader'
 import { wordsWithBennySections } from './sections/words-with-benny'
 import { engagementSignalsSections } from './sections/engagement-signals'
+import { rmiSections } from './sections/rmi'
 import { mobileSections } from './sections/mobile'
 import { mobileIconSections } from './sections/mobile-icons'
 
@@ -288,6 +289,13 @@ export const GROUPS = [
     color: 'var(--c-purple)',
   },
   {
+    id: 'rmi',
+    kind: 'prototype',
+    title: 'Reading Motivation Index',
+    desc: 'The report body of the standalone RMI product — the three score gauges, Benny\u2019s generated summary, the reading goal and recommended actions, and the ten-factor table. The same five blocks build a class report and one reader\u2019s.',
+    color: 'var(--c-teal)',
+  },
+  {
     id: 'engagement-signals',
     kind: 'prototype',
     title: 'Engagement Signals',
@@ -368,6 +376,7 @@ export const SECTIONS = [
   ...gameboardReaderSections,
   ...wordsWithBennySections,
   ...engagementSignalsSections,
+  ...rmiSections,
   ...mobileSections,
   ...mobileIconSections,
 ]

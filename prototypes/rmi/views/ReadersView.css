@@ -1,0 +1,35 @@
+/* The roster's notice sits on its own above the panel; the search bar that
+   follows owns its own 20px. */
+.rmi-readers-bar {
+  margin-bottom: 20px;
+}
+
+/* The access code is a copy target: the app copies the reader's survey link. */
+button.rmi-access-code {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background: var(--c-gray-150);
+  font-family: var(--font-mono);
+  font-size: var(--text-tag);
+  letter-spacing: 0.04em;
+  color: var(--c-gray-800);
+  cursor: pointer;
+  transition: background 0.13s ease;
+}
+button.rmi-access-code:hover {
+  background: var(--c-gray-250);
+}
+
+@media (max-width: 640px) {
+  .rmi-field-group {
+    flex-wrap: wrap;
+  }
+  .rmi-add-field {
+    flex: 1 0 100%;
+    max-width: none;
+  }
+}

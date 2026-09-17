@@ -1190,8 +1190,10 @@ export const atomsSections = [
       <>
         Variants: <code>primary</code>, <code>secondary</code>, <code>ghost</code>,{' '}
         <code>danger</code>, <code>accent</code>. Sizes: <code>sm</code>, <code>md</code>,{' '}
-        <code>msm</code>, <code>lg</code>. Optional <code>icon</code> / <code>iconRight</code>. Can
-        render as a link via <code>as="a"</code>.
+        <code>msm</code>, <code>lg</code>. Optional <code>icon</code> / <code>iconRight</code>, or{' '}
+        <code>iconOnly</code> for a square glyph-only target (the app&apos;s{' '}
+        <code>.button--icon</code> — give it an <code>aria-label</code>). Can render as a link via{' '}
+        <code>as="a"</code>.
         <br />
         <br />
         The four sizes are the app&apos;s own ladder (<code>lib/_buttons.scss</code>):{' '}
