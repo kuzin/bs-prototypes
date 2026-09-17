@@ -437,6 +437,55 @@
   color: var(--c-gray-500);
 }
 
+/* ── Genres to try ─────────────────────────────────────────────────────────
+   The reader's half of the toolkit's genre mapping: which shelves suit each
+   type they came out as. Same grey card as the goal and the advice, so the
+   three payoff blocks read as one family. */
+.rmi-genres-reader {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: 100%;
+  border-radius: 16px;
+  background: var(--c-gray-150);
+  overflow: hidden;
+}
+
+.rmi-genres-reader-type {
+  padding: 16px;
+}
+.rmi-genres-reader-type + .rmi-genres-reader-type {
+  border-top: 1px solid var(--c-gray-300);
+}
+
+.rmi-genres-reader-name {
+  display: block;
+  margin-bottom: 8px;
+  font-size: var(--text-cell);
+  font-weight: 800;
+  color: var(--c-text);
+}
+
+/* Pills: a genre is a thing to go and look for, so it reads as a label rather
+   than a bullet. */
+.rmi-genres-reader-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rmi-genres-reader-list li {
+  padding: 5px 12px;
+  border-radius: 999px;
+  background: #fff;
+  font-size: var(--text-label);
+  font-weight: 700;
+  color: var(--c-text);
+}
+
 /* ── Narrow ────────────────────────────────────────────────────────────── */
 @media (max-width: 860px) {
   .rmi-survey-answers {

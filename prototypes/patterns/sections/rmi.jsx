@@ -5,6 +5,7 @@ import {
   FactorTable,
   FactorIcon,
   TopMotivationTypes,
+  GenreRecommendations,
 } from '../../rmi/components/ReportBlocks'
 import { ALL_FACTORS, recommendationsFor, readingGoalFor, summaryFor } from '../../rmi/scoring'
 import { INDEXES } from '../../rmi/data'
@@ -185,6 +186,36 @@ export const rmiSections = [
         </Variant>
         <Variant label="Nothing above the threshold — The Mystery">
           <TopMotivationTypes scores={LOW} />
+        </Variant>
+      </div>
+    ),
+  },
+  {
+    group: 'rmi',
+    id: 'rmi-genres',
+    name: 'GenreRecommendations',
+    usage: `import { GenreRecommendations } from './components/ReportBlocks'
+
+<GenreRecommendations scores={response.scores} />
+<GenreRecommendations scores={index.scores} subject="class" />`,
+    desc: (
+      <>
+        Three genres for each of the top motivation types, from the RMI toolkit&rsquo;s own mapping
+        &mdash; ten personas, three genres each, with the reason every one suits that type. This is
+        the reader&rsquo;s-advisory half of a report: the recommended <em>actions</em> tell an
+        educator what to do, and these tell them what to put in the reader&rsquo;s hands. The reason
+        matters more than the list &mdash; it&rsquo;s what lets a librarian explain the choice.{' '}
+        <strong>The Mystery</strong> has none: it isn&rsquo;t a reading taste but the absence of a
+        clear one, so the block doesn&rsquo;t render rather than inventing a shelf.
+      </>
+    ),
+    render: () => (
+      <div className="rmi-report">
+        <Variant label="One reader">
+          <GenreRecommendations scores={READER.scores} />
+        </Variant>
+        <Variant label="A class">
+          <GenreRecommendations scores={FALL.scores} subject="class" />
         </Variant>
       </div>
     ),

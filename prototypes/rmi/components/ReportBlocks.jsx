@@ -5,6 +5,7 @@ import { Table } from '@components/Table/Table'
 import '@components/BennyBubble/BennyBubble.css'
 import '@components/Table/Table.css'
 import { FACTORS, MOTIVATION_OF } from '../domain'
+import { GENRES_BY_FACTOR } from '../genres'
 import { rankedFactors, topThreeFactors } from '../scoring'
 import { asset } from '../assets'
 import './ReportBlocks.css'
@@ -250,6 +251,65 @@ export function TopMotivationTypes({ scores }) {
           )
         })}
       </ol>
+    </section>
+  )
+}
+
+// ── Genre recommendations ────────────────────────────────────────────────
+/**
+ * Three genres for each of the reader's top motivation types, from the RMI
+ * toolkit's own mapping.
+ *
+ * This is the reader's-advisory half of the report: the recommended *actions*
+ * above tell an educator what to do, and these tell them what to put in the
+ * reader's hands. Each genre carries the reason it suits that type, because the
+ * point isn't the list — it's that a librarian can explain the choice.
+ *
+ * `mystery` has no genres. It isn't a reading taste, it's the absence of a
+ * clear one, so the block doesn't render rather than inventing a shelf.
+ */
+export function GenreRecommendations({ scores, subject = 'reader' }) {
+  const types = topThreeFactors(scores).filter((f) => GENRES_BY_FACTOR[f.name])
+  if (types.length === 0) return null
+
+  return (
+    <section className="rmi-genres">
+      <h3 className="rmi-block-title">Genre Recommendations</h3>
+      <p className="rmi-genres-lede">
+        Genres that suit {subject === 'class' ? "this class's" : "this reader's"} top motivation
+        types.
+      </p>
+
+      <div className="rmi-genres-types">
+        {types.map((factor) => {
+          const def = FACTORS[factor.name]
+          const slug = def.student_name.toLowerCase().replace(/\s+/g, '-')
+
+          return (
+            <div key={factor.name} className="rmi-genre-type">
+              <div className="rmi-genre-type-head">
+                <img
+                  className="rmi-genre-type-portrait"
+                  src={asset(`factors/${slug}.png`)}
+                  alt=""
+                  width={32}
+                  height={32}
+                />
+                <span className="rmi-genre-type-name">{def.student_name}</span>
+              </div>
+
+              <ul className="rmi-genre-list">
+                {GENRES_BY_FACTOR[factor.name].map((genre) => (
+                  <li key={genre.name} className="rmi-genre">
+                    <span className="rmi-genre-name">{genre.name}</span>
+                    <span className="rmi-genre-why">{genre.why}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )
+        })}
+      </div>
     </section>
   )
 }

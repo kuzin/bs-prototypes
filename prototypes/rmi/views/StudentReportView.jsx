@@ -9,6 +9,7 @@ import {
   BennySays,
   ReadingGoalAndActions,
   TopMotivationTypes,
+  GenreRecommendations,
   FactorTable,
 } from '../components/ReportBlocks'
 import {
@@ -111,6 +112,7 @@ export function StudentReportView({
               })}
             />
             <TopMotivationTypes scores={response.scores} />
+            <GenreRecommendations scores={response.scores} />
             <FactorTable scores={response.scores} deltas={factorDeltas} />
           </>
         ) : (

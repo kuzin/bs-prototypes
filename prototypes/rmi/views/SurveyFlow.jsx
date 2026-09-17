@@ -6,6 +6,7 @@ import '@components/Form/Form.css'
 import { QUESTIONS_IN_ORDER, FACTORS } from '../domain'
 import { scoreAnswers, topThreeFactors, readingGoalFor, recommendationsFor } from '../scoring'
 import { STUDENTS } from '../data'
+import { GENRES_BY_FACTOR } from '../genres'
 import { asset } from '../assets'
 import './SurveyFlow.css'
 
@@ -250,6 +251,37 @@ function Checkpoint({ checkpoint, onContinue }) {
 }
 
 /**
+ * The genres that suit each type the reader just came out as.
+ *
+ * Names only. The toolkit pairs every genre with a reason, but those are
+ * written *about* the reader for a teacher — "appeals to their love of grand
+ * leadership" — so they belong on the report, not here. What a reader wants is
+ * the shelf to go to.
+ */
+function GenresToTry({ top }) {
+  const types = top.filter((f) => GENRES_BY_FACTOR[f.name])
+  if (types.length === 0) return null
+
+  return (
+    <>
+      <h3 className="rmi-motivation-subhead">Genres to Try:</h3>
+      <div className="rmi-genres-reader">
+        {types.map((factor) => (
+          <div key={factor.name} className="rmi-genres-reader-type">
+            <span className="rmi-genres-reader-name">{FACTORS[factor.name].student_name}</span>
+            <ul className="rmi-genres-reader-list">
+              {GENRES_BY_FACTOR[factor.name].map((genre) => (
+                <li key={genre.name}>{genre.name}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
+/**
  * `students/survey_responses/motivation_type` — the payoff. The reader's top
  * factor is shown large with stars either side, the next two beside it, then
  * the reading goal and the reader-facing recommendations.
@@ -314,6 +346,8 @@ function MotivationType({ answers, student, onRestart }) {
           ),
         )}
       </div>
+
+      <GenresToTry top={top} />
 
       <h3 className="rmi-motivation-subhead">Set a Reading Goal</h3>
       <div className="rmi-motivation-goal">

@@ -10,6 +10,7 @@ import {
   ScoreCards,
   BennySays,
   ReadingGoalAndActions,
+  GenreRecommendations,
   FactorTable,
   FactorIcon,
 } from '../components/ReportBlocks'
@@ -141,6 +142,7 @@ function SummaryTab({ index, scored }) {
         goal={readingGoalFor(index.scores)}
         recommendations={recommendations}
       />
+      <GenreRecommendations scores={index.scores} subject="class" />
       <FactorTable scores={index.scores} />
     </>
   )

@@ -362,6 +362,91 @@
   color: var(--c-gray-800);
 }
 
+/* ── Genre recommendations ─────────────────────────────────────────────── */
+.rmi-genres {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.rmi-genres-lede {
+  margin: -8px 0 16px;
+  font-size: var(--text-cell);
+  color: var(--c-gray-750);
+}
+
+/* One column per motivation type, so the three read as parallel shelves
+   rather than one long list you have to keep your place in. */
+.rmi-genres-types {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.rmi-genre-type {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 10px;
+  background: var(--c-gray-150);
+}
+
+.rmi-genre-type-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rmi-genre-type-portrait {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: block;
+}
+
+.rmi-genre-type-name {
+  font-size: var(--text-cell);
+  font-weight: 800;
+  color: var(--c-gray-800);
+}
+
+.rmi-genre-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rmi-genre {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rmi-genre-name {
+  font-size: var(--text-cell);
+  font-weight: 700;
+  color: var(--c-text-dark);
+}
+
+/* The reason the genre suits them — the thing that lets a librarian explain
+   the choice rather than just hand over a list. */
+.rmi-genre-why {
+  font-size: var(--text-tag);
+  line-height: 1.45;
+  color: var(--c-gray-750);
+}
+
+@media (max-width: 900px) {
+  .rmi-genres-types {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 /* ── Factor table ──────────────────────────────────────────────────────── */
 /* The shared <Table>; what's local is the rank/description cell and the bar. */
 .rmi-factors-table {
